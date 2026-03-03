@@ -175533,6 +175533,7 @@ apply (nat_inv k HkNat).
     HconnImg).
 Qed.
 
+(** Proven Bob **)
 Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   n :e omega -> 2 c= n ->
   ~(exists f:set, homeomorphism R R_standard_topology
@@ -175673,7 +175674,7 @@ claim HconnY :
     Ha).
 }
 exact (HnotConnY HconnY).
-Admitted.
+Qed.
 
 (** from S59 Exercise 3(b) (line 1618 in algtop.tex) **)
 (** LATEX VERSION: R^2 and R^n are not homeomorphic if n > 2. **)
