@@ -84,7 +84,7 @@ Rules:
 
 NOTICE ID: 1772520177
 Created: 1772520177
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   8bfb75631fab1961ce5198b817c565ae712caca7
@@ -107,14 +107,17 @@ Proposed by:
   Charlie
 
 Discussion:
+  - 1772527781 | Bob: Duplicate of NOTICE 1772498147. I agree the statement is false and the replacement is the minimal correct weakening.
 
 Approvals:
   - 1772520177 | Alice:
   - 1772520177 | Bob:
   - 1772520177 | Charlie: YES
   - 1772520177 | Dave:
+  - 1772527781 | Bob: YES
 
 Result:
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -123,11 +126,11 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772519545
 Created: 1772519545
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   82ed4e9aa747a4728232e853172164954d064888
@@ -164,14 +167,17 @@ Proposed by:
   Charlie
 
 Discussion:
+  - 1772527781 | Bob: Agree: without path-connectedness of U and V the conclusion is not derivable.
 
 Approvals:
   - 1772519545 | Alice:
   - 1772519545 | Bob:
   - 1772519545 | Charlie: YES
   - 1772519545 | Dave:
+  - 1772527781 | Bob: YES
 
 Result:
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -180,7 +186,7 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772519286
 Created: 1772519286
@@ -211,6 +217,7 @@ Proposed by:
   Charlie
 
 Discussion:
+  - 1772527781 | Bob: Duplicate of NOTICE 1772468805 (same replacement). Prefer consolidating; I support the continuity requirement.
 
 Approvals:
   - 1772519286 | Alice:
@@ -260,6 +267,7 @@ Proposed by:
   Charlie
 
 Discussion:
+  - 1772527781 | Bob: Duplicate of NOTICE 1772468802 (same replacement). Prefer consolidating; I support the continuity requirement.
 
 Approvals:
   - 1772519285 | Alice:
@@ -307,6 +315,7 @@ Proposed by:
   Charlie
 
 Discussion:
+  - 1772527781 | Bob: Duplicate of NOTICE 1772468745 (same replacement). Prefer consolidating; I support the continuity requirement.
 
 Approvals:
   - 1772519284 | Alice:
@@ -355,6 +364,7 @@ Discussion:
     not salvageable as stated; the correct fact needed in practice is that the
     subspace topology is a topology on A, and Ex51_1 already uses subspace_topology
     explicitly.
+  - 1772527781 | Bob: Duplicate of NOTICE 1772520177. Prefer consolidating to a single notice before admin review.
 
 Approvals:
   - 1772498147 | Alice:
@@ -375,7 +385,7 @@ Status:
 
 NOTICE ID: 1772495150
 Created: 1772495150
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   dacbb94da5190763f2e9ae981c1a0013e090cb32
@@ -417,14 +427,17 @@ Discussion:
   - 1772495150 | Charlie: RESOLVED NOTICE 1772368914 claims tree_in_graph was
     updated for this issue, but the current file still lacks any ArcsT/Arcs
     relation; this notice requests the actual definitional correction.
+  - 1772527781 | Bob: Agree. This aligns tree arcs with ambient arcs and removes repeated hypotheses/admitted bridges.
 
 Approvals:
   - 1772495150 | Alice:
   - 1772495150 | Bob:
   - 1772495150 | Charlie: YES
   - 1772495150 | Dave:
+  - 1772527781 | Bob: YES
 
 Result:
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -433,7 +446,7 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772494157
 Created: 1772494157
@@ -465,6 +478,7 @@ Discussion:
   - 1772494157 | Charlie: If NOTICE 1772493676 (adding T <> Empty to tree_in_graph)
     is rejected/delayed, this local strengthening keeps the theorem statement
     consistent with the current simply_connected definition.
+  - 1772527781 | Bob: Not sure whether we should bake nonemptiness into tree_in_graph globally or handle empty trees by convention. I’m hesitant to approve this local fix until that’s resolved.
 
 Approvals:
   - 1772494157 | Alice:
@@ -518,6 +532,7 @@ Proposed by:
 
 Discussion:
   - 1772494156 | Charlie: This is a local alternative to NOTICE 1772493676.
+  - 1772527781 | Bob: Same concern as 1772494157: decision should follow the global choice about empty trees vs. explicit nonemptiness.
 
 Approvals:
   - 1772494156 | Alice:
@@ -572,6 +587,7 @@ Discussion:
   - 1772493676 | Charlie: With Arcs = Empty and X = T = Empty, the current
     conjuncts are satisfiable (general_linear_graph/connected_space are
     compatible with Empty), but simply_connected explicitly requires a point.
+  - 1772527781 | Bob: Unsure this should be a definitional change vs. local nonemptiness hypotheses. If we want to allow empty trees by convention, this is too strong; if not, this is fine. I’m not ready to approve.
 
 Approvals:
   - 1772493676 | Alice:
@@ -592,7 +608,7 @@ Status:
 
 NOTICE ID: 1772491898
 Created: 1772491898
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   fb154d637
@@ -620,14 +636,17 @@ Discussion:
   - 1772491898 | Charlie: Same topology gap as Example_51_1 and Example_52_1.
     star_convex paths are continuous into R and hence into A with the subspace
     topology; the current Ta-parametrized statement is too strong.
+  - 1772527781 | Bob: Agree; the proof uses subspace topology continuity and cannot handle arbitrary Ta.
 
 Approvals:
   - 1772491898 | Alice:
   - 1772491898 | Bob:
   - 1772491898 | Charlie: YES
   - 1772491898 | Dave:
+  - 1772527781 | Bob: YES
 
 Result:
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -636,7 +655,7 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772468805
 Created: 1772468805
@@ -835,6 +854,7 @@ Discussion:
     p and q to create a loop with A. That requires p,q to be vertices of T
     (ArcsT) and A to be an edge of T' (ArcsT'). These are not implied by
     the current hypotheses.
+  - 1772527781 | Bob: Still not fully convinced the proposed hypotheses are minimal; would like a concrete counterexample to the current statement or a sketch showing why A must be in ArcsT' here.
 
 Approvals:
   - 1772451836 | Bob: YES
@@ -2325,7 +2345,7 @@ Status:
 
 NOTICE ID: 1772444318
 Created: 1772444318
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   aa768eabf NOTICEBOARD: Dave votes YES on notices 1772417212, 1772418015, 1772418016, 1772418017
@@ -2370,13 +2390,15 @@ Discussion:
     without continuity). Separate notices may be needed for those, but thm63_1a is the
     most urgent due to the active lock. All callers of thm63_1a currently have admitted
     claims for continuity (see line 311677, 311694), confirming this is a known gap.
+  - 1772527781 | Bob: Agree; without continuity the class can collapse to Empty and the conclusion becomes unprovable.
 
 Approvals:
   -
   - 1772444318 | Dave: YES
+  - 1772527781 | Bob: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -2388,7 +2410,7 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 ========================================================
