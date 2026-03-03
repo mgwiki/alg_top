@@ -322792,6 +322792,110 @@ apply Hcase.
       Hfin18
       HoriC19).
   }
+  claim Hsharedk1 :
+    exists C20:set, C20 :e Arcs /\ C20 <> C19 /\ k1 :e C20.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C19 /\ j1 :e C)
+      (exists D:set, D :e Arcs /\ D <> C19 /\ k1 :e D)
+      (Hallshared C19 j1 k1 HC19 Hj1k1)).
+  }
+  apply Hsharedk1. let C20. assume HC20pack.
+  claim HC20pair : C20 :e Arcs /\ C20 <> C19.
+  { exact (andEL (C20 :e Arcs /\ C20 <> C19) (k1 :e C20) HC20pack). }
+  claim HC20 : C20 :e Arcs.
+  { exact (andEL (C20 :e Arcs) (C20 <> C19) HC20pair). }
+  claim HC20neC19 : C20 <> C19.
+  { exact (andER (C20 :e Arcs) (C20 <> C19) HC20pair). }
+  claim Hk1C20 : k1 :e C20.
+  { exact (andER (C20 :e Arcs /\ C20 <> C19) (k1 :e C20) HC20pack). }
+  claim Hk1C19 : k1 :e C19.
+  { exact (end_points_of_arc_right_in_set C19 (subspace_topology T Tx C19) j1 k1 Hj1k1). }
+  claim HC19neC20 : C19 <> C20.
+  { assume Heq. exact (HC20neC19 (eq_symm C19 C20 Heq)). }
+  claim HintC19C20 :
+    C19 :/\: C20 = Empty \/
+    (exists r20:set, C19 :/\: C20 = Sing r20 /\
+      (exists s20:set, end_points_of_arc C19 (subspace_topology T Tx C19) r20 s20 \/
+                     end_points_of_arc C19 (subspace_topology T Tx C19) s20 r20) /\
+      (exists t20:set, end_points_of_arc C20 (subspace_topology T Tx C20) r20 t20 \/
+                     end_points_of_arc C20 (subspace_topology T Tx C20) t20 r20)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C19
+      C20
+      Hglg
+      HC19
+      HC20
+      HC19neC20).
+  }
+  claim Hk1_is_endpoint_C20 :
+    exists l1:set, end_points_of_arc C20 (subspace_topology T Tx C20) k1 l1 \/
+                    end_points_of_arc C20 (subspace_topology T Tx C20) l1 k1.
+  {
+    apply HintC19C20.
+    - assume Hempty.
+      claim Hk1CC : k1 :e C19 :/\: C20. { exact (binintersectI C19 C20 k1 Hk1C19 Hk1C20). }
+      exact (EmptyE k1 (eq_subst_mem_set k1 (C19 :/\: C20) Empty Hk1CC Hempty)
+        (exists l1:set, end_points_of_arc C20 (subspace_topology T Tx C20) k1 l1 \/
+                        end_points_of_arc C20 (subspace_topology T Tx C20) l1 k1)).
+    - assume Hsing. apply Hsing. let r20. assume Hr20pack.
+      apply (and3E
+        (C19 :/\: C20 = Sing r20)
+        (exists s20:set, end_points_of_arc C19 (subspace_topology T Tx C19) r20 s20 \/
+                       end_points_of_arc C19 (subspace_topology T Tx C19) s20 r20)
+        (exists t20:set, end_points_of_arc C20 (subspace_topology T Tx C20) r20 t20 \/
+                       end_points_of_arc C20 (subspace_topology T Tx C20) t20 r20)
+        Hr20pack).
+      assume Hr20eq _ HC20end.
+      claim Hk1CC : k1 :e C19 :/\: C20. { exact (binintersectI C19 C20 k1 Hk1C19 Hk1C20). }
+      claim Hk1r20 : k1 = r20.
+      { exact (SingE r20 k1 (eq_subst_mem_set k1 (C19 :/\: C20) (Sing r20) Hk1CC Hr20eq)). }
+      apply HC20end. let t20. assume Ht20.
+      witness t20.
+      apply Ht20.
+      * assume Hr20t : end_points_of_arc C20 (subspace_topology T Tx C20) r20 t20.
+        apply orIL. rewrite Hk1r20. exact Hr20t.
+      * assume Ht20r : end_points_of_arc C20 (subspace_topology T Tx C20) t20 r20.
+        apply orIR. rewrite Hk1r20. exact Ht20r.
+  }
+  apply Hk1_is_endpoint_C20. let l1. assume Hl1cases.
+  claim Hk1l1 : end_points_of_arc C20 (subspace_topology T Tx C20) k1 l1.
+  { apply Hl1cases.
+    - assume Hk1l : end_points_of_arc C20 (subspace_topology T Tx C20) k1 l1. exact Hk1l.
+    - assume Hl1k : end_points_of_arc C20 (subspace_topology T Tx C20) l1 k1.
+      exact (end_points_of_arc_sym C20 (subspace_topology T Tx C20) l1 k1 Hl1k). }
+  claim HoriC20 : oriented_edge T Tx Arcs C20 k1 l1.
+  { exact (andI (C20 :e Arcs) (end_points_of_arc C20 (subspace_topology T Tx C20) k1 l1) HC20 Hk1l1). }
+  set n20 := ordsucc n19.
+  set path21 :=
+    (graph n20 (fun i:set => apply_fun path20 i)) :\/:
+    (graph {n20} (fun _:set => ((k1, l1), C20))).
+  claim Hep21 : edge_path T Tx Arcs (ordsucc n20) path21 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n20 path20 q0 n19 C20 k1 l1
+      Hglg
+      Hep20
+      (ordsuccI2 n19)
+      (In_irref (ordsucc n19))
+      Hfin19
+      HoriC20).
+  }
+  claim Hfin20 : (apply_fun path21 n20) 0 1 = l1.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n20 path20 q0 n19 C20 k1 l1
+      Hglg
+      Hep20
+      (ordsuccI2 n19)
+      (In_irref (ordsucc n19))
+      Hfin19
+      HoriC20).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
