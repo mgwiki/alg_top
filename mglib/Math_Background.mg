@@ -181434,6 +181434,34 @@ claim HUVEmpty : U :/\: V = Empty.
     rewrite (binintersect_com W2 W1).
     exact HW1W2Empty.
 }
+claim HU_Ty : U :e Ty.
+{
+  apply HUV_as_Ws.
+  - assume H12 : U = W1 /\ V = W2.
+    claim HUeq : U = W1.
+    { exact (andEL (U = W1) (V = W2) H12). }
+    rewrite HUeq.
+    exact HW1Ty.
+  - assume H21 : U = W2 /\ V = W1.
+    claim HUeq : U = W2.
+    { exact (andEL (U = W2) (V = W1) H21). }
+    rewrite HUeq.
+    exact HW2Ty.
+}
+claim HV_Ty : V :e Ty.
+{
+  apply HUV_as_Ws.
+  - assume H12 : U = W1 /\ V = W2.
+    claim HVeq : V = W2.
+    { exact (andER (U = W1) (V = W2) H12). }
+    rewrite HVeq.
+    exact HW2Ty.
+  - assume H21 : U = W2 /\ V = W1.
+    claim HVeq : V = W1.
+    { exact (andER (U = W2) (V = W1) H21). }
+    rewrite HVeq.
+    exact HW1Ty.
+}
 (** TODO: build the actual deformation retract homotopy using the Jordan curve theorem. **)
 prove deformation_retract X Tx C.
 claim Hdeform0 :
