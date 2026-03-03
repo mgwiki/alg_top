@@ -310593,6 +310593,26 @@ claim Hcycle :
       rewrite Hxr.
       exact HrEq.
   }
+  claim HcapATeq : T :/\: A = UPair p q.
+  {
+    apply set_ext.
+    - let x.
+      assume Hx.
+      claim HxOr : x = p \/ x = q.
+      { exact (HcapATsubset x Hx). }
+      apply HxOr.
+      * assume Hxp. rewrite Hxp. exact (UPairI1 p q).
+      * assume Hxq. rewrite Hxq. exact (UPairI2 p q).
+    - let x.
+      assume Hx.
+      apply (UPairE x p q Hx).
+      * assume Hxp.
+        rewrite Hxp.
+        exact HpTcap.
+      * assume Hxq.
+        rewrite Hxq.
+        exact HqTcap.
+  }
   (** Remaining work: build a closed reduced edge path in T' using E and A. **)
   admit.
 }
