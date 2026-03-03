@@ -295063,6 +295063,192 @@ rewrite tuple_2_1_eq.
 reflexivity.
 Qed.
 
+(** helper: rotate a closed edge path by moving the first edge to the end **)
+(** Proven Bob **)
+Theorem edge_path_rotate_closed_once :
+  forall X Tx Arcs n path_seq x0:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs (ordsucc n) path_seq x0 ->
+  n <> 0 ->
+  (apply_fun path_seq n) 0 1 = x0 ->
+  exists path_seq':set,
+    edge_path X Tx Arcs (ordsucc n) path_seq' ((apply_fun path_seq 0) 0 1) /\
+    (apply_fun path_seq' n) 0 1 = (apply_fun path_seq 0) 0 1.
+let X Tx Arcs n path_seq x0.
+assume Hglg Hep Hn0 Hend.
+set x1 := (apply_fun path_seq 0) 0 1.
+set path_seq0 := graph n (fun i:set => apply_fun path_seq (ordsucc i)).
+claim Hep0 : edge_path X Tx Arcs n path_seq0 x1.
+{ exact (edge_path_drop_first X Tx Arcs n path_seq x0 Hep). }
+claim HnOm : n :e omega.
+{ exact (edge_path_n_in_omega X Tx Arcs n path_seq0 x1 Hep0). }
+claim HnNat : nat_p n.
+{ exact (omega_nat_p n HnOm). }
+claim HnSucc :
+  exists j0:set, nat_p j0 /\ n = ordsucc j0.
+{
+  apply (nat_inv n HnNat).
+  - assume H0.
+    exact (FalseE (Hn0 H0) (exists j0:set, nat_p j0 /\ n = ordsucc j0)).
+  - assume Hex.
+    exact Hex.
+}
+apply HnSucc.
+let j0.
+assume Hj0pack.
+claim HnEq : n = ordsucc j0.
+{ exact (andER (nat_p j0) (n = ordsucc j0) Hj0pack). }
+claim Hj0InN : j0 :e n.
+{
+  rewrite HnEq.
+  exact (ordsuccI2 j0).
+}
+claim Hsj0Not : ordsucc j0 /:e n.
+{
+  rewrite HnEq.
+  exact (In_irref (ordsucc j0)).
+}
+claim Hfinj : (apply_fun path_seq0 j0) 0 1 = x0.
+{
+  rewrite (apply_fun_graph n (fun i:set => apply_fun path_seq (ordsucc i)) j0 Hj0InN).
+  rewrite <- HnEq.
+  exact Hend.
+}
+claim H0InN : 0 :e n.
+{
+  claim Hj0Ord : ordinal j0.
+  { exact (nat_p_ordinal j0 (andEL (nat_p j0) (n = ordsucc j0) Hj0pack)). }
+  rewrite HnEq.
+  exact (ordinal_0_In_ordsucc j0 Hj0Ord).
+}
+claim H0InSuccN : 0 :e ordsucc n.
+{ exact (ordsuccI1 n 0 H0InN). }
+claim Hdec0 :
+  exists A0 ini0 fin0:set,
+    apply_fun path_seq 0 = ((ini0, fin0), A0) /\
+    oriented_edge X Tx Arcs A0 ini0 fin0.
+{
+  exact (edge_path_edge_decomposition
+    X
+    Tx
+    Arcs
+    (ordsucc n)
+    path_seq
+    x0
+    0
+    Hep
+    H0InSuccN).
+}
+apply Hdec0.
+let A0.
+assume HA0.
+apply HA0.
+let ini0.
+assume Hini0.
+apply Hini0.
+let fin0.
+assume Hfin0.
+claim Happ0 : apply_fun path_seq 0 = ((ini0, fin0), A0).
+{
+  exact (andEL
+    (apply_fun path_seq 0 = ((ini0, fin0), A0))
+    (oriented_edge X Tx Arcs A0 ini0 fin0)
+    Hfin0).
+}
+claim Hori0raw : oriented_edge X Tx Arcs A0 ini0 fin0.
+{
+  exact (andER
+    (apply_fun path_seq 0 = ((ini0, fin0), A0))
+    (oriented_edge X Tx Arcs A0 ini0 fin0)
+    Hfin0).
+}
+claim Hstart0 : (apply_fun path_seq 0) 0 0 = x0.
+{
+  exact (edge_path_start_vertex
+    X
+    Tx
+    Arcs
+    (ordsucc n)
+    path_seq
+    x0
+    Hep
+    (neq_i_sym 0 (ordsucc n) (neq_0_ordsucc n))).
+}
+claim Hx1def : x1 = (apply_fun path_seq 0) 0 1.
+{ reflexivity. }
+claim Hini0Eq : ini0 = x0.
+{
+  rewrite <- Hstart0.
+  rewrite Happ0.
+  rewrite (tuple_2_0_eq (ini0, fin0) A0).
+  rewrite (tuple_2_0_eq ini0 fin0).
+  reflexivity.
+}
+claim Hfin0Eq : fin0 = x1.
+{
+  rewrite Hx1def.
+  rewrite Happ0.
+  rewrite (tuple_2_0_eq (ini0, fin0) A0).
+  rewrite tuple_2_1_eq.
+  reflexivity.
+}
+claim Hori0 : oriented_edge X Tx Arcs A0 x0 x1.
+{
+  rewrite <- Hini0Eq.
+  rewrite <- Hfin0Eq.
+  exact Hori0raw.
+}
+set path_seq' :=
+  (graph n (fun i:set => apply_fun path_seq0 i)) :\/:
+  (graph {n} (fun _:set => ((x0, x1), A0))).
+claim Hep' : edge_path X Tx Arcs (ordsucc n) path_seq' x1.
+{
+  exact (edge_path_append_oriented_edge
+    X
+    Tx
+    Arcs
+    n
+    path_seq0
+    x1
+    j0
+    A0
+    x0
+    x1
+    Hglg
+    Hep0
+    Hj0InN
+    Hsj0Not
+    Hfinj
+    Hori0).
+}
+claim Hend' : (apply_fun path_seq' n) 0 1 = x1.
+{
+  exact (edge_path_append_oriented_edge_end_vertex
+    X
+    Tx
+    Arcs
+    n
+    path_seq0
+    x1
+    j0
+    A0
+    x0
+    x1
+    Hglg
+    Hep0
+    Hj0InN
+    Hsj0Not
+    Hfinj
+    Hori0).
+}
+witness path_seq'.
+exact (andI
+  (edge_path X Tx Arcs (ordsucc n) path_seq' x1)
+  ((apply_fun path_seq' n) 0 1 = x1)
+  Hep'
+  Hend').
+Qed.
+
 (** helper: initial vertex of the appended edge is p in the append construction. **)
 (** Proven Bob **)
 Theorem edge_path_append_oriented_edge_start_vertex :
