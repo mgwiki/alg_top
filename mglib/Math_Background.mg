@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 1585 **)
+(** Balance Charlie 1563 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -225424,7 +225424,8 @@ Admitted.
 (** LATEX VERSION: If the extension condition of Lem 68.3 holds, then each i_alpha **)
 (** is a monomorphism and G is the free product of i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
+(** Bounty 242 **)
+(** Lock Charlie 1772642000 **)
 Theorem lemma68_5_extension_characterizes_free_product :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   group_structure G multG eG invG ->
