@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5510 **)
-(** Balance Charlie 1463 **)
+(** Balance Charlie 1453 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -226354,7 +226354,8 @@ exact Hab_notin.
 Qed.
 
 (** Helper bounties (correct-strength versions: also assume Hfp1/Hfp2 on G1 and G2) **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 1772648629 **)
 Theorem cor68_6_side_from_product_G1_ge3_full :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
   group_structure G multG eG invG ->
@@ -226573,7 +226574,8 @@ claim Hnot_all_G2 : (forall i:set, i :e n -> apply_fun ys i :e G2) -> False.
 admit.
 Admitted.
 
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 1772648629 **)
 Theorem cor68_6_side_from_product_G2_ge3_full :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
   group_structure G multG eG invG ->
