@@ -46542,6 +46542,20 @@ claim Hsurj : surjective_map E B p.
 {
   exact (covering_map_surjective E Te B Tb p Hcov).
 }
+claim Hfun : function_on p E B.
+{
+  exact (andEL
+    (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+    Hsurj).
+}
+claim Hsurj_val : forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y.
+{
+  exact (andER
+    (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+    Hsurj).
+}
 exact (andER
   (function_on p E B)
   (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
@@ -46587,6 +46601,119 @@ claim HpcB : path_connected_space B Tb.
   exact (covering_map_path_connected_codomain E Te B Tb p Hcov HpcE).
 }
 exact (path_connected_implies_connected B Tb HpcB).
+Qed.
+
+(** Proven Bob **)
+Theorem covering_map_connected_codomain_of_connected_domain : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  connected_space E Te ->
+  connected_space B Tb.
+let E Te B Tb p.
+assume Hcov HconnE.
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (covering_map_continuous E Te B Tb p Hcov).
+}
+claim Hsurj : surjective_map E B p.
+{
+  exact (covering_map_surjective E Te B Tb p Hcov).
+}
+claim Hfun : function_on p E B.
+{
+  exact (andEL
+    (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+    Hsurj).
+}
+claim Hsurj_val : forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y.
+{
+  exact (andER
+    (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+    Hsurj).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (covering_map_topology_on_codomain E Te B Tb p Hcov).
+}
+claim HimgConn : connected_space (image_of p E) (subspace_topology B Tb (image_of p E)).
+{
+  exact (continuous_image_connected E Te B Tb p HconnE Hcont).
+}
+claim HimgEq : image_of p E = B.
+{
+  apply set_ext.
+  - let b.
+    assume HbImg : b :e image_of p E.
+    claim HbPack : exists x:set, x :e E /\ b = apply_fun p x.
+    {
+      exact (ReplE
+        E
+        (fun x:set => apply_fun p x)
+        b
+        HbImg).
+    }
+    apply HbPack.
+    let x.
+    assume HxPack.
+    claim HxE : x :e E.
+    {
+      exact (andEL
+        (x :e E)
+        (b = apply_fun p x)
+        HxPack).
+    }
+    claim HbEq : b = apply_fun p x.
+    {
+      exact (andER
+        (x :e E)
+        (b = apply_fun p x)
+        HxPack).
+    }
+    rewrite HbEq.
+    exact (Hfun x HxE).
+  - let b.
+    assume HbB : b :e B.
+    claim HbPre : exists x:set, x :e E /\ apply_fun p x = b.
+    {
+      exact (Hsurj_val b HbB).
+    }
+    apply HbPre.
+    let x.
+    assume HxPack.
+    claim HxE : x :e E.
+    {
+      exact (andEL
+        (x :e E)
+        (apply_fun p x = b)
+        HxPack).
+    }
+    claim HxEq : apply_fun p x = b.
+    {
+      exact (andER
+        (x :e E)
+        (apply_fun p x = b)
+        HxPack).
+    }
+    rewrite <- HxEq.
+    exact (ReplI
+      E
+      (fun x0:set => apply_fun p x0)
+      x
+      HxE).
+}
+claim HsubEq : subspace_topology B Tb (image_of p E) = Tb.
+{
+  rewrite HimgEq.
+  exact (subspace_topology_whole B Tb HtopB).
+}
+claim HimgConnB : connected_space (image_of p E) Tb.
+{
+  rewrite <- HsubEq.
+  exact HimgConn.
+}
+rewrite <- HimgEq.
+exact HimgConnB.
 Qed.
 
 (** Proven Bob **)
