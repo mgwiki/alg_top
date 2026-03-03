@@ -330181,7 +330181,64 @@ claim Hmax_ext :
 (** Remaining S84.5 core existence gap:
     construct a maximal tree extending T0 (typically via a maximal-extension
     principle such as Zorn over tree extensions ordered by inclusion). **)
-admit.
+apply Hmax_ext.
+let T.
+assume HArcsPack : exists ArcsT:set,
+  tree_in_graph T ArcsT X Tx Arcs /\
+  T0 c= T /\
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' -> T' = T).
+apply HArcsPack.
+let ArcsT.
+assume Hpack :
+  tree_in_graph T ArcsT X Tx Arcs /\
+  T0 c= T /\
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' -> T' = T).
+claim HtreeT :
+  tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (andEL
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (T0 c= T)
+    (andEL
+      (tree_in_graph T ArcsT X Tx Arcs /\ T0 c= T)
+      (forall T' ArcsT':set,
+        tree_in_graph T' ArcsT' X Tx Arcs ->
+        T c= T' -> T' = T)
+      Hpack)).
+}
+claim HT0sub : T0 c= T.
+{
+  exact (andER
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (T0 c= T)
+    (andEL
+      (tree_in_graph T ArcsT X Tx Arcs /\ T0 c= T)
+      (forall T' ArcsT':set,
+        tree_in_graph T' ArcsT' X Tx Arcs ->
+        T c= T' -> T' = T)
+      Hpack)).
+}
+claim Hmaxprop :
+  forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' -> T' = T.
+{
+  exact (andER
+    (tree_in_graph T ArcsT X Tx Arcs /\ T0 c= T)
+    (forall T' ArcsT':set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' -> T' = T)
+    Hpack).
+}
+witness T.
+witness ArcsT.
+apply andI.
+- exact (maximal_tree_intro T ArcsT X Tx Arcs HtreeT Hmaxprop).
+- exact HT0sub.
 Admitted.
 
 (** from S84 Thm 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
