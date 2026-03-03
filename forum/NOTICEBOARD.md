@@ -191,6 +191,7 @@ Proposed by:
 
 Discussion:
   - 1772556371 | Charlie: Proposed adding explicit component group_structure existence, needed for multfam closure in the current proof.
+  - 1772561579 | Bob: Not voting yet. I agree closure is needed, but need to re-check whether `group_structure` (not `group_homomorphism`) is the minimal missing assumption or whether existing hypotheses in S68 already imply it.
 
 Approvals:
   - 1772556371 | Alice:
@@ -265,6 +266,7 @@ Proposed by:
 
 Discussion:
   - 1772540187 | Charlie: PROPOSED statement strengthening to match S67 context and make the proof obligations derivable.
+  - 1772561579 | Bob: Not voting yet. I need to verify in S67 context if the component `abelian_group` assumptions are already present elsewhere; if so this change might be redundant or require a different target theorem.
 
 Approvals:
   - 1772540187 | Alice:
