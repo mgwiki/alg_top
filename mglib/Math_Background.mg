@@ -180499,6 +180499,39 @@ let C Tc p q x0.
 assume HCsubSn Hsimple HTc HpSnC HqSnC HcompNe Hx0C.
 set X := Sn 2 :\: (Sing p :\/: Sing q).
 set Tx := subspace_topology (Sn 2) (Sn_topology 2) X.
+claim HCsubX : C c= X.
+{
+  let z.
+  assume HzC.
+  claim HzSn : z :e Sn 2.
+  { exact (HCsubSn z HzC). }
+  claim HzNotp : z /:e Sing p.
+  {
+    assume Hzp.
+    claim Hzeq : z = p.
+    { exact (SingE p z Hzp). }
+    claim HpC : p :e C.
+    { rewrite <- Hzeq. exact HzC. }
+    exact ((setminusE2 (Sn 2) C p HpSnC) HpC).
+  }
+  claim HzNotq : z /:e Sing q.
+  {
+    assume Hzq.
+    claim Hzeq : z = q.
+    { exact (SingE q z Hzq). }
+    claim HqC : q :e C.
+    { rewrite <- Hzeq. exact HzC. }
+    exact ((setminusE2 (Sn 2) C q HqSnC) HqC).
+  }
+  claim HzNot : z /:e (Sing p :\/: Sing q).
+  {
+    assume Hbad.
+    apply (binunionE (Sing p) (Sing q) z Hbad).
+    - assume Hzp. exact (HzNotp Hzp).
+    - assume Hzq. exact (HzNotq Hzq).
+  }
+  exact (setminusI (Sn 2) (Sing p :\/: Sing q) z HzSn HzNot).
+}
 claim Hx0Sn : x0 :e Sn 2.
 { exact (HCsubSn x0 Hx0C). }
 claim Hx0Notp : x0 /:e Sing p.
