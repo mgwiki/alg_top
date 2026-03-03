@@ -82,6 +82,149 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772519286
+Created: 1772519286
+Status: PROPOSED
+
+Refers to Commit:
+  9c298c22a3600dc8788b12431a7f09e4e773285e
+
+Target:
+  Line: 141224
+  Name: lemma58_sub_basepoint_change_surjective (Theorem)
+
+Problem:
+  The statement is false as written. `path_between` does not include any continuity
+  hypothesis, but `basepoint_change_map` is only well-behaved on fundamental
+  groups under the standard continuity assumptions on `alpha` (cf. the existing
+  `_cont` variant).
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    c :e fundamental_group X Tx x1 ->
+    exists a:set, a :e fundamental_group X Tx x0 /\
+      apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
+
+Proposed by:
+  Charlie
+
+Discussion:
+
+Approvals:
+  - 1772519286 | Alice:
+  - 1772519286 | Bob:
+  - 1772519286 | Charlie: YES
+  - 1772519286 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1772519285
+Created: 1772519285
+Status: PROPOSED
+
+Refers to Commit:
+  9c298c22a3600dc8788b12431a7f09e4e773285e
+
+Target:
+  Line: 141021
+  Name: lemma58_sub_basepoint_change_injective (Theorem)
+
+Problem:
+  The statement is false as written. `path_between` does not include any continuity
+  hypothesis, but `basepoint_change_map` is only well-behaved on fundamental
+  groups under the standard continuity assumptions on `alpha` (cf. the existing
+  `_cont` variant).
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    a :e fundamental_group X Tx x0 ->
+    b :e fundamental_group X Tx x0 ->
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) a =
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) b ->
+    a = b.
+
+Proposed by:
+  Charlie
+
+Discussion:
+
+Approvals:
+  - 1772519285 | Alice:
+  - 1772519285 | Bob:
+  - 1772519285 | Charlie: YES
+  - 1772519285 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1772519284
+Created: 1772519284
+Status: PROPOSED
+
+Refers to Commit:
+  9c298c22a3600dc8788b12431a7f09e4e773285e
+
+Target:
+  Line: 140767
+  Name: lemma58_sub_basepoint_change_id (Theorem)
+
+Problem:
+  The statement is false as written. `path_between` does not include any continuity
+  hypothesis, but `basepoint_change_map` is only well-behaved on fundamental
+  groups under the standard continuity assumptions on `alpha` (cf. the existing
+  `_cont` variant).
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+      (fundamental_group_id X Tx x0)
+    = fundamental_group_id X Tx x1.
+
+Proposed by:
+  Charlie
+
+Discussion:
+
+Approvals:
+  - 1772519284 | Alice:
+  - 1772519284 | Bob:
+  - 1772519284 | Charlie: YES
+  - 1772519284 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772498147
 Created: 1772498147
 Status: PROPOSED
