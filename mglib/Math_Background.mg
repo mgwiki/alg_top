@@ -225864,6 +225864,96 @@ rewrite <- Hn0_eq_n.
 exact Hn0_eq_1.
 Qed.
 
+(** Infrastructure: a binary reduced word of length >= 2 cannot lie in the left factor **)
+(** Proven Charlie **)
+Lemma free_product_binary_reduced_word_length_ge2_not_in_left_factor :
+  forall G mult e inv G1 G2 n xs:set,
+  subgroup_of G1 G mult e inv ->
+  subgroup_of G2 G mult e inv ->
+  free_product_of_subgroups G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e)) ->
+  reduced_word (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e))
+    n xs ->
+  n <> 0 -> n <> 1 ->
+  word_product mult e xs n /:e G1.
+let G mult e inv G1 G2 n xs.
+assume Hsub1 Hsub2 Hfp Hred Hn_ne0 Hn_ne1.
+claim Hx_ne : word_product mult e xs n <> e.
+{
+  exact (free_product_reduced_word_length_ge2_product_ne_e
+    G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e))
+    n xs
+    Hfp
+    Hred
+    Hn_ne0
+    Hn_ne1).
+}
+assume HxG1 : word_product mult e xs n :e G1.
+claim Hn_eq1 : n = 1.
+{
+  apply (free_product_binary_left_factor_length1
+    G mult e inv G1 G2 (word_product mult e xs n) n xs
+    Hsub1
+    Hfp
+    HxG1
+    Hx_ne
+    Hred
+    Hn_ne0).
+  reflexivity.
+}
+exact (Hn_ne1 Hn_eq1).
+Qed.
+
+(** Infrastructure: a binary reduced word of length >= 2 cannot lie in the right factor **)
+(** Proven Charlie **)
+Lemma free_product_binary_reduced_word_length_ge2_not_in_right_factor :
+  forall G mult e inv G1 G2 n xs:set,
+  subgroup_of G1 G mult e inv ->
+  subgroup_of G2 G mult e inv ->
+  free_product_of_subgroups G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e)) ->
+  reduced_word (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e))
+    n xs ->
+  n <> 0 -> n <> 1 ->
+  word_product mult e xs n /:e G2.
+let G mult e inv G1 G2 n xs.
+assume Hsub1 Hsub2 Hfp Hred Hn_ne0 Hn_ne1.
+claim Hx_ne : word_product mult e xs n <> e.
+{
+  exact (free_product_reduced_word_length_ge2_product_ne_e
+    G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e))
+    n xs
+    Hfp
+    Hred
+    Hn_ne0
+    Hn_ne1).
+}
+assume HxG2 : word_product mult e xs n :e G2.
+claim Hn_eq1 : n = 1.
+{
+  apply (free_product_binary_right_factor_length1
+    G mult e inv G1 G2 (word_product mult e xs n) n xs
+    Hsub2
+    Hfp
+    HxG2
+    Hx_ne
+    Hred
+    Hn_ne0).
+  reflexivity.
+}
+exact (Hn_ne1 Hn_eq1).
+Qed.
+
 (** Helper bounties (correct-strength versions: also assume Hfp1/Hfp2 on G1 and G2) **)
 (** Bounty 50 **)
 Theorem cor68_6_side_from_product_G1_ge3_full :
