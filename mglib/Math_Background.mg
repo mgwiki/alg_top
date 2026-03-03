@@ -321132,7 +321132,86 @@ apply andI.
           * exact HclosedT0.
           * reflexivity.
         + assume HclosedA0.
-          admit.
+          claim HtopT : topology_on T (subspace_topology X Tx T).
+          { exact (tree_in_graph_topology_on_T T ArcsT X Tx Arcs Htree). }
+          claim HCsubT : C c= T.
+          { let x. assume HxC. exact (HT0subT x (HCsub x HxC)). }
+          claim HclosedT : closed_in T (subspace_topology X Tx T) C.
+          {
+            apply (iffER
+              (closed_in T (subspace_topology X Tx T) C)
+              (forall A0:set, A0 :e ArcsT ->
+                closed_in A0 (subspace_topology T (subspace_topology X Tx T) A0) (C :/\: A0))
+              (general_linear_graph_coherence_closed
+                T
+                (subspace_topology X Tx T)
+                ArcsT
+                C
+                HglgT
+                HCsubT)).
+            let A0. assume HA0T.
+            claim Hcase : A0 = A \/ A0 <> A.
+            { exact (xm (A0 = A)). }
+            apply Hcase.
+            - assume HA0eq.
+              admit.
+            - assume HA0ne.
+              claim HA0B : A0 :e B.
+              {
+                apply setminusI.
+                - exact HA0T.
+                - assume HA0sA : A0 :e Sing A.
+                  exact (HA0ne (SingE A A0 HA0sA)).
+              }
+              claim HA0subT : A0 c= T.
+              {
+                exact (andEL
+                  (A0 c= T)
+                  (arc A0 (subspace_topology T (subspace_topology X Tx T) A0))
+                  (general_linear_graph_arc_data
+                    T
+                    (subspace_topology X Tx T)
+                    ArcsT
+                    A0
+                    HglgT
+                    HA0T)).
+              }
+              claim HA0subT0 : A0 c= T0.
+              { let x. assume HxA0. exact (UnionI B x A0 HxA0 HA0B). }
+              claim HsubTopoA0T :
+                subspace_topology T (subspace_topology X Tx T) A0 =
+                subspace_topology X Tx A0.
+              { exact (ex16_1_subspace_transitive X Tx T A0 HtopX HTsubX HA0subT). }
+              claim HsubTopoA0T0 :
+                subspace_topology T0 (subspace_topology X Tx T0) A0 =
+                subspace_topology X Tx A0.
+              { exact (ex16_1_subspace_transitive X Tx T0 A0 HtopX HT0subX HA0subT0). }
+              claim HclosedA0T0 :
+                closed_in A0 (subspace_topology T0 (subspace_topology X Tx T0) A0) (C :/\: A0).
+              { exact (HclosedA0 A0 HA0B). }
+              rewrite HsubTopoA0T.
+              rewrite <- HsubTopoA0T0.
+              exact HclosedA0T0.
+          }
+          claim HsubTopoT0T :
+            subspace_topology T (subspace_topology X Tx T) T0 =
+            subspace_topology X Tx T0.
+          { exact (ex16_1_subspace_transitive X Tx T T0 HtopX HTsubX HT0subT). }
+          rewrite <- HsubTopoT0T.
+          apply (iffER
+            (closed_in T0 (subspace_topology T (subspace_topology X Tx T) T0) C)
+            (exists D:set, closed_in T (subspace_topology X Tx T) D /\ C = D :/\: T0)
+            (closed_in_subspace_iff_intersection
+              T
+              (subspace_topology X Tx T)
+              T0
+              C
+              HtopT
+              HT0subT)).
+          witness C.
+          apply andI.
+          * exact HclosedT.
+          * rewrite (binintersect_Subq_eq_1 C T0 HCsub). reflexivity.
     }
     claim HconnT0 : connected_space T0 (subspace_topology X Tx T0).
     {
