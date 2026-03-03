@@ -226376,6 +226376,200 @@ Theorem cor68_6_side_from_product_G1_ge3_full :
   word_product multG eG ys n :e G1 ->
   word_product multG eG ys n <> eG ->
   forall i:set, i :e n -> apply_fun ys i :e G1.
+let G multG eG invG G1 G2 J K Hfam efamH n ys.
+assume Hgrp : group_structure G multG eG invG.
+assume Hsub1 : subgroup_of G1 G multG eG invG.
+assume Hsub2 : subgroup_of G2 G multG eG invG.
+assume Hfp : free_product_of_subgroups G multG eG invG (UPair 0 1)
+  (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+  (graph (UPair 0 1) (fun i:set => eG)).
+assume HJKdisj : J :/\: K = Empty.
+assume Hfp1 : free_product_of_subgroups G1 multG eG invG J
+  (graph J (fun alpha:set => apply_fun Hfam alpha))
+  (graph J (fun alpha:set => apply_fun efamH alpha)).
+assume Hfp2 : free_product_of_subgroups G2 multG eG invG K
+  (graph K (fun beta:set => apply_fun Hfam beta))
+  (graph K (fun beta:set => apply_fun efamH beta)).
+assume Hred : reduced_word (J :\/: K) Hfam efamH n ys.
+assume HallNe : forall i:set, i :e n -> apply_fun ys i <> eG.
+assume Hn_ne0 : n <> 0.
+assume Hn_ne1 : n <> 1.
+assume Hn_ne2 : n <> 2.
+assume HwpG1 : word_product multG eG ys n :e G1.
+assume Hwpne : word_product multG eG ys n <> eG.
+
+set Gfam12 := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
+
+claim Hinter12 : forall x:set, x :e G1 -> x :e G2 -> x = eG.
+{
+  apply (and5E
+    (group_structure G multG eG invG)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      subgroup_of (apply_fun Gfam12 alpha) G multG eG invG)
+    (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+      forall x:set, x :e apply_fun Gfam12 alpha -> x :e apply_fun Gfam12 beta -> x = eG)
+    (subgroups_generate G multG eG invG (UPair 0 1) Gfam12)
+    (forall x:set, x :e G -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word (UPair 0 1) Gfam12 (graph (UPair 0 1) (fun _:set => eG)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word (UPair 0 1) Gfam12 (graph (UPair 0 1) (fun _:set => eG)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp).
+  assume _ _ Hinter _ _.
+  let x. assume HxG1 HxG2.
+  claim HGfam0 : apply_fun Gfam12 0 = G1.
+  {
+    rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)).
+    rewrite (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+    reflexivity.
+  }
+  claim HGfam1 : apply_fun Gfam12 1 = G2.
+  {
+    rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)).
+    rewrite (If_i_0 (1 = 0) G1 G2 neq_1_0).
+    reflexivity.
+  }
+  claim HxGfam0 : x :e apply_fun Gfam12 0.
+  { rewrite HGfam0. exact HxG1. }
+  claim HxGfam1 : x :e apply_fun Gfam12 1.
+  { rewrite HGfam1. exact HxG2. }
+  exact (Hinter 0 1 (UPairI1 0 1) (UPairI2 0 1) neq_0_1 x HxGfam0 HxGfam1).
+}
+
+claim HsubfamJ : forall alpha:set, alpha :e J ->
+  subgroup_of (apply_fun Hfam alpha) G1 multG eG invG.
+{
+  apply (and5E
+    (group_structure G1 multG eG invG)
+    (forall alpha:set, alpha :e J ->
+      subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG)
+    (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+      forall x:set, x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha ->
+        x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) beta -> x = eG)
+    (subgroups_generate G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)))
+    (forall x:set, x :e G1 -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+          (graph J (fun a:set => apply_fun efamH a)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+            (graph J (fun a:set => apply_fun efamH a)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp1).
+  assume _ Hsub _ _ _.
+  let alpha. assume Hal.
+  rewrite <- (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha Hal).
+  exact (Hsub alpha Hal).
+}
+
+claim HsubfamK : forall beta:set, beta :e K ->
+  subgroup_of (apply_fun Hfam beta) G2 multG eG invG.
+{
+  apply (and5E
+    (group_structure G2 multG eG invG)
+    (forall beta:set, beta :e K ->
+      subgroup_of (apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta) G2 multG eG invG)
+    (forall beta gamma:set, beta :e K -> gamma :e K -> beta <> gamma ->
+      forall x:set, x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta ->
+        x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) gamma -> x = eG)
+    (subgroups_generate G2 multG eG invG K (graph K (fun b:set => apply_fun Hfam b)))
+    (forall x:set, x :e G2 -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+          (graph K (fun b:set => apply_fun efamH b)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+            (graph K (fun b:set => apply_fun efamH b)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp2).
+  assume _ Hsub _ _ _.
+  let beta. assume Hbe.
+  rewrite <- (apply_fun_graph K (fun b:set => apply_fun Hfam b) beta Hbe).
+  exact (Hsub beta Hbe).
+}
+
+claim Hys_side : forall i:set, i :e n -> (apply_fun ys i :e G1) \/ (apply_fun ys i :e G2).
+{
+  let i. assume Hi.
+  apply (reduced_word_elem (J :\/: K) Hfam efamH n ys i Hred Hi).
+  let alpha. assume Halpha_pack.
+  apply (and3E
+    (alpha :e J :\/: K)
+    (apply_fun ys i :e apply_fun Hfam alpha)
+    (apply_fun ys i <> apply_fun efamH alpha)
+    Halpha_pack).
+  assume Hal HyHa _.
+  apply (binunionE J K alpha Hal).
+  - assume HalJ : alpha :e J.
+    apply orIL.
+    claim HsubA : subgroup_of (apply_fun Hfam alpha) G1 multG eG invG.
+    { exact (HsubfamJ alpha HalJ). }
+    exact (subgroup_of_subset (apply_fun Hfam alpha) G1 multG eG invG HsubA (apply_fun ys i) HyHa).
+  - assume HalK : alpha :e K.
+    apply orIR.
+    claim HsubA : subgroup_of (apply_fun Hfam alpha) G2 multG eG invG.
+    { exact (HsubfamK alpha HalK). }
+    exact (subgroup_of_subset (apply_fun Hfam alpha) G2 multG eG invG HsubA (apply_fun ys i) HyHa).
+}
+
+claim HnO : n :e omega.
+{
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J :\/: K /\
+        apply_fun ys i :e apply_fun Hfam alpha /\
+        apply_fun ys i <> apply_fun efamH alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+        apply_fun ys i :e apply_fun Hfam alpha ->
+        apply_fun ys (ordsucc i) :e apply_fun Hfam beta ->
+        alpha <> beta)
+    Hred).
+  assume HnO _ _. exact HnO.
+}
+claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+claim Hgrp2 : group_structure G2 multG eG invG.
+{
+  apply (and5E
+    (group_structure G2 multG eG invG)
+    (forall beta:set, beta :e K ->
+      subgroup_of (apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta) G2 multG eG invG)
+    (forall beta gamma:set, beta :e K -> gamma :e K -> beta <> gamma ->
+      forall x:set, x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta ->
+        x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) gamma -> x = eG)
+    (subgroups_generate G2 multG eG invG K (graph K (fun b:set => apply_fun Hfam b)))
+    (forall x:set, x :e G2 -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+          (graph K (fun b:set => apply_fun efamH b)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+            (graph K (fun b:set => apply_fun efamH b)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp2).
+  assume Hgrp2 _ _ _ _. exact Hgrp2.
+}
+claim Hnot_all_G2 : (forall i:set, i :e n -> apply_fun ys i :e G2) -> False.
+{
+  assume HallG2.
+  claim HwpG2 : word_product multG eG ys n :e G2.
+  { exact (word_product_in_G_group G2 multG eG invG n ys Hgrp2 Hn_nat HallG2). }
+  claim Hxe : word_product multG eG ys n = eG.
+  { exact (Hinter12 (word_product multG eG ys n) HwpG1 HwpG2). }
+  exact (Hwpne Hxe).
+}
+
+(** Remaining mixed-factor case needs a binary-collapse argument. **)
 admit.
 Admitted.
 
@@ -226401,6 +226595,200 @@ Theorem cor68_6_side_from_product_G2_ge3_full :
   word_product multG eG ys n :e G2 ->
   word_product multG eG ys n <> eG ->
   forall i:set, i :e n -> apply_fun ys i :e G2.
+let G multG eG invG G1 G2 J K Hfam efamH n ys.
+assume Hgrp : group_structure G multG eG invG.
+assume Hsub1 : subgroup_of G1 G multG eG invG.
+assume Hsub2 : subgroup_of G2 G multG eG invG.
+assume Hfp : free_product_of_subgroups G multG eG invG (UPair 0 1)
+  (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+  (graph (UPair 0 1) (fun i:set => eG)).
+assume HJKdisj : J :/\: K = Empty.
+assume Hfp1 : free_product_of_subgroups G1 multG eG invG J
+  (graph J (fun alpha:set => apply_fun Hfam alpha))
+  (graph J (fun alpha:set => apply_fun efamH alpha)).
+assume Hfp2 : free_product_of_subgroups G2 multG eG invG K
+  (graph K (fun beta:set => apply_fun Hfam beta))
+  (graph K (fun beta:set => apply_fun efamH beta)).
+assume Hred : reduced_word (J :\/: K) Hfam efamH n ys.
+assume HallNe : forall i:set, i :e n -> apply_fun ys i <> eG.
+assume Hn_ne0 : n <> 0.
+assume Hn_ne1 : n <> 1.
+assume Hn_ne2 : n <> 2.
+assume HwpG2 : word_product multG eG ys n :e G2.
+assume Hwpne : word_product multG eG ys n <> eG.
+
+set Gfam12 := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
+
+claim Hinter12 : forall x:set, x :e G1 -> x :e G2 -> x = eG.
+{
+  apply (and5E
+    (group_structure G multG eG invG)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      subgroup_of (apply_fun Gfam12 alpha) G multG eG invG)
+    (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+      forall x:set, x :e apply_fun Gfam12 alpha -> x :e apply_fun Gfam12 beta -> x = eG)
+    (subgroups_generate G multG eG invG (UPair 0 1) Gfam12)
+    (forall x:set, x :e G -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word (UPair 0 1) Gfam12 (graph (UPair 0 1) (fun _:set => eG)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word (UPair 0 1) Gfam12 (graph (UPair 0 1) (fun _:set => eG)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp).
+  assume _ _ Hinter _ _.
+  let x. assume HxG1 HxG2.
+  claim HGfam0 : apply_fun Gfam12 0 = G1.
+  {
+    rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)).
+    rewrite (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+    reflexivity.
+  }
+  claim HGfam1 : apply_fun Gfam12 1 = G2.
+  {
+    rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)).
+    rewrite (If_i_0 (1 = 0) G1 G2 neq_1_0).
+    reflexivity.
+  }
+  claim HxGfam0 : x :e apply_fun Gfam12 0.
+  { rewrite HGfam0. exact HxG1. }
+  claim HxGfam1 : x :e apply_fun Gfam12 1.
+  { rewrite HGfam1. exact HxG2. }
+  exact (Hinter 0 1 (UPairI1 0 1) (UPairI2 0 1) neq_0_1 x HxGfam0 HxGfam1).
+}
+
+claim HsubfamJ : forall alpha:set, alpha :e J ->
+  subgroup_of (apply_fun Hfam alpha) G1 multG eG invG.
+{
+  apply (and5E
+    (group_structure G1 multG eG invG)
+    (forall alpha:set, alpha :e J ->
+      subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG)
+    (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+      forall x:set, x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha ->
+        x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) beta -> x = eG)
+    (subgroups_generate G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)))
+    (forall x:set, x :e G1 -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+          (graph J (fun a:set => apply_fun efamH a)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+            (graph J (fun a:set => apply_fun efamH a)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp1).
+  assume _ Hsub _ _ _.
+  let alpha. assume Hal.
+  rewrite <- (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha Hal).
+  exact (Hsub alpha Hal).
+}
+
+claim HsubfamK : forall beta:set, beta :e K ->
+  subgroup_of (apply_fun Hfam beta) G2 multG eG invG.
+{
+  apply (and5E
+    (group_structure G2 multG eG invG)
+    (forall beta:set, beta :e K ->
+      subgroup_of (apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta) G2 multG eG invG)
+    (forall beta gamma:set, beta :e K -> gamma :e K -> beta <> gamma ->
+      forall x:set, x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta ->
+        x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) gamma -> x = eG)
+    (subgroups_generate G2 multG eG invG K (graph K (fun b:set => apply_fun Hfam b)))
+    (forall x:set, x :e G2 -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+          (graph K (fun b:set => apply_fun efamH b)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+            (graph K (fun b:set => apply_fun efamH b)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp2).
+  assume _ Hsub _ _ _.
+  let beta. assume Hbe.
+  rewrite <- (apply_fun_graph K (fun b:set => apply_fun Hfam b) beta Hbe).
+  exact (Hsub beta Hbe).
+}
+
+claim Hys_side : forall i:set, i :e n -> (apply_fun ys i :e G1) \/ (apply_fun ys i :e G2).
+{
+  let i. assume Hi.
+  apply (reduced_word_elem (J :\/: K) Hfam efamH n ys i Hred Hi).
+  let alpha. assume Halpha_pack.
+  apply (and3E
+    (alpha :e J :\/: K)
+    (apply_fun ys i :e apply_fun Hfam alpha)
+    (apply_fun ys i <> apply_fun efamH alpha)
+    Halpha_pack).
+  assume Hal HyHa _.
+  apply (binunionE J K alpha Hal).
+  - assume HalJ : alpha :e J.
+    apply orIL.
+    claim HsubA : subgroup_of (apply_fun Hfam alpha) G1 multG eG invG.
+    { exact (HsubfamJ alpha HalJ). }
+    exact (subgroup_of_subset (apply_fun Hfam alpha) G1 multG eG invG HsubA (apply_fun ys i) HyHa).
+  - assume HalK : alpha :e K.
+    apply orIR.
+    claim HsubA : subgroup_of (apply_fun Hfam alpha) G2 multG eG invG.
+    { exact (HsubfamK alpha HalK). }
+    exact (subgroup_of_subset (apply_fun Hfam alpha) G2 multG eG invG HsubA (apply_fun ys i) HyHa).
+}
+
+claim HnO : n :e omega.
+{
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J :\/: K /\
+        apply_fun ys i :e apply_fun Hfam alpha /\
+        apply_fun ys i <> apply_fun efamH alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+        apply_fun ys i :e apply_fun Hfam alpha ->
+        apply_fun ys (ordsucc i) :e apply_fun Hfam beta ->
+        alpha <> beta)
+    Hred).
+  assume HnO _ _. exact HnO.
+}
+claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+claim Hgrp1 : group_structure G1 multG eG invG.
+{
+  apply (and5E
+    (group_structure G1 multG eG invG)
+    (forall alpha:set, alpha :e J ->
+      subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG)
+    (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+      forall x:set, x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha ->
+        x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) beta -> x = eG)
+    (subgroups_generate G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)))
+    (forall x:set, x :e G1 -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+          (graph J (fun a:set => apply_fun efamH a)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+            (graph J (fun a:set => apply_fun efamH a)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp1).
+  assume Hgrp1 _ _ _ _. exact Hgrp1.
+}
+claim Hnot_all_G1 : (forall i:set, i :e n -> apply_fun ys i :e G1) -> False.
+{
+  assume HallG1.
+  claim HwpG1' : word_product multG eG ys n :e G1.
+  { exact (word_product_in_G_group G1 multG eG invG n ys Hgrp1 Hn_nat HallG1). }
+  claim Hxe : word_product multG eG ys n = eG.
+  { exact (Hinter12 (word_product multG eG ys n) HwpG1' HwpG2). }
+  exact (Hwpne Hxe).
+}
+
+(** Remaining mixed-factor case needs a binary-collapse argument. **)
 admit.
 Admitted.
 
