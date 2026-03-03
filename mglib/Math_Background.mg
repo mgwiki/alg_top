@@ -190651,7 +190651,7 @@ Lemma Pi_mem_Sep : forall X:set, forall Y:set -> set, forall f:set,
   f :e {g :e Power (Sigma_ x :e X, Union (Y x)) | forall x :e X, g x :e Y x}.
 let X Y f.
 assume Hf.
-admit. (** TODO: need Pi unfolding lemma (definition seems opaque to reflexivity) **)
+admit. (** TODO: Pi unfolding is opaque; need lemma/axiom to expose Sep definition. **)
 Admitted.
 
 (** Helper: Pi elements lie in the underlying power set **)
@@ -190660,7 +190660,7 @@ Lemma Pi_sub_Power : forall X:set, forall Y:set -> set, forall f:set,
   f :e Power (Sigma_ x :e X, Union (Y x)).
 let X Y f.
 assume Hf.
-admit. (** TODO: need Pi unfolding lemma to extract Power membership **)
+admit. (** TODO: blocked by Pi unfolding lemma. **)
 Admitted.
 
 
