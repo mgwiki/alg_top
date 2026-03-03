@@ -289514,6 +289514,177 @@ exact (edge_path_prefix
   HkIn).
 Qed.
 
+(** helper: if the last two edges backtrack, dropping them preserves a closed endpoint **)
+(** Proven Bob **)
+Theorem edge_path_drop_last_two_closed_if_backtrack_end :
+  forall X Tx Arcs k path_seq p:set,
+  edge_path X Tx Arcs (ordsucc (ordsucc k)) path_seq p ->
+  k <> 0 ->
+  ((apply_fun path_seq k) 1 = (apply_fun path_seq (ordsucc k)) 1 /\
+   (apply_fun path_seq k) 0 0 = (apply_fun path_seq (ordsucc k)) 0 1 /\
+   (apply_fun path_seq k) 0 1 = (apply_fun path_seq (ordsucc k)) 0 0) ->
+  (apply_fun path_seq (ordsucc k)) 0 1 = p ->
+  exists path_seq0:set,
+    edge_path X Tx Arcs k path_seq0 p /\
+    exists j0:set, j0 :e k /\ ordsucc j0 /:e k /\
+      (apply_fun path_seq0 j0) 0 1 = p.
+let X Tx Arcs k path_seq p.
+assume Hep HkNe0 Hback Hend.
+set path_seq0 := graph k (fun i:set => apply_fun path_seq i).
+claim Hep0 : edge_path X Tx Arcs k path_seq0 p.
+{
+  exact (edge_path_drop_last_two
+    X
+    Tx
+    Arcs
+    k
+    path_seq
+    p
+    Hep).
+}
+claim HnOm : ordsucc (ordsucc k) :e omega.
+{
+  exact (edge_path_n_in_omega
+    X
+    Tx
+    Arcs
+    (ordsucc (ordsucc k))
+    path_seq
+    p
+    Hep).
+}
+claim HnOrd : ordinal (ordsucc (ordsucc k)).
+{
+  exact (nat_p_ordinal
+    (ordsucc (ordsucc k))
+    (omega_nat_p
+      (ordsucc (ordsucc k))
+      HnOm)).
+}
+claim HnSubOmega : (ordsucc (ordsucc k)) c= omega.
+{
+  exact (ordinal_TransSet
+    omega
+    omega_ordinal
+    (ordsucc (ordsucc k))
+    HnOm).
+}
+claim HkInN : k :e ordsucc (ordsucc k).
+{
+  exact (ordsuccI1
+    (ordsucc k)
+    k
+    (ordsuccI2 k)).
+}
+claim HkOm : k :e omega.
+{
+  exact (HnSubOmega
+    k
+    HkInN).
+}
+claim HkNat : nat_p k.
+{ exact (omega_nat_p k HkOm). }
+claim HkSucc : exists j0:set, nat_p j0 /\ k = ordsucc j0.
+{
+  apply (nat_inv k HkNat).
+  - assume Hk0.
+    exact (FalseE (HkNe0 Hk0) (exists j0:set, nat_p j0 /\ k = ordsucc j0)).
+  - assume Hex.
+    exact Hex.
+}
+apply HkSucc.
+let j0.
+assume Hj0pack.
+claim HkEq : k = ordsucc j0.
+{ exact (andER (nat_p j0) (k = ordsucc j0) Hj0pack). }
+claim Hj0InK : j0 :e k.
+{
+  rewrite HkEq.
+  exact (ordsuccI2 j0).
+}
+claim HkSubN : k c= ordsucc (ordsucc k).
+{
+  exact (ordinal_TransSet
+    (ordsucc (ordsucc k))
+    HnOrd
+    k
+    HkInN).
+}
+claim Hj0InN : j0 :e ordsucc (ordsucc k).
+{
+  exact (HkSubN
+    j0
+    Hj0InK).
+}
+claim HsuccInN : ordsucc j0 :e ordsucc (ordsucc k).
+{
+  rewrite <- HkEq.
+  exact HkInN.
+}
+claim Hfin_j0 : (apply_fun path_seq j0) 0 1 = p.
+{
+  claim Hmatch :
+    (apply_fun path_seq j0) 0 1 = (apply_fun path_seq (ordsucc j0)) 0 0.
+  {
+    exact (edge_path_consecutive_match
+      X
+      Tx
+      Arcs
+      (ordsucc (ordsucc k))
+      path_seq
+      p
+      j0
+      Hep
+      Hj0InN
+      HsuccInN).
+  }
+  claim HbackAB :
+    (apply_fun path_seq k) 1 = (apply_fun path_seq (ordsucc k)) 1 /\
+    (apply_fun path_seq k) 0 0 = (apply_fun path_seq (ordsucc k)) 0 1.
+  {
+    exact (andEL
+      ((apply_fun path_seq k) 1 = (apply_fun path_seq (ordsucc k)) 1 /\
+       (apply_fun path_seq k) 0 0 = (apply_fun path_seq (ordsucc k)) 0 1)
+      ((apply_fun path_seq k) 0 1 = (apply_fun path_seq (ordsucc k)) 0 0)
+      Hback).
+  }
+  claim Hback2 :
+    (apply_fun path_seq k) 0 0 = (apply_fun path_seq (ordsucc k)) 0 1.
+  {
+    exact (andER
+      ((apply_fun path_seq k) 1 = (apply_fun path_seq (ordsucc k)) 1)
+      ((apply_fun path_seq k) 0 0 = (apply_fun path_seq (ordsucc k)) 0 1)
+      HbackAB).
+  }
+  claim Hback2' :
+    (apply_fun path_seq (ordsucc j0)) 0 0 =
+    (apply_fun path_seq (ordsucc (ordsucc j0))) 0 1.
+  {
+    rewrite <- HkEq.
+    exact Hback2.
+  }
+  rewrite Hmatch.
+  rewrite Hback2'.
+  rewrite <- HkEq.
+  exact Hend.
+}
+witness path_seq0.
+apply andI.
+- exact Hep0.
+- witness j0.
+  apply andI.
+  * apply andI.
+    + exact Hj0InK.
+    + rewrite HkEq.
+      exact (In_irref (ordsucc j0)).
+  * rewrite (apply_fun_graph
+      k
+      (fun i:set => apply_fun path_seq i)
+      j0
+      Hj0InK).
+    exact Hfin_j0.
+Qed.
+
 (** Proven Bob **)
 Theorem edge_path_index_initial_vertex_in_union_arcs_basic :
   forall X Tx Arcs n path_seq x0 i:set,
