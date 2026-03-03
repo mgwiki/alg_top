@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 1665 **)
+(** Balance Charlie 1585 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -225453,6 +225453,49 @@ Admitted.
 (** G2 = free product of H_beta for beta in K, with J,K disjoint, **)
 (** then G = free product of H_gamma for gamma in J union K. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
+(** Helper bounties (for the remaining n >= 3 side-from-product branches inside cor68_6) **)
+(** Bounty 40 **)
+Theorem cor68_6_side_from_product_G1_ge3 :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => eG)) ->
+  J :/\: K = Empty ->
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Hfam alpha) G1 multG eG invG) ->
+  (forall beta:set, beta :e K -> subgroup_of (apply_fun Hfam beta) G2 multG eG invG) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  n <> 0 -> n <> 1 -> n <> 2 ->
+  word_product multG eG ys n :e G1 ->
+  word_product multG eG ys n <> eG ->
+  forall i:set, i :e n -> apply_fun ys i :e G1.
+admit.
+Admitted.
+
+(** Bounty 40 **)
+Theorem cor68_6_side_from_product_G2_ge3 :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => eG)) ->
+  J :/\: K = Empty ->
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Hfam alpha) G1 multG eG invG) ->
+  (forall beta:set, beta :e K -> subgroup_of (apply_fun Hfam beta) G2 multG eG invG) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  n <> 0 -> n <> 1 -> n <> 2 ->
+  word_product multG eG ys n :e G2 ->
+  word_product multG eG ys n <> eG ->
+  forall i:set, i :e n -> apply_fun ys i :e G2.
+admit.
+Admitted.
+
 (** Bounty 61 **)
 (** Lock Charlie 1772627457 **)
 Theorem cor68_6_associativity_free_product :
@@ -228774,10 +228817,13 @@ apply (and5I
           apply (cases_2 i Hi2 (fun j:set => apply_fun ys j :e G1)).
           { exact Hy0_G1. }
           { exact Hy1_G1. }
-        * assume Hn_ne2.
-          (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
-          admit.
-  }
+	        * assume Hn_ne2.
+	          (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
+	          exact (cor68_6_side_from_product_G1_ge3
+	            G multG eG invG G1 G2 J K Hfam efamH n ys
+	            Hgrp Hsub1 Hsub2 Hfp HJKdisj Hsubfam1 Hsubfam2
+	            Hred HallNe Hn0ne Hn_ne1 Hn_ne2 HwpG1 Hwpne).
+	  }
   (** Helper: if a reduced word with nontrivial letters multiplies to G2, all letters are in G2 **)
   claim Hside_from_product_G2 :
     forall n ys:set,
@@ -229086,10 +229132,13 @@ apply (and5I
 	              { exact (Hinter12 wp HwpG1' HwpG2'). }
 	              exact (FalseE (Hwpne Hwp_e) (apply_fun ys 1 :e G2)).
 	          }
-        * assume Hn_ne2.
-          (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
-          admit.
-  }
+	        * assume Hn_ne2.
+	          (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
+	          exact (cor68_6_side_from_product_G2_ge3
+	            G multG eG invG G1 G2 J K Hfam efamH n ys
+	            Hgrp Hsub1 Hsub2 Hfp HJKdisj Hsubfam1 Hsubfam2
+	            Hred HallNe Hn0ne Hn_ne1 Hn_ne2 HwpG2 Hwpne).
+	  }
   (** Helper: expansions in G1/G2 with nontrivial entries **)
   claim Hexp_red_each_G1_non_e :
     forall i:set, i :e n12 -> apply_fun xs12 i :e G1 ->
