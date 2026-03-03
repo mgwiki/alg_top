@@ -180778,6 +180778,169 @@ claim HclW2eq : closure_of (Sn 2) (Sn_topology 2) W2 = W2 :\/: C.
       { rewrite Hbd2. exact HzC. }
       exact (setminusE1 (closure_of (Sn 2) (Sn_topology 2) W2) W2 z Hzsetm).
 }
+(** Intersection of closures is exactly C (the common boundary). **)
+claim HclW1W2eqC :
+  closure_of (Sn 2) (Sn_topology 2) W1 :/\:
+  closure_of (Sn 2) (Sn_topology 2) W2 = C.
+{
+  apply set_ext.
+  - let z.
+    assume HzInt : z :e closure_of (Sn 2) (Sn_topology 2) W1 :/\:
+                      closure_of (Sn 2) (Sn_topology 2) W2.
+    claim Hzcl1 : z :e closure_of (Sn 2) (Sn_topology 2) W1.
+    { exact (binintersectE1 (closure_of (Sn 2) (Sn_topology 2) W1)
+                            (closure_of (Sn 2) (Sn_topology 2) W2) z HzInt). }
+    claim Hzcl2 : z :e closure_of (Sn 2) (Sn_topology 2) W2.
+    { exact (binintersectE2 (closure_of (Sn 2) (Sn_topology 2) W1)
+                            (closure_of (Sn 2) (Sn_topology 2) W2) z HzInt). }
+    claim HzIn1 : z :e W1 :\/: C.
+    { rewrite <- HclW1eq. exact Hzcl1. }
+    claim HzIn2 : z :e W2 :\/: C.
+    { rewrite <- HclW2eq. exact Hzcl2. }
+    apply (binunionE W1 C z HzIn1).
+    + assume HzW1 : z :e W1.
+      apply (binunionE W2 C z HzIn2).
+      * assume HzW2 : z :e W2.
+        claim HzW12 : z :e W1 :/\: W2.
+        { exact (binintersectI W1 W2 z HzW1 HzW2). }
+        claim HzE : z :e Empty.
+        { rewrite <- HW1W2Empty. exact HzW12. }
+        exact (FalseE (EmptyE z HzE) (z :e C)).
+      * assume HzC : z :e C.
+        claim HzWC : z :e W1 :/\: C.
+        { exact (binintersectI W1 C z HzW1 HzC). }
+        claim HzE : z :e Empty.
+        { rewrite <- HW1CEmpty. exact HzWC. }
+        exact (FalseE (EmptyE z HzE) (z :e C)).
+    + assume HzC : z :e C.
+      exact HzC.
+  - let z.
+    assume HzC : z :e C.
+    apply (binintersectI
+      (closure_of (Sn 2) (Sn_topology 2) W1)
+      (closure_of (Sn 2) (Sn_topology 2) W2)
+      z).
+    + claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
+      { rewrite Hbd1. exact HzC. }
+      exact (setminusE1 (closure_of (Sn 2) (Sn_topology 2) W1) W1 z Hzsetm).
+    + claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W2 :\: W2.
+      { rewrite Hbd2. exact HzC. }
+      exact (setminusE1 (closure_of (Sn 2) (Sn_topology 2) W2) W2 z Hzsetm).
+}
+(** W1 and W2 are open in the subspace topology Ty on Y. **)
+claim HW1Ty : W1 :e Ty.
+{
+  claim Htmp : (W1 :/\: Y) :e Ty.
+  { exact (subspace_topologyI (Sn 2) (Sn_topology 2) Y W1 HW1openSn). }
+  rewrite <- (binintersect_Subq_eq_1 W1 Y HW1subY).
+  exact Htmp.
+}
+claim HW2Ty : W2 :e Ty.
+{
+  claim Htmp : (W2 :/\: Y) :e Ty.
+  { exact (subspace_topologyI (Sn 2) (Sn_topology 2) Y W2 HW2openSn). }
+  rewrite <- (binintersect_Subq_eq_1 W2 Y HW2subY).
+  exact Htmp.
+}
+(** Complements inside Y (useful for closed/open-in-Y facts later). **)
+claim HW1eqYminusW2 : W1 = Y :\: W2.
+{
+  apply set_ext.
+  - let z.
+    assume HzW1.
+    apply setminusI.
+    + exact (HW1subY z HzW1).
+    + assume HzW2.
+      claim HzInt : z :e W1 :/\: W2.
+      { exact (binintersectI W1 W2 z HzW1 HzW2). }
+      claim HzE : z :e Empty.
+      { rewrite <- HW1W2Empty. exact HzInt. }
+      exact (EmptyE z HzE).
+  - let z.
+    assume HzYW2.
+    claim HzY : z :e Y.
+    { exact (setminusE1 Y W2 z HzYW2). }
+    claim HzNotW2 : z /:e W2.
+    { exact (setminusE2 Y W2 z HzYW2). }
+    claim HzW : z :e W1 :\/: W2.
+    { rewrite <- HYeqW. exact HzY. }
+    apply (binunionE W1 W2 z HzW).
+    + assume HzW1. exact HzW1.
+    + assume HzW2.
+      exact (FalseE (HzNotW2 HzW2) (z :e W1)).
+}
+claim HW2eqYminusW1 : W2 = Y :\: W1.
+{
+  apply set_ext.
+  - let z.
+    assume HzW2.
+    apply setminusI.
+    + exact (HW2subY z HzW2).
+    + assume HzW1.
+      claim HzInt : z :e W1 :/\: W2.
+      { exact (binintersectI W1 W2 z HzW1 HzW2). }
+      claim HzE : z :e Empty.
+      { rewrite <- HW1W2Empty. exact HzInt. }
+      exact (EmptyE z HzE).
+  - let z.
+    assume HzYW1.
+    claim HzY : z :e Y.
+    { exact (setminusE1 Y W1 z HzYW1). }
+    claim HzNotW1 : z /:e W1.
+    { exact (setminusE2 Y W1 z HzYW1). }
+    claim HzW : z :e W1 :\/: W2.
+    { rewrite <- HYeqW. exact HzY. }
+    apply (binunionE W1 W2 z HzW).
+    + assume HzW1.
+      exact (FalseE (HzNotW1 HzW1) (z :e W2)).
+    + assume HzW2. exact HzW2.
+}
+(** Separation of Y by W1 and W2. **)
+claim HsepY : separation_of Y W1 W2.
+{
+  claim Hab : W1 :e Power Y /\ W2 :e Power Y.
+  {
+    exact (andI
+      (W1 :e Power Y)
+      (W2 :e Power Y)
+      (PowerI Y W1 HW1subY)
+      (PowerI Y W2 HW2subY)).
+  }
+  claim Habc : (W1 :e Power Y /\ W2 :e Power Y) /\ W1 :/\: W2 = Empty.
+  {
+    exact (andI
+      (W1 :e Power Y /\ W2 :e Power Y)
+      (W1 :/\: W2 = Empty)
+      Hab
+      HW1W2Empty).
+  }
+  claim Habcd :
+    ((W1 :e Power Y /\ W2 :e Power Y) /\ W1 :/\: W2 = Empty) /\ W1 <> Empty.
+  {
+    exact (andI
+      ((W1 :e Power Y /\ W2 :e Power Y) /\ W1 :/\: W2 = Empty)
+      (W1 <> Empty)
+      Habc
+      HW1ne).
+  }
+  claim Habcde :
+    (((W1 :e Power Y /\ W2 :e Power Y) /\ W1 :/\: W2 = Empty) /\ W1 <> Empty) /\
+    W2 <> Empty.
+  {
+    exact (andI
+      (((W1 :e Power Y /\ W2 :e Power Y) /\ W1 :/\: W2 = Empty) /\ W1 <> Empty)
+      (W2 <> Empty)
+      Habcd
+      HW2ne).
+  }
+  claim Hunion : W1 :\/: W2 = Y.
+  { rewrite <- HYeqW. reflexivity. }
+  exact (andI
+    ((((W1 :e Power Y /\ W2 :e Power Y) /\ W1 :/\: W2 = Empty) /\ W1 <> Empty) /\ W2 <> Empty)
+    (W1 :\/: W2 = Y)
+    Habcde
+    Hunion).
+}
 (** TODO: build the actual deformation retract homotopy using the Jordan curve theorem. **)
 prove deformation_retract X Tx C.
 claim Hdeform0 :
