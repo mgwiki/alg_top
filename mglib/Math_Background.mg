@@ -183484,7 +183484,6 @@ admit.
 Admitted.
 
 (** Bounty 330 **)
-(** Lock Charlie 1772619208 **)
 Theorem lemma65_2_side_homotopies_exist : forall C Tc p q:set,
   C c= Sn 2 -> is_simple_closed_curve C Tc ->
   Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
@@ -185611,7 +185610,6 @@ Admitted.
 (** an isomorphism of fundamental groups. **)
 (** EFFORT: 40 lines textbook, difficulty 8/10, USD 500 **)
 (** Bounty 666 **)
-(** Lock Charlie 1772604777 **)
 Theorem thm65_2_inclusion_isomorphism : forall C Tc p q x0:set,
   C c= Sn 2 -> is_simple_closed_curve C Tc ->
   Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
