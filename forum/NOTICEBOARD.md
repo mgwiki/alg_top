@@ -82,6 +82,63 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772519545
+Created: 1772519545
+Status: PROPOSED
+
+Refers to Commit:
+  82ed4e9aa747a4728232e853172164954d064888
+
+Target:
+  Line: 173925
+  Name: ex59_4a_both_trivial (Theorem)
+
+Problem:
+  The statement is missing the standard path-connectedness assumptions on U and V.
+  As written, it is not possible to derive path_connected_space X Tx from the given
+  hypotheses (and the current proof attempt contains admits exactly at that gap).
+
+Proposed Replacement:
+  Theorem ex59_4a_both_trivial : forall X Tx U V x0:set,
+    topology_on X Tx ->
+    U :e Tx -> V :e Tx ->
+    X = U :\/: V ->
+    x0 :e U :/\: V ->
+    path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+    path_connected_space U (subspace_topology X Tx U) ->
+    path_connected_space V (subspace_topology X Tx V) ->
+    (forall cls:set,
+      cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+    (forall cls:set,
+      cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+      apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+    simply_connected X Tx.
+
+Proposed by:
+  Charlie
+
+Discussion:
+
+Approvals:
+  - 1772519545 | Alice:
+  - 1772519545 | Bob:
+  - 1772519545 | Charlie: YES
+  - 1772519545 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772519286
 Created: 1772519286
 Status: PROPOSED
