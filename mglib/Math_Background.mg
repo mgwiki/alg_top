@@ -310672,8 +310672,122 @@ claim Hcycle :
       HpV_T'
       HqV_T').
   }
-  (** Remaining work: build a closed reduced edge path in T' using E and A. **)
-  admit.
+  (** Build a closed edge path in T' by appending A (q -> p). **)
+  claim HoriA_rev :
+    oriented_edge T' (subspace_topology X Tx T') ArcsT' A q p.
+  {
+    exact (andI
+      (A :e ArcsT')
+      (end_points_of_arc A (subspace_topology T' (subspace_topology X Tx T') A) q p)
+      HAArcsT'
+      (end_points_of_arc_sym
+        A
+        (subspace_topology T' (subspace_topology X Tx T') A)
+        p
+        q
+        HendT')).
+  }
+  claim HclosedEdge :
+    exists n path_seq:set,
+      edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq p /\
+      n <> 0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = p).
+  {
+    apply HedgepqT'.
+    let n.
+    assume Hnpack.
+    apply Hnpack.
+    let path_seq.
+    assume Hpathpack.
+    apply (and3E
+      (edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq p)
+      (n <> 0)
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = q)
+      Hpathpack).
+    assume Hep Hn0 Hjpack.
+    apply Hjpack.
+    let j.
+    assume Hjdata.
+    claim HjPair : j :e n /\ ordsucc j /:e n.
+    {
+      exact (andEL
+        (j :e n /\ ordsucc j /:e n)
+        ((apply_fun path_seq j) 0 1 = q)
+        Hjdata).
+    }
+    claim HjIn : j :e n.
+    { exact (andEL (j :e n) (ordsucc j /:e n) HjPair). }
+    claim HsjNot : ordsucc j /:e n.
+    { exact (andER (j :e n) (ordsucc j /:e n) HjPair). }
+    claim Hfinj : (apply_fun path_seq j) 0 1 = q.
+    {
+      exact (andER
+        (j :e n /\ ordsucc j /:e n)
+        ((apply_fun path_seq j) 0 1 = q)
+        Hjdata).
+    }
+    witness (ordsucc n).
+    set path_seq' :=
+      ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+       (graph {n} (fun _:set => ((q, p), A)))).
+    witness path_seq'.
+    apply andI.
+    - apply andI.
+      + exact (edge_path_append_oriented_edge
+          T'
+          (subspace_topology X Tx T')
+          ArcsT'
+          n
+          path_seq
+          p
+          j
+          A
+          q
+          p
+          HglgT'
+          Hep
+          HjIn
+          HsjNot
+          Hfinj
+          HoriA_rev).
+      + exact (neq_ordsucc_0 n).
+    - witness n.
+      apply andI.
+      * apply andI.
+        { exact (ordsuccI2 n). }
+        { exact (In_irref (ordsucc n)). }
+      * exact (andER
+          ((apply_fun path_seq' n) 0 0 = q)
+          ((apply_fun path_seq' n) 0 1 = p)
+          (edge_path_append_oriented_edge_endpoints_eq_pq
+            T'
+            (subspace_topology X Tx T')
+            ArcsT'
+            n
+            path_seq
+            p
+            j
+            A
+            q
+            p
+            HglgT'
+            Hep
+            HjIn
+            HsjNot
+            Hfinj
+            HoriA_rev)).
+  }
+  (** Remaining work: reduce the closed edge path to a closed reduced edge path. **)
+  claim HclosedRed :
+    exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0).
+  { admit. }
+  exact HclosedRed.
 }
 exact (HnoloopT' Hcycle).
 Admitted.
