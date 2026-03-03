@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 1871 **)
+(** Balance Charlie 1671 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -180892,6 +180892,30 @@ apply andI.
   exact (apply_fun_graph A (fun y:set => y) a (HCsubA a HaC)).
 Qed.
 
+(** Bounty 200 **)
+Theorem lemma65_2_side_deformation_retracts : forall C Tc p q:set,
+  C c= Sn 2 -> is_simple_closed_curve C Tc ->
+  Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
+  p :e Sn 2 :\: C -> q :e Sn 2 :\: C ->
+  component_of (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
+  component_of (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q ->
+  let X := Sn 2 :\: (Sing p :\/: Sing q) in
+  let Tx := subspace_topology (Sn 2) (Sn_topology 2) X in
+  let Y := Sn 2 :\: C in
+  let Ty := subspace_topology (Sn 2) (Sn_topology 2) Y in
+  let U := component_of Y Ty p in
+  let V := component_of Y Ty q in
+  let DU := closure_of (Sn 2) (Sn_topology 2) U in
+  let DV := closure_of (Sn 2) (Sn_topology 2) V in
+  let A1 := DU :/\: X in
+  let A2 := DV :/\: X in
+  deformation_retract A1 (subspace_topology X Tx A1) C /\
+  deformation_retract A2 (subspace_topology X Tx A2) C.
+admit.
+Admitted.
+
 (** Bounty 330 **)
 (** Lock Charlie 1772619208 **)
 Theorem lemma65_2_side_homotopies_exist : forall C Tc p q:set,
@@ -180926,7 +180950,160 @@ Theorem lemma65_2_side_homotopies_exist : forall C Tc p q:set,
      (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
      (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
      (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a)).
-admit.
+let C Tc p q.
+assume HCsubSn Hsimple HTc HpSnC HqSnC HcompNe.
+set X := Sn 2 :\: (Sing p :\/: Sing q).
+set Tx := subspace_topology (Sn 2) (Sn_topology 2) X.
+set Y := Sn 2 :\: C.
+set Ty := subspace_topology (Sn 2) (Sn_topology 2) Y.
+set U := component_of Y Ty p.
+set V := component_of Y Ty q.
+set DU := closure_of (Sn 2) (Sn_topology 2) U.
+set DV := closure_of (Sn 2) (Sn_topology 2) V.
+set A1 := DU :/\: X.
+set A2 := DV :/\: X.
+set Z := setprod X unit_interval.
+set Tz := product_topology X Tx unit_interval unit_interval_topology.
+set P1 := setprod A1 unit_interval.
+set P2 := setprod A2 unit_interval.
+claim HtopSn2 : topology_on (Sn 2) (Sn_topology 2).
+{ exact (lemma59_3_Sn_topology_on 2). }
+claim HXsubSn : X c= Sn 2.
+{
+  let z.
+  assume HzX.
+  exact (setminusE1 (Sn 2) (Sing p :\/: Sing q) z HzX).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (subspace_topology_is_topology
+    (Sn 2)
+    (Sn_topology 2)
+    X
+    HtopSn2
+    HXsubSn).
+}
+claim HA1subX : A1 c= X.
+{
+  let z.
+  assume HzA1.
+  exact (binintersectE2 DU X z HzA1).
+}
+claim HA2subX : A2 c= X.
+{
+  let z.
+  assume HzA2.
+  exact (binintersectE2 DV X z HzA2).
+}
+claim Hretracts :
+  deformation_retract A1 (subspace_topology X Tx A1) C /\
+  deformation_retract A2 (subspace_topology X Tx A2) C.
+{
+  exact (lemma65_2_side_deformation_retracts
+    C
+    Tc
+    p
+    q
+    HCsubSn
+    Hsimple
+    HTc
+    HpSnC
+    HqSnC
+    HcompNe).
+}
+claim Hdeform1 : deformation_retract A1 (subspace_topology X Tx A1) C.
+{
+  exact (andEL
+    (deformation_retract A1 (subspace_topology X Tx A1) C)
+    (deformation_retract A2 (subspace_topology X Tx A2) C)
+    Hretracts).
+}
+claim Hdeform2 : deformation_retract A2 (subspace_topology X Tx A2) C.
+{
+  exact (andER
+    (deformation_retract A1 (subspace_topology X Tx A1) C)
+    (deformation_retract A2 (subspace_topology X Tx A2) C)
+    Hretracts).
+}
+claim HCsubA1 : C c= A1.
+{
+  exact (andEL
+    (C c= A1)
+    (exists H:set,
+      continuous_map (setprod A1 unit_interval)
+        (product_topology A1 (subspace_topology X Tx A1) unit_interval unit_interval_topology) A1
+        (subspace_topology X Tx A1) H /\
+      (forall x:set, x :e A1 -> apply_fun H (x, 0) = x) /\
+      (forall x:set, x :e A1 -> apply_fun H (x, 1) :e C) /\
+      (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H (a, t) = a))
+    Hdeform1).
+}
+claim HCsubA2 : C c= A2.
+{
+  exact (andEL
+    (C c= A2)
+    (exists H:set,
+      continuous_map (setprod A2 unit_interval)
+        (product_topology A2 (subspace_topology X Tx A2) unit_interval unit_interval_topology) A2
+        (subspace_topology X Tx A2) H /\
+      (forall x:set, x :e A2 -> apply_fun H (x, 0) = x) /\
+      (forall x:set, x :e A2 -> apply_fun H (x, 1) :e C) /\
+      (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H (a, t) = a))
+    Hdeform2).
+}
+claim HexH1 :
+  exists H1:set,
+    continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+    (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
+    (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
+    (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a).
+{
+  exact (deformation_retract_subspace_homotopy
+    X
+    Tx
+    A1
+    C
+    HtopX
+    HA1subX
+    HCsubA1
+    Hdeform1).
+}
+apply HexH1.
+let H1.
+assume HH1.
+claim HexH2 :
+  exists H2:set,
+    continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+    (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
+    (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
+    (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a).
+{
+  exact (deformation_retract_subspace_homotopy
+    X
+    Tx
+    A2
+    C
+    HtopX
+    HA2subX
+    HCsubA2
+    Hdeform2).
+}
+apply HexH2.
+let H2.
+assume HH2.
+witness H1.
+witness H2.
+exact (andI
+  (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+   (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
+   (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
+   (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a))
+  (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+   (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
+   (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
+   (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a))
+  HH1
+  HH2).
 Admitted.
 
 (** S65 helper: the key geometric step in Thm 65.2 is that C is a deformation retract
