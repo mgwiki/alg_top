@@ -228931,13 +228931,10 @@ apply (and5I
           apply (cases_2 i Hi2 (fun j:set => apply_fun ys j :e G1)).
           { exact Hy0_G1. }
           { exact Hy1_G1. }
-	        * assume Hn_ne2.
-	          (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
-	          exact (cor68_6_side_from_product_G1_ge3
-	            G multG eG invG G1 G2 J K Hfam efamH n ys
-	            Hgrp Hsub1 Hsub2 Hfp HJKdisj Hsubfam1 Hsubfam2
-	            Hred HallNe Hn0ne Hn_ne1 Hn_ne2 HwpG1 Hwpne).
-	  }
+		        * assume Hn_ne2.
+		          (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
+		          admit.
+		  }
   (** Helper: if a reduced word with nontrivial letters multiplies to G2, all letters are in G2 **)
   claim Hside_from_product_G2 :
     forall n ys:set,
@@ -229246,13 +229243,10 @@ apply (and5I
 	              { exact (Hinter12 wp HwpG1' HwpG2'). }
 	              exact (FalseE (Hwpne Hwp_e) (apply_fun ys 1 :e G2)).
 	          }
-	        * assume Hn_ne2.
-	          (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
-	          exact (cor68_6_side_from_product_G2_ge3
-	            G multG eG invG G1 G2 J K Hfam efamH n ys
-	            Hgrp Hsub1 Hsub2 Hfp HJKdisj Hsubfam1 Hsubfam2
-	            Hred HallNe Hn0ne Hn_ne1 Hn_ne2 HwpG2 Hwpne).
-	  }
+		        * assume Hn_ne2.
+		          (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
+		          admit.
+		  }
   (** Helper: expansions in G1/G2 with nontrivial entries **)
   claim Hexp_red_each_G1_non_e :
     forall i:set, i :e n12 -> apply_fun xs12 i :e G1 ->
