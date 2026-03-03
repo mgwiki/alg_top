@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 2317 **)
+(** Balance Charlie 2262 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -180471,7 +180471,8 @@ Admitted.
 (** components of S^2 minus C. Then inclusion j: C -> S^2-p-q induces **)
 (** an isomorphism of fundamental groups. **)
 (** EFFORT: 40 lines textbook, difficulty 8/10, USD 500 **)
-(** Bounty 550 **)
+(** Bounty 605 **)
+(** Lock Charlie 1772537000 **)
 Theorem thm65_2_inclusion_isomorphism : forall C Tc p q x0:set,
   C c= Sn 2 -> is_simple_closed_curve C Tc ->
   Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
