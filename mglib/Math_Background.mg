@@ -194628,13 +194628,14 @@ apply (and4I
 Qed.
 
 (** Helper: unfold Pi membership as Sep membership **)
+Transparent Pi.
 Lemma Pi_mem_Sep : forall X:set, forall Y:set -> set, forall f:set,
   f :e (Pi_ x :e X, Y x) ->
   f :e {g :e Power (Sigma_ x :e X, Union (Y x)) | forall x :e X, g x :e Y x}.
 let X Y f.
 assume Hf.
-admit. (** TODO: Pi unfolding is opaque; need lemma/axiom to expose Sep definition. **)
-Admitted.
+exact Hf.
+Qed.
 
 (** Helper: Pi elements lie in the underlying power set **)
 Lemma Pi_sub_Power : forall X:set, forall Y:set -> set, forall f:set,
@@ -194642,8 +194643,16 @@ Lemma Pi_sub_Power : forall X:set, forall Y:set -> set, forall f:set,
   f :e Power (Sigma_ x :e X, Union (Y x)).
 let X Y f.
 assume Hf.
-admit. (** TODO: blocked by Pi unfolding lemma. **)
-Admitted.
+claim HfSep :
+  f :e {g :e Power (Sigma_ x :e X, Union (Y x)) | forall x :e X, g x :e Y x}.
+{ exact (Pi_mem_Sep X Y f Hf). }
+exact (SepE1
+  (Power (Sigma_ x :e X, Union (Y x)))
+  (fun g:set => forall x :e X, g x :e Y x)
+  f
+  HfSep).
+Qed.
+Opaque Pi.
 
 
 (** from S67 Thm 67.4 (line 2647 in algtop.tex): existence of external direct sum **)
