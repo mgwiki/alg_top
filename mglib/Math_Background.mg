@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 2259 **)
+(** Balance Charlie 2356 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -177698,8 +177698,8 @@ Admitted.
 (** LATEX VERSION: X is the union of finitely many arcs, each pair meeting **)
 (** in at most a common endpoint. X is Hausdorff iff each arc is closed. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
-(** Lock Charlie 1772582614 **)
+(** Collected Charlie 97 **)
+(** Proven Charlie **)
 Theorem ex64_1a_hausdorff_iff_arcs_closed : forall X Tx Arcs:set,
   topology_on X Tx ->
   finite Arcs ->
@@ -178871,31 +178871,788 @@ apply iffI.
 			                    let p.
 			                    assume Hcase.
 			                    apply Hcase.
-			                    { assume Hem.
-			                      claim HzE : z :e Empty.
-			                      { rewrite <- Hem. exact (binintersectI A B z HzA0 HzB). }
-			                      exact (EmptyE z HzE (z :e Empty)). }
-				                    { assume Hsing.
-				                      admit.
-				                    }
-			                }
-			                rewrite HUAEmpty.
-			                exact (topology_has_empty A TA HtopA).
+					                    { assume Hem.
+					                      claim HzE : z :e Empty.
+					                      { rewrite <- Hem. exact (binintersectI A B z HzA0 HzB). }
+					                      exact (EmptyE z HzE (z :e Empty)). }
+					                    { assume Hsing.
+					                      (** Since z is in A∩B and A<>B, z is an intersection point of B. **)
+					                      claim HBArcsX : B :e ArcsX.
+					                      { exact (setminusE1 ArcsX (Sing A0) B HBin). }
+					                      claim HBArcs : B :e Arcs.
+					                      { exact (SepE1 Arcs (fun A2:set => x :e A2) B HBArcsX). }
+					                      claim HxB : x :e B.
+					                      { exact (SepE2 Arcs (fun A2:set => x :e A2) B HBArcsX). }
+					                      claim HneqAB : A <> B.
+					                      {
+					                        assume Heq.
+					                        claim HxA1 : x :e A.
+					                        { rewrite Heq. exact HxB. }
+					                        exact (HxNotA HxA1).
+					                      }
+					                      claim HnotInSing : A /:e Sing B.
+					                      {
+					                        assume HAin.
+					                        claim HAeq : A = B.
+					                        { exact (SingE B A HAin). }
+					                        exact (HneqAB HAeq).
+					                      }
+					                      claim HAin0 : A :e (Arcs :\: Sing B).
+					                      { exact (setminusI Arcs (Sing B) A HAArcs HnotInSing). }
+					                      claim HzBA : z :e B :/\: A.
+					                      { exact (binintersectI B A z HzB HzA0). }
+					                      claim HcapIn : (B :/\: A) :e IntFam B.
+					                      { exact (ReplI (Arcs :\: Sing B) (fun C:set => B :/\: C) A HAin0). }
+					                      claim HzInt : z :e IntPts B.
+					                      { exact (UnionI (IntFam B) z (B :/\: A) HzBA HcapIn). }
+					                      apply (xm (z = x)).
+					                      - assume Hzx.
+					                        claim HxA1 : x :e A.
+					                        { rewrite <- Hzx. exact HzA0. }
+					                        exact (FalseE (HxNotA HxA1) (z :e Empty)).
+					                      - assume Hzneq : ~(z = x).
+					                        claim HzNotSing : z /:e Sing x.
+					                        {
+					                          assume HzSing.
+					                          claim Hzx : z = x.
+					                          { exact (SingE x z HzSing). }
+					                          exact (Hzneq Hzx).
+					                        }
+					                        claim HzRem : z :e IntPts B :\: Sing x.
+					                        { exact (setminusI (IntPts B) (Sing x) z HzInt HzNotSing). }
+					                        claim HzNotRem : z /:e (IntPts B :\: Sing x).
+					                        { exact (setminusE2 B (IntPts B :\: Sing x) z HzNxB). }
+					                        exact (FalseE (HzNotRem HzRem) (z :e Empty)).
+					                    }
+				                }
+				                rewrite HUAEmpty.
+				                exact (topology_has_empty A TA HtopA).
 			          }
 			          exact (coherence_open_backward U HUsubX HUArcsOpen).
 			        }
-			        (** V is open by coherence similarly. **)
-			        claim HVsubX : V c= X.
-			        { admit. }
-				        claim HVopen : V :e Tx.
-				        { admit. }
+				        (** V is open by coherence similarly. **)
+				        claim HVsubX : V c= X.
+				        {
+				          let z.
+				          assume HzV.
+				          apply (binunionE Vy Vrest z HzV).
+				          - assume HzVy.
+				            claim HzNyA0 : z :e Ny A0.
+				            { exact (binintersectE2 V0 (Ny A0) z HzVy). }
+				            claim HzA0 : z :e A0.
+				            { exact (setminusE1 A0 (IntPts A0 :\: Sing y) z HzNyA0). }
+				            exact (HA0subX z HzA0).
+				          - assume HzVr.
+				            apply (UnionE FamYrest z HzVr).
+				            let D.
+				            assume HDpack.
+				            claim HzD : z :e D.
+				            { exact (andEL (z :e D) (D :e FamYrest) HDpack). }
+				            claim HDin : D :e FamYrest.
+				            { exact (andER (z :e D) (D :e FamYrest) HDpack). }
+				            apply (ReplE ArcsYrest (fun A1:set => Ny A1) D HDin).
+				            let B.
+				            assume HBpair.
+				            claim HBin : B :e ArcsYrest.
+				            { exact (andEL (B :e ArcsYrest) (D = Ny B) HBpair). }
+				            claim HDeq : D = Ny B.
+				            { exact (andER (B :e ArcsYrest) (D = Ny B) HBpair). }
+				            claim HzNyB : z :e Ny B.
+				            { rewrite <- HDeq. exact HzD. }
+				            claim HzB : z :e B.
+				            { exact (setminusE1 B (IntPts B :\: Sing y) z HzNyB). }
+				            claim HBArcsY : B :e ArcsY.
+				            { exact (setminusE1 ArcsY (Sing A0) B HBin). }
+				            claim HBArcs : B :e Arcs.
+				            { exact (SepE1 Arcs (fun A1:set => y :e A1) B HBArcsY). }
+				            claim HBdat : B c= X /\ arc B (subspace_topology X Tx B).
+				            { exact (HarcDat B HBArcs). }
+				            claim HBsubX : B c= X.
+				            { exact (andEL (B c= X) (arc B (subspace_topology X Tx B)) HBdat). }
+				            exact (HBsubX z HzB).
+				        }
+					        claim HVopen : V :e Tx.
+					        {
+					          claim HVArcsOpen :
+					            forall A:set, A :e Arcs -> V :/\: A :e subspace_topology X Tx A.
+					          {
+					            let A.
+					            assume HAArcs.
+					            set TA := subspace_topology X Tx A.
+					            claim HAdat : A c= X /\ arc A TA.
+					            { exact (HarcDat A HAArcs). }
+					            claim HAsubX : A c= X.
+					            { exact (andEL (A c= X) (arc A TA) HAdat). }
+					            claim HtopA : topology_on A TA.
+					            { exact (subspace_topology_is_topology X Tx A HtopX HAsubX). }
+					            apply xm (A = A0).
+					            - assume HAeq.
+					              (** V∩A0 = Vy **)
+					              claim HVAeq : V :/\: A = Vy.
+					              {
+					                rewrite HAeq.
+					                apply set_ext.
+					                + let z.
+					                  assume HzVA0.
+					                  claim HzV0 : z :e V.
+					                  { exact (binintersectE1 V A0 z HzVA0). }
+					                  claim HzA00 : z :e A0.
+					                  { exact (binintersectE2 V A0 z HzVA0). }
+					                  apply (binunionE Vy Vrest z HzV0).
+					                  - assume HzVy. exact HzVy.
+					                  - assume HzVr.
+					                    apply (UnionE FamYrest z HzVr).
+					                    let D.
+					                    assume HDpack.
+					                    claim HzD : z :e D.
+					                    { exact (andEL (z :e D) (D :e FamYrest) HDpack). }
+					                    claim HDin : D :e FamYrest.
+					                    { exact (andER (z :e D) (D :e FamYrest) HDpack). }
+					                    apply (ReplE ArcsYrest (fun A1:set => Ny A1) D HDin).
+					                    let B.
+					                    assume HBpair.
+					                    claim HBin : B :e ArcsYrest.
+					                    { exact (andEL (B :e ArcsYrest) (D = Ny B) HBpair). }
+					                    claim HDeq : D = Ny B.
+					                    { exact (andER (B :e ArcsYrest) (D = Ny B) HBpair). }
+					                    claim HzNyB : z :e Ny B.
+					                    { rewrite <- HDeq. exact HzD. }
+					                    claim HzB : z :e B.
+					                    { exact (setminusE1 B (IntPts B :\: Sing y) z HzNyB). }
+					                    claim HBArcsY : B :e ArcsY.
+					                    { exact (setminusE1 ArcsY (Sing A0) B HBin). }
+					                    claim HBArcs : B :e Arcs.
+					                    { exact (SepE1 Arcs (fun A2:set => y :e A2) B HBArcsY). }
+					                    claim HyB : y :e B.
+					                    { exact (SepE2 Arcs (fun A2:set => y :e A2) B HBArcsY). }
+					                    claim HneqBA0 : ~(B = A0).
+					                    {
+					                      assume Heq.
+					                      claim HBsing : B :e Sing A0.
+					                      { rewrite Heq. exact (SingI A0). }
+					                      claim Hbad : B :e Sing A0.
+					                      { exact HBsing. }
+					                      exact ((setminusE2 ArcsY (Sing A0) B HBin) Hbad).
+					                    }
+					                    claim HinterBA0 :
+					                      exists p:set, (B :/\: A0 = Empty \/ B :/\: A0 = Sing p).
+					                    { exact (HinterDat B A0 HBArcs HA0Arcs HneqBA0). }
+					                    apply HinterBA0.
+					                    let p.
+					                    assume Hcase.
+					                    apply Hcase.
+					                    { assume Hem.
+					                      claim HyE : y :e Empty.
+					                      { rewrite <- Hem. exact (binintersectI B A0 y HyB HyA0). }
+					                      exact (FalseE (EmptyE y HyE False) (z :e Vy)). }
+					                    { assume Hsing.
+					                      claim HySingp : y :e Sing p.
+					                      { rewrite <- Hsing. exact (binintersectI B A0 y HyB HyA0). }
+					                      claim Hyp : y = p.
+					                      { exact (SingE p y HySingp). }
+					                      claim HzSingp : z :e Sing p.
+					                      { rewrite <- Hsing. exact (binintersectI B A0 z HzB HzA00). }
+					                      claim Hzp : z = p.
+					                      { exact (SingE p z HzSingp). }
+					                      claim Hzy : z = y.
+					                      { rewrite Hzp. symmetry. exact Hyp. }
+					                      rewrite Hzy.
+					                      exact HyVy.
+					                    }
+					                + let z.
+					                  assume HzVy.
+					                  claim HzV0 : z :e V.
+					                  { exact (binunionI1 Vy Vrest z HzVy). }
+					                  claim HzA00 : z :e A0.
+					                  {
+					                    claim HzNyA0 : z :e Ny A0.
+					                    { exact (binintersectE2 V0 (Ny A0) z HzVy). }
+					                    exact (setminusE1 A0 (IntPts A0 :\: Sing y) z HzNyA0).
+					                  }
+					                  exact (binintersectI V A0 z HzV0 HzA00).
+					              }
+					              rewrite HVAeq.
+					              (** Vy is open in A0, hence in TA. **)
+					              rewrite HAeq.
+					              exact HVyIn.
+					            - assume HAneq : ~(A = A0).
+					              apply xm (y :e A).
+					              + assume HyA.
+					                (** V∩A = Ny A **)
+					                claim HVAeq : V :/\: A = Ny A.
+					                {
+					                  apply set_ext.
+					                  + let z.
+					                    assume HzVA.
+					                    claim HzV0 : z :e V.
+					                    { exact (binintersectE1 V A z HzVA). }
+					                    claim HzA0 : z :e A.
+					                    { exact (binintersectE2 V A z HzVA). }
+					                    apply (binunionE Vy Vrest z HzV0).
+					                    - assume HzVy.
+					                      (** If z comes from Vy (subset A0), then z=y and hence in Ny A. **)
+					                      claim HzNyA0 : z :e Ny A0.
+					                      { exact (binintersectE2 V0 (Ny A0) z HzVy). }
+					                      claim HzA00 : z :e A0.
+					                      { exact (setminusE1 A0 (IntPts A0 :\: Sing y) z HzNyA0). }
+					                      claim HzAA0 : z :e A :/\: A0.
+					                      { exact (binintersectI A A0 z HzA0 HzA00). }
+					                      claim HinterAA0 :
+					                        exists p:set, (A :/\: A0 = Empty \/ A :/\: A0 = Sing p).
+					                      { exact (HinterDat A A0 HAArcs HA0Arcs HAneq). }
+					                      apply HinterAA0.
+					                      let p.
+					                      assume Hcase.
+					                      apply Hcase.
+					                      { assume Hem.
+					                        claim HzE : z :e Empty.
+					                        { rewrite <- Hem. exact HzAA0. }
+					                        exact (FalseE (EmptyE z HzE False) (z :e Ny A)). }
+					                      { assume Hsing.
+					                        claim HySingp : y :e Sing p.
+					                        { rewrite <- Hsing. exact (binintersectI A A0 y HyA HyA0). }
+					                        claim Hyp : y = p.
+					                        { exact (SingE p y HySingp). }
+					                        claim HzSingp : z :e Sing p.
+					                        { rewrite <- Hsing. exact HzAA0. }
+					                        claim Hzp : z = p.
+					                        { exact (SingE p z HzSingp). }
+					                        claim Hzy : z = y.
+					                        { rewrite Hzp. symmetry. exact Hyp. }
+					                        rewrite Hzy.
+					                        claim HyNotRem : y /:e (IntPts A :\: Sing y).
+					                        {
+					                          assume Hbad.
+					                          claim HyNotSing : y /:e Sing y.
+					                          { exact (setminusE2 (IntPts A) (Sing y) y Hbad). }
+					                          exact (HyNotSing (SingI y)).
+					                        }
+					                        exact (setminusI A (IntPts A :\: Sing y) y HyA HyNotRem).
+					                      }
+					                    - assume HzVr.
+					                      (** z comes from some Ny B with y∈B and B≠A0; either B=A or z=y **)
+					                      apply (UnionE FamYrest z HzVr).
+					                      let D.
+					                      assume HDpack.
+					                      claim HzD : z :e D.
+					                      { exact (andEL (z :e D) (D :e FamYrest) HDpack). }
+					                      claim HDin : D :e FamYrest.
+					                      { exact (andER (z :e D) (D :e FamYrest) HDpack). }
+					                      apply (ReplE ArcsYrest (fun A1:set => Ny A1) D HDin).
+					                      let B.
+					                      assume HBpair.
+					                      claim HBin : B :e ArcsYrest.
+					                      { exact (andEL (B :e ArcsYrest) (D = Ny B) HBpair). }
+					                      claim HDeq : D = Ny B.
+					                      { exact (andER (B :e ArcsYrest) (D = Ny B) HBpair). }
+					                      claim HzNyB : z :e Ny B.
+					                      { rewrite <- HDeq. exact HzD. }
+					                      claim HzB : z :e B.
+					                      { exact (setminusE1 B (IntPts B :\: Sing y) z HzNyB). }
+					                      apply xm (B = A).
+					                      * assume HBA. rewrite <- HBA. exact HzNyB.
+					                      * assume HBAneq : ~(B = A).
+					                        claim HneqBA : B <> A.
+					                        { exact HBAneq. }
+					                        claim HBArcsY : B :e ArcsY.
+					                        { exact (setminusE1 ArcsY (Sing A0) B HBin). }
+					                        claim HBArcs : B :e Arcs.
+					                        { exact (SepE1 Arcs (fun A2:set => y :e A2) B HBArcsY). }
+					                        claim HyB : y :e B.
+					                        { exact (SepE2 Arcs (fun A2:set => y :e A2) B HBArcsY). }
+					                        claim HinterAB :
+					                          exists p:set, (A :/\: B = Empty \/ A :/\: B = Sing p).
+						                        {
+						                          claim HneqAB : A <> B.
+						                          { exact (neq_i_sym B A HneqBA). }
+						                          exact (HinterDat A B HAArcs HBArcs HneqAB).
+						                        }
+					                        apply HinterAB.
+					                        let p.
+					                        assume Hcase.
+					                        apply Hcase.
+					                        { assume Hem.
+					                          claim HzE : z :e Empty.
+					                          { rewrite <- Hem. exact (binintersectI A B z HzA0 HzB). }
+					                          exact (FalseE (EmptyE z HzE False) (z :e Ny A)). }
+					                        { assume Hsing.
+					                          claim HySingp : y :e Sing p.
+					                          { rewrite <- Hsing. exact (binintersectI A B y HyA HyB). }
+					                          claim Hyp : y = p.
+					                          { exact (SingE p y HySingp). }
+					                          claim HzSingp : z :e Sing p.
+					                          { rewrite <- Hsing. exact (binintersectI A B z HzA0 HzB). }
+					                          claim Hzp : z = p.
+					                          { exact (SingE p z HzSingp). }
+					                          claim Hzy : z = y.
+					                          { rewrite Hzp. symmetry. exact Hyp. }
+					                          rewrite Hzy.
+					                          claim HyNotRem : y /:e (IntPts A :\: Sing y).
+					                          {
+					                            assume Hbad.
+					                            claim HyNotSing : y /:e Sing y.
+					                            { exact (setminusE2 (IntPts A) (Sing y) y Hbad). }
+					                            exact (HyNotSing (SingI y)).
+					                          }
+					                          exact (setminusI A (IntPts A :\: Sing y) y HyA HyNotRem).
+					                        }
+					                + let z.
+					                  assume HzNy.
+					                  claim HAyIn : A :e ArcsYrest.
+					                  {
+					                    claim HAy : A :e ArcsY.
+					                    { exact (SepI Arcs (fun A1:set => y :e A1) A HAArcs HyA). }
+					                    apply (setminusI ArcsY (Sing A0) A HAy).
+					                    assume HAinSing.
+					                    claim HAeq0 : A = A0.
+					                    { exact (SingE A0 A HAinSing). }
+					                    exact (HAneq HAeq0).
+					                  }
+					                  claim HNyIn : Ny A :e FamYrest.
+					                  { exact (ReplI ArcsYrest (fun A1:set => Ny A1) A HAyIn). }
+					                  claim HzVr : z :e Vrest.
+					                  { exact (UnionI FamYrest z (Ny A) HzNy HNyIn). }
+					                  claim HzV0 : z :e V.
+					                  { exact (binunionI2 Vy Vrest z HzVr). }
+					                  claim HzA0 : z :e A.
+					                  { exact (setminusE1 A (IntPts A :\: Sing y) z HzNy). }
+					                  exact (binintersectI V A z HzV0 HzA0).
+					                }
+					                rewrite HVAeq.
+					                claim HNdat : Ny A :e TA /\ y :e Ny A.
+					                { exact (Hneigh_open_in_arc A y HAArcs HyA). }
+					                exact (andEL (Ny A :e TA) (y :e Ny A) HNdat).
+					              + assume HyNotA : ~(y :e A).
+					                (** V∩A = Empty **)
+					                claim HVAEmpty : V :/\: A = Empty.
+					                {
+					                  apply Empty_Subq_eq.
+					                  let z.
+					                  assume HzVA.
+					                  claim HzV0 : z :e V.
+					                  { exact (binintersectE1 V A z HzVA). }
+					                  claim HzA0 : z :e A.
+					                  { exact (binintersectE2 V A z HzVA). }
+					                  apply (binunionE Vy Vrest z HzV0).
+					                  - assume HzVy.
+					                    claim HzNyA0 : z :e Ny A0.
+					                    { exact (binintersectE2 V0 (Ny A0) z HzVy). }
+					                    claim HzA00 : z :e A0.
+					                    { exact (setminusE1 A0 (IntPts A0 :\: Sing y) z HzNyA0). }
+					                    claim HinterAA0 :
+					                      exists p:set, (A :/\: A0 = Empty \/ A :/\: A0 = Sing p).
+					                    { exact (HinterDat A A0 HAArcs HA0Arcs HAneq). }
+					                    apply HinterAA0.
+					                    let p.
+					                    assume Hcase.
+					                    apply Hcase.
+					                    { assume Hem.
+					                      claim HzE : z :e Empty.
+					                      { rewrite <- Hem. exact (binintersectI A A0 z HzA0 HzA00). }
+					                      exact (EmptyE z HzE (z :e Empty)). }
+					                    { assume Hsing.
+					                      claim HzSingp : z :e Sing p.
+					                      { rewrite <- Hsing. exact (binintersectI A A0 z HzA0 HzA00). }
+					                      claim Hzp : z = p.
+					                      { exact (SingE p z HzSingp). }
+					                      claim HzNyA0 : z :e Ny A0.
+					                      { exact (binintersectE2 V0 (Ny A0) z HzVy). }
+					                      claim HzNotRem : z /:e (IntPts A0 :\: Sing y).
+					                      { exact (setminusE2 A0 (IntPts A0 :\: Sing y) z HzNyA0). }
+					                      (** z is an intersection point of A0 with A, hence in IntPts(A0). **)
+					                      claim HnotInSing : A /:e Sing A0.
+					                      {
+					                        assume HAin.
+					                        claim HAeq0 : A = A0.
+					                        { exact (SingE A0 A HAin). }
+					                        exact (HAneq HAeq0).
+					                      }
+					                      claim HAin0 : A :e (Arcs :\: Sing A0).
+					                      { exact (setminusI Arcs (Sing A0) A HAArcs HnotInSing). }
+					                      claim HzA0A : z :e A0 :/\: A.
+					                      { exact (binintersectI A0 A z HzA00 HzA0). }
+					                      claim HcapIn : (A0 :/\: A) :e IntFam A0.
+					                      { exact (ReplI (Arcs :\: Sing A0) (fun B0:set => A0 :/\: B0) A HAin0). }
+					                      claim HzInt : z :e IntPts A0.
+					                      { exact (UnionI (IntFam A0) z (A0 :/\: A) HzA0A HcapIn). }
+					                      apply (xm (z = y)).
+					                      - assume Hzy.
+					                        claim HyA1 : y :e A.
+					                        { rewrite <- Hzy. exact HzA0. }
+					                        exact (FalseE (HyNotA HyA1) (z :e Empty)).
+					                      - assume Hzneq : ~(z = y).
+					                        claim HzNotSing : z /:e Sing y.
+					                        {
+					                          assume HzSing.
+					                          claim Hzy : z = y.
+					                          { exact (SingE y z HzSing). }
+					                          exact (Hzneq Hzy).
+					                        }
+					                        claim HzRem : z :e IntPts A0 :\: Sing y.
+					                        { exact (setminusI (IntPts A0) (Sing y) z HzInt HzNotSing). }
+					                        exact (FalseE (HzNotRem HzRem) (z :e Empty)).
+					                    }
+					                  - assume HzVr.
+					                    apply (UnionE FamYrest z HzVr).
+					                    let D.
+					                    assume HDpack.
+					                    claim HzD : z :e D.
+					                    { exact (andEL (z :e D) (D :e FamYrest) HDpack). }
+					                    claim HDin : D :e FamYrest.
+					                    { exact (andER (z :e D) (D :e FamYrest) HDpack). }
+					                    apply (ReplE ArcsYrest (fun A1:set => Ny A1) D HDin).
+					                    let B.
+					                    assume HBpair.
+					                    claim HBin : B :e ArcsYrest.
+					                    { exact (andEL (B :e ArcsYrest) (D = Ny B) HBpair). }
+					                    claim HDeq : D = Ny B.
+					                    { exact (andER (B :e ArcsYrest) (D = Ny B) HBpair). }
+					                    claim HzNyB : z :e Ny B.
+					                    { rewrite <- HDeq. exact HzD. }
+					                    claim HzB : z :e B.
+					                    { exact (setminusE1 B (IntPts B :\: Sing y) z HzNyB). }
+					                    claim HBArcsY : B :e ArcsY.
+					                    { exact (setminusE1 ArcsY (Sing A0) B HBin). }
+					                    claim HBArcs : B :e Arcs.
+					                    { exact (SepE1 Arcs (fun A2:set => y :e A2) B HBArcsY). }
+					                    claim HyB : y :e B.
+					                    { exact (SepE2 Arcs (fun A2:set => y :e A2) B HBArcsY). }
+					                    claim HneqAB : A <> B.
+					                    {
+					                      assume Heq.
+					                      claim HyA1 : y :e A.
+					                      { rewrite Heq. exact HyB. }
+					                      exact (HyNotA HyA1).
+					                    }
+					                    claim HnotInSing : A /:e Sing B.
+					                    {
+					                      assume HAin.
+					                      claim HAeq : A = B.
+					                      { exact (SingE B A HAin). }
+					                      exact (HneqAB HAeq).
+					                    }
+					                    claim HAin0 : A :e (Arcs :\: Sing B).
+					                    { exact (setminusI Arcs (Sing B) A HAArcs HnotInSing). }
+					                    claim HzBA : z :e B :/\: A.
+					                    { exact (binintersectI B A z HzB HzA0). }
+					                    claim HcapIn : (B :/\: A) :e IntFam B.
+					                    { exact (ReplI (Arcs :\: Sing B) (fun C:set => B :/\: C) A HAin0). }
+					                    claim HzInt : z :e IntPts B.
+					                    { exact (UnionI (IntFam B) z (B :/\: A) HzBA HcapIn). }
+					                    apply (xm (z = y)).
+					                    - assume Hzy.
+					                      claim HyA1 : y :e A.
+					                      { rewrite <- Hzy. exact HzA0. }
+					                      exact (FalseE (HyNotA HyA1) (z :e Empty)).
+					                    - assume Hzneq : ~(z = y).
+					                      claim HzNotSing : z /:e Sing y.
+					                      {
+					                        assume HzSing.
+					                        claim Hzy : z = y.
+					                        { exact (SingE y z HzSing). }
+					                        exact (Hzneq Hzy).
+					                      }
+					                      claim HzRem : z :e IntPts B :\: Sing y.
+					                      { exact (setminusI (IntPts B) (Sing y) z HzInt HzNotSing). }
+					                      claim HzNotRem : z /:e (IntPts B :\: Sing y).
+					                      { exact (setminusE2 B (IntPts B :\: Sing y) z HzNyB). }
+					                      exact (FalseE (HzNotRem HzRem) (z :e Empty)).
+					                }
+					                rewrite HVAEmpty.
+					                exact (topology_has_empty A TA HtopA).
+					          }
+					          exact (coherence_open_backward V HVsubX HVArcsOpen).
+					        }
 				        (** Membership and disjointness. **)
 				        claim HxU : x :e U.
 				        { exact (binunionI1 Ux Urest x HxUx). }
-				        claim HyV : y :e V.
-				        { exact (binunionI1 Vy Vrest y HyVy). }
-				        claim HUVEmpty : U :/\: V = Empty.
-				        { admit. }
+					        claim HyV : y :e V.
+					        { exact (binunionI1 Vy Vrest y HyVy). }
+					        claim HUVEmpty : U :/\: V = Empty.
+				        {
+				          apply Empty_Subq_eq.
+				          let z.
+				          assume HzUV.
+				          claim HzU0 : z :e U.
+				          { exact (binintersectE1 U V z HzUV). }
+				          claim HzV0 : z :e V.
+				          { exact (binintersectE2 U V z HzUV). }
+				          apply (binunionE Ux Urest z HzU0).
+				          - assume HzUx.
+				            apply (binunionE Vy Vrest z HzV0).
+				            + assume HzVy.
+				              (** Ux⊆U0 and Vy⊆V0, but U0∩V0=Empty **)
+				              claim HzU00 : z :e U0.
+				              { exact (binintersectE1 U0 (Nx A0) z HzUx). }
+				              claim HzV00 : z :e V0.
+				              { exact (binintersectE1 V0 (Ny A0) z HzVy). }
+				              rewrite <- HU0V0Empty.
+				              exact (binintersectI U0 V0 z HzU00 HzV00).
+				            + assume HzVr.
+				              (** z lies in A0 (from Ux) and in some arc By containing y (from Vrest) **)
+				              claim HzU00 : z :e U0.
+				              { exact (binintersectE1 U0 (Nx A0) z HzUx). }
+				              claim HzNxA0 : z :e Nx A0.
+				              { exact (binintersectE2 U0 (Nx A0) z HzUx). }
+				              claim HzA00 : z :e A0.
+				              { exact (setminusE1 A0 (IntPts A0 :\: Sing x) z HzNxA0). }
+				              apply (UnionE FamYrest z HzVr).
+				              let D.
+				              assume HDpack.
+				              claim HzD : z :e D.
+				              { exact (andEL (z :e D) (D :e FamYrest) HDpack). }
+				              claim HDin : D :e FamYrest.
+				              { exact (andER (z :e D) (D :e FamYrest) HDpack). }
+				              apply (ReplE ArcsYrest (fun A1:set => Ny A1) D HDin).
+				              let By.
+				              assume HBypair.
+				              claim HByin : By :e ArcsYrest.
+				              { exact (andEL (By :e ArcsYrest) (D = Ny By) HBypair). }
+				              claim HDeq : D = Ny By.
+				              { exact (andER (By :e ArcsYrest) (D = Ny By) HBypair). }
+				              claim HzNyBy : z :e Ny By.
+				              { rewrite <- HDeq. exact HzD. }
+				              claim HzBy : z :e By.
+				              { exact (setminusE1 By (IntPts By :\: Sing y) z HzNyBy). }
+				              claim HByArcsY : By :e ArcsY.
+				              { exact (setminusE1 ArcsY (Sing A0) By HByin). }
+				              claim HByArcs : By :e Arcs.
+				              { exact (SepE1 Arcs (fun A2:set => y :e A2) By HByArcsY). }
+				              claim HyBy : y :e By.
+				              { exact (SepE2 Arcs (fun A2:set => y :e A2) By HByArcsY). }
+				              claim HneqByA0 : ~(By = A0).
+				              {
+				                assume Heq.
+				                claim HBySing : By :e Sing A0.
+				                { rewrite Heq. exact (SingI A0). }
+				                exact ((setminusE2 ArcsY (Sing A0) By HByin) HBySing).
+				              }
+				              claim HinterByA0 :
+				                exists p:set, (By :/\: A0 = Empty \/ By :/\: A0 = Sing p).
+				              { exact (HinterDat By A0 HByArcs HA0Arcs HneqByA0). }
+				              apply HinterByA0.
+				              let p.
+				              assume Hcase.
+				              apply Hcase.
+				              { assume Hem.
+				                claim HzE : z :e Empty.
+				                { rewrite <- Hem. exact (binintersectI By A0 z HzBy HzA00). }
+				                exact (FalseE (EmptyE z HzE False) (z :e Empty)). }
+				              { assume Hsing.
+				                claim HySingp : y :e Sing p.
+				                { rewrite <- Hsing. exact (binintersectI By A0 y HyBy HyA0). }
+				                claim Hyp : y = p.
+				                { exact (SingE p y HySingp). }
+				                claim HzSingp : z :e Sing p.
+				                { rewrite <- Hsing. exact (binintersectI By A0 z HzBy HzA00). }
+				                claim Hzp : z = p.
+				                { exact (SingE p z HzSingp). }
+				                claim Hzy : z = y.
+				                { rewrite Hzp. symmetry. exact Hyp. }
+				                claim HyNotU0 : y /:e U0.
+				                {
+				                  assume HyU0.
+				                  claim HyUV0 : y :e U0 :/\: V0.
+				                  { exact (binintersectI U0 V0 y HyU0 HyV0). }
+					                  claim HyE : y :e Empty.
+					                  { rewrite <- HU0V0Empty. exact HyUV0. }
+					                  exact (EmptyE y HyE False).
+					                }
+				                claim HzNotU0 : z /:e U0.
+				                { rewrite Hzy. exact HyNotU0. }
+				                exact (FalseE (HzNotU0 HzU00) (z :e Empty)).
+				              }
+				          - assume HzUr.
+				            apply (binunionE Vy Vrest z HzV0).
+				            + assume HzVy.
+				              (** z lies in A0 (from Vy) and in some arc Bx containing x (from Urest) **)
+				              claim HzV00 : z :e V0.
+				              { exact (binintersectE1 V0 (Ny A0) z HzVy). }
+				              claim HzNyA0 : z :e Ny A0.
+				              { exact (binintersectE2 V0 (Ny A0) z HzVy). }
+				              claim HzA00 : z :e A0.
+				              { exact (setminusE1 A0 (IntPts A0 :\: Sing y) z HzNyA0). }
+				              apply (UnionE FamXrest z HzUr).
+				              let D.
+				              assume HDpack.
+				              claim HzD : z :e D.
+				              { exact (andEL (z :e D) (D :e FamXrest) HDpack). }
+				              claim HDin : D :e FamXrest.
+				              { exact (andER (z :e D) (D :e FamXrest) HDpack). }
+				              apply (ReplE ArcsXrest (fun A1:set => Nx A1) D HDin).
+				              let Bx.
+				              assume HBxpair.
+				              claim HBxin : Bx :e ArcsXrest.
+				              { exact (andEL (Bx :e ArcsXrest) (D = Nx Bx) HBxpair). }
+				              claim HDeq : D = Nx Bx.
+				              { exact (andER (Bx :e ArcsXrest) (D = Nx Bx) HBxpair). }
+				              claim HzNxBx : z :e Nx Bx.
+				              { rewrite <- HDeq. exact HzD. }
+				              claim HzBx : z :e Bx.
+				              { exact (setminusE1 Bx (IntPts Bx :\: Sing x) z HzNxBx). }
+				              claim HBxArcsX : Bx :e ArcsX.
+				              { exact (setminusE1 ArcsX (Sing A0) Bx HBxin). }
+				              claim HBxArcs : Bx :e Arcs.
+				              { exact (SepE1 Arcs (fun A2:set => x :e A2) Bx HBxArcsX). }
+				              claim HxBx : x :e Bx.
+				              { exact (SepE2 Arcs (fun A2:set => x :e A2) Bx HBxArcsX). }
+				              claim HneqBxA0 : ~(Bx = A0).
+				              {
+				                assume Heq.
+				                claim HBxSing : Bx :e Sing A0.
+				                { rewrite Heq. exact (SingI A0). }
+				                exact ((setminusE2 ArcsX (Sing A0) Bx HBxin) HBxSing).
+				              }
+				              claim HinterBxA0 :
+				                exists p:set, (Bx :/\: A0 = Empty \/ Bx :/\: A0 = Sing p).
+				              { exact (HinterDat Bx A0 HBxArcs HA0Arcs HneqBxA0). }
+				              apply HinterBxA0.
+				              let p.
+				              assume Hcase.
+				              apply Hcase.
+				              { assume Hem.
+				                claim HxE : x :e Empty.
+				                { rewrite <- Hem. exact (binintersectI Bx A0 x HxBx HxA0). }
+				                exact (FalseE (EmptyE x HxE False) (z :e Empty)). }
+				              { assume Hsing.
+				                claim HxSingp : x :e Sing p.
+				                { rewrite <- Hsing. exact (binintersectI Bx A0 x HxBx HxA0). }
+				                claim Hxp : x = p.
+				                { exact (SingE p x HxSingp). }
+				                claim HzSingp : z :e Sing p.
+				                { rewrite <- Hsing. exact (binintersectI Bx A0 z HzBx HzA00). }
+				                claim Hzp : z = p.
+				                { exact (SingE p z HzSingp). }
+				                claim Hzx : z = x.
+				                { rewrite Hzp. symmetry. exact Hxp. }
+				                claim HxNotV0 : x /:e V0.
+				                {
+				                  assume HxV0.
+				                  claim HxUV0 : x :e U0 :/\: V0.
+				                  { exact (binintersectI U0 V0 x HxU0 HxV0). }
+					                  claim HxE : x :e Empty.
+					                  { rewrite <- HU0V0Empty. exact HxUV0. }
+					                  exact (EmptyE x HxE False).
+					                }
+				                claim HzNotV0 : z /:e V0.
+				                { rewrite Hzx. exact HxNotV0. }
+				                exact (FalseE (HzNotV0 HzV00) (z :e Empty)).
+				              }
+				            + assume HzVr.
+				              (** Both z∈Urest and z∈Vrest. **)
+				              apply (UnionE FamXrest z HzUr).
+				              let Du.
+				              assume HDupack.
+				              claim HzDu : z :e Du.
+				              { exact (andEL (z :e Du) (Du :e FamXrest) HDupack). }
+				              claim HDuin : Du :e FamXrest.
+				              { exact (andER (z :e Du) (Du :e FamXrest) HDupack). }
+				              apply (ReplE ArcsXrest (fun A1:set => Nx A1) Du HDuin).
+				              let Bx.
+				              assume HBxpair.
+				              claim HBxin : Bx :e ArcsXrest.
+				              { exact (andEL (Bx :e ArcsXrest) (Du = Nx Bx) HBxpair). }
+				              claim HDueq : Du = Nx Bx.
+				              { exact (andER (Bx :e ArcsXrest) (Du = Nx Bx) HBxpair). }
+				              claim HzNxBx : z :e Nx Bx.
+				              { rewrite <- HDueq. exact HzDu. }
+				              claim HzBx : z :e Bx.
+				              { exact (setminusE1 Bx (IntPts Bx :\: Sing x) z HzNxBx). }
+				              claim HBxArcsX : Bx :e ArcsX.
+				              { exact (setminusE1 ArcsX (Sing A0) Bx HBxin). }
+				              claim HBxArcs : Bx :e Arcs.
+				              { exact (SepE1 Arcs (fun A2:set => x :e A2) Bx HBxArcsX). }
+				              claim HxBx : x :e Bx.
+				              { exact (SepE2 Arcs (fun A2:set => x :e A2) Bx HBxArcsX). }
+				              apply (UnionE FamYrest z HzVr).
+				              let Dv.
+				              assume HDvpack.
+				              claim HzDv : z :e Dv.
+				              { exact (andEL (z :e Dv) (Dv :e FamYrest) HDvpack). }
+				              claim HDvin : Dv :e FamYrest.
+				              { exact (andER (z :e Dv) (Dv :e FamYrest) HDvpack). }
+				              apply (ReplE ArcsYrest (fun A1:set => Ny A1) Dv HDvin).
+				              let By.
+				              assume HBypair.
+				              claim HByin : By :e ArcsYrest.
+				              { exact (andEL (By :e ArcsYrest) (Dv = Ny By) HBypair). }
+				              claim HDveq : Dv = Ny By.
+				              { exact (andER (By :e ArcsYrest) (Dv = Ny By) HBypair). }
+				              claim HzNyBy : z :e Ny By.
+				              { rewrite <- HDveq. exact HzDv. }
+				              claim HzBy : z :e By.
+				              { exact (setminusE1 By (IntPts By :\: Sing y) z HzNyBy). }
+				              claim HByArcsY : By :e ArcsY.
+				              { exact (setminusE1 ArcsY (Sing A0) By HByin). }
+				              claim HByArcs : By :e Arcs.
+				              { exact (SepE1 Arcs (fun A2:set => y :e A2) By HByArcsY). }
+				              claim HyBy : y :e By.
+				              { exact (SepE2 Arcs (fun A2:set => y :e A2) By HByArcsY). }
+				              apply xm (Bx = By).
+				              * assume Heq.
+				                claim HyBx : y :e Bx.
+				                { rewrite Heq. exact HyBy. }
+				                claim HBxA0 : Bx = A0.
+				                { exact (Hunique Bx HBxArcs HxBx HyBx). }
+				                claim HBxNot : Bx /:e Sing A0.
+				                {
+				                  assume Hbad.
+				                  claim HBxEq0 : Bx = A0.
+				                  { exact (SingE A0 Bx Hbad). }
+				                  exact ((setminusE2 ArcsX (Sing A0) Bx HBxin) (eq_subst_mem Bx A0 (Sing A0) HBxEq0 (SingI A0))).
+				                }
+				                claim HBxSing : Bx :e Sing A0.
+				                { rewrite HBxA0. exact (SingI A0). }
+				                exact (FalseE (HBxNot HBxSing) (z :e Empty)).
+				              * assume Hneq : ~(Bx = By).
+				                (** z is an intersection point of Bx, hence z=x, forcing By=A0 (contradiction). **)
+				                claim HnotInSing : By /:e Sing Bx.
+				                {
+				                  assume HBySing.
+				                  claim HByEq : By = Bx.
+				                  { exact (SingE Bx By HBySing). }
+				                  claim HBxEq : Bx = By.
+				                  { symmetry. exact HByEq. }
+				                  exact (Hneq HBxEq).
+				                }
+				                claim HByin0 : By :e (Arcs :\: Sing Bx).
+				                { exact (setminusI Arcs (Sing Bx) By HByArcs HnotInSing). }
+				                claim HzBxBy : z :e Bx :/\: By.
+				                { exact (binintersectI Bx By z HzBx HzBy). }
+				                claim HcapIn : (Bx :/\: By) :e IntFam Bx.
+				                { exact (ReplI (Arcs :\: Sing Bx) (fun C:set => Bx :/\: C) By HByin0). }
+					                claim HzInt : z :e IntPts Bx.
+					                { exact (UnionI (IntFam Bx) z (Bx :/\: By) HzBxBy HcapIn). }
+					                apply (xm (z = x)).
+					                - assume Hzx.
+					                   claim HxBy : x :e By.
+					                   { rewrite <- Hzx. exact HzBy. }
+					                   claim HByA0 : By = A0.
+				                   { exact (Hunique By HByArcs HxBy HyBy). }
+				                   claim HByNot : By /:e Sing A0.
+				                   {
+				                     assume Hbad.
+				                     claim HByEq0 : By = A0.
+				                     { exact (SingE A0 By Hbad). }
+				                     exact ((setminusE2 ArcsY (Sing A0) By HByin) (eq_subst_mem By A0 (Sing A0) HByEq0 (SingI A0))).
+				                   }
+					                   claim HBySing : By :e Sing A0.
+					                   { rewrite HByA0. exact (SingI A0). }
+					                   exact (FalseE (HByNot HBySing) (z :e Empty)).
+					                - assume Hzneq : ~(z = x).
+					                   claim HzNotSing : z /:e Sing x.
+					                   {
+					                     assume HzSing.
+				                     claim Hzx : z = x.
+				                     { exact (SingE x z HzSing). }
+				                     exact (Hzneq Hzx).
+				                   }
+				                   claim HzRem : z :e IntPts Bx :\: Sing x.
+				                   { exact (setminusI (IntPts Bx) (Sing x) z HzInt HzNotSing). }
+				                   claim HzNotRem : z /:e (IntPts Bx :\: Sing x).
+				                   { exact (setminusE2 Bx (IntPts Bx :\: Sing x) z HzNxBx). }
+				                   exact (FalseE (HzNotRem HzRem) (z :e Empty)).
+				        }
 				        witness U.
 				        witness V.
 				        claim HUV0 : (U :e Tx /\ V :e Tx).
@@ -179532,9 +180289,9 @@ apply iffI.
 		        exists U V : set , U :e Tx /\ V :e Tx /\ x1 :e U /\ x2 :e V /\ U :/\: V = Empty)
 		      HtopX
 		      Hsep).
-		  }
-			  exact HHausX2.
-		Admitted.
+			  }
+				  exact HHausX2.
+		Qed.
 
 (** from S64 Exercise 1(b) (line 2367 in algtop.tex) **)
 (** LATEX VERSION: Give an example to show that X (union of finitely many **)
