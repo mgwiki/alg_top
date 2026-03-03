@@ -177509,7 +177509,191 @@ Theorem ex64_1a_hausdorff_iff_arcs_closed : forall X Tx Arcs:set,
     exists p:set, (A :/\: B = Empty \/ A :/\: B = Sing p)) ->
   (Hausdorff_space X Tx <->
     (forall A:set, A :e Arcs -> X :\: A :e Tx)).
-admit.
+let X Tx Arcs.
+assume HtopX HfinArcs HUnion HarcDat HinterDat.
+apply iffI.
+- assume HHausX.
+  let A.
+  assume HAArcs.
+  claim HAdat : A c= X /\ arc A (subspace_topology X Tx A).
+  {
+    exact (HarcDat A HAArcs).
+  }
+  claim HAsubX : A c= X.
+  { exact (andEL (A c= X) (arc A (subspace_topology X Tx A)) HAdat). }
+  claim HarcA : arc A (subspace_topology X Tx A).
+  { exact (andER (A c= X) (arc A (subspace_topology X Tx A)) HAdat). }
+  set TA := subspace_topology X Tx A.
+  claim HtopA : topology_on A TA.
+  {
+    exact (subspace_topology_is_topology
+      X Tx A HtopX HAsubX).
+  }
+  claim HcompA : compact_space A TA.
+  {
+    apply HarcA.
+    let f.
+    assume Hhome.
+    claim Hcontf : continuous_map unit_interval unit_interval_topology A TA f.
+    {
+      exact (andEL
+        (continuous_map unit_interval unit_interval_topology A TA f)
+        (exists g : set , continuous_map A TA unit_interval unit_interval_topology g /\
+          (forall x0 : set , x0 :e unit_interval -> apply_fun g (apply_fun f x0) = x0) /\
+          (forall y0 : set , y0 :e A -> apply_fun f (apply_fun g y0) = y0))
+        Hhome).
+    }
+    claim Hexg :
+      exists g : set , continuous_map A TA unit_interval unit_interval_topology g /\
+        (forall x0 : set , x0 :e unit_interval -> apply_fun g (apply_fun f x0) = x0) /\
+        (forall y0 : set , y0 :e A -> apply_fun f (apply_fun g y0) = y0).
+    {
+      exact (andER
+        (continuous_map unit_interval unit_interval_topology A TA f)
+        (exists g : set , continuous_map A TA unit_interval unit_interval_topology g /\
+          (forall x0 : set , x0 :e unit_interval -> apply_fun g (apply_fun f x0) = x0) /\
+          (forall y0 : set , y0 :e A -> apply_fun f (apply_fun g y0) = y0))
+        Hhome).
+    }
+    apply Hexg.
+    let g.
+    assume Hgdat.
+    claim Hcontg_pack :
+      continuous_map A TA unit_interval unit_interval_topology g /\
+      (forall x0 : set , x0 :e unit_interval -> apply_fun g (apply_fun f x0) = x0).
+    {
+      exact (andEL
+        (continuous_map A TA unit_interval unit_interval_topology g /\
+         (forall x0 : set , x0 :e unit_interval -> apply_fun g (apply_fun f x0) = x0))
+        (forall y0 : set , y0 :e A -> apply_fun f (apply_fun g y0) = y0)
+        Hgdat).
+    }
+    claim Hcontg : continuous_map A TA unit_interval unit_interval_topology g.
+    {
+      exact (andEL
+        (continuous_map A TA unit_interval unit_interval_topology g)
+        (forall x0 : set , x0 :e unit_interval -> apply_fun g (apply_fun f x0) = x0)
+        Hcontg_pack).
+    }
+    claim Hfg_id : forall y0 : set , y0 :e A -> apply_fun f (apply_fun g y0) = y0.
+    {
+      exact (andER
+        (continuous_map A TA unit_interval unit_interval_topology g /\
+         (forall x0 : set , x0 :e unit_interval -> apply_fun g (apply_fun f x0) = x0))
+        (forall y0 : set , y0 :e A -> apply_fun f (apply_fun g y0) = y0)
+        Hgdat).
+    }
+    claim HgFun : function_on g A unit_interval.
+    {
+      apply (and4E
+        (topology_on A TA)
+        (topology_on unit_interval unit_interval_topology)
+        (function_on g A unit_interval)
+        (forall V : set , V :e unit_interval_topology -> preimage_of A g V :e TA)
+        Hcontg).
+      assume _ _ Hfun _.
+      exact Hfun.
+    }
+    claim HimgEq : image_of_fun f unit_interval = A.
+    {
+      apply set_ext.
+      - let y0.
+        assume HyImg.
+        claim HfFun : function_on f unit_interval A.
+        {
+          apply (and4E
+            (topology_on unit_interval unit_interval_topology)
+            (topology_on A TA)
+            (function_on f unit_interval A)
+            (forall V : set , V :e TA -> preimage_of unit_interval f V :e unit_interval_topology)
+            Hcontf).
+          assume _ _ Hfun _.
+          exact Hfun.
+        }
+        exact ((image_of_sub_codomain
+          f
+          unit_interval
+          A
+          unit_interval
+          HfFun
+          (Subq_ref unit_interval))
+          y0
+          HyImg).
+      - let y0.
+        assume HyA.
+        claim HyEq : apply_fun f (apply_fun g y0) = y0.
+        { exact (Hfg_id y0 HyA). }
+        claim HgIn : (apply_fun g y0) :e unit_interval.
+        { exact (HgFun y0 HyA). }
+        rewrite <- HyEq.
+        exact (ReplI
+          unit_interval
+          (fun t:set => apply_fun f t)
+          (apply_fun g y0)
+          HgIn).
+    }
+    claim HcontfX : continuous_map unit_interval unit_interval_topology X Tx f.
+    {
+      exact (continuous_map_range_expand
+        unit_interval
+        unit_interval_topology
+        A
+        TA
+        X
+        Tx
+        f
+        Hcontf
+        HAsubX
+        HtopX
+        (eq_refl TA)).
+    }
+    claim HimgCompX :
+      compact_space (image_of_fun f unit_interval)
+        (subspace_topology X Tx (image_of_fun f unit_interval)).
+    {
+      exact (continuous_image_compact
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        f
+        unit_interval_compact_axiom
+        HcontfX).
+    }
+    claim HcompA2 : compact_space A TA.
+    {
+      rewrite <- HimgEq.
+      exact HimgCompX.
+    }
+    exact HcompA2.
+  }
+  claim HclosedA : closed_in X Tx A.
+  {
+    exact (Hausdorff_compact_sets_closed
+      X Tx A
+      HHausX
+      HAsubX
+      HcompA).
+  }
+  apply (closed_in_exists_open_complement X Tx A HclosedA).
+  let U.
+  assume HUpack.
+  claim HUopen : U :e Tx.
+  { exact (andEL (U :e Tx) (A = X :\: U) HUpack). }
+  claim HAeq : A = X :\: U.
+  { exact (andER (U :e Tx) (A = X :\: U) HUpack). }
+  rewrite HAeq.
+  claim HUsubX : U c= X.
+  {
+    exact (PowerE
+      X
+      U
+      (topology_subset_axiom X Tx HtopX U HUopen)).
+  }
+  rewrite (setminus_setminus_eq X U HUsubX).
+  exact HUopen.
+- assume HarcsClosed.
+  admit.
 Admitted.
 
 (** from S64 Exercise 1(b) (line 2367 in algtop.tex) **)
