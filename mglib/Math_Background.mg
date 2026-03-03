@@ -180423,6 +180423,53 @@ claim HCsubX : C c= X.
   }
   exact (setminusI (Sn 2) (Sing p :\/: Sing q) z HzSn HzNot).
 }
+(** Basic topological setup for later: X is a subspace of S^2; and Jordan provides
+    two complementary components W1,W2 of Y = S^2 \\ C with boundary C. **)
+claim HtopSn2 : topology_on (Sn 2) (Sn_topology 2).
+{ exact (lemma59_3_Sn_topology_on 2). }
+claim HXsubSn : X c= Sn 2.
+{
+  let z.
+  assume HzX.
+  exact (setminusE1 (Sn 2) (Sing p :\/: Sing q) z HzX).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (subspace_topology_is_topology
+    (Sn 2)
+    (Sn_topology 2)
+    X
+    HtopSn2
+    HXsubSn).
+}
+set Y := Sn 2 :\: C.
+set Ty := subspace_topology (Sn 2) (Sn_topology 2) Y.
+claim HpY : p :e Y.
+{ exact HpSnC. }
+claim HqY : q :e Y.
+{ exact HqSnC. }
+claim HsimpleSn :
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
+{
+  rewrite <- HTc.
+  exact Hsimple.
+}
+claim Hjordan :
+  exists W1 W2:set,
+    W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+    W1 :/\: W2 = Empty /\
+    Sn 2 :\: C = W1 :\/: W2 /\
+    W1 <> Empty /\ W2 <> Empty /\
+    connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+    connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) /\
+    closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C /\
+    closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C.
+{
+  exact (thm63_4_jordan_curve_theorem
+    C
+    HCsubSn
+    HsimpleSn).
+}
 (** TODO: build the actual deformation retract homotopy using the Jordan curve theorem. **)
 prove deformation_retract X Tx C.
 claim Hdeform0 :
