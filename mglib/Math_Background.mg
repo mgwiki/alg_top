@@ -181308,7 +181308,23 @@ claim HUV_as_Ws : (U = W1 /\ V = W2) \/ (U = W2 /\ V = W1).
 }
 (** TODO: use boundary identities Hbd1/Hbd2 to show C is the common boundary and build a deformation retract. **)
 claim Hdeform : deformation_retract X Tx C.
-{ admit. }
+{
+  (** Package the easy part (C c= X) explicitly; the homotopy H remains to be built. **)
+  claim Hdeform0 :
+    C c= X /\
+    exists H:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+      (forall x:set, x :e X -> apply_fun H (x, 0) = x) /\
+      (forall x:set, x :e X -> apply_fun H (x, 1) :e C) /\
+      (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H (a, t) = a).
+  {
+    apply andI.
+    - exact HCsubX.
+    - admit.
+  }
+  exact Hdeform0.
+}
 rewrite HTcX.
 exact (thm58_3_deformation_retract_isomorphism
   X Tx C x0 HtopX Hdeform Hx0C).
