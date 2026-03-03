@@ -226038,6 +226038,321 @@ claim Hn_eq1 : n = 1.
 exact (Hn_ne1 Hn_eq1).
 Qed.
 
+(** Infrastructure: in a binary free product, a nontrivial cross-factor product is not in either factor **)
+(** Proven Charlie **)
+Lemma free_product_binary_mult_cross_not_in_left_factor :
+  forall G mult e inv G1 G2 a b:set,
+  subgroup_of G1 G mult e inv ->
+  subgroup_of G2 G mult e inv ->
+  free_product_of_subgroups G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e)) ->
+  a :e G1 -> a <> e ->
+  b :e G2 -> b <> e ->
+  apply_fun mult (a, b) /:e G1.
+let G mult e inv G1 G2 a b.
+assume Hsub1 Hsub2 Hfp HaG1 Hane HbG2 Hbne.
+set Gfam := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
+set efam := graph (UPair 0 1) (fun _:set => e).
+set xs := graph 2 (fun i:set => If_i (i = 0) a b).
+claim Hgrp : group_structure G mult e inv.
+{
+  apply (and5E
+    (group_structure G mult e inv)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      subgroup_of (apply_fun Gfam alpha) G mult e inv)
+    (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+      forall y:set, y :e apply_fun Gfam alpha -> y :e apply_fun Gfam beta -> y = e)
+    (subgroups_generate G mult e inv (UPair 0 1) Gfam)
+    (forall y:set, y :e G -> y <> e ->
+      exists n xs0:set,
+        reduced_word (UPair 0 1) Gfam efam n xs0 /\ n <> 0 /\
+        word_product mult e xs0 n = y /\
+        (forall n' xs':set,
+          reduced_word (UPair 0 1) Gfam efam n' xs' -> n' <> 0 ->
+          word_product mult e xs' n' = y ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp).
+  assume Hgrp _ _ _ _. exact Hgrp.
+}
+claim Hdisjoint :
+  forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+    forall y:set, y :e apply_fun Gfam alpha -> y :e apply_fun Gfam beta -> y = e.
+{
+  apply (and5E
+    (group_structure G mult e inv)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      subgroup_of (apply_fun Gfam alpha) G mult e inv)
+    (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+      forall y:set, y :e apply_fun Gfam alpha -> y :e apply_fun Gfam beta -> y = e)
+    (subgroups_generate G mult e inv (UPair 0 1) Gfam)
+    (forall y:set, y :e G -> y <> e ->
+      exists n xs0:set,
+        reduced_word (UPair 0 1) Gfam efam n xs0 /\ n <> 0 /\
+        word_product mult e xs0 n = y /\
+        (forall n' xs':set,
+          reduced_word (UPair 0 1) Gfam efam n' xs' -> n' <> 0 ->
+          word_product mult e xs' n' = y ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp).
+  assume _ _ Hdisjoint _ _. exact Hdisjoint.
+}
+claim HGfam0 : apply_fun Gfam 0 = G1.
+{
+  rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)).
+  rewrite (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+  reflexivity.
+}
+claim HGfam1 : apply_fun Gfam 1 = G2.
+{
+  rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)).
+  rewrite (If_i_0 (1 = 0) G1 G2 neq_1_0).
+  reflexivity.
+}
+claim HaGfam0 : a :e apply_fun Gfam 0.
+{ rewrite HGfam0. exact HaG1. }
+claim HbGfam1 : b :e apply_fun Gfam 1.
+{ rewrite HGfam1. exact HbG2. }
+claim Hred_xs : reduced_word (UPair 0 1) Gfam efam 2 xs.
+{
+  apply (reduced_word_two_graph_disjoint
+    G mult e inv (UPair 0 1) Gfam efam 0 1 a b).
+  - exact Hdisjoint.
+  - exact (UPairI1 0 1).
+  - exact (UPairI2 0 1).
+  - exact neq_0_1.
+  - exact HaGfam0.
+  - exact Hane.
+  - rewrite (apply_fun_graph (UPair 0 1) (fun _:set => e) 0 (UPairI1 0 1)).
+    exact Hane.
+  - exact HbGfam1.
+  - exact Hbne.
+  - rewrite (apply_fun_graph (UPair 0 1) (fun _:set => e) 1 (UPairI2 0 1)).
+    exact Hbne.
+}
+claim HxsG : forall i:set, i :e 2 -> apply_fun xs i :e G.
+{
+  let i. assume Hi.
+  apply (cases_2 i Hi (fun j:set => apply_fun xs j :e G)).
+  - claim Hx0 : apply_fun xs 0 = a.
+    {
+      rewrite (apply_fun_graph 2 (fun i0:set => If_i (i0 = 0) a b) 0 In_0_2).
+      rewrite (If_i_1 (0 = 0) a b (eq_refl 0)).
+      reflexivity.
+    }
+    claim HaG : a :e G.
+    { exact (subgroup_of_subset G1 G mult e inv Hsub1 a HaG1). }
+    exact (eq_subst_mem (apply_fun xs 0) a G Hx0 HaG).
+  - claim Hx1 : apply_fun xs 1 = b.
+    {
+      rewrite (apply_fun_graph 2 (fun i0:set => If_i (i0 = 0) a b) 1 In_1_2).
+      rewrite (If_i_0 (1 = 0) a b neq_1_0).
+      reflexivity.
+    }
+    claim HbG : b :e G.
+    { exact (subgroup_of_subset G2 G mult e inv Hsub2 b HbG2). }
+    exact (eq_subst_mem (apply_fun xs 1) b G Hx1 HbG).
+}
+claim Hwp2 : word_product mult e xs 2 = apply_fun mult (a, b).
+{
+  claim Hprod : word_product mult e xs 2 = apply_fun mult (apply_fun xs 0, apply_fun xs 1).
+  { exact (word_product_two_group G mult e inv xs Hgrp HxsG). }
+  claim Hx0 : apply_fun xs 0 = a.
+  {
+    rewrite (apply_fun_graph 2 (fun i0:set => If_i (i0 = 0) a b) 0 In_0_2).
+    rewrite (If_i_1 (0 = 0) a b (eq_refl 0)).
+    reflexivity.
+  }
+  claim Hx1 : apply_fun xs 1 = b.
+  {
+    rewrite (apply_fun_graph 2 (fun i0:set => If_i (i0 = 0) a b) 1 In_1_2).
+    rewrite (If_i_0 (1 = 0) a b neq_1_0).
+    reflexivity.
+  }
+  rewrite Hprod.
+  rewrite Hx0.
+  rewrite Hx1.
+  reflexivity.
+}
+claim H2_ne1 : 2 <> 1.
+{
+  assume H21.
+  claim Hs : ordsucc 1 = ordsucc 0.
+  { rewrite <- ordsucc_1_eq_2_nat. rewrite <- ordsucc_0_eq_1_nat. exact H21. }
+  exact (neq_1_0 (ordsucc_inj 1 0 Hs)).
+}
+claim Hab_notin : word_product mult e xs 2 /:e G1.
+{
+  exact (free_product_binary_reduced_word_length_ge2_not_in_left_factor
+    G mult e inv G1 G2 2 xs
+    Hsub1
+    Hsub2
+    Hfp
+    Hred_xs
+    neq_2_0
+    H2_ne1).
+}
+rewrite <- Hwp2.
+exact Hab_notin.
+Qed.
+
+(** Proven Charlie **)
+Lemma free_product_binary_mult_cross_not_in_right_factor :
+  forall G mult e inv G1 G2 a b:set,
+  subgroup_of G1 G mult e inv ->
+  subgroup_of G2 G mult e inv ->
+  free_product_of_subgroups G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e)) ->
+  a :e G1 -> a <> e ->
+  b :e G2 -> b <> e ->
+  apply_fun mult (a, b) /:e G2.
+let G mult e inv G1 G2 a b.
+assume Hsub1 Hsub2 Hfp HaG1 Hane HbG2 Hbne.
+set Gfam := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
+set efam := graph (UPair 0 1) (fun _:set => e).
+set xs := graph 2 (fun i:set => If_i (i = 0) a b).
+claim Hgrp : group_structure G mult e inv.
+{
+  apply (and5E
+    (group_structure G mult e inv)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      subgroup_of (apply_fun Gfam alpha) G mult e inv)
+    (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+      forall y:set, y :e apply_fun Gfam alpha -> y :e apply_fun Gfam beta -> y = e)
+    (subgroups_generate G mult e inv (UPair 0 1) Gfam)
+    (forall y:set, y :e G -> y <> e ->
+      exists n xs0:set,
+        reduced_word (UPair 0 1) Gfam efam n xs0 /\ n <> 0 /\
+        word_product mult e xs0 n = y /\
+        (forall n' xs':set,
+          reduced_word (UPair 0 1) Gfam efam n' xs' -> n' <> 0 ->
+          word_product mult e xs' n' = y ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp).
+  assume Hgrp _ _ _ _. exact Hgrp.
+}
+claim Hdisjoint :
+  forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+    forall y:set, y :e apply_fun Gfam alpha -> y :e apply_fun Gfam beta -> y = e.
+{
+  apply (and5E
+    (group_structure G mult e inv)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      subgroup_of (apply_fun Gfam alpha) G mult e inv)
+    (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+      forall y:set, y :e apply_fun Gfam alpha -> y :e apply_fun Gfam beta -> y = e)
+    (subgroups_generate G mult e inv (UPair 0 1) Gfam)
+    (forall y:set, y :e G -> y <> e ->
+      exists n xs0:set,
+        reduced_word (UPair 0 1) Gfam efam n xs0 /\ n <> 0 /\
+        word_product mult e xs0 n = y /\
+        (forall n' xs':set,
+          reduced_word (UPair 0 1) Gfam efam n' xs' -> n' <> 0 ->
+          word_product mult e xs' n' = y ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp).
+  assume _ _ Hdisjoint _ _. exact Hdisjoint.
+}
+claim HGfam0 : apply_fun Gfam 0 = G1.
+{
+  rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)).
+  rewrite (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+  reflexivity.
+}
+claim HGfam1 : apply_fun Gfam 1 = G2.
+{
+  rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)).
+  rewrite (If_i_0 (1 = 0) G1 G2 neq_1_0).
+  reflexivity.
+}
+claim HaGfam0 : a :e apply_fun Gfam 0.
+{ rewrite HGfam0. exact HaG1. }
+claim HbGfam1 : b :e apply_fun Gfam 1.
+{ rewrite HGfam1. exact HbG2. }
+claim Hred_xs : reduced_word (UPair 0 1) Gfam efam 2 xs.
+{
+  apply (reduced_word_two_graph_disjoint
+    G mult e inv (UPair 0 1) Gfam efam 0 1 a b).
+  - exact Hdisjoint.
+  - exact (UPairI1 0 1).
+  - exact (UPairI2 0 1).
+  - exact neq_0_1.
+  - exact HaGfam0.
+  - exact Hane.
+  - rewrite (apply_fun_graph (UPair 0 1) (fun _:set => e) 0 (UPairI1 0 1)).
+    exact Hane.
+  - exact HbGfam1.
+  - exact Hbne.
+  - rewrite (apply_fun_graph (UPair 0 1) (fun _:set => e) 1 (UPairI2 0 1)).
+    exact Hbne.
+}
+claim HxsG : forall i:set, i :e 2 -> apply_fun xs i :e G.
+{
+  let i. assume Hi.
+  apply (cases_2 i Hi (fun j:set => apply_fun xs j :e G)).
+  - claim Hx0 : apply_fun xs 0 = a.
+    {
+      rewrite (apply_fun_graph 2 (fun i0:set => If_i (i0 = 0) a b) 0 In_0_2).
+      rewrite (If_i_1 (0 = 0) a b (eq_refl 0)).
+      reflexivity.
+    }
+    claim HaG : a :e G.
+    { exact (subgroup_of_subset G1 G mult e inv Hsub1 a HaG1). }
+    exact (eq_subst_mem (apply_fun xs 0) a G Hx0 HaG).
+  - claim Hx1 : apply_fun xs 1 = b.
+    {
+      rewrite (apply_fun_graph 2 (fun i0:set => If_i (i0 = 0) a b) 1 In_1_2).
+      rewrite (If_i_0 (1 = 0) a b neq_1_0).
+      reflexivity.
+    }
+    claim HbG : b :e G.
+    { exact (subgroup_of_subset G2 G mult e inv Hsub2 b HbG2). }
+    exact (eq_subst_mem (apply_fun xs 1) b G Hx1 HbG).
+}
+claim Hwp2 : word_product mult e xs 2 = apply_fun mult (a, b).
+{
+  claim Hprod : word_product mult e xs 2 = apply_fun mult (apply_fun xs 0, apply_fun xs 1).
+  { exact (word_product_two_group G mult e inv xs Hgrp HxsG). }
+  claim Hx0 : apply_fun xs 0 = a.
+  {
+    rewrite (apply_fun_graph 2 (fun i0:set => If_i (i0 = 0) a b) 0 In_0_2).
+    rewrite (If_i_1 (0 = 0) a b (eq_refl 0)).
+    reflexivity.
+  }
+  claim Hx1 : apply_fun xs 1 = b.
+  {
+    rewrite (apply_fun_graph 2 (fun i0:set => If_i (i0 = 0) a b) 1 In_1_2).
+    rewrite (If_i_0 (1 = 0) a b neq_1_0).
+    reflexivity.
+  }
+  rewrite Hprod.
+  rewrite Hx0.
+  rewrite Hx1.
+  reflexivity.
+}
+claim H2_ne1 : 2 <> 1.
+{
+  assume H21.
+  claim Hs : ordsucc 1 = ordsucc 0.
+  { rewrite <- ordsucc_1_eq_2_nat. rewrite <- ordsucc_0_eq_1_nat. exact H21. }
+  exact (neq_1_0 (ordsucc_inj 1 0 Hs)).
+}
+claim Hab_notin : word_product mult e xs 2 /:e G2.
+{
+  exact (free_product_binary_reduced_word_length_ge2_not_in_right_factor
+    G mult e inv G1 G2 2 xs
+    Hsub1
+    Hsub2
+    Hfp
+    Hred_xs
+    neq_2_0
+    H2_ne1).
+}
+rewrite <- Hwp2.
+exact Hab_notin.
+Qed.
+
 (** Helper bounties (correct-strength versions: also assume Hfp1/Hfp2 on G1 and G2) **)
 (** Bounty 50 **)
 Theorem cor68_6_side_from_product_G1_ge3_full :
