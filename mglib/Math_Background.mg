@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 1901 **)
+(** Balance Charlie 1871 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -180518,7 +180518,8 @@ Admitted.
 (** (lines 2370-2481 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** Bounty 300 **)
+(** Bounty 330 **)
+(** Lock Charlie 1772619208 **)
 Theorem lemma65_2_side_homotopies_exist : forall C Tc p q:set,
   C c= Sn 2 -> is_simple_closed_curve C Tc ->
   Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
