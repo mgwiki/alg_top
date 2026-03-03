@@ -313167,6 +313167,32 @@ rewrite <- Heq.
 exact Hconn.
 Qed.
 
+(** helper for S84.3: Hausdorff_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem Hausdorff_space_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  Hausdorff_space X T1 ->
+  Hausdorff_space X T2.
+let X T1 T2.
+assume Heq Hhaus.
+rewrite <- Heq.
+exact Hhaus.
+Qed.
+
+(** helper for S84.3: second_countable_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem second_countable_space_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  second_countable_space X T1 ->
+  second_countable_space X T2.
+let X T1 T2.
+assume Heq Hsc.
+rewrite <- Heq.
+exact Hsc.
+Qed.
+
 (** helper for S84.3: path_connected_space is invariant under definitional equality of topologies. **)
 (** Proven Bob **)
 Theorem path_connected_space_topology_eq_transport :
@@ -313217,6 +313243,32 @@ let X T1 T2.
 assume Heq Hconn.
 rewrite <- Heq.
 exact Hconn.
+Qed.
+
+(** helper for S84.3: Hausdorff_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem Hausdorff_space_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  Hausdorff_space X T1 ->
+  Hausdorff_space X T2.
+let X T1 T2.
+assume Heq Hhaus.
+rewrite <- Heq.
+exact Hhaus.
+Qed.
+
+(** helper for S84.3: second_countable_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem second_countable_space_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  second_countable_space X T1 ->
+  second_countable_space X T2.
+let X T1 T2.
+assume Heq Hsc.
+rewrite <- Heq.
+exact Hsc.
 Qed.
 
 (** helper for S84.3: path_connected_space is invariant under definitional equality of topologies. **)
