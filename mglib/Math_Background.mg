@@ -225610,6 +225610,133 @@ Theorem cor68_6_side_from_product_G2_ge3 :
 admit.
 Admitted.
 
+(** Infrastructure: in a binary free product, an element of the left factor has reduced word length 1 **)
+(** Proven Charlie **)
+Theorem free_product_binary_left_factor_length1 : forall G mult e inv G1 G2 x n xs:set,
+  subgroup_of G1 G mult e inv ->
+  free_product_of_subgroups G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e)) ->
+  x :e G1 -> x <> e ->
+  reduced_word (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e))
+    n xs ->
+  n <> 0 ->
+  word_product mult e xs n = x ->
+  n = 1.
+let G mult e inv G1 G2 x n xs.
+assume Hsub1 : subgroup_of G1 G mult e inv.
+assume Hfp : free_product_of_subgroups G mult e inv (UPair 0 1)
+  (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+  (graph (UPair 0 1) (fun _:set => e)).
+assume HxG1 : x :e G1.
+assume Hxne : x <> e.
+assume Hred : reduced_word (UPair 0 1)
+  (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+  (graph (UPair 0 1) (fun _:set => e))
+  n xs.
+assume Hn_ne0 : n <> 0.
+assume Hwp : word_product mult e xs n = x.
+apply (and5E
+  (group_structure G mult e inv)
+  (forall alpha:set, alpha :e (UPair 0 1) ->
+    subgroup_of (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha) G mult e inv)
+  (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+    forall y:set,
+      y :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha ->
+      y :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) beta ->
+      y = e)
+  (subgroups_generate G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)))
+  (forall y:set, y :e G -> y <> e ->
+    exists n0 xs0:set,
+      reduced_word (UPair 0 1)
+        (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+        (graph (UPair 0 1) (fun _:set => e))
+        n0 xs0 /\ n0 <> 0 /\
+      word_product mult e xs0 n0 = y /\
+      (forall n' xs':set,
+        reduced_word (UPair 0 1)
+          (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+          (graph (UPair 0 1) (fun _:set => e))
+          n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = y ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp _ _ _ Huniq.
+claim HxG : x :e G.
+{
+  apply (and4E
+    (G1 c= G)
+    (e :e G1)
+    (forall u v:set, u :e G1 -> v :e G1 -> apply_fun mult (u, v) :e G1)
+    (forall u:set, u :e G1 -> apply_fun inv u :e G1)
+    Hsub1).
+  assume HsubG1 _ _ _. exact (HsubG1 x HxG1).
+}
+apply (Huniq x HxG Hxne).
+let n0. assume Hn0_pack.
+apply Hn0_pack.
+let xs0. assume Hxs0_pack.
+apply (and4E
+  (reduced_word (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e))
+    n0 xs0)
+  (n0 <> 0)
+  (word_product mult e xs0 n0 = x)
+  (forall n' xs':set,
+    reduced_word (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+      (graph (UPair 0 1) (fun _:set => e))
+      n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = x ->
+    n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i))
+  Hxs0_pack).
+assume Hred0 Hn0ne Hwp0 Huniq0.
+set xw := graph 1 (fun _:set => x).
+claim Hxw_red : reduced_word (UPair 0 1)
+  (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+  (graph (UPair 0 1) (fun _:set => e))
+  1 xw.
+{
+  (** Singleton word in factor 0 **)
+  apply (reduced_word_singleton
+    (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e))
+    0
+    x).
+  - exact (UPairI1 0 1).
+  - rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)).
+    rewrite (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+    exact HxG1.
+  - rewrite (apply_fun_graph (UPair 0 1) (fun _:set => e) 0 (UPairI1 0 1)).
+    exact Hxne.
+}
+claim Hxw_wp : word_product mult e xw 1 = x.
+{
+  apply (word_product_singleton_group G mult e inv x Hgrp HxG).
+}
+claim Hn0_eq_1 : n0 = 1.
+{
+  exact (andEL
+    (n0 = 1)
+    (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xw i)
+    (Huniq0 1 xw Hxw_red (neq_ordsucc_0 0) Hxw_wp)).
+}
+claim Hn0_eq_n : n0 = n.
+{
+  exact (andEL
+    (n0 = n)
+    (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs i)
+    (Huniq0 n xs Hred Hn_ne0 (eq_i_tra (word_product mult e xs n) x x Hwp (eq_refl x)))).
+}
+rewrite <- Hn0_eq_n.
+exact Hn0_eq_1.
+Qed.
+
 (** Helper bounties (correct-strength versions: also assume Hfp1/Hfp2 on G1 and G2) **)
 (** Bounty 50 **)
 Theorem cor68_6_side_from_product_G1_ge3_full :
