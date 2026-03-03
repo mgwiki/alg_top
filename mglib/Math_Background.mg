@@ -313193,6 +313193,32 @@ rewrite <- Heq.
 exact Hsc.
 Qed.
 
+(** helper for S84.3: compact_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem compact_space_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  compact_space X T1 ->
+  compact_space X T2.
+let X T1 T2.
+assume Heq Hcomp.
+rewrite <- Heq.
+exact Hcomp.
+Qed.
+
+(** helper for S84.3: locally_compact is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem locally_compact_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  locally_compact X T1 ->
+  locally_compact X T2.
+let X T1 T2.
+assume Heq Hloc.
+rewrite <- Heq.
+exact Hloc.
+Qed.
+
 (** helper for S84.3: path_connected_space is invariant under definitional equality of topologies. **)
 (** Proven Bob **)
 Theorem path_connected_space_topology_eq_transport :
@@ -313269,6 +313295,32 @@ let X T1 T2.
 assume Heq Hsc.
 rewrite <- Heq.
 exact Hsc.
+Qed.
+
+(** helper for S84.3: compact_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem compact_space_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  compact_space X T1 ->
+  compact_space X T2.
+let X T1 T2.
+assume Heq Hcomp.
+rewrite <- Heq.
+exact Hcomp.
+Qed.
+
+(** helper for S84.3: locally_compact is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem locally_compact_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  locally_compact X T1 ->
+  locally_compact X T2.
+let X T1 T2.
+assume Heq Hloc.
+rewrite <- Heq.
+exact Hloc.
 Qed.
 
 (** helper for S84.3: path_connected_space is invariant under definitional equality of topologies. **)
