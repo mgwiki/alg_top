@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 1563 **)
+(** Balance Charlie 1463 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -225610,6 +225610,57 @@ Theorem cor68_6_side_from_product_G2_ge3 :
 admit.
 Admitted.
 
+(** Helper bounties (correct-strength versions: also assume Hfp1/Hfp2 on G1 and G2) **)
+(** Bounty 50 **)
+Theorem cor68_6_side_from_product_G1_ge3_full :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => eG)) ->
+  J :/\: K = Empty ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  n <> 0 -> n <> 1 -> n <> 2 ->
+  word_product multG eG ys n :e G1 ->
+  word_product multG eG ys n <> eG ->
+  forall i:set, i :e n -> apply_fun ys i :e G1.
+admit.
+Admitted.
+
+(** Bounty 50 **)
+Theorem cor68_6_side_from_product_G2_ge3_full :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => eG)) ->
+  J :/\: K = Empty ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  n <> 0 -> n <> 1 -> n <> 2 ->
+  word_product multG eG ys n :e G2 ->
+  word_product multG eG ys n <> eG ->
+  forall i:set, i :e n -> apply_fun ys i :e G2.
+admit.
+Admitted.
+
 (** Bounty 61 **)
 (** Lock Charlie 1772627457 **)
 Theorem cor68_6_associativity_free_product :
@@ -228933,7 +228984,10 @@ apply (and5I
           { exact Hy1_G1. }
 		        * assume Hn_ne2.
 		          (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
-		          admit.
+		          exact (cor68_6_side_from_product_G1_ge3_full
+		            G multG eG invG G1 G2 J K Hfam efamH n ys
+		            Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2
+		            Hred HallNe Hn0ne Hn_ne1 Hn_ne2 HwpG1 Hwpne).
 		  }
   (** Helper: if a reduced word with nontrivial letters multiplies to G2, all letters are in G2 **)
   claim Hside_from_product_G2 :
@@ -229245,7 +229299,10 @@ apply (and5I
 	          }
 		        * assume Hn_ne2.
 		          (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
-		          admit.
+		          exact (cor68_6_side_from_product_G2_ge3_full
+		            G multG eG invG G1 G2 J K Hfam efamH n ys
+		            Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2
+		            Hred HallNe Hn0ne Hn_ne1 Hn_ne2 HwpG2 Hwpne).
 		  }
   (** Helper: expansions in G1/G2 with nontrivial entries **)
   claim Hexp_red_each_G1_non_e :
