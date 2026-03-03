@@ -321154,7 +321154,59 @@ apply andI.
             { exact (xm (A0 = A)). }
             apply Hcase.
             - assume HA0eq.
-              admit.
+              rewrite HA0eq.
+              claim HAsubT : A c= T.
+              { exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs A Htree HAT). }
+              claim HtopA : topology_on A (subspace_topology T (subspace_topology X Tx T) A).
+              { exact (subspace_topology_is_topology T (subspace_topology X Tx T) A HtopT HAsubT). }
+              claim HcapA : T0 :/\: A = Sing q.
+              { admit. }
+              claim HcapCA : C :/\: A = C :/\: (Sing q).
+              {
+                apply set_ext.
+                - let x. assume Hx.
+                  claim HxC : x :e C. { exact (binintersectE1 C A x Hx). }
+                  claim HxA : x :e A. { exact (binintersectE2 C A x Hx). }
+                  claim HxT0 : x :e T0. { exact (HCsub x HxC). }
+                  claim HxTA : x :e T0 :/\: A. { exact (binintersectI T0 A x HxT0 HxA). }
+                  claim HxSing : x :e Sing q.
+                  { exact (mem_eqR x (T0 :/\: A) (Sing q) HcapA HxTA). }
+                  exact (binintersectI C (Sing q) x HxC HxSing).
+                - let x. assume Hx.
+                  claim HxC : x :e C. { exact (binintersectE1 C (Sing q) x Hx). }
+                  claim HxSing : x :e Sing q. { exact (binintersectE2 C (Sing q) x Hx). }
+                  claim HxTA : x :e T0 :/\: A.
+                  { exact (mem_eqL x (T0 :/\: A) (Sing q) HcapA HxSing). }
+                  claim HxA : x :e A. { exact (binintersectE2 T0 A x HxTA). }
+                  exact (binintersectI C A x HxC HxA).
+              }
+              claim Hqcase : q :e C \/ q /:e C.
+              { exact (xm (q :e C)). }
+              apply Hqcase.
+              * assume HqC.
+                claim HcapSing : C :/\: (Sing q) = Sing q.
+                { exact (binintersect_singleton_eq_singleton_of_mem C q HqC). }
+                claim HclosedSing : closed_in A (subspace_topology T (subspace_topology X Tx T) A) (Sing q).
+                {
+                  exact (general_linear_graph_arc_singleton_closed_in_subspace
+                    T
+                    (subspace_topology X Tx T)
+                    ArcsT
+                    A
+                    q
+                    HglgT
+                    HAT
+                    HqA).
+                }
+                rewrite HcapCA.
+                rewrite HcapSing.
+                exact HclosedSing.
+              * assume HqNotC.
+                claim HcapSing : C :/\: (Sing q) = Empty.
+                { exact (binintersect_singleton_eq_empty_of_not_mem C q HqNotC). }
+                rewrite HcapCA.
+                rewrite HcapSing.
+                exact (empty_is_closed A (subspace_topology T (subspace_topology X Tx T) A) HtopA).
             - assume HA0ne.
               claim HA0B : A0 :e B.
               {
