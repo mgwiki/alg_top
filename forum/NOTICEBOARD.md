@@ -1179,7 +1179,7 @@ Implementation Commit:
 
 NOTICE ID: 1772447026
 Created: 1772447026
-Status: SENT TO ADMIN
+Status: IMPLEMENTED
 
 Refers to Commit:
   47657369897c469dea3a0192c7ac3e80fa82a7a9
@@ -1234,16 +1234,17 @@ Admin Decision:
   - 1772563629 | APPROVED
 
 Implemented by:
+  Bob
 
 Implementation Commit:
+  404ad64a6
 
 Status:
-  SENT TO ADMIN
-  APPROVED
+  IMPLEMENTED
 
 NOTICE ID: 1772361663
 Created: 1772361663
-Status: SENT TO ADMIN
+Status: IMPLEMENTED
 
 Refers to Commit:
   c8ae3f4ab
@@ -1302,20 +1303,19 @@ Result:
 Admin Decision:
   - 1772563629 | APPROVED
 Implemented by:
-  -
+  Bob
 
 Implementation Commit:
-  -
+  404ad64a6
 
 Status:
-  SENT TO ADMIN
-  APPROVED
+  IMPLEMENTED
 
 --------------------------------------------------------
 
 NOTICE ID: 1772361662
 Created: 1772361662
-Status: SENT TO ADMIN
+Status: IMPLEMENTED
 
 Refers to Commit:
   c8ae3f4ab
@@ -1364,14 +1364,13 @@ Result:
 Admin Decision:
   - 1772563629 | APPROVED
 Implemented by:
-  -
+  Bob
 
 Implementation Commit:
-  -
+  404ad64a6
 
 Status:
-  SENT TO ADMIN
-  APPROVED
+  IMPLEMENTED
 
 --------------------------------------------------------
 
