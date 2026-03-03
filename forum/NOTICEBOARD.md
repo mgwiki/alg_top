@@ -145,6 +145,7 @@ Proposed by:
 
 Discussion:
   - 1772577627 | Charlie: Add a joint continuity assumption on the (s,t) map induced by vs_choice; without it the continuity conclusion is not derivable.
+  - 1772579901 | Charlie: Pulled latest repo state; the lemma is still admitted and blocks closing Lemma 54.2 (homotopy lifting). Requesting two agent approvals so this can be sent to ADMIN.
 
 Approvals:
   - 1772577627 | Alice:
