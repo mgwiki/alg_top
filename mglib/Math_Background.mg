@@ -180371,6 +180371,24 @@ Admitted.
 (** (lines 2370-2481 in algtop.tex)                              **)
 (** ============================================================ **)
 
+(** S65 helper: the key geometric step in Thm 65.2 is that C is a deformation retract
+    of S^2 - {p,q} when p and q lie in different components of S^2 - C. **)
+Theorem lemma65_2_deformation_retract : forall C Tc p q:set,
+  C c= Sn 2 -> is_simple_closed_curve C Tc ->
+  Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
+  p :e Sn 2 :\: C -> q :e Sn 2 :\: C ->
+  component_of (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
+  component_of (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q ->
+  deformation_retract
+    (Sn 2 :\: (Sing p :\/: Sing q))
+    (subspace_topology (Sn 2) (Sn_topology 2)
+      (Sn 2 :\: (Sing p :\/: Sing q)))
+    C.
+admit.
+Admitted.
+
 (** from S65 Thm 65.2 (line 2437 in algtop.tex) **)
 (** LATEX VERSION: Let C be a simple closed curve in S^2, p and q in different **)
 (** components of S^2 minus C. Then inclusion j: C -> S^2-p-q induces **)
@@ -181517,24 +181535,19 @@ claim HV_Ty : V :e Ty.
     rewrite HVeq.
     exact HW1Ty.
 }
-(** TODO: use boundary identities Hbd1/Hbd2 to show C is the common boundary and build a deformation retract. **)
 claim Hdeform : deformation_retract X Tx C.
 {
-  (** Package the easy part (C c= X) explicitly; the homotopy H remains to be built. **)
-  claim Hdeform0 :
-    C c= X /\
-    exists H:set,
-      continuous_map (setprod X unit_interval)
-        (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
-      (forall x:set, x :e X -> apply_fun H (x, 0) = x) /\
-      (forall x:set, x :e X -> apply_fun H (x, 1) :e C) /\
-      (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H (a, t) = a).
-  {
-    apply andI.
-    - exact HCsubX.
-    - admit.
-  }
-  exact Hdeform0.
+  exact (lemma65_2_deformation_retract
+    C
+    Tc
+    p
+    q
+    HCsubSn
+    Hsimple
+    HTc
+    HpSnC
+    HqSnC
+    HcompNe).
 }
 rewrite HTcX.
 exact (thm58_3_deformation_retract_isomorphism
