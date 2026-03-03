@@ -310613,6 +310613,42 @@ claim Hcycle :
         rewrite Hxq.
         exact HqTcap.
   }
+  (** There is an edge path in T' between p and q (graph vertices). **)
+  claim HconnT' : connected_space T' (subspace_topology X Tx T').
+  {
+    exact (tree_in_graph_connected
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      Htree').
+  }
+  claim HedgepqT' :
+    exists n path_seq:set, edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq p /\
+      n <> 0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = q).
+  {
+    exact ((iffEL
+      (connected_space T' (subspace_topology X Tx T'))
+      (forall x y:set, x :e graph_vertices T' (subspace_topology X Tx T') ArcsT' ->
+        y :e graph_vertices T' (subspace_topology X Tx T') ArcsT' ->
+        exists n path_seq:set, edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq x /\
+          n <> 0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = y))
+      (lemma84_1_connected_iff_edge_paths
+        T'
+        (subspace_topology X Tx T')
+        ArcsT'
+        HglgT')
+      HconnT')
+      p
+      q
+      HpV_T'
+      HqV_T').
+  }
   (** Remaining work: build a closed reduced edge path in T' using E and A. **)
   admit.
 }
