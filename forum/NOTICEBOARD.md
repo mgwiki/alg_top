@@ -1189,7 +1189,7 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
-  -
+  - 1772563629 | APPROVED
 
 Implemented by:
 
@@ -1197,6 +1197,7 @@ Implementation Commit:
 
 Status:
   SENT TO ADMIN
+  APPROVED
 
 NOTICE ID: 1772361663
 Created: 1772361663
@@ -1257,7 +1258,7 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
-  -
+  - 1772563629 | APPROVED
 Implemented by:
   -
 
@@ -1266,6 +1267,7 @@ Implementation Commit:
 
 Status:
   SENT TO ADMIN
+  APPROVED
 
 --------------------------------------------------------
 
@@ -1318,7 +1320,7 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
-  -
+  - 1772563629 | APPROVED
 Implemented by:
   -
 
@@ -1327,6 +1329,7 @@ Implementation Commit:
 
 Status:
   SENT TO ADMIN
+  APPROVED
 
 --------------------------------------------------------
 
