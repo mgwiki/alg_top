@@ -180315,157 +180315,6 @@ Admitted.
 (** (lines 2370-2481 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** from S65 Lem 65.1 (line 2397 in algtop.tex) **)
-(** LATEX VERSION: Let G be a subspace of S^2, a complete graph on 4 vertices. **)
-(** Let C be a simple closed curve subgraph. Then there exist p, q in G minus C **)
-(** from S65 Lem 65.1 (line 2397 in algtop.tex): complete graph separation **)
-(** in different components of S^2 minus C, and the inclusion C -> S^2-p-q **)
-(** induces an isomorphism of fundamental groups. **)
-(** EFFORT: 30 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 424 **)
-(** Lock Charlie 1772600000 **)
-Theorem lemma65_1_complete_graph_separation : forall V G Tg C Tc x0:set,
-  complete_graph_on V G Tg -> equip V 4 ->
-  G c= Sn 2 -> Tg = subspace_topology (Sn 2) (Sn_topology 2) G ->
-  C c= G -> is_simple_closed_curve C Tc ->
-  Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
-  x0 :e C ->
-  exists p q:set, p :e G :\: C /\ q :e G :\: C /\
-    component_of (Sn 2 :\: C)
-      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
-    component_of (Sn 2 :\: C)
-      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q /\
-    group_isomorphism
-      (fundamental_group C Tc x0) (fundamental_group_mult C Tc x0)
-      (fundamental_group (Sn 2 :\: (Sing p :\/: Sing q))
-        (subspace_topology (Sn 2) (Sn_topology 2)
-          (Sn 2 :\: (Sing p :\/: Sing q))) x0)
-      (fundamental_group_mult (Sn 2 :\: (Sing p :\/: Sing q))
-        (subspace_topology (Sn 2) (Sn_topology 2)
-          (Sn 2 :\: (Sing p :\/: Sing q))) x0)
-      (induced_homomorphism C Tc x0
-        (Sn 2 :\: (Sing p :\/: Sing q))
-        (subspace_topology (Sn 2) (Sn_topology 2)
-          (Sn 2 :\: (Sing p :\/: Sing q))) x0
-        (graph C (fun x:set => x))).
-let V G Tg C Tc x0.
-assume HK4 Hequip4 HGsub HTg HCsubG Hsimple HTc Hx0C.
-claim HCsubSn : C c= Sn 2.
-{
-  let z.
-  assume HzC.
-  claim HzG : z :e G.
-  { exact (HCsubG z HzC). }
-  exact (HGsub z HzG).
-}
-(** Key geometric input: K4 meets both complementary components of the curve. **)
-claim HexPQ :
-  exists p q:set, p :e G :\: C /\ q :e G :\: C /\
-    component_of (Sn 2 :\: C)
-      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
-    component_of (Sn 2 :\: C)
-      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q.
-{ admit. }
-apply HexPQ.
-let p.
-assume Hexp.
-apply Hexp.
-let q.
-assume Hpq.
-claim Hpq12 : p :e G :\: C /\ q :e G :\: C.
-{
-  exact (andEL
-    (p :e G :\: C /\ q :e G :\: C)
-    (component_of (Sn 2 :\: C)
-      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
-     component_of (Sn 2 :\: C)
-      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q)
-    Hpq).
-}
-claim HpGC : p :e G :\: C.
-{
-  exact (andEL (p :e G :\: C) (q :e G :\: C) Hpq12).
-}
-claim HqGC : q :e G :\: C.
-{
-  exact (andER (p :e G :\: C) (q :e G :\: C) Hpq12).
-}
-claim HcompNe :
-  component_of (Sn 2 :\: C)
-    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
-  component_of (Sn 2 :\: C)
-    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q.
-{
-  exact (andER
-    (p :e G :\: C /\ q :e G :\: C)
-    (component_of (Sn 2 :\: C)
-      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
-     component_of (Sn 2 :\: C)
-      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q)
-    Hpq).
-}
-claim HpSnC : p :e Sn 2 :\: C.
-{
-  claim HpG : p :e G.
-  { exact (setminusE1 G C p HpGC). }
-  claim HpNotC : p /:e C.
-  { exact (setminusE2 G C p HpGC). }
-  claim HpSn : p :e Sn 2.
-  { exact (HGsub p HpG). }
-  exact (setminusI (Sn 2) C p HpSn HpNotC).
-}
-claim HqSnC : q :e Sn 2 :\: C.
-{
-  claim HqG : q :e G.
-  { exact (setminusE1 G C q HqGC). }
-  claim HqNotC : q /:e C.
-  { exact (setminusE2 G C q HqGC). }
-  claim HqSn : q :e Sn 2.
-  { exact (HGsub q HqG). }
-  exact (setminusI (Sn 2) C q HqSn HqNotC).
-}
-claim Hiso :
-  group_isomorphism
-    (fundamental_group C Tc x0) (fundamental_group_mult C Tc x0)
-    (fundamental_group (Sn 2 :\: (Sing p :\/: Sing q))
-      (subspace_topology (Sn 2) (Sn_topology 2)
-        (Sn 2 :\: (Sing p :\/: Sing q))) x0)
-    (fundamental_group_mult (Sn 2 :\: (Sing p :\/: Sing q))
-      (subspace_topology (Sn 2) (Sn_topology 2)
-        (Sn 2 :\: (Sing p :\/: Sing q))) x0)
-    (induced_homomorphism C Tc x0
-      (Sn 2 :\: (Sing p :\/: Sing q))
-      (subspace_topology (Sn 2) (Sn_topology 2)
-        (Sn 2 :\: (Sing p :\/: Sing q))) x0
-      (graph C (fun x:set => x))).
-{
-  (** TODO: use thm65_2_inclusion_isomorphism once it is proved (Qed) and moved above. **)
-  admit.
-}
-witness p.
-witness q.
-claim H01 : p :e G :\: C /\ q :e G :\: C.
-{ exact (andI (p :e G :\: C) (q :e G :\: C) HpGC HqGC). }
-claim H02 : (p :e G :\: C /\ q :e G :\: C) /\
-  component_of (Sn 2 :\: C)
-    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
-  component_of (Sn 2 :\: C)
-    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q.
-{
-  exact (andI
-    (p :e G :\: C /\ q :e G :\: C)
-    (component_of (Sn 2 :\: C)
-      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
-     component_of (Sn 2 :\: C)
-      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q)
-    H01
-    HcompNe).
-}
-apply andI.
-- exact H02.
-- exact Hiso.
-Admitted.
-
 (** from S65 Thm 65.2 (line 2437 in algtop.tex) **)
 (** LATEX VERSION: Let C be a simple closed curve in S^2, p and q in different **)
 (** components of S^2 minus C. Then inclusion j: C -> S^2-p-q induces **)
@@ -180592,6 +180441,157 @@ claim Hdeform : deformation_retract X Tx C.
 rewrite HTcX.
 exact (thm58_3_deformation_retract_isomorphism
   X Tx C x0 HtopX Hdeform Hx0C).
+Admitted.
+
+(** from S65 Lem 65.1 (line 2397 in algtop.tex) **)
+(** LATEX VERSION: Let G be a subspace of S^2, a complete graph on 4 vertices. **)
+(** Let C be a simple closed curve subgraph. Then there exist p, q in G minus C **)
+(** from S65 Lem 65.1 (line 2397 in algtop.tex): complete graph separation **)
+(** in different components of S^2 minus C, and the inclusion C -> S^2-p-q **)
+(** induces an isomorphism of fundamental groups. **)
+(** EFFORT: 30 lines textbook, difficulty 7/10, USD 350 **)
+(** Bounty 424 **)
+(** Lock Charlie 1772600000 **)
+Theorem lemma65_1_complete_graph_separation : forall V G Tg C Tc x0:set,
+  complete_graph_on V G Tg -> equip V 4 ->
+  G c= Sn 2 -> Tg = subspace_topology (Sn 2) (Sn_topology 2) G ->
+  C c= G -> is_simple_closed_curve C Tc ->
+  Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
+  x0 :e C ->
+  exists p q:set, p :e G :\: C /\ q :e G :\: C /\
+    component_of (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
+    component_of (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q /\
+    group_isomorphism
+      (fundamental_group C Tc x0) (fundamental_group_mult C Tc x0)
+      (fundamental_group (Sn 2 :\: (Sing p :\/: Sing q))
+        (subspace_topology (Sn 2) (Sn_topology 2)
+          (Sn 2 :\: (Sing p :\/: Sing q))) x0)
+      (fundamental_group_mult (Sn 2 :\: (Sing p :\/: Sing q))
+        (subspace_topology (Sn 2) (Sn_topology 2)
+          (Sn 2 :\: (Sing p :\/: Sing q))) x0)
+      (induced_homomorphism C Tc x0
+        (Sn 2 :\: (Sing p :\/: Sing q))
+        (subspace_topology (Sn 2) (Sn_topology 2)
+          (Sn 2 :\: (Sing p :\/: Sing q))) x0
+        (graph C (fun x:set => x))).
+let V G Tg C Tc x0.
+assume HK4 Hequip4 HGsub HTg HCsubG Hsimple HTc Hx0C.
+claim HCsubSn : C c= Sn 2.
+{
+  let z.
+  assume HzC.
+  claim HzG : z :e G.
+  { exact (HCsubG z HzC). }
+  exact (HGsub z HzG).
+}
+(** Key geometric input: K4 meets both complementary components of the curve. **)
+claim HexPQ :
+  exists p q:set, p :e G :\: C /\ q :e G :\: C /\
+    component_of (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
+    component_of (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q.
+{ admit. }
+apply HexPQ.
+let p.
+assume Hexp.
+apply Hexp.
+let q.
+assume Hpq.
+claim Hpq12 : p :e G :\: C /\ q :e G :\: C.
+{
+  exact (andEL
+    (p :e G :\: C /\ q :e G :\: C)
+    (component_of (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
+     component_of (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q)
+    Hpq).
+}
+claim HpGC : p :e G :\: C.
+{
+  exact (andEL (p :e G :\: C) (q :e G :\: C) Hpq12).
+}
+claim HqGC : q :e G :\: C.
+{
+  exact (andER (p :e G :\: C) (q :e G :\: C) Hpq12).
+}
+claim HcompNe :
+  component_of (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
+  component_of (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q.
+{
+  exact (andER
+    (p :e G :\: C /\ q :e G :\: C)
+    (component_of (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
+     component_of (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q)
+    Hpq).
+}
+claim HpSnC : p :e Sn 2 :\: C.
+{
+  claim HpG : p :e G.
+  { exact (setminusE1 G C p HpGC). }
+  claim HpNotC : p /:e C.
+  { exact (setminusE2 G C p HpGC). }
+  claim HpSn : p :e Sn 2.
+  { exact (HGsub p HpG). }
+  exact (setminusI (Sn 2) C p HpSn HpNotC).
+}
+claim HqSnC : q :e Sn 2 :\: C.
+{
+  claim HqG : q :e G.
+  { exact (setminusE1 G C q HqGC). }
+  claim HqNotC : q /:e C.
+  { exact (setminusE2 G C q HqGC). }
+  claim HqSn : q :e Sn 2.
+  { exact (HGsub q HqG). }
+  exact (setminusI (Sn 2) C q HqSn HqNotC).
+}
+claim Hiso :
+  group_isomorphism
+    (fundamental_group C Tc x0) (fundamental_group_mult C Tc x0)
+    (fundamental_group (Sn 2 :\: (Sing p :\/: Sing q))
+      (subspace_topology (Sn 2) (Sn_topology 2)
+        (Sn 2 :\: (Sing p :\/: Sing q))) x0)
+    (fundamental_group_mult (Sn 2 :\: (Sing p :\/: Sing q))
+      (subspace_topology (Sn 2) (Sn_topology 2)
+        (Sn 2 :\: (Sing p :\/: Sing q))) x0)
+    (induced_homomorphism C Tc x0
+      (Sn 2 :\: (Sing p :\/: Sing q))
+      (subspace_topology (Sn 2) (Sn_topology 2)
+        (Sn 2 :\: (Sing p :\/: Sing q))) x0
+      (graph C (fun x:set => x))).
+{
+  exact (thm65_2_inclusion_isomorphism
+    C Tc p q x0 HCsubSn Hsimple HTc HpSnC HqSnC HcompNe Hx0C).
+}
+witness p.
+witness q.
+claim H01 : p :e G :\: C /\ q :e G :\: C.
+{ exact (andI (p :e G :\: C) (q :e G :\: C) HpGC HqGC). }
+claim H02 : (p :e G :\: C /\ q :e G :\: C) /\
+  component_of (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
+  component_of (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q.
+{
+  exact (andI
+    (p :e G :\: C /\ q :e G :\: C)
+    (component_of (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
+     component_of (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q)
+    H01
+    HcompNe).
+}
+apply andI.
+- exact H02.
+- exact Hiso.
 Admitted.
 
 (** ============================================================ **)
