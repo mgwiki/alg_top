@@ -321276,7 +321276,180 @@ apply andI.
           (exists j:set, j :e n /\ ordsucc j /:e n /\
             (apply_fun path_seq j) 0 1 = x0)).
     {
-      admit.
+      assume Hex.
+      apply Hex.
+      let n. assume Hn.
+      apply Hn.
+      let path_seq. assume Hps.
+      apply Hps.
+      let x0. assume Hx0.
+      apply (and4E
+        (n :e omega)
+        (n <> 0)
+        (reduced_edge_path T0 (subspace_topology X Tx T0) B n path_seq x0)
+        (exists j:set, j :e n /\ ordsucc j /:e n /\ (apply_fun path_seq j) 0 1 = x0)
+        Hx0).
+      assume HnOm HnNe0 Hred0 Hclosed.
+      claim HtopX : topology_on X Tx.
+      { exact (general_linear_graph_topology_on X Tx Arcs HglgX). }
+      claim HnoLoopT :
+        ~(exists n0 path_seq0 x0:set,
+            n0 :e omega /\ n0 <> 0 /\
+            reduced_edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 x0 /\
+            (exists j:set, j :e n0 /\ ordsucc j /:e n0 /\
+              (apply_fun path_seq0 j) 0 1 = x0)).
+      {
+        exact (tree_in_graph_no_closed_reduced_edge_path
+          T ArcsT X Tx Arcs Htree).
+      }
+      claim Hep0 : edge_path T0 (subspace_topology X Tx T0) B n path_seq x0.
+      {
+        exact (reduced_edge_path_edge_path
+          T0 (subspace_topology X Tx T0) B n path_seq x0 Hred0).
+      }
+      claim HnoBack :
+        forall i:set, i :e n -> ordsucc i :e n ->
+          ~((apply_fun path_seq i) 1 = (apply_fun path_seq (ordsucc i)) 1 /\
+            (apply_fun path_seq i) 0 0 = (apply_fun path_seq (ordsucc i)) 0 1 /\
+            (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0).
+      {
+        exact (andER
+          (edge_path T0 (subspace_topology X Tx T0) B n path_seq x0)
+          (forall i0:set, i0 :e n -> ordsucc i0 :e n ->
+            ~((apply_fun path_seq i0) 1 = (apply_fun path_seq (ordsucc i0)) 1 /\
+              (apply_fun path_seq i0) 0 0 = (apply_fun path_seq (ordsucc i0)) 0 1 /\
+              (apply_fun path_seq i0) 0 1 = (apply_fun path_seq (ordsucc i0)) 0 0))
+          Hred0).
+      }
+      claim HepT : edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0.
+      {
+        claim HfunT : function_on path_seq n (setprod (setprod T T) (Power T)).
+        { admit. }
+        claim HdecT :
+          forall i:set, i :e n ->
+            exists E ini fin:set,
+              apply_fun path_seq i = ((ini, fin), E) /\
+              oriented_edge T (subspace_topology X Tx T) ArcsT E ini fin.
+        {
+          let i. assume Hi.
+          apply (edge_path_edge_decomposition
+            T0
+            (subspace_topology X Tx T0)
+            B
+            n
+            path_seq
+            x0
+            i
+            Hep0
+            Hi).
+          let E. assume HE.
+          apply HE.
+          let ini. assume Hini.
+          apply Hini.
+          let fin. assume Hfin.
+          witness E.
+          witness ini.
+          witness fin.
+          apply andI.
+          - exact (andEL
+              (apply_fun path_seq i = ((ini, fin), E))
+              (oriented_edge T0 (subspace_topology X Tx T0) B E ini fin)
+              Hfin).
+          - claim Hori0 :
+              oriented_edge T0 (subspace_topology X Tx T0) B E ini fin.
+            {
+              exact (andER
+                (apply_fun path_seq i = ((ini, fin), E))
+                (oriented_edge T0 (subspace_topology X Tx T0) B E ini fin)
+                Hfin).
+            }
+            claim HEinB : E :e B.
+            { exact (oriented_edge_in_arcs
+                T0 (subspace_topology X Tx T0) B E ini fin Hori0). }
+            claim HEinArcsT : E :e ArcsT.
+            { exact (HBsubArcsT E HEinB). }
+            claim HESubT : E c= T.
+            { exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs E Htree HEinArcsT). }
+            claim HESubT0 : E c= T0.
+            { let x. assume HxE. exact (UnionI B x E HxE HEinB). }
+            claim HtopE0 :
+              subspace_topology T0 (subspace_topology X Tx T0) E =
+              subspace_topology X Tx E.
+            { exact (ex16_1_subspace_transitive X Tx T0 E HtopX HT0subX HESubT0). }
+            claim HtopE :
+              subspace_topology T (subspace_topology X Tx T) E =
+              subspace_topology X Tx E.
+            { exact (ex16_1_subspace_transitive X Tx T E HtopX HTsubX HESubT). }
+            claim Hend0 :
+              end_points_of_arc E (subspace_topology T0 (subspace_topology X Tx T0) E) ini fin.
+            { exact (oriented_edge_endpoints
+                T0 (subspace_topology X Tx T0) B E ini fin Hori0). }
+            claim HendT :
+              end_points_of_arc E (subspace_topology T (subspace_topology X Tx T) E) ini fin.
+            {
+              rewrite HtopE.
+              rewrite <- HtopE0.
+              exact Hend0.
+            }
+            exact (andI
+              (E :e ArcsT)
+              (end_points_of_arc E (subspace_topology T (subspace_topology X Tx T) E) ini fin)
+              HEinArcsT
+              HendT).
+        }
+        claim HstartT : n <> 0 -> (apply_fun path_seq 0) 0 0 = x0.
+        {
+          assume Hn0.
+          exact (edge_path_start_vertex
+            T0 (subspace_topology X Tx T0) B n path_seq x0 Hep0 Hn0).
+        }
+        claim HstepT :
+          forall i:set, i :e n -> ordsucc i :e n ->
+            (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0.
+        {
+          let i. assume Hi His.
+          exact (edge_path_consecutive_match
+            T0 (subspace_topology X Tx T0) B n path_seq x0 i Hep0 Hi His).
+        }
+        exact (and5I
+          (n :e omega)
+          (function_on path_seq n (setprod (setprod T T) (Power T)))
+          (forall i:set, i :e n ->
+            exists E ini fin:set,
+              apply_fun path_seq i = ((ini, fin), E) /\
+              oriented_edge T (subspace_topology X Tx T) ArcsT E ini fin)
+          (n <> 0 -> (apply_fun path_seq 0) 0 0 = x0)
+          (forall i:set, i :e n -> ordsucc i :e n ->
+            (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0)
+          HnOm
+          HfunT
+          HdecT
+          HstartT
+          HstepT).
+      }
+      claim HredT :
+        reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0.
+      {
+        exact (andI
+          (edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0)
+          (forall i:set, i :e n -> ordsucc i :e n ->
+            ~((apply_fun path_seq i) 1 = (apply_fun path_seq (ordsucc i)) 1 /\
+              (apply_fun path_seq i) 0 0 = (apply_fun path_seq (ordsucc i)) 0 1 /\
+              (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0))
+          HepT
+          HnoBack).
+      }
+      apply HnoLoopT.
+      witness n.
+      witness path_seq.
+      witness x0.
+      apply andI.
+      - apply andI.
+        + apply andI.
+          * exact HnOm.
+          * exact HnNe0.
+        + exact HredT.
+      - exact Hclosed.
     }
     exact (tree_in_graph_intro T0 B X Tx Arcs HsubT0 HglgT0 HconnT0 HnoloopT0).
 Admitted.
