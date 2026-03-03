@@ -1506,7 +1506,7 @@ Status:
 
 NOTICE ID: 1772357174
 Created: 1772357174
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   69fce6a58f68d8f5e2720c74cf8cf9314413830f
@@ -1574,7 +1574,7 @@ Status:
 
 NOTICE ID: 1772355632
 Created: 1772355632
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   bbc6696568135e41f95c628e5ebba66c28984d3a
@@ -1638,7 +1638,7 @@ Status:
 
 NOTICE ID: 1772354701
 Created: 1772354701
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   0ad245d740a54d220c403d8aa09934a0b67e41d9
@@ -1700,7 +1700,7 @@ Status:
 
 NOTICE ID: 1772354702
 Created: 1772354702
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   0ad245d740a54d220c403d8aa09934a0b67e41d9

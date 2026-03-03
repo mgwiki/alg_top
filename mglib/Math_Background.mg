@@ -321117,6 +321117,17 @@ apply Hcase.
       Hfin2
       HoriC3).
   }
+  claim Hfin3 : (apply_fun path4 n3) 0 1 = t1.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n3 path3 q0 n2 C3 s1 t1
+      Hglg
+      Hep3
+      (ordsuccI2 n2)
+      (In_irref (ordsucc n2))
+      Hfin2
+      HoriC3).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
