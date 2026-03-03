@@ -174907,6 +174907,7 @@ exact HconnUnion.
 Qed.
 
 (** Helper: punctured Euclidean space is connected in dimension >= 2. **)
+(** Proven Bob **)
 Theorem punctured_euclidean_space_connected_ge2 :
   forall n a:set,
   n :e omega -> 2 c= n ->
@@ -174915,8 +174916,622 @@ Theorem punctured_euclidean_space_connected_ge2 :
     (euclidean_space n :\: {a,a})
     (subspace_topology (euclidean_space n) (euclidean_topology n)
       (euclidean_space n :\: {a,a})).
-admit.
-Admitted.
+let n a.
+assume Hn Hge2 Ha.
+claim Hexk : exists k:set, k :e omega /\ n = ordsucc (ordsucc k).
+{ exact (nat_ge2_ordsucc_ordsucc n Hn Hge2). }
+apply Hexk.
+let k.
+assume HkPack.
+claim HkO : k :e omega.
+{ exact (andEL (k :e omega) (n = ordsucc (ordsucc k)) HkPack). }
+claim HnEq : n = ordsucc (ordsucc k).
+{ exact (andER (k :e omega) (n = ordsucc (ordsucc k)) HkPack). }
+claim Ha' : a :e euclidean_space (ordsucc (ordsucc k)).
+{ rewrite <- HnEq. exact Ha. }
+rewrite HnEq.
+claim HkNat : nat_p k.
+{ exact (omega_nat_p k HkO). }
+apply (nat_inv k HkNat).
+- assume Hk0.
+  claim Ha0 : a :e euclidean_space (ordsucc (ordsucc 0)).
+  { rewrite <- Hk0. exact Ha'. }
+  rewrite Hk0.
+  claim HhomeR :
+    homeomorphism
+      R
+      R_standard_topology
+      (euclidean_space (ordsucc 0))
+      (euclidean_topology (ordsucc 0))
+      R1_singleton_map.
+  {
+    rewrite ordsucc_0_eq_1_nat.
+    rewrite <- SingEmpty_eq_1.
+    exact R_homeomorphic_euclidean_space_1.
+  }
+  apply (homeomorphism_inverse_is_homeomorphism_variant
+    R
+    R_standard_topology
+    (euclidean_space (ordsucc 0))
+    (euclidean_topology (ordsucc 0))
+    R1_singleton_map
+    HhomeR).
+  let gR.
+  assume HgRhome :
+    homeomorphism
+      (euclidean_space (ordsucc 0))
+      (euclidean_topology (ordsucc 0))
+      R
+      R_standard_topology
+      gR.
+  claim Hhome1 :
+    homeomorphism
+      (euclidean_space (ordsucc (ordsucc 0)))
+      (euclidean_topology (ordsucc (ordsucc 0)))
+      (setprod (euclidean_space (ordsucc 0)) R)
+      (product_topology (euclidean_space (ordsucc 0)) (euclidean_topology (ordsucc 0)) R R_standard_topology)
+      (euclidean_space_succ_split_map (ordsucc 0)).
+  {
+    exact (euclidean_space_succ_split_homeomorphism
+      (ordsucc 0)
+      (nat_ordsucc 0 nat_0)).
+  }
+  claim Hhome2 :
+    homeomorphism
+      (setprod (euclidean_space (ordsucc 0)) R)
+      (product_topology (euclidean_space (ordsucc 0)) (euclidean_topology (ordsucc 0)) R R_standard_topology)
+      (setprod R R)
+      (product_topology R R_standard_topology R R_standard_topology)
+      (pair_map (setprod (euclidean_space (ordsucc 0)) R)
+        (compose_fun (setprod (euclidean_space (ordsucc 0)) R)
+          (projection_map1 (euclidean_space (ordsucc 0)) R)
+          gR)
+        (projection_map2 (euclidean_space (ordsucc 0)) R)).
+  {
+    exact (homeomorphism_product_left
+      (euclidean_space (ordsucc 0))
+      (euclidean_topology (ordsucc 0))
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      gR
+      HgRhome
+      R_standard_topology_is_topology).
+  }
+  set f :=
+    compose_fun
+      (euclidean_space (ordsucc (ordsucc 0)))
+      (euclidean_space_succ_split_map (ordsucc 0))
+      (pair_map (setprod (euclidean_space (ordsucc 0)) R)
+        (compose_fun (setprod (euclidean_space (ordsucc 0)) R)
+          (projection_map1 (euclidean_space (ordsucc 0)) R)
+          gR)
+        (projection_map2 (euclidean_space (ordsucc 0)) R)).
+  claim Hhome :
+    homeomorphism
+      (euclidean_space (ordsucc (ordsucc 0)))
+      (euclidean_topology (ordsucc (ordsucc 0)))
+      (setprod R R)
+      (product_topology R R_standard_topology R R_standard_topology)
+      f.
+  {
+    exact (homeomorphism_compose
+      (euclidean_space (ordsucc (ordsucc 0)))
+      (euclidean_topology (ordsucc (ordsucc 0)))
+      (setprod (euclidean_space (ordsucc 0)) R)
+      (product_topology (euclidean_space (ordsucc 0)) (euclidean_topology (ordsucc 0)) R R_standard_topology)
+      (setprod R R)
+      (product_topology R R_standard_topology R R_standard_topology)
+      (euclidean_space_succ_split_map (ordsucc 0))
+      (pair_map (setprod (euclidean_space (ordsucc 0)) R)
+        (compose_fun (setprod (euclidean_space (ordsucc 0)) R)
+          (projection_map1 (euclidean_space (ordsucc 0)) R)
+          gR)
+        (projection_map2 (euclidean_space (ordsucc 0)) R))
+      Hhome1
+      Hhome2).
+  }
+  claim Hfcont :
+    continuous_map
+      (euclidean_space (ordsucc (ordsucc 0)))
+      (euclidean_topology (ordsucc (ordsucc 0)))
+      (setprod R R)
+      (product_topology R R_standard_topology R R_standard_topology)
+      f.
+  { exact (homeomorphism_continuous
+      (euclidean_space (ordsucc (ordsucc 0)))
+      (euclidean_topology (ordsucc (ordsucc 0)))
+      (setprod R R)
+      (product_topology R R_standard_topology R R_standard_topology)
+      f
+      Hhome). }
+  claim Hffun :
+    function_on
+      f
+      (euclidean_space (ordsucc (ordsucc 0)))
+      (setprod R R).
+  { exact (continuous_map_function_on
+      (euclidean_space (ordsucc (ordsucc 0)))
+      (euclidean_topology (ordsucc (ordsucc 0)))
+      (setprod R R)
+      (product_topology R R_standard_topology R R_standard_topology)
+      f
+      Hfcont). }
+  set p0 := apply_fun f a.
+  claim Hp0 : p0 :e EuclidPlane.
+  { exact (Hffun a Ha0). }
+  claim HconnY :
+    connected_space
+      (EuclidPlane :\: {p0,p0})
+      (subspace_topology
+        EuclidPlane
+        (product_topology R R_standard_topology R R_standard_topology)
+        (EuclidPlane :\: {p0,p0})).
+  {
+    claim HconnY0 :
+      connected_space
+        (EuclidPlane :\: {p0,p0})
+        (subspace_topology
+          EuclidPlane
+          R2_standard_topology
+          (EuclidPlane :\: {p0,p0})).
+    { exact (punctured_EuclidPlane_connected_any p0 Hp0). }
+    rewrite <- R2_standard_equals_product.
+    exact HconnY0.
+  }
+  set C := (euclidean_space (ordsucc (ordsucc 0)) :\: {a,a}).
+  set D := ((setprod R R) :\: {apply_fun f a, apply_fun f a}).
+  claim HCsub : C c= euclidean_space (ordsucc (ordsucc 0)).
+  { exact (setminus_Subq (euclidean_space (ordsucc (ordsucc 0))) {a,a}). }
+  claim HhomeC :
+    homeomorphism
+      C
+      (subspace_topology (euclidean_space (ordsucc (ordsucc 0))) (euclidean_topology (ordsucc (ordsucc 0))) C)
+      (image_of f C)
+      (subspace_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology) (image_of f C))
+      f.
+  {
+    exact (homeomorphism_restrict_to_image_of_subset
+      (euclidean_space (ordsucc (ordsucc 0)))
+      (euclidean_topology (ordsucc (ordsucc 0)))
+      (setprod R R)
+      (product_topology R R_standard_topology R R_standard_topology)
+      f
+      C
+      Hhome
+      HCsub).
+  }
+  claim Himg : image_of f C = D.
+  {
+    exact (homeomorphism_image_of_setminus_singleton
+      (euclidean_space (ordsucc (ordsucc 0)))
+      (euclidean_topology (ordsucc (ordsucc 0)))
+      (setprod R R)
+      (product_topology R R_standard_topology R R_standard_topology)
+      f
+      a
+      Hhome
+      Ha0).
+  }
+  claim HconnImg :
+    connected_space
+      (image_of f C)
+      (subspace_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology) (image_of f C)).
+  {
+    rewrite Himg.
+    exact HconnY.
+  }
+  apply (homeomorphism_inverse_is_homeomorphism_variant
+    C
+    (subspace_topology (euclidean_space (ordsucc (ordsucc 0))) (euclidean_topology (ordsucc (ordsucc 0))) C)
+    (image_of f C)
+    (subspace_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology) (image_of f C))
+    f
+    HhomeC).
+  let g.
+  assume HgHome :
+    homeomorphism
+      (image_of f C)
+      (subspace_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology) (image_of f C))
+      C
+      (subspace_topology (euclidean_space (ordsucc (ordsucc 0))) (euclidean_topology (ordsucc (ordsucc 0))) C)
+      g.
+  exact (homeomorphism_preserves_connected
+    (image_of f C)
+    (subspace_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology) (image_of f C))
+    C
+    (subspace_topology (euclidean_space (ordsucc (ordsucc 0))) (euclidean_topology (ordsucc (ordsucc 0))) C)
+    g
+    HgHome
+    HconnImg).
+- assume HkSucc.
+  apply HkSucc.
+  let m.
+  assume HmPack.
+  claim HmNat : nat_p m.
+  { exact (andEL (nat_p m) (k = ordsucc m) HmPack). }
+  claim HkEq : k = ordsucc m.
+  { exact (andER (nat_p m) (k = ordsucc m) HmPack). }
+  claim Ha1 : a :e euclidean_space (ordsucc (ordsucc (ordsucc m))).
+  { rewrite <- HkEq. exact Ha'. }
+  rewrite HkEq.
+  claim HmO : m :e omega.
+  { exact (nat_p_omega m HmNat). }
+  claim Hhome1 :
+    homeomorphism
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (euclidean_space (ordsucc (ordsucc m))) R)
+      (product_topology (euclidean_space (ordsucc (ordsucc m))) (euclidean_topology (ordsucc (ordsucc m))) R R_standard_topology)
+      (euclidean_space_succ_split_map (ordsucc (ordsucc m))).
+  {
+    exact (euclidean_space_succ_split_homeomorphism
+      (ordsucc (ordsucc m))
+      (nat_ordsucc (ordsucc m) (nat_ordsucc m HmNat))).
+  }
+  claim Hhome2 :
+    homeomorphism
+      (euclidean_space (ordsucc (ordsucc m)))
+      (euclidean_topology (ordsucc (ordsucc m)))
+      (setprod (euclidean_space (ordsucc m)) R)
+      (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)) R R_standard_topology)
+      (euclidean_space_succ_split_map (ordsucc m)).
+  {
+    exact (euclidean_space_succ_split_homeomorphism
+      (ordsucc m)
+      (nat_ordsucc m HmNat)).
+  }
+  claim Hhome2prod :
+    homeomorphism
+      (setprod (euclidean_space (ordsucc (ordsucc m))) R)
+      (product_topology (euclidean_space (ordsucc (ordsucc m))) (euclidean_topology (ordsucc (ordsucc m))) R R_standard_topology)
+      (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+      (product_topology (setprod (euclidean_space (ordsucc m)) R)
+        (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)) R R_standard_topology)
+        R
+        R_standard_topology)
+      (pair_map (setprod (euclidean_space (ordsucc (ordsucc m))) R)
+        (compose_fun (setprod (euclidean_space (ordsucc (ordsucc m))) R)
+          (projection_map1 (euclidean_space (ordsucc (ordsucc m))) R)
+          (euclidean_space_succ_split_map (ordsucc m)))
+        (projection_map2 (euclidean_space (ordsucc (ordsucc m))) R)).
+  {
+    exact (homeomorphism_product_left
+      (euclidean_space (ordsucc (ordsucc m)))
+      (euclidean_topology (ordsucc (ordsucc m)))
+      (setprod (euclidean_space (ordsucc m)) R)
+      (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)) R R_standard_topology)
+      R
+      R_standard_topology
+      (euclidean_space_succ_split_map (ordsucc m))
+      Hhome2
+      R_standard_topology_is_topology).
+  }
+  claim HtopE2 :
+    topology_on (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)).
+  { exact (euclidean_topology_is_topology (ordsucc m)). }
+  claim HtopR2 :
+    topology_on (setprod R R) (product_topology R R_standard_topology R R_standard_topology).
+  {
+    exact (product_topology_is_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      R_standard_topology_is_topology
+      R_standard_topology_is_topology).
+  }
+  claim HhomeAssoc :
+    homeomorphism
+      (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+      (product_topology (setprod (euclidean_space (ordsucc m)) R)
+        (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)) R R_standard_topology)
+        R
+        R_standard_topology)
+      (setprod (euclidean_space (ordsucc m)) (setprod R R))
+      (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m))
+        (setprod R R) (product_topology R R_standard_topology R R_standard_topology))
+      (pair_map (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+        (compose_fun (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+          (projection_map1 (setprod (euclidean_space (ordsucc m)) R) R)
+          (projection_map1 (euclidean_space (ordsucc m)) R))
+        (pair_map (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+          (compose_fun (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+            (projection_map1 (setprod (euclidean_space (ordsucc m)) R) R)
+            (projection_map2 (euclidean_space (ordsucc m)) R))
+          (projection_map2 (setprod (euclidean_space (ordsucc m)) R) R))).
+  {
+    exact (setprod_assoc_homeomorphism
+      (euclidean_space (ordsucc m))
+      (euclidean_topology (ordsucc m))
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      HtopE2
+      R_standard_topology_is_topology
+      R_standard_topology_is_topology).
+  }
+  claim HhomeSwap :
+    homeomorphism
+      (setprod (euclidean_space (ordsucc m)) (setprod R R))
+      (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m))
+        (setprod R R) (product_topology R R_standard_topology R R_standard_topology))
+      (setprod (setprod R R) (euclidean_space (ordsucc m)))
+      (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+        (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+      (pair_map (setprod (euclidean_space (ordsucc m)) (setprod R R))
+        (projection_map2 (euclidean_space (ordsucc m)) (setprod R R))
+        (projection_map1 (euclidean_space (ordsucc m)) (setprod R R))).
+  {
+    exact (setprod_swap_homeomorphism
+      (euclidean_space (ordsucc m))
+      (euclidean_topology (ordsucc m))
+      (setprod R R)
+      (product_topology R R_standard_topology R R_standard_topology)
+      HtopE2
+      HtopR2).
+  }
+  set f1 := euclidean_space_succ_split_map (ordsucc (ordsucc m)).
+  set f2 := pair_map (setprod (euclidean_space (ordsucc (ordsucc m))) R)
+    (compose_fun (setprod (euclidean_space (ordsucc (ordsucc m))) R)
+      (projection_map1 (euclidean_space (ordsucc (ordsucc m))) R)
+      (euclidean_space_succ_split_map (ordsucc m)))
+    (projection_map2 (euclidean_space (ordsucc (ordsucc m))) R).
+  set f3 := pair_map (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+    (compose_fun (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+      (projection_map1 (setprod (euclidean_space (ordsucc m)) R) R)
+      (projection_map1 (euclidean_space (ordsucc m)) R))
+    (pair_map (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+      (compose_fun (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+        (projection_map1 (setprod (euclidean_space (ordsucc m)) R) R)
+        (projection_map2 (euclidean_space (ordsucc m)) R))
+      (projection_map2 (setprod (euclidean_space (ordsucc m)) R) R)).
+  set f4 := pair_map (setprod (euclidean_space (ordsucc m)) (setprod R R))
+    (projection_map2 (euclidean_space (ordsucc m)) (setprod R R))
+    (projection_map1 (euclidean_space (ordsucc m)) (setprod R R)).
+  set f12 :=
+    compose_fun
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      f1
+      f2.
+  set f123 :=
+    compose_fun
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      f12
+      f3.
+  set f :=
+    compose_fun
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      f123
+      f4.
+  claim Hhome12 :
+    homeomorphism
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+      (product_topology (setprod (euclidean_space (ordsucc m)) R)
+        (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)) R R_standard_topology)
+        R
+        R_standard_topology)
+      f12.
+  {
+    exact (homeomorphism_compose
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (euclidean_space (ordsucc (ordsucc m))) R)
+      (product_topology (euclidean_space (ordsucc (ordsucc m))) (euclidean_topology (ordsucc (ordsucc m))) R R_standard_topology)
+      (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+      (product_topology (setprod (euclidean_space (ordsucc m)) R)
+        (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)) R R_standard_topology)
+        R
+        R_standard_topology)
+      f1
+      f2
+      Hhome1
+      Hhome2prod).
+  }
+  claim Hhome123 :
+    homeomorphism
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (euclidean_space (ordsucc m)) (setprod R R))
+      (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m))
+        (setprod R R) (product_topology R R_standard_topology R R_standard_topology))
+      f123.
+  {
+    exact (homeomorphism_compose
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (setprod (euclidean_space (ordsucc m)) R) R)
+      (product_topology (setprod (euclidean_space (ordsucc m)) R)
+        (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)) R R_standard_topology)
+        R
+        R_standard_topology)
+      (setprod (euclidean_space (ordsucc m)) (setprod R R))
+      (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m))
+        (setprod R R) (product_topology R R_standard_topology R R_standard_topology))
+      f12
+      f3
+      Hhome12
+      HhomeAssoc).
+  }
+  claim Hhome :
+    homeomorphism
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (setprod R R) (euclidean_space (ordsucc m)))
+      (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+        (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+      f.
+  {
+    exact (homeomorphism_compose
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (euclidean_space (ordsucc m)) (setprod R R))
+      (product_topology (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m))
+        (setprod R R) (product_topology R R_standard_topology R R_standard_topology))
+      (setprod (setprod R R) (euclidean_space (ordsucc m)))
+      (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+        (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+      f123
+      f4
+      Hhome123
+      HhomeSwap).
+  }
+  claim Hfcont :
+    continuous_map
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (setprod R R) (euclidean_space (ordsucc m)))
+      (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+        (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+      f.
+  { exact (homeomorphism_continuous
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (setprod R R) (euclidean_space (ordsucc m)))
+      (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+        (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+      f
+      Hhome). }
+  claim Hffun :
+    function_on
+      f
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (setprod (setprod R R) (euclidean_space (ordsucc m))).
+  { exact (continuous_map_function_on
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (setprod R R) (euclidean_space (ordsucc m)))
+      (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+        (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+      f
+      Hfcont). }
+  set z := apply_fun f a.
+  claim HzIn :
+    z :e setprod EuclidPlane (euclidean_space (ordsucc m)).
+  { exact (Hffun a Ha1). }
+  claim Hp0 : (z 0) :e EuclidPlane.
+  { exact (ap0_Sigma EuclidPlane (fun _ : set => euclidean_space (ordsucc m)) z HzIn). }
+  claim Hq0 : (z 1) :e euclidean_space (ordsucc m).
+  { exact (ap1_Sigma EuclidPlane (fun _ : set => euclidean_space (ordsucc m)) z HzIn). }
+  claim HconnY :
+    connected_space
+      ((setprod EuclidPlane (euclidean_space (ordsucc m))) :\: {(z 0,z 1),(z 0,z 1)})
+      (subspace_topology
+        (setprod EuclidPlane (euclidean_space (ordsucc m)))
+        (product_topology EuclidPlane R2_standard_topology
+          (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+        ((setprod EuclidPlane (euclidean_space (ordsucc m))) :\: {(z 0,z 1),(z 0,z 1)})).
+  { exact (punctured_EuclidPlane_product_euclidean_connected_any m (z 0) (z 1) HmO Hp0 Hq0). }
+  claim HzEta : z = (z 0,z 1).
+  { exact (setprod_eta EuclidPlane (euclidean_space (ordsucc m)) z HzIn). }
+  claim HconnY1 :
+    connected_space
+      ((setprod EuclidPlane (euclidean_space (ordsucc m))) :\: {z,z})
+      (subspace_topology
+        (setprod EuclidPlane (euclidean_space (ordsucc m)))
+        (product_topology EuclidPlane R2_standard_topology
+          (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+        ((setprod EuclidPlane (euclidean_space (ordsucc m))) :\: {z,z})).
+  {
+    rewrite HzEta.
+    exact HconnY.
+  }
+  set C := (euclidean_space (ordsucc (ordsucc (ordsucc m))) :\: {a,a}).
+  set D := ((setprod (setprod R R) (euclidean_space (ordsucc m))) :\: {apply_fun f a, apply_fun f a}).
+  claim HCsub : C c= euclidean_space (ordsucc (ordsucc (ordsucc m))).
+  { exact (setminus_Subq (euclidean_space (ordsucc (ordsucc (ordsucc m)))) {a,a}). }
+  claim HhomeC :
+    homeomorphism
+      C
+      (subspace_topology (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+        (euclidean_topology (ordsucc (ordsucc (ordsucc m)))) C)
+      (image_of f C)
+      (subspace_topology
+        (setprod (setprod R R) (euclidean_space (ordsucc m)))
+        (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+          (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+        (image_of f C))
+      f.
+  {
+    exact (homeomorphism_restrict_to_image_of_subset
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (setprod R R) (euclidean_space (ordsucc m)))
+      (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+        (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+      f
+      C
+      Hhome
+      HCsub).
+  }
+  claim Himg : image_of f C = D.
+  {
+    exact (homeomorphism_image_of_setminus_singleton
+      (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m))))
+      (setprod (setprod R R) (euclidean_space (ordsucc m)))
+      (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+        (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+      f
+      a
+      Hhome
+      Ha1).
+  }
+  claim HconnImg :
+    connected_space
+      (image_of f C)
+      (subspace_topology
+        (setprod (setprod R R) (euclidean_space (ordsucc m)))
+        (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+          (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+        (image_of f C)).
+  {
+    rewrite Himg.
+    exact HconnY1.
+  }
+  apply (homeomorphism_inverse_is_homeomorphism_variant
+    C
+    (subspace_topology (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m)))) C)
+    (image_of f C)
+    (subspace_topology
+      (setprod (setprod R R) (euclidean_space (ordsucc m)))
+      (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+        (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+      (image_of f C))
+    f
+    HhomeC).
+  let g.
+  assume HgHome :
+    homeomorphism
+      (image_of f C)
+      (subspace_topology
+        (setprod (setprod R R) (euclidean_space (ordsucc m)))
+        (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+          (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+        (image_of f C))
+      C
+      (subspace_topology (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+        (euclidean_topology (ordsucc (ordsucc (ordsucc m)))) C)
+      g.
+  exact (homeomorphism_preserves_connected
+    (image_of f C)
+    (subspace_topology
+      (setprod (setprod R R) (euclidean_space (ordsucc m)))
+      (product_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology)
+        (euclidean_space (ordsucc m)) (euclidean_topology (ordsucc m)))
+      (image_of f C))
+    C
+    (subspace_topology (euclidean_space (ordsucc (ordsucc (ordsucc m))))
+      (euclidean_topology (ordsucc (ordsucc (ordsucc m)))) C)
+    g
+    HgHome
+    HconnImg).
+Qed.
 
 Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   n :e omega -> 2 c= n ->
