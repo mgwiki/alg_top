@@ -320503,7 +320503,36 @@ Theorem finite_glg_all_endpoints_shared_has_closed_reduced_edge_path :
 let T Tx Arcs.
 assume Hglg Hfin Hallshared.
 (** TODO: build a non-backtracking walk through arcs and use finiteness to force a repeat. **)
-admit.
+claim Hcase : Arcs = Empty \/ Arcs <> Empty.
+{ exact (xm (Arcs = Empty)). }
+apply Hcase.
+- assume HEmpty.
+  (** If Arcs is empty, the conclusion is still expected from the global context; defer. **)
+  admit.
+- assume Hnonempty.
+  claim HexA : exists A:set, A :e Arcs.
+  { exact (nonempty_has_element Arcs Hnonempty). }
+  apply HexA. let A0. assume HA0.
+  claim HarcA0 : arc A0 (subspace_topology T Tx A0).
+  {
+    exact (andER
+      (A0 c= T)
+      (arc A0 (subspace_topology T Tx A0))
+      (general_linear_graph_arc_data
+        T
+        Tx
+        Arcs
+        A0
+        Hglg
+        HA0)).
+  }
+  claim HepA0 :
+    exists p q:set, end_points_of_arc A0 (subspace_topology T Tx A0) p q.
+  { exact (arc_has_end_points_of_arc_pre A0 (subspace_topology T Tx A0) HarcA0). }
+  (** Use Hallshared to extend a non-backtracking walk from an endpoint of A0. **)
+  apply HepA0. let p0. assume Hp0. apply Hp0. let q0. assume Hpq0.
+  (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
+  admit.
 Admitted.
 
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
