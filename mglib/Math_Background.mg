@@ -181049,6 +181049,263 @@ claim HpqWcase : (p :e W1 /\ q :e W2) \/ (p :e W2 /\ q :e W1).
       (p :e W2 /\ q :e W1)
       (andI (p :e W2) (q :e W1) HpW2 (HpW2_imp_qW1 HpW2))).
 }
+(** Identify the components U and V with W1 and W2 (up to swapping). **)
+claim Hcomp_p_W1 : p :e W1 -> U = W1.
+{
+  assume HpW1.
+  claim HUsubW1 : U c= W1.
+  {
+    claim HUpack : U c= W1 \/ U c= W2.
+    {
+      exact (connected_subset_in_separation_side
+        Y Ty W1 W2 U
+        HtopY
+        (Sep_Subq Y (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            p :e C0 /\ y :e C0))
+        (component_of_connected Y Ty p HtopY HpY)
+        HW1Ty
+        HW2Ty
+        HsepY).
+    }
+    apply HUpack.
+    - assume HUsubW1 : U c= W1.
+      exact HUsubW1.
+    - assume HUsubW2 : U c= W2.
+      claim HpW2 : p :e W2.
+      { exact (HUsubW2 p HpU). }
+      claim HpInt : p :e W1 :/\: W2.
+      { exact (binintersectI W1 W2 p HpW1 HpW2). }
+      claim HpE : p :e Empty.
+      { rewrite <- HW1W2Empty. exact HpInt. }
+      exact (FalseE (EmptyE p HpE) (U c= W1)).
+  }
+  apply set_ext.
+  - (** U c= W1 **)
+    exact HUsubW1.
+  - (** W1 c= U **)
+    let z.
+    assume HzW1.
+    claim HzU0 :
+      z :e {y :e Y |
+        exists C0:set,
+          connected_space C0 (subspace_topology Y Ty C0) /\
+          p :e C0 /\ y :e C0}.
+    {
+      apply (SepI
+        Y
+        (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            p :e C0 /\ y :e C0)
+        z).
+      - exact (HW1subY z HzW1).
+      - witness W1.
+        apply andI.
+        * apply andI.
+          { exact HconnW1Y. }
+          { exact HpW1. }
+        * exact HzW1.
+    }
+    exact HzU0.
+}
+claim Hcomp_p_W2 : p :e W2 -> U = W2.
+{
+  assume HpW2.
+  claim HUsubW2 : U c= W2.
+  {
+    claim HUpack : U c= W1 \/ U c= W2.
+    {
+      exact (connected_subset_in_separation_side
+        Y Ty W1 W2 U
+        HtopY
+        (Sep_Subq Y (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            p :e C0 /\ y :e C0))
+        (component_of_connected Y Ty p HtopY HpY)
+        HW1Ty
+        HW2Ty
+        HsepY).
+    }
+    apply HUpack.
+    - assume HUsubW1 : U c= W1.
+      claim HpW1 : p :e W1.
+      { exact (HUsubW1 p HpU). }
+      claim HpInt : p :e W1 :/\: W2.
+      { exact (binintersectI W1 W2 p HpW1 HpW2). }
+      claim HpE : p :e Empty.
+      { rewrite <- HW1W2Empty. exact HpInt. }
+      exact (FalseE (EmptyE p HpE) (U c= W2)).
+    - assume HUsubW2 : U c= W2.
+      exact HUsubW2.
+  }
+  apply set_ext.
+  - exact HUsubW2.
+  - let z.
+    assume HzW2.
+    claim HzU0 :
+      z :e {y :e Y |
+        exists C0:set,
+          connected_space C0 (subspace_topology Y Ty C0) /\
+          p :e C0 /\ y :e C0}.
+    {
+      apply (SepI
+        Y
+        (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            p :e C0 /\ y :e C0)
+        z).
+      - exact (HW2subY z HzW2).
+      - witness W2.
+        apply andI.
+        * apply andI.
+          { exact HconnW2Y. }
+          { exact HpW2. }
+        * exact HzW2.
+    }
+    exact HzU0.
+}
+claim Hcomp_q_W1 : q :e W1 -> V = W1.
+{
+  assume HqW1.
+  claim HVsubW1 : V c= W1.
+  {
+    claim HVpack : V c= W1 \/ V c= W2.
+    {
+      exact (connected_subset_in_separation_side
+        Y Ty W1 W2 V
+        HtopY
+        (Sep_Subq Y (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            q :e C0 /\ y :e C0))
+        (component_of_connected Y Ty q HtopY HqY)
+        HW1Ty
+        HW2Ty
+        HsepY).
+    }
+    apply HVpack.
+    - assume HVsubW1 : V c= W1.
+      exact HVsubW1.
+    - assume HVsubW2 : V c= W2.
+      claim HqW2 : q :e W2.
+      { exact (HVsubW2 q HqV). }
+      claim HqInt : q :e W1 :/\: W2.
+      { exact (binintersectI W1 W2 q HqW1 HqW2). }
+      claim HqE : q :e Empty.
+      { rewrite <- HW1W2Empty. exact HqInt. }
+      exact (FalseE (EmptyE q HqE) (V c= W1)).
+  }
+  apply set_ext.
+  - exact HVsubW1.
+  - let z.
+    assume HzW1.
+    claim HzV0 :
+      z :e {y :e Y |
+        exists C0:set,
+          connected_space C0 (subspace_topology Y Ty C0) /\
+          q :e C0 /\ y :e C0}.
+    {
+      apply (SepI
+        Y
+        (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            q :e C0 /\ y :e C0)
+        z).
+      - exact (HW1subY z HzW1).
+      - witness W1.
+        apply andI.
+        * apply andI.
+          { exact HconnW1Y. }
+          { exact HqW1. }
+        * exact HzW1.
+    }
+    exact HzV0.
+}
+claim Hcomp_q_W2 : q :e W2 -> V = W2.
+{
+  assume HqW2.
+  claim HVsubW2 : V c= W2.
+  {
+    claim HVpack : V c= W1 \/ V c= W2.
+    {
+      exact (connected_subset_in_separation_side
+        Y Ty W1 W2 V
+        HtopY
+        (Sep_Subq Y (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            q :e C0 /\ y :e C0))
+        (component_of_connected Y Ty q HtopY HqY)
+        HW1Ty
+        HW2Ty
+        HsepY).
+    }
+    apply HVpack.
+    - assume HVsubW1 : V c= W1.
+      claim HqW1 : q :e W1.
+      { exact (HVsubW1 q HqV). }
+      claim HqInt : q :e W1 :/\: W2.
+      { exact (binintersectI W1 W2 q HqW1 HqW2). }
+      claim HqE : q :e Empty.
+      { rewrite <- HW1W2Empty. exact HqInt. }
+      exact (FalseE (EmptyE q HqE) (V c= W2)).
+    - assume HVsubW2 : V c= W2.
+      exact HVsubW2.
+  }
+  apply set_ext.
+  - exact HVsubW2.
+  - let z.
+    assume HzW2.
+    claim HzV0 :
+      z :e {y :e Y |
+        exists C0:set,
+          connected_space C0 (subspace_topology Y Ty C0) /\
+          q :e C0 /\ y :e C0}.
+    {
+      apply (SepI
+        Y
+        (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            q :e C0 /\ y :e C0)
+        z).
+      - exact (HW2subY z HzW2).
+      - witness W2.
+        apply andI.
+        * apply andI.
+          { exact HconnW2Y. }
+          { exact HqW2. }
+        * exact HzW2.
+    }
+    exact HzV0.
+}
+claim HUV_as_Ws : (U = W1 /\ V = W2) \/ (U = W2 /\ V = W1).
+{
+  apply HpqWcase.
+  - assume Hcase12 : p :e W1 /\ q :e W2.
+    claim HpW1 : p :e W1.
+    { exact (andEL (p :e W1) (q :e W2) Hcase12). }
+    claim HqW2 : q :e W2.
+    { exact (andER (p :e W1) (q :e W2) Hcase12). }
+    exact (orIL
+      (U = W1 /\ V = W2)
+      (U = W2 /\ V = W1)
+      (andI (U = W1) (V = W2) (Hcomp_p_W1 HpW1) (Hcomp_q_W2 HqW2))).
+  - assume Hcase21 : p :e W2 /\ q :e W1.
+    claim HpW2 : p :e W2.
+    { exact (andEL (p :e W2) (q :e W1) Hcase21). }
+    claim HqW1 : q :e W1.
+    { exact (andER (p :e W2) (q :e W1) Hcase21). }
+    exact (orIR
+      (U = W1 /\ V = W2)
+      (U = W2 /\ V = W1)
+      (andI (U = W2) (V = W1) (Hcomp_p_W2 HpW2) (Hcomp_q_W1 HqW1))).
+}
 (** TODO: use boundary identities Hbd1/Hbd2 to show C is the common boundary and build a deformation retract. **)
 claim Hdeform : deformation_retract X Tx C.
 { admit. }
