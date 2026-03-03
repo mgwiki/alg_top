@@ -180586,8 +180586,12 @@ claim Hx0Not : x0 /:e (Sing p :\/: Sing q).
 }
 claim Hx0X : x0 :e X.
 { exact (setminusI (Sn 2) (Sing p :\/: Sing q) x0 Hx0Sn Hx0Not). }
-(** Main isomorphism statement: deferred. **)
-admit.
+(** Reduce to the deformation retraction statement via S58 Thm 58.3. **)
+claim Hdeform : deformation_retract X Tx C.
+{ admit. }
+rewrite HTcX.
+exact (thm58_3_deformation_retract_isomorphism
+  X Tx C x0 HtopX Hdeform Hx0C).
 Admitted.
 
 (** ============================================================ **)
