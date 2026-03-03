@@ -173316,6 +173316,85 @@ Definition EuclidPlane_translate : set -> set := fun a =>
       (pair_map EuclidPlane (projection_map2 R R) (const_fun EuclidPlane (R2_ycoord a)))
       add_fun_R).
 
+(** Helper: translation map explicit formula. **)
+(** Proven Bob **)
+Lemma EuclidPlane_translate_apply : forall a p:set,
+  a :e EuclidPlane ->
+  p :e EuclidPlane ->
+  apply_fun (EuclidPlane_translate a) p =
+    (add_SNo (R2_xcoord p) (R2_xcoord a),
+     add_SNo (R2_ycoord p) (R2_ycoord a)).
+let a p.
+assume Ha Hp.
+claim Ha0R : R2_xcoord a :e R.
+{ exact (EuclidPlane_xcoord_in_R a Ha). }
+claim Ha1R : R2_ycoord a :e R.
+{ exact (EuclidPlane_ycoord_in_R a Ha). }
+claim Hxcoord : p 0 = R2_xcoord p.
+{ reflexivity. }
+claim Hycoord : p 1 = R2_ycoord p.
+{ reflexivity. }
+claim Hp0R : p 0 :e R.
+{ exact (eq_subst_mem (p 0) (R2_xcoord p) R Hxcoord
+    (EuclidPlane_xcoord_in_R p Hp)). }
+claim Hp1R : p 1 :e R.
+{ exact (eq_subst_mem (p 1) (R2_ycoord p) R Hycoord
+    (EuclidPlane_ycoord_in_R p Hp)). }
+claim Hproj1p : apply_fun (projection_map1 R R) p :e R.
+{
+  rewrite (projection_map1_apply R R p Hp).
+  exact Hp0R.
+}
+claim Hproj2p : apply_fun (projection_map2 R R) p :e R.
+{
+  rewrite (projection_map2_apply R R p Hp).
+  exact Hp1R.
+}
+claim Hconst1p : apply_fun (const_fun EuclidPlane (R2_xcoord a)) p :e R.
+{
+  rewrite (const_fun_apply EuclidPlane (R2_xcoord a) p Hp).
+  exact Ha0R.
+}
+claim Hconst2p : apply_fun (const_fun EuclidPlane (R2_ycoord a)) p :e R.
+{
+  rewrite (const_fun_apply EuclidPlane (R2_ycoord a) p Hp).
+  exact Ha1R.
+}
+claim Hdef :
+  EuclidPlane_translate a =
+  pair_map EuclidPlane
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map1 R R) (const_fun EuclidPlane (R2_xcoord a)))
+      add_fun_R)
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map2 R R) (const_fun EuclidPlane (R2_ycoord a)))
+      add_fun_R).
+{ reflexivity. }
+rewrite Hdef.
+rewrite (pair_map_apply EuclidPlane R R
+  (compose_fun EuclidPlane
+    (pair_map EuclidPlane (projection_map1 R R) (const_fun EuclidPlane (R2_xcoord a)))
+    add_fun_R)
+  (compose_fun EuclidPlane
+    (pair_map EuclidPlane (projection_map2 R R) (const_fun EuclidPlane (R2_ycoord a)))
+    add_fun_R)
+  p
+  Hp).
+rewrite (add_of_pair_map_apply EuclidPlane (projection_map1 R R)
+  (const_fun EuclidPlane (R2_xcoord a))
+  p Hp Hproj1p Hconst1p).
+rewrite (add_of_pair_map_apply EuclidPlane (projection_map2 R R)
+  (const_fun EuclidPlane (R2_ycoord a))
+  p Hp Hproj2p Hconst2p).
+rewrite (projection_map1_apply R R p Hp).
+rewrite (projection_map2_apply R R p Hp).
+rewrite (const_fun_apply EuclidPlane (R2_xcoord a) p Hp).
+rewrite (const_fun_apply EuclidPlane (R2_ycoord a) p Hp).
+rewrite Hxcoord.
+rewrite Hycoord.
+reflexivity.
+Qed.
+
 (** Helper: translation map on EuclidPlane is a homeomorphism. **)
 Theorem EuclidPlane_translate_homeomorphism : forall a:set,
   a :e EuclidPlane ->
@@ -173325,8 +173404,383 @@ Theorem EuclidPlane_translate_homeomorphism : forall a:set,
     EuclidPlane
     R2_standard_topology
     (EuclidPlane_translate a).
-admit.
-Admitted.
+let a.
+assume Ha.
+set a0 := R2_xcoord a.
+set a1 := R2_ycoord a.
+set a0m := minus_SNo a0.
+set a1m := minus_SNo a1.
+claim Ha0R : a0 :e R.
+{ exact (EuclidPlane_xcoord_in_R a Ha). }
+claim Ha1R : a1 :e R.
+{ exact (EuclidPlane_ycoord_in_R a Ha). }
+claim Ha0mR : a0m :e R.
+{ exact (real_minus_SNo a0 Ha0R). }
+claim Ha1mR : a1m :e R.
+{ exact (real_minus_SNo a1 Ha1R). }
+set aneg := (a0m, a1m).
+claim Haneg : aneg :e EuclidPlane.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    a0m
+    a1m
+    Ha0mR
+    Ha1mR).
+}
+set f := EuclidPlane_translate a.
+set g := EuclidPlane_translate aneg.
+claim HtopR : topology_on R R_standard_topology.
+{ exact R_standard_topology_is_topology. }
+claim HtopE : topology_on EuclidPlane R2_standard_topology.
+{ exact EuclidPlane_R2_standard_topology_on. }
+claim Hproj :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology (projection_map1 R R) /\
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology (projection_map2 R R).
+{
+  rewrite R2_standard_equals_product.
+  exact (projection_maps_continuous
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    HtopR
+    HtopR).
+}
+claim Hproj1 :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology (projection_map1 R R).
+{
+  exact (andEL
+    (continuous_map EuclidPlane R2_standard_topology R R_standard_topology (projection_map1 R R))
+    (continuous_map EuclidPlane R2_standard_topology R R_standard_topology (projection_map2 R R))
+    Hproj).
+}
+claim Hproj2 :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology (projection_map2 R R).
+{
+  exact (andER
+    (continuous_map EuclidPlane R2_standard_topology R R_standard_topology (projection_map1 R R))
+    (continuous_map EuclidPlane R2_standard_topology R R_standard_topology (projection_map2 R R))
+    Hproj).
+}
+claim Hconst1 :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology (const_fun EuclidPlane a0).
+{
+  exact (const_fun_continuous
+    EuclidPlane
+    R2_standard_topology
+    R
+    R_standard_topology
+    a0
+    HtopE
+    HtopR
+    Ha0R).
+}
+claim Hconst2 :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology (const_fun EuclidPlane a1).
+{
+  exact (const_fun_continuous
+    EuclidPlane
+    R2_standard_topology
+    R
+    R_standard_topology
+    a1
+    HtopE
+    HtopR
+    Ha1R).
+}
+claim Hconst1m :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology (const_fun EuclidPlane a0m).
+{
+  exact (const_fun_continuous
+    EuclidPlane
+    R2_standard_topology
+    R
+    R_standard_topology
+    a0m
+    HtopE
+    HtopR
+    Ha0mR).
+}
+claim Hconst2m :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology (const_fun EuclidPlane a1m).
+{
+  exact (const_fun_continuous
+    EuclidPlane
+    R2_standard_topology
+    R
+    R_standard_topology
+    a1m
+    HtopE
+    HtopR
+    Ha1mR).
+}
+claim Hf1cont :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map1 R R) (const_fun EuclidPlane a0))
+      add_fun_R).
+{
+  exact (add_two_continuous_R
+    EuclidPlane
+    R2_standard_topology
+    (projection_map1 R R)
+    (const_fun EuclidPlane a0)
+    HtopE
+    Hproj1
+    Hconst1).
+}
+claim Hf2cont :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map2 R R) (const_fun EuclidPlane a1))
+      add_fun_R).
+{
+  exact (add_two_continuous_R
+    EuclidPlane
+    R2_standard_topology
+    (projection_map2 R R)
+    (const_fun EuclidPlane a1)
+    HtopE
+    Hproj2
+    Hconst2).
+}
+claim Hg1cont :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map1 R R) (const_fun EuclidPlane a0m))
+      add_fun_R).
+{
+  exact (add_two_continuous_R
+    EuclidPlane
+    R2_standard_topology
+    (projection_map1 R R)
+    (const_fun EuclidPlane a0m)
+    HtopE
+    Hproj1
+    Hconst1m).
+}
+claim Hg2cont :
+  continuous_map EuclidPlane R2_standard_topology R R_standard_topology
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map2 R R) (const_fun EuclidPlane a1m))
+      add_fun_R).
+{
+  exact (add_two_continuous_R
+    EuclidPlane
+    R2_standard_topology
+    (projection_map2 R R)
+    (const_fun EuclidPlane a1m)
+    HtopE
+    Hproj2
+    Hconst2m).
+}
+claim Hfcont :
+  continuous_map EuclidPlane R2_standard_topology
+    EuclidPlane R2_standard_topology f.
+{
+  claim Hfdef :
+    f =
+    pair_map EuclidPlane
+      (compose_fun EuclidPlane
+        (pair_map EuclidPlane (projection_map1 R R) (const_fun EuclidPlane a0))
+        add_fun_R)
+      (compose_fun EuclidPlane
+        (pair_map EuclidPlane (projection_map2 R R) (const_fun EuclidPlane a1))
+        add_fun_R).
+  { reflexivity. }
+  rewrite Hfdef.
+  rewrite R2_standard_equals_product.
+  exact (maps_into_products
+    EuclidPlane
+    R2_standard_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map1 R R) (const_fun EuclidPlane a0))
+      add_fun_R)
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map2 R R) (const_fun EuclidPlane a1))
+      add_fun_R)
+    Hf1cont
+    Hf2cont).
+}
+claim Hgcont :
+  continuous_map EuclidPlane R2_standard_topology
+    EuclidPlane R2_standard_topology g.
+{
+  claim Hgdef :
+    g =
+    pair_map EuclidPlane
+      (compose_fun EuclidPlane
+        (pair_map EuclidPlane (projection_map1 R R) (const_fun EuclidPlane (R2_xcoord aneg)))
+        add_fun_R)
+      (compose_fun EuclidPlane
+        (pair_map EuclidPlane (projection_map2 R R) (const_fun EuclidPlane (R2_ycoord aneg)))
+        add_fun_R).
+  { reflexivity. }
+  rewrite Hgdef.
+  rewrite (R2_xcoord_tuple a0m a1m).
+  rewrite (R2_ycoord_tuple a0m a1m).
+  rewrite R2_standard_equals_product.
+  exact (maps_into_products
+    EuclidPlane
+    R2_standard_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map1 R R) (const_fun EuclidPlane a0m))
+      add_fun_R)
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map2 R R) (const_fun EuclidPlane a1m))
+      add_fun_R)
+    Hg1cont
+    Hg2cont).
+}
+claim HfFun : function_on f EuclidPlane EuclidPlane.
+{
+  exact (continuous_map_function_on
+    EuclidPlane
+    R2_standard_topology
+    EuclidPlane
+    R2_standard_topology
+    f
+    Hfcont).
+}
+claim HgFun : function_on g EuclidPlane EuclidPlane.
+{
+  exact (continuous_map_function_on
+    EuclidPlane
+    R2_standard_topology
+    EuclidPlane
+    R2_standard_topology
+    g
+    Hgcont).
+}
+claim Hleft : forall p:set, p :e EuclidPlane -> apply_fun g (apply_fun f p) = p.
+{
+  let p. assume Hp.
+  claim Hfp : apply_fun f p :e EuclidPlane.
+  { exact (HfFun p Hp). }
+  claim Hgdef0 : g = EuclidPlane_translate aneg.
+  { reflexivity. }
+  rewrite Hgdef0.
+  claim Hgf :
+    apply_fun (EuclidPlane_translate aneg) (apply_fun f p) =
+      (add_SNo (R2_xcoord (apply_fun f p)) (R2_xcoord aneg),
+       add_SNo (R2_ycoord (apply_fun f p)) (R2_ycoord aneg)).
+  {
+    exact (EuclidPlane_translate_apply aneg (apply_fun f p) Haneg Hfp).
+  }
+  rewrite Hgf.
+  claim Hfap :
+    apply_fun f p =
+      (add_SNo (R2_xcoord p) a0, add_SNo (R2_ycoord p) a1).
+  {
+    claim Hfdef0 : f = EuclidPlane_translate a.
+    { reflexivity. }
+    rewrite Hfdef0.
+    exact (EuclidPlane_translate_apply a p Ha Hp).
+  }
+  rewrite Hfap.
+  rewrite (R2_xcoord_tuple
+    (add_SNo (R2_xcoord p) a0)
+    (add_SNo (R2_ycoord p) a1)).
+  rewrite (R2_ycoord_tuple
+    (add_SNo (R2_xcoord p) a0)
+    (add_SNo (R2_ycoord p) a1)).
+  rewrite (R2_xcoord_tuple a0m a1m).
+  rewrite (R2_ycoord_tuple a0m a1m).
+  claim Ha0SNo : SNo a0.
+  { exact (real_SNo a0 Ha0R). }
+  claim Ha1SNo : SNo a1.
+  { exact (real_SNo a1 Ha1R). }
+  claim Hp0SNo : SNo (R2_xcoord p).
+  { exact (real_SNo (R2_xcoord p) (EuclidPlane_xcoord_in_R p Hp)). }
+  claim Hp1SNo : SNo (R2_ycoord p).
+  { exact (real_SNo (R2_ycoord p) (EuclidPlane_ycoord_in_R p Hp)). }
+  rewrite (add_SNo_minus_R2 (R2_xcoord p) a0 Hp0SNo Ha0SNo).
+  rewrite (add_SNo_minus_R2 (R2_ycoord p) a1 Hp1SNo Ha1SNo).
+  exact (EuclidPlane_eta p Hp).
+}
+claim Hright : forall p:set, p :e EuclidPlane -> apply_fun f (apply_fun g p) = p.
+{
+  let p. assume Hp.
+  claim Hgp : apply_fun g p :e EuclidPlane.
+  { exact (HgFun p Hp). }
+  claim Hfdef0 : f = EuclidPlane_translate a.
+  { reflexivity. }
+  rewrite Hfdef0.
+  claim Hfg :
+    apply_fun (EuclidPlane_translate a) (apply_fun g p) =
+      (add_SNo (R2_xcoord (apply_fun g p)) (R2_xcoord a),
+       add_SNo (R2_ycoord (apply_fun g p)) (R2_ycoord a)).
+  {
+    exact (EuclidPlane_translate_apply a (apply_fun g p) Ha Hgp).
+  }
+  rewrite Hfg.
+  claim Hgap :
+    apply_fun g p =
+      (add_SNo (R2_xcoord p) a0m, add_SNo (R2_ycoord p) a1m).
+  {
+    claim Hgdef0 : g = EuclidPlane_translate aneg.
+    { reflexivity. }
+    rewrite Hgdef0.
+    rewrite (EuclidPlane_translate_apply aneg p Haneg Hp).
+    rewrite (R2_xcoord_tuple a0m a1m).
+    rewrite (R2_ycoord_tuple a0m a1m).
+    reflexivity.
+  }
+  rewrite Hgap.
+  rewrite (R2_xcoord_tuple
+    (add_SNo (R2_xcoord p) a0m)
+    (add_SNo (R2_ycoord p) a1m)).
+  rewrite (R2_ycoord_tuple
+    (add_SNo (R2_xcoord p) a0m)
+    (add_SNo (R2_ycoord p) a1m)).
+  claim Ha0def : R2_xcoord a = a0.
+  { reflexivity. }
+  rewrite Ha0def.
+  claim Ha1def : R2_ycoord a = a1.
+  { reflexivity. }
+  rewrite Ha1def.
+  claim Ha0SNo : SNo a0.
+  { exact (real_SNo a0 Ha0R). }
+  claim Ha1SNo : SNo a1.
+  { exact (real_SNo a1 Ha1R). }
+  claim Hp0SNo : SNo (R2_xcoord p).
+  { exact (real_SNo (R2_xcoord p) (EuclidPlane_xcoord_in_R p Hp)). }
+  claim Hp1SNo : SNo (R2_ycoord p).
+  { exact (real_SNo (R2_ycoord p) (EuclidPlane_ycoord_in_R p Hp)). }
+  rewrite (add_SNo_minus_R2' (R2_xcoord p) a0 Hp0SNo Ha0SNo).
+  rewrite (add_SNo_minus_R2' (R2_ycoord p) a1 Hp1SNo Ha1SNo).
+exact (EuclidPlane_eta p Hp).
+}
+claim Hhome :
+  continuous_map EuclidPlane R2_standard_topology
+    EuclidPlane R2_standard_topology f /\
+  exists g : set,
+    continuous_map EuclidPlane R2_standard_topology
+      EuclidPlane R2_standard_topology g /\
+    (forall x:set, x :e EuclidPlane -> apply_fun g (apply_fun f x) = x) /\
+    (forall y:set, y :e EuclidPlane -> apply_fun f (apply_fun g y) = y).
+{
+  apply andI.
+  - exact Hfcont.
+  - witness g.
+    apply andI.
+    + apply andI.
+      * exact Hgcont.
+      * exact Hleft.
+    + exact Hright.
+}
+exact Hhome.
+Qed.
 
 (** Helper: punctured Euclidean plane is connected at any point. **)
 Theorem punctured_EuclidPlane_connected_any : forall a:set,
@@ -173334,8 +173788,145 @@ Theorem punctured_EuclidPlane_connected_any : forall a:set,
   connected_space (EuclidPlane :\: {a,a})
     (subspace_topology EuclidPlane R2_standard_topology
       (EuclidPlane :\: {a,a})).
-admit.
-Admitted.
+let a.
+assume Ha.
+set a0 := R2_xcoord a.
+set a1 := R2_ycoord a.
+set a0m := minus_SNo a0.
+set a1m := minus_SNo a1.
+claim Ha0R : a0 :e R.
+{ exact (EuclidPlane_xcoord_in_R a Ha). }
+claim Ha1R : a1 :e R.
+{ exact (EuclidPlane_ycoord_in_R a Ha). }
+claim Ha0mR : a0m :e R.
+{ exact (real_minus_SNo a0 Ha0R). }
+claim Ha1mR : a1m :e R.
+{ exact (real_minus_SNo a1 Ha1R). }
+set aneg := (a0m, a1m).
+claim Haneg : aneg :e EuclidPlane.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    a0m
+    a1m
+    Ha0mR
+    Ha1mR).
+}
+set f := EuclidPlane_translate aneg.
+claim Hhome :
+  homeomorphism EuclidPlane R2_standard_topology
+    EuclidPlane R2_standard_topology f.
+{
+  exact (EuclidPlane_translate_homeomorphism aneg Haneg).
+}
+claim Hfa : apply_fun f a = (0,0).
+{
+  rewrite (EuclidPlane_translate_apply aneg a Haneg Ha).
+  rewrite (R2_xcoord_tuple a0m a1m).
+  rewrite (R2_ycoord_tuple a0m a1m).
+  claim Ha0SNo : SNo a0.
+  { exact (real_SNo a0 Ha0R). }
+  claim Ha1SNo : SNo a1.
+  { exact (real_SNo a1 Ha1R). }
+  rewrite (add_SNo_minus_SNo_rinv a0 Ha0SNo).
+  rewrite (add_SNo_minus_SNo_rinv a1 Ha1SNo).
+  reflexivity.
+}
+set C := EuclidPlane :\: {a,a}.
+claim HCsub : C c= EuclidPlane.
+{ exact (setminus_Subq EuclidPlane {a,a}). }
+claim HhomeSub :
+  homeomorphism
+    C
+    (subspace_topology EuclidPlane R2_standard_topology C)
+    (image_of f C)
+    (subspace_topology EuclidPlane R2_standard_topology (image_of f C))
+    f.
+{
+  exact (homeomorphism_restrict_to_image_of_subset
+    EuclidPlane
+    R2_standard_topology
+    EuclidPlane
+    R2_standard_topology
+    f
+    C
+    Hhome
+    HCsub).
+}
+claim Himg :
+  image_of f C = EuclidPlane :\: {apply_fun f a, apply_fun f a}.
+{
+  exact (homeomorphism_image_of_setminus_singleton
+    EuclidPlane
+    R2_standard_topology
+    EuclidPlane
+    R2_standard_topology
+    f
+    a
+    Hhome
+    Ha).
+}
+claim HconnImg :
+  connected_space (image_of f C)
+    (subspace_topology EuclidPlane R2_standard_topology (image_of f C)).
+{
+  rewrite Himg.
+  rewrite Hfa.
+  rewrite <- (Sing_eq_UPair (0,0)).
+  exact punctured_EuclidPlane_connected.
+}
+claim HinvEx :
+  exists g : set,
+    homeomorphism
+      (image_of f C)
+      (subspace_topology EuclidPlane R2_standard_topology (image_of f C))
+      C
+      (subspace_topology EuclidPlane R2_standard_topology C)
+      g.
+{
+  exact (homeomorphism_inverse_is_homeomorphism_variant
+    C
+    (subspace_topology EuclidPlane R2_standard_topology C)
+    (image_of f C)
+    (subspace_topology EuclidPlane R2_standard_topology (image_of f C))
+    f
+    HhomeSub).
+}
+set g := Eps_i (fun g:set =>
+  homeomorphism
+    (image_of f C)
+    (subspace_topology EuclidPlane R2_standard_topology (image_of f C))
+    C
+    (subspace_topology EuclidPlane R2_standard_topology C)
+    g).
+claim HgHome :
+  homeomorphism
+    (image_of f C)
+    (subspace_topology EuclidPlane R2_standard_topology (image_of f C))
+    C
+    (subspace_topology EuclidPlane R2_standard_topology C)
+    g.
+{
+  exact (Eps_i_ex
+    (fun g:set =>
+      homeomorphism
+        (image_of f C)
+        (subspace_topology EuclidPlane R2_standard_topology (image_of f C))
+        C
+        (subspace_topology EuclidPlane R2_standard_topology C)
+        g)
+    HinvEx).
+}
+exact (homeomorphism_preserves_connected
+  (image_of f C)
+  (subspace_topology EuclidPlane R2_standard_topology (image_of f C))
+  C
+  (subspace_topology EuclidPlane R2_standard_topology C)
+  g
+  HgHome
+  HconnImg).
+Qed.
 
 (** Helper: any n >= 2 can be written as ordsucc (ordsucc k). **)
 (** Proven Bob **)
