@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 2268 **)
+(** Balance Charlie 2259 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -177499,7 +177499,8 @@ Admitted.
 (** LATEX VERSION: X is the union of finitely many arcs, each pair meeting **)
 (** in at most a common endpoint. X is Hausdorff iff each arc is closed. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Charlie 1772582614 **)
 Theorem ex64_1a_hausdorff_iff_arcs_closed : forall X Tx Arcs:set,
   topology_on X Tx ->
   finite Arcs ->
