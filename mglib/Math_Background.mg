@@ -1,5 +1,5 @@
 (** Balance Alice 4188 **)
-(** Balance Bob 5480 **)
+(** Balance Bob 5510 **)
 (** Balance Charlie 1463 **)
 (** Balance Dave 2064 **)
 
@@ -90968,6 +90968,42 @@ Qed.
     lift (start) maps I1 into one slice, and each column lift maps [0,1] into one slice
     (by being anchored at t=0 via start), then all columns map I2 into that same slice.
     This is the key column-to-column transfer used in L54.2. **)
+(** Infrastructure: continuity of the t0-column map for product-ball lifts **)
+(** TODO: derive from parametric path-lift continuity on product balls. **)
+Lemma column_lifts_same_sheet_on_product_ball_column_continuous :
+  forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  V0 :e slices ->
+  continuous_map unit_interval unit_interval_topology B Tb g0 ->
+  e0 :e E ->
+  apply_fun p e0 = apply_fun g0 0 ->
+  start_lift = path_lift E Te B Tb p e0 g0 ->
+  I1 c= unit_interval ->
+  I2 c= unit_interval ->
+  connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+  connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+  (forall s:set, s :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+  (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+    apply_fun (apply_fun vs_choice s) t :e U) ->
+  (forall s:set, s :e I1 ->
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+  s0 :e I1 ->
+  t0 :e I2 ->
+  apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0 :e V0 ->
+  (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+    (graph I1 (fun s:set =>
+      apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+        t0)).
+admit.
+Admitted.
+
 Lemma column_lifts_same_sheet_on_product_ball :
   forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
   covering_map E Te B Tb p ->
@@ -91214,7 +91250,46 @@ Lemma column_lifts_same_sheet_on_product_ball :
       t0).
   claim HcolCont :
     continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te Fcol.
-  { admit. }
+  {
+    exact (column_lifts_same_sheet_on_product_ball_column_continuous
+      E
+      Te
+      B
+      Tb
+      p
+      U
+      slices
+      V0
+      e0
+      g0
+      start_lift
+      I1
+      I2
+      vs_choice
+      s0
+      t0
+      Hcov
+      HtopE
+      HslicesSub
+      HpdSlices
+      Hunion
+      HV0Slice
+      Hg0Cont
+      He0
+      Hstart0
+      HstartLift
+      HI1sub
+      HI2sub
+      HI1conn
+      HI2conn
+      HvsCont
+      HvsU
+      HstartComm
+      Hs0
+      Ht0
+      Hlift0V0
+      HstartE).
+  }
   claim HcolInUnion :
     forall s:set, s :e I1 -> apply_fun Fcol s :e Union slices.
   {
@@ -91343,7 +91418,7 @@ Lemma column_lifts_same_sheet_on_product_ball :
   exact (HcolVs t HtI2).
 }
 Admitted. (** TODO: requires continuity of the t0-column map; see
-  column_lifts_same_sheet_on_product_ball_with_col_cont. **)
+  column_lifts_same_sheet_on_product_ball_column_continuous. **)
 
 (** Infrastructure: column lift sheet constancy with explicit continuity of the t0-column map **)
 Lemma column_lifts_same_sheet_on_product_ball_with_col_cont :
@@ -140939,14 +141014,17 @@ Qed.
 
 (** helper sub-bounty for Cor 58.5: alpha-hat sends identity to identity **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Bounty 10 **)
+(** Collected Bob 10 **)
+(** Proven Bob **)
+(** Admin-approved-refactored per noticeboard proposal <<1772418015>> **)
 Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
   path_between X x0 x1 alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
   apply_fun (basepoint_change_map X Tx x0 x1 alpha)
     (fundamental_group_id X Tx x0)
   = fundamental_group_id X Tx x1.
 let X Tx x0 x1 alpha.
-assume HalphaPath.
+assume HalphaPath HalphaCont.
 claim HalphaFun : function_on alpha unit_interval X.
 {
   exact (path_between_function_on
@@ -141069,8 +141147,8 @@ claim HidIfCont :
   }
   exact HhomMapsId.
 }
-admit. (** TODO: needs continuous_map for lemma58_path_between_continuous_bridge **)
-Admitted.
+exact (HidIfCont HalphaCont).
+Qed.
 
 (** Proven Bob **)
 (** helper sub-bounty for Cor 58.5: alpha-hat sends identity to identity (continuous case) **)
@@ -141193,16 +141271,19 @@ Qed.
 
 (** helper sub-bounty for Cor 58.5: alpha-hat is injective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Bounty 10 **)
+(** Collected Bob 10 **)
+(** Proven Bob **)
+(** Admin-approved-refactored per noticeboard proposal <<1772418016>> **)
 Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
   path_between X x0 x1 alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
   a :e fundamental_group X Tx x0 ->
   b :e fundamental_group X Tx x0 ->
   apply_fun (basepoint_change_map X Tx x0 x1 alpha) a =
   apply_fun (basepoint_change_map X Tx x0 x1 alpha) b ->
   a = b.
 let X Tx x0 x1 alpha a b.
-assume HalphaPath Ha Hb Hab.
+assume HalphaPath HalphaCont Ha Hb Hab.
 claim HalphaFun : function_on alpha unit_interval X.
 {
   exact (path_between_function_on
@@ -141313,8 +141394,8 @@ claim HinjIfCont :
     Hb
     Hab).
 }
-admit. (** TODO: needs continuous_map for lemma58_path_between_continuous_bridge **)
-Admitted.
+exact (HinjIfCont HalphaCont).
+Qed.
 
 (** Proven Bob **)
 (** helper sub-bounty for Cor 58.5: alpha-hat is injective (continuous case) **)
@@ -141396,14 +141477,17 @@ Qed.
 
 (** helper sub-bounty for Cor 58.5: alpha-hat is surjective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Bounty 10 **)
+(** Collected Bob 10 **)
+(** Proven Bob **)
+(** Admin-approved-refactored per noticeboard proposal <<1772418017>> **)
 Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
   path_between X x0 x1 alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
   c :e fundamental_group X Tx x1 ->
   exists a:set, a :e fundamental_group X Tx x0 /\
     apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
 let X Tx x0 x1 alpha c.
-assume HalphaPath Hc.
+assume HalphaPath HalphaCont Hc.
 claim HalphaFun : function_on alpha unit_interval X.
 {
   exact (path_between_function_on
@@ -141512,8 +141596,8 @@ claim HsurjIfCont :
     Hbij
     Hc).
 }
-admit. (** TODO: needs continuous_map for lemma58_path_between_continuous_bridge **)
-Admitted.
+exact (HsurjIfCont HalphaCont).
+Qed.
 
 (** Proven Bob **)
 (** helper sub-bounty for Cor 58.5: alpha-hat is surjective (continuous case) **)
