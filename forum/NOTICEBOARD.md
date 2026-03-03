@@ -82,6 +82,63 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772569544
+Created: 1772569544
+Status: PROPOSED
+
+Refers to Commit:
+  3203eef048f928fa11cf511c1adc879053c063c9
+
+Target:
+  Line: 223964
+  Name: lemma68_3_extension_external_free_product (Theorem)
+
+Problem:
+  The statement does not assume the factors (apply_fun Gfam alpha, apply_fun multfam alpha) are groups.
+  But the intended proof (and the current partial proof attempt) needs closure of multfam on each factor
+  to show the descended maps on the images are group_homomorphisms; otherwise the proof gets stuck and
+  requires an internal `admit`.
+
+Proposed Replacement:
+  Theorem lemma68_3_extension_external_free_product :
+    forall G multG eG invG J Gfam multfam ifam:set,
+    external_free_product G multG eG invG J Gfam multfam ifam ->
+    (forall alpha:set, alpha :e J ->
+      exists ea inva:set,
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea inva) ->
+    forall H multH eH invH:set,
+      group_structure H multH eH invH ->
+      forall hfam:set,
+        (forall alpha:set, alpha :e J ->
+          group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH (apply_fun hfam alpha)) ->
+        exists h:set,
+          group_homomorphism G multG H multH h /\
+          (forall alpha:set, alpha :e J ->
+            forall x:set, x :e apply_fun Gfam alpha ->
+              apply_fun h (apply_fun (apply_fun ifam alpha) x) =
+                apply_fun (apply_fun hfam alpha) x) /\
+          (forall h':set, group_homomorphism G multG H multH h' ->
+            (forall alpha:set, alpha :e J ->
+              forall x:set, x :e apply_fun Gfam alpha ->
+                apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+                  apply_fun (apply_fun hfam alpha) x) ->
+            forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+
+Proposed by:
+  - 1772569544 | Charlie
+
+Discussion:
+  - 1772569544 | Charlie: The proof needs factor closure (via group_structure) to descend hfam to the image subgroup.
+
+Approvals:
+  - 1772569544 | Alice:
+  - 1772569544 | Bob:
+  - 1772569544 | Charlie: YES
+  - 1772569544 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772562734
 Created: 1772562734
 Status: PROPOSED
