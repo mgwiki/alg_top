@@ -225764,7 +225764,6 @@ admit.
 Admitted.
 
 (** Bounty 55 **)
-(** Lock Charlie 1772648629 **)
 Theorem cor68_6_side_from_product_G1_ge3_full :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
   group_structure G multG eG invG ->
@@ -226045,7 +226044,6 @@ apply (Hys_side i Hi_in).
 Admitted.
 
 (** Bounty 55 **)
-(** Lock Charlie 1772648629 **)
 Theorem cor68_6_side_from_product_G2_ge3_full :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
   group_structure G multG eG invG ->
@@ -226326,7 +226324,6 @@ apply (Hys_side i Hi_in).
 Admitted.
 
 (** Bounty 61 **)
-(** Lock Charlie 1772627457 **)
 Theorem cor68_6_associativity_free_product :
   forall G multG eG invG G1 G2 J K Hfam efamH:set,
   group_structure G multG eG invG ->
