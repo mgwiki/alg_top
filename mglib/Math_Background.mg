@@ -196897,6 +196897,7 @@ Opaque Pi.
 (** LATEX VERSION: Given a family of abelian groups {G_alpha}, there exists an abelian group G **)
 (** and monomorphisms i_alpha: G_alpha -> G such that G is the direct sum of the images. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 200 **)
+(** Proven Charlie **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -199025,7 +199026,7 @@ apply andI.
         claim Hne2 : gamma <> apply_fun a2 j. { rewrite Ha2j. exact Hne. }
         rewrite Hev. rewrite (If_i_0 (gamma = apply_fun a2 j) ((apply_fun x2 j) (apply_fun a2 j)) (ea gamma) Hne2).
         symmetry. exact (beta J (fun alpha => ea alpha) gamma Hg).
-Admitted.
+Qed.
 
 (** from S67 Lem 67.5 (line 2660 in algtop.tex): extension condition for external direct sums **)
 (** LATEX VERSION: If each i_alpha is a monomorphism and G is the direct sum of i_alpha(G_alpha), **)
