@@ -181794,7 +181794,574 @@ claim Hdeform0 :
 {
   apply andI.
   - exact HCsubX.
-  - admit.
+  - (** Skeleton: define a closed cover of X by the two Jordan sides and
+        paste deformation homotopies on each side using the pasting lemma. **)
+    (** U and V sit inside Y. **)
+    claim HUsubY : U c= Y.
+    {
+      let z.
+      assume HzU.
+      exact (SepE1
+        Y
+        (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            p :e C0 /\ y :e C0)
+        z
+        HzU).
+    }
+    claim HVsubY : V c= Y.
+    {
+      let z.
+      assume HzV.
+      exact (SepE1
+        Y
+        (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            q :e C0 /\ y :e C0)
+        z
+        HzV).
+    }
+    claim HUsubSn : U c= Sn 2.
+    { exact (Subq_tra U Y (Sn 2) HUsubY HYsubSn). }
+    claim HVsubSn : V c= Sn 2.
+    { exact (Subq_tra V Y (Sn 2) HVsubY HYsubSn). }
+    (** Closure descriptions (U and V are either W1 or W2). **)
+    set DU := closure_of (Sn 2) (Sn_topology 2) U.
+    set DV := closure_of (Sn 2) (Sn_topology 2) V.
+    claim HDUdef : DU = closure_of (Sn 2) (Sn_topology 2) U.
+    { reflexivity. }
+    claim HDVdef : DV = closure_of (Sn 2) (Sn_topology 2) V.
+    { reflexivity. }
+    claim HDUeq : DU = U :\/: C.
+    {
+      rewrite HDUdef.
+      apply HUV_as_Ws.
+      - assume H12 : U = W1 /\ V = W2.
+        claim HUeq : U = W1.
+        { exact (andEL (U = W1) (V = W2) H12). }
+        rewrite HUeq.
+        exact HclW1eq.
+      - assume H21 : U = W2 /\ V = W1.
+        claim HUeq : U = W2.
+        { exact (andEL (U = W2) (V = W1) H21). }
+        rewrite HUeq.
+        exact HclW2eq.
+    }
+    claim HDVeq : DV = V :\/: C.
+    {
+      rewrite HDVdef.
+      apply HUV_as_Ws.
+      - assume H12 : U = W1 /\ V = W2.
+        claim HVeq : V = W2.
+        { exact (andER (U = W1) (V = W2) H12). }
+        rewrite HVeq.
+        exact HclW2eq.
+      - assume H21 : U = W2 /\ V = W1.
+        claim HVeq : V = W1.
+        { exact (andER (U = W2) (V = W1) H21). }
+        rewrite HVeq.
+        exact HclW1eq.
+    }
+    claim HDUDVeqSn : DU :\/: DV = Sn 2.
+    {
+      apply set_ext.
+      - let z.
+        assume HzUDV : z :e DU :\/: DV.
+        apply (binunionE DU DV z HzUDV).
+        + assume HzDU.
+          claim Hzcl : z :e closure_of (Sn 2) (Sn_topology 2) U.
+          { rewrite <- HDUdef. exact HzDU. }
+          exact (closure_in_space (Sn 2) (Sn_topology 2) U HtopSn2 z Hzcl).
+        + assume HzDV.
+          claim Hzcl : z :e closure_of (Sn 2) (Sn_topology 2) V.
+          { rewrite <- HDVdef. exact HzDV. }
+          exact (closure_in_space (Sn 2) (Sn_topology 2) V HtopSn2 z Hzcl).
+      - let z.
+        assume HzSn : z :e Sn 2.
+        apply (xm (z :e C)).
+        + assume HzC : z :e C.
+          claim HzDU : z :e DU.
+          { rewrite HDUeq. exact (binunionI2 U C z HzC). }
+          exact (binunionI1 DU DV z HzDU).
+        + assume HzNotC : ~(z :e C).
+          claim HzY : z :e Y.
+          { exact (setminusI (Sn 2) C z HzSn HzNotC). }
+          claim HzUV : z :e U :\/: V.
+          { rewrite <- HYeqUV. exact HzY. }
+          apply (binunionE U V z HzUV).
+          * assume HzU : z :e U.
+            claim HzDU : z :e DU.
+            { rewrite HDUeq. exact (binunionI1 U C z HzU). }
+            exact (binunionI1 DU DV z HzDU).
+          * assume HzV : z :e V.
+            claim HzDV : z :e DV.
+            { rewrite HDVeq. exact (binunionI1 V C z HzV). }
+            exact (binunionI2 DU DV z HzDV).
+    }
+    claim HDUDVeqC : DU :/\: DV = C.
+    {
+      rewrite HDUdef.
+      rewrite HDVdef.
+      apply HUV_as_Ws.
+      - assume H12 : U = W1 /\ V = W2.
+        claim HUeq : U = W1.
+        { exact (andEL (U = W1) (V = W2) H12). }
+        claim HVeq : V = W2.
+        { exact (andER (U = W1) (V = W2) H12). }
+        rewrite HUeq.
+        rewrite HVeq.
+        exact HclW1W2eqC.
+      - assume H21 : U = W2 /\ V = W1.
+        claim HUeq : U = W2.
+        { exact (andEL (U = W2) (V = W1) H21). }
+        claim HVeq : V = W1.
+        { exact (andER (U = W2) (V = W1) H21). }
+        rewrite HUeq.
+        rewrite HVeq.
+        rewrite (binintersect_com
+          (closure_of (Sn 2) (Sn_topology 2) W2)
+          (closure_of (Sn 2) (Sn_topology 2) W1)).
+        exact HclW1W2eqC.
+    }
+    (** A1 = DU ∩ X and A2 = DV ∩ X form a closed cover of X. **)
+    set A1 := DU :/\: X.
+    set A2 := DV :/\: X.
+    claim HA1def : A1 = DU :/\: X.
+    { reflexivity. }
+    claim HA2def : A2 = DV :/\: X.
+    { reflexivity. }
+    claim HclosedDU : closed_in (Sn 2) (Sn_topology 2) DU.
+    {
+      rewrite HDUdef.
+      exact (closure_is_closed (Sn 2) (Sn_topology 2) U HtopSn2 HUsubSn).
+    }
+    claim HclosedDV : closed_in (Sn 2) (Sn_topology 2) DV.
+    {
+      rewrite HDVdef.
+      exact (closure_is_closed (Sn 2) (Sn_topology 2) V HtopSn2 HVsubSn).
+    }
+    claim HclosedA1 : closed_in X Tx A1.
+    {
+      rewrite HA1def.
+      apply (iffER
+        (closed_in X (subspace_topology (Sn 2) (Sn_topology 2) X) (DU :/\: X))
+        (exists C0:set, closed_in (Sn 2) (Sn_topology 2) C0 /\ (DU :/\: X) = C0 :/\: X)
+        (closed_in_subspace_iff_intersection (Sn 2) (Sn_topology 2) X (DU :/\: X) HtopSn2 HXsubSn)).
+      witness DU.
+      apply andI.
+      - exact HclosedDU.
+      - reflexivity.
+    }
+    claim HclosedA2 : closed_in X Tx A2.
+    {
+      rewrite HA2def.
+      apply (iffER
+        (closed_in X (subspace_topology (Sn 2) (Sn_topology 2) X) (DV :/\: X))
+        (exists C0:set, closed_in (Sn 2) (Sn_topology 2) C0 /\ (DV :/\: X) = C0 :/\: X)
+        (closed_in_subspace_iff_intersection (Sn 2) (Sn_topology 2) X (DV :/\: X) HtopSn2 HXsubSn)).
+      witness DV.
+      apply andI.
+      - exact HclosedDV.
+      - reflexivity.
+    }
+    claim HXeqA12 : X = A1 :\/: A2.
+    {
+      apply set_ext.
+      - let z.
+        assume HzX : z :e X.
+        claim HzSn : z :e Sn 2.
+        { exact (HXsubSn z HzX). }
+        claim HzDUV : z :e DU :\/: DV.
+        { rewrite HDUDVeqSn. exact HzSn. }
+        apply (binunionE DU DV z HzDUV).
+        + assume HzDU : z :e DU.
+          claim HzA1 : z :e A1.
+          { rewrite HA1def. exact (binintersectI DU X z HzDU HzX). }
+          exact (binunionI1 A1 A2 z HzA1).
+        + assume HzDV : z :e DV.
+          claim HzA2 : z :e A2.
+          { rewrite HA2def. exact (binintersectI DV X z HzDV HzX). }
+          exact (binunionI2 A1 A2 z HzA2).
+      - let z.
+        assume HzA12 : z :e A1 :\/: A2.
+        apply (binunionE A1 A2 z HzA12).
+        + assume HzA1 : z :e A1.
+          exact (binintersectE2 DU X z HzA1).
+        + assume HzA2 : z :e A2.
+          exact (binintersectE2 DV X z HzA2).
+    }
+    (** The intersection A1 ∩ A2 is exactly C (since p,q are not on C). **)
+    claim HA12eqC : A1 :/\: A2 = C.
+    {
+      apply set_ext.
+      - let z.
+        assume HzInt : z :e A1 :/\: A2.
+        claim HzA1 : z :e A1.
+        { exact (binintersectE1 A1 A2 z HzInt). }
+        claim HzA2 : z :e A2.
+        { exact (binintersectE2 A1 A2 z HzInt). }
+        claim HzDU : z :e DU.
+        { exact (binintersectE1 DU X z HzA1). }
+        claim HzDV : z :e DV.
+        { exact (binintersectE1 DV X z HzA2). }
+        claim HzDUDV : z :e DU :/\: DV.
+        { exact (binintersectI DU DV z HzDU HzDV). }
+        rewrite <- HDUDVeqC.
+        exact HzDUDV.
+      - let z.
+        assume HzC : z :e C.
+        claim HzDU : z :e DU.
+        { rewrite HDUeq. exact (binunionI2 U C z HzC). }
+        claim HzDV : z :e DV.
+        { rewrite HDVeq. exact (binunionI2 V C z HzC). }
+        claim HzX : z :e X.
+        { exact (HCsubX z HzC). }
+        apply (binintersectI A1 A2 z).
+        + rewrite HA1def.
+          exact (binintersectI DU X z HzDU HzX).
+        + rewrite HA2def.
+          exact (binintersectI DV X z HzDV HzX).
+    }
+    (** Now construct the global homotopy H on X×I by pasting homotopies on A1×I and A2×I. **)
+    set Z := setprod X unit_interval.
+    set Tz := product_topology X Tx unit_interval unit_interval_topology.
+    claim HZdef : Z = setprod X unit_interval.
+    { reflexivity. }
+    claim HTzdef : Tz = product_topology X Tx unit_interval unit_interval_topology.
+    { reflexivity. }
+    claim HtopZ : topology_on Z Tz.
+    { exact (product_topology_is_topology X Tx unit_interval unit_interval_topology HtopX unit_interval_topology_on). }
+    claim HclosedI : closed_in unit_interval unit_interval_topology unit_interval.
+    { exact (X_is_closed unit_interval unit_interval_topology unit_interval_topology_on). }
+    set P1 := setprod A1 unit_interval.
+    set P2 := setprod A2 unit_interval.
+    claim HP1def : P1 = setprod A1 unit_interval.
+    { reflexivity. }
+    claim HP2def : P2 = setprod A2 unit_interval.
+    { reflexivity. }
+    claim HclosedP1 : closed_in Z Tz P1.
+    {
+      rewrite HZdef.
+      rewrite HTzdef.
+      rewrite HP1def.
+      exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology A1 unit_interval HclosedA1 HclosedI).
+    }
+    claim HclosedP2 : closed_in Z Tz P2.
+    {
+      rewrite HZdef.
+      rewrite HTzdef.
+      rewrite HP2def.
+      exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology A2 unit_interval HclosedA2 HclosedI).
+    }
+    claim HA1subX : A1 c= X.
+    {
+      let z.
+      assume HzA1.
+      exact (binintersectE2 DU X z HzA1).
+    }
+    claim HA2subX : A2 c= X.
+    {
+      let z.
+      assume HzA2.
+      exact (binintersectE2 DV X z HzA2).
+    }
+    claim HP1subZ : P1 c= Z.
+    {
+      rewrite HP1def.
+      rewrite HZdef.
+      exact (setprod_Subq A1 unit_interval X unit_interval HA1subX (Subq_ref unit_interval)).
+    }
+    claim HP2subZ : P2 c= Z.
+    {
+      rewrite HP2def.
+      rewrite HZdef.
+      exact (setprod_Subq A2 unit_interval X unit_interval HA2subX (Subq_ref unit_interval)).
+    }
+    claim HP12eqZ : P1 :\/: P2 = Z.
+    {
+      apply set_ext.
+      - let xt.
+        assume HxtP : xt :e P1 :\/: P2.
+        apply (binunionE P1 P2 xt HxtP).
+        + assume Hxt1 : xt :e P1.
+          exact (HP1subZ xt Hxt1).
+        + assume Hxt2 : xt :e P2.
+          exact (HP2subZ xt Hxt2).
+      - let xt.
+        assume HxtZ : xt :e Z.
+        claim HxX : xt 0 :e X.
+        { exact (ap0_Sigma X (fun _ : set => unit_interval) xt HxtZ). }
+        claim HtI : xt 1 :e unit_interval.
+        { exact (ap1_Sigma X (fun _ : set => unit_interval) xt HxtZ). }
+        claim HxA12 : xt 0 :e A1 :\/: A2.
+        { rewrite <- HXeqA12. exact HxX. }
+        claim Heta : xt = (xt 0, xt 1).
+        { exact (setprod_eta X unit_interval xt HxtZ). }
+        apply (binunionE A1 A2 (xt 0) HxA12).
+        + assume HxA1 : xt 0 :e A1.
+          rewrite Heta.
+          exact (binunionI1 P1 P2 (xt 0, xt 1)
+            (tuple_2_setprod_by_pair_Sigma A1 unit_interval (xt 0) (xt 1) HxA1 HtI)).
+        + assume HxA2 : xt 0 :e A2.
+          rewrite Heta.
+          exact (binunionI2 P1 P2 (xt 0, xt 1)
+            (tuple_2_setprod_by_pair_Sigma A2 unit_interval (xt 0) (xt 1) HxA2 HtI)).
+    }
+    (** Admitted geometric input: deformation homotopies on each side. **)
+    claim HexH1 :
+      exists H1:set,
+        continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+        (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
+        (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
+        (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a).
+    { admit. }
+    claim HexH2 :
+      exists H2:set,
+        continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+        (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
+        (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
+        (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a).
+    { admit. }
+    apply HexH1.
+    let H1.
+    assume HH1pack.
+    apply HexH2.
+    let H2.
+    assume HH2pack.
+    (** Peel the left-associated conjunctions in HH1pack/HH2pack carefully. **)
+    claim HH1PQR : (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+                    (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x)) /\
+                   (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C).
+    {
+      exact (andEL
+        ((continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+          (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x)) /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C))
+        (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a)
+        HH1pack).
+    }
+    claim HH1fix : forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a.
+    {
+      exact (andER
+        ((continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+          (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x)) /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C))
+        (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a)
+        HH1pack).
+    }
+    claim HH1PQ : continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+                  (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x).
+    { exact (andEL
+        (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x))
+        (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C)
+        HH1PQR). }
+    claim HH11 : forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C.
+    { exact (andER
+        (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x))
+        (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C)
+        HH1PQR). }
+    claim HH1cont : continuous_map P1 (subspace_topology Z Tz P1) X Tx H1.
+    { exact (andEL
+        (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1)
+        (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x)
+        HH1PQ). }
+    claim HH10 : forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x.
+    { exact (andER
+        (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1)
+        (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x)
+        HH1PQ). }
+
+    claim HH2PQR : (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+                    (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x)) /\
+                   (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C).
+    {
+      exact (andEL
+        ((continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+          (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x)) /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C))
+        (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a)
+        HH2pack).
+    }
+    claim HH2fix : forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a.
+    {
+      exact (andER
+        ((continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+          (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x)) /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C))
+        (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a)
+        HH2pack).
+    }
+    claim HH2PQ : continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+                  (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x).
+    { exact (andEL
+        (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x))
+        (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C)
+        HH2PQR). }
+    claim HH21 : forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C.
+    { exact (andER
+        (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x))
+        (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C)
+        HH2PQR). }
+    claim HH2cont : continuous_map P2 (subspace_topology Z Tz P2) X Tx H2.
+    { exact (andEL
+        (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2)
+        (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x)
+        HH2PQ). }
+    claim HH20 : forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x.
+    { exact (andER
+        (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2)
+        (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x)
+        HH2PQ). }
+    (** Apply pasting lemma on Z = X×I. **)
+    claim Hagree : forall xt:set, xt :e (P1 :/\: P2) -> apply_fun H1 xt = apply_fun H2 xt.
+    {
+      let xt.
+      assume HxtInt : xt :e P1 :/\: P2.
+      claim Hxt1 : xt :e P1.
+      { exact (binintersectE1 P1 P2 xt HxtInt). }
+      claim Hxt2 : xt :e P2.
+      { exact (binintersectE2 P1 P2 xt HxtInt). }
+      claim HxA1 : xt 0 :e A1.
+      { exact (ap0_Sigma A1 (fun _ : set => unit_interval) xt Hxt1). }
+      claim HxA2 : xt 0 :e A2.
+      { exact (ap0_Sigma A2 (fun _ : set => unit_interval) xt Hxt2). }
+      claim HxC : xt 0 :e C.
+      {
+        claim HxInt : xt 0 :e A1 :/\: A2.
+        { exact (binintersectI A1 A2 (xt 0) HxA1 HxA2). }
+        rewrite <- HA12eqC.
+        exact HxInt.
+      }
+      claim HtI : xt 1 :e unit_interval.
+      { exact (ap1_Sigma A1 (fun _ : set => unit_interval) xt Hxt1). }
+      claim Heta1 : xt = (xt 0, xt 1).
+      { exact (setprod_eta A1 unit_interval xt Hxt1). }
+      claim Heta2 : xt = (xt 0, xt 1).
+      { exact (setprod_eta A2 unit_interval xt Hxt2). }
+      claim Hpair0 : (xt 0, xt 1) 0 = xt 0.
+      {
+        rewrite <- (tuple_pair (xt 0) (xt 1)).
+        exact (pair_ap_0 (xt 0) (xt 1)).
+      }
+      claim HH1val : apply_fun H1 xt = xt 0.
+      {
+        rewrite Heta1.
+        rewrite Hpair0.
+        exact (HH1fix (xt 0) (xt 1) HxC HtI).
+      }
+      claim HH2val : apply_fun H2 xt = xt 0.
+      {
+        rewrite Heta2.
+        rewrite Hpair0.
+        exact (HH2fix (xt 0) (xt 1) HxC HtI).
+      }
+      rewrite HH1val.
+      rewrite HH2val.
+      reflexivity.
+    }
+    apply (pasting_lemma Z P1 P2 X Tz Tx H1 H2 HtopZ HclosedP1 HclosedP2 HP12eqZ HH1cont HH2cont Hagree).
+    let H.
+    assume Hpack.
+    claim Hcont : continuous_map Z Tz X Tx H.
+    { exact (andEL
+        (continuous_map Z Tz X Tx H)
+        ((forall x:set, x :e P1 -> apply_fun H x = apply_fun H1 x) /\
+         (forall x:set, x :e P2 -> apply_fun H x = apply_fun H2 x))
+        Hpack). }
+    claim Hrest :
+      (forall x:set, x :e P1 -> apply_fun H x = apply_fun H1 x) /\
+      (forall x:set, x :e P2 -> apply_fun H x = apply_fun H2 x).
+    { exact (andER
+        (continuous_map Z Tz X Tx H)
+        ((forall x:set, x :e P1 -> apply_fun H x = apply_fun H1 x) /\
+         (forall x:set, x :e P2 -> apply_fun H x = apply_fun H2 x))
+        Hpack). }
+    claim H_on_P1 : forall xt:set, xt :e P1 -> apply_fun H xt = apply_fun H1 xt.
+    { exact (andEL
+        (forall x:set, x :e P1 -> apply_fun H x = apply_fun H1 x)
+        (forall x:set, x :e P2 -> apply_fun H x = apply_fun H2 x)
+        Hrest). }
+    claim H_on_P2 : forall xt:set, xt :e P2 -> apply_fun H xt = apply_fun H2 xt.
+    { exact (andER
+        (forall x:set, x :e P1 -> apply_fun H x = apply_fun H1 x)
+        (forall x:set, x :e P2 -> apply_fun H x = apply_fun H2 x)
+        Hrest). }
+    (** Package H in the required deformation-retract witness for X. **)
+    witness H.
+    apply andI.
+    - (** Left-associated: ((continuous_map /\ H(x,0)=x) /\ H(x,1)∈C) **)
+      apply andI.
+      + (** Left-associated: (continuous_map /\ H(x,0)=x) **)
+        apply andI.
+        * exact Hcont.
+        * let x.
+          assume HxX : x :e X.
+          claim HxA12 : x :e A1 :\/: A2.
+          { rewrite <- HXeqA12. exact HxX. }
+          apply (binunionE A1 A2 x HxA12).
+          { assume HxA1 : x :e A1.
+            claim Hxt1 : (x, 0) :e P1.
+            {
+              rewrite HP1def.
+              exact (tuple_2_setprod_by_pair_Sigma A1 unit_interval x 0 HxA1 zero_in_unit_interval).
+            }
+            rewrite (H_on_P1 (x, 0) Hxt1).
+            exact (HH10 x HxA1).
+          }
+          { assume HxA2 : x :e A2.
+            claim Hxt2 : (x, 0) :e P2.
+            {
+              rewrite HP2def.
+              exact (tuple_2_setprod_by_pair_Sigma A2 unit_interval x 0 HxA2 zero_in_unit_interval).
+            }
+            rewrite (H_on_P2 (x, 0) Hxt2).
+            exact (HH20 x HxA2).
+          }
+      + let x.
+        assume HxX : x :e X.
+        claim HxA12 : x :e A1 :\/: A2.
+        { rewrite <- HXeqA12. exact HxX. }
+        apply (binunionE A1 A2 x HxA12).
+        { assume HxA1 : x :e A1.
+          claim Hxt1 : (x, 1) :e P1.
+          {
+            rewrite HP1def.
+            exact (tuple_2_setprod_by_pair_Sigma A1 unit_interval x 1 HxA1 one_in_unit_interval).
+          }
+          rewrite (H_on_P1 (x, 1) Hxt1).
+          exact (HH11 x HxA1).
+        }
+        { assume HxA2 : x :e A2.
+          claim Hxt2 : (x, 1) :e P2.
+          {
+            rewrite HP2def.
+            exact (tuple_2_setprod_by_pair_Sigma A2 unit_interval x 1 HxA2 one_in_unit_interval).
+          }
+          rewrite (H_on_P2 (x, 1) Hxt2).
+          exact (HH21 x HxA2).
+        }
+    - let a t.
+      assume HaC : a :e C.
+      assume HtI : t :e unit_interval.
+      claim HaDU : a :e DU.
+      { rewrite HDUeq. exact (binunionI2 U C a HaC). }
+      claim HaX : a :e X.
+      { exact (HCsubX a HaC). }
+      claim HaA1 : a :e A1.
+      { rewrite HA1def. exact (binintersectI DU X a HaDU HaX). }
+      claim Hxt1 : (a, t) :e P1.
+      {
+        rewrite HP1def.
+        exact (tuple_2_setprod_by_pair_Sigma A1 unit_interval a t HaA1 HtI).
+      }
+      rewrite (H_on_P1 (a, t) Hxt1).
+      exact (HH1fix a t HaC HtI).
 }
 exact Hdeform0.
 Admitted.
