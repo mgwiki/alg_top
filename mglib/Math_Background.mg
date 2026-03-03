@@ -172467,6 +172467,255 @@ apply andI.
   + exact Hright.
 Qed.
 
+(** Helper: product of a homeomorphism with identity (left factor). **)
+(** Proven Bob **)
+Theorem homeomorphism_product_left :
+  forall X Tx Y Ty Z Tz f:set,
+  homeomorphism X Tx Y Ty f ->
+  topology_on Z Tz ->
+  homeomorphism
+    (setprod X Z)
+    (product_topology X Tx Z Tz)
+    (setprod Y Z)
+    (product_topology Y Ty Z Tz)
+    (pair_map (setprod X Z)
+      (compose_fun (setprod X Z) (projection_map1 X Z) f)
+      (projection_map2 X Z)).
+let X Tx Y Ty Z Tz f.
+assume Hhome HtopZ.
+claim HtopX : topology_on X Tx.
+{ exact (homeomorphism_topology_left X Tx Y Ty f Hhome). }
+claim HtopY : topology_on Y Ty.
+{ exact (homeomorphism_topology_right X Tx Y Ty f Hhome). }
+set f1 :=
+  compose_fun (setprod X Z) (projection_map1 X Z) f.
+set fprod :=
+  pair_map (setprod X Z) f1 (projection_map2 X Z).
+claim Hfcont0 : continuous_map X Tx Y Ty f.
+{ exact (homeomorphism_continuous X Tx Y Ty f Hhome). }
+claim Hproj :
+  continuous_map (setprod X Z) (product_topology X Tx Z Tz) X Tx (projection_map1 X Z) /\
+  continuous_map (setprod X Z) (product_topology X Tx Z Tz) Z Tz (projection_map2 X Z).
+{ exact (projection_maps_continuous X Tx Z Tz HtopX HtopZ). }
+claim Hproj1 :
+  continuous_map (setprod X Z) (product_topology X Tx Z Tz) X Tx (projection_map1 X Z).
+{
+  exact (andEL
+    (continuous_map (setprod X Z) (product_topology X Tx Z Tz) X Tx (projection_map1 X Z))
+    (continuous_map (setprod X Z) (product_topology X Tx Z Tz) Z Tz (projection_map2 X Z))
+    Hproj).
+}
+claim Hproj2 :
+  continuous_map (setprod X Z) (product_topology X Tx Z Tz) Z Tz (projection_map2 X Z).
+{
+  exact (andER
+    (continuous_map (setprod X Z) (product_topology X Tx Z Tz) X Tx (projection_map1 X Z))
+    (continuous_map (setprod X Z) (product_topology X Tx Z Tz) Z Tz (projection_map2 X Z))
+    Hproj).
+}
+claim Hf1cont :
+  continuous_map (setprod X Z) (product_topology X Tx Z Tz) Y Ty f1.
+{
+  exact (composition_continuous
+    (setprod X Z)
+    (product_topology X Tx Z Tz)
+    X
+    Tx
+    Y
+    Ty
+    (projection_map1 X Z)
+    f
+    Hproj1
+    Hfcont0).
+}
+claim Hfcont :
+  continuous_map (setprod X Z) (product_topology X Tx Z Tz)
+    (setprod Y Z) (product_topology Y Ty Z Tz) fprod.
+{
+  exact (maps_into_products
+    (setprod X Z)
+    (product_topology X Tx Z Tz)
+    Y
+    Ty
+    Z
+    Tz
+    f1
+    (projection_map2 X Z)
+    Hf1cont
+    Hproj2).
+}
+claim HfFun : function_on fprod (setprod X Z) (setprod Y Z).
+{
+  exact (continuous_map_function_on
+    (setprod X Z)
+    (product_topology X Tx Z Tz)
+    (setprod Y Z)
+    (product_topology Y Ty Z Tz)
+    fprod
+    Hfcont).
+}
+apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+let g.
+assume HgPack.
+set g1 :=
+  compose_fun (setprod Y Z) (projection_map1 Y Z) g.
+set gprod :=
+  pair_map (setprod Y Z) g1 (projection_map2 Y Z).
+claim Hgboth :
+  continuous_map Y Ty X Tx g /\
+  (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+     (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim Hgcont0 : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x)
+    Hgboth).
+}
+claim Hleft0 : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x)
+    Hgboth).
+}
+claim Hright0 : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+     (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim Hgproj :
+  continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Y Ty (projection_map1 Y Z) /\
+  continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Z Tz (projection_map2 Y Z).
+{ exact (projection_maps_continuous Y Ty Z Tz HtopY HtopZ). }
+claim Hgproj1 :
+  continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Y Ty (projection_map1 Y Z).
+{
+  exact (andEL
+    (continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Y Ty (projection_map1 Y Z))
+    (continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Z Tz (projection_map2 Y Z))
+    Hgproj).
+}
+claim Hgproj2 :
+  continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Z Tz (projection_map2 Y Z).
+{
+  exact (andER
+    (continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Y Ty (projection_map1 Y Z))
+    (continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Z Tz (projection_map2 Y Z))
+    Hgproj).
+}
+claim Hg1cont :
+  continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) X Tx g1.
+{
+  exact (composition_continuous
+    (setprod Y Z)
+    (product_topology Y Ty Z Tz)
+    Y
+    Ty
+    X
+    Tx
+    (projection_map1 Y Z)
+    g
+    Hgproj1
+    Hgcont0).
+}
+claim Hgcont :
+  continuous_map (setprod Y Z) (product_topology Y Ty Z Tz)
+    (setprod X Z) (product_topology X Tx Z Tz) gprod.
+{
+  exact (maps_into_products
+    (setprod Y Z)
+    (product_topology Y Ty Z Tz)
+    X
+    Tx
+    Z
+    Tz
+    g1
+    (projection_map2 Y Z)
+    Hg1cont
+    Hgproj2).
+}
+claim HgFun : function_on gprod (setprod Y Z) (setprod X Z).
+{
+  exact (continuous_map_function_on
+    (setprod Y Z)
+    (product_topology Y Ty Z Tz)
+    (setprod X Z)
+    (product_topology X Tx Z Tz)
+    gprod
+    Hgcont).
+}
+claim Hleft : forall p:set, p :e setprod X Z -> apply_fun gprod (apply_fun fprod p) = p.
+{
+  let p. assume Hp.
+  claim Hfp : apply_fun fprod p :e setprod Y Z.
+  { exact (HfFun p Hp). }
+  rewrite (pair_map_apply (setprod Y Z) X Z g1 (projection_map2 Y Z) (apply_fun fprod p) Hfp).
+  rewrite (compose_fun_apply (setprod Y Z) (projection_map1 Y Z) g (apply_fun fprod p) Hfp).
+  rewrite (projection1_apply Y Z (apply_fun fprod p) Hfp).
+  rewrite (projection2_apply Y Z (apply_fun fprod p) Hfp).
+  rewrite (pair_map_apply (setprod X Z) Y Z f1 (projection_map2 X Z) p Hp).
+  rewrite (tuple_2_0_eq (apply_fun f1 p) (apply_fun (projection_map2 X Z) p)).
+  rewrite (tuple_2_1_eq (apply_fun f1 p) (apply_fun (projection_map2 X Z) p)).
+  rewrite (projection2_apply X Z p Hp).
+  rewrite (compose_fun_apply (setprod X Z) (projection_map1 X Z) f p Hp).
+  rewrite (projection1_apply X Z p Hp).
+  claim Hp0 : p 0 :e X.
+  { exact (ap0_Sigma X (fun _ : set => Z) p Hp). }
+  rewrite (Hleft0 (p 0) Hp0).
+  claim Heta : p = (p 0, p 1).
+  { exact (setprod_eta X Z p Hp). }
+  exact (eq_symm p (p 0, p 1) Heta).
+}
+claim Hright : forall p:set, p :e setprod Y Z -> apply_fun fprod (apply_fun gprod p) = p.
+{
+  let p. assume Hp.
+  claim Hgp : apply_fun gprod p :e setprod X Z.
+  { exact (HgFun p Hp). }
+  rewrite (pair_map_apply (setprod X Z) Y Z f1 (projection_map2 X Z) (apply_fun gprod p) Hgp).
+  rewrite (compose_fun_apply (setprod X Z) (projection_map1 X Z) f (apply_fun gprod p) Hgp).
+  rewrite (projection1_apply X Z (apply_fun gprod p) Hgp).
+  rewrite (projection2_apply X Z (apply_fun gprod p) Hgp).
+  rewrite (pair_map_apply (setprod Y Z) X Z g1 (projection_map2 Y Z) p Hp).
+  rewrite (tuple_2_0_eq (apply_fun g1 p) (apply_fun (projection_map2 Y Z) p)).
+  rewrite (tuple_2_1_eq (apply_fun g1 p) (apply_fun (projection_map2 Y Z) p)).
+  rewrite (projection2_apply Y Z p Hp).
+  rewrite (compose_fun_apply (setprod Y Z) (projection_map1 Y Z) g p Hp).
+  rewrite (projection1_apply Y Z p Hp).
+  claim Hp0 : p 0 :e Y.
+  { exact (ap0_Sigma Y (fun _ : set => Z) p Hp). }
+  rewrite (Hright0 (p 0) Hp0).
+  claim Heta : p = (p 0, p 1).
+  { exact (setprod_eta Y Z p Hp). }
+  exact (eq_symm p (p 0, p 1) Heta).
+}
+prove
+  continuous_map (setprod X Z) (product_topology X Tx Z Tz)
+    (setprod Y Z) (product_topology Y Ty Z Tz) fprod /\
+  exists g0:set,
+    continuous_map (setprod Y Z) (product_topology Y Ty Z Tz)
+      (setprod X Z) (product_topology X Tx Z Tz) g0 /\
+    (forall x:set, x :e setprod X Z -> apply_fun g0 (apply_fun fprod x) = x) /\
+    (forall y:set, y :e setprod Y Z -> apply_fun fprod (apply_fun g0 y) = y).
+apply andI.
+- exact Hfcont.
+- witness gprod.
+  apply andI.
+  + apply andI.
+    * exact Hgcont.
+    * exact Hleft.
+  + exact Hright.
+Qed.
+
 (** Proven Bob **)
 (** Helper: associativity of product is a homeomorphism **)
 Theorem setprod_assoc_homeomorphism : forall X Tx Y Ty Z Tz:set,
@@ -173928,6 +174177,157 @@ exact (homeomorphism_preserves_connected
   HconnImg).
 Qed.
 
+(** Helper: EuclidPlane has a point distinct from any given point. **)
+(** Proven Bob **)
+Lemma EuclidPlane_exists_point_neq : forall p0:set,
+  p0 :e EuclidPlane ->
+  exists p1:set, p1 :e EuclidPlane /\ p1 <> p0.
+let p0.
+assume Hp0.
+set p1 := (0,0).
+set p2 := (1,0).
+claim Hp1 : p1 :e EuclidPlane.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    0
+    0
+    real_0
+    real_0).
+}
+claim Hp2 : p2 :e EuclidPlane.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    1
+    0
+    real_1
+    real_0).
+}
+claim Hp2neqp1 : p2 <> p1.
+{
+  assume Hp2eq.
+  claim H1eq0 : 1 = 0.
+  { exact (pair_eq_fst 1 0 0 0 Hp2eq). }
+  exact (neq_1_0 H1eq0).
+}
+apply (xm (p0 = p1)).
+- assume Hp0eq.
+  witness p2.
+  apply andI.
+  * exact Hp2.
+  * assume Hp2eq.
+    claim Hp2eqp1 : p2 = p1.
+    { exact (eq_i_tra p2 p0 p1 Hp2eq Hp0eq). }
+    exact (Hp2neqp1 Hp2eqp1).
+- assume Hp0neq.
+  witness p1.
+  apply andI.
+  * exact Hp1.
+  * assume Hp1eq.
+    exact (Hp0neq (eq_symm p1 p0 Hp1eq)).
+Qed.
+
+(** Helper: Euclidean space of positive dimension has a point distinct from any given point. **)
+(** Proven Bob **)
+Lemma euclidean_space_succ_exists_point_neq : forall n q:set,
+  n :e omega ->
+  q :e euclidean_space (ordsucc n) ->
+  exists y:set, y :e euclidean_space (ordsucc n) /\ y <> q.
+let n q.
+assume Hn Hq.
+set z0 := graph (ordsucc n) (fun _ : set => 0).
+set z1 := graph (ordsucc n) (fun i : set => if i = 0 then 1 else 0).
+claim Hz0 : z0 :e euclidean_space (ordsucc n).
+{
+  claim Heu :
+    euclidean_space (ordsucc n) =
+    product_space (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology).
+  { reflexivity. }
+  rewrite Heu.
+  apply (product_space_graphI
+    (ordsucc n)
+    (const_space_family (ordsucc n) R R_standard_topology)
+    (fun _ : set => 0)).
+  let i.
+  assume Hi.
+  rewrite (space_family_set_const_space_family
+    (ordsucc n) R R_standard_topology i Hi).
+  exact real_0.
+}
+claim Hz1 : z1 :e euclidean_space (ordsucc n).
+{
+  claim Heu :
+    euclidean_space (ordsucc n) =
+    product_space (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology).
+  { reflexivity. }
+  rewrite Heu.
+  apply (product_space_graphI
+    (ordsucc n)
+    (const_space_family (ordsucc n) R R_standard_topology)
+    (fun i : set => if i = 0 then 1 else 0)).
+  let i.
+  assume Hi.
+  rewrite (space_family_set_const_space_family
+    (ordsucc n) R R_standard_topology i Hi).
+  apply (xm (i = 0)).
+  - assume Hi0.
+    claim Hif : (if i = 0 then 1 else 0) = 1.
+    { exact (If_i_1 (i = 0) 1 0 Hi0). }
+    exact (eq_subst_mem (if i = 0 then 1 else 0) 1 R Hif real_1).
+  - assume Hi0.
+    claim Hif : (if i = 0 then 1 else 0) = 0.
+    { exact (If_i_0 (i = 0) 1 0 Hi0). }
+    exact (eq_subst_mem (if i = 0 then 1 else 0) 0 R Hif real_0).
+}
+claim Hz1neqz0 : z1 <> z0.
+{
+  assume Hz1eq.
+  claim H0in : 0 :e ordsucc n.
+  { exact (nat_0_in_ordsucc n (omega_nat_p n Hn)). }
+  claim Hz10 : apply_fun z1 0 = 1.
+  {
+    rewrite (apply_fun_graph (ordsucc n)
+      (fun i : set => if i = 0 then 1 else 0)
+      0
+      H0in).
+    rewrite (If_i_1 (0 = 0) 1 0 (eq_refl 0)).
+    reflexivity.
+  }
+  claim Hz00 : apply_fun z0 0 = 0.
+  {
+    rewrite (apply_fun_graph (ordsucc n)
+      (fun _ : set => 0)
+      0
+      H0in).
+    reflexivity.
+  }
+  claim Hz00' : apply_fun z1 0 = 0.
+  { rewrite Hz1eq. exact Hz00. }
+  claim Hz10eq0 : 1 = 0.
+  { exact (eq_i_tra 1 (apply_fun z1 0) 0
+      (eq_symm (apply_fun z1 0) 1 Hz10) Hz00'). }
+  exact (neq_1_0 Hz10eq0).
+}
+apply (xm (q = z0)).
+- assume Hqeq.
+  witness z1.
+  apply andI.
+  * exact Hz1.
+  * assume Hz1eq.
+    claim Hz1eqz0 : z1 = z0.
+    { exact (eq_i_tra z1 q z0 Hz1eq Hqeq). }
+    exact (Hz1neqz0 Hz1eqz0).
+- assume Hqneq.
+  witness z0.
+  apply andI.
+  * exact Hz0.
+  * assume Hz0eq.
+    exact (Hqneq (eq_symm z0 q Hz0eq)).
+Qed.
+
 (** Helper: any n >= 2 can be written as ordsucc (ordsucc k). **)
 (** Proven Bob **)
 Theorem nat_ge2_ordsucc_ordsucc : forall n:set,
@@ -174018,6 +174418,492 @@ apply (nat_inv n (omega_nat_p n HnO)).
     - rewrite HnEq.
       rewrite HmEq.
       reflexivity.
+Qed.
+
+(** Helper: punctured product with Euclidean space is connected at any point. **)
+(** Proven Bob **)
+Theorem punctured_EuclidPlane_product_euclidean_connected_any : forall n p0 q:set,
+  n :e omega ->
+  p0 :e EuclidPlane ->
+  q :e euclidean_space (ordsucc n) ->
+  connected_space
+    ((setprod EuclidPlane (euclidean_space (ordsucc n))) :\: {(p0,q),(p0,q)})
+    (subspace_topology
+      (setprod EuclidPlane (euclidean_space (ordsucc n)))
+      (product_topology
+        EuclidPlane
+        R2_standard_topology
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n)))
+      ((setprod EuclidPlane (euclidean_space (ordsucc n))) :\: {(p0,q),(p0,q)})).
+let n p0 q.
+assume Hn Hp0 Hq.
+set E := euclidean_space (ordsucc n).
+set TE := euclidean_topology (ordsucc n).
+set X := setprod EuclidPlane E.
+set Tx := product_topology EuclidPlane R2_standard_topology E TE.
+set A := setprod (EuclidPlane :\: {p0,p0}) E.
+set Y := E :\: {q,q}.
+claim HtopE : topology_on E TE.
+{ exact (euclidean_topology_is_topology (ordsucc n)). }
+claim HtopX : topology_on X Tx.
+{
+  exact (product_topology_is_topology
+    EuclidPlane
+    R2_standard_topology
+    E
+    TE
+    EuclidPlane_R2_standard_topology_on
+    HtopE).
+}
+claim HpstarEx : exists pstar:set, pstar :e EuclidPlane /\ pstar <> p0.
+{ exact (EuclidPlane_exists_point_neq p0 Hp0). }
+apply HpstarEx.
+let pstar.
+assume HpstarPack.
+claim Hpstar : pstar :e EuclidPlane.
+{
+  exact (andEL
+    (pstar :e EuclidPlane)
+    (pstar <> p0)
+    HpstarPack).
+}
+claim Hpstarneq : pstar <> p0.
+{
+  exact (andER
+    (pstar :e EuclidPlane)
+    (pstar <> p0)
+    HpstarPack).
+}
+claim Hy0Ex : exists y0:set, y0 :e E /\ y0 <> q.
+{ exact (euclidean_space_succ_exists_point_neq n q Hn Hq). }
+apply Hy0Ex.
+let y0.
+assume Hy0Pack.
+claim Hy0E : y0 :e E.
+{
+  exact (andEL
+    (y0 :e E)
+    (y0 <> q)
+    Hy0Pack).
+}
+claim Hy0neq : y0 <> q.
+{
+  exact (andER
+    (y0 :e E)
+    (y0 <> q)
+    Hy0Pack).
+}
+claim HconnA : connected_space A (subspace_topology X Tx A).
+{
+  rewrite <- (product_subspace_topology
+    EuclidPlane
+    R2_standard_topology
+    E
+    TE
+    (EuclidPlane :\: {p0,p0})
+    E
+    EuclidPlane_R2_standard_topology_on
+    HtopE
+    (setminus_Subq EuclidPlane {p0,p0})
+    (Subq_ref E)).
+  rewrite (subspace_topology_whole E TE HtopE).
+  exact (finite_product_connected
+    (EuclidPlane :\: {p0,p0})
+    (subspace_topology EuclidPlane R2_standard_topology (EuclidPlane :\: {p0,p0}))
+    E
+    TE
+    (punctured_EuclidPlane_connected_any p0 Hp0)
+    (euclidean_space_connected_succ n Hn)).
+}
+claim HconnDy :
+  forall y:set,
+  y :e Y ->
+  connected_space
+    (A :\/: (setprod EuclidPlane {y}))
+    (subspace_topology X Tx (A :\/: (setprod EuclidPlane {y}))).
+{
+  let y.
+  assume HyY.
+  claim HyE : y :e E.
+  { exact (setminusE1 E {q,q} y HyY). }
+  claim HySub : {y} c= E.
+  {
+    let t.
+    assume Ht.
+    exact (eq_subst_mem t y E (SingE y t Ht) HyE).
+  }
+  set By := setprod EuclidPlane {y}.
+  claim HconnBy : connected_space By (subspace_topology X Tx By).
+  {
+    rewrite <- (product_subspace_topology
+      EuclidPlane
+      R2_standard_topology
+      E
+      TE
+      EuclidPlane
+      {y}
+      EuclidPlane_R2_standard_topology_on
+      HtopE
+      (Subq_ref EuclidPlane)
+      HySub).
+    rewrite (subspace_topology_whole EuclidPlane R2_standard_topology EuclidPlane_R2_standard_topology_on).
+    exact (finite_product_connected
+      EuclidPlane
+      R2_standard_topology
+      {y}
+      (subspace_topology E TE {y})
+      EuclidPlane_connected
+      (singleton_subspace_connected E TE y HtopE HyE)).
+  }
+  set F := UPair A By.
+  claim HFsub : forall C:set, C :e F -> C c= X.
+  {
+    let C.
+    assume HC.
+    apply (UPairE C A By HC).
+    - assume HCA.
+      rewrite HCA.
+      exact (setprod_Subq
+        (EuclidPlane :\: {p0,p0})
+        E
+        EuclidPlane
+        E
+        (setminus_Subq EuclidPlane {p0,p0})
+        (Subq_ref E)).
+    - assume HCB.
+      rewrite HCB.
+      exact (setprod_Subq
+        EuclidPlane
+        {y}
+        EuclidPlane
+        E
+        (Subq_ref EuclidPlane)
+        HySub).
+  }
+  claim HFconn : forall C:set, C :e F -> connected_space C (subspace_topology X Tx C).
+  {
+    let C.
+    assume HC.
+    apply (UPairE C A By HC).
+    - assume HCA.
+      rewrite HCA.
+      exact HconnA.
+    - assume HCB.
+      rewrite HCB.
+      exact HconnBy.
+  }
+  claim HxIn : exists x : set , forall C : set , C :e F -> x :e C.
+  {
+    witness (pstar, y).
+    let C.
+    assume HC.
+    apply (UPairE C A By HC).
+    - assume HCA.
+      rewrite HCA.
+      apply (tuple_2_setprod_by_pair_Sigma
+        (EuclidPlane :\: {p0,p0})
+        E
+        pstar
+        y).
+      + apply (setminusI EuclidPlane {p0,p0} pstar Hpstar).
+        assume HpstarIn.
+        claim Hpstareq : pstar = p0.
+        { exact (SingE p0 pstar
+            (mem_eqR pstar {p0,p0} {p0}
+              (eq_symm {p0} {p0,p0} (Sing_eq_UPair p0)) HpstarIn)). }
+        exact (Hpstarneq Hpstareq).
+      + exact HyE.
+    - assume HCB.
+      rewrite HCB.
+      apply (tuple_2_setprod_by_pair_Sigma
+        EuclidPlane
+        {y}
+        pstar
+        y
+        Hpstar
+        (SingI y)).
+  }
+  claim HconnUnion :
+    connected_space (Union F) (subspace_topology X Tx (Union F)).
+  {
+    exact (union_connected_common_point
+      X
+      Tx
+      F
+      HtopX
+      HFsub
+      HFconn
+      HxIn).
+  }
+  rewrite <- (Union_UPair_eq_binunion A By).
+  exact HconnUnion.
+}
+set G := {A :\/: (setprod EuclidPlane {y})|y :e Y}.
+claim HGsub : forall C:set, C :e G -> C c= X.
+{
+  let C.
+  assume HC.
+  apply (ReplE_impred Y (fun y:set => A :\/: (setprod EuclidPlane {y})) C HC).
+  let y.
+  assume HyY HCeq.
+  rewrite HCeq.
+  claim HyE : y :e E.
+  { exact (setminusE1 E {q,q} y HyY). }
+  claim HySub : {y} c= E.
+  {
+    let t.
+    assume Ht.
+    exact (eq_subst_mem t y E (SingE y t Ht) HyE).
+  }
+  exact (binunion_Subq_min
+    A
+    (setprod EuclidPlane {y})
+    X
+    (setprod_Subq
+      (EuclidPlane :\: {p0,p0})
+      E
+      EuclidPlane
+      E
+      (setminus_Subq EuclidPlane {p0,p0})
+      (Subq_ref E))
+    (setprod_Subq
+      EuclidPlane
+      {y}
+      EuclidPlane
+      E
+      (Subq_ref EuclidPlane)
+      HySub)).
+}
+claim HGconn : forall C:set, C :e G -> connected_space C (subspace_topology X Tx C).
+{
+  let C.
+  assume HC.
+  apply (ReplE_impred Y (fun y:set => A :\/: (setprod EuclidPlane {y})) C HC).
+  let y.
+  assume HyY HCeq.
+  rewrite HCeq.
+  exact (HconnDy y HyY).
+}
+claim HbIn : exists x : set , forall C : set , C :e G -> x :e C.
+{
+  witness (pstar, q).
+  let C.
+  assume HC.
+  apply (ReplE_impred Y (fun y:set => A :\/: (setprod EuclidPlane {y})) C HC).
+  let y.
+  assume HyY HCeq.
+  rewrite HCeq.
+  apply (binunionI1 A (setprod EuclidPlane {y}) (pstar, q)).
+  apply (tuple_2_setprod_by_pair_Sigma
+    (EuclidPlane :\: {p0,p0})
+    E
+    pstar
+    q).
+  - apply (setminusI EuclidPlane {p0,p0} pstar Hpstar).
+    assume HpstarIn.
+    claim Hpstareq : pstar = p0.
+    { exact (SingE p0 pstar
+        (mem_eqR pstar {p0,p0} {p0}
+          (eq_symm {p0} {p0,p0} (Sing_eq_UPair p0)) HpstarIn)). }
+    exact (Hpstarneq Hpstareq).
+  - exact Hq.
+}
+claim HconnUnion :
+  connected_space (Union G) (subspace_topology X Tx (Union G)).
+{
+  exact (union_connected_common_point
+    X
+    Tx
+    G
+    HtopX
+    HGsub
+    HGconn
+    HbIn).
+}
+claim HUnionEq :
+  Union G = X :\: {(p0,q),(p0,q)}.
+{
+  apply set_ext.
+  - let x. assume HxU.
+    apply (UnionE G x HxU).
+    let C. assume HCpack.
+    claim HxInC : x :e C.
+    { exact (andEL (x :e C) (C :e G) HCpack). }
+    claim HCinG : C :e G.
+    { exact (andER (x :e C) (C :e G) HCpack). }
+    apply (ReplE_impred Y (fun y:set => A :\/: (setprod EuclidPlane {y})) C HCinG).
+    let y.
+    assume HyY HCeq.
+    claim HxIn : x :e A :\/: (setprod EuclidPlane {y}).
+    { exact (eq_subst_mem_set x C (A :\/: (setprod EuclidPlane {y})) HxInC HCeq). }
+    apply (binunionE A (setprod EuclidPlane {y}) x HxIn).
+    * assume HxA.
+      apply (setminusI X {(p0,q),(p0,q)} x).
+      + exact (setprod_Subq
+          (EuclidPlane :\: {p0,p0})
+          E
+          EuclidPlane
+          E
+          (setminus_Subq EuclidPlane {p0,p0})
+          (Subq_ref E)
+          x
+          HxA).
+      + assume HxInS.
+        claim HxEq : x = (p0,q).
+        {
+          exact (SingE (p0,q) x
+            (mem_eqR x {(p0,q),(p0,q)} {(p0,q)}
+              (eq_symm {(p0,q)} {(p0,q),(p0,q)} (Sing_eq_UPair (p0,q))) HxInS)).
+        }
+        claim Hx0In : x 0 :e (EuclidPlane :\: {p0,p0}).
+        { exact (ap0_Sigma (EuclidPlane :\: {p0,p0}) (fun _ : set => E) x HxA). }
+        claim Hx0neq : x 0 <> p0.
+        {
+          assume Hx0eq.
+          exact (setminusE2 EuclidPlane {p0,p0} (x 0) Hx0In
+            (eq_subst_mem (x 0) p0 {p0,p0} Hx0eq (UPairI1 p0 p0))).
+        }
+        claim Hx0eq : x 0 = p0.
+        {
+          exact (pair_eq_fst
+            (x 0)
+            (x 1)
+            p0
+            q
+            (eq_i_tra (x 0,x 1) x (p0,q)
+              (eq_symm x (x 0,x 1) (setprod_eta (EuclidPlane :\: {p0,p0}) E x HxA))
+              HxEq)).
+        }
+        exact (Hx0neq Hx0eq).
+    * assume HxB.
+      claim HySub : {y} c= E.
+      {
+        let t.
+        assume Ht.
+        exact (eq_subst_mem t y E (SingE y t Ht) (setminusE1 E {q,q} y HyY)).
+      }
+      apply (setminusI X {(p0,q),(p0,q)} x).
+      + exact (setprod_Subq
+          EuclidPlane
+          {y}
+          EuclidPlane
+          E
+          (Subq_ref EuclidPlane)
+          HySub
+          x
+          HxB).
+      + assume HxInS.
+        claim HxEq : x = (p0,q).
+        {
+          exact (SingE (p0,q) x
+            (mem_eqR x {(p0,q),(p0,q)} {(p0,q)}
+              (eq_symm {(p0,q)} {(p0,q),(p0,q)} (Sing_eq_UPair (p0,q))) HxInS)).
+        }
+        claim Hyneq : y <> q.
+        {
+          assume HyEq.
+          exact (setminusE2 E {q,q} y HyY
+            (eq_subst_mem y q {q,q} HyEq (UPairI1 q q))).
+        }
+        claim Hx1In : x 1 :e {y}.
+        {
+          rewrite <- (proj1_ap_1 x).
+          exact (proj1_Sigma EuclidPlane (fun _ : set => {y}) x HxB).
+        }
+        claim Hx1eqy : x 1 = y.
+        { exact (SingE y (x 1) Hx1In). }
+        claim Hx1eqq : x 1 = q.
+        {
+          exact (pair_eq_snd
+            (x 0)
+            (x 1)
+            p0
+            q
+            (eq_i_tra (x 0,x 1) x (p0,q)
+              (eq_symm x (x 0,x 1) (setprod_eta EuclidPlane {y} x HxB))
+              HxEq)).
+        }
+        claim HyEq : y = q.
+        { exact (eq_i_tra y (x 1) q (eq_symm (x 1) y Hx1eqy) Hx1eqq). }
+        exact (Hyneq HyEq).
+  - let x. assume HxP.
+    claim HxX : x :e X.
+    { exact (setminusE1 X {(p0,q),(p0,q)} x HxP). }
+    claim HxNot : x /:e {(p0,q),(p0,q)}.
+    { exact (setminusE2 X {(p0,q),(p0,q)} x HxP). }
+    apply (xm (x :e A)).
+    * assume HxA.
+      apply (UnionI G x (A :\/: (setprod EuclidPlane {y0}))).
+      + exact (binunionI1 A (setprod EuclidPlane {y0}) x HxA).
+      + apply (ReplI Y (fun y:set => A :\/: (setprod EuclidPlane {y})) y0).
+        apply (setminusI E {q,q} y0 Hy0E).
+        assume Hy0In.
+        exact (Hy0neq (SingE q y0
+          (mem_eqR y0 {q,q} {q}
+            (eq_symm {q} {q,q} (Sing_eq_UPair q)) Hy0In))).
+    * assume HxNotA.
+      set y := x 1.
+      claim HyE : y :e E.
+      { exact (ap1_Sigma EuclidPlane (fun _ : set => E) x HxX). }
+      claim Hyneq : y <> q.
+      {
+        assume HyEq.
+        claim HxEq : x = (p0,q).
+        {
+          rewrite (setprod_eta EuclidPlane E x HxX).
+          apply tuple_2_ext_euclid.
+          - apply (xm ((x 0) = p0)).
+            + assume Hx0eq. exact Hx0eq.
+            + assume Hx0neq.
+              claim HxA' : x :e A.
+              {
+                rewrite (setprod_eta EuclidPlane E x HxX).
+                apply (tuple_2_setprod_by_pair_Sigma
+                  (EuclidPlane :\: {p0,p0})
+                  E
+                  (x 0)
+                  (x 1)).
+                * apply (setminusI EuclidPlane {p0,p0} (x 0)
+                    (ap0_Sigma EuclidPlane (fun _ : set => E) x HxX)).
+                  assume Hx0In.
+                  exact (Hx0neq (SingE p0 (x 0)
+                    (mem_eqR (x 0) {p0,p0} {p0}
+                      (eq_symm {p0} {p0,p0} (Sing_eq_UPair p0)) Hx0In))).
+                * exact HyE.
+              }
+              exact (FalseE (HxNotA HxA') (x 0 = p0)).
+          - exact HyEq.
+        }
+        exact (HxNot (eq_subst_mem x (p0,q) {(p0,q),(p0,q)} HxEq (UPairI1 (p0,q) (p0,q)))).
+      }
+      apply (UnionI G x (A :\/: (setprod EuclidPlane {y}))).
+      + apply (binunionI2 A (setprod EuclidPlane {y}) x).
+        claim Hydef : y = x 1.
+        { reflexivity. }
+        claim Hx1InY : x 1 :e {y}.
+        { exact (eq_subst_mem (x 1) y {y} (eq_symm y (x 1) Hydef) (SingI y)). }
+        claim HxPair : (x 0,x 1) :e setprod EuclidPlane {y}.
+        {
+          exact (tuple_2_setprod_by_pair_Sigma
+            EuclidPlane
+            {y}
+            (x 0)
+            (x 1)
+            (ap0_Sigma EuclidPlane (fun _ : set => E) x HxX)
+            Hx1InY).
+        }
+        exact (eq_subst_mem x (x 0,x 1) (setprod EuclidPlane {y})
+          (setprod_eta EuclidPlane E x HxX) HxPair).
+      + apply (ReplI Y (fun y:set => A :\/: (setprod EuclidPlane {y})) y).
+        apply (setminusI E {q,q} y HyE).
+        assume HyIn.
+        exact (Hyneq (SingE q y
+          (mem_eqR y {q,q} {q}
+            (eq_symm {q} {q,q} (Sing_eq_UPair q)) HyIn))).
+}
+rewrite <- HUnionEq.
+exact HconnUnion.
 Qed.
 
 (** Helper: punctured Euclidean space is connected in dimension >= 2. **)
