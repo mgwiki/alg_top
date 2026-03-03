@@ -82,6 +82,79 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772577627
+Created: 1772577627
+Status: PROPOSED
+
+Refers to Commit:
+  ce72c283fc409af97ea227a117d005db80b98656
+
+Target:
+  Line: 90973
+  Name: column_lifts_same_sheet_on_product_ball_column_continuous (Lemma)
+
+Problem:
+  The statement claims continuity in the parameter s of the map
+    s |-> path_lift(... start_lift s ... vs_choice s ... ) t0,
+  but assumes only pointwise continuity of each column path (in t) and no continuity of the family vs_choice in s
+  (or of the induced map (s,t) |-> vs_choice(s)(t)). This is generally false and blocks removing admits in Lemma 54.2.
+
+Proposed Replacement:
+  Lemma column_lifts_same_sheet_on_product_ball_column_continuous :
+    forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    slices c= Te ->
+    pairwise_disjoint slices ->
+    Union slices = preimage_of E p U ->
+    V0 :e slices ->
+    continuous_map unit_interval unit_interval_topology B Tb g0 ->
+    e0 :e E ->
+    apply_fun p e0 = apply_fun g0 0 ->
+    start_lift = path_lift E Te B Tb p e0 g0 ->
+    I1 c= unit_interval ->
+    I2 c= unit_interval ->
+    connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+    connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+      apply_fun (apply_fun vs_choice s) t :e U) ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    continuous_map (setprod I1 I2)
+      (product_topology
+        I1 (subspace_topology unit_interval unit_interval_topology I1)
+        I2 (subspace_topology unit_interval unit_interval_topology I2))
+      B Tb
+      (graph (setprod I1 I2) (fun z:set =>
+        apply_fun (apply_fun vs_choice (apply_fun (projection_map1 I1 I2) z))
+          (apply_fun (projection_map2 I1 I2) z))) ->
+    s0 :e I1 ->
+    t0 :e I2 ->
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0 :e V0 ->
+    (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  - 1772577627 | Charlie
+
+Discussion:
+  - 1772577627 | Charlie: Add a joint continuity assumption on the (s,t) map induced by vs_choice; without it the continuity conclusion is not derivable.
+
+Approvals:
+  - 1772577627 | Alice:
+  - 1772577627 | Bob:
+  - 1772577627 | Charlie: YES
+  - 1772577627 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772569544
 Created: 1772569544
 Status: PROPOSED
