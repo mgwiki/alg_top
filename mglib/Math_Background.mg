@@ -46551,6 +46551,31 @@ exact (andER
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_path_connected_codomain : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  path_connected_space E Te ->
+  path_connected_space B Tb.
+let E Te B Tb p.
+assume Hcov HpcE.
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (covering_map_continuous E Te B Tb p Hcov).
+}
+claim Hsurj : surjective_map E B p.
+{
+  exact (covering_map_surjective E Te B Tb p Hcov).
+}
+claim Hsurj_val : forall b:set, b :e B -> exists e:set, e :e E /\ apply_fun p e = b.
+{
+  exact (andER
+    (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+    Hsurj).
+}
+exact (continuous_image_path_connected E Te B Tb p HpcE Hcont Hsurj_val).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_preimage_nonempty_of_nonempty_subset : forall E Te B Tb p V:set,
   covering_map E Te B Tb p ->
   V c= B ->
