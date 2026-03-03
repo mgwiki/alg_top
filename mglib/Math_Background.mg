@@ -289281,6 +289281,55 @@ exact (and5I
   HstepPref).
 Qed.
 
+(** helper: drop the last edge from a successor-length edge path **)
+(** Proven Bob **)
+Theorem edge_path_drop_last :
+  forall X Tx Arcs k path_seq x0:set,
+  edge_path X Tx Arcs (ordsucc k) path_seq x0 ->
+  edge_path X Tx Arcs k (graph k (fun i:set => apply_fun path_seq i)) x0.
+let X Tx Arcs k path_seq x0.
+assume Hep.
+claim HkIn : k :e ordsucc k.
+{ exact (ordsuccI2 k). }
+exact (edge_path_prefix
+  X
+  Tx
+  Arcs
+  (ordsucc k)
+  path_seq
+  x0
+  k
+  Hep
+  HkIn).
+Qed.
+
+(** helper: drop the last two edges from a double-successor-length edge path **)
+(** Proven Bob **)
+Theorem edge_path_drop_last_two :
+  forall X Tx Arcs k path_seq x0:set,
+  edge_path X Tx Arcs (ordsucc (ordsucc k)) path_seq x0 ->
+  edge_path X Tx Arcs k (graph k (fun i:set => apply_fun path_seq i)) x0.
+let X Tx Arcs k path_seq x0.
+assume Hep.
+claim HkIn : k :e ordsucc (ordsucc k).
+{
+  exact (ordsuccI1
+    (ordsucc k)
+    k
+    (ordsuccI2 k)).
+}
+exact (edge_path_prefix
+  X
+  Tx
+  Arcs
+  (ordsucc (ordsucc k))
+  path_seq
+  x0
+  k
+  Hep
+  HkIn).
+Qed.
+
 (** Proven Bob **)
 Theorem edge_path_index_initial_vertex_in_union_arcs_basic :
   forall X Tx Arcs n path_seq x0 i:set,
