@@ -82,6 +82,54 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772580827
+Created: 1772580827
+Status: PROPOSED
+
+Refers to Commit:
+  8c18df4c9d60d9f469a8f01913be51705ac732f5
+
+Target:
+  Line: 320741
+  Name: finite_glg_all_endpoints_shared_has_closed_reduced_edge_path (Theorem)
+
+Problem:
+  The statement is false when Arcs = Empty.
+  In that case, oriented_edge cannot exist (requires A :e Arcs), so reduced_edge_path with n <> 0
+  is impossible, but the current hypotheses make the endpoint-sharing condition vacuous.
+  This forces an `admit` in the Arcs = Empty branch.
+
+Proposed Replacement:
+  Theorem finite_glg_all_endpoints_shared_has_closed_reduced_edge_path :
+    forall T Tx Arcs:set,
+    general_linear_graph T Tx Arcs ->
+    finite Arcs ->
+    Arcs <> Empty ->
+    (forall A p q:set, A :e Arcs ->
+      end_points_of_arc A (subspace_topology T Tx A) p q ->
+      (exists C:set, C :e Arcs /\ C <> A /\ p :e C) /\
+      (exists D:set, D :e Arcs /\ D <> A /\ q :e D)) ->
+    exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T Tx Arcs n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0).
+
+Proposed by:
+  - 1772580827 | Charlie
+
+Discussion:
+  - 1772580827 | Charlie: The lemma is only used in contexts where the arc family is nonempty; adding Arcs <> Empty fixes the vacuous case and should allow eliminating the empty-case admit.
+
+Approvals:
+  - 1772580827 | Alice:
+  - 1772580827 | Bob:
+  - 1772580827 | Charlie: YES
+  - 1772580827 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772577627
 Created: 1772577627
 Status: PROPOSED
