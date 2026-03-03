@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 2356 **)
+(** Balance Charlie 2317 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -180322,7 +180322,8 @@ Admitted.
 (** in different components of S^2 minus C, and the inclusion C -> S^2-p-q **)
 (** induces an isomorphism of fundamental groups. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 385 **)
+(** Bounty 424 **)
+(** Lock Charlie 1772600000 **)
 Theorem lemma65_1_complete_graph_separation : forall V G Tg C Tc x0:set,
   complete_graph_on V G Tg -> equip V 4 ->
   G c= Sn 2 -> Tg = subspace_topology (Sn 2) (Sn_topology 2) G ->
