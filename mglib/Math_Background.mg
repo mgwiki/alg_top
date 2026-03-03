@@ -177878,8 +177878,8 @@ apply iffI.
 	  (** Reverse direction infrastructure: for each arc A, collect all intersection points of A with other arcs. **)
 	  set IntFam := fun A:set => Repl (Arcs :\: Sing A) (fun B:set => A :/\: B).
 	  set IntPts := fun A:set => Union (IntFam A).
-	  claim HIntPts_dat :
-	    forall A:set, A :e Arcs -> IntPts A c= A /\ finite (IntPts A).
+		  claim HIntPts_dat :
+		    forall A:set, A :e Arcs -> IntPts A c= A /\ finite (IntPts A).
 	  {
 	    let A.
 	    assume HAArcs.
@@ -177953,14 +177953,133 @@ apply iffI.
 	      { rewrite <- HDeq. exact HzD. }
 	      exact (binintersectE1 A B z HzD2).
 	    }
-	    exact (andI
-	      (IntPts A c= A)
-	      (finite (IntPts A))
-	      HIntPts_sub
-	      HIntPts_fin).
-	  }
-	  admit.
-	Admitted.
+		    exact (andI
+		      (IntPts A c= A)
+		      (finite (IntPts A))
+		      HIntPts_sub
+		      HIntPts_fin).
+		  }
+		  (** Reverse direction infrastructure: for any p∈A, the set A\\(IntPts(A)\\{p}) is open in A. **)
+		  claim Hneigh_open_in_arc :
+		    forall A p:set,
+		      A :e Arcs ->
+		      p :e A ->
+		      let TA := subspace_topology X Tx A in
+		      let N := A :\: ((IntPts A) :\: Sing p) in
+		      N :e TA /\ p :e N.
+		  {
+		    let A p.
+		    assume HAArcs HpA.
+		    set TA := subspace_topology X Tx A.
+		    set N := A :\: ((IntPts A) :\: Sing p).
+		    claim HAdat : A c= X /\ arc A TA.
+		    { exact (HarcDat A HAArcs). }
+		    claim HAsubX : A c= X.
+		    { exact (andEL (A c= X) (arc A TA) HAdat). }
+		    claim HarcA : arc A TA.
+		    { exact (andER (A c= X) (arc A TA) HAdat). }
+		    claim HtopA : topology_on A TA.
+		    { exact (subspace_topology_is_topology X Tx A HtopX HAsubX). }
+		    (** unit_interval is Hausdorff as a subspace of R; hence any arc is Hausdorff. **)
+		    claim HUIHaus : Hausdorff_space unit_interval unit_interval_topology.
+		    {
+		      claim HsubR : unit_interval c= R.
+		      {
+		        exact (Sep_Subq
+		          R
+		          (fun x0:set => ~ (Rlt x0 0) /\ ~ (Rlt 1 x0))).
+		      }
+		      exact (ex17_12_subspace_Hausdorff
+		        R
+		        R_standard_topology
+		        unit_interval
+		        R_standard_topology_Hausdorff
+		        HsubR).
+		    }
+		    claim HHausA : Hausdorff_space A TA.
+		    {
+		      apply HarcA.
+		      let f.
+		      assume Hhome.
+		      claim Hexg : exists g:set, homeomorphism A TA unit_interval unit_interval_topology g.
+		      {
+		        exact (homeomorphism_inverse_is_homeomorphism_variant
+		          unit_interval
+		          unit_interval_topology
+		          A
+		          TA
+		          f
+		          Hhome).
+		      }
+		      apply Hexg.
+		      let g.
+		      assume HgHome.
+		      exact (homeomorphism_preserves_Hausdorff
+		        A
+		        TA
+		        unit_interval
+		        unit_interval_topology
+		        g
+		        HgHome
+		        HUIHaus).
+		    }
+		    claim HIntA : IntPts A c= A /\ finite (IntPts A).
+		    { exact (HIntPts_dat A HAArcs). }
+		    claim HIntAsub : IntPts A c= A.
+		    { exact (andEL (IntPts A c= A) (finite (IntPts A)) HIntA). }
+		    claim HIntAfin : finite (IntPts A).
+		    { exact (andER (IntPts A c= A) (finite (IntPts A)) HIntA). }
+		    claim HremSub : (IntPts A :\: Sing p) c= A.
+		    {
+		      exact (Subq_tra
+		        (IntPts A :\: Sing p)
+		        (IntPts A)
+		        A
+		        (setminus_Subq (IntPts A) (Sing p))
+		        HIntAsub).
+		    }
+		    claim HremFin : finite (IntPts A :\: Sing p).
+		    {
+		      apply (Subq_finite (IntPts A) HIntAfin (IntPts A :\: Sing p)).
+		      exact (setminus_Subq (IntPts A) (Sing p)).
+		    }
+		    claim HremClosed : closed_in A TA (IntPts A :\: Sing p).
+		    {
+		      exact (finite_sets_closed_in_Hausdorff
+		        A
+		        TA
+		        HHausA
+		        (IntPts A :\: Sing p)
+		        HremSub
+		        HremFin).
+		    }
+		    claim HNopen : N :e TA.
+		    {
+		      exact (open_in_elem
+		        A
+		        TA
+		        (A :\: (IntPts A :\: Sing p))
+		        (open_of_closed_complement
+		          A
+		          TA
+		          (IntPts A :\: Sing p)
+		          HremClosed)).
+		    }
+		    claim HpN : p :e N.
+		    {
+		      claim HpNotRem : p /:e (IntPts A :\: Sing p).
+		      {
+		        assume Hbad.
+		        claim HnotSing : p /:e (Sing p).
+		        { exact (setminusE2 (IntPts A) (Sing p) p Hbad). }
+		        exact (HnotSing (SingI p)).
+		      }
+		      exact (setminusI A (IntPts A :\: Sing p) p HpA HpNotRem).
+		    }
+		    exact (andI (N :e TA) (p :e N) HNopen HpN).
+		  }
+		  admit.
+		Admitted.
 
 (** from S64 Exercise 1(b) (line 2367 in algtop.tex) **)
 (** LATEX VERSION: Give an example to show that X (union of finitely many **)
