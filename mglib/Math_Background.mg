@@ -320531,6 +320531,80 @@ apply Hcase.
   { exact (arc_has_end_points_of_arc_pre A0 (subspace_topology T Tx A0) HarcA0). }
   (** Use Hallshared to extend a non-backtracking walk from an endpoint of A0. **)
   apply HepA0. let p0. assume Hp0. apply Hp0. let q0. assume Hpq0.
+  claim Hsharedp0 :
+    exists C1:set, C1 :e Arcs /\ C1 <> A0 /\ p0 :e C1.
+  {
+    exact (andEL
+      (exists C:set, C :e Arcs /\ C <> A0 /\ p0 :e C)
+      (exists D:set, D :e Arcs /\ D <> A0 /\ q0 :e D)
+      (Hallshared A0 p0 q0 HA0 Hpq0)).
+  }
+  apply Hsharedp0. let C1. assume HC1pack.
+  claim HC1pair : C1 :e Arcs /\ C1 <> A0.
+  { exact (andEL (C1 :e Arcs /\ C1 <> A0) (p0 :e C1) HC1pack). }
+  claim HC1 : C1 :e Arcs.
+  { exact (andEL (C1 :e Arcs) (C1 <> A0) HC1pair). }
+  claim HC1ne : C1 <> A0.
+  { exact (andER (C1 :e Arcs) (C1 <> A0) HC1pair). }
+  claim Hp0C1 : p0 :e C1.
+  { exact (andER (C1 :e Arcs /\ C1 <> A0) (p0 :e C1) HC1pack). }
+  claim HA0neC1 : A0 <> C1.
+  { assume Heq. exact (HC1ne (eq_symm A0 C1 Heq)). }
+  claim HintA0C1 :
+    A0 :/\: C1 = Empty \/
+    (exists r:set, A0 :/\: C1 = Sing r /\
+      (exists s:set, end_points_of_arc A0 (subspace_topology T Tx A0) r s \/
+                     end_points_of_arc A0 (subspace_topology T Tx A0) s r) /\
+      (exists t:set, end_points_of_arc C1 (subspace_topology T Tx C1) r t \/
+                     end_points_of_arc C1 (subspace_topology T Tx C1) t r)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      A0
+      C1
+      Hglg
+      HA0
+      HC1
+      HA0neC1).
+  }
+  claim Hp0_is_endpoint_C1 :
+    exists r1:set, end_points_of_arc C1 (subspace_topology T Tx C1) p0 r1 \/
+                    end_points_of_arc C1 (subspace_topology T Tx C1) r1 p0.
+  {
+    apply HintA0C1.
+    - assume Hempty.
+      claim Hp0AC : p0 :e A0 :/\: C1.
+      { exact (binintersectI A0 C1 p0
+          (end_points_of_arc_left_in_set A0 (subspace_topology T Tx A0) p0 q0 Hpq0)
+          Hp0C1). }
+      exact (EmptyE p0 (eq_subst_mem_set p0 (A0 :/\: C1) Empty Hp0AC Hempty)
+        (exists r1:set, end_points_of_arc C1 (subspace_topology T Tx C1) p0 r1 \/
+                        end_points_of_arc C1 (subspace_topology T Tx C1) r1 p0)).
+    - assume Hsing. apply Hsing. let r. assume Hrpack.
+      apply (and3E
+        (A0 :/\: C1 = Sing r)
+        (exists s:set, end_points_of_arc A0 (subspace_topology T Tx A0) r s \/
+                       end_points_of_arc A0 (subspace_topology T Tx A0) s r)
+        (exists t:set, end_points_of_arc C1 (subspace_topology T Tx C1) r t \/
+                       end_points_of_arc C1 (subspace_topology T Tx C1) t r)
+        Hrpack).
+      assume HrEq _ HC1end.
+      claim Hp0AC : p0 :e A0 :/\: C1.
+      { exact (binintersectI A0 C1 p0
+          (end_points_of_arc_left_in_set A0 (subspace_topology T Tx A0) p0 q0 Hpq0)
+          Hp0C1). }
+      claim Hp0r : p0 = r.
+      { exact (SingE r p0 (eq_subst_mem_set p0 (A0 :/\: C1) (Sing r) Hp0AC HrEq)). }
+      apply HC1end. let t. assume Ht.
+      witness t.
+      apply Ht.
+      - assume Hrt : end_points_of_arc C1 (subspace_topology T Tx C1) r t.
+        apply orIL. rewrite Hp0r. exact Hrt.
+      - assume Htr : end_points_of_arc C1 (subspace_topology T Tx C1) t r.
+        apply orIR. rewrite Hp0r. exact Htr.
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
