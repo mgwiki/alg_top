@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 1671 **)
+(** Balance Charlie 1665 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -222834,7 +222834,8 @@ Admitted.
 (** G2 = free product of H_beta for beta in K, with J,K disjoint, **)
 (** then G = free product of H_gamma for gamma in J union K. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Bounty 61 **)
+(** Lock Charlie 1772627457 **)
 Theorem cor68_6_associativity_free_product :
   forall G multG eG invG G1 G2 J K Hfam efamH:set,
   group_structure G multG eG invG ->
