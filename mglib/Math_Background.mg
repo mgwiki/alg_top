@@ -171556,6 +171556,27 @@ exact (path_connected_implies_connected
   punctured_space_path_connected).
 Qed.
 
+(** Helper: product with R preserves connectedness of the punctured plane **)
+(** Proven Bob **)
+Theorem punctured_EuclidPlane_product_R_connected :
+  connected_space
+    (setprod (EuclidPlane :\: {(0,0)}) R)
+    (product_topology
+      (EuclidPlane :\: {(0,0)})
+      (subspace_topology EuclidPlane R2_standard_topology
+        (EuclidPlane :\: {(0,0)}))
+      R
+      R_standard_topology).
+exact (finite_product_connected
+  (EuclidPlane :\: {(0,0)})
+  (subspace_topology EuclidPlane R2_standard_topology
+    (EuclidPlane :\: {(0,0)}))
+  R
+  R_standard_topology
+  punctured_EuclidPlane_connected
+  interval_connected).
+Qed.
+
 (** Helper: the punctured real line is disconnected **)
 (** Proven Bob **)
 Theorem punctured_R_not_connected :
