@@ -180802,6 +180802,144 @@ claim HW2subY : W2 c= Y.
   rewrite HYeqW.
   exact (binunionI2 W1 W2 z HzW2).
 }
+(** Basic ambient facts about W1 and W2. **)
+claim HW1subSn : W1 c= Sn 2.
+{ exact (topology_elem_subset (Sn 2) (Sn_topology 2) W1 HtopSn2 HW1openSn). }
+claim HW2subSn : W2 c= Sn 2.
+{ exact (topology_elem_subset (Sn 2) (Sn_topology 2) W2 HtopSn2 HW2openSn). }
+claim HW1CEmpty : W1 :/\: C = Empty.
+{
+  apply set_ext.
+  - let z.
+    assume HzInt : z :e W1 :/\: C.
+    claim HzW1 : z :e W1.
+    { exact (binintersectE1 W1 C z HzInt). }
+    claim HzC : z :e C.
+    { exact (binintersectE2 W1 C z HzInt). }
+    claim HzY : z :e Y.
+    { exact (HW1subY z HzW1). }
+    claim HzNotC : z /:e C.
+    { exact (setminusE2 (Sn 2) C z HzY). }
+    exact (FalseE (HzNotC HzC) (z :e Empty)).
+  - let z.
+    assume HzE : z :e Empty.
+    exact (FalseE (EmptyE z HzE) (z :e W1 :/\: C)).
+}
+claim HW2CEmpty : W2 :/\: C = Empty.
+{
+  apply set_ext.
+  - let z.
+    assume HzInt : z :e W2 :/\: C.
+    claim HzW2 : z :e W2.
+    { exact (binintersectE1 W2 C z HzInt). }
+    claim HzC : z :e C.
+    { exact (binintersectE2 W2 C z HzInt). }
+    claim HzY : z :e Y.
+    { exact (HW2subY z HzW2). }
+    claim HzNotC : z /:e C.
+    { exact (setminusE2 (Sn 2) C z HzY). }
+    exact (FalseE (HzNotC HzC) (z :e Empty)).
+  - let z.
+    assume HzE : z :e Empty.
+    exact (FalseE (EmptyE z HzE) (z :e W2 :/\: C)).
+}
+(** Closure identities from Hbd1/Hbd2: closure(Wi) = Wi ∪ C. **)
+claim HclW1eq : closure_of (Sn 2) (Sn_topology 2) W1 = W1 :\/: C.
+{
+  apply set_ext.
+  - let z.
+    assume Hzcl : z :e closure_of (Sn 2) (Sn_topology 2) W1.
+    apply (xm (z :e W1)).
+    + assume HzW1 : z :e W1.
+      exact (binunionI1 W1 C z HzW1).
+    + assume HzNotW1 : ~(z :e W1).
+      claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
+      { exact (setminusI (closure_of (Sn 2) (Sn_topology 2) W1) W1 z Hzcl HzNotW1). }
+      claim HzC : z :e C.
+      { rewrite <- Hbd1. exact Hzsetm. }
+      exact (binunionI2 W1 C z HzC).
+  - let z.
+    assume HzWC : z :e W1 :\/: C.
+    apply (binunionE W1 C z HzWC).
+    + assume HzW1 : z :e W1.
+      exact ((subset_of_closure (Sn 2) (Sn_topology 2) W1 HtopSn2 HW1subSn) z HzW1).
+    + assume HzC : z :e C.
+      claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
+      { rewrite Hbd1. exact HzC. }
+      exact (setminusE1 (closure_of (Sn 2) (Sn_topology 2) W1) W1 z Hzsetm).
+}
+claim HclW2eq : closure_of (Sn 2) (Sn_topology 2) W2 = W2 :\/: C.
+{
+  apply set_ext.
+  - let z.
+    assume Hzcl : z :e closure_of (Sn 2) (Sn_topology 2) W2.
+    apply (xm (z :e W2)).
+    + assume HzW2 : z :e W2.
+      exact (binunionI1 W2 C z HzW2).
+    + assume HzNotW2 : ~(z :e W2).
+      claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W2 :\: W2.
+      { exact (setminusI (closure_of (Sn 2) (Sn_topology 2) W2) W2 z Hzcl HzNotW2). }
+      claim HzC : z :e C.
+      { rewrite <- Hbd2. exact Hzsetm. }
+      exact (binunionI2 W2 C z HzC).
+  - let z.
+    assume HzWC : z :e W2 :\/: C.
+    apply (binunionE W2 C z HzWC).
+    + assume HzW2 : z :e W2.
+      exact ((subset_of_closure (Sn 2) (Sn_topology 2) W2 HtopSn2 HW2subSn) z HzW2).
+    + assume HzC : z :e C.
+      claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W2 :\: W2.
+      { rewrite Hbd2. exact HzC. }
+      exact (setminusE1 (closure_of (Sn 2) (Sn_topology 2) W2) W2 z Hzsetm).
+}
+claim HclW1W2eqC :
+  closure_of (Sn 2) (Sn_topology 2) W1 :/\:
+  closure_of (Sn 2) (Sn_topology 2) W2 = C.
+{
+  apply set_ext.
+  - let z.
+    assume HzInt : z :e closure_of (Sn 2) (Sn_topology 2) W1 :/\:
+                      closure_of (Sn 2) (Sn_topology 2) W2.
+    claim Hzcl1 : z :e closure_of (Sn 2) (Sn_topology 2) W1.
+    { exact (binintersectE1 (closure_of (Sn 2) (Sn_topology 2) W1)
+                            (closure_of (Sn 2) (Sn_topology 2) W2) z HzInt). }
+    claim Hzcl2 : z :e closure_of (Sn 2) (Sn_topology 2) W2.
+    { exact (binintersectE2 (closure_of (Sn 2) (Sn_topology 2) W1)
+                            (closure_of (Sn 2) (Sn_topology 2) W2) z HzInt). }
+    claim HzIn1 : z :e W1 :\/: C.
+    { rewrite <- HclW1eq. exact Hzcl1. }
+    claim HzIn2 : z :e W2 :\/: C.
+    { rewrite <- HclW2eq. exact Hzcl2. }
+    apply (binunionE W1 C z HzIn1).
+    + assume HzW1 : z :e W1.
+      apply (binunionE W2 C z HzIn2).
+      * assume HzW2 : z :e W2.
+        claim HzW12 : z :e W1 :/\: W2.
+        { exact (binintersectI W1 W2 z HzW1 HzW2). }
+        claim HzE : z :e Empty.
+        { rewrite <- HW1W2Empty. exact HzW12. }
+        exact (FalseE (EmptyE z HzE) (z :e C)).
+      * assume HzC : z :e C.
+        claim HzWC : z :e W1 :/\: C.
+        { exact (binintersectI W1 C z HzW1 HzC). }
+        claim HzE : z :e Empty.
+        { rewrite <- HW1CEmpty. exact HzWC. }
+        exact (FalseE (EmptyE z HzE) (z :e C)).
+    + assume HzC : z :e C.
+      exact HzC.
+  - let z.
+    assume HzC : z :e C.
+    apply (binintersectI
+      (closure_of (Sn 2) (Sn_topology 2) W1)
+      (closure_of (Sn 2) (Sn_topology 2) W2)
+      z).
+    + claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
+      { rewrite Hbd1. exact HzC. }
+      exact (setminusE1 (closure_of (Sn 2) (Sn_topology 2) W1) W1 z Hzsetm).
+    + claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W2 :\: W2.
+      { rewrite Hbd2. exact HzC. }
+      exact (setminusE1 (closure_of (Sn 2) (Sn_topology 2) W2) W2 z Hzsetm).
+}
 (** W1 and W2 are open in the subspace topology Ty on Y. **)
 claim HW1Ty : W1 :e Ty.
 {
