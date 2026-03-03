@@ -320909,6 +320909,110 @@ apply Hcase.
       Hfin0
       HoriC1).
   }
+  claim Hfin1 : (apply_fun path2 n1) 0 1 = r1.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n1 path1 q0 0 C1 p0 r1
+      Hglg
+      Hep1
+      (ordsuccI2 0)
+      (In_irref (ordsucc 0))
+      Hfin0
+      HoriC1).
+  }
+  claim Hsharedr1 :
+    exists C2:set, C2 :e Arcs /\ C2 <> C1 /\ r1 :e C2.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C1 /\ p0 :e C)
+      (exists D:set, D :e Arcs /\ D <> C1 /\ r1 :e D)
+      (Hallshared C1 p0 r1 HC1 Hp0r1)).
+  }
+  apply Hsharedr1. let C2. assume HC2pack.
+  claim HC2pair : C2 :e Arcs /\ C2 <> C1.
+  { exact (andEL (C2 :e Arcs /\ C2 <> C1) (r1 :e C2) HC2pack). }
+  claim HC2 : C2 :e Arcs.
+  { exact (andEL (C2 :e Arcs) (C2 <> C1) HC2pair). }
+  claim HC2neC1 : C2 <> C1.
+  { exact (andER (C2 :e Arcs) (C2 <> C1) HC2pair). }
+  claim Hr1C2 : r1 :e C2.
+  { exact (andER (C2 :e Arcs /\ C2 <> C1) (r1 :e C2) HC2pack). }
+  claim Hr1C1 : r1 :e C1.
+  { exact (end_points_of_arc_right_in_set C1 (subspace_topology T Tx C1) p0 r1 Hp0r1). }
+  claim HC1neC2 : C1 <> C2.
+  { assume Heq. exact (HC2neC1 (eq_symm C1 C2 Heq)). }
+  claim HintC1C2 :
+    C1 :/\: C2 = Empty \/
+    (exists r2:set, C1 :/\: C2 = Sing r2 /\
+      (exists s2:set, end_points_of_arc C1 (subspace_topology T Tx C1) r2 s2 \/
+                     end_points_of_arc C1 (subspace_topology T Tx C1) s2 r2) /\
+      (exists t2:set, end_points_of_arc C2 (subspace_topology T Tx C2) r2 t2 \/
+                     end_points_of_arc C2 (subspace_topology T Tx C2) t2 r2)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C1
+      C2
+      Hglg
+      HC1
+      HC2
+      HC1neC2).
+  }
+  claim Hr1_is_endpoint_C2 :
+    exists s1:set, end_points_of_arc C2 (subspace_topology T Tx C2) r1 s1 \/
+                    end_points_of_arc C2 (subspace_topology T Tx C2) s1 r1.
+  {
+    apply HintC1C2.
+    - assume Hempty.
+      claim Hr1CC : r1 :e C1 :/\: C2. { exact (binintersectI C1 C2 r1 Hr1C1 Hr1C2). }
+      exact (EmptyE r1 (eq_subst_mem_set r1 (C1 :/\: C2) Empty Hr1CC Hempty)
+        (exists s1:set, end_points_of_arc C2 (subspace_topology T Tx C2) r1 s1 \/
+                        end_points_of_arc C2 (subspace_topology T Tx C2) s1 r1)).
+    - assume Hsing. apply Hsing. let r2. assume Hr2pack.
+      apply (and3E
+        (C1 :/\: C2 = Sing r2)
+        (exists s2:set, end_points_of_arc C1 (subspace_topology T Tx C1) r2 s2 \/
+                       end_points_of_arc C1 (subspace_topology T Tx C1) s2 r2)
+        (exists t2:set, end_points_of_arc C2 (subspace_topology T Tx C2) r2 t2 \/
+                       end_points_of_arc C2 (subspace_topology T Tx C2) t2 r2)
+        Hr2pack).
+      assume Hr2eq _ HC2end.
+      claim Hr1CC : r1 :e C1 :/\: C2. { exact (binintersectI C1 C2 r1 Hr1C1 Hr1C2). }
+      claim Hr1r2 : r1 = r2.
+      { exact (SingE r2 r1 (eq_subst_mem_set r1 (C1 :/\: C2) (Sing r2) Hr1CC Hr2eq)). }
+      apply HC2end. let t2. assume Ht2.
+      witness t2.
+      apply Ht2.
+      * assume Hr2t : end_points_of_arc C2 (subspace_topology T Tx C2) r2 t2.
+        apply orIL. rewrite Hr1r2. exact Hr2t.
+      * assume Ht2r : end_points_of_arc C2 (subspace_topology T Tx C2) t2 r2.
+        apply orIR. rewrite Hr1r2. exact Ht2r.
+  }
+  apply Hr1_is_endpoint_C2. let s1. assume Hs1cases.
+  claim Hrs1 : end_points_of_arc C2 (subspace_topology T Tx C2) r1 s1.
+  { apply Hs1cases.
+    - assume Hrs : end_points_of_arc C2 (subspace_topology T Tx C2) r1 s1. exact Hrs.
+    - assume Hsr : end_points_of_arc C2 (subspace_topology T Tx C2) s1 r1.
+      exact (end_points_of_arc_sym C2 (subspace_topology T Tx C2) s1 r1 Hsr). }
+  claim HoriC2 : oriented_edge T Tx Arcs C2 r1 s1.
+  { exact (andI (C2 :e Arcs) (end_points_of_arc C2 (subspace_topology T Tx C2) r1 s1) HC2 Hrs1). }
+  set n2 := ordsucc n1.
+  set path3 :=
+    (graph n2 (fun i:set => apply_fun path2 i)) :\/:
+    (graph {n2} (fun _:set => ((r1, s1), C2))).
+  claim Hep3 : edge_path T Tx Arcs (ordsucc n2) path3 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n2 path2 q0 n1 C2 r1 s1
+      Hglg
+      Hep2
+      (ordsuccI2 n1)
+      (In_irref (ordsucc n1))
+      Hfin1
+      HoriC2).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
