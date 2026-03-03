@@ -321273,7 +321273,239 @@ apply andI.
     }
     claim HconnT0 : connected_space T0 (subspace_topology X Tx T0).
     {
-      admit.
+      claim HtopX : topology_on X Tx.
+      { exact (general_linear_graph_topology_on X Tx Arcs HglgX). }
+      claim HtopT0 : topology_on T0 (subspace_topology X Tx T0).
+      { exact (subspace_topology_is_topology X Tx T0 HtopX HT0subX). }
+      apply (iffER
+        (connected_space T0 (subspace_topology X Tx T0))
+        (~(exists S:set, S <> Empty /\ S <> T0 /\ open_in T0 (subspace_topology X Tx T0) S /\ closed_in T0 (subspace_topology X Tx T0) S))
+        (connected_iff_no_nontrivial_clopen T0 (subspace_topology X Tx T0) HtopT0)).
+      assume Hex.
+      apply Hex.
+      let S. assume HS.
+      apply (and4E
+        (S <> Empty)
+        (S <> T0)
+        (open_in T0 (subspace_topology X Tx T0) S)
+        (closed_in T0 (subspace_topology X Tx T0) S)
+        HS).
+      assume HSne HSneT0 HSopen HSclosed.
+      claim HSsubT0 : S c= T0.
+      { exact (open_in_subset T0 (subspace_topology X Tx T0) S HSopen). }
+      claim HqT0 : q :e T0.
+      {
+        claim HqSing : q :e Sing q. { exact (SingI q). }
+        claim HqTA : q :e T0 :/\: A.
+        { exact (mem_eqL q (T0 :/\: A) (Sing q) HmeetSingQ HqSing). }
+        exact (binintersectE1 T0 A q HqTA).
+      }
+      claim Hno_clopenT :
+        ~(exists U:set, U <> Empty /\ U <> T /\ open_in T (subspace_topology X Tx T) U /\ closed_in T (subspace_topology X Tx T) U).
+      { exact (iffEL
+          (connected_space T (subspace_topology X Tx T))
+          (~(exists U:set, U <> Empty /\ U <> T /\ open_in T (subspace_topology X Tx T) U /\ closed_in T (subspace_topology X Tx T) U))
+          (connected_iff_no_nontrivial_clopen T (subspace_topology X Tx T) HtopT)
+          HconnT). }
+      claim Hcontra :
+        forall S1:set,
+        S1 c= T0 ->
+        S1 <> Empty ->
+        q /:e S1 ->
+        open_in T0 (subspace_topology X Tx T0) S1 ->
+        closed_in T0 (subspace_topology X Tx T0) S1 ->
+        False.
+      {
+        let S1. assume HS1sub HS1ne Hqnot HS1open HS1closed.
+        claim HS1subT : S1 c= T.
+        { let x. assume HxS1. exact (HT0subT x (HS1sub x HxS1)). }
+        claim HAsubT : A c= T.
+        { exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs A Htree HAT). }
+        claim HqT : q :e T.
+        { exact (HAsubT q HqA). }
+        claim HS1neT : S1 <> T.
+        { assume Heq. apply Hqnot. rewrite Heq. exact HqT. }
+        claim HfinB : finite B.
+        { exact (Subq_finite ArcsT HfinArcsT B HBsubArcsT). }
+        claim HsubTopoT0T :
+          subspace_topology T (subspace_topology X Tx T) T0 =
+          subspace_topology X Tx T0.
+        { exact (ex16_1_subspace_transitive X Tx T T0 HtopX HTsubX HT0subT). }
+        claim HT0closed : closed_in T (subspace_topology X Tx T) T0.
+        {
+          rewrite HT0eq.
+          exact (general_linear_graph_finite_union_arcs_closed
+            T
+            (subspace_topology X Tx T)
+            ArcsT
+            B
+            HglgT
+            HBsubArcsT
+            HfinB).
+        }
+        claim HS1closedT0 : closed_in T0 (subspace_topology T (subspace_topology X Tx T) T0) S1.
+        { rewrite HsubTopoT0T. exact HS1closed. }
+        claim HS1closedT : closed_in T (subspace_topology X Tx T) S1.
+        { exact (closed_in_closed_subspace
+            T
+            (subspace_topology X Tx T)
+            T0
+            S1
+            HtopT
+            HT0closed
+            HS1closedT0). }
+        claim HS1openT : open_in T (subspace_topology X Tx T) S1.
+        {
+          claim HVe : exists V:set, V :e Tx /\ S1 = V :/\: T0.
+          { exact (iffEL
+              (open_in T0 (subspace_topology X Tx T0) S1)
+              (exists V:set, V :e Tx /\ S1 = V :/\: T0)
+              (open_in_subspace_iff X Tx T0 S1 HtopX HT0subX HS1sub)
+              HS1open). }
+          apply HVe. let V. assume HVpack.
+          claim HVin : V :e Tx.
+          { exact (andEL (V :e Tx) (S1 = V :/\: T0) HVpack). }
+          claim HVeq : S1 = V :/\: T0.
+          { exact (andER (V :e Tx) (S1 = V :/\: T0) HVpack). }
+          apply (iffER
+            (open_in T (subspace_topology X Tx T) S1)
+            (forall A0:set, A0 :e ArcsT ->
+              open_in A0 (subspace_topology T (subspace_topology X Tx T) A0) (S1 :/\: A0))
+            (general_linear_graph_coherence_open
+              T
+              (subspace_topology X Tx T)
+              ArcsT
+              S1
+              HglgT
+              HS1subT)).
+          let A0. assume HA0T.
+          claim Hcase : A0 = A \/ A0 <> A.
+          { exact (xm (A0 = A)). }
+          apply Hcase.
+          - assume HA0eq. rewrite HA0eq.
+            claim Hcap : S1 :/\: A = Empty.
+            {
+              apply set_ext.
+              - let x. assume Hx.
+                claim HxS1 : x :e S1. { exact (binintersectE1 S1 A x Hx). }
+                claim HxA : x :e A. { exact (binintersectE2 S1 A x Hx). }
+                claim HxT0 : x :e T0. { exact (HS1sub x HxS1). }
+                claim HxTA : x :e T0 :/\: A.
+                { exact (binintersectI T0 A x HxT0 HxA). }
+                claim HxSing : x :e Sing q.
+                { exact (mem_eqR x (T0 :/\: A) (Sing q) HmeetSingQ HxTA). }
+                claim Hxq : x = q. { exact (SingE q x HxSing). }
+                claim Hfalse : False.
+                { apply Hqnot. rewrite <- Hxq. exact HxS1. }
+                exact (Hfalse (x :e Empty)).
+              - let x. assume Hx. exact (EmptyE x Hx (x :e S1 :/\: A)).
+            }
+            claim HtopA : topology_on A (subspace_topology T (subspace_topology X Tx T) A).
+            { exact (subspace_topology_is_topology T (subspace_topology X Tx T) A HtopT HAsubT). }
+            rewrite Hcap.
+            exact (Empty_is_open A (subspace_topology T (subspace_topology X Tx T) A) HtopA).
+          - assume HA0ne.
+            claim HA0B : A0 :e B.
+            {
+              apply setminusI.
+              - exact HA0T.
+              - assume HA0sA : A0 :e Sing A.
+                exact (HA0ne (SingE A A0 HA0sA)).
+            }
+            claim HA0subT0 : A0 c= T0.
+            { let x. assume HxA0. exact (UnionI B x A0 HxA0 HA0B). }
+            claim HA0subT : A0 c= T.
+            { exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs A0 Htree HA0T). }
+            claim HA0subX : A0 c= X.
+            { let x. assume HxA0. exact (HTsubX x (HA0subT x HxA0)). }
+            claim HtopA0 : topology_on A0 (subspace_topology X Tx A0).
+            { exact (subspace_topology_is_topology X Tx A0 HtopX HA0subX). }
+            claim HsubTopoA0T :
+              subspace_topology T (subspace_topology X Tx T) A0 =
+              subspace_topology X Tx A0.
+            { exact (ex16_1_subspace_transitive X Tx T A0 HtopX HTsubX HA0subT). }
+            claim HS1capA0 : S1 :/\: A0 = V :/\: A0.
+            {
+              apply set_ext.
+              - let x. assume Hx.
+                claim HxS1 : x :e S1. { exact (binintersectE1 S1 A0 x Hx). }
+                claim HxA0 : x :e A0. { exact (binintersectE2 S1 A0 x Hx). }
+                claim HxVT0 : x :e V :/\: T0.
+                { exact (mem_eqR x S1 (V :/\: T0) HVeq HxS1). }
+                claim HxV : x :e V. { exact (binintersectE1 V T0 x HxVT0). }
+                exact (binintersectI V A0 x HxV HxA0).
+              - let x. assume Hx.
+                claim HxV : x :e V. { exact (binintersectE1 V A0 x Hx). }
+                claim HxA0 : x :e A0. { exact (binintersectE2 V A0 x Hx). }
+                claim HxT0 : x :e T0. { exact (HA0subT0 x HxA0). }
+                claim HxVT0 : x :e V :/\: T0. { exact (binintersectI V T0 x HxV HxT0). }
+                claim HxS1 : x :e S1.
+                { exact (mem_eqL x S1 (V :/\: T0) HVeq HxVT0). }
+                exact (binintersectI S1 A0 x HxS1 HxA0).
+            }
+            claim HVcapA0 : (V :/\: A0) :e subspace_topology X Tx A0.
+            { exact (subspace_topologyI X Tx A0 V HVin). }
+            claim HopenVA0 : open_in A0 (subspace_topology X Tx A0) (V :/\: A0).
+            { exact (open_inI A0 (subspace_topology X Tx A0) (V :/\: A0) HtopA0 HVcapA0). }
+            rewrite HsubTopoA0T.
+            rewrite HS1capA0.
+            exact HopenVA0.
+        }
+        apply Hno_clopenT. witness S1.
+        apply andI.
+        - apply andI.
+          + apply andI.
+            * exact HS1ne.
+            * exact HS1neT.
+          + exact HS1openT.
+        - exact HS1closedT.
+      }
+      claim Hqcase : q :e S \/ q /:e S.
+      { exact (xm (q :e S)). }
+      apply Hqcase.
+      - assume HqS.
+        set S1 := T0 :\: S.
+        claim HS1sub : S1 c= T0.
+        { exact (setminus_Subq T0 S). }
+        claim HS1ne : S1 <> Empty.
+        {
+          assume Heq.
+          claim HT0subS : T0 c= S.
+          {
+            let x. assume HxT0.
+            claim Hcase : x :e S \/ x /:e S.
+            { exact (xm (x :e S)). }
+            apply Hcase.
+            - assume HxS. exact HxS.
+            - assume HxNotS.
+              claim HxS1 : x :e S1.
+              { exact (setminusI T0 S x HxT0 HxNotS). }
+              claim HxEmp : x :e Empty. { rewrite <- Heq. exact HxS1. }
+              exact (EmptyE x HxEmp (x :e S)).
+          }
+          claim HSeq : S = T0.
+          { apply set_ext.
+            - let x. assume HxS. exact (HSsubT0 x HxS).
+            - let x. assume HxT0. exact (HT0subS x HxT0). }
+          exact (HSneT0 HSeq).
+        }
+        claim HqnotS1 : q /:e S1.
+        {
+          assume HqS1.
+          claim HqNotS : q /:e S.
+          { exact (setminusE2 T0 S q HqS1). }
+          exact (HqNotS HqS).
+        }
+        claim HS1open : open_in T0 (subspace_topology X Tx T0) S1.
+        { exact (open_of_closed_complement T0 (subspace_topology X Tx T0) S HSclosed). }
+        claim HSopenElem : S :e subspace_topology X Tx T0.
+        { exact (open_in_elem T0 (subspace_topology X Tx T0) S HSopen). }
+        claim HS1closed : closed_in T0 (subspace_topology X Tx T0) S1.
+        { exact (closed_of_open_complement T0 (subspace_topology X Tx T0) S HtopT0 HSopenElem). }
+        apply (Hcontra S1 HS1sub HS1ne HqnotS1 HS1open HS1closed).
+      - assume HqNotS.
+        set S1 := S.
+        apply (Hcontra S1 HSsubT0 HSne HqNotS HSopen HSclosed).
     }
     claim HnoloopT0 :
       ~(exists n path_seq x0:set,
