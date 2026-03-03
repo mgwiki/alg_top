@@ -173267,6 +173267,76 @@ exact (finite_product_connected
   interval_connected).
 Qed.
 
+(** Helper: projection_map1/2 evaluation. **)
+(** Proven Bob **)
+Lemma projection_map1_apply : forall X Y p:set,
+  p :e setprod X Y ->
+  apply_fun (projection_map1 X Y) p = p 0.
+let X Y p.
+assume Hp.
+exact (projection1_apply X Y p Hp).
+Qed.
+
+(** Proven Bob **)
+Lemma projection_map2_apply : forall X Y p:set,
+  p :e setprod X Y ->
+  apply_fun (projection_map2 X Y) p = p 1.
+let X Y p.
+assume Hp.
+exact (projection2_apply X Y p Hp).
+Qed.
+
+(** Helper: Euclidean plane is path connected. **)
+(** Proven Bob **)
+Theorem EuclidPlane_path_connected :
+  path_connected_space EuclidPlane R2_standard_topology.
+claim HpcR : path_connected_space R R_standard_topology.
+{
+  exact (ex51_3b_contractible_path_connected
+    R
+    R_standard_topology
+    ex51_3a_R_contractible).
+}
+exact (finite_product_path_connected
+  R
+  R_standard_topology
+  R
+  R_standard_topology
+  HpcR
+  HpcR).
+Qed.
+
+(** Helper: translation map on EuclidPlane. **)
+Definition EuclidPlane_translate : set -> set := fun a =>
+  pair_map EuclidPlane
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map1 R R) (const_fun EuclidPlane (R2_xcoord a)))
+      add_fun_R)
+    (compose_fun EuclidPlane
+      (pair_map EuclidPlane (projection_map2 R R) (const_fun EuclidPlane (R2_ycoord a)))
+      add_fun_R).
+
+(** Helper: translation map on EuclidPlane is a homeomorphism. **)
+Theorem EuclidPlane_translate_homeomorphism : forall a:set,
+  a :e EuclidPlane ->
+  homeomorphism
+    EuclidPlane
+    R2_standard_topology
+    EuclidPlane
+    R2_standard_topology
+    (EuclidPlane_translate a).
+admit.
+Admitted.
+
+(** Helper: punctured Euclidean plane is connected at any point. **)
+Theorem punctured_EuclidPlane_connected_any : forall a:set,
+  a :e EuclidPlane ->
+  connected_space (EuclidPlane :\: {a,a})
+    (subspace_topology EuclidPlane R2_standard_topology
+      (EuclidPlane :\: {a,a})).
+admit.
+Admitted.
+
 (** Helper: any n >= 2 can be written as ordsucc (ordsucc k). **)
 (** Proven Bob **)
 Theorem nat_ge2_ordsucc_ordsucc : forall n:set,
