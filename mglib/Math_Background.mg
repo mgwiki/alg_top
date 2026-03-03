@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 2201 **)
+(** Balance Charlie 1901 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -180518,6 +180518,42 @@ Admitted.
 (** (lines 2370-2481 in algtop.tex)                              **)
 (** ============================================================ **)
 
+(** Bounty 300 **)
+Theorem lemma65_2_side_homotopies_exist : forall C Tc p q:set,
+  C c= Sn 2 -> is_simple_closed_curve C Tc ->
+  Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
+  p :e Sn 2 :\: C -> q :e Sn 2 :\: C ->
+  component_of (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) p <>
+  component_of (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) q ->
+  let X := Sn 2 :\: (Sing p :\/: Sing q) in
+  let Tx := subspace_topology (Sn 2) (Sn_topology 2) X in
+  let Y := Sn 2 :\: C in
+  let Ty := subspace_topology (Sn 2) (Sn_topology 2) Y in
+  let U := component_of Y Ty p in
+  let V := component_of Y Ty q in
+  let DU := closure_of (Sn 2) (Sn_topology 2) U in
+  let DV := closure_of (Sn 2) (Sn_topology 2) V in
+  let A1 := DU :/\: X in
+  let A2 := DV :/\: X in
+  let Z := setprod X unit_interval in
+  let Tz := product_topology X Tx unit_interval unit_interval_topology in
+  let P1 := setprod A1 unit_interval in
+  let P2 := setprod A2 unit_interval in
+  exists H1 H2:set,
+    (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+     (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
+     (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
+     (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a))
+    /\
+    (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+     (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
+     (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
+     (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a)).
+admit.
+Admitted.
+
 (** S65 helper: the key geometric step in Thm 65.2 is that C is a deformation retract
     of S^2 - {p,q} when p and q lie in different components of S^2 - C. **)
 Theorem lemma65_2_deformation_retract : forall C Tc p q:set,
@@ -182116,14 +182152,98 @@ claim Hdeform0 :
         (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
         (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
         (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a).
-    { admit. }
+    {
+      claim HexH12 :
+        exists H1 H2:set,
+          (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+           (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
+           (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
+           (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a))
+          /\
+          (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+           (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
+           (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
+           (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a)).
+      {
+        exact (lemma65_2_side_homotopies_exist
+          C Tc p q HCsubSn Hsimple HTc HpSnC HqSnC HcompNe).
+      }
+      apply HexH12.
+      let H1.
+      assume HexH2 : exists H2:set,
+        (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
+         (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a))
+        /\
+        (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
+         (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a)).
+      apply HexH2.
+      let H2.
+      assume HH12.
+      witness H1.
+      exact (andEL
+        (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
+         (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a))
+        (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
+         (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a))
+        HH12).
+    }
     claim HexH2 :
       exists H2:set,
         continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
         (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
         (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
         (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a).
-    { admit. }
+    {
+      claim HexH12 :
+        exists H1 H2:set,
+          (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+           (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
+           (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
+           (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a))
+          /\
+          (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+           (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
+           (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
+           (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a)).
+      {
+        exact (lemma65_2_side_homotopies_exist
+          C Tc p q HCsubSn Hsimple HTc HpSnC HqSnC HcompNe).
+      }
+      apply HexH12.
+      let H1.
+      assume HexH2 : exists H2:set,
+        (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
+         (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a))
+        /\
+        (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
+         (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a)).
+      apply HexH2.
+      let H2.
+      assume HH12.
+      witness H2.
+      exact (andER
+        (continuous_map P1 (subspace_topology Z Tz P1) X Tx H1 /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 0) = x) /\
+         (forall x:set, x :e A1 -> apply_fun H1 (x, 1) :e C) /\
+         (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H1 (a, t) = a))
+        (continuous_map P2 (subspace_topology Z Tz P2) X Tx H2 /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 0) = x) /\
+         (forall x:set, x :e A2 -> apply_fun H2 (x, 1) :e C) /\
+         (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H2 (a, t) = a))
+        HH12).
+    }
     apply HexH1.
     let H1.
     assume HH1pack.
