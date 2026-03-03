@@ -172377,11 +172377,158 @@ exact (finite_product_connected
   (euclidean_space_connected_succ n Hn)).
 Qed.
 
+(** Helper: punctured Euclidean space is connected in dimension >= 2. **)
+Theorem punctured_euclidean_space_connected_ge2 :
+  forall n a:set,
+  n :e omega -> 2 c= n ->
+  a :e euclidean_space n ->
+  connected_space
+    (euclidean_space n :\: {a,a})
+    (subspace_topology (euclidean_space n) (euclidean_topology n)
+      (euclidean_space n :\: {a,a})).
+admit.
+Admitted.
+
 Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   n :e omega -> 2 c= n ->
   ~(exists f:set, homeomorphism R R_standard_topology
     (euclidean_space n) (euclidean_topology n) f).
-admit.
+let n.
+assume Hn HnGe2.
+assume HhomeEx.
+apply HhomeEx.
+let f.
+assume Hhome.
+claim H0R : 0 :e R.
+{
+  exact real_0.
+}
+claim HfCont : continuous_map R R_standard_topology
+  (euclidean_space n) (euclidean_topology n) f.
+{
+  exact (homeomorphism_continuous
+    R
+    R_standard_topology
+    (euclidean_space n)
+    (euclidean_topology n)
+    f
+    Hhome).
+}
+claim HfFun : function_on f R (euclidean_space n).
+{
+  exact (continuous_map_function_on
+    R
+    R_standard_topology
+    (euclidean_space n)
+    (euclidean_topology n)
+    f
+    HfCont).
+}
+set a := apply_fun f 0.
+claim Ha : a :e euclidean_space n.
+{
+  exact (HfFun 0 H0R).
+}
+set C := R :\: {0,0}.
+set D := (euclidean_space n) :\: {a,a}.
+claim HnotConnR :
+  ~ connected_space C
+    (subspace_topology R R_standard_topology C).
+{
+  exact punctured_R_not_connected.
+}
+claim HCsub : C c= R.
+{
+  exact (setminus_Subq R {0,0}).
+}
+claim HhomeC :
+  homeomorphism
+    C
+    (subspace_topology R R_standard_topology C)
+    (image_of f C)
+    (subspace_topology (euclidean_space n) (euclidean_topology n) (image_of f C))
+    f.
+{
+  exact (homeomorphism_restrict_to_image_of_subset
+    R
+    R_standard_topology
+    (euclidean_space n)
+    (euclidean_topology n)
+    f
+    C
+    Hhome
+    HCsub).
+}
+claim Himg : image_of f C = D.
+{
+  exact (homeomorphism_image_of_setminus_singleton
+    R
+    R_standard_topology
+    (euclidean_space n)
+    (euclidean_topology n)
+    f
+    0
+    Hhome
+    H0R).
+}
+claim HnotConnY :
+  ~ connected_space
+    D
+    (subspace_topology (euclidean_space n) (euclidean_topology n) D).
+{
+  assume HconnY.
+  claim HconnImg :
+    connected_space
+      (image_of f C)
+      (subspace_topology (euclidean_space n) (euclidean_topology n) (image_of f C)).
+  {
+    rewrite Himg.
+    exact HconnY.
+  }
+  apply (homeomorphism_inverse_is_homeomorphism_variant
+    C
+    (subspace_topology R R_standard_topology C)
+    (image_of f C)
+    (subspace_topology (euclidean_space n) (euclidean_topology n) (image_of f C))
+    f
+    HhomeC).
+  let g.
+  assume HgHome :
+    homeomorphism
+      (image_of f C)
+      (subspace_topology (euclidean_space n) (euclidean_topology n) (image_of f C))
+      C
+      (subspace_topology R R_standard_topology C)
+      g.
+  claim HconnC :
+    connected_space
+      C
+      (subspace_topology R R_standard_topology C).
+  {
+    exact (homeomorphism_preserves_connected
+      (image_of f C)
+      (subspace_topology (euclidean_space n) (euclidean_topology n) (image_of f C))
+      C
+      (subspace_topology R R_standard_topology C)
+      g
+      HgHome
+      HconnImg).
+  }
+  exact (HnotConnR HconnC).
+}
+claim HconnY :
+  connected_space
+    D
+    (subspace_topology (euclidean_space n) (euclidean_topology n) D).
+{
+  exact (punctured_euclidean_space_connected_ge2
+    n
+    a
+    Hn
+    HnGe2
+    Ha).
+}
+exact (HnotConnY HconnY).
 Admitted.
 
 (** from S59 Exercise 3(b) (line 1618 in algtop.tex) **)
