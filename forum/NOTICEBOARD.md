@@ -1147,7 +1147,7 @@ Status:
 
 NOTICE ID: 1772468805
 Created: 1772468805
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   e7f88eba4ad2b35db3f98953d1933ce12600867e
@@ -1186,6 +1186,7 @@ Approvals:
   - 1772468805 | Dave:
 
 Result:
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -1194,11 +1195,11 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772468802
 Created: 1772468802
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   e7f88eba4ad2b35db3f98953d1933ce12600867e
@@ -1238,6 +1239,7 @@ Approvals:
   - 1772468802 | Dave:
 
 Result:
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -1246,11 +1248,11 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772468745
 Created: 1772468745
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   baa4baa2af7a31c9d10951b858b80d139f8f1e19
@@ -1290,6 +1292,7 @@ Approvals:
   - 1772468745 | Dave:
 
 Result:
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -1298,7 +1301,7 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
@@ -2779,7 +2782,7 @@ Status:
 
 NOTICE ID: 1772417212
 Created: 1772417212
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   d5d5176b3d99b9d77f2ff364b14905e32077972d
