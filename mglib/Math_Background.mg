@@ -228970,10 +228970,122 @@ apply (and5I
 	              { exact (Hinter12 wp HwpG1' HwpG2'). }
 	              exact (FalseE (Hwpne Hwp_e) (apply_fun ys 0 :e G2)).
 	          }
-          { (** i = 1 **)
-	            (** keep n=2 case for i=1 admitted for now; handled similarly **)
-            admit.
-          }
+	          { (** i = 1 **)
+	            claim H0in : 0 :e n. { rewrite Hn2. exact In_0_2. }
+	            claim H1in : 1 :e n. { rewrite Hn2. exact In_1_2. }
+	            claim Hy0_G : apply_fun ys 0 :e G.
+	            { exact (reduced_word_in_G G multG eG invG (J :\/: K) Hfam efamH n ys Hsubfam_union Hred 0 H0in). }
+	            claim Hy1_G : apply_fun ys 1 :e G.
+	            { exact (reduced_word_in_G G multG eG invG (J :\/: K) Hfam efamH n ys Hsubfam_union Hred 1 H1in). }
+	            apply (and6E
+	              (function_on multG (setprod G G) G)
+	              (function_on invG G G)
+	              (eG :e G)
+	              (forall u v w:set, u :e G -> v :e G -> w :e G ->
+	                apply_fun multG (apply_fun multG (u, v), w) =
+	                  apply_fun multG (u, apply_fun multG (v, w)))
+	              (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+	              (forall u:set, u :e G ->
+	                apply_fun multG (u, apply_fun invG u) = eG /\
+	                apply_fun multG (apply_fun invG u, u) = eG)
+	              Hgrp).
+	            assume _ HinvF _ HassocG HidG HinverseG.
+	            apply (and4E
+	              (G2 c= G)
+	              (eG :e G2)
+	              (forall u v:set, u :e G2 -> v :e G2 -> apply_fun multG (u, v) :e G2)
+	              (forall u:set, u :e G2 -> apply_fun invG u :e G2)
+	              Hsub2).
+	            assume _ _ HmultG2 HinvG2.
+	            apply (and4E
+	              (G1 c= G)
+	              (eG :e G1)
+	              (forall u v:set, u :e G1 -> v :e G1 -> apply_fun multG (u, v) :e G1)
+	              (forall u:set, u :e G1 -> apply_fun invG u :e G1)
+	              Hsub1).
+	            assume _ _ HmultG1 _.
+	            (** wp = mult(ys0,ys1) **)
+	            claim Hwp2 : word_product multG eG ys 2 = apply_fun multG (apply_fun ys 0, apply_fun ys 1).
+	            {
+	              claim Hwp2a : word_product multG eG ys 2 =
+	                apply_fun multG (word_product multG eG ys 1, apply_fun ys 1).
+	              { rewrite <- ordsucc_1_eq_2_nat.
+	                exact (word_product_succ multG eG ys 1 nat_1). }
+	              claim Hwp1a : word_product multG eG ys 1 =
+	                apply_fun multG (word_product multG eG ys 0, apply_fun ys 0).
+	              { rewrite <- ordsucc_0_eq_1_nat.
+	                exact (word_product_succ multG eG ys 0 nat_0). }
+	              claim Hwp0a : word_product multG eG ys 0 = eG.
+	              { exact (nat_primrec_0 eG (fun k r => apply_fun multG (r, apply_fun ys k))). }
+	              claim HidL0 : apply_fun multG (eG, apply_fun ys 0) = apply_fun ys 0.
+	              {
+	                exact (andEL
+	                  (apply_fun multG (eG, apply_fun ys 0) = apply_fun ys 0)
+	                  (apply_fun multG (apply_fun ys 0, eG) = apply_fun ys 0)
+	                  (HidG (apply_fun ys 0) Hy0_G)).
+	              }
+	              claim Hwp1eq : word_product multG eG ys 1 = apply_fun ys 0.
+	              { rewrite Hwp1a. rewrite Hwp0a. exact HidL0. }
+	              rewrite Hwp2a. rewrite Hwp1eq. reflexivity.
+	            }
+	            set wp := word_product multG eG ys n.
+	            claim Hwp_eq : wp = apply_fun multG (apply_fun ys 0, apply_fun ys 1).
+	            { rewrite Hn2. rewrite <- Hwp2. reflexivity. }
+	            claim HwpG2' : wp :e G2.
+	            { exact HwpG2. }
+	            apply (xm (apply_fun ys 1 :e G2)).
+	            - assume Hy1G2. exact Hy1G2.
+	            - assume Hy1nG2.
+	              claim Hy1G1 : apply_fun ys 1 :e G1.
+	              {
+	                apply (Hside_union n ys Hred 1 H1in).
+	                - assume Hy1G1. exact Hy1G1.
+	                - assume Hy1G2. exact (FalseE (Hy1nG2 Hy1G2) (apply_fun ys 1 :e G1)).
+	              }
+	              claim Hy0G1 : apply_fun ys 0 :e G1.
+	              {
+	                apply (Hside_union n ys Hred 0 H0in).
+	                - assume Hy0G1. exact Hy0G1.
+	                - assume Hy0G2.
+	                  claim Hinv0G2 : apply_fun invG (apply_fun ys 0) :e G2.
+	                  { exact (HinvG2 (apply_fun ys 0) Hy0G2). }
+	                  claim HtmpG2 : apply_fun multG (apply_fun invG (apply_fun ys 0), wp) :e G2.
+	                  { exact (HmultG2 (apply_fun invG (apply_fun ys 0)) wp Hinv0G2 HwpG2'). }
+	                  claim Hinv0_G : apply_fun invG (apply_fun ys 0) :e G.
+	                  { exact (HinvF (apply_fun ys 0) Hy0_G). }
+	                  claim HinvL : apply_fun multG (apply_fun invG (apply_fun ys 0), apply_fun ys 0) = eG.
+	                  { exact (andER
+	                      (apply_fun multG (apply_fun ys 0, apply_fun invG (apply_fun ys 0)) = eG)
+	                      (apply_fun multG (apply_fun invG (apply_fun ys 0), apply_fun ys 0) = eG)
+	                      (HinverseG (apply_fun ys 0) Hy0_G)). }
+	                  claim HidL1 : apply_fun multG (eG, apply_fun ys 1) = apply_fun ys 1.
+	                  { exact (andEL
+	                      (apply_fun multG (eG, apply_fun ys 1) = apply_fun ys 1)
+	                      (apply_fun multG (apply_fun ys 1, eG) = apply_fun ys 1)
+	                      (HidG (apply_fun ys 1) Hy1_G)). }
+	                  claim Hassoc1 : apply_fun multG (apply_fun invG (apply_fun ys 0),
+	                      apply_fun multG (apply_fun ys 0, apply_fun ys 1)) =
+	                    apply_fun multG (apply_fun multG (apply_fun invG (apply_fun ys 0), apply_fun ys 0), apply_fun ys 1).
+	                  { symmetry.
+	                    exact (HassocG (apply_fun invG (apply_fun ys 0)) (apply_fun ys 0) (apply_fun ys 1)
+	                      Hinv0_G Hy0_G Hy1_G). }
+	                  claim Hy1_eq : apply_fun multG (apply_fun invG (apply_fun ys 0), wp) = apply_fun ys 1.
+	                  {
+	                    rewrite Hwp_eq.
+	                    rewrite Hassoc1.
+	                    rewrite HinvL.
+	                    exact HidL1.
+	                  }
+	                  claim Hy1G2 : apply_fun ys 1 :e G2.
+	                  { rewrite <- Hy1_eq. exact HtmpG2. }
+	                  exact (FalseE (Hy1nG2 Hy1G2) (apply_fun ys 0 :e G1)).
+	              }
+	              claim HwpG1' : wp :e G1.
+	              { rewrite Hwp_eq. exact (HmultG1 (apply_fun ys 0) (apply_fun ys 1) Hy0G1 Hy1G1). }
+	              claim Hwp_e : wp = eG.
+	              { exact (Hinter12 wp HwpG1' HwpG2'). }
+	              exact (FalseE (Hwpne Hwp_e) (apply_fun ys 1 :e G2)).
+	          }
         * assume Hn_ne2.
           (** Remaining case: n >= 3 requires compressing G1/G2 blocks and using free product uniqueness **)
           admit.
