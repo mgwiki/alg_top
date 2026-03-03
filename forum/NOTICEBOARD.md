@@ -82,6 +82,54 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772498147
+Created: 1772498147
+Status: PROPOSED
+
+Refers to Commit:
+  bb6493e3f8501c14fcb678c4a12b2b2cf1d33f1c
+
+Target:
+  Line: 20162
+  Name: convex_subspace_topology_eq_R (Theorem)
+
+Problem:
+  The current statement is false. From A c= R, convex_in R A, and topology_on A Ta,
+  it does not follow that Ta must equal the subspace topology inherited from R.
+  Counterexample: take any nontrivial convex A (e.g. a closed interval) and let Ta
+  be the discrete topology on A.
+
+Proposed Replacement:
+  Theorem convex_subspace_topology_eq_R : forall A:set,
+    A c= R -> convex_in R A ->
+    topology_on A (subspace_topology R R_standard_topology A).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772498147 | Charlie: This lemma was introduced as a "bridge" for Ex51_1 but is
+    not salvageable as stated; the correct fact needed in practice is that the
+    subspace topology is a topology on A, and Ex51_1 already uses subspace_topology
+    explicitly.
+
+Approvals:
+  - 1772498147 | Alice:
+  - 1772498147 | Bob:
+  - 1772498147 | Charlie: YES
+  - 1772498147 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772495150
 Created: 1772495150
 Status: PROPOSED
