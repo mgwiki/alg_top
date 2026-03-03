@@ -250762,6 +250762,123 @@ apply andI.
     HnY).
 Qed.
 
+(** Helper: Euclidean spaces of positive dimension are path connected **)
+(** Proven Bob **)
+Theorem euclidean_space_path_connected_succ : forall n:set,
+  n :e omega ->
+  path_connected_space (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)).
+let n. assume HnO.
+apply (nat_ind (fun k:set =>
+  path_connected_space (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)))).
+- (** base: k = 0 (dimension 1) **)
+  claim Hhome :
+    homeomorphism
+      R
+      R_standard_topology
+      (euclidean_space (ordsucc 0))
+      (euclidean_topology (ordsucc 0))
+      R1_singleton_map.
+  {
+    rewrite ordsucc_0_eq_1_nat.
+    rewrite <- SingEmpty_eq_1.
+    exact R_homeomorphic_euclidean_space_1.
+  }
+  claim HpcR : path_connected_space R R_standard_topology.
+  {
+    exact (ex51_3b_contractible_path_connected
+      R
+      R_standard_topology
+      ex51_3a_R_contractible).
+  }
+  exact (homeomorphism_preserves_path_connected_space_right
+    R
+    R_standard_topology
+    (euclidean_space (ordsucc 0))
+    (euclidean_topology (ordsucc 0))
+    R1_singleton_map
+    Hhome
+    HpcR).
+- (** step **)
+  let k.
+  assume HkNat : nat_p k.
+  assume HkPc :
+    path_connected_space (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)).
+  claim Hhome :
+    homeomorphism
+      (euclidean_space (ordsucc (ordsucc k)))
+      (euclidean_topology (ordsucc (ordsucc k)))
+      (setprod (euclidean_space (ordsucc k)) R)
+      (product_topology (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) R R_standard_topology)
+      (euclidean_space_succ_split_map (ordsucc k)).
+  {
+    exact (euclidean_space_succ_split_homeomorphism (ordsucc k)
+      (nat_ordsucc k HkNat)).
+  }
+  claim HpcProd :
+    path_connected_space
+      (setprod (euclidean_space (ordsucc k)) R)
+      (product_topology (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) R R_standard_topology).
+  {
+    exact (finite_product_path_connected
+      (euclidean_space (ordsucc k))
+      (euclidean_topology (ordsucc k))
+      R
+      R_standard_topology
+      HkPc
+      (ex51_3b_contractible_path_connected
+        R
+        R_standard_topology
+        ex51_3a_R_contractible)).
+  }
+  apply (homeomorphism_inverse_is_homeomorphism_variant
+    (euclidean_space (ordsucc (ordsucc k)))
+    (euclidean_topology (ordsucc (ordsucc k)))
+    (setprod (euclidean_space (ordsucc k)) R)
+    (product_topology (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) R R_standard_topology)
+    (euclidean_space_succ_split_map (ordsucc k))
+    Hhome).
+  let g.
+  assume HgHome :
+    homeomorphism
+      (setprod (euclidean_space (ordsucc k)) R)
+      (product_topology (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) R R_standard_topology)
+      (euclidean_space (ordsucc (ordsucc k)))
+      (euclidean_topology (ordsucc (ordsucc k)))
+      g.
+  exact (homeomorphism_preserves_path_connected_space_right
+    (setprod (euclidean_space (ordsucc k)) R)
+    (product_topology (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) R R_standard_topology)
+    (euclidean_space (ordsucc (ordsucc k)))
+    (euclidean_topology (ordsucc (ordsucc k)))
+    g
+    HgHome
+    HpcProd).
+- exact (omega_nat_p n HnO).
+Qed.
+
+(** Helper: product with Euclidean space preserves path connectedness of punctured plane **)
+(** Proven Bob **)
+Theorem punctured_EuclidPlane_product_euclidean_path_connected : forall n:set,
+  n :e omega ->
+  path_connected_space
+    (setprod (EuclidPlane :\: {(0,0)}) (euclidean_space (ordsucc n)))
+    (product_topology
+      (EuclidPlane :\: {(0,0)})
+      (subspace_topology EuclidPlane R2_standard_topology
+        (EuclidPlane :\: {(0,0)}))
+      (euclidean_space (ordsucc n))
+      (euclidean_topology (ordsucc n))).
+let n. assume Hn.
+exact (finite_product_path_connected
+  (EuclidPlane :\: {(0,0)})
+  (subspace_topology EuclidPlane R2_standard_topology
+    (EuclidPlane :\: {(0,0)}))
+  (euclidean_space (ordsucc n))
+  (euclidean_topology (ordsucc n))
+  punctured_space_path_connected
+  (euclidean_space_path_connected_succ n Hn)).
+Qed.
+
 (** Helper: homeomorphism preserves second countability (forward direction). **)
 (** Proven Bob **)
 Theorem homeomorphism_preserves_second_countable_right :
