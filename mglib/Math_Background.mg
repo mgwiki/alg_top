@@ -180941,6 +180941,200 @@ claim HsepY : separation_of Y W1 W2.
     Habcde
     Hunion).
 }
+(** Topology on Y and the connected components U,V of p,q in Y. **)
+claim HYsubSn : Y c= Sn 2.
+{
+  let z.
+  assume HzY.
+  exact (setminusE1 (Sn 2) C z HzY).
+}
+claim HtopY : topology_on Y Ty.
+{
+  exact (subspace_topology_is_topology
+    (Sn 2)
+    (Sn_topology 2)
+    Y
+    HtopSn2
+    HYsubSn).
+}
+set U := component_of Y Ty p.
+set V := component_of Y Ty q.
+claim HpU : p :e U.
+{
+  claim HpU0 :
+    p :e {y :e Y |
+      exists C0:set,
+        connected_space C0 (subspace_topology Y Ty C0) /\
+        p :e C0 /\ y :e C0}.
+  {
+    apply (SepI
+      Y
+      (fun y:set =>
+        exists C0:set,
+          connected_space C0 (subspace_topology Y Ty C0) /\
+          p :e C0 /\ y :e C0)
+      p).
+    - exact HpY.
+    - witness (Sing p).
+      apply andI.
+      + apply andI.
+        * exact (singleton_subspace_connected Y Ty p HtopY HpY).
+        * exact (SingI p).
+      + exact (SingI p).
+  }
+  exact HpU0.
+}
+claim HqV : q :e V.
+{
+  claim HqV0 :
+    q :e {y :e Y |
+      exists C0:set,
+        connected_space C0 (subspace_topology Y Ty C0) /\
+        q :e C0 /\ y :e C0}.
+  {
+    apply (SepI
+      Y
+      (fun y:set =>
+        exists C0:set,
+          connected_space C0 (subspace_topology Y Ty C0) /\
+          q :e C0 /\ y :e C0)
+      q).
+    - exact HqY.
+    - witness (Sing q).
+      apply andI.
+      + apply andI.
+        * exact (singleton_subspace_connected Y Ty q HtopY HqY).
+        * exact (SingI q).
+      + exact (SingI q).
+  }
+  exact HqV0.
+}
+claim HUVneq : U <> V.
+{ exact HcompNe. }
+(** Connectedness of W1 and W2 in the subspace topology on Y. **)
+claim HTyW1 :
+  subspace_topology Y Ty W1 = subspace_topology (Sn 2) (Sn_topology 2) W1.
+{
+  exact (ex16_1_subspace_transitive
+    (Sn 2) (Sn_topology 2) Y W1 HtopSn2 HYsubSn HW1subY).
+}
+claim HTyW2 :
+  subspace_topology Y Ty W2 = subspace_topology (Sn 2) (Sn_topology 2) W2.
+{
+  exact (ex16_1_subspace_transitive
+    (Sn 2) (Sn_topology 2) Y W2 HtopSn2 HYsubSn HW2subY).
+}
+claim HconnW1Y : connected_space W1 (subspace_topology Y Ty W1).
+{
+  rewrite HTyW1.
+  exact HconnW1.
+}
+claim HconnW2Y : connected_space W2 (subspace_topology Y Ty W2).
+{
+  rewrite HTyW2.
+  exact HconnW2.
+}
+(** p and q lie in different Jordan components. **)
+claim HpW : p :e W1 :\/: W2.
+{ rewrite <- HYeqW. exact HpY. }
+claim HqW : q :e W1 :\/: W2.
+{ rewrite <- HYeqW. exact HqY. }
+claim HpW1_imp_qW2 : p :e W1 -> q :e W2.
+{
+  assume HpW1.
+  apply (binunionE W1 W2 q HqW).
+  - assume HqW1.
+    (** If q in W1 together with p, then q is in the component of p, hence U=V. **)
+    claim HqU0 :
+      q :e {y :e Y |
+        exists C0:set,
+          connected_space C0 (subspace_topology Y Ty C0) /\
+          p :e C0 /\ y :e C0}.
+    {
+      apply (SepI
+        Y
+        (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            p :e C0 /\ y :e C0)
+        q).
+      + exact HqY.
+      + witness W1.
+        apply andI.
+        - apply andI.
+          + exact HconnW1Y.
+          + exact HpW1.
+        - exact HqW1.
+    }
+    claim HqU : q :e component_of Y Ty p.
+    { exact HqU0. }
+    claim HeqUV0 : component_of Y Ty q = component_of Y Ty p.
+    { exact (component_of_eq_if_in Y Ty p q HtopY HpY HqU). }
+    claim HeqUV : component_of Y Ty p = component_of Y Ty q.
+    { exact (eq_symm (component_of Y Ty q) (component_of Y Ty p) HeqUV0). }
+    claim Hfalse : False.
+    {
+      apply HUVneq.
+      exact HeqUV.
+    }
+    exact (FalseE Hfalse (q :e W2)).
+  - assume HqW2.
+    exact HqW2.
+}
+claim HpW2_imp_qW1 : p :e W2 -> q :e W1.
+{
+  assume HpW2.
+  apply (binunionE W1 W2 q HqW).
+  - assume HqW1.
+    exact HqW1.
+  - assume HqW2.
+    (** If q in W2 together with p, then p is in the component of q, hence U=V. **)
+    claim HpV0 :
+      p :e {y :e Y |
+        exists C0:set,
+          connected_space C0 (subspace_topology Y Ty C0) /\
+          q :e C0 /\ y :e C0}.
+    {
+      apply (SepI
+        Y
+        (fun y:set =>
+          exists C0:set,
+            connected_space C0 (subspace_topology Y Ty C0) /\
+            q :e C0 /\ y :e C0)
+        p).
+      + exact HpY.
+      + witness W2.
+        apply andI.
+        - apply andI.
+          + exact HconnW2Y.
+          + exact HqW2.
+        - exact HpW2.
+    }
+    claim HpV : p :e component_of Y Ty q.
+    { exact HpV0. }
+    claim HeqUV : component_of Y Ty p = component_of Y Ty q.
+    { exact (component_of_eq_if_in Y Ty q p HtopY HqY HpV). }
+    claim Hfalse : False.
+    {
+      apply HUVneq.
+      exact HeqUV.
+    }
+    exact (FalseE Hfalse (q :e W1)).
+}
+claim HpqWcase : (p :e W1 /\ q :e W2) \/ (p :e W2 /\ q :e W1).
+{
+  apply (binunionE W1 W2 p HpW).
+  - assume HpW1.
+    exact (orIL
+      (p :e W1 /\ q :e W2)
+      (p :e W2 /\ q :e W1)
+      (andI (p :e W1) (q :e W2) HpW1 (HpW1_imp_qW2 HpW1))).
+  - assume HpW2.
+    exact (orIR
+      (p :e W1 /\ q :e W2)
+      (p :e W2 /\ q :e W1)
+      (andI (p :e W2) (q :e W1) HpW2 (HpW2_imp_qW1 HpW2))).
+}
 (** TODO: build the actual deformation retract homotopy using the Jordan curve theorem. **)
 prove deformation_retract X Tx C.
 claim Hdeform0 :
