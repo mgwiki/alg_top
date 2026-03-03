@@ -82,6 +82,49 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772520177
+Created: 1772520177
+Status: PROPOSED
+
+Refers to Commit:
+  8bfb75631fab1961ce5198b817c565ae712caca7
+
+Target:
+  Line: 20162
+  Name: convex_subspace_topology_eq_R (Theorem)
+
+Problem:
+  The statement is false as written: from `topology_on A Ta` (even with convexity)
+  one cannot conclude `Ta = subspace_topology R R_standard_topology A`.
+  The theorem is currently admitted and annotated as a placeholder.
+
+Proposed Replacement:
+  Theorem convex_subspace_topology_eq_R : forall A:set,
+    A c= R -> convex_in R A ->
+    topology_on A (subspace_topology R R_standard_topology A).
+
+Proposed by:
+  Charlie
+
+Discussion:
+
+Approvals:
+  - 1772520177 | Alice:
+  - 1772520177 | Bob:
+  - 1772520177 | Charlie: YES
+  - 1772520177 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772519545
 Created: 1772519545
 Status: PROPOSED
