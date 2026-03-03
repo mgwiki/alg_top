@@ -226004,9 +226004,10 @@ apply (and5I
       reduced_word (J :\/: K) Hfam efamH n ys ->
       (forall i:set, i :e n -> apply_fun ys i <> eG) ->
       word_product multG eG ys n :e G1 ->
+      word_product multG eG ys n <> eG ->
       forall i:set, i :e n -> apply_fun ys i :e G1.
   {
-    let n ys. assume Hred HallNe HwpG1.
+    let n ys. assume Hred HallNe HwpG1 Hwpne.
     apply (xm (n = 0)).
     - assume Hn0.
       let i. assume Hi.
@@ -226072,9 +226073,10 @@ apply (and5I
       reduced_word (J :\/: K) Hfam efamH n ys ->
       (forall i:set, i :e n -> apply_fun ys i <> eG) ->
       word_product multG eG ys n :e G2 ->
+      word_product multG eG ys n <> eG ->
       forall i:set, i :e n -> apply_fun ys i :e G2.
   {
-    let n ys. assume Hred HallNe HwpG2.
+    let n ys. assume Hred HallNe HwpG2 Hwpne.
     apply (xm (n = 0)).
     - assume Hn0.
       let i. assume Hi.
@@ -228310,8 +228312,10 @@ apply (and5I
         { exact (Hred_J_of_union n xs Hred HallG1 HallNe). }
         claim Hwp'_G1 : word_product multG eG xs' n' :e G1.
         { rewrite Hwp'. exact HxG1. }
+        claim Hwp'_ne : word_product multG eG xs' n' <> eG.
+        { rewrite Hwp'. exact Hxne. }
         claim Hside_xs' : forall j:set, j :e n' -> apply_fun xs' j :e G1.
-        { exact (Hside_from_product_G1 n' xs' Hred' HallNe' Hwp'_G1). }
+        { exact (Hside_from_product_G1 n' xs' Hred' HallNe' Hwp'_G1 Hwp'_ne). }
         claim HredJ' : reduced_word J (graph J (fun a:set => apply_fun Hfam a))
           (graph J (fun a:set => apply_fun efamH a)) n' xs'.
         { exact (Hred_J_of_union n' xs' Hred' Hside_xs' HallNe'). }
@@ -228384,8 +228388,10 @@ apply (and5I
         { exact (Hred_K_of_union n xs Hred HallG2 HallNe). }
         claim Hwp'_G2 : word_product multG eG xs' n' :e G2.
         { rewrite Hwp'. exact HxG2. }
+        claim Hwp'_ne : word_product multG eG xs' n' <> eG.
+        { rewrite Hwp'. exact Hxne. }
         claim Hside_xs' : forall j:set, j :e n' -> apply_fun xs' j :e G2.
-        { exact (Hside_from_product_G2 n' xs' Hred' HallNe' Hwp'_G2). }
+        { exact (Hside_from_product_G2 n' xs' Hred' HallNe' Hwp'_G2 Hwp'_ne). }
         claim HredK' : reduced_word K (graph K (fun b:set => apply_fun Hfam b))
           (graph K (fun b:set => apply_fun efamH b)) n' xs'.
         { exact (Hred_K_of_union n' xs' Hred' Hside_xs' HallNe'). }
