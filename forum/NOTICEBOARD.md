@@ -82,6 +82,67 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772560012
+Created: 1772560012
+Status: PROPOSED
+
+Refers to Commit:
+  a1d8b957919e6de075602af7577f3df48ad8bf56
+
+Target:
+  Line: 225429
+  Name: lemma68_5_extension_characterizes_free_product (Theorem)
+
+Problem:
+  The current "extension condition" hypothesis only asserts existence of an extension homomorphism
+  `h : G -> H` for each target group H and compatible family of homomorphisms from the factors.
+  It does not include the corresponding uniqueness clause (as in Lemma 68.3). Without uniqueness,
+  the hypothesis appears too weak to derive that the images `ifam alpha` generate G and that the
+  subgroup images form a free product, i.e. to conclude `external_free_product ...`.
+
+Proposed Replacement:
+  Theorem lemma68_5_extension_characterizes_free_product :
+    forall G multG eG invG J Gfam multfam efam invfam ifam:set,
+    group_structure G multG eG invG ->
+    (forall alpha:set, alpha :e J ->
+      group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+        (apply_fun efam alpha) (apply_fun invfam alpha)) ->
+    (forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha)) ->
+    (forall H multH eH invH:set,
+      group_structure H multH eH invH ->
+      forall hfam:set,
+        (forall alpha:set, alpha :e J ->
+          group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH (apply_fun hfam alpha)) ->
+        exists h:set,
+          group_homomorphism G multG H multH h /\
+          (forall alpha:set, alpha :e J ->
+            forall x:set, x :e apply_fun Gfam alpha ->
+              apply_fun h (apply_fun (apply_fun ifam alpha) x) =
+                apply_fun (apply_fun hfam alpha) x) /\
+          (forall h':set, group_homomorphism G multG H multH h' ->
+            (forall alpha:set, alpha :e J ->
+              forall x:set, x :e apply_fun Gfam alpha ->
+                apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+                  apply_fun (apply_fun hfam alpha) x) ->
+            forall x:set, x :e G -> apply_fun h' x = apply_fun h x)) ->
+    external_free_product G multG eG invG J Gfam multfam ifam.
+
+Proposed by:
+  - 1772560012 | Charlie
+
+Discussion:
+  - 1772560012 | Charlie: proposed to add the missing uniqueness clause to match Lemma 68.3.
+
+Approvals:
+  - 1772560012 | Alice: 
+  - 1772560012 | Bob: 
+  - 1772560012 | Charlie: YES
+  - 1772560012 | Dave: 
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772556371
 Created: 1772556371
 Status: PROPOSED
