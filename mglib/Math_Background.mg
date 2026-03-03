@@ -180499,6 +180499,19 @@ let C Tc p q x0.
 assume HCsubSn Hsimple HTc HpSnC HqSnC HcompNe Hx0C.
 set X := Sn 2 :\: (Sing p :\/: Sing q).
 set Tx := subspace_topology (Sn 2) (Sn_topology 2) X.
+claim HtopSn2 : topology_on (Sn 2) (Sn_topology 2).
+{ exact (lemma59_3_Sn_topology_on 2). }
+claim HXsubSn : X c= Sn 2.
+{
+  let z.
+  assume HzX.
+  exact (setminusE1 (Sn 2) (Sing p :\/: Sing q) z HzX).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (subspace_topology_is_topology
+    (Sn 2) (Sn_topology 2) X HtopSn2 HXsubSn).
+}
 claim HCsubX : C c= X.
 {
   let z.
@@ -180531,6 +180544,18 @@ claim HCsubX : C c= X.
     - assume Hzq. exact (HzNotq Hzq).
   }
   exact (setminusI (Sn 2) (Sing p :\/: Sing q) z HzSn HzNot).
+}
+claim HTxC :
+  subspace_topology X Tx C = subspace_topology (Sn 2) (Sn_topology 2) C.
+{
+  exact (ex16_1_subspace_transitive
+    (Sn 2) (Sn_topology 2) X C HtopSn2 HXsubSn HCsubX).
+}
+claim HTcX : Tc = subspace_topology X Tx C.
+{
+  rewrite HTc.
+  rewrite <- HTxC.
+  reflexivity.
 }
 claim Hx0Sn : x0 :e Sn 2.
 { exact (HCsubSn x0 Hx0C). }
