@@ -180507,8 +180507,27 @@ claim HqV : q :e V.
 }
 claim HUVneq : U <> V.
 { exact HcompNe. }
-(** TODO: show Y = U :\/: V (Jordan separation yields exactly two complementary components). **)
-(** TODO: build deformation retract of X = (Y :\\: (Sing p :\\/: Sing q)) :\\/: C onto C by retracting punctured components onto the common boundary. **)
+claim HsimpleSn :
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
+{
+  rewrite <- HTc.
+  exact Hsimple.
+}
+claim Hjordan :
+  exists W1 W2:set,
+    W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+    W1 :/\: W2 = Empty /\
+    Sn 2 :\: C = W1 :\/: W2 /\
+    W1 <> Empty /\ W2 <> Empty /\
+    connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+    connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) /\
+    closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C /\
+    closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C.
+{
+  exact (thm63_4_jordan_curve_theorem C HCsubSn HsimpleSn).
+}
+(** TODO: use Hjordan to show Y = U :\/: V and C = boundary(U) = boundary(V). **)
+(** TODO: build deformation retract of X onto C by retracting punctured components onto the common boundary. **)
 claim Hdeform : deformation_retract X Tx C.
 { admit. }
 rewrite HTcX.
