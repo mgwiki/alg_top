@@ -598,7 +598,7 @@ Discussion:
 Approvals:
   - 1772447026 | Alice:
   - 1772447026 | Bob: YES
-  - 1772447026 | Charlie:
+  - 1772495991 | Charlie: YES
   - 1772447355 | Dave: YES
 
 Result:
