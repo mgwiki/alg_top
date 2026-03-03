@@ -82,6 +82,73 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772556371
+Created: 1772556371
+Status: PROPOSED
+
+Refers to Commit:
+  b115f76cab5f3b61dcfc9284d0b58c54ed3ef4cc
+
+Target:
+  Line: 224344
+  Name: lemma68_3_extension_external_free_product (Theorem)
+
+Problem:
+  The current proof of lemma68_3 requires closure of each component multiplication
+  `(apply_fun multfam alpha)` on `(apply_fun Gfam alpha)` to apply injectivity and
+  relate `preimg` to `multfam`. But the theorem statement only assumes
+  `group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) ...`,
+  which does not imply closure of `multfam` on `Gfam`. This blocks the proof
+  at the helper `HGfam_mult_cl`.
+
+Proposed Replacement:
+  Theorem lemma68_3_extension_external_free_product :
+    forall G multG eG invG J Gfam multfam ifam:set,
+    external_free_product G multG eG invG J Gfam multfam ifam ->
+    (forall alpha:set, alpha :e J ->
+      exists ea ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia) ->
+    forall H multH eH invH:set,
+      group_structure H multH eH invH ->
+      forall hfam:set,
+        (forall alpha:set, alpha :e J ->
+          group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH (apply_fun hfam alpha)) ->
+        exists h:set,
+          group_homomorphism G multG H multH h /\
+          (forall alpha:set, alpha :e J ->
+            forall x:set, x :e apply_fun Gfam alpha ->
+              apply_fun h (apply_fun (apply_fun ifam alpha) x) =
+                apply_fun (apply_fun hfam alpha) x) /\
+          (forall h':set, group_homomorphism G multG H multH h' ->
+            (forall alpha:set, alpha :e J ->
+              forall x:set, x :e apply_fun Gfam alpha ->
+                apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+                  apply_fun (apply_fun hfam alpha) x) ->
+            forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772556371 | Charlie: Proposed adding explicit component group_structure existence, needed for multfam closure in the current proof.
+
+Approvals:
+  - 1772556371 | Alice:
+  - 1772556371 | Bob:
+  - 1772556371 | Charlie: YES
+  - 1772556371 | Dave:
+
+Result:
+  PROPOSED
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772540187
 Created: 1772540187
 Status: PROPOSED
