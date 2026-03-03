@@ -180442,6 +180442,168 @@ claim HtopX : topology_on X Tx.
     HtopSn2
     HXsubSn).
 }
+claim HtopC : topology_on C Tc.
+{
+  rewrite HTc.
+  exact (subspace_topology_is_topology
+    (Sn 2)
+    (Sn_topology 2)
+    C
+    HtopSn2
+    HCsubSn).
+}
+(** C is compact (hence closed in S^2, since S^2 is Hausdorff). **)
+claim HcompC : compact_space C Tc.
+{
+  claim HcompS1 : compact_space S1 S1_topology.
+  { exact s54_S1_compact. }
+  apply Hsimple.
+  let h.
+  assume Hhome : homeomorphism C Tc S1 S1_topology h.
+  claim HhCont : continuous_map C Tc S1 S1_topology h.
+  {
+    exact (andEL
+      (continuous_map C Tc S1 S1_topology h)
+      (exists g:set,
+        continuous_map S1 S1_topology C Tc g /\
+        (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x) /\
+        (forall y:set, y :e S1 -> apply_fun h (apply_fun g y) = y))
+      Hhome).
+  }
+  claim Hexg :
+    exists g:set,
+      continuous_map S1 S1_topology C Tc g /\
+      (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x) /\
+      (forall y:set, y :e S1 -> apply_fun h (apply_fun g y) = y).
+  {
+    exact (andER
+      (continuous_map C Tc S1 S1_topology h)
+      (exists g:set,
+        continuous_map S1 S1_topology C Tc g /\
+        (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x) /\
+        (forall y:set, y :e S1 -> apply_fun h (apply_fun g y) = y))
+      Hhome).
+  }
+  apply Hexg.
+  let g.
+  assume Hgpack.
+  claim HgCont : continuous_map S1 S1_topology C Tc g.
+  {
+    exact (andEL
+      (continuous_map S1 S1_topology C Tc g)
+      (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x)
+      (andEL
+        (continuous_map S1 S1_topology C Tc g /\
+         (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x))
+        (forall y:set, y :e S1 -> apply_fun h (apply_fun g y) = y)
+        Hgpack)).
+  }
+  claim HgInvL : forall x:set, x :e C -> apply_fun g (apply_fun h x) = x.
+  {
+    exact (andER
+      (continuous_map S1 S1_topology C Tc g)
+      (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x)
+      (andEL
+        (continuous_map S1 S1_topology C Tc g /\
+         (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x))
+        (forall y:set, y :e S1 -> apply_fun h (apply_fun g y) = y)
+        Hgpack)).
+  }
+  claim HhFun : function_on h C S1.
+  { exact (continuous_map_function_on C Tc S1 S1_topology h HhCont). }
+  claim HgFun : function_on g S1 C.
+  { exact (continuous_map_function_on S1 S1_topology C Tc g HgCont). }
+  set Img := image_of_fun g S1.
+  claim HImgDef : Img = image_of_fun g S1.
+  { reflexivity. }
+  claim HimgEq : Img = C.
+  {
+    apply set_ext.
+    - let z.
+      assume HzImg : z :e Img.
+      claim HzImg2 : z :e image_of_fun g S1.
+      { exact (mem_eqR z Img (image_of_fun g S1) HImgDef HzImg). }
+      apply (ReplE S1 (fun y:set => apply_fun g y) z HzImg2).
+      let y.
+      assume HyPack.
+      claim HyS1 : y :e S1.
+      { exact (andEL (y :e S1) (z = apply_fun g y) HyPack). }
+      claim Hzeq : z = apply_fun g y.
+      { exact (andER (y :e S1) (z = apply_fun g y) HyPack). }
+      rewrite Hzeq.
+      exact (HgFun y HyS1).
+    - let z.
+      assume HzC : z :e C.
+      set y := apply_fun h z.
+      claim HyS1 : y :e S1.
+      { exact (HhFun z HzC). }
+      claim HgHy : apply_fun g y = z.
+      {
+        claim HyDef : y = apply_fun h z.
+        { reflexivity. }
+        rewrite HyDef.
+        exact (HgInvL z HzC).
+      }
+      claim HzImg2 : z :e image_of_fun g S1.
+      {
+        rewrite <- HgHy.
+        exact (ReplI S1 (fun t:set => apply_fun g t) y HyS1).
+      }
+      exact (mem_eqL z Img (image_of_fun g S1) HImgDef HzImg2).
+  }
+  claim HimgCompC : compact_space C (subspace_topology C Tc C).
+  {
+    rewrite <- HimgEq.
+    exact (continuous_image_compact
+      S1
+      S1_topology
+      C
+      Tc
+      g
+      HcompS1
+      HgCont).
+  }
+  rewrite <- (subspace_topology_whole C Tc HtopC).
+  exact HimgCompC.
+}
+claim HhausSn2 : Hausdorff_space (Sn 2) (Sn_topology 2).
+{
+  claim HhausE :
+    Hausdorff_space (euclidean_space (ordsucc 2)) (euclidean_topology (ordsucc 2)).
+  { exact (euclidean_space_Hausdorff (ordsucc 2)). }
+  claim HSnSub : Sn 2 c= euclidean_space (ordsucc 2).
+  {
+    let z.
+    assume HzSn : z :e Sn 2.
+    exact (SepE1
+      (euclidean_space (ordsucc 2))
+      (fun v:set => euclidean_norm_sq (ordsucc 2) v = 1)
+      z
+      HzSn).
+  }
+  exact (ex17_12_subspace_Hausdorff
+    (euclidean_space (ordsucc 2))
+    (euclidean_topology (ordsucc 2))
+    (Sn 2)
+    HhausE
+    HSnSub).
+}
+claim HclosedC : closed_in (Sn 2) (Sn_topology 2) C.
+{
+  claim HcompCsub :
+    compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C).
+  {
+    rewrite <- HTc.
+    exact HcompC.
+  }
+  exact (Hausdorff_compact_sets_closed
+    (Sn 2)
+    (Sn_topology 2)
+    C
+    HhausSn2
+    HCsubSn
+    HcompCsub).
+}
 set Y := Sn 2 :\: C.
 set Ty := subspace_topology (Sn 2) (Sn_topology 2) Y.
 claim HpY : p :e Y.
