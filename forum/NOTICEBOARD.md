@@ -82,6 +82,80 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772540187
+Created: 1772540187
+Status: PROPOSED
+
+Refers to Commit:
+  6a8e6333654bec1dd183045e1c2cce0639584610
+
+Target:
+  Line: 199808
+  Name: thm67_6_uniqueness_direct_sum (Theorem)
+
+Problem:
+  The statement is missing the group structure assumptions on each component G_alpha.
+  In particular, the proof needs closure of (apply_fun multfam alpha) in (apply_fun Gfam alpha),
+  but the current hypotheses only assume a multiplicative homomorphism property for ifam/ifam'
+  (group_homomorphism), which does not imply closure of multfam on Gfam.
+
+Proposed Replacement:
+  Theorem thm67_6_uniqueness_direct_sum :
+    forall J Gfam multfam efam invfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
+    (forall alpha:set, alpha :e J ->
+      abelian_group (apply_fun Gfam alpha) (apply_fun multfam alpha)
+        (apply_fun efam alpha) (apply_fun invfam alpha)) ->
+    abelian_group G multG eG invG ->
+    abelian_group G' multG' eG' invG' ->
+    (forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)) ->
+    (forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G' multG' (apply_fun ifam' alpha) /\
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam' alpha) x = apply_fun (apply_fun ifam' alpha) y -> x = y)) ->
+    direct_sum_of_subgroups G multG eG invG J
+      (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))) ->
+    direct_sum_of_subgroups G' multG' eG' invG' J
+      (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam' alpha))) ->
+    exists phi:set,
+      group_isomorphism G multG G' multG' phi /\
+      (forall alpha:set, alpha :e J ->
+        forall x:set, x :e apply_fun Gfam alpha ->
+          apply_fun phi (apply_fun (apply_fun ifam alpha) x) =
+            apply_fun (apply_fun ifam' alpha) x) /\
+      (forall phi':set, group_isomorphism G multG G' multG' phi' ->
+        (forall alpha:set, alpha :e J ->
+          forall x:set, x :e apply_fun Gfam alpha ->
+            apply_fun phi' (apply_fun (apply_fun ifam alpha) x) =
+              apply_fun (apply_fun ifam' alpha) x) ->
+        forall x:set, x :e G -> apply_fun phi' x = apply_fun phi x).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772540187 | Charlie: PROPOSED statement strengthening to match S67 context and make the proof obligations derivable.
+
+Approvals:
+  - 1772540187 | Alice:
+  - 1772540187 | Bob:
+  - 1772540187 | Charlie: YES
+  - 1772540187 | Dave:
+
+Result:
+  PROPOSED
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772520177
 Created: 1772520177
 Status: SENT TO ADMIN
