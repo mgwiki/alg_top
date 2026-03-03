@@ -180817,6 +180817,69 @@ claim HW2Ty : W2 :e Ty.
   rewrite <- (binintersect_Subq_eq_1 W2 Y HW2subY).
   exact Htmp.
 }
+(** Complements inside Y (useful for closed/open-in-Y facts later). **)
+claim HW1eqYminusW2 : W1 = Y :\: W2.
+{
+  apply set_ext.
+  - (** W1 c= Y \ W2 **)
+    let z.
+    assume HzW1.
+    apply setminusI.
+    + exact (HW1subY z HzW1).
+    + assume HzW2.
+      claim HzInt : z :e W1 :/\: W2.
+      { exact (binintersectI W1 W2 z HzW1 HzW2). }
+      claim HzE : z :e Empty.
+      {
+        rewrite <- HW1W2Empty.
+        exact HzInt.
+      }
+      exact (EmptyE z HzE).
+  - (** Y \ W2 c= W1 **)
+    let z.
+    assume HzYW2.
+    claim HzY : z :e Y.
+    { exact (setminusE1 Y W2 z HzYW2). }
+    claim HzNotW2 : z /:e W2.
+    { exact (setminusE2 Y W2 z HzYW2). }
+    claim HzW : z :e W1 :\/: W2.
+    { rewrite <- HYeqW. exact HzY. }
+    apply (binunionE W1 W2 z HzW).
+    + assume HzW1. exact HzW1.
+    + assume HzW2.
+      exact (FalseE (HzNotW2 HzW2) (z :e W1)).
+}
+claim HW2eqYminusW1 : W2 = Y :\: W1.
+{
+  apply set_ext.
+  - (** W2 c= Y \ W1 **)
+    let z.
+    assume HzW2.
+    apply setminusI.
+    + exact (HW2subY z HzW2).
+    + assume HzW1.
+      claim HzInt : z :e W1 :/\: W2.
+      { exact (binintersectI W1 W2 z HzW1 HzW2). }
+      claim HzE : z :e Empty.
+      {
+        rewrite <- HW1W2Empty.
+        exact HzInt.
+      }
+      exact (EmptyE z HzE).
+  - (** Y \ W1 c= W2 **)
+    let z.
+    assume HzYW1.
+    claim HzY : z :e Y.
+    { exact (setminusE1 Y W1 z HzYW1). }
+    claim HzNotW1 : z /:e W1.
+    { exact (setminusE2 Y W1 z HzYW1). }
+    claim HzW : z :e W1 :\/: W2.
+    { rewrite <- HYeqW. exact HzY. }
+    apply (binunionE W1 W2 z HzW).
+    + assume HzW1.
+      exact (FalseE (HzNotW1 HzW1) (z :e W2)).
+    + assume HzW2. exact HzW2.
+}
 (** Separation of Y by W1 and W2. **)
 claim HsepY : separation_of Y W1 W2.
 {
@@ -180970,6 +181033,21 @@ claim HpW2_imp_qW1 : p :e W2 -> q :e W1.
       exact HeqUV.
     }
     exact (FalseE Hfalse (q :e W1)).
+}
+(** Exactly one of the two Jordan components contains p (and hence q is in the other). **)
+claim HpqWcase : (p :e W1 /\ q :e W2) \/ (p :e W2 /\ q :e W1).
+{
+  apply (binunionE W1 W2 p HpW).
+  - assume HpW1.
+    exact (orIL
+      (p :e W1 /\ q :e W2)
+      (p :e W2 /\ q :e W1)
+      (andI (p :e W1) (q :e W2) HpW1 (HpW1_imp_qW2 HpW1))).
+  - assume HpW2.
+    exact (orIR
+      (p :e W1 /\ q :e W2)
+      (p :e W2 /\ q :e W1)
+      (andI (p :e W2) (q :e W1) HpW2 (HpW2_imp_qW1 HpW2))).
 }
 (** TODO: use boundary identities Hbd1/Hbd2 to show C is the common boundary and build a deformation retract. **)
 claim Hdeform : deformation_retract X Tx C.
