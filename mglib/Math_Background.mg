@@ -181119,6 +181119,16 @@ claim HtopY : topology_on Y Ty.
     HtopSn2
     HYsubSn).
 }
+claim HW1closedY : closed_in Y Ty W1.
+{
+  rewrite HW1eqYminusW2.
+  exact (closed_of_open_complement Y Ty W2 HtopY HW2Ty).
+}
+claim HW2closedY : closed_in Y Ty W2.
+{
+  rewrite HW2eqYminusW1.
+  exact (closed_of_open_complement Y Ty W1 HtopY HW1Ty).
+}
 set U := component_of Y Ty p.
 set V := component_of Y Ty q.
 claim HpU : p :e U.
