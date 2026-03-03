@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5510 **)
-(** Balance Charlie 1419 **)
+(** Balance Charlie 1412 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -223959,7 +223959,8 @@ Admitted.
 (** i_alpha(G_alpha), then given any group H and homomorphisms h_alpha: G_alpha -> H, **)
 (** there exists a unique h: G -> H with h o i_alpha = h_alpha. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 61 **)
+(** Bounty 68 **)
+(** Lock Charlie 1772651301 **)
 Theorem lemma68_3_extension_external_free_product :
   forall G multG eG invG J Gfam multfam ifam:set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
