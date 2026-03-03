@@ -289669,6 +289669,247 @@ exact (edge_path_prefix
   HkIn).
 Qed.
 
+(** helper: drop the first edge from a successor-length edge path **)
+(** Proven Bob **)
+Theorem edge_path_drop_first :
+  forall X Tx Arcs n path_seq x0:set,
+  edge_path X Tx Arcs (ordsucc n) path_seq x0 ->
+  edge_path X Tx Arcs n
+    (graph n (fun i:set => apply_fun path_seq (ordsucc i)))
+    ((apply_fun path_seq 0) 0 1).
+let X Tx Arcs n path_seq x0.
+assume Hep.
+set path_seq0 := graph n (fun i:set => apply_fun path_seq (ordsucc i)).
+set x1 := (apply_fun path_seq 0) 0 1.
+claim HnSuccOm : ordsucc n :e omega.
+{
+  exact (edge_path_n_in_omega
+    X
+    Tx
+    Arcs
+    (ordsucc n)
+    path_seq
+    x0
+    Hep).
+}
+claim HnNat : nat_p n.
+{
+  claim HsuccNat : nat_p (ordsucc n).
+  { exact (omega_nat_p (ordsucc n) HnSuccOm). }
+  claim Hinv : ordsucc n = 0 \/ exists x:set, nat_p x /\ ordsucc n = ordsucc x.
+  { exact (nat_inv (ordsucc n) HsuccNat). }
+  apply Hinv.
+  - assume H0.
+    exact (FalseE
+      ((neq_i_sym 0 (ordsucc n) (neq_0_ordsucc n)) H0)
+      (nat_p n)).
+  - assume Hex.
+    apply Hex.
+    let j.
+    assume Hjpack.
+    claim HordEq : ordsucc n = ordsucc j.
+    { exact (andER (nat_p j) (ordsucc n = ordsucc j) Hjpack). }
+    claim Hjeq : n = j.
+    { exact (ordsucc_inj n j HordEq). }
+    rewrite Hjeq.
+    exact (andEL (nat_p j) (ordsucc n = ordsucc j) Hjpack).
+}
+claim HnOm : n :e omega.
+{ exact (nat_p_omega n HnNat). }
+claim HordN : ordinal n.
+{ exact (nat_p_ordinal n HnNat). }
+claim Hfun : function_on path_seq (ordsucc n) (setprod (setprod X X) (Power X)).
+{
+  exact (edge_path_function_on
+    X
+    Tx
+    Arcs
+    (ordsucc n)
+    path_seq
+    x0
+    Hep).
+}
+claim HsIn :
+  forall i:set, i :e n -> ordsucc i :e ordsucc n.
+{
+  let i.
+  assume Hi.
+  claim Hcase : ordsucc i :e n \/ n = ordsucc i.
+  { exact (ordinal_ordsucc_In_eq n i HordN Hi). }
+  apply Hcase.
+  - assume Hsin.
+    exact (ordsuccI1 n (ordsucc i) Hsin).
+  - assume Heq.
+    rewrite Heq.
+    exact (ordsuccI2 (ordsucc i)).
+}
+claim HssIn :
+  forall i:set, i :e n -> ordsucc i :e n -> ordsucc (ordsucc i) :e ordsucc n.
+{
+  let i.
+  assume Hi His.
+  claim Hcase : ordsucc (ordsucc i) :e n \/ n = ordsucc (ordsucc i).
+  { exact (ordinal_ordsucc_In_eq n (ordsucc i) HordN His). }
+  apply Hcase.
+  - assume Hsin.
+    exact (ordsuccI1 n (ordsucc (ordsucc i)) Hsin).
+  - assume Heq.
+    rewrite Heq.
+    exact (ordsuccI2 (ordsucc (ordsucc i))).
+}
+claim Hfun0 :
+  function_on path_seq0 n (setprod (setprod X X) (Power X)).
+{
+  let i.
+  assume Hi.
+  rewrite (apply_fun_graph n (fun i0:set => apply_fun path_seq (ordsucc i0)) i Hi).
+  exact (Hfun (ordsucc i) (HsIn i Hi)).
+}
+claim Hdec0 :
+  forall i:set, i :e n ->
+    exists A ini fin:set,
+      apply_fun path_seq0 i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin.
+{
+  let i.
+  assume Hi.
+  claim Hdec :
+    exists A ini fin:set,
+      apply_fun path_seq (ordsucc i) = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin.
+  {
+    exact (edge_path_edge_decomposition
+      X
+      Tx
+      Arcs
+      (ordsucc n)
+      path_seq
+      x0
+      (ordsucc i)
+      Hep
+      (HsIn i Hi)).
+  }
+  apply Hdec.
+  let A.
+  assume HA.
+  apply HA.
+  let ini.
+  assume Hini.
+  apply Hini.
+  let fin.
+  assume Hfin.
+  witness A.
+  witness ini.
+  witness fin.
+  apply andI.
+  - rewrite (apply_fun_graph n (fun i0:set => apply_fun path_seq (ordsucc i0)) i Hi).
+    exact (andEL
+      (apply_fun path_seq (ordsucc i) = ((ini, fin), A))
+      (oriented_edge X Tx Arcs A ini fin)
+      Hfin).
+  - exact (andER
+      (apply_fun path_seq (ordsucc i) = ((ini, fin), A))
+      (oriented_edge X Tx Arcs A ini fin)
+      Hfin).
+}
+claim Hstart0 :
+  n <> 0 -> (apply_fun path_seq0 0) 0 0 = x1.
+{
+  assume Hn0.
+  claim HnSucc :
+    exists j:set, nat_p j /\ n = ordsucc j.
+  {
+    apply (nat_inv n HnNat).
+    - assume H0.
+      exact (FalseE (Hn0 H0) (exists j:set, nat_p j /\ n = ordsucc j)).
+    - assume Hex.
+      exact Hex.
+  }
+  apply HnSucc.
+  let j.
+  assume Hjpack.
+  claim HnEq : n = ordsucc j.
+  { exact (andER (nat_p j) (n = ordsucc j) Hjpack). }
+  claim HjOrd : ordinal j.
+  { exact (nat_p_ordinal j (andEL (nat_p j) (n = ordsucc j) Hjpack)). }
+  claim H0InN : 0 :e n.
+  {
+    rewrite HnEq.
+    exact (ordinal_0_In_ordsucc j HjOrd).
+  }
+  claim H0InSuccN : 0 :e ordsucc n.
+  { exact (ordsuccI1 n 0 H0InN). }
+  claim Hs0InSuccN : ordsucc 0 :e ordsucc n.
+  { exact (HsIn 0 H0InN). }
+  claim Hmatch :
+    (apply_fun path_seq 0) 0 1 =
+    (apply_fun path_seq (ordsucc 0)) 0 0.
+  {
+    exact (edge_path_consecutive_match
+      X
+      Tx
+      Arcs
+      (ordsucc n)
+      path_seq
+      x0
+      0
+      Hep
+      H0InSuccN
+      Hs0InSuccN).
+  }
+  rewrite (apply_fun_graph
+    n
+    (fun i0:set => apply_fun path_seq (ordsucc i0))
+    0
+    H0InN).
+  rewrite <- Hmatch.
+  reflexivity.
+}
+claim Hstep0 :
+  forall i:set, i :e n -> ordsucc i :e n ->
+    (apply_fun path_seq0 i) 0 1 = (apply_fun path_seq0 (ordsucc i)) 0 0.
+{
+  let i.
+  assume Hi His.
+  rewrite (apply_fun_graph
+    n
+    (fun i0:set => apply_fun path_seq (ordsucc i0))
+    i
+    Hi).
+  rewrite (apply_fun_graph
+    n
+    (fun i0:set => apply_fun path_seq (ordsucc i0))
+    (ordsucc i)
+    His).
+  exact (edge_path_consecutive_match
+    X
+    Tx
+    Arcs
+    (ordsucc n)
+    path_seq
+    x0
+    (ordsucc i)
+    Hep
+    (HsIn i Hi)
+    (HssIn i Hi His)).
+}
+exact (and5I
+  (n :e omega)
+  (function_on path_seq0 n (setprod (setprod X X) (Power X)))
+  (forall i:set, i :e n ->
+    exists A ini fin:set,
+      apply_fun path_seq0 i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin)
+  (n <> 0 -> (apply_fun path_seq0 0) 0 0 = x1)
+  (forall i:set, i :e n -> ordsucc i :e n ->
+    (apply_fun path_seq0 i) 0 1 = (apply_fun path_seq0 (ordsucc i)) 0 0)
+  HnOm
+  Hfun0
+  Hdec0
+  Hstart0
+  Hstep0).
+Qed.
+
 (** helper: drop the last two edges from a double-successor-length edge path **)
 (** Proven Bob **)
 Theorem edge_path_drop_last_two :
