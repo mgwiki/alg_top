@@ -181444,6 +181444,79 @@ claim HUV_as_Ws : (U = W1 /\ V = W2) \/ (U = W2 /\ V = W1).
       (U = W2 /\ V = W1)
       (andI (U = W2) (V = W1) (Hcomp_p_W2 HpW2) (Hcomp_q_W1 HqW1))).
 }
+(** Consequences: Y has exactly the two components U and V (matching W1/W2 up to swapping). **)
+claim HYeqUV : Y = U :\/: V.
+{
+  apply HUV_as_Ws.
+  - assume H12 : U = W1 /\ V = W2.
+    claim HUeq : U = W1.
+    { exact (andEL (U = W1) (V = W2) H12). }
+    claim HVeq : V = W2.
+    { exact (andER (U = W1) (V = W2) H12). }
+    rewrite HUeq.
+    rewrite HVeq.
+    rewrite <- HYeqW.
+    reflexivity.
+  - assume H21 : U = W2 /\ V = W1.
+    claim HUeq : U = W2.
+    { exact (andEL (U = W2) (V = W1) H21). }
+    claim HVeq : V = W1.
+    { exact (andER (U = W2) (V = W1) H21). }
+    rewrite HUeq.
+    rewrite HVeq.
+    rewrite (binunion_com W2 W1).
+    rewrite <- HYeqW.
+    reflexivity.
+}
+claim HUVEmpty : U :/\: V = Empty.
+{
+  apply HUV_as_Ws.
+  - assume H12 : U = W1 /\ V = W2.
+    claim HUeq : U = W1.
+    { exact (andEL (U = W1) (V = W2) H12). }
+    claim HVeq : V = W2.
+    { exact (andER (U = W1) (V = W2) H12). }
+    rewrite HUeq.
+    rewrite HVeq.
+    exact HW1W2Empty.
+  - assume H21 : U = W2 /\ V = W1.
+    claim HUeq : U = W2.
+    { exact (andEL (U = W2) (V = W1) H21). }
+    claim HVeq : V = W1.
+    { exact (andER (U = W2) (V = W1) H21). }
+    rewrite HUeq.
+    rewrite HVeq.
+    rewrite (binintersect_com W2 W1).
+    exact HW1W2Empty.
+}
+claim HU_Ty : U :e Ty.
+{
+  apply HUV_as_Ws.
+  - assume H12 : U = W1 /\ V = W2.
+    claim HUeq : U = W1.
+    { exact (andEL (U = W1) (V = W2) H12). }
+    rewrite HUeq.
+    exact HW1Ty.
+  - assume H21 : U = W2 /\ V = W1.
+    claim HUeq : U = W2.
+    { exact (andEL (U = W2) (V = W1) H21). }
+    rewrite HUeq.
+    exact HW2Ty.
+}
+claim HV_Ty : V :e Ty.
+{
+  apply HUV_as_Ws.
+  - assume H12 : U = W1 /\ V = W2.
+    claim HVeq : V = W2.
+    { exact (andER (U = W1) (V = W2) H12). }
+    rewrite HVeq.
+    exact HW2Ty.
+  - assume H21 : U = W2 /\ V = W1.
+    claim HVeq : V = W1.
+    { exact (andER (U = W2) (V = W1) H21). }
+    rewrite HVeq.
+    exact HW1Ty.
+}
 (** TODO: use boundary identities Hbd1/Hbd2 to show C is the common boundary and build a deformation retract. **)
 claim Hdeform : deformation_retract X Tx C.
 {
