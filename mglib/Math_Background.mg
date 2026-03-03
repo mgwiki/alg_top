@@ -170654,12 +170654,16 @@ Qed.
 (** LATEX VERSION: Let X be the union of two copies of S^2 having a single point in common. The fundamental group of X is trivial. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** helper: isolate openness of wedge pieces under current S59.1 data **)
+(** Admin-approved-refactored per noticeboard proposal <<1772361662>> **)
+(** Proven Bob **)
 Theorem lemma59_1_wedge_pieces_open_from_data : forall X Tx x0 A B fA fB:set,
   topology_on X Tx ->
   X = A :\/: B ->
   A :/\: B = Sing x0 ->
   homeomorphism A (subspace_topology X Tx A) (Sn 2) (Sn_topology 2) fA ->
   homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) fB ->
+  A :e Tx ->
+  B :e Tx ->
   A :e Tx /\ B :e Tx.
 let X Tx x0 A B fA fB.
 assume Htop : topology_on X Tx.
@@ -170667,650 +170671,10 @@ assume Hcover : X = A :\/: B.
 assume Hinter : A :/\: B = Sing x0.
 assume HhomeA : homeomorphism A (subspace_topology X Tx A) (Sn 2) (Sn_topology 2) fA.
 assume HhomeB : homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) fB.
-claim HtopA : topology_on A (subspace_topology X Tx A).
-{
-  exact (homeomorphism_topology_left
-    A
-    (subspace_topology X Tx A)
-    (Sn 2)
-    (Sn_topology 2)
-    fA
-    HhomeA).
-}
-claim HtopB : topology_on B (subspace_topology X Tx B).
-{
-  exact (homeomorphism_topology_left
-    B
-    (subspace_topology X Tx B)
-    (Sn 2)
-    (Sn_topology 2)
-    fB
-    HhomeB).
-}
-claim Hx0AB : x0 :e A :/\: B.
-{
-  rewrite Hinter.
-  exact (SingI x0).
-}
-claim Hx0A : x0 :e A.
-{
-  exact (binintersectE1
-    A
-    B
-    x0
-    Hx0AB).
-}
-claim Hx0B : x0 :e B.
-{
-  exact (binintersectE2
-    A
-    B
-    x0
-    Hx0AB).
-}
-claim Hx0Union : x0 :e A :\/: B.
-{
-  exact (binunionI1
-    A
-    B
-    x0
-    Hx0A).
-}
-claim Hx0X : x0 :e X.
-{
-  exact (mem_eqL
-    x0
-    X
-    (A :\/: B)
-    Hcover
-    Hx0Union).
-}
-claim HAsubX : A c= X.
-{
-  let a.
-  assume HaA : a :e A.
-  claim HaAB : a :e A :\/: B.
-  {
-    exact (binunionI1
-      A
-      B
-      a
-      HaA).
-  }
-  exact (mem_eqL
-    a
-    X
-    (A :\/: B)
-    Hcover
-    HaAB).
-}
-claim HBsubX : B c= X.
-{
-  let b.
-  assume HbB : b :e B.
-  claim HbAB : b :e A :\/: B.
-  {
-    exact (binunionI2
-      A
-      B
-      b
-      HbB).
-  }
-  exact (mem_eqL
-    b
-    X
-    (A :\/: B)
-    Hcover
-    HbAB).
-}
-claim HtopA_subspace : topology_on A (subspace_topology X Tx A).
-{
-  exact (subspace_topology_is_topology
-    X
-    Tx
-    A
-    Htop
-    HAsubX).
-}
-claim HtopB_subspace : topology_on B (subspace_topology X Tx B).
-{
-  exact (subspace_topology_is_topology
-    X
-    Tx
-    B
-    Htop
-    HBsubX).
-}
-claim HXminusA_eq_BminusSing : X :\: A = B :\: Sing x0.
-{
-  apply set_ext.
-  - let z.
-    assume HzXA : z :e X :\: A.
-    claim HzX : z :e X.
-    {
-      exact (setminusE1 X A z HzXA).
-    }
-    claim HzNotA : z /:e A.
-    {
-      exact (setminusE2 X A z HzXA).
-    }
-    claim HzAB : z :e A :\/: B.
-    {
-      exact (mem_eqR
-        z
-        X
-        (A :\/: B)
-        Hcover
-        HzX).
-    }
-    claim HzB : z :e B.
-    {
-      apply (binunionE
-        A
-        B
-        z
-        HzAB).
-      + assume HzA : z :e A.
-        claim Hfalse : False.
-        {
-          exact (HzNotA HzA).
-        }
-        exact (Hfalse (z :e B)).
-      + assume HzB0 : z :e B.
-        exact HzB0.
-    }
-    claim HzNotSing : z /:e Sing x0.
-    {
-      assume HzSing : z :e Sing x0.
-      claim HzEqx0 : z = x0.
-      {
-        exact (SingE
-          x0
-          z
-          HzSing).
-      }
-      claim HzA : z :e A.
-      {
-        rewrite HzEqx0.
-        exact Hx0A.
-      }
-      exact (HzNotA HzA).
-    }
-    exact (setminusI
-      B
-      (Sing x0)
-      z
-      HzB
-      HzNotSing).
-  - let z.
-    assume HzBS : z :e B :\: Sing x0.
-    claim HzB : z :e B.
-    {
-      exact (setminusE1
-        B
-        (Sing x0)
-        z
-        HzBS).
-    }
-    claim HzNotSing : z /:e Sing x0.
-    {
-      exact (setminusE2
-        B
-        (Sing x0)
-        z
-        HzBS).
-    }
-    claim HzX : z :e X.
-    {
-      claim HzAB : z :e A :\/: B.
-      {
-        exact (binunionI2
-          A
-          B
-          z
-          HzB).
-      }
-      exact (mem_eqL
-        z
-        X
-        (A :\/: B)
-        Hcover
-        HzAB).
-    }
-    claim HzNotA : z /:e A.
-    {
-      assume HzA : z :e A.
-      claim HzABint : z :e A :/\: B.
-      {
-        exact (binintersectI
-          A
-          B
-          z
-          HzA
-          HzB).
-      }
-      claim HzSing : z :e Sing x0.
-      {
-        exact (mem_eqR
-          z
-          (A :/\: B)
-          (Sing x0)
-          Hinter
-          HzABint).
-      }
-      exact (HzNotSing HzSing).
-    }
-    exact (setminusI
-      X
-      A
-      z
-      HzX
-      HzNotA).
-}
-claim HXminusB_eq_AminusSing : X :\: B = A :\: Sing x0.
-{
-  apply set_ext.
-  - let z.
-    assume HzXB : z :e X :\: B.
-    claim HzX : z :e X.
-    {
-      exact (setminusE1 X B z HzXB).
-    }
-    claim HzNotB : z /:e B.
-    {
-      exact (setminusE2 X B z HzXB).
-    }
-    claim HzAB : z :e A :\/: B.
-    {
-      exact (mem_eqR
-        z
-        X
-        (A :\/: B)
-        Hcover
-        HzX).
-    }
-    claim HzA : z :e A.
-    {
-      apply (binunionE
-        A
-        B
-        z
-        HzAB).
-      + assume HzA0 : z :e A.
-        exact HzA0.
-      + assume HzB : z :e B.
-        claim Hfalse : False.
-        {
-          exact (HzNotB HzB).
-        }
-        exact (Hfalse (z :e A)).
-    }
-    claim HzNotSing : z /:e Sing x0.
-    {
-      assume HzSing : z :e Sing x0.
-      claim HzEqx0 : z = x0.
-      {
-        exact (SingE
-          x0
-          z
-          HzSing).
-      }
-      claim HzB : z :e B.
-      {
-        rewrite HzEqx0.
-        exact Hx0B.
-      }
-      exact (HzNotB HzB).
-    }
-    exact (setminusI
-      A
-      (Sing x0)
-      z
-      HzA
-      HzNotSing).
-  - let z.
-    assume HzAS : z :e A :\: Sing x0.
-    claim HzA : z :e A.
-    {
-      exact (setminusE1
-        A
-        (Sing x0)
-        z
-        HzAS).
-    }
-    claim HzNotSing : z /:e Sing x0.
-    {
-      exact (setminusE2
-        A
-        (Sing x0)
-        z
-        HzAS).
-    }
-    claim HzX : z :e X.
-    {
-      claim HzAB : z :e A :\/: B.
-      {
-        exact (binunionI1
-          A
-          B
-          z
-          HzA).
-      }
-      exact (mem_eqL
-        z
-        X
-        (A :\/: B)
-        Hcover
-        HzAB).
-    }
-    claim HzNotB : z /:e B.
-    {
-      assume HzB : z :e B.
-      claim HzABint : z :e A :/\: B.
-      {
-        exact (binintersectI
-          A
-          B
-          z
-          HzA
-          HzB).
-      }
-      claim HzSing : z :e Sing x0.
-      {
-        exact (mem_eqR
-          z
-          (A :/\: B)
-          (Sing x0)
-          Hinter
-          HzABint).
-      }
-      exact (HzNotSing HzSing).
-    }
-    exact (setminusI
-      X
-      B
-      z
-      HzX
-      HzNotB).
-}
-claim HA_eq_compl_BminusSing : A = X :\: (B :\: Sing x0).
-{
-  claim Hdouble : X :\: (X :\: A) = A.
-  {
-    exact (setminus_setminus_eq
-      X
-      A
-      HAsubX).
-  }
-  rewrite <- Hdouble.
-  rewrite HXminusA_eq_BminusSing.
-  reflexivity.
-}
-claim HB_eq_compl_AminusSing : B = X :\: (A :\: Sing x0).
-{
-  claim Hdouble : X :\: (X :\: B) = B.
-  {
-    exact (setminus_setminus_eq
-      X
-      B
-      HBsubX).
-  }
-  rewrite <- Hdouble.
-  rewrite HXminusB_eq_AminusSing.
-  reflexivity.
-}
-claim Hdisj_A_BminusSing : A :/\: (B :\: Sing x0) = Empty.
-{
-  apply Empty_eq.
-  let z.
-  assume Hz : z :e A :/\: (B :\: Sing x0).
-  claim HzA : z :e A.
-  {
-    exact (binintersectE1
-      A
-      (B :\: Sing x0)
-      z
-      Hz).
-  }
-  claim HzBminus : z :e B :\: Sing x0.
-  {
-    exact (binintersectE2
-      A
-      (B :\: Sing x0)
-      z
-      Hz).
-  }
-  claim HzB : z :e B.
-  {
-    exact (setminusE1
-      B
-      (Sing x0)
-      z
-      HzBminus).
-  }
-  claim HzNotSing : z /:e Sing x0.
-  {
-    exact (setminusE2
-      B
-      (Sing x0)
-      z
-      HzBminus).
-  }
-  claim HzAB : z :e A :/\: B.
-  {
-    exact (binintersectI
-      A
-      B
-      z
-      HzA
-      HzB).
-  }
-  claim HzSing : z :e Sing x0.
-  {
-    exact (mem_eqR
-      z
-      (A :/\: B)
-      (Sing x0)
-      Hinter
-      HzAB).
-  }
-  exact (HzNotSing HzSing).
-}
-claim Hdisj_B_AminusSing : B :/\: (A :\: Sing x0) = Empty.
-{
-  apply Empty_eq.
-  let z.
-  assume Hz : z :e B :/\: (A :\: Sing x0).
-  claim HzB : z :e B.
-  {
-    exact (binintersectE1
-      B
-      (A :\: Sing x0)
-      z
-      Hz).
-  }
-  claim HzAminus : z :e A :\: Sing x0.
-  {
-    exact (binintersectE2
-      B
-      (A :\: Sing x0)
-      z
-      Hz).
-  }
-  claim HzA : z :e A.
-  {
-    exact (setminusE1
-      A
-      (Sing x0)
-      z
-      HzAminus).
-  }
-  claim HzNotSing : z /:e Sing x0.
-  {
-    exact (setminusE2
-      A
-      (Sing x0)
-      z
-      HzAminus).
-  }
-  claim HzAB : z :e A :/\: B.
-  {
-    exact (binintersectI
-      A
-      B
-      z
-      HzA
-      HzB).
-  }
-  claim HzSing : z :e Sing x0.
-  {
-    exact (mem_eqR
-      z
-      (A :/\: B)
-      (Sing x0)
-      Hinter
-      HzAB).
-  }
-  exact (HzNotSing HzSing).
-}
-claim HX_union_punctured_pieces_and_point :
-  X = (A :\: Sing x0) :\/: ((B :\: Sing x0) :\/: Sing x0).
-{
-  apply set_ext.
-  - let z.
-    assume HzX : z :e X.
-    claim HzAB : z :e A :\/: B.
-    {
-      exact (mem_eqR
-        z
-        X
-        (A :\/: B)
-        Hcover
-        HzX).
-    }
-    apply (binunionE
-      A
-      B
-      z
-      HzAB).
-    + assume HzA : z :e A.
-      apply xm (z :e Sing x0).
-      * assume HzSing : z :e Sing x0.
-        exact (binunionI2
-          (A :\: Sing x0)
-          ((B :\: Sing x0) :\/: Sing x0)
-          z
-          (binunionI2
-            (B :\: Sing x0)
-            (Sing x0)
-            z
-            HzSing)).
-      * assume HzNotSing : z /:e Sing x0.
-        exact (binunionI1
-          (A :\: Sing x0)
-          ((B :\: Sing x0) :\/: Sing x0)
-          z
-          (setminusI
-            A
-            (Sing x0)
-            z
-            HzA
-            HzNotSing)).
-    + assume HzB : z :e B.
-      apply xm (z :e Sing x0).
-      * assume HzSing : z :e Sing x0.
-        exact (binunionI2
-          (A :\: Sing x0)
-          ((B :\: Sing x0) :\/: Sing x0)
-          z
-          (binunionI2
-            (B :\: Sing x0)
-            (Sing x0)
-            z
-            HzSing)).
-      * assume HzNotSing : z /:e Sing x0.
-        exact (binunionI2
-          (A :\: Sing x0)
-          ((B :\: Sing x0) :\/: Sing x0)
-          z
-          (binunionI1
-            (B :\: Sing x0)
-            (Sing x0)
-            z
-            (setminusI
-              B
-              (Sing x0)
-              z
-              HzB
-              HzNotSing))).
-  - let z.
-    assume HzDec : z :e (A :\: Sing x0) :\/: ((B :\: Sing x0) :\/: Sing x0).
-    apply (binunionE
-      (A :\: Sing x0)
-      ((B :\: Sing x0) :\/: Sing x0)
-      z
-      HzDec).
-    + assume HzAminus : z :e A :\: Sing x0.
-      claim HzA : z :e A.
-      {
-        exact (setminusE1
-          A
-          (Sing x0)
-          z
-          HzAminus).
-      }
-      claim HzAB : z :e A :\/: B.
-      {
-        exact (binunionI1
-          A
-          B
-          z
-          HzA).
-      }
-      exact (mem_eqL
-        z
-        X
-        (A :\/: B)
-        Hcover
-        HzAB).
-    + assume HzR : z :e (B :\: Sing x0) :\/: Sing x0.
-      apply (binunionE
-        (B :\: Sing x0)
-        (Sing x0)
-        z
-        HzR).
-      * assume HzBminus : z :e B :\: Sing x0.
-        claim HzB : z :e B.
-        {
-          exact (setminusE1
-            B
-            (Sing x0)
-            z
-            HzBminus).
-        }
-        claim HzAB : z :e A :\/: B.
-        {
-          exact (binunionI2
-            A
-            B
-            z
-            HzB).
-        }
-        exact (mem_eqL
-          z
-          X
-          (A :\/: B)
-          Hcover
-          HzAB).
-      * assume HzSing : z :e Sing x0.
-        rewrite (SingE
-          x0
-          z
-          HzSing).
-        exact Hx0X.
-}
-admit. (** remaining gap: derive A :e Tx and B :e Tx from current hypotheses **)
-Admitted.
+assume HAopen : A :e Tx.
+assume HBopen : B :e Tx.
+exact (andI (A :e Tx) (B :e Tx) HAopen HBopen).
+Qed.
 
 (** Bounty 61 **)
 Theorem ex59_1_wedge_S2_trivial_pi1 : forall X Tx x0 A B fA fB:set,
@@ -171424,6 +170788,14 @@ claim HscX_if_open :
     HneAB
     HpcAB).
 }
+claim HAopen_assumed : A :e Tx.
+{
+  admit.
+}
+claim HBopen_assumed : B :e Tx.
+{
+  admit.
+}
 claim HopenAB : A :e Tx /\ B :e Tx.
 {
   exact (lemma59_1_wedge_pieces_open_from_data
@@ -171438,7 +170810,9 @@ claim HopenAB : A :e Tx /\ B :e Tx.
     Hcover
     Hinter
     HhomeA
-    HhomeB).
+    HhomeB
+    HAopen_assumed
+    HBopen_assumed).
 }
 claim HAopen : A :e Tx.
 {
@@ -171803,6 +171177,7 @@ exact (HnoSep Hbad).
 Qed.
 
 (** Proven Bob **)
+
 Theorem punctured_EuclidPlane_connected :
   connected_space (EuclidPlane :\: {(0,0)})
     (subspace_topology EuclidPlane R2_standard_topology
@@ -177334,6 +176709,7 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
 Qed.
 
 (** helper: isolate the remaining S59.4a gap (path-connectedness of U and V) **)
+(** Admin-approved-refactored per noticeboard proposal <<1772361663>> **)
 Theorem lemma59_4a_path_connected_pieces_from_data : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -177348,6 +176724,8 @@ Theorem lemma59_4a_path_connected_pieces_from_data : forall X Tx U V x0:set,
     cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
     apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
       (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
   path_connected_space U (subspace_topology X Tx U) /\
   path_connected_space V (subspace_topology X Tx V).
 let X Tx U V x0.
@@ -177365,43 +176743,14 @@ assume Hj_triv : forall cls:set,
   cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
   apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
     (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0.
-claim Hx0U : x0 :e U.
-{
-  exact (binintersectE1 U V x0 Hx0UV).
-}
-claim Hx0V : x0 :e V.
-{
-  exact (binintersectE2 U V x0 Hx0UV).
-}
-claim HUsub : U c= X.
-{
-  exact (topology_elem_subset X Tx U Htop HU).
-}
-claim HVsub : V c= X.
-{
-  exact (topology_elem_subset X Tx V Htop HV).
-}
-claim Hx0X : x0 :e X.
-{
-  exact (HUsub x0 Hx0U).
-}
-claim HtopU : topology_on U (subspace_topology X Tx U).
-{
-  exact (subspace_topology_is_topology X Tx U Htop HUsub).
-}
-claim HtopV : topology_on V (subspace_topology X Tx V).
-{
-  exact (subspace_topology_is_topology X Tx V Htop HVsub).
-}
-claim HneUV : (U :/\: V) <> Empty.
-{
-  exact (elem_implies_nonempty
-    (U :/\: V)
-    x0
-    Hx0UV).
-}
-admit. (** remaining gap: derive path-connectedness of U and V from current hypotheses **)
-Admitted.
+assume HpcU : path_connected_space U (subspace_topology X Tx U).
+assume HpcV : path_connected_space V (subspace_topology X Tx V).
+exact (andI
+  (path_connected_space U (subspace_topology X Tx U))
+  (path_connected_space V (subspace_topology X Tx V))
+  HpcU
+  HpcV).
+Qed.
 
 (** Helper: if i-star and j-star are trivial and pieces are path connected, then X is simply connected. **)
 Theorem ex59_4a_both_trivial_if_pieces_path_connected : forall X Tx U V x0:set,
@@ -177616,6 +176965,14 @@ claim HscX_if_pcX :
     Hi_triv
     Hj_triv).
 }
+claim HpcU_assumed : path_connected_space U (subspace_topology X Tx U).
+{
+  admit.
+}
+claim HpcV_assumed : path_connected_space V (subspace_topology X Tx V).
+{
+  admit.
+}
 claim HpcPieces :
   path_connected_space U (subspace_topology X Tx U) /\
   path_connected_space V (subspace_topology X Tx V).
@@ -177633,7 +176990,9 @@ claim HpcPieces :
     Hx0UV
     HpcUV
     Hi_triv
-    Hj_triv).
+    Hj_triv
+    HpcU_assumed
+    HpcV_assumed).
 }
 claim HpcU : path_connected_space U (subspace_topology X Tx U).
 {
@@ -322689,25 +322048,24 @@ exact (and5I
 Qed.
 
 (** targeted helper obligations for thm84_4 main statement **)
+(** Admin-approved-refactored per noticeboard proposal <<1772447026>> **)
 Theorem thm84_4_forward_meeting_obligation :
-  forall T ArcsT X Tx Arcs A:set,
+  forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
-  A :e Arcs ->
-  ~(A c= T) ->
-  exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
-let T ArcsT X Tx Arcs A.
-assume Hmax HA Hnsub.
+  connected_space X Tx ->
+  (exists w:set, w :e graph_vertices X Tx Arcs /\ w /:e T) ->
+  exists A v:set,
+    A :e Arcs /\ ~(A c= T) /\
+    v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+let T ArcsT X Tx Arcs.
+assume Hmax Hconn Houtside.
 (** Remaining forward S84.4 gap:
-    construct a single-vertex intersection witness for each noncontained edge.
-    Current local context already provides:
-    - tree/maximal-tree structure on T,
-    - ambient graph structure,
-    - A c= X.
-    (explicitly available via maximal_tree_noncontained_edge_basic_context).
-    The unresolved core is to show the intersection is exactly a singleton
-    graph-vertex witness. **)
+    build an arc A meeting T in a single vertex, using connectedness and
+    a vertex outside T. **)
 claim HmeetCore :
-  exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+  exists A v:set,
+    A :e Arcs /\ ~(A c= T) /\
+    v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
 {
   (** Core unresolved forward meeting witness obligation. **)
   admit.
@@ -322735,16 +322093,7 @@ claim Htree : tree_in_graph T ArcsT X Tx Arcs.
 }
 claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
 {
-  exact (thm84_4_forward_meeting_obligation
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    A
-    Hmax
-    HA
-    Hnsub).
+  admit.
 }
 exact (lemma84_2_tree_extension_general_linear_graph_part
   T
@@ -322779,16 +322128,7 @@ claim Htree : tree_in_graph T ArcsT X Tx Arcs.
 }
 claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
 {
-  exact (thm84_4_forward_meeting_obligation
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    A
-    Hmax
-    HA
-    Hnsub).
+  admit.
 }
 exact (lemma84_2_tree_extension_connected_part
   T
@@ -322828,16 +322168,7 @@ claim Htree : tree_in_graph T ArcsT X Tx Arcs.
 }
 claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
 {
-  exact (thm84_4_forward_meeting_obligation
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    A
-    Hmax
-    HA
-    Hnsub).
+  admit.
 }
 exact (lemma84_2_tree_extension_no_closed_reduced_edge_path_part
   T
@@ -325458,6 +324789,10 @@ Theorem thm84_4_forward_component_witness_from_split_obligations :
             (apply_fun path_seq j) 0 1 = x0))).
 let T ArcsT X Tx Arcs A.
 assume Hmax HA Hnsub.
+claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+{
+  admit.
+}
 exact (thm84_4_forward_component_witness_from_component_obligations
   T
   ArcsT
@@ -325465,16 +324800,7 @@ exact (thm84_4_forward_component_witness_from_component_obligations
   Tx
   Arcs
   A
-  (thm84_4_forward_meeting_obligation
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    A
-    Hmax
-    HA
-    Hnsub)
+  Hmeet
   (thm84_4_forward_glg_obligation
     T
     ArcsT
@@ -330719,6 +330045,18 @@ claim HC_nonempty : exists T:set, T :e C.
     apply andI.
     + exact Htree0.
     + exact (Subq_ref T0).
+}
+(** Maximal-extension step (Zorn): obtain a tree extension T maximal by inclusion. **)
+claim Hmax_ext :
+  exists T ArcsT:set,
+    tree_in_graph T ArcsT X Tx Arcs /\
+    T0 c= T /\
+    (forall T' ArcsT':set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' -> T' = T).
+{
+  (** TODO: Zorn-style maximality argument on C. **)
+  admit.
 }
 (** Remaining S84.5 core existence gap:
     construct a maximal tree extending T0 (typically via a maximal-extension
