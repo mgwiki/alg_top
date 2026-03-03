@@ -180715,6 +180715,183 @@ Admitted.
 (** (lines 2370-2481 in algtop.tex)                              **)
 (** ============================================================ **)
 
+(** Proven Charlie **)
+Theorem deformation_retract_subspace_homotopy : forall X Tx A C:set,
+  topology_on X Tx -> A c= X -> C c= A ->
+  deformation_retract A (subspace_topology X Tx A) C ->
+  let Z := setprod X unit_interval in
+  let Tz := product_topology X Tx unit_interval unit_interval_topology in
+  let P := setprod A unit_interval in
+  exists H:set,
+    continuous_map P (subspace_topology Z Tz P) X Tx H /\
+    (forall x:set, x :e A -> apply_fun H (x, 0) = x) /\
+    (forall x:set, x :e A -> apply_fun H (x, 1) :e C) /\
+    (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H (a, t) = a).
+let X Tx A C.
+assume HtopX HAsubX HCsubA Hdeform.
+set Ta := subspace_topology X Tx A.
+set Z := setprod X unit_interval.
+set Tz := product_topology X Tx unit_interval unit_interval_topology.
+set P := setprod A unit_interval.
+claim Htop_eq : product_topology A Ta unit_interval unit_interval_topology = subspace_topology Z Tz P.
+{
+  exact ((subspace_topology_whole unit_interval unit_interval_topology unit_interval_topology_on)
+    (fun a b:set => product_topology A Ta unit_interval a = subspace_topology Z Tz P)
+    (product_subspace_topology
+      X
+      Tx
+      unit_interval
+      unit_interval_topology
+      A
+      unit_interval
+      HtopX
+      unit_interval_topology_on
+      HAsubX
+      (Subq_ref unit_interval))).
+}
+claim Htop_eq_sym : subspace_topology Z Tz P = product_topology A Ta unit_interval unit_interval_topology.
+{ exact (fun Q => Htop_eq (fun x y:set => Q y x)). }
+claim HAsubA : A c= A.
+{ exact (Subq_ref A). }
+claim Hdeform0 :
+  C c= A /\
+  exists H0:set,
+    continuous_map (setprod A unit_interval)
+      (product_topology A Ta unit_interval unit_interval_topology) A Ta H0 /\
+    (forall x:set, x :e A -> apply_fun H0 (x, 0) = x) /\
+    (forall x:set, x :e A -> apply_fun H0 (x, 1) :e C) /\
+    (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H0 (a, t) = a).
+{
+  exact Hdeform.
+}
+apply (andER (C c= A)
+  (exists H0:set,
+    continuous_map (setprod A unit_interval)
+      (product_topology A Ta unit_interval unit_interval_topology) A Ta H0 /\
+    (forall x:set, x :e A -> apply_fun H0 (x, 0) = x) /\
+    (forall x:set, x :e A -> apply_fun H0 (x, 1) :e C) /\
+    (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H0 (a, t) = a))
+  Hdeform0).
+let H0.
+assume HH0.
+claim HH0cont_prod :
+  continuous_map P (product_topology A Ta unit_interval unit_interval_topology) A Ta H0.
+{
+  exact (andEL
+    (continuous_map P (product_topology A Ta unit_interval unit_interval_topology) A Ta H0)
+    (forall x:set, x :e A -> apply_fun H0 (x, 0) = x)
+    (andEL
+      (continuous_map P (product_topology A Ta unit_interval unit_interval_topology) A Ta H0 /\
+       (forall x:set, x :e A -> apply_fun H0 (x, 0) = x))
+      (forall x:set, x :e A -> apply_fun H0 (x, 1) :e C)
+      (andEL
+        ((continuous_map P (product_topology A Ta unit_interval unit_interval_topology) A Ta H0 /\
+          (forall x:set, x :e A -> apply_fun H0 (x, 0) = x)) /\
+         (forall x:set, x :e A -> apply_fun H0 (x, 1) :e C))
+        (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H0 (a, t) = a)
+        HH0))).
+}
+claim HH0cont_sub :
+  continuous_map P (subspace_topology Z Tz P) A Ta H0.
+{ rewrite Htop_eq_sym. exact HH0cont_prod. }
+claim HH0_0 : forall x:set, x :e A -> apply_fun H0 (x, 0) = x.
+{
+  exact (andER
+    (continuous_map P (product_topology A Ta unit_interval unit_interval_topology) A Ta H0)
+    (forall x:set, x :e A -> apply_fun H0 (x, 0) = x)
+    (andEL
+      (continuous_map P (product_topology A Ta unit_interval unit_interval_topology) A Ta H0 /\
+       (forall x:set, x :e A -> apply_fun H0 (x, 0) = x))
+      (forall x:set, x :e A -> apply_fun H0 (x, 1) :e C)
+      (andEL
+        ((continuous_map P (product_topology A Ta unit_interval unit_interval_topology) A Ta H0 /\
+          (forall x:set, x :e A -> apply_fun H0 (x, 0) = x)) /\
+         (forall x:set, x :e A -> apply_fun H0 (x, 1) :e C))
+        (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H0 (a, t) = a)
+        HH0))).
+}
+claim HH0_1 : forall x:set, x :e A -> apply_fun H0 (x, 1) :e C.
+{
+  exact (andER
+    (continuous_map P (product_topology A Ta unit_interval unit_interval_topology) A Ta H0 /\
+     (forall x:set, x :e A -> apply_fun H0 (x, 0) = x))
+    (forall x:set, x :e A -> apply_fun H0 (x, 1) :e C)
+    (andEL
+      ((continuous_map P (product_topology A Ta unit_interval unit_interval_topology) A Ta H0 /\
+        (forall x:set, x :e A -> apply_fun H0 (x, 0) = x)) /\
+       (forall x:set, x :e A -> apply_fun H0 (x, 1) :e C))
+      (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H0 (a, t) = a)
+      HH0)).
+}
+claim HH0_fix : forall a t:set, a :e C -> t :e unit_interval -> apply_fun H0 (a, t) = a.
+{
+  exact (andER
+    ((continuous_map P (product_topology A Ta unit_interval unit_interval_topology) A Ta H0 /\
+      (forall x:set, x :e A -> apply_fun H0 (x, 0) = x)) /\
+     (forall x:set, x :e A -> apply_fun H0 (x, 1) :e C))
+    (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H0 (a, t) = a)
+    HH0).
+}
+set i := graph A (fun y:set => y).
+claim Hi_cont : continuous_map A Ta X Tx i.
+{
+  exact (subspace_inclusion_continuous X Tx A HtopX HAsubX).
+}
+set H := compose_fun P H0 i.
+witness H.
+claim HH_cont0 : continuous_map P (subspace_topology Z Tz P) X Tx H.
+{
+  exact (composition_continuous
+    P
+    (subspace_topology Z Tz P)
+    A
+    Ta
+    X
+    Tx
+    H0
+    i
+    HH0cont_sub
+    Hi_cont).
+}
+apply andI.
+- apply andI.
+  * apply andI.
+    { exact HH_cont0. }
+    { let x.
+      assume HxA.
+      claim Hx0P : (x, 0) :e P.
+      { exact (tuple_2_setprod_by_pair_Sigma A unit_interval x 0 HxA zero_in_unit_interval). }
+      claim Happ : apply_fun H (x, 0) = apply_fun i (apply_fun H0 (x, 0)).
+      { exact (compose_fun_apply P H0 i (x, 0) Hx0P). }
+      rewrite Happ.
+      rewrite (HH0_0 x HxA).
+      exact (apply_fun_graph A (fun y:set => y) x HxA).
+    }
+  * let x.
+    assume HxA.
+    claim Hx1P : (x, 1) :e P.
+    {
+      exact (tuple_2_setprod_by_pair_Sigma A unit_interval x 1 HxA
+        (andER (0 :e unit_interval) (1 :e unit_interval) zero_one_in_unit_interval)).
+    }
+    claim Happ : apply_fun H (x, 1) = apply_fun i (apply_fun H0 (x, 1)).
+    { exact (compose_fun_apply P H0 i (x, 1) Hx1P). }
+    rewrite Happ.
+    claim Htmp : apply_fun H0 (x, 1) :e A.
+    { exact (HCsubA (apply_fun H0 (x, 1)) (HH0_1 x HxA)). }
+    rewrite (apply_fun_graph A (fun y:set => y) (apply_fun H0 (x, 1)) Htmp).
+    exact (HH0_1 x HxA).
+- let a t.
+  assume HaC HtI.
+  claim HatP : (a, t) :e P.
+  { exact (tuple_2_setprod_by_pair_Sigma A unit_interval a t (HCsubA a HaC) HtI). }
+  claim Happ : apply_fun H (a, t) = apply_fun i (apply_fun H0 (a, t)).
+  { exact (compose_fun_apply P H0 i (a, t) HatP). }
+  rewrite Happ.
+  rewrite (HH0_fix a t HaC HtI).
+  exact (apply_fun_graph A (fun y:set => y) a (HCsubA a HaC)).
+Qed.
+
 (** Bounty 330 **)
 (** Lock Charlie 1772619208 **)
 Theorem lemma65_2_side_homotopies_exist : forall C Tc p q:set,
