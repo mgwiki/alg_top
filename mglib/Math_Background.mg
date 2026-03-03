@@ -310410,24 +310410,6 @@ claim Hcycle :
       HendT').
   }
   (** Intersection of A with T is only at endpoints. **)
-  claim HArcsT_sub : ArcsT c= Arcs. { admit. }
-  claim HAnotArcsT : A /:e ArcsT.
-  {
-    assume HAinT.
-    claim HAsubT'0 : A c= T.
-    {
-      exact (tree_in_graph_arc_subset_T
-        T
-        ArcsT
-        X
-        Tx
-        Arcs
-        A
-        Htree
-        HAinT).
-    }
-    exact (Hnsub HAsubT'0).
-  }
   claim HcapATsubset :
     forall x:set, x :e T :/\: A -> x = p \/ x = q.
   {
@@ -310437,38 +310419,53 @@ claim Hcycle :
     { exact (binintersectE1 T A x HxCap). }
     claim HxA : x :e A.
     { exact (binintersectE2 T A x HxCap). }
-    claim HunionT : T = Union ArcsT.
-    { exact (tree_in_graph_union_arcsT T ArcsT X Tx Arcs Htree). }
-    claim HxU : x :e Union ArcsT.
+    claim HunionT : T = Union {B :e Arcs | B c= T}.
+    {
+      exact (subgraph_of_union_of_contained_arcs
+        T
+        X
+        Tx
+        Arcs
+        HsubT).
+    }
+    claim HxU : x :e Union {B :e Arcs | B c= T}.
     {
       exact (mem_eqR
         x
         T
-        (Union ArcsT)
+        (Union {B :e Arcs | B c= T})
         HunionT
         HxT).
     }
     apply (UnionE
-      ArcsT
+      {B :e Arcs | B c= T}
       x
       HxU).
     let B.
     assume HxBpack.
-    claim HBArcsT : B :e ArcsT.
-    { exact (andER (x :e B) (B :e ArcsT) HxBpack). }
+    claim HBsel : B :e {B :e Arcs | B c= T}.
+    { exact (andER (x :e B) (B :e {B :e Arcs | B c= T}) HxBpack). }
     claim HxB : x :e B.
-    { exact (andEL (x :e B) (B :e ArcsT) HxBpack). }
+    { exact (andEL (x :e B) (B :e {B :e Arcs | B c= T}) HxBpack). }
+    claim HBpack2 : B :e Arcs /\ B c= T.
+    {
+      exact (SepE
+        Arcs
+        (fun B0:set => B0 c= T)
+        B
+        HBsel).
+    }
     claim HBArcs : B :e Arcs.
-    { exact (HArcsT_sub B HBArcsT). }
+    { exact (andEL (B :e Arcs) (B c= T) HBpack2). }
     claim HBneA : B <> A.
     {
       assume Heq.
-      claim HAArcsT : A :e ArcsT.
+      claim HAsubT'0 : A c= T.
       {
         rewrite <- Heq.
-        exact HBArcsT.
+        exact (andER (B :e Arcs) (B c= T) HBpack2).
       }
-      exact (HAnotArcsT HAArcsT).
+      exact (Hnsub HAsubT'0).
     }
     claim Hinter :
       A :/\: B = Empty \/
@@ -310959,7 +310956,8 @@ claim Hcycle :
               (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\
                 (apply_fun path_seq0 j0) 0 1 = p)) /\
           m' :e m.
-    { admit. }
+    { (** TODO: build shorter closed edge path by deleting a backtracking pair. **)
+      admit. }
     claim Hnoback0 :
       forall i:set, i :e n0 -> ordsucc i :e n0 ->
         ~((apply_fun path_seq0 i) 1 = (apply_fun path_seq0 (ordsucc i)) 1 /\
