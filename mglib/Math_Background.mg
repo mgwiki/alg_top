@@ -225981,8 +225981,69 @@ claim Hnot_all_G2 : (forall i:set, i :e n -> apply_fun ys i :e G2) -> False.
   exact (Hwpne Hxe).
 }
 
-(** Remaining mixed-factor case needs a binary-collapse argument. **)
-admit.
+(** Reduce to the mixed-factor collapse lemma. **)
+claim Hex_notG2 : exists j:set, j :e n /\ ~ (apply_fun ys j :e G2).
+{
+  apply (xm (exists j:set, j :e n /\ ~ (apply_fun ys j :e G2))).
+  - assume Hex. exact Hex.
+  - assume Hnoex.
+    claim HallG2 : forall i:set, i :e n -> apply_fun ys i :e G2.
+    {
+      let i. assume Hi.
+      apply (xm (apply_fun ys i :e G2)).
+      - assume HyG2. exact HyG2.
+      - assume HynG2.
+        claim Hex : exists j:set, j :e n /\ ~ (apply_fun ys j :e G2).
+        {
+          witness i.
+          apply andI.
+          exact Hi.
+          exact HynG2.
+        }
+        exact (FalseE (Hnoex Hex) (apply_fun ys i :e G2)).
+    }
+    exact (FalseE (Hnot_all_G2 HallG2) (exists j:set, j :e n /\ ~ (apply_fun ys j :e G2))).
+}
+apply Hex_notG2.
+let j. assume Hj_pack.
+claim Hj_in : j :e n.
+{ exact (andEL (j :e n) (~ (apply_fun ys j :e G2)) Hj_pack). }
+claim Hj_notG2 : ~ (apply_fun ys j :e G2).
+{ exact (andER (j :e n) (~ (apply_fun ys j :e G2)) Hj_pack). }
+claim HjG1 : apply_fun ys j :e G1.
+{
+  apply (Hys_side j Hj_in).
+  - assume HjG1. exact HjG1.
+  - assume HjG2.
+    exact (FalseE (Hj_notG2 HjG2) (apply_fun ys j :e G1)).
+}
+claim HexG1 : exists i:set, i :e n /\ apply_fun ys i :e G1.
+{
+  witness j.
+  apply andI.
+  exact Hj_in.
+  exact HjG1.
+}
+let i. assume Hi_in.
+apply (Hys_side i Hi_in).
+- assume HiG1. exact HiG1.
+- assume HiG2.
+  claim HexG2 : exists i0:set, i0 :e n /\ apply_fun ys i0 :e G2.
+  {
+    witness i.
+    apply andI.
+    exact Hi_in.
+    exact HiG2.
+  }
+  claim Hwp_notG1 : word_product multG eG ys n /:e G1.
+  {
+    exact (cor68_6_binary_collapse_mixed_not_in_G1
+      G multG eG invG G1 G2 J K Hfam efamH n ys
+      Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HallNe Hwpne
+      HexG1
+      HexG2).
+  }
+  exact (FalseE (Hwp_notG1 HwpG1) (apply_fun ys i :e G1)).
 Admitted.
 
 (** Bounty 55 **)
@@ -226201,8 +226262,69 @@ claim Hnot_all_G1 : (forall i:set, i :e n -> apply_fun ys i :e G1) -> False.
   exact (Hwpne Hxe).
 }
 
-(** Remaining mixed-factor case needs a binary-collapse argument. **)
-admit.
+(** Reduce to the mixed-factor collapse lemma. **)
+claim Hex_notG1 : exists j:set, j :e n /\ ~ (apply_fun ys j :e G1).
+{
+  apply (xm (exists j:set, j :e n /\ ~ (apply_fun ys j :e G1))).
+  - assume Hex. exact Hex.
+  - assume Hnoex.
+    claim HallG1 : forall i:set, i :e n -> apply_fun ys i :e G1.
+    {
+      let i. assume Hi.
+      apply (xm (apply_fun ys i :e G1)).
+      - assume HyG1. exact HyG1.
+      - assume HynG1.
+        claim Hex : exists j:set, j :e n /\ ~ (apply_fun ys j :e G1).
+        {
+          witness i.
+          apply andI.
+          exact Hi.
+          exact HynG1.
+        }
+        exact (FalseE (Hnoex Hex) (apply_fun ys i :e G1)).
+    }
+    exact (FalseE (Hnot_all_G1 HallG1) (exists j:set, j :e n /\ ~ (apply_fun ys j :e G1))).
+}
+apply Hex_notG1.
+let j. assume Hj_pack.
+claim Hj_in : j :e n.
+{ exact (andEL (j :e n) (~ (apply_fun ys j :e G1)) Hj_pack). }
+claim Hj_notG1 : ~ (apply_fun ys j :e G1).
+{ exact (andER (j :e n) (~ (apply_fun ys j :e G1)) Hj_pack). }
+claim HjG2 : apply_fun ys j :e G2.
+{
+  apply (Hys_side j Hj_in).
+  - assume HjG1.
+    exact (FalseE (Hj_notG1 HjG1) (apply_fun ys j :e G2)).
+  - assume HjG2. exact HjG2.
+}
+claim HexG2 : exists i:set, i :e n /\ apply_fun ys i :e G2.
+{
+  witness j.
+  apply andI.
+  exact Hj_in.
+  exact HjG2.
+}
+let i. assume Hi_in.
+apply (Hys_side i Hi_in).
+- assume HiG1.
+  claim HexG1 : exists i0:set, i0 :e n /\ apply_fun ys i0 :e G1.
+  {
+    witness i.
+    apply andI.
+    exact Hi_in.
+    exact HiG1.
+  }
+  claim Hwp_notG2 : word_product multG eG ys n /:e G2.
+  {
+    exact (cor68_6_binary_collapse_mixed_not_in_G2
+      G multG eG invG G1 G2 J K Hfam efamH n ys
+      Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HallNe Hwpne
+      HexG1
+      HexG2).
+  }
+  exact (FalseE (Hwp_notG2 HwpG2) (apply_fun ys i :e G2)).
+- assume HiG2. exact HiG2.
 Admitted.
 
 (** Bounty 61 **)
