@@ -171777,6 +171777,19 @@ claim Hsep : exists U0 V0:set, U0 :e Tx /\ V0 :e Tx /\ separation_of X U0 V0.
 exact (connected_space_no_separation X Tx Hconn Hsep).
 Qed.
 
+(** Helper: the punctured real line is not path connected **)
+(** Proven Bob **)
+Theorem punctured_R_not_path_connected :
+  ~ path_connected_space (R :\: {0,0})
+    (subspace_topology R R_standard_topology (R :\: {0,0})).
+assume Hpc.
+apply punctured_R_not_connected.
+exact (path_connected_implies_connected
+  (R :\: {0,0})
+  (subspace_topology R R_standard_topology (R :\: {0,0}))
+  Hpc).
+Qed.
+
 (** Helper: image of punctured space under a homeomorphism **)
 (** Proven Bob **)
 Theorem homeomorphism_image_of_setminus_singleton :
