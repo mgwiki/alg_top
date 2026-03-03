@@ -1673,6 +1673,162 @@ Rules:
 
 [place newly resolved notices here below this line]
 
+NOTICE ID: 1772418017
+Created: 1772418017
+Status: IMPLEMENTED
+
+Refers to Commit:
+  300b8c3461e0f1cbe5d3a9f3f9a2b7d3a8f6f0de
+
+Target:
+  Line: 138150
+  Name: lemma58_sub_basepoint_change_surjective (Theorem)
+
+Problem:
+  The proof uses basepoint_change_bijection, which requires alpha to be continuous.
+  The statement only assumes path_between, so the lemma is unprovable as stated.
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    c :e fundamental_group X Tx x1 ->
+    exists a:set, a :e fundamental_group X Tx x0 /\
+      apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772418017 | Bob: Add continuous_map hypothesis to match
+    lemma52_1_basepoint_change_bijection usage in the proof.
+
+Approvals:
+  -
+  - 1772418017 | Bob: YES
+  - 1772442281 | Dave: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  - 1772564183 | APPROVED
+
+Implemented by:
+  Bob
+
+Implementation Commit:
+  b16c59aa4
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772418016
+Created: 1772418016
+Status: IMPLEMENTED
+
+Refers to Commit:
+  300b8c3461e0f1cbe5d3a9f3f9a2b7d3a8f6f0de
+
+Target:
+  Line: 138030
+  Name: lemma58_sub_basepoint_change_injective (Theorem)
+
+Problem:
+  The proof uses basepoint_change_bijection, which requires alpha to be continuous.
+  The statement only assumes path_between, so the lemma is unprovable as stated.
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    a :e fundamental_group X Tx x0 ->
+    b :e fundamental_group X Tx x0 ->
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) a =
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) b ->
+    a = b.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772418016 | Bob: Add continuous_map hypothesis to match
+    lemma52_1_basepoint_change_bijection usage in the proof.
+
+Approvals:
+  -
+  - 1772418016 | Bob: YES
+  - 1772442281 | Dave: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  - 1772564183 | APPROVED
+
+Implemented by:
+  Bob
+
+Implementation Commit:
+  b16c59aa4
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772418015
+Created: 1772418015
+Status: IMPLEMENTED
+
+Refers to Commit:
+  300b8c3461e0f1cbe5d3a9f3f9a2b7d3a8f6f0de
+
+Target:
+  Line: 137900
+  Name: lemma58_sub_basepoint_change_id (Theorem)
+
+Problem:
+  The proof requires continuity of alpha to apply basepoint_change_homomorphism,
+  but the statement only assumes path_between. Since path_between does not imply
+  continuity, the lemma is unprovable as stated (current proof ends in admit).
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+      (fundamental_group_id X Tx x0)
+    = fundamental_group_id X Tx x1.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772418015 | Bob: Add the continuous_map hypothesis so the existing proof
+    can close by applying lemma52_1_basepoint_change_homomorphism.
+
+Approvals:
+  -
+  - 1772418015 | Bob: YES
+  - 1772442281 | Dave: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  - 1772564183 | APPROVED
+
+Implemented by:
+  Bob
+
+Implementation Commit:
+  b16c59aa4
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
+
 NOTICE ID: 1772368914
 Created: 1772368914
 Status: IMPLEMENTED
@@ -2480,162 +2636,6 @@ Discussion:
 Approvals:
   -
   - 1772417212 | Bob: YES
-  - 1772442281 | Dave: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
-NOTICE ID: 1772418015
-Created: 1772418015
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  300b8c3461e0f1cbe5d3a9f3f9a2b7d3a8f6f0de
-
-Target:
-  Line: 137900
-  Name: lemma58_sub_basepoint_change_id (Theorem)
-
-Problem:
-  The proof requires continuity of alpha to apply basepoint_change_homomorphism,
-  but the statement only assumes path_between. Since path_between does not imply
-  continuity, the lemma is unprovable as stated (current proof ends in admit).
-
-Proposed Replacement:
-  Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
-    path_between X x0 x1 alpha ->
-    continuous_map unit_interval unit_interval_topology X Tx alpha ->
-    apply_fun (basepoint_change_map X Tx x0 x1 alpha)
-      (fundamental_group_id X Tx x0)
-    = fundamental_group_id X Tx x1.
-
-Proposed by: Bob
-
-Discussion:
-  - 1772418015 | Bob: Add the continuous_map hypothesis so the existing proof
-    can close by applying lemma52_1_basepoint_change_homomorphism.
-
-Approvals:
-  -
-  - 1772418015 | Bob: YES
-  - 1772442281 | Dave: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
-NOTICE ID: 1772418016
-Created: 1772418016
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  300b8c3461e0f1cbe5d3a9f3f9a2b7d3a8f6f0de
-
-Target:
-  Line: 138030
-  Name: lemma58_sub_basepoint_change_injective (Theorem)
-
-Problem:
-  The proof uses basepoint_change_bijection, which requires alpha to be continuous.
-  The statement only assumes path_between, so the lemma is unprovable as stated.
-
-Proposed Replacement:
-  Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
-    path_between X x0 x1 alpha ->
-    continuous_map unit_interval unit_interval_topology X Tx alpha ->
-    a :e fundamental_group X Tx x0 ->
-    b :e fundamental_group X Tx x0 ->
-    apply_fun (basepoint_change_map X Tx x0 x1 alpha) a =
-    apply_fun (basepoint_change_map X Tx x0 x1 alpha) b ->
-    a = b.
-
-Proposed by: Bob
-
-Discussion:
-  - 1772418016 | Bob: Add continuous_map hypothesis to match
-    lemma52_1_basepoint_change_bijection usage in the proof.
-
-Approvals:
-  -
-  - 1772418016 | Bob: YES
-  - 1772442281 | Dave: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
-NOTICE ID: 1772418017
-Created: 1772418017
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  300b8c3461e0f1cbe5d3a9f3f9a2b7d3a8f6f0de
-
-Target:
-  Line: 138150
-  Name: lemma58_sub_basepoint_change_surjective (Theorem)
-
-Problem:
-  The proof uses basepoint_change_bijection, which requires alpha to be continuous.
-  The statement only assumes path_between, so the lemma is unprovable as stated.
-
-Proposed Replacement:
-  Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
-    path_between X x0 x1 alpha ->
-    continuous_map unit_interval unit_interval_topology X Tx alpha ->
-    c :e fundamental_group X Tx x1 ->
-    exists a:set, a :e fundamental_group X Tx x0 /\
-      apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
-
-Proposed by: Bob
-
-Discussion:
-  - 1772418017 | Bob: Add continuous_map hypothesis to match
-    lemma52_1_basepoint_change_bijection usage in the proof.
-
-Approvals:
-  -
-  - 1772418017 | Bob: YES
   - 1772442281 | Dave: YES
 
 Result:
