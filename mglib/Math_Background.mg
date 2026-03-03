@@ -141016,7 +141016,7 @@ Qed.
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Collected Bob 10 **)
 (** Proven Bob **)
-(** Admin-approved-refactored per noticeboard proposal <<1772418015>> **)
+(** Admin-approved-refactored per noticeboard proposal 1772418015 **)
 Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
   path_between X x0 x1 alpha ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
@@ -141273,7 +141273,7 @@ Qed.
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Collected Bob 10 **)
 (** Proven Bob **)
-(** Admin-approved-refactored per noticeboard proposal <<1772418016>> **)
+(** Admin-approved-refactored per noticeboard proposal 1772418016 **)
 Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
   path_between X x0 x1 alpha ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
@@ -141479,7 +141479,7 @@ Qed.
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Collected Bob 10 **)
 (** Proven Bob **)
-(** Admin-approved-refactored per noticeboard proposal <<1772418017>> **)
+(** Admin-approved-refactored per noticeboard proposal 1772418017 **)
 Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
   path_between X x0 x1 alpha ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
@@ -170654,7 +170654,7 @@ Qed.
 (** LATEX VERSION: Let X be the union of two copies of S^2 having a single point in common. The fundamental group of X is trivial. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** helper: isolate openness of wedge pieces under current S59.1 data **)
-(** Admin-approved-refactored per noticeboard proposal <<1772361662>> **)
+(** Admin-approved-refactored per noticeboard proposal 1772361662 **)
 (** Proven Bob **)
 Theorem lemma59_1_wedge_pieces_open_from_data : forall X Tx x0 A B fA fB:set,
   topology_on X Tx ->
@@ -176709,7 +176709,7 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
 Qed.
 
 (** helper: isolate the remaining S59.4a gap (path-connectedness of U and V) **)
-(** Admin-approved-refactored per noticeboard proposal <<1772361663>> **)
+(** Admin-approved-refactored per noticeboard proposal 1772361663 **)
 Theorem lemma59_4a_path_connected_pieces_from_data : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -322165,7 +322165,7 @@ exact (and5I
 Qed.
 
 (** targeted helper obligations for thm84_4 main statement **)
-(** Admin-approved-refactored per noticeboard proposal <<1772447026>> **)
+(** Admin-approved-refactored per noticeboard proposal 1772447026 **)
 Theorem thm84_4_forward_meeting_obligation :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
