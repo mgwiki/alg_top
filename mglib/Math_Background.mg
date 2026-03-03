@@ -46576,6 +46576,20 @@ exact (continuous_image_path_connected E Te B Tb p HpcE Hcont Hsurj_val).
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_connected_codomain : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  path_connected_space E Te ->
+  connected_space B Tb.
+let E Te B Tb p.
+assume Hcov HpcE.
+claim HpcB : path_connected_space B Tb.
+{
+  exact (covering_map_path_connected_codomain E Te B Tb p Hcov HpcE).
+}
+exact (path_connected_implies_connected B Tb HpcB).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_preimage_nonempty_of_nonempty_subset : forall E Te B Tb p V:set,
   covering_map E Te B Tb p ->
   V c= B ->
