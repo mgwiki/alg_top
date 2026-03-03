@@ -180495,6 +180495,40 @@ Theorem thm65_2_inclusion_isomorphism : forall C Tc p q x0:set,
       (subspace_topology (Sn 2) (Sn_topology 2)
         (Sn 2 :\: (Sing p :\/: Sing q))) x0
       (graph C (fun x:set => x))).
+let C Tc p q x0.
+assume HCsubSn Hsimple HTc HpSnC HqSnC HcompNe Hx0C.
+set X := Sn 2 :\: (Sing p :\/: Sing q).
+set Tx := subspace_topology (Sn 2) (Sn_topology 2) X.
+claim Hx0Sn : x0 :e Sn 2.
+{ exact (HCsubSn x0 Hx0C). }
+claim Hx0Notp : x0 /:e Sing p.
+{
+  assume Hx0p.
+  claim Hx0eq : x0 = p.
+  { exact (SingE p x0 Hx0p). }
+  claim HpC : p :e C.
+  { rewrite <- Hx0eq. exact Hx0C. }
+  exact ((setminusE2 (Sn 2) C p HpSnC) HpC).
+}
+claim Hx0Notq : x0 /:e Sing q.
+{
+  assume Hx0q.
+  claim Hx0eq : x0 = q.
+  { exact (SingE q x0 Hx0q). }
+  claim HqC : q :e C.
+  { rewrite <- Hx0eq. exact Hx0C. }
+  exact ((setminusE2 (Sn 2) C q HqSnC) HqC).
+}
+claim Hx0Not : x0 /:e (Sing p :\/: Sing q).
+{
+  assume Hbad.
+  apply (binunionE (Sing p) (Sing q) x0 Hbad).
+  - assume Hx0p. exact (Hx0Notp Hx0p).
+  - assume Hx0q. exact (Hx0Notq Hx0q).
+}
+claim Hx0X : x0 :e X.
+{ exact (setminusI (Sn 2) (Sing p :\/: Sing q) x0 Hx0Sn Hx0Not). }
+(** Main isomorphism statement: deferred. **)
 admit.
 Admitted.
 
