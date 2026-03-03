@@ -250632,6 +250632,44 @@ apply iffI.
     HconnX).
 Qed.
 
+(** Helper: homeomorphism preserves connectedness of a subspace image. **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_connected_subspace :
+  forall X Tx Y Ty f C:set,
+  homeomorphism X Tx Y Ty f ->
+  C c= X ->
+  connected_space C (subspace_topology X Tx C) ->
+  connected_space (image_of f C) (subspace_topology Y Ty (image_of f C)).
+let X Tx Y Ty f C.
+assume Hhome HCsub HconnC.
+claim HhomeSub :
+  homeomorphism
+    C
+    (subspace_topology X Tx C)
+    (image_of f C)
+    (subspace_topology Y Ty (image_of f C))
+    f.
+{
+  exact (homeomorphism_restrict_to_image_of_subset
+    X
+    Tx
+    Y
+    Ty
+    f
+    C
+    Hhome
+    HCsub).
+}
+exact (homeomorphism_preserves_connected
+  C
+  (subspace_topology X Tx C)
+  (image_of f C)
+  (subspace_topology Y Ty (image_of f C))
+  f
+  HhomeSub
+  HconnC).
+Qed.
+
 (** Helper: non-connectedness equivalence from existence of a homeomorphism. **)
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_connected_space_iff :
