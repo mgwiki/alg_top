@@ -180342,7 +180342,6 @@ Admitted.
 (** an isomorphism of fundamental groups. **)
 (** EFFORT: 40 lines textbook, difficulty 8/10, USD 500 **)
 (** Bounty 605 **)
-(** Lock Charlie 1772537000 **)
 Theorem thm65_2_inclusion_isomorphism : forall C Tc p q x0:set,
   C c= Sn 2 -> is_simple_closed_curve C Tc ->
   Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
@@ -180564,7 +180563,6 @@ Admitted.
 (** induces an isomorphism of fundamental groups. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
-(** Lock Charlie 1772600000 **)
 Theorem lemma65_1_complete_graph_separation : forall V G Tg C Tc x0:set,
   complete_graph_on V G Tg -> equip V 4 ->
   G c= Sn 2 -> Tg = subspace_topology (Sn 2) (Sn_topology 2) G ->
