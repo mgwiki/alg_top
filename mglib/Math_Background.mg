@@ -325704,6 +325704,110 @@ apply Hcase.
       Hfin46
       HoriC47).
   }
+  claim Hsharedn3 :
+    exists C48:set, C48 :e Arcs /\ C48 <> C47 /\ n3 :e C48.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C47 /\ m3 :e C)
+      (exists D:set, D :e Arcs /\ D <> C47 /\ n3 :e D)
+      (Hallshared C47 m3 n3 HC47 Hm3n3)).
+  }
+  apply Hsharedn3. let C48. assume HC48pack.
+  claim HC48pair : C48 :e Arcs /\ C48 <> C47.
+  { exact (andEL (C48 :e Arcs /\ C48 <> C47) (n3 :e C48) HC48pack). }
+  claim HC48 : C48 :e Arcs.
+  { exact (andEL (C48 :e Arcs) (C48 <> C47) HC48pair). }
+  claim HC48neC47 : C48 <> C47.
+  { exact (andER (C48 :e Arcs) (C48 <> C47) HC48pair). }
+  claim Hn3C48 : n3 :e C48.
+  { exact (andER (C48 :e Arcs /\ C48 <> C47) (n3 :e C48) HC48pack). }
+  claim Hn3C47 : n3 :e C47.
+  { exact (end_points_of_arc_right_in_set C47 (subspace_topology T Tx C47) m3 n3 Hm3n3). }
+  claim HC47neC48 : C47 <> C48.
+  { assume Heq. exact (HC48neC47 (eq_symm C47 C48 Heq)). }
+  claim HintC47C48 :
+    C47 :/\: C48 = Empty \/
+    (exists r48:set, C47 :/\: C48 = Sing r48 /\
+      (exists s48:set, end_points_of_arc C47 (subspace_topology T Tx C47) r48 s48 \/
+                     end_points_of_arc C47 (subspace_topology T Tx C47) s48 r48) /\
+      (exists t48:set, end_points_of_arc C48 (subspace_topology T Tx C48) r48 t48 \/
+                     end_points_of_arc C48 (subspace_topology T Tx C48) t48 r48)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C47
+      C48
+      Hglg
+      HC47
+      HC48
+      HC47neC48).
+  }
+  claim Hn3_is_endpoint_C48 :
+    exists o3:set, end_points_of_arc C48 (subspace_topology T Tx C48) n3 o3 \/
+                    end_points_of_arc C48 (subspace_topology T Tx C48) o3 n3.
+  {
+    apply HintC47C48.
+    - assume Hempty.
+      claim Hn3CC : n3 :e C47 :/\: C48. { exact (binintersectI C47 C48 n3 Hn3C47 Hn3C48). }
+      exact (EmptyE n3 (eq_subst_mem_set n3 (C47 :/\: C48) Empty Hn3CC Hempty)
+        (exists o3:set, end_points_of_arc C48 (subspace_topology T Tx C48) n3 o3 \/
+                        end_points_of_arc C48 (subspace_topology T Tx C48) o3 n3)).
+    - assume Hsing. apply Hsing. let r48. assume Hr48pack.
+      apply (and3E
+        (C47 :/\: C48 = Sing r48)
+        (exists s48:set, end_points_of_arc C47 (subspace_topology T Tx C47) r48 s48 \/
+                       end_points_of_arc C47 (subspace_topology T Tx C47) s48 r48)
+        (exists t48:set, end_points_of_arc C48 (subspace_topology T Tx C48) r48 t48 \/
+                       end_points_of_arc C48 (subspace_topology T Tx C48) t48 r48)
+        Hr48pack).
+      assume Hr48eq _ HC48end.
+      claim Hn3CC : n3 :e C47 :/\: C48. { exact (binintersectI C47 C48 n3 Hn3C47 Hn3C48). }
+      claim Hn3r48 : n3 = r48.
+      { exact (SingE r48 n3 (eq_subst_mem_set n3 (C47 :/\: C48) (Sing r48) Hn3CC Hr48eq)). }
+      apply HC48end. let t48. assume Ht48.
+      witness t48.
+      apply Ht48.
+      * assume Hr48t : end_points_of_arc C48 (subspace_topology T Tx C48) r48 t48.
+        apply orIL. rewrite Hn3r48. exact Hr48t.
+      * assume Ht48r : end_points_of_arc C48 (subspace_topology T Tx C48) t48 r48.
+        apply orIR. rewrite Hn3r48. exact Ht48r.
+  }
+  apply Hn3_is_endpoint_C48. let o3. assume Ho3cases.
+  claim Hn3o3 : end_points_of_arc C48 (subspace_topology T Tx C48) n3 o3.
+  { apply Ho3cases.
+    - assume Hn3o : end_points_of_arc C48 (subspace_topology T Tx C48) n3 o3. exact Hn3o.
+    - assume Ho3n : end_points_of_arc C48 (subspace_topology T Tx C48) o3 n3.
+      exact (end_points_of_arc_sym C48 (subspace_topology T Tx C48) o3 n3 Ho3n). }
+  claim HoriC48 : oriented_edge T Tx Arcs C48 n3 o3.
+  { exact (andI (C48 :e Arcs) (end_points_of_arc C48 (subspace_topology T Tx C48) n3 o3) HC48 Hn3o3). }
+  set n48 := ordsucc n47.
+  set path49 :=
+    (graph n48 (fun i:set => apply_fun path48 i)) :\/:
+    (graph {n48} (fun _:set => ((n3, o3), C48))).
+  claim Hep49 : edge_path T Tx Arcs (ordsucc n48) path49 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n48 path48 q0 n47 C48 n3 o3
+      Hglg
+      Hep48
+      (ordsuccI2 n47)
+      (In_irref (ordsucc n47))
+      Hfin47
+      HoriC48).
+  }
+  claim Hfin48 : (apply_fun path49 n48) 0 1 = o3.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n48 path48 q0 n47 C48 n3 o3
+      Hglg
+      Hep48
+      (ordsuccI2 n47)
+      (In_irref (ordsucc n47))
+      Hfin47
+      HoriC48).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
