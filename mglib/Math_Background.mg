@@ -231179,6 +231179,298 @@ Qed.
 
 (** Infrastructure for Cor 68.6 (Bounty 19): collapse a mixed (J \\/ K)-reduced word to a binary reduced word **)
 (** The binary word lives in factors G1/G2 and has length >= 2 when both factors occur. **)
+
+(** Infrastructure: within a same-factor segment, appending the next letter keeps the segment product nontrivial (G1) **)
+(** Proven Charlie **)
+Lemma cor68_6_same_factor_segment_append_product_ne_eG_G1 :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys n1 n2 m:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun t:set => if t = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun a:set => apply_fun Hfam a))
+    (graph J (fun a:set => apply_fun efamH a)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun b:set => apply_fun Hfam b))
+    (graph K (fun b:set => apply_fun efamH b)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  nat_p n1 ->
+  nat_p n2 ->
+  n = add_nat n1 n2 ->
+  m :e n2 ->
+  m <> 0 ->
+  (forall i:set, i :e ordsucc m -> apply_fun ys (add_nat n1 i) :e G1) ->
+  apply_fun multG
+    (word_product multG eG (graph m (fun i:set => apply_fun ys (add_nat n1 i))) m,
+     apply_fun ys (add_nat n1 m)) <> eG.
+let G multG eG invG G1 G2 J K Hfam efamH n ys n1 n2 m.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe Hn1_nat Hn2_nat Hn_eq Hm_in Hm_ne0 HallG1.
+
+	(** Use nontriviality of the (m+1)-prefix of the same-factor segment. **)
+	claim Hseg_ne :
+	  word_product multG eG (graph (ordsucc m) (fun i:set => apply_fun ys (add_nat n1 i))) (ordsucc m) <> eG.
+	{
+	  claim Hsm_in_sn2 : ordsucc m :e ordsucc n2.
+	  { exact (nat_ordsucc_in_ordsucc n2 Hn2_nat m Hm_in). }
+	  apply (ordsuccE n2 (ordsucc m) Hsm_in_sn2).
+	  - (** ordsucc m :e n2 **)
+	    assume Hsm_in_n2.
+	    exact (cor68_6_reduced_word_suffix_prefix_all_in_G1_product_ne_eG
+	      G multG eG invG G1 G2 J K Hfam efamH n ys n1 n2 (ordsucc m)
+	      Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe
+	      Hn1_nat Hn2_nat Hn_eq
+	      Hsm_in_n2
+	      (fun i Hi => HallG1 i Hi)
+	      (neq_ordsucc_0 m)).
+	  - (** ordsucc m = n2 **)
+	    assume Hsm_eq_n2.
+	    set ys_suf := graph n2 (fun i:set => apply_fun ys (add_nat n1 i)).
+	    claim Hred_suf : reduced_word (J :\/: K) Hfam efamH n2 ys_suf.
+	    {
+	      exact (reduced_word_suffix_by_add_nat (J :\/: K) Hfam efamH n ys n1 n2
+	        Hred Hn1_nat Hn2_nat Hn_eq).
+	    }
+	    claim HallNe_suf : forall i:set, i :e n2 -> apply_fun ys_suf i <> eG.
+	    {
+	      let i. assume Hi2.
+	      claim Hin_sum : add_nat n1 i :e add_nat n1 n2.
+	      { exact (add_nat_In_L n1 Hn1_nat n2 Hn2_nat i Hi2). }
+	      claim Hin_n : add_nat n1 i :e n.
+	      { exact (eq_subst_mem_set (add_nat n1 i) (add_nat n1 n2) n Hin_sum (eq_symm n (add_nat n1 n2) Hn_eq)). }
+	      rewrite (apply_fun_graph n2 (fun t:set => apply_fun ys (add_nat n1 t)) i Hi2).
+	      exact (HallNe (add_nat n1 i) Hin_n).
+	    }
+	    claim HallG1_suf : forall i:set, i :e n2 -> apply_fun ys_suf i :e G1.
+	    {
+	      let i. assume Hi2.
+	      claim Hi_sm : i :e ordsucc m.
+	      { rewrite Hsm_eq_n2. exact Hi2. }
+	      rewrite (apply_fun_graph n2 (fun t:set => apply_fun ys (add_nat n1 t)) i Hi2).
+	      exact (HallG1 i Hi_sm).
+	    }
+	    claim Hn2_ne0 : n2 <> 0.
+	    {
+	      assume Hn2_eq0.
+	      claim Hm0 : m :e 0.
+	      { exact (eq_subst_mem_set m n2 0 Hm_in Hn2_eq0). }
+	      claim HmEmpty : m :e Empty.
+	      { exact (eq_subst_mem_set m 0 Empty Hm0 zero_eq_empty). }
+	      exact (EmptyE m HmEmpty False).
+	    }
+	    claim Hwp_suf_ne :
+	      word_product multG eG ys_suf n2 <> eG.
+	    {
+	      exact (cor68_6_reduced_word_all_in_G1_product_ne_eG
+	        G multG eG invG G1 G2 J K Hfam efamH n2 ys_suf
+	        Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2
+	        Hred_suf
+	        HallNe_suf
+	        HallG1_suf
+	        Hn2_ne0).
+	    }
+	    rewrite Hsm_eq_n2.
+	    exact Hwp_suf_ne.
+	}
+	
+	claim HmO : m :e omega.
+	{
+	  claim Hn2O : n2 :e omega. { exact (nat_p_omega n2 Hn2_nat). }
+	  claim Hsub : n2 c= omega. { exact (omega_TransSet n2 Hn2O). }
+	  exact (Hsub m Hm_in).
+	}
+claim Hwp_split :
+  word_product multG eG (graph (ordsucc m) (fun i:set => apply_fun ys (add_nat n1 i))) (ordsucc m) =
+    apply_fun multG
+      (word_product multG eG (graph m (fun i:set => apply_fun ys (add_nat n1 i))) m,
+       apply_fun ys (add_nat n1 m)).
+{
+  claim Hm_nat : nat_p m. { exact (omega_nat_p m HmO). }
+  set xs_ext := graph (ordsucc m) (fun i:set => apply_fun ys (add_nat n1 i)).
+  set xs_pre := graph m (fun i:set => apply_fun ys (add_nat n1 i)).
+  claim Hwp_succ :
+    word_product multG eG xs_ext (ordsucc m) =
+      apply_fun multG (word_product multG eG xs_ext m, apply_fun xs_ext m).
+  { exact (word_product_succ multG eG xs_ext m Hm_nat). }
+  claim Hwp_eq :
+    word_product multG eG xs_ext m = word_product multG eG xs_pre m.
+  {
+    apply (nat_primrec_ext eG
+      (fun i r => apply_fun multG (r, apply_fun xs_ext i))
+      (fun i r => apply_fun multG (r, apply_fun xs_pre i))
+      m
+      HmO).
+    let i r. assume Hi.
+    claim Hxse_i : apply_fun xs_ext i = apply_fun ys (add_nat n1 i).
+    { exact (apply_fun_graph (ordsucc m) (fun j:set => apply_fun ys (add_nat n1 j)) i (ordsuccI1 m i Hi)). }
+    claim Hxsp_i : apply_fun xs_pre i = apply_fun ys (add_nat n1 i).
+    { exact (apply_fun_graph m (fun j:set => apply_fun ys (add_nat n1 j)) i Hi). }
+    rewrite Hxse_i.
+    rewrite Hxsp_i.
+    reflexivity.
+  }
+  claim Hxse_m : apply_fun xs_ext m = apply_fun ys (add_nat n1 m).
+  { exact (apply_fun_graph (ordsucc m) (fun j:set => apply_fun ys (add_nat n1 j)) m (ordsuccI2 m)). }
+  rewrite Hwp_succ.
+  rewrite Hwp_eq.
+  rewrite Hxse_m.
+  reflexivity.
+}
+
+assume Habs.
+apply Hseg_ne.
+rewrite Hwp_split.
+exact Habs.
+Qed.
+
+(** Infrastructure: within a same-factor segment, appending the next letter keeps the segment product nontrivial (G2) **)
+(** Proven Charlie **)
+Lemma cor68_6_same_factor_segment_append_product_ne_eG_G2 :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys n1 n2 m:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun t:set => if t = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun a:set => apply_fun Hfam a))
+    (graph J (fun a:set => apply_fun efamH a)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun b:set => apply_fun Hfam b))
+    (graph K (fun b:set => apply_fun efamH b)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  nat_p n1 ->
+  nat_p n2 ->
+  n = add_nat n1 n2 ->
+  m :e n2 ->
+  m <> 0 ->
+  (forall i:set, i :e ordsucc m -> apply_fun ys (add_nat n1 i) :e G2) ->
+  apply_fun multG
+    (word_product multG eG (graph m (fun i:set => apply_fun ys (add_nat n1 i))) m,
+     apply_fun ys (add_nat n1 m)) <> eG.
+let G multG eG invG G1 G2 J K Hfam efamH n ys n1 n2 m.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe Hn1_nat Hn2_nat Hn_eq Hm_in Hm_ne0 HallG2.
+
+claim Hseg_ne :
+  word_product multG eG (graph (ordsucc m) (fun i:set => apply_fun ys (add_nat n1 i))) (ordsucc m) <> eG.
+{
+  claim Hsm_in_sn2 : ordsucc m :e ordsucc n2.
+  { exact (nat_ordsucc_in_ordsucc n2 Hn2_nat m Hm_in). }
+  apply (ordsuccE n2 (ordsucc m) Hsm_in_sn2).
+  - (** ordsucc m :e n2 **)
+    assume Hsm_in_n2.
+    exact (cor68_6_reduced_word_suffix_prefix_all_in_G2_product_ne_eG
+      G multG eG invG G1 G2 J K Hfam efamH n ys n1 n2 (ordsucc m)
+      Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe
+      Hn1_nat Hn2_nat Hn_eq
+      Hsm_in_n2
+      (fun i Hi => HallG2 i Hi)
+      (neq_ordsucc_0 m)).
+  - (** ordsucc m = n2 **)
+    assume Hsm_eq_n2.
+    set ys_suf := graph n2 (fun i:set => apply_fun ys (add_nat n1 i)).
+    claim Hred_suf : reduced_word (J :\/: K) Hfam efamH n2 ys_suf.
+    {
+      exact (reduced_word_suffix_by_add_nat (J :\/: K) Hfam efamH n ys n1 n2
+        Hred Hn1_nat Hn2_nat Hn_eq).
+    }
+    claim HallNe_suf : forall i:set, i :e n2 -> apply_fun ys_suf i <> eG.
+    {
+      let i. assume Hi2.
+      claim Hin_sum : add_nat n1 i :e add_nat n1 n2.
+      { exact (add_nat_In_L n1 Hn1_nat n2 Hn2_nat i Hi2). }
+      claim Hin_n : add_nat n1 i :e n.
+      { exact (eq_subst_mem_set (add_nat n1 i) (add_nat n1 n2) n Hin_sum (eq_symm n (add_nat n1 n2) Hn_eq)). }
+      rewrite (apply_fun_graph n2 (fun t:set => apply_fun ys (add_nat n1 t)) i Hi2).
+      exact (HallNe (add_nat n1 i) Hin_n).
+    }
+    claim HallG2_suf : forall i:set, i :e n2 -> apply_fun ys_suf i :e G2.
+    {
+      let i. assume Hi2.
+      claim Hi_sm : i :e ordsucc m.
+      { rewrite Hsm_eq_n2. exact Hi2. }
+      rewrite (apply_fun_graph n2 (fun t:set => apply_fun ys (add_nat n1 t)) i Hi2).
+      exact (HallG2 i Hi_sm).
+    }
+    claim Hn2_ne0 : n2 <> 0.
+    {
+      assume Hn2_eq0.
+      claim Hm0 : m :e 0.
+      { exact (eq_subst_mem_set m n2 0 Hm_in Hn2_eq0). }
+      claim HmEmpty : m :e Empty.
+      { exact (eq_subst_mem_set m 0 Empty Hm0 zero_eq_empty). }
+      exact (EmptyE m HmEmpty False).
+    }
+    claim Hwp_suf_ne :
+      word_product multG eG ys_suf n2 <> eG.
+    {
+      exact (cor68_6_reduced_word_all_in_G2_product_ne_eG
+        G multG eG invG G1 G2 J K Hfam efamH n2 ys_suf
+        Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2
+        Hred_suf
+        HallNe_suf
+        HallG2_suf
+        Hn2_ne0).
+    }
+    rewrite Hsm_eq_n2.
+    exact Hwp_suf_ne.
+}
+
+claim HmO : m :e omega.
+{
+  claim Hn2O : n2 :e omega. { exact (nat_p_omega n2 Hn2_nat). }
+  claim Hsub : n2 c= omega. { exact (omega_TransSet n2 Hn2O). }
+  exact (Hsub m Hm_in).
+}
+claim Hwp_split :
+  word_product multG eG (graph (ordsucc m) (fun i:set => apply_fun ys (add_nat n1 i))) (ordsucc m) =
+    apply_fun multG
+      (word_product multG eG (graph m (fun i:set => apply_fun ys (add_nat n1 i))) m,
+       apply_fun ys (add_nat n1 m)).
+{
+  claim Hm_nat : nat_p m. { exact (omega_nat_p m HmO). }
+  set xs_ext := graph (ordsucc m) (fun i:set => apply_fun ys (add_nat n1 i)).
+  set xs_pre := graph m (fun i:set => apply_fun ys (add_nat n1 i)).
+  claim Hwp_succ :
+    word_product multG eG xs_ext (ordsucc m) =
+      apply_fun multG (word_product multG eG xs_ext m, apply_fun xs_ext m).
+  { exact (word_product_succ multG eG xs_ext m Hm_nat). }
+  claim Hwp_eq :
+    word_product multG eG xs_ext m = word_product multG eG xs_pre m.
+  {
+    apply (nat_primrec_ext eG
+      (fun i r => apply_fun multG (r, apply_fun xs_ext i))
+      (fun i r => apply_fun multG (r, apply_fun xs_pre i))
+      m
+      HmO).
+    let i r. assume Hi.
+    claim Hxse_i : apply_fun xs_ext i = apply_fun ys (add_nat n1 i).
+    { exact (apply_fun_graph (ordsucc m) (fun j:set => apply_fun ys (add_nat n1 j)) i (ordsuccI1 m i Hi)). }
+    claim Hxsp_i : apply_fun xs_pre i = apply_fun ys (add_nat n1 i).
+    { exact (apply_fun_graph m (fun j:set => apply_fun ys (add_nat n1 j)) i Hi). }
+    rewrite Hxse_i.
+    rewrite Hxsp_i.
+    reflexivity.
+  }
+  claim Hxse_m : apply_fun xs_ext m = apply_fun ys (add_nat n1 m).
+  { exact (apply_fun_graph (ordsucc m) (fun j:set => apply_fun ys (add_nat n1 j)) m (ordsuccI2 m)). }
+  rewrite Hwp_succ.
+  rewrite Hwp_eq.
+  rewrite Hxse_m.
+  reflexivity.
+}
+
+assume Habs.
+apply Hseg_ne.
+rewrite Hwp_split.
+exact Habs.
+Qed.
+
 		Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
 		  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
 	  group_structure G multG eG invG ->
