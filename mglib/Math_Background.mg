@@ -324976,6 +324976,110 @@ apply Hcase.
       Hfin39
       HoriC40).
   }
+  claim Hsharedg3 :
+    exists C41:set, C41 :e Arcs /\ C41 <> C40 /\ g3 :e C41.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C40 /\ f3 :e C)
+      (exists D:set, D :e Arcs /\ D <> C40 /\ g3 :e D)
+      (Hallshared C40 f3 g3 HC40 Hf3g3)).
+  }
+  apply Hsharedg3. let C41. assume HC41pack.
+  claim HC41pair : C41 :e Arcs /\ C41 <> C40.
+  { exact (andEL (C41 :e Arcs /\ C41 <> C40) (g3 :e C41) HC41pack). }
+  claim HC41 : C41 :e Arcs.
+  { exact (andEL (C41 :e Arcs) (C41 <> C40) HC41pair). }
+  claim HC41neC40 : C41 <> C40.
+  { exact (andER (C41 :e Arcs) (C41 <> C40) HC41pair). }
+  claim Hg3C41 : g3 :e C41.
+  { exact (andER (C41 :e Arcs /\ C41 <> C40) (g3 :e C41) HC41pack). }
+  claim Hg3C40 : g3 :e C40.
+  { exact (end_points_of_arc_right_in_set C40 (subspace_topology T Tx C40) f3 g3 Hf3g3). }
+  claim HC40neC41 : C40 <> C41.
+  { assume Heq. exact (HC41neC40 (eq_symm C40 C41 Heq)). }
+  claim HintC40C41 :
+    C40 :/\: C41 = Empty \/
+    (exists r41:set, C40 :/\: C41 = Sing r41 /\
+      (exists s41:set, end_points_of_arc C40 (subspace_topology T Tx C40) r41 s41 \/
+                     end_points_of_arc C40 (subspace_topology T Tx C40) s41 r41) /\
+      (exists t41:set, end_points_of_arc C41 (subspace_topology T Tx C41) r41 t41 \/
+                     end_points_of_arc C41 (subspace_topology T Tx C41) t41 r41)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C40
+      C41
+      Hglg
+      HC40
+      HC41
+      HC40neC41).
+  }
+  claim Hg3_is_endpoint_C41 :
+    exists h3:set, end_points_of_arc C41 (subspace_topology T Tx C41) g3 h3 \/
+                    end_points_of_arc C41 (subspace_topology T Tx C41) h3 g3.
+  {
+    apply HintC40C41.
+    - assume Hempty.
+      claim Hg3CC : g3 :e C40 :/\: C41. { exact (binintersectI C40 C41 g3 Hg3C40 Hg3C41). }
+      exact (EmptyE g3 (eq_subst_mem_set g3 (C40 :/\: C41) Empty Hg3CC Hempty)
+        (exists h3:set, end_points_of_arc C41 (subspace_topology T Tx C41) g3 h3 \/
+                        end_points_of_arc C41 (subspace_topology T Tx C41) h3 g3)).
+    - assume Hsing. apply Hsing. let r41. assume Hr41pack.
+      apply (and3E
+        (C40 :/\: C41 = Sing r41)
+        (exists s41:set, end_points_of_arc C40 (subspace_topology T Tx C40) r41 s41 \/
+                       end_points_of_arc C40 (subspace_topology T Tx C40) s41 r41)
+        (exists t41:set, end_points_of_arc C41 (subspace_topology T Tx C41) r41 t41 \/
+                       end_points_of_arc C41 (subspace_topology T Tx C41) t41 r41)
+        Hr41pack).
+      assume Hr41eq _ HC41end.
+      claim Hg3CC : g3 :e C40 :/\: C41. { exact (binintersectI C40 C41 g3 Hg3C40 Hg3C41). }
+      claim Hg3r41 : g3 = r41.
+      { exact (SingE r41 g3 (eq_subst_mem_set g3 (C40 :/\: C41) (Sing r41) Hg3CC Hr41eq)). }
+      apply HC41end. let t41. assume Ht41.
+      witness t41.
+      apply Ht41.
+      * assume Hr41t : end_points_of_arc C41 (subspace_topology T Tx C41) r41 t41.
+        apply orIL. rewrite Hg3r41. exact Hr41t.
+      * assume Ht41r : end_points_of_arc C41 (subspace_topology T Tx C41) t41 r41.
+        apply orIR. rewrite Hg3r41. exact Ht41r.
+  }
+  apply Hg3_is_endpoint_C41. let h3. assume Hh3cases.
+  claim Hg3h3 : end_points_of_arc C41 (subspace_topology T Tx C41) g3 h3.
+  { apply Hh3cases.
+    - assume Hg3h : end_points_of_arc C41 (subspace_topology T Tx C41) g3 h3. exact Hg3h.
+    - assume Hh3g : end_points_of_arc C41 (subspace_topology T Tx C41) h3 g3.
+      exact (end_points_of_arc_sym C41 (subspace_topology T Tx C41) h3 g3 Hh3g). }
+  claim HoriC41 : oriented_edge T Tx Arcs C41 g3 h3.
+  { exact (andI (C41 :e Arcs) (end_points_of_arc C41 (subspace_topology T Tx C41) g3 h3) HC41 Hg3h3). }
+  set n41 := ordsucc n40.
+  set path42 :=
+    (graph n41 (fun i:set => apply_fun path41 i)) :\/:
+    (graph {n41} (fun _:set => ((g3, h3), C41))).
+  claim Hep42 : edge_path T Tx Arcs (ordsucc n41) path42 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n41 path41 q0 n40 C41 g3 h3
+      Hglg
+      Hep41
+      (ordsuccI2 n40)
+      (In_irref (ordsucc n40))
+      Hfin40
+      HoriC41).
+  }
+  claim Hfin41 : (apply_fun path42 n41) 0 1 = h3.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n41 path41 q0 n40 C41 g3 h3
+      Hglg
+      Hep41
+      (ordsuccI2 n40)
+      (In_irref (ordsucc n40))
+      Hfin40
+      HoriC41).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
