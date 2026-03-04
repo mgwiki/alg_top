@@ -230309,6 +230309,41 @@ rewrite Hwp2_eq.
 exact Habs.
 Qed.
 
+(** Infrastructure: decompose a natural n as n1 + n2 when n1 < n **)
+(** Proven Charlie **)
+Lemma nat_mem_add_nat_decomp :
+  forall n n1:set,
+  nat_p n ->
+  n1 :e n ->
+  exists n2:set, nat_p n2 /\ n = add_nat n1 n2.
+let n n1.
+assume Hn_nat Hn1_in.
+claim HnO : n :e omega.
+{ exact (nat_p_omega n Hn_nat). }
+claim Hn_ord : ordinal n.
+{ exact (nat_p_ordinal n Hn_nat). }
+claim Hn_sub_omega : n c= omega.
+{ exact (omega_TransSet n HnO). }
+claim Hn1O : n1 :e omega.
+{ exact (Hn_sub_omega n1 Hn1_in). }
+claim Hn1_nat : nat_p n1.
+{ exact (omega_nat_p n1 Hn1O). }
+claim Hn1_sub_n : n1 c= n.
+{ exact (ordinal_TransSet n Hn_ord n1 Hn1_in). }
+apply (nat_Subq_add_ex n1 Hn1_nat n Hn_nat Hn1_sub_n).
+let k. assume Hk_pack.
+claim Hk_nat : nat_p k.
+{ exact (andEL (nat_p k) (n = add_nat k n1) Hk_pack). }
+claim Hn_eq : n = add_nat k n1.
+{ exact (andER (nat_p k) (n = add_nat k n1) Hk_pack). }
+witness k.
+apply andI.
+- exact Hk_nat.
+- rewrite Hn_eq.
+  rewrite (add_nat_com k Hk_nat n1 Hn1_nat).
+  reflexivity.
+Qed.
+
 (** Infrastructure for Cor 68.6: a mixed word has an adjacent factor switch **)
 (** Proven Charlie **)
 Lemma cor68_6_mixed_word_has_adjacent_G1_G2_switch :
