@@ -325392,6 +325392,110 @@ apply Hcase.
       Hfin43
       HoriC44).
   }
+  claim Hsharedk3 :
+    exists C45:set, C45 :e Arcs /\ C45 <> C44 /\ k3 :e C45.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C44 /\ j3 :e C)
+      (exists D:set, D :e Arcs /\ D <> C44 /\ k3 :e D)
+      (Hallshared C44 j3 k3 HC44 Hj3k3)).
+  }
+  apply Hsharedk3. let C45. assume HC45pack.
+  claim HC45pair : C45 :e Arcs /\ C45 <> C44.
+  { exact (andEL (C45 :e Arcs /\ C45 <> C44) (k3 :e C45) HC45pack). }
+  claim HC45 : C45 :e Arcs.
+  { exact (andEL (C45 :e Arcs) (C45 <> C44) HC45pair). }
+  claim HC45neC44 : C45 <> C44.
+  { exact (andER (C45 :e Arcs) (C45 <> C44) HC45pair). }
+  claim Hk3C45 : k3 :e C45.
+  { exact (andER (C45 :e Arcs /\ C45 <> C44) (k3 :e C45) HC45pack). }
+  claim Hk3C44 : k3 :e C44.
+  { exact (end_points_of_arc_right_in_set C44 (subspace_topology T Tx C44) j3 k3 Hj3k3). }
+  claim HC44neC45 : C44 <> C45.
+  { assume Heq. exact (HC45neC44 (eq_symm C44 C45 Heq)). }
+  claim HintC44C45 :
+    C44 :/\: C45 = Empty \/
+    (exists r45:set, C44 :/\: C45 = Sing r45 /\
+      (exists s45:set, end_points_of_arc C44 (subspace_topology T Tx C44) r45 s45 \/
+                     end_points_of_arc C44 (subspace_topology T Tx C44) s45 r45) /\
+      (exists t45:set, end_points_of_arc C45 (subspace_topology T Tx C45) r45 t45 \/
+                     end_points_of_arc C45 (subspace_topology T Tx C45) t45 r45)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C44
+      C45
+      Hglg
+      HC44
+      HC45
+      HC44neC45).
+  }
+  claim Hk3_is_endpoint_C45 :
+    exists l3:set, end_points_of_arc C45 (subspace_topology T Tx C45) k3 l3 \/
+                    end_points_of_arc C45 (subspace_topology T Tx C45) l3 k3.
+  {
+    apply HintC44C45.
+    - assume Hempty.
+      claim Hk3CC : k3 :e C44 :/\: C45. { exact (binintersectI C44 C45 k3 Hk3C44 Hk3C45). }
+      exact (EmptyE k3 (eq_subst_mem_set k3 (C44 :/\: C45) Empty Hk3CC Hempty)
+        (exists l3:set, end_points_of_arc C45 (subspace_topology T Tx C45) k3 l3 \/
+                        end_points_of_arc C45 (subspace_topology T Tx C45) l3 k3)).
+    - assume Hsing. apply Hsing. let r45. assume Hr45pack.
+      apply (and3E
+        (C44 :/\: C45 = Sing r45)
+        (exists s45:set, end_points_of_arc C44 (subspace_topology T Tx C44) r45 s45 \/
+                       end_points_of_arc C44 (subspace_topology T Tx C44) s45 r45)
+        (exists t45:set, end_points_of_arc C45 (subspace_topology T Tx C45) r45 t45 \/
+                       end_points_of_arc C45 (subspace_topology T Tx C45) t45 r45)
+        Hr45pack).
+      assume Hr45eq _ HC45end.
+      claim Hk3CC : k3 :e C44 :/\: C45. { exact (binintersectI C44 C45 k3 Hk3C44 Hk3C45). }
+      claim Hk3r45 : k3 = r45.
+      { exact (SingE r45 k3 (eq_subst_mem_set k3 (C44 :/\: C45) (Sing r45) Hk3CC Hr45eq)). }
+      apply HC45end. let t45. assume Ht45.
+      witness t45.
+      apply Ht45.
+      * assume Hr45t : end_points_of_arc C45 (subspace_topology T Tx C45) r45 t45.
+        apply orIL. rewrite Hk3r45. exact Hr45t.
+      * assume Ht45r : end_points_of_arc C45 (subspace_topology T Tx C45) t45 r45.
+        apply orIR. rewrite Hk3r45. exact Ht45r.
+  }
+  apply Hk3_is_endpoint_C45. let l3. assume Hl3cases.
+  claim Hk3l3 : end_points_of_arc C45 (subspace_topology T Tx C45) k3 l3.
+  { apply Hl3cases.
+    - assume Hk3l : end_points_of_arc C45 (subspace_topology T Tx C45) k3 l3. exact Hk3l.
+    - assume Hl3k : end_points_of_arc C45 (subspace_topology T Tx C45) l3 k3.
+      exact (end_points_of_arc_sym C45 (subspace_topology T Tx C45) l3 k3 Hl3k). }
+  claim HoriC45 : oriented_edge T Tx Arcs C45 k3 l3.
+  { exact (andI (C45 :e Arcs) (end_points_of_arc C45 (subspace_topology T Tx C45) k3 l3) HC45 Hk3l3). }
+  set n45 := ordsucc n44.
+  set path46 :=
+    (graph n45 (fun i:set => apply_fun path45 i)) :\/:
+    (graph {n45} (fun _:set => ((k3, l3), C45))).
+  claim Hep46 : edge_path T Tx Arcs (ordsucc n45) path46 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n45 path45 q0 n44 C45 k3 l3
+      Hglg
+      Hep45
+      (ordsuccI2 n44)
+      (In_irref (ordsucc n44))
+      Hfin44
+      HoriC45).
+  }
+  claim Hfin45 : (apply_fun path46 n45) 0 1 = l3.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n45 path45 q0 n44 C45 k3 l3
+      Hglg
+      Hep45
+      (ordsuccI2 n44)
+      (In_irref (ordsucc n44))
+      Hfin44
+      HoriC45).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
