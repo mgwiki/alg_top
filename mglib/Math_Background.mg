@@ -229098,6 +229098,38 @@ apply (binunionE J K alpha Hal_union).
   exact (subgroup_of_subset (apply_fun Hfam alpha) G2 multG eG invG HsubHb_G2 (apply_fun ys i) Hyi_Ha).
 Qed.
 
+(** Infrastructure for Cor 68.6 (Bounty 19): collapse a mixed (J \\/ K)-reduced word to a binary reduced word **)
+(** The binary word lives in factors G1/G2 and has length >= 2 when both factors occur. **)
+Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  J :/\: K = Empty ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  word_product multG eG ys n <> eG ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G1) ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G2) ->
+  exists n2 xs2:set,
+    reduced_word (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+      (graph (UPair 0 1) (fun _:set => eG))
+      n2 xs2 /\
+    word_product multG eG xs2 n2 = word_product multG eG ys n /\
+    n2 <> 0 /\ n2 <> 1.
+admit.
+Admitted.
+
 (** Bounty 19 **)
 (** Lock Charlie 1772681543 **)
 Theorem cor68_6_binary_collapse_mixed_not_in_G1 :
