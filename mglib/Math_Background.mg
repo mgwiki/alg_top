@@ -327117,6 +327117,110 @@ apply Hcase.
       Hfin59
       HoriC60).
   }
+  claim Hshareda4 :
+    exists C61:set, C61 :e Arcs /\ C61 <> C60 /\ a4 :e C61.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C60 /\ z3 :e C)
+      (exists D:set, D :e Arcs /\ D <> C60 /\ a4 :e D)
+      (Hallshared C60 z3 a4 HC60 Hz3a4)).
+  }
+  apply Hshareda4. let C61. assume HC61pack.
+  claim HC61pair : C61 :e Arcs /\ C61 <> C60.
+  { exact (andEL (C61 :e Arcs /\ C61 <> C60) (a4 :e C61) HC61pack). }
+  claim HC61 : C61 :e Arcs.
+  { exact (andEL (C61 :e Arcs) (C61 <> C60) HC61pair). }
+  claim HC61neC60 : C61 <> C60.
+  { exact (andER (C61 :e Arcs) (C61 <> C60) HC61pair). }
+  claim Ha4C61 : a4 :e C61.
+  { exact (andER (C61 :e Arcs /\ C61 <> C60) (a4 :e C61) HC61pack). }
+  claim Ha4C60 : a4 :e C60.
+  { exact (end_points_of_arc_right_in_set C60 (subspace_topology T Tx C60) z3 a4 Hz3a4). }
+  claim HC60neC61 : C60 <> C61.
+  { assume Heq. exact (HC61neC60 (eq_symm C60 C61 Heq)). }
+  claim HintC60C61 :
+    C60 :/\: C61 = Empty \/
+    (exists r61:set, C60 :/\: C61 = Sing r61 /\
+      (exists s61:set, end_points_of_arc C60 (subspace_topology T Tx C60) r61 s61 \/
+                     end_points_of_arc C60 (subspace_topology T Tx C60) s61 r61) /\
+      (exists t61:set, end_points_of_arc C61 (subspace_topology T Tx C61) r61 t61 \/
+                     end_points_of_arc C61 (subspace_topology T Tx C61) t61 r61)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C60
+      C61
+      Hglg
+      HC60
+      HC61
+      HC60neC61).
+  }
+  claim Ha4_is_endpoint_C61 :
+    exists b4:set, end_points_of_arc C61 (subspace_topology T Tx C61) a4 b4 \/
+                    end_points_of_arc C61 (subspace_topology T Tx C61) b4 a4.
+  {
+    apply HintC60C61.
+    - assume Hempty.
+      claim Ha4CC : a4 :e C60 :/\: C61. { exact (binintersectI C60 C61 a4 Ha4C60 Ha4C61). }
+      exact (EmptyE a4 (eq_subst_mem_set a4 (C60 :/\: C61) Empty Ha4CC Hempty)
+        (exists b4:set, end_points_of_arc C61 (subspace_topology T Tx C61) a4 b4 \/
+                        end_points_of_arc C61 (subspace_topology T Tx C61) b4 a4)).
+    - assume Hsing. apply Hsing. let r61. assume Hr61pack.
+      apply (and3E
+        (C60 :/\: C61 = Sing r61)
+        (exists s61:set, end_points_of_arc C60 (subspace_topology T Tx C60) r61 s61 \/
+                       end_points_of_arc C60 (subspace_topology T Tx C60) s61 r61)
+        (exists t61:set, end_points_of_arc C61 (subspace_topology T Tx C61) r61 t61 \/
+                       end_points_of_arc C61 (subspace_topology T Tx C61) t61 r61)
+        Hr61pack).
+      assume Hr61eq _ HC61end.
+      claim Ha4CC : a4 :e C60 :/\: C61. { exact (binintersectI C60 C61 a4 Ha4C60 Ha4C61). }
+      claim Ha4r61 : a4 = r61.
+      { exact (SingE r61 a4 (eq_subst_mem_set a4 (C60 :/\: C61) (Sing r61) Ha4CC Hr61eq)). }
+      apply HC61end. let t61. assume Ht61.
+      witness t61.
+      apply Ht61.
+      * assume Hr61t : end_points_of_arc C61 (subspace_topology T Tx C61) r61 t61.
+        apply orIL. rewrite Ha4r61. exact Hr61t.
+      * assume Ht61r : end_points_of_arc C61 (subspace_topology T Tx C61) t61 r61.
+        apply orIR. rewrite Ha4r61. exact Ht61r.
+  }
+  apply Ha4_is_endpoint_C61. let b4. assume Hb4cases.
+  claim Ha4b4 : end_points_of_arc C61 (subspace_topology T Tx C61) a4 b4.
+  { apply Hb4cases.
+    - assume Ha4b : end_points_of_arc C61 (subspace_topology T Tx C61) a4 b4. exact Ha4b.
+    - assume Hb4a : end_points_of_arc C61 (subspace_topology T Tx C61) b4 a4.
+      exact (end_points_of_arc_sym C61 (subspace_topology T Tx C61) b4 a4 Hb4a). }
+  claim HoriC61 : oriented_edge T Tx Arcs C61 a4 b4.
+  { exact (andI (C61 :e Arcs) (end_points_of_arc C61 (subspace_topology T Tx C61) a4 b4) HC61 Ha4b4). }
+  set n61 := ordsucc n60.
+  set path62 :=
+    (graph n61 (fun i:set => apply_fun path61 i)) :\/:
+    (graph {n61} (fun _:set => ((a4, b4), C61))).
+  claim Hep62 : edge_path T Tx Arcs (ordsucc n61) path62 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n61 path61 q0 n60 C61 a4 b4
+      Hglg
+      Hep61
+      (ordsuccI2 n60)
+      (In_irref (ordsucc n60))
+      Hfin60
+      HoriC61).
+  }
+  claim Hfin61 : (apply_fun path62 n61) 0 1 = b4.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n61 path61 q0 n60 C61 a4 b4
+      Hglg
+      Hep61
+      (ordsuccI2 n60)
+      (In_irref (ordsucc n60))
+      Hfin60
+      HoriC61).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
