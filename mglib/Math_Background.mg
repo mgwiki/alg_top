@@ -230695,6 +230695,72 @@ claim Hxs0e : apply_fun xs 0 = eG.
 exact (Hxs0ne Hxs0e).
 Qed.
 
+(** Infrastructure for Cor 68.6: if a reduced (J \\/ K)-word hits both factors, its length is not 1 **)
+(** Proven Charlie **)
+Lemma cor68_6_mixed_reduced_word_both_factors_length_ne1 :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G1) ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G2) ->
+  n <> 1.
+let G multG eG invG G1 G2 J K Hfam efamH n ys.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe HexG1 HexG2.
+assume Hn1 : n = 1.
+(** Both witnesses force the unique index 0; then y0 lies in both factors and is eG, contradiction. **)
+apply HexG1. let i. assume Hi_pack.
+claim Hi_in : i :e n.
+{ exact (andEL (i :e n) (apply_fun ys i :e G1) Hi_pack). }
+claim HyiG1 : apply_fun ys i :e G1.
+{ exact (andER (i :e n) (apply_fun ys i :e G1) Hi_pack). }
+claim Hi0 : i = 0.
+{
+  claim Hi1 : i :e 1.
+  { exact (eq_subst_mem_set i n 1 Hi_in Hn1). }
+  apply (cases_1 i Hi1 (fun j:set => j = 0)).
+  exact (eq_refl 0).
+}
+claim H0_in : 0 :e n.
+{ rewrite Hn1. exact (ordsuccI2 0). }
+claim Hy0G1 : apply_fun ys 0 :e G1.
+{ rewrite <- Hi0. exact HyiG1. }
+apply HexG2. let j. assume Hj_pack.
+claim Hj_in : j :e n.
+{ exact (andEL (j :e n) (apply_fun ys j :e G2) Hj_pack). }
+claim HyjG2 : apply_fun ys j :e G2.
+{ exact (andER (j :e n) (apply_fun ys j :e G2) Hj_pack). }
+claim Hj0 : j = 0.
+{
+  claim Hj1 : j :e 1.
+  { exact (eq_subst_mem_set j n 1 Hj_in Hn1). }
+  apply (cases_1 j Hj1 (fun k:set => k = 0)).
+  exact (eq_refl 0).
+}
+claim Hy0G2 : apply_fun ys 0 :e G2.
+{ rewrite <- Hj0. exact HyjG2. }
+claim Hy0e : apply_fun ys 0 = eG.
+{
+  exact (free_product_binary_factors_intersect_trivial
+    G multG eG invG G1 G2 (apply_fun ys 0)
+    Hfp
+    Hy0G1
+    Hy0G2).
+}
+exact ((HallNe 0 H0_in) Hy0e).
+Qed.
+
 (** Infrastructure for Cor 68.6 (Bounty 19): collapse a mixed (J \\/ K)-reduced word to a binary reduced word **)
 (** The binary word lives in factors G1/G2 and has length >= 2 when both factors occur. **)
 	Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
