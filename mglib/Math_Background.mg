@@ -331042,6 +331042,110 @@ apply Hcase.
       Hfin90
       HoriC91).
   }
+  claim Hsharedf5 :
+    exists C92:set, C92 :e Arcs /\ C92 <> C91 /\ f5 :e C92.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C91 /\ e5 :e C)
+      (exists D:set, D :e Arcs /\ D <> C91 /\ f5 :e D)
+      (Hallshared C91 e5 f5 HC91 He5f5)).
+  }
+  apply Hsharedf5. let C92. assume HC92pack.
+  claim HC92pair : C92 :e Arcs /\ C92 <> C91.
+  { exact (andEL (C92 :e Arcs /\ C92 <> C91) (f5 :e C92) HC92pack). }
+  claim HC92 : C92 :e Arcs.
+  { exact (andEL (C92 :e Arcs) (C92 <> C91) HC92pair). }
+  claim HC92neC91 : C92 <> C91.
+  { exact (andER (C92 :e Arcs) (C92 <> C91) HC92pair). }
+  claim Hf5C92 : f5 :e C92.
+  { exact (andER (C92 :e Arcs /\ C92 <> C91) (f5 :e C92) HC92pack). }
+  claim Hf5C91 : f5 :e C91.
+  { exact (end_points_of_arc_right_in_set C91 (subspace_topology T Tx C91) e5 f5 He5f5). }
+  claim HC91neC92 : C91 <> C92.
+  { assume Heq. exact (HC92neC91 (eq_symm C91 C92 Heq)). }
+  claim HintC91C92 :
+    C91 :/\: C92 = Empty \/
+    (exists r92:set, C91 :/\: C92 = Sing r92 /\
+      (exists s92:set, end_points_of_arc C91 (subspace_topology T Tx C91) r92 s92 \/
+                     end_points_of_arc C91 (subspace_topology T Tx C91) s92 r92) /\
+      (exists t92:set, end_points_of_arc C92 (subspace_topology T Tx C92) r92 t92 \/
+                     end_points_of_arc C92 (subspace_topology T Tx C92) t92 r92)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C91
+      C92
+      Hglg
+      HC91
+      HC92
+      HC91neC92).
+  }
+  claim Hf5_is_endpoint_C92 :
+    exists g5:set, end_points_of_arc C92 (subspace_topology T Tx C92) f5 g5 \/
+                    end_points_of_arc C92 (subspace_topology T Tx C92) g5 f5.
+  {
+    apply HintC91C92.
+    - assume Hempty.
+      claim Hf5CC : f5 :e C91 :/\: C92. { exact (binintersectI C91 C92 f5 Hf5C91 Hf5C92). }
+      exact (EmptyE f5 (eq_subst_mem_set f5 (C91 :/\: C92) Empty Hf5CC Hempty)
+        (exists g5:set, end_points_of_arc C92 (subspace_topology T Tx C92) f5 g5 \/
+                        end_points_of_arc C92 (subspace_topology T Tx C92) g5 f5)).
+    - assume Hsing. apply Hsing. let r92. assume Hr92pack.
+      apply (and3E
+        (C91 :/\: C92 = Sing r92)
+        (exists s92:set, end_points_of_arc C91 (subspace_topology T Tx C91) r92 s92 \/
+                       end_points_of_arc C91 (subspace_topology T Tx C91) s92 r92)
+        (exists t92:set, end_points_of_arc C92 (subspace_topology T Tx C92) r92 t92 \/
+                       end_points_of_arc C92 (subspace_topology T Tx C92) t92 r92)
+        Hr92pack).
+      assume Hr92eq _ HC92end.
+      claim Hf5CC : f5 :e C91 :/\: C92. { exact (binintersectI C91 C92 f5 Hf5C91 Hf5C92). }
+      claim Hf5r92 : f5 = r92.
+      { exact (SingE r92 f5 (eq_subst_mem_set f5 (C91 :/\: C92) (Sing r92) Hf5CC Hr92eq)). }
+      apply HC92end. let t92. assume Ht92.
+      witness t92.
+      apply Ht92.
+      * assume Hr92t : end_points_of_arc C92 (subspace_topology T Tx C92) r92 t92.
+        apply orIL. rewrite Hf5r92. exact Hr92t.
+      * assume Ht92r : end_points_of_arc C92 (subspace_topology T Tx C92) t92 r92.
+        apply orIR. rewrite Hf5r92. exact Ht92r.
+  }
+  apply Hf5_is_endpoint_C92. let g5. assume Hg5cases.
+  claim Hf5g5 : end_points_of_arc C92 (subspace_topology T Tx C92) f5 g5.
+  { apply Hg5cases.
+    - assume Hf5g : end_points_of_arc C92 (subspace_topology T Tx C92) f5 g5. exact Hf5g.
+    - assume Hg5f : end_points_of_arc C92 (subspace_topology T Tx C92) g5 f5.
+      exact (end_points_of_arc_sym C92 (subspace_topology T Tx C92) g5 f5 Hg5f). }
+  claim HoriC92 : oriented_edge T Tx Arcs C92 f5 g5.
+  { exact (andI (C92 :e Arcs) (end_points_of_arc C92 (subspace_topology T Tx C92) f5 g5) HC92 Hf5g5). }
+  set n92 := ordsucc n91.
+  set path93 :=
+    (graph n92 (fun i:set => apply_fun path92 i)) :\/:
+    (graph {n92} (fun _:set => ((f5, g5), C92))).
+  claim Hep93 : edge_path T Tx Arcs (ordsucc n92) path93 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n92 path92 q0 n91 C92 f5 g5
+      Hglg
+      Hep92
+      (ordsuccI2 n91)
+      (In_irref (ordsucc n91))
+      Hfin91
+      HoriC92).
+  }
+  claim Hfin92 : (apply_fun path93 n92) 0 1 = g5.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n92 path92 q0 n91 C92 f5 g5
+      Hglg
+      Hep92
+      (ordsuccI2 n91)
+      (In_irref (ordsucc n91))
+      Hfin91
+      HoriC92).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
