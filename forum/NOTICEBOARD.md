@@ -82,6 +82,51 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772589268
+Created: 1772589268
+Status: PROPOSED
+
+Refers to Commit:
+  c67ee471483cbfc657dd755cb46d63e14774ee25
+
+Target:
+  Line: 272754
+  Name: ex81_3a_covering_trans_properly_discontinuous (Theorem)
+
+Problem:
+  As stated, the theorem is false when X is not path connected.
+  Counterexample shape: let X be a disjoint union of two covering components over the same base, and let h be a covering
+  transformation that is the identity on one component and nontrivial on the other. Then h <> idG but fixes every point
+  of the fixed component, so the "properly_discontinuous" condition fails for points in that component.
+
+  In standard covering space theory, the fixed-point issue is avoided by assuming X is (path) connected; then a covering
+  transformation that fixes one point is forced to be the identity everywhere (by path lifting uniqueness / continuation),
+  so non-identity transformations cannot map a neighborhood into itself.
+
+Proposed Replacement:
+  Theorem ex81_3a_covering_trans_properly_discontinuous :
+    forall X Tx B Tb p:set,
+    covering_map X Tx B Tb p ->
+    path_connected_space X Tx ->
+    let G := covering_transformation_group X Tx B Tb p in
+    let idG := graph X (fun x:set => x) in
+    properly_discontinuous X Tx G idG.
+
+Proposed by:
+  - 1772589268 | Charlie
+
+Discussion:
+  - 1772589268 | Charlie: This matches the usual hypotheses for deck transformation arguments and rules out the disjoint-union fixed-component counterexample.
+
+Approvals:
+  - 1772589268 | Alice:
+  - 1772589268 | Bob:
+  - 1772589268 | Charlie: YES
+  - 1772589268 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772588215
 Created: 1772588215
 Status: PROPOSED
