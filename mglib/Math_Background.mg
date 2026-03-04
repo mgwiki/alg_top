@@ -323728,6 +323728,110 @@ apply Hcase.
       Hfin27
       HoriC28).
   }
+  claim Hsharedu2 :
+    exists C29:set, C29 :e Arcs /\ C29 <> C28 /\ u2 :e C29.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C28 /\ t2 :e C)
+      (exists D:set, D :e Arcs /\ D <> C28 /\ u2 :e D)
+      (Hallshared C28 t2 u2 HC28 Ht2u2)).
+  }
+  apply Hsharedu2. let C29. assume HC29pack.
+  claim HC29pair : C29 :e Arcs /\ C29 <> C28.
+  { exact (andEL (C29 :e Arcs /\ C29 <> C28) (u2 :e C29) HC29pack). }
+  claim HC29 : C29 :e Arcs.
+  { exact (andEL (C29 :e Arcs) (C29 <> C28) HC29pair). }
+  claim HC29neC28 : C29 <> C28.
+  { exact (andER (C29 :e Arcs) (C29 <> C28) HC29pair). }
+  claim Hu2C29 : u2 :e C29.
+  { exact (andER (C29 :e Arcs /\ C29 <> C28) (u2 :e C29) HC29pack). }
+  claim Hu2C28 : u2 :e C28.
+  { exact (end_points_of_arc_right_in_set C28 (subspace_topology T Tx C28) t2 u2 Ht2u2). }
+  claim HC28neC29 : C28 <> C29.
+  { assume Heq. exact (HC29neC28 (eq_symm C28 C29 Heq)). }
+  claim HintC28C29 :
+    C28 :/\: C29 = Empty \/
+    (exists r29:set, C28 :/\: C29 = Sing r29 /\
+      (exists s29:set, end_points_of_arc C28 (subspace_topology T Tx C28) r29 s29 \/
+                     end_points_of_arc C28 (subspace_topology T Tx C28) s29 r29) /\
+      (exists t29:set, end_points_of_arc C29 (subspace_topology T Tx C29) r29 t29 \/
+                     end_points_of_arc C29 (subspace_topology T Tx C29) t29 r29)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C28
+      C29
+      Hglg
+      HC28
+      HC29
+      HC28neC29).
+  }
+  claim Hu2_is_endpoint_C29 :
+    exists v2:set, end_points_of_arc C29 (subspace_topology T Tx C29) u2 v2 \/
+                    end_points_of_arc C29 (subspace_topology T Tx C29) v2 u2.
+  {
+    apply HintC28C29.
+    - assume Hempty.
+      claim Hu2CC : u2 :e C28 :/\: C29. { exact (binintersectI C28 C29 u2 Hu2C28 Hu2C29). }
+      exact (EmptyE u2 (eq_subst_mem_set u2 (C28 :/\: C29) Empty Hu2CC Hempty)
+        (exists v2:set, end_points_of_arc C29 (subspace_topology T Tx C29) u2 v2 \/
+                        end_points_of_arc C29 (subspace_topology T Tx C29) v2 u2)).
+    - assume Hsing. apply Hsing. let r29. assume Hr29pack.
+      apply (and3E
+        (C28 :/\: C29 = Sing r29)
+        (exists s29:set, end_points_of_arc C28 (subspace_topology T Tx C28) r29 s29 \/
+                       end_points_of_arc C28 (subspace_topology T Tx C28) s29 r29)
+        (exists t29:set, end_points_of_arc C29 (subspace_topology T Tx C29) r29 t29 \/
+                       end_points_of_arc C29 (subspace_topology T Tx C29) t29 r29)
+        Hr29pack).
+      assume Hr29eq _ HC29end.
+      claim Hu2CC : u2 :e C28 :/\: C29. { exact (binintersectI C28 C29 u2 Hu2C28 Hu2C29). }
+      claim Hu2r29 : u2 = r29.
+      { exact (SingE r29 u2 (eq_subst_mem_set u2 (C28 :/\: C29) (Sing r29) Hu2CC Hr29eq)). }
+      apply HC29end. let t29. assume Ht29.
+      witness t29.
+      apply Ht29.
+      * assume Hr29t : end_points_of_arc C29 (subspace_topology T Tx C29) r29 t29.
+        apply orIL. rewrite Hu2r29. exact Hr29t.
+      * assume Ht29r : end_points_of_arc C29 (subspace_topology T Tx C29) t29 r29.
+        apply orIR. rewrite Hu2r29. exact Ht29r.
+  }
+  apply Hu2_is_endpoint_C29. let v2. assume Hv2cases.
+  claim Hu2v2 : end_points_of_arc C29 (subspace_topology T Tx C29) u2 v2.
+  { apply Hv2cases.
+    - assume Hu2v : end_points_of_arc C29 (subspace_topology T Tx C29) u2 v2. exact Hu2v.
+    - assume Hv2u : end_points_of_arc C29 (subspace_topology T Tx C29) v2 u2.
+      exact (end_points_of_arc_sym C29 (subspace_topology T Tx C29) v2 u2 Hv2u). }
+  claim HoriC29 : oriented_edge T Tx Arcs C29 u2 v2.
+  { exact (andI (C29 :e Arcs) (end_points_of_arc C29 (subspace_topology T Tx C29) u2 v2) HC29 Hu2v2). }
+  set n29 := ordsucc n28.
+  set path30 :=
+    (graph n29 (fun i:set => apply_fun path29 i)) :\/:
+    (graph {n29} (fun _:set => ((u2, v2), C29))).
+  claim Hep30 : edge_path T Tx Arcs (ordsucc n29) path30 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n29 path29 q0 n28 C29 u2 v2
+      Hglg
+      Hep29
+      (ordsuccI2 n28)
+      (In_irref (ordsucc n28))
+      Hfin28
+      HoriC29).
+  }
+  claim Hfin29 : (apply_fun path30 n29) 0 1 = v2.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n29 path29 q0 n28 C29 u2 v2
+      Hglg
+      Hep29
+      (ordsuccI2 n28)
+      (In_irref (ordsucc n28))
+      Hfin28
+      HoriC29).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
