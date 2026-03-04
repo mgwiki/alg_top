@@ -229462,6 +229462,130 @@ apply (binunionE J K alpha Hal_union).
   + exact Hyi_ne_ef.
 Qed.
 
+(** Infrastructure for Cor 68.6: a prefix lying entirely in G1 has nontrivial product **)
+(** Proven Charlie **)
+Lemma cor68_6_reduced_word_prefix_all_in_G1_product_ne_eG :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys m:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun t:set => if t = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun a:set => apply_fun Hfam a))
+    (graph J (fun a:set => apply_fun efamH a)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun b:set => apply_fun Hfam b))
+    (graph K (fun b:set => apply_fun efamH b)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  m :e n ->
+  (forall i:set, i :e m -> apply_fun ys i :e G1) ->
+  m <> 0 ->
+  word_product multG eG (graph m (fun i:set => apply_fun ys i)) m <> eG.
+let G multG eG invG G1 G2 J K Hfam efamH n ys m.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe Hm_in HprefG1 Hm_ne0.
+set ys_pref := graph m (fun i:set => apply_fun ys i).
+claim Hred_pref : reduced_word (J :\/: K) Hfam efamH m ys_pref.
+{ exact (reduced_word_prefix (J :\/: K) Hfam efamH n ys m Hred Hm_in). }
+claim HallNe_pref : forall i:set, i :e m -> apply_fun ys_pref i <> eG.
+{
+  let i. assume Hi_m.
+  apply (and3E
+    (n :e omega)
+    (forall j:set, j :e n ->
+      exists alpha:set, alpha :e (J :\/: K) /\
+        apply_fun ys j :e apply_fun Hfam alpha /\
+        apply_fun ys j <> apply_fun efamH alpha)
+    (forall j:set, j :e n -> ordsucc j :e n ->
+      forall alpha beta:set, alpha :e (J :\/: K) -> beta :e (J :\/: K) ->
+        apply_fun ys j :e apply_fun Hfam alpha ->
+        apply_fun ys (ordsucc j) :e apply_fun Hfam beta ->
+        alpha <> beta)
+    Hred).
+  assume HnO _ _.
+  claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+  claim Hn_ord : ordinal n. { exact (nat_p_ordinal n Hn_nat). }
+  claim Hm_sub : m c= n.
+  { exact (ordinal_TransSet n Hn_ord m Hm_in). }
+  claim Hi_n : i :e n. { exact (Hm_sub i Hi_m). }
+  rewrite (apply_fun_graph m (fun j:set => apply_fun ys j) i Hi_m).
+  exact (HallNe i Hi_n).
+}
+claim HallG1_pref : forall i:set, i :e m -> apply_fun ys_pref i :e G1.
+{
+  let i. assume Hi_m.
+  rewrite (apply_fun_graph m (fun j:set => apply_fun ys j) i Hi_m).
+  exact (HprefG1 i Hi_m).
+}
+exact (cor68_6_reduced_word_all_in_G1_product_ne_eG
+  G multG eG invG G1 G2 J K Hfam efamH m ys_pref
+  Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred_pref HallNe_pref HallG1_pref Hm_ne0).
+Qed.
+
+(** Infrastructure for Cor 68.6: a prefix lying entirely in G2 has nontrivial product **)
+(** Proven Charlie **)
+Lemma cor68_6_reduced_word_prefix_all_in_G2_product_ne_eG :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys m:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun t:set => if t = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun a:set => apply_fun Hfam a))
+    (graph J (fun a:set => apply_fun efamH a)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun b:set => apply_fun Hfam b))
+    (graph K (fun b:set => apply_fun efamH b)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  m :e n ->
+  (forall i:set, i :e m -> apply_fun ys i :e G2) ->
+  m <> 0 ->
+  word_product multG eG (graph m (fun i:set => apply_fun ys i)) m <> eG.
+let G multG eG invG G1 G2 J K Hfam efamH n ys m.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe Hm_in HprefG2 Hm_ne0.
+set ys_pref := graph m (fun i:set => apply_fun ys i).
+claim Hred_pref : reduced_word (J :\/: K) Hfam efamH m ys_pref.
+{ exact (reduced_word_prefix (J :\/: K) Hfam efamH n ys m Hred Hm_in). }
+claim HallNe_pref : forall i:set, i :e m -> apply_fun ys_pref i <> eG.
+{
+  let i. assume Hi_m.
+  apply (and3E
+    (n :e omega)
+    (forall j:set, j :e n ->
+      exists alpha:set, alpha :e (J :\/: K) /\
+        apply_fun ys j :e apply_fun Hfam alpha /\
+        apply_fun ys j <> apply_fun efamH alpha)
+    (forall j:set, j :e n -> ordsucc j :e n ->
+      forall alpha beta:set, alpha :e (J :\/: K) -> beta :e (J :\/: K) ->
+        apply_fun ys j :e apply_fun Hfam alpha ->
+        apply_fun ys (ordsucc j) :e apply_fun Hfam beta ->
+        alpha <> beta)
+    Hred).
+  assume HnO _ _.
+  claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+  claim Hn_ord : ordinal n. { exact (nat_p_ordinal n Hn_nat). }
+  claim Hm_sub : m c= n.
+  { exact (ordinal_TransSet n Hn_ord m Hm_in). }
+  claim Hi_n : i :e n. { exact (Hm_sub i Hi_m). }
+  rewrite (apply_fun_graph m (fun j:set => apply_fun ys j) i Hi_m).
+  exact (HallNe i Hi_n).
+}
+claim HallG2_pref : forall i:set, i :e m -> apply_fun ys_pref i :e G2.
+{
+  let i. assume Hi_m.
+  rewrite (apply_fun_graph m (fun j:set => apply_fun ys j) i Hi_m).
+  exact (HprefG2 i Hi_m).
+}
+exact (cor68_6_reduced_word_all_in_G2_product_ne_eG
+  G multG eG invG G1 G2 J K Hfam efamH m ys_pref
+  Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred_pref HallNe_pref HallG2_pref Hm_ne0).
+Qed.
+
 (** Infrastructure: a binary reduced word whose letters hit both factors cannot have length 1 **)
 (** Proven Charlie **)
 Lemma free_product_binary_reduced_word_both_factors_length_ne1 :
