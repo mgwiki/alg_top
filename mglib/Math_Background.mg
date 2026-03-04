@@ -326805,6 +326805,110 @@ apply Hcase.
       Hfin56
       HoriC57).
   }
+  claim Hsharedx3 :
+    exists C58:set, C58 :e Arcs /\ C58 <> C57 /\ x3 :e C58.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C57 /\ w3 :e C)
+      (exists D:set, D :e Arcs /\ D <> C57 /\ x3 :e D)
+      (Hallshared C57 w3 x3 HC57 Hw3x3)).
+  }
+  apply Hsharedx3. let C58. assume HC58pack.
+  claim HC58pair : C58 :e Arcs /\ C58 <> C57.
+  { exact (andEL (C58 :e Arcs /\ C58 <> C57) (x3 :e C58) HC58pack). }
+  claim HC58 : C58 :e Arcs.
+  { exact (andEL (C58 :e Arcs) (C58 <> C57) HC58pair). }
+  claim HC58neC57 : C58 <> C57.
+  { exact (andER (C58 :e Arcs) (C58 <> C57) HC58pair). }
+  claim Hx3C58 : x3 :e C58.
+  { exact (andER (C58 :e Arcs /\ C58 <> C57) (x3 :e C58) HC58pack). }
+  claim Hx3C57 : x3 :e C57.
+  { exact (end_points_of_arc_right_in_set C57 (subspace_topology T Tx C57) w3 x3 Hw3x3). }
+  claim HC57neC58 : C57 <> C58.
+  { assume Heq. exact (HC58neC57 (eq_symm C57 C58 Heq)). }
+  claim HintC57C58 :
+    C57 :/\: C58 = Empty \/
+    (exists r58:set, C57 :/\: C58 = Sing r58 /\
+      (exists s58:set, end_points_of_arc C57 (subspace_topology T Tx C57) r58 s58 \/
+                     end_points_of_arc C57 (subspace_topology T Tx C57) s58 r58) /\
+      (exists t58:set, end_points_of_arc C58 (subspace_topology T Tx C58) r58 t58 \/
+                     end_points_of_arc C58 (subspace_topology T Tx C58) t58 r58)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C57
+      C58
+      Hglg
+      HC57
+      HC58
+      HC57neC58).
+  }
+  claim Hx3_is_endpoint_C58 :
+    exists y3:set, end_points_of_arc C58 (subspace_topology T Tx C58) x3 y3 \/
+                    end_points_of_arc C58 (subspace_topology T Tx C58) y3 x3.
+  {
+    apply HintC57C58.
+    - assume Hempty.
+      claim Hx3CC : x3 :e C57 :/\: C58. { exact (binintersectI C57 C58 x3 Hx3C57 Hx3C58). }
+      exact (EmptyE x3 (eq_subst_mem_set x3 (C57 :/\: C58) Empty Hx3CC Hempty)
+        (exists y3:set, end_points_of_arc C58 (subspace_topology T Tx C58) x3 y3 \/
+                        end_points_of_arc C58 (subspace_topology T Tx C58) y3 x3)).
+    - assume Hsing. apply Hsing. let r58. assume Hr58pack.
+      apply (and3E
+        (C57 :/\: C58 = Sing r58)
+        (exists s58:set, end_points_of_arc C57 (subspace_topology T Tx C57) r58 s58 \/
+                       end_points_of_arc C57 (subspace_topology T Tx C57) s58 r58)
+        (exists t58:set, end_points_of_arc C58 (subspace_topology T Tx C58) r58 t58 \/
+                       end_points_of_arc C58 (subspace_topology T Tx C58) t58 r58)
+        Hr58pack).
+      assume Hr58eq _ HC58end.
+      claim Hx3CC : x3 :e C57 :/\: C58. { exact (binintersectI C57 C58 x3 Hx3C57 Hx3C58). }
+      claim Hx3r58 : x3 = r58.
+      { exact (SingE r58 x3 (eq_subst_mem_set x3 (C57 :/\: C58) (Sing r58) Hx3CC Hr58eq)). }
+      apply HC58end. let t58. assume Ht58.
+      witness t58.
+      apply Ht58.
+      * assume Hr58t : end_points_of_arc C58 (subspace_topology T Tx C58) r58 t58.
+        apply orIL. rewrite Hx3r58. exact Hr58t.
+      * assume Ht58r : end_points_of_arc C58 (subspace_topology T Tx C58) t58 r58.
+        apply orIR. rewrite Hx3r58. exact Ht58r.
+  }
+  apply Hx3_is_endpoint_C58. let y3. assume Hy3cases.
+  claim Hx3y3 : end_points_of_arc C58 (subspace_topology T Tx C58) x3 y3.
+  { apply Hy3cases.
+    - assume Hx3y : end_points_of_arc C58 (subspace_topology T Tx C58) x3 y3. exact Hx3y.
+    - assume Hy3x : end_points_of_arc C58 (subspace_topology T Tx C58) y3 x3.
+      exact (end_points_of_arc_sym C58 (subspace_topology T Tx C58) y3 x3 Hy3x). }
+  claim HoriC58 : oriented_edge T Tx Arcs C58 x3 y3.
+  { exact (andI (C58 :e Arcs) (end_points_of_arc C58 (subspace_topology T Tx C58) x3 y3) HC58 Hx3y3). }
+  set n58 := ordsucc n57.
+  set path59 :=
+    (graph n58 (fun i:set => apply_fun path58 i)) :\/:
+    (graph {n58} (fun _:set => ((x3, y3), C58))).
+  claim Hep59 : edge_path T Tx Arcs (ordsucc n58) path59 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n58 path58 q0 n57 C58 x3 y3
+      Hglg
+      Hep58
+      (ordsuccI2 n57)
+      (In_irref (ordsucc n57))
+      Hfin57
+      HoriC58).
+  }
+  claim Hfin58 : (apply_fun path59 n58) 0 1 = y3.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n58 path58 q0 n57 C58 x3 y3
+      Hglg
+      Hep58
+      (ordsuccI2 n57)
+      (In_irref (ordsucc n57))
+      Hfin57
+      HoriC58).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
