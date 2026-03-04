@@ -229098,6 +229098,53 @@ apply (binunionE J K alpha Hal_union).
   exact (subgroup_of_subset (apply_fun Hfam alpha) G2 multG eG invG HsubHb_G2 (apply_fun ys i) Hyi_Ha).
 Qed.
 
+(** Infrastructure: in the binary free product setup, the intersection of the two factors is trivial **)
+(** Proven Charlie **)
+Lemma free_product_binary_factors_intersect_trivial :
+  forall G multG eG invG G1 G2 x:set,
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  x :e G1 -> x :e G2 -> x = eG.
+let G multG eG invG G1 G2 x.
+assume Hfp HxG1 HxG2.
+set Gfam12 := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
+apply (and5E
+  (group_structure G multG eG invG)
+  (forall alpha:set, alpha :e (UPair 0 1) ->
+    subgroup_of (apply_fun Gfam12 alpha) G multG eG invG)
+  (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+    forall y:set, y :e apply_fun Gfam12 alpha -> y :e apply_fun Gfam12 beta -> y = eG)
+  (subgroups_generate G multG eG invG (UPair 0 1) Gfam12)
+  (forall y:set, y :e G -> y <> eG ->
+    exists n0 xs0:set,
+      reduced_word (UPair 0 1) Gfam12 (graph (UPair 0 1) (fun _:set => eG)) n0 xs0 /\ n0 <> 0 /\
+      word_product multG eG xs0 n0 = y /\
+      (forall n' xs':set,
+        reduced_word (UPair 0 1) Gfam12 (graph (UPair 0 1) (fun _:set => eG)) n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = y ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+  Hfp).
+assume _ _ Hinter _ _.
+claim HGfam0 : apply_fun Gfam12 0 = G1.
+{
+  rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)).
+  rewrite (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+  reflexivity.
+}
+claim HGfam1 : apply_fun Gfam12 1 = G2.
+{
+  rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)).
+  rewrite (If_i_0 (1 = 0) G1 G2 neq_1_0).
+  reflexivity.
+}
+claim HxGfam0 : x :e apply_fun Gfam12 0.
+{ rewrite HGfam0. exact HxG1. }
+claim HxGfam1 : x :e apply_fun Gfam12 1.
+{ rewrite HGfam1. exact HxG2. }
+exact (Hinter 0 1 (UPairI1 0 1) (UPairI2 0 1) neq_0_1 x HxGfam0 HxGfam1).
+Qed.
+
 (** Infrastructure for Cor 68.6 (Bounty 19): collapse a mixed (J \\/ K)-reduced word to a binary reduced word **)
 (** The binary word lives in factors G1/G2 and has length >= 2 when both factors occur. **)
 Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
