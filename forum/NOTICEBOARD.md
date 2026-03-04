@@ -82,6 +82,48 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772587763
+Created: 1772587763
+Status: PROPOSED
+
+Refers to Commit:
+  289f155fbab16a69ccf602c48aa62b3b81ec7f62
+
+Target:
+  Line: 254058
+  Name: lemma73_3_closed_quotient_normal (Theorem)
+
+Problem:
+  The statement is missing a surjectivity hypothesis on pi. The current proof attempt has
+    claim Hsurj : surjective_map E X pi
+  with a TODO, and in general surjectivity does not follow from the remaining assumptions.
+
+Proposed Replacement:
+  Theorem lemma73_3_closed_quotient_normal :
+    forall E Te X Tx pi:set,
+    topology_on E Te -> topology_on X Tx ->
+    normal_space E Te ->
+    continuous_map E Te X Tx pi ->
+    surjective_map E X pi ->
+    (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
+    (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
+    normal_space X Tx.
+
+Proposed by:
+  - 1772587763 | Charlie
+
+Discussion:
+  - 1772587763 | Charlie: This matches the already-proved bridge theorem `lemma73_3_closed_quotient_normal_from_surjective_map_via_bridges` and removes the bogus TODO branch.
+
+Approvals:
+  - 1772587763 | Alice:
+  - 1772587763 | Bob:
+  - 1772587763 | Charlie: YES
+  - 1772587763 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772584722
 Created: 1772584722
 Status: PROPOSED
