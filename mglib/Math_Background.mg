@@ -229620,6 +229620,64 @@ exact (cor68_6_reduced_word_all_in_G1_product_ne_eG
   Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred_pref HallNe_pref HallG1_pref Hm_ne0).
 Qed.
 
+(** Infrastructure for Cor 68.6: a prefix lying entirely in G1 has product in G1 **)
+(** Proven Charlie **)
+Lemma cor68_6_word_product_prefix_all_in_G1_in_G1 :
+  forall multG eG invG G1 J Hfam efamH n ys m:set,
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun a:set => apply_fun Hfam a))
+    (graph J (fun a:set => apply_fun efamH a)) ->
+  n :e omega ->
+  m :e n ->
+  (forall i:set, i :e m -> apply_fun ys i :e G1) ->
+  word_product multG eG (graph m (fun i:set => apply_fun ys i)) m :e G1.
+let multG eG invG G1 J Hfam efamH n ys m.
+assume Hfp1 HnO Hm_in HprefG1.
+claim Hgrp1 : group_structure G1 multG eG invG.
+{
+  apply (and5E
+    (group_structure G1 multG eG invG)
+    (forall alpha:set, alpha :e J ->
+      subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG)
+    (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+      forall x:set, x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha ->
+        x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) beta -> x = eG)
+    (subgroups_generate G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)))
+    (forall x:set, x :e G1 -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+          (graph J (fun a:set => apply_fun efamH a)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+            (graph J (fun a:set => apply_fun efamH a)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs' i0)))
+    Hfp1).
+  assume Hgrp1 _ _ _ _. exact Hgrp1.
+}
+claim HmO : m :e omega.
+{
+  claim Hn_sub : n c= omega.
+  { exact (omega_TransSet n HnO). }
+  exact (Hn_sub m Hm_in).
+}
+claim Hm_nat : nat_p m.
+{ exact (omega_nat_p m HmO). }
+apply (word_product_in_G_group
+  G1
+  multG
+  eG
+  invG
+  m
+  (graph m (fun i:set => apply_fun ys i))
+  Hgrp1
+  Hm_nat).
+let i. assume Hi_m.
+rewrite (apply_fun_graph m (fun j:set => apply_fun ys j) i Hi_m).
+exact (HprefG1 i Hi_m).
+Qed.
+
 (** Infrastructure for Cor 68.6: a prefix lying entirely in G2 has nontrivial product **)
 (** Proven Charlie **)
 Lemma cor68_6_reduced_word_prefix_all_in_G2_product_ne_eG :
@@ -229680,6 +229738,64 @@ claim HallG2_pref : forall i:set, i :e m -> apply_fun ys_pref i :e G2.
 exact (cor68_6_reduced_word_all_in_G2_product_ne_eG
   G multG eG invG G1 G2 J K Hfam efamH m ys_pref
   Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred_pref HallNe_pref HallG2_pref Hm_ne0).
+Qed.
+
+(** Infrastructure for Cor 68.6: a prefix lying entirely in G2 has product in G2 **)
+(** Proven Charlie **)
+Lemma cor68_6_word_product_prefix_all_in_G2_in_G2 :
+  forall multG eG invG G2 K Hfam efamH n ys m:set,
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun b:set => apply_fun Hfam b))
+    (graph K (fun b:set => apply_fun efamH b)) ->
+  n :e omega ->
+  m :e n ->
+  (forall i:set, i :e m -> apply_fun ys i :e G2) ->
+  word_product multG eG (graph m (fun i:set => apply_fun ys i)) m :e G2.
+let multG eG invG G2 K Hfam efamH n ys m.
+assume Hfp2 HnO Hm_in HprefG2.
+claim Hgrp2 : group_structure G2 multG eG invG.
+{
+  apply (and5E
+    (group_structure G2 multG eG invG)
+    (forall beta:set, beta :e K ->
+      subgroup_of (apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta) G2 multG eG invG)
+    (forall beta gamma:set, beta :e K -> gamma :e K -> beta <> gamma ->
+      forall x:set, x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta ->
+        x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) gamma -> x = eG)
+    (subgroups_generate G2 multG eG invG K (graph K (fun b:set => apply_fun Hfam b)))
+    (forall x:set, x :e G2 -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+          (graph K (fun b:set => apply_fun efamH b)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+            (graph K (fun b:set => apply_fun efamH b)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs' i0)))
+    Hfp2).
+  assume Hgrp2 _ _ _ _. exact Hgrp2.
+}
+claim HmO : m :e omega.
+{
+  claim Hn_sub : n c= omega.
+  { exact (omega_TransSet n HnO). }
+  exact (Hn_sub m Hm_in).
+}
+claim Hm_nat : nat_p m.
+{ exact (omega_nat_p m HmO). }
+apply (word_product_in_G_group
+  G2
+  multG
+  eG
+  invG
+  m
+  (graph m (fun i:set => apply_fun ys i))
+  Hgrp2
+  Hm_nat).
+let i. assume Hi_m.
+rewrite (apply_fun_graph m (fun j:set => apply_fun ys j) i Hi_m).
+exact (HprefG2 i Hi_m).
 Qed.
 
 (** Infrastructure for Cor 68.6: a suffix-segment lying entirely in G1 has nontrivial product **)
