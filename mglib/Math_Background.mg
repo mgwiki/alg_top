@@ -229586,6 +229586,269 @@ exact (cor68_6_reduced_word_all_in_G2_product_ne_eG
   Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred_pref HallNe_pref HallG2_pref Hm_ne0).
 Qed.
 
+(** Infrastructure for Cor 68.6: a mixed word has an adjacent factor switch **)
+(** Proven Charlie **)
+Lemma cor68_6_mixed_word_has_adjacent_G1_G2_switch :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G1) ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G2) ->
+  exists i:set,
+    i :e n /\ ordsucc i :e n /\
+    ((apply_fun ys i :e G1 /\ apply_fun ys (ordsucc i) :e G2) \/
+     (apply_fun ys i :e G2 /\ apply_fun ys (ordsucc i) :e G1)).
+let G multG eG invG G1 G2 J K Hfam efamH n ys.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe HexG1 HexG2.
+
+(** n is a natural number and hence an ordinal. **)
+claim HnO : n :e omega.
+{
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e (J :\/: K) /\
+        apply_fun ys i :e apply_fun Hfam alpha /\
+        apply_fun ys i <> apply_fun efamH alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e (J :\/: K) -> beta :e (J :\/: K) ->
+        apply_fun ys i :e apply_fun Hfam alpha ->
+        apply_fun ys (ordsucc i) :e apply_fun Hfam beta ->
+        alpha <> beta)
+    Hred).
+  assume HnO _ _. exact HnO.
+}
+claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+claim Hn_ord : ordinal n. { exact (nat_p_ordinal n Hn_nat). }
+
+(** Each letter lies in G1 or G2. **)
+claim Hyside : forall i:set, i :e n -> apply_fun ys i :e G1 \/ apply_fun ys i :e G2.
+{
+  exact (cor68_6_reduced_word_letter_in_G1_or_G2
+    G multG eG invG G1 G2 J K Hfam efamH n ys
+    Hsub1 Hsub2 Hfp1 Hfp2 Hred).
+}
+
+(** Define the set of G2-indices. **)
+set A2 := {i :e n|apply_fun ys i :e G2}.
+claim HA2_sub : A2 c= omega.
+{
+  let i. assume HiA2.
+  claim Hi_n : i :e n.
+  { exact (SepE1 n (fun t:set => apply_fun ys t :e G2) i HiA2). }
+  claim Hn_sub : n c= omega.
+  { exact (omega_TransSet n HnO). }
+  exact (Hn_sub i Hi_n).
+}
+claim HA2_ne : A2 <> Empty.
+{
+  apply HexG2. let j. assume Hj_pack.
+  claim Hj_in : j :e n.
+  { exact (andEL (j :e n) (apply_fun ys j :e G2) Hj_pack). }
+  claim HyjG2 : apply_fun ys j :e G2.
+  { exact (andER (j :e n) (apply_fun ys j :e G2) Hj_pack). }
+  assume Hempty : A2 = Empty.
+  claim HjA2 : j :e A2.
+  { exact (SepI n (fun t:set => apply_fun ys t :e G2) j Hj_in HyjG2). }
+  exact (EmptyE j (eq_subst_mem_set j A2 Empty HjA2 Hempty)).
+}
+
+(** Get the least G2-index m2. **)
+claim Hm2_ex : exists m2:set, m2 :e A2 /\ forall t:set, t :e A2 -> (m2 :e t \/ m2 = t).
+{ exact (omega_nonempty_subset_has_least A2 HA2_sub HA2_ne). }
+apply Hm2_ex. let m2. assume Hm2_pack.
+claim Hm2A2 : m2 :e A2.
+{ exact (andEL (m2 :e A2) (forall t:set, t :e A2 -> (m2 :e t \/ m2 = t)) Hm2_pack). }
+claim Hm2_least : forall t:set, t :e A2 -> (m2 :e t \/ m2 = t).
+{ exact (andER (m2 :e A2) (forall t:set, t :e A2 -> (m2 :e t \/ m2 = t)) Hm2_pack). }
+claim Hm2_in : m2 :e n.
+{ exact (SepE1 n (fun t:set => apply_fun ys t :e G2) m2 Hm2A2). }
+claim Hym2G2 : apply_fun ys m2 :e G2.
+{ exact (SepE2 n (fun t:set => apply_fun ys t :e G2) m2 Hm2A2). }
+
+(** If m2 = 0, then 0 is in G2 and we use the least G1-index instead. **)
+apply (xm (m2 = 0)).
+- assume Hm2_0 : m2 = 0.
+  (** Define the set of G1-indices and pick its least element m1. **)
+  set A1 := {i :e n|apply_fun ys i :e G1}.
+  claim HA1_sub : A1 c= omega.
+  {
+    let i. assume HiA1.
+    claim Hi_n : i :e n.
+    { exact (SepE1 n (fun t:set => apply_fun ys t :e G1) i HiA1). }
+    claim Hn_sub : n c= omega.
+    { exact (omega_TransSet n HnO). }
+    exact (Hn_sub i Hi_n).
+  }
+  claim HA1_ne : A1 <> Empty.
+  {
+    apply HexG1. let j. assume Hj_pack.
+    claim Hj_in : j :e n.
+    { exact (andEL (j :e n) (apply_fun ys j :e G1) Hj_pack). }
+    claim HyjG1 : apply_fun ys j :e G1.
+    { exact (andER (j :e n) (apply_fun ys j :e G1) Hj_pack). }
+    assume Hempty : A1 = Empty.
+    claim HjA1 : j :e A1.
+    { exact (SepI n (fun t:set => apply_fun ys t :e G1) j Hj_in HyjG1). }
+    exact (EmptyE j (eq_subst_mem_set j A1 Empty HjA1 Hempty)).
+  }
+  claim Hm1_ex : exists m1:set, m1 :e A1 /\ forall t:set, t :e A1 -> (m1 :e t \/ m1 = t).
+  { exact (omega_nonempty_subset_has_least A1 HA1_sub HA1_ne). }
+  apply Hm1_ex. let m1. assume Hm1_pack.
+  claim Hm1A1 : m1 :e A1.
+  { exact (andEL (m1 :e A1) (forall t:set, t :e A1 -> (m1 :e t \/ m1 = t)) Hm1_pack). }
+  claim Hm1_least : forall t:set, t :e A1 -> (m1 :e t \/ m1 = t).
+  { exact (andER (m1 :e A1) (forall t:set, t :e A1 -> (m1 :e t \/ m1 = t)) Hm1_pack). }
+  claim Hm1_in : m1 :e n.
+  { exact (SepE1 n (fun t:set => apply_fun ys t :e G1) m1 Hm1A1). }
+  claim Hym1G1 : apply_fun ys m1 :e G1.
+  { exact (SepE2 n (fun t:set => apply_fun ys t :e G1) m1 Hm1A1). }
+  (** m1 cannot be 0 since ys(0) is in G2 and nontrivial. **)
+  claim Hm1_ne0 : m1 <> 0.
+  {
+    assume Hm10.
+    claim Hy0G2 : apply_fun ys 0 :e G2.
+    { rewrite <- Hm2_0. exact Hym2G2. }
+    claim Hy0G1 : apply_fun ys 0 :e G1.
+    { rewrite <- Hm10. exact Hym1G1. }
+    claim Hy0e : apply_fun ys 0 = eG.
+    {
+      exact (free_product_binary_factors_intersect_trivial
+        G multG eG invG G1 G2 (apply_fun ys 0)
+        Hfp
+        Hy0G1
+        Hy0G2).
+    }
+    claim H0_in : 0 :e n.
+    { rewrite <- Hm10. exact Hm1_in. }
+    exact ((HallNe 0 H0_in) Hy0e).
+  }
+  (** Write m1 = ordsucc i and use leastness to show ys(i) is in G2. **)
+  claim Hm1_omega : m1 :e omega.
+  { exact (HA1_sub m1 Hm1A1). }
+  claim Hm1_nat : nat_p m1.
+  { exact (omega_nat_p m1 Hm1_omega). }
+  apply (nat_inv m1 Hm1_nat).
+  * assume Hm10. exact (FalseE (Hm1_ne0 Hm10) (exists i:set, i :e n /\ ordsucc i :e n /\ ((apply_fun ys i :e G1 /\ apply_fun ys (ordsucc i) :e G2) \/ (apply_fun ys i :e G2 /\ apply_fun ys (ordsucc i) :e G1)))).
+  * assume Hi_ex.
+    apply Hi_ex. let i. assume Hi_pack.
+    claim Hi_nat : nat_p i.
+    { exact (andEL (nat_p i) (m1 = ordsucc i) Hi_pack). }
+    claim Hm1_eq : m1 = ordsucc i.
+    { exact (andER (nat_p i) (m1 = ordsucc i) Hi_pack). }
+    claim Hi_in_m1 : i :e m1.
+    { rewrite Hm1_eq. exact (ordsuccI2 i). }
+    claim Hi_in : i :e n.
+    { exact (ordinal_TransSet n Hn_ord m1 Hm1_in i Hi_in_m1). }
+    claim Hsi_in : ordsucc i :e n.
+    { rewrite <- Hm1_eq. exact Hm1_in. }
+    (** ys(i) is not in G1, else i would be in A1 and contradict leastness. **)
+    claim Hyi_notG1 : ~ (apply_fun ys i :e G1).
+    {
+      assume HyiG1.
+      claim HiA1 : i :e A1.
+      { exact (SepI n (fun t:set => apply_fun ys t :e G1) i Hi_in HyiG1). }
+      apply (Hm1_least i HiA1).
+      - assume Hm1_in_i.
+	        claim Hm1_in_m1 : m1 :e m1.
+	        {
+	          exact (ordinal_TransSet m1 (nat_p_ordinal m1 Hm1_nat) i Hi_in_m1 m1 Hm1_in_i).
+	        }
+	        exact (In_irref m1 Hm1_in_m1).
+      - assume Hm1_eq_i.
+	        claim Hs : ordsucc i = i.
+	        { rewrite <- Hm1_eq. exact Hm1_eq_i. }
+	        claim Hi_in_i : i :e i.
+	        { exact (eq_subst_mem_set i (ordsucc i) i (ordsuccI2 i) Hs). }
+	        exact (In_irref i Hi_in_i).
+	    }
+    (** So ys(i) lies in G2. **)
+    claim HyiG2 : apply_fun ys i :e G2.
+    {
+      apply (Hyside i Hi_in).
+      - assume HyiG1. exact (FalseE (Hyi_notG1 HyiG1) (apply_fun ys i :e G2)).
+      - assume HyiG2. exact HyiG2.
+    }
+    witness i.
+    apply and3I.
+    + exact Hi_in.
+    + exact Hsi_in.
+    + apply orIR.
+      apply andI.
+      exact HyiG2.
+      rewrite <- Hm1_eq.
+      exact Hym1G1.
+- assume Hm2_ne0 : m2 <> 0.
+  (** Write m2 = ordsucc i and use leastness to show ys(i) is in G1. **)
+  claim Hm2_omega : m2 :e omega.
+  { exact (HA2_sub m2 Hm2A2). }
+  claim Hm2_nat : nat_p m2.
+  { exact (omega_nat_p m2 Hm2_omega). }
+  apply (nat_inv m2 Hm2_nat).
+  * assume Hm20. exact (FalseE (Hm2_ne0 Hm20) (exists i:set, i :e n /\ ordsucc i :e n /\ ((apply_fun ys i :e G1 /\ apply_fun ys (ordsucc i) :e G2) \/ (apply_fun ys i :e G2 /\ apply_fun ys (ordsucc i) :e G1)))).
+  * assume Hi_ex.
+    apply Hi_ex. let i. assume Hi_pack.
+    claim Hi_nat : nat_p i.
+    { exact (andEL (nat_p i) (m2 = ordsucc i) Hi_pack). }
+    claim Hm2_eq : m2 = ordsucc i.
+    { exact (andER (nat_p i) (m2 = ordsucc i) Hi_pack). }
+    claim Hi_in_m2 : i :e m2.
+    { rewrite Hm2_eq. exact (ordsuccI2 i). }
+    claim Hi_in : i :e n.
+    { exact (ordinal_TransSet n Hn_ord m2 Hm2_in i Hi_in_m2). }
+    claim Hsi_in : ordsucc i :e n.
+    { rewrite <- Hm2_eq. exact Hm2_in. }
+    (** ys(i) is not in G2, else i would be in A2 and contradict leastness. **)
+    claim Hyi_notG2 : ~ (apply_fun ys i :e G2).
+    {
+      assume HyiG2.
+      claim HiA2 : i :e A2.
+      { exact (SepI n (fun t:set => apply_fun ys t :e G2) i Hi_in HyiG2). }
+      apply (Hm2_least i HiA2).
+      - assume Hm2_in_i.
+	        claim Hm2_in_m2 : m2 :e m2.
+	        {
+	          exact (ordinal_TransSet m2 (nat_p_ordinal m2 Hm2_nat) i Hi_in_m2 m2 Hm2_in_i).
+	        }
+	        exact (In_irref m2 Hm2_in_m2).
+      - assume Hm2_eq_i.
+	        claim Hs : ordsucc i = i.
+	        { rewrite <- Hm2_eq. exact Hm2_eq_i. }
+	        claim Hi_in_i : i :e i.
+	        { exact (eq_subst_mem_set i (ordsucc i) i (ordsuccI2 i) Hs). }
+	        exact (In_irref i Hi_in_i).
+	    }
+    (** So ys(i) lies in G1. **)
+    claim HyiG1 : apply_fun ys i :e G1.
+    {
+      apply (Hyside i Hi_in).
+      - assume HyiG1. exact HyiG1.
+      - assume HyiG2.
+        exact (FalseE (Hyi_notG2 HyiG2) (apply_fun ys i :e G1)).
+    }
+    witness i.
+    apply and3I.
+    + exact Hi_in.
+    + exact Hsi_in.
+    + apply orIL.
+      apply andI.
+      exact HyiG1.
+      rewrite <- Hm2_eq.
+      exact Hym2G2.
+Qed.
+
 (** Infrastructure: a binary reduced word whose letters hit both factors cannot have length 1 **)
 (** Proven Charlie **)
 Lemma free_product_binary_reduced_word_both_factors_length_ne1 :
