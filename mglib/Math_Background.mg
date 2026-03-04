@@ -328781,6 +328781,110 @@ apply Hcase.
       Hfin75
       HoriC76).
   }
+  claim Hsharedq4 :
+    exists C77:set, C77 :e Arcs /\ C77 <> C76 /\ q4 :e C77.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C76 /\ p4 :e C)
+      (exists D:set, D :e Arcs /\ D <> C76 /\ q4 :e D)
+      (Hallshared C76 p4 q4 HC76 Hp4q4)).
+  }
+  apply Hsharedq4. let C77. assume HC77pack.
+  claim HC77pair : C77 :e Arcs /\ C77 <> C76.
+  { exact (andEL (C77 :e Arcs /\ C77 <> C76) (q4 :e C77) HC77pack). }
+  claim HC77 : C77 :e Arcs.
+  { exact (andEL (C77 :e Arcs) (C77 <> C76) HC77pair). }
+  claim HC77neC76 : C77 <> C76.
+  { exact (andER (C77 :e Arcs) (C77 <> C76) HC77pair). }
+  claim Hq4C77 : q4 :e C77.
+  { exact (andER (C77 :e Arcs /\ C77 <> C76) (q4 :e C77) HC77pack). }
+  claim Hq4C76 : q4 :e C76.
+  { exact (end_points_of_arc_right_in_set C76 (subspace_topology T Tx C76) p4 q4 Hp4q4). }
+  claim HC76neC77 : C76 <> C77.
+  { assume Heq. exact (HC77neC76 (eq_symm C76 C77 Heq)). }
+  claim HintC76C77 :
+    C76 :/\: C77 = Empty \/
+    (exists r77:set, C76 :/\: C77 = Sing r77 /\
+      (exists s77:set, end_points_of_arc C76 (subspace_topology T Tx C76) r77 s77 \/
+                     end_points_of_arc C76 (subspace_topology T Tx C76) s77 r77) /\
+      (exists t77:set, end_points_of_arc C77 (subspace_topology T Tx C77) r77 t77 \/
+                     end_points_of_arc C77 (subspace_topology T Tx C77) t77 r77)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C76
+      C77
+      Hglg
+      HC76
+      HC77
+      HC76neC77).
+  }
+  claim Hq4_is_endpoint_C77 :
+    exists r4:set, end_points_of_arc C77 (subspace_topology T Tx C77) q4 r4 \/
+                    end_points_of_arc C77 (subspace_topology T Tx C77) r4 q4.
+  {
+    apply HintC76C77.
+    - assume Hempty.
+      claim Hq4CC : q4 :e C76 :/\: C77. { exact (binintersectI C76 C77 q4 Hq4C76 Hq4C77). }
+      exact (EmptyE q4 (eq_subst_mem_set q4 (C76 :/\: C77) Empty Hq4CC Hempty)
+        (exists r4:set, end_points_of_arc C77 (subspace_topology T Tx C77) q4 r4 \/
+                        end_points_of_arc C77 (subspace_topology T Tx C77) r4 q4)).
+    - assume Hsing. apply Hsing. let r77. assume Hr77pack.
+      apply (and3E
+        (C76 :/\: C77 = Sing r77)
+        (exists s77:set, end_points_of_arc C76 (subspace_topology T Tx C76) r77 s77 \/
+                       end_points_of_arc C76 (subspace_topology T Tx C76) s77 r77)
+        (exists t77:set, end_points_of_arc C77 (subspace_topology T Tx C77) r77 t77 \/
+                       end_points_of_arc C77 (subspace_topology T Tx C77) t77 r77)
+        Hr77pack).
+      assume Hr77eq _ HC77end.
+      claim Hq4CC : q4 :e C76 :/\: C77. { exact (binintersectI C76 C77 q4 Hq4C76 Hq4C77). }
+      claim Hq4r77 : q4 = r77.
+      { exact (SingE r77 q4 (eq_subst_mem_set q4 (C76 :/\: C77) (Sing r77) Hq4CC Hr77eq)). }
+      apply HC77end. let t77. assume Ht77.
+      witness t77.
+      apply Ht77.
+      * assume Hr77t : end_points_of_arc C77 (subspace_topology T Tx C77) r77 t77.
+        apply orIL. rewrite Hq4r77. exact Hr77t.
+      * assume Ht77r : end_points_of_arc C77 (subspace_topology T Tx C77) t77 r77.
+        apply orIR. rewrite Hq4r77. exact Ht77r.
+  }
+  apply Hq4_is_endpoint_C77. let r4. assume Hr4cases.
+  claim Hq4r4 : end_points_of_arc C77 (subspace_topology T Tx C77) q4 r4.
+  { apply Hr4cases.
+    - assume Hq4r : end_points_of_arc C77 (subspace_topology T Tx C77) q4 r4. exact Hq4r.
+    - assume Hr4q : end_points_of_arc C77 (subspace_topology T Tx C77) r4 q4.
+      exact (end_points_of_arc_sym C77 (subspace_topology T Tx C77) r4 q4 Hr4q). }
+  claim HoriC77 : oriented_edge T Tx Arcs C77 q4 r4.
+  { exact (andI (C77 :e Arcs) (end_points_of_arc C77 (subspace_topology T Tx C77) q4 r4) HC77 Hq4r4). }
+  set n77 := ordsucc n76.
+  set path78 :=
+    (graph n77 (fun i:set => apply_fun path77 i)) :\/:
+    (graph {n77} (fun _:set => ((q4, r4), C77))).
+  claim Hep78 : edge_path T Tx Arcs (ordsucc n77) path78 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n77 path77 q0 n76 C77 q4 r4
+      Hglg
+      Hep77
+      (ordsuccI2 n76)
+      (In_irref (ordsucc n76))
+      Hfin76
+      HoriC77).
+  }
+  claim Hfin77 : (apply_fun path78 n77) 0 1 = r4.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n77 path77 q0 n76 C77 q4 r4
+      Hglg
+      Hep77
+      (ordsuccI2 n76)
+      (In_irref (ordsucc n76))
+      Hfin76
+      HoriC77).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
