@@ -256687,6 +256687,67 @@ exact (conjugates_subset_normal_subgroup
 Qed.
 
 
+(** Helper: least_normal_subgroup is unchanged if we replace S by its conjugates set **)
+(** Proven Charlie **)
+Lemma least_normal_subgroup_eq_conjugates :
+  forall G mult e inv S:set,
+  group_structure G mult e inv ->
+  S c= G ->
+  let conjugates := Union (Repl G (fun c:set =>
+    Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))) in
+  least_normal_subgroup G mult e inv S =
+  least_normal_subgroup G mult e inv conjugates.
+let G mult e inv S.
+assume Hgrp HSsub.
+set conjugates := Union (Repl G (fun c:set =>
+  Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))).
+claim HconjSubG : conjugates c= G.
+{
+  exact (conjugates_subset_G G mult e inv S Hgrp HSsub).
+}
+set NS := least_normal_subgroup G mult e inv S.
+set NC := least_normal_subgroup G mult e inv conjugates.
+claim HnormNS : normal_subgroup NS G mult e inv.
+{
+  exact (least_normal_subgroup_normal G mult e inv S Hgrp HSsub).
+}
+claim HnormNC : normal_subgroup NC G mult e inv.
+{
+  exact (least_normal_subgroup_normal G mult e inv conjugates Hgrp HconjSubG).
+}
+claim HSsubConj : S c= conjugates.
+{
+  exact (conjugates_contains_S G mult e inv S Hgrp HSsub).
+}
+claim HconjSubNC : conjugates c= NC.
+{
+  exact (least_normal_subgroup_contains G mult e inv conjugates Hgrp HconjSubG).
+}
+claim HSsubNC : S c= NC.
+{
+  let s.
+  assume HsS : s :e S.
+  exact (HconjSubNC s (HSsubConj s HsS)).
+}
+claim HNSsubNC : NS c= NC.
+{
+  exact (least_normal_subgroup_minimal G mult e inv S NC Hgrp HSsub HnormNC HSsubNC).
+}
+claim HconjSubNS : conjugates c= NS.
+{
+  exact (least_normal_subgroup_conjugates_subset G mult e inv S Hgrp HSsub).
+}
+claim HNCsubNS : NC c= NS.
+{
+  exact (least_normal_subgroup_minimal G mult e inv conjugates NS Hgrp HconjSubG HnormNS HconjSubNS).
+}
+apply set_ext.
+- let x. assume Hx : x :e NS.
+  exact (HNSsubNC x Hx).
+- let x. assume Hx : x :e NC.
+  exact (HNCsubNS x Hx).
+Qed.
+
 (** Helper: least_normal_subgroup is a subgroup **)
 (** Proven Bob **)
 Lemma least_normal_subgroup_subgroup :
