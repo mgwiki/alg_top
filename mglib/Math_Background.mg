@@ -227481,6 +227481,189 @@ apply andI.
 - exact Hwp.
 Qed.
 
+(** Infrastructure: append one letter to a reduced word (general index set) **)
+(** Proven Charlie **)
+Lemma reduced_word_append_one :
+  forall J Gfam efam n xs b beta:set,
+  reduced_word J Gfam efam n xs ->
+  n <> 0 ->
+  beta :e J ->
+  b :e apply_fun Gfam beta ->
+  b <> apply_fun efam beta ->
+  (forall k alpha beta0:set,
+    n = ordsucc k ->
+    alpha :e J ->
+    beta0 :e J ->
+    apply_fun xs k :e apply_fun Gfam alpha ->
+    b :e apply_fun Gfam beta0 ->
+    alpha <> beta0) ->
+  reduced_word J Gfam efam (ordsucc n)
+    (graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else b)).
+let J Gfam efam n xs b beta.
+assume Hred : reduced_word J Gfam efam n xs.
+assume Hn_ne0 : n <> 0.
+assume Hbeta : beta :e J.
+assume HbG : b :e apply_fun Gfam beta.
+assume Hbne : b <> apply_fun efam beta.
+assume Hlast_diff :
+  forall k alpha beta0:set,
+    n = ordsucc k ->
+    alpha :e J ->
+    beta0 :e J ->
+    apply_fun xs k :e apply_fun Gfam alpha ->
+    b :e apply_fun Gfam beta0 ->
+    alpha <> beta0.
+
+set xs_ext := graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else b).
+
+apply (and3E
+  (n :e omega)
+  (forall i:set, i :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs i :e apply_fun Gfam alpha /\
+      apply_fun xs i <> apply_fun efam alpha)
+  (forall i:set, i :e n -> ordsucc i :e n ->
+    forall alpha beta0:set, alpha :e J -> beta0 :e J ->
+      apply_fun xs i :e apply_fun Gfam alpha ->
+      apply_fun xs (ordsucc i) :e apply_fun Gfam beta0 ->
+      alpha <> beta0)
+  Hred).
+assume HnO Helem Hadj.
+claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+claim HsnO : ordsucc n :e omega.
+{ exact (nat_p_omega (ordsucc n) (nat_ordsucc n Hn_nat)). }
+
+prove (ordsucc n) :e omega /\
+  (forall i:set, i :e ordsucc n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs_ext i :e apply_fun Gfam alpha /\
+      apply_fun xs_ext i <> apply_fun efam alpha) /\
+  (forall i:set, i :e ordsucc n -> ordsucc i :e ordsucc n ->
+    forall alpha beta0:set, alpha :e J -> beta0 :e J ->
+      apply_fun xs_ext i :e apply_fun Gfam alpha ->
+      apply_fun xs_ext (ordsucc i) :e apply_fun Gfam beta0 ->
+      alpha <> beta0).
+apply and3I.
+- exact HsnO.
+- let i. assume Hi : i :e ordsucc n.
+  apply (ordsuccE n i Hi).
+  * assume Hi_n : i :e n.
+    apply (Helem i Hi_n). let alpha. assume Halpha_pack.
+    apply (and3E
+      (alpha :e J)
+      (apply_fun xs i :e apply_fun Gfam alpha)
+      (apply_fun xs i <> apply_fun efam alpha)
+      Halpha_pack).
+    assume Hal Hxi Hxne.
+    witness alpha.
+    apply and3I.
+    + exact Hal.
+    + rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) i
+        (ordsuccI1 n i Hi_n)).
+      rewrite (If_i_1 (i :e n) (apply_fun xs i) b Hi_n).
+      exact Hxi.
+    + rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) i
+        (ordsuccI1 n i Hi_n)).
+      rewrite (If_i_1 (i :e n) (apply_fun xs i) b Hi_n).
+      exact Hxne.
+  * assume Hin : i = n.
+    witness beta.
+    apply and3I.
+    + exact Hbeta.
+    + rewrite Hin.
+      rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) n (ordsuccI2 n)).
+      rewrite (If_i_0 (n :e n) (apply_fun xs n) b (In_irref n)).
+      exact HbG.
+    + rewrite Hin.
+      rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) n (ordsuccI2 n)).
+      rewrite (If_i_0 (n :e n) (apply_fun xs n) b (In_irref n)).
+      exact Hbne.
+- let i. assume Hi : i :e ordsucc n.
+  assume Hsi : ordsucc i :e ordsucc n.
+  let alpha beta0. assume Hal Hbe0 Hxi Hxsi.
+  (** i cannot be the last index n, since ordsucc n :e ordsucc n would contradict irreflexivity **)
+  claim Hi_n : i :e n.
+  {
+    apply (ordsuccE n i Hi).
+	    - assume Hi_n. exact Hi_n.
+	    - assume Hin : i = n.
+	      claim Hsn_in : ordsucc n :e ordsucc n.
+	      {
+	        claim Hsucc_eq : ordsucc n = ordsucc i.
+	        { rewrite <- Hin. reflexivity. }
+	        exact (eq_subst_mem (ordsucc n) (ordsucc i) (ordsucc n) Hsucc_eq Hsi).
+	      }
+	      exact (FalseE (In_irref (ordsucc n) Hsn_in) (i :e n)).
+	  }
+	  (** Split depending on whether ordsucc i = n (the appended position) **)
+	  apply (ordsuccE n (ordsucc i) Hsi).
+  * assume Hsi_n : ordsucc i :e n.
+    (** both positions are in the original word, so use original adjacency **)
+    claim Hxi0 : apply_fun xs i :e apply_fun Gfam alpha.
+    {
+      claim Hxext_eq :
+        apply_fun xs_ext i = apply_fun xs i.
+      {
+        rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) i
+          (ordsuccI1 n i Hi_n)).
+        rewrite (If_i_1 (i :e n) (apply_fun xs i) b Hi_n).
+        reflexivity.
+      }
+      exact (eq_subst_mem_rev (apply_fun xs_ext i) (apply_fun xs i) (apply_fun Gfam alpha) Hxext_eq Hxi).
+    }
+    claim Hxsi0 : apply_fun xs (ordsucc i) :e apply_fun Gfam beta0.
+    {
+      claim Hxext_eq :
+        apply_fun xs_ext (ordsucc i) = apply_fun xs (ordsucc i).
+      {
+        rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) (ordsucc i)
+          (ordsuccI1 n (ordsucc i) Hsi_n)).
+        rewrite (If_i_1 (ordsucc i :e n) (apply_fun xs (ordsucc i)) b Hsi_n).
+        reflexivity.
+      }
+      exact (eq_subst_mem_rev
+        (apply_fun xs_ext (ordsucc i))
+        (apply_fun xs (ordsucc i))
+        (apply_fun Gfam beta0)
+        Hxext_eq
+        Hxsi).
+    }
+    exact (Hadj i Hi_n Hsi_n alpha beta0 Hal Hbe0 Hxi0 Hxsi0).
+  * assume Hsi_eq : ordsucc i = n.
+    (** successor is the appended position, so compare the last label to the (arbitrary) witness beta0 **)
+    claim Hxi0 : apply_fun xs i :e apply_fun Gfam alpha.
+    {
+      claim Hxext_eq :
+        apply_fun xs_ext i = apply_fun xs i.
+      {
+        rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) i
+          (ordsuccI1 n i Hi_n)).
+        rewrite (If_i_1 (i :e n) (apply_fun xs i) b Hi_n).
+        reflexivity.
+      }
+      exact (eq_subst_mem_rev (apply_fun xs_ext i) (apply_fun xs i) (apply_fun Gfam alpha) Hxext_eq Hxi).
+    }
+    claim Hb0 : b :e apply_fun Gfam beta0.
+    {
+      claim Hxext_eq : apply_fun xs_ext (ordsucc i) = b.
+      {
+        rewrite Hsi_eq.
+        rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) n (ordsuccI2 n)).
+        rewrite (If_i_0 (n :e n) (apply_fun xs n) b (In_irref n)).
+        reflexivity.
+      }
+      exact (eq_subst_mem_rev
+        (apply_fun xs_ext (ordsucc i))
+        b
+        (apply_fun Gfam beta0)
+        Hxext_eq
+        Hxsi).
+    }
+    claim Hn_eq_i : n = ordsucc i.
+    { exact (eq_symm (ordsucc i) n Hsi_eq). }
+    exact (Hlast_diff i alpha beta0 Hn_eq_i Hal Hbe0 Hxi0 Hb0).
+Qed.
+
 (** Infrastructure: if a (J \/ K)-reduced word has all entries in G1, then it is a J-reduced word **)
 (** Proven Charlie **)
 Lemma cor68_6_reduced_word_all_in_G1_is_reduced_word_J :
