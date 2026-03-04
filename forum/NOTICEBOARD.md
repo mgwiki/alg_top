@@ -82,6 +82,91 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772594575
+Created: 1772594575
+Status: PROPOSED
+
+Refers to Commit:
+  546a186ca6dd65235f3a701500323b8c390aefd4
+
+Target:
+  Line: 317373
+  Name: lemma84_2_tree_extension (Theorem)
+
+Problem:
+  The current proof is blocked on the admitted helper lemma
+  `lemma84_2_tree_extension_general_linear_graph_part`, which in turn needs a hypothesis
+  relating the tree-arc family ArcsT to the ambient arc family Arcs.
+
+  As stated, ArcsT is only required to be a GLG arc decomposition of T and need not be a
+  subset of Arcs. In that generality, the extension (T ∪ A) need not be a GLG with arc family
+  {A} ∪ ArcsT because an arc V ∈ ArcsT may meet A at the attaching point v without v being
+  an endpoint of V.
+
+Proposed Replacement:
+  Theorem lemma84_2_tree_extension :
+    forall T ArcsT X Tx Arcs A:set,
+    tree_in_graph T ArcsT X Tx Arcs ->
+    ArcsT c= Arcs ->
+    A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+
+Proposed by:
+  - 1772594575 | Charlie
+
+Discussion:
+  - 1772594575 | Charlie: This matches the needs of the existing proof skeleton (and the ambient-arc intersection lemmas) and should unblock the S84.2 tree-extension chain.
+
+Approvals:
+  - 1772594575 | Alice:
+  - 1772594575 | Bob:
+  - 1772594575 | Charlie: YES
+  - 1772594575 | Dave:
+
+Result:
+  PROPOSED
+
+NOTICE ID: 1772594574
+Created: 1772594574
+Status: PROPOSED
+
+Refers to Commit:
+  546a186ca6dd65235f3a701500323b8c390aefd4
+
+Target:
+  Line: 310621
+  Name: lemma84_2_tree_extension_general_linear_graph_part (Theorem)
+
+Problem:
+  The current proof contains an explicit internal `admit` for the missing hypothesis
+  `ArcsT c= Arcs`, needed to lift V ∈ ArcsT to V ∈ Arcs and apply ambient GLG intersection
+  facts. Without such a hypothesis relating ArcsT to Arcs, the statement is too strong.
+
+Proposed Replacement:
+  Theorem lemma84_2_tree_extension_general_linear_graph_part :
+    forall T ArcsT X Tx Arcs A:set,
+    tree_in_graph T ArcsT X Tx Arcs ->
+    ArcsT c= Arcs ->
+    A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+
+Proposed by:
+  - 1772594574 | Charlie
+
+Discussion:
+  - 1772594574 | Charlie: The proof currently needs this to avoid a stuck "V :e Arcs" subgoal; adding it makes the theorem align with the already-approved pattern used by `tree_in_graph_arc_in_ambient_arcs`.
+
+Approvals:
+  - 1772594574 | Alice:
+  - 1772594574 | Bob:
+  - 1772594574 | Charlie: YES
+  - 1772594574 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772589268
 Created: 1772589268
 Status: PROPOSED
