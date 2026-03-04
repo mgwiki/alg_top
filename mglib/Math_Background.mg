@@ -229431,11 +229431,11 @@ Qed.
 
 (** Infrastructure for Cor 68.6 (Bounty 19): collapse a mixed (J \\/ K)-reduced word to a binary reduced word **)
 (** The binary word lives in factors G1/G2 and has length >= 2 when both factors occur. **)
-Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
-  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
-  group_structure G multG eG invG ->
-  subgroup_of G1 G multG eG invG ->
-  subgroup_of G2 G multG eG invG ->
+	Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
+	  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+	  group_structure G multG eG invG ->
+	  subgroup_of G1 G multG eG invG ->
+	  subgroup_of G2 G multG eG invG ->
   free_product_of_subgroups G multG eG invG (UPair 0 1)
     (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
     (graph (UPair 0 1) (fun _:set => eG)) ->
@@ -229452,14 +229452,126 @@ Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
   (exists i:set, i :e n /\ apply_fun ys i :e G1) ->
   (exists i:set, i :e n /\ apply_fun ys i :e G2) ->
   exists n2 xs2:set,
-    reduced_word (UPair 0 1)
-      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
-      (graph (UPair 0 1) (fun _:set => eG))
-      n2 xs2 /\
-    word_product multG eG xs2 n2 = word_product multG eG ys n /\
-    n2 <> 0 /\ n2 <> 1.
-admit.
-Admitted.
+	    reduced_word (UPair 0 1)
+	      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+	      (graph (UPair 0 1) (fun _:set => eG))
+	      n2 xs2 /\
+	    word_product multG eG xs2 n2 = word_product multG eG ys n /\
+	    n2 <> 0 /\ n2 <> 1.
+	let G multG eG invG G1 G2 J K Hfam efamH n ys.
+	assume Hgrp : group_structure G multG eG invG.
+	assume Hsub1 : subgroup_of G1 G multG eG invG.
+	assume Hsub2 : subgroup_of G2 G multG eG invG.
+	assume Hfp : free_product_of_subgroups G multG eG invG (UPair 0 1)
+	  (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+	  (graph (UPair 0 1) (fun _:set => eG)).
+	assume HJKdisj : J :/\: K = Empty.
+	assume Hfp1 : free_product_of_subgroups G1 multG eG invG J
+	  (graph J (fun alpha:set => apply_fun Hfam alpha))
+	  (graph J (fun alpha:set => apply_fun efamH alpha)).
+	assume Hfp2 : free_product_of_subgroups G2 multG eG invG K
+	  (graph K (fun beta:set => apply_fun Hfam beta))
+	  (graph K (fun beta:set => apply_fun efamH beta)).
+	assume Hred : reduced_word (J :\/: K) Hfam efamH n ys.
+	assume HallNe : forall i:set, i :e n -> apply_fun ys i <> eG.
+	assume Hwpne : word_product multG eG ys n <> eG.
+	assume HexG1 : exists i:set, i :e n /\ apply_fun ys i :e G1.
+	assume HexG2 : exists i:set, i :e n /\ apply_fun ys i :e G2.
+
+	set x := word_product multG eG ys n.
+
+	(** n is a natural number. **)
+	claim HnO : n :e omega.
+	{
+	  apply (and3E
+	    (n :e omega)
+	    (forall i:set, i :e n ->
+	      exists alpha:set, alpha :e (J :\/: K) /\
+	        apply_fun ys i :e apply_fun Hfam alpha /\
+	        apply_fun ys i <> apply_fun efamH alpha)
+	    (forall i:set, i :e n -> ordsucc i :e n ->
+	      forall alpha beta:set, alpha :e (J :\/: K) -> beta :e (J :\/: K) ->
+	        apply_fun ys i :e apply_fun Hfam alpha ->
+	        apply_fun ys (ordsucc i) :e apply_fun Hfam beta ->
+	        alpha <> beta)
+	    Hred).
+	  assume HnO0 _ _. exact HnO0.
+	}
+	claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+
+	(** Every letter lies in G1 or G2, hence in G. **)
+	claim Hyside : forall i:set, i :e n -> apply_fun ys i :e G1 \/ apply_fun ys i :e G2.
+	{
+	  exact (cor68_6_reduced_word_letter_in_G1_or_G2
+	    G multG eG invG G1 G2 J K Hfam efamH n ys
+	    Hsub1
+	    Hsub2
+	    Hfp1
+	    Hfp2
+	    Hred).
+	}
+	claim HysG : forall i:set, i :e n -> apply_fun ys i :e G.
+	{
+	  let i. assume Hi.
+	  apply (Hyside i Hi).
+	  - assume HyiG1.
+	    exact (subgroup_of_subset G1 G multG eG invG Hsub1 (apply_fun ys i) HyiG1).
+	  - assume HyiG2.
+	    exact (subgroup_of_subset G2 G multG eG invG Hsub2 (apply_fun ys i) HyiG2).
+	}
+	claim HxG : x :e G.
+	{
+	  exact (word_product_in_G_group
+	    G multG eG invG n ys
+	    Hgrp
+	    Hn_nat
+	    HysG).
+	}
+
+	(** Use the existence clause of the binary free product normal form. **)
+	set Gfam12 := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
+	set efam12 := graph (UPair 0 1) (fun _:set => eG).
+	apply (and5E
+	  (group_structure G multG eG invG)
+	  (forall alpha:set, alpha :e (UPair 0 1) ->
+	    subgroup_of (apply_fun Gfam12 alpha) G multG eG invG)
+	  (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+	    forall y:set, y :e apply_fun Gfam12 alpha -> y :e apply_fun Gfam12 beta -> y = eG)
+	  (subgroups_generate G multG eG invG (UPair 0 1) Gfam12)
+	  (forall y:set, y :e G -> y <> eG ->
+	    exists n2 xs2:set,
+	      reduced_word (UPair 0 1) Gfam12 efam12 n2 xs2 /\ n2 <> 0 /\
+	      word_product multG eG xs2 n2 = y /\
+	      (forall n' xs':set,
+	        reduced_word (UPair 0 1) Gfam12 efam12 n' xs' -> n' <> 0 ->
+	        word_product multG eG xs' n' = y ->
+	        n2 = n' /\ (forall i:set, i :e n2 -> apply_fun xs2 i = apply_fun xs' i)))
+	  Hfp).
+	assume _ _ _ _ Hex_nf.
+	apply (Hex_nf x HxG Hwpne).
+	let n2. assume Hxs2_ex.
+	apply Hxs2_ex.
+	let xs2. assume Hpack.
+	witness n2.
+	witness xs2.
+	apply (and4E
+	  (reduced_word (UPair 0 1) Gfam12 efam12 n2 xs2)
+	  (n2 <> 0)
+	  (word_product multG eG xs2 n2 = x)
+	  (forall n' xs':set,
+	    reduced_word (UPair 0 1) Gfam12 efam12 n' xs' -> n' <> 0 ->
+	    word_product multG eG xs' n' = x ->
+	    n2 = n' /\ (forall i:set, i :e n2 -> apply_fun xs2 i = apply_fun xs' i))
+	  Hpack).
+	assume Hred2 Hn2_ne0 Hwp2 _.
+	claim Hn2_ne1 : n2 <> 1.
+	{ admit. }
+	apply and4I.
+	- exact Hred2.
+	- rewrite Hwp2. reflexivity.
+	- exact Hn2_ne0.
+	- exact Hn2_ne1.
+	Admitted.
 
 (** Bounty 19 **)
 (** Lock Charlie 1772681543 **)
