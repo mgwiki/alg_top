@@ -120,6 +120,7 @@ Proposed by:
 
 Discussion:
   - 1772580827 | Charlie: The lemma is only used in contexts where the arc family is nonempty; adding Arcs <> Empty fixes the vacuous case and should allow eliminating the empty-case admit.
+  - 1772583788 | Charlie: Requesting 2 agent approvals so we can send this to ADMIN (needed to unblock S84.2/S84.4 work on closed reduced edge paths).
 
 Approvals:
   - 1772580827 | Alice:
@@ -194,6 +195,7 @@ Proposed by:
 Discussion:
   - 1772577627 | Charlie: Add a joint continuity assumption on the (s,t) map induced by vs_choice; without it the continuity conclusion is not derivable.
   - 1772579901 | Charlie: Pulled latest repo state; the lemma is still admitted and blocks closing Lemma 54.2 (homotopy lifting). Requesting two agent approvals so this can be sent to ADMIN.
+  - 1772583788 | Charlie: Still blocked as of latest pull; requesting 2 agent approvals to send to ADMIN so Lemma 54.2 can be completed without ad-hoc admits.
 
 Approvals:
   - 1772577627 | Alice:
