@@ -231001,10 +231001,186 @@ claim Hy0e : apply_fun ys 0 = eG.
 exact ((HallNe 0 H0_in) Hy0e).
 Qed.
 
+(** Infrastructure: split a word product at an add_nat boundary **)
+(** Proven Charlie **)
+Lemma word_product_split_by_add_nat :
+  forall G mult e inv n xs n1 n2:set,
+  group_structure G mult e inv ->
+  nat_p n1 ->
+  nat_p n2 ->
+  n = add_nat n1 n2 ->
+  (forall i:set, i :e n -> apply_fun xs i :e G) ->
+  word_product mult e xs n =
+    apply_fun mult
+      (word_product mult e xs n1,
+       word_product mult e (graph n2 (fun i:set => apply_fun xs (add_nat n1 i))) n2).
+let G mult e inv n xs n1 n2.
+assume Hgrp : group_structure G mult e inv.
+assume Hn1_nat : nat_p n1.
+assume Hn2_nat : nat_p n2.
+assume Hn_eq : n = add_nat n1 n2.
+assume HxsG : forall i:set, i :e n -> apply_fun xs i :e G.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultF _ HeG HassocG HidG _.
+
+(** Base product lies in G. **)
+claim Hwp_n1_G : word_product mult e xs n1 :e G.
+{
+  claim Hsub : n1 c= add_nat n1 n2.
+  { exact (add_nat_Subq_R' n1 Hn1_nat n2 Hn2_nat). }
+  exact (word_product_in_G_group
+    G mult e inv n1 xs Hgrp Hn1_nat
+    (fun i Hi =>
+      HxsG i (eq_subst_mem_set i (add_nat n1 n2) n (Hsub i Hi) (eq_symm n (add_nat n1 n2) Hn_eq)))).
+}
+
+(** Prove the split formula for all k <= n2. **)
+	claim Hwp_shift : forall k:set, nat_p k -> k :e ordsucc n2 ->
+	  word_product mult e xs (add_nat n1 k) =
+	    apply_fun mult
+	      (word_product mult e xs n1,
+	       word_product mult e (graph k (fun i:set => apply_fun xs (add_nat n1 i))) k).
+	{
+	  apply nat_ind.
+	  - assume _.
+	    claim Hadd0 : add_nat n1 0 = n1.
+	    { exact (add_nat_0R n1). }
+    claim Hwp_suf0 : word_product mult e (graph 0 (fun i:set => apply_fun xs (add_nat n1 i))) 0 = e.
+    { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun (graph 0 (fun j:set => apply_fun xs (add_nat n1 j))) i))). }
+    claim HidR : apply_fun mult (word_product mult e xs n1, e) = word_product mult e xs n1.
+    {
+      exact (andER
+        (apply_fun mult (e, word_product mult e xs n1) = word_product mult e xs n1)
+        (apply_fun mult (word_product mult e xs n1, e) = word_product mult e xs n1)
+        (HidG (word_product mult e xs n1) Hwp_n1_G)).
+    }
+    rewrite Hadd0.
+    rewrite Hwp_suf0.
+    symmetry.
+    exact HidR.
+  - let k. assume Hk_nat IH.
+    assume Hsk_in.
+    (** Derive k <= n2. **)
+    claim Hk_in_n2 : k :e n2.
+    {
+      apply (ordsuccE n2 (ordsucc k) Hsk_in).
+      - assume Hsk_in_n2.
+        exact (nat_trans n2 Hn2_nat (ordsucc k) Hsk_in_n2 k (ordsuccI2 k)).
+      - assume Hsk_eq_n2.
+        claim Heq : n2 = ordsucc k. { symmetry. exact Hsk_eq_n2. }
+        rewrite Heq.
+        exact (ordsuccI2 k).
+    }
+    claim Hk_in : k :e ordsucc n2.
+    { exact (ordsuccI1 n2 k Hk_in_n2). }
+    claim HaddSR : add_nat n1 (ordsucc k) = ordsucc (add_nat n1 k).
+    { exact (add_nat_SR n1 k Hk_nat). }
+    claim Hmsk_nat : nat_p (add_nat n1 k).
+    { exact (add_nat_p n1 Hn1_nat k Hk_nat). }
+    claim Hwp_step :
+      word_product mult e xs (add_nat n1 (ordsucc k)) =
+        apply_fun mult (word_product mult e xs (add_nat n1 k), apply_fun xs (add_nat n1 k)).
+    {
+      rewrite HaddSR.
+      exact (word_product_succ mult e xs (add_nat n1 k) Hmsk_nat).
+    }
+    claim IH_applied :
+      word_product mult e xs (add_nat n1 k) =
+        apply_fun mult
+          (word_product mult e xs n1,
+           word_product mult e (graph k (fun i:set => apply_fun xs (add_nat n1 i))) k).
+    { exact (IH Hk_in). }
+    claim Hsuf_step :
+      word_product mult e (graph (ordsucc k) (fun i:set => apply_fun xs (add_nat n1 i))) (ordsucc k) =
+        apply_fun mult
+          (word_product mult e (graph k (fun i:set => apply_fun xs (add_nat n1 i))) k,
+           apply_fun xs (add_nat n1 k)).
+    {
+      claim Hwp_suf_succ :
+        word_product mult e (graph (ordsucc k) (fun i:set => apply_fun xs (add_nat n1 i))) (ordsucc k) =
+          apply_fun mult
+            (word_product mult e (graph (ordsucc k) (fun i:set => apply_fun xs (add_nat n1 i))) k,
+             apply_fun (graph (ordsucc k) (fun i:set => apply_fun xs (add_nat n1 i))) k).
+      { exact (word_product_succ mult e (graph (ordsucc k) (fun i:set => apply_fun xs (add_nat n1 i))) k Hk_nat). }
+      claim Hlast :
+        apply_fun (graph (ordsucc k) (fun i:set => apply_fun xs (add_nat n1 i))) k =
+          apply_fun xs (add_nat n1 k).
+      { exact (apply_fun_graph (ordsucc k) (fun i:set => apply_fun xs (add_nat n1 i)) k (ordsuccI2 k)). }
+      claim Hpref_eq :
+        word_product mult e (graph (ordsucc k) (fun i:set => apply_fun xs (add_nat n1 i))) k =
+        word_product mult e (graph k (fun i:set => apply_fun xs (add_nat n1 i))) k.
+      {
+        claim HkO : k :e omega. { exact (nat_p_omega k Hk_nat). }
+        apply (nat_primrec_ext e
+          (fun i r => apply_fun mult (r, apply_fun (graph (ordsucc k) (fun j:set => apply_fun xs (add_nat n1 j))) i))
+          (fun i r => apply_fun mult (r, apply_fun (graph k (fun j:set => apply_fun xs (add_nat n1 j))) i))
+          k
+          HkO).
+        let i r. assume Hi.
+        rewrite (apply_fun_graph (ordsucc k) (fun j:set => apply_fun xs (add_nat n1 j)) i (ordsuccI1 k i Hi)).
+        rewrite (apply_fun_graph k (fun j:set => apply_fun xs (add_nat n1 j)) i Hi).
+        reflexivity.
+      }
+      rewrite Hwp_suf_succ.
+      rewrite Hpref_eq.
+      rewrite Hlast.
+      reflexivity.
+    }
+    (** Element membership for associativity. **)
+	    claim Hwp_suf_G : word_product mult e (graph k (fun i:set => apply_fun xs (add_nat n1 i))) k :e G.
+	    {
+	      claim Hn2_ord : ordinal n2. { exact (nat_p_ordinal n2 Hn2_nat). }
+	      claim Hk_sub_n2 : k c= n2.
+	      { exact (ordinal_TransSet n2 Hn2_ord k Hk_in_n2). }
+	      exact (word_product_in_G_group
+	        G mult e inv k (graph k (fun i:set => apply_fun xs (add_nat n1 i))) Hgrp Hk_nat
+	        (fun i Hi =>
+	          eq_subst_mem
+	            (apply_fun (graph k (fun j:set => apply_fun xs (add_nat n1 j))) i)
+	            (apply_fun xs (add_nat n1 i))
+	            G
+	            (apply_fun_graph k (fun j:set => apply_fun xs (add_nat n1 j)) i Hi)
+	            (HxsG (add_nat n1 i)
+	              (eq_subst_mem_set (add_nat n1 i) (add_nat n1 n2) n
+	                (add_nat_In_L n1 Hn1_nat n2 Hn2_nat i (Hk_sub_n2 i Hi))
+	                (eq_symm n (add_nat n1 n2) Hn_eq))))).
+	    }
+    claim Hx_last_G : apply_fun xs (add_nat n1 k) :e G.
+    {
+      exact (HxsG (add_nat n1 k)
+        (eq_subst_mem_set (add_nat n1 k) (add_nat n1 n2) n
+          (add_nat_In_L n1 Hn1_nat n2 Hn2_nat k Hk_in_n2)
+          (eq_symm n (add_nat n1 n2) Hn_eq))).
+    }
+    rewrite Hwp_step.
+    rewrite IH_applied.
+    rewrite Hsuf_step.
+    exact (HassocG
+      (word_product mult e xs n1)
+      (word_product mult e (graph k (fun i:set => apply_fun xs (add_nat n1 i))) k)
+      (apply_fun xs (add_nat n1 k))
+      Hwp_n1_G
+      Hwp_suf_G
+      Hx_last_G).
+}
+
+rewrite Hn_eq.
+exact (Hwp_shift n2 Hn2_nat (ordsuccI2 n2)).
+Qed.
+
 (** Infrastructure for Cor 68.6 (Bounty 19): collapse a mixed (J \\/ K)-reduced word to a binary reduced word **)
 (** The binary word lives in factors G1/G2 and has length >= 2 when both factors occur. **)
-	Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
-	  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+		Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
+		  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
 	  group_structure G multG eG invG ->
 	  subgroup_of G1 G multG eG invG ->
 	  subgroup_of G2 G multG eG invG ->
