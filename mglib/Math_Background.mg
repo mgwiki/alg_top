@@ -327533,6 +327533,110 @@ apply Hcase.
       Hfin63
       HoriC64).
   }
+  claim Hsharede4 :
+    exists C65:set, C65 :e Arcs /\ C65 <> C64 /\ e4 :e C65.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C64 /\ d4 :e C)
+      (exists D:set, D :e Arcs /\ D <> C64 /\ e4 :e D)
+      (Hallshared C64 d4 e4 HC64 Hd4e4)).
+  }
+  apply Hsharede4. let C65. assume HC65pack.
+  claim HC65pair : C65 :e Arcs /\ C65 <> C64.
+  { exact (andEL (C65 :e Arcs /\ C65 <> C64) (e4 :e C65) HC65pack). }
+  claim HC65 : C65 :e Arcs.
+  { exact (andEL (C65 :e Arcs) (C65 <> C64) HC65pair). }
+  claim HC65neC64 : C65 <> C64.
+  { exact (andER (C65 :e Arcs) (C65 <> C64) HC65pair). }
+  claim He4C65 : e4 :e C65.
+  { exact (andER (C65 :e Arcs /\ C65 <> C64) (e4 :e C65) HC65pack). }
+  claim He4C64 : e4 :e C64.
+  { exact (end_points_of_arc_right_in_set C64 (subspace_topology T Tx C64) d4 e4 Hd4e4). }
+  claim HC64neC65 : C64 <> C65.
+  { assume Heq. exact (HC65neC64 (eq_symm C64 C65 Heq)). }
+  claim HintC64C65 :
+    C64 :/\: C65 = Empty \/
+    (exists r65:set, C64 :/\: C65 = Sing r65 /\
+      (exists s65:set, end_points_of_arc C64 (subspace_topology T Tx C64) r65 s65 \/
+                     end_points_of_arc C64 (subspace_topology T Tx C64) s65 r65) /\
+      (exists t65:set, end_points_of_arc C65 (subspace_topology T Tx C65) r65 t65 \/
+                     end_points_of_arc C65 (subspace_topology T Tx C65) t65 r65)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C64
+      C65
+      Hglg
+      HC64
+      HC65
+      HC64neC65).
+  }
+  claim He4_is_endpoint_C65 :
+    exists f4:set, end_points_of_arc C65 (subspace_topology T Tx C65) e4 f4 \/
+                    end_points_of_arc C65 (subspace_topology T Tx C65) f4 e4.
+  {
+    apply HintC64C65.
+    - assume Hempty.
+      claim He4CC : e4 :e C64 :/\: C65. { exact (binintersectI C64 C65 e4 He4C64 He4C65). }
+      exact (EmptyE e4 (eq_subst_mem_set e4 (C64 :/\: C65) Empty He4CC Hempty)
+        (exists f4:set, end_points_of_arc C65 (subspace_topology T Tx C65) e4 f4 \/
+                        end_points_of_arc C65 (subspace_topology T Tx C65) f4 e4)).
+    - assume Hsing. apply Hsing. let r65. assume Hr65pack.
+      apply (and3E
+        (C64 :/\: C65 = Sing r65)
+        (exists s65:set, end_points_of_arc C64 (subspace_topology T Tx C64) r65 s65 \/
+                       end_points_of_arc C64 (subspace_topology T Tx C64) s65 r65)
+        (exists t65:set, end_points_of_arc C65 (subspace_topology T Tx C65) r65 t65 \/
+                       end_points_of_arc C65 (subspace_topology T Tx C65) t65 r65)
+        Hr65pack).
+      assume Hr65eq _ HC65end.
+      claim He4CC : e4 :e C64 :/\: C65. { exact (binintersectI C64 C65 e4 He4C64 He4C65). }
+      claim He4r65 : e4 = r65.
+      { exact (SingE r65 e4 (eq_subst_mem_set e4 (C64 :/\: C65) (Sing r65) He4CC Hr65eq)). }
+      apply HC65end. let t65. assume Ht65.
+      witness t65.
+      apply Ht65.
+      * assume Hr65t : end_points_of_arc C65 (subspace_topology T Tx C65) r65 t65.
+        apply orIL. rewrite He4r65. exact Hr65t.
+      * assume Ht65r : end_points_of_arc C65 (subspace_topology T Tx C65) t65 r65.
+        apply orIR. rewrite He4r65. exact Ht65r.
+  }
+  apply He4_is_endpoint_C65. let f4. assume Hf4cases.
+  claim He4f4 : end_points_of_arc C65 (subspace_topology T Tx C65) e4 f4.
+  { apply Hf4cases.
+    - assume He4f : end_points_of_arc C65 (subspace_topology T Tx C65) e4 f4. exact He4f.
+    - assume Hf4e : end_points_of_arc C65 (subspace_topology T Tx C65) f4 e4.
+      exact (end_points_of_arc_sym C65 (subspace_topology T Tx C65) f4 e4 Hf4e). }
+  claim HoriC65 : oriented_edge T Tx Arcs C65 e4 f4.
+  { exact (andI (C65 :e Arcs) (end_points_of_arc C65 (subspace_topology T Tx C65) e4 f4) HC65 He4f4). }
+  set n65 := ordsucc n64.
+  set path66 :=
+    (graph n65 (fun i:set => apply_fun path65 i)) :\/:
+    (graph {n65} (fun _:set => ((e4, f4), C65))).
+  claim Hep66 : edge_path T Tx Arcs (ordsucc n65) path66 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n65 path65 q0 n64 C65 e4 f4
+      Hglg
+      Hep65
+      (ordsuccI2 n64)
+      (In_irref (ordsucc n64))
+      Hfin64
+      HoriC65).
+  }
+  claim Hfin65 : (apply_fun path66 n65) 0 1 = f4.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n65 path65 q0 n64 C65 e4 f4
+      Hglg
+      Hep65
+      (ordsuccI2 n64)
+      (In_irref (ordsucc n64))
+      Hfin64
+      HoriC65).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
