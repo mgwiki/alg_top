@@ -230785,18 +230785,30 @@ Qed.
 	  - assume HyiG2.
 	    exact (subgroup_of_subset G2 G multG eG invG Hsub2 (apply_fun ys i) HyiG2).
 	}
-	claim HxG : x :e G.
-	{
-	  exact (word_product_in_G_group
-	    G multG eG invG n ys
-	    Hgrp
-	    Hn_nat
-	    HysG).
-	}
+		claim HxG : x :e G.
+		{
+		  exact (word_product_in_G_group
+		    G multG eG invG n ys
+		    Hgrp
+		    Hn_nat
+		    HysG).
+		}
 
-	(** Use the existence clause of the binary free product normal form. **)
-	set Gfam12 := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
-	set efam12 := graph (UPair 0 1) (fun _:set => eG).
+    (** Record a concrete adjacent G1/G2 switch in the original word (used later). **)
+    claim Hswitch :
+      exists i:set,
+        i :e n /\ ordsucc i :e n /\
+        ((apply_fun ys i :e G1 /\ apply_fun ys (ordsucc i) :e G2) \/
+         (apply_fun ys i :e G2 /\ apply_fun ys (ordsucc i) :e G1)).
+    {
+      exact (cor68_6_mixed_word_has_adjacent_G1_G2_switch
+        G multG eG invG G1 G2 J K Hfam efamH n ys
+        Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe HexG1 HexG2).
+    }
+
+		(** Use the existence clause of the binary free product normal form. **)
+		set Gfam12 := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
+		set efam12 := graph (UPair 0 1) (fun _:set => eG).
 	apply (and5E
 	  (group_structure G multG eG invG)
 	  (forall alpha:set, alpha :e (UPair 0 1) ->
