@@ -225801,9 +225801,39 @@ claim Hab_notin : word_product mult e xs 2 /:e G1.
     neq_2_0
     H2_ne1).
 }
-rewrite <- Hwp2.
-exact Hab_notin.
-Qed.
+	rewrite <- Hwp2.
+	exact Hab_notin.
+	Qed.
+
+	(** Infrastructure: natural numbers are finite (as sets) **)
+	(** Proven Charlie **)
+	Lemma nat_p_finite : forall n:set, nat_p n -> finite n.
+	let n.
+	assume Hn.
+	exact (nat_finite n Hn).
+	Qed.
+
+	(** Infrastructure: every nonempty subset of a natural number has a maximum **)
+	(** Proven Charlie **)
+	Lemma nat_nonempty_subset_has_max : forall n S:set,
+	  nat_p n ->
+	  S c= n ->
+	  S <> Empty ->
+	  exists m:set, m :e S /\ forall s:set, s :e S -> s c= m.
+	let n S.
+	assume Hn HSsub HSne.
+	claim Hord : ordinal n.
+	{ exact (nat_p_ordinal n Hn). }
+	claim HfinS : finite S.
+	{
+	  exact (Subq_finite
+	    n
+	    (nat_p_finite n Hn)
+	    S
+	    HSsub).
+	}
+	exact (finite_nonempty_subset_of_ordinal_has_max n S Hord HfinS HSsub HSne).
+	Qed.
 
 (** Proven Charlie **)
 Lemma free_product_binary_mult_cross_not_in_right_factor :
