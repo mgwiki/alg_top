@@ -212209,6 +212209,127 @@ claim Hn_eq0 : n = 0.
 exact (Hn_ne0 Hn_eq0).
 Qed.
 
+(** Infrastructure: in a free product, any nonempty reduced word with no identity entries cannot represent e **)
+(** Proven Charlie **)
+Lemma free_product_reduced_word_length_ne0_product_ne_e :
+  forall G mult e inv J Gfam efam n xs:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  reduced_word J Gfam efam n xs ->
+  (forall i:set, i :e n -> apply_fun xs i :e G) ->
+  (forall i:set, i :e n -> apply_fun xs i <> e) ->
+  n <> 0 ->
+  word_product mult e xs n <> e.
+let G mult e inv J Gfam efam n xs.
+assume Hfp : free_product_of_subgroups G mult e inv J Gfam efam.
+assume Hred : reduced_word J Gfam efam n xs.
+assume HxsG : forall i:set, i :e n -> apply_fun xs i :e G.
+assume HxsNe : forall i:set, i :e n -> apply_fun xs i <> e.
+assume Hn_ne0 : n <> 0.
+
+(** Extract group structure. **)
+apply (and5E
+  (group_structure G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall y:set, y :e apply_fun Gfam alpha -> y :e apply_fun Gfam beta -> y = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall y:set, y :e G -> y <> e ->
+    exists n0 xs0:set,
+      reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product mult e xs0 n0 = y /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = y ->
+        n0 = n' /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs' i0)))
+  Hfp).
+assume Hgrp _ _ _ _.
+
+claim HnO : n :e omega.
+{
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs i :e apply_fun Gfam alpha /\
+        apply_fun xs i <> apply_fun efam alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e J -> beta :e J ->
+        apply_fun xs i :e apply_fun Gfam alpha ->
+        apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+        alpha <> beta)
+    Hred).
+  assume HnO0 _ _. exact HnO0.
+}
+claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+
+apply (nat_inv n Hn_nat).
+- assume Hn0 : n = 0.
+  exact (FalseE (Hn_ne0 Hn0) (word_product mult e xs n <> e)).
+- assume Hm_ex.
+  apply Hm_ex.
+  let m. assume Hm_pack.
+  claim Hm_nat : nat_p m.
+  { exact (andEL (nat_p m) (n = ordsucc m) Hm_pack). }
+  claim Hn_eq : n = ordsucc m.
+  { exact (andER (nat_p m) (n = ordsucc m) Hm_pack). }
+  apply (xm (m = 0)).
+  * assume Hm0 : m = 0.
+    claim Hn1 : n = 1.
+    { rewrite Hn_eq. rewrite Hm0. exact ordsucc_0_eq_1_nat. }
+    claim Hxs0_ne : apply_fun xs 0 <> e.
+    { exact (HxsNe 0 (eq_subst_mem_set 0 1 n (ordsuccI2 0) (eq_symm n 1 Hn1))). }
+    claim Hxs0_G : apply_fun xs 0 :e G.
+    { exact (HxsG 0 (eq_subst_mem_set 0 1 n (ordsuccI2 0) (eq_symm n 1 Hn1))). }
+    claim Hwp1 : word_product mult e xs n = apply_fun xs 0.
+    {
+      rewrite Hn1.
+      claim Hwp_succ : word_product mult e xs 1 =
+        apply_fun mult (word_product mult e xs 0, apply_fun xs 0).
+      { exact (word_product_succ mult e xs 0 nat_0). }
+      claim Hwp0 : word_product mult e xs 0 = e.
+      { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun xs i))). }
+      claim HidL : apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0.
+      {
+        apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall x y z:set, x :e G -> y :e G -> z :e G ->
+            apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+          (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+          (forall x:set, x :e G ->
+            apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+          Hgrp).
+        assume _ _ _ _ Hid _.
+        exact (andEL
+          (apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0)
+          (apply_fun mult (apply_fun xs 0, e) = apply_fun xs 0)
+          (Hid (apply_fun xs 0) Hxs0_G)).
+      }
+      rewrite Hwp_succ.
+      rewrite Hwp0.
+      exact HidL.
+    }
+    assume Habs : word_product mult e xs n = e.
+    apply Hxs0_ne.
+    rewrite <- Hwp1.
+    exact Habs.
+  * assume Hm_ne0.
+    claim Hn_ne1 : n <> 1.
+    {
+      assume Hn1.
+      claim Hs : ordsucc m = ordsucc 0.
+      { rewrite <- Hn_eq. rewrite <- ordsucc_0_eq_1_nat. exact Hn1. }
+      exact (Hm_ne0 (ordsucc_inj m 0 Hs)).
+    }
+    exact (free_product_reduced_word_length_ge2_product_ne_e
+      G mult e inv J Gfam efam n xs
+      Hfp
+      Hred
+      Hn_ne0
+      Hn_ne1).
+Qed.
+
 (** Infrastructure: the least normal subgroup of G containing a subset S **)
 Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
   fun G mult e inv S =>
