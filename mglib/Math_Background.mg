@@ -231471,6 +231471,88 @@ rewrite Hwp_split.
 exact Habs.
 Qed.
 
+(** Infrastructure for Cor 68.6: a binary reduced word that has letters from both factors has length not 1 **)
+(** Proven Charlie **)
+Lemma binary_reduced_word_both_factors_length_ne1 :
+  forall G mult e inv G1 G2 n xs:set,
+  group_structure G mult e inv ->
+  free_product_of_subgroups G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e)) ->
+  reduced_word (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e))
+    n xs ->
+  (exists i:set, i :e n /\ apply_fun xs i :e G1) ->
+  (exists i:set, i :e n /\ apply_fun xs i :e G2) ->
+  n <> 1.
+let G mult e inv G1 G2 n xs.
+assume Hgrp Hfp Hred HexG1 HexG2.
+assume Hn1 : n = 1.
+
+apply HexG1. let i. assume Hi_pack.
+claim Hi_in : i :e n.
+{ exact (andEL (i :e n) (apply_fun xs i :e G1) Hi_pack). }
+claim HxiG1 : apply_fun xs i :e G1.
+{ exact (andER (i :e n) (apply_fun xs i :e G1) Hi_pack). }
+claim Hi0 : i = 0.
+{
+  claim Hi1 : i :e 1.
+  { exact (eq_subst_mem_set i n 1 Hi_in Hn1). }
+  apply (cases_1 i Hi1 (fun j:set => j = 0)).
+  exact (eq_refl 0).
+}
+claim H0_in : 0 :e n.
+{ rewrite Hn1. exact (ordsuccI2 0). }
+claim Hx0G1 : apply_fun xs 0 :e G1.
+{ rewrite <- Hi0. exact HxiG1. }
+
+apply HexG2. let j. assume Hj_pack.
+claim Hj_in : j :e n.
+{ exact (andEL (j :e n) (apply_fun xs j :e G2) Hj_pack). }
+claim HxjG2 : apply_fun xs j :e G2.
+{ exact (andER (j :e n) (apply_fun xs j :e G2) Hj_pack). }
+claim Hj0 : j = 0.
+{
+  claim Hj1 : j :e 1.
+  { exact (eq_subst_mem_set j n 1 Hj_in Hn1). }
+  apply (cases_1 j Hj1 (fun k:set => k = 0)).
+  exact (eq_refl 0).
+}
+claim Hx0G2 : apply_fun xs 0 :e G2.
+{ rewrite <- Hj0. exact HxjG2. }
+
+claim Hx0e : apply_fun xs 0 = e.
+{
+  exact (free_product_binary_factors_intersect_trivial
+    G mult e inv G1 G2 (apply_fun xs 0)
+    Hfp
+    Hx0G1
+    Hx0G2).
+}
+
+(** reduced_word forces the unique entry at 0 to be nontrivial **)
+claim Hx0ne : apply_fun xs 0 <> e.
+{
+  apply (reduced_word_elem
+    (UPair 0 1)
+    (graph (UPair 0 1) (fun t:set => if t = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e))
+    n xs 0 Hred H0_in).
+  let alpha. assume Ha_pack.
+  apply (and3E
+    (alpha :e (UPair 0 1))
+    (apply_fun xs 0 :e apply_fun (graph (UPair 0 1) (fun t:set => if t = 0 then G1 else G2)) alpha)
+    (apply_fun xs 0 <> apply_fun (graph (UPair 0 1) (fun _:set => e)) alpha)
+    Ha_pack).
+  assume HalphaU _ Hne.
+  apply Hne.
+  rewrite (apply_fun_graph (UPair 0 1) (fun _:set => e) alpha HalphaU).
+  exact Hx0e.
+}
+exact (Hx0ne Hx0e).
+Qed.
+
 		Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
 		  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
 	  group_structure G multG eG invG ->
