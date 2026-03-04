@@ -209877,6 +209877,102 @@ apply and3I.
     Hxssi_Gb).
 Qed.
 
+(** Infrastructure: suffix of reduced word obtained by shifting indices by add_nat **)
+(** This generalizes reduced_word_suffix (shift by 1) to an arbitrary shift n1. **)
+(** Proven Charlie **)
+Lemma reduced_word_suffix_by_add_nat :
+  forall J Gfam efam n xs n1 n2:set,
+  reduced_word J Gfam efam n xs ->
+  nat_p n1 ->
+  nat_p n2 ->
+  n = add_nat n1 n2 ->
+  reduced_word J Gfam efam n2 (graph n2 (fun i:set => apply_fun xs (add_nat n1 i))).
+let J Gfam efam n xs n1 n2.
+assume Hred Hn1_nat Hn2_nat Hn_eq.
+apply (and3E
+  (n :e omega)
+  (forall i:set, i :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs i :e apply_fun Gfam alpha /\
+      apply_fun xs i <> apply_fun efam alpha)
+  (forall i:set, i :e n -> ordsucc i :e n ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun xs i :e apply_fun Gfam alpha ->
+      apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+      alpha <> beta)
+  Hred).
+assume _ Helem Hadj.
+prove n2 :e omega /\
+  (forall i:set, i :e n2 ->
+    exists alpha:set, alpha :e J /\
+      apply_fun (graph n2 (fun t:set => apply_fun xs (add_nat n1 t))) i :e apply_fun Gfam alpha /\
+      apply_fun (graph n2 (fun t:set => apply_fun xs (add_nat n1 t))) i <> apply_fun efam alpha) /\
+  (forall i:set, i :e n2 -> ordsucc i :e n2 ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun (graph n2 (fun t:set => apply_fun xs (add_nat n1 t))) i :e apply_fun Gfam alpha ->
+      apply_fun (graph n2 (fun t:set => apply_fun xs (add_nat n1 t))) (ordsucc i) :e apply_fun Gfam beta ->
+      alpha <> beta).
+apply and3I.
+- exact (nat_p_omega n2 Hn2_nat).
+- let i. assume Hi2 : i :e n2.
+  claim Hin_sum : add_nat n1 i :e add_nat n1 n2.
+  { exact (add_nat_In_L n1 Hn1_nat n2 Hn2_nat i Hi2). }
+  claim Hin_n : add_nat n1 i :e n.
+  { exact (eq_subst_mem_set (add_nat n1 i) (add_nat n1 n2) n Hin_sum (eq_symm n (add_nat n1 n2) Hn_eq)). }
+  apply (Helem (add_nat n1 i) Hin_n).
+  let alpha. assume Halpha_pack.
+  apply (and3E
+    (alpha :e J)
+    (apply_fun xs (add_nat n1 i) :e apply_fun Gfam alpha)
+    (apply_fun xs (add_nat n1 i) <> apply_fun efam alpha)
+    Halpha_pack).
+  assume Hal Hmem Hne.
+  witness alpha.
+  apply and3I.
+  * exact Hal.
+  * rewrite (apply_fun_graph n2 (fun t:set => apply_fun xs (add_nat n1 t)) i Hi2).
+    exact Hmem.
+  * rewrite (apply_fun_graph n2 (fun t:set => apply_fun xs (add_nat n1 t)) i Hi2).
+    exact Hne.
+- let i. assume Hi2 Hsi2.
+  let alpha beta. assume Hal Hb Hxi Hxsi.
+  claim Hin_sum : add_nat n1 i :e add_nat n1 n2.
+  { exact (add_nat_In_L n1 Hn1_nat n2 Hn2_nat i Hi2). }
+  claim Hin_n : add_nat n1 i :e n.
+  { exact (eq_subst_mem_set (add_nat n1 i) (add_nat n1 n2) n Hin_sum (eq_symm n (add_nat n1 n2) Hn_eq)). }
+  claim Hsi_sum : add_nat n1 (ordsucc i) :e add_nat n1 n2.
+  { exact (add_nat_In_L n1 Hn1_nat n2 Hn2_nat (ordsucc i) Hsi2). }
+  claim HiO : i :e omega.
+  {
+    claim Hn2O : n2 :e omega.
+    { exact (nat_p_omega n2 Hn2_nat). }
+    claim Hsub : n2 c= omega.
+    { exact (omega_TransSet n2 Hn2O). }
+    exact (Hsub i Hi2).
+  }
+  claim Hi_nat : nat_p i.
+  { exact (omega_nat_p i HiO). }
+  claim Hsi_sum' : ordsucc (add_nat n1 i) :e add_nat n1 n2.
+  {
+    rewrite <- (add_nat_SR n1 i Hi_nat).
+    exact Hsi_sum.
+  }
+  claim Hsi_n : ordsucc (add_nat n1 i) :e n.
+  { exact (eq_subst_mem_set (ordsucc (add_nat n1 i)) (add_nat n1 n2) n Hsi_sum' (eq_symm n (add_nat n1 n2) Hn_eq)). }
+  claim Hlhs : apply_fun xs (add_nat n1 i) :e apply_fun Gfam alpha.
+  {
+    rewrite <- (apply_fun_graph n2 (fun t:set => apply_fun xs (add_nat n1 t)) i Hi2).
+    exact Hxi.
+  }
+  claim Hridx : apply_fun xs (ordsucc (add_nat n1 i)) :e apply_fun Gfam beta.
+  {
+    rewrite <- (add_nat_SR n1 i Hi_nat).
+    rewrite <- (apply_fun_graph n2 (fun t:set => apply_fun xs (add_nat n1 t)) (ordsucc i) Hsi2).
+    exact Hxsi.
+  }
+  exact (Hadj (add_nat n1 i) Hin_n Hsi_n alpha beta Hal Hb Hlhs Hridx).
+Qed.
+
 (** Infrastructure: the product represented by a word of length n **)
 Definition word_product : set -> set -> set -> set -> set :=
   fun mult e xs n =>
