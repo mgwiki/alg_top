@@ -82,6 +82,53 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772594849
+Created: 1772594849
+Status: PROPOSED
+
+Refers to Commit:
+  d4a941a7cdd111cd66c66d5caf4484aa07ac4bda
+
+Target:
+  Line: 271523
+  Name: thm80_3_universal_covers_everything (Theorem)
+
+Problem:
+  The statement is false when Y is not connected (or not path connected).
+  A covering_map q: E -> Y must be surjective, so if E is (path) connected then Y must be too.
+  More concretely: if Y is a disconnected covering space of B with >=2 components, there cannot exist
+  a surjective covering map q from connected E onto Y, so the conclusion fails.
+
+Proposed Replacement:
+  Theorem thm80_3_universal_covers_everything :
+    forall E Te B Tb p:set,
+    covering_map E Te B Tb p ->
+    simply_connected E Te ->
+    locally_path_connected E Te ->
+    forall Y Ty r:set,
+      covering_map Y Ty B Tb r ->
+      locally_path_connected Y Ty ->
+      path_connected_space Y Ty ->
+      exists q:set,
+        covering_map E Te Y Ty q /\
+        (forall x:set, x :e E ->
+          apply_fun r (apply_fun q x) = apply_fun p x).
+
+Proposed by:
+  - 1772594849 | Charlie
+
+Discussion:
+  - 1772594849 | Charlie: The file comment already notes this missing hypothesis; adding it should unblock the USD 121 bounty proof and matches the standard universal-cover lifting statement (for connected coverings).
+
+Approvals:
+  - 1772594849 | Alice:
+  - 1772594849 | Bob:
+  - 1772594849 | Charlie: YES
+  - 1772594849 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772594575
 Created: 1772594575
 Status: PROPOSED
