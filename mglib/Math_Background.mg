@@ -231001,6 +231001,118 @@ claim Hy0e : apply_fun ys 0 = eG.
 exact ((HallNe 0 H0_in) Hy0e).
 Qed.
 
+(** Infrastructure for Cor 68.6: pick a maximal index carrying a G2-letter; the later suffix has only G1-letters **)
+(** Proven Charlie **)
+Lemma cor68_6_max_G2_index_suffix_all_in_G1 :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G1) ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G2) ->
+  exists m:set,
+    m :e n /\ apply_fun ys m :e G2 /\
+    (forall i:set, i :e n -> apply_fun ys i :e G2 -> i c= m) /\
+    (forall i:set, i :e n -> ordsucc m c= i -> apply_fun ys i :e G1).
+let G multG eG invG G1 G2 J K Hfam efamH n ys.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe HexG1 HexG2.
+
+(** n is a natural number. **)
+claim HnO : n :e omega.
+{
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e (J :\/: K) /\
+        apply_fun ys i :e apply_fun Hfam alpha /\
+        apply_fun ys i <> apply_fun efamH alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e (J :\/: K) -> beta :e (J :\/: K) ->
+        apply_fun ys i :e apply_fun Hfam alpha ->
+        apply_fun ys (ordsucc i) :e apply_fun Hfam beta ->
+        alpha <> beta)
+    Hred).
+  assume HnO0 _ _. exact HnO0.
+}
+claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+
+(** Every letter lies in G1 or G2. **)
+claim Hyside : forall i:set, i :e n -> apply_fun ys i :e G1 \/ apply_fun ys i :e G2.
+{
+  exact (cor68_6_reduced_word_letter_in_G1_or_G2
+    G multG eG invG G1 G2 J K Hfam efamH n ys
+    Hsub1 Hsub2 Hfp1 Hfp2 Hred).
+}
+
+(** Define the set of indices carrying G2-letters and take its maximum. **)
+set S := {i :e n | apply_fun ys i :e G2}.
+claim HSsub : S c= n.
+{
+  let i. assume HiS.
+  exact (andEL (i :e n) (apply_fun ys i :e G2)
+    (SepE n (fun j:set => apply_fun ys j :e G2) i HiS)).
+}
+claim HSne : S <> Empty.
+{
+  assume HSemp.
+  apply HexG2. let i. assume Hi_pack.
+  claim Hi_in : i :e n.
+  { exact (andEL (i :e n) (apply_fun ys i :e G2) Hi_pack). }
+  claim HyiG2 : apply_fun ys i :e G2.
+  { exact (andER (i :e n) (apply_fun ys i :e G2) Hi_pack). }
+  claim HiS : i :e S.
+  { exact (SepI n (fun j:set => apply_fun ys j :e G2) i Hi_in HyiG2). }
+  exact (EmptyE i (eq_subst_mem_set i S Empty HiS HSemp)).
+}
+claim Hmax : exists m:set, m :e S /\ forall s:set, s :e S -> s c= m.
+{
+  exact (nat_nonempty_subset_has_max n S Hn_nat HSsub HSne).
+}
+apply Hmax. let m. assume Hm_pack.
+claim HmS : m :e S.
+{ exact (andEL (m :e S) (forall s:set, s :e S -> s c= m) Hm_pack). }
+claim Hm_max : forall s:set, s :e S -> s c= m.
+{ exact (andER (m :e S) (forall s:set, s :e S -> s c= m) Hm_pack). }
+claim Hm_in : m :e n.
+{ exact (andEL (m :e n) (apply_fun ys m :e G2)
+    (SepE n (fun j:set => apply_fun ys j :e G2) m HmS)). }
+claim HymG2 : apply_fun ys m :e G2.
+{ exact (andER (m :e n) (apply_fun ys m :e G2)
+    (SepE n (fun j:set => apply_fun ys j :e G2) m HmS)). }
+
+witness m.
+apply and4I.
+- exact Hm_in.
+- exact HymG2.
+- let i. assume Hi_n HyiG2.
+  exact (Hm_max i (SepI n (fun j:set => apply_fun ys j :e G2) i Hi_n HyiG2)).
+- let i. assume Hi_n Hsm_sub_i.
+  (** If i carried a G2-letter, it would be <= m; but ordsucc m <= i makes that impossible. **)
+  apply (Hyside i Hi_n).
+  * assume HyiG1. exact HyiG1.
+  * assume HyiG2.
+    claim Hi_sub_m : i c= m.
+    { exact (Hm_max i (SepI n (fun j:set => apply_fun ys j :e G2) i Hi_n HyiG2)). }
+    claim Hm_in_m : m :e m.
+    {
+      claim Hm_in_i : m :e i.
+      { exact (Hsm_sub_i m (ordsuccI2 m)). }
+      exact (Hi_sub_m m Hm_in_i).
+    }
+    exact (FalseE (In_irref m Hm_in_m) (apply_fun ys i :e G1)).
+Qed.
+
 (** Infrastructure: split a word product at an add_nat boundary **)
 (** Proven Charlie **)
 Lemma word_product_split_by_add_nat :
