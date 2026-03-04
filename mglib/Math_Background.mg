@@ -329720,6 +329720,110 @@ apply Hcase.
       Hfin84
       HoriC85).
   }
+  claim Hsharedz4 :
+    exists C86:set, C86 :e Arcs /\ C86 <> C85 /\ z4 :e C86.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C85 /\ y4 :e C)
+      (exists D:set, D :e Arcs /\ D <> C85 /\ z4 :e D)
+      (Hallshared C85 y4 z4 HC85 Hy4z4)).
+  }
+  apply Hsharedz4. let C86. assume HC86pack.
+  claim HC86pair : C86 :e Arcs /\ C86 <> C85.
+  { exact (andEL (C86 :e Arcs /\ C86 <> C85) (z4 :e C86) HC86pack). }
+  claim HC86 : C86 :e Arcs.
+  { exact (andEL (C86 :e Arcs) (C86 <> C85) HC86pair). }
+  claim HC86neC85 : C86 <> C85.
+  { exact (andER (C86 :e Arcs) (C86 <> C85) HC86pair). }
+  claim Hz4C86 : z4 :e C86.
+  { exact (andER (C86 :e Arcs /\ C86 <> C85) (z4 :e C86) HC86pack). }
+  claim Hz4C85 : z4 :e C85.
+  { exact (end_points_of_arc_right_in_set C85 (subspace_topology T Tx C85) y4 z4 Hy4z4). }
+  claim HC85neC86 : C85 <> C86.
+  { assume Heq. exact (HC86neC85 (eq_symm C85 C86 Heq)). }
+  claim HintC85C86 :
+    C85 :/\: C86 = Empty \/
+    (exists r86:set, C85 :/\: C86 = Sing r86 /\
+      (exists s86:set, end_points_of_arc C85 (subspace_topology T Tx C85) r86 s86 \/
+                     end_points_of_arc C85 (subspace_topology T Tx C85) s86 r86) /\
+      (exists t86:set, end_points_of_arc C86 (subspace_topology T Tx C86) r86 t86 \/
+                     end_points_of_arc C86 (subspace_topology T Tx C86) t86 r86)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C85
+      C86
+      Hglg
+      HC85
+      HC86
+      HC85neC86).
+  }
+  claim Hz4_is_endpoint_C86 :
+    exists a5:set, end_points_of_arc C86 (subspace_topology T Tx C86) z4 a5 \/
+                    end_points_of_arc C86 (subspace_topology T Tx C86) a5 z4.
+  {
+    apply HintC85C86.
+    - assume Hempty.
+      claim Hz4CC : z4 :e C85 :/\: C86. { exact (binintersectI C85 C86 z4 Hz4C85 Hz4C86). }
+      exact (EmptyE z4 (eq_subst_mem_set z4 (C85 :/\: C86) Empty Hz4CC Hempty)
+        (exists a5:set, end_points_of_arc C86 (subspace_topology T Tx C86) z4 a5 \/
+                        end_points_of_arc C86 (subspace_topology T Tx C86) a5 z4)).
+    - assume Hsing. apply Hsing. let r86. assume Hr86pack.
+      apply (and3E
+        (C85 :/\: C86 = Sing r86)
+        (exists s86:set, end_points_of_arc C85 (subspace_topology T Tx C85) r86 s86 \/
+                       end_points_of_arc C85 (subspace_topology T Tx C85) s86 r86)
+        (exists t86:set, end_points_of_arc C86 (subspace_topology T Tx C86) r86 t86 \/
+                       end_points_of_arc C86 (subspace_topology T Tx C86) t86 r86)
+        Hr86pack).
+      assume Hr86eq _ HC86end.
+      claim Hz4CC : z4 :e C85 :/\: C86. { exact (binintersectI C85 C86 z4 Hz4C85 Hz4C86). }
+      claim Hz4r86 : z4 = r86.
+      { exact (SingE r86 z4 (eq_subst_mem_set z4 (C85 :/\: C86) (Sing r86) Hz4CC Hr86eq)). }
+      apply HC86end. let t86. assume Ht86.
+      witness t86.
+      apply Ht86.
+      * assume Hr86t : end_points_of_arc C86 (subspace_topology T Tx C86) r86 t86.
+        apply orIL. rewrite Hz4r86. exact Hr86t.
+      * assume Ht86r : end_points_of_arc C86 (subspace_topology T Tx C86) t86 r86.
+        apply orIR. rewrite Hz4r86. exact Ht86r.
+  }
+  apply Hz4_is_endpoint_C86. let a5. assume Ha5cases.
+  claim Hz4a5 : end_points_of_arc C86 (subspace_topology T Tx C86) z4 a5.
+  { apply Ha5cases.
+    - assume Hz4a : end_points_of_arc C86 (subspace_topology T Tx C86) z4 a5. exact Hz4a.
+    - assume Ha5z : end_points_of_arc C86 (subspace_topology T Tx C86) a5 z4.
+      exact (end_points_of_arc_sym C86 (subspace_topology T Tx C86) a5 z4 Ha5z). }
+  claim HoriC86 : oriented_edge T Tx Arcs C86 z4 a5.
+  { exact (andI (C86 :e Arcs) (end_points_of_arc C86 (subspace_topology T Tx C86) z4 a5) HC86 Hz4a5). }
+  set n86 := ordsucc n85.
+  set path87 :=
+    (graph n86 (fun i:set => apply_fun path86 i)) :\/:
+    (graph {n86} (fun _:set => ((z4, a5), C86))).
+  claim Hep87 : edge_path T Tx Arcs (ordsucc n86) path87 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n86 path86 q0 n85 C86 z4 a5
+      Hglg
+      Hep86
+      (ordsuccI2 n85)
+      (In_irref (ordsucc n85))
+      Hfin85
+      HoriC86).
+  }
+  claim Hfin86 : (apply_fun path87 n86) 0 1 = a5.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n86 path86 q0 n85 C86 z4 a5
+      Hglg
+      Hep86
+      (ordsuccI2 n85)
+      (In_irref (ordsucc n85))
+      Hfin85
+      HoriC86).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
