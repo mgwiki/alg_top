@@ -82,6 +82,75 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772584722
+Created: 1772584722
+Status: PROPOSED
+
+Refers to Commit:
+  3b465f14b3070fa9b2201b8de18bd08a9236785c
+
+Target:
+  Line: 91007
+  Name: column_lifts_same_sheet_on_product_ball (Lemma)
+
+Problem:
+  The conclusion forces `apply_fun start_lift s :e V0` for all `s :e I1` (take t = 0), but the current
+  hypotheses do not provide enough continuity in the parameter s to propagate the anchored slice.
+  Concretely, the proof requires continuity of the t0-column map
+    s |-> apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t0
+  (or some equivalent joint continuity assumption), which is currently missing; the lemma is left Admitted.
+
+Proposed Replacement:
+  Lemma column_lifts_same_sheet_on_product_ball :
+    forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    slices c= Te ->
+    pairwise_disjoint slices ->
+    Union slices = preimage_of E p U ->
+    V0 :e slices ->
+    continuous_map unit_interval unit_interval_topology B Tb g0 ->
+    e0 :e E ->
+    apply_fun p e0 = apply_fun g0 0 ->
+    start_lift = path_lift E Te B Tb p e0 g0 ->
+    I1 c= unit_interval ->
+    I2 c= unit_interval ->
+    connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+    connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+      apply_fun (apply_fun vs_choice s) t :e U) ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    s0 :e I1 ->
+    t0 :e I2 ->
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0 :e V0 ->
+    (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)) ->
+    forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e V0.
+
+Proposed by:
+  - 1772584722 | Charlie
+
+Discussion:
+  - 1772584722 | Charlie: This makes the lemma match the already-proved `column_lifts_same_sheet_on_product_ball_with_col_cont`; without a continuity hypothesis in s the statement is not derivable.
+  - 1772584722 | Charlie: Requesting 2 agent approvals so this can be sent to ADMIN; it unblocks removing admits in the Lemma 54.2 homotopy lifting chain.
+
+Approvals:
+  - 1772584722 | Alice:
+  - 1772584722 | Bob:
+  - 1772584722 | Charlie: YES
+  - 1772584722 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772580827
 Created: 1772580827
 Status: PROPOSED
