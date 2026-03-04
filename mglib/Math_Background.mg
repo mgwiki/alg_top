@@ -327949,6 +327949,110 @@ apply Hcase.
       Hfin67
       HoriC68).
   }
+  claim Hsharedi4 :
+    exists C69:set, C69 :e Arcs /\ C69 <> C68 /\ i4 :e C69.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C68 /\ h4 :e C)
+      (exists D:set, D :e Arcs /\ D <> C68 /\ i4 :e D)
+      (Hallshared C68 h4 i4 HC68 Hh4i4)).
+  }
+  apply Hsharedi4. let C69. assume HC69pack.
+  claim HC69pair : C69 :e Arcs /\ C69 <> C68.
+  { exact (andEL (C69 :e Arcs /\ C69 <> C68) (i4 :e C69) HC69pack). }
+  claim HC69 : C69 :e Arcs.
+  { exact (andEL (C69 :e Arcs) (C69 <> C68) HC69pair). }
+  claim HC69neC68 : C69 <> C68.
+  { exact (andER (C69 :e Arcs) (C69 <> C68) HC69pair). }
+  claim Hi4C69 : i4 :e C69.
+  { exact (andER (C69 :e Arcs /\ C69 <> C68) (i4 :e C69) HC69pack). }
+  claim Hi4C68 : i4 :e C68.
+  { exact (end_points_of_arc_right_in_set C68 (subspace_topology T Tx C68) h4 i4 Hh4i4). }
+  claim HC68neC69 : C68 <> C69.
+  { assume Heq. exact (HC69neC68 (eq_symm C68 C69 Heq)). }
+  claim HintC68C69 :
+    C68 :/\: C69 = Empty \/
+    (exists r69:set, C68 :/\: C69 = Sing r69 /\
+      (exists s69:set, end_points_of_arc C68 (subspace_topology T Tx C68) r69 s69 \/
+                     end_points_of_arc C68 (subspace_topology T Tx C68) s69 r69) /\
+      (exists t69:set, end_points_of_arc C69 (subspace_topology T Tx C69) r69 t69 \/
+                     end_points_of_arc C69 (subspace_topology T Tx C69) t69 r69)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C68
+      C69
+      Hglg
+      HC68
+      HC69
+      HC68neC69).
+  }
+  claim Hi4_is_endpoint_C69 :
+    exists j4:set, end_points_of_arc C69 (subspace_topology T Tx C69) i4 j4 \/
+                    end_points_of_arc C69 (subspace_topology T Tx C69) j4 i4.
+  {
+    apply HintC68C69.
+    - assume Hempty.
+      claim Hi4CC : i4 :e C68 :/\: C69. { exact (binintersectI C68 C69 i4 Hi4C68 Hi4C69). }
+      exact (EmptyE i4 (eq_subst_mem_set i4 (C68 :/\: C69) Empty Hi4CC Hempty)
+        (exists j4:set, end_points_of_arc C69 (subspace_topology T Tx C69) i4 j4 \/
+                        end_points_of_arc C69 (subspace_topology T Tx C69) j4 i4)).
+    - assume Hsing. apply Hsing. let r69. assume Hr69pack.
+      apply (and3E
+        (C68 :/\: C69 = Sing r69)
+        (exists s69:set, end_points_of_arc C68 (subspace_topology T Tx C68) r69 s69 \/
+                       end_points_of_arc C68 (subspace_topology T Tx C68) s69 r69)
+        (exists t69:set, end_points_of_arc C69 (subspace_topology T Tx C69) r69 t69 \/
+                       end_points_of_arc C69 (subspace_topology T Tx C69) t69 r69)
+        Hr69pack).
+      assume Hr69eq _ HC69end.
+      claim Hi4CC : i4 :e C68 :/\: C69. { exact (binintersectI C68 C69 i4 Hi4C68 Hi4C69). }
+      claim Hi4r69 : i4 = r69.
+      { exact (SingE r69 i4 (eq_subst_mem_set i4 (C68 :/\: C69) (Sing r69) Hi4CC Hr69eq)). }
+      apply HC69end. let t69. assume Ht69.
+      witness t69.
+      apply Ht69.
+      * assume Hr69t : end_points_of_arc C69 (subspace_topology T Tx C69) r69 t69.
+        apply orIL. rewrite Hi4r69. exact Hr69t.
+      * assume Ht69r : end_points_of_arc C69 (subspace_topology T Tx C69) t69 r69.
+        apply orIR. rewrite Hi4r69. exact Ht69r.
+  }
+  apply Hi4_is_endpoint_C69. let j4. assume Hj4cases.
+  claim Hi4j4 : end_points_of_arc C69 (subspace_topology T Tx C69) i4 j4.
+  { apply Hj4cases.
+    - assume Hi4j : end_points_of_arc C69 (subspace_topology T Tx C69) i4 j4. exact Hi4j.
+    - assume Hj4i : end_points_of_arc C69 (subspace_topology T Tx C69) j4 i4.
+      exact (end_points_of_arc_sym C69 (subspace_topology T Tx C69) j4 i4 Hj4i). }
+  claim HoriC69 : oriented_edge T Tx Arcs C69 i4 j4.
+  { exact (andI (C69 :e Arcs) (end_points_of_arc C69 (subspace_topology T Tx C69) i4 j4) HC69 Hi4j4). }
+  set n69 := ordsucc n68.
+  set path70 :=
+    (graph n69 (fun i:set => apply_fun path69 i)) :\/:
+    (graph {n69} (fun _:set => ((i4, j4), C69))).
+  claim Hep70 : edge_path T Tx Arcs (ordsucc n69) path70 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n69 path69 q0 n68 C69 i4 j4
+      Hglg
+      Hep69
+      (ordsuccI2 n68)
+      (In_irref (ordsucc n68))
+      Hfin68
+      HoriC69).
+  }
+  claim Hfin69 : (apply_fun path70 n69) 0 1 = j4.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n69 path69 q0 n68 C69 i4 j4
+      Hglg
+      Hep69
+      (ordsuccI2 n68)
+      (In_irref (ordsucc n68))
+      Hfin68
+      HoriC69).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
