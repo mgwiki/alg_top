@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5510 **)
-(** Balance Charlie 1382 **)
+(** Balance Charlie 1378 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -187216,7 +187216,8 @@ Definition free_homotopy_loops : set -> set -> set -> set -> set -> prop :=
 (** from S66 Lem 66.1(a) (line 2501 in algtop.tex) **)
 (** LATEX VERSION: If f_bar is the reverse of f, then n(f_bar, a) = -n(f,a). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 37 **)
+(** Bounty 41 **)
+(** Lock Charlie 1772681010 **)
 Theorem lemma66_1a_reverse_winding : forall f a:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   a :e setprod R R -> ~(a :e image_of f unit_interval) ->
