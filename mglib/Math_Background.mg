@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5510 **)
-(** Balance Charlie 1412 **)
+(** Balance Charlie 1522 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -233774,7 +233774,8 @@ claim Hwp_xs2_G2 : word_product multG eG xs2 n2 :e G2.
 exact (Hnotin Hwp_xs2_G2).
 Qed.
 
-(** Bounty 55 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem cor68_6_side_from_product_G1_ge3_full :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
   group_structure G multG eG invG ->
@@ -234052,9 +234053,10 @@ apply (Hys_side i Hi_in).
       HexG2).
   }
   exact (FalseE (Hwp_notG1 HwpG1) (apply_fun ys i :e G1)).
-Admitted.
+Qed.
 
-(** Bounty 55 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem cor68_6_side_from_product_G2_ge3_full :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
   group_structure G multG eG invG ->
@@ -234332,7 +234334,7 @@ apply (Hys_side i Hi_in).
   }
   exact (FalseE (Hwp_notG2 HwpG2) (apply_fun ys i :e G2)).
 - assume HiG2. exact HiG2.
-Admitted.
+Qed.
 
 (** Bounty 61 **)
 Theorem cor68_6_associativity_free_product :
