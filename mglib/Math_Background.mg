@@ -229682,6 +229682,191 @@ exact (cor68_6_reduced_word_all_in_G2_product_ne_eG
   Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred_pref HallNe_pref HallG2_pref Hm_ne0).
 Qed.
 
+(** Infrastructure for Cor 68.6: a suffix-segment lying entirely in G1 has nontrivial product **)
+(** This is a shifted version of cor68_6_reduced_word_prefix_all_in_G1_product_ne_eG. **)
+(** Proven Charlie **)
+Lemma cor68_6_reduced_word_suffix_prefix_all_in_G1_product_ne_eG :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys n1 n2 m:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun t:set => if t = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun a:set => apply_fun Hfam a))
+    (graph J (fun a:set => apply_fun efamH a)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun b:set => apply_fun Hfam b))
+    (graph K (fun b:set => apply_fun efamH b)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  nat_p n1 ->
+  nat_p n2 ->
+  n = add_nat n1 n2 ->
+  m :e n2 ->
+  (forall i:set, i :e m -> apply_fun ys (add_nat n1 i) :e G1) ->
+  m <> 0 ->
+  word_product multG eG (graph m (fun i:set => apply_fun ys (add_nat n1 i))) m <> eG.
+let G multG eG invG G1 G2 J K Hfam efamH n ys n1 n2 m.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe Hn1_nat Hn2_nat Hn_eq Hm_in HsegG1 Hm_ne0.
+
+set ys_suf := graph n2 (fun i:set => apply_fun ys (add_nat n1 i)).
+claim Hred_suf : reduced_word (J :\/: K) Hfam efamH n2 ys_suf.
+{
+  exact (reduced_word_suffix_by_add_nat (J :\/: K) Hfam efamH n ys n1 n2
+    Hred Hn1_nat Hn2_nat Hn_eq).
+}
+claim HallNe_suf : forall i:set, i :e n2 -> apply_fun ys_suf i <> eG.
+{
+  let i. assume Hi2.
+  claim Hin_sum : add_nat n1 i :e add_nat n1 n2.
+  { exact (add_nat_In_L n1 Hn1_nat n2 Hn2_nat i Hi2). }
+  claim Hin_n : add_nat n1 i :e n.
+  { exact (eq_subst_mem_set (add_nat n1 i) (add_nat n1 n2) n Hin_sum (eq_symm n (add_nat n1 n2) Hn_eq)). }
+  rewrite (apply_fun_graph n2 (fun t:set => apply_fun ys (add_nat n1 t)) i Hi2).
+  exact (HallNe (add_nat n1 i) Hin_n).
+}
+claim Hm_in2 : m :e n2. { exact Hm_in. }
+claim HprefG1 : forall i:set, i :e m -> apply_fun ys_suf i :e G1.
+{
+  let i. assume Hi_m.
+  claim Hn2_ord : ordinal n2. { exact (nat_p_ordinal n2 Hn2_nat). }
+  claim Hm_sub : m c= n2. { exact (ordinal_TransSet n2 Hn2_ord m Hm_in). }
+  claim Hi2 : i :e n2. { exact (Hm_sub i Hi_m). }
+  rewrite (apply_fun_graph n2 (fun t:set => apply_fun ys (add_nat n1 t)) i Hi2).
+  exact (HsegG1 i Hi_m).
+}
+claim Hwp_ne :
+  word_product multG eG (graph m (fun i:set => apply_fun ys_suf i)) m <> eG.
+{
+  exact (cor68_6_reduced_word_prefix_all_in_G1_product_ne_eG
+  G multG eG invG G1 G2 J K Hfam efamH n2 ys_suf m
+  Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred_suf HallNe_suf Hm_in HprefG1 Hm_ne0).
+}
+claim HmO : m :e omega.
+{
+  claim Hn2O : n2 :e omega. { exact (nat_p_omega n2 Hn2_nat). }
+  claim Hsub : n2 c= omega. { exact (omega_TransSet n2 Hn2O). }
+  exact (Hsub m Hm_in).
+}
+claim Hwp_congr :
+  word_product multG eG (graph m (fun i:set => apply_fun ys_suf i)) m =
+  word_product multG eG (graph m (fun i:set => apply_fun ys (add_nat n1 i))) m.
+{
+  apply (nat_primrec_ext eG
+    (fun i r:set => apply_fun multG (r, apply_fun (graph m (fun j:set => apply_fun ys_suf j)) i))
+    (fun i r:set => apply_fun multG (r, apply_fun (graph m (fun j:set => apply_fun ys (add_nat n1 j))) i))
+    m
+    HmO).
+  let i r. assume Hi_m.
+  rewrite (apply_fun_graph m (fun j:set => apply_fun ys_suf j) i Hi_m).
+  claim Hn2_ord : ordinal n2. { exact (nat_p_ordinal n2 Hn2_nat). }
+  claim Hm_sub : m c= n2. { exact (ordinal_TransSet n2 Hn2_ord m Hm_in). }
+  claim Hi2 : i :e n2. { exact (Hm_sub i Hi_m). }
+  rewrite (apply_fun_graph n2 (fun t:set => apply_fun ys (add_nat n1 t)) i Hi2).
+  rewrite (apply_fun_graph m (fun j:set => apply_fun ys (add_nat n1 j)) i Hi_m).
+  reflexivity.
+}
+assume Habs :
+  word_product multG eG (graph m (fun i:set => apply_fun ys (add_nat n1 i))) m = eG.
+apply Hwp_ne.
+rewrite Hwp_congr.
+exact Habs.
+Qed.
+
+(** Infrastructure for Cor 68.6: a suffix-segment lying entirely in G2 has nontrivial product **)
+(** This is a shifted version of cor68_6_reduced_word_prefix_all_in_G2_product_ne_eG. **)
+(** Proven Charlie **)
+Lemma cor68_6_reduced_word_suffix_prefix_all_in_G2_product_ne_eG :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys n1 n2 m:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun t:set => if t = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun a:set => apply_fun Hfam a))
+    (graph J (fun a:set => apply_fun efamH a)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun b:set => apply_fun Hfam b))
+    (graph K (fun b:set => apply_fun efamH b)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  nat_p n1 ->
+  nat_p n2 ->
+  n = add_nat n1 n2 ->
+  m :e n2 ->
+  (forall i:set, i :e m -> apply_fun ys (add_nat n1 i) :e G2) ->
+  m <> 0 ->
+  word_product multG eG (graph m (fun i:set => apply_fun ys (add_nat n1 i))) m <> eG.
+let G multG eG invG G1 G2 J K Hfam efamH n ys n1 n2 m.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe Hn1_nat Hn2_nat Hn_eq Hm_in HsegG2 Hm_ne0.
+
+set ys_suf := graph n2 (fun i:set => apply_fun ys (add_nat n1 i)).
+claim Hred_suf : reduced_word (J :\/: K) Hfam efamH n2 ys_suf.
+{
+  exact (reduced_word_suffix_by_add_nat (J :\/: K) Hfam efamH n ys n1 n2
+    Hred Hn1_nat Hn2_nat Hn_eq).
+}
+claim HallNe_suf : forall i:set, i :e n2 -> apply_fun ys_suf i <> eG.
+{
+  let i. assume Hi2.
+  claim Hin_sum : add_nat n1 i :e add_nat n1 n2.
+  { exact (add_nat_In_L n1 Hn1_nat n2 Hn2_nat i Hi2). }
+  claim Hin_n : add_nat n1 i :e n.
+  { exact (eq_subst_mem_set (add_nat n1 i) (add_nat n1 n2) n Hin_sum (eq_symm n (add_nat n1 n2) Hn_eq)). }
+  rewrite (apply_fun_graph n2 (fun t:set => apply_fun ys (add_nat n1 t)) i Hi2).
+  exact (HallNe (add_nat n1 i) Hin_n).
+}
+claim HprefG2 : forall i:set, i :e m -> apply_fun ys_suf i :e G2.
+{
+  let i. assume Hi_m.
+  claim Hn2_ord : ordinal n2. { exact (nat_p_ordinal n2 Hn2_nat). }
+  claim Hm_sub : m c= n2. { exact (ordinal_TransSet n2 Hn2_ord m Hm_in). }
+  claim Hi2 : i :e n2. { exact (Hm_sub i Hi_m). }
+  rewrite (apply_fun_graph n2 (fun t:set => apply_fun ys (add_nat n1 t)) i Hi2).
+  exact (HsegG2 i Hi_m).
+}
+claim Hwp_ne :
+  word_product multG eG (graph m (fun i:set => apply_fun ys_suf i)) m <> eG.
+{
+  exact (cor68_6_reduced_word_prefix_all_in_G2_product_ne_eG
+  G multG eG invG G1 G2 J K Hfam efamH n2 ys_suf m
+  Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred_suf HallNe_suf Hm_in HprefG2 Hm_ne0).
+}
+claim HmO : m :e omega.
+{
+  claim Hn2O : n2 :e omega. { exact (nat_p_omega n2 Hn2_nat). }
+  claim Hsub : n2 c= omega. { exact (omega_TransSet n2 Hn2O). }
+  exact (Hsub m Hm_in).
+}
+claim Hwp_congr :
+  word_product multG eG (graph m (fun i:set => apply_fun ys_suf i)) m =
+  word_product multG eG (graph m (fun i:set => apply_fun ys (add_nat n1 i))) m.
+{
+  apply (nat_primrec_ext eG
+    (fun i r:set => apply_fun multG (r, apply_fun (graph m (fun j:set => apply_fun ys_suf j)) i))
+    (fun i r:set => apply_fun multG (r, apply_fun (graph m (fun j:set => apply_fun ys (add_nat n1 j))) i))
+    m
+    HmO).
+  let i r. assume Hi_m.
+  rewrite (apply_fun_graph m (fun j:set => apply_fun ys_suf j) i Hi_m).
+  claim Hn2_ord : ordinal n2. { exact (nat_p_ordinal n2 Hn2_nat). }
+  claim Hm_sub : m c= n2. { exact (ordinal_TransSet n2 Hn2_ord m Hm_in). }
+  claim Hi2 : i :e n2. { exact (Hm_sub i Hi_m). }
+  rewrite (apply_fun_graph n2 (fun t:set => apply_fun ys (add_nat n1 t)) i Hi2).
+  rewrite (apply_fun_graph m (fun j:set => apply_fun ys (add_nat n1 j)) i Hi_m).
+  reflexivity.
+}
+assume Habs :
+  word_product multG eG (graph m (fun i:set => apply_fun ys (add_nat n1 i))) m = eG.
+apply Hwp_ne.
+rewrite Hwp_congr.
+exact Habs.
+Qed.
+
 (** Infrastructure for Cor 68.6: a mixed word has an adjacent factor switch **)
 (** Proven Charlie **)
 Lemma cor68_6_mixed_word_has_adjacent_G1_G2_switch :
