@@ -82,6 +82,122 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772623361
+Created: 1772623361
+Status: PROPOSED
+
+Refers to Commit:
+  949fb3efefe52a63603d3e717721a987e79af73b
+
+Target:
+  Line: 225286
+  Name: cor68_6_side_from_product_G2_ge3 (Theorem)
+
+Problem:
+  The statement is too weak as written: it does not assume that (K, Hfam|_K) forms a free product
+  inside G2 (or any equivalent disjointness/normal-form property). Without that, a reduced (J \\/ K)-word
+  can contain nontrivial G2-letters that multiply to eG (e.g. by taking two distinct labels in K with the
+  same subgroup), allowing the overall product to land in G2 (or even in G1 by cancellation) while mixed
+  factors appear. This makes the claimed “all letters lie in G2” conclusion unprovable in general.
+
+Proposed Replacement:
+  Theorem cor68_6_side_from_product_G2_ge3 :
+    forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+    group_structure G multG eG invG ->
+    subgroup_of G1 G multG eG invG ->
+    subgroup_of G2 G multG eG invG ->
+    free_product_of_subgroups G multG eG invG (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+      (graph (UPair 0 1) (fun i:set => eG)) ->
+    J :/\\: K = Empty ->
+    free_product_of_subgroups G1 multG eG invG J
+      (graph J (fun alpha:set => apply_fun Hfam alpha))
+      (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+    free_product_of_subgroups G2 multG eG invG K
+      (graph K (fun beta:set => apply_fun Hfam beta))
+      (graph K (fun beta:set => apply_fun efamH beta)) ->
+    reduced_word (J :\\/: K) Hfam efamH n ys ->
+    (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+    n <> 0 -> n <> 1 -> n <> 2 ->
+    word_product multG eG ys n :e G2 ->
+    word_product multG eG ys n <> eG ->
+    forall i:set, i :e n -> apply_fun ys i :e G2.
+
+Proposed by:
+  - 1772623361 | Charlie
+
+Discussion:
+  - 1772623361 | Charlie: This aligns the helper with the stronger “_full” variant later in the file and
+    with the actual assumptions needed to rule out internal cancellations within G2 when collapsing to the
+    binary free product normal form.
+
+Approvals:
+  - 1772623361 | Alice:
+  - 1772623361 | Bob:
+  - 1772623361 | Charlie: YES
+  - 1772623361 | Dave:
+
+Result:
+  PROPOSED
+
+NOTICE ID: 1772623360
+Created: 1772623360
+Status: PROPOSED
+
+Refers to Commit:
+  949fb3efefe52a63603d3e717721a987e79af73b
+
+Target:
+  Line: 225265
+  Name: cor68_6_side_from_product_G1_ge3 (Theorem)
+
+Problem:
+  The statement is too weak as written: it does not assume that (J, Hfam|_J) forms a free product
+  inside G1 (or any equivalent disjointness/normal-form property). Without that, a reduced (J \\/ K)-word
+  can contain nontrivial G1-letters that multiply to eG inside G1 (e.g. by taking two distinct labels in J
+  with the same subgroup), breaking the intended “binary collapse” argument and making the conclusion
+  (“all letters lie in G1”) unprovable in general.
+
+Proposed Replacement:
+  Theorem cor68_6_side_from_product_G1_ge3 :
+    forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+    group_structure G multG eG invG ->
+    subgroup_of G1 G multG eG invG ->
+    subgroup_of G2 G multG eG invG ->
+    free_product_of_subgroups G multG eG invG (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+      (graph (UPair 0 1) (fun i:set => eG)) ->
+    J :/\\: K = Empty ->
+    free_product_of_subgroups G1 multG eG invG J
+      (graph J (fun alpha:set => apply_fun Hfam alpha))
+      (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+    free_product_of_subgroups G2 multG eG invG K
+      (graph K (fun beta:set => apply_fun Hfam beta))
+      (graph K (fun beta:set => apply_fun efamH beta)) ->
+    reduced_word (J :\\/: K) Hfam efamH n ys ->
+    (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+    n <> 0 -> n <> 1 -> n <> 2 ->
+    word_product multG eG ys n :e G1 ->
+    word_product multG eG ys n <> eG ->
+    forall i:set, i :e n -> apply_fun ys i :e G1.
+
+Proposed by:
+  - 1772623360 | Charlie
+
+Discussion:
+  - 1772623360 | Charlie: This aligns the helper with the stronger “_full” variant later in the file and
+    with the actual assumptions needed to rule out internal cancellations within G1 when collapsing to the
+    binary free product normal form.
+
+Approvals:
+  - 1772623360 | Alice:
+  - 1772623360 | Bob:
+  - 1772623360 | Charlie: YES
+  - 1772623360 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772594849
 Created: 1772594849
 Status: PROPOSED
