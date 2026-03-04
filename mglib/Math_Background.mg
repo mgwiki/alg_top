@@ -225805,6 +225805,254 @@ claim Hab_notin : word_product mult e xs 2 /:e G1.
 	exact Hab_notin.
 	Qed.
 
+(** Infrastructure: swapped-order cross-factor product is not in the left factor **)
+(** Proven Charlie **)
+Lemma free_product_binary_mult_cross_not_in_left_factor_swapped :
+  forall G mult e inv G1 G2 a b:set,
+  subgroup_of G1 G mult e inv ->
+  subgroup_of G2 G mult e inv ->
+  free_product_of_subgroups G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => e)) ->
+  a :e G2 -> a <> e ->
+  b :e G1 -> b <> e ->
+  apply_fun mult (a, b) /:e G1.
+let G mult e inv G1 G2 a b.
+assume Hsub1 Hsub2 Hfp HaG2 Hane HbG1 Hbne.
+claim Hgrp : group_structure G mult e inv.
+{
+  apply (and5E
+    (group_structure G mult e inv)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      subgroup_of (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha) G mult e inv)
+    (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+      forall y:set, y :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha ->
+        y :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) beta -> y = e)
+    (subgroups_generate G mult e inv (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)))
+    (forall y:set, y :e G -> y <> e ->
+      exists n xs0:set,
+        reduced_word (UPair 0 1)
+          (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+          (graph (UPair 0 1) (fun _:set => e)) n xs0 /\ n <> 0 /\
+        word_product mult e xs0 n = y /\
+        (forall n' xs':set,
+          reduced_word (UPair 0 1)
+            (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+            (graph (UPair 0 1) (fun _:set => e)) n' xs' -> n' <> 0 ->
+          word_product mult e xs' n' = y ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs0 i = apply_fun xs' i)))
+    Hfp).
+  assume Hgrp _ _ _ _. exact Hgrp.
+}
+
+set x := apply_fun mult (a, b).
+assume HxG1 : x :e G1.
+claim HxG : x :e G.
+{ exact (subgroup_of_subset G1 G mult e inv Hsub1 x HxG1). }
+
+claim HinvbG1 : apply_fun inv b :e G1.
+{
+  apply (and4E
+    (G1 c= G)
+    (e :e G1)
+    (forall u v:set, u :e G1 -> v :e G1 -> apply_fun mult (u, v) :e G1)
+    (forall u:set, u :e G1 -> apply_fun inv u :e G1)
+    Hsub1).
+  assume _ _ _ Hinv1.
+  exact (Hinv1 b HbG1).
+}
+claim HinvaG2 : apply_fun inv a :e G2.
+{
+  apply (and4E
+    (G2 c= G)
+    (e :e G2)
+    (forall u v:set, u :e G2 -> v :e G2 -> apply_fun mult (u, v) :e G2)
+    (forall u:set, u :e G2 -> apply_fun inv u :e G2)
+    Hsub2).
+  assume _ _ _ Hinv2.
+  exact (Hinv2 a HaG2).
+}
+claim HinvxG1 : apply_fun inv x :e G1.
+{
+  apply (and4E
+    (G1 c= G)
+    (e :e G1)
+    (forall u v:set, u :e G1 -> v :e G1 -> apply_fun mult (u, v) :e G1)
+    (forall u:set, u :e G1 -> apply_fun inv u :e G1)
+    Hsub1).
+  assume _ _ _ Hinv1.
+  exact (Hinv1 x HxG1).
+}
+
+claim HaG : a :e G.
+{ exact (subgroup_of_subset G2 G mult e inv Hsub2 a HaG2). }
+claim HbG : b :e G.
+{ exact (subgroup_of_subset G1 G mult e inv Hsub1 b HbG1). }
+claim HinvOfProd :
+  forall u v:set, u :e G -> v :e G ->
+  apply_fun inv (apply_fun mult (u, v)) = apply_fun mult (apply_fun inv v, apply_fun inv u).
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall u v w:set, u :e G -> v :e G -> w :e G ->
+      apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+    (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+    (forall u:set, u :e G ->
+      apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+    Hgrp).
+  assume HmultFn HinvFn HeG HassocG HidG HinvLaw.
+  let u v. assume HuG HvG.
+  claim HuvG : apply_fun mult (u, v) :e G.
+  { exact (HmultFn (u, v) (tuple_2_setprod_by_pair_Sigma G G u v HuG HvG)). }
+  claim HinvvG : apply_fun inv v :e G. { exact (HinvFn v HvG). }
+  claim HinvuG : apply_fun inv u :e G. { exact (HinvFn u HuG). }
+  claim HcandG : apply_fun mult (apply_fun inv v, apply_fun inv u) :e G.
+  { exact (HmultFn (apply_fun inv v, apply_fun inv u)
+      (tuple_2_setprod_by_pair_Sigma G G (apply_fun inv v) (apply_fun inv u) HinvvG HinvuG)). }
+  claim HinvuvG : apply_fun inv (apply_fun mult (u, v)) :e G.
+  { exact (HinvFn (apply_fun mult (u, v)) HuvG). }
+  claim Hprod_e :
+    apply_fun mult (apply_fun mult (u, v), apply_fun mult (apply_fun inv v, apply_fun inv u)) = e.
+  {
+    rewrite (HassocG u v (apply_fun mult (apply_fun inv v, apply_fun inv u)) HuG HvG HcandG).
+    rewrite <- (HassocG v (apply_fun inv v) (apply_fun inv u) HvG HinvvG HinvuG).
+    rewrite (andEL
+      (apply_fun mult (v, apply_fun inv v) = e)
+      (apply_fun mult (apply_fun inv v, v) = e)
+      (HinvLaw v HvG)).
+    rewrite (andEL
+      (apply_fun mult (e, apply_fun inv u) = apply_fun inv u)
+      (apply_fun mult (apply_fun inv u, e) = apply_fun inv u)
+      (HidG (apply_fun inv u) HinvuG)).
+    exact (andEL
+      (apply_fun mult (u, apply_fun inv u) = e)
+      (apply_fun mult (apply_fun inv u, u) = e)
+      (HinvLaw u HuG)).
+  }
+  claim Hcand_eq_invuv :
+    apply_fun mult (apply_fun inv v, apply_fun inv u) =
+    apply_fun inv (apply_fun mult (u, v)).
+  {
+    apply (group_left_inv_solve
+      G mult inv e
+      (apply_fun inv (apply_fun mult (u, v)))
+      (apply_fun mult (apply_fun inv v, apply_fun inv u))
+      HmultFn HinvFn HeG HassocG HidG HinvLaw
+      HinvuvG HcandG).
+    rewrite (group_inv_inv
+      G mult inv e (apply_fun mult (u, v))
+      HmultFn HinvFn HeG HassocG HidG HinvLaw HuvG).
+    exact Hprod_e.
+  }
+  rewrite Hcand_eq_invuv.
+  reflexivity.
+}
+
+claim Hinv_eq : apply_fun inv x =
+  apply_fun mult (apply_fun inv b, apply_fun inv a).
+{
+  exact (HinvOfProd a b HaG HbG).
+}
+
+claim Hinvb_ne : apply_fun inv b <> e.
+{
+  assume Hinvb_e : apply_fun inv b = e.
+  apply Hbne.
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall u v w:set, u :e G -> v :e G -> w :e G ->
+      apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+    (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+    (forall u:set, u :e G ->
+      apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+    Hgrp).
+  assume _ _ _ _ Hid HinvLaw.
+  claim Hleft : apply_fun mult (apply_fun inv b, b) = e.
+  { exact (andER
+      (apply_fun mult (b, apply_fun inv b) = e)
+      (apply_fun mult (apply_fun inv b, b) = e)
+      (HinvLaw b HbG)). }
+  claim Hleft2 : apply_fun mult (e, b) = e.
+  {
+    claim Hpair : (e, b) = (apply_fun inv b, b).
+    {
+      rewrite <- Hinvb_e.
+      reflexivity.
+    }
+    claim HmultEq : apply_fun mult (e, b) = apply_fun mult (apply_fun inv b, b).
+    { exact (apply_fun_congr_arg mult (e, b) (apply_fun inv b, b) Hpair). }
+    exact (eq_i_tra
+      (apply_fun mult (e, b))
+      (apply_fun mult (apply_fun inv b, b))
+      e
+      HmultEq
+      Hleft).
+  }
+  exact (eq_i_tra b (apply_fun mult (e, b)) e
+    (eq_symm (apply_fun mult (e, b)) b
+      (andEL (apply_fun mult (e, b) = b) (apply_fun mult (b, e) = b) (Hid b HbG)))
+    Hleft2).
+}
+claim Hinva_ne : apply_fun inv a <> e.
+{
+  assume Hinva_e : apply_fun inv a = e.
+  apply Hane.
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall u v w:set, u :e G -> v :e G -> w :e G ->
+      apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+    (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+    (forall u:set, u :e G ->
+      apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+    Hgrp).
+  assume _ _ _ _ Hid HinvLaw.
+  claim Hleft : apply_fun mult (apply_fun inv a, a) = e.
+  { exact (andER
+      (apply_fun mult (a, apply_fun inv a) = e)
+      (apply_fun mult (apply_fun inv a, a) = e)
+      (HinvLaw a HaG)). }
+  claim Hleft2 : apply_fun mult (e, a) = e.
+  {
+    claim Hpair : (e, a) = (apply_fun inv a, a).
+    {
+      rewrite <- Hinva_e.
+      reflexivity.
+    }
+    claim HmultEq : apply_fun mult (e, a) = apply_fun mult (apply_fun inv a, a).
+    { exact (apply_fun_congr_arg mult (e, a) (apply_fun inv a, a) Hpair). }
+    exact (eq_i_tra
+      (apply_fun mult (e, a))
+      (apply_fun mult (apply_fun inv a, a))
+      e
+      HmultEq
+      Hleft).
+  }
+  exact (eq_i_tra a (apply_fun mult (e, a)) e
+    (eq_symm (apply_fun mult (e, a)) a
+      (andEL (apply_fun mult (e, a) = a) (apply_fun mult (a, e) = a) (Hid a HaG)))
+    Hleft2).
+}
+
+claim Hinv_cross_notG1 : apply_fun mult (apply_fun inv b, apply_fun inv a) /:e G1.
+{
+  exact (free_product_binary_mult_cross_not_in_left_factor
+    G mult e inv G1 G2 (apply_fun inv b) (apply_fun inv a)
+    Hsub1 Hsub2 Hfp
+    HinvbG1 Hinvb_ne
+    HinvaG2 Hinva_ne).
+}
+exact (Hinv_cross_notG1 (eq_subst_mem (apply_fun mult (apply_fun inv b, apply_fun inv a)) (apply_fun inv x) G1
+  (eq_symm (apply_fun inv x) (apply_fun mult (apply_fun inv b, apply_fun inv a)) Hinv_eq)
+  HinvxG1)).
+Qed.
+
 	(** Infrastructure: natural numbers are finite (as sets) **)
 	(** Proven Charlie **)
 	Lemma nat_p_finite : forall n:set, nat_p n -> finite n.
