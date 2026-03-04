@@ -229145,6 +229145,202 @@ claim HxGfam1 : x :e apply_fun Gfam12 1.
 exact (Hinter 0 1 (UPairI1 0 1) (UPairI2 0 1) neq_0_1 x HxGfam0 HxGfam1).
 Qed.
 
+(** Infrastructure for Cor 68.6: if a nontrivial reduced (J \\/ K)-letter lies in G1, it must come from J **)
+(** Proven Charlie **)
+Lemma cor68_6_letter_in_G1_has_J_witness :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys i:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall j:set, j :e n -> apply_fun ys j <> eG) ->
+  i :e n ->
+  apply_fun ys i :e G1 ->
+  exists alpha:set, alpha :e J /\
+    apply_fun ys i :e apply_fun Hfam alpha /\
+    apply_fun ys i <> apply_fun efamH alpha.
+let G multG eG invG G1 G2 J K Hfam efamH n ys i.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe Hi HyiG1.
+
+(** Extract subgroup containment for the K-family inside G2. **)
+claim HsubfamK : forall beta:set, beta :e K ->
+  subgroup_of (apply_fun Hfam beta) G2 multG eG invG.
+{
+  apply (and5E
+    (group_structure G2 multG eG invG)
+    (forall beta:set, beta :e K ->
+      subgroup_of (apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta) G2 multG eG invG)
+    (forall beta gamma:set, beta :e K -> gamma :e K -> beta <> gamma ->
+      forall x:set, x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta ->
+        x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) gamma -> x = eG)
+    (subgroups_generate G2 multG eG invG K (graph K (fun b:set => apply_fun Hfam b)))
+    (forall x:set, x :e G2 -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+          (graph K (fun b:set => apply_fun efamH b)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+            (graph K (fun b:set => apply_fun efamH b)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs' i0)))
+    Hfp2).
+  assume _ Hsub _ _ _.
+  let beta. assume Hbe.
+  rewrite <- (apply_fun_graph K (fun b:set => apply_fun Hfam b) beta Hbe).
+  exact (Hsub beta Hbe).
+}
+
+(** Use the reduced_word witness alpha :e (J \\/ K) and split alpha \\/. **)
+apply (reduced_word_elem (J :\/: K) Hfam efamH n ys i Hred Hi).
+let alpha. assume Halpha_pack.
+apply (and3E
+  (alpha :e (J :\/: K))
+  (apply_fun ys i :e apply_fun Hfam alpha)
+  (apply_fun ys i <> apply_fun efamH alpha)
+  Halpha_pack).
+assume Hal_union Hyi_Ha Hyi_ne_ef.
+apply (binunionE J K alpha Hal_union).
+- assume HalJ.
+  witness alpha.
+  apply and3I.
+  + exact HalJ.
+  + exact Hyi_Ha.
+  + exact Hyi_ne_ef.
+- assume HalK.
+  (** Then y_i lies in G2, hence in G1 \\cap G2 = {eG}, contradiction with y_i <> eG. **)
+  claim HyiG2 : apply_fun ys i :e G2.
+  {
+    exact (subgroup_of_subset
+      (apply_fun Hfam alpha)
+      G2
+      multG
+      eG
+      invG
+      (HsubfamK alpha HalK)
+      (apply_fun ys i)
+      Hyi_Ha).
+  }
+  claim Hyie : apply_fun ys i = eG.
+  {
+    exact (free_product_binary_factors_intersect_trivial
+      G multG eG invG G1 G2 (apply_fun ys i)
+      Hfp
+      HyiG1
+      HyiG2).
+  }
+  exact (FalseE ((HallNe i Hi) Hyie)
+    (exists alpha:set, alpha :e J /\
+      apply_fun ys i :e apply_fun Hfam alpha /\
+      apply_fun ys i <> apply_fun efamH alpha)).
+Qed.
+
+(** Infrastructure for Cor 68.6: if a nontrivial reduced (J \\/ K)-letter lies in G2, it must come from K **)
+(** Proven Charlie **)
+Lemma cor68_6_letter_in_G2_has_K_witness :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys i:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun _:set => eG)) ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall j:set, j :e n -> apply_fun ys j <> eG) ->
+  i :e n ->
+  apply_fun ys i :e G2 ->
+  exists beta:set, beta :e K /\
+    apply_fun ys i :e apply_fun Hfam beta /\
+    apply_fun ys i <> apply_fun efamH beta.
+let G multG eG invG G1 G2 J K Hfam efamH n ys i.
+assume Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2 Hred HallNe Hi HyiG2.
+
+claim HsubfamJ : forall alpha:set, alpha :e J ->
+  subgroup_of (apply_fun Hfam alpha) G1 multG eG invG.
+{
+  apply (and5E
+    (group_structure G1 multG eG invG)
+    (forall alpha:set, alpha :e J ->
+      subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG)
+    (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+      forall x:set, x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha ->
+        x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) beta -> x = eG)
+    (subgroups_generate G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)))
+    (forall x:set, x :e G1 -> x <> eG ->
+      exists n0 xs0:set,
+        reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+          (graph J (fun a:set => apply_fun efamH a)) n0 xs0 /\ n0 <> 0 /\
+        word_product multG eG xs0 n0 = x /\
+        (forall n' xs':set,
+          reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+            (graph J (fun a:set => apply_fun efamH a)) n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n0 = n' /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs' i0)))
+    Hfp1).
+  assume _ Hsub _ _ _.
+  let alpha. assume Hal.
+  rewrite <- (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha Hal).
+  exact (Hsub alpha Hal).
+}
+
+apply (reduced_word_elem (J :\/: K) Hfam efamH n ys i Hred Hi).
+let alpha. assume Halpha_pack.
+apply (and3E
+  (alpha :e (J :\/: K))
+  (apply_fun ys i :e apply_fun Hfam alpha)
+  (apply_fun ys i <> apply_fun efamH alpha)
+  Halpha_pack).
+assume Hal_union Hyi_Ha Hyi_ne_ef.
+apply (binunionE J K alpha Hal_union).
+- assume HalJ.
+  (** Then y_i lies in G1, contradicting y_i <> eG by trivial intersection. **)
+  claim HyiG1 : apply_fun ys i :e G1.
+  {
+    exact (subgroup_of_subset
+      (apply_fun Hfam alpha)
+      G1
+      multG
+      eG
+      invG
+      (HsubfamJ alpha HalJ)
+      (apply_fun ys i)
+      Hyi_Ha).
+  }
+  claim Hyie : apply_fun ys i = eG.
+  {
+    exact (free_product_binary_factors_intersect_trivial
+      G multG eG invG G1 G2 (apply_fun ys i)
+      Hfp
+      HyiG1
+      HyiG2).
+  }
+  exact (FalseE ((HallNe i Hi) Hyie)
+    (exists beta:set, beta :e K /\
+      apply_fun ys i :e apply_fun Hfam beta /\
+      apply_fun ys i <> apply_fun efamH beta)).
+- assume HalK.
+  witness alpha.
+  apply and3I.
+  + exact HalK.
+  + exact Hyi_Ha.
+  + exact Hyi_ne_ef.
+Qed.
+
 (** Infrastructure for Cor 68.6 (Bounty 19): collapse a mixed (J \\/ K)-reduced word to a binary reduced word **)
 (** The binary word lives in factors G1/G2 and has length >= 2 when both factors occur. **)
 Lemma cor68_6_collapse_mixed_union_to_binary_reduced_word :
