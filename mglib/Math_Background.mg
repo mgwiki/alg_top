@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5510 **)
-(** Balance Charlie 1378 **)
+(** Balance Charlie 1374 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -225963,7 +225963,8 @@ exact Hab_notin.
 Qed.
 
 (** Helper bounties (correct-strength versions: also assume Hfp1/Hfp2 on G1 and G2) **)
-(** Bounty 17 **)
+(** Bounty 19 **)
+(** Lock Charlie 1772681543 **)
 Theorem cor68_6_binary_collapse_mixed_not_in_G1 :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
   group_structure G multG eG invG ->
@@ -225988,7 +225989,8 @@ Theorem cor68_6_binary_collapse_mixed_not_in_G1 :
 admit.
 Admitted.
 
-(** Bounty 17 **)
+(** Bounty 19 **)
+(** Lock Charlie 1772681543 **)
 Theorem cor68_6_binary_collapse_mixed_not_in_G2 :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
   group_structure G multG eG invG ->
