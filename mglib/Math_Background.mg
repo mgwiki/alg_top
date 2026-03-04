@@ -329200,6 +329200,110 @@ apply Hcase.
       Hfin79
       HoriC80).
   }
+  claim Hsharedu4 :
+    exists C81:set, C81 :e Arcs /\ C81 <> C80 /\ u4 :e C81.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C80 /\ t4 :e C)
+      (exists D:set, D :e Arcs /\ D <> C80 /\ u4 :e D)
+      (Hallshared C80 t4 u4 HC80 Ht4u4)).
+  }
+  apply Hsharedu4. let C81. assume HC81pack.
+  claim HC81pair : C81 :e Arcs /\ C81 <> C80.
+  { exact (andEL (C81 :e Arcs /\ C81 <> C80) (u4 :e C81) HC81pack). }
+  claim HC81 : C81 :e Arcs.
+  { exact (andEL (C81 :e Arcs) (C81 <> C80) HC81pair). }
+  claim HC81neC80 : C81 <> C80.
+  { exact (andER (C81 :e Arcs) (C81 <> C80) HC81pair). }
+  claim Hu4C81 : u4 :e C81.
+  { exact (andER (C81 :e Arcs /\ C81 <> C80) (u4 :e C81) HC81pack). }
+  claim Hu4C80 : u4 :e C80.
+  { exact (end_points_of_arc_right_in_set C80 (subspace_topology T Tx C80) t4 u4 Ht4u4). }
+  claim HC80neC81 : C80 <> C81.
+  { assume Heq. exact (HC81neC80 (eq_symm C80 C81 Heq)). }
+  claim HintC80C81 :
+    C80 :/\: C81 = Empty \/
+    (exists r81:set, C80 :/\: C81 = Sing r81 /\
+      (exists s81:set, end_points_of_arc C80 (subspace_topology T Tx C80) r81 s81 \/
+                     end_points_of_arc C80 (subspace_topology T Tx C80) s81 r81) /\
+      (exists t81:set, end_points_of_arc C81 (subspace_topology T Tx C81) r81 t81 \/
+                     end_points_of_arc C81 (subspace_topology T Tx C81) t81 r81)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C80
+      C81
+      Hglg
+      HC80
+      HC81
+      HC80neC81).
+  }
+  claim Hu4_is_endpoint_C81 :
+    exists v4:set, end_points_of_arc C81 (subspace_topology T Tx C81) u4 v4 \/
+                    end_points_of_arc C81 (subspace_topology T Tx C81) v4 u4.
+  {
+    apply HintC80C81.
+    - assume Hempty.
+      claim Hu4CC : u4 :e C80 :/\: C81. { exact (binintersectI C80 C81 u4 Hu4C80 Hu4C81). }
+      exact (EmptyE u4 (eq_subst_mem_set u4 (C80 :/\: C81) Empty Hu4CC Hempty)
+        (exists v4:set, end_points_of_arc C81 (subspace_topology T Tx C81) u4 v4 \/
+                        end_points_of_arc C81 (subspace_topology T Tx C81) v4 u4)).
+    - assume Hsing. apply Hsing. let r81. assume Hr81pack.
+      apply (and3E
+        (C80 :/\: C81 = Sing r81)
+        (exists s81:set, end_points_of_arc C80 (subspace_topology T Tx C80) r81 s81 \/
+                       end_points_of_arc C80 (subspace_topology T Tx C80) s81 r81)
+        (exists t81:set, end_points_of_arc C81 (subspace_topology T Tx C81) r81 t81 \/
+                       end_points_of_arc C81 (subspace_topology T Tx C81) t81 r81)
+        Hr81pack).
+      assume Hr81eq _ HC81end.
+      claim Hu4CC : u4 :e C80 :/\: C81. { exact (binintersectI C80 C81 u4 Hu4C80 Hu4C81). }
+      claim Hu4r81 : u4 = r81.
+      { exact (SingE r81 u4 (eq_subst_mem_set u4 (C80 :/\: C81) (Sing r81) Hu4CC Hr81eq)). }
+      apply HC81end. let t81. assume Ht81.
+      witness t81.
+      apply Ht81.
+      * assume Hr81t : end_points_of_arc C81 (subspace_topology T Tx C81) r81 t81.
+        apply orIL. rewrite Hu4r81. exact Hr81t.
+      * assume Ht81r : end_points_of_arc C81 (subspace_topology T Tx C81) t81 r81.
+        apply orIR. rewrite Hu4r81. exact Ht81r.
+  }
+  apply Hu4_is_endpoint_C81. let v4. assume Hv4cases.
+  claim Hu4v4 : end_points_of_arc C81 (subspace_topology T Tx C81) u4 v4.
+  { apply Hv4cases.
+    - assume Hu4v : end_points_of_arc C81 (subspace_topology T Tx C81) u4 v4. exact Hu4v.
+    - assume Hv4u : end_points_of_arc C81 (subspace_topology T Tx C81) v4 u4.
+      exact (end_points_of_arc_sym C81 (subspace_topology T Tx C81) v4 u4 Hv4u). }
+  claim HoriC81 : oriented_edge T Tx Arcs C81 u4 v4.
+  { exact (andI (C81 :e Arcs) (end_points_of_arc C81 (subspace_topology T Tx C81) u4 v4) HC81 Hu4v4). }
+  set n81 := ordsucc n80.
+  set path82 :=
+    (graph n81 (fun i:set => apply_fun path81 i)) :\/:
+    (graph {n81} (fun _:set => ((u4, v4), C81))).
+  claim Hep82 : edge_path T Tx Arcs (ordsucc n81) path82 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n81 path81 q0 n80 C81 u4 v4
+      Hglg
+      Hep81
+      (ordsuccI2 n80)
+      (In_irref (ordsucc n80))
+      Hfin80
+      HoriC81).
+  }
+  claim Hfin81 : (apply_fun path82 n81) 0 1 = v4.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n81 path81 q0 n80 C81 u4 v4
+      Hglg
+      Hep81
+      (ordsuccI2 n80)
+      (In_irref (ordsucc n80))
+      Hfin80
+      HoriC81).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
