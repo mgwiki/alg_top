@@ -230549,13 +230549,13 @@ rewrite Hwp2_eq.
 exact Habs.
 Qed.
 
-(** Infrastructure: decompose a natural n as n1 + n2 when n1 < n **)
-(** Proven Charlie **)
-Lemma nat_mem_add_nat_decomp :
-  forall n n1:set,
-  nat_p n ->
-  n1 :e n ->
-  exists n2:set, nat_p n2 /\ n = add_nat n1 n2.
+	(** Infrastructure: decompose a natural n as n1 + n2 when n1 < n **)
+	(** Proven Charlie **)
+	Lemma nat_mem_add_nat_decomp :
+	  forall n n1:set,
+	  nat_p n ->
+	  n1 :e n ->
+	  exists n2:set, nat_p n2 /\ n = add_nat n1 n2.
 let n n1.
 assume Hn_nat Hn1_in.
 claim HnO : n :e omega.
@@ -230579,10 +230579,46 @@ claim Hn_eq : n = add_nat k n1.
 witness k.
 apply andI.
 - exact Hk_nat.
-- rewrite Hn_eq.
-  rewrite (add_nat_com k Hk_nat n1 Hn1_nat).
-  reflexivity.
-Qed.
+	- rewrite Hn_eq.
+	  rewrite (add_nat_com k Hk_nat n1 Hn1_nat).
+	  reflexivity.
+	Qed.
+
+	(** Infrastructure: strong induction on natural numbers (derived from nat_ind) **)
+	(** Proven Charlie **)
+	Theorem nat_strong_ind :
+	  forall P:set -> prop,
+	  (forall n:set, nat_p n -> (forall m:set, m :e n -> P m) -> P n) ->
+	  forall n:set, nat_p n -> P n.
+	let P.
+	assume Hstep.
+	let n. assume Hn_nat.
+
+	(** Let Q(t) := forall m < t, P(m). We prove Q(t) for all naturals t. **)
+	set Q := fun t:set => forall m:set, m :e t -> P m.
+		claim HQ : forall t:set, nat_p t -> Q t.
+		{
+		  apply nat_ind.
+		  - let m. assume Hm0.
+		    exact (FalseE (EmptyE m (eq_subst_mem_set m 0 Empty Hm0 zero_eq_empty)) (P m)).
+		  - let t. assume Ht_nat IHQt.
+		    (** Show Q(ordsucc t). **)
+		    let m. assume Hm_st.
+		    apply (ordsuccE t m Hm_st).
+	    + assume Hm_t.
+	      exact (IHQt m Hm_t).
+	    + assume Hm_eq.
+	      (** Need P(t), from the strong step using IHQt. **)
+	      claim Pt : P t.
+	      { exact (Hstep t Ht_nat IHQt). }
+	      rewrite Hm_eq.
+	      exact Pt.
+	}
+	claim HQsn : Q (ordsucc n).
+	{ exact (HQ (ordsucc n) (nat_ordsucc n Hn_nat)). }
+	(** Since n < succ n, HQsn yields P(n). **)
+	exact (HQsn n (ordsuccI2 n)).
+	Qed.
 
 (** Infrastructure for Cor 68.6: a mixed word has an adjacent factor switch **)
 (** Proven Charlie **)
