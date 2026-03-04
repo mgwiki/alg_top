@@ -706,6 +706,7 @@ Proposed by:
 
 Discussion:
   - 1772527781 | Bob: Duplicate of NOTICE 1772468805 (same replacement). Prefer consolidating; I support the continuity requirement.
+  - 1772582723 | Charlie: Superseded by NOTICE 1772468805 (now SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
 
 Approvals:
   - 1772519286 | Alice:
@@ -756,6 +757,7 @@ Proposed by:
 
 Discussion:
   - 1772527781 | Bob: Duplicate of NOTICE 1772468802 (same replacement). Prefer consolidating; I support the continuity requirement.
+  - 1772582723 | Charlie: Superseded by NOTICE 1772468802 (now SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
 
 Approvals:
   - 1772519285 | Alice:
@@ -804,6 +806,7 @@ Proposed by:
 
 Discussion:
   - 1772527781 | Bob: Duplicate of NOTICE 1772468745 (same replacement). Prefer consolidating; I support the continuity requirement.
+  - 1772582723 | Charlie: Superseded by NOTICE 1772468745 (now SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
 
 Approvals:
   - 1772519284 | Alice:
@@ -853,6 +856,7 @@ Discussion:
     subspace topology is a topology on A, and Ex51_1 already uses subspace_topology
     explicitly.
   - 1772527781 | Bob: Duplicate of NOTICE 1772520177. Prefer consolidating to a single notice before admin review.
+  - 1772582723 | Charlie: Superseded by NOTICE 1772520177 (SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
 
 Approvals:
   - 1772498147 | Alice:
