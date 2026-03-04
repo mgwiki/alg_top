@@ -324144,6 +324144,110 @@ apply Hcase.
       Hfin31
       HoriC32).
   }
+  claim Hsharedy2 :
+    exists C33:set, C33 :e Arcs /\ C33 <> C32 /\ y2 :e C33.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C32 /\ x2 :e C)
+      (exists D:set, D :e Arcs /\ D <> C32 /\ y2 :e D)
+      (Hallshared C32 x2 y2 HC32 Hx2y2)).
+  }
+  apply Hsharedy2. let C33. assume HC33pack.
+  claim HC33pair : C33 :e Arcs /\ C33 <> C32.
+  { exact (andEL (C33 :e Arcs /\ C33 <> C32) (y2 :e C33) HC33pack). }
+  claim HC33 : C33 :e Arcs.
+  { exact (andEL (C33 :e Arcs) (C33 <> C32) HC33pair). }
+  claim HC33neC32 : C33 <> C32.
+  { exact (andER (C33 :e Arcs) (C33 <> C32) HC33pair). }
+  claim Hy2C33 : y2 :e C33.
+  { exact (andER (C33 :e Arcs /\ C33 <> C32) (y2 :e C33) HC33pack). }
+  claim Hy2C32 : y2 :e C32.
+  { exact (end_points_of_arc_right_in_set C32 (subspace_topology T Tx C32) x2 y2 Hx2y2). }
+  claim HC32neC33 : C32 <> C33.
+  { assume Heq. exact (HC33neC32 (eq_symm C32 C33 Heq)). }
+  claim HintC32C33 :
+    C32 :/\: C33 = Empty \/
+    (exists r33:set, C32 :/\: C33 = Sing r33 /\
+      (exists s33:set, end_points_of_arc C32 (subspace_topology T Tx C32) r33 s33 \/
+                     end_points_of_arc C32 (subspace_topology T Tx C32) s33 r33) /\
+      (exists t33:set, end_points_of_arc C33 (subspace_topology T Tx C33) r33 t33 \/
+                     end_points_of_arc C33 (subspace_topology T Tx C33) t33 r33)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C32
+      C33
+      Hglg
+      HC32
+      HC33
+      HC32neC33).
+  }
+  claim Hy2_is_endpoint_C33 :
+    exists z2:set, end_points_of_arc C33 (subspace_topology T Tx C33) y2 z2 \/
+                    end_points_of_arc C33 (subspace_topology T Tx C33) z2 y2.
+  {
+    apply HintC32C33.
+    - assume Hempty.
+      claim Hy2CC : y2 :e C32 :/\: C33. { exact (binintersectI C32 C33 y2 Hy2C32 Hy2C33). }
+      exact (EmptyE y2 (eq_subst_mem_set y2 (C32 :/\: C33) Empty Hy2CC Hempty)
+        (exists z2:set, end_points_of_arc C33 (subspace_topology T Tx C33) y2 z2 \/
+                        end_points_of_arc C33 (subspace_topology T Tx C33) z2 y2)).
+    - assume Hsing. apply Hsing. let r33. assume Hr33pack.
+      apply (and3E
+        (C32 :/\: C33 = Sing r33)
+        (exists s33:set, end_points_of_arc C32 (subspace_topology T Tx C32) r33 s33 \/
+                       end_points_of_arc C32 (subspace_topology T Tx C32) s33 r33)
+        (exists t33:set, end_points_of_arc C33 (subspace_topology T Tx C33) r33 t33 \/
+                       end_points_of_arc C33 (subspace_topology T Tx C33) t33 r33)
+        Hr33pack).
+      assume Hr33eq _ HC33end.
+      claim Hy2CC : y2 :e C32 :/\: C33. { exact (binintersectI C32 C33 y2 Hy2C32 Hy2C33). }
+      claim Hy2r33 : y2 = r33.
+      { exact (SingE r33 y2 (eq_subst_mem_set y2 (C32 :/\: C33) (Sing r33) Hy2CC Hr33eq)). }
+      apply HC33end. let t33. assume Ht33.
+      witness t33.
+      apply Ht33.
+      * assume Hr33t : end_points_of_arc C33 (subspace_topology T Tx C33) r33 t33.
+        apply orIL. rewrite Hy2r33. exact Hr33t.
+      * assume Ht33r : end_points_of_arc C33 (subspace_topology T Tx C33) t33 r33.
+        apply orIR. rewrite Hy2r33. exact Ht33r.
+  }
+  apply Hy2_is_endpoint_C33. let z2. assume Hz2cases.
+  claim Hy2z2 : end_points_of_arc C33 (subspace_topology T Tx C33) y2 z2.
+  { apply Hz2cases.
+    - assume Hy2z : end_points_of_arc C33 (subspace_topology T Tx C33) y2 z2. exact Hy2z.
+    - assume Hz2y : end_points_of_arc C33 (subspace_topology T Tx C33) z2 y2.
+      exact (end_points_of_arc_sym C33 (subspace_topology T Tx C33) z2 y2 Hz2y). }
+  claim HoriC33 : oriented_edge T Tx Arcs C33 y2 z2.
+  { exact (andI (C33 :e Arcs) (end_points_of_arc C33 (subspace_topology T Tx C33) y2 z2) HC33 Hy2z2). }
+  set n33 := ordsucc n32.
+  set path34 :=
+    (graph n33 (fun i:set => apply_fun path33 i)) :\/:
+    (graph {n33} (fun _:set => ((y2, z2), C33))).
+  claim Hep34 : edge_path T Tx Arcs (ordsucc n33) path34 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n33 path33 q0 n32 C33 y2 z2
+      Hglg
+      Hep33
+      (ordsuccI2 n32)
+      (In_irref (ordsucc n32))
+      Hfin32
+      HoriC33).
+  }
+  claim Hfin33 : (apply_fun path34 n33) 0 1 = z2.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n33 path33 q0 n32 C33 y2 z2
+      Hglg
+      Hep33
+      (ordsuccI2 n32)
+      (In_irref (ordsucc n32))
+      Hfin32
+      HoriC33).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
