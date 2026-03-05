@@ -118356,6 +118356,20 @@ assume HU.
 exact (subspace_topology_subset X Tx Y U HU).
 Qed.
 
+(** Infrastructure: subspace topology members are subsets of the ambient space **)
+(** Proven Bob **)
+Lemma subspace_topology_member_subset_ambient : forall X Tx Y U:set,
+  Y c= X ->
+  U :e subspace_topology X Tx Y ->
+  U c= X.
+let X Tx Y U.
+assume HYsub HU.
+claim HsubY : U c= Y.
+{ exact (subspace_topology_member_subset_no_topology X Tx Y U HU). }
+let x. assume HxU.
+exact (HYsub x (HsubY x HxU)).
+Qed.
+
 (** Infrastructure: subspace topology members lie in Power Y **)
 (** Proven Bob **)
 Lemma subspace_topology_member_power : forall X Tx Y U:set,
