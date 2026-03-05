@@ -117937,6 +117937,24 @@ apply andI.
 - reflexivity.
 Qed.
 
+(** Infrastructure: closed sets are closed in subspaces via intersection **)
+(** Proven Bob **)
+Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
+  topology_on X Tx ->
+  Y c= X ->
+  closed_in X Tx C ->
+  closed_in Y (subspace_topology X Tx Y) (C :/\: Y).
+let X Tx Y C.
+assume Htop HYsub Hclosed.
+apply (closed_in_subspace_iff_intersection X Tx Y (C :/\: Y) Htop HYsub).
+assume _ Hrev.
+apply Hrev.
+witness C.
+apply andI.
+- exact Hclosed.
+- reflexivity.
+Qed.
+
 (** Infrastructure: closed maps have well-typed data **)
 (** Proven Bob **)
 Lemma closed_map_function_on : forall X Tx Y Ty f:set,
