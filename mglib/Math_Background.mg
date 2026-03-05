@@ -247254,10 +247254,25 @@ apply (and5I
 						        reduced_word (J :\/: K) Hfam efamH nB xsB -> nB <> 0 ->
 						        word_product multG eG xsB nB = word_product multG eG xs12 (ordsucc t) ->
 						        nA = nB /\ (forall i:set, i :e nA -> apply_fun xsA i = apply_fun xsB i).
-						  {
-						    let t. assume Ht_nat Ht_in12 Ht_ne0.
-						    let nA xsA nB xsB.
-						    assume HredA HnA_ne0 HwpA HredB HnB_ne0 HwpB.
+							  {
+							    let t. assume Ht_nat.
+							    set P := fun t0:set =>
+							      t0 :e n12 -> t0 <> 0 ->
+							        forall nA xsA nB xsB:set,
+							          reduced_word (J :\/: K) Hfam efamH nA xsA -> nA <> 0 ->
+							          word_product multG eG xsA nA = word_product multG eG xs12 (ordsucc t0) ->
+							          reduced_word (J :\/: K) Hfam efamH nB xsB -> nB <> 0 ->
+							          word_product multG eG xsB nB = word_product multG eG xs12 (ordsucc t0) ->
+							          nA = nB /\ (forall i:set, i :e nA -> apply_fun xsA i = apply_fun xsB i).
+							    claim Hstep :
+							      forall t0:set, nat_p t0 ->
+							        (forall r:set, r :e t0 -> P r) ->
+							        P t0.
+							    {
+							      let t. assume Ht_nat IHt.
+							      assume Ht_in12 Ht_ne0.
+							    let nA xsA nB xsB.
+							    assume HredA HnA_ne0 HwpA HredB HnB_ne0 HwpB.
 
 						    set xt := word_product multG eG xs12 (ordsucc t).
 
@@ -247524,9 +247539,11 @@ apply (and5I
 						        Hgrp Hsubfam_union HredB HnB_ne0 HnB_ne1 i Hi).
 						    }
 
-						    admit.
-						  }
-						  claim Hkmax_ne0 : kmax <> 0.
+							    admit.
+							  }
+							  exact (nat_strong_ind P Hstep t Ht_nat).
+							  }
+							  claim Hkmax_ne0 : kmax <> 0.
 						  {
 						    assume Hk0.
 						    claim Hn12_1 : n12 = 1.
