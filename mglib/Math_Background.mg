@@ -118308,6 +118308,16 @@ claim Hsub : U c= Y.
 exact (PowerI Y U Hsub).
 Qed.
 
+(** Infrastructure: subspace topology members lie in Power Y (no topology assumptions) **)
+(** Proven Bob **)
+Lemma subspace_topology_member_power_no_topology : forall X Tx Y U:set,
+  U :e subspace_topology X Tx Y ->
+  U :e Power Y.
+let X Tx Y U.
+assume HU.
+exact (subspace_topology_in_Power X Tx Y U HU).
+Qed.
+
 (** Infrastructure: closed_in in subspace implies subset of subspace **)
 (** Proven Bob **)
 Lemma closed_in_subspace_member_subset : forall X Tx Y A:set,
