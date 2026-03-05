@@ -244941,9 +244941,214 @@ apply (and5I
 		            word_product multG eG xs' n' = x ->
 		            n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
 		      {
-		        (** TODO: n12 >= 3 case. The append helpers `Happend_word_G1` and `Happend_word_G2`
-		            now return both `HallNe` and a last-letter side witness, so this can be folded
-		            over the binary normal form `xs12`. **)
+		        (** Setup lemmas for the remaining n12 >= 3 construction. **)
+		        claim Hn12O : n12 :e omega.
+		        {
+		          apply (and3E
+		            (n12 :e omega)
+		            (forall i:set, i :e n12 ->
+		              exists alpha:set, alpha :e (UPair 0 1) /\
+		                apply_fun xs12 i :e apply_fun Gfam12 alpha /\
+		                apply_fun xs12 i <> apply_fun (graph (UPair 0 1) (fun i:set => eG)) alpha)
+		            (forall i:set, i :e n12 -> ordsucc i :e n12 ->
+		              forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) ->
+		                apply_fun xs12 i :e apply_fun Gfam12 alpha ->
+		                apply_fun xs12 (ordsucc i) :e apply_fun Gfam12 beta ->
+		                alpha <> beta)
+		            Hred12word).
+		          assume Hn12O _ _. exact Hn12O.
+		        }
+		        claim Hn12_nat : nat_p n12.
+		        { exact (omega_nat_p n12 Hn12O). }
+		        claim Hn12_succ : exists kmax:set, nat_p kmax /\ n12 = ordsucc kmax.
+		        {
+		          apply (nat_inv n12 Hn12_nat).
+		          - assume Hn0.
+		            exact (FalseE (Hn12ne Hn0) (exists kmax:set, nat_p kmax /\ n12 = ordsucc kmax)).
+		          - assume Hk_ex. exact Hk_ex.
+		        }
+
+		        claim Hxs12_fam :
+		          forall i:set, i :e n12 ->
+		            exists alpha:set, alpha :e (UPair 0 1) /\
+		              apply_fun xs12 i :e apply_fun Gfam12 alpha /\
+		              apply_fun xs12 i <> eG.
+		        {
+		          let i. assume Hi.
+		          apply (and3E
+		            (n12 :e omega)
+		            (forall j:set, j :e n12 ->
+		              exists alpha:set, alpha :e (UPair 0 1) /\
+		                apply_fun xs12 j :e apply_fun Gfam12 alpha /\
+		                apply_fun xs12 j <> apply_fun (graph (UPair 0 1) (fun i:set => eG)) alpha)
+		            (forall j:set, j :e n12 -> ordsucc j :e n12 ->
+		              forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) ->
+		                apply_fun xs12 j :e apply_fun Gfam12 alpha ->
+		                apply_fun xs12 (ordsucc j) :e apply_fun Gfam12 beta ->
+		                alpha <> beta)
+		            Hred12word).
+		          assume _ Hfam _.
+		          apply (Hfam i Hi).
+		          let alpha. assume Halpha_pack.
+		          apply (and3E
+		            (alpha :e (UPair 0 1))
+		            (apply_fun xs12 i :e apply_fun Gfam12 alpha)
+		            (apply_fun xs12 i <> apply_fun (graph (UPair 0 1) (fun i:set => eG)) alpha)
+		            Halpha_pack).
+		          assume Hal HxG Hxne0.
+		          witness alpha.
+		          apply and3I.
+		          - exact Hal.
+		          - exact HxG.
+		          - exact (Hxs12_ne i Hi).
+		        }
+
+		        claim Hxs12_side :
+		          forall i:set, i :e n12 ->
+		            apply_fun xs12 i :e G1 \/ apply_fun xs12 i :e G2.
+		        {
+		          let i. assume Hi.
+		          apply (Hxs12_fam i Hi).
+		          let alpha. assume Halpha_pack.
+		          apply (and3E
+		            (alpha :e (UPair 0 1))
+		            (apply_fun xs12 i :e apply_fun Gfam12 alpha)
+		            (apply_fun xs12 i <> eG)
+		            Halpha_pack).
+		          assume Hal HxG _.
+		          apply (UPairE alpha 0 1 Hal).
+		          - assume Ha0 : alpha = 0.
+		            apply orIL.
+		            claim HGfam0 : apply_fun Gfam12 alpha = G1.
+		            {
+		              rewrite (apply_fun_graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2) alpha Hal).
+		              exact (If_i_1 (alpha = 0) G1 G2 Ha0).
+		            }
+		            exact (eq_subst_mem_set (apply_fun xs12 i) (apply_fun Gfam12 alpha) G1 HxG HGfam0).
+		          - assume Ha1 : alpha = 1.
+		            apply orIR.
+			            claim HGfam1 : apply_fun Gfam12 alpha = G2.
+			            {
+			              rewrite (apply_fun_graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2) alpha Hal).
+			              rewrite Ha1.
+			              exact (If_i_0 (1 = 0) G1 G2 neq_1_0).
+			            }
+		            exact (eq_subst_mem_set (apply_fun xs12 i) (apply_fun Gfam12 alpha) G2 HxG HGfam1).
+		        }
+
+		        claim Hxs12_adj_side :
+		          forall i:set, i :e n12 -> ordsucc i :e n12 ->
+		            (apply_fun xs12 i :e G1 -> apply_fun xs12 (ordsucc i) :e G2) /\
+		            (apply_fun xs12 i :e G2 -> apply_fun xs12 (ordsucc i) :e G1).
+		        {
+		          let i. assume Hi Hsi.
+		          apply andI.
+		          - assume HxiG1.
+		            claim Hxi0 : apply_fun xs12 i :e apply_fun Gfam12 0.
+		            {
+		              rewrite (apply_fun_graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2) 0 (UPairI1 0 1)).
+		              rewrite (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+		              exact HxiG1.
+		            }
+		            apply (Hxs12_fam (ordsucc i) Hsi). let beta. assume Hbeta_pack.
+		            apply (and3E
+		              (beta :e (UPair 0 1))
+		              (apply_fun xs12 (ordsucc i) :e apply_fun Gfam12 beta)
+		              (apply_fun xs12 (ordsucc i) <> eG)
+		              Hbeta_pack).
+		            assume HbeU Hxsi _.
+		            claim Hadj :
+		              forall alpha beta0:set,
+		                alpha :e (UPair 0 1) -> beta0 :e (UPair 0 1) ->
+		                  apply_fun xs12 i :e apply_fun Gfam12 alpha ->
+		                  apply_fun xs12 (ordsucc i) :e apply_fun Gfam12 beta0 ->
+		                  alpha <> beta0.
+		            {
+		              apply (and3E
+		                (n12 :e omega)
+		                (forall j:set, j :e n12 ->
+		                  exists alpha:set, alpha :e (UPair 0 1) /\
+		                    apply_fun xs12 j :e apply_fun Gfam12 alpha /\
+		                    apply_fun xs12 j <> apply_fun (graph (UPair 0 1) (fun i:set => eG)) alpha)
+		                (forall j:set, j :e n12 -> ordsucc j :e n12 ->
+		                  forall alpha beta0:set, alpha :e (UPair 0 1) -> beta0 :e (UPair 0 1) ->
+		                    apply_fun xs12 j :e apply_fun Gfam12 alpha ->
+		                    apply_fun xs12 (ordsucc j) :e apply_fun Gfam12 beta0 ->
+		                    alpha <> beta0)
+		                Hred12word).
+		              assume _ _ Hadj. exact (Hadj i Hi Hsi).
+		            }
+		            claim H0_ne_beta : 0 <> beta.
+		            { exact (Hadj 0 beta (UPairI1 0 1) HbeU Hxi0 Hxsi). }
+			            claim Hbeta1 : beta = 1.
+			            {
+			              apply (UPairE beta 0 1 HbeU).
+			              - assume Hb0. exact (FalseE (H0_ne_beta (eq_symm beta 0 Hb0)) (beta = 1)).
+			              - assume Hb1. exact Hb1.
+			            }
+		            claim HGfam1 : apply_fun Gfam12 beta = G2.
+		            {
+		              rewrite (apply_fun_graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2) beta HbeU).
+		              rewrite Hbeta1.
+		              rewrite (If_i_0 (1 = 0) G1 G2 neq_1_0).
+		              reflexivity.
+		            }
+		            exact (eq_subst_mem_set (apply_fun xs12 (ordsucc i)) (apply_fun Gfam12 beta) G2 Hxsi HGfam1).
+		          - assume HxiG2.
+		            claim Hxi1 : apply_fun xs12 i :e apply_fun Gfam12 1.
+		            {
+		              rewrite (apply_fun_graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2) 1 (UPairI2 0 1)).
+		              rewrite (If_i_0 (1 = 0) G1 G2 neq_1_0).
+		              exact HxiG2.
+		            }
+		            apply (Hxs12_fam (ordsucc i) Hsi). let beta. assume Hbeta_pack.
+		            apply (and3E
+		              (beta :e (UPair 0 1))
+		              (apply_fun xs12 (ordsucc i) :e apply_fun Gfam12 beta)
+		              (apply_fun xs12 (ordsucc i) <> eG)
+		              Hbeta_pack).
+		            assume HbeU Hxsi _.
+		            claim Hadj :
+		              forall alpha beta0:set,
+		                alpha :e (UPair 0 1) -> beta0 :e (UPair 0 1) ->
+		                  apply_fun xs12 i :e apply_fun Gfam12 alpha ->
+		                  apply_fun xs12 (ordsucc i) :e apply_fun Gfam12 beta0 ->
+		                  alpha <> beta0.
+		            {
+		              apply (and3E
+		                (n12 :e omega)
+		                (forall j:set, j :e n12 ->
+		                  exists alpha:set, alpha :e (UPair 0 1) /\
+		                    apply_fun xs12 j :e apply_fun Gfam12 alpha /\
+		                    apply_fun xs12 j <> apply_fun (graph (UPair 0 1) (fun i:set => eG)) alpha)
+		                (forall j:set, j :e n12 -> ordsucc j :e n12 ->
+		                  forall alpha beta0:set, alpha :e (UPair 0 1) -> beta0 :e (UPair 0 1) ->
+		                    apply_fun xs12 j :e apply_fun Gfam12 alpha ->
+		                    apply_fun xs12 (ordsucc j) :e apply_fun Gfam12 beta0 ->
+		                    alpha <> beta0)
+		                Hred12word).
+		              assume _ _ Hadj. exact (Hadj i Hi Hsi).
+		            }
+		            claim H1_ne_beta : 1 <> beta.
+		            { exact (Hadj 1 beta (UPairI2 0 1) HbeU Hxi1 Hxsi). }
+			            claim Hbeta0 : beta = 0.
+			            {
+			              apply (UPairE beta 0 1 HbeU).
+			              - assume Hb0. exact Hb0.
+			              - assume Hb1. exact (FalseE (H1_ne_beta (eq_symm beta 1 Hb1)) (beta = 0)).
+			            }
+		            claim HGfam0 : apply_fun Gfam12 beta = G1.
+		            {
+		              rewrite (apply_fun_graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2) beta HbeU).
+		              rewrite Hbeta0.
+		              rewrite (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+		              reflexivity.
+		            }
+		            exact (eq_subst_mem_set (apply_fun xs12 (ordsucc i)) (apply_fun Gfam12 beta) G1 Hxsi HGfam0).
+		        }
+
+		        (** TODO: n12 >= 3 case. Use Hexp_red_each_G1_non_e / Hexp_red_each_G2_non_e and
+		            fold over xs12 with Happend_word_G1 / Happend_word_G2. **)
 		        admit.
 		      }
 		      exact Hge3_case.
