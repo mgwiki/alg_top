@@ -117958,6 +117958,27 @@ apply andI.
 - reflexivity.
 Qed.
 
+(** Infrastructure: ambient open subset of Y is open in subspace **)
+(** Proven Bob **)
+Lemma open_in_subspace_of_open_in_ambient_subset : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y c= X ->
+  U :e Tx ->
+  U c= Y ->
+  open_in Y (subspace_topology X Tx Y) U.
+let X Tx Y U.
+assume Htop HYsub HUopen HUsub.
+claim Hopen' :
+  open_in Y (subspace_topology X Tx Y) (U :/\: Y).
+{
+  exact (open_in_subspace_of_open_in_ambient X Tx Y U Htop HYsub HUopen).
+}
+claim HeqU : U = U :/\: Y.
+{ exact (eq_symm (U :/\: Y) U (binintersect_sub_eq_right U Y HUsub)). }
+rewrite HeqU.
+exact Hopen'.
+Qed.
+
 (** Infrastructure: open_in in subspace gives an ambient open witness **)
 (** Proven Bob **)
 Lemma open_in_subspace_witness : forall X Tx Y U:set,
