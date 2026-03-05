@@ -118116,6 +118116,17 @@ claim HsubX : U c= X.
 exact (PowerI X U HsubX).
 Qed.
 
+(** Infrastructure: open_in in subspace lies in Power X (ambient, no topology assumptions) **)
+(** Proven Bob **)
+Lemma open_in_subspace_member_power_ambient_no_topology : forall X Tx Y U:set,
+  Y c= X ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  U :e Power X.
+let X Tx Y U.
+assume HYsub Hopen.
+exact (open_in_subspace_member_power_ambient X Tx Y U HYsub Hopen).
+Qed.
+
 (** Infrastructure: open_in in subspace implies subset of ambient space **)
 (** Proven Bob **)
 Lemma open_in_subspace_member_subset_ambient : forall X Tx Y U:set,
