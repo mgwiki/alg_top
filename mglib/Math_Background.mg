@@ -50628,6 +50628,23 @@ Definition covering_map_R_S1 : set :=
     (apply_fun cos_real (mul_SNo two_pi x),
      apply_fun sin_real (mul_SNo two_pi x))).
 
+(** Helper: 8-way conjunction elimination **)
+(** Proven Bob **)
+Theorem and8E : forall A1 A2 A3 A4 A5 A6 A7 A8:prop,
+  A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7 /\ A8 ->
+  forall p:prop,
+  (A1 -> A2 -> A3 -> A4 -> A5 -> A6 -> A7 -> A8 -> p) -> p.
+let A1 A2 A3 A4 A5 A6 A7 A8.
+assume H8 : A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7 /\ A8.
+let p. assume Hf : A1 -> A2 -> A3 -> A4 -> A5 -> A6 -> A7 -> A8 -> p.
+claim H8th : A8. { exact (andER (A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7) A8 H8). }
+claim H7 : A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7.
+{ exact (andEL (A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7) A8 H8). }
+apply (and7E A1 A2 A3 A4 A5 A6 A7 H7).
+assume HA1 HA2 HA3 HA4 HA5 HA6 HA7.
+exact (Hf HA1 HA2 HA3 HA4 HA5 HA6 HA7 H8th).
+Qed.
+
 (** Helper: 9-way conjunction elimination **)
 (** Proven Alice **)
 (** Proven Bob **)
