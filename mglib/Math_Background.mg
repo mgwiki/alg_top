@@ -118058,6 +118058,56 @@ claim HUopen : U :e Tx.
 exact (open_inI X Tx U Htop HUopen).
 Qed.
 
+(** Infrastructure: open_in in open subspace iff open ambient with subset **)
+(** Proven Bob **)
+Lemma open_in_subspace_iff_open_ambient_on_open_subspace : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y :e Tx ->
+  (open_in Y (subspace_topology X Tx Y) U <->
+    U c= Y /\ U :e Tx).
+let X Tx Y U.
+assume Htop HYopen.
+claim HYsub : Y c= X.
+{
+  exact (open_in_subset X Tx Y (open_inI X Tx Y Htop HYopen)).
+}
+apply (iffI
+  (open_in Y (subspace_topology X Tx Y) U)
+  (U c= Y /\ U :e Tx)).
+- assume Hopen.
+  claim HUsub : U c= Y.
+  { exact (open_in_subset Y (subspace_topology X Tx Y) U Hopen). }
+  claim HUopen : U :e Tx.
+  {
+    exact (open_in_subspace_if_ambient_open
+      X
+      Tx
+      Y
+      U
+      Htop
+      HYopen
+      HUsub
+      Hopen).
+  }
+  exact (andI (U c= Y) (U :e Tx) HUsub HUopen).
+- assume Hpair.
+  claim HUsub : U c= Y.
+  { exact (andEL (U c= Y) (U :e Tx) Hpair). }
+  claim HUopen : U :e Tx.
+  { exact (andER (U c= Y) (U :e Tx) Hpair). }
+  claim Hopen' :
+    open_in Y (subspace_topology X Tx Y) (U :/\: Y).
+  {
+    exact (open_in_subspace_of_open_in_ambient X Tx Y U Htop HYsub HUopen).
+  }
+  claim HeqU : U :/\: Y = U.
+  { exact (binintersect_sub_eq_right U Y HUsub). }
+  claim HeqU' : U = U :/\: Y.
+  { exact (eq_symm (U :/\: Y) U HeqU). }
+  rewrite HeqU'.
+  exact Hopen'.
+Qed.
+
 (** Infrastructure: closed sets are closed in subspaces via intersection **)
 (** Proven Bob **)
 Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
