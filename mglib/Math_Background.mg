@@ -91419,6 +91419,122 @@ Qed.
     lift (start) maps I1 into one slice, and each column lift maps [0,1] into one slice
     (by being anchored at t=0 via start), then all columns map I2 into that same slice.
     This is the key column-to-column transfer used in L54.2. **)
+(** Infrastructure: fixing the second coordinate preserves continuity **)
+(** Proven Bob **)
+Lemma continuous_map_slice_const_second :
+  forall X Tx Y Ty Z Tz F y0:set,
+  topology_on X Tx ->
+  topology_on Y Ty ->
+  continuous_map (setprod X Y) (product_topology X Tx Y Ty) Z Tz F ->
+  y0 :e Y ->
+  continuous_map X Tx Z Tz
+    (compose_fun X (pair_map X (graph X (fun x:set => x)) (const_fun X y0)) F).
+let X Tx Y Ty Z Tz F y0.
+assume HtopX HtopY HFcont Hy0.
+set idX := graph X (fun x:set => x).
+claim HidX : continuous_map X Tx X Tx idX.
+{
+  exact (identity_continuous X Tx HtopX).
+}
+claim Hconst : continuous_map X Tx Y Ty (const_fun X y0).
+{
+  exact (const_fun_continuous
+    X
+    Tx
+    Y
+    Ty
+    y0
+    HtopX
+    HtopY
+    Hy0).
+}
+claim Hpair :
+  continuous_map X Tx (setprod X Y) (product_topology X Tx Y Ty)
+    (pair_map X idX (const_fun X y0)).
+{
+  exact (maps_into_products
+    X
+    Tx
+    X
+    Tx
+    Y
+    Ty
+    idX
+    (const_fun X y0)
+    HidX
+    Hconst).
+}
+exact (composition_continuous
+  X
+  Tx
+  (setprod X Y)
+  (product_topology X Tx Y Ty)
+  Z
+  Tz
+  (pair_map X idX (const_fun X y0))
+  F
+  Hpair
+  HFcont).
+Qed.
+
+(** Infrastructure: fixing the first coordinate preserves continuity **)
+(** Proven Bob **)
+Lemma continuous_map_slice_const_first :
+  forall X Tx Y Ty Z Tz F x0:set,
+  topology_on X Tx ->
+  topology_on Y Ty ->
+  continuous_map (setprod X Y) (product_topology X Tx Y Ty) Z Tz F ->
+  x0 :e X ->
+  continuous_map Y Ty Z Tz
+    (compose_fun Y (pair_map Y (const_fun Y x0) (graph Y (fun y:set => y))) F).
+let X Tx Y Ty Z Tz F x0.
+assume HtopX HtopY HFcont Hx0.
+set idY := graph Y (fun y:set => y).
+claim HidY : continuous_map Y Ty Y Ty idY.
+{
+  exact (identity_continuous Y Ty HtopY).
+}
+claim Hconst : continuous_map Y Ty X Tx (const_fun Y x0).
+{
+  exact (const_fun_continuous
+    Y
+    Ty
+    X
+    Tx
+    x0
+    HtopY
+    HtopX
+    Hx0).
+}
+claim Hpair :
+  continuous_map Y Ty (setprod X Y) (product_topology X Tx Y Ty)
+    (pair_map Y (const_fun Y x0) idY).
+{
+  exact (maps_into_products
+    Y
+    Ty
+    X
+    Tx
+    Y
+    Ty
+    (const_fun Y x0)
+    idY
+    Hconst
+    HidY).
+}
+exact (composition_continuous
+  Y
+  Ty
+  (setprod X Y)
+  (product_topology X Tx Y Ty)
+  Z
+  Tz
+  (pair_map Y (const_fun Y x0) idY)
+  F
+  Hpair
+  HFcont).
+Qed.
+
 (** Infrastructure: continuity of the t0-column map for product-ball lifts **)
 (** TODO: derive from parametric path-lift continuity on product balls. **)
 Lemma path_lift_column_continuous_on_product_ball :
