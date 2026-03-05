@@ -116122,6 +116122,7 @@ rewrite (Hinv2_prop (x 1) Hx1).
 reflexivity.
 Qed.
 
+(** Proven Dave **)
 Theorem product_group_structure : forall G1 mult1 e1 inv1 G2 mult2 e2 inv2:set,
   group_structure G1 mult1 e1 inv1 ->
   group_structure G2 mult2 e2 inv2 ->
@@ -116129,8 +116130,158 @@ Theorem product_group_structure : forall G1 mult1 e1 inv1 G2 mult2 e2 inv2:set,
     (product_group_mult G1 mult1 G2 mult2)
     (e1, e2)
     (product_group_inv G1 inv1 G2 inv2).
-admit.
-Admitted.
+let G1 mult1 e1 inv1 G2 mult2 e2 inv2.
+assume Hgrp1 Hgrp2.
+apply (and6E
+  (function_on mult1 (setprod G1 G1) G1)
+  (function_on inv1 G1 G1)
+  (e1 :e G1)
+  (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+    apply_fun mult1 (apply_fun mult1 (x, y), z) = apply_fun mult1 (x, apply_fun mult1 (y, z)))
+  (forall x:set, x :e G1 -> apply_fun mult1 (e1, x) = x /\ apply_fun mult1 (x, e1) = x)
+  (forall x:set, x :e G1 ->
+    apply_fun mult1 (x, apply_fun inv1 x) = e1 /\ apply_fun mult1 (apply_fun inv1 x, x) = e1)
+  Hgrp1).
+assume Hmult_fn1 Hinv_fn1 He1 Hassoc1 Hid1 Hinv1.
+apply (and6E
+  (function_on mult2 (setprod G2 G2) G2)
+  (function_on inv2 G2 G2)
+  (e2 :e G2)
+  (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+    apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z)))
+  (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x)
+  (forall x:set, x :e G2 ->
+    apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2)
+  Hgrp2).
+assume Hmult_fn2 Hinv_fn2 He2 Hassoc2 Hid2 Hinv2.
+set G := setprod G1 G2.
+set pmult := product_group_mult G1 mult1 G2 mult2.
+set pinv := product_group_inv G1 inv1 G2 inv2.
+claim He_in : (e1, e2) :e G.
+{ exact (tuple_2_setprod_by_pair_Sigma G1 G2 e1 e2 He1 He2). }
+prove function_on pmult (setprod G G) G /\
+  function_on pinv G G /\
+  (e1, e2) :e G /\
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun pmult (apply_fun pmult (x, y), z) = apply_fun pmult (x, apply_fun pmult (y, z))) /\
+  (forall x:set, x :e G -> apply_fun pmult ((e1, e2), x) = x /\ apply_fun pmult (x, (e1, e2)) = x) /\
+  (forall x:set, x :e G ->
+    apply_fun pmult (x, apply_fun pinv x) = (e1, e2) /\ apply_fun pmult (apply_fun pinv x, x) = (e1, e2)).
+apply (and6I
+  (function_on pmult (setprod G G) G)
+  (function_on pinv G G)
+  ((e1, e2) :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun pmult (apply_fun pmult (x, y), z) = apply_fun pmult (x, apply_fun pmult (y, z)))
+  (forall x:set, x :e G -> apply_fun pmult ((e1, e2), x) = x /\ apply_fun pmult (x, (e1, e2)) = x)
+  (forall x:set, x :e G ->
+    apply_fun pmult (x, apply_fun pinv x) = (e1, e2) /\ apply_fun pmult (apply_fun pinv x, x) = (e1, e2))).
++ (** mult function_on **)
+  exact (product_group_mult_function_on G1 mult1 G2 mult2 Hmult_fn1 Hmult_fn2).
++ (** inv function_on **)
+  exact (product_group_inv_function_on G1 inv1 G2 inv2 Hinv_fn1 Hinv_fn2).
++ (** identity in G **)
+  exact He_in.
++ (** associativity **)
+  let x y z.
+  assume Hx Hy Hz.
+  claim Hx0 : x 0 :e G1. { exact (ap0_Sigma G1 (fun _:set => G2) x Hx). }
+  claim Hx1 : x 1 :e G2. { exact (ap1_Sigma G1 (fun _:set => G2) x Hx). }
+  claim Hy0 : y 0 :e G1. { exact (ap0_Sigma G1 (fun _:set => G2) y Hy). }
+  claim Hy1 : y 1 :e G2. { exact (ap1_Sigma G1 (fun _:set => G2) y Hy). }
+  claim Hz0 : z 0 :e G1. { exact (ap0_Sigma G1 (fun _:set => G2) z Hz). }
+  claim Hz1 : z 1 :e G2. { exact (ap1_Sigma G1 (fun _:set => G2) z Hz). }
+  claim Hxy01_0 : apply_fun mult1 (x 0, y 0) :e G1.
+  { exact (Hmult_fn1 (x 0, y 0) (tuple_2_setprod_by_pair_Sigma G1 G1 (x 0) (y 0) Hx0 Hy0)). }
+  claim Hxy01_1 : apply_fun mult2 (x 1, y 1) :e G2.
+  { exact (Hmult_fn2 (x 1, y 1) (tuple_2_setprod_by_pair_Sigma G2 G2 (x 1) (y 1) Hx1 Hy1)). }
+  claim Hxy : apply_fun pmult (x, y) = (apply_fun mult1 (x 0, y 0), apply_fun mult2 (x 1, y 1)).
+  { exact (product_group_mult_apply_pair G1 mult1 G2 mult2 x y Hx Hy). }
+  claim Hxy_in : apply_fun pmult (x, y) :e G.
+  {
+    rewrite Hxy.
+    exact (tuple_2_setprod_by_pair_Sigma G1 G2
+      (apply_fun mult1 (x 0, y 0)) (apply_fun mult2 (x 1, y 1)) Hxy01_0 Hxy01_1).
+  }
+  claim Hyz01_0 : apply_fun mult1 (y 0, z 0) :e G1.
+  { exact (Hmult_fn1 (y 0, z 0) (tuple_2_setprod_by_pair_Sigma G1 G1 (y 0) (z 0) Hy0 Hz0)). }
+  claim Hyz01_1 : apply_fun mult2 (y 1, z 1) :e G2.
+  { exact (Hmult_fn2 (y 1, z 1) (tuple_2_setprod_by_pair_Sigma G2 G2 (y 1) (z 1) Hy1 Hz1)). }
+  claim Hyz : apply_fun pmult (y, z) = (apply_fun mult1 (y 0, z 0), apply_fun mult2 (y 1, z 1)).
+  { exact (product_group_mult_apply_pair G1 mult1 G2 mult2 y z Hy Hz). }
+  claim Hyz_in : apply_fun pmult (y, z) :e G.
+  {
+    rewrite Hyz.
+    exact (tuple_2_setprod_by_pair_Sigma G1 G2
+      (apply_fun mult1 (y 0, z 0)) (apply_fun mult2 (y 1, z 1)) Hyz01_0 Hyz01_1).
+  }
+  rewrite (product_group_mult_apply_pair G1 mult1 G2 mult2 (apply_fun pmult (x, y)) z Hxy_in Hz).
+  rewrite Hxy.
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  rewrite (product_group_mult_apply_pair G1 mult1 G2 mult2 x (apply_fun pmult (y, z)) Hx Hyz_in).
+  rewrite Hyz.
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  rewrite (Hassoc1 (x 0) (y 0) (z 0) Hx0 Hy0 Hz0).
+  rewrite (Hassoc2 (x 1) (y 1) (z 1) Hx1 Hy1 Hz1).
+  reflexivity.
++ (** identity **)
+  let x.
+  assume Hx.
+  claim Hx0 : x 0 :e G1. { exact (ap0_Sigma G1 (fun _:set => G2) x Hx). }
+  claim Hx1 : x 1 :e G2. { exact (ap1_Sigma G1 (fun _:set => G2) x Hx). }
+  apply andI.
+  - (** left id **)
+    exact (product_group_mult_left_id G1 mult1 e1 G2 mult2 e2 x He1 He2
+      (fun a Ha => andEL (apply_fun mult1 (e1, a) = a) (apply_fun mult1 (a, e1) = a) (Hid1 a Ha))
+      (fun b Hb => andEL (apply_fun mult2 (e2, b) = b) (apply_fun mult2 (b, e2) = b) (Hid2 b Hb))
+      Hx).
+  - (** right id **)
+    rewrite (product_group_mult_apply_pair G1 mult1 G2 mult2 x (e1, e2) Hx He_in).
+    rewrite tuple_2_0_eq.
+    rewrite tuple_2_1_eq.
+    rewrite (andER (apply_fun mult1 (e1, x 0) = x 0) (apply_fun mult1 (x 0, e1) = x 0) (Hid1 (x 0) Hx0)).
+    rewrite (andER (apply_fun mult2 (e2, x 1) = x 1) (apply_fun mult2 (x 1, e2) = x 1) (Hid2 (x 1) Hx1)).
+    rewrite <- (setprod_eta G1 G2 x Hx).
+    reflexivity.
++ (** inverse **)
+  let x.
+  assume Hx.
+  claim Hx0 : x 0 :e G1. { exact (ap0_Sigma G1 (fun _:set => G2) x Hx). }
+  claim Hx1 : x 1 :e G2. { exact (ap1_Sigma G1 (fun _:set => G2) x Hx). }
+  claim Hinvx : apply_fun pinv x = (apply_fun inv1 (x 0), apply_fun inv2 (x 1)).
+  { exact (product_group_inv_apply G1 inv1 G2 inv2 x Hx). }
+  claim Hinvx_in : apply_fun pinv x :e G.
+  {
+    rewrite Hinvx.
+    exact (tuple_2_setprod_by_pair_Sigma G1 G2
+      (apply_fun inv1 (x 0)) (apply_fun inv2 (x 1))
+      (Hinv_fn1 (x 0) Hx0)
+      (Hinv_fn2 (x 1) Hx1)).
+  }
+  apply andI.
+  - (** x times inv x = e **)
+    rewrite (product_group_mult_apply_pair G1 mult1 G2 mult2 x (apply_fun pinv x) Hx Hinvx_in).
+    rewrite Hinvx.
+    rewrite tuple_2_0_eq.
+    rewrite tuple_2_1_eq.
+    rewrite (andEL (apply_fun mult1 (x 0, apply_fun inv1 (x 0)) = e1)
+      (apply_fun mult1 (apply_fun inv1 (x 0), x 0) = e1) (Hinv1 (x 0) Hx0)).
+    rewrite (andEL (apply_fun mult2 (x 1, apply_fun inv2 (x 1)) = e2)
+      (apply_fun mult2 (apply_fun inv2 (x 1), x 1) = e2) (Hinv2 (x 1) Hx1)).
+    reflexivity.
+  - (** inv x times x = e **)
+    rewrite (product_group_mult_apply_pair G1 mult1 G2 mult2 (apply_fun pinv x) x Hinvx_in Hx).
+    rewrite Hinvx.
+    rewrite tuple_2_0_eq.
+    rewrite tuple_2_1_eq.
+    rewrite (andER (apply_fun mult1 (x 0, apply_fun inv1 (x 0)) = e1)
+      (apply_fun mult1 (apply_fun inv1 (x 0), x 0) = e1) (Hinv1 (x 0) Hx0)).
+    rewrite (andER (apply_fun mult2 (x 1, apply_fun inv2 (x 1)) = e2)
+      (apply_fun mult2 (apply_fun inv2 (x 1), x 1) = e2) (Hinv2 (x 1) Hx1)).
+    reflexivity.
+Qed.
 
 (** ex54_7_pi1_torus moved to S60 section (after thm60_1_pi1_product) where it uses the proved theorem directly **)
 
