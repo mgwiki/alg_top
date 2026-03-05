@@ -117081,6 +117081,102 @@ exact (and4I
   HopenImg).
 Qed.
 
+(** Infrastructure: homeomorphisms are bijections **)
+(** Proven Bob **)
+Lemma homeomorphism_bijection : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  bijection X Y f.
+let X Tx Y Ty f.
+assume Hhome.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim Hfun : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f Hcont). }
+claim HinvEx :
+  exists g:set,
+    continuous_map Y Ty X Tx g /\
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y).
+{
+  exact (andER
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+prove
+  function_on f X Y /\
+  (forall y:set, y :e Y ->
+    exists x:set, x :e X /\ apply_fun f x = y /\
+      (forall x':set, x' :e X -> apply_fun f x' = y -> x' = x)).
+apply andI.
+- exact Hfun.
+- let y.
+  assume HyY.
+  apply HinvEx.
+  let g.
+  assume HgPack.
+  claim HgLeft :
+    continuous_map Y Ty X Tx g /\
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+  {
+    exact (andEL
+      (continuous_map Y Ty X Tx g /\
+        (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+      HgPack).
+  }
+  claim HgCont : continuous_map Y Ty X Tx g.
+  { exact (andEL
+      (continuous_map Y Ty X Tx g)
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+      HgLeft). }
+  claim Hleft :
+    forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+  {
+    exact (andER
+      (continuous_map Y Ty X Tx g)
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+      HgLeft).
+  }
+  claim Hright :
+    forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+  {
+    exact (andER
+      (continuous_map Y Ty X Tx g /\
+        (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+      HgPack).
+  }
+  claim HgFun : function_on g Y X.
+  { exact (continuous_map_function_on Y Ty X Tx g HgCont). }
+  set x := apply_fun g y.
+  witness x.
+  apply andI.
+  - apply andI.
+    + exact (HgFun y HyY).
+    + exact (Hright y HyY).
+  - let x'.
+    assume Hx'X Hfx'.
+    claim Hgx' : apply_fun g y = x'.
+    {
+      rewrite <- Hfx'.
+      exact (Hleft x' Hx'X).
+    }
+    symmetry.
+    exact Hgx'.
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
