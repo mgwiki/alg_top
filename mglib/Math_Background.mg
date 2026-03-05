@@ -117163,6 +117163,27 @@ claim Hcont : continuous_map X Tx Y Ty f.
 exact (continuous_map_preimage X Tx Y Ty f Hcont U HU).
 Qed.
 
+(** Infrastructure: homeomorphism preimages of G-delta sets are G-delta **)
+(** Proven Bob **)
+Lemma homeomorphism_preimage_Gdelta : forall X Tx Y Ty f A:set,
+  homeomorphism X Tx Y Ty f ->
+  Gdelta_in Y Ty A ->
+  Gdelta_in X Tx (preimage_of X f A).
+let X Tx Y Ty f A.
+assume Hhome HA.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+exact (continuous_preimage_Gdelta X Tx Y Ty f A Hcont HA).
+Qed.
+
 (** Infrastructure: homeomorphisms are bijections **)
 (** Proven Bob **)
 Lemma homeomorphism_bijection : forall X Tx Y Ty f:set,
