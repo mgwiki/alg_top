@@ -118206,6 +118206,16 @@ claim Hopen : open_in Y (subspace_topology X Tx Y) U.
 exact (open_in_subset Y (subspace_topology X Tx Y) U Hopen).
 Qed.
 
+(** Infrastructure: closed_in in subspace implies subset of subspace **)
+(** Proven Bob **)
+Lemma closed_in_subspace_member_subset : forall X Tx Y A:set,
+  closed_in Y (subspace_topology X Tx Y) A ->
+  A c= Y.
+let X Tx Y A.
+assume Hclosed.
+exact (closed_in_subset Y (subspace_topology X Tx Y) A Hclosed).
+Qed.
+
 (** Infrastructure: closed sets are closed in subspaces via intersection **)
 (** Proven Bob **)
 Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
