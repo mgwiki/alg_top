@@ -91421,6 +91421,26 @@ Qed.
     This is the key column-to-column transfer used in L54.2. **)
 (** Infrastructure: continuity of the t0-column map for product-ball lifts **)
 (** TODO: derive from parametric path-lift continuity on product balls. **)
+Lemma path_lift_column_continuous_on_product_ball :
+  forall E Te B Tb p start_lift I1 I2 vs_choice t0:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  I1 c= unit_interval ->
+  I2 c= unit_interval ->
+  t0 :e I2 ->
+  (forall s:set, s :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+  (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+  (forall s:set, s :e I1 ->
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+    (graph I1 (fun s:set =>
+      apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+        t0)).
+admit.
+Admitted.
+
 Lemma column_lifts_same_sheet_on_product_ball_column_continuous :
   forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
   covering_map E Te B Tb p ->
@@ -91463,8 +91483,25 @@ set Fcol := graph I1 (fun s:set =>
 claim HFcol_cont :
   continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te Fcol.
 {
-  (** TODO: needs parametric continuity of path_lift in the s-parameter. **)
-  admit.
+  exact (path_lift_column_continuous_on_product_ball
+    E
+    Te
+    B
+    Tb
+    p
+    start_lift
+    I1
+    I2
+    vs_choice
+    t0
+    Hcov
+    HtopE
+    HI1sub
+    HI2sub
+    Ht0
+    HvsCont
+    HstartE
+    HstartComm).
 }
 exact HFcol_cont.
 Admitted.
@@ -95358,6 +95395,7 @@ exact (andI
   HFt_54_00)
   HFt_54_comm).
 Admitted. (** TODO: needs parametric path-lift continuity to close HFt54ContOnN. **)
+
 
 (** from S54 Lem 54.2 (line 730 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map; p(e0) = b0. Let F: I x I -> B be **)
