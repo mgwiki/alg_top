@@ -117356,6 +117356,21 @@ apply andI.
   exact (bijection_surj X Y f y Hbij HyY).
 Qed.
 
+(** Infrastructure: homeomorphisms are functions **)
+(** Proven Bob **)
+Lemma homeomorphism_function_on : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  function_on f X Y.
+let X Tx Y Ty f.
+assume Hhome.
+claim Hsurj : surjective_map X Y f.
+{ exact (homeomorphism_surjective_map X Tx Y Ty f Hhome). }
+exact (andEL
+  (function_on f X Y)
+  (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y)
+  Hsurj).
+Qed.
+
 (** Infrastructure: homeomorphisms are surjective (value form) **)
 (** Proven Bob **)
 Lemma homeomorphism_surjective_value : forall X Tx Y Ty f y:set,
