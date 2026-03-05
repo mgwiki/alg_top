@@ -118348,6 +118348,16 @@ assume Hclosed.
 exact (closed_in_subset Y (subspace_topology X Tx Y) A Hclosed).
 Qed.
 
+(** Infrastructure: closed_in in subspace implies subset of subspace (no topology assumptions) **)
+(** Proven Bob **)
+Lemma closed_in_subspace_member_subset_no_topology : forall X Tx Y A:set,
+  closed_in Y (subspace_topology X Tx Y) A ->
+  A c= Y.
+let X Tx Y A.
+assume Hclosed.
+exact (closed_in_subspace_member_subset X Tx Y A Hclosed).
+Qed.
+
 (** Infrastructure: closed_in in subspace lies in Power Y **)
 (** Proven Bob **)
 Lemma closed_in_subspace_member_power : forall X Tx Y A:set,
