@@ -1,7 +1,7 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1515 **)
-(** Balance Dave 2064 **)
+(** Balance Dave 2020 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -152740,7 +152740,8 @@ Admitted.
 (** Helper: Given a loop fcls with a Lebesgue number for {preU, preV}, construct
     the word decomposition in pi_1(U) and pi_1(V). This is the key technical
     step for Seifert-van Kampen (lemma59_1). **)
-(** Bounty 61 **)
+(** Bounty 68 **)
+(** Lock Dave 1772808343 **)
 Lemma loop_lebesgue_decomposition : forall X Tx U V x0 fcls Nleb:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -153687,7 +153688,8 @@ Admitted.
 (** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 324 **)
+(** Bounty 357 **)
+(** Lock Dave 1772808343 **)
 Theorem lemma59_1_open_cover_generates_pi1_core : forall X Tx U V x0 cls:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -169497,7 +169499,8 @@ Qed.
 (** from S59 Cor 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 37 **)
+(** Bounty 41 **)
+(** Lock Dave 1772808343 **)
 Theorem cor59_2_simply_connected_union : forall X Tx U V:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
