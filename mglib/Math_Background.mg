@@ -244781,9 +244781,57 @@ apply (and5I
                   Hxs_i
                   (eq_i_tra (apply_fun xs2 j) (apply_fun xs2' j) (apply_fun xs' i) Hxs2_xs2' (eq_symm (apply_fun xs' i) (apply_fun xs2' j) Hxs'_i))).
           }
-    + assume Hn12_ne2.
-      (** TODO: general concatenation + uniqueness for n12 >= 3 **)
-      admit.
+	    + assume Hn12_ne2.
+	      (** General case n12 >= 3.  Reduce to a dedicated lemma for the remaining concatenation
+	          and uniqueness argument. **)
+	      claim Hn12_ne0 : n12 <> 0. { exact Hn12ne. }
+	
+	      (** x is not in either factor since the binary normal form length is >= 2. **)
+	      claim Hx_not_G1 : x /:e G1.
+	      {
+	        claim Hwp_not_G1 : word_product multG eG xs12 n12 /:e G1.
+	        {
+	          exact (free_product_binary_reduced_word_length_ge2_not_in_left_factor
+	            G multG eG invG G1 G2 n12 xs12
+	            Hsub1 Hsub2 Hfp
+	            Hred12word
+	            Hn12_ne0
+	            Hn12_ne1).
+	        }
+	        assume HxG1 : x :e G1.
+	        claim HwpG1 : word_product multG eG xs12 n12 :e G1.
+	        { exact (eq_subst_mem_rev x (word_product multG eG xs12 n12) G1 (eq_symm (word_product multG eG xs12 n12) x Hwp12) HxG1). }
+	        exact (Hwp_not_G1 HwpG1).
+	      }
+	      claim Hx_not_G2 : x /:e G2.
+	      {
+	        claim Hwp_not_G2 : word_product multG eG xs12 n12 /:e G2.
+	        {
+	          exact (free_product_binary_reduced_word_length_ge2_not_in_right_factor
+	            G multG eG invG G1 G2 n12 xs12
+	            Hsub1 Hsub2 Hfp
+	            Hred12word
+	            Hn12_ne0
+	            Hn12_ne1).
+	        }
+	        assume HxG2 : x :e G2.
+	        claim HwpG2 : word_product multG eG xs12 n12 :e G2.
+	        { exact (eq_subst_mem_rev x (word_product multG eG xs12 n12) G2 (eq_symm (word_product multG eG xs12 n12) x Hwp12) HxG2). }
+	        exact (Hwp_not_G2 HwpG2).
+	      }
+	
+	      claim Hge3_case :
+	        exists n xs:set,
+	          reduced_word (J :\/: K) Hfam efamH n xs /\ n <> 0 /\
+	          word_product multG eG xs n = x /\
+	          (forall n' xs':set,
+	            reduced_word (J :\/: K) Hfam efamH n' xs' -> n' <> 0 ->
+	            word_product multG eG xs' n' = x ->
+	            n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+	      {
+	        admit.
+	      }
+	      exact Hge3_case.
 Admitted.
 
 (** from S68 Thm 68.7 (line 2972 in algtop.tex): quotient of free product **)
