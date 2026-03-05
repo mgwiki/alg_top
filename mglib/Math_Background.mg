@@ -115769,6 +115769,30 @@ exact (apply_fun_graph
 Qed.
 
 (** Proven Bob **)
+Theorem product_group_mult_apply0 : forall G1 mult1 G2 mult2 p:set,
+  p :e setprod (setprod G1 G2) (setprod G1 G2) ->
+  (apply_fun (product_group_mult G1 mult1 G2 mult2) p) 0 =
+    apply_fun mult1 ((p 0) 0, (p 1) 0).
+let G1 mult1 G2 mult2 p.
+assume Hp.
+rewrite (product_group_mult_apply G1 mult1 G2 mult2 p Hp).
+rewrite tuple_2_0_eq.
+reflexivity.
+Qed.
+
+(** Proven Bob **)
+Theorem product_group_mult_apply1 : forall G1 mult1 G2 mult2 p:set,
+  p :e setprod (setprod G1 G2) (setprod G1 G2) ->
+  (apply_fun (product_group_mult G1 mult1 G2 mult2) p) 1 =
+    apply_fun mult2 ((p 0) 1, (p 1) 1).
+let G1 mult1 G2 mult2 p.
+assume Hp.
+rewrite (product_group_mult_apply G1 mult1 G2 mult2 p Hp).
+rewrite tuple_2_1_eq.
+reflexivity.
+Qed.
+
+(** Proven Bob **)
 Theorem tuple_2_eq : forall a b c d:set, a = c -> b = d -> (a, b) = (c, d).
 let a b c d.
 assume Ha Hb.
