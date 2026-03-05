@@ -117041,6 +117041,128 @@ symmetry.
 exact Hx2x1.
 Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 
+(** Infrastructure: open bijections are homeomorphisms **)
+(** Proven Bob **)
+Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
+  continuous_map X Tx Y Ty f ->
+  open_map X Tx Y Ty f ->
+  bijection X Y f ->
+  homeomorphism X Tx Y Ty f.
+let X Tx Y Ty f.
+assume Hcont Hopen Hbij.
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_dom X Tx Y Ty f Hcont). }
+claim HtopY : topology_on Y Ty.
+{ exact (continuous_map_topology_cod X Tx Y Ty f Hcont). }
+set g := inv_fun_graph X f Y.
+claim HfunG : function_on g Y X.
+{
+  let y.
+  assume HyY.
+  claim HsurjWit : exists x:set, x :e X /\ apply_fun f x = y.
+  { exact (bijection_surj X Y f y Hbij HyY). }
+  apply HsurjWit.
+  let x.
+  assume HxPack.
+  claim HxX : x :e X.
+  {
+    exact (andEL
+      (x :e X)
+      (apply_fun f x = y)
+      HxPack).
+  }
+  claim HinvPack :
+    inv X (fun z:set => apply_fun f z) y :e X /\
+    apply_fun f (inv X (fun z:set => apply_fun f z) y) = y.
+  {
+    exact (surj_rinv
+      X
+      Y
+      (fun z:set => apply_fun f z)
+      (fun w Hw => bijection_surj X Y f w Hbij Hw)
+      y
+      HyY).
+  }
+  rewrite (inv_fun_graph_apply X Y f y HyY).
+  exact (andEL
+    (inv X (fun z:set => apply_fun f z) y :e X)
+    (apply_fun f (inv X (fun z:set => apply_fun f z) y) = y)
+    HinvPack).
+}
+claim HopenClause : forall U:set, U :e Tx -> image_of f U :e Ty.
+{
+  apply (and4E
+    (topology_on X Tx)
+    (topology_on Y Ty)
+    (function_on f X Y)
+    (forall U:set, U :e Tx -> image_of f U :e Ty)
+    Hopen).
+  assume _ _ _ Himg.
+  exact Himg.
+}
+claim HpreOpen : forall V:set, V :e Tx -> preimage_of Y g V :e Ty.
+{
+  let V.
+  assume HVTx.
+  claim HVsubX : V c= X.
+  { exact (topology_elem_subset X Tx V HtopX HVTx). }
+  claim HpreEq :
+    preimage_of Y g V = image_of_fun f V.
+  {
+    exact (inv_fun_graph_preimage_eq_image
+      X
+      Y
+      f
+      V
+      Hbij
+      HVsubX).
+  }
+  rewrite HpreEq.
+  exact (HopenClause V HVTx).
+}
+claim Hcontg : continuous_map Y Ty X Tx g.
+{
+  exact (and4I
+    (topology_on Y Ty)
+    (topology_on X Tx)
+    (function_on g Y X)
+    (forall V:set, V :e Tx -> preimage_of Y g V :e Ty)
+    HtopY
+    HtopX
+    HfunG
+    HpreOpen).
+}
+prove continuous_map X Tx Y Ty f /\
+  exists g0:set,
+    continuous_map Y Ty X Tx g0 /\
+    (forall x:set, x :e X -> apply_fun g0 (apply_fun f x) = x) /\
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g0 y) = y).
+apply andI.
+- exact Hcont.
+- witness g.
+  apply andI.
+  + apply andI.
+    * exact Hcontg.
+    * let x.
+      assume HxX.
+      exact (inv_fun_graph_left_inverse
+        X
+        Y
+        f
+        x
+        Hbij
+        HxX).
+  + let y.
+    assume HyY.
+    exact (inv_fun_graph_right_inverse
+      X
+      Y
+      f
+      y
+      Hbij
+      HyY).
+Qed.
+
 (** from S54 Exercise 8 (line 893 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
 (** If B is simply connected, then p is a homeomorphism. **)
