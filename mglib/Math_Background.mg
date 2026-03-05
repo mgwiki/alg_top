@@ -118861,6 +118861,17 @@ let x. assume Hx.
 exact (HYsub x (setminusE1 Y A x Hx)).
 Qed.
 
+(** Infrastructure: closed_in in subspace gives complement subset of ambient (no topology assumptions) **)
+(** Proven Bob **)
+Lemma closed_in_subspace_member_complement_subset_ambient_no_topology : forall X Tx Y A:set,
+  Y c= X ->
+  closed_in Y (subspace_topology X Tx Y) A ->
+  (Y :\: A) c= X.
+let X Tx Y A.
+assume HYsub Hclosed.
+exact (closed_in_subspace_member_complement_subset_ambient X Tx Y A HYsub Hclosed).
+Qed.
+
 (** Infrastructure: open_in in subspace gives complement in Power Y **)
 (** Proven Bob **)
 Lemma open_in_subspace_complement_power : forall X Tx Y U:set,
