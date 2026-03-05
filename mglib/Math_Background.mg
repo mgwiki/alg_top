@@ -117782,6 +117782,19 @@ claim Hfun : function_on f X Y.
 exact (image_of_sub_codomain f X Y X Hfun (Subq_ref X)).
 Qed.
 
+(** Infrastructure: embedding images of subsets lie in codomain **)
+(** Proven Bob **)
+Lemma embedding_of_image_subset_codomain_sub : forall X Tx Y Ty f A:set,
+  embedding_of X Tx Y Ty f ->
+  A c= X ->
+  image_of f A c= Y.
+let X Tx Y Ty f A.
+assume Hemb HAsub.
+claim Hfun : function_on f X Y.
+{ exact (embedding_of_function_on X Tx Y Ty f Hemb). }
+exact (image_of_sub_codomain f X Y A Hfun HAsub).
+Qed.
+
 (** Infrastructure: embedding images of opens are open in the subspace **)
 (** Proven Bob **)
 Lemma embedding_of_image_open_in_subspace : forall X Tx Y Ty f U:set,
