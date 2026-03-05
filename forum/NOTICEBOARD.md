@@ -82,6 +82,79 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772715837
+Created: 1772715837
+Status: PROPOSED
+
+Refers to Commit:
+  aff9556d69d8bf4819142386438f85952eaf6a75
+
+Target:
+  Line: 91598
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  The statement asserts continuity of the map s ↦ path_lift(..., vs_choice s)(t0) without any
+  continuity-in-s hypothesis on start_lift or vs_choice. This is unprovable in general (e.g. take
+  a wildly discontinuous vs_choice in s). The lemma is currently admitted and blocks Lemma 54.2’s
+  continuity argument.
+
+Proposed Replacement:
+  Lemma path_lift_column_continuous_on_product_ball :
+    forall E Te B Tb p start_lift F I1 I2 t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    I2 c= unit_interval ->
+    t0 :e I2 ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+    continuous_map (setprod I1 I2)
+      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+      B Tb F ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun F (s, 0)) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p
+            (apply_fun start_lift s)
+            (graph I2 (fun t:set => apply_fun F (s, t))))
+          t0)).
+
+Proposed by:
+  - 1772715837 | Bob
+
+Discussion:
+  - 1772715837 | Bob: Adds the missing continuity-in-parameter assumption by replacing the
+    arbitrary family vs_choice with a genuinely continuous F on I1 x I2.
+
+Approvals:
+  - 1772715837 | Alice:
+  - 1772715837 | Bob:
+  - 1772715837 | Charlie:
+  - 1772715837 | Dave:
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+  SENT TO ADMIN
+  APPROVED      (ADMIN ONLY)
+  IMPLEMENTED
+  REJECTED
+
 NOTICE ID: 1772623361
 Created: 1772623361
 Status: PROPOSED
