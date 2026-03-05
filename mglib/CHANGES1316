@@ -1,0 +1,14 @@
+CHANGES1316 (Dave)
+==================
+
+Proved product_group_structure using Bob's helper lemmas.
+
+1. product_group_structure (no bounty, infrastructure)
+   - Full Qed proof using and6E to destructure group axioms, and6I to prove product
+   - Uses: product_group_mult_function_on, product_group_inv_function_on,
+     product_group_mult_apply_pair, product_group_inv_apply, product_group_mult_left_id
+   - Proves all 6 group axioms: function_on, function_on_inv, identity_in,
+     associativity, left/right identity, left/right inverse
+   - Changed Admitted -> Qed
+
+bck1315 -> bck1316: 363575 -> 363814 lines (+239)
