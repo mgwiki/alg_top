@@ -119001,6 +119001,20 @@ assume HYsub Hopen.
 exact (open_in_subspace_complement_subset_ambient X Tx Y U HYsub Hopen).
 Qed.
 
+(** Infrastructure: member of subspace topology has closed complement in subspace **)
+(** Proven Bob **)
+Lemma subspace_topology_member_complement_closed : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y c= X ->
+  U :e subspace_topology X Tx Y ->
+  closed_in Y (subspace_topology X Tx Y) (Y :\: U).
+let X Tx Y U.
+assume Htop HYsub HU.
+claim Hopen : open_in Y (subspace_topology X Tx Y) U.
+{ exact (open_in_subspace_of_member X Tx Y U Htop HYsub HU). }
+exact (open_in_subspace_complement_closed X Tx Y U Htop HYsub Hopen).
+Qed.
+
 (** Infrastructure: open_in in subspace iff complement is closed_in **)
 (** Proven Bob **)
 Lemma open_in_subspace_iff_closed_complement : forall X Tx Y U:set,
