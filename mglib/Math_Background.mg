@@ -247239,6 +247239,76 @@ apply (and5I
 					            { exact (andEL (nL = n2) (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0) Huniq_xs2). }
 					            claim HxsL_eq_xs2 : forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0.
 					            { exact (andER (nL = n2) (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0) Huniq_xs2). }
+					            (** Identify the prefix product of xs' as the binary prefix product by right cancellation. **)
+					            claim Hx_eq_mult_last :
+					              x = apply_fun multG (word_product multG eG xs' n1, apply_fun xs12 kmax).
+					            {
+					              rewrite Hx_eq_mult.
+					              rewrite Hu_eq_last.
+					              reflexivity.
+					            }
+					            claim Hx_eq_succ :
+					              x = apply_fun multG (word_product multG eG xs12 kmax, apply_fun xs12 kmax).
+					            {
+					              claim Hwp_succ :
+					                word_product multG eG xs12 (ordsucc kmax) =
+					                  apply_fun multG (word_product multG eG xs12 kmax, apply_fun xs12 kmax).
+					              { exact (word_product_succ multG eG xs12 kmax Hkmax_nat). }
+					              rewrite <- Hwp12.
+					              rewrite Hn12_eq.
+					              rewrite Hwp_succ.
+					              reflexivity.
+					            }
+					            claim Heq_cancel :
+					              apply_fun multG (word_product multG eG xs' n1, apply_fun xs12 kmax) =
+					              apply_fun multG (word_product multG eG xs12 kmax, apply_fun xs12 kmax).
+					            {
+					              exact (eq_i_tra
+					                (apply_fun multG (word_product multG eG xs' n1, apply_fun xs12 kmax))
+					                x
+					                (apply_fun multG (word_product multG eG xs12 kmax, apply_fun xs12 kmax))
+					                (eq_symm x (apply_fun multG (word_product multG eG xs' n1, apply_fun xs12 kmax)) Hx_eq_mult_last)
+					                Hx_eq_succ).
+					            }
+					            claim Hlast_inG : apply_fun xs12 kmax :e G.
+					            { exact (subgroup_of_subset G1 G multG eG invG Hsub1 (apply_fun xs12 kmax) Hlast12G1). }
+					            claim Hxs'_G : forall i0:set, i0 :e n1 -> apply_fun xs' i0 :e G.
+					            {
+					              let i0. assume Hi0.
+					              claim Hi' : i0 :e n'.
+					              { exact (ordinal_TransSet n' (nat_p_ordinal n' Hn'_nat) n1 Hn1_in i0 Hi0). }
+					              exact (reduced_word_in_G G multG eG invG (J :\/: K) Hfam efamH n' xs' Hsubfam_union Hred' i0 Hi').
+					            }
+					            claim Hwp_pref_inG : word_product multG eG xs' n1 :e G.
+					            { exact (word_product_in_G_group G multG eG invG n1 xs' Hgrp Hn1_nat Hxs'_G). }
+					            claim Hxs12_G : forall i0:set, i0 :e kmax -> apply_fun xs12 i0 :e G.
+					            {
+					              let i0. assume Hi0.
+					              claim Hi_sn : i0 :e ordsucc kmax.
+					              { exact (ordsuccI1 kmax i0 Hi0). }
+					              claim Hi12 : i0 :e n12.
+					              { rewrite Hn12_eq. exact Hi_sn. }
+					              apply (Hxs12_side i0 Hi12).
+					              - assume HiG1.
+					                exact (subgroup_of_subset G1 G multG eG invG Hsub1 (apply_fun xs12 i0) HiG1).
+					              - assume HiG2.
+					                exact (subgroup_of_subset G2 G multG eG invG Hsub2 (apply_fun xs12 i0) HiG2).
+					            }
+					            claim Hwp_binpref_inG : word_product multG eG xs12 kmax :e G.
+					            { exact (word_product_in_G_group G multG eG invG kmax xs12 Hgrp Hkmax_nat Hxs12_G). }
+					            claim Hwp_pref_eq : word_product multG eG xs' n1 = word_product multG eG xs12 kmax.
+					            {
+					              exact (group_right_cancel
+					                G multG eG invG
+					                (apply_fun xs12 kmax)
+					                (word_product multG eG xs' n1)
+					                (word_product multG eG xs12 kmax)
+					                Hgrp
+					                Hlast_inG
+					                Hwp_pref_inG
+					                Hwp_binpref_inG
+					                Heq_cancel).
+					            }
 					            admit.
 					          - assume Hlast12G2.
 					            apply (Hsuffix_block_G2 Hlast12G2).
@@ -247641,9 +247711,79 @@ apply (and5I
 					            { exact (HuniqL n2 xs2 Hxs2_redK Hn2_ne0 Hwp_xs2_last). }
 					            claim HnL_eq_n2 : nL = n2.
 					            { exact (andEL (nL = n2) (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0) Huniq_xs2). }
-					            claim HxsL_eq_xs2 : forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0.
-					            { exact (andER (nL = n2) (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0) Huniq_xs2). }
-					            admit.
+						            claim HxsL_eq_xs2 : forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0.
+						            { exact (andER (nL = n2) (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0) Huniq_xs2). }
+						            (** Identify the prefix product of xs' as the binary prefix product by right cancellation. **)
+						            claim Hx_eq_mult_last :
+						              x = apply_fun multG (word_product multG eG xs' n1, apply_fun xs12 kmax).
+						            {
+						              rewrite Hx_eq_mult.
+						              rewrite Hu_eq_last.
+						              reflexivity.
+						            }
+						            claim Hx_eq_succ :
+						              x = apply_fun multG (word_product multG eG xs12 kmax, apply_fun xs12 kmax).
+						            {
+						              claim Hwp_succ :
+						                word_product multG eG xs12 (ordsucc kmax) =
+						                  apply_fun multG (word_product multG eG xs12 kmax, apply_fun xs12 kmax).
+						              { exact (word_product_succ multG eG xs12 kmax Hkmax_nat). }
+						              rewrite <- Hwp12.
+						              rewrite Hn12_eq.
+						              rewrite Hwp_succ.
+						              reflexivity.
+						            }
+						            claim Heq_cancel :
+						              apply_fun multG (word_product multG eG xs' n1, apply_fun xs12 kmax) =
+						              apply_fun multG (word_product multG eG xs12 kmax, apply_fun xs12 kmax).
+						            {
+						              exact (eq_i_tra
+						                (apply_fun multG (word_product multG eG xs' n1, apply_fun xs12 kmax))
+						                x
+						                (apply_fun multG (word_product multG eG xs12 kmax, apply_fun xs12 kmax))
+						                (eq_symm x (apply_fun multG (word_product multG eG xs' n1, apply_fun xs12 kmax)) Hx_eq_mult_last)
+						                Hx_eq_succ).
+						            }
+						            claim Hlast_inG : apply_fun xs12 kmax :e G.
+						            { exact (subgroup_of_subset G2 G multG eG invG Hsub2 (apply_fun xs12 kmax) Hlast12G2). }
+						            claim Hxs'_G : forall i0:set, i0 :e n1 -> apply_fun xs' i0 :e G.
+						            {
+						              let i0. assume Hi0.
+						              claim Hi' : i0 :e n'.
+						              { exact (ordinal_TransSet n' (nat_p_ordinal n' Hn'_nat) n1 Hn1_in i0 Hi0). }
+						              exact (reduced_word_in_G G multG eG invG (J :\/: K) Hfam efamH n' xs' Hsubfam_union Hred' i0 Hi').
+						            }
+						            claim Hwp_pref_inG : word_product multG eG xs' n1 :e G.
+						            { exact (word_product_in_G_group G multG eG invG n1 xs' Hgrp Hn1_nat Hxs'_G). }
+						            claim Hxs12_G : forall i0:set, i0 :e kmax -> apply_fun xs12 i0 :e G.
+						            {
+						              let i0. assume Hi0.
+						              claim Hi_sn : i0 :e ordsucc kmax.
+						              { exact (ordsuccI1 kmax i0 Hi0). }
+						              claim Hi12 : i0 :e n12.
+						              { rewrite Hn12_eq. exact Hi_sn. }
+						              apply (Hxs12_side i0 Hi12).
+						              - assume HiG1.
+						                exact (subgroup_of_subset G1 G multG eG invG Hsub1 (apply_fun xs12 i0) HiG1).
+						              - assume HiG2.
+						                exact (subgroup_of_subset G2 G multG eG invG Hsub2 (apply_fun xs12 i0) HiG2).
+						            }
+						            claim Hwp_binpref_inG : word_product multG eG xs12 kmax :e G.
+						            { exact (word_product_in_G_group G multG eG invG kmax xs12 Hgrp Hkmax_nat Hxs12_G). }
+						            claim Hwp_pref_eq : word_product multG eG xs' n1 = word_product multG eG xs12 kmax.
+						            {
+						              exact (group_right_cancel
+						                G multG eG invG
+						                (apply_fun xs12 kmax)
+						                (word_product multG eG xs' n1)
+						                (word_product multG eG xs12 kmax)
+						                Hgrp
+						                Hlast_inG
+						                Hwp_pref_inG
+						                Hwp_binpref_inG
+						                Heq_cancel).
+						            }
+						            admit.
 			      }
 			      exact Hge3_case.
 		Admitted.
