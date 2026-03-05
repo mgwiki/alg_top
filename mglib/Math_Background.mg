@@ -91593,6 +91593,218 @@ exact (continuous_map_slice_const_first
   Hs0).
 Qed.
 
+(** Infrastructure: product-ball vertical slice continuity **)
+(** Proven Bob **)
+Lemma continuous_map_product_ball_slice_second :
+  forall B Tb F I1 I2 t0:set,
+  I1 c= unit_interval ->
+  I2 c= unit_interval ->
+  t0 :e I2 ->
+  continuous_map (setprod I1 I2)
+    (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+    B Tb F ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) B Tb
+    (compose_fun I1
+      (pair_map I1 (graph I1 (fun s:set => s)) (const_fun I1 t0))
+      F).
+let B Tb F I1 I2 t0.
+assume HI1sub HI2sub Ht0 HFcont.
+set T1 := subspace_topology unit_interval unit_interval_topology I1.
+set T2 := subspace_topology unit_interval unit_interval_topology I2.
+claim HtopI1 : topology_on I1 T1.
+{
+  exact (subspace_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    I1
+    unit_interval_topology_on
+    HI1sub).
+}
+claim HtopI2 : topology_on I2 T2.
+{
+  exact (subspace_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    I2
+    unit_interval_topology_on
+    HI2sub).
+}
+set idI1 := graph I1 (fun s:set => s).
+claim HidI1 : continuous_map I1 T1 I1 T1 idI1.
+{
+  exact (identity_continuous I1 T1 HtopI1).
+}
+claim HconstI2 : continuous_map I1 T1 I2 T2 (const_fun I1 t0).
+{
+  exact (const_fun_continuous
+    I1
+    T1
+    I2
+    T2
+    t0
+    HtopI1
+    HtopI2
+    Ht0).
+}
+claim Hpair :
+  continuous_map I1 T1 (setprod I1 I2) (product_topology I1 T1 I2 T2)
+    (pair_map I1 idI1 (const_fun I1 t0)).
+{
+  exact (maps_into_products
+    I1
+    T1
+    I1
+    T1
+    I2
+    T2
+    idI1
+    (const_fun I1 t0)
+    HidI1
+    HconstI2).
+}
+claim HprodEq :
+  product_topology I1 T1 I2 T2 =
+  subspace_topology unit_square unit_square_topology (setprod I1 I2).
+{
+  exact (product_subspace_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    I1
+    I2
+    unit_interval_topology_on
+    unit_interval_topology_on
+    HI1sub
+    HI2sub).
+}
+claim Hpair2 :
+  continuous_map I1 T1 (setprod I1 I2)
+    (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+    (pair_map I1 idI1 (const_fun I1 t0)).
+{
+  rewrite <- HprodEq.
+  exact Hpair.
+}
+exact (composition_continuous
+  I1
+  T1
+  (setprod I1 I2)
+  (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+  B
+  Tb
+  (pair_map I1 idI1 (const_fun I1 t0))
+  F
+  Hpair2
+  HFcont).
+Qed.
+
+(** Infrastructure: product-ball horizontal slice continuity **)
+(** Proven Bob **)
+Lemma continuous_map_product_ball_slice_first :
+  forall B Tb F I1 I2 s0:set,
+  I1 c= unit_interval ->
+  I2 c= unit_interval ->
+  s0 :e I1 ->
+  continuous_map (setprod I1 I2)
+    (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+    B Tb F ->
+  continuous_map I2 (subspace_topology unit_interval unit_interval_topology I2) B Tb
+    (compose_fun I2
+      (pair_map I2 (const_fun I2 s0) (graph I2 (fun t:set => t)))
+      F).
+let B Tb F I1 I2 s0.
+assume HI1sub HI2sub Hs0 HFcont.
+set T1 := subspace_topology unit_interval unit_interval_topology I1.
+set T2 := subspace_topology unit_interval unit_interval_topology I2.
+claim HtopI1 : topology_on I1 T1.
+{
+  exact (subspace_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    I1
+    unit_interval_topology_on
+    HI1sub).
+}
+claim HtopI2 : topology_on I2 T2.
+{
+  exact (subspace_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    I2
+    unit_interval_topology_on
+    HI2sub).
+}
+set idI2 := graph I2 (fun t:set => t).
+claim HidI2 : continuous_map I2 T2 I2 T2 idI2.
+{
+  exact (identity_continuous I2 T2 HtopI2).
+}
+claim HconstI1 : continuous_map I2 T2 I1 T1 (const_fun I2 s0).
+{
+  exact (const_fun_continuous
+    I2
+    T2
+    I1
+    T1
+    s0
+    HtopI2
+    HtopI1
+    Hs0).
+}
+claim Hpair :
+  continuous_map I2 T2 (setprod I1 I2) (product_topology I1 T1 I2 T2)
+    (pair_map I2 (const_fun I2 s0) idI2).
+{
+  exact (maps_into_products
+    I2
+    T2
+    I1
+    T1
+    I2
+    T2
+    (const_fun I2 s0)
+    idI2
+    HconstI1
+    HidI2).
+}
+claim HprodEq :
+  product_topology I1 T1 I2 T2 =
+  subspace_topology unit_square unit_square_topology (setprod I1 I2).
+{
+  exact (product_subspace_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    I1
+    I2
+    unit_interval_topology_on
+    unit_interval_topology_on
+    HI1sub
+    HI2sub).
+}
+claim Hpair2 :
+  continuous_map I2 T2 (setprod I1 I2)
+    (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+    (pair_map I2 (const_fun I2 s0) idI2).
+{
+  rewrite <- HprodEq.
+  exact Hpair.
+}
+exact (composition_continuous
+  I2
+  T2
+  (setprod I1 I2)
+  (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+  B
+  Tb
+  (pair_map I2 (const_fun I2 s0) idI2)
+  F
+  Hpair2
+  HFcont).
+Qed.
+
 (** Infrastructure: continuity of the t0-column map for product-ball lifts **)
 (** TODO: derive from parametric path-lift continuity on product balls. **)
 Lemma path_lift_column_continuous_on_product_ball :
