@@ -117845,6 +117845,57 @@ claim Hfun : function_on f X Y.
 exact (image_of_sub_codomain f X Y U Hfun HUsub).
 Qed.
 
+(** Infrastructure: open map images are open in the subspace **)
+(** Proven Bob **)
+Lemma open_map_image_open_in_subspace : forall X Tx Y Ty f U:set,
+  open_map X Tx Y Ty f ->
+  U :e Tx ->
+  image_of f U :e subspace_topology Y Ty (image_of f X).
+let X Tx Y Ty f U.
+assume Hopen HU.
+claim HopenY : image_of f U :e Ty.
+{ exact (open_map_image_open X Tx Y Ty f U Hopen HU). }
+claim HimgSub : image_of f U c= image_of f X.
+{
+  apply (image_of_mono f U X).
+  claim HtopX : topology_on X Tx.
+  { exact (open_map_topology_on_dom X Tx Y Ty f Hopen). }
+  exact (topology_elem_subset X Tx U HtopX HU).
+}
+claim Hpow : image_of f U :e Power (image_of f X).
+{ exact (PowerI (image_of f X) (image_of f U) HimgSub). }
+set Sub := subspace_topology Y Ty (image_of f X).
+claim Hsubdef : Sub =
+  {U0 :e Power (image_of f X) |
+    exists V:set, V :e Ty /\ U0 = V :/\: image_of f X}.
+{ reflexivity. }
+rewrite Hsubdef.
+apply (SepI
+  (Power (image_of f X))
+  (fun U0:set => exists V:set, V :e Ty /\ U0 = V :/\: image_of f X)
+  (image_of f U)
+  Hpow).
+witness (image_of f U).
+apply andI.
+- exact HopenY.
+- apply set_ext.
+  * let x.
+    assume HxImg.
+    apply (binintersectI
+      (image_of f U)
+      (image_of f X)
+      x
+      HxImg
+      (HimgSub x HxImg)).
+  * let x.
+    assume HxInt.
+    exact (binintersectE1
+      (image_of f U)
+      (image_of f X)
+      x
+      HxInt).
+Qed.
+
 (** Infrastructure: closed maps have well-typed data **)
 (** Proven Bob **)
 Lemma closed_map_function_on : forall X Tx Y Ty f:set,
