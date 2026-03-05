@@ -230583,6 +230583,67 @@ apply andI.
 	  reflexivity.
 	Qed.
 
+  (** Infrastructure: if k is in n1+n2 but not in n1, then k = n1 + j for some j in n2 **)
+  (** Proven Charlie **)
+  Lemma nat_add_nat_decomp_beyond_left :
+    forall n1 n2 k:set,
+    nat_p n1 ->
+    nat_p n2 ->
+    k :e add_nat n1 n2 ->
+    ~(k :e n1) ->
+    exists j:set, j :e n2 /\ k = add_nat n1 j.
+  let n1 n2 k.
+  assume Hn1_nat Hn2_nat Hk_in Hk_not.
+  set N := add_nat n1 n2.
+  claim HN_nat : nat_p N.
+  { exact (add_nat_p n1 Hn1_nat n2 Hn2_nat). }
+  claim HN_omega : N :e omega.
+  { exact (nat_p_omega N HN_nat). }
+  claim Hk_omega : k :e omega.
+  {
+    claim HN_sub_omega : N c= omega.
+    { exact (omega_TransSet N HN_omega). }
+    exact (HN_sub_omega k Hk_in).
+  }
+  claim Hk_nat : nat_p k.
+  { exact (omega_nat_p k Hk_omega). }
+  claim Hk_ord : ordinal k.
+  { exact (nat_p_ordinal k Hk_nat). }
+  claim Hn1_ord : ordinal n1.
+  { exact (nat_p_ordinal n1 Hn1_nat). }
+  claim Hn2_ord : ordinal n2.
+  { exact (nat_p_ordinal n2 Hn2_nat). }
+  claim Hn1_sub_k : n1 c= k.
+  {
+    apply (ordinal_In_Or_Subq k n1 Hk_ord Hn1_ord).
+    - assume Habs. exact (FalseE (Hk_not Habs) (n1 c= k)).
+    - assume H. exact H.
+  }
+  apply (nat_Subq_add_ex n1 Hn1_nat k Hk_nat Hn1_sub_k).
+  let j. assume Hj_pack.
+  claim Hj_nat : nat_p j.
+  { exact (andEL (nat_p j) (k = add_nat j n1) Hj_pack). }
+  claim Hk_eq : k = add_nat j n1.
+  { exact (andER (nat_p j) (k = add_nat j n1) Hj_pack). }
+  claim Hk_eq2 : k = add_nat n1 j.
+  { rewrite Hk_eq. exact (add_nat_com j Hj_nat n1 Hn1_nat). }
+  claim Hj_in_n2 : j :e n2.
+  {
+    apply (ordinal_In_Or_Subq j n2 (nat_p_ordinal j Hj_nat) Hn2_ord).
+    - assume H. exact H.
+    - assume Hn2_sub_j : n2 c= j.
+      claim HN_sub_k : N c= k.
+      {
+        claim H1 : add_nat n1 n2 c= add_nat n1 j.
+        { exact (add_nat_Subq_L n1 Hn1_nat n2 Hn2_nat j Hj_nat Hn2_sub_j). }
+        rewrite Hk_eq2. exact H1.
+      }
+      exact (FalseE (In_irref k (HN_sub_k k Hk_in)) (j :e n2)).
+  }
+  witness j.
+  exact (andI (j :e n2) (k = add_nat n1 j) Hj_in_n2 Hk_eq2).
+  Qed.
+
 	(** Infrastructure: strong induction on natural numbers (derived from nat_ind) **)
 	(** Proven Charlie **)
 	Theorem nat_strong_ind :
