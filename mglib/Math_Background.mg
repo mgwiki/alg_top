@@ -91535,6 +91535,64 @@ exact (composition_continuous
   HFcont).
 Qed.
 
+(** Infrastructure: unit_square vertical slice continuity **)
+(** Proven Bob **)
+Lemma continuous_map_unit_square_slice_second :
+  forall B Tb F t0:set,
+  continuous_map unit_square unit_square_topology B Tb F ->
+  t0 :e unit_interval ->
+  continuous_map unit_interval unit_interval_topology B Tb
+    (compose_fun unit_interval
+      (pair_map unit_interval (graph unit_interval (fun s:set => s)) (const_fun unit_interval t0))
+      F).
+let B Tb F t0.
+assume HFcont Ht0.
+claim HtopI : topology_on unit_interval unit_interval_topology.
+{ exact unit_interval_topology_on. }
+exact (continuous_map_slice_const_second
+  unit_interval
+  unit_interval_topology
+  unit_interval
+  unit_interval_topology
+  B
+  Tb
+  F
+  t0
+  HtopI
+  HtopI
+  HFcont
+  Ht0).
+Qed.
+
+(** Infrastructure: unit_square horizontal slice continuity **)
+(** Proven Bob **)
+Lemma continuous_map_unit_square_slice_first :
+  forall B Tb F s0:set,
+  continuous_map unit_square unit_square_topology B Tb F ->
+  s0 :e unit_interval ->
+  continuous_map unit_interval unit_interval_topology B Tb
+    (compose_fun unit_interval
+      (pair_map unit_interval (const_fun unit_interval s0) (graph unit_interval (fun t:set => t)))
+      F).
+let B Tb F s0.
+assume HFcont Hs0.
+claim HtopI : topology_on unit_interval unit_interval_topology.
+{ exact unit_interval_topology_on. }
+exact (continuous_map_slice_const_first
+  unit_interval
+  unit_interval_topology
+  unit_interval
+  unit_interval_topology
+  B
+  Tb
+  F
+  s0
+  HtopI
+  HtopI
+  HFcont
+  Hs0).
+Qed.
+
 (** Infrastructure: continuity of the t0-column map for product-ball lifts **)
 (** TODO: derive from parametric path-lift continuity on product balls. **)
 Lemma path_lift_column_continuous_on_product_ball :
