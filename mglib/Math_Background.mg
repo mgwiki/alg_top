@@ -117371,6 +117371,19 @@ exact (andEL
   Hsurj).
 Qed.
 
+(** Infrastructure: homeomorphism images lie in codomain **)
+(** Proven Bob **)
+Lemma homeomorphism_image_subset_codomain : forall X Tx Y Ty f A:set,
+  homeomorphism X Tx Y Ty f ->
+  A c= X ->
+  image_of f A c= Y.
+let X Tx Y Ty f A.
+assume Hhome HAsub.
+claim Hfun : function_on f X Y.
+{ exact (homeomorphism_function_on X Tx Y Ty f Hhome). }
+exact (image_of_sub_codomain f X Y A Hfun HAsub).
+Qed.
+
 (** Infrastructure: homeomorphisms are surjective (value form) **)
 (** Proven Bob **)
 Lemma homeomorphism_surjective_value : forall X Tx Y Ty f y:set,
