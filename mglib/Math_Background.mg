@@ -117958,6 +117958,29 @@ apply andI.
 - reflexivity.
 Qed.
 
+(** Infrastructure: open_in in subspace gives an ambient open witness **)
+(** Proven Bob **)
+Lemma open_in_subspace_witness : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y c= X ->
+  U c= Y ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  exists V:set, V :e Tx /\ U = V :/\: Y.
+let X Tx Y U.
+assume Htop HYsub HUsub Hopen.
+claim Hiff :
+  open_in Y (subspace_topology X Tx Y) U <->
+  exists V:set, V :e Tx /\ U = V :/\: Y.
+{
+  exact (open_in_subspace_iff X Tx Y U Htop HYsub HUsub).
+}
+exact ((iffEL
+  (open_in Y (subspace_topology X Tx Y) U)
+  (exists V:set, V :e Tx /\ U = V :/\: Y)
+  Hiff)
+  Hopen).
+Qed.
+
 (** Infrastructure: closed sets are closed in subspaces via intersection **)
 (** Proven Bob **)
 Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
@@ -117974,6 +117997,28 @@ witness C.
 apply andI.
 - exact Hclosed.
 - reflexivity.
+Qed.
+
+(** Infrastructure: closed_in in subspace gives an ambient closed witness **)
+(** Proven Bob **)
+Lemma closed_in_subspace_witness : forall X Tx Y A:set,
+  topology_on X Tx ->
+  Y c= X ->
+  closed_in Y (subspace_topology X Tx Y) A ->
+  exists C:set, closed_in X Tx C /\ A = C :/\: Y.
+let X Tx Y A.
+assume Htop HYsub Hclosed.
+claim Hiff :
+  closed_in Y (subspace_topology X Tx Y) A <->
+  exists C:set, closed_in X Tx C /\ A = C :/\: Y.
+{
+  exact (closed_in_subspace_iff_intersection X Tx Y A Htop HYsub).
+}
+exact ((iffEL
+  (closed_in Y (subspace_topology X Tx Y) A)
+  (exists C:set, closed_in X Tx C /\ A = C :/\: Y)
+  Hiff)
+  Hclosed).
 Qed.
 
 (** Infrastructure: closed maps have well-typed data **)
