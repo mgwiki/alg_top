@@ -115769,6 +115769,15 @@ exact (apply_fun_graph
 Qed.
 
 (** Proven Bob **)
+Theorem tuple_2_eq : forall a b c d:set, a = c -> b = d -> (a, b) = (c, d).
+let a b c d.
+assume Ha Hb.
+rewrite Ha.
+rewrite Hb.
+reflexivity.
+Qed.
+
+(** Proven Bob **)
 Theorem product_group_mult_function_on : forall G1 mult1 G2 mult2:set,
   function_on mult1 (setprod G1 G1) G1 ->
   function_on mult2 (setprod G2 G2) G2 ->
@@ -115868,6 +115877,82 @@ exact (tuple_2_setprod_by_pair_Sigma
   Hmult1In
   Hmult2In).
 Qed.
+
+(** Infrastructure: product group inverse map **)
+Definition product_group_inv : set -> set -> set -> set -> set :=
+  fun G1 inv1 G2 inv2 =>
+    graph (setprod G1 G2)
+      (fun p:set => (apply_fun inv1 (p 0), apply_fun inv2 (p 1))).
+
+(** Proven Bob **)
+Theorem product_group_inv_apply : forall G1 inv1 G2 inv2 p:set,
+  p :e setprod G1 G2 ->
+  apply_fun (product_group_inv G1 inv1 G2 inv2) p =
+    (apply_fun inv1 (p 0), apply_fun inv2 (p 1)).
+let G1 inv1 G2 inv2 p.
+assume Hp.
+exact (apply_fun_graph
+  (setprod G1 G2)
+  (fun q:set => (apply_fun inv1 (q 0), apply_fun inv2 (q 1)))
+  p
+  Hp).
+Qed.
+
+(** Proven Bob **)
+Theorem product_group_inv_function_on : forall G1 inv1 G2 inv2:set,
+  function_on inv1 G1 G1 ->
+  function_on inv2 G2 G2 ->
+  function_on (product_group_inv G1 inv1 G2 inv2) (setprod G1 G2) (setprod G1 G2).
+let G1 inv1 G2 inv2.
+assume Hinv1 Hinv2.
+apply (total_function_on_function_on
+  (product_group_inv G1 inv1 G2 inv2)
+  (setprod G1 G2)
+  (setprod G1 G2)).
+apply (total_function_on_graph
+  (setprod G1 G2)
+  (setprod G1 G2)
+  (fun p:set => (apply_fun inv1 (p 0), apply_fun inv2 (p 1)))).
+let p.
+assume Hp.
+claim Hp0 : p 0 :e G1.
+{
+  exact (ap0_Sigma
+    G1
+    (fun _:set => G2)
+    p
+    Hp).
+}
+claim Hp1 : p 1 :e G2.
+{
+  exact (ap1_Sigma
+    G1
+    (fun _:set => G2)
+    p
+    Hp).
+}
+claim Hinv1In : apply_fun inv1 (p 0) :e G1.
+{ exact (Hinv1 (p 0) Hp0). }
+claim Hinv2In : apply_fun inv2 (p 1) :e G2.
+{ exact (Hinv2 (p 1) Hp1). }
+exact (tuple_2_setprod_by_pair_Sigma
+  G1
+  G2
+  (apply_fun inv1 (p 0))
+  (apply_fun inv2 (p 1))
+  Hinv1In
+  Hinv2In).
+Qed.
+
+Theorem product_group_structure : forall G1 mult1 e1 inv1 G2 mult2 e2 inv2:set,
+  group_structure G1 mult1 e1 inv1 ->
+  group_structure G2 mult2 e2 inv2 ->
+  group_structure (setprod G1 G2)
+    (product_group_mult G1 mult1 G2 mult2)
+    (e1, e2)
+    (product_group_inv G1 inv1 G2 inv2).
+admit.
+Admitted.
 
 (** ex54_7_pi1_torus moved to S60 section (after thm60_1_pi1_product) where it uses the proved theorem directly **)
 
