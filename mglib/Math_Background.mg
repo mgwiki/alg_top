@@ -118398,6 +118398,24 @@ claim Hsub : A c= Y.
 exact (PowerI Y A Hsub).
 Qed.
 
+(** Infrastructure: closed_in in subspace lies in Power X (ambient) **)
+(** Proven Bob **)
+Lemma closed_in_subspace_member_power_ambient : forall X Tx Y A:set,
+  Y c= X ->
+  closed_in Y (subspace_topology X Tx Y) A ->
+  A :e Power X.
+let X Tx Y A.
+assume HYsub Hclosed.
+claim HsubY : A c= Y.
+{ exact (closed_in_subspace_member_subset X Tx Y A Hclosed). }
+claim HsubX : A c= X.
+{
+  let x. assume HxA.
+  exact (HYsub x (HsubY x HxA)).
+}
+exact (PowerI X A HsubX).
+Qed.
+
 (** Infrastructure: closed_in in subspace lies in Power Y (no topology assumptions) **)
 (** Proven Bob **)
 Lemma closed_in_subspace_member_power_no_topology : forall X Tx Y A:set,
