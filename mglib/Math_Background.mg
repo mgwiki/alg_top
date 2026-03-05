@@ -115844,6 +115844,32 @@ reflexivity.
 Qed.
 
 (** Proven Bob **)
+Theorem product_group_mult_right_id :
+  forall G1 mult1 e1 G2 mult2 e2 x:set,
+  e1 :e G1 ->
+  e2 :e G2 ->
+  (forall a:set, a :e G1 -> apply_fun mult1 (a, e1) = a) ->
+  (forall b:set, b :e G2 -> apply_fun mult2 (b, e2) = b) ->
+  x :e setprod G1 G2 ->
+  apply_fun (product_group_mult G1 mult1 G2 mult2) (x, (e1, e2)) = x.
+let G1 mult1 e1 G2 mult2 e2 x.
+assume He1 He2 Hright1 Hright2 Hx.
+claim Hx0 : x 0 :e G1.
+{ exact (ap0_Sigma G1 (fun _:set => G2) x Hx). }
+claim Hx1 : x 1 :e G2.
+{ exact (ap1_Sigma G1 (fun _:set => G2) x Hx). }
+claim He : (e1, e2) :e setprod G1 G2.
+{ exact (tuple_2_setprod_by_pair_Sigma G1 G2 e1 e2 He1 He2). }
+rewrite (product_group_mult_apply_pair G1 mult1 G2 mult2 x (e1, e2) Hx He).
+rewrite tuple_2_0_eq.
+rewrite tuple_2_1_eq.
+rewrite (Hright1 (x 0) Hx0).
+rewrite (Hright2 (x 1) Hx1).
+rewrite <- (setprod_eta G1 G2 x Hx).
+reflexivity.
+Qed.
+
+(** Proven Bob **)
 Theorem product_group_mult_function_on : forall G1 mult1 G2 mult2:set,
   function_on mult1 (setprod G1 G1) G1 ->
   function_on mult2 (setprod G2 G2) G2 ->
