@@ -118233,6 +118233,42 @@ rewrite HeqA.
 exact (closed_binintersect X Tx C Y HclosedC HclosedY).
 Qed.
 
+(** Infrastructure: closed_in in closed subspace iff closed ambient with subset **)
+(** Proven Bob **)
+Lemma closed_in_subspace_iff_closed_ambient_on_closed_subspace : forall X Tx Y A:set,
+  topology_on X Tx ->
+  closed_in X Tx Y ->
+  (closed_in Y (subspace_topology X Tx Y) A <->
+    A c= Y /\ closed_in X Tx A).
+let X Tx Y A.
+assume Htop HclosedY.
+apply (iffI
+  (closed_in Y (subspace_topology X Tx Y) A)
+  (A c= Y /\ closed_in X Tx A)).
+- assume HclosedSub.
+  claim HAsub : A c= Y.
+  { exact (closed_in_subset Y (subspace_topology X Tx Y) A HclosedSub). }
+  claim HAclosed : closed_in X Tx A.
+  { exact (closed_in_subspace_closed_ambient X Tx Y A Htop HclosedY HclosedSub). }
+  exact (andI (A c= Y) (closed_in X Tx A) HAsub HAclosed).
+- assume Hpair.
+  claim HAsub : A c= Y.
+  { exact (andEL (A c= Y) (closed_in X Tx A) Hpair). }
+  claim HAclosed : closed_in X Tx A.
+  { exact (andER (A c= Y) (closed_in X Tx A) Hpair). }
+  claim HYsub : Y c= X.
+  { exact (closed_in_subset X Tx Y HclosedY). }
+  claim HclosedSub :
+    closed_in Y (subspace_topology X Tx Y) (A :/\: Y).
+  {
+    exact (closed_in_subspace_of_closed_in_ambient X Tx Y A Htop HYsub HAclosed).
+  }
+  claim HeqA : A = A :/\: Y.
+  { exact (eq_symm (A :/\: Y) A (binintersect_sub_eq_right A Y HAsub)). }
+  rewrite HeqA.
+  exact HclosedSub.
+Qed.
+
 (** Infrastructure: closed maps have well-typed data **)
 (** Proven Bob **)
 Lemma closed_map_function_on : forall X Tx Y Ty f:set,
