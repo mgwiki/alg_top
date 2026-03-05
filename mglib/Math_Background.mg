@@ -118135,6 +118135,28 @@ apply (iffI
   * exact HeqA.
 Qed.
 
+(** Infrastructure: closed_in in subspace of closed subspace is closed in ambient **)
+(** Proven Bob **)
+Lemma closed_in_subspace_closed_ambient : forall X Tx Y A:set,
+  topology_on X Tx ->
+  closed_in X Tx Y ->
+  closed_in Y (subspace_topology X Tx Y) A ->
+  closed_in X Tx A.
+let X Tx Y A.
+assume Htop HclosedY HclosedSub.
+claim HYsub : Y c= X.
+{ exact (closed_in_subset X Tx Y HclosedY). }
+claim HexC : exists C:set, closed_in X Tx C /\ A = C :/\: Y.
+{ exact (closed_in_subspace_witness X Tx Y A Htop HYsub HclosedSub). }
+apply HexC. let C. assume HC.
+claim HclosedC : closed_in X Tx C.
+{ exact (andEL (closed_in X Tx C) (A = C :/\: Y) HC). }
+claim HeqA : A = C :/\: Y.
+{ exact (andER (closed_in X Tx C) (A = C :/\: Y) HC). }
+rewrite HeqA.
+exact (closed_binintersect X Tx C Y HclosedC HclosedY).
+Qed.
+
 (** Infrastructure: closed maps have well-typed data **)
 (** Proven Bob **)
 Lemma closed_map_function_on : forall X Tx Y Ty f:set,
