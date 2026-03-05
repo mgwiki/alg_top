@@ -121305,7 +121305,7 @@ exact (s54_two_distinct_lifts_if_S1_compact_of_covering
   covering_map_R_S1
   thm53_1_R_covers_S1
   HcompS1).
-Admitted.
+Admitted. (** depends on admitted thm53_1_R_covers_S1 **)
 Theorem s54_S1_compact :
   compact_space S1 S1_topology.
 set I := closed_interval (minus_SNo 1) 1.
