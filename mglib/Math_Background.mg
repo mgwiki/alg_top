@@ -246719,17 +246719,81 @@ apply (and5I
 				                (graph J (fun a:set => apply_fun Hfam a))
 				                (graph J (fun a:set => apply_fun efamH a))
 				                n2 xs2.
-				            {
-				              exact (cor68_6_reduced_word_all_in_G1_is_reduced_word_J
-				                G multG eG invG G1 G2 J K Hfam efamH n2 xs2
-				                Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2
-				                Hred2
-				                (fun i Hi => HallNe2 i Hi)
-				                (fun i Hi => HallG1_2 i Hi)).
-				            }
-				            admit.
-				          - assume Hlast12G2.
-				            apply (Hsuffix_block_G2 Hlast12G2).
+					            {
+					              exact (cor68_6_reduced_word_all_in_G1_is_reduced_word_J
+					                G multG eG invG G1 G2 J K Hfam efamH n2 xs2
+					                Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2
+					                Hred2
+					                (fun i Hi => HallNe2 i Hi)
+					                (fun i Hi => HallG1_2 i Hi)).
+					            }
+					            (** Canonical J-normal form of the last binary syllable. **)
+					            set GfamJ := graph J (fun a:set => apply_fun Hfam a).
+					            set efamJ := graph J (fun a:set => apply_fun efamH a).
+					            claim HuniqJ :
+					              forall x0:set, x0 :e G1 -> x0 <> eG ->
+					                exists n0 xs0:set,
+					                  reduced_word J GfamJ efamJ n0 xs0 /\ n0 <> 0 /\
+					                  word_product multG eG xs0 n0 = x0 /\
+					                  (forall n'0 xs'0:set,
+					                    reduced_word J GfamJ efamJ n'0 xs'0 -> n'0 <> 0 ->
+					                    word_product multG eG xs'0 n'0 = x0 ->
+					                    n0 = n'0 /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs'0 i0)).
+					            {
+					              apply (and5E
+					                (group_structure G1 multG eG invG)
+					                (forall alpha:set, alpha :e J -> subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG)
+					                (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+					                  forall x:set, x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha ->
+					                    x :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) beta -> x = eG)
+					                (subgroups_generate G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)))
+					                (forall x0:set, x0 :e G1 -> x0 <> eG ->
+					                  exists n0 xs0:set,
+					                    reduced_word J (graph J (fun a:set => apply_fun Hfam a)) (graph J (fun a:set => apply_fun efamH a)) n0 xs0 /\ n0 <> 0 /\
+					                    word_product multG eG xs0 n0 = x0 /\
+					                    (forall n'0 xs'0:set,
+					                      reduced_word J (graph J (fun a:set => apply_fun Hfam a)) (graph J (fun a:set => apply_fun efamH a)) n'0 xs'0 -> n'0 <> 0 ->
+					                      word_product multG eG xs'0 n'0 = x0 ->
+					                      n0 = n'0 /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs'0 i0)))
+					                Hfp1).
+					              assume _ _ _ _ Huniq.
+					              exact Huniq.
+					            }
+					            claim Hlast_ne : apply_fun xs12 kmax <> eG.
+					            { exact (Hxs12_ne kmax Hkmax_in12). }
+					            claim Hex_lastJ :
+					              exists nL xsL:set,
+					                reduced_word J GfamJ efamJ nL xsL /\ nL <> 0 /\
+					                word_product multG eG xsL nL = apply_fun xs12 kmax /\
+					                (forall nL' xsL':set,
+					                  reduced_word J GfamJ efamJ nL' xsL' -> nL' <> 0 ->
+					                  word_product multG eG xsL' nL' = apply_fun xs12 kmax ->
+					                  nL = nL' /\ (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xsL' i0)).
+					            { exact (HuniqJ (apply_fun xs12 kmax) Hlast12G1 Hlast_ne). }
+					            apply Hex_lastJ. let nL. assume HnL_pack.
+					            apply HnL_pack. let xsL. assume HxsL_pack.
+					            apply (and4E
+					              (reduced_word J GfamJ efamJ nL xsL)
+					              (nL <> 0)
+					              (word_product multG eG xsL nL = apply_fun xs12 kmax)
+					              (forall nL' xsL':set,
+					                reduced_word J GfamJ efamJ nL' xsL' -> nL' <> 0 ->
+					                word_product multG eG xsL' nL' = apply_fun xs12 kmax ->
+					                nL = nL' /\ (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xsL' i0))
+					              HxsL_pack).
+					            assume HredL HnL_ne0 HwpL HuniqL.
+					            claim Hwp_xs2_last : word_product multG eG xs2 n2 = apply_fun xs12 kmax.
+					            { rewrite <- Hu_eq_last. reflexivity. }
+					            claim Huniq_xs2 :
+					              nL = n2 /\ (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0).
+					            { exact (HuniqL n2 xs2 Hxs2_redJ Hn2_ne0 Hwp_xs2_last). }
+					            claim HnL_eq_n2 : nL = n2.
+					            { exact (andEL (nL = n2) (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0) Huniq_xs2). }
+					            claim HxsL_eq_xs2 : forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0.
+					            { exact (andER (nL = n2) (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0) Huniq_xs2). }
+					            admit.
+					          - assume Hlast12G2.
+					            apply (Hsuffix_block_G2 Hlast12G2).
 				            let m. assume Hm_pack.
 				            apply Hm_pack. let n1. assume Hn1_pack.
 				            apply Hn1_pack. let n2. assume Hn2_pack.
@@ -247059,15 +247123,79 @@ apply (and5I
 				                (graph K (fun b:set => apply_fun Hfam b))
 				                (graph K (fun b:set => apply_fun efamH b))
 				                n2 xs2.
-				            {
-				              exact (cor68_6_reduced_word_all_in_G2_is_reduced_word_K
-				                G multG eG invG G1 G2 J K Hfam efamH n2 xs2
-				                Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2
-				                Hred2
-				                (fun i Hi => HallNe2 i Hi)
-				                (fun i Hi => HallG2_2 i Hi)).
-				            }
-				            admit.
+					            {
+					              exact (cor68_6_reduced_word_all_in_G2_is_reduced_word_K
+					                G multG eG invG G1 G2 J K Hfam efamH n2 xs2
+					                Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2
+					                Hred2
+					                (fun i Hi => HallNe2 i Hi)
+					                (fun i Hi => HallG2_2 i Hi)).
+					            }
+					            (** Canonical K-normal form of the last binary syllable. **)
+					            set GfamK := graph K (fun b:set => apply_fun Hfam b).
+					            set efamK := graph K (fun b:set => apply_fun efamH b).
+					            claim HuniqK :
+					              forall x0:set, x0 :e G2 -> x0 <> eG ->
+					                exists n0 xs0:set,
+					                  reduced_word K GfamK efamK n0 xs0 /\ n0 <> 0 /\
+					                  word_product multG eG xs0 n0 = x0 /\
+					                  (forall n'0 xs'0:set,
+					                    reduced_word K GfamK efamK n'0 xs'0 -> n'0 <> 0 ->
+					                    word_product multG eG xs'0 n'0 = x0 ->
+					                    n0 = n'0 /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs'0 i0)).
+					            {
+					              apply (and5E
+					                (group_structure G2 multG eG invG)
+					                (forall beta:set, beta :e K -> subgroup_of (apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta) G2 multG eG invG)
+					                (forall alpha beta:set, alpha :e K -> beta :e K -> alpha <> beta ->
+					                  forall x:set, x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha ->
+					                    x :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta -> x = eG)
+					                (subgroups_generate G2 multG eG invG K (graph K (fun b:set => apply_fun Hfam b)))
+					                (forall x0:set, x0 :e G2 -> x0 <> eG ->
+					                  exists n0 xs0:set,
+					                    reduced_word K (graph K (fun b:set => apply_fun Hfam b)) (graph K (fun b:set => apply_fun efamH b)) n0 xs0 /\ n0 <> 0 /\
+					                    word_product multG eG xs0 n0 = x0 /\
+					                    (forall n'0 xs'0:set,
+					                      reduced_word K (graph K (fun b:set => apply_fun Hfam b)) (graph K (fun b:set => apply_fun efamH b)) n'0 xs'0 -> n'0 <> 0 ->
+					                      word_product multG eG xs'0 n'0 = x0 ->
+					                      n0 = n'0 /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs'0 i0)))
+					                Hfp2).
+					              assume _ _ _ _ Huniq.
+					              exact Huniq.
+					            }
+					            claim Hlast_ne : apply_fun xs12 kmax <> eG.
+					            { exact (Hxs12_ne kmax Hkmax_in12). }
+					            claim Hex_lastK :
+					              exists nL xsL:set,
+					                reduced_word K GfamK efamK nL xsL /\ nL <> 0 /\
+					                word_product multG eG xsL nL = apply_fun xs12 kmax /\
+					                (forall nL' xsL':set,
+					                  reduced_word K GfamK efamK nL' xsL' -> nL' <> 0 ->
+					                  word_product multG eG xsL' nL' = apply_fun xs12 kmax ->
+					                  nL = nL' /\ (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xsL' i0)).
+					            { exact (HuniqK (apply_fun xs12 kmax) Hlast12G2 Hlast_ne). }
+					            apply Hex_lastK. let nL. assume HnL_pack.
+					            apply HnL_pack. let xsL. assume HxsL_pack.
+					            apply (and4E
+					              (reduced_word K GfamK efamK nL xsL)
+					              (nL <> 0)
+					              (word_product multG eG xsL nL = apply_fun xs12 kmax)
+					              (forall nL' xsL':set,
+					                reduced_word K GfamK efamK nL' xsL' -> nL' <> 0 ->
+					                word_product multG eG xsL' nL' = apply_fun xs12 kmax ->
+					                nL = nL' /\ (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xsL' i0))
+					              HxsL_pack).
+					            assume HredL HnL_ne0 HwpL HuniqL.
+					            claim Hwp_xs2_last : word_product multG eG xs2 n2 = apply_fun xs12 kmax.
+					            { rewrite <- Hu_eq_last. reflexivity. }
+					            claim Huniq_xs2 :
+					              nL = n2 /\ (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0).
+					            { exact (HuniqL n2 xs2 Hxs2_redK Hn2_ne0 Hwp_xs2_last). }
+					            claim HnL_eq_n2 : nL = n2.
+					            { exact (andEL (nL = n2) (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0) Huniq_xs2). }
+					            claim HxsL_eq_xs2 : forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0.
+					            { exact (andER (nL = n2) (forall i0:set, i0 :e nL -> apply_fun xsL i0 = apply_fun xs2 i0) Huniq_xs2). }
+					            admit.
 			      }
 			      exact Hge3_case.
 		Admitted.
