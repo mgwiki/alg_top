@@ -242881,6 +242881,45 @@ apply (and5I
               Hred HallNe
               HexG1 HexG2).
           }
+          apply Hm_pack. let m. assume Hm_pack0.
+          apply (and4E
+            (m :e n)
+            (apply_fun xs m :e G1)
+            (forall i:set, i :e n -> apply_fun xs i :e G1 -> i c= m)
+            (forall i:set, i :e n -> ordsucc m c= i -> apply_fun xs i :e G2)
+            Hm_pack0).
+          assume Hm_in HymG1 Hm_maxG1 Hsuffix_all_G2.
+
+          set n1 := ordsucc m.
+
+          (** n is a natural number. **)
+          claim HnO : n :e omega.
+          {
+            apply (and3E
+              (n :e omega)
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e J :\/: K /\
+                  apply_fun xs i :e apply_fun Hfam alpha /\
+                  apply_fun xs i <> apply_fun efamH alpha)
+              (forall i:set, i :e n -> ordsucc i :e n ->
+                forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+                  apply_fun xs i :e apply_fun Hfam alpha ->
+                  apply_fun xs (ordsucc i) :e apply_fun Hfam beta ->
+                  alpha <> beta)
+              Hred).
+            assume HnO0 _ _. exact HnO0.
+          }
+          claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+          claim Hn_ord : ordinal n. { exact (nat_p_ordinal n Hn_nat). }
+          claim HmO : m :e omega.
+          {
+            claim Hn_sub_omega : n c= omega.
+            { exact (omega_TransSet n HnO). }
+            exact (Hn_sub_omega m Hm_in).
+          }
+          claim Hm_nat : nat_p m. { exact (omega_nat_p m HmO). }
+
+          (** TODO: finish symmetric decomposition and comparison. **)
           admit.
     + assume Hn12_ne2.
       (** TODO: general concatenation + uniqueness for n12 >= 3 **)
