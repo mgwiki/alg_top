@@ -245757,6 +245757,104 @@ apply (and5I
 		              G multG eG invG (J :\/: K) Hfam efamH
 		              n' xs' Hgrp Hsubfam_union Hred' Hn'_ne Hn'_ne1 i Hi).
 		          }
+		          (** Reduce any competing (J \\/ K)-reduced word for x to the unique binary reduced word xs12. **)
+		          claim Hwp'_ne_e : word_product multG eG xs' n' <> eG.
+		          {
+		            assume Hwp'_e.
+		            claim Hx_e : x = eG.
+		            { rewrite <- Hwp'. exact Hwp'_e. }
+		            exact (Hxne Hx_e).
+		          }
+		          claim Hys_side' :
+		            forall i:set, i :e n' -> apply_fun xs' i :e G1 \/ apply_fun xs' i :e G2.
+		          {
+		            exact (cor68_6_reduced_word_letter_in_G1_or_G2
+		              G multG eG invG G1 G2 J K Hfam efamH n' xs'
+		              Hsub1 Hsub2 Hfp1 Hfp2 Hred').
+		          }
+		          claim HexG1' : exists i:set, i :e n' /\ apply_fun xs' i :e G1.
+		          {
+		            apply (xm (exists i:set, i :e n' /\ apply_fun xs' i :e G1)).
+		            - assume Hex. exact Hex.
+		            - assume Hnoex.
+		              claim HallG2' : forall i:set, i :e n' -> apply_fun xs' i :e G2.
+		              {
+		                let i. assume Hi.
+		                apply (Hys_side' i Hi).
+		                + assume HiG1.
+		                  claim Hex : exists j:set, j :e n' /\ apply_fun xs' j :e G1.
+		                  {
+		                    witness i.
+		                    apply andI.
+		                    exact Hi.
+		                    exact HiG1.
+		                  }
+		                  exact (FalseE (Hnoex Hex) (apply_fun xs' i :e G2)).
+		                + assume HiG2. exact HiG2.
+		              }
+		              claim Hwp'_G2 : word_product multG eG xs' n' :e G2.
+		              { exact (word_product_in_G_group G2 multG eG invG n' xs' Hgrp2 Hn'_nat HallG2'). }
+		              claim HxG2 : x :e G2.
+		              { rewrite <- Hwp'. exact Hwp'_G2. }
+		              exact (FalseE (Hx_not_G2 HxG2) (exists i:set, i :e n' /\ apply_fun xs' i :e G1)).
+		          }
+		          claim HexG2' : exists i:set, i :e n' /\ apply_fun xs' i :e G2.
+		          {
+		            apply (xm (exists i:set, i :e n' /\ apply_fun xs' i :e G2)).
+		            - assume Hex. exact Hex.
+		            - assume Hnoex.
+		              claim HallG1' : forall i:set, i :e n' -> apply_fun xs' i :e G1.
+		              {
+		                let i. assume Hi.
+		                apply (Hys_side' i Hi).
+		                + assume HiG1. exact HiG1.
+		                + assume HiG2.
+		                  claim Hex : exists j:set, j :e n' /\ apply_fun xs' j :e G2.
+		                  {
+		                    witness i.
+		                    apply andI.
+		                    exact Hi.
+		                    exact HiG2.
+		                  }
+		                  exact (FalseE (Hnoex Hex) (apply_fun xs' i :e G1)).
+		              }
+		              claim Hwp'_G1 : word_product multG eG xs' n' :e G1.
+		              { exact (word_product_in_G_group G1 multG eG invG n' xs' Hgrp1 Hn'_nat HallG1'). }
+		              claim HxG1 : x :e G1.
+		              { rewrite <- Hwp'. exact Hwp'_G1. }
+		              exact (FalseE (Hx_not_G1 HxG1) (exists i:set, i :e n' /\ apply_fun xs' i :e G2)).
+		          }
+		          claim Hcoll' :
+		            exists nb xb:set,
+		              reduced_word (UPair 0 1)
+		                (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+		                (graph (UPair 0 1) (fun _:set => eG))
+		                nb xb /\
+		              word_product multG eG xb nb = word_product multG eG xs' n' /\
+		              nb <> 0 /\ nb <> 1.
+		          {
+		            exact (cor68_6_collapse_mixed_union_to_binary_reduced_word
+		              G multG eG invG G1 G2 J K Hfam efamH n' xs'
+		              Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2
+		              Hred' HallNe' Hwp'_ne_e
+		              HexG1'
+		              HexG2').
+		          }
+		          claim Hbin_eq :
+		            forall nb xb:set,
+		              reduced_word (UPair 0 1)
+		                (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+		                (graph (UPair 0 1) (fun _:set => eG))
+		                nb xb ->
+		              nb <> 0 ->
+		              word_product multG eG xb nb = word_product multG eG xs' n' ->
+		              n12 = nb /\ (forall i0:set, i0 :e n12 -> apply_fun xs12 i0 = apply_fun xb i0).
+		          {
+		            let nb xb. assume Hredb Hnb_ne0 Hwpb.
+		            claim Hwpb_x : word_product multG eG xb nb = x.
+		            { rewrite Hwpb. rewrite Hwp'. reflexivity. }
+		            exact (Huniq12 nb xb Hredb Hnb_ne0 Hwpb_x).
+		          }
 		          (** Remaining uniqueness proof for n12 >= 3. **)
 		          admit.
 		      }
