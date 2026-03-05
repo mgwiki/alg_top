@@ -115768,6 +115768,107 @@ exact (apply_fun_graph
   Hp).
 Qed.
 
+(** Proven Bob **)
+Theorem product_group_mult_function_on : forall G1 mult1 G2 mult2:set,
+  function_on mult1 (setprod G1 G1) G1 ->
+  function_on mult2 (setprod G2 G2) G2 ->
+  function_on (product_group_mult G1 mult1 G2 mult2)
+    (setprod (setprod G1 G2) (setprod G1 G2)) (setprod G1 G2).
+let G1 mult1 G2 mult2.
+assume Hmult1 Hmult2.
+apply (total_function_on_function_on
+  (product_group_mult G1 mult1 G2 mult2)
+  (setprod (setprod G1 G2) (setprod G1 G2))
+  (setprod G1 G2)).
+apply (total_function_on_graph
+  (setprod (setprod G1 G2) (setprod G1 G2))
+  (setprod G1 G2)
+  (fun p:set =>
+    (apply_fun mult1 ((p 0) 0, (p 1) 0),
+     apply_fun mult2 ((p 0) 1, (p 1) 1)))).
+let p.
+assume Hp.
+claim Hp0 : p 0 :e setprod G1 G2.
+{
+  exact (ap0_Sigma
+    (setprod G1 G2)
+    (fun _:set => setprod G1 G2)
+    p
+    Hp).
+}
+claim Hp1 : p 1 :e setprod G1 G2.
+{
+  exact (ap1_Sigma
+    (setprod G1 G2)
+    (fun _:set => setprod G1 G2)
+    p
+    Hp).
+}
+claim Hp00 : (p 0) 0 :e G1.
+{
+  exact (ap0_Sigma
+    G1
+    (fun _:set => G2)
+    (p 0)
+    Hp0).
+}
+claim Hp01 : (p 0) 1 :e G2.
+{
+  exact (ap1_Sigma
+    G1
+    (fun _:set => G2)
+    (p 0)
+    Hp0).
+}
+claim Hp10 : (p 1) 0 :e G1.
+{
+  exact (ap0_Sigma
+    G1
+    (fun _:set => G2)
+    (p 1)
+    Hp1).
+}
+claim Hp11 : (p 1) 1 :e G2.
+{
+  exact (ap1_Sigma
+    G1
+    (fun _:set => G2)
+    (p 1)
+    Hp1).
+}
+claim Hpair1 : ((p 0) 0, (p 1) 0) :e setprod G1 G1.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    G1
+    G1
+    ((p 0) 0)
+    ((p 1) 0)
+    Hp00
+    Hp10).
+}
+claim Hpair2 : ((p 0) 1, (p 1) 1) :e setprod G2 G2.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    G2
+    G2
+    ((p 0) 1)
+    ((p 1) 1)
+    Hp01
+    Hp11).
+}
+claim Hmult1In : apply_fun mult1 ((p 0) 0, (p 1) 0) :e G1.
+{ exact (Hmult1 ((p 0) 0, (p 1) 0) Hpair1). }
+claim Hmult2In : apply_fun mult2 ((p 0) 1, (p 1) 1) :e G2.
+{ exact (Hmult2 ((p 0) 1, (p 1) 1) Hpair2). }
+exact (tuple_2_setprod_by_pair_Sigma
+  G1
+  G2
+  (apply_fun mult1 ((p 0) 0, (p 1) 0))
+  (apply_fun mult2 ((p 0) 1, (p 1) 1))
+  Hmult1In
+  Hmult2In).
+Qed.
+
 (** ex54_7_pi1_torus moved to S60 section (after thm60_1_pi1_product) where it uses the proved theorem directly **)
 
 (** Infrastructure: injectivity of covering map when total space is path connected and base is simply connected **)
