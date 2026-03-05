@@ -118088,6 +118088,16 @@ claim Hsub : U c= Y.
 exact (PowerI Y U Hsub).
 Qed.
 
+(** Infrastructure: open_in in subspace lies in Power Y (no topology assumptions) **)
+(** Proven Bob **)
+Lemma open_in_subspace_member_power_no_topology : forall X Tx Y U:set,
+  open_in Y (subspace_topology X Tx Y) U ->
+  U :e Power Y.
+let X Tx Y U.
+assume Hopen.
+exact (open_in_subspace_member_power X Tx Y U Hopen).
+Qed.
+
 (** Infrastructure: open_in in subspace gives an ambient open witness (no subset arg) **)
 (** Proven Bob **)
 Lemma open_in_subspace_witness_no_subset : forall X Tx Y U:set,
