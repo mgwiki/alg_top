@@ -41267,7 +41267,24 @@ claim Hmult_beta :
     Ha
     Hb).
 }
-admit.
+set b_alpha := basepoint_change_map X Tx x0 x1 alpha.
+set b_beta := basepoint_change_map X Tx x0 x1 beta.
+claim Habel_delta :
+  apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)
+  = apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls).
+{
+  exact (Habel cls delta_cls Hcls HdeltaCls).
+}
+apply andI.
+- (** alpha-image vs beta-image after multiplying by delta_cls **)
+  rewrite (Hmult_beta cls delta_cls Hcls HdeltaCls).
+  (** TODO: relate b_alpha cls to b_beta cls and b_beta delta_cls under abelianity. **)
+  admit.
+- (** beta-image commutes under abelianity **)
+  rewrite <- Habel_delta.
+  rewrite (Hmult_beta cls delta_cls Hcls HdeltaCls).
+  (** TODO: show b_beta cls equals the product with b_beta delta_cls. **)
+  admit.
 Admitted.
 
 (** S52 helper: uniqueness of basepoint-change maps implies commutativity at the basepoint **)
