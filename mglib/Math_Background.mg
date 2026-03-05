@@ -118032,6 +118032,32 @@ apply (iffI
   exact (open_in_subspace_of_member X Tx Y U Htop HYsub HU).
 Qed.
 
+(** Infrastructure: open_in in open subspace is open in ambient **)
+(** Proven Bob **)
+Lemma open_in_subspace_open_ambient : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y :e Tx ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  open_in X Tx U.
+let X Tx Y U.
+assume Htop HYopen Hopen.
+claim HUsub : U c= Y.
+{ exact (open_in_subset Y (subspace_topology X Tx Y) U Hopen). }
+claim HUopen : U :e Tx.
+{
+  exact (open_in_subspace_if_ambient_open
+    X
+    Tx
+    Y
+    U
+    Htop
+    HYopen
+    HUsub
+    Hopen).
+}
+exact (open_inI X Tx U Htop HUopen).
+Qed.
+
 (** Infrastructure: closed sets are closed in subspaces via intersection **)
 (** Proven Bob **)
 Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
