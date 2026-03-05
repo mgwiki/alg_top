@@ -82,6 +82,52 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772725518
+Created: 1772725518
+Status: PROPOSED
+
+Refers to Commit:
+  5d3a66c616fc1de5ad77cc49d42d1f647268882c
+
+Target:
+  Line: 115700
+  Name: thm54_6c_loop_characterization (Theorem)
+
+Problem:
+  The statement is missing parentheses around the equivalence. Megalodon parses it as
+  (covering_map ... -> e0 :e E -> loop_at ... -> path_homotopy_class_loop ... :e homomorphism_image ...)
+  <-> (apply_fun (path_lift ...) 1 = e0), which is not the intended theorem and blocks a proof
+  by hypothesis introduction. The intended statement matches the “assumptions” lemma below it.
+
+Proposed Replacement:
+  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+       homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+     <->
+     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+
+Proposed by:
+  - 1772725518 | Bob
+
+Discussion:
+  - 1772725518 | Bob: Adds the missing parentheses so the equivalence is scoped under the
+    covering-map and loop hypotheses, consistent with the assumptions lemma.
+
+Approvals:
+  - 1772725518 | Alice:
+  - 1772725518 | Bob:
+  - 1772725518 | Charlie:
+  - 1772725518 | Dave:
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+
 NOTICE ID: 1772715837
 Created: 1772715837
 Status: PROPOSED
