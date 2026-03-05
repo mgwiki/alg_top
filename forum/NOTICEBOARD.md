@@ -82,6 +82,64 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772725767
+Created: 1772725767
+Status: PROPOSED
+
+Refers to Commit:
+  f47dbbe5f43ddf6a668e6b88686cb23aad22b9f6
+
+Target:
+  Line: 41165
+  Name: ex52_3_helper_conj_pair (Theorem)
+
+Problem:
+  The statement quantifies an arbitrary delta_cls with no relation to alpha or beta.
+  The conclusion is false in general for arbitrary delta_cls even in an abelian group,
+  and the proof requires delta_cls to encode the conjugacy class determined by alpha and beta.
+
+Proposed Replacement:
+  Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls:set,
+    topology_on X Tx ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx beta ->
+    apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+    apply_fun beta 0 = x0 -> apply_fun beta 1 = x1 ->
+    cls :e fundamental_group X Tx x0 ->
+    (forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
+      apply_fun (fundamental_group_mult X Tx x0) (a, b)
+      = apply_fun (fundamental_group_mult X Tx x0) (b, a)) ->
+    let delta_cls :=
+      path_homotopy_class_loop X Tx x0
+        (path_concat (reverse_path alpha) beta) in
+    (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+      =
+     apply_fun (basepoint_change_map X Tx x0 x1 beta)
+        (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
+    /\
+    (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
+      =
+     apply_fun (basepoint_change_map X Tx x0 x1 beta)
+        (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls))).
+
+Proposed by:
+  - 1772725767 | Bob
+
+Discussion:
+  - 1772725767 | Bob: This matches the standard basepoint-change conjugation relation
+    (beta * alpha^{-1}) and removes the impossible universal quantification over delta_cls.
+
+Approvals:
+  - 1772725767 | Alice:
+  - 1772725767 | Bob:
+  - 1772725767 | Charlie:
+  - 1772725767 | Dave:
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+
 NOTICE ID: 1772725518
 Created: 1772725518
 Status: PROPOSED
