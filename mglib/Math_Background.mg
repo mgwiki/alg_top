@@ -117458,6 +117458,31 @@ claim Hsurj_part :
 exact (Hsurj_part y HyY).
 Qed.
 
+(** Infrastructure: quotient map images lie in codomain **)
+(** Proven Bob **)
+Lemma quotient_map_image_subset_codomain : forall X Tx Y f A:set,
+  quotient_map X Tx Y f ->
+  A c= X ->
+  image_of f A c= Y.
+let X Tx Y f A.
+assume Hquot HAsub.
+claim Hpair : topology_on X Tx /\ function_on f X Y.
+{
+  exact (andEL
+    (topology_on X Tx /\ function_on f X Y)
+    (forall y0:set, y0 :e Y -> exists x:set, x :e X /\ apply_fun f x = y0)
+    Hquot).
+}
+claim Hfun : function_on f X Y.
+{
+  exact (andER
+    (topology_on X Tx)
+    (function_on f X Y)
+    Hpair).
+}
+exact (image_of_sub_codomain f X Y A Hfun HAsub).
+Qed.
+
 (** Infrastructure: covering maps are quotient maps **)
 (** Proven Bob **)
 Lemma covering_map_quotient_map : forall E Te B Tb p:set,
