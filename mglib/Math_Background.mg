@@ -118141,6 +118141,17 @@ let x. assume HxU.
 exact (HYsub x (HsubY x HxU)).
 Qed.
 
+(** Infrastructure: open_in in subspace implies subset of ambient space (no topology assumptions) **)
+(** Proven Bob **)
+Lemma open_in_subspace_member_subset_ambient_no_topology : forall X Tx Y U:set,
+  Y c= X ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  U c= X.
+let X Tx Y U.
+assume HYsub Hopen.
+exact (open_in_subspace_member_subset_ambient X Tx Y U HYsub Hopen).
+Qed.
+
 (** Infrastructure: open_in in subspace lies in Power Y (no topology assumptions) **)
 (** Proven Bob **)
 Lemma open_in_subspace_member_power_no_topology : forall X Tx Y U:set,
