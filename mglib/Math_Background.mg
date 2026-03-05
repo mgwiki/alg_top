@@ -117878,6 +117878,49 @@ exact (homeomorphism_image_open
   HU).
 Qed.
 
+(** Infrastructure: embeddings are open maps onto their image **)
+(** Proven Bob **)
+Lemma embedding_of_open_map_to_image : forall X Tx Y Ty f:set,
+  embedding_of X Tx Y Ty f ->
+  open_map X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f.
+let X Tx Y Ty f.
+assume Hemb.
+claim Hhome :
+  homeomorphism X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f.
+{ exact (embedding_of_homeomorphism X Tx Y Ty f Hemb). }
+claim Hcont :
+  continuous_map X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f.
+{
+  exact (andEL
+    (continuous_map X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f)
+    (exists g:set,
+      continuous_map (image_of f X) (subspace_topology Y Ty (image_of f X)) X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e image_of f X -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_dom X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f Hcont). }
+claim HtopIm : topology_on (image_of f X) (subspace_topology Y Ty (image_of f X)).
+{ exact (continuous_map_topology_cod X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f Hcont). }
+claim Hfun : function_on f X (image_of f X).
+{ exact (homeomorphism_function_on X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f Hhome). }
+prove
+  topology_on X Tx /\
+  topology_on (image_of f X) (subspace_topology Y Ty (image_of f X)) /\
+  function_on f X (image_of f X) /\
+  (forall U:set, U :e Tx -> image_of f U :e subspace_topology Y Ty (image_of f X)).
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact HtopX.
+    * exact HtopIm.
+  + exact Hfun.
+- let U.
+  assume HU.
+  exact (embedding_of_image_open_in_subspace X Tx Y Ty f U Hemb HU).
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
