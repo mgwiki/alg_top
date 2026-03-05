@@ -118794,6 +118794,16 @@ exact (subspace_topology_member_power_no_topology
   X Tx Y (Y :\: A) Hmem).
 Qed.
 
+(** Infrastructure: closed_in in subspace gives complement in Power Y (no topology assumptions) **)
+(** Proven Bob **)
+Lemma closed_in_subspace_member_complement_power_no_topology : forall X Tx Y A:set,
+  closed_in Y (subspace_topology X Tx Y) A ->
+  (Y :\: A) :e Power Y.
+let X Tx Y A.
+assume Hclosed.
+exact (closed_in_subspace_member_complement_power X Tx Y A Hclosed).
+Qed.
+
 (** Infrastructure: closed_in in subspace gives complement in Power X **)
 (** Proven Bob **)
 Lemma closed_in_subspace_member_complement_power_ambient : forall X Tx Y A:set,
@@ -118827,6 +118837,16 @@ Lemma closed_in_subspace_member_complement_subset : forall X Tx Y A:set,
 let X Tx Y A.
 assume Hclosed.
 exact (setminus_Subq Y A).
+Qed.
+
+(** Infrastructure: closed_in in subspace gives complement subset of subspace (no topology assumptions) **)
+(** Proven Bob **)
+Lemma closed_in_subspace_member_complement_subset_no_topology : forall X Tx Y A:set,
+  closed_in Y (subspace_topology X Tx Y) A ->
+  (Y :\: A) c= Y.
+let X Tx Y A.
+assume Hclosed.
+exact (closed_in_subspace_member_complement_subset X Tx Y A Hclosed).
 Qed.
 
 (** Infrastructure: closed_in in subspace gives complement subset of ambient **)
@@ -118907,6 +118927,16 @@ Lemma open_in_subspace_complement_subset : forall X Tx Y U:set,
 let X Tx Y U.
 assume Hopen.
 exact (setminus_Subq Y U).
+Qed.
+
+(** Infrastructure: open_in in subspace gives complement subset of subspace (no topology assumptions) **)
+(** Proven Bob **)
+Lemma open_in_subspace_complement_subset_no_topology : forall X Tx Y U:set,
+  open_in Y (subspace_topology X Tx Y) U ->
+  (Y :\: U) c= Y.
+let X Tx Y U.
+assume Hopen.
+exact (open_in_subspace_complement_subset X Tx Y U Hopen).
 Qed.
 
 (** Infrastructure: open_in in subspace gives complement subset of ambient **)
