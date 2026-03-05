@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5510 **)
-(** Balance Charlie 1583 **)
+(** Balance Charlie 1555 **)
 (** Balance Dave 2020 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -253554,7 +253554,8 @@ apply (and5I
 (** LATEX VERSION: Let G = G1 free-prod G2. Let N_i be normal in G_i. If N is the least **)
 (** normal subgroup of G containing N1 and N2, then G/N iso (G1/N1) free-prod (G2/N2). **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
-(** Bounty 275 **)
+(** Bounty 303 **)
+(** Lock Charlie 1772824647 **)
 Theorem thm68_7_quotient_free_product :
   forall G multG eG invG G1 G2 N1 N2:set,
   free_product_of_subgroups G multG eG invG (UPair 0 1)
