@@ -119076,6 +119076,18 @@ claim HclosedSub :
 exact (closed_in_subspace_closed_ambient X Tx Y (Y :\: U) Htop HclosedY HclosedSub).
 Qed.
 
+(** Infrastructure: open_in in closed subspace gives closed complement in ambient (no topology assumptions) **)
+(** Proven Bob **)
+Lemma open_in_subspace_complement_closed_ambient_no_topology : forall X Tx Y U:set,
+  topology_on X Tx ->
+  closed_in X Tx Y ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  closed_in X Tx (Y :\: U).
+let X Tx Y U.
+assume Htop HclosedY Hopen.
+exact (open_in_subspace_complement_closed_ambient X Tx Y U Htop HclosedY Hopen).
+Qed.
+
 (** Infrastructure: closed_in in closed subspace iff closed ambient with subset **)
 (** Proven Bob **)
 Lemma closed_in_subspace_iff_closed_ambient_on_closed_subspace : forall X Tx Y A:set,
