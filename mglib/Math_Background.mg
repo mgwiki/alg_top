@@ -118781,6 +118781,33 @@ exact (open_in_elem
   (closed_in_subspace_complement_open X Tx Y A Hclosed)).
 Qed.
 
+(** Infrastructure: closed_in in subspace gives complement in Power Y **)
+(** Proven Bob **)
+Lemma closed_in_subspace_member_complement_power : forall X Tx Y A:set,
+  closed_in Y (subspace_topology X Tx Y) A ->
+  (Y :\: A) :e Power Y.
+let X Tx Y A.
+assume Hclosed.
+claim Hmem : (Y :\: A) :e subspace_topology X Tx Y.
+{ exact (closed_in_subspace_member_complement_open X Tx Y A Hclosed). }
+exact (subspace_topology_member_power_no_topology
+  X Tx Y (Y :\: A) Hmem).
+Qed.
+
+(** Infrastructure: closed_in in subspace gives complement in Power X **)
+(** Proven Bob **)
+Lemma closed_in_subspace_member_complement_power_ambient : forall X Tx Y A:set,
+  Y c= X ->
+  closed_in Y (subspace_topology X Tx Y) A ->
+  (Y :\: A) :e Power X.
+let X Tx Y A.
+assume HYsub Hclosed.
+claim Hmem : (Y :\: A) :e subspace_topology X Tx Y.
+{ exact (closed_in_subspace_member_complement_open X Tx Y A Hclosed). }
+exact (subspace_topology_member_power_ambient
+  X Tx Y (Y :\: A) HYsub Hmem).
+Qed.
+
 (** Infrastructure: open_in in subspace iff complement is closed_in **)
 (** Proven Bob **)
 Lemma open_in_subspace_iff_closed_complement : forall X Tx Y U:set,
