@@ -117722,6 +117722,19 @@ apply set_ext.
     HxE).
 Qed.
 
+(** Infrastructure: covering map images lie in the codomain **)
+(** Proven Bob **)
+Lemma covering_map_image_subset_codomain : forall E Te B Tb p A:set,
+  covering_map E Te B Tb p ->
+  A c= E ->
+  image_of p A c= B.
+let E Te B Tb p A.
+assume Hcov HAsub.
+claim Hfun : function_on p E B.
+{ exact (covering_map_function_on E Te B Tb p Hcov). }
+exact (image_of_sub_codomain p E B A Hfun HAsub).
+Qed.
+
 (** Infrastructure: open maps have well-typed data **)
 (** Proven Bob **)
 Lemma open_map_topology_on_dom : forall X Tx Y Ty f:set,
