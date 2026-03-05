@@ -117389,7 +117389,46 @@ apply andI.
   + exact Hfun.
 - exact (andER
     (function_on f X Y)
-    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y)
+  (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y)
+    Hsurj).
+Qed.
+
+(** Infrastructure: covering maps are quotient maps **)
+(** Proven Bob **)
+Lemma covering_map_quotient_map : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  quotient_map E Te B p.
+let E Te B Tb p.
+assume Hcov.
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{ exact (continuous_map_topology_dom E Te B Tb p Hcont). }
+claim Hsurj : surjective_map E B p.
+{ exact (covering_map_surjective E Te B Tb p Hcov). }
+prove
+  topology_on E Te /\
+  function_on p E B /\
+  (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y).
+apply andI.
+- apply andI.
+  + exact HtopE.
+  + exact (andEL
+      (function_on p E B)
+      (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+      Hsurj).
+- exact (andER
+    (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
     Hsurj).
 Qed.
 
