@@ -117914,6 +117914,29 @@ apply andI.
       HxInt).
 Qed.
 
+(** Infrastructure: intersections with open sets are open in subspace **)
+(** Proven Bob **)
+Lemma subspace_topology_intersection_open : forall X Tx Y V:set,
+  V :e Tx ->
+  V :/\: Y :e subspace_topology X Tx Y.
+let X Tx Y V.
+assume HV.
+set Sub := subspace_topology X Tx Y.
+claim Hsubdef : Sub =
+  {U :e Power Y | exists V0:set, V0 :e Tx /\ U = V0 :/\: Y}.
+{ reflexivity. }
+rewrite Hsubdef.
+apply (SepI
+  (Power Y)
+  (fun U:set => exists V0:set, V0 :e Tx /\ U = V0 :/\: Y)
+  (V :/\: Y)
+  (PowerI Y (V :/\: Y) (binintersect_Subq_2 V Y))).
+witness V.
+apply andI.
+- exact HV.
+- reflexivity.
+Qed.
+
 (** Infrastructure: closed maps have well-typed data **)
 (** Proven Bob **)
 Lemma closed_map_function_on : forall X Tx Y Ty f:set,
