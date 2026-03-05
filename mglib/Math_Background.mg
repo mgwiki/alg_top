@@ -115899,6 +115899,28 @@ exact (apply_fun_graph
 Qed.
 
 (** Proven Bob **)
+Theorem product_group_inv_apply0 : forall G1 inv1 G2 inv2 p:set,
+  p :e setprod G1 G2 ->
+  (apply_fun (product_group_inv G1 inv1 G2 inv2) p) 0 = apply_fun inv1 (p 0).
+let G1 inv1 G2 inv2 p.
+assume Hp.
+rewrite (product_group_inv_apply G1 inv1 G2 inv2 p Hp).
+rewrite tuple_2_0_eq.
+reflexivity.
+Qed.
+
+(** Proven Bob **)
+Theorem product_group_inv_apply1 : forall G1 inv1 G2 inv2 p:set,
+  p :e setprod G1 G2 ->
+  (apply_fun (product_group_inv G1 inv1 G2 inv2) p) 1 = apply_fun inv2 (p 1).
+let G1 inv1 G2 inv2 p.
+assume Hp.
+rewrite (product_group_inv_apply G1 inv1 G2 inv2 p Hp).
+rewrite tuple_2_1_eq.
+reflexivity.
+Qed.
+
+(** Proven Bob **)
 Theorem product_group_inv_function_on : forall G1 inv1 G2 inv2:set,
   function_on inv1 G1 G1 ->
   function_on inv2 G2 G2 ->
