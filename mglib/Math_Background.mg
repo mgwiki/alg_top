@@ -117444,6 +117444,64 @@ apply andI.
       HxInt).
 Qed.
 
+(** Infrastructure: homeomorphism images of closed sets are closed in the subspace **)
+(** Proven Bob **)
+Lemma homeomorphism_image_closed_in_subspace : forall X Tx Y Ty f A:set,
+  homeomorphism X Tx Y Ty f ->
+  closed_in X Tx A ->
+  closed_in (image_of f X) (subspace_topology Y Ty (image_of f X)) (image_of f A).
+let X Tx Y Ty f A.
+assume Hhome HAclosed.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim HtopY : topology_on Y Ty.
+{ exact (continuous_map_topology_cod X Tx Y Ty f Hcont). }
+claim HAsub : A c= X.
+{ exact (closed_in_subset X Tx A HAclosed). }
+claim HimgSub : image_of f A c= image_of f X.
+{ exact (image_of_mono f A X HAsub). }
+claim HimgXsub : image_of f X c= Y.
+{ exact (homeomorphism_image_subset_codomain X Tx Y Ty f X Hhome (Subq_ref X)). }
+claim Hclosed : closed_in Y Ty (image_of f A).
+{ exact (homeomorphism_image_closed X Tx Y Ty f A Hhome HAclosed). }
+apply (closed_in_subspace_iff_intersection
+  Y
+  Ty
+  (image_of f X)
+  (image_of f A)
+  HtopY
+  HimgXsub).
+assume _ Hrev.
+apply Hrev.
+witness (image_of f A).
+apply andI.
+- exact Hclosed.
+- apply set_ext.
+  * let x.
+    assume HxImg.
+    apply (binintersectI
+      (image_of f A)
+      (image_of f X)
+      x
+      HxImg
+      (HimgSub x HxImg)).
+  * let x.
+    assume HxInt.
+    exact (binintersectE1
+      (image_of f A)
+      (image_of f X)
+      x
+      HxInt).
+Qed.
+
 (** Infrastructure: homeomorphisms are surjective (value form) **)
 (** Proven Bob **)
 Lemma homeomorphism_surjective_value : forall X Tx Y Ty f y:set,
