@@ -118841,6 +118841,58 @@ let x. assume Hx.
 exact (HYsub x (setminusE1 Y A x Hx)).
 Qed.
 
+(** Infrastructure: open_in in subspace gives complement in Power Y **)
+(** Proven Bob **)
+Lemma open_in_subspace_complement_power : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y c= X ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  (Y :\: U) :e Power Y.
+let X Tx Y U.
+assume Htop HYsub Hopen.
+claim Hclosed :
+  closed_in Y (subspace_topology X Tx Y) (Y :\: U).
+{ exact (open_in_subspace_complement_closed X Tx Y U Htop HYsub Hopen). }
+exact (closed_in_subspace_member_power X Tx Y (Y :\: U) Hclosed).
+Qed.
+
+(** Infrastructure: open_in in subspace gives complement in Power X **)
+(** Proven Bob **)
+Lemma open_in_subspace_complement_power_ambient : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y c= X ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  (Y :\: U) :e Power X.
+let X Tx Y U.
+assume Htop HYsub Hopen.
+claim Hclosed :
+  closed_in Y (subspace_topology X Tx Y) (Y :\: U).
+{ exact (open_in_subspace_complement_closed X Tx Y U Htop HYsub Hopen). }
+exact (closed_in_subspace_member_power_ambient X Tx Y (Y :\: U) HYsub Hclosed).
+Qed.
+
+(** Infrastructure: open_in in subspace gives complement subset of subspace **)
+(** Proven Bob **)
+Lemma open_in_subspace_complement_subset : forall X Tx Y U:set,
+  open_in Y (subspace_topology X Tx Y) U ->
+  (Y :\: U) c= Y.
+let X Tx Y U.
+assume Hopen.
+exact (setminus_Subq Y U).
+Qed.
+
+(** Infrastructure: open_in in subspace gives complement subset of ambient **)
+(** Proven Bob **)
+Lemma open_in_subspace_complement_subset_ambient : forall X Tx Y U:set,
+  Y c= X ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  (Y :\: U) c= X.
+let X Tx Y U.
+assume HYsub Hopen.
+let x. assume Hx.
+exact (HYsub x (setminusE1 Y U x Hx)).
+Qed.
+
 (** Infrastructure: open_in in subspace iff complement is closed_in **)
 (** Proven Bob **)
 Lemma open_in_subspace_iff_closed_complement : forall X Tx Y U:set,
