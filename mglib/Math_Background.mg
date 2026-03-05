@@ -41185,6 +41185,88 @@ Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls delta_cls:set
 let X Tx x0 x1 alpha beta cls delta_cls.
 assume HtopX HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
 assume Hcls HdeltaCls Habel.
+claim Hhom_alpha :
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+{
+  exact (lemma52_1_basepoint_change_homomorphism
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+claim Hhom_beta :
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 beta).
+{
+  exact (lemma52_1_basepoint_change_homomorphism
+    X
+    Tx
+    x0
+    x1
+    beta
+    HtopX
+    HbetaCont
+    Hbeta0
+    Hbeta1).
+}
+claim Hmult_alpha :
+  forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
+    apply_fun
+      (basepoint_change_map X Tx x0 x1 alpha)
+      (apply_fun (fundamental_group_mult X Tx x0) (a, b))
+    =
+    apply_fun
+      (fundamental_group_mult X Tx x1)
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) a,
+       apply_fun (basepoint_change_map X Tx x0 x1 alpha) b).
+{
+  let a b. assume Ha Hb.
+  exact (group_homomorphism_mult_rule
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1)
+    (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha)
+    a
+    b
+    Hhom_alpha
+    Ha
+    Hb).
+}
+claim Hmult_beta :
+  forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
+    apply_fun
+      (basepoint_change_map X Tx x0 x1 beta)
+      (apply_fun (fundamental_group_mult X Tx x0) (a, b))
+    =
+    apply_fun
+      (fundamental_group_mult X Tx x1)
+      (apply_fun (basepoint_change_map X Tx x0 x1 beta) a,
+       apply_fun (basepoint_change_map X Tx x0 x1 beta) b).
+{
+  let a b. assume Ha Hb.
+  exact (group_homomorphism_mult_rule
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1)
+    (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 beta)
+    a
+    b
+    Hhom_beta
+    Ha
+    Hb).
+}
 admit.
 Admitted.
 
