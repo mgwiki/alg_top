@@ -117937,6 +117937,27 @@ apply andI.
 - reflexivity.
 Qed.
 
+(** Infrastructure: open sets are open in subspaces via intersection **)
+(** Proven Bob **)
+Lemma open_in_subspace_of_open_in_ambient : forall X Tx Y V:set,
+  topology_on X Tx ->
+  Y c= X ->
+  V :e Tx ->
+  open_in Y (subspace_topology X Tx Y) (V :/\: Y).
+let X Tx Y V.
+assume Htop HYsub HV.
+claim Hsub : V :/\: Y c= Y.
+{ exact (binintersect_Subq_2 V Y). }
+apply (iffER
+  (open_in Y (subspace_topology X Tx Y) (V :/\: Y))
+  (exists W:set, W :e Tx /\ (V :/\: Y) = W :/\: Y)
+  (open_in_subspace_iff X Tx Y (V :/\: Y) Htop HYsub Hsub)).
+witness V.
+apply andI.
+- exact HV.
+- reflexivity.
+Qed.
+
 (** Infrastructure: closed sets are closed in subspaces via intersection **)
 (** Proven Bob **)
 Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
