@@ -263535,6 +263535,20 @@ apply set_ext.
 Qed.
 
 (** Proven Bob **)
+Theorem homeomorphism_image_of_whole :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  image_of f X = Y.
+let X Tx Y Ty f.
+assume Hhome.
+exact (surjective_map_image_of_whole
+  X
+  Y
+  f
+  (homeomorphism_surjective_map X Tx Y Ty f Hhome)).
+Qed.
+
+(** Proven Bob **)
 Theorem quotient_map_image_of_whole :
   forall E Te X pi:set,
   quotient_map E Te X pi ->
