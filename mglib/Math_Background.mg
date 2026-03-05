@@ -117233,6 +117233,43 @@ apply andI.
   exact (bijection_surj X Y f y Hbij HyY).
 Qed.
 
+(** Infrastructure: homeomorphisms are quotient maps **)
+(** Proven Bob **)
+Lemma homeomorphism_quotient_map : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  quotient_map X Tx Y f.
+let X Tx Y Ty f.
+assume Hhome.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_dom X Tx Y Ty f Hcont). }
+claim Hfun : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f Hcont). }
+claim Hsurj : surjective_map X Y f.
+{ exact (homeomorphism_surjective_map X Tx Y Ty f Hhome). }
+prove
+  topology_on X Tx /\
+  function_on f X Y /\
+  (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y).
+apply andI.
+- apply andI.
+  + exact HtopX.
+  + exact Hfun.
+- exact (andER
+    (function_on f X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y)
+    Hsurj).
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
