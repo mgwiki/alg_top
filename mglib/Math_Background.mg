@@ -119019,6 +119019,17 @@ claim HsubX : (Y :\: U) c= X.
 exact (PowerI X (Y :\: U) HsubX).
 Qed.
 
+(** Infrastructure: member of subspace topology gives complement in Power X (no topology assumptions) **)
+(** Proven Bob **)
+Lemma subspace_topology_member_complement_power_ambient_no_topology : forall X Tx Y U:set,
+  Y c= X ->
+  U :e subspace_topology X Tx Y ->
+  (Y :\: U) :e Power X.
+let X Tx Y U.
+assume HYsub HU.
+exact (subspace_topology_member_complement_power_ambient X Tx Y U HYsub HU).
+Qed.
+
 (** Infrastructure: member of subspace topology has closed complement in subspace **)
 (** Proven Bob **)
 Lemma subspace_topology_member_complement_closed : forall X Tx Y U:set,
