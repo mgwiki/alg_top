@@ -242817,6 +242817,70 @@ apply (and5I
 	          }
 	        - assume Halpha1_1.
           (** Symmetric case: last binary factor is G2. **)
+          (** Then the first factor is G1. **)
+          claim Halpha0_0 : alpha0 = 0.
+          {
+            apply (UPairE alpha0 0 1 Hal0).
+            + assume Halpha0_0. exact Halpha0_0.
+            + assume Halpha0_1.
+              claim Heq : alpha0 = alpha1.
+              { rewrite Halpha0_1. rewrite Halpha1_1. reflexivity. }
+              exact (FalseE (Halpha_ne Heq) (alpha0 = 0)).
+          }
+
+          (** Translate xs12 letters into the actual factors. **)
+          claim Hx0G1 : apply_fun xs12 0 :e G1.
+          {
+            claim HG0 : apply_fun Gfam12 alpha0 = G1.
+            {
+              rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) alpha0 Hal0).
+              exact (If_i_1 (alpha0 = 0) G1 G2 Halpha0_0).
+            }
+            exact (eq_subst_mem_set (apply_fun xs12 0) (apply_fun Gfam12 alpha0) G1 Hx0fam HG0).
+          }
+          claim Hx1G2 : apply_fun xs12 1 :e G2.
+          {
+            claim HG1 : apply_fun Gfam12 alpha1 = G2.
+            {
+              rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) alpha1 Hal1).
+              claim Hne0 : alpha1 <> 0.
+              { rewrite Halpha1_1. exact neq_1_0. }
+              exact (If_i_0 (alpha1 = 0) G1 G2 Hne0).
+            }
+            exact (eq_subst_mem_set (apply_fun xs12 1) (apply_fun Gfam12 alpha1) G2 Hx1fam HG1).
+          }
+          claim Hx0neG : apply_fun xs12 0 <> eG.
+          {
+            claim He0 : apply_fun efam12 alpha0 = eG.
+            { exact (apply_fun_graph (UPair 0 1) (fun _:set => eG) alpha0 Hal0). }
+            assume Heq0 : apply_fun xs12 0 = eG.
+            apply Hx0ne.
+            rewrite He0.
+            exact Heq0.
+          }
+          claim Hx1neG : apply_fun xs12 1 <> eG.
+          {
+            claim He1 : apply_fun efam12 alpha1 = eG.
+            { exact (apply_fun_graph (UPair 0 1) (fun _:set => eG) alpha1 Hal1). }
+            assume Heq1 : apply_fun xs12 1 = eG.
+            apply Hx1ne.
+            rewrite He1.
+            exact Heq1.
+          }
+
+          (** Setup for the symmetric (max-G1) decomposition; proof pending. **)
+          claim Hm_pack :
+            exists m:set,
+              m :e n /\ apply_fun xs m :e G1 /\
+              (forall i:set, i :e n -> apply_fun xs i :e G1 -> i c= m) /\
+              (forall i:set, i :e n -> ordsucc m c= i -> apply_fun xs i :e G2).
+          {
+            exact (cor68_6_max_G1_index_suffix_all_in_G2
+              G multG eG invG G1 G2 J K Hfam efamH n xs
+              Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2
+              Hred HallNe
+              HexG1 HexG2).
+          }
           admit.
     + assume Hn12_ne2.
       (** TODO: general concatenation + uniqueness for n12 >= 3 **)
