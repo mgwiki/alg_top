@@ -119070,6 +119070,29 @@ assume HU.
 exact (subspace_topology_member_complement_subset X Tx Y U HU).
 Qed.
 
+(** Infrastructure: member of subspace topology gives complement subset of ambient **)
+(** Proven Bob **)
+Lemma subspace_topology_member_complement_subset_ambient : forall X Tx Y U:set,
+  Y c= X ->
+  U :e subspace_topology X Tx Y ->
+  (Y :\: U) c= X.
+let X Tx Y U.
+assume HYsub HU.
+let x. assume Hx.
+exact (HYsub x (setminusE1 Y U x Hx)).
+Qed.
+
+(** Infrastructure: member of subspace topology gives complement subset of ambient (no topology assumptions) **)
+(** Proven Bob **)
+Lemma subspace_topology_member_complement_subset_ambient_no_topology : forall X Tx Y U:set,
+  Y c= X ->
+  U :e subspace_topology X Tx Y ->
+  (Y :\: U) c= X.
+let X Tx Y U.
+assume HYsub HU.
+exact (subspace_topology_member_complement_subset_ambient X Tx Y U HYsub HU).
+Qed.
+
 (** Infrastructure: member of subspace topology has closed complement in subspace **)
 (** Proven Bob **)
 Lemma subspace_topology_member_complement_closed : forall X Tx Y U:set,
