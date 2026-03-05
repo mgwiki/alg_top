@@ -117551,6 +117551,83 @@ apply set_ext.
     HxE).
 Qed.
 
+(** Infrastructure: open maps have well-typed data **)
+(** Proven Bob **)
+Lemma open_map_topology_on_dom : forall X Tx Y Ty f:set,
+  open_map X Tx Y Ty f ->
+  topology_on X Tx.
+let X Tx Y Ty f.
+assume Hopen.
+claim Hleft :
+  topology_on X Tx /\ topology_on Y Ty /\ function_on f X Y.
+{
+  exact (andEL
+    (topology_on X Tx /\ topology_on Y Ty /\ function_on f X Y)
+    (forall U:set, U :e Tx -> image_of f U :e Ty)
+    Hopen).
+}
+claim Hpair : topology_on X Tx /\ topology_on Y Ty.
+{
+  exact (andEL
+    (topology_on X Tx /\ topology_on Y Ty)
+    (function_on f X Y)
+    Hleft).
+}
+exact (andEL
+  (topology_on X Tx)
+  (topology_on Y Ty)
+  Hpair).
+Qed.
+
+(** Infrastructure: open maps have well-typed data **)
+(** Proven Bob **)
+Lemma open_map_topology_on_cod : forall X Tx Y Ty f:set,
+  open_map X Tx Y Ty f ->
+  topology_on Y Ty.
+let X Tx Y Ty f.
+assume Hopen.
+claim Hleft :
+  topology_on X Tx /\ topology_on Y Ty /\ function_on f X Y.
+{
+  exact (andEL
+    (topology_on X Tx /\ topology_on Y Ty /\ function_on f X Y)
+    (forall U:set, U :e Tx -> image_of f U :e Ty)
+    Hopen).
+}
+claim Hpair : topology_on X Tx /\ topology_on Y Ty.
+{
+  exact (andEL
+    (topology_on X Tx /\ topology_on Y Ty)
+    (function_on f X Y)
+    Hleft).
+}
+exact (andER
+  (topology_on X Tx)
+  (topology_on Y Ty)
+  Hpair).
+Qed.
+
+(** Infrastructure: open maps have well-typed data **)
+(** Proven Bob **)
+Lemma open_map_function_on : forall X Tx Y Ty f:set,
+  open_map X Tx Y Ty f ->
+  function_on f X Y.
+let X Tx Y Ty f.
+assume Hopen.
+claim Hleft :
+  topology_on X Tx /\ topology_on Y Ty /\ function_on f X Y.
+{
+  exact (andEL
+    (topology_on X Tx /\ topology_on Y Ty /\ function_on f X Y)
+    (forall U:set, U :e Tx -> image_of f U :e Ty)
+    Hopen).
+}
+exact (andER
+  (topology_on X Tx /\ topology_on Y Ty)
+  (function_on f X Y)
+  Hleft).
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
