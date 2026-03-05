@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5510 **)
-(** Balance Charlie 1522 **)
+(** Balance Charlie 1515 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -234336,7 +234336,8 @@ apply (Hys_side i Hi_in).
 - assume HiG2. exact HiG2.
 Qed.
 
-(** Bounty 61 **)
+(** Bounty 68 **)
+(** Lock Charlie 1772752235 **)
 Theorem cor68_6_associativity_free_product :
   forall G multG eG invG G1 G2 J K Hfam efamH:set,
   group_structure G multG eG invG ->
