@@ -117940,6 +117940,62 @@ claim HAsub : A c= X.
 exact (image_of_sub_codomain f X Y A Hfun HAsub).
 Qed.
 
+(** Infrastructure: closed map images are closed in the subspace **)
+(** Proven Bob **)
+Lemma closed_map_image_closed_in_subspace : forall X Tx Y Ty f A:set,
+  closed_map X Tx Y Ty f ->
+  closed_in X Tx A ->
+  closed_in (image_of f X) (subspace_topology Y Ty (image_of f X)) (image_of f A).
+let X Tx Y Ty f A.
+assume Hclosed HAclosed.
+claim HclosedY : closed_in Y Ty (image_of f A).
+{ exact (closed_map_image_closed X Tx Y Ty f A Hclosed HAclosed). }
+claim HtopY : topology_on Y Ty.
+{
+  exact (andEL
+    (topology_on Y Ty)
+    (image_of f A c= Y /\
+      exists U:set, U :e Ty /\ image_of f A = Y :\: U)
+    HclosedY).
+}
+claim Hfun : function_on f X Y.
+{ exact (closed_map_function_on X Tx Y Ty f Hclosed). }
+claim HimgXsub : image_of f X c= Y.
+{ exact (image_of_sub_codomain f X Y X Hfun (Subq_ref X)). }
+claim HAsub : A c= X.
+{ exact (closed_in_subset X Tx A HAclosed). }
+claim HimgSub : image_of f A c= image_of f X.
+{ exact (image_of_mono f A X HAsub). }
+apply (closed_in_subspace_iff_intersection
+  Y
+  Ty
+  (image_of f X)
+  (image_of f A)
+  HtopY
+  HimgXsub).
+assume _ Hrev.
+apply Hrev.
+witness (image_of f A).
+apply andI.
+- exact HclosedY.
+- apply set_ext.
+  * let x.
+    assume HxImg.
+    apply (binintersectI
+      (image_of f A)
+      (image_of f X)
+      x
+      HxImg
+      (HimgSub x HxImg)).
+  * let x.
+    assume HxInt.
+    exact (binintersectE1
+      (image_of f A)
+      (image_of f X)
+      x
+      HxInt).
+Qed.
+
 (** Infrastructure: embeddings are functions **)
 (** Proven Bob **)
 Lemma embedding_of_function_on : forall X Tx Y Ty f:set,
