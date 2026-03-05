@@ -250431,15 +250431,619 @@ apply (and5I
 										            (eq_symm (apply_fun xs0 i) (apply_fun xsA2 i) H0Aeq)
 										            H0Beq).
 										      }
-										      apply (xm (t = 1)).
-										      - assume Ht1.
-										        (** Base case t = 1 to be completed. **)
-										        admit.
-										      - assume Ht_ne1.
-										        (** Compare the prefixes using IHt on the predecessor of t, then glue with suffix equality. **)
-										        claim Ht_succ : exists tp:set, nat_p tp /\ t = ordsucc tp.
-										        {
-										          apply (nat_inv t Ht_nat).
+											      apply (xm (t = 1)).
+											      - assume Ht1.
+											        (** Base case t = 1: compare prefixes directly using the K-uniqueness in G2. **)
+											        set xtp := word_product multG eG xs12 t.
+											        claim Hxs12tG : apply_fun xs12 t :e G.
+											        { exact (subgroup_of_subset G1 G multG eG invG Hsub1 (apply_fun xs12 t) Hxs12tG1). }
+											        claim Hxt_split :
+											          word_product multG eG xs12 (ordsucc t) =
+											          apply_fun multG (xtp, apply_fun xs12 t).
+											        { exact (word_product_succ multG eG xs12 t Ht_nat). }
+											        claim Hxs12t_ne' : apply_fun xs12 t <> eG.
+											        { exact Hxs12t_ne. }
+											        claim Ht_eq1 : t = 1. { exact Ht1. }
+											
+											        (** Show xtp is the first binary letter and lies in G2. **)
+											        claim Hx0_in_sn : 0 :e ordsucc t.
+											        { exact (nat_0_in_ordsucc t Ht_nat). }
+											        claim Hxtp_eq_x0 : xtp = apply_fun xs12 0.
+											        {
+											          rewrite Ht_eq1.
+											          claim HwpS :
+											            word_product multG eG xs12 (ordsucc 0) =
+											            apply_fun multG (word_product multG eG xs12 0, apply_fun xs12 0).
+											          {
+											            exact (nat_primrec_S
+											              eG
+											              (fun i r:set => apply_fun multG (r, apply_fun xs12 i))
+											              0
+											              nat_0).
+											          }
+											          claim Hwp0 : word_product multG eG xs12 0 = eG.
+											          {
+											            exact (nat_primrec_0
+											              eG
+											              (fun i r:set => apply_fun multG (r, apply_fun xs12 i))).
+											          }
+											          claim Hx0_G : apply_fun xs12 0 :e G.
+											          {
+											            apply (and3E
+											              (ordsucc t :e omega)
+											              (forall i:set, i :e ordsucc t ->
+											                exists alpha:set, alpha :e (UPair 0 1) /\
+											                  apply_fun xs12 i :e apply_fun Gfam12 alpha /\
+											                  apply_fun xs12 i <> apply_fun (graph (UPair 0 1) (fun _:set => eG)) alpha)
+											              (forall i:set, i :e ordsucc t -> ordsucc i :e ordsucc t ->
+											                forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) ->
+											                  apply_fun xs12 i :e apply_fun Gfam12 alpha ->
+											                  apply_fun xs12 (ordsucc i) :e apply_fun Gfam12 beta ->
+											                  alpha <> beta)
+											              Hred12t).
+											            assume _ Helem _.
+											            apply (Helem 0 Hx0_in_sn). let alpha0. assume Hal0_pack.
+											            apply (and3E
+											              (alpha0 :e (UPair 0 1))
+											              (apply_fun xs12 0 :e apply_fun Gfam12 alpha0)
+											              (apply_fun xs12 0 <> apply_fun (graph (UPair 0 1) (fun _:set => eG)) alpha0)
+											              Hal0_pack).
+											            assume Hal0 Hx0fam _.
+											            apply (and5E
+											              (group_structure G multG eG invG)
+											              (forall alpha:set, alpha :e (UPair 0 1) ->
+											                subgroup_of (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha) G multG eG invG)
+											              (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+											                forall x:set, x :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha ->
+											                  x :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) beta -> x = eG)
+											              (subgroups_generate G multG eG invG (UPair 0 1) (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)))
+											              (forall x:set, x :e G -> x <> eG ->
+											                exists n0 xs0:set,
+											                  reduced_word (UPair 0 1)
+											                    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+											                    (graph (UPair 0 1) (fun _:set => eG))
+											                    n0 xs0 /\ n0 <> 0 /\
+											                  word_product multG eG xs0 n0 = x /\
+											                  (forall n' xs':set,
+											                    reduced_word (UPair 0 1)
+											                      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+											                      (graph (UPair 0 1) (fun _:set => eG))
+											                      n' xs' ->
+											                    n' <> 0 -> word_product multG eG xs' n' = x ->
+											                    n0 = n' /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs' i0)))
+											              Hfp).
+											            assume _ Hsubfam12 _ _ _.
+											            apply (and4E
+											              (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha0 c= G)
+											              (eG :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha0)
+											              (forall x y:set, x :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha0 ->
+											                y :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha0 ->
+											                apply_fun multG (x, y) :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha0)
+											              (forall x:set, x :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha0 ->
+											                apply_fun invG x :e apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) alpha0)
+											              (Hsubfam12 alpha0 Hal0)).
+											            assume Hsub0 _ _ _.
+											            exact (Hsub0 (apply_fun xs12 0) Hx0fam).
+											          }
+											          apply (and6E
+											            (function_on multG (setprod G G) G)
+											            (function_on invG G G)
+											            (eG :e G)
+											            (forall u v w:set, u :e G -> v :e G -> w :e G ->
+											              apply_fun multG (apply_fun multG (u, v), w) =
+											                apply_fun multG (u, apply_fun multG (v, w)))
+											            (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+											            (forall u:set, u :e G ->
+											              apply_fun multG (u, apply_fun invG u) = eG /\
+											              apply_fun multG (apply_fun invG u, u) = eG)
+											            Hgrp).
+												          assume _ _ _ _ Hid _.
+												          rewrite HwpS.
+												          rewrite Hwp0.
+												          exact (andEL
+												            (apply_fun multG (eG, apply_fun xs12 0) = apply_fun xs12 0)
+												            (apply_fun multG (apply_fun xs12 0, eG) = apply_fun xs12 0)
+												            (Hid (apply_fun xs12 0) Hx0_G)).
+												        }
+											        claim Hx0_ne : apply_fun xs12 0 <> eG.
+											        {
+											          apply (and3E
+											            (ordsucc t :e omega)
+											            (forall i:set, i :e ordsucc t ->
+											              exists alpha:set, alpha :e (UPair 0 1) /\
+											                apply_fun xs12 i :e apply_fun Gfam12 alpha /\
+											                apply_fun xs12 i <> apply_fun (graph (UPair 0 1) (fun _:set => eG)) alpha)
+											            (forall i:set, i :e ordsucc t -> ordsucc i :e ordsucc t ->
+											              forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) ->
+											                apply_fun xs12 i :e apply_fun Gfam12 alpha ->
+											                apply_fun xs12 (ordsucc i) :e apply_fun Gfam12 beta ->
+											                alpha <> beta)
+											            Hred12t).
+											          assume _ Helem _.
+											          apply (Helem 0 Hx0_in_sn). let alpha0. assume Hal0_pack.
+											          apply (and3E
+											            (alpha0 :e (UPair 0 1))
+											            (apply_fun xs12 0 :e apply_fun Gfam12 alpha0)
+											            (apply_fun xs12 0 <> apply_fun (graph (UPair 0 1) (fun _:set => eG)) alpha0)
+											            Hal0_pack).
+											          assume Hal0 _ Hne.
+											          claim Hef : apply_fun (graph (UPair 0 1) (fun _:set => eG)) alpha0 = eG.
+											          { exact (apply_fun_graph (UPair 0 1) (fun _:set => eG) alpha0 Hal0). }
+											          assume Hxe : apply_fun xs12 0 = eG.
+											          apply Hne.
+											          rewrite Hef.
+											          exact Hxe.
+											        }
+											        claim Hxs12t_in_sn : t :e ordsucc t. { exact (ordsuccI2 t). }
+											        claim Hx1_in_sn : ordsucc 0 :e ordsucc t.
+											        { rewrite Ht_eq1. exact (ordsuccI2 (ordsucc 0)). }
+											        claim Hx0_G2 : apply_fun xs12 0 :e G2.
+											        {
+											          apply (and3E
+											            (ordsucc t :e omega)
+											            (forall i:set, i :e ordsucc t ->
+											              exists alpha:set, alpha :e (UPair 0 1) /\
+											                apply_fun xs12 i :e apply_fun Gfam12 alpha /\
+											                apply_fun xs12 i <> apply_fun (graph (UPair 0 1) (fun _:set => eG)) alpha)
+											            (forall i:set, i :e ordsucc t -> ordsucc i :e ordsucc t ->
+											              forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) ->
+											                apply_fun xs12 i :e apply_fun Gfam12 alpha ->
+											                apply_fun xs12 (ordsucc i) :e apply_fun Gfam12 beta ->
+											                alpha <> beta)
+											            Hred12t).
+											          assume _ Helem Hadj.
+											          apply (Helem t Hxs12t_in_sn). let beta. assume Hbeta_pack.
+											          apply (and3E
+											            (beta :e (UPair 0 1))
+											            (apply_fun xs12 t :e apply_fun Gfam12 beta)
+											            (apply_fun xs12 t <> apply_fun (graph (UPair 0 1) (fun _:set => eG)) beta)
+											            Hbeta_pack).
+											          assume Hbe Hx1fam _.
+											          claim Hbeta0 : beta = 0.
+											          {
+												            apply (UPairE beta 0 1 Hbe).
+												            - assume Hb0. exact Hb0.
+												            - assume Hb1.
+													              claim Hx1fam1 : apply_fun xs12 t :e apply_fun Gfam12 1.
+													              {
+													                claim Hfam_eq : apply_fun Gfam12 beta = apply_fun Gfam12 1.
+													                { rewrite Hb1. reflexivity. }
+													                exact (eq_subst_mem_set
+													                  (apply_fun xs12 t)
+													                  (apply_fun Gfam12 beta)
+													                  (apply_fun Gfam12 1)
+													                  Hx1fam
+													                  Hfam_eq).
+													              }
+												              claim HGfam1 : apply_fun Gfam12 1 = G2.
+												              {
+												                rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)).
+												                rewrite (If_i_0 (1 = 0) G1 G2 neq_1_0).
+												                reflexivity.
+												              }
+												              claim Hx1G2 : apply_fun xs12 t :e G2.
+												              {
+												                exact (eq_subst_mem_set
+												                  (apply_fun xs12 t)
+												                  (apply_fun Gfam12 1)
+												                  G2
+												                  Hx1fam1
+												                  HGfam1).
+												              }
+												              claim Hxe : apply_fun xs12 t = eG.
+												              { exact (free_product_binary_factors_intersect_trivial G multG eG invG G1 G2 (apply_fun xs12 t) Hfp Hxs12tG1 Hx1G2). }
+												              exact (FalseE (Hxs12t_ne' Hxe) (beta = 0)).
+												          }
+											          claim Hx1_inGfam0 : apply_fun xs12 t :e apply_fun Gfam12 0.
+											          {
+											            rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)).
+											            rewrite (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+											            exact Hxs12tG1.
+											          }
+												          claim Hbeta_eq : apply_fun xs12 (ordsucc 0) :e apply_fun Gfam12 beta.
+												          {
+												            claim Ht_os0 : t = ordsucc 0.
+												            {
+												              rewrite Ht_eq1.
+												              exact (eq_symm (ordsucc 0) 1 ordsucc_0_eq_1_nat).
+												            }
+												            claim Hx1eq : apply_fun xs12 t = apply_fun xs12 (ordsucc 0).
+												            {
+												              rewrite Ht_os0.
+												              reflexivity.
+												            }
+												            exact (eq_subst_mem_rev
+												              (apply_fun xs12 t)
+												              (apply_fun xs12 (ordsucc 0))
+												              (apply_fun Gfam12 beta)
+												              Hx1eq
+												              Hx1fam).
+												          }
+											          claim Halpha0_ne : forall alpha:set, alpha :e (UPair 0 1) ->
+											            apply_fun xs12 0 :e apply_fun Gfam12 alpha -> alpha <> 0.
+											          {
+											            let alpha. assume Hal Hx0fam.
+											            assume Ha0.
+												            claim H0beta : alpha <> beta.
+												            {
+													              exact (Hadj 0 Hx0_in_sn Hx1_in_sn alpha beta Hal Hbe Hx0fam Hbeta_eq).
+													            }
+													            claim Ha_beta : alpha = beta.
+													            { exact (eq_i_tra alpha 0 beta Ha0 (eq_symm beta 0 Hbeta0)). }
+													            exact (H0beta Ha_beta).
+													          }
+											          apply (Helem 0 Hx0_in_sn). let alpha. assume Halpha_pack.
+											          apply (and3E
+											            (alpha :e (UPair 0 1))
+											            (apply_fun xs12 0 :e apply_fun Gfam12 alpha)
+											            (apply_fun xs12 0 <> apply_fun (graph (UPair 0 1) (fun _:set => eG)) alpha)
+											            Halpha_pack).
+											          assume Hal Hx0fam _.
+											          claim Hal_ne0 : alpha <> 0.
+											          { exact (Halpha0_ne alpha Hal Hx0fam). }
+											          apply (UPairE alpha 0 1 Hal).
+											          - assume Ha0.
+											            exact (FalseE (Hal_ne0 Ha0) (apply_fun xs12 0 :e G2)).
+												          - assume Ha1.
+												            claim Hx0fam1 : apply_fun xs12 0 :e apply_fun Gfam12 1.
+												            {
+												              claim Hfam_eq : apply_fun Gfam12 alpha = apply_fun Gfam12 1.
+												              { rewrite Ha1. reflexivity. }
+												              exact (eq_subst_mem_set
+												                (apply_fun xs12 0)
+												                (apply_fun Gfam12 alpha)
+												                (apply_fun Gfam12 1)
+												                Hx0fam
+												                Hfam_eq).
+												            }
+												            claim HGfam1 : apply_fun Gfam12 1 = G2.
+												            {
+												              rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)).
+												              rewrite (If_i_0 (1 = 0) G1 G2 neq_1_0).
+												              reflexivity.
+												            }
+												            exact (eq_subst_mem_set
+												              (apply_fun xs12 0)
+												              (apply_fun Gfam12 1)
+												              G2
+												              Hx0fam1
+												              HGfam1).
+												        }
+											        claim Hxtp_G2 : xtp :e G2.
+											        { rewrite Hxtp_eq_x0. exact Hx0_G2. }
+											        claim Hxtp_ne : xtp <> eG.
+											        { rewrite Hxtp_eq_x0. exact Hx0_ne. }
+											
+											        (** Membership facts for cancellation. **)
+											        claim HxsA1G : forall i:set, i :e n1A -> apply_fun xsA1 i :e G.
+											        {
+											          let i. assume Hi1.
+											          rewrite (apply_fun_graph n1A (fun j:set => apply_fun xsA j) i Hi1).
+											          claim HiA : i :e nA.
+											          {
+											            claim Hsub : n1A c= add_nat n1A n2A.
+											            { exact (add_nat_Subq_R' n1A Hn1A_nat n2A Hn2A_nat). }
+											            claim Hi_sum : i :e add_nat n1A n2A.
+											            { exact (Hsub i Hi1). }
+											            exact (eq_subst_mem_set i (add_nat n1A n2A) nA Hi_sum (eq_symm nA (add_nat n1A n2A) HnA_add)).
+											          }
+											          exact (reduced_word_in_G
+											            G multG eG invG (J :\/: K) Hfam efamH nA xsA
+											            Hsubfam_union HredA i HiA).
+											        }
+											        claim HxsB1G : forall i:set, i :e n1B -> apply_fun xsB1 i :e G.
+											        {
+											          let i. assume Hi1.
+											          rewrite (apply_fun_graph n1B (fun j:set => apply_fun xsB j) i Hi1).
+											          claim HiA : i :e nB.
+											          {
+											            claim Hsub : n1B c= add_nat n1B n2B.
+											            { exact (add_nat_Subq_R' n1B Hn1B_nat n2B Hn2B_nat). }
+											            claim Hi_sum : i :e add_nat n1B n2B.
+											            { exact (Hsub i Hi1). }
+											            exact (eq_subst_mem_set i (add_nat n1B n2B) nB Hi_sum (eq_symm nB (add_nat n1B n2B) HnB_add)).
+											          }
+											          exact (reduced_word_in_G
+											            G multG eG invG (J :\/: K) Hfam efamH nB xsB
+											            Hsubfam_union HredB i HiA).
+											        }
+											        claim HwpA1_G : word_product multG eG xsA1 n1A :e G.
+											        { exact (word_product_in_G_group G multG eG invG n1A xsA1 Hgrp Hn1A_nat HxsA1G). }
+											        claim HwpB1_G : word_product multG eG xsB1 n1B :e G.
+											        { exact (word_product_in_G_group G multG eG invG n1B xsB1 Hgrp Hn1B_nat HxsB1G). }
+											        claim Hxtp_G : xtp :e G.
+											        { exact (subgroup_of_subset G2 G multG eG invG Hsub2 xtp Hxtp_G2). }
+											
+											        (** Identify the prefix products by canceling the common G1 suffix apply_fun xs12 t. **)
+											        claim HwpA1_eq_xtp : word_product multG eG xsA1 n1A = xtp.
+											        {
+											          apply (group_right_cancel G multG eG invG (apply_fun xs12 t)
+											            (word_product multG eG xsA1 n1A) xtp
+											            Hgrp Hxs12tG HwpA1_G Hxtp_G).
+											          claim Hlhs :
+											            apply_fun multG (word_product multG eG xsA1 n1A, apply_fun xs12 t) =
+											              word_product multG eG xs12 (ordsucc t).
+											          {
+											            rewrite <- HwpA.
+											            rewrite Hwp_splitA.
+											            rewrite <- HwpA2_eq.
+											            reflexivity.
+											          }
+											          claim Hrhs :
+											            apply_fun multG (xtp, apply_fun xs12 t) =
+											              word_product multG eG xs12 (ordsucc t).
+											          { exact (eq_symm (word_product multG eG xs12 (ordsucc t)) (apply_fun multG (xtp, apply_fun xs12 t)) Hxt_split). }
+											          exact (eq_i_tra
+											            (apply_fun multG (word_product multG eG xsA1 n1A, apply_fun xs12 t))
+											            (word_product multG eG xs12 (ordsucc t))
+											            (apply_fun multG (xtp, apply_fun xs12 t))
+											            Hlhs
+											            (eq_symm (apply_fun multG (xtp, apply_fun xs12 t)) (word_product multG eG xs12 (ordsucc t)) Hrhs)).
+											        }
+											        claim HwpB1_eq_xtp : word_product multG eG xsB1 n1B = xtp.
+											        {
+											          apply (group_right_cancel G multG eG invG (apply_fun xs12 t)
+											            (word_product multG eG xsB1 n1B) xtp
+											            Hgrp Hxs12tG HwpB1_G Hxtp_G).
+											          claim Hlhs :
+											            apply_fun multG (word_product multG eG xsB1 n1B, apply_fun xs12 t) =
+											              word_product multG eG xs12 (ordsucc t).
+											          {
+											            rewrite <- HwpB.
+											            rewrite Hwp_splitB.
+											            rewrite <- HwpB2_eq.
+											            reflexivity.
+											          }
+											          claim Hrhs :
+											            apply_fun multG (xtp, apply_fun xs12 t) =
+											              word_product multG eG xs12 (ordsucc t).
+											          { exact (eq_symm (word_product multG eG xs12 (ordsucc t)) (apply_fun multG (xtp, apply_fun xs12 t)) Hxt_split). }
+											          exact (eq_i_tra
+											            (apply_fun multG (word_product multG eG xsB1 n1B, apply_fun xs12 t))
+											            (word_product multG eG xs12 (ordsucc t))
+											            (apply_fun multG (xtp, apply_fun xs12 t))
+											            Hlhs
+											            (eq_symm (apply_fun multG (xtp, apply_fun xs12 t)) (word_product multG eG xs12 (ordsucc t)) Hrhs)).
+											        }
+											
+											        (** Show both prefixes lie entirely in G2 (otherwise we get a mixed word whose product cannot lie in G2). **)
+											        claim HexG2A1 : exists i:set, i :e n1A /\ apply_fun xsA1 i :e G2.
+											        {
+											          witness mA.
+											          apply andI.
+											          - exact (ordsuccI2 mA).
+											          - rewrite (apply_fun_graph n1A (fun j:set => apply_fun xsA j) mA (ordsuccI2 mA)).
+											            exact HxmA_G2.
+											        }
+											        claim HexG2B1 : exists i:set, i :e n1B /\ apply_fun xsB1 i :e G2.
+											        {
+											          witness mB.
+											          apply andI.
+											          - exact (ordsuccI2 mB).
+											          - rewrite (apply_fun_graph n1B (fun j:set => apply_fun xsB j) mB (ordsuccI2 mB)).
+											            exact HxmB_G2.
+											        }
+											        claim HwpA1_ne : word_product multG eG xsA1 n1A <> eG.
+											        { rewrite HwpA1_eq_xtp. exact Hxtp_ne. }
+											        claim HwpB1_ne : word_product multG eG xsB1 n1B <> eG.
+											        { rewrite HwpB1_eq_xtp. exact Hxtp_ne. }
+											        claim HwpA1_G2 : word_product multG eG xsA1 n1A :e G2.
+											        { rewrite HwpA1_eq_xtp. exact Hxtp_G2. }
+											        claim HwpB1_G2 : word_product multG eG xsB1 n1B :e G2.
+											        { rewrite HwpB1_eq_xtp. exact Hxtp_G2. }
+											
+											        claim HnoG1A1 : not (exists i:set, i :e n1A /\ apply_fun xsA1 i :e G1).
+											        {
+											          assume HexG1A1.
+												          claim HnotG2 :
+												            word_product multG eG xsA1 n1A /:e G2.
+												          {
+												            exact (cor68_6_binary_collapse_mixed_not_in_G2
+												              G multG eG invG G1 G2 J K Hfam efamH n1A xsA1
+												              Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2
+												              HredA1 HallNeA1 HwpA1_ne
+												              HexG1A1 HexG2A1).
+												          }
+												          exact (HnotG2 HwpA1_G2).
+												        }
+											        claim HnoG1B1 : not (exists i:set, i :e n1B /\ apply_fun xsB1 i :e G1).
+											        {
+											          assume HexG1B1.
+												          claim HnotG2 :
+												            word_product multG eG xsB1 n1B /:e G2.
+												          {
+												            exact (cor68_6_binary_collapse_mixed_not_in_G2
+												              G multG eG invG G1 G2 J K Hfam efamH n1B xsB1
+												              Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2
+												              HredB1 HallNeB1 HwpB1_ne
+												              HexG1B1 HexG2B1).
+												          }
+												          exact (HnotG2 HwpB1_G2).
+												        }
+											
+											        claim HallG2A1 : forall i:set, i :e n1A -> apply_fun xsA1 i :e G2.
+											        {
+											          let i. assume Hi1.
+											          apply (Hside_union n1A xsA1 HredA1 i Hi1).
+											          - assume HiG1.
+											            claim Hex : exists j:set, j :e n1A /\ apply_fun xsA1 j :e G1.
+											            { witness i. exact (andI (i :e n1A) (apply_fun xsA1 i :e G1) Hi1 HiG1). }
+											            exact (FalseE (HnoG1A1 Hex) (apply_fun xsA1 i :e G2)).
+											          - assume HiG2. exact HiG2.
+											        }
+											        claim HallG2B1 : forall i:set, i :e n1B -> apply_fun xsB1 i :e G2.
+											        {
+											          let i. assume Hi1.
+											          apply (Hside_union n1B xsB1 HredB1 i Hi1).
+											          - assume HiG1.
+											            claim Hex : exists j:set, j :e n1B /\ apply_fun xsB1 j :e G1.
+											            { witness i. exact (andI (i :e n1B) (apply_fun xsB1 i :e G1) Hi1 HiG1). }
+											            exact (FalseE (HnoG1B1 Hex) (apply_fun xsB1 i :e G2)).
+											          - assume HiG2. exact HiG2.
+											        }
+											
+											        (** Convert to K-reduced words and use uniqueness in G2 to compare. **)
+											        set GfamK := graph K (fun b:set => apply_fun Hfam b).
+											        set efamK := graph K (fun b:set => apply_fun efamH b).
+											        claim HredA1_K : reduced_word K GfamK efamK n1A xsA1.
+											        {
+											          exact (cor68_6_reduced_word_all_in_G2_is_reduced_word_K
+											            G multG eG invG G1 G2 J K Hfam efamH n1A xsA1
+											            Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2
+											            HredA1 HallNeA1 HallG2A1).
+											        }
+											        claim HredB1_K : reduced_word K GfamK efamK n1B xsB1.
+											        {
+											          exact (cor68_6_reduced_word_all_in_G2_is_reduced_word_K
+											            G multG eG invG G1 G2 J K Hfam efamH n1B xsB1
+											            Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2
+											            HredB1 HallNeB1 HallG2B1).
+											        }
+											
+											        claim Hprefix_pack : n1A = n1B /\ (forall i:set, i :e n1A -> apply_fun xsA1 i = apply_fun xsB1 i).
+											        {
+											          apply (and5E
+											            (group_structure G2 multG eG invG)
+											            (forall beta:set, beta :e K ->
+											              subgroup_of (apply_fun GfamK beta) G2 multG eG invG)
+											            (forall beta gamma:set, beta :e K -> gamma :e K -> beta <> gamma ->
+											              forall x:set, x :e apply_fun GfamK beta -> x :e apply_fun GfamK gamma -> x = eG)
+											            (subgroups_generate G2 multG eG invG K GfamK)
+											            (forall y:set, y :e G2 -> y <> eG ->
+											              exists n0 xs0:set,
+											                reduced_word K GfamK efamK n0 xs0 /\ n0 <> 0 /\
+											                word_product multG eG xs0 n0 = y /\
+											                (forall n' xs':set,
+											                  reduced_word K GfamK efamK n' xs' ->
+											                  n' <> 0 -> word_product multG eG xs' n' = y ->
+											                  n0 = n' /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs' i0)))
+											            Hfp2).
+											          assume _ _ _ _ HuniqK.
+											          claim Huniq_pack :
+											            exists n0 xs0:set,
+											              reduced_word K GfamK efamK n0 xs0 /\ n0 <> 0 /\
+											              word_product multG eG xs0 n0 = xtp /\
+											              (forall n' xs':set,
+											                reduced_word K GfamK efamK n' xs' ->
+											                n' <> 0 -> word_product multG eG xs' n' = xtp ->
+											                n0 = n' /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs' i0)).
+											          { exact (HuniqK xtp Hxtp_G2 Hxtp_ne). }
+											          apply Huniq_pack. let n0. assume Hn0_pack.
+											          apply Hn0_pack. let xs0. assume Hxs0_pack.
+											          apply (and4E
+											            (reduced_word K GfamK efamK n0 xs0)
+											            (n0 <> 0)
+											            (word_product multG eG xs0 n0 = xtp)
+											            (forall n' xs':set,
+											              reduced_word K GfamK efamK n' xs' ->
+											              n' <> 0 -> word_product multG eG xs' n' = xtp ->
+											              n0 = n' /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xs' i0))
+											            Hxs0_pack).
+												          assume Hred0 Hn0_ne0 Hwp0 Huniq0.
+												          claim HuA : n0 = n1A /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xsA1 i0).
+												          { exact (Huniq0 n1A xsA1 HredA1_K (neq_ordsucc_0 mA) HwpA1_eq_xtp). }
+												          claim HuB : n0 = n1B /\ (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xsB1 i0).
+												          { exact (Huniq0 n1B xsB1 HredB1_K (neq_ordsucc_0 mB) HwpB1_eq_xtp). }
+											          apply andI.
+											          - claim H0A : n0 = n1A.
+											            { exact (andEL (n0 = n1A) (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xsA1 i0) HuA). }
+											            claim H0B : n0 = n1B.
+											            { exact (andEL (n0 = n1B) (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xsB1 i0) HuB). }
+											            exact (eq_i_tra n1A n0 n1B (eq_symm n0 n1A H0A) H0B).
+											          - let i. assume Hi1.
+											            claim Hi0 : i :e n0.
+											            {
+											              claim H0A : n0 = n1A.
+											              { exact (andEL (n0 = n1A) (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xsA1 i0) HuA). }
+											              exact (eq_subst_mem_set i n1A n0 Hi1 (eq_symm n0 n1A H0A)).
+											            }
+											            claim H0Aeq : apply_fun xs0 i = apply_fun xsA1 i.
+											            { exact (andER (n0 = n1A) (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xsA1 i0) HuA i Hi0). }
+											            claim H0Beq : apply_fun xs0 i = apply_fun xsB1 i.
+											            { exact (andER (n0 = n1B) (forall i0:set, i0 :e n0 -> apply_fun xs0 i0 = apply_fun xsB1 i0) HuB i Hi0). }
+											            exact (eq_i_tra
+											              (apply_fun xsA1 i)
+											              (apply_fun xs0 i)
+											              (apply_fun xsB1 i)
+											              (eq_symm (apply_fun xs0 i) (apply_fun xsA1 i) H0Aeq)
+											              H0Beq).
+											        }
+											
+											        claim Hn1_eq : n1A = n1B.
+											        { exact (andEL (n1A = n1B) (forall i:set, i :e n1A -> apply_fun xsA1 i = apply_fun xsB1 i) Hprefix_pack). }
+											        claim Hn2_eq' : n2A = n2B.
+											        { exact (andEL (n2A = n2B) (forall i:set, i :e n2A -> apply_fun xsA2 i = apply_fun xsB2 i) Hsuffix_pack). }
+											        claim Hn_eq : nA = nB.
+											        {
+											          rewrite HnA_add.
+											          rewrite HnB_add.
+											          rewrite Hn1_eq.
+											          rewrite Hn2_eq'.
+											          reflexivity.
+											        }
+											        apply andI.
+											        - exact Hn_eq.
+											        - let i. assume HiA.
+											          claim Hi_sum : i :e add_nat n1A n2A.
+											          { rewrite <- HnA_add. exact HiA. }
+											          apply (xm (i :e n1A)).
+											          + assume Hi1.
+											            claim Hpref_eq : apply_fun xsA1 i = apply_fun xsB1 i.
+											            { exact (andER (n1A = n1B) (forall i0:set, i0 :e n1A -> apply_fun xsA1 i0 = apply_fun xsB1 i0) Hprefix_pack i Hi1). }
+											            claim Hi1B : i :e n1B.
+											            { exact (eq_subst_mem_set i n1A n1B Hi1 Hn1_eq). }
+											            claim HxsA1i : apply_fun xsA1 i = apply_fun xsA i.
+											            { exact (apply_fun_graph n1A (fun j:set => apply_fun xsA j) i Hi1). }
+											            claim HxsB1i : apply_fun xsB1 i = apply_fun xsB i.
+											            { exact (apply_fun_graph n1B (fun j:set => apply_fun xsB j) i Hi1B). }
+											            exact (eq_i_tra
+											              (apply_fun xsA i)
+											              (apply_fun xsA1 i)
+											              (apply_fun xsB i)
+											              (eq_symm (apply_fun xsA1 i) (apply_fun xsA i) HxsA1i)
+											              (eq_i_tra
+											                (apply_fun xsA1 i)
+											                (apply_fun xsB1 i)
+											                (apply_fun xsB i)
+											                Hpref_eq
+											                HxsB1i)).
+											          + assume Hi_not1.
+											            apply (nat_add_nat_decomp_beyond_left n1A n2A i Hn1A_nat Hn2A_nat Hi_sum Hi_not1).
+											            let j. assume Hj_pack.
+											            claim Hj2A : j :e n2A.
+											            { exact (andEL (j :e n2A) (i = add_nat n1A j) Hj_pack). }
+											            claim Hieq : i = add_nat n1A j.
+											            { exact (andER (j :e n2A) (i = add_nat n1A j) Hj_pack). }
+											            claim Hsuf_eq : apply_fun xsA2 j = apply_fun xsB2 j.
+											            { exact (andER (n2A = n2B) (forall i0:set, i0 :e n2A -> apply_fun xsA2 i0 = apply_fun xsB2 i0) Hsuffix_pack j Hj2A). }
+											            claim Hj2B : j :e n2B.
+											            { exact (eq_subst_mem_set j n2A n2B Hj2A Hn2_eq'). }
+											            claim HxsA2j : apply_fun xsA2 j = apply_fun xsA (add_nat n1A j).
+											            { exact (apply_fun_graph n2A (fun k:set => apply_fun xsA (add_nat n1A k)) j Hj2A). }
+											            claim HxsB2j : apply_fun xsB2 j = apply_fun xsB (add_nat n1B j).
+											            { exact (apply_fun_graph n2B (fun k:set => apply_fun xsB (add_nat n1B k)) j Hj2B). }
+											            claim Hmid : apply_fun xsA (add_nat n1A j) = apply_fun xsB (add_nat n1A j).
+											            {
+											              claim Hadd : add_nat n1B j = add_nat n1A j.
+											              {
+											                rewrite (eq_symm n1A n1B Hn1_eq).
+											                reflexivity.
+											              }
+											              claim HxsBshift : apply_fun xsB (add_nat n1B j) = apply_fun xsB (add_nat n1A j).
+											              { rewrite Hadd. reflexivity. }
+											              rewrite <- HxsA2j.
+											              rewrite Hsuf_eq.
+											              rewrite HxsB2j.
+											              rewrite HxsBshift.
+											              reflexivity.
+											            }
+											            rewrite Hieq.
+											            exact Hmid.
+											      - assume Ht_ne1.
+											        (** Compare the prefixes using IHt on the predecessor of t, then glue with suffix equality. **)
+											        claim Ht_succ : exists tp:set, nat_p tp /\ t = ordsucc tp.
+											        {
+											          apply (nat_inv t Ht_nat).
 										          - assume Ht0.
 										            exact (FalseE (Ht_ne0 Ht0) (exists tp:set, nat_p tp /\ t = ordsucc tp)).
 										          - assume Hex. exact Hex.
