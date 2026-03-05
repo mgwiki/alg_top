@@ -118294,6 +118294,16 @@ claim Hopen : open_in Y (subspace_topology X Tx Y) U.
 exact (open_in_subset Y (subspace_topology X Tx Y) U Hopen).
 Qed.
 
+(** Infrastructure: subspace topology members are subsets of the subspace (no topology assumptions) **)
+(** Proven Bob **)
+Lemma subspace_topology_member_subset_no_topology : forall X Tx Y U:set,
+  U :e subspace_topology X Tx Y ->
+  U c= Y.
+let X Tx Y U.
+assume HU.
+exact (subspace_topology_subset X Tx Y U HU).
+Qed.
+
 (** Infrastructure: subspace topology members lie in Power Y **)
 (** Proven Bob **)
 Lemma subspace_topology_member_power : forall X Tx Y U:set,
