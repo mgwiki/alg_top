@@ -118072,6 +118072,39 @@ exact ((iffEL
   Hclosed).
 Qed.
 
+(** Infrastructure: closed_in in subspace gives ambient open complement witness **)
+(** Proven Bob **)
+Lemma closed_in_subspace_ambient_open_complement : forall X Tx Y A:set,
+  topology_on X Tx ->
+  Y c= X ->
+  closed_in Y (subspace_topology X Tx Y) A ->
+  exists U:set, U :e Tx /\ A = (X :\: U) :/\: Y.
+let X Tx Y A.
+assume Htop HYsub Hclosed.
+claim HexC : exists C:set, closed_in X Tx C /\ A = C :/\: Y.
+{
+  exact (closed_in_subspace_witness X Tx Y A Htop HYsub Hclosed).
+}
+apply HexC. let C. assume HC.
+claim HclosedC : closed_in X Tx C.
+{ exact (andEL (closed_in X Tx C) (A = C :/\: Y) HC). }
+claim HeqA : A = C :/\: Y.
+{ exact (andER (closed_in X Tx C) (A = C :/\: Y) HC). }
+claim HexU : exists U:set, U :e Tx /\ C = X :\: U.
+{ exact (closed_in_exists_open_complement X Tx C HclosedC). }
+apply HexU. let U. assume HU.
+claim HUopen : U :e Tx.
+{ exact (andEL (U :e Tx) (C = X :\: U) HU). }
+claim HeqC : C = X :\: U.
+{ exact (andER (U :e Tx) (C = X :\: U) HU). }
+witness U.
+apply andI.
+- exact HUopen.
+- rewrite HeqA.
+  rewrite HeqC.
+  reflexivity.
+Qed.
+
 (** Infrastructure: closed maps have well-typed data **)
 (** Proven Bob **)
 Lemma closed_map_function_on : forall X Tx Y Ty f:set,
