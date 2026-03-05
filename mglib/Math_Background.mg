@@ -118014,6 +118014,24 @@ claim HUsub : U c= Y.
 exact (open_in_subspace_witness X Tx Y U Htop HYsub HUsub Hopen).
 Qed.
 
+(** Infrastructure: open_in in subspace iff membership in subspace topology **)
+(** Proven Bob **)
+Lemma open_in_subspace_iff_member : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y c= X ->
+  (open_in Y (subspace_topology X Tx Y) U <->
+    U :e subspace_topology X Tx Y).
+let X Tx Y U.
+assume Htop HYsub.
+apply (iffI
+  (open_in Y (subspace_topology X Tx Y) U)
+  (U :e subspace_topology X Tx Y)).
+- assume Hopen.
+  exact (open_in_elem Y (subspace_topology X Tx Y) U Hopen).
+- assume HU.
+  exact (open_in_subspace_of_member X Tx Y U Htop HYsub HU).
+Qed.
+
 (** Infrastructure: closed sets are closed in subspaces via intersection **)
 (** Proven Bob **)
 Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
