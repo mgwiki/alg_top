@@ -117432,6 +117432,88 @@ apply andI.
     Hsurj).
 Qed.
 
+(** Infrastructure: covering maps have full image **)
+(** Proven Bob **)
+Lemma covering_map_image_of_whole : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  image_of p E = B.
+let E Te B Tb p.
+assume Hcov.
+claim Hsurj : surjective_map E B p.
+{ exact (covering_map_surjective E Te B Tb p Hcov). }
+claim Hfun : function_on p E B.
+{
+  exact (andEL
+    (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+    Hsurj).
+}
+apply set_ext.
+- let z.
+  assume HzImg : z :e image_of p E.
+  claim HzPack : exists x:set, x :e E /\ z = apply_fun p x.
+  {
+    exact (ReplE
+      E
+      (fun x:set => apply_fun p x)
+      z
+      HzImg).
+  }
+  apply HzPack.
+  let x.
+  assume HxPack.
+  claim HxE : x :e E.
+  {
+    exact (andEL
+      (x :e E)
+      (z = apply_fun p x)
+      HxPack).
+  }
+  claim HzEq : z = apply_fun p x.
+  {
+    exact (andER
+      (x :e E)
+      (z = apply_fun p x)
+      HxPack).
+  }
+  rewrite HzEq.
+  exact (Hfun x HxE).
+- let z.
+  assume HzB : z :e B.
+  claim HzPre : exists x:set, x :e E /\ apply_fun p x = z.
+  {
+    exact (andER
+      (function_on p E B)
+      (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+      Hsurj
+      z
+      HzB).
+  }
+  apply HzPre.
+  let x.
+  assume HxPack.
+  claim HxE : x :e E.
+  {
+    exact (andEL
+      (x :e E)
+      (apply_fun p x = z)
+      HxPack).
+  }
+  claim HxEq : apply_fun p x = z.
+  {
+    exact (andER
+      (x :e E)
+      (apply_fun p x = z)
+      HxPack).
+  }
+  rewrite <- HxEq.
+  exact (ReplI
+    E
+    (fun x0:set => apply_fun p x0)
+    x
+    HxE).
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
