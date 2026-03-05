@@ -117981,6 +117981,39 @@ exact ((iffEL
   Hopen).
 Qed.
 
+(** Infrastructure: members of subspace topology are open_in **)
+(** Proven Bob **)
+Lemma open_in_subspace_of_member : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y c= X ->
+  U :e subspace_topology X Tx Y ->
+  open_in Y (subspace_topology X Tx Y) U.
+let X Tx Y U.
+assume Htop HYsub HU.
+claim HtopY : topology_on Y (subspace_topology X Tx Y).
+{ exact (subspace_topology_is_topology X Tx Y Htop HYsub). }
+exact (open_inI
+  Y
+  (subspace_topology X Tx Y)
+  U
+  HtopY
+  HU).
+Qed.
+
+(** Infrastructure: open_in in subspace gives an ambient open witness (no subset arg) **)
+(** Proven Bob **)
+Lemma open_in_subspace_witness_no_subset : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y c= X ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  exists V:set, V :e Tx /\ U = V :/\: Y.
+let X Tx Y U.
+assume Htop HYsub Hopen.
+claim HUsub : U c= Y.
+{ exact (open_in_subset Y (subspace_topology X Tx Y) U Hopen). }
+exact (open_in_subspace_witness X Tx Y U Htop HYsub HUsub Hopen).
+Qed.
+
 (** Infrastructure: closed sets are closed in subspaces via intersection **)
 (** Proven Bob **)
 Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
