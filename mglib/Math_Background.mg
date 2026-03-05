@@ -117735,6 +117735,24 @@ claim Hfun : function_on p E B.
 exact (image_of_sub_codomain p E B A Hfun HAsub).
 Qed.
 
+(** Infrastructure: surjective map images lie in the codomain **)
+(** Proven Bob **)
+Lemma surjective_map_image_subset_codomain : forall X Y f A:set,
+  surjective_map X Y f ->
+  A c= X ->
+  image_of f A c= Y.
+let X Y f A.
+assume Hsurj HAsub.
+claim Hfun : function_on f X Y.
+{
+  exact (andEL
+    (function_on f X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y)
+    Hsurj).
+}
+exact (image_of_sub_codomain f X Y A Hfun HAsub).
+Qed.
+
 (** Infrastructure: open maps have well-typed data **)
 (** Proven Bob **)
 Lemma open_map_topology_on_dom : forall X Tx Y Ty f:set,
