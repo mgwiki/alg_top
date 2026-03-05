@@ -118148,6 +118148,50 @@ apply (iffI
     Hopen).
 Qed.
 
+(** Infrastructure: subspace topology on open subset as ambient-open subsets **)
+(** Proven Bob **)
+Lemma subspace_topology_open_eq : forall X Tx Y:set,
+  topology_on X Tx ->
+  Y :e Tx ->
+  subspace_topology X Tx Y = {U :e Power Y | U :e Tx}.
+let X Tx Y.
+assume Htop HYopen.
+apply set_ext.
+- let U.
+  assume HUsub.
+  claim Hpair : U c= Y /\ U :e Tx.
+  {
+    exact ((iffEL
+      (U :e subspace_topology X Tx Y)
+      (U c= Y /\ U :e Tx)
+      (subspace_topology_open_iff_member X Tx Y U Htop HYopen))
+      HUsub).
+  }
+  claim Hsub : U c= Y.
+  { exact (andEL (U c= Y) (U :e Tx) Hpair). }
+  claim HUopen : U :e Tx.
+  { exact (andER (U c= Y) (U :e Tx) Hpair). }
+  apply (SepI
+    (Power Y)
+    (fun U0:set => U0 :e Tx)
+    U
+    (PowerI Y U Hsub)
+    HUopen).
+- let U.
+  assume HUset.
+  claim HUpow : U :e Power Y.
+  { exact (SepE1 (Power Y) (fun U0:set => U0 :e Tx) U HUset). }
+  claim HUopen : U :e Tx.
+  { exact (SepE2 (Power Y) (fun U0:set => U0 :e Tx) U HUset). }
+  claim Hsub : U c= Y.
+  { exact (PowerE Y U HUpow). }
+  exact ((iffER
+    (U :e subspace_topology X Tx Y)
+    (U c= Y /\ U :e Tx)
+    (subspace_topology_open_iff_member X Tx Y U Htop HYopen))
+    (andI (U c= Y) (U :e Tx) Hsub HUopen)).
+Qed.
+
 (** Infrastructure: closed sets are closed in subspaces via intersection **)
 (** Proven Bob **)
 Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
