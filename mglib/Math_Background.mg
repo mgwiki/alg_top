@@ -247575,19 +247575,34 @@ apply (and5I
 						        Hsn_ne0
 						        Hsn_ne1).
 						    }
-						    claim Hxt_notG2 : xt /:e G2.
-						    {
-						      exact (free_product_binary_reduced_word_length_ge2_not_in_right_factor
-						        G multG eG invG G1 G2 (ordsucc t) xs12
-						        Hsub1 Hsub2 Hfp
-						        Hred12t
-						        Hsn_ne0
-						        Hsn_ne1).
-						    }
+							    claim Hxt_notG2 : xt /:e G2.
+							    {
+							      exact (free_product_binary_reduced_word_length_ge2_not_in_right_factor
+							        G multG eG invG G1 G2 (ordsucc t) xs12
+							        Hsub1 Hsub2 Hfp
+							        Hred12t
+							        Hsn_ne0
+							        Hsn_ne1).
+							    }
+							
+							    (** The binary reduced word product is nontrivial. **)
+							    claim Hxt_ne_e : xt <> eG.
+							    {
+							      exact (free_product_reduced_word_length_ge2_product_ne_e
+							        G multG eG invG
+							        (UPair 0 1)
+							        (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+							        (graph (UPair 0 1) (fun _:set => eG))
+							        (ordsucc t) xs12
+							        Hfp
+							        Hred12t
+							        Hsn_ne0
+							        Hsn_ne1).
+							    }
 
-						    claim HnA_ne1 : nA <> 1.
-						    {
-						      assume HnA1.
+							    claim HnA_ne1 : nA <> 1.
+							    {
+							      assume HnA1.
 						      claim H0in : 0 :e nA.
 						      { rewrite HnA1. exact (nat_0_in_ordsucc 0 nat_0). }
 							      apply (Hside_union nA xsA HredA 0 H0in).
