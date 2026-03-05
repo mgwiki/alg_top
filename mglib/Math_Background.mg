@@ -251557,10 +251557,113 @@ apply (and5I
 									        (forall i:set, i :e nA -> apply_fun xsA i :e G1 -> i c= mA)
 									        (forall i:set, i :e nA -> ordsucc mA c= i -> apply_fun xsA i :e G2)
 									        HmA_pack).
-									      assume HmA_in HxmA_G1 HmA_maxG1 HsuffixA_all_G2.
-									      (** Continue as in the G1-case, but swapping G1/G2 and J/K. **)
-									      admit.
-										  }
+										      assume HmA_in HxmA_G1 HmA_maxG1 HsuffixA_all_G2.
+										      (** Start the symmetric decomposition for A: split at the maximal G1 index, so the suffix lies in G2. **)
+										      claim HmA_ne_kA : mA <> kA.
+										      {
+										        assume Hmk.
+										        claim Hxk_G1 : apply_fun xsA kA :e G1.
+										        { rewrite <- Hmk. exact HxmA_G1. }
+										        claim Hxe : apply_fun xsA kA = eG.
+										        { exact (free_product_binary_factors_intersect_trivial G multG eG invG G1 G2 (apply_fun xsA kA) Hfp Hxk_G1 HlastA_G2). }
+										        exact (HallNeA kA HkA_in Hxe).
+										      }
+										      claim HmA_in_kA : mA :e kA.
+										      {
+										        apply (ordsuccE kA mA (eq_subst_mem_set mA nA (ordsucc kA) HmA_in HnA_eq)).
+										        - assume Hm_in. exact Hm_in.
+										        - assume Hmeq. exact (FalseE (HmA_ne_kA Hmeq) (mA :e kA)).
+										      }
+										      set n1A := ordsucc mA.
+										      claim Hn1A_nat : nat_p n1A.
+										      {
+										        claim HmA_omega : mA :e omega.
+										        { exact (omega_TransSet nA HnAO mA HmA_in). }
+										        exact (nat_ordsucc mA (omega_nat_p mA HmA_omega)).
+										      }
+										      claim Hn1A_in_nA : n1A :e nA.
+										      {
+										        rewrite HnA_eq.
+										        exact (nat_ordsucc_in_ordsucc kA HkA_nat mA HmA_in_kA).
+										      }
+										      apply (nat_mem_add_nat_decomp nA n1A HnA_nat Hn1A_in_nA).
+										      let n2A. assume Hn2A_pack.
+										      claim Hn2A_nat : nat_p n2A.
+										      { exact (andEL (nat_p n2A) (nA = add_nat n1A n2A) Hn2A_pack). }
+										      claim HnA_add : nA = add_nat n1A n2A.
+										      { exact (andER (nat_p n2A) (nA = add_nat n1A n2A) Hn2A_pack). }
+										      set xsA1 := graph n1A (fun i:set => apply_fun xsA i).
+										      set xsA2 := graph n2A (fun i:set => apply_fun xsA (add_nat n1A i)).
+										      claim HredA1 : reduced_word (J :\/: K) Hfam efamH n1A xsA1.
+										      { exact (reduced_word_prefix (J :\/: K) Hfam efamH nA xsA n1A HredA Hn1A_in_nA). }
+										      claim HredA2 : reduced_word (J :\/: K) Hfam efamH n2A xsA2.
+										      { exact (reduced_word_suffix_by_add_nat (J :\/: K) Hfam efamH nA xsA n1A n2A HredA Hn1A_nat Hn2A_nat HnA_add). }
+										      claim HallNeA1 : forall i:set, i :e n1A -> apply_fun xsA1 i <> eG.
+										      {
+										        let i. assume Hi1.
+										        rewrite (apply_fun_graph n1A (fun j:set => apply_fun xsA j) i Hi1).
+										        claim HiA : i :e nA.
+										        {
+										          claim Hsub : n1A c= add_nat n1A n2A.
+										          { exact (add_nat_Subq_R' n1A Hn1A_nat n2A Hn2A_nat). }
+										          claim Hi_sum : i :e add_nat n1A n2A.
+										          { exact (Hsub i Hi1). }
+										          exact (eq_subst_mem_set i (add_nat n1A n2A) nA Hi_sum (eq_symm nA (add_nat n1A n2A) HnA_add)).
+										        }
+										        exact (HallNeA i HiA).
+										      }
+										      claim HallNeA2 : forall i:set, i :e n2A -> apply_fun xsA2 i <> eG.
+										      {
+										        let i. assume Hi2.
+										        rewrite (apply_fun_graph n2A (fun j:set => apply_fun xsA (add_nat n1A j)) i Hi2).
+										        claim Hi_sum : add_nat n1A i :e add_nat n1A n2A.
+										        { exact (add_nat_In_L n1A Hn1A_nat n2A Hn2A_nat i Hi2). }
+										        claim HiA : add_nat n1A i :e nA.
+										        { exact (eq_subst_mem_set (add_nat n1A i) (add_nat n1A n2A) nA Hi_sum (eq_symm nA (add_nat n1A n2A) HnA_add)). }
+										        exact (HallNeA (add_nat n1A i) HiA).
+										      }
+										      claim HallG2A2 : forall i:set, i :e n2A -> apply_fun xsA2 i :e G2.
+										      {
+										        let i. assume Hi2.
+										        rewrite (apply_fun_graph n2A (fun j:set => apply_fun xsA (add_nat n1A j)) i Hi2).
+										        claim Hi_sum : add_nat n1A i :e add_nat n1A n2A.
+										        { exact (add_nat_In_L n1A Hn1A_nat n2A Hn2A_nat i Hi2). }
+										        claim HiA : add_nat n1A i :e nA.
+										        { exact (eq_subst_mem_set (add_nat n1A i) (add_nat n1A n2A) nA Hi_sum (eq_symm nA (add_nat n1A n2A) HnA_add)). }
+										        claim Hsub : ordsucc mA c= add_nat n1A i.
+										        {
+										          claim Hsub1 : n1A c= add_nat n1A i.
+										          { exact (add_nat_Subq_R' n1A Hn1A_nat i (nat_p_trans n2A Hn2A_nat i Hi2)). }
+										          exact Hsub1.
+										        }
+										        exact (HsuffixA_all_G2 (add_nat n1A i) HiA Hsub).
+										      }
+										      claim Hn2A_ne0 : n2A <> 0.
+										      {
+										        assume Hn20.
+										        claim HnA_eq_n1 : nA = n1A.
+										        { rewrite HnA_add. rewrite Hn20. rewrite (add_nat_0R n1A). reflexivity. }
+										        claim Hk_eq : kA = mA.
+										        {
+										          claim Hs : ordsucc kA = ordsucc mA.
+										          { rewrite <- HnA_eq. rewrite HnA_eq_n1. reflexivity. }
+										          exact (ordsucc_inj kA mA Hs).
+										        }
+										        exact (HmA_ne_kA (eq_symm kA mA Hk_eq)).
+										      }
+										      set wpA2 := word_product multG eG xsA2 n2A.
+										      claim HwpA2_G2 : wpA2 :e G2.
+										      { exact (Hword_product_in_G2 n2A xsA2 HredA2 HallG2A2). }
+										      claim HwpA2_ne : wpA2 <> eG.
+										      {
+										        exact (cor68_6_reduced_word_all_in_G2_product_ne_eG
+										          G multG eG invG G1 G2 J K Hfam efamH n2A xsA2
+										          Hgrp Hsub1 Hsub2 Hfp Hfp1 Hfp2
+										          HredA2 HallNeA2 HallG2A2 Hn2A_ne0).
+										      }
+										      (** TODO: collapse prefix A1 to a binary word ending in G1, append wpA2 in G2, then handle B and compare suffixes/prefixes. **)
+										      admit.
+											  }
 								  exact (nat_strong_ind P Hstep t Ht_nat).
 								  }
 							  claim Hkmax_ne0 : kmax <> 0.
