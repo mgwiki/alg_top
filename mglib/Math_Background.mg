@@ -117979,6 +117979,63 @@ apply andI.
   exact (embedding_of_image_open_in_subspace X Tx Y Ty f U Hemb HU).
 Qed.
 
+(** Infrastructure: embedding images of closed sets are closed in the subspace **)
+(** Proven Bob **)
+Lemma embedding_of_image_closed_in_subspace : forall X Tx Y Ty f A:set,
+  embedding_of X Tx Y Ty f ->
+  closed_in X Tx A ->
+  closed_in (image_of f X) (subspace_topology Y Ty (image_of f X)) (image_of f A).
+let X Tx Y Ty f A.
+assume Hemb HAclosed.
+claim Hhome :
+  homeomorphism X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f.
+{ exact (embedding_of_homeomorphism X Tx Y Ty f Hemb). }
+claim Hcont :
+  continuous_map X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f.
+{
+  exact (andEL
+    (continuous_map X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f)
+    (exists g:set,
+      continuous_map (image_of f X) (subspace_topology Y Ty (image_of f X)) X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e image_of f X -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim HtopIm :
+  topology_on (image_of f X) (subspace_topology Y Ty (image_of f X)).
+{
+  exact (continuous_map_topology_cod
+    X
+    Tx
+    (image_of f X)
+    (subspace_topology Y Ty (image_of f X))
+    f
+    Hcont).
+}
+claim Hclosed_sub :
+  closed_in (image_of f X)
+    (subspace_topology (image_of f X)
+      (subspace_topology Y Ty (image_of f X))
+      (image_of f X))
+    (image_of f A).
+{
+  exact (homeomorphism_image_closed_in_subspace
+    X
+    Tx
+    (image_of f X)
+    (subspace_topology Y Ty (image_of f X))
+    f
+    A
+    Hhome
+    HAclosed).
+}
+rewrite <- (subspace_topology_whole
+  (image_of f X)
+  (subspace_topology Y Ty (image_of f X))
+  HtopIm).
+exact Hclosed_sub.
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
