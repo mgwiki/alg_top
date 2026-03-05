@@ -117142,6 +117142,27 @@ exact (continuous_map_preimage_closed
   HC).
 Qed.
 
+(** Infrastructure: homeomorphism preimages of open sets are open **)
+(** Proven Bob **)
+Lemma homeomorphism_preimage_open : forall X Tx Y Ty f U:set,
+  homeomorphism X Tx Y Ty f ->
+  U :e Ty ->
+  preimage_of X f U :e Tx.
+let X Tx Y Ty f U.
+assume Hhome HU.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+exact (continuous_map_preimage X Tx Y Ty f Hcont U HU).
+Qed.
+
 (** Infrastructure: homeomorphisms are bijections **)
 (** Proven Bob **)
 Lemma homeomorphism_bijection : forall X Tx Y Ty f:set,
