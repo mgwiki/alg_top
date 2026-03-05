@@ -118767,6 +118767,20 @@ exact (open_of_closed_complement
   Hclosed).
 Qed.
 
+(** Infrastructure: closed_in in subspace gives complement as member **)
+(** Proven Bob **)
+Lemma closed_in_subspace_member_complement_open : forall X Tx Y A:set,
+  closed_in Y (subspace_topology X Tx Y) A ->
+  (Y :\: A) :e subspace_topology X Tx Y.
+let X Tx Y A.
+assume Hclosed.
+exact (open_in_elem
+  Y
+  (subspace_topology X Tx Y)
+  (Y :\: A)
+  (closed_in_subspace_complement_open X Tx Y A Hclosed)).
+Qed.
+
 (** Infrastructure: open_in in subspace iff complement is closed_in **)
 (** Proven Bob **)
 Lemma open_in_subspace_iff_closed_complement : forall X Tx Y U:set,
