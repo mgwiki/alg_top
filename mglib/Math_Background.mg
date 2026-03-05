@@ -118002,6 +118002,37 @@ exact ((iffEL
   Hopen).
 Qed.
 
+(** Infrastructure: open_in in subspace gives ambient open witness in Power X **)
+(** Proven Bob **)
+Lemma open_in_subspace_witness_power : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y c= X ->
+  U c= Y ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  exists V:set, V :e Tx /\ V :e Power X /\ U = V :/\: Y.
+let X Tx Y U.
+assume Htop HYsub HUsub Hopen.
+claim HexV : exists V:set, V :e Tx /\ U = V :/\: Y.
+{
+  exact (open_in_subspace_witness X Tx Y U Htop HYsub HUsub Hopen).
+}
+apply HexV. let V. assume HV.
+claim HVtx : V :e Tx.
+{ exact (andEL (V :e Tx) (U = V :/\: Y) HV). }
+claim HeqU : U = V :/\: Y.
+{ exact (andER (V :e Tx) (U = V :/\: Y) HV). }
+claim HVopen : open_in X Tx V.
+{ exact (open_inI X Tx V Htop HVtx). }
+claim HVsubX : V c= X.
+{ exact (open_in_subset X Tx V HVopen). }
+witness V.
+apply andI.
+- apply andI.
+  * exact HVtx.
+  * exact (PowerI X V HVsubX).
+- exact HeqU.
+Qed.
+
 (** Infrastructure: members of subspace topology are open_in **)
 (** Proven Bob **)
 Lemma open_in_subspace_of_member : forall X Tx Y U:set,
