@@ -117644,6 +117644,23 @@ exact ((andER
   HU).
 Qed.
 
+(** Infrastructure: open maps have image subset of codomain **)
+(** Proven Bob **)
+Lemma open_map_image_subset_codomain : forall X Tx Y Ty f U:set,
+  open_map X Tx Y Ty f ->
+  U :e Tx ->
+  image_of f U c= Y.
+let X Tx Y Ty f U.
+assume Hopen HU.
+claim HtopX : topology_on X Tx.
+{ exact (open_map_topology_on_dom X Tx Y Ty f Hopen). }
+claim HUsub : U c= X.
+{ exact (topology_elem_subset X Tx U HtopX HU). }
+claim Hfun : function_on f X Y.
+{ exact (open_map_function_on X Tx Y Ty f Hopen). }
+exact (image_of_sub_codomain f X Y U Hfun HUsub).
+Qed.
+
 (** Infrastructure: closed maps have well-typed data **)
 (** Proven Bob **)
 Lemma closed_map_function_on : forall X Tx Y Ty f:set,
