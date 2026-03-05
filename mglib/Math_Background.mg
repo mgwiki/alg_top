@@ -117041,6 +117041,46 @@ symmetry.
 exact Hx2x1.
 Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 
+(** Infrastructure: homeomorphisms are open maps **)
+(** Proven Bob **)
+Lemma homeomorphism_open_map : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  open_map X Tx Y Ty f.
+let X Tx Y Ty f.
+assume Hhome.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_dom X Tx Y Ty f Hcont). }
+claim HtopY : topology_on Y Ty.
+{ exact (continuous_map_topology_cod X Tx Y Ty f Hcont). }
+claim Hfun : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f Hcont). }
+claim HopenImg : forall U:set, U :e Tx -> image_of f U :e Ty.
+{
+  let U.
+  assume HU.
+  exact (homeomorphism_image_open X Tx Y Ty f U Hhome HU).
+}
+exact (and4I
+  (topology_on X Tx)
+  (topology_on Y Ty)
+  (function_on f X Y)
+  (forall U:set, U :e Tx -> image_of f U :e Ty)
+  HtopX
+  HtopY
+  Hfun
+  HopenImg).
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
