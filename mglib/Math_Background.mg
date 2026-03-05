@@ -118099,6 +118099,25 @@ apply andI.
   exact (embedding_of_image_open_in_subspace X Tx Y Ty f U Hemb HU).
 Qed.
 
+(** Infrastructure: embeddings are closed maps onto their image **)
+(** Proven Bob **)
+Lemma embedding_of_closed_map_to_image : forall X Tx Y Ty f:set,
+  embedding_of X Tx Y Ty f ->
+  closed_map X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f.
+let X Tx Y Ty f.
+assume Hemb.
+claim Hhome :
+  homeomorphism X Tx (image_of f X) (subspace_topology Y Ty (image_of f X)) f.
+{ exact (embedding_of_homeomorphism X Tx Y Ty f Hemb). }
+exact (homeomorphism_closed_map
+  X
+  Tx
+  (image_of f X)
+  (subspace_topology Y Ty (image_of f X))
+  f
+  Hhome).
+Qed.
+
 (** Infrastructure: embedding images of closed sets are closed in the subspace **)
 (** Proven Bob **)
 Lemma embedding_of_image_closed_in_subspace : forall X Tx Y Ty f A:set,
