@@ -238639,6 +238639,7 @@ apply (and5I
 	          reduced_word (J :\/: K) Hfam efamH m' zs /\
 	          word_product multG eG zs m' =
 	            apply_fun multG (word_product multG eG xs m, word_product multG eG ys p) /\
+	          (forall i:set, i :e m' -> apply_fun zs i <> eG) /\
 	          exists r:set, m' = ordsucc r /\ apply_fun zs r :e G1.
   {
     let m xs.
@@ -238678,14 +238679,15 @@ apply (and5I
     { exact (andER (nat_p kmax) (p = ordsucc kmax) Hkpack). }
     claim Hkmax_in : kmax :e p.
     { rewrite Hpk. exact (ordsuccI2 kmax). }
-    claim Happend_prefix :
-      forall k:set, nat_p k ->
-        (k :e p ->
-          exists m' zs:set,
-            reduced_word (J :\/: K) Hfam efamH m' zs /\
-            word_product multG eG zs m' =
-              apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc k)) /\
-            exists r:set, m' = ordsucc r /\ apply_fun zs r = apply_fun ys k).
+	    claim Happend_prefix :
+	      forall k:set, nat_p k ->
+	        (k :e p ->
+	          exists m' zs:set,
+	            reduced_word (J :\/: K) Hfam efamH m' zs /\
+	            word_product multG eG zs m' =
+	              apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc k)) /\
+	            (forall i:set, i :e m' -> apply_fun zs i <> eG) /\
+	            exists r:set, m' = ordsucc r /\ apply_fun zs r = apply_fun ys k).
     {
       apply nat_ind.
       - assume H0in : 0 :e p.
@@ -238753,13 +238755,13 @@ apply (and5I
               apply_fun multG (word_product multG eG xs m, apply_fun ys 0))
             Happend0).
         }
-        witness (ordsucc m).
-        witness (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else apply_fun ys 0)).
-        apply and3I.
-        + exact Happ_red.
-        + claim Hwp1 :
-            word_product multG eG ys (ordsucc 0) =
-              apply_fun multG (word_product multG eG ys 0, apply_fun ys 0).
+	        witness (ordsucc m).
+	        witness (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else apply_fun ys 0)).
+	        apply and4I.
+	        + exact Happ_red.
+	        + claim Hwp1 :
+	            word_product multG eG ys (ordsucc 0) =
+	              apply_fun multG (word_product multG eG ys 0, apply_fun ys 0).
           { exact (word_product_succ multG eG ys 0 nat_0). }
           claim Hwp0 : word_product multG eG ys 0 = eG.
           { exact (nat_primrec_0 eG
@@ -238789,14 +238791,29 @@ apply (and5I
               (apply_fun multG (apply_fun ys 0, eG) = apply_fun ys 0)
               (Hid (apply_fun ys 0) Hy0G)).
           }
-          rewrite Happ_prod.
-          rewrite Hwp1_eq.
-          reflexivity.
-        + witness m. apply andI.
-          * reflexivity.
-          * claim Hlast :
-              apply_fun (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else apply_fun ys 0)) m =
-              apply_fun ys 0.
+	          rewrite Happ_prod.
+	          rewrite Hwp1_eq.
+	          reflexivity.
+	        + let i. assume Hi.
+	          apply (ordsuccE m i Hi).
+	          * assume Him.
+	            rewrite (apply_fun_graph (ordsucc m)
+	              (fun t:set => if t :e m then apply_fun xs t else apply_fun ys 0)
+	              i Hi).
+	            rewrite (If_i_1 (i :e m) (apply_fun xs i) (apply_fun ys 0) Him).
+	            exact (Hxs_ne i Him).
+	          * assume Hieq.
+	            rewrite Hieq.
+	            rewrite (apply_fun_graph (ordsucc m)
+	              (fun t:set => if t :e m then apply_fun xs t else apply_fun ys 0)
+	              m (ordsuccI2 m)).
+	            rewrite (If_i_0 (m :e m) (apply_fun xs m) (apply_fun ys 0) (In_irref m)).
+	            exact (HallNe 0 H0in).
+	        + witness m. apply andI.
+	          * reflexivity.
+	          * claim Hlast :
+	              apply_fun (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else apply_fun ys 0)) m =
+	              apply_fun ys 0.
             {
               rewrite (apply_fun_graph (ordsucc m)
                 (fun i:set => if i :e m then apply_fun xs i else apply_fun ys 0)
@@ -238818,14 +238835,15 @@ apply (and5I
         apply (IH Hk_in).
         let m0. assume Hpack0.
         apply Hpack0.
-        let zs0. assume Hpack1.
-        apply (and3E
-          (reduced_word (J :\/: K) Hfam efamH m0 zs0)
-          (word_product multG eG zs0 m0 =
-            apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc k)))
-          (exists r:set, m0 = ordsucc r /\ apply_fun zs0 r = apply_fun ys k)
-          Hpack1).
-        assume Hred0 Hprod0 Hlast0.
+	        let zs0. assume Hpack1.
+	        apply (and4E
+	          (reduced_word (J :\/: K) Hfam efamH m0 zs0)
+	          (word_product multG eG zs0 m0 =
+	            apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc k)))
+	          (forall i:set, i :e m0 -> apply_fun zs0 i <> eG)
+	          (exists r:set, m0 = ordsucc r /\ apply_fun zs0 r = apply_fun ys k)
+	          Hpack1).
+	        assume Hred0 Hprod0 HallNe0 Hlast0.
         apply Hlast0. let r0. assume Hlast0_pack.
         claim Hm0_eq : m0 = ordsucc r0.
         { exact (andEL (m0 = ordsucc r0) (apply_fun zs0 r0 = apply_fun ys k) Hlast0_pack). }
@@ -238919,13 +238937,13 @@ apply (and5I
               apply_fun multG (word_product multG eG zs0 m0, apply_fun ys (ordsucc k)))
             Happend1).
         }
-        witness (ordsucc m0).
-        witness (graph (ordsucc m0) (fun i:set => if i :e m0 then apply_fun zs0 i else apply_fun ys (ordsucc k))).
-        apply and3I.
-        + exact Happ_red.
-        + claim Hwp_succ :
-            word_product multG eG ys (ordsucc (ordsucc k)) =
-              apply_fun multG (word_product multG eG ys (ordsucc k), apply_fun ys (ordsucc k)).
+	        witness (ordsucc m0).
+	        witness (graph (ordsucc m0) (fun i:set => if i :e m0 then apply_fun zs0 i else apply_fun ys (ordsucc k))).
+	        apply and4I.
+	        + exact Happ_red.
+	        + claim Hwp_succ :
+	            word_product multG eG ys (ordsucc (ordsucc k)) =
+	              apply_fun multG (word_product multG eG ys (ordsucc k), apply_fun ys (ordsucc k)).
           { exact (word_product_succ multG eG ys (ordsucc k) (nat_ordsucc k Hk_nat)). }
           rewrite Happ_prod.
           rewrite Hprod0.
@@ -238986,16 +239004,31 @@ apply (and5I
               apply_fun multG (apply_fun invG y, y) = eG)
             Hgrp).
           assume _ _ _ Hassoc _ _.
-          exact (Hassoc
-            (word_product multG eG xs m)
-            (word_product multG eG ys (ordsucc k))
-            (apply_fun ys (ordsucc k))
-            HxsG HysG Hy1G).
-        + witness m0. apply andI.
-          * reflexivity.
-          * claim Hlast :
-              apply_fun (graph (ordsucc m0)
-                (fun i:set => if i :e m0 then apply_fun zs0 i else apply_fun ys (ordsucc k))) m0 =
+	          exact (Hassoc
+	            (word_product multG eG xs m)
+	            (word_product multG eG ys (ordsucc k))
+	            (apply_fun ys (ordsucc k))
+	            HxsG HysG Hy1G).
+	        + let i. assume Hi.
+	          apply (ordsuccE m0 i Hi).
+	          * assume Him0.
+	            rewrite (apply_fun_graph (ordsucc m0)
+	              (fun t:set => if t :e m0 then apply_fun zs0 t else apply_fun ys (ordsucc k))
+	              i Hi).
+	            rewrite (If_i_1 (i :e m0) (apply_fun zs0 i) (apply_fun ys (ordsucc k)) Him0).
+	            exact (HallNe0 i Him0).
+	          * assume Hieq.
+	            rewrite Hieq.
+	            rewrite (apply_fun_graph (ordsucc m0)
+	              (fun t:set => if t :e m0 then apply_fun zs0 t else apply_fun ys (ordsucc k))
+	              m0 (ordsuccI2 m0)).
+	            rewrite (If_i_0 (m0 :e m0) (apply_fun zs0 m0) (apply_fun ys (ordsucc k)) (In_irref m0)).
+	            exact (HallNe (ordsucc k) Hsk_in).
+	        + witness m0. apply andI.
+	          * reflexivity.
+	          * claim Hlast :
+	              apply_fun (graph (ordsucc m0)
+	                (fun i:set => if i :e m0 then apply_fun zs0 i else apply_fun ys (ordsucc k))) m0 =
                 apply_fun ys (ordsucc k).
             {
               rewrite (apply_fun_graph (ordsucc m0)
@@ -239008,22 +239041,24 @@ apply (and5I
     }
     rewrite Hpk.
     apply (Happend_prefix kmax Hkmax_nat Hkmax_in).
-    let m'. assume Hm_pack.
-    apply Hm_pack. let zs. assume Hzs_pack.
-	    apply (and3E
-	      (reduced_word (J :\/: K) Hfam efamH m' zs)
-	      (word_product multG eG zs m' =
-	        apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc kmax)))
-	      (exists r:set, m' = ordsucc r /\ apply_fun zs r = apply_fun ys kmax)
-	      Hzs_pack).
-	    assume Hred Hprod Hlast.
-	    witness m'. witness zs. apply and3I.
-	    - exact Hred.
-	    - exact Hprod.
-	    - apply Hlast. let r. assume Hr_pack.
-	      witness r.
-	      apply andI.
-	      * exact (andEL (m' = ordsucc r) (apply_fun zs r = apply_fun ys kmax) Hr_pack).
+	    let m'. assume Hm_pack.
+	    apply Hm_pack. let zs. assume Hzs_pack.
+		    apply (and4E
+		      (reduced_word (J :\/: K) Hfam efamH m' zs)
+		      (word_product multG eG zs m' =
+		        apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc kmax)))
+		      (forall i:set, i :e m' -> apply_fun zs i <> eG)
+		      (exists r:set, m' = ordsucc r /\ apply_fun zs r = apply_fun ys kmax)
+		      Hzs_pack).
+		    assume Hred Hprod HallNe_zs Hlast.
+		    witness m'. witness zs. apply and4I.
+		    - exact Hred.
+		    - exact Hprod.
+		    - exact HallNe_zs.
+		    - apply Hlast. let r. assume Hr_pack.
+		      witness r.
+		      apply andI.
+		      * exact (andEL (m' = ordsucc r) (apply_fun zs r = apply_fun ys kmax) Hr_pack).
 	      * claim Hzr_eq : apply_fun zs r = apply_fun ys kmax.
 	        { exact (andER (m' = ordsucc r) (apply_fun zs r = apply_fun ys kmax) Hr_pack). }
 	        claim Hyk_G1 : apply_fun ys kmax :e G1.
@@ -239052,6 +239087,7 @@ apply (and5I
 	          reduced_word (J :\/: K) Hfam efamH m' zs /\
 	          word_product multG eG zs m' =
 	            apply_fun multG (word_product multG eG xs m, word_product multG eG ys p) /\
+	          (forall i:set, i :e m' -> apply_fun zs i <> eG) /\
 	          exists r:set, m' = ordsucc r /\ apply_fun zs r :e G2.
   {
     let m xs.
@@ -239091,14 +239127,15 @@ apply (and5I
     { exact (andER (nat_p kmax) (p = ordsucc kmax) Hkpack). }
     claim Hkmax_in : kmax :e p.
     { rewrite Hpk. exact (ordsuccI2 kmax). }
-    claim Happend_prefix :
-      forall k:set, nat_p k ->
-        (k :e p ->
-          exists m' zs:set,
-            reduced_word (J :\/: K) Hfam efamH m' zs /\
-            word_product multG eG zs m' =
-              apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc k)) /\
-            exists r:set, m' = ordsucc r /\ apply_fun zs r = apply_fun ys k).
+	    claim Happend_prefix :
+	      forall k:set, nat_p k ->
+	        (k :e p ->
+	          exists m' zs:set,
+	            reduced_word (J :\/: K) Hfam efamH m' zs /\
+	            word_product multG eG zs m' =
+	              apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc k)) /\
+	            (forall i:set, i :e m' -> apply_fun zs i <> eG) /\
+	            exists r:set, m' = ordsucc r /\ apply_fun zs r = apply_fun ys k).
     {
       apply nat_ind.
       - assume H0in : 0 :e p.
@@ -239166,13 +239203,13 @@ apply (and5I
               apply_fun multG (word_product multG eG xs m, apply_fun ys 0))
             Happend0).
         }
-        witness (ordsucc m).
-        witness (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else apply_fun ys 0)).
-        apply and3I.
-        + exact Happ_red.
-        + claim Hwp1 :
-            word_product multG eG ys (ordsucc 0) =
-              apply_fun multG (word_product multG eG ys 0, apply_fun ys 0).
+	        witness (ordsucc m).
+	        witness (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else apply_fun ys 0)).
+	        apply and4I.
+	        + exact Happ_red.
+	        + claim Hwp1 :
+	            word_product multG eG ys (ordsucc 0) =
+	              apply_fun multG (word_product multG eG ys 0, apply_fun ys 0).
           { exact (word_product_succ multG eG ys 0 nat_0). }
           claim Hwp0 : word_product multG eG ys 0 = eG.
           { exact (nat_primrec_0 eG
@@ -239202,14 +239239,29 @@ apply (and5I
               (apply_fun multG (apply_fun ys 0, eG) = apply_fun ys 0)
               (Hid (apply_fun ys 0) Hy0G)).
           }
-          rewrite Happ_prod.
-          rewrite Hwp1_eq.
-          reflexivity.
-        + witness m. apply andI.
-          * reflexivity.
-          * claim Hlast :
-              apply_fun (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else apply_fun ys 0)) m =
-              apply_fun ys 0.
+	          rewrite Happ_prod.
+	          rewrite Hwp1_eq.
+	          reflexivity.
+	        + let i. assume Hi.
+	          apply (ordsuccE m i Hi).
+	          * assume Him.
+	            rewrite (apply_fun_graph (ordsucc m)
+	              (fun t:set => if t :e m then apply_fun xs t else apply_fun ys 0)
+	              i Hi).
+	            rewrite (If_i_1 (i :e m) (apply_fun xs i) (apply_fun ys 0) Him).
+	            exact (Hxs_ne i Him).
+	          * assume Hieq.
+	            rewrite Hieq.
+	            rewrite (apply_fun_graph (ordsucc m)
+	              (fun t:set => if t :e m then apply_fun xs t else apply_fun ys 0)
+	              m (ordsuccI2 m)).
+	            rewrite (If_i_0 (m :e m) (apply_fun xs m) (apply_fun ys 0) (In_irref m)).
+	            exact (HallNe 0 H0in).
+	        + witness m. apply andI.
+	          * reflexivity.
+	          * claim Hlast :
+	              apply_fun (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else apply_fun ys 0)) m =
+	              apply_fun ys 0.
             {
               rewrite (apply_fun_graph (ordsucc m)
                 (fun i:set => if i :e m then apply_fun xs i else apply_fun ys 0)
@@ -239231,14 +239283,15 @@ apply (and5I
         apply (IH Hk_in).
         let m0. assume Hpack0.
         apply Hpack0.
-        let zs0. assume Hpack1.
-        apply (and3E
-          (reduced_word (J :\/: K) Hfam efamH m0 zs0)
-          (word_product multG eG zs0 m0 =
-            apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc k)))
-          (exists r:set, m0 = ordsucc r /\ apply_fun zs0 r = apply_fun ys k)
-          Hpack1).
-        assume Hred0 Hprod0 Hlast0.
+	        let zs0. assume Hpack1.
+	        apply (and4E
+	          (reduced_word (J :\/: K) Hfam efamH m0 zs0)
+	          (word_product multG eG zs0 m0 =
+	            apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc k)))
+	          (forall i:set, i :e m0 -> apply_fun zs0 i <> eG)
+	          (exists r:set, m0 = ordsucc r /\ apply_fun zs0 r = apply_fun ys k)
+	          Hpack1).
+	        assume Hred0 Hprod0 HallNe0 Hlast0.
         apply Hlast0. let r0. assume Hlast0_pack.
         claim Hm0_eq : m0 = ordsucc r0.
         { exact (andEL (m0 = ordsucc r0) (apply_fun zs0 r0 = apply_fun ys k) Hlast0_pack). }
@@ -239332,13 +239385,13 @@ apply (and5I
               apply_fun multG (word_product multG eG zs0 m0, apply_fun ys (ordsucc k)))
             Happend1).
         }
-        witness (ordsucc m0).
-        witness (graph (ordsucc m0) (fun i:set => if i :e m0 then apply_fun zs0 i else apply_fun ys (ordsucc k))).
-        apply and3I.
-        + exact Happ_red.
-        + claim Hwp_succ :
-            word_product multG eG ys (ordsucc (ordsucc k)) =
-              apply_fun multG (word_product multG eG ys (ordsucc k), apply_fun ys (ordsucc k)).
+	        witness (ordsucc m0).
+	        witness (graph (ordsucc m0) (fun i:set => if i :e m0 then apply_fun zs0 i else apply_fun ys (ordsucc k))).
+	        apply and4I.
+	        + exact Happ_red.
+	        + claim Hwp_succ :
+	            word_product multG eG ys (ordsucc (ordsucc k)) =
+	              apply_fun multG (word_product multG eG ys (ordsucc k), apply_fun ys (ordsucc k)).
           { exact (word_product_succ multG eG ys (ordsucc k) (nat_ordsucc k Hk_nat)). }
           rewrite Happ_prod.
           rewrite Hprod0.
@@ -239399,16 +239452,31 @@ apply (and5I
               apply_fun multG (apply_fun invG y, y) = eG)
             Hgrp).
           assume _ _ _ Hassoc _ _.
-          exact (Hassoc
-            (word_product multG eG xs m)
-            (word_product multG eG ys (ordsucc k))
-            (apply_fun ys (ordsucc k))
-            HxsG HysG Hy1G).
-        + witness m0. apply andI.
-          * reflexivity.
-          * claim Hlast :
-              apply_fun (graph (ordsucc m0)
-                (fun i:set => if i :e m0 then apply_fun zs0 i else apply_fun ys (ordsucc k))) m0 =
+	          exact (Hassoc
+	            (word_product multG eG xs m)
+	            (word_product multG eG ys (ordsucc k))
+	            (apply_fun ys (ordsucc k))
+	            HxsG HysG Hy1G).
+	        + let i. assume Hi.
+	          apply (ordsuccE m0 i Hi).
+	          * assume Him0.
+	            rewrite (apply_fun_graph (ordsucc m0)
+	              (fun t:set => if t :e m0 then apply_fun zs0 t else apply_fun ys (ordsucc k))
+	              i Hi).
+	            rewrite (If_i_1 (i :e m0) (apply_fun zs0 i) (apply_fun ys (ordsucc k)) Him0).
+	            exact (HallNe0 i Him0).
+	          * assume Hieq.
+	            rewrite Hieq.
+	            rewrite (apply_fun_graph (ordsucc m0)
+	              (fun t:set => if t :e m0 then apply_fun zs0 t else apply_fun ys (ordsucc k))
+	              m0 (ordsuccI2 m0)).
+	            rewrite (If_i_0 (m0 :e m0) (apply_fun zs0 m0) (apply_fun ys (ordsucc k)) (In_irref m0)).
+	            exact (HallNe (ordsucc k) Hsk_in).
+	        + witness m0. apply andI.
+	          * reflexivity.
+	          * claim Hlast :
+	              apply_fun (graph (ordsucc m0)
+	                (fun i:set => if i :e m0 then apply_fun zs0 i else apply_fun ys (ordsucc k))) m0 =
                 apply_fun ys (ordsucc k).
             {
               rewrite (apply_fun_graph (ordsucc m0)
@@ -239421,18 +239489,20 @@ apply (and5I
     }
     rewrite Hpk.
     apply (Happend_prefix kmax Hkmax_nat Hkmax_in).
-    let m'. assume Hm_pack.
-    apply Hm_pack. let zs. assume Hzs_pack.
-	    apply (and3E
+	    let m'. assume Hm_pack.
+	    apply Hm_pack. let zs. assume Hzs_pack.
+	    apply (and4E
 	      (reduced_word (J :\/: K) Hfam efamH m' zs)
 	      (word_product multG eG zs m' =
 	        apply_fun multG (word_product multG eG xs m, word_product multG eG ys (ordsucc kmax)))
+	      (forall i:set, i :e m' -> apply_fun zs i <> eG)
 	      (exists r:set, m' = ordsucc r /\ apply_fun zs r = apply_fun ys kmax)
 	      Hzs_pack).
-	    assume Hred Hprod Hlast.
-	    witness m'. witness zs. apply and3I.
+	    assume Hred Hprod HallNe_zs Hlast.
+	    witness m'. witness zs. apply and4I.
 	    - exact Hred.
 	    - exact Hprod.
+	    - exact HallNe_zs.
 	    - apply Hlast. let r. assume Hr_pack.
 	      witness r.
 	      apply andI.
@@ -239874,25 +239944,27 @@ apply (and5I
 	      claim Hred :
 	        reduced_word (J :\/: K) Hfam efamH m ys.
 	      {
-	        apply (and3E
+	        apply (and4E
 	          (reduced_word (J :\/: K) Hfam efamH m ys)
 	          (word_product multG eG ys m =
 	            apply_fun multG (word_product multG eG ys0 m0, word_product multG eG ys1 m1))
+	          (forall i:set, i :e m -> apply_fun ys i <> eG)
 	          (exists r:set, m = ordsucc r /\ apply_fun ys r :e G2)
 	          Hys_pack).
-	        assume Hred0 _ _. exact Hred0.
+	        assume Hred0 _ _ _. exact Hred0.
 	      }
 	      claim Hprod :
 	        word_product multG eG ys m =
 	          apply_fun multG (word_product multG eG ys0 m0, word_product multG eG ys1 m1).
 	      {
-	        apply (and3E
+	        apply (and4E
 	          (reduced_word (J :\/: K) Hfam efamH m ys)
 	          (word_product multG eG ys m =
 	            apply_fun multG (word_product multG eG ys0 m0, word_product multG eG ys1 m1))
+	          (forall i:set, i :e m -> apply_fun ys i <> eG)
 	          (exists r:set, m = ordsucc r /\ apply_fun ys r :e G2)
 	          Hys_pack).
-	        assume _ Hprod0 _. exact Hprod0.
+	        assume _ Hprod0 _ _. exact Hprod0.
 	      }
       witness m. witness ys.
       claim Hprod_eq :
@@ -240068,25 +240140,27 @@ apply (and5I
 	      claim Hred :
 	        reduced_word (J :\/: K) Hfam efamH m ys.
 	      {
-	        apply (and3E
+	        apply (and4E
 	          (reduced_word (J :\/: K) Hfam efamH m ys)
 	          (word_product multG eG ys m =
 	            apply_fun multG (word_product multG eG ys0 m0, word_product multG eG ys1 m1))
+	          (forall i:set, i :e m -> apply_fun ys i <> eG)
 	          (exists r:set, m = ordsucc r /\ apply_fun ys r :e G1)
 	          Hys_pack).
-	        assume Hred0 _ _. exact Hred0.
+	        assume Hred0 _ _ _. exact Hred0.
 	      }
 	      claim Hprod :
 	        word_product multG eG ys m =
 	          apply_fun multG (word_product multG eG ys0 m0, word_product multG eG ys1 m1).
 	      {
-	        apply (and3E
+	        apply (and4E
 	          (reduced_word (J :\/: K) Hfam efamH m ys)
 	          (word_product multG eG ys m =
 	            apply_fun multG (word_product multG eG ys0 m0, word_product multG eG ys1 m1))
+	          (forall i:set, i :e m -> apply_fun ys i <> eG)
 	          (exists r:set, m = ordsucc r /\ apply_fun ys r :e G1)
 	          Hys_pack).
-	        assume _ Hprod0 _. exact Hprod0.
+	        assume _ Hprod0 _ _. exact Hprod0.
 	      }
       witness m. witness ys.
       claim Hprod_eq :
@@ -244858,19 +244932,22 @@ apply (and5I
 	        exact (Hwp_not_G2 HwpG2).
 	      }
 	
-	      claim Hge3_case :
-	        exists n xs:set,
-	          reduced_word (J :\/: K) Hfam efamH n xs /\ n <> 0 /\
-	          word_product multG eG xs n = x /\
-	          (forall n' xs':set,
-	            reduced_word (J :\/: K) Hfam efamH n' xs' -> n' <> 0 ->
-	            word_product multG eG xs' n' = x ->
-	            n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
-	      {
-	        admit.
-	      }
-	      exact Hge3_case.
-Admitted.
+		      claim Hge3_case :
+		        exists n xs:set,
+		          reduced_word (J :\/: K) Hfam efamH n xs /\ n <> 0 /\
+		          word_product multG eG xs n = x /\
+		          (forall n' xs':set,
+		            reduced_word (J :\/: K) Hfam efamH n' xs' -> n' <> 0 ->
+		            word_product multG eG xs' n' = x ->
+		            n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+		      {
+		        (** TODO: n12 >= 3 case. The append helpers `Happend_word_G1` and `Happend_word_G2`
+		            now return both `HallNe` and a last-letter side witness, so this can be folded
+		            over the binary normal form `xs12`. **)
+		        admit.
+		      }
+		      exact Hge3_case.
+	Admitted.
 
 (** from S68 Thm 68.7 (line 2972 in algtop.tex): quotient of free product **)
 (** LATEX VERSION: Let G = G1 free-prod G2. Let N_i be normal in G_i. If N is the least **)
