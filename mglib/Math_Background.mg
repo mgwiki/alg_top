@@ -117628,6 +117628,22 @@ exact (andER
   Hleft).
 Qed.
 
+(** Infrastructure: open maps send opens to opens **)
+(** Proven Bob **)
+Lemma open_map_image_open : forall X Tx Y Ty f U:set,
+  open_map X Tx Y Ty f ->
+  U :e Tx ->
+  image_of f U :e Ty.
+let X Tx Y Ty f U.
+assume Hopen HU.
+exact ((andER
+  (topology_on X Tx /\ topology_on Y Ty /\ function_on f X Y)
+  (forall V:set, V :e Tx -> image_of f V :e Ty)
+  Hopen)
+  U
+  HU).
+Qed.
+
 (** Infrastructure: closed maps have well-typed data **)
 (** Proven Bob **)
 Lemma closed_map_function_on : forall X Tx Y Ty f:set,
