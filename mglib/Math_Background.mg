@@ -118108,6 +118108,46 @@ apply (iffI
   exact Hopen'.
 Qed.
 
+(** Infrastructure: subspace topology on open subset is ambient open subsets **)
+(** Proven Bob **)
+Lemma subspace_topology_open_iff_member : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y :e Tx ->
+  (U :e subspace_topology X Tx Y <->
+    U c= Y /\ U :e Tx).
+let X Tx Y U.
+assume Htop HYopen.
+claim HYsub : Y c= X.
+{
+  exact (open_in_subset X Tx Y (open_inI X Tx Y Htop HYopen)).
+}
+apply (iffI
+  (U :e subspace_topology X Tx Y)
+  (U c= Y /\ U :e Tx)).
+- assume HU.
+  claim Hopen : open_in Y (subspace_topology X Tx Y) U.
+  { exact (open_in_subspace_of_member X Tx Y U Htop HYsub HU). }
+  exact ((iffEL
+    (open_in Y (subspace_topology X Tx Y) U)
+    (U c= Y /\ U :e Tx)
+    (open_in_subspace_iff_open_ambient_on_open_subspace X Tx Y U Htop HYopen))
+    Hopen).
+- assume Hpair.
+  claim Hopen : open_in Y (subspace_topology X Tx Y) U.
+  {
+    exact ((iffER
+      (open_in Y (subspace_topology X Tx Y) U)
+      (U c= Y /\ U :e Tx)
+      (open_in_subspace_iff_open_ambient_on_open_subspace X Tx Y U Htop HYopen))
+      Hpair).
+  }
+  exact ((iffEL
+    (open_in Y (subspace_topology X Tx Y) U)
+    (U :e subspace_topology X Tx Y)
+    (open_in_subspace_iff_member X Tx Y U Htop HYsub))
+    Hopen).
+Qed.
+
 (** Infrastructure: closed sets are closed in subspaces via intersection **)
 (** Proven Bob **)
 Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
