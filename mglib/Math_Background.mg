@@ -117690,6 +117690,21 @@ exact ((andER
   HAclosed).
 Qed.
 
+(** Infrastructure: closed maps have image subset of codomain **)
+(** Proven Bob **)
+Lemma closed_map_image_subset_codomain : forall X Tx Y Ty f A:set,
+  closed_map X Tx Y Ty f ->
+  closed_in X Tx A ->
+  image_of f A c= Y.
+let X Tx Y Ty f A.
+assume Hclosed HAclosed.
+claim Hfun : function_on f X Y.
+{ exact (closed_map_function_on X Tx Y Ty f Hclosed). }
+claim HAsub : A c= X.
+{ exact (closed_in_subset X Tx A HAclosed). }
+exact (image_of_sub_codomain f X Y A Hfun HAsub).
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
