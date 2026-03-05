@@ -91452,7 +91452,21 @@ Lemma column_lifts_same_sheet_on_product_ball_column_continuous :
       apply_fun
         (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
         t0)).
-admit.
+let E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0.
+assume Hcov HtopE HslicesSub HpdSlices Hunion HV0Slice Hg0Cont He0 Hstart0.
+assume HstartLift HI1sub HI2sub HI1conn HI2conn HvsCont HvsU HstartComm.
+assume Hs0 Ht0 Hlift0V0 HstartE.
+set Fcol := graph I1 (fun s:set =>
+  apply_fun
+    (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+    t0).
+claim HFcol_cont :
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te Fcol.
+{
+  (** TODO: needs parametric continuity of path_lift in the s-parameter. **)
+  admit.
+}
+exact HFcol_cont.
 Admitted.
 
 Lemma column_lifts_same_sheet_on_product_ball :
