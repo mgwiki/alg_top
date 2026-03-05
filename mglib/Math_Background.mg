@@ -117705,6 +117705,41 @@ claim HAsub : A c= X.
 exact (image_of_sub_codomain f X Y A Hfun HAsub).
 Qed.
 
+(** Infrastructure: embeddings are functions **)
+(** Proven Bob **)
+Lemma embedding_of_function_on : forall X Tx Y Ty f:set,
+  embedding_of X Tx Y Ty f ->
+  function_on f X Y.
+let X Tx Y Ty f.
+assume Hemb.
+claim Hcont : continuous_map X Tx Y Ty f.
+{ exact (embedding_of_continuous X Tx Y Ty f Hemb). }
+exact (continuous_map_function_on X Tx Y Ty f Hcont).
+Qed.
+
+(** Infrastructure: embedding images of opens are open in the subspace **)
+(** Proven Bob **)
+Lemma embedding_of_image_open_in_subspace : forall X Tx Y Ty f U:set,
+  embedding_of X Tx Y Ty f ->
+  U :e Tx ->
+  image_of f U :e subspace_topology Y Ty (image_of f X).
+let X Tx Y Ty f U.
+assume Hemb HU.
+claim Hhome :
+  homeomorphism X Tx (image_of f X)
+    (subspace_topology Y Ty (image_of f X)) f.
+{ exact (embedding_of_homeomorphism X Tx Y Ty f Hemb). }
+exact (homeomorphism_image_open
+  X
+  Tx
+  (image_of f X)
+  (subspace_topology Y Ty (image_of f X))
+  f
+  U
+  Hhome
+  HU).
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
