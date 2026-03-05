@@ -118255,6 +118255,27 @@ apply andI.
 - reflexivity.
 Qed.
 
+(** Infrastructure: closed subset of Y stays closed in subspace **)
+(** Proven Bob **)
+Lemma closed_in_subspace_of_closed_in_ambient_subset : forall X Tx Y C:set,
+  topology_on X Tx ->
+  Y c= X ->
+  closed_in X Tx C ->
+  C c= Y ->
+  closed_in Y (subspace_topology X Tx Y) C.
+let X Tx Y C.
+assume Htop HYsub Hclosed HCsub.
+claim Hclosed' :
+  closed_in Y (subspace_topology X Tx Y) (C :/\: Y).
+{
+  exact (closed_in_subspace_of_closed_in_ambient X Tx Y C Htop HYsub Hclosed).
+}
+claim HeqC : C = C :/\: Y.
+{ exact (eq_symm (C :/\: Y) C (binintersect_sub_eq_right C Y HCsub)). }
+rewrite HeqC.
+exact Hclosed'.
+Qed.
+
 (** Infrastructure: closed_in in subspace gives an ambient closed witness **)
 (** Proven Bob **)
 Lemma closed_in_subspace_witness : forall X Tx Y A:set,
