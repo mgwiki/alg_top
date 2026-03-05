@@ -118276,6 +118276,36 @@ rewrite HeqC.
 exact Hclosed'.
 Qed.
 
+(** Infrastructure: closed_in in subspace gives ambient closed witness (intersection form) **)
+(** Proven Bob **)
+Lemma closed_in_subspace_witness_intersection : forall X Tx Y A:set,
+  topology_on X Tx ->
+  Y c= X ->
+  closed_in Y (subspace_topology X Tx Y) A ->
+  exists C:set, C :e Power X /\ closed_in X Tx C /\ A = C :/\: Y.
+let X Tx Y A.
+assume Htop HYsub Hclosed.
+claim HexC : exists C:set, closed_in X Tx C /\ A = C :/\: Y.
+{
+  exact (iffEL
+    (closed_in Y (subspace_topology X Tx Y) A)
+    (exists C:set, closed_in X Tx C /\ A = C :/\: Y)
+    (closed_in_subspace_iff_intersection X Tx Y A Htop HYsub)
+    Hclosed).
+}
+apply HexC. let C. assume HC.
+claim HclosedC : closed_in X Tx C.
+{ exact (andEL (closed_in X Tx C) (A = C :/\: Y) HC). }
+claim HeqA : A = C :/\: Y.
+{ exact (andER (closed_in X Tx C) (A = C :/\: Y) HC). }
+witness C.
+apply andI.
+- apply andI.
+  * exact (PowerI X C (closed_in_subset X Tx C HclosedC)).
+  * exact HclosedC.
+- exact HeqA.
+Qed.
+
 (** Infrastructure: closed_in in subspace gives an ambient closed witness **)
 (** Proven Bob **)
 Lemma closed_in_subspace_witness : forall X Tx Y A:set,
