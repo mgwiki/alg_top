@@ -117717,6 +117717,18 @@ claim Hcont : continuous_map X Tx Y Ty f.
 exact (continuous_map_function_on X Tx Y Ty f Hcont).
 Qed.
 
+(** Infrastructure: embedding image lies in codomain **)
+(** Proven Bob **)
+Lemma embedding_of_image_subset_codomain : forall X Tx Y Ty f:set,
+  embedding_of X Tx Y Ty f ->
+  image_of f X c= Y.
+let X Tx Y Ty f.
+assume Hemb.
+claim Hfun : function_on f X Y.
+{ exact (embedding_of_function_on X Tx Y Ty f Hemb). }
+exact (image_of_sub_codomain f X Y X Hfun (Subq_ref X)).
+Qed.
+
 (** Infrastructure: embedding images of opens are open in the subspace **)
 (** Proven Bob **)
 Lemma embedding_of_image_open_in_subspace : forall X Tx Y Ty f U:set,
