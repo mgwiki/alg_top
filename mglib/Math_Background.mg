@@ -118684,6 +118684,56 @@ apply (iffI
   * exact HeqA.
 Qed.
 
+(** Infrastructure: closed_in in subspace iff complement is member of subspace topology **)
+(** Proven Bob **)
+Lemma closed_in_subspace_iff_member_complement : forall X Tx Y A:set,
+  topology_on X Tx ->
+  Y c= X ->
+  A c= Y ->
+  (closed_in Y (subspace_topology X Tx Y) A <->
+    (Y :\: A) :e subspace_topology X Tx Y).
+let X Tx Y A.
+assume Htop HYsub HAsub.
+apply (iffI
+  (closed_in Y (subspace_topology X Tx Y) A)
+  ((Y :\: A) :e subspace_topology X Tx Y)).
+- assume Hclosed.
+  claim Hopen :
+    open_in Y (subspace_topology X Tx Y) (Y :\: A).
+  { exact (open_of_closed_complement
+      Y (subspace_topology X Tx Y) A Hclosed). }
+  exact (open_in_elem
+    Y
+    (subspace_topology X Tx Y)
+    (Y :\: A)
+    Hopen).
+- assume Hmem.
+  claim HtopY : topology_on Y (subspace_topology X Tx Y).
+  { exact (subspace_topology_is_topology X Tx Y Htop HYsub). }
+  claim Hopen :
+    open_in Y (subspace_topology X Tx Y) (Y :\: A).
+  { exact (open_inI
+      Y
+      (subspace_topology X Tx Y)
+      (Y :\: A)
+      HtopY
+      Hmem). }
+  claim Hclosed :
+    closed_in Y (subspace_topology X Tx Y) (Y :\: (Y :\: A)).
+  { exact (closed_of_open_complement
+      Y
+      (subspace_topology X Tx Y)
+      (Y :\: A)
+      HtopY
+      (open_in_elem
+        Y
+        (subspace_topology X Tx Y)
+        (Y :\: A)
+        Hopen)). }
+  rewrite <- (setminus_setminus_eq Y A HAsub).
+  exact Hclosed.
+Qed.
+
 (** Infrastructure: closed_in in subspace of closed subspace is closed in ambient **)
 (** Proven Bob **)
 Lemma closed_in_subspace_closed_ambient : forall X Tx Y A:set,
