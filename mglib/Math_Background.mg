@@ -117384,6 +117384,66 @@ claim Hfun : function_on f X Y.
 exact (image_of_sub_codomain f X Y A Hfun HAsub).
 Qed.
 
+(** Infrastructure: homeomorphism images of open sets are open in the subspace **)
+(** Proven Bob **)
+Lemma homeomorphism_image_open_in_subspace : forall X Tx Y Ty f U:set,
+  homeomorphism X Tx Y Ty f ->
+  U :e Tx ->
+  image_of f U :e subspace_topology Y Ty (image_of f X).
+let X Tx Y Ty f U.
+assume Hhome HU.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_dom X Tx Y Ty f Hcont). }
+claim HUsub : U c= X.
+{ exact (topology_elem_subset X Tx U HtopX HU). }
+claim Hopen : image_of f U :e Ty.
+{ exact (homeomorphism_image_open X Tx Y Ty f U Hhome HU). }
+claim HimgSub : image_of f U c= image_of f X.
+{ exact (image_of_mono f U X HUsub). }
+claim Hpow : image_of f U :e Power (image_of f X).
+{ exact (PowerI (image_of f X) (image_of f U) HimgSub). }
+set Sub := subspace_topology Y Ty (image_of f X).
+claim Hsubdef : Sub =
+  {U0 :e Power (image_of f X) |
+    exists V:set, V :e Ty /\ U0 = V :/\: image_of f X}.
+{ reflexivity. }
+rewrite Hsubdef.
+apply (SepI
+  (Power (image_of f X))
+  (fun U0:set => exists V:set, V :e Ty /\ U0 = V :/\: image_of f X)
+  (image_of f U)
+  Hpow).
+witness (image_of f U).
+apply andI.
+- exact Hopen.
+- apply set_ext.
+  * let x.
+    assume HxImg.
+    apply (binintersectI
+      (image_of f U)
+      (image_of f X)
+      x
+      HxImg
+      (HimgSub x HxImg)).
+  * let x.
+    assume HxInt.
+    exact (binintersectE1
+      (image_of f U)
+      (image_of f X)
+      x
+      HxInt).
+Qed.
+
 (** Infrastructure: homeomorphisms are surjective (value form) **)
 (** Proven Bob **)
 Lemma homeomorphism_surjective_value : forall X Tx Y Ty f y:set,
