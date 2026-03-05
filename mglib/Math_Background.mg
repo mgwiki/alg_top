@@ -118889,6 +118889,16 @@ claim HsubX : (Y :\: U) c= X.
 exact (PowerI X (Y :\: U) HsubX).
 Qed.
 
+(** Infrastructure: open_in in subspace gives complement in Power Y (no topology assumptions) **)
+(** Proven Bob **)
+Lemma open_in_subspace_complement_power_no_topology : forall X Tx Y U:set,
+  open_in Y (subspace_topology X Tx Y) U ->
+  (Y :\: U) :e Power Y.
+let X Tx Y U.
+assume Hopen.
+exact (PowerI Y (Y :\: U) (setminus_Subq Y U)).
+Qed.
+
 (** Infrastructure: open_in in subspace gives complement subset of subspace **)
 (** Proven Bob **)
 Lemma open_in_subspace_complement_subset : forall X Tx Y U:set,
@@ -118909,6 +118919,17 @@ let X Tx Y U.
 assume HYsub Hopen.
 let x. assume Hx.
 exact (HYsub x (setminusE1 Y U x Hx)).
+Qed.
+
+(** Infrastructure: open_in in subspace gives complement subset of ambient (no topology assumptions) **)
+(** Proven Bob **)
+Lemma open_in_subspace_complement_subset_ambient_no_topology : forall X Tx Y U:set,
+  Y c= X ->
+  open_in Y (subspace_topology X Tx Y) U ->
+  (Y :\: U) c= X.
+let X Tx Y U.
+assume HYsub Hopen.
+exact (open_in_subspace_complement_subset_ambient X Tx Y U HYsub Hopen).
 Qed.
 
 (** Infrastructure: open_in in subspace iff complement is closed_in **)
