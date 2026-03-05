@@ -119050,6 +119050,26 @@ assume HU.
 exact (subspace_topology_member_complement_power X Tx Y U HU).
 Qed.
 
+(** Infrastructure: member of subspace topology gives complement subset of subspace **)
+(** Proven Bob **)
+Lemma subspace_topology_member_complement_subset : forall X Tx Y U:set,
+  U :e subspace_topology X Tx Y ->
+  (Y :\: U) c= Y.
+let X Tx Y U.
+assume HU.
+exact (setminus_Subq Y U).
+Qed.
+
+(** Infrastructure: member of subspace topology gives complement subset of subspace (no topology assumptions) **)
+(** Proven Bob **)
+Lemma subspace_topology_member_complement_subset_no_topology : forall X Tx Y U:set,
+  U :e subspace_topology X Tx Y ->
+  (Y :\: U) c= Y.
+let X Tx Y U.
+assume HU.
+exact (subspace_topology_member_complement_subset X Tx Y U HU).
+Qed.
+
 (** Infrastructure: member of subspace topology has closed complement in subspace **)
 (** Proven Bob **)
 Lemma subspace_topology_member_complement_closed : forall X Tx Y U:set,
