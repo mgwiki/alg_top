@@ -117356,6 +117356,24 @@ apply andI.
   exact (bijection_surj X Y f y Hbij HyY).
 Qed.
 
+(** Infrastructure: homeomorphisms are surjective (value form) **)
+(** Proven Bob **)
+Lemma homeomorphism_surjective_value : forall X Tx Y Ty f y:set,
+  homeomorphism X Tx Y Ty f ->
+  y :e Y ->
+  exists x:set, x :e X /\ apply_fun f x = y.
+let X Tx Y Ty f y.
+assume Hhome HyY.
+claim Hsurj : surjective_map X Y f.
+{ exact (homeomorphism_surjective_map X Tx Y Ty f Hhome). }
+exact (andER
+  (function_on f X Y)
+  (forall y0:set, y0 :e Y -> exists x:set, x :e X /\ apply_fun f x = y0)
+  Hsurj
+  y
+  HyY).
+Qed.
+
 (** Infrastructure: homeomorphisms are quotient maps **)
 (** Proven Bob **)
 Lemma homeomorphism_quotient_map : forall X Tx Y Ty f:set,
@@ -117391,6 +117409,25 @@ apply andI.
     (function_on f X Y)
   (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y)
     Hsurj).
+Qed.
+
+(** Infrastructure: quotient maps are surjective (value form) **)
+(** Proven Bob **)
+Lemma quotient_map_surjective_value : forall X Tx Y f y:set,
+  quotient_map X Tx Y f ->
+  y :e Y ->
+  exists x:set, x :e X /\ apply_fun f x = y.
+let X Tx Y f y.
+assume Hquot HyY.
+claim Hsurj_part :
+  forall y0:set, y0 :e Y -> exists x:set, x :e X /\ apply_fun f x = y0.
+{
+  exact (andER
+    (topology_on X Tx /\ function_on f X Y)
+    (forall y0:set, y0 :e Y -> exists x:set, x :e X /\ apply_fun f x = y0)
+    Hquot).
+}
+exact (Hsurj_part y HyY).
 Qed.
 
 (** Infrastructure: covering maps are quotient maps **)
