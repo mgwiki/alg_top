@@ -119030,6 +119030,26 @@ assume HYsub HU.
 exact (subspace_topology_member_complement_power_ambient X Tx Y U HYsub HU).
 Qed.
 
+(** Infrastructure: member of subspace topology gives complement in Power Y **)
+(** Proven Bob **)
+Lemma subspace_topology_member_complement_power : forall X Tx Y U:set,
+  U :e subspace_topology X Tx Y ->
+  (Y :\: U) :e Power Y.
+let X Tx Y U.
+assume HU.
+exact (PowerI Y (Y :\: U) (setminus_Subq Y U)).
+Qed.
+
+(** Infrastructure: member of subspace topology gives complement in Power Y (no topology assumptions) **)
+(** Proven Bob **)
+Lemma subspace_topology_member_complement_power_no_topology : forall X Tx Y U:set,
+  U :e subspace_topology X Tx Y ->
+  (Y :\: U) :e Power Y.
+let X Tx Y U.
+assume HU.
+exact (subspace_topology_member_complement_power X Tx Y U HU).
+Qed.
+
 (** Infrastructure: member of subspace topology has closed complement in subspace **)
 (** Proven Bob **)
 Lemma subspace_topology_member_complement_closed : forall X Tx Y U:set,
