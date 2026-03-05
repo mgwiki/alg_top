@@ -118192,6 +118192,20 @@ apply set_ext.
     (andI (U c= Y) (U :e Tx) Hsub HUopen)).
 Qed.
 
+(** Infrastructure: subspace topology members are subsets of the subspace **)
+(** Proven Bob **)
+Lemma subspace_topology_member_subset : forall X Tx Y U:set,
+  topology_on X Tx ->
+  Y c= X ->
+  U :e subspace_topology X Tx Y ->
+  U c= Y.
+let X Tx Y U.
+assume Htop HYsub HU.
+claim Hopen : open_in Y (subspace_topology X Tx Y) U.
+{ exact (open_in_subspace_of_member X Tx Y U Htop HYsub HU). }
+exact (open_in_subset Y (subspace_topology X Tx Y) U Hopen).
+Qed.
+
 (** Infrastructure: closed sets are closed in subspaces via intersection **)
 (** Proven Bob **)
 Lemma closed_in_subspace_of_closed_in_ambient : forall X Tx Y C:set,
