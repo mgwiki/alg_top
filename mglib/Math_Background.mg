@@ -117177,6 +117177,30 @@ apply andI.
     exact Hgx'.
 Qed.
 
+(** Infrastructure: homeomorphisms are surjective maps **)
+(** Proven Bob **)
+Lemma homeomorphism_surjective_map : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  surjective_map X Y f.
+let X Tx Y Ty f.
+assume Hhome.
+claim Hbij : bijection X Y f.
+{ exact (homeomorphism_bijection X Tx Y Ty f Hhome). }
+prove
+  function_on f X Y /\
+  (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y).
+apply andI.
+- exact (andEL
+    (function_on f X Y)
+    (forall y:set, y :e Y ->
+      exists x:set, x :e X /\ apply_fun f x = y /\
+        (forall x':set, x' :e X -> apply_fun f x' = y -> x' = x))
+    Hbij).
+- let y.
+  assume HyY.
+  exact (bijection_surj X Y f y Hbij HyY).
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
