@@ -41267,6 +41267,38 @@ claim Hmult_beta :
     Ha
     Hb).
 }
+claim Hbeta_fun : function_on beta unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    beta
+    HbetaCont).
+}
+claim Hx1X : x1 :e X.
+{
+  rewrite <- Hbeta1.
+  exact (Hbeta_fun 1 one_in_unit_interval).
+}
+set G1 := fundamental_group X Tx x1.
+set mult1 := fundamental_group_mult X Tx x1.
+set id1 := fundamental_group_id X Tx x1.
+set inv1 := fundamental_group_inv X Tx x1.
+claim Hgrp1 : group_structure G1 mult1 id1 inv1.
+{ exact (fundamental_group_is_group X Tx x1 HtopX Hx1X). }
+apply (and6E
+  (function_on mult1 (setprod G1 G1) G1)
+  (function_on inv1 G1 G1)
+  (id1 :e G1)
+  (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+    apply_fun mult1 (apply_fun mult1 (x, y), z) = apply_fun mult1 (x, apply_fun mult1 (y, z)))
+  (forall x:set, x :e G1 -> apply_fun mult1 (id1, x) = x /\ apply_fun mult1 (x, id1) = x)
+  (forall x:set, x :e G1 ->
+    apply_fun mult1 (x, apply_fun inv1 x) = id1 /\ apply_fun mult1 (apply_fun inv1 x, x) = id1)
+  Hgrp1).
+assume Hmult1_fn Hinv1_fn Hid1_in Hassoc1 Hid1 Hinv1.
 set b_alpha := basepoint_change_map X Tx x0 x1 alpha.
 set b_beta := basepoint_change_map X Tx x0 x1 beta.
 claim Habel_delta :
@@ -41283,9 +41315,33 @@ apply andI.
 - (** beta-image commutes under abelianity **)
   rewrite <- Habel_delta.
   rewrite (Hmult_beta cls delta_cls Hcls HdeltaCls).
-  (** TODO: show b_beta cls equals the product with b_beta delta_cls. **)
-  admit.
-Admitted.
+  claim Hb_beta_fun :
+    function_on b_beta (fundamental_group X Tx x0) G1.
+  {
+    exact (group_homomorphism_function_on
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      G1
+      mult1
+      b_beta
+      Hhom_beta).
+  }
+  claim Hb_beta_cls : apply_fun b_beta cls :e G1.
+  { exact (Hb_beta_fun cls Hcls). }
+  claim Hbeta_delta_id : apply_fun b_beta delta_cls = id1.
+  { (** TODO: delta_cls should correspond to the beta/alpha conjugacy class. **) admit. }
+  rewrite Hbeta_delta_id.
+  claim Hright_id :
+    apply_fun mult1 (apply_fun b_beta cls, id1) = apply_fun b_beta cls.
+  {
+    exact (andER
+      (apply_fun mult1 (id1, apply_fun b_beta cls) = apply_fun b_beta cls)
+      (apply_fun mult1 (apply_fun b_beta cls, id1) = apply_fun b_beta cls)
+      (Hid1 (apply_fun b_beta cls) Hb_beta_cls)).
+  }
+  rewrite Hright_id.
+  reflexivity.
+Admitted. (** TODO: missing relation between alpha and beta (delta_cls likely a specific conjugacy class). **)
 
 (** S52 helper: uniqueness of basepoint-change maps implies commutativity at the basepoint **)
 Theorem ex52_3_helper_unique_to_abelian_step : forall X Tx x0 a b:set,
