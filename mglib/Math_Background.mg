@@ -119001,6 +119001,24 @@ assume HYsub Hopen.
 exact (open_in_subspace_complement_subset_ambient X Tx Y U HYsub Hopen).
 Qed.
 
+(** Infrastructure: member of subspace topology gives complement in Power X **)
+(** Proven Bob **)
+Lemma subspace_topology_member_complement_power_ambient : forall X Tx Y U:set,
+  Y c= X ->
+  U :e subspace_topology X Tx Y ->
+  (Y :\: U) :e Power X.
+let X Tx Y U.
+assume HYsub HU.
+claim HsubY : (Y :\: U) c= Y.
+{ exact (setminus_Subq Y U). }
+claim HsubX : (Y :\: U) c= X.
+{
+  let x. assume Hx.
+  exact (HYsub x (HsubY x Hx)).
+}
+exact (PowerI X (Y :\: U) HsubX).
+Qed.
+
 (** Infrastructure: member of subspace topology has closed complement in subspace **)
 (** Proven Bob **)
 Lemma subspace_topology_member_complement_closed : forall X Tx Y U:set,
