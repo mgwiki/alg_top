@@ -246632,7 +246632,7 @@ apply (and5I
 						    reflexivity.
 						  }
 						  claim Huniq_binprefix :
-						    forall t:set, nat_p t ->
+						    forall t:set, nat_p t -> t :e n12 -> t <> 0 ->
 						      forall nA xsA nB xsB:set,
 						        reduced_word (J :\/: K) Hfam efamH nA xsA -> nA <> 0 ->
 						        word_product multG eG xsA nA = word_product multG eG xs12 (ordsucc t) ->
@@ -246640,8 +246640,15 @@ apply (and5I
 						        word_product multG eG xsB nB = word_product multG eG xs12 (ordsucc t) ->
 						        nA = nB /\ (forall i:set, i :e nA -> apply_fun xsA i = apply_fun xsB i).
 						  { admit. }
+						  claim Hkmax_ne0 : kmax <> 0.
+						  {
+						    assume Hk0.
+						    claim Hn12_1 : n12 = 1.
+						    { rewrite Hn12_eq. rewrite Hk0. exact ordsucc_0_eq_1_nat. }
+						    exact (Hn12_ne1 Hn12_1).
+						  }
 						  exact (Huniq_binprefix
-						    kmax Hkmax_nat
+						    kmax Hkmax_nat Hkmax_in12 Hkmax_ne0
 						    n xs
 						    n' xs'
 						    Hred Hn_ne Hwp
