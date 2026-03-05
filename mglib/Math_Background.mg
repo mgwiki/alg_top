@@ -117081,6 +117081,38 @@ exact (and4I
   HopenImg).
 Qed.
 
+(** Infrastructure: homeomorphisms are closed maps **)
+(** Proven Bob **)
+Lemma homeomorphism_closed_map : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  closed_map X Tx Y Ty f.
+let X Tx Y Ty f.
+assume Hhome.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim Hfun : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f Hcont). }
+claim HclosedImg : forall A:set, closed_in X Tx A -> closed_in Y Ty (image_of f A).
+{
+  let A.
+  assume HA.
+  exact (homeomorphism_image_closed X Tx Y Ty f A Hhome HA).
+}
+exact (andI
+  (function_on f X Y)
+  (forall A:set, closed_in X Tx A -> closed_in Y Ty (image_of f A))
+  Hfun
+  HclosedImg).
+Qed.
+
 (** Infrastructure: homeomorphisms are bijections **)
 (** Proven Bob **)
 Lemma homeomorphism_bijection : forall X Tx Y Ty f:set,
