@@ -117628,6 +117628,35 @@ exact (andER
   Hleft).
 Qed.
 
+(** Infrastructure: closed maps have well-typed data **)
+(** Proven Bob **)
+Lemma closed_map_function_on : forall X Tx Y Ty f:set,
+  closed_map X Tx Y Ty f ->
+  function_on f X Y.
+let X Tx Y Ty f.
+assume Hclosed.
+exact (andEL
+  (function_on f X Y)
+  (forall A:set, closed_in X Tx A -> closed_in Y Ty (image_of f A))
+  Hclosed).
+Qed.
+
+(** Infrastructure: closed maps send closed sets to closed sets **)
+(** Proven Bob **)
+Lemma closed_map_image_closed : forall X Tx Y Ty f A:set,
+  closed_map X Tx Y Ty f ->
+  closed_in X Tx A ->
+  closed_in Y Ty (image_of f A).
+let X Tx Y Ty f A.
+assume Hclosed HAclosed.
+exact ((andER
+  (function_on f X Y)
+  (forall A0:set, closed_in X Tx A0 -> closed_in Y Ty (image_of f A0))
+  Hclosed)
+  A
+  HAclosed).
+Qed.
+
 (** Infrastructure: open bijections are homeomorphisms **)
 (** Proven Bob **)
 Lemma open_map_bijection_homeomorphism : forall X Tx Y Ty f:set,
