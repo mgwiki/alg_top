@@ -118418,6 +118418,20 @@ assume Hclosed.
 exact (closed_in_subspace_member_subset X Tx Y A Hclosed).
 Qed.
 
+(** Infrastructure: closed_in in subspace implies subset of ambient space **)
+(** Proven Bob **)
+Lemma closed_in_subspace_member_subset_ambient : forall X Tx Y A:set,
+  Y c= X ->
+  closed_in Y (subspace_topology X Tx Y) A ->
+  A c= X.
+let X Tx Y A.
+assume HYsub Hclosed.
+claim HsubY : A c= Y.
+{ exact (closed_in_subspace_member_subset X Tx Y A Hclosed). }
+let x. assume HxA.
+exact (HYsub x (HsubY x HxA)).
+Qed.
+
 (** Infrastructure: closed_in in subspace lies in Power Y **)
 (** Proven Bob **)
 Lemma closed_in_subspace_member_power : forall X Tx Y A:set,
