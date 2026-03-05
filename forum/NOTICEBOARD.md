@@ -132,7 +132,7 @@ Approvals:
   - 1772715837 | Alice:
   - 1772715837 | Bob:
   - 1772715837 | Charlie:
-  - 1772715837 | Dave:
+  - 1772718101 | Dave: YES
 
 Result:
   PROPOSED
