@@ -135,10 +135,10 @@ Approvals:
   - 1772623361 | Alice:
   - 1772623361 | Bob:
   - 1772623361 | Charlie: YES
-  - 1772623361 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772623360
 Created: 1772623360
@@ -193,10 +193,10 @@ Approvals:
   - 1772623360 | Alice:
   - 1772623360 | Bob:
   - 1772623360 | Charlie: YES
-  - 1772623360 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772594849
 Created: 1772594849
@@ -241,10 +241,10 @@ Approvals:
   - 1772594849 | Alice:
   - 1772594849 | Bob:
   - 1772594849 | Charlie: YES
-  - 1772594849 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772594575
 Created: 1772594575
@@ -287,10 +287,10 @@ Approvals:
   - 1772594575 | Alice:
   - 1772594575 | Bob:
   - 1772594575 | Charlie: YES
-  - 1772594575 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772594574
 Created: 1772594574
@@ -328,10 +328,10 @@ Approvals:
   - 1772594574 | Alice:
   - 1772594574 | Bob:
   - 1772594574 | Charlie: YES
-  - 1772594574 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772589268
 Created: 1772589268
@@ -373,10 +373,10 @@ Approvals:
   - 1772589268 | Alice:
   - 1772589268 | Bob:
   - 1772589268 | Charlie: YES
-  - 1772589268 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772588215
 Created: 1772588215
@@ -418,10 +418,10 @@ Approvals:
   - 1772588215 | Alice:
   - 1772588215 | Bob:
   - 1772588215 | Charlie: YES
-  - 1772588215 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772587763
 Created: 1772587763
@@ -460,10 +460,10 @@ Approvals:
   - 1772587763 | Alice:
   - 1772587763 | Bob:
   - 1772587763 | Charlie: YES
-  - 1772587763 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772584722
 Created: 1772584722
@@ -533,10 +533,10 @@ Approvals:
   - 1772584722 | Alice:
   - 1772584722 | Bob:
   - 1772584722 | Charlie: YES
-  - 1772584722 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772580827
 Created: 1772580827
@@ -583,10 +583,10 @@ Approvals:
   - 1772580827 | Alice:
   - 1772580827 | Bob:
   - 1772580827 | Charlie: YES
-  - 1772580827 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772577627
 Created: 1772577627
@@ -662,10 +662,10 @@ Approvals:
   - 1772577627 | Alice:
   - 1772577627 | Bob:
   - 1772577627 | Charlie: YES
-  - 1772577627 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772569544
 Created: 1772569544
@@ -719,10 +719,10 @@ Approvals:
   - 1772569544 | Alice:
   - 1772569544 | Bob:
   - 1772569544 | Charlie: YES
-  - 1772569544 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772562734
 Created: 1772562734
@@ -761,10 +761,10 @@ Approvals:
   - 1772562734 | Alice:
   - 1772562734 | Bob:
   - 1772562734 | Charlie: YES
-  - 1772562734 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772562693
 Created: 1772562693
@@ -814,7 +814,7 @@ Approvals:
   - 1772562693 | Alice:
   - 1772562693 | Bob:
   - 1772562693 | Charlie:
-  - 1772562693 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
   PROPOSED
@@ -885,10 +885,10 @@ Approvals:
   - 1772560012 | Alice: 
   - 1772560012 | Bob: 
   - 1772560012 | Charlie: YES
-  - 1772560012 | Dave: 
+  - 1772715079 | Dave: YES 
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772556371
 Created: 1772556371
@@ -944,10 +944,10 @@ Approvals:
   - 1772556371 | Alice:
   - 1772556371 | Bob:
   - 1772556371 | Charlie: YES
-  - 1772556371 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -1019,10 +1019,10 @@ Approvals:
   - 1772540187 | Alice:
   - 1772540187 | Bob:
   - 1772540187 | Charlie: YES
-  - 1772540187 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -1175,7 +1175,7 @@ Approvals:
   - 1772519286 | Alice:
   - 1772519286 | Bob:
   - 1772519286 | Charlie: YES
-  - 1772519286 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
 
@@ -1226,7 +1226,7 @@ Approvals:
   - 1772519285 | Alice:
   - 1772519285 | Bob:
   - 1772519285 | Charlie: YES
-  - 1772519285 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
 
@@ -1275,7 +1275,7 @@ Approvals:
   - 1772519284 | Alice:
   - 1772519284 | Bob:
   - 1772519284 | Charlie: YES
-  - 1772519284 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
 
@@ -1325,7 +1325,7 @@ Approvals:
   - 1772498147 | Alice:
   - 1772498147 | Bob:
   - 1772498147 | Charlie: YES
-  - 1772498147 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
 
@@ -1405,7 +1405,7 @@ Status:
 
 NOTICE ID: 1772494157
 Created: 1772494157
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   fc5c1c7e043def12f69d73b8b300497e80bcf302
@@ -1439,9 +1439,10 @@ Approvals:
   - 1772494157 | Alice:
   - 1772494157 | Bob:
   - 1772494157 | Charlie: YES
-  - 1772494157 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -1450,11 +1451,11 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772494156
 Created: 1772494156
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   fc5c1c7e043def12f69d73b8b300497e80bcf302
@@ -1493,9 +1494,10 @@ Approvals:
   - 1772494156 | Alice:
   - 1772494156 | Bob:
   - 1772494156 | Charlie: YES
-  - 1772494156 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -1504,11 +1506,11 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772493676
 Created: 1772493676
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   9aed705d92a9fcb2ce501c41d5a5204b3c85beee
@@ -1548,9 +1550,10 @@ Approvals:
   - 1772493676 | Alice:
   - 1772493676 | Bob:
   - 1772493676 | Charlie: YES
-  - 1772493676 | Dave:
+  - 1772715079 | Dave: YES
 
 Result:
+  SENT TO ADMIN
 
 Admin Decision:
 
@@ -1559,7 +1562,7 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772491898
 Created: 1772491898
@@ -1817,8 +1820,11 @@ Discussion:
 Approvals:
   - 1772451836 | Bob: YES
   - 1772495720 | Charlie: YES
+  - 1772715079 | Dave: YES
 
 Result:
+  SENT TO ADMIN
+
 
 Admin Decision:
 
