@@ -141239,6 +141239,61 @@ claim Hnat :
 exact (Hnat n Hn HfR Hf0).
 Qed.
 
+(** Proven Bob **)
+Lemma finite_real_sum_nonneg : forall f:set->set, forall n:set, nat_p n ->
+  (forall k:set, k :e n -> f k :e R) ->
+  (forall k:set, k :e n -> Rle 0 (f k)) ->
+  Rle 0 (finite_real_sum f n).
+let f n.
+assume Hn HfR HfNonneg.
+claim Hnat :
+  forall m:set, nat_p m ->
+    (forall k:set, k :e m -> f k :e R) ->
+    (forall k:set, k :e m -> Rle 0 (f k)) ->
+    Rle 0 (finite_real_sum f m).
+{
+  apply nat_ind.
+  - assume H0R H0nonneg.
+    rewrite (finite_real_sum_0 f).
+    exact (Rle_refl 0 real_0).
+  - let m.
+    assume Hm_nat IH.
+    assume HmR Hmnonneg.
+    rewrite (finite_real_sum_S f m Hm_nat).
+    claim HsumR : finite_real_sum f m :e R.
+    {
+      exact (finite_real_sum_in_R f m Hm_nat
+        (fun k Hk => HmR k (ordsuccI1 m k Hk))).
+    }
+    claim HsumNonneg : Rle 0 (finite_real_sum f m).
+    {
+      exact (IH
+        (fun k Hk => HmR k (ordsuccI1 m k Hk))
+        (fun k Hk => Hmnonneg k (ordsuccI1 m k Hk))).
+    }
+    claim HfmR : f m :e R.
+    { exact (HmR m (ordsuccI2 m)). }
+    claim HfmNonneg : Rle 0 (f m).
+    { exact (Hmnonneg m (ordsuccI2 m)). }
+    claim Hfm_le_sum : Rle (f m) (add_SNo (finite_real_sum f m) (f m)).
+    {
+      exact (Rle_increase_by_nonneg_left
+        (finite_real_sum f m)
+        (f m)
+        HsumR
+        HfmR
+        HsumNonneg).
+    }
+    exact (Rle_tra
+      0
+      (f m)
+      (add_SNo (finite_real_sum f m) (f m))
+      HfmNonneg
+      Hfm_le_sum).
+}
+exact (Hnat n Hn HfR HfNonneg).
+Qed.
+
 (** Infrastructure: n-by-n matrix applied to n-vector **)
 (** (Av)_i = sum_{j<n} A(i,j) v(j) **)
 Definition matrix_vector_mult : set -> set -> set -> set := fun n A v =>
@@ -141283,7 +141338,6 @@ claim Hfixed_implies_eigen :
   assume HvS Hfixed.
   set Av := matrix_vector_mult 3 A v.
   set lam := finite_real_sum (fun k:set => apply_fun Av k) 3.
-  (** TODO: show lam :e R and Rlt 0 lam using positivity and sum=1. **)
   claim Hvfun : function_on v 3 R.
   { exact (function_on_of_function_space v 3 R (SepE1 (function_space 3 R) (fun w:set =>
       (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
@@ -141323,31 +141377,80 @@ claim Hfixed_implies_eigen :
     { rewrite <- Hsum1. exact Hsum0. }
     exact (neq_1_0 H10).
   }
-  witness lam.
-  apply andI.
-  - admit. (** TODO: positivity of lam from HApos and HvS. **)
-  - claim H3nat : nat_p 3.
-    { exact (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))). }
-    claim HlamR : lam :e R.
+  claim H3nat : nat_p 3.
+  { exact (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))). }
+  claim HvSprop :
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+  {
+    exact (SepE2
+      (function_space 3 R)
+      (fun w:set =>
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+        finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+      v
+      HvS).
+  }
+  claim HvNonneg : forall i:set, i :e 3 -> Rle 0 (apply_fun v i).
+  {
+    let i. assume Hi3.
+    claim Hnonlt : ~(Rlt (apply_fun v i) 0).
     {
-      apply (finite_real_sum_in_R (fun k:set => apply_fun Av k) 3 H3nat).
-      let k.
-      assume Hk3.
-      claim HavkEq :
-        apply_fun Av k =
-          finite_real_sum (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3.
-      {
-        exact (apply_fun_graph
-          3
-          (fun i:set =>
-            finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
-          k
-          Hk3).
-      }
-      rewrite HavkEq.
-      apply (finite_real_sum_in_R (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3 H3nat).
-      let j.
-      assume Hj3.
+      exact (andEL
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+        (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+        HvSprop
+        i
+        Hi3).
+    }
+    exact (RleI 0 (apply_fun v i) real_0 (Hvfun i Hi3) Hnonlt).
+  }
+  claim HAvRall : forall k:set, k :e 3 -> apply_fun Av k :e R.
+  {
+    let k. assume Hk3.
+    claim HavkEq :
+      apply_fun Av k =
+        finite_real_sum (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3.
+    {
+      exact (apply_fun_graph
+        3
+        (fun i:set =>
+          finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+        k
+        Hk3).
+    }
+    rewrite HavkEq.
+    apply (finite_real_sum_in_R (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3 H3nat).
+    let j.
+    assume Hj3.
+    claim HakjR : apply_fun A (k, j) :e R.
+    {
+      exact (HAfun
+        (k, j)
+        (tuple_2_setprod_by_pair_Sigma 3 3 k j Hk3 Hj3)).
+    }
+    claim HvjR : apply_fun v j :e R.
+    { exact (Hvfun j Hj3). }
+    exact (real_mul_SNo (apply_fun A (k, j)) HakjR (apply_fun v j) HvjR).
+  }
+  claim HAvNonneg : forall k:set, k :e 3 -> Rle 0 (apply_fun Av k).
+  {
+    let k. assume Hk3.
+    claim HavkEq :
+      apply_fun Av k =
+        finite_real_sum (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3.
+    {
+      exact (apply_fun_graph
+        3
+        (fun i:set =>
+          finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+        k
+        Hk3).
+    }
+    rewrite HavkEq.
+    apply (finite_real_sum_nonneg
+      (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3 H3nat).
+    - let j. assume Hj3.
       claim HakjR : apply_fun A (k, j) :e R.
       {
         exact (HAfun
@@ -141357,8 +141460,86 @@ claim Hfixed_implies_eigen :
       claim HvjR : apply_fun v j :e R.
       { exact (Hvfun j Hj3). }
       exact (real_mul_SNo (apply_fun A (k, j)) HakjR (apply_fun v j) HvjR).
+    - let j. assume Hj3.
+      claim HakjR : apply_fun A (k, j) :e R.
+      {
+        exact (HAfun
+          (k, j)
+          (tuple_2_setprod_by_pair_Sigma 3 3 k j Hk3 Hj3)).
+      }
+      claim HvjR : apply_fun v j :e R.
+      { exact (Hvfun j Hj3). }
+      claim HakjPos : Rlt 0 (apply_fun A (k, j)).
+      { exact (HApos k j Hk3 Hj3). }
+      claim HakjNonneg : Rle 0 (apply_fun A (k, j)).
+      { exact (Rlt_implies_Rle 0 (apply_fun A (k, j)) HakjPos). }
+      claim HvjNonneg : Rle 0 (apply_fun v j).
+      { exact (HvNonneg j Hj3). }
+      claim HakjSNo : SNo (apply_fun A (k, j)).
+      { exact (real_SNo (apply_fun A (k, j)) HakjR). }
+      claim HvjSNo : SNo (apply_fun v j).
+      { exact (real_SNo (apply_fun v j) HvjR). }
+      claim Hakj_le : 0 <= apply_fun A (k, j).
+      { exact (SNoLe_of_Rle 0 (apply_fun A (k, j)) HakjNonneg). }
+      claim Hvj_le : 0 <= apply_fun v j.
+      { exact (SNoLe_of_Rle 0 (apply_fun v j) HvjNonneg). }
+      claim Hprod_le :
+        0 <= mul_SNo (apply_fun A (k, j)) (apply_fun v j).
+      {
+        exact (mul_SNo_nonneg_nonneg
+          (apply_fun A (k, j))
+          (apply_fun v j)
+          HakjSNo
+          HvjSNo
+          Hakj_le
+          Hvj_le).
+      }
+      claim HprodR : mul_SNo (apply_fun A (k, j)) (apply_fun v j) :e R.
+      { exact (real_mul_SNo (apply_fun A (k, j)) HakjR (apply_fun v j) HvjR). }
+      exact (Rle_of_SNoLe
+        0
+        (mul_SNo (apply_fun A (k, j)) (apply_fun v j))
+        real_0
+        HprodR
+        Hprod_le).
+  }
+  claim HlamR : lam :e R.
+  {
+    apply (finite_real_sum_in_R (fun k:set => apply_fun Av k) 3 H3nat).
+    let k. assume Hk3. exact (HAvRall k Hk3).
+  }
+  claim HlamNonneg : Rle 0 lam.
+  {
+    apply (finite_real_sum_nonneg (fun k:set => apply_fun Av k) 3 H3nat).
+    - let k. assume Hk3. exact (HAvRall k Hk3).
+    - let k. assume Hk3. exact (HAvNonneg k Hk3).
+  }
+  claim Hlamneq0 : lam <> 0.
+  {
+    assume Hlam0.
+    claim Hvzero : forall i:set, i :e 3 -> apply_fun v i = 0.
+    {
+      let i. assume Hi3.
+      claim HAvSNo : SNo (apply_fun Av i).
+      { exact (real_SNo (apply_fun Av i) (HAvRall i Hi3)). }
+      rewrite (Hfixed i Hi3).
+      rewrite Hlam0.
+      exact (div_SNo_0_denum (apply_fun Av i) HAvSNo).
     }
-    claim Hvexists :
+    exact (Hnotzero Hvzero).
+  }
+  claim Hlampos : Rlt 0 lam.
+  {
+    exact (Rle_neq_implies_Rlt
+      0
+      lam
+      HlamNonneg
+      (fun H0 => Hlamneq0 (eq_symm 0 lam H0))).
+  }
+  witness lam.
+  apply andI.
+  - exact Hlampos.
+  - claim Hvexists :
       exists v:set,
         function_on v 3 R /\
         ~(forall i:set, i :e 3 -> apply_fun v i = 0) /\
@@ -141372,50 +141553,7 @@ claim Hfixed_implies_eigen :
       - apply andI.
         + exact Hvfun.
         + exact Hnotzero.
-      - claim Hlamneq0 : lam <> 0.
-        {
-          assume Hlam0.
-          claim Hvzero : forall i:set, i :e 3 -> apply_fun v i = 0.
-          {
-            let i. assume Hi3.
-            claim Hav_i :
-              apply_fun Av i =
-                finite_real_sum (fun j:set =>
-                  mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3.
-            {
-              exact (apply_fun_graph
-                3
-                (fun i:set =>
-                  finite_real_sum (fun j:set =>
-                    mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
-                i
-                Hi3).
-            }
-            claim HAvR : apply_fun Av i :e R.
-            {
-              rewrite Hav_i.
-              apply (finite_real_sum_in_R
-                (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3 H3nat).
-              let j. assume Hj3.
-              claim HakjR : apply_fun A (i, j) :e R.
-              {
-                exact (HAfun
-                  (i, j)
-                  (tuple_2_setprod_by_pair_Sigma 3 3 i j Hi3 Hj3)).
-              }
-              claim HvjR : apply_fun v j :e R.
-              { exact (Hvfun j Hj3). }
-              exact (real_mul_SNo (apply_fun A (i, j)) HakjR (apply_fun v j) HvjR).
-            }
-            claim HAvSNo : SNo (apply_fun Av i).
-            { exact (real_SNo (apply_fun Av i) HAvR). }
-            rewrite (Hfixed i Hi3).
-            rewrite Hlam0.
-            exact (div_SNo_0_denum (apply_fun Av i) HAvSNo).
-          }
-          exact (Hnotzero Hvzero).
-        }
-        let i. assume Hi3.
+      - let i. assume Hi3.
         claim Hav_i :
           apply_fun Av i =
             finite_real_sum (fun j:set =>
