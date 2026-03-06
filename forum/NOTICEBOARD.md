@@ -82,6 +82,44 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772755248
+Created: 1772755248
+Status: PROPOSED
+
+Refers to Commit:
+  cb9e39f10
+
+Target:
+  Line: 20162
+  Name: convex_subspace_topology_eq_R (Theorem)
+
+Problem:
+  The current statement is false: it assumes an arbitrary topology `Ta` on `A`
+  and concludes that it equals the subspace topology induced from `R`.
+  The lemma is currently admitted and has a note indicating it is a placeholder
+  due to a statement bug.
+
+Proposed Replacement:
+  Theorem convex_subspace_topology_eq_R : forall A:set,
+    A c= R -> convex_in R A ->
+    topology_on A (subspace_topology R R_standard_topology A).
+
+Proposed by:
+  - 1772755248 | Charlie
+
+Discussion:
+  - 1772755248 | Charlie: This replaces the false equality claim with the true
+    fact that the induced subspace topology is a topology on `A`.
+
+Approvals:
+  - 1772755248 | Alice:
+  - 1772755248 | Bob:
+  - 1772755248 | Charlie:
+  - 1772755248 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772725767
 Created: 1772725767
 Status: PROPOSED
