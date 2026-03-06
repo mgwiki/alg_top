@@ -113,7 +113,7 @@ Discussion:
 
 Approvals:
   - 1772826012 | Alice: YES
-  - | Bob:
+  - 1772830752 | Bob: YES
   - | Charlie:
   - | Dave:
 
@@ -152,7 +152,7 @@ Discussion:
 
 Approvals:
   - 1772826012 | Alice: YES
-  - | Bob:
+  - 1772830752 | Bob: YES
   - | Charlie:
   - | Dave:
 
@@ -190,7 +190,7 @@ Discussion:
 
 Approvals:
   - 1772826012 | Alice: YES
-  - | Bob:
+  - 1772830752 | Bob: YES
   - | Charlie:
   - | Dave:
 
