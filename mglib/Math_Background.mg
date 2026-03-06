@@ -142300,6 +142300,105 @@ apply (SepI
     Hsum1)).
 Qed.
 
+(** Infrastructure: triangle -> simplex -> triangle is identity **)
+(** Proven Bob **)
+Lemma simplex3_to_triangular_region_roundtrip :
+  forall p:set, p :e triangular_region ->
+    apply_fun simplex3_to_triangular_region
+      (apply_fun triangular_region_to_simplex3 p) = p.
+let p.
+assume HpT.
+set v := apply_fun triangular_region_to_simplex3 p.
+claim HvS : v :e simplex3_set.
+{ exact (triangular_region_to_simplex3_in_simplex3 p HpT). }
+claim HpR2 : p :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun q:set =>
+      ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+      ~(Rlt 1 (add_SNo (q 0) (q 1))))
+    p
+    HpT).
+}
+claim HpEta : p = (p 0, p 1).
+{ exact (setprod_eta R R p HpR2). }
+claim H0in3 : 0 :e 3.
+{ exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3.
+{ exact (ordsuccI1 2 1 In_1_2). }
+claim Hv0 :
+  apply_fun v 0 = p 0.
+{
+  rewrite (apply_fun_graph
+    triangular_region
+    (fun p0:set =>
+      graph 3 (fun i:set =>
+        if i = 0 then p0 0 else
+        if i = 1 then p0 1 else
+        add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+    p
+    HpT).
+  rewrite (apply_fun_graph
+    3
+    (fun i0:set =>
+      if i0 = 0 then p 0 else
+      if i0 = 1 then p 1 else
+      add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+    0
+    H0in3).
+  apply (If_i_1 (0 = 0) (p 0)
+    (if 0 = 1 then p 1 else
+      add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))).
+  reflexivity.
+}
+claim Hv1 :
+  apply_fun v 1 = p 1.
+{
+  rewrite (apply_fun_graph
+    triangular_region
+    (fun p0:set =>
+      graph 3 (fun i:set =>
+        if i = 0 then p0 0 else
+        if i = 1 then p0 1 else
+        add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+    p
+    HpT).
+  rewrite (apply_fun_graph
+    3
+    (fun i0:set =>
+      if i0 = 0 then p 0 else
+      if i0 = 1 then p 1 else
+      add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+    1
+    H1in3).
+  rewrite (If_i_0 (1 = 0) (p 0)
+    (if 1 = 1 then p 1 else
+      add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+    (neq_1_0)).
+  apply (If_i_1 (1 = 1) (p 1)
+    (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))).
+  reflexivity.
+}
+claim HpairEq :
+  apply_fun simplex3_to_triangular_region v = (p 0, p 1).
+{
+  rewrite (apply_fun_graph
+    simplex3_set
+    (fun v0:set => (apply_fun v0 0, apply_fun v0 1))
+    v
+    HvS).
+  exact (tuple_2_eq
+    (apply_fun v 0)
+    (apply_fun v 1)
+    (p 0)
+    (p 1)
+    Hv0
+    Hv1).
+}
+exact (HpEta (fun a b => apply_fun simplex3_to_triangular_region v = b) HpairEq).
+Qed.
+
 (** Infrastructure: the triangular region lies in the closed unit disk **)
 (** Proven Bob **)
 Lemma triangular_region_subset_B2 :
