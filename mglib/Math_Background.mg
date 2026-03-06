@@ -26251,6 +26251,7 @@ exact (fundamental_group_mult_apply
     (path_homotopy_class_in_fundamental_group X Tx x0 g Hg))).
 Qed.
 
+(** Proven Bob **)
 (** helper: the identity element of fundamental_group **)
 Definition fundamental_group_id : set -> set -> set -> set :=
   fun X Tx x0 =>
@@ -34638,6 +34639,54 @@ exact (SepI
   f
   HfLoop
   Hrefl).
+Qed.
+
+(** Proven Bob **)
+Theorem fundamental_group_mult_apply_on_representatives : forall X Tx x0 f g:set,
+  f :e loop_space X Tx x0 ->
+  g :e loop_space X Tx x0 ->
+  apply_fun (fundamental_group_mult X Tx x0)
+    (path_homotopy_class_loop X Tx x0 f, path_homotopy_class_loop X Tx x0 g)
+  = path_homotopy_class_loop X Tx x0 (path_concat f g).
+let X Tx x0 f g.
+assume Hf Hg.
+set clsf := path_homotopy_class_loop X Tx x0 f.
+set clsg := path_homotopy_class_loop X Tx x0 g.
+set f0 := Eps_i (fun h:set => h :e clsf).
+set g0 := Eps_i (fun h:set => h :e clsg).
+claim Hf_in : f :e clsf.
+{ exact (loop_in_own_path_homotopy_class X Tx x0 f Hf). }
+claim Hg_in : g :e clsg.
+{ exact (loop_in_own_path_homotopy_class X Tx x0 g Hg). }
+claim Hf0_in : f0 :e clsf.
+{ exact (Eps_i_ax (fun h:set => h :e clsf) f Hf_in). }
+claim Hg0_in : g0 :e clsg.
+{ exact (Eps_i_ax (fun h:set => h :e clsg) g Hg_in). }
+claim Hf_hom : path_homotopic X Tx x0 x0 f f0.
+{ exact (path_homotopy_class_loop_has_homotopy X Tx x0 f f0 Hf0_in). }
+claim Hg_hom : path_homotopic X Tx x0 x0 g g0.
+{ exact (path_homotopy_class_loop_has_homotopy X Tx x0 g g0 Hg0_in). }
+claim Hconcat_hom :
+  path_homotopic X Tx x0 x0 (path_concat f g) (path_concat f0 g0).
+{ exact (path_concat_well_defined_on_classes X Tx x0 x0 x0 f f0 g g0 Hf_hom Hg_hom). }
+claim Hclass_eq :
+  path_homotopy_class_loop X Tx x0 (path_concat f g)
+  = path_homotopy_class_loop X Tx x0 (path_concat f0 g0).
+{ exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X Tx x0 (path_concat f g) (path_concat f0 g0) Hconcat_hom). }
+claim Hmult_eq :
+  apply_fun (fundamental_group_mult X Tx x0)
+    (path_homotopy_class_loop X Tx x0 f, path_homotopy_class_loop X Tx x0 g)
+  = path_homotopy_class_loop X Tx x0 (path_concat f0 g0).
+{
+  rewrite (fundamental_group_mult_apply_on_loop_classes X Tx x0 f g Hf Hg).
+  rewrite (tuple_2_0_eq (path_homotopy_class_loop X Tx x0 f) (path_homotopy_class_loop X Tx x0 g)).
+  rewrite (tuple_2_1_eq (path_homotopy_class_loop X Tx x0 f) (path_homotopy_class_loop X Tx x0 g)).
+  reflexivity.
+}
+rewrite Hmult_eq.
+rewrite <- Hclass_eq.
+reflexivity.
 Qed.
 
 (** Infrastructure: canonical Eps_i representative of a pi1 class is a loop **)
