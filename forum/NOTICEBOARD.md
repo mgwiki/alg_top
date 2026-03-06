@@ -82,6 +82,57 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772757793
+Created: 1772757793
+Status: PROPOSED
+
+Refers to Commit:
+  0521ddfcf
+
+Target:
+  Line: 223356
+  Name: external_free_product (Definition)
+
+Problem:
+  The current definition does not assume that each factor (apply_fun Gfam alpha, apply_fun multfam alpha)
+  carries a group structure. As a result, multfam(alpha) is not known to be closed on apply_fun Gfam(alpha),
+  and several downstream arguments (e.g. in lemma68_3_extension_external_free_product) require such closure.
+  The current definition attempts to pick an identity element for each factor via Eps_i over
+  (exists ma ia, group_structure ...), but without an existence hypothesis this provides no usable facts.
+
+Proposed Replacement:
+  Definition external_free_product : set -> set -> set -> set -> set -> set -> set -> set -> prop :=
+    fun G multG eG invG J Gfam multfam ifam =>
+      group_structure G multG eG invG /\
+      (forall alpha:set, alpha :e J ->
+        exists ea ia:set,
+          group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia) /\
+      (forall alpha:set, alpha :e J ->
+        group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)) /\
+      free_product_of_subgroups G multG eG invG J
+        (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)))
+        (graph J (fun alpha:set => apply_fun (apply_fun ifam alpha) (Eps_i (fun ea:set =>
+          exists ma ia:set,
+            group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia)))).
+
+Proposed by:
+  - 1772757793 | Charlie
+
+Discussion:
+  - 1772757793 | Charlie: This adds the minimal existence-of-group-structure hypothesis for each factor.
+    It is required for closure reasoning in the external free product development.
+
+Approvals:
+  - 1772757793 | Alice:
+  - 1772757793 | Bob:
+  - 1772757793 | Charlie:
+  - 1772757793 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772756274
 Created: 1772756274
 Status: PROPOSED
