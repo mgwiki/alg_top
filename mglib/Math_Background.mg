@@ -141173,6 +141173,36 @@ assume Hn.
 exact (nat_primrec_S 0 (fun j r => add_SNo r (f j)) n Hn).
 Qed.
 
+(** Proven Bob **)
+Lemma finite_real_sum_in_R : forall f:set->set, forall n:set, nat_p n ->
+  (forall k:set, k :e n -> f k :e R) ->
+  finite_real_sum f n :e R.
+let f n.
+assume Hn Hf.
+claim Hnat :
+  forall m:set, nat_p m ->
+    (forall k:set, k :e m -> f k :e R) ->
+    finite_real_sum f m :e R.
+{
+  apply nat_ind.
+  - assume H0f.
+    rewrite (finite_real_sum_0 f).
+    exact real_0.
+  - let m.
+    assume Hm_nat IH.
+    assume Hmf.
+    rewrite (finite_real_sum_S f m Hm_nat).
+    claim HsumR : finite_real_sum f m :e R.
+    {
+      exact (IH (fun k Hk => Hmf k (ordsuccI1 m k Hk))).
+    }
+    claim HfR : f m :e R.
+    { exact (Hmf m (ordsuccI2 m)). }
+    exact (real_add_SNo (finite_real_sum f m) HsumR (f m) HfR).
+}
+exact (Hnat n Hn Hf).
+Qed.
+
 (** Infrastructure: n-by-n matrix applied to n-vector **)
 (** (Av)_i = sum_{j<n} A(i,j) v(j) **)
 Definition matrix_vector_mult : set -> set -> set -> set := fun n A v =>
