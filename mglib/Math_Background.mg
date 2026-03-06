@@ -95430,10 +95430,77 @@ apply xm (t0 = 0).
         U :e TI1 /\ s0 :e U /\
         continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift.
     {
-      (** TODO: build a chain of product balls covering t from 0 to t0, use
-          column_continuity_propagation_step to propagate continuity along the chain,
-          and shrink I1 around s0 so F maps the product into evenly covered U at each step.
-          Use connected_space_open_cover_chain on unit_interval and continuity of F. **)
+      (** Sketch: build an open cover of unit_interval by t-neighborhoods I2_t such that
+          F maps (I1_t x I2_t) into an evenly covered U_t; extract a finite chain from 0 to t0
+          (connected_space_open_cover_chain), intersect the corresponding I1_t to get a
+          neighborhood U of s0, and propagate column continuity along the chain using
+          column_continuity_propagation_step. **)
+      set I2 := unit_interval.
+      set TI2 := unit_interval_topology.
+      set f0 := compose_fun unit_interval
+        (pair_map unit_interval (const_fun unit_interval s0)
+          (graph unit_interval (fun t:set => t))) F.
+      claim Hf0cont :
+        continuous_map unit_interval
+          (subspace_topology unit_interval unit_interval_topology unit_interval)
+          B Tb f0.
+      {
+        exact (continuous_map_product_ball_slice_first
+          B
+          Tb
+          F
+          I1
+          unit_interval
+          s0
+          HI1sub
+          (Subq_ref unit_interval)
+          Hs0
+          HFcont).
+      }
+      (** Fam: t-intervals coming from product balls mapped into evenly covered U_t. **)
+      set Fam := {J :e unit_interval_topology |
+        exists U r0 r1:set,
+          U :e Tb /\
+          evenly_covered E Te B Tb p U /\
+          r0 :e R /\ Rlt 0 r0 /\ Rlt r0 1 /\
+          r1 :e R /\ Rlt 0 r1 /\ Rlt r1 1 /\
+          s0 :e open_ball unit_interval R_bounded_metric s0 r0 /\
+          J = open_ball unit_interval R_bounded_metric 0 r1 /\
+          setprod
+            (open_ball unit_interval R_bounded_metric s0 r0)
+            J c= preimage_of (setprod I1 unit_interval) F U}.
+      claim Hcover : open_cover_of unit_interval unit_interval_topology Fam.
+      {
+        (** TODO: use lemma54_1_path_lifting_sub_bounty_A at each t to get U_t,
+            continuity of F at (s0,t) to get a unit_square neighborhood mapping into U_t,
+            and unit_square_open_neighborhood_contains_product_balls to extract J :e Fam. **)
+        admit.
+      }
+      claim Hchain :
+        exists U0 U1 n seq:set,
+          U0 :e Fam /\ 0 :e U0 /\
+          U1 :e Fam /\ t0 :e U1 /\
+          n :e omega /\
+          function_on seq (ordsucc n) Fam /\
+          apply_fun seq 0 = U0 /\
+          apply_fun seq n = U1 /\
+          (forall k:set, k :e n ->
+            apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
+      {
+        exact (connected_space_open_cover_chain
+          unit_interval
+          unit_interval_topology
+          Fam
+          0
+          t0
+          unit_interval_connected
+          Hcover
+          zero_in_unit_interval
+          Ht0).
+      }
+      (** TODO: extract corresponding I1-balls and evenly covered U_k from the chain,
+          intersect the I1-balls to get U, then apply column_continuity_propagation_step
+          iteratively along the chain to conclude continuity at t0 on U. **)
       admit.
     }
     apply Hlocal_ex.
