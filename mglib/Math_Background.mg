@@ -141288,6 +141288,41 @@ claim Hfixed_implies_eigen :
   { exact (function_on_of_function_space v 3 R (SepE1 (function_space 3 R) (fun w:set =>
       (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
       finite_real_sum (fun i:set => apply_fun w i) 3 = 1) v HvS)). }
+  claim Hnotzero : ~(forall i:set, i :e 3 -> apply_fun v i = 0).
+  {
+    (** v is not identically zero because sum = 1 **)
+    assume Hzero.
+    claim HvSprop :
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+    {
+      exact (SepE2
+        (function_space 3 R)
+        (fun w:set =>
+          (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+          finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+        v
+        HvS).
+    }
+    claim Hsum1 : finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+    {
+      exact (andER
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+        (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+        HvSprop).
+    }
+    claim H3nat_local : nat_p 3.
+    { exact (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))). }
+    claim Hsum0 : finite_real_sum (fun i:set => apply_fun v i) 3 = 0.
+    {
+      apply (finite_real_sum_zero_of_all_zero (fun i:set => apply_fun v i) 3 H3nat_local).
+      - let i. assume Hi3. exact (Hvfun i Hi3).
+      - exact Hzero.
+    }
+    claim H10 : 1 = 0.
+    { rewrite <- Hsum1. exact Hsum0. }
+    exact (neq_1_0 H10).
+  }
   witness lam.
   apply andI.
   - admit. (** TODO: positivity of lam from HApos and HvS. **)
@@ -141336,43 +141371,102 @@ claim Hfixed_implies_eigen :
       apply andI.
       - apply andI.
         + exact Hvfun.
-        + {
-            (** v is not identically zero because sum = 1 **)
-            assume Hzero.
-            claim HvSprop :
-              (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
-              finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+        + exact Hnotzero.
+      - claim Hlamneq0 : lam <> 0.
+        {
+          assume Hlam0.
+          claim Hvzero : forall i:set, i :e 3 -> apply_fun v i = 0.
+          {
+            let i. assume Hi3.
+            claim Hav_i :
+              apply_fun Av i =
+                finite_real_sum (fun j:set =>
+                  mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3.
             {
-              exact (SepE2
-                (function_space 3 R)
-                (fun w:set =>
-                  (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
-                  finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
-                v
-                HvS).
+              exact (apply_fun_graph
+                3
+                (fun i:set =>
+                  finite_real_sum (fun j:set =>
+                    mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+                i
+                Hi3).
             }
-            claim Hsum1 : finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+            claim HAvR : apply_fun Av i :e R.
             {
-              exact (andER
-                (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
-                (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
-                HvSprop).
+              rewrite Hav_i.
+              apply (finite_real_sum_in_R
+                (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3 H3nat).
+              let j. assume Hj3.
+              claim HakjR : apply_fun A (i, j) :e R.
+              {
+                exact (HAfun
+                  (i, j)
+                  (tuple_2_setprod_by_pair_Sigma 3 3 i j Hi3 Hj3)).
+              }
+              claim HvjR : apply_fun v j :e R.
+              { exact (Hvfun j Hj3). }
+              exact (real_mul_SNo (apply_fun A (i, j)) HakjR (apply_fun v j) HvjR).
             }
-            claim H3nat_local : nat_p 3.
-            { exact (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))). }
-            claim Hsum0 : finite_real_sum (fun i:set => apply_fun v i) 3 = 0.
-            {
-              apply (finite_real_sum_zero_of_all_zero (fun i:set => apply_fun v i) 3 H3nat_local).
-              - let i. assume Hi3. exact (Hvfun i Hi3).
-              - exact Hzero.
-            }
-            claim H10 : 1 = 0.
-            { rewrite <- Hsum1. exact Hsum0. }
-            exact (neq_1_0 H10).
+            claim HAvSNo : SNo (apply_fun Av i).
+            { exact (real_SNo (apply_fun Av i) HAvR). }
+            rewrite (Hfixed i Hi3).
+            rewrite Hlam0.
+            exact (div_SNo_0_denum (apply_fun Av i) HAvSNo).
           }
-      - admit.
+          exact (Hnotzero Hvzero).
+        }
+        let i. assume Hi3.
+        claim Hav_i :
+          apply_fun Av i =
+            finite_real_sum (fun j:set =>
+              mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3.
+        {
+          exact (apply_fun_graph
+            3
+            (fun i:set =>
+              finite_real_sum (fun j:set =>
+                mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+            i
+            Hi3).
+        }
+        rewrite <- Hav_i.
+        rewrite (Hfixed i Hi3).
+        claim HAvR : apply_fun Av i :e R.
+        {
+          rewrite Hav_i.
+          apply (finite_real_sum_in_R
+            (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3 H3nat).
+          let j. assume Hj3.
+          claim HakjR : apply_fun A (i, j) :e R.
+          {
+            exact (HAfun
+              (i, j)
+              (tuple_2_setprod_by_pair_Sigma 3 3 i j Hi3 Hj3)).
+          }
+          claim HvjR : apply_fun v j :e R.
+          { exact (Hvfun j Hj3). }
+          exact (real_mul_SNo (apply_fun A (i, j)) HakjR (apply_fun v j) HvjR).
+        }
+        claim HAvSNo : SNo (apply_fun Av i).
+        { exact (real_SNo (apply_fun Av i) HAvR). }
+        claim HlamSNo : SNo lam.
+        { exact (real_SNo lam HlamR). }
+        exact (eq_symm
+          (mul_SNo lam (div_SNo (apply_fun Av i) lam))
+          (apply_fun Av i)
+          (mul_div_SNo_invR (apply_fun Av i) lam HAvSNo HlamSNo Hlamneq0)).
     }
-    admit. (** TODO: combine HlamR and Hvexists to conclude eigenvalue_of_matrix. **)
+    exact (andI
+      (lam :e R)
+      (exists v:set,
+        function_on v 3 R /\
+        ~(forall i:set, i :e 3 -> apply_fun v i = 0) /\
+        (forall i:set, i :e 3 ->
+          finite_real_sum (fun j:set =>
+            mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3 =
+          mul_SNo lam (apply_fun v i)))
+      HlamR
+      Hvexists).
 }
 (** TODO: produce a fixed point for the normalized map on simplex3.
     This should follow from Brouwer fixed-point on a triangle (homeomorphic to B2). **)
