@@ -94705,6 +94705,439 @@ Lemma column_lifts_same_sheet_on_product_ball_with_zero :
 }
 Qed.
 
+(** Infrastructure: propagation step for column continuity. **)
+(** If column continuity holds at t1, and F maps I1 x I2 into one evenly covered U, **)
+(** then column continuity holds at t2 (for any t1, t2 in I2). **)
+(** Key idea: all lifts at t1 are in one sheet (connected_lift_stays_in_anchored_sheet), **)
+(** each row lift stays in that sheet on I2 (connected interval), so the column map **)
+(** at t2 equals section(F(s,t2)), which is a composition of continuous maps. **)
+Lemma column_continuity_propagation_step :
+  forall E Te B Tb p F start_lift vs_choice I1 I2 t1 t2 s0 U slices:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  I1 c= unit_interval ->
+  I2 c= unit_interval ->
+  connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+  connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+  t1 :e I2 ->
+  t2 :e I2 ->
+  s0 :e I1 ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+  (forall s:set, s :e I1 ->
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+  (forall s:set, s :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+  continuous_map (setprod I1 I2)
+    (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+    B Tb F ->
+  (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+    apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+  U :e Tb ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  (forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (fun z:set => apply_fun p z))) ->
+  (forall z:set, z :e setprod I1 I2 -> apply_fun F z :e U) ->
+  (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+    (graph I1 (fun s:set =>
+      apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+        t1)) ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+    (graph I1 (fun s:set =>
+      apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+        t2)).
+let E Te B Tb p F start_lift vs_choice I1 I2 t1 t2 s0 U slices.
+assume Hcov HtopE HI1sub HI2sub HI1conn HI2conn Ht1 Ht2 Hs0.
+assume HstartCont HstartComm HvsCont HFcont HvsEval.
+assume HUopen HslicesSub HpdSlices Hunion HhomeSlices HFNinU HstartE.
+assume HcolContT1.
+set TI1 := subspace_topology unit_interval unit_interval_topology I1.
+set col_t1 := graph I1 (fun s:set =>
+  apply_fun
+    (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+    t1).
+set col_t2 := graph I1 (fun s:set =>
+  apply_fun
+    (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+    t2).
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod
+    (setprod I1 I2)
+    (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+    B Tb F HFcont).
+}
+(** Step 1: lift at s0 at time t1 is in preimage(U), hence in some sheet V0 **)
+claim Ht1I : t1 :e unit_interval.
+{ exact (HI2sub t1 Ht1). }
+claim Ht2I : t2 :e unit_interval.
+{ exact (HI2sub t2 Ht2). }
+claim Hs0I : s0 :e unit_interval.
+{ exact (HI1sub s0 Hs0). }
+claim Hs0t1N : (s0, t1) :e setprod I1 I2.
+{ exact (tuple_2_setprod_by_pair_Sigma I1 I2 s0 t1 Hs0 Ht1). }
+claim HFs0t1U : apply_fun F (s0, t1) :e U.
+{ exact (HFNinU (s0, t1) Hs0t1N). }
+claim Hlift_s0_E : apply_fun start_lift s0 :e E.
+{ exact (HstartE s0 Hs0). }
+claim HvsInU_s0 :
+  forall t:set, t :e I2 -> apply_fun (apply_fun vs_choice s0) t :e U.
+{
+  let t. assume HtI2.
+  claim HvsEq : apply_fun (apply_fun vs_choice s0) t = apply_fun F (s0, t).
+  { exact (HvsEval s0 Hs0 t HtI2). }
+  rewrite HvsEq.
+  exact (HFNinU (s0, t) (tuple_2_setprod_by_pair_Sigma I1 I2 s0 t Hs0 HtI2)).
+}
+claim Hlift_s0_t1_pre :
+  apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t1
+    :e preimage_of E p U.
+{
+  exact (path_lift_pointwise_in_preimage_on_subset
+    E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0) I2 U
+    Hcov Hlift_s0_E (HstartComm s0 Hs0) (HvsCont s0 Hs0) HI2sub
+    HvsInU_s0 t1 Ht1).
+}
+claim Hlift_s0_t1_inUnion :
+  apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t1
+    :e Union slices.
+{
+  rewrite Hunion.
+  exact Hlift_s0_t1_pre.
+}
+(** Extract the sheet V0 containing lift(s0)(t1) **)
+apply (UnionE slices
+  (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t1)
+  Hlift_s0_t1_inUnion).
+let V0.
+assume HV0pack :
+  apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t1 :e V0 /\
+  V0 :e slices.
+claim Hlift_s0_t1_V0 :
+  apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t1 :e V0.
+{ exact (andEL
+    (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t1 :e V0)
+    (V0 :e slices)
+    HV0pack). }
+claim HV0Slice : V0 :e slices.
+{ exact (andER
+    (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t1 :e V0)
+    (V0 :e slices)
+    HV0pack). }
+(** Step 2: All lifts at t1 are in V0 (connected_lift_stays_in_anchored_sheet on I1) **)
+set f_t1 := graph I1 (fun s:set => apply_fun F (s, t1)).
+claim HcolT1CommP :
+  forall s:set, s :e I1 ->
+    apply_fun p (apply_fun col_t1 s) = apply_fun f_t1 s.
+{
+  let s. assume HsI1.
+  rewrite (apply_fun_graph I1 (fun s0:set =>
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t1)
+    s HsI1).
+  rewrite (apply_fun_graph I1 (fun s0:set => apply_fun F (s0, t1)) s HsI1).
+  claim HpLift :
+    apply_fun p (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t1)
+      = apply_fun (apply_fun vs_choice s) t1.
+  {
+    exact (path_lift_commutes_on_subset
+      E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)
+      I2
+      Hcov (HstartE s HsI1) (HstartComm s HsI1) (HvsCont s HsI1)
+      HI2sub
+      t1 Ht1).
+  }
+  rewrite HpLift.
+  exact (HvsEval s HsI1 t1 Ht1).
+}
+claim Hf_t1_inU :
+  forall s:set, s :e I1 -> apply_fun f_t1 s :e U.
+{
+  let s. assume HsI1.
+  rewrite (apply_fun_graph I1 (fun s0:set => apply_fun F (s0, t1)) s HsI1).
+  exact (HFNinU (s, t1) (tuple_2_setprod_by_pair_Sigma I1 I2 s t1 HsI1 Ht1)).
+}
+claim Hcol_s0_t1_V0 :
+  apply_fun col_t1 s0 :e V0.
+{
+  rewrite (apply_fun_graph I1 (fun s:set =>
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t1)
+    s0 Hs0).
+  exact Hlift_s0_t1_V0.
+}
+claim HallInV0_t1 :
+  forall s:set, s :e I1 ->
+    apply_fun col_t1 s :e V0.
+{
+  exact (connected_lift_stays_in_anchored_sheet
+    E Te B Tb p U slices V0 I1 TI1 f_t1 col_t1 s0
+    HtopE HslicesSub HpdSlices Hunion HI1conn
+    HcolContT1 HcolT1CommP Hf_t1_inU HV0Slice Hs0 Hcol_s0_t1_V0).
+}
+(** Step 3: For each s, the row lift stays in V0 on all of I2 **)
+claim HallInV0 :
+  forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e V0.
+{
+  let s. assume HsI1.
+  set lift_s := path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s).
+  set f_s := graph I2 (fun t:set => apply_fun (apply_fun vs_choice s) t).
+  claim HliftSCont :
+    continuous_map I2 (subspace_topology unit_interval unit_interval_topology I2) E Te lift_s.
+  {
+    exact (path_lift_continuous_on_subset E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s) I2
+      Hcov (HstartE s HsI1) (HstartComm s HsI1) (HvsCont s HsI1) HI2sub).
+  }
+  claim HliftSCommP :
+    forall t:set, t :e I2 -> apply_fun p (apply_fun lift_s t) = apply_fun f_s t.
+  {
+    let t. assume HtI2.
+    claim HpLift :
+      apply_fun p (apply_fun lift_s t) = apply_fun (apply_fun vs_choice s) t.
+    {
+      exact (path_lift_commutes_on_subset
+        E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)
+        I2
+        Hcov (HstartE s HsI1) (HstartComm s HsI1) (HvsCont s HsI1)
+        HI2sub
+        t HtI2).
+    }
+    rewrite HpLift.
+    rewrite (apply_fun_graph I2 (fun t0:set => apply_fun (apply_fun vs_choice s) t0) t HtI2).
+    reflexivity.
+  }
+  claim Hf_s_inU :
+    forall t:set, t :e I2 -> apply_fun f_s t :e U.
+  {
+    let t. assume HtI2.
+    rewrite (apply_fun_graph I2 (fun t0:set => apply_fun (apply_fun vs_choice s) t0) t HtI2).
+    claim Hvseval : apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t).
+    { exact (HvsEval s HsI1 t HtI2). }
+    rewrite Hvseval.
+    exact (HFNinU (s, t) (tuple_2_setprod_by_pair_Sigma I1 I2 s t HsI1 HtI2)).
+  }
+  claim HliftS_t1_V0 : apply_fun lift_s t1 :e V0.
+  {
+    claim Hexpand :
+      apply_fun lift_s t1 = apply_fun col_t1 s.
+    {
+      rewrite (apply_fun_graph I1 (fun s0:set =>
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t1)
+        s HsI1).
+      reflexivity.
+    }
+    rewrite Hexpand.
+    exact (HallInV0_t1 s HsI1).
+  }
+  exact (connected_lift_stays_in_anchored_sheet
+    E Te B Tb p U slices V0
+    I2 (subspace_topology unit_interval unit_interval_topology I2)
+    f_s lift_s t1
+    HtopE HslicesSub HpdSlices Hunion HI2conn
+    HliftSCont HliftSCommP Hf_s_inU HV0Slice Ht1 HliftS_t1_V0).
+}
+(** Step 4: Extract the section g: U -> V0 from the homeomorphism **)
+claim Hhomeo :
+  homeomorphism V0 (subspace_topology E Te V0) U (subspace_topology B Tb U)
+    (graph V0 (fun z:set => apply_fun p z)).
+{ exact (HhomeSlices V0 HV0Slice). }
+set pV0 := graph V0 (fun z:set => apply_fun p z).
+claim HhomeoPack :
+  exists g:set,
+    continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g /\
+    (forall x:set, x :e V0 -> apply_fun g (apply_fun pV0 x) = x) /\
+    (forall y:set, y :e U -> apply_fun pV0 (apply_fun g y) = y).
+{ exact (homeomorphism_inverse_package V0 (subspace_topology E Te V0) U (subspace_topology B Tb U) pV0 Hhomeo). }
+apply HhomeoPack.
+let g.
+assume HgPack :
+  continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g /\
+  (forall x:set, x :e V0 -> apply_fun g (apply_fun pV0 x) = x) /\
+  (forall y:set, y :e U -> apply_fun pV0 (apply_fun g y) = y).
+claim HgContAndInv :
+  continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g /\
+  (forall x:set, x :e V0 -> apply_fun g (apply_fun pV0 x) = x).
+{
+  exact (andEL
+    (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g /\
+     (forall x:set, x :e V0 -> apply_fun g (apply_fun pV0 x) = x))
+    (forall y:set, y :e U -> apply_fun pV0 (apply_fun g y) = y)
+    HgPack).
+}
+claim HgCont :
+  continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g.
+{
+  exact (andEL
+    (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g)
+    (forall x:set, x :e V0 -> apply_fun g (apply_fun pV0 x) = x)
+    HgContAndInv).
+}
+claim HpSection :
+  forall y:set, y :e U -> apply_fun pV0 (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g /\
+     (forall x:set, x :e V0 -> apply_fun g (apply_fun pV0 x) = x))
+    (forall y:set, y :e U -> apply_fun pV0 (apply_fun g y) = y)
+    HgPack).
+}
+claim HgInverse :
+  forall x:set, x :e V0 -> apply_fun g (apply_fun pV0 x) = x.
+{
+  exact (andER
+    (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g)
+    (forall x:set, x :e V0 -> apply_fun g (apply_fun pV0 x) = x)
+    HgContAndInv).
+}
+(** Step 5: Show lift(s)(t2) = g(F(s, t2)) for all s in I1 **)
+claim HliftEqSection :
+  forall s:set, s :e I1 ->
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t2
+      = apply_fun g (apply_fun F (s, t2)).
+{
+  let s. assume HsI1.
+  set lift_s_t2 :=
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t2.
+  claim HinV0 : lift_s_t2 :e V0.
+  { exact (HallInV0 s HsI1 t2 Ht2). }
+  claim HpVal : apply_fun pV0 lift_s_t2 = apply_fun F (s, t2).
+  {
+    rewrite (apply_fun_graph V0 (fun z:set => apply_fun p z) lift_s_t2 HinV0).
+    claim HpLift :
+      apply_fun p lift_s_t2 = apply_fun (apply_fun vs_choice s) t2.
+    {
+      exact (path_lift_commutes_on_subset
+        E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)
+        I2
+        Hcov (HstartE s HsI1) (HstartComm s HsI1) (HvsCont s HsI1)
+        HI2sub
+        t2 Ht2).
+    }
+    rewrite HpLift.
+    exact (HvsEval s HsI1 t2 Ht2).
+  }
+  claim HgFVal : apply_fun g (apply_fun pV0 lift_s_t2) = lift_s_t2.
+  { exact (HgInverse lift_s_t2 HinV0). }
+  rewrite <- HgFVal.
+  rewrite HpVal.
+  reflexivity.
+}
+(** Step 6: Build the continuous map g(F(s, t2)) and show col_t2 equals it **)
+set F_slice_t2 := compose_fun I1
+  (pair_map I1 (graph I1 (fun s:set => s)) (const_fun I1 t2))
+  F.
+claim HFsliceCont :
+  continuous_map I1 TI1 B Tb F_slice_t2.
+{
+  exact (continuous_map_product_ball_slice_second
+    B Tb F I1 I2 t2 HI1sub HI2sub Ht2 HFcont).
+}
+claim HFsliceInU :
+  forall s:set, s :e I1 -> apply_fun F_slice_t2 s :e U.
+{
+  let s. assume HsI1.
+  claim HFsliceEval : apply_fun F_slice_t2 s = apply_fun F (s, t2).
+  {
+    rewrite (compose_fun_apply I1
+      (pair_map I1 (graph I1 (fun s0:set => s0)) (const_fun I1 t2))
+      F s HsI1).
+    rewrite (pair_map_apply I1 unit_interval unit_interval
+      (graph I1 (fun s0:set => s0)) (const_fun I1 t2) s HsI1).
+    rewrite (apply_fun_graph I1 (fun s0:set => s0) s HsI1).
+    rewrite (const_fun_apply I1 t2 s HsI1).
+    reflexivity.
+  }
+  rewrite HFsliceEval.
+  exact (HFNinU (s, t2) (tuple_2_setprod_by_pair_Sigma I1 I2 s t2 HsI1 Ht2)).
+}
+claim HFsliceRestCont :
+  continuous_map I1 TI1 U (subspace_topology B Tb U) F_slice_t2.
+{
+  exact (continuous_map_range_restrict I1 TI1 B Tb F_slice_t2 U
+    HFsliceCont
+    (topology_elem_subset B Tb U (covering_map_topology_on_codomain E Te B Tb p Hcov) HUopen)
+    HFsliceInU).
+}
+(** Expand g from V0-valued to E-valued **)
+claim HgContE :
+  continuous_map U (subspace_topology B Tb U) E Te g.
+{
+  claim HV0subE : V0 c= E.
+  {
+    exact (topology_elem_subset E Te V0 HtopE (HslicesSub V0 HV0Slice)).
+  }
+  exact (continuous_map_range_expand
+    U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) E Te g
+    HgCont HV0subE HtopE (eq_refl (subspace_topology E Te V0))).
+}
+set h := compose_fun I1 F_slice_t2 g.
+claim HhCont :
+  continuous_map I1 TI1 E Te h.
+{
+  exact (composition_continuous
+    I1 TI1 U (subspace_topology B Tb U) E Te F_slice_t2 g
+    HFsliceRestCont HgContE).
+}
+(** Use continuous_map_congr_on to transfer from h to col_t2 **)
+claim Hcol_t2_fun : function_on col_t2 I1 E.
+{
+  let s. assume HsI1.
+  rewrite (apply_fun_graph I1 (fun s0:set =>
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t2)
+    s HsI1).
+  claim HliftSCont_loc :
+    continuous_map I2 (subspace_topology unit_interval unit_interval_topology I2) E Te
+      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)).
+  {
+    exact (path_lift_continuous_on_subset E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s) I2
+      Hcov (HstartE s HsI1) (HstartComm s HsI1) (HvsCont s HsI1) HI2sub).
+  }
+  exact (continuous_map_function_on
+    I2 (subspace_topology unit_interval unit_interval_topology I2) E Te
+    (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+    HliftSCont_loc t2 Ht2).
+}
+claim HhEq :
+  forall s:set, s :e I1 -> apply_fun h s = apply_fun col_t2 s.
+{
+  let s. assume HsI1.
+  (** h s = g(F_slice_t2 s) = g(F(s, t2)) **)
+  rewrite (compose_fun_apply I1 F_slice_t2 g s HsI1).
+  claim HFsliceEval_loc : apply_fun F_slice_t2 s = apply_fun F (s, t2).
+  {
+    rewrite (compose_fun_apply I1
+      (pair_map I1 (graph I1 (fun s0:set => s0)) (const_fun I1 t2))
+      F s HsI1).
+    rewrite (pair_map_apply I1 unit_interval unit_interval
+      (graph I1 (fun s0:set => s0)) (const_fun I1 t2) s HsI1).
+    rewrite (apply_fun_graph I1 (fun s0:set => s0) s HsI1).
+    rewrite (const_fun_apply I1 t2 s HsI1).
+    reflexivity.
+  }
+  rewrite HFsliceEval_loc.
+  (** col_t2 s = path_lift(...)(t2) **)
+  rewrite (apply_fun_graph I1 (fun s0:set =>
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t2)
+    s HsI1).
+  (** g(F(s, t2)) = path_lift(start_lift s, vs_choice s)(t2) **)
+  claim Hsym :
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t2
+    = apply_fun g (apply_fun F (s, t2)).
+  { exact (HliftEqSection s HsI1). }
+  rewrite Hsym.
+  reflexivity.
+}
+exact (continuous_map_congr_on
+  I1 TI1 E Te h col_t2
+  HhCont Hcol_t2_fun
+  (fun s:set => fun HsI1:(s :e I1) =>
+    HhEq s HsI1)).
+Qed.
+
 (** Infrastructure: column continuity via chain argument (no 0-in-I2 needed) **)
 (** Given a covering map, connected parameter space I1, continuous start_lift, **)
 (** and continuous column paths vs_choice, the column map at any t0 is continuous. **)
