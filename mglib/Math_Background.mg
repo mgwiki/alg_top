@@ -157146,6 +157146,104 @@ Admitted.
 
 (** ======================= S59 THE FUNDAMENTAL GROUP OF S^n ======================= **)
 
+(** Infrastructure: points between two points of an open ball in unit_interval stay in the ball (for r < 1). **)
+(** Proven Bob **)
+Lemma open_ball_unit_interval_between : forall c r x y z:set,
+  c :e unit_interval ->
+  r :e R -> Rlt 0 r -> Rlt r 1 ->
+  x :e open_ball unit_interval R_bounded_metric c r ->
+  y :e open_ball unit_interval R_bounded_metric c r ->
+  z :e unit_interval ->
+  (Rle x z /\ Rle z y \/ Rle y z /\ Rle z x) ->
+  z :e open_ball unit_interval R_bounded_metric c r.
+let c r x y z.
+assume HcI HrR Hrpos Hrlt1 HxBall HyBall HzI Hbetween.
+set a := add_SNo c (minus_SNo r).
+set b := add_SNo c r.
+claim HcR : c :e R.
+{ exact (unit_interval_sub_R c HcI). }
+claim HaR : a :e R.
+{ exact (real_add_SNo c HcR (minus_SNo r) (real_minus_SNo r HrR)). }
+claim HbR : b :e R.
+{ exact (real_add_SNo c HcR r HrR). }
+claim HballEq :
+  open_ball unit_interval R_bounded_metric c r =
+    unit_interval :/\: open_interval a b.
+{
+  exact (open_ball_unit_interval_eq_binintersect_open_interval
+    c r HcI HrR Hrpos Hrlt1).
+}
+claim HxIn : x :e unit_interval :/\: open_interval a b.
+{ exact (mem_eqR x (open_ball unit_interval R_bounded_metric c r)
+    (unit_interval :/\: open_interval a b) HballEq HxBall). }
+claim HyIn : y :e unit_interval :/\: open_interval a b.
+{ exact (mem_eqR y (open_ball unit_interval R_bounded_metric c r)
+    (unit_interval :/\: open_interval a b) HballEq HyBall). }
+claim HxInt : x :e open_interval a b.
+{ exact (binintersectE2 unit_interval (open_interval a b) x HxIn). }
+claim HyInt : y :e open_interval a b.
+{ exact (binintersectE2 unit_interval (open_interval a b) y HyIn). }
+claim HxR : x :e R.
+{ exact (SepE1 R (fun t:set => Rlt a t /\ Rlt t b) x HxInt). }
+claim HyR : y :e R.
+{ exact (SepE1 R (fun t:set => Rlt a t /\ Rlt t b) y HyInt). }
+claim HxBounds : Rlt a x /\ Rlt x b.
+{ exact (SepE2 R (fun t:set => Rlt a t /\ Rlt t b) x HxInt). }
+claim HyBounds : Rlt a y /\ Rlt y b.
+{ exact (SepE2 R (fun t:set => Rlt a t /\ Rlt t b) y HyInt). }
+claim HxGt : Rlt a x.
+{ exact (andEL (Rlt a x) (Rlt x b) HxBounds). }
+claim HxLt : Rlt x b.
+{ exact (andER (Rlt a x) (Rlt x b) HxBounds). }
+claim HyGt : Rlt a y.
+{ exact (andEL (Rlt a y) (Rlt y b) HyBounds). }
+claim HyLt : Rlt y b.
+{ exact (andER (Rlt a y) (Rlt y b) HyBounds). }
+claim HzR : z :e R.
+{ exact (unit_interval_sub_R z HzI). }
+apply Hbetween.
+- assume Hxz : Rle x z /\ Rle z y.
+  claim HzGt : Rlt a z.
+  {
+    apply (Rlt_Rle_tra a x z HxGt).
+    exact (andEL (Rle x z) (Rle z y) Hxz).
+  }
+  claim HzLt : Rlt z b.
+  {
+    apply (Rle_Rlt_tra z y b).
+    - exact (andER (Rle x z) (Rle z y) Hxz).
+    - exact HyLt.
+  }
+  claim HzInt : z :e open_interval a b.
+  { exact (SepI R (fun t:set => Rlt a t /\ Rlt t b) z HzR (andI (Rlt a z) (Rlt z b) HzGt HzLt)). }
+  exact (mem_eqR z (unit_interval :/\: open_interval a b)
+    (open_ball unit_interval R_bounded_metric c r)
+    (eq_symm (open_ball unit_interval R_bounded_metric c r)
+      (unit_interval :/\: open_interval a b)
+      HballEq)
+    (binintersectI unit_interval (open_interval a b) z HzI HzInt)).
+- assume Hyz : Rle y z /\ Rle z x.
+  claim HzGt : Rlt a z.
+  {
+    apply (Rlt_Rle_tra a y z HyGt).
+    exact (andEL (Rle y z) (Rle z x) Hyz).
+  }
+  claim HzLt : Rlt z b.
+  {
+    apply (Rle_Rlt_tra z x b).
+    - exact (andER (Rle y z) (Rle z x) Hyz).
+    - exact HxLt.
+  }
+  claim HzInt : z :e open_interval a b.
+  { exact (SepI R (fun t:set => Rlt a t /\ Rlt t b) z HzR (andI (Rlt a z) (Rlt z b) HzGt HzLt)). }
+  exact (mem_eqR z (unit_interval :/\: open_interval a b)
+    (open_ball unit_interval R_bounded_metric c r)
+    (eq_symm (open_ball unit_interval R_bounded_metric c r)
+      (unit_interval :/\: open_interval a b)
+      HballEq)
+    (binintersectI unit_interval (open_interval a b) z HzI HzInt)).
+Qed.
+
 (** Core word construction: given ball property for a loop, produce word decomposition.
     This is the inductive heart of Munkres Thm 59.1, separated from the Lebesgue setup. **)
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
