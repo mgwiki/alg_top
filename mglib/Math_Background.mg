@@ -95165,8 +95165,60 @@ Admitted.
   (** TODO: statement likely needs joint continuity of vs_choice via a continuous F;
       see column_continuity_via_chain_with_F and NOTICEBOARD. **)
 
+(** Helper: within a ball around any time point, column continuity is "all or nothing". **)
+(** Consequence of column_continuity_propagation_step + compactness of I1 via covering map. **)
+(** For any t1, there exists delta such that within B(t1, delta), if column continuity **)
+(** holds at any t_a, then it holds at any t_b. This is the symmetric local transfer. **)
+Lemma column_continuity_local_transfer :
+  forall E Te B Tb p F start_lift vs_choice I1 t1:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  I1 c= unit_interval ->
+  I1 <> Empty ->
+  connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+  continuous_map (setprod I1 unit_interval)
+    (subspace_topology unit_square unit_square_topology (setprod I1 unit_interval))
+    B Tb F ->
+  (forall s:set, s :e I1 ->
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+  (forall s:set, s :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+  (forall s:set, s :e I1 -> forall t:set, t :e unit_interval ->
+    apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+  t1 :e unit_interval ->
+  exists delta:set,
+    delta :e R /\ Rlt 0 delta /\
+    forall t_a t_b:set,
+      t_a :e open_ball unit_interval R_bounded_metric t1 delta ->
+      t_b :e open_ball unit_interval R_bounded_metric t1 delta ->
+      continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+        (graph I1 (fun s:set =>
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t_a)) ->
+      continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+        (graph I1 (fun s:set =>
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t_b)).
+admit.
+Admitted.
+
+(** Helper: in a connected metric space, a nonempty set with ball neighborhoods **)
+(** for all points (both in the set and in the complement) equals the whole space. **)
+(** This is the metric-space version of the clopen argument for connected spaces. **)
+Lemma connected_metric_clopen_full :
+  forall X d S:set,
+  metric_on X d ->
+  connected_space X (metric_topology X d) ->
+  S c= X ->
+  S <> Empty ->
+  (forall x:set, x :e S -> exists r:set, r :e R /\ Rlt 0 r /\ open_ball X d x r c= S) ->
+  (forall x:set, x :e X -> x /:e S -> exists r:set, r :e R /\ Rlt 0 r /\ open_ball X d x r c= X :\: S) ->
+  S = X.
+admit.
+Admitted.
+
 (** Infrastructure: column continuity with jointly continuous F (provable via chain) **)
-(** Unlike column_continuity_via_chain, includes F for the chain argument proof. **)
+(** Uses open-and-closed argument on unit_interval: the set of times where column **)
+(** continuity holds is clopen in the connected unit_interval, hence all of it. **)
 Lemma column_continuity_via_chain_with_F :
   forall E Te B Tb p F start_lift vs_choice I1 t0:set,
   covering_map E Te B Tb p ->
@@ -95400,215 +95452,294 @@ apply xm (t0 = 0).
     HFcol_fun
     (fun s Hs => eq_symm (apply_fun Fcol_lift s) (apply_fun start_lift s) (Hcol_eq s Hs))).
 - assume Ht0neq.
-  set TI1 := subspace_topology unit_interval unit_interval_topology I1.
-  set UFam := {U :e TI1 |
-    continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift}.
-  claim HUFamSub : UFam c= TI1.
-  {
-    let U. assume HU.
-    exact (SepE1 TI1 (fun V:set =>
-      continuous_map V (subspace_topology I1 TI1 V) E Te Fcol_lift) U HU).
-  }
-  claim HUFamUnionSub : Union UFam c= I1.
-  {
-    let x. assume HxU.
-    apply (UnionE UFam x HxU).
-    let U. assume HUPack.
-    claim HxU' : x :e U.
-    { exact (andEL (x :e U) (U :e UFam) HUPack). }
-    claim HUin : U :e TI1.
-    { exact (HUFamSub U (andER (x :e U) (U :e UFam) HUPack)). }
-    claim HUsub : U c= I1.
-    { exact (topology_elem_subset I1 TI1 U HtopI1 HUin). }
-    exact (HUsub x HxU').
-  }
-  claim HUFamUnionSup : I1 c= Union UFam.
-  {
-    let s0. assume Hs0.
-    claim Hlocal_ex :
-      exists U:set,
-        U :e TI1 /\ s0 :e U /\
-        continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift.
+  (** Open-and-closed argument: the set of "good times" where column continuity holds **)
+  (** is clopen and nonempty in the connected unit_interval, hence equals unit_interval. **)
+  set good_pred := fun t:set =>
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t)).
+  set good_times := {t :e unit_interval | good_pred t}.
+  claim Hgood_sub : good_times c= unit_interval.
+  { exact (Sep_Subq unit_interval good_pred). }
+  (** Handle I1 = Empty case trivially **)
+  apply xm (I1 = Empty).
+  + assume HI1empty.
+    claim Heq_empty : forall s:set, s :e I1 -> apply_fun start_lift s = apply_fun Fcol_lift s.
     {
-      (** Sketch: build an open cover of unit_interval by t-neighborhoods I2_t such that
-          F maps (I1_t x I2_t) into an evenly covered U_t; extract a finite chain from 0 to t0
-          (connected_space_open_cover_chain), intersect the corresponding I1_t to get a
-          neighborhood U of s0, and propagate column continuity along the chain using
-          column_continuity_propagation_step. **)
-      set I2 := unit_interval.
-      set TI2 := unit_interval_topology.
-      set f0 := compose_fun unit_interval
-        (pair_map unit_interval (const_fun unit_interval s0)
-          (graph unit_interval (fun t:set => t))) F.
-      claim Hf0cont :
-        continuous_map unit_interval
-          (subspace_topology unit_interval unit_interval_topology unit_interval)
-          B Tb f0.
+      let s. assume Hs.
+      exact (EmptyE s (eq_subst_mem_set s I1 Empty Hs HI1empty)
+        (apply_fun start_lift s = apply_fun Fcol_lift s)).
+    }
+    exact (continuous_map_congr_on
+      I1
+      (subspace_topology unit_interval unit_interval_topology I1)
+      E Te start_lift Fcol_lift HstartCont HFcol_fun Heq_empty).
+  + assume HI1ne.
+    (** Show 0 :e good_times (column continuity at t=0 equals start_lift continuity) **)
+    claim H0I : 0 :e unit_interval.
+    { exact (andEL (0 :e unit_interval) (1 :e unit_interval) zero_one_in_unit_interval). }
+    claim Hgraph0_fun : function_on
+      (graph I1 (fun s:set =>
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0))
+      I1 E.
+    {
+      apply (total_function_on_function_on
+        (graph I1 (fun s:set =>
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0))
+        I1 E).
+      apply (total_function_on_graph I1 E
+        (fun s:set =>
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0)).
+      let s. assume HsI1.
+      claim Hlift_pack_s :
+        continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+          = apply_fun start_lift s /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun p
+            (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
+          = apply_fun (apply_fun vs_choice s) t).
       {
-        exact (continuous_map_product_ball_slice_first
-          B
-          Tb
-          F
-          I1
-          unit_interval
-          s0
-          HI1sub
-          (Subq_ref unit_interval)
-          Hs0
-          HFcont).
+        exact (lemma54_1_path_lifting E Te B Tb p
+          (apply_fun start_lift s) (apply_fun vs_choice s)
+          Hcov (HstartFun s HsI1) (HstartComm s HsI1) (HvsCont s HsI1)).
       }
-      (** Fam: t-intervals coming from product balls mapped into evenly covered U_t. **)
-      set Fam := {J :e unit_interval_topology |
-        exists t U r0 r1:set,
-          t :e unit_interval /\
-          U :e Tb /\
-          evenly_covered E Te B Tb p U /\
-          r0 :e R /\ Rlt 0 r0 /\ Rlt r0 1 /\
-          r1 :e R /\ Rlt 0 r1 /\ Rlt r1 1 /\
-          s0 :e open_ball unit_interval R_bounded_metric s0 r0 /\
-          J = open_ball unit_interval R_bounded_metric t r1 /\
-          setprod
-            ((open_ball unit_interval R_bounded_metric s0 r0) :/\: I1)
-            J c= preimage_of (setprod I1 unit_interval) F U}.
-      claim Hcover : open_cover_of unit_interval unit_interval_topology Fam.
+      claim Hlift_cont_s :
+        continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)).
       {
-        apply (open_cover_ofI unit_interval unit_interval_topology Fam).
-        - exact unit_interval_topology_on.
-        - (** Fam c= Power unit_interval **)
-          let J. assume HJ.
-          claim HJopen : J :e unit_interval_topology.
-          {
-            exact (SepE1
-              unit_interval_topology
-              (fun J0:set =>
-                exists t U r0 r1:set,
-                  t :e unit_interval /\
-                  U :e Tb /\
-                  evenly_covered E Te B Tb p U /\
-                  r0 :e R /\ Rlt 0 r0 /\ Rlt r0 1 /\
-                  r1 :e R /\ Rlt 0 r1 /\ Rlt r1 1 /\
-                  s0 :e open_ball unit_interval R_bounded_metric s0 r0 /\
-                  J0 = open_ball unit_interval R_bounded_metric t r1 /\
-                  setprod
-                    ((open_ball unit_interval R_bounded_metric s0 r0) :/\: I1)
-                    J0 c= preimage_of (setprod I1 unit_interval) F U)
-              J
-              HJ).
-          }
-          exact (PowerI
-            unit_interval
-            J
-            (topology_elem_subset
-              unit_interval
-              unit_interval_topology
-              J
-              unit_interval_topology_on
-              HJopen)).
-        - (** TODO: show unit_interval c= Union Fam by constructing J around each t. **)
-          admit.
-        - let J. assume HJ.
-          exact (SepE1
-            unit_interval_topology
-            (fun J0:set =>
-              exists t U r0 r1:set,
-                t :e unit_interval /\
-                U :e Tb /\
-                evenly_covered E Te B Tb p U /\
-                r0 :e R /\ Rlt 0 r0 /\ Rlt r0 1 /\
-                r1 :e R /\ Rlt 0 r1 /\ Rlt r1 1 /\
-                s0 :e open_ball unit_interval R_bounded_metric s0 r0 /\
-                J0 = open_ball unit_interval R_bounded_metric t r1 /\
-                setprod
-                  ((open_ball unit_interval R_bounded_metric s0 r0) :/\: I1)
-                  J0 c= preimage_of (setprod I1 unit_interval) F U)
-            J
-            HJ).
+        exact (andEL
+          (continuous_map unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)))
+          (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+            = apply_fun start_lift s)
+          (andEL
+            (continuous_map unit_interval unit_interval_topology E Te
+              (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+             apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+               = apply_fun start_lift s)
+            (forall t:set, t :e unit_interval ->
+              apply_fun p
+                (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
+              = apply_fun (apply_fun vs_choice s) t)
+            Hlift_pack_s)).
       }
-      claim Hchain :
-        exists U0 U1 n seq:set,
-          U0 :e Fam /\ 0 :e U0 /\
-          U1 :e Fam /\ t0 :e U1 /\
-          n :e omega /\
-          function_on seq (ordsucc n) Fam /\
-          apply_fun seq 0 = U0 /\
-          apply_fun seq n = U1 /\
-          (forall k:set, k :e n ->
-            apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
+      exact (continuous_map_function_on
+        unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+        Hlift_cont_s 0 H0I).
+    }
+    claim Hcol0_eq :
+      forall s:set, s :e I1 ->
+        apply_fun start_lift s =
+        apply_fun
+          (graph I1 (fun s0:set =>
+            apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) 0))
+          s.
+    {
+      let s. assume HsI1.
+      claim Hlift_pack_s :
+        continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+          = apply_fun start_lift s /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun p
+            (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
+          = apply_fun (apply_fun vs_choice s) t).
       {
-        exact (connected_space_open_cover_chain
-          unit_interval
-          unit_interval_topology
-          Fam
-          0
-          t0
-          unit_interval_connected
-          Hcover
-          zero_in_unit_interval
-          Ht0).
+        exact (lemma54_1_path_lifting E Te B Tb p
+          (apply_fun start_lift s) (apply_fun vs_choice s)
+          Hcov (HstartFun s HsI1) (HstartComm s HsI1) (HvsCont s HsI1)).
       }
-      (** TODO: extract corresponding I1-balls and evenly covered U_k from the chain,
-          intersect the I1-balls to get U, then apply column_continuity_propagation_step
-          iteratively along the chain to conclude continuity at t0 on U. **)
-      admit.
+      claim Hlift0_eq :
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+          = apply_fun start_lift s.
+      {
+        exact (andER
+          (continuous_map unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)))
+          (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+            = apply_fun start_lift s)
+          (andEL
+            (continuous_map unit_interval unit_interval_topology E Te
+              (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+             apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+               = apply_fun start_lift s)
+            (forall t:set, t :e unit_interval ->
+              apply_fun p
+                (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
+              = apply_fun (apply_fun vs_choice s) t)
+            Hlift_pack_s)).
+      }
+      rewrite (apply_fun_graph I1
+        (fun s0:set =>
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) 0)
+        s HsI1).
+      exact (eq_symm
+        (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0)
+        (apply_fun start_lift s)
+        Hlift0_eq).
     }
-    apply Hlocal_ex.
-    let U. assume HUPack.
-    claim Hpair : U :e TI1 /\ s0 :e U.
-    { exact (andEL
-        (U :e TI1 /\ s0 :e U)
-        (continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift)
-        HUPack). }
-    claim HUinTI1 : U :e TI1.
-    { exact (andEL (U :e TI1) (s0 :e U) Hpair). }
-    claim Hs0U : s0 :e U.
+    claim Hcol0_cont : good_pred 0.
     {
-      exact (andER (U :e TI1) (s0 :e U) Hpair).
+      prove continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+        (graph I1 (fun s:set =>
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0)).
+      exact (continuous_map_congr_on
+        I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+        start_lift
+        (graph I1 (fun s:set =>
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0))
+        HstartCont Hgraph0_fun Hcol0_eq).
     }
-    claim HcontU :
-      continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift.
+    claim H0good : 0 :e good_times.
     {
-      exact (andER
-        (U :e TI1 /\ s0 :e U)
-        (continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift)
-        HUPack).
+      prove 0 :e {t :e unit_interval | good_pred t}.
+      exact (SepI unit_interval good_pred 0 H0I Hcol0_cont).
     }
-    claim HUinUFam : U :e UFam.
+    claim Hgood_ne : good_times <> Empty.
+    { assume Hempty. exact (EmptyE 0 (eq_subst_mem_set 0 good_times Empty H0good Hempty)). }
+    (** Apply connected_metric_clopen_full to show good_times = unit_interval **)
+    claim Hconn_metric : connected_space unit_interval (metric_topology unit_interval R_bounded_metric).
+    { rewrite metric_topology_unit_interval_eq_I_topology. exact unit_interval_connected. }
+    (** Ball neighborhoods for points in good_times **)
+    claim Hball_good :
+      forall x:set, x :e good_times ->
+        exists r:set, r :e R /\ Rlt 0 r /\ open_ball unit_interval R_bounded_metric x r c= good_times.
     {
-      exact (SepI TI1 (fun V:set =>
-        continuous_map V (subspace_topology I1 TI1 V) E Te Fcol_lift) U HUinTI1 HcontU).
+      let t1. assume Ht1good.
+      claim Ht1I : t1 :e unit_interval.
+      { exact (SepE1 unit_interval good_pred t1 Ht1good). }
+      claim Ht1cont : good_pred t1.
+      { exact (SepE2 unit_interval good_pred t1 Ht1good). }
+      claim Htransfer :
+        exists delta:set, delta :e R /\ Rlt 0 delta /\
+          forall t_a t_b:set,
+            t_a :e open_ball unit_interval R_bounded_metric t1 delta ->
+            t_b :e open_ball unit_interval R_bounded_metric t1 delta ->
+            good_pred t_a -> good_pred t_b.
+      {
+        exact (column_continuity_local_transfer E Te B Tb p F start_lift vs_choice I1 t1
+          Hcov HtopE HI1sub HI1ne HI1conn HstartCont HFcont HstartComm HvsCont HvsEval Ht1I).
+      }
+      apply Htransfer.
+      let delta. assume Hdelta.
+      claim HdR_pos : delta :e R /\ Rlt 0 delta.
+      {
+        exact (andEL (delta :e R /\ Rlt 0 delta)
+          (forall t_a t_b:set,
+            t_a :e open_ball unit_interval R_bounded_metric t1 delta ->
+            t_b :e open_ball unit_interval R_bounded_metric t1 delta ->
+            good_pred t_a -> good_pred t_b)
+          Hdelta).
+      }
+      claim HdR : delta :e R.
+      { exact (andEL (delta :e R) (Rlt 0 delta) HdR_pos). }
+      claim Hdpos : Rlt 0 delta.
+      { exact (andER (delta :e R) (Rlt 0 delta) HdR_pos). }
+      claim Htrans_prop :
+        forall t_a t_b:set,
+          t_a :e open_ball unit_interval R_bounded_metric t1 delta ->
+          t_b :e open_ball unit_interval R_bounded_metric t1 delta ->
+          good_pred t_a -> good_pred t_b.
+      {
+        exact (andER (delta :e R /\ Rlt 0 delta)
+          (forall t_a t_b:set,
+            t_a :e open_ball unit_interval R_bounded_metric t1 delta ->
+            t_b :e open_ball unit_interval R_bounded_metric t1 delta ->
+            good_pred t_a -> good_pred t_b)
+          Hdelta).
+      }
+      witness delta.
+      prove delta :e R /\ Rlt 0 delta /\ open_ball unit_interval R_bounded_metric t1 delta c= good_times.
+      apply andI. exact HdR_pos.
+      let t2. assume Ht2ball : t2 :e open_ball unit_interval R_bounded_metric t1 delta.
+      claim Ht1ball : t1 :e open_ball unit_interval R_bounded_metric t1 delta.
+      { exact (center_in_open_ball unit_interval R_bounded_metric t1 delta
+          R_bounded_metric_is_metric_on_unit_interval Ht1I Hdpos). }
+      apply (SepI unit_interval good_pred t2).
+      - exact (open_ballE1 unit_interval R_bounded_metric t1 delta t2 Ht2ball).
+      - exact (Htrans_prop t1 t2 Ht1ball Ht2ball Ht1cont).
     }
-    exact (UnionI UFam s0 U Hs0U HUinUFam).
-  }
-  claim HUFamUnion : Union UFam = I1.
-  {
-    apply set_ext.
-    - exact HUFamUnionSub.
-    - exact HUFamUnionSup.
-  }
-  claim Hlocal_cont :
-    exists UFam0:set,
-      UFam0 c= TI1 /\ Union UFam0 = I1 /\
-      (forall U:set, U :e UFam0 ->
-        continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift).
-  {
-    witness UFam.
-    apply andI.
-    - apply andI.
-      + exact HUFamSub.
-      + exact HUFamUnion.
-    - let U. assume HU.
-      exact (SepE2 TI1 (fun V:set =>
-        continuous_map V (subspace_topology I1 TI1 V) E Te Fcol_lift) U HU).
-  }
-  exact (continuous_map_local_cover
-    I1
-    TI1
-    E
-    Te
-    Fcol_lift
-    HtopI1
-    HtopE
-    Hlocal_cont).
+    (** Ball neighborhoods for points NOT in good_times **)
+    claim Hball_comp :
+      forall x:set, x :e unit_interval -> x /:e good_times ->
+        exists r:set, r :e R /\ Rlt 0 r /\ open_ball unit_interval R_bounded_metric x r c= unit_interval :\: good_times.
+    {
+      let t1. assume Ht1I. assume Ht1bad.
+      claim Htransfer :
+        exists delta:set, delta :e R /\ Rlt 0 delta /\
+          forall t_a t_b:set,
+            t_a :e open_ball unit_interval R_bounded_metric t1 delta ->
+            t_b :e open_ball unit_interval R_bounded_metric t1 delta ->
+            good_pred t_a -> good_pred t_b.
+      {
+        exact (column_continuity_local_transfer E Te B Tb p F start_lift vs_choice I1 t1
+          Hcov HtopE HI1sub HI1ne HI1conn HstartCont HFcont HstartComm HvsCont HvsEval Ht1I).
+      }
+      apply Htransfer.
+      let delta. assume Hdelta.
+      claim HdR_pos : delta :e R /\ Rlt 0 delta.
+      {
+        exact (andEL (delta :e R /\ Rlt 0 delta)
+          (forall t_a t_b:set,
+            t_a :e open_ball unit_interval R_bounded_metric t1 delta ->
+            t_b :e open_ball unit_interval R_bounded_metric t1 delta ->
+            good_pred t_a -> good_pred t_b)
+          Hdelta).
+      }
+      claim HdR : delta :e R.
+      { exact (andEL (delta :e R) (Rlt 0 delta) HdR_pos). }
+      claim Hdpos : Rlt 0 delta.
+      { exact (andER (delta :e R) (Rlt 0 delta) HdR_pos). }
+      claim Htrans_prop :
+        forall t_a t_b:set,
+          t_a :e open_ball unit_interval R_bounded_metric t1 delta ->
+          t_b :e open_ball unit_interval R_bounded_metric t1 delta ->
+          good_pred t_a -> good_pred t_b.
+      {
+        exact (andER (delta :e R /\ Rlt 0 delta)
+          (forall t_a t_b:set,
+            t_a :e open_ball unit_interval R_bounded_metric t1 delta ->
+            t_b :e open_ball unit_interval R_bounded_metric t1 delta ->
+            good_pred t_a -> good_pred t_b)
+          Hdelta).
+      }
+      witness delta.
+      prove delta :e R /\ Rlt 0 delta /\ open_ball unit_interval R_bounded_metric t1 delta c= unit_interval :\: good_times.
+      apply andI. exact HdR_pos.
+      let t2. assume Ht2ball : t2 :e open_ball unit_interval R_bounded_metric t1 delta.
+      apply (setminusI unit_interval good_times t2).
+      - exact (open_ballE1 unit_interval R_bounded_metric t1 delta t2 Ht2ball).
+      - assume Ht2good.
+        claim Ht1ball : t1 :e open_ball unit_interval R_bounded_metric t1 delta.
+        { exact (center_in_open_ball unit_interval R_bounded_metric t1 delta
+            R_bounded_metric_is_metric_on_unit_interval Ht1I Hdpos). }
+        claim Ht2cont : good_pred t2.
+        { exact (SepE2 unit_interval good_pred t2 Ht2good). }
+        apply Ht1bad.
+        apply (SepI unit_interval good_pred t1 Ht1I).
+        exact (Htrans_prop t2 t1 Ht2ball Ht1ball Ht2cont).
+    }
+    claim Hgood_eq : good_times = unit_interval.
+    {
+      exact (connected_metric_clopen_full
+        unit_interval R_bounded_metric good_times
+        R_bounded_metric_is_metric_on_unit_interval
+        Hconn_metric
+        Hgood_sub
+        Hgood_ne
+        Hball_good
+        Hball_comp).
+    }
+    (** Extract t0 :e good_times, then get column continuity at t0 **)
+    exact (SepE2 unit_interval good_pred t0
+      (eq_subst_mem_set t0 unit_interval good_times Ht0
+        (eq_symm good_times unit_interval Hgood_eq))).
 Admitted.
 
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
