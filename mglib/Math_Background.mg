@@ -217822,6 +217822,142 @@ Lemma free_product_efam_involutive_contra : forall G multG eG invG J Gfam efam a
   apply_fun efam al <> eG ->
   apply_fun invG (apply_fun efam al) = apply_fun efam al ->
   False.
+let G multG eG invG J Gfam efam al.
+assume Hfp Hal Hefam_Gal Hefam_ne Hinv_eq.
+
+(** Extract core free product structure. **)
+apply (and5E
+  (group_structure G multG eG invG)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
+  (subgroups_generate G multG eG invG J Gfam)
+  (forall x:set, x :e G -> x <> eG ->
+    exists n xs:set,
+      reduced_word J Gfam efam n xs /\ n <> 0 /\
+      word_product multG eG xs n = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsubfam Hdisjoint _ Huniq.
+
+(** efam(al) is a group element. **)
+claim Hefam_G : apply_fun efam al :e G.
+{ exact (subgroup_of_subset (apply_fun Gfam al) G multG eG invG (Hsubfam al Hal)
+    (apply_fun efam al) Hefam_Gal). }
+
+(** Obtain the unique reduced word for efam(al). **)
+apply (Huniq (apply_fun efam al) Hefam_G Hefam_ne).
+let n. assume Hex : exists xs:set,
+  reduced_word J Gfam efam n xs /\ n <> 0 /\
+  word_product multG eG xs n = apply_fun efam al /\
+  (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product multG eG xs' n' = apply_fun efam al ->
+    n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+apply Hex. let xs.
+assume Hpack : reduced_word J Gfam efam n xs /\ n <> 0 /\
+  word_product multG eG xs n = apply_fun efam al /\
+  (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product multG eG xs' n' = apply_fun efam al ->
+    n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+apply (and4E
+  (reduced_word J Gfam efam n xs)
+  (n <> 0)
+  (word_product multG eG xs n = apply_fun efam al)
+  (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product multG eG xs' n' = apply_fun efam al ->
+    n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))
+  Hpack).
+assume Hred Hn_ne0 Hwp Huniq_full.
+
+(** Quick contradiction if the unique reduced word has length 1. **)
+claim HnO : n :e omega.
+{
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs i :e apply_fun Gfam alpha /\
+        apply_fun xs i <> apply_fun efam alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e J -> beta :e J ->
+        apply_fun xs i :e apply_fun Gfam alpha ->
+        apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+        alpha <> beta)
+    Hred).
+  assume HnO0 _ _. exact HnO0.
+}
+claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+apply (nat_inv n Hn_nat).
+- assume Hn0 : n = 0. exact (FalseE (Hn_ne0 Hn0) False).
+- assume Hex_m : exists m:set, nat_p m /\ n = ordsucc m.
+  apply Hex_m. let m. assume Hm_pack : nat_p m /\ n = ordsucc m.
+  claim Hm_nat : nat_p m. { exact (andEL (nat_p m) (n = ordsucc m) Hm_pack). }
+  claim Hn_sm : n = ordsucc m. { exact (andER (nat_p m) (n = ordsucc m) Hm_pack). }
+  apply (xm (m = 0)).
+  * assume Hm0 : m = 0.
+    claim Hn1 : n = 1.
+    { rewrite Hn_sm. rewrite Hm0. exact ordsucc_0_eq_1_nat. }
+    claim H0in : 0 :e n.
+    { rewrite Hn1. exact (ordsuccI2 0). }
+    (** reduced_word element data at index 0 **)
+    apply (reduced_word_elem J Gfam efam n xs 0 Hred H0in). let beta.
+    assume Hbeta_pack : beta :e J /\ apply_fun xs 0 :e apply_fun Gfam beta /\ apply_fun xs 0 <> apply_fun efam beta.
+    apply (and3E (beta :e J) (apply_fun xs 0 :e apply_fun Gfam beta) (apply_fun xs 0 <> apply_fun efam beta) Hbeta_pack).
+    assume HbJ Hxs0_Gb Hxs0_ne_efb.
+    (** compute word_product for n=1: equals xs(0) **)
+    claim Hwp1 : word_product multG eG xs n = apply_fun xs 0.
+    {
+      rewrite Hn1.
+      claim Hwp_succ : word_product multG eG xs 1 =
+        apply_fun multG (word_product multG eG xs 0, apply_fun xs 0).
+      { exact (word_product_succ multG eG xs 0 nat_0). }
+      claim Hwp0 : word_product multG eG xs 0 = eG.
+      { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xs i))). }
+      claim HidL : apply_fun multG (eG, apply_fun xs 0) = apply_fun xs 0.
+      {
+        apply (and6E
+          (function_on multG (setprod G G) G)
+          (function_on invG G G)
+          (eG :e G)
+          (forall x y z:set, x :e G -> y :e G -> z :e G ->
+            apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+          (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+          (forall x:set, x :e G ->
+            apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+          Hgrp).
+        assume _ _ _ _ Hid _.
+        exact (andEL
+          (apply_fun multG (eG, apply_fun xs 0) = apply_fun xs 0)
+          (apply_fun multG (apply_fun xs 0, eG) = apply_fun xs 0)
+          (Hid (apply_fun xs 0)
+            (subgroup_of_subset (apply_fun Gfam beta) G multG eG invG (Hsubfam beta HbJ)
+              (apply_fun xs 0) Hxs0_Gb))).
+      }
+      rewrite Hwp_succ. rewrite Hwp0. exact HidL.
+    }
+    (** so xs(0) = efam(al) **)
+    claim Hxs0_eq : apply_fun xs 0 = apply_fun efam al.
+    { rewrite <- Hwp1. exact (eq_i_tra (word_product multG eG xs n) (apply_fun efam al) (apply_fun efam al)
+        Hwp (eq_refl (apply_fun efam al))). }
+    (** If beta = al then reduced_word forbids xs(0)=efam(al). If beta != al, disjointness forces efam(al)=eG. **)
+    apply (xm (beta = al)).
+    + assume Hb_eq : beta = al.
+      claim Hxs0_eq2 : apply_fun xs 0 = apply_fun efam beta.
+      { rewrite Hb_eq. exact Hxs0_eq. }
+      exact (Hxs0_ne_efb Hxs0_eq2).
+    + assume Hb_ne : beta <> al.
+      claim Hefam_in_Gb : apply_fun efam al :e apply_fun Gfam beta.
+      { rewrite <- Hxs0_eq. exact Hxs0_Gb. }
+      claim Hefam_eG : apply_fun efam al = eG.
+      { exact (Hdisjoint beta al HbJ Hal Hb_ne (apply_fun efam al) Hefam_in_Gb Hefam_Gal). }
+      exact (Hefam_ne Hefam_eG).
+  * assume Hm_ne0.
+    (** Remaining case: n >= 2. The involutive assumption should force a contradiction,
+       but the proof is not yet completed. **)
+    admit.
 Admitted.
 
 (** Helper lemma: in a free product, efam(alpha) in Gfam(alpha) with efam(alpha) != eG is impossible **)
