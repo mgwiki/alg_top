@@ -133165,6 +133165,18 @@ Qed.
 (** from S55 Lem 55.3 direction (3) implies (1) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h-star is the trivial homomorphism, then h is nulhomotopic. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 180 **)
+(** Infrastructure: trivial induced homomorphism yields extension over B2. **)
+Lemma s55_trivial_implies_extends_to_B2 : forall X Tx h b0:set,
+  continuous_map S1 S1_topology X Tx h ->
+  b0 :e S1 ->
+  (forall cls:set, cls :e fundamental_group S1 S1_topology b0 ->
+    apply_fun (induced_homomorphism S1 S1_topology b0 X Tx (apply_fun h b0) h) cls =
+    fundamental_group_id X Tx (apply_fun h b0)) ->
+  exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
+admit.
+Admitted. (** TODO: needs classification of maps S1 -> X by pi1 (degree zero/loop class). **)
+
 (** Bounty 198 **)
 Theorem lemma55_3_trivial_implies_nulhomotopic : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
@@ -133179,7 +133191,14 @@ claim Hext :
   exists k:set, continuous_map B2 B2_topology X Tx k /\
     (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
 {
-  admit.
+  exact (s55_trivial_implies_extends_to_B2
+    X
+    Tx
+    h
+    b0
+    Hh
+    Hb0
+    Htriv).
 }
 exact (s55_extends_to_B2_implies_nulhomotopic
   X
@@ -133187,7 +133206,7 @@ exact (s55_extends_to_B2_implies_nulhomotopic
   h
   Hh
   Hext).
-Admitted. (** TODO: need lemma that trivial induced homomorphism on pi1(S1) yields extension over B2 (degree zero / pi1 circle classification). **)
+Admitted. (** TODO: need lemma that trivial induced homomorphism on pi1(S1) yields extension over B2. **)
 
 (** from S55 Cor 55.4 part (a) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^1 -> R^2 - 0 is not nulhomotopic. **)
