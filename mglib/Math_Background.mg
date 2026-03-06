@@ -218947,7 +218947,47 @@ apply (nat_inv n Hn_nat).
 						                    + (** reduced_word **)
 						                      admit.
 						                    + (** word_product **)
-						                      admit.
+						                      claim Hnk_nat : nat_p (add_nat n k).
+						                      { exact (add_nat_p n Hn_nat k Hk_nat). }
+						                      claim HnkO : add_nat n k :e omega.
+						                      { exact (nat_p_omega (add_nat n k) Hnk_nat). }
+						                      claim Hlen_eq : add_nat n (ordsucc k) = ordsucc (add_nat n k).
+						                      { exact (add_nat_SR n k Hk_nat). }
+						                      rewrite Hlen_eq.
+						                      claim Hwp_app :
+						                        word_product multG eG ys' (ordsucc (add_nat n k)) =
+						                          apply_fun multG (word_product multG eG ys (add_nat n k), apply_fun xs (ordsucc k)).
+						                      { exact (word_product_append_one multG eG ys (apply_fun xs (ordsucc k)) (add_nat n k) HnkO). }
+						                      rewrite Hwp_app.
+						                      rewrite Hwp_y.
+						                      apply (and6E
+						                        (function_on multG (setprod G G) G)
+						                        (function_on invG G G)
+						                        (eG :e G)
+						                        (forall a b c:set, a :e G -> b :e G -> c :e G ->
+						                          apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+						                        (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+						                        (forall a:set, a :e G ->
+						                          apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+						                        Hgrp).
+						                      assume _ _ _ HassocG _ _.
+						                      claim HkO : k :e omega. { exact (nat_p_omega k Hk_nat). }
+						                      claim Hsk_nat : nat_p (ordsucc k).
+						                      { exact (nat_ordsucc k Hk_nat). }
+						                      claim Hwp_xs_succ :
+						                        word_product multG eG xs (ordsucc (ordsucc k)) =
+						                          apply_fun multG (word_product multG eG xs (ordsucc k), apply_fun xs (ordsucc k)).
+						                      { exact (word_product_succ multG eG xs (ordsucc k) Hsk_nat). }
+						                      rewrite Hwp_xs_succ.
+						                      exact (HassocG
+						                        w
+						                        (word_product multG eG xs (ordsucc k))
+						                        (apply_fun xs (ordsucc k))
+						                        Hefam_G
+						                        (word_product_in_G_group
+						                          G multG eG invG (ordsucc k) xs Hgrp Hsk_nat
+						                          (fun i Hi => Hxs_in_G i (nat_trans (ordsucc m) (nat_ordsucc m Hm_nat) (ordsucc k) Hsk_in i Hi)))
+						                        (Hxs_in_G (ordsucc k) Hsk_in)).
 						                    + (** last element for this step **)
 						                      let t. assume Ht_nat Ht_succ.
 						                      claim Hk_eq_t : k = t.
