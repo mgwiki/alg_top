@@ -124948,10 +124948,6 @@ exact (s55_nulhomotopic_identity_implies_nulhomotopic_inclusion_R2_minus_origin
     Hretr)).
 Qed.
 
-(** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
-(** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
-(** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
 Definition s55_radial_collapse_map : set :=
   graph (setprod S1 unit_interval)
     (fun p:set =>
@@ -127267,6 +127263,10 @@ exact (eq_i_tra
   Hstep2).
 Qed.
 
+(** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
+(** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
+(** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
+(** Bounty 132 **)
 Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
   continuous_map S1 S1_topology X Tx h ->
   nulhomotopic S1 S1_topology X Tx h ->
