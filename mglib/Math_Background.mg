@@ -220718,6 +220718,75 @@ apply (nat_inv n Hn_nat).
 								                  - reflexivity.
 								                  - exact Huu_e.
 								                }
+								                (** Also record a decomposition of w using the middle product u. **)
+								                claim Hk_ex : exists k:set, nat_p k /\ m = ordsucc k.
+								                {
+								                  apply (nat_inv m Hm_nat).
+								                  - assume Hm0 : m = 0.
+								                    exact (FalseE (Hm_ne0 Hm0) (exists k:set, nat_p k /\ m = ordsucc k)).
+								                  - assume Hk. exact Hk.
+								                }
+								                apply Hk_ex. let k. assume Hk_pack.
+								                claim Hk_nat : nat_p k.
+								                { exact (andEL (nat_p k) (m = ordsucc k) Hk_pack). }
+								                claim Hm_eq_sk : m = ordsucc k.
+								                { exact (andER (nat_p k) (m = ordsucc k) Hk_pack). }
+								                claim Hk_in_m : k :e m.
+								                { rewrite Hm_eq_sk. exact (ordsuccI2 k). }
+								                set xs_suf_e2 := graph m (fun i:set => apply_fun xs (ordsucc i)).
+								                set xs_mid2 := graph k (fun i:set => apply_fun xs_suf_e2 i).
+								                set u2 := word_product multG eG xs_mid2 k.
+								                claim Hwp_suf_e2 :
+								                  word_product multG eG xs_suf_e2 m = apply_fun multG (u2, xlast).
+								                {
+								                  claim HkO : k :e omega. { exact (nat_p_omega k Hk_nat). }
+								                  claim Hwp_k_eq : word_product multG eG xs_suf_e2 k = u2.
+								                  {
+								                    claim Hwp_k_eq' : word_product multG eG xs_suf_e2 k = word_product multG eG xs_mid2 k.
+								                    {
+								                      apply (nat_primrec_ext eG
+								                        (fun i r => apply_fun multG (r, apply_fun xs_suf_e2 i))
+								                        (fun i r => apply_fun multG (r, apply_fun xs_mid2 i))
+								                        k
+								                        HkO).
+								                      let i r. assume Hik.
+								                      rewrite (apply_fun_graph k (fun t:set => apply_fun xs_suf_e2 t) i Hik).
+								                      reflexivity.
+								                    }
+								                    rewrite Hwp_k_eq'.
+								                    reflexivity.
+								                  }
+								                  claim Hxs_suf_k : apply_fun xs_suf_e2 k = xlast.
+								                  {
+								                    rewrite (apply_fun_graph m (fun t:set => apply_fun xs (ordsucc t)) k Hk_in_m).
+								                    claim Hsk_eq_m : ordsucc k = m. { symmetry. exact Hm_eq_sk. }
+								                    rewrite Hsk_eq_m.
+								                    reflexivity.
+								                  }
+								                  claim Hwp_succ :
+								                    word_product multG eG xs_suf_e2 (ordsucc k) =
+								                      apply_fun multG (word_product multG eG xs_suf_e2 k, apply_fun xs_suf_e2 k).
+								                  { exact (word_product_succ multG eG xs_suf_e2 k Hk_nat). }
+								                  claim Hlhs :
+								                    word_product multG eG xs_suf_e2 m = word_product multG eG xs_suf_e2 (ordsucc k).
+								                  { rewrite Hm_eq_sk. reflexivity. }
+								                  rewrite Hlhs.
+								                  rewrite Hwp_succ.
+								                  rewrite Hwp_k_eq.
+								                  rewrite Hxs_suf_k.
+								                  reflexivity.
+								                }
+								                claim Hw_eq : w = apply_fun multG (x0, apply_fun multG (u2, xlast)).
+								                {
+								                  claim Hwp_shift :
+								                    word_product multG eG xs (ordsucc m) =
+								                      apply_fun multG (apply_fun xs 0, word_product multG eG xs_suf_e2 m).
+								                  { exact (word_product_shift_first G multG eG invG m xs Hgrp Hm_nat Hxs_in_G m Hm_nat (ordsuccI2 m)). }
+								                  rewrite <- Hwp_full.
+								                  rewrite Hwp_shift.
+								                  rewrite Hwp_suf_e2.
+								                  reflexivity.
+								                }
 								                (** Remaining work: use this boundary cancellation information to contradict w^2 = eG in a free product. **)
 								                admit.
 								            - assume Hp_ne_eG : p <> eG.
