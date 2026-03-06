@@ -220886,6 +220886,200 @@ apply (nat_inv n Hn_nat).
 								                  rewrite Hwp_suf_e2.
 								                  reflexivity.
 								                }
+								                (** From the split and w squared = eG, deduce u2 squared = eG. **)
+								                claim Hu2_sq : apply_fun multG (u2, u2) = eG.
+								                {
+								                  apply (and6E
+								                    (function_on multG (setprod G G) G)
+								                    (function_on invG G G)
+								                    (eG :e G)
+								                    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+								                      apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+								                    (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+								                    (forall a:set, a :e G ->
+								                      apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+								                    Hgrp).
+								                  assume HmultF HinvF HeG HassocG HidG HinvLaw.
+								                  claim Hxs_mid2_G : forall i:set, i :e k -> apply_fun xs_mid2 i :e G.
+								                  {
+								                    let i. assume Hik.
+								                    rewrite (apply_fun_graph k (fun t:set => apply_fun xs_suf_e2 t) i Hik).
+								                    claim Hik_m : i :e m.
+								                    {
+								                      claim Hk_sub_m : k c= m.
+								                      { exact (nat_trans m Hm_nat k Hk_in_m). }
+								                      exact (Hk_sub_m i Hik).
+								                    }
+								                    rewrite (apply_fun_graph m (fun t:set => apply_fun xs (ordsucc t)) i Hik_m).
+								                    exact (Hxs_in_G (ordsucc i) (nat_ordsucc_in_ordsucc m Hm_nat i Hik_m)).
+								                  }
+								                  claim Hu2_G : u2 :e G.
+								                  {
+								                    exact (word_product_in_G_group
+								                      G multG eG invG k xs_mid2 Hgrp Hk_nat Hxs_mid2_G).
+								                  }
+								                  claim Ha_G : apply_fun multG (u2, xlast) :e G.
+								                  {
+								                    exact (HmultF (u2, xlast)
+								                      (tuple_2_setprod_by_pair_Sigma G G u2 xlast Hu2_G Hxlast_G)).
+								                  }
+								                  claim Hxa_G : apply_fun multG (x0, apply_fun multG (u2, xlast)) :e G.
+								                  {
+								                    exact (HmultF (x0, apply_fun multG (u2, xlast))
+								                      (tuple_2_setprod_by_pair_Sigma G G x0 (apply_fun multG (u2, xlast)) Hx0_G Ha_G)).
+								                  }
+								                  claim Hw_sq0 : apply_fun multG (w, w) = eG.
+								                  { exact Hefam_sq. }
+								                  claim Hw_sq1 : apply_fun multG
+								                    (apply_fun multG (x0, apply_fun multG (u2, xlast)),
+				                              apply_fun multG (x0, apply_fun multG (u2, xlast))) = eG.
+								                  {
+								                    rewrite <- Hw_eq.
+								                    exact Hw_sq0.
+								                  }
+								                  claim Hstep1 :
+								                    apply_fun multG
+								                      (apply_fun multG (x0, apply_fun multG (u2, xlast)),
+								                       apply_fun multG (x0, apply_fun multG (u2, xlast))) =
+								                    apply_fun multG
+								                      (x0, apply_fun multG (apply_fun multG (u2, xlast),
+								                        apply_fun multG (x0, apply_fun multG (u2, xlast)))).
+								                  {
+								                    exact (HassocG
+								                      x0
+								                      (apply_fun multG (u2, xlast))
+								                      (apply_fun multG (x0, apply_fun multG (u2, xlast)))
+								                      Hx0_G
+								                      Ha_G
+								                      Hxa_G).
+								                  }
+								                  claim Hstep2 :
+								                    apply_fun multG (apply_fun multG (u2, xlast),
+								                      apply_fun multG (x0, apply_fun multG (u2, xlast))) =
+								                    apply_fun multG (u2, apply_fun multG (xlast,
+								                      apply_fun multG (x0, apply_fun multG (u2, xlast)))).
+								                  {
+								                    exact (HassocG
+								                      u2
+								                      xlast
+								                      (apply_fun multG (x0, apply_fun multG (u2, xlast)))
+								                      Hu2_G
+								                      Hxlast_G
+								                      Hxa_G).
+								                  }
+								                  claim Hstep3 :
+								                    apply_fun multG (xlast, apply_fun multG (x0, apply_fun multG (u2, xlast))) =
+								                      apply_fun multG (u2, xlast).
+								                  {
+								                    claim Hassoc1 :
+								                      apply_fun multG (xlast, apply_fun multG (x0, apply_fun multG (u2, xlast))) =
+								                        apply_fun multG (apply_fun multG (xlast, x0), apply_fun multG (u2, xlast)).
+								                    {
+								                      symmetry.
+								                      exact (HassocG
+								                        xlast
+								                        x0
+								                        (apply_fun multG (u2, xlast))
+								                        Hxlast_G
+								                        Hx0_G
+								                        Ha_G).
+								                    }
+								                    rewrite Hassoc1.
+								                    rewrite Hp_eG.
+								                    exact (andEL
+								                      (apply_fun multG (eG, apply_fun multG (u2, xlast)) = apply_fun multG (u2, xlast))
+								                      (apply_fun multG (apply_fun multG (u2, xlast), eG) = apply_fun multG (u2, xlast))
+								                      (HidG (apply_fun multG (u2, xlast)) Ha_G)).
+								                  }
+								                  claim Hstep4 :
+								                    apply_fun multG
+								                      (apply_fun multG (u2, xlast),
+								                       apply_fun multG (x0, apply_fun multG (u2, xlast))) =
+								                    apply_fun multG (u2, apply_fun multG (u2, xlast)).
+								                  {
+								                    rewrite Hstep2.
+								                    rewrite Hstep3.
+								                    reflexivity.
+								                  }
+								                  claim Hstep5 :
+								                    apply_fun multG (u2, apply_fun multG (u2, xlast)) =
+								                      apply_fun multG (apply_fun multG (u2, u2), xlast).
+								                  {
+								                    symmetry.
+								                    exact (HassocG u2 u2 xlast Hu2_G Hu2_G Hxlast_G).
+								                  }
+								                  claim Hw_sq2 :
+								                    apply_fun multG (x0, apply_fun multG (apply_fun multG (u2, u2), xlast)) = eG.
+								                  {
+								                    rewrite <- Hstep5.
+								                    rewrite <- Hstep4.
+								                    rewrite <- Hstep1.
+								                    exact Hw_sq1.
+								                  }
+								                  claim Hinvx0_G : apply_fun invG x0 :e G.
+								                  { exact (HinvF x0 Hx0_G). }
+								                  claim Hmul_in_G :
+								                    apply_fun multG (apply_fun multG (u2, u2), xlast) :e G.
+								                  {
+								                    exact (HmultF (apply_fun multG (u2, u2), xlast)
+								                      (tuple_2_setprod_by_pair_Sigma G G (apply_fun multG (u2, u2)) xlast
+								                        (HmultF (u2, u2) (tuple_2_setprod_by_pair_Sigma G G u2 u2 Hu2_G Hu2_G))
+								                        Hxlast_G)).
+								                  }
+								                  claim Hcancel1 :
+								                    apply_fun multG (apply_fun multG (u2, u2), xlast) = apply_fun invG x0.
+								                  {
+								                    exact (group_left_cancel
+								                      G multG eG invG x0
+								                      (apply_fun multG (apply_fun multG (u2, u2), xlast))
+								                      (apply_fun invG x0)
+								                      Hgrp
+								                      Hx0_G
+								                      Hmul_in_G
+								                      Hinvx0_G
+								                      (eq_i_tra
+								                        (apply_fun multG (x0, apply_fun multG (apply_fun multG (u2, u2), xlast)))
+								                        eG
+								                        (apply_fun multG (x0, apply_fun invG x0))
+								                        Hw_sq2
+								                        (eq_symm
+								                          (apply_fun multG (x0, apply_fun invG x0))
+								                          eG
+								                          (andEL
+								                            (apply_fun multG (x0, apply_fun invG x0) = eG)
+								                            (apply_fun multG (apply_fun invG x0, x0) = eG)
+								                            (HinvLaw x0 Hx0_G))))).
+								                  }
+								                  claim HidLx : apply_fun multG (eG, xlast) = xlast.
+								                  {
+								                    exact (andEL
+								                      (apply_fun multG (eG, xlast) = xlast)
+								                      (apply_fun multG (xlast, eG) = xlast)
+								                      (HidG xlast Hxlast_G)).
+								                  }
+								                  claim Hcancel1x :
+								                    apply_fun multG (apply_fun multG (u2, u2), xlast) = xlast.
+								                  {
+								                    exact (eq_i_tra
+								                      (apply_fun multG (apply_fun multG (u2, u2), xlast))
+								                      (apply_fun invG x0)
+								                      xlast
+								                      Hcancel1
+								                      (eq_symm xlast (apply_fun invG x0) Hxlast_eq_inv_x0)).
+								                  }
+								                  exact (group_right_cancel
+								                    G multG eG invG xlast (apply_fun multG (u2, u2)) eG
+								                    Hgrp
+								                    Hxlast_G
+								                    (HmultF (u2, u2) (tuple_2_setprod_by_pair_Sigma G G u2 u2 Hu2_G Hu2_G))
+								                    HeG
+								                    (eq_i_tra
+								                      (apply_fun multG (apply_fun multG (u2, u2), xlast))
+								                      xlast
+								                      (apply_fun multG (eG, xlast))
+								                      Hcancel1x
+								                      (eq_symm (apply_fun multG (eG, xlast)) xlast HidLx))).
+								                }
 								                (** Remaining work: use this boundary cancellation information to contradict w^2 = eG in a free product. **)
 								                admit.
 								            - assume Hp_ne_eG : p <> eG.
