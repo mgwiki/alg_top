@@ -157484,6 +157484,31 @@ claim HconnUnion : connected_space (Union (UPair A B)) (subspace_topology X Tx (
  exact HconnUnion.
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: shrink the ball-cover property to a smaller radius. **)
+Lemma ball_cover_property_shrink : forall U V f r1 r2:set,
+  (forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r2 -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r2 -> apply_fun f t :e V)) ->
+  Rlt r1 r2 ->
+  (forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e V)).
+let U V f r1 r2.
+assume Hball Hlt.
+let c.
+assume Hc.
+apply (Hball c Hc).
+- assume HallU.
+  apply orIL.
+  let t. assume Ht.
+  exact (HallU t (open_ball_radius_mono unit_interval R_bounded_metric c r1 r2 Hlt t Ht)).
+- assume HallV.
+  apply orIR.
+  let t. assume Ht.
+  exact (HallV t (open_ball_radius_mono unit_interval R_bounded_metric c r1 r2 Hlt t Ht)).
+Qed.
+
 (** Core word construction: given ball property for a loop, produce word decomposition.
     This is the inductive heart of Munkres Thm 59.1, separated from the Lebesgue setup. **)
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
@@ -158340,6 +158365,111 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
       rewrite H2m1.
       exact Hf2_1. }
     (** Remaining step: express [f] as product of classes from U and V **)
+    (** Step 10: f is homotopic to path_concat L1 L2 **)
+    claim HL1_loop_at : loop_at X Tx x0 L1.
+    {
+      prove (continuous_map unit_interval unit_interval_topology X Tx L1 /\
+        apply_fun L1 0 = x0) /\ apply_fun L1 1 = x0.
+      apply andI.
+      - apply andI.
+        + exact HL1_cont.
+        + exact HL1_0.
+      - exact HL1_1.
+    }
+    claim HL2_loop_at : loop_at X Tx x0 L2.
+    {
+      prove (continuous_map unit_interval unit_interval_topology X Tx L2 /\
+        apply_fun L2 0 = x0) /\ apply_fun L2 1 = x0.
+      apply andI.
+      - apply andI.
+        + exact HL2_cont.
+        + exact HL2_0.
+      - exact HL2_1.
+    }
+    claim HL1_fun : function_on L1 unit_interval X.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx L1 HL1_cont). }
+    claim HL2_fun : function_on L2 unit_interval X.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx L2 HL2_cont). }
+    claim HL1_sub : L1 c= setprod unit_interval X.
+    {
+      let p. assume Hp.
+      apply (binunionE
+        {(t, apply_fun f1 (mul_SNo 2 t)) | t :e unit_interval_left_half}
+        {(t, apply_fun (reverse_path gammaX) (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+        p Hp).
+      - assume Hleft.
+        apply (ReplE_impred unit_interval_left_half
+          (fun t:set => (t, apply_fun f1 (mul_SNo 2 t))) p Hleft).
+        let t. assume Ht Heq.
+        claim H2tI : mul_SNo 2 t :e unit_interval.
+        { rewrite <- (double_map_apply t Ht). exact (double_map_function_on t Ht). }
+        rewrite Heq.
+        exact (tuple_2_setprod_by_pair_Sigma unit_interval X t
+          (apply_fun f1 (mul_SNo 2 t))
+          (unit_interval_left_half_sub t Ht)
+          (continuous_map_function_on unit_interval unit_interval_topology X Tx f1 Hf1Cont (mul_SNo 2 t) H2tI)).
+      - assume Hright.
+        apply (ReplE_impred unit_interval_right_half
+          (fun t:set => (t, apply_fun (reverse_path gammaX) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))) p Hright).
+        let t. assume Ht Heq.
+        claim H2m1tI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+        { rewrite <- (double_minus_one_map_apply t Ht). exact (double_minus_one_map_function_on t Ht). }
+        rewrite Heq.
+        exact (tuple_2_setprod_by_pair_Sigma unit_interval X t
+          (apply_fun (reverse_path gammaX) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+          (unit_interval_right_half_sub t Ht)
+          (continuous_map_function_on unit_interval unit_interval_topology X Tx (reverse_path gammaX)
+            (reverse_path_continuous X Tx gammaX HgammaXCont)
+            (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2m1tI)).
+    }
+    claim HL2_sub : L2 c= setprod unit_interval X.
+    {
+      let p. assume Hp.
+      apply (binunionE
+        {(t, apply_fun gammaX (mul_SNo 2 t)) | t :e unit_interval_left_half}
+        {(t, apply_fun f2 (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+        p Hp).
+      - assume Hleft.
+        apply (ReplE_impred unit_interval_left_half
+          (fun t:set => (t, apply_fun gammaX (mul_SNo 2 t))) p Hleft).
+        let t. assume Ht Heq.
+        claim H2tI : mul_SNo 2 t :e unit_interval.
+        { rewrite <- (double_map_apply t Ht). exact (double_map_function_on t Ht). }
+        rewrite Heq.
+        exact (tuple_2_setprod_by_pair_Sigma unit_interval X t
+          (apply_fun gammaX (mul_SNo 2 t))
+          (unit_interval_left_half_sub t Ht)
+          (continuous_map_function_on unit_interval unit_interval_topology X Tx gammaX HgammaXCont
+            (mul_SNo 2 t) H2tI)).
+      - assume Hright.
+        apply (ReplE_impred unit_interval_right_half
+          (fun t:set => (t, apply_fun f2 (add_SNo (mul_SNo 2 t) (minus_SNo 1)))) p Hright).
+        let t. assume Ht Heq.
+        claim H2m1tI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+        { rewrite <- (double_minus_one_map_apply t Ht). exact (double_minus_one_map_function_on t Ht). }
+        rewrite Heq.
+        exact (tuple_2_setprod_by_pair_Sigma unit_interval X t
+          (apply_fun f2 (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+          (unit_interval_right_half_sub t Ht)
+          (continuous_map_function_on unit_interval unit_interval_topology X Tx f2 Hf2Cont
+            (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2m1tI)).
+    }
+    claim HL1_funspace : L1 :e function_space unit_interval X.
+    {
+      exact (SepI (Power (setprod unit_interval X)) (fun u:set => function_on u unit_interval X)
+        L1 (PowerI (setprod unit_interval X) L1 HL1_sub) HL1_fun).
+    }
+    claim HL2_funspace : L2 :e function_space unit_interval X.
+    {
+      exact (SepI (Power (setprod unit_interval X)) (fun u:set => function_on u unit_interval X)
+        L2 (PowerI (setprod unit_interval X) L2 HL2_sub) HL2_fun).
+    }
+    claim HL1_loop : L1 :e loop_space X Tx x0.
+    { exact (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx x0 g) L1 HL1_funspace HL1_loop_at). }
+    claim HL2_loop : L2 :e loop_space X Tx x0.
+    { exact (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx x0 g) L2 HL2_funspace HL2_loop_at). }
+    (** TODO: complete the word decomposition using the ball cover property for L2
+        and the homotopy f ~ path_concat L1 L2. **)
     admit.
 Admitted.
 
