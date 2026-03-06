@@ -218752,14 +218752,33 @@ apply (nat_inv n Hn_nat).
 				          exact (Halpha0_ne Halpha0_eq_al).
 				        - assume Halpha_m_ne : alpha_m <> al.
 				          (** Subcase analysis on whether the last label equals the first label. **)
-				          apply (xm (alpha_m = alpha0)).
-				          + assume Halpha_m_eq0 : alpha_m = alpha0.
-				            (** TODO: boundary-cancellation case alpha_m = alpha0. **)
-				            admit.
-				          + assume Halpha_m_ne0 : alpha_m <> alpha0.
-				            (** If alpha_m <> alpha0, then doubling the reduced word gives a reduced word for eG. **)
-				            claim Hn_nat : nat_p n.
-				            { rewrite Hn_sm. exact (nat_ordsucc m Hm_nat). }
+						          apply (xm (alpha_m = alpha0)).
+						          - assume Halpha_m_eq0 : alpha_m = alpha0.
+						            (** Boundary-cancellation case alpha_m = alpha0.
+						               We analyze the "middle product" p := xs(m) times xs(0). **)
+					            set x0 := apply_fun xs 0.
+					            set xm := apply_fun xs m.
+					            claim Hxm_in_Ga0 : xm :e apply_fun Gfam alpha0.
+					            { rewrite <- Halpha_m_eq0. exact Hxsm_in_Gam. }
+					            claim Hxm_ne_ef0 : xm <> apply_fun efam alpha0.
+					            { rewrite <- Halpha_m_eq0. exact Hxsm_ne_efm. }
+					            claim Hx0_ne_ef0' : x0 <> apply_fun efam alpha0.
+					            { exact Hx0_ne_ef0. }
+					            set p := apply_fun multG (xm, x0).
+					            claim Hp_in_Ga0 : p :e apply_fun Gfam alpha0.
+					            {
+					              exact (subgroup_of_mult_closed
+					                (apply_fun Gfam alpha0) G multG eG invG xm x0
+					                (Hsubfam alpha0 Halpha0J) Hxm_in_Ga0 Hx0_in_Ga0).
+					            }
+						            (** TODO: finish the boundary-cancellation case alpha_m = alpha0.
+						               A likely next step is to analyze whether p equals apply_fun efam alpha0,
+						               and/or to build a reduced word for mult(w,w) by merging the boundary pair (xm,x0). **)
+						            admit.
+					          - assume Halpha_m_ne0 : alpha_m <> alpha0.
+					            (** If alpha_m <> alpha0, then doubling the reduced word gives a reduced word for eG. **)
+					            claim Hn_nat : nat_p n.
+					            { rewrite Hn_sm. exact (nat_ordsucc m Hm_nat). }
 				            claim Hn_ne0 : n <> 0.
 				            { rewrite Hn_sm. exact (neq_ordsucc_0 m). }
 				            claim Hn_ne1 : n <> 1.
