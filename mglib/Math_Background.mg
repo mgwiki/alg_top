@@ -94867,9 +94867,36 @@ claim HFcol_fun : function_on Fcol_lift I1 E.
   }
   exact (Hlift_fun t0 Ht0).
 }
-(** TODO: build a chain of product balls along [0,t0] and use local sheet constancy to
-    show that Fcol_lift agrees locally with a continuous inverse chart on I1. **)
-admit.
+claim HtopI1 : topology_on I1 (subspace_topology unit_interval unit_interval_topology I1).
+{
+  exact (subspace_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    I1
+    unit_interval_topology_on
+    HI1sub).
+}
+claim Hlocal_cont :
+  exists UFam:set,
+    UFam c= (subspace_topology unit_interval unit_interval_topology I1) /\
+    Union UFam = I1 /\
+    (forall U:set, U :e UFam ->
+      continuous_map U (subspace_topology I1 (subspace_topology unit_interval unit_interval_topology I1) U)
+        E Te Fcol_lift).
+{
+  (** TODO: for each s0, build a neighborhood U in I1 such that Fcol_lift agrees on U
+      with a continuous local inverse chart (via chain of evenly covered product balls in t). **)
+  admit.
+}
+exact (continuous_map_local_cover
+  I1
+  (subspace_topology unit_interval unit_interval_topology I1)
+  E
+  Te
+  Fcol_lift
+  HtopI1
+  HtopE
+  Hlocal_cont).
 Admitted.
 
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
