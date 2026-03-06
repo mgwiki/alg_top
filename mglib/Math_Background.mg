@@ -95213,8 +95213,113 @@ Lemma connected_metric_clopen_full :
   (forall x:set, x :e S -> exists r:set, r :e R /\ Rlt 0 r /\ open_ball X d x r c= S) ->
   (forall x:set, x :e X -> x /:e S -> exists r:set, r :e R /\ Rlt 0 r /\ open_ball X d x r c= X :\: S) ->
   S = X.
-admit.
-Admitted.
+let X d S.
+assume Hmetric Hconn HSsub HSne Hball_in Hball_comp.
+set Tx := metric_topology X d.
+claim HtopX : topology_on X Tx.
+{ exact (metric_topology_is_topology X d Hmetric). }
+set CompS := X :\: S.
+(** Show S is open via local open subset **)
+claim HSopenIn : open_in X Tx S.
+{
+  apply (ex13_1_local_open_subset X Tx S HtopX).
+  let x. assume HxS.
+  claim HxX : x :e X.
+  { exact (HSsub x HxS). }
+  claim Hball_ex : exists r:set, r :e R /\ Rlt 0 r /\ open_ball X d x r c= S.
+  { exact (Hball_in x HxS). }
+  apply Hball_ex.
+  let r. assume Hr.
+  claim HrR_pos : r :e R /\ Rlt 0 r.
+  { exact (andEL (r :e R /\ Rlt 0 r) (open_ball X d x r c= S) Hr). }
+  claim HrR : r :e R.
+  { exact (andEL (r :e R) (Rlt 0 r) HrR_pos). }
+  claim Hrpos : Rlt 0 r.
+  { exact (andER (r :e R) (Rlt 0 r) HrR_pos). }
+  claim Hball_sub : open_ball X d x r c= S.
+  { exact (andER (r :e R /\ Rlt 0 r) (open_ball X d x r c= S) Hr). }
+  claim Hball_open : open_ball X d x r :e Tx.
+  { exact (open_in_elem X Tx (open_ball X d x r)
+      (open_ball_open_in_metric_topology X d x r Hmetric HxX Hrpos)). }
+  witness (open_ball X d x r).
+  apply andI.
+  - exact Hball_open.
+  - apply andI.
+    + exact (center_in_open_ball X d x r Hmetric HxX Hrpos).
+    + exact Hball_sub.
+}
+(** Show X\S is open via local open subset **)
+claim HCompSopenIn : open_in X Tx CompS.
+{
+  apply (ex13_1_local_open_subset X Tx CompS HtopX).
+  let x. assume HxCompS.
+  claim HxX : x :e X.
+  { exact (setminusE1 X S x HxCompS). }
+  claim HxnS : x /:e S.
+  { exact (setminusE2 X S x HxCompS). }
+  claim Hball_ex : exists r:set, r :e R /\ Rlt 0 r /\ open_ball X d x r c= X :\: S.
+  { exact (Hball_comp x HxX HxnS). }
+  apply Hball_ex.
+  let r. assume Hr.
+  claim HrR_pos : r :e R /\ Rlt 0 r.
+  { exact (andEL (r :e R /\ Rlt 0 r) (open_ball X d x r c= CompS) Hr). }
+  claim HrR : r :e R.
+  { exact (andEL (r :e R) (Rlt 0 r) HrR_pos). }
+  claim Hrpos : Rlt 0 r.
+  { exact (andER (r :e R) (Rlt 0 r) HrR_pos). }
+  claim Hball_sub : open_ball X d x r c= CompS.
+  { exact (andER (r :e R /\ Rlt 0 r) (open_ball X d x r c= CompS) Hr). }
+  claim Hball_open : open_ball X d x r :e Tx.
+  { exact (open_in_elem X Tx (open_ball X d x r)
+      (open_ball_open_in_metric_topology X d x r Hmetric HxX Hrpos)). }
+  witness (open_ball X d x r).
+  apply andI.
+  - exact Hball_open.
+  - apply andI.
+    + exact (center_in_open_ball X d x r Hmetric HxX Hrpos).
+    + exact Hball_sub.
+}
+(** S is closed: X\S is open, so X\(X\S) = S is closed **)
+claim HSclosedIn : closed_in X Tx S.
+{
+  claim HclosedComp : closed_in X Tx (X :\: CompS).
+  {
+    exact (closed_of_open_complement X Tx CompS HtopX
+      (open_in_elem X Tx CompS HCompSopenIn)).
+  }
+  claim Htmp : X :\: CompS = S.
+  { exact (setminus_setminus_eq X S HSsub). }
+  rewrite <- Htmp.
+  exact HclosedComp.
+}
+(** By connected_iff_no_nontrivial_clopen, S cannot be proper clopen, so S = X **)
+claim Hnoclopen :
+  ~ (exists C:set, C <> Empty /\ C <> X /\ open_in X Tx C /\ closed_in X Tx C).
+{
+  exact (iffEL
+    (connected_space X Tx)
+    (~ (exists C:set, C <> Empty /\ C <> X /\ open_in X Tx C /\ closed_in X Tx C))
+    (connected_iff_no_nontrivial_clopen X Tx HtopX)
+    Hconn).
+}
+apply xm (S = X).
+- assume HSX : S = X.
+  exact HSX.
+- assume HSXneq : ~ (S = X).
+  claim Hbad :
+    exists C:set, C <> Empty /\ C <> X /\ open_in X Tx C /\ closed_in X Tx C.
+  {
+    witness S.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * exact HSne.
+        * exact (fun H => HSXneq H).
+      + exact HSopenIn.
+    - exact HSclosedIn.
+  }
+  exact (FalseE (Hnoclopen Hbad) (S = X)).
+Qed.
 
 (** Infrastructure: column continuity with jointly continuous F (provable via chain) **)
 (** Uses open-and-closed argument on unit_interval: the set of times where column **)
