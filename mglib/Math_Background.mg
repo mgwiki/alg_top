@@ -219079,14 +219079,47 @@ apply (nat_inv n Hn_nat).
 						                (apply_fun Gfam alpha0) G multG eG invG xlast x0
 						                (Hsubfam alpha0 Halpha0J) Hxlast_in_Ga0 Hx0_in_Ga0).
 						            }
-						            (** Boundary-cancellation case alpha_m = alpha0.
-						               Split on whether p is trivial or equals efam(alpha0). **)
-						            apply (xm (p = eG)).
-						            - assume Hp_eG : p = eG.
-						              (** TODO: handle the case mult(xlast,x0) = eG (cyclic reduction / conjugation). **)
-						              admit.
-						            - assume Hp_ne_eG : p <> eG.
-						              apply (xm (p = apply_fun efam alpha0)).
+							            (** Boundary-cancellation case alpha_m = alpha0.
+							               Split on whether p is trivial or equals efam(alpha0). **)
+								            apply (xm (p = eG)).
+								            - assume Hp_eG : p = eG.
+								              (** If m = 1, reducedness at indices 0 and 1 contradicts alpha_m = alpha0. **)
+								              apply (xm (m = 1)).
+								              + assume Hm1 : m = 1.
+								                claim Hn2 : ordsucc m = 2.
+								                { rewrite Hm1. exact ordsucc_1_eq_2_nat. }
+								                claim H0_in_n : 0 :e ordsucc m.
+								                { rewrite Hn2. exact In_0_2. }
+								                claim H1_in_n : 1 :e ordsucc m.
+								                { rewrite Hn2. exact In_1_2. }
+								                apply (and3E
+								                  ((ordsucc m) :e omega)
+								                  (forall i:set, i :e ordsucc m ->
+								                    exists a:set, a :e J /\
+								                      apply_fun xs i :e apply_fun Gfam a /\
+								                      apply_fun xs i <> apply_fun efam a)
+								                  (forall i:set, i :e ordsucc m -> ordsucc i :e ordsucc m ->
+								                    forall a b:set, a :e J -> b :e J ->
+								                      apply_fun xs i :e apply_fun Gfam a ->
+								                      apply_fun xs (ordsucc i) :e apply_fun Gfam b ->
+								                      a <> b)
+								                  Hred_sm).
+								                assume _ _ Hadj.
+								                claim Hx1_in_Ga0 : apply_fun xs 1 :e apply_fun Gfam alpha0.
+								                {
+								                  claim Hxlast_eq : xlast = apply_fun xs 1.
+								                  { rewrite Hm1. reflexivity. }
+								                  rewrite <- Hxlast_eq.
+								                  exact Hxlast_in_Ga0.
+								                }
+								                claim Hs0_in_n : ordsucc 0 :e ordsucc m.
+								                { rewrite <- ordsucc_0_eq_1_nat. exact H1_in_n. }
+								                exact ((Hadj 0 H0_in_n Hs0_in_n alpha0 alpha0 Halpha0J Halpha0J Hx0_in_Ga0 Hx1_in_Ga0) (eq_refl alpha0)).
+								              + assume Hm_ne1 : m <> 1.
+								                (** TODO: handle the case mult(xlast,x0) = eG (cyclic seam cancellation). **)
+								                admit.
+								            - assume Hp_ne_eG : p <> eG.
+								              apply (xm (p = apply_fun efam alpha0)).
 						              - assume Hp_eq_ef0 : p = apply_fun efam alpha0.
 						                (** TODO: handle the case mult(xlast,x0) = efam(alpha0). **)
 						                admit.
