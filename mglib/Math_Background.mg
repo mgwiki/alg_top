@@ -218253,6 +218253,47 @@ apply (nat_inv n Hn_nat).
       Hn_ne1).
 Qed.
 
+(** Infrastructure: label uniqueness for non-identity letters in reduced words (free product) **)
+(** Proven Charlie **)
+Lemma free_product_reduced_word_label_unique :
+  forall G mult e inv J Gfam efam n xs i alpha beta:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  reduced_word J Gfam efam n xs ->
+  n <> 0 -> n <> 1 ->
+  i :e n ->
+  alpha :e J -> beta :e J ->
+  apply_fun xs i :e apply_fun Gfam alpha ->
+  apply_fun xs i :e apply_fun Gfam beta ->
+  alpha = beta.
+let G mult e inv J Gfam efam n xs i alpha beta.
+assume Hfp Hred Hn_ne0 Hn_ne1 Hi HalphaJ HbetaJ HxGa HxGb.
+apply (and5E
+  (group_structure G mult e inv)
+  (forall a:set, a :e J -> subgroup_of (apply_fun Gfam a) G mult e inv)
+  (forall a b:set, a :e J -> b :e J -> a <> b ->
+    forall x:set, x :e apply_fun Gfam a -> x :e apply_fun Gfam b -> x = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall x:set, x :e G -> x <> e ->
+    exists n0 xs0:set,
+      reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product mult e xs0 n0 = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = x ->
+        n0 = n' /\ (forall j:set, j :e n0 -> apply_fun xs0 j = apply_fun xs' j)))
+  Hfp).
+assume Hgrp Hsubfam Hdisjoint _ _.
+claim Hx_ne_e : apply_fun xs i <> e.
+{
+  exact (reduced_word_no_eG_all
+    G mult e inv J Gfam efam n xs
+    Hgrp Hsubfam Hred Hn_ne0 Hn_ne1 i Hi).
+}
+exact (disjoint_subgroups_label_unique
+  G mult e inv J Gfam alpha beta (apply_fun xs i)
+  Hdisjoint HalphaJ HbetaJ HxGa HxGb Hx_ne_e).
+Qed.
+
 (** Infrastructure: the least normal subgroup of G containing a subset S **)
 Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
   fun G mult e inv S =>
