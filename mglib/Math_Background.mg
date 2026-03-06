@@ -141157,6 +141157,22 @@ Qed.
 Definition finite_real_sum : (set -> set) -> set -> set := fun f n =>
   nat_primrec 0 (fun j r => add_SNo r (f j)) n.
 
+(** Infrastructure: finite_real_sum base/step rules **)
+(** Proven Bob **)
+Lemma finite_real_sum_0 : forall f:set->set,
+  finite_real_sum f 0 = 0.
+let f.
+exact (nat_primrec_0 0 (fun j r => add_SNo r (f j))).
+Qed.
+
+(** Proven Bob **)
+Lemma finite_real_sum_S : forall f:set->set, forall n:set, nat_p n ->
+  finite_real_sum f (ordsucc n) = add_SNo (finite_real_sum f n) (f n).
+let f n.
+assume Hn.
+exact (nat_primrec_S 0 (fun j r => add_SNo r (f j)) n Hn).
+Qed.
+
 (** Infrastructure: n-by-n matrix applied to n-vector **)
 (** (Av)_i = sum_{j<n} A(i,j) v(j) **)
 Definition matrix_vector_mult : set -> set -> set -> set := fun n A v =>
