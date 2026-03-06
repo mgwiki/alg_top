@@ -141203,6 +141203,42 @@ claim Hnat :
 exact (Hnat n Hn Hf).
 Qed.
 
+(** Proven Bob **)
+Lemma finite_real_sum_zero_of_all_zero : forall f:set->set, forall n:set, nat_p n ->
+  (forall k:set, k :e n -> f k :e R) ->
+  (forall k:set, k :e n -> f k = 0) ->
+  finite_real_sum f n = 0.
+let f n.
+assume Hn HfR Hf0.
+claim Hnat :
+  forall m:set, nat_p m ->
+    (forall k:set, k :e m -> f k :e R) ->
+    (forall k:set, k :e m -> f k = 0) ->
+    finite_real_sum f m = 0.
+{
+  apply nat_ind.
+  - assume H0R H0.
+    rewrite (finite_real_sum_0 f).
+    reflexivity.
+  - let m.
+    assume Hm_nat IH.
+    assume HmR Hm0.
+    rewrite (finite_real_sum_S f m Hm_nat).
+    claim Hsum0 : finite_real_sum f m = 0.
+    {
+      exact (IH
+        (fun k Hk => HmR k (ordsuccI1 m k Hk))
+        (fun k Hk => Hm0 k (ordsuccI1 m k Hk))).
+    }
+    rewrite Hsum0.
+    claim Hfm0 : f m = 0.
+    { exact (Hm0 m (ordsuccI2 m)). }
+    rewrite Hfm0.
+    exact (add_SNo_0L 0 (real_SNo 0 real_0)).
+}
+exact (Hnat n Hn HfR Hf0).
+Qed.
+
 (** Infrastructure: n-by-n matrix applied to n-vector **)
 (** (Av)_i = sum_{j<n} A(i,j) v(j) **)
 Definition matrix_vector_mult : set -> set -> set -> set := fun n A v =>
@@ -141302,7 +141338,37 @@ claim Hfixed_implies_eigen :
         + exact Hvfun.
         + {
             (** v is not identically zero because sum = 1 **)
-            admit.
+            assume Hzero.
+            claim HvSprop :
+              (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+              finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+            {
+              exact (SepE2
+                (function_space 3 R)
+                (fun w:set =>
+                  (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+                  finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+                v
+                HvS).
+            }
+            claim Hsum1 : finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+            {
+              exact (andER
+                (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+                (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+                HvSprop).
+            }
+            claim H3nat_local : nat_p 3.
+            { exact (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))). }
+            claim Hsum0 : finite_real_sum (fun i:set => apply_fun v i) 3 = 0.
+            {
+              apply (finite_real_sum_zero_of_all_zero (fun i:set => apply_fun v i) 3 H3nat_local).
+              - let i. assume Hi3. exact (Hvfun i Hi3).
+              - exact Hzero.
+            }
+            claim H10 : 1 = 0.
+            { rewrite <- Hsum1. exact Hsum0. }
+            exact (neq_1_0 H10).
           }
       - admit.
     }
