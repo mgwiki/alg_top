@@ -141783,6 +141783,168 @@ Definition triangular_region : set :=
 Definition triangular_region_topology : set :=
   subspace_topology (setprod R R) R2_topology triangular_region.
 
+(** Infrastructure: the triangular region lies in the closed unit disk **)
+(** Proven Bob **)
+Lemma triangular_region_subset_B2 :
+  triangular_region c= B2.
+let p.
+assume HpT.
+claim HpR2 : p :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun q:set =>
+      ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+      ~(Rlt 1 (add_SNo (q 0) (q 1))))
+    p
+    HpT).
+}
+claim HpProp :
+  ~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0) /\
+  ~(Rlt 1 (add_SNo (p 0) (p 1))).
+{
+  exact (SepE2
+    (setprod R R)
+    (fun q:set =>
+      ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+      ~(Rlt 1 (add_SNo (q 0) (q 1))))
+    p
+    HpT).
+}
+claim Hleft :
+  ~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0).
+{
+  exact (andEL
+    (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+    (~(Rlt 1 (add_SNo (p 0) (p 1))))
+    HpProp).
+}
+claim Hnlt0 : ~(Rlt (p 0) 0).
+{ exact (andEL (~(Rlt (p 0) 0)) (~(Rlt (p 1) 0)) Hleft). }
+claim Hnlt1 : ~(Rlt (p 1) 0).
+{ exact (andER (~(Rlt (p 0) 0)) (~(Rlt (p 1) 0)) Hleft). }
+claim HnltSum : ~(Rlt 1 (add_SNo (p 0) (p 1))).
+{ exact (andER
+    (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+    (~(Rlt 1 (add_SNo (p 0) (p 1))))
+    HpProp). }
+claim Hp0R : p 0 :e R.
+{ exact (ap0_Sigma R (fun _ : set => R) p HpR2). }
+claim Hp1R : p 1 :e R.
+{ exact (ap1_Sigma R (fun _ : set => R) p HpR2). }
+claim Hp0SNo : SNo (p 0).
+{ exact (real_SNo (p 0) Hp0R). }
+claim Hp1SNo : SNo (p 1).
+{ exact (real_SNo (p 1) Hp1R). }
+claim H0le0 : Rle 0 (p 0).
+{ exact (RleI 0 (p 0) real_0 Hp0R Hnlt0). }
+claim H0le1 : Rle 0 (p 1).
+{ exact (RleI 0 (p 1) real_0 Hp1R Hnlt1). }
+claim H0le0S : 0 <= (p 0).
+{ exact (SNoLe_of_Rle 0 (p 0) H0le0). }
+claim H0le1S : 0 <= (p 1).
+{ exact (SNoLe_of_Rle 0 (p 1) H0le1). }
+claim HsumR : add_SNo (p 0) (p 1) :e R.
+{ exact (real_add_SNo (p 0) Hp0R (p 1) Hp1R). }
+claim HsumLe1 : Rle (add_SNo (p 0) (p 1)) 1.
+{ exact (RleI (add_SNo (p 0) (p 1)) 1 HsumR real_1 HnltSum). }
+claim Hp0LeSum : Rle (p 0) (add_SNo (p 0) (p 1)).
+{
+  rewrite (add_SNo_com (p 0) (p 1) Hp0SNo Hp1SNo).
+  exact (Rle_increase_by_nonneg_left (p 1) (p 0) Hp1R Hp0R H0le1).
+}
+claim Hp1LeSum : Rle (p 1) (add_SNo (p 0) (p 1)).
+{
+  exact (Rle_increase_by_nonneg_left (p 0) (p 1) Hp0R Hp1R H0le0).
+}
+claim Hp0Le1 : Rle (p 0) 1.
+{ exact (Rle_tra (p 0) (add_SNo (p 0) (p 1)) 1 Hp0LeSum HsumLe1). }
+claim Hp1Le1 : Rle (p 1) 1.
+{ exact (Rle_tra (p 1) (add_SNo (p 0) (p 1)) 1 Hp1LeSum HsumLe1). }
+claim Hp0Le1S : (p 0) <= 1.
+{ exact (SNoLe_of_Rle (p 0) 1 Hp0Le1). }
+claim Hp1Le1S : (p 1) <= 1.
+{ exact (SNoLe_of_Rle (p 1) 1 Hp1Le1). }
+claim Hp0sqR : mul_SNo (p 0) (p 0) :e R.
+{ exact (real_mul_SNo (p 0) Hp0R (p 0) Hp0R). }
+claim Hp1sqR : mul_SNo (p 1) (p 1) :e R.
+{ exact (real_mul_SNo (p 1) Hp1R (p 1) Hp1R). }
+claim Hp0sqLe : Rle (mul_SNo (p 0) (p 0)) (p 0).
+{
+  exact (Rle_of_SNoLe
+    (mul_SNo (p 0) (p 0))
+    (p 0)
+    Hp0sqR
+    Hp0R
+    (mul_SNo_Le1_nonneg_Le (p 0) (p 0) Hp0SNo Hp0SNo Hp0Le1S H0le0S)).
+}
+claim Hp1sqLe : Rle (mul_SNo (p 1) (p 1)) (p 1).
+{
+  exact (Rle_of_SNoLe
+    (mul_SNo (p 1) (p 1))
+    (p 1)
+    Hp1sqR
+    Hp1R
+    (mul_SNo_Le1_nonneg_Le (p 1) (p 1) Hp1SNo Hp1SNo Hp1Le1S H0le1S)).
+}
+claim HsqSumLe_step :
+  Rle (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))
+      (add_SNo (p 0) (mul_SNo (p 1) (p 1))).
+{
+  exact (Rle_add_SNo_1
+    (mul_SNo (p 0) (p 0))
+    (p 0)
+    (mul_SNo (p 1) (p 1))
+    Hp0sqR
+    Hp0R
+    Hp1sqR
+    Hp0sqLe).
+}
+claim HsqSumLe_sum :
+  Rle (add_SNo (p 0) (mul_SNo (p 1) (p 1)))
+      (add_SNo (p 0) (p 1)).
+{
+  exact (Rle_add_SNo_2
+    (p 0)
+    (mul_SNo (p 1) (p 1))
+    (p 1)
+    Hp0R
+    Hp1sqR
+    Hp1R
+    Hp1sqLe).
+}
+claim HsqSumLe1 :
+  Rle (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1))) 1.
+{
+  exact (Rle_tra
+    (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))
+    (add_SNo (p 0) (p 1))
+    1
+    (Rle_tra
+      (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))
+      (add_SNo (p 0) (mul_SNo (p 1) (p 1)))
+      (add_SNo (p 0) (p 1))
+      HsqSumLe_step
+      HsqSumLe_sum)
+    HsumLe1).
+}
+claim Hnotlt1 :
+  ~(Rlt 1 (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))).
+{
+  exact (RleE_nlt
+    (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))
+    1
+    HsqSumLe1).
+}
+apply (SepI
+  (setprod R R)
+  (fun q:set =>
+    ~(Rlt 1 (add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)))))
+  p
+  HpR2
+  Hnotlt1).
+Qed.
+
 (** from S55 starred Thm 55.8 (line 1020 in algtop.tex) **)
 (** LATEX VERSION: There is an epsilon > 0 such that for every open covering of T by sets of diameter less than epsilon, some point of T belongs to at least three elements of the covering. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 300 **)
