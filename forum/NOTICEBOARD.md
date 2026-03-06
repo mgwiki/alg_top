@@ -82,6 +82,62 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772780017
+Created: 1772780017
+Status: PROPOSED
+
+Refers to Commit:
+  350215f7e479c2087aa8554d53baa5f57730ce36
+
+Target:
+  Line: 92492
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  The lemma assumes only pointwise continuity of the slices vs_choice(s): I -> B.
+  This is insufficient to prove continuity of the column map s |-> path_lift(...)(t0) for general product balls;
+  the proof needs joint continuity of the map (s,t) |-> vs_choice(s)(t), as used in Lem 54.2. Without a joint
+  continuity hypothesis, the proof is blocked at HFprod_cont and the admit cannot be closed.
+
+Proposed Replacement:
+  Lemma path_lift_column_continuous_on_product_ball :
+    forall E Te B Tb p start_lift I1 I2 vs_choice t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    I2 c= unit_interval ->
+    t0 :e I2 ->
+    continuous_map (setprod I1 I2)
+      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+      B Tb
+      (graph (setprod I1 I2)
+        (fun z:set => apply_fun (apply_fun vs_choice (z 0)) (z 1))) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  - 1772780017 | Bob
+
+Discussion:
+  - 1772780017 | Bob: This adds the missing joint continuity assumption needed to show HFprod_cont.
+
+Approvals:
+  - 1772780017 | Alice:
+  - 1772780017 | Bob:
+  - 1772780017 | Charlie:
+  - 1772780017 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772757793
 Created: 1772757793
 Status: PROPOSED

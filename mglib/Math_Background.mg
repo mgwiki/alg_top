@@ -133187,7 +133187,7 @@ exact (s55_extends_to_B2_implies_nulhomotopic
   h
   Hh
   Hext).
-Admitted.
+Admitted. (** TODO: need lemma that trivial induced homomorphism on pi1(S1) yields extension over B2 (degree zero / pi1 circle classification). **)
 
 (** from S55 Cor 55.4 part (a) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^1 -> R^2 - 0 is not nulhomotopic. **)
