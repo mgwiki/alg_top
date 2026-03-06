@@ -217958,10 +217958,78 @@ apply (nat_inv n Hn_nat).
       claim Hefam_eG : apply_fun efam al = eG.
       { exact (Hdisjoint beta al HbJ Hal Hb_ne (apply_fun efam al) Hefam_in_Gb Hefam_Gal). }
       exact (Hefam_ne Hefam_eG).
-  * assume Hm_ne0.
-    (** Remaining case: n >= 2. The involutive assumption should force a contradiction,
-       but the proof is not yet completed. **)
-    admit.
+	  * assume Hm_ne0.
+	    (** Remaining case: n >= 2. Start by handling the easy subcase xs(0) = eG. **)
+	    claim Hred_sm : reduced_word J Gfam efam (ordsucc m) xs.
+	    { rewrite <- Hn_sm. exact Hred. }
+	    set xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)).
+	    claim Hred_suf : reduced_word J Gfam efam m xs_suf.
+	    { exact (reduced_word_suffix J Gfam efam m xs Hred_sm). }
+	    claim Hxs_in_G : forall i:set, i :e ordsucc m -> apply_fun xs i :e G.
+	    {
+	      exact (reduced_word_in_G G multG eG invG J Gfam efam (ordsucc m) xs
+	        Hsubfam Hred_sm).
+	    }
+	    claim Hwp_suf_G : word_product multG eG xs_suf m :e G.
+	    {
+	      apply (word_product_in_G_group G multG eG invG m xs_suf Hgrp Hm_nat).
+	      let i. assume Hi.
+	      rewrite (apply_fun_graph m (fun t:set => apply_fun xs (ordsucc t)) i Hi).
+	      exact (Hxs_in_G (ordsucc i)
+	        (nat_ordsucc_in_ordsucc m Hm_nat i Hi)).
+	    }
+	    claim Hwp_shift : word_product multG eG xs (ordsucc m) =
+	      apply_fun multG (apply_fun xs 0, word_product multG eG xs_suf m).
+	    { exact (word_product_shift_first G multG eG invG m xs Hgrp Hm_nat Hxs_in_G m Hm_nat (ordsuccI2 m)). }
+	    apply (xm (apply_fun xs 0 = eG)).
+	    + assume Hxs0_eG : apply_fun xs 0 = eG.
+	      (** If xs(0)=eG then the suffix word is a reduced word for efam(al), contradicting uniqueness. **)
+	      claim Hwp_suf : word_product multG eG xs_suf m = apply_fun efam al.
+	      {
+	        claim Hwp_full : word_product multG eG xs (ordsucc m) = apply_fun efam al.
+	        { rewrite <- Hn_sm. exact Hwp. }
+	        apply (and6E
+	          (function_on multG (setprod G G) G)
+	          (function_on invG G G)
+	          (eG :e G)
+	          (forall x y z:set, x :e G -> y :e G -> z :e G ->
+	            apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+	          (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+	          (forall x:set, x :e G ->
+	            apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+	          Hgrp).
+	        assume _ _ _ _ HidG _.
+	        claim Hxs0_G : apply_fun xs 0 :e G.
+	        { exact (Hxs_in_G 0 (nat_0_in_ordsucc m Hm_nat)). }
+	        claim HidL_suf : apply_fun multG (apply_fun xs 0, word_product multG eG xs_suf m) =
+	          word_product multG eG xs_suf m.
+	        {
+	          rewrite Hxs0_eG.
+	          exact (andEL
+	            (apply_fun multG (eG, word_product multG eG xs_suf m) = word_product multG eG xs_suf m)
+	            (apply_fun multG (word_product multG eG xs_suf m, eG) = word_product multG eG xs_suf m)
+	            (HidG (word_product multG eG xs_suf m) Hwp_suf_G)).
+	        }
+	        claim Hlhs : word_product multG eG xs (ordsucc m) = word_product multG eG xs_suf m.
+	        { rewrite Hwp_shift. exact HidL_suf. }
+	        exact (eq_i_tra
+	          (word_product multG eG xs_suf m)
+	          (word_product multG eG xs (ordsucc m))
+	          (apply_fun efam al)
+	          (eq_symm (word_product multG eG xs (ordsucc m)) (word_product multG eG xs_suf m) Hlhs)
+	          Hwp_full).
+	      }
+	      claim Hn_eq_m : n = m.
+	      { exact (andEL (n = m) (forall i:set, i :e n -> apply_fun xs i = apply_fun xs_suf i)
+	          (Huniq_full m xs_suf Hred_suf Hm_ne0 Hwp_suf)). }
+	      claim Hsm_m : ordsucc m = m.
+	      { exact (eq_i_tra (ordsucc m) n m (eq_symm n (ordsucc m) Hn_sm) Hn_eq_m). }
+	      claim Hm_in_sm : m :e ordsucc m. { exact (ordsuccI2 m). }
+	      claim Hm_in_m : m :e m. { exact (eq_subst_mem_set m (ordsucc m) m Hm_in_sm Hsm_m). }
+	      exact (In_irref m Hm_in_m).
+	    + assume Hxs0_ne_eG : apply_fun xs 0 <> eG.
+	      (** Hard subcase: xs(0) != eG. Not yet completed. **)
+	      admit.
 Admitted.
 
 (** Helper lemma: in a free product, efam(alpha) in Gfam(alpha) with efam(alpha) != eG is impossible **)
