@@ -157244,6 +157244,54 @@ apply Hbetween.
     (binintersectI unit_interval (open_interval a b) z HzI HzInt)).
 Qed.
 
+(** Infrastructure: union of two connected subspaces with nonempty intersection is connected. **)
+(** Proven Bob **)
+Lemma connected_union_two_intersect : forall X Tx A B:set,
+  topology_on X Tx ->
+  A c= X -> B c= X ->
+  connected_space A (subspace_topology X Tx A) ->
+  connected_space B (subspace_topology X Tx B) ->
+  A :/\: B <> Empty ->
+  connected_space (A :\/: B) (subspace_topology X Tx (A :\/: B)).
+let X Tx A B.
+assume Htop HAsub HBsub HconnA HconnB Hnonempty.
+claim Hex : exists x:set, x :e A :/\: B.
+{ exact (nonempty_has_element (A :/\: B) Hnonempty). }
+apply Hex.
+let x.
+assume HxAB : x :e A :/\: B.
+claim HxA : x :e A.
+{ exact (binintersectE1 A B x HxAB). }
+claim HxB : x :e B.
+{ exact (binintersectE2 A B x HxAB). }
+ claim HFsub : forall C:set, C :e (UPair A B) -> C c= X.
+{
+  let C. assume HC.
+  apply (UPairE C A B HC).
+  - assume HCA : C = A. rewrite HCA. exact HAsub.
+  - assume HCB : C = B. rewrite HCB. exact HBsub.
+}
+claim HFconn : forall C:set, C :e (UPair A B) -> connected_space C (subspace_topology X Tx C).
+{
+  let C. assume HC.
+  apply (UPairE C A B HC).
+  - assume HCA : C = A. rewrite HCA. exact HconnA.
+  - assume HCB : C = B. rewrite HCB. exact HconnB.
+}
+claim Hcommon : exists y:set, forall C:set, C :e (UPair A B) -> y :e C.
+{
+  witness x.
+  let C. assume HC.
+  apply (UPairE C A B HC).
+  - assume HCA : C = A. rewrite HCA. exact HxA.
+  - assume HCB : C = B. rewrite HCB. exact HxB.
+}
+claim HconnUnion : connected_space (Union (UPair A B)) (subspace_topology X Tx (Union (UPair A B))).
+{ exact (union_connected_common_point X Tx (UPair A B) Htop HFsub HFconn Hcommon). }
+ rewrite <- (Union_UPair_eq_binunion A B).
+ exact HconnUnion.
+Qed.
+
 (** Core word construction: given ball property for a loop, produce word decomposition.
     This is the inductive heart of Munkres Thm 59.1, separated from the Lebesgue setup. **)
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
