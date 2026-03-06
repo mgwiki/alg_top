@@ -219820,12 +219820,107 @@ apply (nat_inv n Hn_nat).
 								                { rewrite <- ordsucc_0_eq_1_nat. exact H1_in_n. }
 								                exact ((Hadj 0 H0_in_n Hs0_in_n alpha0 alpha0 Halpha0J Halpha0J Hx0_in_Ga0 Hx1_in_Ga0) (eq_refl alpha0)).
 								              + assume Hm_ne1 : m <> 1.
-								                (** TODO: handle the case mult(xlast,x0) = eG (cyclic seam cancellation). **)
+								                (** Reduce mult(xlast,x0) = eG to inverse relations between xlast and x0. **)
+								                claim Hxlast_G : xlast :e G.
+								                { exact (Hxs_in_G m (ordsuccI2 m)). }
+								                claim Hx0_G : x0 :e G.
+								                { exact (Hxs_in_G 0 (nat_0_in_ordsucc m Hm_nat)). }
+								                set xs2 := graph 2 (fun i:set => If_i (i = 0) xlast x0).
+								                claim Hxs2_G : forall i:set, i :e 2 -> apply_fun xs2 i :e G.
+								                {
+								                  let i. assume Hi2.
+								                  apply (cases_2 i Hi2 (fun j:set => apply_fun xs2 j :e G)).
+								                  + prove apply_fun xs2 0 :e G.
+								                    rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) xlast x0) 0 In_0_2).
+								                    rewrite (If_i_1 (0 = 0) xlast x0 (eq_refl 0)).
+								                    exact Hxlast_G.
+								                  + prove apply_fun xs2 1 :e G.
+								                    rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) xlast x0) 1 In_1_2).
+								                    rewrite (If_i_0 (1 = 0) xlast x0 neq_1_0).
+								                    exact Hx0_G.
+								                }
+								                claim Hwp2 :
+								                  word_product multG eG xs2 2 = apply_fun multG (xlast, x0).
+								                { exact (word_product_two_graph_group G multG eG invG xlast x0 Hgrp Hxlast_G Hx0_G). }
+								                claim Hwp2_e : word_product multG eG xs2 2 = eG.
+								                { rewrite Hwp2. exact Hp_eG. }
+								                claim Hx0_eq_inv_xlast : x0 = apply_fun invG xlast.
+								                {
+								                  claim Htmp : apply_fun xs2 1 = apply_fun invG (apply_fun xs2 0).
+								                  { exact (word_product_two_eq_inv G multG eG invG xs2 Hgrp Hxs2_G Hwp2_e). }
+								                  claim Hxs20 : apply_fun xs2 0 = xlast.
+								                  {
+								                    rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) xlast x0) 0 In_0_2).
+								                    rewrite (If_i_1 (0 = 0) xlast x0 (eq_refl 0)).
+								                    reflexivity.
+								                  }
+								                  claim Hxs21 : apply_fun xs2 1 = x0.
+								                  {
+								                    rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) xlast x0) 1 In_1_2).
+								                    rewrite (If_i_0 (1 = 0) xlast x0 neq_1_0).
+								                    reflexivity.
+								                  }
+								                  claim Hlhs : x0 = apply_fun xs2 1.
+								                  { exact (eq_symm (apply_fun xs2 1) x0 Hxs21). }
+								                  claim Hinv_congr :
+								                    apply_fun invG (apply_fun xs2 0) = apply_fun invG xlast.
+								                  { exact (apply_fun_congr_arg invG (apply_fun xs2 0) xlast Hxs20). }
+								                  exact (eq_i_tra
+								                    x0
+								                    (apply_fun xs2 1)
+								                    (apply_fun invG xlast)
+								                    Hlhs
+								                    (eq_i_tra
+								                      (apply_fun xs2 1)
+								                      (apply_fun invG (apply_fun xs2 0))
+								                      (apply_fun invG xlast)
+								                      Htmp
+								                      Hinv_congr)).
+								                }
+								                claim Hxlast_eq_inv_x0 : xlast = apply_fun invG x0.
+								                {
+								                  claim Htmp : apply_fun xs2 0 = apply_fun invG (apply_fun xs2 1).
+								                  { exact (word_product_two_eq_inv_left G multG eG invG xs2 Hgrp Hxs2_G Hwp2_e). }
+								                  claim Hxs20 : apply_fun xs2 0 = xlast.
+								                  {
+								                    rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) xlast x0) 0 In_0_2).
+								                    rewrite (If_i_1 (0 = 0) xlast x0 (eq_refl 0)).
+								                    reflexivity.
+								                  }
+								                  claim Hxs21 : apply_fun xs2 1 = x0.
+								                  {
+								                    rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) xlast x0) 1 In_1_2).
+								                    rewrite (If_i_0 (1 = 0) xlast x0 neq_1_0).
+								                    reflexivity.
+								                  }
+								                  claim Hlhs : xlast = apply_fun xs2 0.
+								                  { exact (eq_symm (apply_fun xs2 0) xlast Hxs20). }
+								                  claim Hinv_congr :
+								                    apply_fun invG (apply_fun xs2 1) = apply_fun invG x0.
+								                  { exact (apply_fun_congr_arg invG (apply_fun xs2 1) x0 Hxs21). }
+								                  exact (eq_i_tra
+								                    xlast
+								                    (apply_fun xs2 0)
+								                    (apply_fun invG x0)
+								                    Hlhs
+								                    (eq_i_tra
+								                      (apply_fun xs2 0)
+								                      (apply_fun invG (apply_fun xs2 1))
+								                      (apply_fun invG x0)
+								                      Htmp
+								                      Hinv_congr)).
+								                }
+								                (** Remaining work: use this boundary cancellation information to contradict w^2 = eG in a free product. **)
 								                admit.
 								            - assume Hp_ne_eG : p <> eG.
 								              apply (xm (p = apply_fun efam alpha0)).
 						              - assume Hp_eq_ef0 : p = apply_fun efam alpha0.
-						                (** TODO: handle the case mult(xlast,x0) = efam(alpha0). **)
+						                (** In this branch, efam(alpha0) is a nontrivial element of Gfam(alpha0). **)
+						                claim Hef0_in_Ga0 : apply_fun efam alpha0 :e apply_fun Gfam alpha0.
+						                { rewrite <- Hp_eq_ef0. exact Hp_in_Ga0. }
+						                claim Hef0_ne_eG : apply_fun efam alpha0 <> eG.
+						                { rewrite <- Hp_eq_ef0. exact Hp_ne_eG. }
+						                (** Remaining work: use this seam value to derive a contradiction with w^2 = eG in a free product. **)
 						                admit.
 						              - assume Hp_ne_ef0 : p <> apply_fun efam alpha0.
 						                (** Build a reduced word for mult(w,w) by merging (xlast,x0) into p and appending the suffix word. **)
