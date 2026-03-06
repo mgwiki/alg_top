@@ -94756,6 +94756,119 @@ Lemma column_continuity_via_chain_with_F :
       apply_fun
         (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
         t0)).
+let E Te B Tb p F start_lift vs_choice I1 t0.
+assume Hcov HtopE HI1sub HI1conn Ht0 HstartCont HFcont HstartComm HvsCont HvsEval.
+set Fcol := compose_fun I1
+  (pair_map I1 (graph I1 (fun s:set => s)) (const_fun I1 t0)) F.
+claim HFcol_cont :
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) B Tb Fcol.
+{
+  exact (continuous_map_product_ball_slice_second
+    B
+    Tb
+    F
+    I1
+    unit_interval
+    t0
+    HI1sub
+    (Subq_ref unit_interval)
+    Ht0
+    HFcont).
+}
+set Fcol_lift := graph I1 (fun s:set =>
+  apply_fun
+    (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+    t0).
+claim HstartFun : function_on start_lift I1 E.
+{
+  exact (continuous_map_function_on
+    I1
+    (subspace_topology unit_interval unit_interval_topology I1)
+    E
+    Te
+    start_lift
+    HstartCont).
+}
+claim HFcol_fun : function_on Fcol_lift I1 E.
+{
+  apply (total_function_on_function_on Fcol_lift I1 E).
+  apply (total_function_on_graph I1 E (fun s:set =>
+    apply_fun
+      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+      t0)).
+  let s.
+  assume HsI1.
+  claim HsI : s :e unit_interval.
+  { exact (HI1sub s HsI1). }
+  claim Hf_s_cont :
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s).
+  { exact (HvsCont s HsI1). }
+  claim He_s_E : apply_fun start_lift s :e E.
+  { exact (HstartFun s HsI1). }
+  claim Hstart_s :
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0.
+  { exact (HstartComm s HsI1). }
+  claim Hlift_pack :
+    continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+      = apply_fun start_lift s /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p
+        (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
+      = apply_fun (apply_fun vs_choice s) t).
+  {
+    exact (lemma54_1_path_lifting
+      E
+      Te
+      B
+      Tb
+      p
+      (apply_fun start_lift s)
+      (apply_fun vs_choice s)
+      Hcov
+      He_s_E
+      Hstart_s
+      Hf_s_cont).
+  }
+  claim Hlift_cont :
+    continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)).
+  {
+    exact (andEL
+      (continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)))
+      (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+        = apply_fun start_lift s)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+         apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+           = apply_fun start_lift s)
+        (forall t:set, t :e unit_interval ->
+          apply_fun p
+            (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
+          = apply_fun (apply_fun vs_choice s) t)
+        Hlift_pack)).
+  }
+  claim Hlift_fun :
+    function_on
+      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+      unit_interval
+      E.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      E
+      Te
+      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+      Hlift_cont).
+  }
+  exact (Hlift_fun t0 Ht0).
+}
+(** TODO: build a chain of product balls along [0,t0] and use local sheet constancy to
+    show that Fcol_lift agrees locally with a continuous inverse chart on I1. **)
 admit.
 Admitted.
 
