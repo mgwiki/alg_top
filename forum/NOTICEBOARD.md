@@ -82,6 +82,64 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772756274
+Created: 1772756274
+Status: PROPOSED
+
+Refers to Commit:
+  e38f042dc
+
+Target:
+  Line: 223398
+  Name: lemma68_3_extension_external_free_product (Theorem)
+
+Problem:
+  The current statement does not assume that each factor (apply_fun Gfam alpha, apply_fun multfam alpha)
+  has a group structure (or even that multfam(alpha) is closed on apply_fun Gfam(alpha)).
+  The current proof attempt requires closure of multfam(alpha) on apply_fun Gfam(alpha) to show kfam is a
+  group_homomorphism on the corresponding homomorphism image, but this closure is not derivable from the
+  current hypotheses; the proof contains an admit at line 223617 noting this gap.
+
+Proposed Replacement:
+  Theorem lemma68_3_extension_external_free_product :
+    forall G multG eG invG J Gfam multfam ifam:set,
+    external_free_product G multG eG invG J Gfam multfam ifam ->
+    (forall alpha:set, alpha :e J ->
+      exists ea ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia) ->
+    forall H multH eH invH:set,
+      group_structure H multH eH invH ->
+      forall hfam:set,
+        (forall alpha:set, alpha :e J ->
+          group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH (apply_fun hfam alpha)) ->
+        exists h:set,
+          group_homomorphism G multG H multH h /\
+          (forall alpha:set, alpha :e J ->
+            forall x:set, x :e apply_fun Gfam alpha ->
+              apply_fun h (apply_fun (apply_fun ifam alpha) x) =
+                apply_fun (apply_fun hfam alpha) x) /\
+          (forall h':set, group_homomorphism G multG H multH h' ->
+            (forall alpha:set, alpha :e J ->
+              forall x:set, x :e apply_fun Gfam alpha ->
+                apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+                  apply_fun (apply_fun hfam alpha) x) ->
+            forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+
+Proposed by:
+  - 1772756274 | Charlie
+
+Discussion:
+  - 1772756274 | Charlie: This is the minimal hypothesis needed to make the existing proof strategy type-check,
+    by allowing the use of group_structure -> function_on(multfam(alpha), setprod(Gfam(alpha),Gfam(alpha)),Gfam(alpha)).
+
+Approvals:
+  - 1772756274 | Alice:
+  - 1772756274 | Bob:
+  - 1772756274 | Charlie:
+  - 1772756274 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772755248
 Created: 1772755248
 Status: PROPOSED
