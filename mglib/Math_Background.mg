@@ -96889,8 +96889,74 @@ claim HFt_54_cont :
               Hlift_q
               HstartE_I1).
           - assume H0I2.
-            (** TODO: need column continuity when 0 :e I2_54 fails. **)
-            admit.
+            claim HcolCont :
+              continuous_map I1_54 (subspace_topology unit_interval unit_interval_topology I1_54) E Te
+                (graph I1_54 (fun s:set =>
+                  apply_fun
+                    (path_lift E Te B Tb p
+                      (apply_fun (path_lift E Te B Tb p e0 g0_54) s)
+                      (apply_fun vs_choice_54 s))
+                    (q 1))).
+            {
+              exact (path_lift_column_continuous_on_product_ball
+                E
+                Te
+                B
+                Tb
+                p
+                (path_lift E Te B Tb p e0 g0_54)
+                I1_54
+                I2_54
+                vs_choice_54
+                (q 1)
+                Hcov
+                HtopE
+                HI1subI
+                HI2subI
+                Hq1I2
+                HvsCont_I1
+                HstartE_I1
+                HstartComm_I1).
+            }
+            exact (column_lifts_same_sheet_on_product_ball_with_col_cont
+              E
+              Te
+              B
+              Tb
+              p
+              U
+              slices
+              Vq
+              e0
+              g0_54
+              (path_lift E Te B Tb p e0 g0_54)
+              I1_54
+              I2_54
+              vs_choice_54
+              (q 0)
+              (q 1)
+              Hcov
+              HtopE
+              HslicesSubTe
+              HslicesPD
+              HslicesUnion
+              HVqSlice
+              Hg0_54Cont
+              He0
+              Hstart_g0_54
+              (eq_refl (path_lift E Te B Tb p e0 g0_54))
+              HI1subI
+              HI2subI
+              HI1conn
+              HI2conn
+              HvsCont_I1
+              HvsU_I1
+              HstartComm_I1
+              Hq0I1
+              Hq1I2
+              Hlift_q
+              HstartE_I1
+              HcolCont).
         }
         let z. assume HzN.
         claim Hz0I1 : z 0 :e I1_54.
