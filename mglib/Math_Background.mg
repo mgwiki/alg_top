@@ -141783,6 +141783,523 @@ Definition triangular_region : set :=
 Definition triangular_region_topology : set :=
   subspace_topology (setprod R R) R2_topology triangular_region.
 
+(** Infrastructure: 3-simplex in R^3 viewed as functions on 3 **)
+Definition simplex3_set : set :=
+  {v :e function_space 3 R |
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun v i) 3 = 1}.
+
+(** Infrastructure: map from triangular region to simplex3 **)
+Definition triangular_region_to_simplex3 : set :=
+  graph triangular_region (fun p:set =>
+    graph 3 (fun i:set =>
+      if i = 0 then p 0 else
+      if i = 1 then p 1 else
+      add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))).
+
+(** Infrastructure: map from simplex3 to triangular region **)
+Definition simplex3_to_triangular_region : set :=
+  graph simplex3_set (fun v:set =>
+    (apply_fun v 0, apply_fun v 1)).
+
+(** Infrastructure: simplex3 points map into triangular region **)
+(** Proven Bob **)
+Lemma simplex3_to_triangular_region_in_triangular_region :
+  forall v:set, v :e simplex3_set ->
+    apply_fun simplex3_to_triangular_region v :e triangular_region.
+let v.
+assume HvS.
+set p := apply_fun simplex3_to_triangular_region v.
+claim HpEq : p = (apply_fun v 0, apply_fun v 1).
+{
+  exact (apply_fun_graph
+    simplex3_set
+    (fun v0:set => (apply_fun v0 0, apply_fun v0 1))
+    v
+    HvS).
+}
+claim Hvfun : function_on v 3 R.
+{
+  exact (function_on_of_function_space v 3 R
+    (SepE1
+      (function_space 3 R)
+      (fun w:set =>
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+        finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+      v
+      HvS)).
+}
+claim HvProp :
+  (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+  finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+{
+  exact (SepE2
+    (function_space 3 R)
+    (fun w:set =>
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+    v
+    HvS).
+}
+claim Hnonneg :
+  forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0).
+{
+  exact (andEL
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+    (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+    HvProp).
+}
+claim Hsum1 : finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+{
+  exact (andER
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+    (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+    HvProp).
+}
+claim H0in3 : 0 :e 3.
+{ exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3.
+{ exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3.
+{ exact (ordsuccI2 2). }
+claim Hv0R : apply_fun v 0 :e R.
+{ exact (Hvfun 0 H0in3). }
+claim Hv1R : apply_fun v 1 :e R.
+{ exact (Hvfun 1 H1in3). }
+claim Hv2R : apply_fun v 2 :e R.
+{ exact (Hvfun 2 H2in3). }
+claim HpR2 : p :e setprod R R.
+{
+  rewrite HpEq.
+  exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    (apply_fun v 0)
+    (apply_fun v 1)
+    Hv0R
+    Hv1R).
+}
+claim Hp0Eq : p 0 = apply_fun v 0.
+{
+  rewrite HpEq.
+  rewrite tuple_2_0_eq.
+  reflexivity.
+}
+claim Hp1Eq : p 1 = apply_fun v 1.
+{
+  rewrite HpEq.
+  rewrite tuple_2_1_eq.
+  reflexivity.
+}
+claim Hnlt0 : ~(Rlt (p 0) 0).
+{
+  rewrite Hp0Eq.
+  exact (Hnonneg 0 H0in3).
+}
+claim Hnlt1 : ~(Rlt (p 1) 0).
+{
+  rewrite Hp1Eq.
+  exact (Hnonneg 1 H1in3).
+}
+claim Hv0SNo : SNo (apply_fun v 0).
+{ exact (real_SNo (apply_fun v 0) Hv0R). }
+claim Hsum01R : add_SNo (apply_fun v 0) (apply_fun v 1) :e R.
+{ exact (real_add_SNo (apply_fun v 0) Hv0R (apply_fun v 1) Hv1R). }
+claim Hsum01SNo : SNo (add_SNo (apply_fun v 0) (apply_fun v 1)).
+{ exact (real_SNo (add_SNo (apply_fun v 0) (apply_fun v 1)) Hsum01R). }
+claim Hv2SNo : SNo (apply_fun v 2).
+{ exact (real_SNo (apply_fun v 2) Hv2R). }
+claim H2nat : nat_p 2.
+{ exact (nat_ordsucc 1 (nat_ordsucc 0 nat_0)). }
+claim H1nat : nat_p 1.
+{ exact (nat_ordsucc 0 nat_0). }
+claim HsumExp :
+  finite_real_sum (fun i:set => apply_fun v i) 3 =
+  add_SNo (add_SNo (apply_fun v 0) (apply_fun v 1)) (apply_fun v 2).
+{
+  rewrite (finite_real_sum_S (fun i:set => apply_fun v i) 2 H2nat).
+  rewrite (finite_real_sum_S (fun i:set => apply_fun v i) 1 H1nat).
+  rewrite (finite_real_sum_S (fun i:set => apply_fun v i) 0 nat_0).
+  rewrite (finite_real_sum_0 (fun i:set => apply_fun v i)).
+  rewrite (add_SNo_0L (apply_fun v 0) Hv0SNo).
+  reflexivity.
+}
+claim HsumEq :
+  add_SNo (add_SNo (apply_fun v 0) (apply_fun v 1)) (apply_fun v 2) = 1.
+{
+  rewrite <- HsumExp.
+  exact Hsum1.
+}
+claim H0le2 : Rle 0 (apply_fun v 2).
+{ exact (RleI 0 (apply_fun v 2) real_0 Hv2R (Hnonneg 2 H2in3)). }
+claim HsumLe' :
+  Rle (add_SNo (apply_fun v 0) (apply_fun v 1))
+    (add_SNo (add_SNo (apply_fun v 0) (apply_fun v 1)) (apply_fun v 2)).
+{
+  rewrite <- (add_SNo_com (apply_fun v 2) (add_SNo (apply_fun v 0) (apply_fun v 1)) Hv2SNo Hsum01SNo).
+  exact (Rle_increase_by_nonneg_left
+    (apply_fun v 2)
+    (add_SNo (apply_fun v 0) (apply_fun v 1))
+    Hv2R
+    Hsum01R
+    H0le2).
+}
+claim HsumLe2 :
+  Rle (add_SNo (add_SNo (apply_fun v 0) (apply_fun v 1)) (apply_fun v 2)) 1.
+{
+  rewrite HsumEq.
+  exact (Rle_refl 1 real_1).
+}
+claim HsumLe1 :
+  Rle (add_SNo (apply_fun v 0) (apply_fun v 1)) 1.
+{
+  exact (Rle_tra
+    (add_SNo (apply_fun v 0) (apply_fun v 1))
+    (add_SNo (add_SNo (apply_fun v 0) (apply_fun v 1)) (apply_fun v 2))
+    1
+    HsumLe'
+    HsumLe2).
+}
+claim HnltSum : ~(Rlt 1 (add_SNo (p 0) (p 1))).
+{
+  rewrite Hp0Eq.
+  rewrite Hp1Eq.
+  exact (RleE_nlt
+    (add_SNo (apply_fun v 0) (apply_fun v 1))
+    1
+    HsumLe1).
+}
+exact (SepI
+  (setprod R R)
+  (fun q:set =>
+    ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+    ~(Rlt 1 (add_SNo (q 0) (q 1))))
+  p
+  HpR2
+  (andI
+    (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+    (~(Rlt 1 (add_SNo (p 0) (p 1))))
+    (andI
+      (~(Rlt (p 0) 0))
+      (~(Rlt (p 1) 0))
+      Hnlt0
+      Hnlt1)
+    HnltSum)).
+Qed.
+
+(** Infrastructure: triangular region points map into simplex3 **)
+(** Proven Bob **)
+Lemma triangular_region_to_simplex3_in_simplex3 :
+  forall p:set, p :e triangular_region ->
+    apply_fun triangular_region_to_simplex3 p :e simplex3_set.
+let p.
+assume HpT.
+set v := apply_fun triangular_region_to_simplex3 p.
+claim HvEq :
+  v
+  =
+  graph 3 (fun i:set =>
+    if i = 0 then p 0 else
+    if i = 1 then p 1 else
+    add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1)))).
+{
+  exact (apply_fun_graph
+    triangular_region
+    (fun p0:set =>
+      graph 3 (fun i:set =>
+        if i = 0 then p0 0 else
+        if i = 1 then p0 1 else
+        add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+    p
+    HpT).
+}
+claim HpR2 : p :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun q:set =>
+      ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+      ~(Rlt 1 (add_SNo (q 0) (q 1))))
+    p
+    HpT).
+}
+claim HpProp :
+  ~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0) /\
+  ~(Rlt 1 (add_SNo (p 0) (p 1))).
+{
+  exact (SepE2
+    (setprod R R)
+    (fun q:set =>
+      ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+      ~(Rlt 1 (add_SNo (q 0) (q 1))))
+    p
+    HpT).
+}
+claim Hp0R : p 0 :e R.
+{ exact (ap0_Sigma R (fun _ : set => R) p HpR2). }
+claim Hp1R : p 1 :e R.
+{ exact (ap1_Sigma R (fun _ : set => R) p HpR2). }
+claim Hnlt0 : ~(Rlt (p 0) 0).
+{
+  exact (andEL
+    (~(Rlt (p 0) 0))
+    (~(Rlt (p 1) 0))
+    (andEL
+      (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+      (~(Rlt 1 (add_SNo (p 0) (p 1))))
+      HpProp)).
+}
+claim Hnlt1 : ~(Rlt (p 1) 0).
+{
+  exact (andER
+    (~(Rlt (p 0) 0))
+    (~(Rlt (p 1) 0))
+    (andEL
+      (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+      (~(Rlt 1 (add_SNo (p 0) (p 1))))
+      HpProp)).
+}
+claim HnltSum : ~(Rlt 1 (add_SNo (p 0) (p 1))).
+{
+  exact (andER
+    (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+    (~(Rlt 1 (add_SNo (p 0) (p 1))))
+    HpProp).
+}
+claim HsumR : add_SNo (p 0) (p 1) :e R.
+{ exact (real_add_SNo (p 0) Hp0R (p 1) Hp1R). }
+claim HsumSNo : SNo (add_SNo (p 0) (p 1)).
+{ exact (real_SNo (add_SNo (p 0) (p 1)) HsumR). }
+claim HsumLe1 : Rle (add_SNo (p 0) (p 1)) 1.
+{ exact (RleI (add_SNo (p 0) (p 1)) 1 HsumR real_1 HnltSum). }
+claim HsumNegLe :
+  Rle (add_SNo (minus_SNo (add_SNo (p 0) (p 1))) (add_SNo (p 0) (p 1)))
+      (add_SNo (minus_SNo (add_SNo (p 0) (p 1))) 1).
+{
+  exact (Rle_add_SNo_2
+    (minus_SNo (add_SNo (p 0) (p 1)))
+    (add_SNo (p 0) (p 1))
+    1
+    (real_minus_SNo (add_SNo (p 0) (p 1)) HsumR)
+    HsumR
+    real_1
+    HsumLe1).
+}
+claim HsumNegLe0 :
+  Rle 0 (add_SNo (minus_SNo (add_SNo (p 0) (p 1))) 1).
+{
+  rewrite <- (add_SNo_minus_SNo_linv (add_SNo (p 0) (p 1)) HsumSNo) at 1.
+  exact HsumNegLe.
+}
+claim HtNonlt0 :
+  ~(Rlt (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1)))) 0).
+{
+  claim HSNo_msum : SNo (minus_SNo (add_SNo (p 0) (p 1))).
+  { exact (SNo_minus_SNo (add_SNo (p 0) (p 1)) HsumSNo). }
+  rewrite (add_SNo_com 1 (minus_SNo (add_SNo (p 0) (p 1))) SNo_1 HSNo_msum).
+  exact (RleE_nlt
+    0
+    (add_SNo (minus_SNo (add_SNo (p 0) (p 1))) 1)
+    HsumNegLe0).
+}
+claim HvFun : v :e function_space 3 R.
+{
+  rewrite HvEq.
+  apply (graph_in_function_space
+    3
+    R
+    (fun i:set =>
+      if i = 0 then p 0 else
+      if i = 1 then p 1 else
+      add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))).
+  let i.
+  assume Hi3.
+  claim Hcases :
+    (if i = 0 then p 0 else
+     if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+    = p 0 \/
+    (if i = 0 then p 0 else
+     if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+    =
+    (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1)))).
+  { exact (If_i_or (i = 0) (p 0)
+      (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))). }
+  apply Hcases.
+  - assume Hcase.
+    exact (Hcase (fun a b => b :e R) Hp0R).
+  - assume Hcase.
+    claim Hcases2 :
+      (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      = p 1 \/
+      (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      = add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))).
+    { exact (If_i_or (i = 1) (p 1)
+        (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))). }
+    apply Hcases2.
+    + assume Hcase2.
+      exact (Hcase (fun a b => b :e R) (Hcase2 (fun a b => b :e R) Hp1R)).
+    + assume Hcase2.
+      exact (Hcase (fun a b => b :e R)
+        (Hcase2 (fun a b => b :e R)
+          (real_add_SNo
+            1
+            real_1
+            (minus_SNo (add_SNo (p 0) (p 1)))
+            (real_minus_SNo (add_SNo (p 0) (p 1)) HsumR)))).
+}
+claim Hnonneg :
+  forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0).
+{
+  let i. assume Hi3.
+  rewrite HvEq.
+  rewrite (apply_fun_graph
+    3
+    (fun i0:set =>
+      if i0 = 0 then p 0 else
+      if i0 = 1 then p 1 else
+      add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+    i
+    Hi3).
+  claim Hcases :
+    (if i = 0 then p 0 else
+     if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+    = p 0 \/
+    (if i = 0 then p 0 else
+     if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+    =
+    (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1)))).
+  { exact (If_i_or (i = 0) (p 0)
+      (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))). }
+  apply Hcases.
+  - assume Hcase.
+    exact (Hcase (fun a b => ~(Rlt b 0)) Hnlt0).
+  - assume Hcase.
+    claim Hcases2 :
+      (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      = p 1 \/
+      (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      = add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))).
+    { exact (If_i_or (i = 1) (p 1)
+        (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))). }
+    apply Hcases2.
+    + assume Hcase2.
+      exact (Hcase (fun a b => ~(Rlt b 0))
+        (Hcase2 (fun a b => ~(Rlt b 0)) Hnlt1)).
+    + assume Hcase2.
+      exact (Hcase (fun a b => ~(Rlt b 0))
+        (Hcase2 (fun a b => ~(Rlt b 0)) HtNonlt0)).
+}
+claim Hsum1 :
+  finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+{
+  claim H0in3 : 0 :e 3.
+  { exact (ordsuccI1 2 0 In_0_2). }
+  claim H1in3 : 1 :e 3.
+  { exact (ordsuccI1 2 1 In_1_2). }
+  claim H2in3 : 2 :e 3.
+  { exact (ordsuccI2 2). }
+  claim H3nat : nat_p 3.
+  { exact (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))). }
+  claim H2nat : nat_p 2.
+  { exact (nat_ordsucc 1 (nat_ordsucc 0 nat_0)). }
+  claim H1nat : nat_p 1.
+  { exact (nat_ordsucc 0 nat_0). }
+  rewrite (finite_real_sum_S (fun i:set => apply_fun v i) 2 H2nat).
+  rewrite (finite_real_sum_S (fun i:set => apply_fun v i) 1 H1nat).
+  rewrite (finite_real_sum_S (fun i:set => apply_fun v i) 0 nat_0).
+  rewrite (finite_real_sum_0 (fun i:set => apply_fun v i)).
+  (** simplify v 0, v 1, v 2 using HvEq **)
+  claim Hv0 :
+    apply_fun v 0 = p 0.
+  {
+    rewrite HvEq.
+    rewrite (apply_fun_graph
+      3
+      (fun i0:set =>
+        if i0 = 0 then p 0 else
+        if i0 = 1 then p 1 else
+        add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      0
+      H0in3).
+    apply (If_i_1 (0 = 0) (p 0)
+      (if 0 = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))).
+    reflexivity.
+  }
+  claim Hv1 :
+    apply_fun v 1 = p 1.
+  {
+    rewrite HvEq.
+    rewrite (apply_fun_graph
+      3
+      (fun i0:set =>
+        if i0 = 0 then p 0 else
+        if i0 = 1 then p 1 else
+        add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      1
+      H1in3).
+    rewrite (If_i_0 (1 = 0) (p 0)
+      (if 1 = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      (neq_1_0)).
+    apply (If_i_1 (1 = 1) (p 1)
+      (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))).
+    reflexivity.
+  }
+  claim Hneq21 : 2 <> 1.
+  {
+    assume H21.
+    claim H1in2 : 1 :e 2. { exact In_1_2. }
+    claim H1in1 : 1 :e 1.
+    { exact (H21 (fun a b => 1 :e a) H1in2). }
+    apply (ordsuccE 0 1 H1in1).
+    - assume H1in0. exact (EmptyE 1 H1in0).
+    - assume H10. exact (neq_1_0 H10).
+  }
+  claim Hv2 :
+    apply_fun v 2 = add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))).
+  {
+    rewrite HvEq.
+    rewrite (apply_fun_graph
+      3
+      (fun i0:set =>
+        if i0 = 0 then p 0 else
+        if i0 = 1 then p 1 else
+        add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      2
+      H2in3).
+    rewrite (If_i_0 (2 = 0) (p 0)
+      (if 2 = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      (neq_2_0)).
+    exact (If_i_0 (2 = 1) (p 1)
+      (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      Hneq21).
+  }
+  claim Hp0SNo : SNo (p 0). { exact (real_SNo (p 0) Hp0R). }
+  claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+  claim HsumSNo2 : SNo (add_SNo (p 0) (p 1)).
+  { exact (real_SNo (add_SNo (p 0) (p 1)) HsumR). }
+  claim HmSumSNo : SNo (minus_SNo (add_SNo (p 0) (p 1))).
+  { exact (SNo_minus_SNo (add_SNo (p 0) (p 1)) HsumSNo2). }
+  rewrite Hv0.
+  rewrite Hv1.
+  rewrite Hv2.
+  rewrite (add_SNo_0L (p 0) Hp0SNo).
+  rewrite (add_SNo_com 1 (minus_SNo (add_SNo (p 0) (p 1))) SNo_1 HmSumSNo).
+  exact (add_SNo_minus_SNo_prop2 (add_SNo (p 0) (p 1)) 1 HsumSNo2 SNo_1).
+}
+apply (SepI
+  (function_space 3 R)
+  (fun w:set =>
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+  v
+  HvFun
+  (andI
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+    (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+    Hnonneg
+    Hsum1)).
+Qed.
+
 (** Infrastructure: the triangular region lies in the closed unit disk **)
 (** Proven Bob **)
 Lemma triangular_region_subset_B2 :
