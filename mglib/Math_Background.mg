@@ -96798,74 +96798,50 @@ claim HFt_54_cont :
                 (apply_fun vs_choice_54 s))
               t :e Vq.
         {
-          set Fcol := graph I1_54 (fun s:set =>
-            apply_fun
-              (path_lift E Te B Tb p
-                (apply_fun (path_lift E Te B Tb p e0 g0_54) s)
-                (apply_fun vs_choice_54 s))
-              (q 1)).
-          claim HcolCont :
-            continuous_map I1_54 (subspace_topology unit_interval unit_interval_topology I1_54) E Te Fcol.
-          {
-            exact (path_lift_column_continuous_on_product_ball
+          apply xm (0 :e I2_54).
+          - assume H0I2.
+            exact (column_lifts_same_sheet_on_product_ball_with_zero
               E
               Te
               B
               Tb
               p
+              U
+              slices
+              Vq
+              e0
+              g0_54
               (path_lift E Te B Tb p e0 g0_54)
               I1_54
               I2_54
               vs_choice_54
+              (q 0)
               (q 1)
               Hcov
               HtopE
+              HslicesSubTe
+              HslicesPD
+              HslicesUnion
+              HVqSlice
+              Hg0_54Cont
+              He0
+              Hstart_g0_54
+              (eq_refl (path_lift E Te B Tb p e0 g0_54))
               HI1subI
               HI2subI
-              Hq1I2
+              HI1conn
+              HI2conn
               HvsCont_I1
-              HstartE_I1
-              HstartComm_I1).
-          }
-          exact (column_lifts_same_sheet_on_product_ball_with_col_cont
-            E
-            Te
-            B
-            Tb
-            p
-            U
-            slices
-            Vq
-            e0
-            g0_54
-            (path_lift E Te B Tb p e0 g0_54)
-            I1_54
-            I2_54
-            vs_choice_54
-            (q 0)
-            (q 1)
-            Hcov
-            HtopE
-            HslicesSubTe
-            HslicesPD
-            HslicesUnion
-            HVqSlice
-            Hg0_54Cont
-            He0
-            Hstart_g0_54
-            (eq_refl (path_lift E Te B Tb p e0 g0_54))
-            HI1subI
-            HI2subI
-            HI1conn
-            HI2conn
-            HvsCont_I1
-            HvsU_I1
-            HstartComm_I1
-            Hq0I1
-            Hq1I2
-            Hlift_q
-            HstartE_I1
-            HcolCont).
+              HvsU_I1
+              HstartComm_I1
+              Hq0I1
+              Hq1I2
+              H0I2
+              Hlift_q
+              HstartE_I1).
+          - assume H0I2.
+            (** TODO: need column continuity when 0 :e I2_54 fails. **)
+            admit.
         }
         let z. assume HzN.
         claim Hz0I1 : z 0 :e I1_54.
@@ -158033,7 +158009,6 @@ Admitted.
     the word decomposition in pi_1(U) and pi_1(V). This is the key technical
     step for Seifert-van Kampen (lemma59_1). **)
 (** Bounty 68 **)
-(** Lock Dave 1772808343 **)
 Lemma loop_lebesgue_decomposition : forall X Tx U V x0 fcls Nleb:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -158981,7 +158956,6 @@ Admitted.
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 357 **)
-(** Lock Dave 1772808343 **)
 Theorem lemma59_1_open_cover_generates_pi1_core : forall X Tx U V x0 cls:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -174792,7 +174766,6 @@ Qed.
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 41 **)
-(** Lock Dave 1772808343 **)
 Theorem cor59_2_simply_connected_union : forall X Tx U V:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
