@@ -95400,22 +95400,94 @@ apply xm (t0 = 0).
     HFcol_fun
     (fun s Hs => eq_symm (apply_fun Fcol_lift s) (apply_fun start_lift s) (Hcol_eq s Hs))).
 - assume Ht0neq.
-  claim Hlocal_cont :
-    exists UFam:set,
-      UFam c= (subspace_topology unit_interval unit_interval_topology I1) /\
-      Union UFam = I1 /\
-      (forall U:set, U :e UFam ->
-        continuous_map U (subspace_topology I1 (subspace_topology unit_interval unit_interval_topology I1) U)
-          E Te Fcol_lift).
+  set TI1 := subspace_topology unit_interval unit_interval_topology I1.
+  set UFam := {U :e TI1 |
+    continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift}.
+  claim HUFamSub : UFam c= TI1.
   {
-    (** TODO: for each s0, build a neighborhood U in I1 such that Fcol_lift agrees on U
-        with a continuous local inverse chart (via chain of evenly covered product balls in t,
-        using Ht0neq for the nontrivial case). **)
-    admit.
+    let U. assume HU.
+    exact (SepE1 TI1 (fun V:set =>
+      continuous_map V (subspace_topology I1 TI1 V) E Te Fcol_lift) U HU).
+  }
+  claim HUFamUnionSub : Union UFam c= I1.
+  {
+    let x. assume HxU.
+    apply (UnionE UFam x HxU).
+    let U. assume HUPack.
+    claim HxU' : x :e U.
+    { exact (andEL (x :e U) (U :e UFam) HUPack). }
+    claim HUin : U :e TI1.
+    { exact (HUFamSub U (andER (x :e U) (U :e UFam) HUPack)). }
+    claim HUsub : U c= I1.
+    { exact (topology_elem_subset I1 TI1 U HtopI1 HUin). }
+    exact (HUsub x HxU').
+  }
+  claim HUFamUnionSup : I1 c= Union UFam.
+  {
+    let s0. assume Hs0.
+    claim Hlocal_ex :
+      exists U:set,
+        U :e TI1 /\ s0 :e U /\
+        continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift.
+    {
+      (** TODO: build a chain of product balls covering t from 0 to t0, use
+          column_continuity_propagation_step to propagate continuity along the chain,
+          and shrink I1 around s0 so F maps the product into evenly covered U at each step.
+          Use connected_space_open_cover_chain on unit_interval and continuity of F. **)
+      admit.
+    }
+    apply Hlocal_ex.
+    let U. assume HUPack.
+    claim Hpair : U :e TI1 /\ s0 :e U.
+    { exact (andEL
+        (U :e TI1 /\ s0 :e U)
+        (continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift)
+        HUPack). }
+    claim HUinTI1 : U :e TI1.
+    { exact (andEL (U :e TI1) (s0 :e U) Hpair). }
+    claim Hs0U : s0 :e U.
+    {
+      exact (andER (U :e TI1) (s0 :e U) Hpair).
+    }
+    claim HcontU :
+      continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift.
+    {
+      exact (andER
+        (U :e TI1 /\ s0 :e U)
+        (continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift)
+        HUPack).
+    }
+    claim HUinUFam : U :e UFam.
+    {
+      exact (SepI TI1 (fun V:set =>
+        continuous_map V (subspace_topology I1 TI1 V) E Te Fcol_lift) U HUinTI1 HcontU).
+    }
+    exact (UnionI UFam s0 U Hs0U HUinUFam).
+  }
+  claim HUFamUnion : Union UFam = I1.
+  {
+    apply set_ext.
+    - exact HUFamUnionSub.
+    - exact HUFamUnionSup.
+  }
+  claim Hlocal_cont :
+    exists UFam0:set,
+      UFam0 c= TI1 /\ Union UFam0 = I1 /\
+      (forall U:set, U :e UFam0 ->
+        continuous_map U (subspace_topology I1 TI1 U) E Te Fcol_lift).
+  {
+    witness UFam.
+    apply andI.
+    - apply andI.
+      + exact HUFamSub.
+      + exact HUFamUnion.
+    - let U. assume HU.
+      exact (SepE2 TI1 (fun V:set =>
+        continuous_map V (subspace_topology I1 TI1 V) E Te Fcol_lift) U HU).
   }
   exact (continuous_map_local_cover
     I1
-    (subspace_topology unit_interval unit_interval_topology I1)
+    TI1
     E
     Te
     Fcol_lift
