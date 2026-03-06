@@ -94730,6 +94730,33 @@ Lemma column_continuity_via_chain :
 admit.
 Admitted.
 
+(** Infrastructure: column continuity with jointly continuous F (provable via chain) **)
+(** Unlike column_continuity_via_chain, includes F for the chain argument proof. **)
+Lemma column_continuity_via_chain_with_F :
+  forall E Te B Tb p F start_lift vs_choice I1 t0:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  I1 c= unit_interval ->
+  connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+  t0 :e unit_interval ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+  continuous_map (setprod I1 unit_interval)
+    (subspace_topology unit_square unit_square_topology (setprod I1 unit_interval))
+    B Tb F ->
+  (forall s:set, s :e I1 ->
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+  (forall s:set, s :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+  (forall s:set, s :e I1 -> forall t:set, t :e unit_interval ->
+    apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+    (graph I1 (fun s:set =>
+      apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+        t0)).
+admit.
+Admitted.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
@@ -96923,12 +96950,35 @@ claim HFt_54_cont :
                       (apply_fun vs_choice_54 s))
                     (q 1))).
             {
-              exact (column_continuity_via_chain
+              claim HFcontI1full :
+                continuous_map (setprod I1_54 unit_interval)
+                  (subspace_topology unit_square unit_square_topology (setprod I1_54 unit_interval))
+                  B Tb F.
+              {
+                exact (continuous_on_subspace
+                  unit_square unit_square_topology B Tb F
+                  (setprod I1_54 unit_interval)
+                  (product_topology_is_topology unit_interval unit_interval_topology
+                    unit_interval unit_interval_topology
+                    unit_interval_topology_on unit_interval_topology_on)
+                  (setprod_Subq I1_54 unit_interval unit_interval unit_interval
+                    HI1subI (Subq_ref unit_interval))
+                  HFcont).
+              }
+              claim HvsEvalI1 :
+                forall s:set, s :e I1_54 -> forall t:set, t :e unit_interval ->
+                  apply_fun (apply_fun vs_choice_54 s) t = apply_fun F (s, t).
+              {
+                let s. assume HsI1. let t. assume Ht.
+                exact (Hvs_choice_54_eval s t (HI1subI s HsI1) Ht).
+              }
+              exact (column_continuity_via_chain_with_F
                 E
                 Te
                 B
                 Tb
                 p
+                F
                 (path_lift E Te B Tb p e0 g0_54)
                 vs_choice_54
                 I1_54
@@ -96940,8 +96990,10 @@ claim HFt_54_cont :
                 Hq1I_local
                 (path_lift_continuous_on_subset E Te B Tb p e0 g0_54 I1_54
                   Hcov He0 Hstart_g0_54 Hg0_54Cont HI1subI)
+                HFcontI1full
                 HstartComm_I1
-                HvsCont_I1).
+                HvsCont_I1
+                HvsEvalI1).
             }
             exact (column_lifts_same_sheet_on_product_ball_with_col_cont
               E
