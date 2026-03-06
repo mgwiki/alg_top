@@ -135,9 +135,11 @@ Approvals:
   - 1772798197 | Bob:
   - 1772798197 | Charlie:
   - 1772798197 | Dave:
+  - 1772811450 | Charlie: YES
 
 Result:
   PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772780017
 Created: 1772780017
@@ -192,9 +194,11 @@ Approvals:
   - 1772780017 | Bob:
   - 1772780017 | Charlie:
   - 1772780017 | Dave:
+  - 1772811450 | Charlie: YES
 
 Result:
   PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772757793
 Created: 1772757793
@@ -244,9 +248,11 @@ Approvals:
   - 1772757793 | Bob:
   - 1772757793 | Charlie:
   - 1772757793 | Dave:
+  - 1772811450 | Charlie: YES
 
 Result:
   PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772756274
 Created: 1772756274
