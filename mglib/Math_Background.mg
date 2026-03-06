@@ -95309,27 +95309,119 @@ claim HtopI1 : topology_on I1 (subspace_topology unit_interval unit_interval_top
     unit_interval_topology_on
     HI1sub).
 }
-claim Hlocal_cont :
-  exists UFam:set,
-    UFam c= (subspace_topology unit_interval unit_interval_topology I1) /\
-    Union UFam = I1 /\
-    (forall U:set, U :e UFam ->
-      continuous_map U (subspace_topology I1 (subspace_topology unit_interval unit_interval_topology I1) U)
-        E Te Fcol_lift).
-{
-  (** TODO: for each s0, build a neighborhood U in I1 such that Fcol_lift agrees on U
-      with a continuous local inverse chart (via chain of evenly covered product balls in t). **)
-  admit.
-}
-exact (continuous_map_local_cover
-  I1
-  (subspace_topology unit_interval unit_interval_topology I1)
-  E
-  Te
-  Fcol_lift
-  HtopI1
-  HtopE
-  Hlocal_cont).
+apply xm (t0 = 0).
+- assume Ht0zero.
+  claim Hcol_eq :
+    forall s:set, s :e I1 ->
+      apply_fun Fcol_lift s = apply_fun start_lift s.
+  {
+    let s.
+    assume HsI1.
+    claim HsI : s :e unit_interval.
+    { exact (HI1sub s HsI1). }
+    claim Hf_s_cont :
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s).
+    { exact (HvsCont s HsI1). }
+    claim He_s_E : apply_fun start_lift s :e E.
+    { exact (HstartFun s HsI1). }
+    claim Hstart_s :
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0.
+    { exact (HstartComm s HsI1). }
+    claim Hlift_pack :
+      continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+        = apply_fun start_lift s /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p
+          (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
+        = apply_fun (apply_fun vs_choice s) t).
+    {
+      exact (lemma54_1_path_lifting
+        E
+        Te
+        B
+        Tb
+        p
+        (apply_fun start_lift s)
+        (apply_fun vs_choice s)
+        Hcov
+        He_s_E
+        Hstart_s
+        Hf_s_cont).
+    }
+    claim Hlift_left :
+      continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+        = apply_fun start_lift s.
+    {
+      exact (andEL
+        (continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+         apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+           = apply_fun start_lift s)
+        (forall t:set, t :e unit_interval ->
+          apply_fun p
+            (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
+          = apply_fun (apply_fun vs_choice s) t)
+        Hlift_pack).
+    }
+    claim Hlift0 :
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+        = apply_fun start_lift s.
+    {
+      exact (andER
+        (continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)))
+        (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+          = apply_fun start_lift s)
+        Hlift_left).
+    }
+    rewrite (apply_fun_graph
+      I1
+      (fun s0:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0))
+          t0)
+      s
+      HsI1).
+    rewrite Ht0zero.
+    exact Hlift0.
+  }
+  exact (continuous_map_congr_on
+    I1
+    (subspace_topology unit_interval unit_interval_topology I1)
+    E
+    Te
+    start_lift
+    Fcol_lift
+    HstartCont
+    HFcol_fun
+    (fun s Hs => eq_symm (apply_fun Fcol_lift s) (apply_fun start_lift s) (Hcol_eq s Hs))).
+- assume Ht0neq.
+  claim Hlocal_cont :
+    exists UFam:set,
+      UFam c= (subspace_topology unit_interval unit_interval_topology I1) /\
+      Union UFam = I1 /\
+      (forall U:set, U :e UFam ->
+        continuous_map U (subspace_topology I1 (subspace_topology unit_interval unit_interval_topology I1) U)
+          E Te Fcol_lift).
+  {
+    (** TODO: for each s0, build a neighborhood U in I1 such that Fcol_lift agrees on U
+        with a continuous local inverse chart (via chain of evenly covered product balls in t,
+        using Ht0neq for the nontrivial case). **)
+    admit.
+  }
+  exact (continuous_map_local_cover
+    I1
+    (subspace_topology unit_interval unit_interval_topology I1)
+    E
+    Te
+    Fcol_lift
+    HtopI1
+    HtopE
+    Hlocal_cont).
 Admitted.
 
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
