@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5510 **)
-(** Balance Charlie 1449 **)
+(** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -217339,7 +217339,8 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
 
 (** Infrastructure: involutive efam(al) cannot be nontrivial in its subgroup in a free product **)
 (** This isolates the remaining "order 2" subcase in efam_not_in_Gfam_nontrivial. **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 1772841394 **)
 Lemma free_product_efam_involutive_contra : forall G multG eG invG J Gfam efam al:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
   al :e J ->
