@@ -91879,6 +91879,7 @@ exact (composition_continuous
 Qed.
 
 (** Infrastructure: parametric path-lift continuity on a product ball mapping into one sheet **)
+(** Proven Bob **)
 Lemma path_lift_parametric_continuous_on_product_ball :
   forall E Te B Tb p F start_lift vs_choice U slices V0 I1 I2 s0:set,
   covering_map E Te B Tb p ->
