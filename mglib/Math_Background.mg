@@ -142407,6 +142407,7 @@ admit.
 Admitted. (** TODO: simplex3_set uses function_space; need link to total_function_on/functional_graph. **)
 
 (** Infrastructure: simplex3_set elements are subsets of 3 x R **)
+(** Proven Bob **)
 Lemma simplex3_set_sub_setprod :
   forall v:set, v :e simplex3_set -> v c= setprod 3 R.
 let v.
