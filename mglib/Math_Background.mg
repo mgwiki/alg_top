@@ -91878,6 +91878,612 @@ exact (composition_continuous
   HFcont).
 Qed.
 
+(** Infrastructure: parametric path-lift continuity on a product ball mapping into one sheet **)
+Lemma path_lift_parametric_continuous_on_product_ball :
+  forall E Te B Tb p F start_lift vs_choice U slices V0 I1 I2 s0:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  I1 c= unit_interval ->
+  I2 c= unit_interval ->
+  0 :e I2 ->
+  connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+  connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+  continuous_map (setprod I1 I2)
+    (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+    B Tb F ->
+  (forall z:set, z :e setprod I1 I2 -> apply_fun F z :e U) ->
+  U :e Tb ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  (forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (fun z:set => apply_fun p z))) ->
+  V0 :e slices ->
+  s0 :e I1 ->
+  apply_fun start_lift s0 :e V0 ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+  (forall s:set, s :e I1 ->
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+  (forall s:set, s :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+  (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+    apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+  continuous_map (setprod I1 I2)
+    (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+    E Te
+    (graph (setprod I1 I2) (fun z:set =>
+      apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift (z 0)) (apply_fun vs_choice (z 0)))
+        (z 1))).
+{
+  let E Te B Tb p F start_lift vs_choice U slices V0 I1 I2 s0.
+  assume Hcov HtopE HI1sub HI2sub H0I2 HI1conn HI2conn HFcont HFNinU HUopen.
+  assume HslicesSub HpdSlices Hunion HhomeSlices HV0Slice Hs0 Hstart0.
+  assume HstartCont HstartComm HvsCont HvsEval.
+  set N := setprod I1 I2.
+  set TN := subspace_topology unit_square unit_square_topology N.
+  set Fprod := graph N (fun z:set =>
+    apply_fun
+      (path_lift E Te B Tb p (apply_fun start_lift (z 0)) (apply_fun vs_choice (z 0)))
+      (z 1)).
+  claim HtopB : topology_on B Tb.
+  {
+    exact (continuous_map_topology_cod
+      N
+      TN
+      B
+      Tb
+      F
+      HFcont).
+  }
+  claim HstartFun : function_on start_lift I1 E.
+  {
+    exact (continuous_map_function_on
+      I1
+      (subspace_topology unit_interval unit_interval_topology I1)
+      E
+      Te
+      start_lift
+      HstartCont).
+  }
+  claim HstartInUnion :
+    forall s:set, s :e I1 -> apply_fun start_lift s :e Union slices.
+  {
+    let s.
+    assume HsI1.
+    claim HsE : apply_fun start_lift s :e E.
+    { exact (HstartFun s HsI1). }
+    claim Hs0N : (s, 0) :e N.
+    {
+      exact (tuple_2_setprod_by_pair_Sigma
+        I1
+        I2
+        s
+        0
+        HsI1
+        H0I2).
+    }
+    claim HF0U : apply_fun F (s, 0) :e U.
+    { exact (HFNinU (s, 0) Hs0N). }
+    claim HpStartU : apply_fun p (apply_fun start_lift s) :e U.
+    {
+      rewrite (HstartComm s HsI1).
+      rewrite (HvsEval s HsI1 0 H0I2).
+      exact HF0U.
+    }
+    claim Hpre : apply_fun start_lift s :e preimage_of E p U.
+    {
+      exact (SepI
+        E
+        (fun z:set => apply_fun p z :e U)
+        (apply_fun start_lift s)
+        HsE
+        HpStartU).
+    }
+    rewrite Hunion.
+    exact Hpre.
+  }
+  claim HstartInV0 :
+    forall s:set, s :e I1 -> apply_fun start_lift s :e V0.
+  {
+    let s.
+    assume HsI1.
+    claim HsUnion : apply_fun start_lift s :e Union slices.
+    { exact (HstartInUnion s HsI1). }
+    apply (UnionE slices (apply_fun start_lift s) HsUnion).
+    let Vs.
+    assume HVsPack.
+    claim HsVs : apply_fun start_lift s :e Vs.
+    {
+      exact (andEL
+        (apply_fun start_lift s :e Vs)
+        (Vs :e slices)
+        HVsPack).
+    }
+    claim HVsSlice : Vs :e slices.
+    {
+      exact (andER
+        (apply_fun start_lift s :e Vs)
+        (Vs :e slices)
+        HVsPack).
+    }
+    claim HVsEq : Vs = V0.
+    {
+      exact (lemma54_2_sheet_non_switching_local
+        E
+        Te
+        I1
+        (subspace_topology unit_interval unit_interval_topology I1)
+        start_lift
+        slices
+        s0
+        s
+        V0
+        Vs
+        HtopE
+        HslicesSub
+        HpdSlices
+        HI1conn
+        HstartCont
+        HstartInUnion
+        Hs0
+        HsI1
+        Hstart0
+        HV0Slice
+        HsVs
+        HVsSlice).
+    }
+    rewrite <- HVsEq.
+    exact HsVs.
+  }
+  claim HFprodInV0 :
+    forall z:set, z :e N -> apply_fun Fprod z :e V0.
+  {
+    let z.
+    assume HzN.
+    claim Hz0I1 : z 0 :e I1.
+    { exact (ap0_Sigma I1 (fun _ : set => I2) z HzN). }
+    claim Hz1I2 : z 1 :e I2.
+    { exact (ap1_Sigma I1 (fun _ : set => I2) z HzN). }
+    set f_s := apply_fun vs_choice (z 0).
+    set e_s := apply_fun start_lift (z 0).
+    claim Hf_s_cont :
+      continuous_map unit_interval unit_interval_topology B Tb f_s.
+    { exact (HvsCont (z 0) Hz0I1). }
+    claim He_s_E : e_s :e E.
+    { exact (HstartFun (z 0) Hz0I1). }
+    claim Hstart_s : apply_fun p e_s = apply_fun f_s 0.
+    { exact (HstartComm (z 0) Hz0I1). }
+    claim HfU_s : forall t:set, t :e I2 -> apply_fun f_s t :e U.
+    {
+      let t.
+      assume HtI2.
+      claim HstN : (z 0, t) :e N.
+      { exact (tuple_2_setprod_by_pair_Sigma I1 I2 (z 0) t Hz0I1 HtI2). }
+      rewrite (HvsEval (z 0) Hz0I1 t HtI2).
+      exact (HFNinU (z 0, t) HstN).
+    }
+    claim HcolInV0 :
+      forall t:set, t :e I2 ->
+        apply_fun (path_lift E Te B Tb p e_s f_s) t :e V0.
+    {
+      claim HliftPack :
+        continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e_s f_s) /\
+        apply_fun (path_lift E Te B Tb p e_s f_s) 0 = e_s /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun p (apply_fun (path_lift E Te B Tb p e_s f_s) t) = apply_fun f_s t).
+      {
+        exact (lemma54_1_path_lifting
+          E
+          Te
+          B
+          Tb
+          p
+          e_s
+          f_s
+          Hcov
+          He_s_E
+          Hstart_s
+          Hf_s_cont).
+      }
+      claim Hlift0 : apply_fun (path_lift E Te B Tb p e_s f_s) 0 = e_s.
+      {
+        claim HliftLeft :
+          continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e_s f_s) /\
+          apply_fun (path_lift E Te B Tb p e_s f_s) 0 = e_s.
+        {
+          exact (andEL
+            (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e_s f_s) /\
+             apply_fun (path_lift E Te B Tb p e_s f_s) 0 = e_s)
+            (forall t:set, t :e unit_interval ->
+              apply_fun p (apply_fun (path_lift E Te B Tb p e_s f_s) t) = apply_fun f_s t)
+            HliftPack).
+        }
+        exact (andER
+          (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e_s f_s))
+          (apply_fun (path_lift E Te B Tb p e_s f_s) 0 = e_s)
+          HliftLeft).
+      }
+      claim Hft0V0 : apply_fun (path_lift E Te B Tb p e_s f_s) 0 :e V0.
+      {
+        rewrite Hlift0.
+        exact (HstartInV0 (z 0) Hz0I1).
+      }
+      exact (connected_lift_stays_in_anchored_sheet
+        E
+        Te
+        B
+        Tb
+        p
+        U
+        slices
+        V0
+        I2
+        (subspace_topology unit_interval unit_interval_topology I2)
+        f_s
+        (path_lift E Te B Tb p e_s f_s)
+        0
+        HtopE
+        HslicesSub
+        HpdSlices
+        Hunion
+        HI2conn
+        (path_lift_continuous_on_subset
+          E
+          Te
+          B
+          Tb
+          p
+          e_s
+          f_s
+          I2
+          Hcov
+          He_s_E
+          Hstart_s
+          Hf_s_cont
+          HI2sub)
+        (path_lift_commutes_on_subset
+          E
+          Te
+          B
+          Tb
+          p
+          e_s
+          f_s
+          I2
+          Hcov
+          He_s_E
+          Hstart_s
+          Hf_s_cont
+          HI2sub)
+        (fun t0 Ht0 => HfU_s t0 Ht0)
+        HV0Slice
+        H0I2
+        Hft0V0).
+    }
+    rewrite (apply_fun_graph
+      N
+      (fun z0:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift (z0 0)) (apply_fun vs_choice (z0 0)))
+          (z0 1))
+      z
+      HzN).
+    exact (HcolInV0 (z 1) Hz1I2).
+  }
+  claim Hcomm :
+    forall z:set, z :e N -> apply_fun p (apply_fun Fprod z) = apply_fun F z.
+  {
+    let z.
+    assume HzN.
+    claim Hz0I1 : z 0 :e I1.
+    { exact (ap0_Sigma I1 (fun _ : set => I2) z HzN). }
+    claim Hz1I2 : z 1 :e I2.
+    { exact (ap1_Sigma I1 (fun _ : set => I2) z HzN). }
+    set f_s := apply_fun vs_choice (z 0).
+    set e_s := apply_fun start_lift (z 0).
+    claim Hf_s_cont :
+      continuous_map unit_interval unit_interval_topology B Tb f_s.
+    { exact (HvsCont (z 0) Hz0I1). }
+    claim He_s_E : e_s :e E.
+    { exact (HstartFun (z 0) Hz0I1). }
+    claim Hstart_s : apply_fun p e_s = apply_fun f_s 0.
+    { exact (HstartComm (z 0) Hz0I1). }
+    rewrite (apply_fun_graph
+      N
+      (fun z0:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift (z0 0)) (apply_fun vs_choice (z0 0)))
+          (z0 1))
+      z
+      HzN).
+    rewrite (path_lift_commutes_on_subset
+      E
+      Te
+      B
+      Tb
+      p
+      e_s
+      f_s
+      I2
+      Hcov
+      He_s_E
+      Hstart_s
+      Hf_s_cont
+      HI2sub
+      (z 1)
+      Hz1I2).
+    rewrite (HvsEval (z 0) Hz0I1 (z 1) Hz1I2).
+    claim HzEta : z = (z 0, z 1).
+    { exact (setprod_eta I1 I2 z HzN). }
+    rewrite <- HzEta.
+    reflexivity.
+  }
+  claim HhomeV0 :
+    homeomorphism V0 (subspace_topology E Te V0) U (subspace_topology B Tb U)
+      (graph V0 (fun z:set => apply_fun p z)).
+  { exact (HhomeSlices V0 HV0Slice). }
+  claim HinvV0 :
+    exists g0:set,
+      continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+      (forall x:set, x :e V0 ->
+        apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x) /\
+      (forall y:set, y :e U ->
+        apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y).
+  {
+    exact (homeomorphism_inverse_package
+      V0
+      (subspace_topology E Te V0)
+      U
+      (subspace_topology B Tb U)
+      (graph V0 (fun z:set => apply_fun p z))
+      HhomeV0).
+  }
+  apply HinvV0.
+  let g0.
+  assume Hg0Pack.
+  claim Hg0cont :
+    continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0.
+  {
+    exact (andEL
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0)
+      (forall x:set, x :e V0 ->
+        apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x)
+      (andEL
+        (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+          (forall x:set, x :e V0 ->
+            apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x))
+        (forall y:set, y :e U ->
+          apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y)
+        Hg0Pack)).
+  }
+  claim Hg0right :
+    forall y:set, y :e U ->
+      apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y.
+  {
+    exact (andER
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+        (forall x:set, x :e V0 ->
+          apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x))
+      (forall y:set, y :e U ->
+        apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y)
+      Hg0Pack).
+  }
+  claim Hg0fun : function_on g0 U V0.
+  {
+    exact (continuous_map_function_on
+      U
+      (subspace_topology B Tb U)
+      V0
+      (subspace_topology E Te V0)
+      g0
+      Hg0cont).
+  }
+  set Ft_local_N := compose_fun N F g0.
+  claim HFcontN_B :
+    continuous_map N TN B Tb F.
+  { exact HFcont. }
+  claim HUsubB : U c= B.
+  {
+    exact (topology_elem_subset
+      B
+      Tb
+      U
+      HtopB
+      HUopen).
+  }
+  claim HFcontN_U :
+    continuous_map N TN U (subspace_topology B Tb U) F.
+  {
+    exact (continuous_map_range_restrict
+      N
+      TN
+      B
+      Tb
+      F
+      U
+      HFcontN_B
+      HUsubB
+      HFNinU).
+  }
+  claim HFtLocalContV0 :
+    continuous_map N TN V0 (subspace_topology E Te V0) Ft_local_N.
+  {
+    exact (composition_continuous
+      N
+      TN
+      U
+      (subspace_topology B Tb U)
+      V0
+      (subspace_topology E Te V0)
+      F
+      g0
+      HFcontN_U
+      Hg0cont).
+  }
+  claim HV0Open : V0 :e Te.
+  { exact (HslicesSub V0 HV0Slice). }
+  claim HV0subE : V0 c= E.
+  {
+    exact (topology_elem_subset
+      E
+      Te
+      V0
+      HtopE
+      HV0Open).
+  }
+  claim HFtLocalContE :
+    continuous_map N TN E Te Ft_local_N.
+  {
+    claim HV0TyEq : subspace_topology E Te V0 = subspace_topology E Te V0.
+    { reflexivity. }
+    exact (continuous_map_range_expand
+      N
+      TN
+      V0
+      (subspace_topology E Te V0)
+      E
+      Te
+      Ft_local_N
+      HFtLocalContV0
+      HV0subE
+      HtopE
+      HV0TyEq).
+  }
+  claim HFprodEq :
+    forall z:set, z :e N -> apply_fun Fprod z = apply_fun Ft_local_N z.
+  {
+    let z.
+    assume HzN.
+    claim HFzU : apply_fun F z :e U.
+    { exact (HFNinU z HzN). }
+    claim HFprodV0 : apply_fun Fprod z :e V0.
+    { exact (HFprodInV0 z HzN). }
+    claim Hg0FzV0 : apply_fun g0 (apply_fun F z) :e V0.
+    { exact (Hg0fun (apply_fun F z) HFzU). }
+    claim HpFprodEq : apply_fun p (apply_fun Fprod z) = apply_fun F z.
+    { exact (Hcomm z HzN). }
+    claim Hpg0Eq : apply_fun p (apply_fun g0 (apply_fun F z)) = apply_fun F z.
+    {
+      rewrite <- (apply_fun_graph
+        V0
+        (fun x:set => apply_fun p x)
+        (apply_fun g0 (apply_fun F z))
+        Hg0FzV0).
+      exact (Hg0right (apply_fun F z) HFzU).
+    }
+    claim Huniq :
+      exists x:set, x :e V0 /\ apply_fun p x = apply_fun F z /\
+        forall y:set, y :e V0 -> apply_fun p y = apply_fun F z -> y = x.
+    {
+      exact (homeomorphic_sheet_unique_fiber_point
+        E
+        Te
+        B
+        Tb
+        p
+        V0
+        U
+        (apply_fun F z)
+        HhomeV0
+        HFzU).
+    }
+    apply Huniq.
+    let x.
+    assume HxPack.
+    claim HxCore : x :e V0 /\ apply_fun p x = apply_fun F z.
+    {
+      exact (andEL
+        (x :e V0 /\ apply_fun p x = apply_fun F z)
+        (forall y:set, y :e V0 -> apply_fun p y = apply_fun F z -> y = x)
+        HxPack).
+    }
+    claim HxV0 : x :e V0.
+    { exact (andEL
+        (x :e V0)
+        (apply_fun p x = apply_fun F z)
+        HxCore). }
+    claim HxEq : apply_fun p x = apply_fun F z.
+    { exact (andER
+        (x :e V0)
+        (apply_fun p x = apply_fun F z)
+        HxCore). }
+    claim HuniqX :
+      forall y:set, y :e V0 -> apply_fun p y = apply_fun F z -> y = x.
+    {
+      exact (andER
+        (x :e V0 /\ apply_fun p x = apply_fun F z)
+        (forall y:set, y :e V0 -> apply_fun p y = apply_fun F z -> y = x)
+        HxPack).
+    }
+    claim HFprodEqX :
+      apply_fun Fprod z = x.
+    {
+      exact (HuniqX
+        (apply_fun Fprod z)
+        HFprodV0
+        HpFprodEq).
+    }
+    claim Hg0EqX :
+      apply_fun g0 (apply_fun F z) = x.
+    {
+      exact (HuniqX
+        (apply_fun g0 (apply_fun F z))
+        Hg0FzV0
+        Hpg0Eq).
+    }
+    rewrite (compose_fun_apply N F g0 z HzN).
+    rewrite HFprodEqX.
+    rewrite Hg0EqX.
+    reflexivity.
+  }
+  claim HFprodFun : function_on Fprod N E.
+  {
+    apply (total_function_on_function_on Fprod N E).
+    apply (total_function_on_graph N E (fun z:set =>
+      apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift (z 0)) (apply_fun vs_choice (z 0)))
+        (z 1))).
+    let z. assume HzN.
+    claim HcolV0 :
+      apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift (z 0)) (apply_fun vs_choice (z 0)))
+        (z 1) :e V0.
+    {
+      rewrite <- (apply_fun_graph
+        N
+        (fun z0:set =>
+          apply_fun
+            (path_lift E Te B Tb p (apply_fun start_lift (z0 0)) (apply_fun vs_choice (z0 0)))
+            (z0 1))
+        z
+        HzN).
+      exact (HFprodInV0 z HzN).
+    }
+    exact (HV0subE
+      (apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift (z 0)) (apply_fun vs_choice (z 0)))
+        (z 1))
+      HcolV0).
+  }
+  exact (continuous_map_congr_on
+    N
+    TN
+    E
+    Te
+    Ft_local_N
+    Fprod
+    HFtLocalContE
+    HFprodFun
+    (fun z HzN =>
+      eq_symm
+        (apply_fun Fprod z)
+        (apply_fun Ft_local_N z)
+        (HFprodEq z HzN))).
+}
+Qed.
+
 (** Infrastructure: continuity of the t0-column map for product-ball lifts **)
 (** TODO: derive from parametric path-lift continuity on product balls. **)
 Lemma path_lift_column_continuous_on_product_ball :
