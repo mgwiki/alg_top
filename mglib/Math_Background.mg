@@ -215556,16 +215556,223 @@ apply and3I.
       Hsi_m).
     exact Hib.
   }
-  exact (Hadj
-    i
-    Hi_n
-    Hsi_n
-    alpha
-    beta
-    HaJ
-    HbJ
-    Hxsi
-    Hxsi1).
+exact (Hadj
+  i
+  Hi_n
+  Hsi_n
+  alpha
+  beta
+  HaJ
+  HbJ
+  Hxsi
+  Hxsi1).
+Qed.
+
+(** Infrastructure: append one letter to a reduced word (early copy for use before later sections) **)
+(** Proven Charlie **)
+Lemma reduced_word_append_one_pre :
+  forall J Gfam efam n xs b beta:set,
+  reduced_word J Gfam efam n xs ->
+  n <> 0 ->
+  beta :e J ->
+  b :e apply_fun Gfam beta ->
+  b <> apply_fun efam beta ->
+  (forall k alpha beta0:set,
+    n = ordsucc k ->
+    alpha :e J ->
+    beta0 :e J ->
+    apply_fun xs k :e apply_fun Gfam alpha ->
+    b :e apply_fun Gfam beta0 ->
+    alpha <> beta0) ->
+  reduced_word J Gfam efam (ordsucc n)
+    (graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else b)).
+let J Gfam efam n xs b beta.
+assume Hred : reduced_word J Gfam efam n xs.
+assume Hn_ne0 : n <> 0.
+assume Hbeta : beta :e J.
+assume HbG : b :e apply_fun Gfam beta.
+assume Hbne : b <> apply_fun efam beta.
+assume Hlast_diff :
+  forall k alpha beta0:set,
+    n = ordsucc k ->
+    alpha :e J ->
+    beta0 :e J ->
+    apply_fun xs k :e apply_fun Gfam alpha ->
+    b :e apply_fun Gfam beta0 ->
+    alpha <> beta0.
+
+set xs_ext := graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else b).
+
+apply (and3E
+  (n :e omega)
+  (forall i:set, i :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs i :e apply_fun Gfam alpha /\
+      apply_fun xs i <> apply_fun efam alpha)
+  (forall i:set, i :e n -> ordsucc i :e n ->
+    forall alpha beta0:set, alpha :e J -> beta0 :e J ->
+      apply_fun xs i :e apply_fun Gfam alpha ->
+      apply_fun xs (ordsucc i) :e apply_fun Gfam beta0 ->
+      alpha <> beta0)
+  Hred).
+assume HnO Helem Hadj.
+claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+claim HsnO : ordsucc n :e omega.
+{ exact (nat_p_omega (ordsucc n) (nat_ordsucc n Hn_nat)). }
+
+prove (ordsucc n) :e omega /\
+  (forall i:set, i :e ordsucc n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs_ext i :e apply_fun Gfam alpha /\
+      apply_fun xs_ext i <> apply_fun efam alpha) /\
+  (forall i:set, i :e ordsucc n -> ordsucc i :e ordsucc n ->
+    forall alpha beta0:set, alpha :e J -> beta0 :e J ->
+      apply_fun xs_ext i :e apply_fun Gfam alpha ->
+      apply_fun xs_ext (ordsucc i) :e apply_fun Gfam beta0 ->
+      alpha <> beta0).
+apply and3I.
+- exact HsnO.
+- let i. assume Hi : i :e ordsucc n.
+  apply (ordsuccE n i Hi).
+  * assume Hi_n : i :e n.
+    apply (Helem i Hi_n). let alpha. assume Halpha_pack.
+    apply (and3E
+      (alpha :e J)
+      (apply_fun xs i :e apply_fun Gfam alpha)
+      (apply_fun xs i <> apply_fun efam alpha)
+      Halpha_pack).
+    assume Hal Hxi Hxne.
+    witness alpha.
+    apply and3I.
+    + exact Hal.
+    + rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) i
+        (ordsuccI1 n i Hi_n)).
+      rewrite (If_i_1 (i :e n) (apply_fun xs i) b Hi_n).
+      exact Hxi.
+    + rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) i
+        (ordsuccI1 n i Hi_n)).
+      rewrite (If_i_1 (i :e n) (apply_fun xs i) b Hi_n).
+      exact Hxne.
+  * assume Hi_eq : i = n.
+    witness beta.
+    apply and3I.
+    + exact Hbeta.
+    + rewrite Hi_eq.
+      rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) n
+        (ordsuccI2 n)).
+      rewrite (If_i_0 (n :e n) (apply_fun xs n) b (In_irref n)).
+      exact HbG.
+    + rewrite Hi_eq.
+      rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) n
+        (ordsuccI2 n)).
+      rewrite (If_i_0 (n :e n) (apply_fun xs n) b (In_irref n)).
+      exact Hbne.
+- let i. assume Hi : i :e ordsucc n.
+  assume Hsi : ordsucc i :e ordsucc n.
+  let alpha beta0. assume Hal Hb0.
+  assume Hxi : apply_fun xs_ext i :e apply_fun Gfam alpha.
+  assume Hxsi : apply_fun xs_ext (ordsucc i) :e apply_fun Gfam beta0.
+  apply (ordsuccE n i Hi).
+  * assume Hi_n : i :e n.
+    apply (xm (ordsucc i :e n)).
+	    + assume Hsi_n : ordsucc i :e n.
+	      claim Hx_i : apply_fun xs i :e apply_fun Gfam alpha.
+	      {
+	        claim Hxs_ext_i : apply_fun xs_ext i = apply_fun xs i.
+	        {
+	          rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) i
+	            (ordsuccI1 n i Hi_n)).
+	          rewrite (If_i_1 (i :e n) (apply_fun xs i) b Hi_n).
+	          reflexivity.
+	        }
+	        exact (eq_subst_mem_rev
+	          (apply_fun xs_ext i)
+	          (apply_fun xs i)
+	          (apply_fun Gfam alpha)
+	          Hxs_ext_i
+	          Hxi).
+	      }
+	      claim Hx_si : apply_fun xs (ordsucc i) :e apply_fun Gfam beta0.
+	      {
+	        claim Hxs_ext_si : apply_fun xs_ext (ordsucc i) = apply_fun xs (ordsucc i).
+	        {
+	          rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) (ordsucc i)
+	            (ordsuccI1 n (ordsucc i) Hsi_n)).
+	          rewrite (If_i_1 (ordsucc i :e n) (apply_fun xs (ordsucc i)) b Hsi_n).
+	          reflexivity.
+	        }
+	        exact (eq_subst_mem_rev
+	          (apply_fun xs_ext (ordsucc i))
+	          (apply_fun xs (ordsucc i))
+	          (apply_fun Gfam beta0)
+	          Hxs_ext_si
+	          Hxsi).
+	      }
+	      exact (Hadj i Hi_n Hsi_n alpha beta0 Hal Hb0 Hx_i Hx_si).
+	    + assume Hsi_not : ~(ordsucc i :e n).
+      claim Hsi_eq : ordsucc i = n.
+      {
+        apply (ordsuccE n (ordsucc i) Hsi).
+        - assume Habs : ordsucc i :e n.
+          exact (FalseE (Hsi_not Habs) (ordsucc i = n)).
+        - assume Heq. exact Heq.
+	      }
+	      claim Hx_i : apply_fun xs i :e apply_fun Gfam alpha.
+	      {
+	        claim Hxs_ext_i : apply_fun xs_ext i = apply_fun xs i.
+	        {
+	          rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) i
+	            (ordsuccI1 n i Hi_n)).
+	          rewrite (If_i_1 (i :e n) (apply_fun xs i) b Hi_n).
+	          reflexivity.
+	        }
+	        exact (eq_subst_mem_rev
+	          (apply_fun xs_ext i)
+	          (apply_fun xs i)
+	          (apply_fun Gfam alpha)
+	          Hxs_ext_i
+	          Hxi).
+	      }
+	      claim Hb_beta0 : b :e apply_fun Gfam beta0.
+	      {
+	        claim Hxs_ext_n : apply_fun xs_ext n = b.
+	        {
+	          rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else b) n
+	            (ordsuccI2 n)).
+	          rewrite (If_i_0 (n :e n) (apply_fun xs n) b (In_irref n)).
+	          reflexivity.
+	        }
+		        claim Hb_beta0' : apply_fun xs_ext n :e apply_fun Gfam beta0.
+		        {
+			          claim Hxsi_eq_n : apply_fun xs_ext n = apply_fun xs_ext (ordsucc i).
+			          { rewrite <- Hsi_eq. reflexivity. }
+			          exact (eq_subst_mem
+			            (apply_fun xs_ext n)
+			            (apply_fun xs_ext (ordsucc i))
+			            (apply_fun Gfam beta0)
+			            Hxsi_eq_n
+			            Hxsi).
+		        }
+	        exact (eq_subst_mem_rev
+	          (apply_fun xs_ext n)
+	          b
+	          (apply_fun Gfam beta0)
+	          Hxs_ext_n
+	          Hb_beta0').
+	      }
+	      claim Hn_eq : n = ordsucc i.
+	      { exact (eq_symm (ordsucc i) n Hsi_eq). }
+	      exact (Hlast_diff i alpha beta0 Hn_eq Hal Hb0 Hx_i Hb_beta0).
+	  * assume Hi_eq : i = n.
+	    claim Hbad : False.
+	    {
+	      claim Hs_eq : ordsucc n = ordsucc i.
+	      { rewrite Hi_eq. reflexivity. }
+	      claim Hnn : ordsucc n :e ordsucc n.
+	      { exact (eq_subst_mem (ordsucc n) (ordsucc i) (ordsucc n) Hs_eq Hsi). }
+	      exact (In_irref (ordsucc n) Hnn).
+	    }
+	    exact (FalseE Hbad (alpha <> beta0)).
 Qed.
 
 (** Infrastructure: suffix of reduced word is reduced **)
