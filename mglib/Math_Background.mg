@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5510 **)
-(** Balance Charlie 1529 **)
+(** Balance Charlie 1449 **)
 (** Balance Dave 2020 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -217337,6 +217337,18 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
       S c= N /\
       (forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> N c= N')).
 
+(** Infrastructure: involutive efam(al) cannot be nontrivial in its subgroup in a free product **)
+(** This isolates the remaining "order 2" subcase in efam_not_in_Gfam_nontrivial. **)
+(** Bounty 80 **)
+Lemma free_product_efam_involutive_contra : forall G multG eG invG J Gfam efam al:set,
+  free_product_of_subgroups G multG eG invG J Gfam efam ->
+  al :e J ->
+  apply_fun efam al :e apply_fun Gfam al ->
+  apply_fun efam al <> eG ->
+  apply_fun invG (apply_fun efam al) = apply_fun efam al ->
+  False.
+Admitted.
+
 (** Helper lemma: in a free product, efam(alpha) in Gfam(alpha) with efam(alpha) != eG is impossible **)
 (** This captures the key fact that reduced word uniqueness forces efam(alpha) = eG **)
 Theorem efam_not_in_Gfam_nontrivial : forall G multG eG invG J Gfam efam:set,
@@ -218747,17 +218759,18 @@ apply Hnw_inv.
                 exact (Hefam_ne Hefam_eG). }
               claim Hinv_efam_G : apply_fun invG (apply_fun efam al) :e G.
               { exact (HinvGF (apply_fun efam al) Hefam_G). }
-	              apply (xm (apply_fun invG (apply_fun efam al) = apply_fun efam al)).
-	              + assume Hinv_eq_efam : apply_fun invG (apply_fun efam al) = apply_fun efam al.
-	                (** efam(al)^2 = eG case **)
-	                (** This is impossible in a free product when efam(al) is assumed nontrivial. **)
-	                (** NOTE: this subcase was previously (incorrectly) closed by a self-reference
-	                   to efam_not_in_Gfam_nontrivial. A non-recursive proof should be provided here. **)
-	                admit.
-	              + assume Hinv_ne_efam : apply_fun invG (apply_fun efam al) <> apply_fun efam al.
-	                (** Construct word [inv(efam(al)), xsw(0), ..., xsw(mw), inv(efam(al))] **)
-	                (** of length nw+2 for inv(efam(al)). Contradicts [inv(efam(al))] of length 1. **)
-	                set ie := apply_fun invG (apply_fun efam al).
+		              apply (xm (apply_fun invG (apply_fun efam al) = apply_fun efam al)).
+		              + assume Hinv_eq_efam : apply_fun invG (apply_fun efam al) = apply_fun efam al.
+		                (** efam(al)^2 = eG case **)
+		                (** This is impossible in a free product when efam(al) is assumed nontrivial. **)
+		                (** NOTE: this subcase was previously (incorrectly) closed by a self-reference
+		                   to efam_not_in_Gfam_nontrivial. It is now isolated in a dedicated lemma. **)
+		                exact (free_product_efam_involutive_contra
+		                  G multG eG invG J Gfam efam al Hfp Hal Hefam_Gal Hefam_ne Hinv_eq_efam).
+		              + assume Hinv_ne_efam : apply_fun invG (apply_fun efam al) <> apply_fun efam al.
+		                (** Construct word [inv(efam(al)), xsw(0), ..., xsw(mw), inv(efam(al))] **)
+		                (** of length nw+2 for inv(efam(al)). Contradicts [inv(efam(al))] of length 1. **)
+		                set ie := apply_fun invG (apply_fun efam al).
                 (** ie has a unique reduced word. [ie] of length 1 is one. **)
                 set ie_word := graph 1 (fun _:set => ie).
                 claim Hie_word_0 : apply_fun ie_word 0 = ie.
