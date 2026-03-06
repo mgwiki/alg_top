@@ -91879,6 +91879,7 @@ exact (composition_continuous
 Qed.
 
 (** Infrastructure: parametric path-lift continuity on a product ball mapping into one sheet **)
+(** Used in homotopy lifting proof. **)
 (** Proven Bob **)
 Lemma path_lift_parametric_continuous_on_product_ball :
   forall E Te B Tb p F start_lift vs_choice U slices V0 I1 I2 s0:set,
@@ -92693,6 +92694,7 @@ exact (continuous_map_congr_on
 Admitted.
 
 (** Infrastructure: column continuity from parametric product-ball continuity (anchored at t=0) **)
+(** Used in homotopy lifting proof. **)
 (** Proven Bob **)
 Lemma path_lift_column_continuous_on_product_ball_parametric :
   forall E Te B Tb p F start_lift vs_choice U slices V0 I1 I2 s0 t0:set,
@@ -93848,6 +93850,7 @@ Lemma column_lifts_same_sheet_on_product_ball_with_col_cont :
 Qed.
 
 (** Infrastructure: sheet constancy from parametric column continuity (homotopy into one sheet). **)
+(** Used in homotopy lifting proof. **)
 (** Proven Bob **)
 Lemma column_lifts_same_sheet_on_product_ball_parametric :
   forall E Te B Tb p F U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
@@ -94010,6 +94013,7 @@ Qed.
 
 (** Proven Bob **)
 (** Infrastructure: column lift sheet constancy when 0 :e I2 (anchor at t=0). **)
+(** Used in homotopy lifting proof. **)
 Lemma column_lifts_same_sheet_on_product_ball_with_zero :
   forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
   covering_map E Te B Tb p ->
