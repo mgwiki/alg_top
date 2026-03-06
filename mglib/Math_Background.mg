@@ -141181,6 +141181,59 @@ Theorem cor55_7_positive_matrix_eigenvalue : forall A:set,
   function_on A (setprod 3 3) R ->
   (forall i j:set, i :e 3 -> j :e 3 -> Rlt 0 (apply_fun A (i, j))) ->
   exists lam:set, Rlt 0 lam /\ eigenvalue_of_matrix 3 A lam.
+let A.
+assume HAfun HApos.
+(** Strategy: use a fixed point of the normalized positive-matrix map on the 2-simplex. **)
+(** The analytic/topological step (fixed point on the simplex) is postponed. **)
+set simplex3 := {v :e function_space 3 R |
+  (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+  finite_real_sum (fun i:set => apply_fun v i) 3 = 1}.
+claim Hfixed_implies_eigen :
+  forall v:set, v :e simplex3 ->
+    (forall i:set, i :e 3 ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult 3 A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3)) ->
+    exists lam:set, Rlt 0 lam /\ eigenvalue_of_matrix 3 A lam.
+{
+  let v.
+  assume HvS Hfixed.
+  set Av := matrix_vector_mult 3 A v.
+  set lam := finite_real_sum (fun k:set => apply_fun Av k) 3.
+  (** TODO: show lam :e R and Rlt 0 lam using positivity and sum=1. **)
+  claim Hvfun : function_on v 3 R.
+  { exact (function_on_of_function_space v 3 R (SepE1 (function_space 3 R) (fun w:set =>
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun w i) 3 = 1) v HvS)). }
+  witness lam.
+  apply andI.
+  - admit. (** TODO: positivity of lam from HApos and HvS. **)
+  - claim HlamR : lam :e R.
+    { admit. (** TODO: lam :e R. **)}
+    claim Hvexists :
+      exists v:set,
+        function_on v 3 R /\
+        ~(forall i:set, i :e 3 -> apply_fun v i = 0) /\
+        (forall i:set, i :e 3 ->
+          finite_real_sum (fun j:set =>
+            mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3 =
+          mul_SNo lam (apply_fun v i)).
+    {
+      witness v.
+      apply andI.
+      - apply andI.
+        + exact Hvfun.
+        + {
+            (** v is not identically zero because sum = 1 **)
+            admit.
+          }
+      - admit.
+    }
+    admit. (** TODO: combine HlamR and Hvexists to conclude eigenvalue_of_matrix. **)
+}
+(** TODO: produce a fixed point for the normalized map on simplex3.
+    This should follow from Brouwer fixed-point on a triangle (homeomorphic to B2). **)
 admit.
 Admitted.
 
