@@ -133173,7 +133173,135 @@ Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
     apply_fun (induced_homomorphism S1 S1_topology b0 X Tx (apply_fun h b0) h) cls =
     fundamental_group_id X Tx (apply_fun h b0)) ->
   nulhomotopic S1 S1_topology X Tx h.
-admit.
+let X Tx h b0.
+assume Hh Hb0 Htriv.
+claim Hloop_triv :
+  forall f:set, f :e loop_space S1 S1_topology b0 ->
+    path_homotopy_class_loop X Tx (apply_fun h b0)
+      (compose_fun unit_interval f h)
+    = fundamental_group_id X Tx (apply_fun h b0).
+{
+  let f.
+  assume HfLoop.
+  set cls := path_homotopy_class_loop S1 S1_topology b0 f.
+  claim Hcls : cls :e fundamental_group S1 S1_topology b0.
+  {
+    exact (path_homotopy_class_in_fundamental_group
+      S1
+      S1_topology
+      b0
+      f
+      HfLoop).
+  }
+  claim HtrivCls :
+    apply_fun (induced_homomorphism S1 S1_topology b0 X Tx (apply_fun h b0) h) cls =
+    fundamental_group_id X Tx (apply_fun h b0).
+  { exact (Htriv cls Hcls). }
+  claim HtrivCls0 :
+    path_homotopy_class_loop X Tx (apply_fun h b0)
+      (compose_fun unit_interval (Eps_i (fun g:set => g :e cls)) h)
+    = fundamental_group_id X Tx (apply_fun h b0).
+  {
+    rewrite <- (induced_homomorphism_apply
+      S1
+      S1_topology
+      b0
+      X
+      Tx
+      (apply_fun h b0)
+      h
+      cls
+      Hcls).
+    exact HtrivCls.
+  }
+  set g := Eps_i (fun g:set => g :e cls).
+  claim HtrivCls_g :
+    path_homotopy_class_loop X Tx (apply_fun h b0)
+      (compose_fun unit_interval g h)
+    = fundamental_group_id X Tx (apply_fun h b0).
+  { exact HtrivCls0. }
+  claim HgCls : g :e cls.
+  {
+    apply (Eps_i_ex (fun g:set => g :e cls)).
+    witness f.
+    exact (loop_in_own_path_homotopy_class
+      S1
+      S1_topology
+      b0
+      f
+      HfLoop).
+  }
+  claim HfgHom :
+    path_homotopic S1 S1_topology b0 b0 f g.
+  {
+    exact (path_homotopy_class_loop_has_homotopy
+      S1
+      S1_topology
+      b0
+      f
+      g
+      HgCls).
+  }
+  claim HcompHom :
+    path_homotopic X Tx (apply_fun h b0) (apply_fun h b0)
+      (compose_fun unit_interval f h)
+      (compose_fun unit_interval g h).
+  {
+    claim Hb0eq : apply_fun h b0 = apply_fun h b0.
+    { reflexivity. }
+    exact (path_homotopic_postcompose
+      S1
+      S1_topology
+      X
+      Tx
+      b0
+      b0
+      (apply_fun h b0)
+      (apply_fun h b0)
+      f
+      g
+      h
+      HfgHom
+      Hh
+      Hb0eq
+      Hb0eq).
+  }
+  claim HclassEq :
+    path_homotopy_class_loop X Tx (apply_fun h b0) (compose_fun unit_interval f h)
+    =
+    path_homotopy_class_loop X Tx (apply_fun h b0) (compose_fun unit_interval g h).
+  {
+    exact (path_homotopy_class_loop_eq_of_path_homotopic
+      X
+      Tx
+      (apply_fun h b0)
+      (compose_fun unit_interval f h)
+      (compose_fun unit_interval g h)
+      HcompHom).
+  }
+  claim HtrivCls_f :
+    path_homotopy_class_loop X Tx (apply_fun h b0)
+      (compose_fun unit_interval f h)
+    = fundamental_group_id X Tx (apply_fun h b0).
+  {
+    exact (eq_i_tra
+      (path_homotopy_class_loop X Tx (apply_fun h b0)
+        (compose_fun unit_interval f h))
+      (path_homotopy_class_loop X Tx (apply_fun h b0)
+        (compose_fun unit_interval g h))
+      (fundamental_group_id X Tx (apply_fun h b0))
+      HclassEq
+      HtrivCls_g).
+  }
+  exact HtrivCls_f.
+}
+claim Hnul :
+  nulhomotopic S1 S1_topology X Tx h.
+{
+  (** TODO: need to relate loop triviality of h o f to nulhomotopy of h **)
+  admit.
+}
+exact Hnul.
 Admitted. (** TODO: needs classification of maps S1 -> X by pi1 (degree zero/loop class). **)
 
 Lemma s55_trivial_implies_extends_to_B2 : forall X Tx h b0:set,
