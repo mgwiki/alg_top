@@ -95198,7 +95198,85 @@ Lemma column_continuity_local_transfer :
       continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
         (graph I1 (fun s:set =>
           apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t_b)).
-admit.
+let E Te B Tb p F start_lift vs_choice I1 t1.
+assume Hcov HtopE HI1sub HI1ne HI1conn HstartCont HFcont HstartComm HvsCont HvsEval Ht1.
+set TI1 := subspace_topology unit_interval unit_interval_topology I1.
+claim HtopI1 : topology_on I1 TI1.
+{ exact (subspace_topology_is_topology unit_interval unit_interval_topology I1
+    unit_interval_topology_on HI1sub). }
+(** Witness delta = 1; the transfer holds for any ball because it uses continuous_map_local_cover **)
+(** which only needs pointwise local continuity (no uniform delta across I1 needed). **)
+witness 1.
+apply andI.
+- apply andI.
+  + exact real_1.
+  + exact Rlt_0_1.
+- let t_a. let t_b.
+  assume Ht_a : t_a :e open_ball unit_interval R_bounded_metric t1 1.
+  assume Ht_b : t_b :e open_ball unit_interval R_bounded_metric t1 1.
+  assume Hcol_ta :
+    continuous_map I1 TI1 E Te
+      (graph I1 (fun s:set =>
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t_a)).
+  set col_tb := graph I1 (fun s:set =>
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t_b).
+  claim Ht_bI : t_b :e unit_interval.
+  { exact (open_ballE1 unit_interval R_bounded_metric t1 1 t_b Ht_b). }
+  (** Use continuous_map_local_cover: show col_tb is continuous on each piece of an open cover **)
+  apply (continuous_map_local_cover I1 TI1 E Te col_tb HtopI1 HtopE).
+  set UFam := {N :e TI1 | continuous_map N (subspace_topology I1 TI1 N) E Te col_tb}.
+  witness UFam.
+  apply andI.
+  - apply andI.
+    + (** UFam c= TI1 **)
+      exact (Sep_Subq TI1 (fun N:set =>
+        continuous_map N (subspace_topology I1 TI1 N) E Te col_tb)).
+    + (** Union UFam = I1 **)
+      apply set_ext.
+      * (** Union UFam c= I1 **)
+        let x. assume Hx.
+        apply (UnionE UFam x Hx).
+        let N. assume HNpack.
+        claim HxN : x :e N.
+        { exact (andEL (x :e N) (N :e UFam) HNpack). }
+        claim HNUFam : N :e UFam.
+        { exact (andER (x :e N) (N :e UFam) HNpack). }
+        claim HNinTI1 : N :e TI1.
+        { exact (Sep_Subq TI1 (fun N0:set =>
+            continuous_map N0 (subspace_topology I1 TI1 N0) E Te col_tb) N HNUFam). }
+        exact (topology_elem_subset I1 TI1 N HtopI1 HNinTI1 x HxN).
+      * (** I1 c= Union UFam: for each s, find open N with col_tb continuous **)
+        let s. assume Hs.
+        (** Core claim: covering map structure gives local continuity at each point. **)
+        (** Provable from: path lifts are continuous, covering map sheets give local **)
+        (** homeomorphisms, col_ta continuity anchors nearby lifts in the same sheet. **)
+        claim Hlocal :
+          exists N:set, N :e TI1 /\ s :e N /\
+            continuous_map N (subspace_topology I1 TI1 N) E Te col_tb.
+        {
+          admit.
+        }
+        apply Hlocal. let N. assume HNpack.
+        claim HNpair : N :e TI1 /\ s :e N.
+        { exact (andEL (N :e TI1 /\ s :e N)
+            (continuous_map N (subspace_topology I1 TI1 N) E Te col_tb) HNpack). }
+        claim HNinTI1 : N :e TI1.
+        { exact (andEL (N :e TI1) (s :e N) HNpair). }
+        claim HsN : s :e N.
+        { exact (andER (N :e TI1) (s :e N) HNpair). }
+        claim Hcont : continuous_map N (subspace_topology I1 TI1 N) E Te col_tb.
+        { exact (andER (N :e TI1 /\ s :e N)
+            (continuous_map N (subspace_topology I1 TI1 N) E Te col_tb) HNpack). }
+        claim HNinUFam : N :e UFam.
+        { exact (SepI TI1 (fun N0:set =>
+            continuous_map N0 (subspace_topology I1 TI1 N0) E Te col_tb)
+            N HNinTI1 Hcont). }
+        exact (UnionI UFam s N HsN HNinUFam).
+  - (** forall N in UFam, col_tb continuous on N **)
+    let N. assume HNUFam.
+    exact (SepE2 TI1 (fun N0:set =>
+      continuous_map N0 (subspace_topology I1 TI1 N0) E Te col_tb)
+      N HNUFam).
 Admitted.
 
 (** Helper: in a connected metric space, a nonempty set with ball neighborhoods **)
