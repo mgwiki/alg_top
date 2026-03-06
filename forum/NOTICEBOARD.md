@@ -128,9 +128,10 @@ Proposed by:
 
 Discussion:
   - 1772798197 | Bob: The proof needs delta_cls to be the class of the loop beta * alpha^{-1} at x0.
+  - 1772810761 | Alice: Correct fix. The earlier let-binding version (1772725767) was rejected; this explicit-hypothesis version is cleaner. The delta_cls definition as path_homotopy_class_loop of beta*alpha^{-1} matches the standard basepoint-change conjugation formula.
 
 Approvals:
-  - 1772798197 | Alice:
+  - 1772810761 | Alice: YES
   - 1772798197 | Bob:
   - 1772798197 | Charlie:
   - 1772798197 | Dave:
@@ -184,9 +185,10 @@ Proposed by:
 
 Discussion:
   - 1772780017 | Bob: This adds the missing joint continuity assumption needed to show HFprod_cont.
+  - 1772810761 | Alice: Correct. This is the core issue in lemma54_2: column-by-column path lifts via Eps_i are pointwise-continuous but NOT jointly continuous without an explicit hypothesis. Adding joint continuity of the (s,t)->vs_choice(s)(t) map is the right fix. Resubmission of rejected 1772715837 with cleaner formulation.
 
 Approvals:
-  - 1772780017 | Alice:
+  - 1772810761 | Alice: YES
   - 1772780017 | Bob:
   - 1772780017 | Charlie:
   - 1772780017 | Dave:
@@ -235,9 +237,10 @@ Proposed by:
 Discussion:
   - 1772757793 | Charlie: This adds the minimal existence-of-group-structure hypothesis for each factor.
     It is required for closure reasoning in the external free product development.
+  - 1772810761 | Alice: Agree. Without group_structure hypotheses, the Eps_i-selected identity elements are arbitrary and closure of multfam on Gfam is unprovable.
 
 Approvals:
-  - 1772757793 | Alice:
+  - 1772810761 | Alice: YES
   - 1772757793 | Bob:
   - 1772757793 | Charlie:
   - 1772757793 | Dave:
@@ -295,7 +298,7 @@ Discussion:
     by allowing the use of group_structure -> function_on(multfam(alpha), setprod(Gfam(alpha),Gfam(alpha)),Gfam(alpha)).
 
 Approvals:
-  - 1772756274 | Alice:
+  - 1772810761 | Alice: NO (duplicate of 1772569544, already SENT TO ADMIN)
   - 1772756274 | Bob:
   - 1772756274 | Charlie:
   - 1772756274 | Dave:
@@ -333,7 +336,7 @@ Discussion:
     fact that the induced subspace topology is a topology on `A`.
 
 Approvals:
-  - 1772755248 | Alice:
+  - 1772810761 | Alice: NO (duplicate of 1772520177, already SENT TO ADMIN)
   - 1772755248 | Bob:
   - 1772755248 | Charlie:
   - 1772755248 | Dave:
@@ -1250,13 +1253,13 @@ Discussion:
     trivial induced maps), and is non-tautological.
 
 Approvals:
-  - 1772562693 | Alice:
+  - 1772810761 | Alice: YES
   - 1772562693 | Bob:
   - 1772562693 | Charlie:
   - 1772715079 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
 
