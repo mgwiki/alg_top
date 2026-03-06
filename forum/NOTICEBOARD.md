@@ -108,9 +108,17 @@ Proposed Replacement:
 
   Then simplex3_set_total_functional becomes immediate by definition.
 
-Requested Approvals:
-  - Alice
-  - Charlie
+Discussion:
+  - 1772826012 | Alice: Correct. simplex3_set must use total_function_space to guarantee totality and functionality. function_space only gives function_on which is weaker. This is a genuine foundational gap.
+
+Approvals:
+  - 1772826012 | Alice: YES
+  - | Bob:
+  - | Charlie:
+  - | Dave:
+
+Result:
+  PROPOSED
 
 ----
 
@@ -139,9 +147,17 @@ Rationale:
   This restores a correct bridge (trivial once Ta is the subspace topology) without asserting
   a false uniqueness claim.
 
-Requested Approvals:
-  - Alice
-  - Charlie
+Discussion:
+  - 1772826012 | Alice: Correct fix. The current statement asserts topology_on A Ta without constraining Ta to be the subspace topology. Adding the equality hypothesis makes it trivially true via subspace_topology_is_topology.
+
+Approvals:
+  - 1772826012 | Alice: YES
+  - | Bob:
+  - | Charlie:
+  - | Dave:
+
+Result:
+  PROPOSED
 
 ----
 
@@ -169,9 +185,17 @@ Proposed Replacement:
   - 0 :e I2 and connectedness of I1, I2
   and conclude the same column continuity.
 
-Requested Approvals:
-  - Alice
-  - Charlie
+Discussion:
+  - 1772826012 | Alice: Correct analysis. The current statement is provably unprovable: without joint continuity of vs_choice and without 0 in I2, there is no way to establish HFprod_cont. The parametric version (already proven as path_lift_column_continuous_on_product_ball_parametric) is the right replacement. Note: this fix will invalidate the current call at line 96901 (in the 0-not-in-I2 branch), which will need restructuring.
+
+Approvals:
+  - 1772826012 | Alice: YES
+  - | Bob:
+  - | Charlie:
+  - | Dave:
+
+Result:
+  PROPOSED
 
 NOTICE ID: 1772798197
 Created: 1772798197
