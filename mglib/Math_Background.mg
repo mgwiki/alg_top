@@ -191514,7 +191514,6 @@ Definition free_homotopy_loops : set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: If f_bar is the reverse of f, then n(f_bar, a) = -n(f,a). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 46 **)
-(** Lock Charlie 1772840229 **)
 Theorem lemma66_1a_reverse_winding : forall f a:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   a :e setprod R R -> ~(a :e image_of f unit_interval) ->
