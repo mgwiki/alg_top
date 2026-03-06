@@ -219248,17 +219248,21 @@ apply (nat_inv n Hn_nat).
 								                              np = n' /\ (forall i:set, i :e np -> apply_fun xs_can i = apply_fun xs' i))
 								                            Hcan_pack).
 								                          assume Hred_can Hnp_ne0 Hwp_can Huniq_can.
-							                          (** Use ys0 and ys as two reduced words for mult(w,x0). **)
-								                          claim Hwp_ys0_wx0 : word_product multG eG ys0 n = apply_fun multG (w, x0).
-								                          { rewrite Hn_sm. exact Hwp_ys0. }
-								                          claim Hwp_y_wx0 : word_product multG eG ys n = apply_fun multG (w, x0).
-								                          { admit. }
+								                          (** Use ys0 and ys as two reduced words for mult(w,x0). **)
+									                          claim Hwp_ys0_wx0 : word_product multG eG ys0 n = apply_fun multG (w, x0).
+									                          { rewrite Hn_sm. exact Hwp_ys0. }
+										                          claim Hwp_y_wx0 : word_product multG eG ys n = apply_fun multG (w, x0).
+										                          { admit. }
 								                          claim Hred_ys0_n : reduced_word J Gfam efam n ys0.
 								                          { rewrite Hn_sm. exact Hred_ys0. }
 								                          claim Hnp_eq_n0 : np = n /\ (forall i:set, i :e np -> apply_fun xs_can i = apply_fun ys0 i).
 								                          { exact (Huniq_can n ys0 Hred_ys0_n Hn_ne0 Hwp_ys0_wx0). }
-								                          claim Hnp_eq_n1 : np = n /\ (forall i:set, i :e np -> apply_fun xs_can i = apply_fun ys i).
-								                          { admit. }
+									                          claim Hnp_eq_n1 : np = n /\ (forall i:set, i :e np -> apply_fun xs_can i = apply_fun ys i).
+									                          {
+									                            claim Hred_y_n : reduced_word J Gfam efam n ys.
+									                            { rewrite <- (add_nat_0R n). rewrite <- Hk0. exact Hred_y. }
+									                            exact (Huniq_can n ys Hred_y_n Hn_ne0 Hwp_y_wx0).
+									                          }
 							                          claim Hnp_eq_n : np = n.
 							                          { exact (andEL (np = n) (forall i:set, i :e np -> apply_fun xs_can i = apply_fun ys0 i) Hnp_eq_n0). }
 								                          claim Hkk_in_np : kk :e np.
