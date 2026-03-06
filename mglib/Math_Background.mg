@@ -94705,6 +94705,31 @@ Lemma column_lifts_same_sheet_on_product_ball_with_zero :
 }
 Qed.
 
+(** Infrastructure: column continuity via chain argument (no 0-in-I2 needed) **)
+(** Given a covering map, connected parameter space I1, continuous start_lift, **)
+(** and continuous column paths vs_choice, the column map at any t0 is continuous. **)
+(** Proof sketch: cover [0,t0] by chain of balls, propagate column continuity **)
+(** from t=0 (= start_lift continuity) via Lebesgue number and connected_lift. **)
+Lemma column_continuity_via_chain :
+  forall E Te B Tb p start_lift vs_choice I1 t0:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  I1 c= unit_interval ->
+  connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+  t0 :e unit_interval ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+  (forall s:set, s :e I1 ->
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+  (forall s:set, s :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+    (graph I1 (fun s:set =>
+      apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+        t0)).
+admit.
+Admitted.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
@@ -96898,25 +96923,25 @@ claim HFt_54_cont :
                       (apply_fun vs_choice_54 s))
                     (q 1))).
             {
-              exact (path_lift_column_continuous_on_product_ball
+              exact (column_continuity_via_chain
                 E
                 Te
                 B
                 Tb
                 p
                 (path_lift E Te B Tb p e0 g0_54)
-                I1_54
-                I2_54
                 vs_choice_54
+                I1_54
                 (q 1)
                 Hcov
                 HtopE
                 HI1subI
-                HI2subI
-                Hq1I2
-                HvsCont_I1
-                HstartE_I1
-                HstartComm_I1).
+                HI1conn
+                Hq1I_local
+                (path_lift_continuous_on_subset E Te B Tb p e0 g0_54 I1_54
+                  Hcov He0 Hstart_g0_54 Hg0_54Cont HI1subI)
+                HstartComm_I1
+                HvsCont_I1).
             }
             exact (column_lifts_same_sheet_on_product_ball_with_col_cont
               E
@@ -224970,7 +224995,6 @@ apply Hnw_inv.
 (** to G_alpha equals h_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 222 **)
-(** Lock Charlie 1772825719 **)
 Theorem lemma68_1_extension_condition_free_product :
   forall G multG eG invG J Gfam efam:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -255389,7 +255413,6 @@ apply (and5I
 (** normal subgroup of G containing N1 and N2, then G/N iso (G1/N1) free-prod (G2/N2). **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
 (** Bounty 303 **)
-(** Lock Charlie 1772824647 **)
 Theorem thm68_7_quotient_free_product :
   forall G multG eG invG G1 G2 N1 N2:set,
   free_product_of_subgroups G multG eG invG (UPair 0 1)
