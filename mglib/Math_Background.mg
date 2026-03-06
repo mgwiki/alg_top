@@ -95459,22 +95459,70 @@ apply xm (t0 = 0).
       }
       (** Fam: t-intervals coming from product balls mapped into evenly covered U_t. **)
       set Fam := {J :e unit_interval_topology |
-        exists U r0 r1:set,
+        exists t U r0 r1:set,
+          t :e unit_interval /\
           U :e Tb /\
           evenly_covered E Te B Tb p U /\
           r0 :e R /\ Rlt 0 r0 /\ Rlt r0 1 /\
           r1 :e R /\ Rlt 0 r1 /\ Rlt r1 1 /\
           s0 :e open_ball unit_interval R_bounded_metric s0 r0 /\
-          J = open_ball unit_interval R_bounded_metric 0 r1 /\
+          J = open_ball unit_interval R_bounded_metric t r1 /\
           setprod
-            (open_ball unit_interval R_bounded_metric s0 r0)
+            ((open_ball unit_interval R_bounded_metric s0 r0) :/\: I1)
             J c= preimage_of (setprod I1 unit_interval) F U}.
       claim Hcover : open_cover_of unit_interval unit_interval_topology Fam.
       {
-        (** TODO: use lemma54_1_path_lifting_sub_bounty_A at each t to get U_t,
-            continuity of F at (s0,t) to get a unit_square neighborhood mapping into U_t,
-            and unit_square_open_neighborhood_contains_product_balls to extract J :e Fam. **)
-        admit.
+        apply (open_cover_ofI unit_interval unit_interval_topology Fam).
+        - exact unit_interval_topology_on.
+        - (** Fam c= Power unit_interval **)
+          let J. assume HJ.
+          claim HJopen : J :e unit_interval_topology.
+          {
+            exact (SepE1
+              unit_interval_topology
+              (fun J0:set =>
+                exists t U r0 r1:set,
+                  t :e unit_interval /\
+                  U :e Tb /\
+                  evenly_covered E Te B Tb p U /\
+                  r0 :e R /\ Rlt 0 r0 /\ Rlt r0 1 /\
+                  r1 :e R /\ Rlt 0 r1 /\ Rlt r1 1 /\
+                  s0 :e open_ball unit_interval R_bounded_metric s0 r0 /\
+                  J0 = open_ball unit_interval R_bounded_metric t r1 /\
+                  setprod
+                    ((open_ball unit_interval R_bounded_metric s0 r0) :/\: I1)
+                    J0 c= preimage_of (setprod I1 unit_interval) F U)
+              J
+              HJ).
+          }
+          exact (PowerI
+            unit_interval
+            J
+            (topology_elem_subset
+              unit_interval
+              unit_interval_topology
+              J
+              unit_interval_topology_on
+              HJopen)).
+        - (** TODO: show unit_interval c= Union Fam by constructing J around each t. **)
+          admit.
+        - let J. assume HJ.
+          exact (SepE1
+            unit_interval_topology
+            (fun J0:set =>
+              exists t U r0 r1:set,
+                t :e unit_interval /\
+                U :e Tb /\
+                evenly_covered E Te B Tb p U /\
+                r0 :e R /\ Rlt 0 r0 /\ Rlt r0 1 /\
+                r1 :e R /\ Rlt 0 r1 /\ Rlt r1 1 /\
+                s0 :e open_ball unit_interval R_bounded_metric s0 r0 /\
+                J0 = open_ball unit_interval R_bounded_metric t r1 /\
+                setprod
+                  ((open_ball unit_interval R_bounded_metric s0 r0) :/\: I1)
+                  J0 c= preimage_of (setprod I1 unit_interval) F U)
+            J
+            HJ).
       }
       claim Hchain :
         exists U0 U1 n seq:set,
