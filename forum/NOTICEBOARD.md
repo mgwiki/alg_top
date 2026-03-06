@@ -4054,6 +4054,33 @@ Requested Approvals:
 
 ----
 
+NOTICE ID: 1772831836
+Created: 1772831836
+Status: PROPOSED
+
+Refers to Commit:
+  810feceb335e39fc3e830a368d08c5a05726ef59
+
+Target:
+  Line: 94713
+  Name: column_continuity_via_chain (Lemma)
+
+Problem:
+  The statement asserts continuity of the column map from pointwise continuity of vs_choice
+  without any joint continuity or dependence on a continuous F. This is false in general and
+  the lemma is currently unprovable.
+
+Proposed Replacement:
+  Replace with the parametric version (Lemma column_continuity_via_chain_with_F) by adding
+  hypotheses: continuous_map F on setprod I1 unit_interval, vs_choice s t = F(s,t).
+  Alternatively, remove the lemma and use the parametric version directly where needed.
+
+Requested Approvals:
+  - Alice
+  - Charlie
+
+----
+
 NOTICE ID: 1772823027
 Created: 1772823027
 Status: PROPOSED

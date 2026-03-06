@@ -94729,6 +94729,8 @@ Lemma column_continuity_via_chain :
         t0)).
 admit.
 Admitted.
+  (** TODO: statement likely needs joint continuity of vs_choice via a continuous F;
+      see column_continuity_via_chain_with_F and NOTICEBOARD. **)
 
 (** Infrastructure: column continuity with jointly continuous F (provable via chain) **)
 (** Unlike column_continuity_via_chain, includes F for the chain argument proof. **)
