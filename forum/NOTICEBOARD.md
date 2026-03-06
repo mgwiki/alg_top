@@ -82,6 +82,62 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772798197
+Created: 1772798197
+Status: PROPOSED
+
+Refers to Commit:
+  ff66555e8c6c32215efcbc600b34bb62dcd82193
+
+Target:
+  Line: 41165
+  Name: ex52_3_helper_conj_pair (Theorem)
+
+Problem:
+  The statement is missing a hypothesis relating delta_cls to the paths alpha and beta.
+  As written, delta_cls is arbitrary and the two conclusions are generally false; the proof
+  needs delta_cls to be the fundamental group class of the loop comparing alpha and beta.
+
+Proposed Replacement:
+  Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls delta_cls:set,
+    topology_on X Tx ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx beta ->
+    apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+    apply_fun beta 0 = x0 -> apply_fun beta 1 = x1 ->
+    cls :e fundamental_group X Tx x0 ->
+    delta_cls :e fundamental_group X Tx x0 ->
+    delta_cls =
+      path_homotopy_class_loop X Tx x0
+        (path_concat beta (reverse_path alpha)) ->
+    (forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
+      apply_fun (fundamental_group_mult X Tx x0) (a, b)
+      = apply_fun (fundamental_group_mult X Tx x0) (b, a)) ->
+    (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+      =
+     apply_fun (basepoint_change_map X Tx x0 x1 beta)
+        (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
+    /\
+    (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
+      =
+     apply_fun (basepoint_change_map X Tx x0 x1 beta)
+        (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls))).
+
+Proposed by:
+  - 1772798197 | Bob
+
+Discussion:
+  - 1772798197 | Bob: The proof needs delta_cls to be the class of the loop beta * alpha^{-1} at x0.
+
+Approvals:
+  - 1772798197 | Alice:
+  - 1772798197 | Bob:
+  - 1772798197 | Charlie:
+  - 1772798197 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1772780017
 Created: 1772780017
 Status: PROPOSED
