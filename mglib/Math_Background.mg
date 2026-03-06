@@ -217852,6 +217852,29 @@ claim Hefam_G : apply_fun efam al :e G.
 { exact (subgroup_of_subset (apply_fun Gfam al) G multG eG invG (Hsubfam al Hal)
     (apply_fun efam al) Hefam_Gal). }
 
+(** Involutive assumption: efam(al)^2 = eG. **)
+claim Hefam_sq : apply_fun multG (apply_fun efam al, apply_fun efam al) = eG.
+{
+  apply (and6E
+    (function_on multG (setprod G G) G)
+    (function_on invG G G)
+    (eG :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+    (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+    (forall x:set, x :e G ->
+      apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+    Hgrp).
+  assume _ _ _ _ _ HinvLaw.
+  claim Hrinv : apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG.
+  { exact (andEL
+      (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
+      (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
+      (HinvLaw (apply_fun efam al) Hefam_G)). }
+  rewrite <- Hinv_eq at 2.
+  exact Hrinv.
+}
+
 (** Obtain the unique reduced word for efam(al). **)
 apply (Huniq (apply_fun efam al) Hefam_G Hefam_ne).
 let n. assume Hex : exists xs:set,
@@ -218027,9 +218050,112 @@ apply (nat_inv n Hn_nat).
 	      claim Hm_in_sm : m :e ordsucc m. { exact (ordsuccI2 m). }
 	      claim Hm_in_m : m :e m. { exact (eq_subst_mem_set m (ordsucc m) m Hm_in_sm Hsm_m). }
 	      exact (In_irref m Hm_in_m).
-	    + assume Hxs0_ne_eG : apply_fun xs 0 <> eG.
-	      (** Hard subcase: xs(0) != eG. Not yet completed. **)
-	      admit.
+		    + assume Hxs0_ne_eG : apply_fun xs 0 <> eG.
+		      (** Hard subcase: xs(0) != eG. Not yet completed. **)
+		      (** We at least record the key algebraic consequence of involution. **)
+		      set w := apply_fun efam al.
+		      claim Hwp_full : word_product multG eG xs (ordsucc m) = w.
+		      { rewrite <- Hn_sm. exact Hwp. }
+			      claim Hwp_suf_cancel :
+			        word_product multG eG xs_suf m =
+			          apply_fun multG (apply_fun invG (apply_fun xs 0), w).
+			      {
+			        claim Htmp :
+			          word_product multG eG xs_suf m =
+			            apply_fun multG (apply_fun invG (apply_fun xs 0), word_product multG eG xs (ordsucc m)).
+			        { exact (word_product_suffix_by_cancel G multG eG invG m xs Hgrp Hm_nat Hxs_in_G). }
+			        claim Htmp2 :
+			          apply_fun multG (apply_fun invG (apply_fun xs 0), word_product multG eG xs (ordsucc m)) =
+			            apply_fun multG (apply_fun invG (apply_fun xs 0), w).
+			        { rewrite Hwp_full. reflexivity. }
+			        exact (eq_i_tra
+			          (word_product multG eG xs_suf m)
+			          (apply_fun multG (apply_fun invG (apply_fun xs 0), word_product multG eG xs (ordsucc m)))
+			          (apply_fun multG (apply_fun invG (apply_fun xs 0), w))
+			          Htmp
+			          Htmp2).
+			      }
+		      claim Hinv_xs0_eq :
+		        apply_fun invG (apply_fun xs 0) =
+		          apply_fun multG (word_product multG eG xs_suf m, w).
+		      {
+		        apply (and6E
+		          (function_on multG (setprod G G) G)
+		          (function_on invG G G)
+		          (eG :e G)
+		          (forall x y z:set, x :e G -> y :e G -> z :e G ->
+		            apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+		          (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+		          (forall x:set, x :e G ->
+		            apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+		          Hgrp).
+		        assume HmultFn HinvFn HeG HassocG HidG _.
+		        claim Hx0_G : apply_fun xs 0 :e G.
+		        { exact (Hxs_in_G 0 (nat_0_in_ordsucc m Hm_nat)). }
+		        claim Hinv_x0_G : apply_fun invG (apply_fun xs 0) :e G.
+		        { exact (HinvFn (apply_fun xs 0) Hx0_G). }
+		        claim Hwp_suf_G2 : word_product multG eG xs_suf m :e G.
+		        { exact Hwp_suf_G. }
+			        claim Hw_G : w :e G. { exact Hefam_G. }
+			        claim Hww_e : apply_fun multG (w, w) = eG.
+			        { exact Hefam_sq. }
+		        (** Multiply Hwp_suf_cancel on the right by w and simplify using multG(w,w)=eG. **)
+		        claim Hstep1 :
+		          apply_fun multG (word_product multG eG xs_suf m, w) =
+		            apply_fun multG (apply_fun multG (apply_fun invG (apply_fun xs 0), w), w).
+		        {
+		          rewrite Hwp_suf_cancel.
+		          reflexivity.
+		        }
+		        claim Hstep2 :
+		          apply_fun multG (apply_fun multG (apply_fun invG (apply_fun xs 0), w), w) =
+		            apply_fun multG (apply_fun invG (apply_fun xs 0), apply_fun multG (w, w)).
+		        {
+		          exact (HassocG
+		            (apply_fun invG (apply_fun xs 0))
+		            w
+		            w
+		            Hinv_x0_G
+		            Hw_G
+		            Hw_G).
+		        }
+		        claim Hstep3 :
+		          apply_fun multG (apply_fun invG (apply_fun xs 0), apply_fun multG (w, w)) =
+		            apply_fun multG (apply_fun invG (apply_fun xs 0), eG).
+		        { rewrite Hww_e. reflexivity. }
+		        claim HidR_invx0 : apply_fun multG (apply_fun invG (apply_fun xs 0), eG) =
+		          apply_fun invG (apply_fun xs 0).
+		        {
+		          exact (andER
+		            (apply_fun multG (eG, apply_fun invG (apply_fun xs 0)) = apply_fun invG (apply_fun xs 0))
+		            (apply_fun multG (apply_fun invG (apply_fun xs 0), eG) = apply_fun invG (apply_fun xs 0))
+		            (HidG (apply_fun invG (apply_fun xs 0)) Hinv_x0_G)).
+		        }
+		        claim Hlhs :
+		          apply_fun multG (word_product multG eG xs_suf m, w) =
+		            apply_fun invG (apply_fun xs 0).
+		        {
+		          exact (eq_i_tra
+		            (apply_fun multG (word_product multG eG xs_suf m, w))
+		            (apply_fun multG (apply_fun multG (apply_fun invG (apply_fun xs 0), w), w))
+		            (apply_fun invG (apply_fun xs 0))
+		            Hstep1
+		            (eq_i_tra
+		              (apply_fun multG (apply_fun multG (apply_fun invG (apply_fun xs 0), w), w))
+		              (apply_fun multG (apply_fun invG (apply_fun xs 0), apply_fun multG (w, w)))
+		              (apply_fun invG (apply_fun xs 0))
+		              Hstep2
+		              (eq_i_tra
+		                (apply_fun multG (apply_fun invG (apply_fun xs 0), apply_fun multG (w, w)))
+		                (apply_fun multG (apply_fun invG (apply_fun xs 0), eG))
+		                (apply_fun invG (apply_fun xs 0))
+		                Hstep3
+		                HidR_invx0))).
+		        }
+		        symmetry.
+		        exact Hlhs.
+		      }
+		      admit.
 Admitted.
 
 (** Helper lemma: in a free product, efam(alpha) in Gfam(alpha) with efam(alpha) != eG is impossible **)
