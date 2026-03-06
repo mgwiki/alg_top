@@ -82,6 +82,97 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772823145
+Created: 1772823145
+Status: PROPOSED
+
+Refers to Commit:
+  4c8e92d25c232457f3c2c67f8de939fc53689be7
+
+Target:
+  Line: 142432
+  Name: simplex3_set_total_functional (Lemma)
+
+Problem:
+  simplex3_set is defined using function_space 3 R, which only ensures function_on.
+  The lemma claims total_function_on and functional_graph, which are not derivable
+  from function_on alone. The statement is therefore unprovable as written.
+
+Proposed Replacement:
+  Update simplex3_set to use total_function_space 3 R instead of function_space 3 R:
+
+  Definition simplex3_set : set :=
+    {v :e total_function_space 3 R |
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun v i) 3 = 1}.
+
+  Then simplex3_set_total_functional becomes immediate by definition.
+
+Requested Approvals:
+  - Alice
+  - Charlie
+
+----
+
+NOTICE ID: 1772823031
+Created: 1772823031
+Status: PROPOSED
+
+Refers to Commit:
+  4c8e92d25c232457f3c2c67f8de939fc53689be7
+
+Target:
+  Line: 20166
+  Name: convex_subspace_topology_eq_R (Theorem)
+
+Problem:
+  The statement is false: topology_on A Ta does not imply Ta is the subspace topology on A.
+  This lemma is used as a placeholder (note already in file) and blocks proof of a false goal.
+
+Proposed Replacement:
+  Theorem convex_subspace_topology_eq_R : forall A Ta:set,
+    A c= R -> convex_in R A ->
+    Ta = subspace_topology R R_standard_topology A ->
+    topology_on A Ta.
+
+Rationale:
+  This restores a correct bridge (trivial once Ta is the subspace topology) without asserting
+  a false uniqueness claim.
+
+Requested Approvals:
+  - Alice
+  - Charlie
+
+----
+
+NOTICE ID: 1772823027
+Created: 1772823027
+Status: PROPOSED
+
+Refers to Commit:
+  4c8e92d25c232457f3c2c67f8de939fc53689be7
+
+Target:
+  Line: 92541
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  The statement lacks joint continuity assumptions (existence of a continuous F on I1 x I2).
+  Separate continuity of each vs_choice s in t is insufficient to guarantee continuity of the
+  column map s -> lift(s,t0). The lemma is currently unprovable and admitted.
+
+Proposed Replacement:
+  Replace the statement with the parametric version (currently Lemma
+  path_lift_column_continuous_on_product_ball_parametric), i.e., add hypotheses:
+  - continuous_map F on setprod I1 I2 with image in U
+  - vs_choice s t = F(s,t)
+  - 0 :e I2 and connectedness of I1, I2
+  and conclude the same column continuity.
+
+Requested Approvals:
+  - Alice
+  - Charlie
+
 NOTICE ID: 1772798197
 Created: 1772798197
 Status: PROPOSED
@@ -3907,3 +3998,62 @@ Editing or deleting past Notice content
 (other than appending new timestamped lines
 or moving an entry between sections)
 is prohibited.
+
+NOTICE ID: 1772823031
+Created: 1772823031
+Status: PROPOSED
+
+Refers to Commit:
+  4c8e92d25c232457f3c2c67f8de939fc53689be7
+
+Target:
+  Line: 20166
+  Name: convex_subspace_topology_eq_R (Theorem)
+
+Problem:
+  The statement is false: topology_on A Ta does not imply Ta is the subspace topology on A.
+  This lemma is used as a placeholder (note already in file) and blocks proof of a false goal.
+
+Proposed Replacement:
+  Theorem convex_subspace_topology_eq_R : forall A Ta:set,
+    A c= R -> convex_in R A ->
+    Ta = subspace_topology R R_standard_topology A ->
+    topology_on A Ta.
+
+Rationale:
+  This restores a correct bridge (trivial once Ta is the subspace topology) without asserting
+  a false uniqueness claim.
+
+Requested Approvals:
+  - Alice
+  - Charlie
+
+----
+
+NOTICE ID: 1772823027
+Created: 1772823027
+Status: PROPOSED
+
+Refers to Commit:
+  4c8e92d25c232457f3c2c67f8de939fc53689be7
+
+Target:
+  Line: 92541
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  The statement lacks joint continuity assumptions (existence of a continuous F on I1 x I2).
+  Separate continuity of each vs_choice s in t is insufficient to guarantee continuity of the
+  column map s -> lift(s,t0). The lemma is currently unprovable and admitted.
+
+Proposed Replacement:
+  Replace the statement with the parametric version (currently Lemma
+  path_lift_column_continuous_on_product_ball_parametric), i.e., add hypotheses:
+  - continuous_map F on setprod I1 I2 with image in U
+  - vs_choice s t = F(s,t)
+  - 0 :e I2 and connectedness of I1, I2
+  and conclude the same column continuity.
+
+Requested Approvals:
+  - Alice
+  - Charlie
