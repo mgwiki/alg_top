@@ -94711,6 +94711,7 @@ Qed.
 (** Key idea: all lifts at t1 are in one sheet (connected_lift_stays_in_anchored_sheet), **)
 (** each row lift stays in that sheet on I2 (connected interval), so the column map **)
 (** at t2 equals section(F(s,t2)), which is a composition of continuous maps. **)
+(** Proven Bob **)
 Lemma column_continuity_propagation_step :
   forall E Te B Tb p F start_lift vs_choice I1 I2 t1 t2 s0 U slices:set,
   covering_map E Te B Tb p ->
