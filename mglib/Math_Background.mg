@@ -141255,8 +141255,38 @@ claim Hfixed_implies_eigen :
   witness lam.
   apply andI.
   - admit. (** TODO: positivity of lam from HApos and HvS. **)
-  - claim HlamR : lam :e R.
-    { admit. (** TODO: lam :e R. **)}
+  - claim H3nat : nat_p 3.
+    { exact (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))). }
+    claim HlamR : lam :e R.
+    {
+      apply (finite_real_sum_in_R (fun k:set => apply_fun Av k) 3 H3nat).
+      let k.
+      assume Hk3.
+      claim HavkEq :
+        apply_fun Av k =
+          finite_real_sum (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3.
+      {
+        exact (apply_fun_graph
+          3
+          (fun i:set =>
+            finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+          k
+          Hk3).
+      }
+      rewrite HavkEq.
+      apply (finite_real_sum_in_R (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3 H3nat).
+      let j.
+      assume Hj3.
+      claim HakjR : apply_fun A (k, j) :e R.
+      {
+        exact (HAfun
+          (k, j)
+          (tuple_2_setprod_by_pair_Sigma 3 3 k j Hk3 Hj3)).
+      }
+      claim HvjR : apply_fun v j :e R.
+      { exact (Hvfun j Hj3). }
+      exact (real_mul_SNo (apply_fun A (k, j)) HakjR (apply_fun v j) HvjR).
+    }
     claim Hvexists :
       exists v:set,
         function_on v 3 R /\
