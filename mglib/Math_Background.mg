@@ -92658,208 +92658,28 @@ Qed.
 (** Infrastructure: continuity of the t0-column map for product-ball lifts **)
 (** TODO: needs joint continuity (a homotopy) for vs_choice; use the
   parametric lemma below when F is available. See NOTICEBOARD 1772868964. **)
+(** Admin-approved-refactored per noticeboard proposal 1772715837 **)
 Lemma path_lift_column_continuous_on_product_ball :
-  forall E Te B Tb p start_lift I1 I2 vs_choice t0:set,
+  forall E Te B Tb p start_lift F I1 I2 t0:set,
   covering_map E Te B Tb p ->
   topology_on E Te ->
   I1 c= unit_interval ->
   I2 c= unit_interval ->
   t0 :e I2 ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+  continuous_map (setprod I1 I2)
+    (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+    B Tb F ->
   (forall s:set, s :e I1 ->
-    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
-  (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
-  (forall s:set, s :e I1 ->
-    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    apply_fun p (apply_fun start_lift s) = apply_fun F (s, 0)) ->
   continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
     (graph I1 (fun s:set =>
       apply_fun
-        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+        (path_lift E Te B Tb p
+          (apply_fun start_lift s)
+          (graph I2 (fun t:set => apply_fun F (s, t))))
         t0)).
-let E Te B Tb p start_lift I1 I2 vs_choice t0.
-assume Hcov HtopE HI1sub HI2sub Ht0 HvsCont HstartE HstartComm.
-set Fprod := graph (setprod I1 I2) (fun z:set =>
-  apply_fun
-    (path_lift E Te B Tb p (apply_fun start_lift (z 0)) (apply_fun vs_choice (z 0)))
-    (z 1)).
-set Fcol := graph I1 (fun s:set =>
-  apply_fun
-    (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
-    t0).
-claim HFprod_cont :
-  continuous_map (setprod I1 I2)
-    (subspace_topology unit_square unit_square_topology (setprod I1 I2)) E Te Fprod.
-{
-  (** TODO: needs parametric path-lift continuity on product balls. **)
-  admit.
-}
-set idI1 := graph I1 (fun s:set => s).
-claim Hslice_cont :
-  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
-    (compose_fun I1 (pair_map I1 idI1 (const_fun I1 t0)) Fprod).
-{
-  exact (continuous_map_product_ball_slice_second
-    E
-    Te
-    Fprod
-    I1
-    I2
-    t0
-    HI1sub
-    HI2sub
-    Ht0
-    HFprod_cont).
-}
-claim HFcol_fun : function_on Fcol I1 E.
-{
-  apply (total_function_on_function_on Fcol I1 E).
-  apply (total_function_on_graph I1 E (fun s:set =>
-    apply_fun
-      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
-      t0)).
-  let s.
-  assume HsI1.
-  claim HsI : s :e unit_interval.
-  { exact (HI1sub s HsI1). }
-  claim Ht0I : t0 :e unit_interval.
-  { exact (HI2sub t0 Ht0). }
-  claim Hf_s_cont :
-    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s).
-  { exact (HvsCont s HsI1). }
-  claim He_s_E : apply_fun start_lift s :e E.
-  { exact (HstartE s HsI1). }
-  claim Hstart_s :
-    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0.
-  { exact (HstartComm s HsI1). }
-  claim Hlift_pack :
-    continuous_map unit_interval unit_interval_topology E Te
-      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
-    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
-      = apply_fun start_lift s /\
-    (forall t:set, t :e unit_interval ->
-      apply_fun p
-        (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
-      = apply_fun (apply_fun vs_choice s) t).
-  {
-    exact (lemma54_1_path_lifting
-      E
-      Te
-      B
-      Tb
-      p
-      (apply_fun start_lift s)
-      (apply_fun vs_choice s)
-      Hcov
-      He_s_E
-      Hstart_s
-      Hf_s_cont).
-  }
-  claim Hlift_left :
-    continuous_map unit_interval unit_interval_topology E Te
-      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
-    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
-      = apply_fun start_lift s.
-  {
-    exact (andEL
-      (continuous_map unit_interval unit_interval_topology E Te
-        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
-       apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
-         = apply_fun start_lift s)
-      (forall t:set, t :e unit_interval ->
-        apply_fun p
-          (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
-        = apply_fun (apply_fun vs_choice s) t)
-      Hlift_pack).
-  }
-  claim Hlift_cont :
-    continuous_map unit_interval unit_interval_topology E Te
-      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)).
-  {
-    exact (andEL
-      (continuous_map unit_interval unit_interval_topology E Te
-        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)))
-      (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
-        = apply_fun start_lift s)
-      Hlift_left).
-  }
-  claim Hlift_fun :
-    function_on
-      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
-      unit_interval
-      E.
-  {
-    exact (continuous_map_function_on
-      unit_interval
-      unit_interval_topology
-      E
-      Te
-      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
-      Hlift_cont).
-  }
-  exact (Hlift_fun t0 Ht0I).
-}
-claim Hcol_eq :
-  forall s:set, s :e I1 ->
-    apply_fun (compose_fun I1 (pair_map I1 idI1 (const_fun I1 t0)) Fprod) s =
-    apply_fun Fcol s.
-{
-  let s.
-  assume HsI1.
-  claim HpairIn : (s, t0) :e setprod I1 I2.
-  { exact (tuple_2_setprod_by_pair_Sigma I1 I2 s t0 HsI1 Ht0). }
-  rewrite (compose_fun_apply
-    I1
-    (pair_map I1 idI1 (const_fun I1 t0))
-    Fprod
-    s
-    HsI1).
-  rewrite (pair_map_apply
-    I1
-    I1
-    I2
-    idI1
-    (const_fun I1 t0)
-    s
-    HsI1).
-  rewrite (apply_fun_graph
-    I1
-    (fun s0:set => s0)
-    s
-    HsI1).
-  rewrite (const_fun_apply
-    I1
-    t0
-    s
-    HsI1).
-  rewrite (apply_fun_graph
-    (setprod I1 I2)
-    (fun z:set =>
-      apply_fun
-        (path_lift E Te B Tb p (apply_fun start_lift (z 0)) (apply_fun vs_choice (z 0)))
-        (z 1))
-    (s, t0)
-    HpairIn).
-  rewrite tuple_2_0_eq.
-  rewrite tuple_2_1_eq.
-  rewrite (apply_fun_graph
-    I1
-    (fun s0:set =>
-      apply_fun
-        (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0))
-        t0)
-    s
-    HsI1).
-  reflexivity.
-}
-exact (continuous_map_congr_on
-  I1
-  (subspace_topology unit_interval unit_interval_topology I1)
-  E
-  Te
-  (compose_fun I1 (pair_map I1 idI1 (const_fun I1 t0)) Fprod)
-  Fcol
-  Hslice_cont
-  HFcol_fun
-  Hcol_eq).
+admit.
 Admitted.
 
 (** Infrastructure: column continuity from parametric product-ball continuity (anchored at t=0) **)
@@ -93145,7 +92965,51 @@ Lemma path_lift_column_continuous_on_product_ball_parametric :
 }
 Qed.
 
+(** Admin-approved-refactored per noticeboard proposal 1772577627 **)
 Lemma column_lifts_same_sheet_on_product_ball_column_continuous :
+  forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  V0 :e slices ->
+  continuous_map unit_interval unit_interval_topology B Tb g0 ->
+  e0 :e E ->
+  apply_fun p e0 = apply_fun g0 0 ->
+  start_lift = path_lift E Te B Tb p e0 g0 ->
+  I1 c= unit_interval ->
+  I2 c= unit_interval ->
+  connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+  connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+  (forall s:set, s :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+  (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+    apply_fun (apply_fun vs_choice s) t :e U) ->
+  (forall s:set, s :e I1 ->
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+  continuous_map (setprod I1 I2)
+    (product_topology
+      I1 (subspace_topology unit_interval unit_interval_topology I1)
+      I2 (subspace_topology unit_interval unit_interval_topology I2))
+    B Tb
+    (graph (setprod I1 I2) (fun z:set =>
+      apply_fun (apply_fun vs_choice (apply_fun (projection_map1 I1 I2) z))
+        (apply_fun (projection_map2 I1 I2) z))) ->
+  s0 :e I1 ->
+  t0 :e I2 ->
+  apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0 :e V0 ->
+  (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+    (graph I1 (fun s:set =>
+      apply_fun
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+        t0)).
+admit.
+Admitted.
+
+(** Admin-approved-refactored per noticeboard proposal 1772584722 **)
+Lemma column_lifts_same_sheet_on_product_ball :
   forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
   covering_map E Te B Tb p ->
   topology_on E Te ->
@@ -93175,73 +93039,13 @@ Lemma column_lifts_same_sheet_on_product_ball_column_continuous :
     (graph I1 (fun s:set =>
       apply_fun
         (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
-        t0)).
-let E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0.
-assume Hcov HtopE HslicesSub HpdSlices Hunion HV0Slice Hg0Cont He0 Hstart0.
-assume HstartLift HI1sub HI2sub HI1conn HI2conn HvsCont HvsU HstartComm.
-assume Hs0 Ht0 Hlift0V0 HstartE.
-set Fcol := graph I1 (fun s:set =>
-  apply_fun
-    (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
-    t0).
-claim HFcol_cont :
-  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te Fcol.
-{
-  exact (path_lift_column_continuous_on_product_ball
-    E
-    Te
-    B
-    Tb
-    p
-    start_lift
-    I1
-    I2
-    vs_choice
-    t0
-    Hcov
-    HtopE
-    HI1sub
-    HI2sub
-    Ht0
-    HvsCont
-    HstartE
-    HstartComm).
-}
-exact HFcol_cont.
-Admitted.
-
-Lemma column_lifts_same_sheet_on_product_ball :
-  forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
-  covering_map E Te B Tb p ->
-  topology_on E Te ->
-  slices c= Te ->
-  pairwise_disjoint slices ->
-  Union slices = preimage_of E p U ->
-  V0 :e slices ->
-  continuous_map unit_interval unit_interval_topology B Tb g0 ->
-  e0 :e E ->
-  apply_fun p e0 = apply_fun g0 0 ->
-  start_lift = path_lift E Te B Tb p e0 g0 ->
-  I1 c= unit_interval ->
-  I2 c= unit_interval ->
-  connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
-  connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
-  (forall s:set, s :e I1 ->
-    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
-  (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
-    apply_fun (apply_fun vs_choice s) t :e U) ->
-  (forall s:set, s :e I1 ->
-    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
-  s0 :e I1 ->
-  t0 :e I2 ->
-  apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0 :e V0 ->
-  (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+        t0)) ->
   forall s:set, s :e I1 -> forall t:set, t :e I2 ->
     apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e V0.
 {
   let E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0.
   assume Hcov HtopE HslicesSub HpdSlices Hunion HV0Slice Hg0Cont He0 Hstart0 HstartLift.
-  assume HI1sub HI2sub HI1conn HI2conn HvsCont HvsU HstartComm Hs0 Ht0 Hlift0V0 HstartE.
+  assume HI1sub HI2sub HI1conn HI2conn HvsCont HvsU HstartComm Hs0 Ht0 Hlift0V0 HstartE HFcolCont.
   (** Each column over s stays in a single slice (possibly depending on s). **)
   claim HcolInSlice :
     forall s:set, s :e I1 ->
@@ -93457,44 +93261,7 @@ Lemma column_lifts_same_sheet_on_product_ball :
   claim HcolCont :
     continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te Fcol.
   {
-    exact (column_lifts_same_sheet_on_product_ball_column_continuous
-      E
-      Te
-      B
-      Tb
-      p
-      U
-      slices
-      V0
-      e0
-      g0
-      start_lift
-      I1
-      I2
-      vs_choice
-      s0
-      t0
-      Hcov
-      HtopE
-      HslicesSub
-      HpdSlices
-      Hunion
-      HV0Slice
-      Hg0Cont
-      He0
-      Hstart0
-      HstartLift
-      HI1sub
-      HI2sub
-      HI1conn
-      HI2conn
-      HvsCont
-      HvsU
-      HstartComm
-      Hs0
-      Ht0
-      Hlift0V0
-      HstartE).
+    exact HFcolCont.
   }
   claim HcolInUnion :
     forall s:set, s :e I1 -> apply_fun Fcol s :e Union slices.
