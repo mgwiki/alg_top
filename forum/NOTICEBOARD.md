@@ -82,6 +82,62 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772846090
+Created: 1772846090
+Status: PROPOSED
+
+Refers to Commit:
+  47c36727897a86bd62fa23bc8ee1d427345ddd36
+
+Target:
+  Line: 92542
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  Statement is underspecified: it asserts continuity in s of the lifted column
+  from only pointwise continuity of vs_choice in t. This is generally false
+  without joint continuity (or an explicit continuous F on I1 x I2).
+
+Proposed Replacement:
+  Lemma path_lift_column_continuous_on_product_ball :
+    forall E Te B Tb p F start_lift I1 I2 vs_choice t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    I2 c= unit_interval ->
+    t0 :e I2 ->
+    continuous_map (setprod I1 I2)
+      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+      B Tb F ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772846090 | Bob: Use the existing parametric continuity machinery by
+    adding F and the evaluation hypothesis; otherwise the statement is false.
+
+Approvals:
+  - 1772846090 | Alice:
+  - 1772846090 | Bob: YES
+  - 1772846090 | Charlie:
+  - 1772846090 | Dave:
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+
 NOTICE ID: 1772843048
 Created: 1772843048
 Status: PROPOSED
