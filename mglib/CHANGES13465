@@ -1,0 +1,29 @@
+CHANGES13465 (from bck13464, 383110 lines to bck13465, 383145 lines)
+
+1. Implemented admin-approved noticeboard refactors (3 proposals):
+
+   a) Notice 1772594849: thm80_3_universal_covers_everything
+      - Added path_connected_space Y Ty hypothesis to theorem statement
+      - Updated proof to accept new hypothesis (HpcY)
+      - Replaced admit for HpcY with exact HpcY (was waiting for this hypothesis)
+
+   b) Notice 1772589268: ex81_3a_covering_trans_properly_discontinuous
+      - Added path_connected_space X Tx hypothesis to theorem statement
+
+   c) Notice 1772823145: simplex3_set definition
+      - Changed function_space 3 R to total_function_space 3 R
+      - Proved simplex3_set_total_functional (was Admitted, now Qed)
+      - Updated 3 Qed proofs that extract from simplex3_set membership:
+        simplex3_to_triangular_region_in_triangular_region,
+        simplex3_set_sub_setprod,
+        triangular_region_to_simplex3_roundtrip
+      - All updated proofs still compile and are Qed
+
+2. Guard violations are all from admin-approved statement changes
+   (marked with Admin-approved-refactored comments)
+
+3. Balance unchanged: Alice 7078
+
+4. Line change: +35 lines (383145 - 383110)
+
+Running totals: 370 Admitted (simplex3_set_total_functional now Qed), Alice balance: 7078
