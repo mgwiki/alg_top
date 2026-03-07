@@ -161893,6 +161893,47 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         { rewrite <- Heq. exact Ht. }
         exact (HallV t Ht_ball).
     }
+    (** Images of overlap points under f land in U or V (and in U cap V on a change). **)
+    claim Ht_seq_image :
+      forall k:set, k :e n ->
+        (apply_fun f (apply_fun t_seq k) :e U) \/
+        (apply_fun f (apply_fun t_seq k) :e V).
+    {
+      let k. assume Hk.
+      claim Ht_in_seqk : apply_fun t_seq k :e apply_fun seq k.
+      { exact (andEL
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)). }
+      apply (Hball_map k (ordsuccI1 n k Hk)).
+      - assume HallU.
+        apply orIL.
+        exact (HallU (apply_fun t_seq k) Ht_in_seqk).
+      - assume HallV.
+        apply orIR.
+        exact (HallV (apply_fun t_seq k) Ht_in_seqk).
+    }
+    claim Ht_seq_in_UcapV :
+      forall k:set, k :e n ->
+        (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) ->
+        (forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e V) ->
+        apply_fun f (apply_fun t_seq k) :e U :/\: V.
+    {
+      let k. assume Hk. assume HallU HallV.
+      claim Ht_in_seqk : apply_fun t_seq k :e apply_fun seq k.
+      { exact (andEL
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)). }
+      claim Ht_in_seqk1 : apply_fun t_seq k :e apply_fun seq (ordsucc k).
+      { exact (andER
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)). }
+      apply (binintersectI U V (apply_fun f (apply_fun t_seq k))).
+      - exact (HallU (apply_fun t_seq k) Ht_in_seqk).
+      - exact (HallV (apply_fun t_seq k) Ht_in_seqk1).
+    }
     (** Interval property for chain balls when r < 1. **)
     claim Hball_interval :
       Rlt r 1 ->
