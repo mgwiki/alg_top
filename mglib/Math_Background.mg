@@ -1,4 +1,4 @@
-(** Balance Alice 5206 **)
+(** Balance Alice 5884 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -284551,10 +284551,119 @@ Definition equivalent_covering_maps : set -> set -> set -> set -> set -> set -> 
       homeomorphism E Te E' Te' h /\
       (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x)).
 
+
+(** Helper: lift of concatenation endpoint equals lift of second part endpoint **)
+(** path_lift(path_concat(alpha, beta), e0)(1) = path_lift(beta, path_lift(alpha, e0)(1))(1) **)
+(** Proven Alice **)
+Lemma path_lift_concat_endpoint :
+  forall E Te B Tb p e0 alpha beta:set,
+  covering_map E Te B Tb p -> e0 :e E ->
+  continuous_map unit_interval unit_interval_topology B Tb alpha ->
+  continuous_map unit_interval unit_interval_topology B Tb beta ->
+  apply_fun alpha 1 = apply_fun beta 0 ->
+  apply_fun p e0 = apply_fun alpha 0 ->
+  apply_fun (path_lift E Te B Tb p e0 (path_concat alpha beta)) 1
+  = apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta) 1.
+let E Te B Tb p e0 alpha beta.
+assume Hcov He0E Halpha_cont Hbeta_cont Hmatch Hpe0.
+(** path_concat(alpha, beta) is continuous B-path **)
+claim Hgamma_cont : continuous_map unit_interval unit_interval_topology B Tb (path_concat alpha beta).
+{ exact (path_concat_continuous B Tb (apply_fun alpha 0) (apply_fun alpha 1) (apply_fun beta 1)
+    alpha beta Halpha_cont Hbeta_cont
+    (eq_refl (apply_fun alpha 0)) (eq_refl (apply_fun alpha 1))
+    (eq_symm (apply_fun alpha 1) (apply_fun beta 0) Hmatch)
+    (eq_refl (apply_fun beta 1))). }
+(** p(e0) = path_concat(alpha,beta)(0) **)
+claim Hpe0_gamma : apply_fun p e0 = apply_fun (path_concat alpha beta) 0.
+{ claim Hpc_zero : apply_fun (path_concat alpha beta) 0 = apply_fun alpha 0.
+  { exact (path_concat_at_zero alpha beta). }
+  rewrite Hpc_zero. exact Hpe0. }
+(** Lift of alpha: get properties **)
+claim Hlift_alpha_props :
+  (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 alpha) /\
+   apply_fun (path_lift E Te B Tb p e0 alpha) 0 = e0) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 alpha) t) = apply_fun alpha t).
+{ exact (lemma54_1_path_lifting E Te B Tb p e0 alpha Hcov He0E Hpe0 Halpha_cont). }
+claim Hlift_alpha_start : apply_fun (path_lift E Te B Tb p e0 alpha) 0 = e0.
+{ exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 alpha))
+    (apply_fun (path_lift E Te B Tb p e0 alpha) 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 alpha) /\
+       apply_fun (path_lift E Te B Tb p e0 alpha) 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 alpha) t) = apply_fun alpha t)
+      Hlift_alpha_props)). }
+(** ex54_3: concat of lifts is lifting_of concat of paths **)
+claim Hproduct_lift : lifting_of unit_interval unit_interval_topology E Te B Tb p
+  (path_concat alpha beta)
+  (path_concat (path_lift E Te B Tb p e0 alpha)
+    (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta)).
+{ exact (ex54_3_lift_of_product E Te B Tb p e0 alpha beta
+    Hcov He0E Halpha_cont Hbeta_cont Hmatch Hpe0). }
+(** path_lift of concat is also lifting_of **)
+claim Hpl_liftof : lifting_of unit_interval unit_interval_topology E Te B Tb p
+  (path_concat alpha beta)
+  (path_lift E Te B Tb p e0 (path_concat alpha beta)).
+{ exact (path_lift_is_lifting_of E Te B Tb p e0 (path_concat alpha beta)
+    Hcov He0E Hpe0_gamma Hgamma_cont). }
+(** concat of lifts starts at e0 **)
+claim Hproduct_start : apply_fun
+  (path_concat (path_lift E Te B Tb p e0 alpha)
+    (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta)) 0 = e0.
+{ claim Htmp : apply_fun
+    (path_concat (path_lift E Te B Tb p e0 alpha)
+      (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta)) 0
+    = apply_fun (path_lift E Te B Tb p e0 alpha) 0.
+  { exact (path_concat_at_zero (path_lift E Te B Tb p e0 alpha)
+      (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta)). }
+  rewrite Htmp. exact Hlift_alpha_start. }
+(** path_lift of concat starts at e0 **)
+claim Hpl_start : apply_fun (path_lift E Te B Tb p e0 (path_concat alpha beta)) 0 = e0.
+{ exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 (path_concat alpha beta)))
+    (apply_fun (path_lift E Te B Tb p e0 (path_concat alpha beta)) 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p e0 (path_concat alpha beta)) /\
+       apply_fun (path_lift E Te B Tb p e0 (path_concat alpha beta)) 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 (path_concat alpha beta)) t)
+        = apply_fun (path_concat alpha beta) t)
+      (lemma54_1_path_lifting E Te B Tb p e0 (path_concat alpha beta)
+        Hcov He0E Hpe0_gamma Hgamma_cont))). }
+(** Uniqueness: they agree at all t **)
+claim Huniq : forall t:set, t :e unit_interval ->
+  apply_fun (path_lift E Te B Tb p e0 (path_concat alpha beta)) t
+  = apply_fun (path_concat (path_lift E Te B Tb p e0 alpha)
+      (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta)) t.
+{ exact (lemma54_1_path_lifting_unique E Te B Tb p e0 (path_concat alpha beta)
+    (path_lift E Te B Tb p e0 (path_concat alpha beta))
+    (path_concat (path_lift E Te B Tb p e0 alpha)
+      (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta))
+    Hcov He0E Hgamma_cont Hpl_liftof Hpl_start Hproduct_lift Hproduct_start). }
+(** At t=1 **)
+claim Heval1 : apply_fun (path_lift E Te B Tb p e0 (path_concat alpha beta)) 1
+  = apply_fun (path_concat (path_lift E Te B Tb p e0 alpha)
+      (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta)) 1.
+{ exact (Huniq 1 one_in_unit_interval). }
+(** path_concat at 1 gives the second component at 1 **)
+claim Hconcat1 : apply_fun (path_concat (path_lift E Te B Tb p e0 alpha)
+    (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta)) 1
+  = apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta) 1.
+{ exact (path_concat_at_one (path_lift E Te B Tb p e0 alpha)
+    (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta)). }
+(** Chain: LHS = concat_lift(1) = lift_beta(1) = RHS **)
+rewrite Heval1. exact Hconcat1.
+Qed.
+
 (** Helper: path independence of lift endpoints under the subgroup condition **)
 (** If alpha1, alpha2 are both continuous paths in Y from y0 to the same endpoint, **)
 (** and f_star(pi1(Y,y0)) subset p_star(pi1(E,e0)), then **)
 (** lift(f o alpha1, e0)(1) = lift(f o alpha2, e0)(1). **)
+(** Proven Alice **)
 Lemma lift_endpoint_path_independent :
   forall E Te B Tb p e0 Y Ty y0 f alpha1 alpha2:set,
   covering_map E Te B Tb p -> e0 :e E ->
@@ -284572,20 +284681,374 @@ Lemma lift_endpoint_path_independent :
     (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
   apply_fun (path_lift E Te B Tb p e0 (compose_fun unit_interval alpha1 f)) 1
   = apply_fun (path_lift E Te B Tb p e0 (compose_fun unit_interval alpha2 f)) 1.
-Admitted.
+let E Te B Tb p e0 Y Ty y0 f alpha1 alpha2.
+assume Hcov He0E HtopY HfCont Hy0Y Hfy0 Ha1_cont Ha2_cont Ha1_0 Ha2_0 Ha12_end Hsub.
+claim HtopB : topology_on B Tb.
+{ exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+(** reverse_path alpha2 is continuous **)
+claim Ha2_rev_cont : continuous_map unit_interval unit_interval_topology Y Ty (reverse_path alpha2).
+{ exact (reverse_path_continuous Y Ty alpha2 Ha2_cont). }
+(** Endpoint matching for concat **)
+claim Hrev_a2_0 : apply_fun (reverse_path alpha2) 0 = apply_fun alpha2 1.
+{ exact (reverse_path_at_zero alpha2). }
+claim Hrev_a2_1 : apply_fun (reverse_path alpha2) 1 = apply_fun alpha2 0.
+{ exact (reverse_path_at_one alpha2). }
+claim Ha12_match : apply_fun alpha1 1 = apply_fun (reverse_path alpha2) 0.
+{ rewrite Hrev_a2_0. exact Ha12_end. }
+(** delta = path_concat(alpha1, reverse_path(alpha2)) is continuous **)
+claim Hrev_a2_1_y0 : apply_fun (reverse_path alpha2) 1 = y0.
+{ rewrite Hrev_a2_1. exact Ha2_0. }
+claim Hdelta_cont : continuous_map unit_interval unit_interval_topology Y Ty
+  (path_concat alpha1 (reverse_path alpha2)).
+{ exact (path_concat_continuous Y Ty y0 (apply_fun alpha1 1) y0
+    alpha1 (reverse_path alpha2) Ha1_cont Ha2_rev_cont
+    Ha1_0 (eq_refl (apply_fun alpha1 1))
+    (eq_symm (apply_fun alpha1 1) (apply_fun (reverse_path alpha2) 0) Ha12_match)
+    Hrev_a2_1_y0). }
+(** delta endpoints **)
+claim Hdelta_0 : apply_fun (path_concat alpha1 (reverse_path alpha2)) 0 = y0.
+{ rewrite (path_concat_at_zero alpha1 (reverse_path alpha2)). exact Ha1_0. }
+claim Hdelta_1 : apply_fun (path_concat alpha1 (reverse_path alpha2)) 1 = y0.
+{ rewrite (path_concat_at_one alpha1 (reverse_path alpha2)). rewrite Hrev_a2_1. exact Ha2_0. }
+(** delta is a loop at y0 **)
+claim Hdelta_loopat : loop_at Y Ty y0 (path_concat alpha1 (reverse_path alpha2)).
+{ exact (loop_at_fold Y Ty y0 (path_concat alpha1 (reverse_path alpha2))
+    (andI
+      (continuous_map unit_interval unit_interval_topology Y Ty
+        (path_concat alpha1 (reverse_path alpha2)) /\
+       apply_fun (path_concat alpha1 (reverse_path alpha2)) 0 = y0)
+      (apply_fun (path_concat alpha1 (reverse_path alpha2)) 1 = y0)
+      (andI
+        (continuous_map unit_interval unit_interval_topology Y Ty
+          (path_concat alpha1 (reverse_path alpha2)))
+        (apply_fun (path_concat alpha1 (reverse_path alpha2)) 0 = y0)
+        Hdelta_cont Hdelta_0)
+      Hdelta_1)). }
+(** f o delta is a loop at p(e0) in B **)
+set f_delta := compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f.
+claim Hf_delta_cont : continuous_map unit_interval unit_interval_topology B Tb f_delta.
+{ exact (composition_continuous unit_interval unit_interval_topology Y Ty B Tb
+    (path_concat alpha1 (reverse_path alpha2)) f Hdelta_cont HfCont). }
+claim Hf_delta_0 : apply_fun f_delta 0 = apply_fun p e0.
+{ claim H1 : apply_fun f_delta 0 = apply_fun f (apply_fun (path_concat alpha1 (reverse_path alpha2)) 0).
+  { exact (compose_fun_apply unit_interval (path_concat alpha1 (reverse_path alpha2)) f
+      0 zero_in_unit_interval). }
+  rewrite H1. rewrite Hdelta_0. exact Hfy0. }
+claim Hf_delta_1 : apply_fun f_delta 1 = apply_fun p e0.
+{ claim H1 : apply_fun f_delta 1 = apply_fun f (apply_fun (path_concat alpha1 (reverse_path alpha2)) 1).
+  { exact (compose_fun_apply unit_interval (path_concat alpha1 (reverse_path alpha2)) f
+      1 one_in_unit_interval). }
+  rewrite H1. rewrite Hdelta_1. exact Hfy0. }
+claim Hf_delta_loopat : loop_at B Tb (apply_fun p e0) f_delta.
+{ exact (loop_at_fold B Tb (apply_fun p e0) f_delta
+    (andI
+      (continuous_map unit_interval unit_interval_topology B Tb f_delta /\
+       apply_fun f_delta 0 = apply_fun p e0)
+      (apply_fun f_delta 1 = apply_fun p e0)
+      (andI
+        (continuous_map unit_interval unit_interval_topology B Tb f_delta)
+        (apply_fun f_delta 0 = apply_fun p e0)
+        Hf_delta_cont Hf_delta_0)
+      Hf_delta_1)). }
+(** Show [f_delta] in p-star(pi1(E,e0)) using subgroup condition **)
+claim Hf_delta_in_pstar : path_homotopy_class_loop B Tb (apply_fun p e0) f_delta :e
+  homomorphism_image (fundamental_group E Te e0) (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p).
+{ (** Step 1: delta in function_space I Y **)
+  claim Ha1_fon : function_on alpha1 unit_interval Y.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty alpha1 Ha1_cont). }
+  claim Ha2r_fon : function_on (reverse_path alpha2) unit_interval Y.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty
+      (reverse_path alpha2) Ha2_rev_cont). }
+  claim Hdelta_fo : function_on (path_concat alpha1 (reverse_path alpha2)) unit_interval Y.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty
+      (path_concat alpha1 (reverse_path alpha2)) Hdelta_cont). }
+  claim HconcatSub : path_concat alpha1 (reverse_path alpha2) c= setprod unit_interval Y.
+  { let q. assume Hq.
+    apply (binunionE
+      {(t, apply_fun alpha1 (mul_SNo 2 t)) | t :e unit_interval_left_half}
+      {(t, apply_fun (reverse_path alpha2) (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+      q Hq).
+    - assume Hleft.
+      apply (ReplE_impred unit_interval_left_half
+        (fun t:set => (t, apply_fun alpha1 (mul_SNo 2 t))) q Hleft).
+      let t. assume Ht Heq.
+      claim H2tInI : mul_SNo 2 t :e unit_interval.
+      { rewrite <- (double_map_apply t Ht). exact (double_map_function_on t Ht). }
+      rewrite Heq.
+      exact (tuple_2_setprod_by_pair_Sigma unit_interval Y t
+        (apply_fun alpha1 (mul_SNo 2 t))
+        (unit_interval_left_half_sub t Ht)
+        (Ha1_fon (mul_SNo 2 t) H2tInI)).
+    - assume Hright.
+      apply (ReplE_impred unit_interval_right_half
+        (fun t:set => (t, apply_fun (reverse_path alpha2) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))) q Hright).
+      let t. assume Ht Heq.
+      claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+      { rewrite <- (double_minus_one_map_apply t Ht). exact (double_minus_one_map_function_on t Ht). }
+      rewrite Heq.
+      exact (tuple_2_setprod_by_pair_Sigma unit_interval Y t
+        (apply_fun (reverse_path alpha2) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+        (unit_interval_right_half_sub t Ht)
+        (Ha2r_fon (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2m1tInI)). }
+  claim HconcatPow : path_concat alpha1 (reverse_path alpha2) :e Power (setprod unit_interval Y).
+  { exact (PowerI (setprod unit_interval Y) (path_concat alpha1 (reverse_path alpha2)) HconcatSub). }
+  claim Hdelta_fs : path_concat alpha1 (reverse_path alpha2) :e function_space unit_interval Y.
+  { exact (SepI (Power (setprod unit_interval Y)) (fun u:set => function_on u unit_interval Y)
+      (path_concat alpha1 (reverse_path alpha2)) HconcatPow Hdelta_fo). }
+  (** Step 2: delta in loop_space **)
+  claim Hdelta_loop : path_concat alpha1 (reverse_path alpha2) :e loop_space Y Ty y0.
+  { exact (SepI (function_space unit_interval Y)
+      (fun g:set => loop_at Y Ty y0 g)
+      (path_concat alpha1 (reverse_path alpha2)) Hdelta_fs Hdelta_loopat). }
+  (** Step 3: [delta] in fundamental_group **)
+  set delta_class := path_homotopy_class_loop Y Ty y0 (path_concat alpha1 (reverse_path alpha2)).
+  claim Hdelta_fg : delta_class :e fundamental_group Y Ty y0.
+  { exact (path_homotopy_class_in_fundamental_group Y Ty y0
+      (path_concat alpha1 (reverse_path alpha2)) Hdelta_loop). }
+  (** Step 4: f_star(delta_class) in im(f_star) **)
+  claim Hih_mem : apply_fun (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f) delta_class :e
+    homomorphism_image (fundamental_group Y Ty y0) (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f).
+  { exact (homomorphism_image_intro (fundamental_group Y Ty y0)
+      (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f) delta_class Hdelta_fg). }
+  (** Step 5: Compute f_star(delta_class) **)
+  set rep := Eps_i (fun gg:set => gg :e delta_class).
+  claim Hih_eq : apply_fun (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f) delta_class =
+    path_homotopy_class_loop B Tb (apply_fun f y0) (compose_fun unit_interval rep f).
+  { exact (induced_homomorphism_apply Y Ty y0 B Tb (apply_fun f y0) f delta_class Hdelta_fg). }
+  (** Step 6: delta in delta_class, rep in delta_class, so homotopic **)
+  claim Hdelta_in_class : path_concat alpha1 (reverse_path alpha2) :e delta_class.
+  { exact (loop_in_own_path_homotopy_class Y Ty y0
+      (path_concat alpha1 (reverse_path alpha2)) Hdelta_loop). }
+  claim Hrep_in_class : rep :e delta_class.
+  { exact (Eps_i_ax (fun gg:set => gg :e delta_class)
+      (path_concat alpha1 (reverse_path alpha2)) Hdelta_in_class). }
+  claim Hhom_reps : path_homotopic Y Ty y0 y0
+    (path_concat alpha1 (reverse_path alpha2)) rep.
+  { exact (path_homotopy_class_loop_has_homotopy Y Ty y0
+      (path_concat alpha1 (reverse_path alpha2)) rep Hrep_in_class). }
+  (** Step 7: Post-compose: f o delta ~ f o rep in B **)
+  claim Hfy0_refl : apply_fun f y0 = apply_fun f y0. { reflexivity. }
+  claim Hhom_comp : path_homotopic B Tb (apply_fun f y0) (apply_fun f y0)
+    (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f)
+    (compose_fun unit_interval rep f).
+  { exact (path_homotopic_postcompose Y Ty B Tb y0 y0 (apply_fun f y0) (apply_fun f y0)
+      (path_concat alpha1 (reverse_path alpha2)) rep f Hhom_reps HfCont Hfy0_refl Hfy0_refl). }
+  (** Step 8: Classes equal **)
+  claim Hclass_eq : path_homotopy_class_loop B Tb (apply_fun f y0)
+    (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f) =
+    path_homotopy_class_loop B Tb (apply_fun f y0) (compose_fun unit_interval rep f).
+  { exact (path_homotopy_class_loop_eq_of_path_homotopic B Tb (apply_fun f y0)
+      (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f)
+      (compose_fun unit_interval rep f) Hhom_comp). }
+  (** Step 9: [f o delta] = f_star(delta_class) **)
+  claim Hfdelta_eq_ih : path_homotopy_class_loop B Tb (apply_fun f y0)
+    (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f) =
+    apply_fun (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f) delta_class.
+  { rewrite Hih_eq. exact Hclass_eq. }
+  (** Step 10: [f o delta] in im(f_star) **)
+  claim Hfdelta_in_fstar : path_homotopy_class_loop B Tb (apply_fun f y0)
+    (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f) :e
+    homomorphism_image (fundamental_group Y Ty y0) (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f).
+  { exact (eq_subst_mem
+      (path_homotopy_class_loop B Tb (apply_fun f y0)
+        (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f))
+      (apply_fun (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f) delta_class)
+      (homomorphism_image (fundamental_group Y Ty y0) (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f))
+      Hfdelta_eq_ih Hih_mem). }
+  (** Step 11: Apply Hsub **)
+  claim Hfdelta_in_pstar_fy0 : path_homotopy_class_loop B Tb (apply_fun f y0)
+    (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f) :e
+    homomorphism_image (fundamental_group E Te e0) (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p).
+  { exact (Hsub
+      (path_homotopy_class_loop B Tb (apply_fun f y0)
+        (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f))
+      Hfdelta_in_fstar). }
+  (** Step 12: Convert basepoint f(y0) to p(e0) **)
+  claim Hbp_eq : path_homotopy_class_loop B Tb (apply_fun f y0)
+    (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f) =
+    path_homotopy_class_loop B Tb (apply_fun p e0)
+    (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f).
+  { rewrite Hfy0. reflexivity. }
+  exact (eq_subst_mem_rev
+    (path_homotopy_class_loop B Tb (apply_fun f y0)
+      (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f))
+    (path_homotopy_class_loop B Tb (apply_fun p e0)
+      (compose_fun unit_interval (path_concat alpha1 (reverse_path alpha2)) f))
+    (homomorphism_image (fundamental_group E Te e0) (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+    Hbp_eq Hfdelta_in_pstar_fy0). }
+(** Apply thm54_6c: lift(f_delta, e0)(1) = e0 **)
+claim Hlift_delta_e0 : apply_fun (path_lift E Te B Tb p e0 f_delta) 1 = e0.
+{ exact (thm54_6c_loop_characterization_forward E Te B Tb p e0 f_delta
+    Hcov He0E Hf_delta_loopat Hf_delta_in_pstar). }
+(** Show f_delta = path_concat(f o alpha1, reverse(f o alpha2)) as sets **)
+claim Ha1_fo : function_on alpha1 unit_interval Y.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty alpha1 Ha1_cont). }
+claim Ha2_rev_fo : function_on (reverse_path alpha2) unit_interval Y.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty
+    (reverse_path alpha2) Ha2_rev_cont). }
+claim Hf_fo : function_on f Y B.
+{ exact (continuous_map_function_on Y Ty B Tb f HfCont). }
+claim Hdecomp1 : f_delta = path_concat (compose_fun unit_interval alpha1 f)
+  (compose_fun unit_interval (reverse_path alpha2) f).
+{ exact (compose_path_concat_eq_algtop Y B alpha1 (reverse_path alpha2) f
+    Ha1_fo Ha2_rev_fo Hf_fo Ha12_match). }
+(** Show compose_fun I (reverse_path alpha2) f = reverse_path (compose_fun I alpha2 f) **)
+claim Ha2_fo : function_on alpha2 unit_interval Y.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty alpha2 Ha2_cont). }
+claim Hrev_eq : reverse_path (compose_fun unit_interval alpha2 f) =
+  compose_fun unit_interval (reverse_path alpha2) f.
+{ exact (compose_fun_assoc_eq_algtop unit_interval unit_interval Y B
+    flip_unit_interval alpha2 f flip_unit_interval_function_on Ha2_fo Hf_fo). }
+claim Hdecomp2 : f_delta = path_concat (compose_fun unit_interval alpha1 f)
+  (reverse_path (compose_fun unit_interval alpha2 f)).
+{ rewrite Hrev_eq. exact Hdecomp1. }
+(** Shorthand **)
+set fa1 := compose_fun unit_interval alpha1 f.
+set fa2 := compose_fun unit_interval alpha2 f.
+(** lift(f_delta, e0)(1) = lift(path_concat(fa1, reverse(fa2)), e0)(1) **)
+(** by Hdecomp2: f_delta = path_concat(fa1, reverse(fa2)) **)
+(** by Hlift_delta_e0: lift(f_delta, e0)(1) = e0 **)
+(** So lift(path_concat(fa1, reverse(fa2)), e0)(1) = e0 **)
+(** Apply path_lift_concat_endpoint **)
+claim Hfa1_cont : continuous_map unit_interval unit_interval_topology B Tb fa1.
+{ exact (composition_continuous unit_interval unit_interval_topology Y Ty B Tb
+    alpha1 f Ha1_cont HfCont). }
+claim Hfa2_cont : continuous_map unit_interval unit_interval_topology B Tb fa2.
+{ exact (composition_continuous unit_interval unit_interval_topology Y Ty B Tb
+    alpha2 f Ha2_cont HfCont). }
+claim Hrev_fa2_cont : continuous_map unit_interval unit_interval_topology B Tb (reverse_path fa2).
+{ exact (reverse_path_continuous B Tb fa2 Hfa2_cont). }
+claim Hfa1_1_eq_rev0 : apply_fun fa1 1 = apply_fun (reverse_path fa2) 0.
+{ claim Hfa1_1 : apply_fun fa1 1 = apply_fun f (apply_fun alpha1 1).
+  { exact (compose_fun_apply unit_interval alpha1 f 1 one_in_unit_interval). }
+  claim Hrev0 : apply_fun (reverse_path fa2) 0 = apply_fun fa2 1.
+  { exact (reverse_path_at_zero fa2). }
+  claim Hfa2_1 : apply_fun fa2 1 = apply_fun f (apply_fun alpha2 1).
+  { exact (compose_fun_apply unit_interval alpha2 f 1 one_in_unit_interval). }
+  rewrite Hfa1_1. rewrite Hrev0. rewrite Hfa2_1. rewrite Ha12_end. reflexivity. }
+claim Hpe0_fa1 : apply_fun p e0 = apply_fun fa1 0.
+{ claim Hfa1_0 : apply_fun fa1 0 = apply_fun f (apply_fun alpha1 0).
+  { exact (compose_fun_apply unit_interval alpha1 f 0 zero_in_unit_interval). }
+  rewrite Hfa1_0. rewrite Ha1_0. exact (eq_symm (apply_fun f y0) (apply_fun p e0) Hfy0). }
+(** Q = lift(fa1, e0)(1) **)
+set Q := apply_fun (path_lift E Te B Tb p e0 fa1) 1.
+(** path_lift_concat_endpoint: lift(concat(fa1, rev(fa2)), e0)(1) = lift(rev(fa2), Q)(1) **)
+claim Hpc_endpt : apply_fun (path_lift E Te B Tb p e0 (path_concat fa1 (reverse_path fa2))) 1
+  = apply_fun (path_lift E Te B Tb p Q (reverse_path fa2)) 1.
+{ exact (path_lift_concat_endpoint E Te B Tb p e0 fa1 (reverse_path fa2)
+    Hcov He0E Hfa1_cont Hrev_fa2_cont Hfa1_1_eq_rev0 Hpe0_fa1). }
+(** lift(f_delta, e0)(1) = lift(concat(fa1, rev(fa2)), e0)(1) since f_delta = concat as sets **)
+claim Hlift_eq : apply_fun (path_lift E Te B Tb p e0 f_delta) 1
+  = apply_fun (path_lift E Te B Tb p e0 (path_concat fa1 (reverse_path fa2))) 1.
+{ rewrite Hdecomp2. reflexivity. }
+(** So lift(rev(fa2), Q)(1) = e0 **)
+claim Hlift_rev_Q : apply_fun (path_lift E Te B Tb p Q (reverse_path fa2)) 1 = e0.
+{ claim Htmp : apply_fun (path_lift E Te B Tb p e0 (path_concat fa1 (reverse_path fa2))) 1 = e0.
+  { rewrite (eq_symm
+      (apply_fun (path_lift E Te B Tb p e0 f_delta) 1)
+      (apply_fun (path_lift E Te B Tb p e0 (path_concat fa1 (reverse_path fa2))) 1) Hlift_eq).
+    exact Hlift_delta_e0. }
+  rewrite (eq_symm
+    (apply_fun (path_lift E Te B Tb p e0 (path_concat fa1 (reverse_path fa2))) 1)
+    (apply_fun (path_lift E Te B Tb p Q (reverse_path fa2)) 1) Hpc_endpt).
+  exact Htmp. }
+(** path_lift_reverse_endpoint on fa2: lift(rev(fa2), lift(fa2, e0)(1))(1) = e0 **)
+set ft2 := apply_fun (path_lift E Te B Tb p e0 fa2) 1.
+claim Hpe0_fa2 : apply_fun p e0 = apply_fun fa2 0.
+{ claim Hfa2_0 : apply_fun fa2 0 = apply_fun f (apply_fun alpha2 0).
+  { exact (compose_fun_apply unit_interval alpha2 f 0 zero_in_unit_interval). }
+  rewrite Hfa2_0. rewrite Ha2_0. exact (eq_symm (apply_fun f y0) (apply_fun p e0) Hfy0). }
+claim Hlift_rev_ft2 : apply_fun (path_lift E Te B Tb p ft2 (reverse_path fa2)) 1 = e0.
+{ exact (path_lift_reverse_endpoint E Te B Tb p e0 fa2 Hcov He0E Hfa2_cont Hpe0_fa2). }
+(** Apply path_lift_reverse_endpoint to reverse(fa2) starting at Q **)
+claim Hlift_alpha1_cont : continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 fa1).
+{ exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 fa1))
+    (apply_fun (path_lift E Te B Tb p e0 fa1) 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 fa1) /\
+       apply_fun (path_lift E Te B Tb p e0 fa1) 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 fa1) t) = apply_fun fa1 t)
+      (lemma54_1_path_lifting E Te B Tb p e0 fa1 Hcov He0E Hpe0_fa1 Hfa1_cont))). }
+claim HQ_E : Q :e E.
+{ exact (continuous_map_value_in_space unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 fa1) 1 Hlift_alpha1_cont one_in_unit_interval). }
+claim Hlift_alpha2_cont : continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 fa2).
+{ exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 fa2))
+    (apply_fun (path_lift E Te B Tb p e0 fa2) 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 fa2) /\
+       apply_fun (path_lift E Te B Tb p e0 fa2) 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 fa2) t) = apply_fun fa2 t)
+      (lemma54_1_path_lifting E Te B Tb p e0 fa2 Hcov He0E Hpe0_fa2 Hfa2_cont))). }
+claim Hft2_E : ft2 :e E.
+{ exact (continuous_map_value_in_space unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 fa2) 1 Hlift_alpha2_cont one_in_unit_interval). }
+claim HpQ : apply_fun p Q = apply_fun (reverse_path fa2) 0.
+{ claim Htmp : apply_fun (reverse_path fa2) 0 = apply_fun fa2 1.
+  { exact (reverse_path_at_zero fa2). }
+  rewrite Htmp.
+  claim Hplifta1 : apply_fun p (apply_fun (path_lift E Te B Tb p e0 fa1) 1) = apply_fun fa1 1.
+  { exact (andER
+      (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 fa1) /\
+       apply_fun (path_lift E Te B Tb p e0 fa1) 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 fa1) t) = apply_fun fa1 t)
+      (lemma54_1_path_lifting E Te B Tb p e0 fa1 Hcov He0E Hpe0_fa1 Hfa1_cont)
+      1 one_in_unit_interval). }
+  rewrite Hplifta1.
+  claim Hfa1_1 : apply_fun fa1 1 = apply_fun f (apply_fun alpha1 1).
+  { exact (compose_fun_apply unit_interval alpha1 f 1 one_in_unit_interval). }
+  claim Hfa2_1 : apply_fun fa2 1 = apply_fun f (apply_fun alpha2 1).
+  { exact (compose_fun_apply unit_interval alpha2 f 1 one_in_unit_interval). }
+  rewrite Hfa1_1. rewrite Hfa2_1. rewrite Ha12_end. reflexivity. }
+claim Hpft2 : apply_fun p ft2 = apply_fun (reverse_path fa2) 0.
+{ claim Htmp : apply_fun (reverse_path fa2) 0 = apply_fun fa2 1.
+  { exact (reverse_path_at_zero fa2). }
+  rewrite Htmp.
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 fa2) /\
+     apply_fun (path_lift E Te B Tb p e0 fa2) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 fa2) t) = apply_fun fa2 t)
+    (lemma54_1_path_lifting E Te B Tb p e0 fa2 Hcov He0E Hpe0_fa2 Hfa2_cont)
+    1 one_in_unit_interval). }
+(** Apply path_lift_reverse_endpoint to reverse(fa2) starting at Q and ft2 **)
+(** Strategy: avoid rewriting e0 which corrupts set abbreviation Q **)
+(** Instead: prove directly with expanded base points, then chain via Hbases **)
+claim Htmp_Q : apply_fun (path_lift E Te B Tb p
+    (apply_fun (path_lift E Te B Tb p Q (reverse_path fa2)) 1)
+    (reverse_path (reverse_path fa2))) 1 = Q.
+{ exact (path_lift_reverse_endpoint E Te B Tb p Q (reverse_path fa2)
+    Hcov HQ_E Hrev_fa2_cont HpQ). }
+claim Htmp_ft2 : apply_fun (path_lift E Te B Tb p
+    (apply_fun (path_lift E Te B Tb p ft2 (reverse_path fa2)) 1)
+    (reverse_path (reverse_path fa2))) 1 = ft2.
+{ exact (path_lift_reverse_endpoint E Te B Tb p ft2 (reverse_path fa2)
+    Hcov Hft2_E Hrev_fa2_cont Hpft2). }
+(** Both bases equal e0, so equal to each other **)
+claim Hbases : apply_fun (path_lift E Te B Tb p Q (reverse_path fa2)) 1
+  = apply_fun (path_lift E Te B Tb p ft2 (reverse_path fa2)) 1.
+{ rewrite Hlift_rev_Q. exact (eq_symm
+    (apply_fun (path_lift E Te B Tb p ft2 (reverse_path fa2)) 1) e0
+    Hlift_rev_ft2). }
+(** Chain: Q = Htmp_Q^-1 ... rewrite base via Hbases ... = ft2 via Htmp_ft2 **)
+claim HQ_eq_ft2 : Q = ft2.
+{ claim H1 : Q = apply_fun (path_lift E Te B Tb p
+      (apply_fun (path_lift E Te B Tb p Q (reverse_path fa2)) 1)
+      (reverse_path (reverse_path fa2))) 1.
+  { exact (eq_symm
+      (apply_fun (path_lift E Te B Tb p
+        (apply_fun (path_lift E Te B Tb p Q (reverse_path fa2)) 1)
+        (reverse_path (reverse_path fa2))) 1)
+      Q Htmp_Q). }
+  rewrite H1. rewrite Hbases. exact Htmp_ft2. }
+exact HQ_eq_ft2.
+Qed.
 
-(** Helper: lift of concatenation endpoint equals lift of second part endpoint **)
-(** path_lift(path_concat(alpha, beta), e0)(1) = path_lift(beta, path_lift(alpha, e0)(1))(1) **)
-Lemma path_lift_concat_endpoint :
-  forall E Te B Tb p e0 alpha beta:set,
-  covering_map E Te B Tb p -> e0 :e E ->
-  continuous_map unit_interval unit_interval_topology B Tb alpha ->
-  continuous_map unit_interval unit_interval_topology B Tb beta ->
-  apply_fun alpha 1 = apply_fun beta 0 ->
-  apply_fun p e0 = apply_fun alpha 0 ->
-  apply_fun (path_lift E Te B Tb p e0 (path_concat alpha beta)) 1
-  = apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta) 1.
-Admitted.
 
 (** from S79 Lem 79.1 (line 4792 in algtop.tex): the general lifting lemma **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0)=b0. Let f: Y -> B continuous **)
@@ -284594,8 +285057,8 @@ Admitted.
 (** to f_tilde: Y -> E with f_tilde(y0)=e0 iff f_star(pi1(Y,y0)) subset p_star(pi1(E,e0)). **)
 (** Furthermore, if such a lifting exists, it is unique. **)
 (** EFFORT: 40 lines textbook, difficulty 7/10, USD 560 **)
-(** Bounty 678 **)
-(** Lock Alice 1772934667 **)
+(** Collected Alice 678 **)
+(** Proven Alice **)
 Theorem lemma79_1_general_lifting :
   forall E Te B Tb p e0 Y Ty y0 f:set,
   covering_map E Te B Tb p ->
@@ -285511,7 +285974,7 @@ apply andI.
   rewrite (eq_symm (apply_fun lift1_u 1) (apply_fun ft1 y) Hlift1_at1).
   rewrite (eq_symm (apply_fun lift2_u 1) (apply_fun ft2 y) Hlift2_at1).
   exact Heq1.
-Admitted.
+Qed.
 
 (** from S79 Thm 79.2 (line 4836 in algtop.tex): equivalence iff same subgroup **)
 (** LATEX VERSION: Let p: E -> B and p': E' -> B be covering maps with **)
