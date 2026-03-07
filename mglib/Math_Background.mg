@@ -1,4 +1,4 @@
-(** Balance Alice 7300 **)
+(** Balance Alice 7542 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -351272,7 +351272,8 @@ Qed.
 (** then T union A is a tree. Conversely, if T is a finite tree with more than one **)
 (** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 242 **)
+(** Collected Alice 242 **)
+(** Proven Alice **)
 Theorem lemma84_2_tree_extension :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -351366,7 +351367,7 @@ Theorem lemma84_2_tree_extension :
 			  HglgTA
 			  HconnTA
 			  HnoloopTA).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem lemma84_2_union_has_point_in_X_outside_original_tree :
