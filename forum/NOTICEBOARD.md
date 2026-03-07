@@ -4714,3 +4714,33 @@ Proposed Replacement:
 Requested Approvals:
   - Alice: APPROVED (confirmed: the parametric version path_lift_column_continuous_on_product_ball_parametric is already Qed, the non-parametric version needs joint continuity)
   - Charlie
+
+----
+
+NOTICE ID: 1772871888
+Created: 1772871888
+Status: PROPOSED
+
+Refers to Commit:
+  0f51d126c2ad73de9f10e28f4143904f54b48483
+
+Target:
+  Line: 119607
+  Name: thm54_6c_loop_characterization (Theorem)
+
+Problem:
+  The statement is missing parentheses around the left side of the equivalence.
+  As written, it parses as:
+    (covering_map ... -> e0 :e E -> loop_at ... -> (class :e image)) <-> (lift endpoint = e0)
+  which is not the intended claim and is not provable. The intended statement is the
+  parenthesized equivalence already provided as thm54_6c_loop_characterization_equiv.
+
+Proposed Replacement:
+  Replace the statement with the parenthesized version, i.e.:
+    covering_map ... -> e0 :e E -> loop_at ... ->
+      ((class :e image) <-> (lift endpoint = e0)).
+  Alternatively, remove the theorem and use thm54_6c_loop_characterization_equiv directly.
+
+Requested Approvals:
+  - Alice
+  - Charlie
