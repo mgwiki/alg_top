@@ -304462,7 +304462,113 @@ apply iffI.
             claim HV0sub : V0 c= V.
             { exact (PowerE V V0
                 (SepE1 (Power V) (fun U0:set => exists V2:set, V2 :e Tx /\ U0 = V2 :/\: V) V0 HV0)). }
-            admit. }
+            (** V0 is open in Tx (from subspace of open V) **)
+            claim HV0ex : exists V2:set, V2 :e Tx /\ V0 = V2 :/\: V.
+            { exact (SepE2 (Power V) (fun U0:set => exists V2:set, V2 :e Tx /\ U0 = V2 :/\: V) V0 HV0). }
+            apply HV0ex. let V2. assume HV2pack.
+            claim HV2Tx : V2 :e Tx. { exact (andEL (V2 :e Tx) (V0 = V2 :/\: V) HV2pack). }
+            claim HV0eq_V2 : V0 = V2 :/\: V. { exact (andER (V2 :e Tx) (V0 = V2 :/\: V) HV2pack). }
+            claim HV0Tx : V0 :e Tx.
+            { rewrite HV0eq_V2. exact (topology_binintersect_closed X Tx V2 V HtopX HV2Tx HVopen). }
+            (** preimage = image: preimage_of W inv_f V0 = image_of fwd V0 **)
+            claim Hpre_eq_img : preimage_of W inv_f V0 = image_of_fun fwd V0.
+            { exact (inv_fun_graph_preimage_eq_image V W fwd V0 Hbij HV0sub). }
+            (** image_of fwd V0 subset W **)
+            claim Himg_sub_W : image_of fwd V0 c= W.
+            { let w. assume Hw.
+              apply (ReplE_impred V0 (fun z:set => apply_fun fwd z) w Hw).
+              let z. assume HzV0 Hweq.
+              claim HzV : z :e V. { exact (HV0sub z HzV0). }
+              rewrite Hweq. rewrite (apply_fun_graph V (fun z0:set => apply_fun pi z0) z HzV).
+              exact (Hpi_V_W z HzV). }
+            (** image_of fwd V0 subset B **)
+            claim Himg_sub_B : image_of fwd V0 c= B.
+            { let w. assume Hw. exact (HWsub w (Himg_sub_W w Hw)). }
+            (** Key: preimage_of X pi (image_of fwd V0) = Union (Repl G (fun h => image_of h V0)) **)
+            set gslices := Repl G (fun h:set => image_of h V0).
+            claim Hgslices_sub_Tx : gslices c= Tx.
+            { let A. assume HA.
+              apply (ReplE_impred G (fun h:set => image_of h V0) A HA).
+              let h. assume HhG HAeq.
+              rewrite HAeq. exact (homeomorphism_image_open X Tx X Tx h V0 (Hhomeo h HhG) HV0Tx). }
+            claim HpreEq : preimage_of X pi (image_of fwd V0) = Union gslices.
+            { apply set_ext.
+              - (** forward: x in preimage -> x in Union gslices **)
+                let x. assume Hx.
+                claim HxX : x :e X. { exact (SepE1 X (fun x0:set => apply_fun pi x0 :e image_of fwd V0) x Hx). }
+                claim Hpix_img : apply_fun pi x :e image_of fwd V0.
+                { exact (SepE2 X (fun x0:set => apply_fun pi x0 :e image_of fwd V0) x Hx). }
+                apply (ReplE_impred V0 (fun z:set => apply_fun fwd z) (apply_fun pi x) Hpix_img).
+                let z. assume HzV0 Hpixeq.
+                claim HzV : z :e V. { exact (HV0sub z HzV0). }
+                claim HzX : z :e X. { exact (HVsub z HzV). }
+                claim Hafg_z : apply_fun fwd z = apply_fun pi z.
+                { exact (apply_fun_graph V (fun z0:set => apply_fun pi z0) z HzV). }
+                claim Hpi_eq : apply_fun pi x = apply_fun pi z. { rewrite Hpixeq. exact Hafg_z. }
+                (** orbit_equiv: z and x in same orbit **)
+                claim Hx_in_orb : x :e {y :e X | orbit_equiv X G z y}.
+                { rewrite <- (orbit_map_apply X G z HzX).
+                  claim Hx_pi_z : x :e apply_fun pi z.
+                  { rewrite <- Hpi_eq. rewrite (orbit_map_apply X G x HxX).
+                    exact (orbit_self_mem X G idG x HidG HidAct HxX). }
+                  exact Hx_pi_z. }
+                claim Horb : orbit_equiv X G z x.
+                { exact (SepE2 X (fun y:set => orbit_equiv X G z y) x Hx_in_orb). }
+                claim Hhex : exists h:set, h :e G /\ apply_fun h z = x.
+                { exact (andER (z :e X /\ x :e X) (exists h:set, h :e G /\ apply_fun h z = x) Horb). }
+                apply Hhex. let h. assume Hhpack.
+                claim HhG : h :e G. { exact (andEL (h :e G) (apply_fun h z = x) Hhpack). }
+                claim Hhzx : apply_fun h z = x. { exact (andER (h :e G) (apply_fun h z = x) Hhpack). }
+                apply (UnionI gslices x (image_of h V0)).
+                + rewrite <- Hhzx. exact (ReplI V0 (fun y:set => apply_fun h y) z HzV0).
+                + exact (ReplI G (fun h0:set => image_of h0 V0) h HhG).
+              - (** backward: x in Union gslices -> x in preimage **)
+                let x. assume Hx.
+                apply (UnionE gslices x Hx). let A. assume HApack.
+                claim HxA : x :e A. { exact (andEL (x :e A) (A :e gslices) HApack). }
+                claim HAgslices : A :e gslices. { exact (andER (x :e A) (A :e gslices) HApack). }
+                apply (ReplE_impred G (fun h:set => image_of h V0) A HAgslices).
+                let h. assume HhG HAeq.
+                claim HxhV0 : x :e image_of h V0. { rewrite <- HAeq. exact HxA. }
+                apply (ReplE_impred V0 (fun y:set => apply_fun h y) x HxhV0).
+                let z. assume HzV0 Hxeq.
+                claim HzV : z :e V. { exact (HV0sub z HzV0). }
+                claim HzX : z :e X. { exact (HVsub z HzV). }
+                claim HxX : x :e X. { rewrite Hxeq. exact (Hfn h HhG z HzX). }
+                prove x :e {x0 :e X | apply_fun pi x0 :e image_of fwd V0}.
+                apply SepI. exact HxX.
+                prove apply_fun pi x :e image_of fwd V0.
+                claim Hpi_eq : apply_fun pi x = apply_fun pi z.
+                { rewrite Hxeq. exact (orbit_map_invariant X G h z HhG Hfn Hcomp Hinv HzX). }
+                claim Hafg_z : apply_fun fwd z = apply_fun pi z.
+                { exact (apply_fun_graph V (fun z0:set => apply_fun pi z0) z HzV). }
+                rewrite Hpi_eq. rewrite <- Hafg_z.
+                exact (ReplI V0 (fun z0:set => apply_fun fwd z0) z HzV0). }
+            (** preimage_of X pi (image_of fwd V0) is open **)
+            claim HpreOpen : preimage_of X pi (image_of fwd V0) :e Tx.
+            { rewrite HpreEq. exact (topology_union_closed X Tx gslices HtopX Hgslices_sub_Tx). }
+            (** image_of fwd V0 in Tb **)
+            claim Himg_Tb : image_of fwd V0 :e Tb.
+            { prove image_of fwd V0 :e quotient_topology X Tx B pi.
+              prove image_of fwd V0 :e {V3 :e Power B | {x :e X | apply_fun pi x :e V3} :e Tx}.
+              apply SepI.
+              - apply PowerI. exact Himg_sub_B.
+              - exact HpreOpen. }
+            (** image_of fwd V0 in subspace W **)
+            claim Himg_sub_W2 : image_of fwd V0 = (image_of fwd V0) :/\: W.
+            { apply set_ext.
+              - let w. assume Hw. exact (binintersectI (image_of fwd V0) W w Hw (Himg_sub_W w Hw)).
+              - let w. assume Hw. exact (binintersectE1 (image_of fwd V0) W w Hw). }
+            (** Combine: preimage_of W inv_f V0 in subspace W **)
+            prove preimage_of W inv_f V0 :e subspace_topology B Tb W.
+            prove preimage_of W inv_f V0 :e {U0 :e Power W | exists V3:set, V3 :e Tb /\ U0 = V3 :/\: W}.
+            rewrite Hpre_eq_img.
+            apply SepI.
+            + apply PowerI. exact Himg_sub_W.
+            + prove exists V3:set, V3 :e Tb /\ image_of fwd V0 = V3 :/\: W.
+              witness (image_of fwd V0). apply andI.
+              * exact Himg_Tb.
+              * exact Himg_sub_W2. }
         (** Combine into homeomorphism **)
         prove continuous_map V (subspace_topology X Tx V) W (subspace_topology B Tb W) fwd /\
           exists g0:set, (continuous_map W (subspace_topology B Tb W) V (subspace_topology X Tx V) g0 /\
