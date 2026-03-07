@@ -26402,6 +26402,31 @@ rewrite (fundamental_group_mult_apply_on_loop_classes X Tx x0 f g HfLoop HgLoop)
 exact HclassEq.
 Qed.
 
+(** Infrastructure: if h is homotopic to a concatenation, its class is the product. **)
+(** Proven Bob **)
+Lemma path_homotopy_class_loop_eq_mult_of_concat_homotopic :
+  forall X Tx x0 f g h:set,
+  f :e loop_space X Tx x0 ->
+  g :e loop_space X Tx x0 ->
+  h :e loop_space X Tx x0 ->
+  path_homotopic X Tx x0 x0 h (path_concat f g) ->
+  path_homotopy_class_loop X Tx x0 h =
+    apply_fun (fundamental_group_mult X Tx x0)
+      (path_homotopy_class_loop X Tx x0 f, path_homotopy_class_loop X Tx x0 g).
+let X Tx x0 f g h.
+assume HfLoop HgLoop HhLoop Hhom.
+claim Hclass_eq :
+  path_homotopy_class_loop X Tx x0 h
+  = path_homotopy_class_loop X Tx x0 (path_concat f g).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X Tx x0 h (path_concat f g) Hhom).
+}
+rewrite Hclass_eq.
+exact (path_homotopy_class_loop_concat_eq_mult
+  X Tx x0 f g HfLoop HgLoop).
+Qed.
+
 (** Helper: Eps_i of a fundamental group member is in loop_space (early version) **)
 (** Proven Alice **)
 Theorem eps_in_loop_space_early : forall X Tx x0 cls:set,
