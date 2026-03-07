@@ -303789,7 +303789,99 @@ apply iffI.
   (** This follows from: path gamma from e0 to e1 projects to loop alpha at b0, **)
   (** alpha's lift ends at e1, so by Hbwd [alpha] in N(H0), **)
   (** and the conjugation relation H1 = alpha_bar H0 alpha gives H0 = H1. **)
-  claim HH0eqH1 : H0 = H1. { admit. }
+  (** Get a path sigma from e0 to e1 in E **)
+  claim Hsigma_ex : exists sigma:set, path_between E e0 e1 sigma /\
+    continuous_map unit_interval unit_interval_topology E Te sigma.
+  { exact (path_connected_space_paths E Te e0 e1 HpcE He0E He1E). }
+  apply Hsigma_ex. let sigma. assume HsigmaPack.
+  claim Hsigma_pb : path_between E e0 e1 sigma.
+  { exact (andEL (path_between E e0 e1 sigma)
+      (continuous_map unit_interval unit_interval_topology E Te sigma) HsigmaPack). }
+  claim Hsigma_cont : continuous_map unit_interval unit_interval_topology E Te sigma.
+  { exact (andER (path_between E e0 e1 sigma)
+      (continuous_map unit_interval unit_interval_topology E Te sigma) HsigmaPack). }
+  claim Hsigma0 : apply_fun sigma 0 = e0.
+  { exact (andER (function_on sigma unit_interval E) (apply_fun sigma 0 = e0)
+      (andEL (function_on sigma unit_interval E /\ apply_fun sigma 0 = e0) (apply_fun sigma 1 = e1)
+        Hsigma_pb)). }
+  claim Hsigma1 : apply_fun sigma 1 = e1.
+  { exact (andER (function_on sigma unit_interval E /\ apply_fun sigma 0 = e0) (apply_fun sigma 1 = e1)
+      Hsigma_pb). }
+  (** Project sigma to get loop alpha_s = p o sigma **)
+  set alpha_s := compose_fun unit_interval sigma p.
+  claim Halpha_s_cont : continuous_map unit_interval unit_interval_topology B Tb alpha_s.
+  { exact (composition_continuous unit_interval unit_interval_topology E Te B Tb sigma p Hsigma_cont Hp_cont). }
+  claim Halpha_s0 : apply_fun alpha_s 0 = b0.
+  { claim H : apply_fun alpha_s 0 = apply_fun p (apply_fun sigma 0).
+    { exact (compose_fun_apply unit_interval sigma p 0 zero_in_unit_interval). }
+    rewrite H. rewrite Hsigma0. exact (fun P h => h). }
+  claim Halpha_s1 : apply_fun alpha_s 1 = b0.
+  { claim H : apply_fun alpha_s 1 = apply_fun p (apply_fun sigma 1).
+    { exact (compose_fun_apply unit_interval sigma p 1 one_in_unit_interval). }
+    rewrite H. rewrite Hsigma1. exact Hpe1. }
+  claim Halpha_s_loop : loop_at B Tb b0 alpha_s.
+  { exact (andI (continuous_map unit_interval unit_interval_topology B Tb alpha_s /\ apply_fun alpha_s 0 = b0)
+      (apply_fun alpha_s 1 = b0)
+      (andI (continuous_map unit_interval unit_interval_topology B Tb alpha_s)
+        (apply_fun alpha_s 0 = b0)
+        Halpha_s_cont Halpha_s0)
+      Halpha_s1). }
+  (** The lift of alpha_s starting at e0 ends at e1 **)
+  (** sigma is a lift of alpha_s starting at e0, so by uniqueness path_lift = sigma **)
+  claim Hpe0alpha_s : apply_fun p e0 = apply_fun alpha_s 0.
+  { rewrite Halpha_s0. exact (fun P h => h). }
+  claim Hlift_alpha_s_end : apply_fun (path_lift E Te B Tb p e0 alpha_s) 1 = e1.
+  { (** sigma is a lift of alpha_s starting at e0 **)
+    claim Hsigma_fun : function_on sigma unit_interval E.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology E Te sigma Hsigma_cont). }
+    claim Hsigma_lifting : lifting_of unit_interval unit_interval_topology E Te B Tb p alpha_s sigma.
+    { prove continuous_map unit_interval unit_interval_topology E Te sigma /\
+        (forall t:set, t :e unit_interval -> apply_fun p (apply_fun sigma t) = apply_fun alpha_s t).
+      apply andI.
+      - exact Hsigma_cont.
+      - let t. assume Ht.
+        exact (eq_symm (apply_fun alpha_s t) (apply_fun p (apply_fun sigma t))
+          (compose_fun_apply unit_interval sigma p t Ht)). }
+    claim Hlift_as_lifting : lifting_of unit_interval unit_interval_topology E Te B Tb p alpha_s
+      (path_lift E Te B Tb p e0 alpha_s).
+    { exact (path_lift_is_lifting_of E Te B Tb p e0 alpha_s Hcov He0E Hpe0alpha_s Halpha_s_cont). }
+    claim Hlift_as_start : apply_fun (path_lift E Te B Tb p e0 alpha_s) 0 = e0.
+    { exact (andER (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 alpha_s))
+        (apply_fun (path_lift E Te B Tb p e0 alpha_s) 0 = e0)
+        (andEL (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 alpha_s) /\
+          apply_fun (path_lift E Te B Tb p e0 alpha_s) 0 = e0)
+          (forall t:set, t :e unit_interval -> apply_fun p (apply_fun (path_lift E Te B Tb p e0 alpha_s) t) = apply_fun alpha_s t)
+          (lemma54_1_path_lifting E Te B Tb p e0 alpha_s Hcov He0E Hpe0alpha_s Halpha_s_cont))). }
+    (** By uniqueness: path_lift(alpha_s, e0)(1) = sigma(1) = e1 **)
+    claim Hlift_eq_at_1 : apply_fun (path_lift E Te B Tb p e0 alpha_s) 1 = apply_fun sigma 1.
+    { exact (lemma54_1_path_lifting_unique E Te B Tb p e0 alpha_s
+        (path_lift E Te B Tb p e0 alpha_s) sigma
+        Hcov He0E Halpha_s_cont
+        Hlift_as_lifting Hlift_as_start
+        Hsigma_lifting Hsigma0
+        1 one_in_unit_interval). }
+    rewrite Hlift_eq_at_1. exact Hsigma1. }
+  (** Apply the normalizer condition Hbwd to alpha_s **)
+  claim Halpha_s_in_N : path_homotopy_class_loop B Tb b0 alpha_s :e N.
+  { exact (Hbwd alpha_s Halpha_s_loop Hlift_alpha_s_end). }
+  (** Extract normalizer conditions **)
+  set alpha_s_class := path_homotopy_class_loop B Tb b0 alpha_s.
+  claim Halpha_s_G : alpha_s_class :e G.
+  { exact (SepE1 G (fun g:set =>
+      (forall h:set, h :e H0 ->
+        apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0) /\
+      (forall h:set, h :e H0 ->
+        apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0))
+      alpha_s_class Halpha_s_in_N). }
+  (** H0 = H1 via set_ext **)
+  claim HH0eqH1 : H0 = H1.
+  { (** Both directions use path-lifting and normalizer **)
+    apply set_ext.
+    - (** H0 c= H1 **)
+      admit.
+    - (** H1 c= H0 **)
+      admit.
+  }
   (** Apply thm79_2 backward to get homeomorphism **)
   claim Hh_ex : exists h:set, homeomorphism E Te E Te h /\ apply_fun h e0 = e1 /\
     (forall x:set, x :e E -> apply_fun p x = apply_fun p (apply_fun h x)).
