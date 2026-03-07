@@ -20163,8 +20163,8 @@ Theorem convex_subspace_topology_eq_R : forall A Ta:set,
   A c= R -> convex_in R A -> topology_on A Ta ->
   Ta = subspace_topology R R_standard_topology A.
 admit.
-Admitted. (** TODO: statement is incorrect; topology_on does not determine Ta uniquely.
-  This lemma is a placeholder pending noticeboard fix. **)
+Admitted.
+(** NOTE: statement bug in Ex51_1; this lemma is a placeholder pending noticeboard fix. **)
 
 (** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
@@ -39366,8 +39366,7 @@ apply andI.
   apply andI.
   + exact Ha0A.
   + exact Hpi1Trivial.
-Admitted. (** TODO: likely needs a uniform delta in t around t1, requiring compactness
-  or uniform continuity in s; current assumptions appear insufficient. **)
+Admitted.
 
 (** S52 helper: reverse of a concatenation is homotopic to concatenation of reverses in opposite order **)
 (** Proven Charlie **)
