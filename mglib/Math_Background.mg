@@ -20163,7 +20163,8 @@ Theorem convex_subspace_topology_eq_R : forall A Ta:set,
   A c= R -> convex_in R A -> topology_on A Ta ->
   Ta = subspace_topology R R_standard_topology A.
 admit.
-Admitted.
+Admitted. (** TODO: needs a uniform delta in t around t1, likely requiring compactness of I1
+  or uniform continuity of F in s on a t1-neighborhood. **)
 (** NOTE: statement bug in Ex51_1; this lemma is a placeholder pending noticeboard fix. **)
 
 (** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
