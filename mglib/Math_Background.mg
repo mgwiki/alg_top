@@ -93390,8 +93390,7 @@ Lemma column_lifts_same_sheet_on_product_ball :
   rewrite <- HVsEq.
   exact (HcolVs t HtI2).
 }
-Admitted. (** TODO: requires continuity of the t0-column map; see
-  column_lifts_same_sheet_on_product_ball_column_continuous. **)
+Qed.
 
 (** Infrastructure: column lift sheet constancy with explicit continuity of the t0-column map **)
 Lemma column_lifts_same_sheet_on_product_ball_with_col_cont :
@@ -145449,7 +145448,7 @@ exact (eq_i_tra
   v
   HgraphEq
   HvGraph).
-Admitted. (** TODO: depends on simplex3_set_total_functional. **)
+Qed.
 
 (** Infrastructure: the triangular region lies in the closed unit disk **)
 (** Proven Bob **)
