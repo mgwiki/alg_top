@@ -1,4 +1,4 @@
-(** Balance Alice 6324 **)
+(** Balance Alice 6307 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -287665,7 +287665,8 @@ Qed.
 
 (** from S79 Lem 79.3(b) (line 4862 in algtop.tex): conjugacy converse **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Alice 1772961480 **)
 Theorem lemma79_3b_conjugacy_converse :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p ->
