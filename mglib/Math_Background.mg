@@ -212902,71 +212902,12 @@ claim Hfwd_hom : forall alpha:set, alpha :e J ->
     { symmetry. exact Hifam_hom_ab. }
     rewrite Hifam_hom_sym.
     (** LHS is now hfam_fwd(ifam(multfam(a,b))). We need multfam(a,b) :e Gfam alpha for Hfwd_apply. **)
-    (** This follows from the fact that ifam maps (Gfam, multfam) to (image subgroup of G), **)
-    (** and the image is closed under multG, so multfam(a,b) must map into Gfam. **)
-    (** We admit this closure fact. **)
+    (** Use group_structure on Gfam alpha to obtain closure under multfam. **)
     claim Hmult_closed : apply_fun (apply_fun multfam alpha) (a, b) :e apply_fun Gfam alpha.
-    { claim Hifam_hom_al : group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
-      { exact (andEL
-          (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
-          (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
-            apply_fun (apply_fun ifam alpha) u = apply_fun (apply_fun ifam alpha) v -> u = v)
-          (Hifam alpha Halpha)). }
-      claim Hifam_inj_al : forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
-        apply_fun (apply_fun ifam alpha) u = apply_fun (apply_fun ifam alpha) v -> u = v.
-      { exact (andER
-          (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
-          (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
-            apply_fun (apply_fun ifam alpha) u = apply_fun (apply_fun ifam alpha) v -> u = v)
-          (Hifam alpha Halpha)). }
-      claim Hsga : subgroups_generate_abelian G multG eG invG J
-        (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))).
-      { exact (andEL
-          (subgroups_generate_abelian G multG eG invG J
-            (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))))
-          (forall x:set, x :e G ->
-            forall n1 n2:set, n1 :e omega -> n2 :e omega -> 
-            forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
-            forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
-              (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) (apply_fun a1 i)) ->
-              (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) (apply_fun a2 i)) ->
-              (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
-              (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
-              x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) n1 ->
-              x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2 ->
-              (forall alpha0:set, alpha0 :e J ->
-                (forall i j:set, i :e n1 -> j :e n2 ->
-                  apply_fun a1 i = alpha0 -> apply_fun a2 j = alpha0 ->
-                  apply_fun x1 i = apply_fun x2 j) /\
-                ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha0) ->
-                 ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha0) ->
-                 forall i:set, i :e n1 -> apply_fun a1 i = alpha0 -> apply_fun x1 i = eG) /\
-                (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha0) ->
-                 (exists j:set, j :e n2 /\ apply_fun a2 j = alpha0) ->
-                 forall j:set, j :e n2 -> apply_fun a2 j = alpha0 -> apply_fun x2 j = eG)))
-          HdsG). }
-      claim Hsubgrps : forall alpha0:set, alpha0 :e J ->
-        subgroup_of (apply_fun (graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al))) alpha0) G multG eG invG.
-      { apply (and3E
-          (abelian_group G multG eG invG)
-          (forall alpha0:set, alpha0 :e J ->
-            subgroup_of (apply_fun (graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al))) alpha0) G multG eG invG)
-          (forall x:set, x :e G ->
-            exists n:set, n :e omega /\
-            exists alphas:set, function_on alphas n J /\
-            exists xs:set, function_on xs n G /\
-              (forall i:set, i :e n -> apply_fun xs i :e apply_fun (graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al))) (apply_fun alphas i)) /\
-              (forall i j:set, i :e n -> j :e n -> i <> j ->
-                apply_fun alphas i <> apply_fun alphas j) /\
-              x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
-          Hsga).
-        assume _ Hsub _. exact Hsub. }
-      claim Hsubgrp_al : subgroup_of (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G multG eG invG.
-      { claim Heq : apply_fun (graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al))) alpha =
-          homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
-        { exact (apply_fun_graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al)) alpha Halpha). }
-        rewrite <- Heq. exact (Hsubgrps alpha Halpha). }
-      admit. (** TODO: wire up group_structure after notice adds efam/invfam **) }
+    {
+      (** TODO: need closure of multfam on Gfam (group_structure assumption for Gfam alpha). **)
+      admit.
+    }
     rewrite (Hfwd_apply alpha (apply_fun (apply_fun multfam alpha) (a, b)) Halpha Hmult_closed).
     (** RHS: multG'(hfam_fwd(ifam(a)), hfam_fwd(ifam(b))) = multG'(ifam'(a), ifam'(b)) **)
     rewrite (Hfwd_apply alpha a Halpha Ha).
@@ -213117,12 +213058,8 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
               apply_fun (apply_fun ifam alpha) x) ->
         forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
-    { claim Hgfam_grp_psi : forall alpha:set, alpha :e J ->
-        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
-          (apply_fun Empty alpha) (apply_fun Empty alpha).
-      { admit. }
-      exact (lemma67_5_extension_external G' multG' eG' invG' J Gfam multfam Empty Empty ifam'
-          HabG' Hgfam_grp_psi Hifam' HdsG' G multG eG invG HabG ifam Hifam_hom_only). }
+    { (** TODO: need group_structure (identity/inverse families) on Gfam to apply lemma67_5_extension_external. **)
+      admit. }
     apply Hpsi_ex. let psi. assume Hpsi_all.
     apply (and3E
       (group_homomorphism G' multG' G multG psi)
@@ -213165,12 +213102,8 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
               apply_fun (apply_fun ifam alpha) x) ->
         forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-    { claim Hgfam_grp_id : forall alpha:set, alpha :e J ->
-        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
-          (apply_fun Empty alpha) (apply_fun Empty alpha).
-      { admit. }
-      exact (lemma67_5_extension_external G multG eG invG J Gfam multfam Empty Empty ifam
-          HabG Hgfam_grp_id Hifam HdsG G multG eG invG HabG ifam Hifam_hom_only). }
+    { (** TODO: need group_structure (identity/inverse families) on Gfam to apply lemma67_5_extension_external. **)
+      admit. }
     apply Hid_ex. let h_id. assume Hid_all.
     apply (and3E
       (group_homomorphism G multG G multG h_id)
@@ -213288,12 +213221,8 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
               apply_fun (apply_fun ifam' alpha) x) ->
         forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
-    { claim Hgfam_grp_id2 : forall alpha:set, alpha :e J ->
-        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
-          (apply_fun Empty alpha) (apply_fun Empty alpha).
-      { admit. }
-      exact (lemma67_5_extension_external G' multG' eG' invG' J Gfam multfam Empty Empty ifam'
-          HabG' Hgfam_grp_id2 Hifam' HdsG' G' multG' eG' invG' HabG' ifam' Hifam'_hom_only). }
+    { (** TODO: need group_structure (identity/inverse families) on Gfam to apply lemma67_5_extension_external. **)
+      admit. }
     apply Hid2_ex. let h_id2. assume Hid2_all.
     apply (and3E
       (group_homomorphism G' multG' G' multG' h_id2)
@@ -270798,7 +270727,7 @@ claim HpowOrigEqe : group_power_nat mult e (apply_fun gens alpha) n = e.
     (group_power_nat mult e (apply_fun gens alpha) n = e)).
 }
 exact HpowOrigEqe.
-Admitted.
+Admitted. (** TODO: depends on admitted lemma69_1_extension_free_group **)
 
 (** Infrastructure helper for S69 Thm 69.4:
     cyclic generator subgroups in the commutator quotient form the required direct sum. **)
