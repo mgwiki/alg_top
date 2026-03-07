@@ -160384,6 +160384,26 @@ apply (set_ext (open_ball unit_interval R_bounded_metric c r) unit_interval).
   exact (open_ball_unit_interval_radius_gt1_mem c r t HcI HrR H1ltR Ht).
 Qed.
 
+(** Infrastructure: radius > 1 ball-cover forces f into U or V globally **)
+(** Proven Bob **)
+Lemma ball_cover_property_radius_gt1_all_in_one :
+  forall U V f r:set,
+  r :e R -> Rlt 1 r ->
+  (forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V)) ->
+  (forall t:set, t :e unit_interval -> apply_fun f t :e U) \/
+  (forall t:set, t :e unit_interval -> apply_fun f t :e V).
+let U V f r.
+assume HrR H1ltR Hball.
+claim Hball0 :
+  (forall t:set, t :e open_ball unit_interval R_bounded_metric 0 r -> apply_fun f t :e U) \/
+  (forall t:set, t :e open_ball unit_interval R_bounded_metric 0 r -> apply_fun f t :e V).
+{ exact (Hball 0 zero_in_unit_interval). }
+rewrite <- (open_ball_unit_interval_radius_gt1_eq 0 r zero_in_unit_interval HrR H1ltR).
+exact Hball0.
+Qed.
+
 (** Core word construction: given ball property for a loop, produce word decomposition.
     This is the inductive heart of Munkres Thm 59.1, separated from the Lebesgue setup. **)
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
