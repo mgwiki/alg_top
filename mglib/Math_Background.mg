@@ -1,4 +1,4 @@
-(** Balance Alice 6602 **)
+(** Balance Alice 7111 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -330729,7 +330729,8 @@ Qed.
 (** then p maps B homeomorphically onto A_alpha. Furthermore, E is a linear graph **)
 (** with path components of p^{-1}(A_alpha) as its edges. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
-(** Bounty 509 **)
+(** Collected Alice 509 **)
+(** Proven Alice **)
 Theorem thm83_4_covering_of_graph_is_graph :
   forall X Tx Arcs E Te p:set,
   general_linear_graph X Tx Arcs ->
@@ -332300,7 +332301,7 @@ apply andI.
       B (subspace_topology E Te B) A Ta
       (graph B (fun x1:set => apply_fun p x1))
       Hcov_B HBpc HAsc).
-Admitted.
+Qed.
 
 (** from S83 Exercise 2 (line 5547 in algtop.tex) **)
 (** LATEX VERSION: The Euler number = vertices - edges. What is Euler number **)
