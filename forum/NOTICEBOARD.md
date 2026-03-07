@@ -82,6 +82,53 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772868093
+Created: 1772868093
+Status: PROPOSED
+
+Refers to Commit:
+  db8200d335e1d2d96709a913fc3e5fd42d1c4d09
+
+Target:
+  Line: 20155
+  Name: convex_subspace_topology_eq_R (Theorem)
+
+Problem:
+  The statement claims any topology_on A Ta equals the subspace topology of R,
+  which is false. This is already noted by the in-file TODO and blocks proof.
+
+Proposed Replacement:
+  Theorem convex_subspace_topology_eq_R : forall A:set,
+    A c= R -> convex_in R A ->
+    topology_on A (subspace_topology R R_standard_topology A).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772868093 | Bob: aligns with subspace_topology_is_topology; avoids false uniqueness claim.
+
+Approvals:
+  - 1772868093 | Alice: NO
+  - 1772868093 | Bob: YES
+  - 1772868093 | Charlie: NO
+  - 1772868093 | Dave: NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772867805
 Created: 1772867805
 Status: PROPOSED
