@@ -82,6 +82,55 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772849625
+Created: 1772849625
+Status: PROPOSED
+
+Refers to Commit:
+  b05bfe1f23103983798a106ca5b0e0a99aa4b1d4
+
+Target:
+  Line: 119490
+  Name: thm54_6c_loop_characterization (Theorem)
+
+Problem:
+  Statement is mis-parenthesized: it currently parses as
+  ((covering_map ... -> e0 :e E -> loop_at ... -> [f] in image) <-> endpoint),
+  which is not the intended assertion and is not provable in general. The
+  intended statement is the implication chain with the equivalence in
+  parentheses, as in thm54_6c_loop_characterization_equiv/assumptions.
+
+Proposed Replacement:
+  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+      homomorphism_image
+        (fundamental_group E Te e0)
+        (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+     <->
+     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772849625 | Bob: Add parentheses around the equivalence to match the
+    intended statement and existing lemma thm54_6c_loop_characterization_equiv.
+
+Approvals:
+  - 1772849625 | Alice:
+  - 1772849625 | Bob: YES
+  - 1772849625 | Charlie:
+  - 1772849625 | Dave:
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772846090
 Created: 1772846090
 Status: PROPOSED
