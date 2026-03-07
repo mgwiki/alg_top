@@ -161681,6 +161681,296 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         HfLoop
         Hf_hom_L1L2).
     }
+    (** Reduce to a finite chain of radius-r balls in unit_interval. **)
+    set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+    claim Hchain :
+      exists U0 U1 n seq:set,
+        U0 :e BallFam /\ 0 :e U0 /\
+        U1 :e BallFam /\ 1 :e U1 /\
+        n :e omega /\
+        function_on seq (ordsucc n) BallFam /\
+        apply_fun seq 0 = U0 /\
+        apply_fun seq n = U1 /\
+        (forall k:set, k :e n ->
+          apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
+    { exact (unit_interval_ball_chain r HrR Hrpos). }
+    (** Extract a point from each consecutive intersection in the chain. **)
+    apply Hchain.
+    let U0. assume HU0pack.
+    apply HU0pack.
+    let U1. assume HU1pack.
+    apply HU1pack.
+    let n. assume Hnpack.
+    apply Hnpack.
+    let seq. assume Hseqpack.
+    apply (and9E
+      (U0 :e BallFam)
+      (0 :e U0)
+      (U1 :e BallFam)
+      (1 :e U1)
+      (n :e omega)
+      (function_on seq (ordsucc n) BallFam)
+      (apply_fun seq 0 = U0)
+      (apply_fun seq n = U1)
+      (forall k:set, k :e n ->
+        apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty)
+      Hseqpack).
+    assume HU0mem H0U0 HU1mem H1U1 HnOmega HseqFun Hseq0 Hseqn HseqInter.
+    claim H0_in_seq0 : 0 :e apply_fun seq 0.
+    {
+      rewrite Hseq0.
+      exact H0U0.
+    }
+    claim H1_in_seqn : 1 :e apply_fun seq n.
+    {
+      rewrite Hseqn.
+      exact H1U1.
+    }
+    claim Hchain_point :
+      forall k:set, k :e n ->
+        exists t:set, t :e unit_interval /\
+          t :e apply_fun seq k /\ t :e apply_fun seq (ordsucc k).
+    {
+      let k. assume Hk.
+      claim Hnonempty : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+      { exact (HseqInter k Hk). }
+      apply (nonempty_has_element (apply_fun seq k :/\: apply_fun seq (ordsucc k)) Hnonempty).
+      let t. assume Ht.
+      witness t.
+      apply andI.
+      - apply andI.
+        + (** t is in unit_interval since it lies in a ball **)
+          claim Ht_left : t :e apply_fun seq k.
+          { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Ht). }
+          claim Hseqk_ball : apply_fun seq k :e BallFam.
+          { exact (HseqFun k (ordsuccI1 n k Hk)). }
+          apply (ReplE_impred unit_interval
+            (fun x:set => open_ball unit_interval R_bounded_metric x r)
+            (apply_fun seq k) Hseqk_ball).
+          let c. assume HcI Heq.
+          claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r.
+          { rewrite <- Heq. exact Ht_left. }
+          exact (open_ball_subset_X unit_interval R_bounded_metric c r t Ht_ball).
+        + exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Ht).
+      - exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Ht).
+    }
+    set t_seq := graph n (fun k:set =>
+      Eps_i (fun t:set =>
+        t :e unit_interval /\ t :e apply_fun seq k /\ t :e apply_fun seq (ordsucc k))).
+    claim Ht_seq_val :
+      forall k:set, k :e n -> apply_fun t_seq k :e unit_interval.
+    {
+      let k. assume Hk.
+      claim Hex :
+        exists t:set, t :e unit_interval /\
+          t :e apply_fun seq k /\ t :e apply_fun seq (ordsucc k).
+      { exact (Hchain_point k Hk). }
+      apply Hex.
+      let t. assume Htpack.
+      claim Htprop :
+        (fun t0:set =>
+          t0 :e unit_interval /\ t0 :e apply_fun seq k /\ t0 :e apply_fun seq (ordsucc k)) t.
+      { exact Htpack. }
+      claim HEps :
+        (apply_fun t_seq k :e unit_interval /\ apply_fun t_seq k :e apply_fun seq k) /\
+        apply_fun t_seq k :e apply_fun seq (ordsucc k).
+      {
+        rewrite (apply_fun_graph n
+          (fun k0:set =>
+            Eps_i (fun t0:set =>
+              t0 :e unit_interval /\ t0 :e apply_fun seq k0 /\ t0 :e apply_fun seq (ordsucc k0)))
+          k
+          Hk).
+        exact (Eps_i_ax
+          (fun t0:set =>
+            t0 :e unit_interval /\ t0 :e apply_fun seq k /\ t0 :e apply_fun seq (ordsucc k))
+          t
+          Htprop).
+      }
+      claim HEps_left :
+        apply_fun t_seq k :e unit_interval /\ apply_fun t_seq k :e apply_fun seq k.
+      {
+        exact (andEL
+          (apply_fun t_seq k :e unit_interval /\ apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          HEps).
+      }
+      exact (andEL
+        (apply_fun t_seq k :e unit_interval)
+        (apply_fun t_seq k :e apply_fun seq k)
+        HEps_left).
+    }
+    claim Ht_seq_mem :
+      forall k:set, k :e n ->
+        apply_fun t_seq k :e apply_fun seq k /\
+        apply_fun t_seq k :e apply_fun seq (ordsucc k).
+    {
+      let k. assume Hk.
+      claim Hex :
+        exists t:set, t :e unit_interval /\
+          t :e apply_fun seq k /\ t :e apply_fun seq (ordsucc k).
+      { exact (Hchain_point k Hk). }
+      apply Hex.
+      let t. assume Htpack.
+      claim Htprop :
+        (fun t0:set =>
+          t0 :e unit_interval /\ t0 :e apply_fun seq k /\ t0 :e apply_fun seq (ordsucc k)) t.
+      { exact Htpack. }
+      claim HEps :
+        (apply_fun t_seq k :e unit_interval /\ apply_fun t_seq k :e apply_fun seq k) /\
+        apply_fun t_seq k :e apply_fun seq (ordsucc k).
+      {
+        rewrite (apply_fun_graph n
+          (fun k0:set =>
+            Eps_i (fun t0:set =>
+              t0 :e unit_interval /\ t0 :e apply_fun seq k0 /\ t0 :e apply_fun seq (ordsucc k0)))
+          k
+          Hk).
+        exact (Eps_i_ax
+          (fun t0:set =>
+            t0 :e unit_interval /\ t0 :e apply_fun seq k /\ t0 :e apply_fun seq (ordsucc k))
+          t
+          Htprop).
+      }
+      claim HEps_left :
+        apply_fun t_seq k :e unit_interval /\ apply_fun t_seq k :e apply_fun seq k.
+      {
+        exact (andEL
+          (apply_fun t_seq k :e unit_interval /\ apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          HEps).
+      }
+      claim Ht_left :
+        apply_fun t_seq k :e apply_fun seq k.
+      {
+        exact (andER
+          (apply_fun t_seq k :e unit_interval)
+          (apply_fun t_seq k :e apply_fun seq k)
+          HEps_left).
+      }
+      claim Ht_right :
+        apply_fun t_seq k :e apply_fun seq (ordsucc k).
+      {
+        exact (andER
+          (apply_fun t_seq k :e unit_interval /\ apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          HEps).
+      }
+      exact (andI
+        (apply_fun t_seq k :e apply_fun seq k)
+        (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+        Ht_left
+        Ht_right).
+    }
+    (** Each chain ball is wholly in U or wholly in V. **)
+    claim Hball_map :
+      forall k:set, k :e ordsucc n ->
+        (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) \/
+        (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V).
+    {
+      let k. assume Hk.
+      claim Hseqk_ball : apply_fun seq k :e BallFam.
+      { exact (HseqFun k Hk). }
+      apply (ReplE_impred unit_interval
+        (fun x:set => open_ball unit_interval R_bounded_metric x r)
+        (apply_fun seq k) Hseqk_ball).
+      let c. assume HcI Heq.
+      claim HcBall :
+        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e U) \/
+        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V).
+      { exact (Hball_image c HcI). }
+      apply HcBall.
+      - assume HallU.
+        apply orIL.
+        let t. assume Ht.
+        claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r.
+        { rewrite <- Heq. exact Ht. }
+        exact (HallU t Ht_ball).
+      - assume HallV.
+        apply orIR.
+        let t. assume Ht.
+        claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r.
+        { rewrite <- Heq. exact Ht. }
+        exact (HallV t Ht_ball).
+    }
+    (** Interval property for chain balls when r < 1. **)
+    claim Hball_interval :
+      Rlt r 1 ->
+      forall k:set, k :e ordsucc n ->
+      forall x y z:set,
+        x :e apply_fun seq k ->
+        y :e apply_fun seq k ->
+        z :e unit_interval ->
+        (Rlt x z /\ Rlt z y \/ Rlt y z /\ Rlt z x) ->
+        z :e apply_fun seq k.
+    {
+      assume Hrlt1.
+      let k. assume Hk.
+      claim Hseqk_ball : apply_fun seq k :e BallFam.
+      { exact (HseqFun k Hk). }
+      claim HballConn :
+        connected_space (apply_fun seq k)
+          (subspace_topology unit_interval unit_interval_topology (apply_fun seq k)).
+      {
+        apply (ReplE_impred unit_interval
+          (fun x0:set => open_ball unit_interval R_bounded_metric x0 r)
+          (apply_fun seq k) Hseqk_ball).
+        let c. assume HcI Heq.
+        rewrite Heq.
+        exact (open_ball_unit_interval_connected_lt1 c r HcI HrR Hrpos Hrlt1).
+      }
+      claim HballSubI : apply_fun seq k c= unit_interval.
+      {
+        apply (ReplE_impred unit_interval
+          (fun x0:set => open_ball unit_interval R_bounded_metric x0 r)
+          (apply_fun seq k) Hseqk_ball).
+        let c. assume HcI Heq.
+        rewrite Heq.
+        exact (open_ball_subset_X unit_interval R_bounded_metric c r).
+      }
+      let x.
+      let y.
+      let z.
+      assume Hx.
+      assume Hy.
+      assume HzI.
+      assume Hbetween.
+      exact (connected_subset_unit_interval_interval_property
+        (apply_fun seq k)
+        HballSubI
+        HballConn
+        x
+        y
+        z
+        Hx
+        Hy
+        HzI
+        Hbetween).
+    }
+    (** Ball-image property is monotone under shrinking radii. **)
+    claim Hball_image_mono :
+      forall r1:set,
+        r1 :e R ->
+        Rlt 0 r1 ->
+        Rlt r1 r ->
+        forall c:set, c :e unit_interval ->
+          (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e U) \/
+          (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e V).
+    {
+      let r1. assume Hr1R Hr1pos Hr1lt.
+      let c. assume HcI.
+      apply (Hball_image c HcI).
+      - assume HallU.
+        apply orIL.
+        let t. assume Ht.
+        exact (HallU t
+          (open_ball_radius_mono unit_interval R_bounded_metric c r1 r Hr1lt t Ht)).
+      - assume HallV.
+        apply orIR.
+        let t. assume Ht.
+        exact (HallV t
+          (open_ball_radius_mono unit_interval R_bounded_metric c r1 r Hr1lt t Ht)).
+    }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
