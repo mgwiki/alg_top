@@ -1,4 +1,4 @@
-(** Balance Alice 7212 **)
+(** Balance Alice 7300 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -280728,7 +280728,8 @@ Qed.
 (** LATEX VERSION: If pi: E -> X is a closed quotient map and E is normal, then X is normal. **)
 (** Admin-approved-refactored per noticeboard proposal 1772587763 **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Collected Alice 88 **)
+(** Proven Alice **)
 Theorem lemma73_3_closed_quotient_normal :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
@@ -280753,7 +280754,7 @@ exact (closed_quotient_map_preserves_normality_helper
   Hcont
   HclosedImg
   HpreimOpen).
-Admitted.
+Qed.
 
 (** Infrastructure helper for S73 Thm 73.4:
     fundamental group of n-fold dunce cap is cyclic of order n. **)
@@ -346725,7 +346726,7 @@ exact (and5I
   HunionTA
   HinterFamTA
   HcohFamTA).
-Admitted.
+Qed.
 
 (** helper: if A meets T exactly at v and v is a graph vertex, then A has a second endpoint outside T. **)
 (** Proven Bob **)
