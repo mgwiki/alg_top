@@ -337548,9 +337548,11 @@ Qed.
 (** from S84 Definition (line 5581 in algtop.tex): tree **)
 (** LATEX VERSION: A subgraph T of X is a tree if T is connected and **)
 (** T contains no closed reduced edge paths. **)
+(** Admin-approved-refactored per noticeboard proposal 1772495150 **)
 Definition tree_in_graph : set -> set -> set -> set -> set -> prop :=
   fun T ArcsT X Tx Arcs =>
     subgraph_of T X Tx Arcs /\
+    ArcsT c= Arcs /\
     general_linear_graph T (subspace_topology X Tx T) ArcsT /\
     connected_space T (subspace_topology X Tx T) /\
     ~(exists n path_seq x0:set,
@@ -337573,6 +337575,7 @@ Definition maximal_tree : set -> set -> set -> set -> set -> prop :=
 Theorem tree_in_graph_intro :
   forall T ArcsT X Tx Arcs:set,
   subgraph_of T X Tx Arcs ->
+  ArcsT c= Arcs ->
   general_linear_graph T (subspace_topology X Tx T) ArcsT ->
   connected_space T (subspace_topology X Tx T) ->
   ~(exists n path_seq x0:set,
@@ -337582,9 +337585,10 @@ Theorem tree_in_graph_intro :
         (apply_fun path_seq j) 0 1 = x0)) ->
   tree_in_graph T ArcsT X Tx Arcs.
 let T ArcsT X Tx Arcs.
-assume Hsub HglgT HconnT Hnoloop.
-exact (and4I
+assume Hsub HarcsSub HglgT HconnT Hnoloop.
+exact (and5I
   (subgraph_of T X Tx Arcs)
+  (ArcsT c= Arcs)
   (general_linear_graph T (subspace_topology X Tx T) ArcsT)
   (connected_space T (subspace_topology X Tx T))
   (~(exists n path_seq x0:set,
@@ -337593,6 +337597,7 @@ exact (and4I
       (exists j:set, j :e n /\ ordsucc j /:e n /\
         (apply_fun path_seq j) 0 1 = x0)))
   Hsub
+  HarcsSub
   HglgT
   HconnT
   Hnoloop).
@@ -337625,8 +337630,9 @@ Theorem tree_in_graph_subgraph_of :
   subgraph_of T X Tx Arcs.
 let T ArcsT X Tx Arcs.
 assume Htree.
-apply (and4E
+apply (and5E
   (subgraph_of T X Tx Arcs)
+  (ArcsT c= Arcs)
   (general_linear_graph T (subspace_topology X Tx T) ArcsT)
   (connected_space T (subspace_topology X Tx T))
   (~(exists n path_seq x0:set,
@@ -337635,7 +337641,7 @@ apply (and4E
       (exists j:set, j :e n /\ ordsucc j /:e n /\
         (apply_fun path_seq j) 0 1 = x0)))
   Htree).
-assume Hsub HTglg HTconn Hnoloop.
+assume Hsub _ _ _ _.
 exact Hsub.
 Qed.
 
@@ -337646,8 +337652,9 @@ Theorem tree_in_graph_general_linear_graph :
   general_linear_graph T (subspace_topology X Tx T) ArcsT.
 let T ArcsT X Tx Arcs.
 assume Htree.
-apply (and4E
+apply (and5E
   (subgraph_of T X Tx Arcs)
+  (ArcsT c= Arcs)
   (general_linear_graph T (subspace_topology X Tx T) ArcsT)
   (connected_space T (subspace_topology X Tx T))
   (~(exists n path_seq x0:set,
@@ -337656,7 +337663,7 @@ apply (and4E
       (exists j:set, j :e n /\ ordsucc j /:e n /\
         (apply_fun path_seq j) 0 1 = x0)))
   Htree).
-assume Hsub HTglg HTconn Hnoloop.
+assume _ _ HTglg _ _.
 exact HTglg.
 Qed.
 
@@ -337667,8 +337674,9 @@ Theorem tree_in_graph_connected :
   connected_space T (subspace_topology X Tx T).
 let T ArcsT X Tx Arcs.
 assume Htree.
-apply (and4E
+apply (and5E
   (subgraph_of T X Tx Arcs)
+  (ArcsT c= Arcs)
   (general_linear_graph T (subspace_topology X Tx T) ArcsT)
   (connected_space T (subspace_topology X Tx T))
   (~(exists n path_seq x0:set,
@@ -337677,7 +337685,7 @@ apply (and4E
       (exists j:set, j :e n /\ ordsucc j /:e n /\
         (apply_fun path_seq j) 0 1 = x0)))
   Htree).
-assume Hsub HTglg HTconn Hnoloop.
+assume _ _ _ HTconn _.
 exact HTconn.
 Qed.
 
@@ -337692,8 +337700,9 @@ Theorem tree_in_graph_no_closed_reduced_edge_path :
         (apply_fun path_seq j) 0 1 = x0)).
 let T ArcsT X Tx Arcs.
 assume Htree.
-apply (and4E
+apply (and5E
   (subgraph_of T X Tx Arcs)
+  (ArcsT c= Arcs)
   (general_linear_graph T (subspace_topology X Tx T) ArcsT)
   (connected_space T (subspace_topology X Tx T))
   (~(exists n path_seq x0:set,
@@ -337702,8 +337711,30 @@ apply (and4E
       (exists j:set, j :e n /\ ordsucc j /:e n /\
         (apply_fun path_seq j) 0 1 = x0)))
   Htree).
-assume Hsub HTglg HTconn Hnoloop.
+assume _ _ _ _ Hnoloop.
 exact Hnoloop.
+Qed.
+
+(** Proven Alice **)
+Theorem tree_in_graph_arcs_subset :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  ArcsT c= Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree.
+apply (and5E
+  (subgraph_of T X Tx Arcs)
+  (ArcsT c= Arcs)
+  (general_linear_graph T (subspace_topology X Tx T) ArcsT)
+  (connected_space T (subspace_topology X Tx T))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Htree).
+assume _ HarcsSub _ _ _.
+exact HarcsSub.
 Qed.
 
 (** Proven Bob **)
@@ -343915,6 +343946,7 @@ Qed.
 Theorem lemma84_2_tree_extension_from_components :
   forall T ArcsT X Tx Arcs A:set,
   subgraph_of (T :\/: A) X Tx Arcs ->
+  {A} :\/: ArcsT c= Arcs ->
   general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
   connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
   ~(exists n path_seq x0:set,
@@ -343925,7 +343957,7 @@ Theorem lemma84_2_tree_extension_from_components :
         (apply_fun path_seq j) 0 1 = x0)) ->
   tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
 let T ArcsT X Tx Arcs A.
-assume HsubTA HglgTA HconnTA HnoloopTA.
+assume HsubTA HarcsSub HglgTA HconnTA HnoloopTA.
 exact (tree_in_graph_intro
   (T :\/: A)
   ({A} :\/: ArcsT)
@@ -343933,6 +343965,7 @@ exact (tree_in_graph_intro
   Tx
   Arcs
   HsubTA
+  HarcsSub
   HglgTA
   HconnTA
   HnoloopTA).
@@ -343942,6 +343975,7 @@ Qed.
 Theorem lemma84_2_tree_extension_iff_components :
   forall T ArcsT X Tx Arcs A:set,
   subgraph_of (T :\/: A) X Tx Arcs ->
+  {A} :\/: ArcsT c= Arcs ->
   (tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs <->
    ((general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) /\
@@ -343952,7 +343986,7 @@ Theorem lemma84_2_tree_extension_iff_components :
         (exists j:set, j :e n /\ ordsucc j /:e n /\
           (apply_fun path_seq j) 0 1 = x0)))).
 let T ArcsT X Tx Arcs A.
-assume HsubTA.
+assume HsubTA HarcsSub.
 apply iffI.
 - assume HtreeExt.
   apply andI.
@@ -344021,6 +344055,7 @@ apply iffI.
     Arcs
     A
     HsubTA
+    HarcsSub
     (andEL
       (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
       (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
@@ -344049,6 +344084,14 @@ Theorem lemma84_2_tree_extension_iff_components_from_hypotheses :
           (apply_fun path_seq j) 0 1 = x0)))).
 let T ArcsT X Tx Arcs A.
 assume Htree HA Hnsub Hmeet.
+claim HarcsSub : {A} :\/: ArcsT c= Arcs.
+{
+  let x. assume Hx : x :e {A} :\/: ArcsT.
+  apply (binunionE' {A} ArcsT x (x :e Arcs)).
+  - assume HxSA. rewrite (SingE A x HxSA). exact HA.
+  - assume HxArcsT. exact ((tree_in_graph_arcs_subset T ArcsT X Tx Arcs Htree) x HxArcsT).
+  - exact Hx.
+}
 exact (lemma84_2_tree_extension_iff_components
   T
   ArcsT
@@ -344069,7 +344112,8 @@ exact (lemma84_2_tree_extension_iff_components
       Tx
       Arcs
   Htree)
-    HA)).
+    HA)
+  HarcsSub).
 Qed.
 
 (** Proven Bob **)
@@ -344240,6 +344284,14 @@ Theorem lemma84_2_tree_extension_from_hypotheses_and_components :
   tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
 let T ArcsT X Tx Arcs A.
 assume Htree HA Hnsub Hmeet HglgTA HconnTA HnoloopTA.
+claim HarcsSub : {A} :\/: ArcsT c= Arcs.
+{
+  let x. assume Hx : x :e {A} :\/: ArcsT.
+  apply (binunionE' {A} ArcsT x (x :e Arcs)).
+  - assume HxSA. rewrite (SingE A x HxSA). exact HA.
+  - assume HxArcsT. exact ((tree_in_graph_arcs_subset T ArcsT X Tx Arcs Htree) x HxArcsT).
+  - exact Hx.
+}
 exact (lemma84_2_tree_extension_from_components
   T
   ArcsT
@@ -344261,6 +344313,7 @@ exact (lemma84_2_tree_extension_from_components
       Arcs
       Htree)
     HA)
+  HarcsSub
   HglgTA
   HconnTA
   HnoloopTA).
@@ -351528,13 +351581,22 @@ Theorem lemma84_2_tree_extension :
 		    Hnsub
 		    Hmeet).
 		}
-			exact (tree_in_graph_intro
+			claim HarcsSub : {A} :\/: ArcsT c= Arcs.
+		{
+		  let x. assume Hx : x :e {A} :\/: ArcsT.
+		  apply (binunionE' {A} ArcsT x (x :e Arcs)).
+		  - assume HxSA. rewrite (SingE A x HxSA). exact HA.
+		  - assume HxArcsT. exact ((tree_in_graph_arcs_subset T ArcsT X Tx Arcs Htree) x HxArcsT).
+		  - exact Hx.
+		}
+		exact (tree_in_graph_intro
 			  (T :\/: A)
 			  ({A} :\/: ArcsT)
 			  X
 			  Tx
 			  Arcs
 			  HsubTA
+			  HarcsSub
 			  HglgTA
 			  HconnTA
 			  HnoloopTA).
@@ -365948,7 +366010,7 @@ apply andI.
         + exact HredT.
       - exact Hclosed.
     }
-    exact (tree_in_graph_intro T0 B X Tx Arcs HsubT0 HglgT0 HconnT0 HnoloopT0).
+    exact (tree_in_graph_intro T0 B X Tx Arcs HsubT0 HBsubArcs HglgT0 HconnT0 HnoloopT0).
 Admitted.
 
 (** helper for S84.3: a tree is path-connected once local path-connectedness is available on T. **)
