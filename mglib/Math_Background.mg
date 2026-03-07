@@ -304100,9 +304100,39 @@ apply iffI.
               let y. assume HyU Hweq.
               claim HyX : y :e X. { exact (HUsub y HyU). }
               claim Hg1y_eq_g2y : apply_fun g1 y = apply_fun g2 y.
-              { (** h = idG, so h(y) = idG(y) = y. But h(y) = g2inv(g1(y)). **)
-                (** So g2inv(g1(y)) = y. Apply g2: g1(y) = g2(y) using right inv **)
-                admit. }
+              { (** h = idG, so g2inv(g1(y)) = y. Use homeomorphism right inverse. **)
+                claim Hg2inv_g1y : apply_fun g2inv (apply_fun g1 y) = y.
+                { claim Hhy : apply_fun h y = y.
+                  { rewrite HheqId. exact (HidAct y HyX). }
+                  rewrite <- (Hh_act y HyX). exact Hhy. }
+                claim Hg1yX : apply_fun g1 y :e X. { exact (Hfn g1 Hg1G y HyX). }
+                (** g2inv is injective since it's a homeomorphism **)
+                claim Hg2inv_inj : forall a b:set, a :e X -> b :e X ->
+                  apply_fun g2inv a = apply_fun g2inv b -> a = b.
+                { let a b. assume HaX HbX Heqab.
+                  apply (homeomorphism_inverse_continuous X Tx X Tx g2inv (Hhomeo g2inv Hg2invG)).
+                  let gi. assume Hgipack.
+                  claim Hgi_left : forall w:set, w :e X ->
+                    apply_fun gi (apply_fun g2inv w) = w.
+                  { exact (andER
+                      (continuous_map X Tx X Tx gi)
+                      (forall w:set, w :e X -> apply_fun gi (apply_fun g2inv w) = w)
+                      (andEL
+                        (continuous_map X Tx X Tx gi /\ (forall w:set, w :e X -> apply_fun gi (apply_fun g2inv w) = w))
+                        (forall v:set, v :e X -> apply_fun g2inv (apply_fun gi v) = v)
+                        Hgipack)). }
+                  claim Ha : a = apply_fun gi (apply_fun g2inv a).
+                  { symmetry. exact (Hgi_left a HaX). }
+                  claim Hb : b = apply_fun gi (apply_fun g2inv b).
+                  { symmetry. exact (Hgi_left b HbX). }
+                  rewrite Ha. rewrite Hb. rewrite Heqab. reflexivity. }
+                (** g2inv(g1(y)) = y = g2inv(g2(y)), so by injectivity g1(y) = g2(y) **)
+                claim Hg2inv_g2y : apply_fun g2inv (apply_fun g2 y) = y.
+                { exact (Hg2inv_act y HyX). }
+                claim Heq_inv : apply_fun g2inv (apply_fun g1 y) = apply_fun g2inv (apply_fun g2 y).
+                { rewrite Hg2inv_g1y. rewrite Hg2inv_g2y. reflexivity. }
+                claim Hg2yX : apply_fun g2 y :e X. { exact (Hfn g2 Hg2G y HyX). }
+                exact (Hg2inv_inj (apply_fun g1 y) (apply_fun g2 y) Hg1yX Hg2yX Heq_inv). }
               rewrite Hweq. rewrite Hg1y_eq_g2y.
               exact (ReplI U (fun y:set => apply_fun g2 y) y HyU).
             - let w. assume Hw.
@@ -304110,7 +304140,37 @@ apply iffI.
               let y. assume HyU Hweq.
               claim HyX : y :e X. { exact (HUsub y HyU). }
               claim Hg2y_eq_g1y : apply_fun g2 y = apply_fun g1 y.
-              { admit. }
+              { (** Same argument as Hg1y_eq_g2y but symmetric **)
+                claim Hg2inv_g1y : apply_fun g2inv (apply_fun g1 y) = y.
+                { claim Hhy : apply_fun h y = y.
+                  { rewrite HheqId. exact (HidAct y HyX). }
+                  rewrite <- (Hh_act y HyX). exact Hhy. }
+                claim Hg1yX : apply_fun g1 y :e X. { exact (Hfn g1 Hg1G y HyX). }
+                claim Hg2inv_g2y : apply_fun g2inv (apply_fun g2 y) = y.
+                { exact (Hg2inv_act y HyX). }
+                claim Hg2yX : apply_fun g2 y :e X. { exact (Hfn g2 Hg2G y HyX). }
+                claim Hg2inv_inj2 : forall a b:set, a :e X -> b :e X ->
+                  apply_fun g2inv a = apply_fun g2inv b -> a = b.
+                { let a b. assume HaX HbX Heqab.
+                  apply (homeomorphism_inverse_continuous X Tx X Tx g2inv (Hhomeo g2inv Hg2invG)).
+                  let gi. assume Hgipack.
+                  claim Hgi_left : forall w:set, w :e X ->
+                    apply_fun gi (apply_fun g2inv w) = w.
+                  { exact (andER
+                      (continuous_map X Tx X Tx gi)
+                      (forall w:set, w :e X -> apply_fun gi (apply_fun g2inv w) = w)
+                      (andEL
+                        (continuous_map X Tx X Tx gi /\ (forall w:set, w :e X -> apply_fun gi (apply_fun g2inv w) = w))
+                        (forall v:set, v :e X -> apply_fun g2inv (apply_fun gi v) = v)
+                        Hgipack)). }
+                  claim Ha : a = apply_fun gi (apply_fun g2inv a).
+                  { symmetry. exact (Hgi_left a HaX). }
+                  claim Hb : b = apply_fun gi (apply_fun g2inv b).
+                  { symmetry. exact (Hgi_left b HbX). }
+                  rewrite Ha. rewrite Hb. rewrite Heqab. reflexivity. }
+                claim Heq_inv : apply_fun g2inv (apply_fun g2 y) = apply_fun g2inv (apply_fun g1 y).
+                { rewrite Hg2inv_g2y. rewrite Hg2inv_g1y. reflexivity. }
+                exact (Hg2inv_inj2 (apply_fun g2 y) (apply_fun g1 y) Hg2yX Hg1yX Heq_inv). }
               rewrite Hweq. rewrite Hg2y_eq_g1y.
               exact (ReplI U (fun y:set => apply_fun g1 y) y HyU). }
           exact Himg_eq.
