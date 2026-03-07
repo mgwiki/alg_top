@@ -287057,6 +287057,80 @@ apply andI.
   witness alpha_class. apply andI.
   + exact Halpha_in_FG.
   + (** H0 = {conj(h) | h in H1} **)
+    (** Extract group axioms from group_structure **)
+    apply (and6E
+      (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+      (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+      (forall a:set, a :e G ->
+        apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+      HgrpG).
+    assume HmultFn HinvFn HeGmem HassocG HidG HinvAxG.
+    claim Hinv_alpha_G : apply_fun invG alpha_class :e G. { exact (HinvFn alpha_class Halpha_in_FG). }
+    (** Sigma reverse facts **)
+    claim Hrev_sigma_cont : continuous_map unit_interval unit_interval_topology E Te (reverse_path sigma).
+    { exact (reverse_path_continuous E Te sigma Hsigma_cont). }
+    claim Hrev_sigma_fun : function_on (reverse_path sigma) unit_interval E.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology E Te
+        (reverse_path sigma) Hrev_sigma_cont). }
+    claim Hrev_sigma_0 : apply_fun (reverse_path sigma) 0 = e1.
+    { claim H : apply_fun (reverse_path sigma) 0 = apply_fun sigma 1.
+      { exact (reverse_path_at_zero sigma). }
+      rewrite H. exact Hsigma1. }
+    claim Hrev_sigma_1 : apply_fun (reverse_path sigma) 1 = e0.
+    { claim H : apply_fun (reverse_path sigma) 1 = apply_fun sigma 0.
+      { exact (reverse_path_at_one sigma). }
+      rewrite H. exact Hsigma0. }
+    (** Reverse alpha_path and its class **)
+    set rev_alpha_path := reverse_path alpha_path.
+    claim Hrev_alpha_cont : continuous_map unit_interval unit_interval_topology B Tb rev_alpha_path.
+    { exact (reverse_path_continuous B Tb alpha_path Halpha_cont). }
+    claim Hrev_ls : rev_alpha_path :e loop_space B Tb b0.
+    { exact (reverse_path_preserves_loop_space_early B Tb b0 alpha_path Halpha_in_ls). }
+    set rev_alpha_class := path_homotopy_class_loop B Tb b0 rev_alpha_path.
+    claim Hrev_FG : rev_alpha_class :e G.
+    { exact (path_homotopy_class_in_fundamental_group B Tb b0 rev_alpha_path Hrev_ls). }
+    (** p o reverse(sigma) = reverse(alpha_path) **)
+    claim Hp_rev_sigma : compose_fun unit_interval (reverse_path sigma) p = rev_alpha_path.
+    { exact (eq_symm
+        (compose_fun unit_interval flip_unit_interval (compose_fun unit_interval sigma p))
+        (compose_fun unit_interval (compose_fun unit_interval flip_unit_interval sigma) p)
+        (compose_fun_assoc_eq_algtop unit_interval unit_interval E B
+          flip_unit_interval sigma p
+          flip_unit_interval_function_on Hsigma_fun Hp_fun)). }
+    (** Key: inv(alpha_class) = rev_alpha_class **)
+    claim Hinv_eq_rev : apply_fun invG alpha_class = rev_alpha_class.
+    { claim Hhtpy : path_homotopic B Tb b0 b0
+        (path_concat rev_alpha_path alpha_path) (constant_path b0).
+      { exact (Theorem_51_2_left_inverse B Tb b0 b0 alpha_path
+          Halpha_cont Halpha0 Halpha1). }
+      claim Hconcat_eq_eG : path_homotopy_class_loop B Tb b0
+        (path_concat rev_alpha_path alpha_path) = eG.
+      { exact (path_homotopy_class_loop_eq_of_path_homotopic B Tb b0
+          (path_concat rev_alpha_path alpha_path) (constant_path b0) Hhtpy). }
+      claim Hmult_rev_eG : apply_fun multG (rev_alpha_class, alpha_class) = eG.
+      { rewrite (eq_symm
+          (path_homotopy_class_loop B Tb b0 (path_concat rev_alpha_path alpha_path))
+          (apply_fun multG (rev_alpha_class, alpha_class))
+          (path_homotopy_class_loop_concat_eq_mult B Tb b0
+            rev_alpha_path alpha_path Hrev_ls Halpha_in_ls)).
+        exact Hconcat_eq_eG. }
+      claim Hmult_inv_eG : apply_fun multG (apply_fun invG alpha_class, alpha_class) = eG.
+      { exact (andER
+          (apply_fun multG (alpha_class, apply_fun invG alpha_class) = eG)
+          (apply_fun multG (apply_fun invG alpha_class, alpha_class) = eG)
+          (HinvAxG alpha_class Halpha_in_FG)). }
+      claim Hboth : apply_fun multG (rev_alpha_class, alpha_class)
+        = apply_fun multG (apply_fun invG alpha_class, alpha_class).
+      { rewrite Hmult_rev_eG. exact (eq_symm
+          (apply_fun multG (apply_fun invG alpha_class, alpha_class)) eG
+          Hmult_inv_eG). }
+      exact (eq_symm
+        rev_alpha_class (apply_fun invG alpha_class)
+        (group_right_cancel G multG eG invG alpha_class
+          rev_alpha_class (apply_fun invG alpha_class)
+          HgrpG Halpha_in_FG Hrev_FG Hinv_alpha_G Hboth)). }
     apply set_ext.
     - (** H0 c= {conj(h) | h in H1} **)
       admit.
