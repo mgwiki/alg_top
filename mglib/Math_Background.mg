@@ -304028,7 +304028,105 @@ apply iffI.
       witness slices.
       (** pairwise_disjoint slices **)
       claim Hpd_slices : pairwise_disjoint slices.
-      { admit. }
+      { let V1 V2. assume HV1 HV2 HV1neq.
+        apply (ReplE_impred G (fun g:set => image_of g U) V1 HV1).
+        let g1. assume Hg1G HV1eq.
+        apply (ReplE_impred G (fun g:set => image_of g U) V2 HV2).
+        let g2. assume Hg2G HV2eq.
+        (** Need: V1 :/\: V2 = Empty. Use nonempty_or_empty from xm **)
+        apply xm (V1 :/\: V2 = Empty).
+        + assume Heq. exact Heq.
+        + assume Hne.
+          claim Hnonempty : exists z:set, z :e V1 :/\: V2.
+          { apply (dneg (exists z:set, z :e V1 :/\: V2)). assume Hnex.
+            apply Hne. apply set_ext.
+            - let z. assume Hz.
+              claim Hfalse : False. { apply Hnex. witness z. exact Hz. }
+              exact (Hfalse (z :e Empty)).
+            - let z. assume Hz. exact (EmptyE z Hz (z :e V1 :/\: V2)). }
+          apply Hnonempty. let z. assume Hz.
+        claim HzV1 : z :e V1. { exact (binintersectE1 V1 V2 z Hz). }
+        claim HzV2 : z :e V2. { exact (binintersectE2 V1 V2 z Hz). }
+        (** z :e image_of g1 U and z :e image_of g2 U **)
+        claim HzG1 : z :e image_of g1 U. { rewrite <- HV1eq. exact HzV1. }
+        claim HzG2 : z :e image_of g2 U. { rewrite <- HV2eq. exact HzV2. }
+        apply (ReplE_impred U (fun y:set => apply_fun g1 y) z HzG1).
+        let y1. assume Hy1U Hzeq1.
+        apply (ReplE_impred U (fun y:set => apply_fun g2 y) z HzG2).
+        let y2. assume Hy2U Hzeq2.
+        claim Hy1X : y1 :e X. { exact (HUsub y1 Hy1U). }
+        claim Hy2X : y2 :e X. { exact (HUsub y2 Hy2U). }
+        (** Get g2inv from Hinv **)
+        apply (Hinv g2 Hg2G). let g2inv. assume Hg2invpack.
+        claim Hg2invG : g2inv :e G.
+        { exact (andEL (g2inv :e G)
+            (forall w:set, w :e X -> apply_fun g2inv (apply_fun g2 w) = w)
+            Hg2invpack). }
+        claim Hg2inv_act : forall w:set, w :e X -> apply_fun g2inv (apply_fun g2 w) = w.
+        { exact (andER (g2inv :e G)
+            (forall w:set, w :e X -> apply_fun g2inv (apply_fun g2 w) = w)
+            Hg2invpack). }
+        (** Get h = g2inv . g1 from Hcomp **)
+        apply (Hcomp g1 g2inv Hg1G Hg2invG). let h. assume Hhpack.
+        claim HhG : h :e G.
+        { exact (andEL (h :e G)
+            (forall w:set, w :e X -> apply_fun h w = apply_fun g2inv (apply_fun g1 w))
+            Hhpack). }
+        claim Hh_act : forall w:set, w :e X -> apply_fun h w = apply_fun g2inv (apply_fun g1 w).
+        { exact (andER (h :e G)
+            (forall w:set, w :e X -> apply_fun h w = apply_fun g2inv (apply_fun g1 w))
+            Hhpack). }
+        (** h(y1) = g2inv(g1(y1)) = g2inv(z) = g2inv(g2(y2)) = y2 **)
+        claim Hhy1 : apply_fun h y1 = y2.
+        { rewrite (Hh_act y1 Hy1X).
+          (** Goal: apply_fun g2inv (apply_fun g1 y1) = y2 **)
+          (** Hzeq1 : z = apply_fun g1 y1, Hzeq2 : z = apply_fun g2 y2 **)
+          rewrite <- Hzeq1. rewrite Hzeq2.
+          exact (Hg2inv_act y2 Hy2X). }
+        (** h(y1) = y2 :e U, y1 :e U **)
+        (** If h <> idG, properly_discontinuous gives h(y1) /:e U - contradiction **)
+        apply xm (h = idG).
+        + assume HheqId.
+          (** h = idG means h acts as identity **)
+          (** Then g2inv(g1(y)) = y for all y, so g1(y) = g2(y) **)
+          (** image_of g1 U = image_of g2 U, so V1 = V2 - contradiction **)
+          apply HV1neq.
+          rewrite HV1eq. rewrite HV2eq.
+          (** Show image_of g1 U = image_of g2 U **)
+          claim Himg_eq : image_of g1 U = image_of g2 U.
+          { apply set_ext.
+            - let w. assume Hw.
+              apply (ReplE_impred U (fun y:set => apply_fun g1 y) w Hw).
+              let y. assume HyU Hweq.
+              claim HyX : y :e X. { exact (HUsub y HyU). }
+              claim Hg1y_eq_g2y : apply_fun g1 y = apply_fun g2 y.
+              { (** h = idG, so h(y) = idG(y) = y. But h(y) = g2inv(g1(y)). **)
+                (** So g2inv(g1(y)) = y. Apply g2: g1(y) = g2(y) using right inv **)
+                admit. }
+              rewrite Hweq. rewrite Hg1y_eq_g2y.
+              exact (ReplI U (fun y:set => apply_fun g2 y) y HyU).
+            - let w. assume Hw.
+              apply (ReplE_impred U (fun y:set => apply_fun g2 y) w Hw).
+              let y. assume HyU Hweq.
+              claim HyX : y :e X. { exact (HUsub y HyU). }
+              claim Hg2y_eq_g1y : apply_fun g2 y = apply_fun g1 y.
+              { admit. }
+              rewrite Hweq. rewrite Hg2y_eq_g1y.
+              exact (ReplI U (fun y:set => apply_fun g1 y) y HyU). }
+          exact Himg_eq.
+        + assume HhneqId.
+          (** h :e G, h <> idG, y1 :e U **)
+          claim Hpdact_h : apply_fun h x0 :e X /\ (forall y:set, y :e U -> apply_fun h y /:e U).
+          { exact (Hpdact h HhG HhneqId). }
+          claim Hhy1_notU : forall y:set, y :e U -> apply_fun h y /:e U.
+          { exact (andER (apply_fun h x0 :e X)
+              (forall y:set, y :e U -> apply_fun h y /:e U)
+              Hpdact_h). }
+          (** h(y1) = y2 :e U contradicts h(y1) /:e U **)
+          claim Hhy1U : apply_fun h y1 :e U.
+          { exact (eq_subst_mem (apply_fun h y1) y2 U Hhy1 Hy2U). }
+          claim Hfalse : False. { exact (Hhy1_notU y1 Hy1U Hhy1U). }
+          exact (Hfalse (V1 :/\: V2 = Empty)). }
       (** Union slices = preimage_of X pi W **)
       claim Hunion_eq : Union slices = preimage_of X pi W.
       { apply set_ext.
