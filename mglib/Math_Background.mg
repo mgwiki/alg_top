@@ -301882,11 +301882,65 @@ claim Hlift_full :
 (** Step 2b: Show lifting condition: p_star(pi1(E,e0)) subset r_star(pi1(Y,y0)) **)
 (** Since E is simply connected, pi1(E,e0) = {e_id}, so p_star(pi1(E,e0)) = {id_B} **)
 (** and id_B = r_star(e_id_Y) is in r_star(pi1(Y,y0)) **)
+claim Hpi1E_triv : fundamental_group E Te e0 = Sing (fundamental_group_id E Te e0).
+{ exact (simply_connected_trivial_pi1_at_point E Te e0 Hsimp He0E). }
+set eE := fundamental_group_id E Te e0.
+set eB := fundamental_group_id B Tb b0.
+set eY := fundamental_group_id Y Ty y0.
+claim HgrpE : group_structure (fundamental_group E Te e0) (fundamental_group_mult E Te e0) eE (fundamental_group_inv E Te e0).
+{ exact (fundamental_group_is_group E Te e0 HtopE He0E). }
+claim HgrpB : group_structure (fundamental_group B Tb b0) (fundamental_group_mult B Tb b0) eB (fundamental_group_inv B Tb b0).
+{ exact (fundamental_group_is_group B Tb b0 HtopB Hb0B). }
+claim HgrpY : group_structure (fundamental_group Y Ty y0) (fundamental_group_mult Y Ty y0) eY (fundamental_group_inv Y Ty y0).
+{ exact (fundamental_group_is_group Y Ty y0 HtopY Hy0Y). }
+claim Hpe0_refl : apply_fun p e0 = b0. { reflexivity. }
+claim Hphi_p_hom : group_homomorphism
+  (fundamental_group E Te e0) (fundamental_group_mult E Te e0)
+  (fundamental_group B Tb b0) (fundamental_group_mult B Tb b0)
+  phi_p.
+{ exact (induced_homomorphism_is_homomorphism E Te e0 B Tb b0 p Hpcont Hpe0_refl He0E). }
+claim Hphi_p_id : apply_fun phi_p eE = eB.
+{ exact (group_hom_maps_id_to_id
+    (fundamental_group E Te e0) (fundamental_group_mult E Te e0) eE (fundamental_group_inv E Te e0)
+    (fundamental_group B Tb b0) (fundamental_group_mult B Tb b0) eB (fundamental_group_inv B Tb b0)
+    phi_p HgrpE HgrpB Hphi_p_hom). }
+claim Hphi_r_hom : group_homomorphism
+  (fundamental_group Y Ty y0) (fundamental_group_mult Y Ty y0)
+  (fundamental_group B Tb (apply_fun r y0)) (fundamental_group_mult B Tb (apply_fun r y0))
+  phi_r.
+{ exact (induced_homomorphism_is_homomorphism Y Ty y0 B Tb (apply_fun r y0) r Hrcont (eq_refl (apply_fun r y0)) Hy0Y). }
+claim HeY_mem : eY :e fundamental_group Y Ty y0.
+{ exact (fundamental_group_id_member Y Ty y0 HtopY Hy0Y). }
+claim HgrpB2 : group_structure (fundamental_group B Tb (apply_fun r y0)) (fundamental_group_mult B Tb (apply_fun r y0)) (fundamental_group_id B Tb (apply_fun r y0)) (fundamental_group_inv B Tb (apply_fun r y0)).
+{ rewrite Hry0. exact HgrpB. }
+claim Hphi_r_id : apply_fun phi_r eY = fundamental_group_id B Tb (apply_fun r y0).
+{ exact (group_hom_maps_id_to_id
+    (fundamental_group Y Ty y0) (fundamental_group_mult Y Ty y0) eY (fundamental_group_inv Y Ty y0)
+    (fundamental_group B Tb (apply_fun r y0)) (fundamental_group_mult B Tb (apply_fun r y0)) (fundamental_group_id B Tb (apply_fun r y0)) (fundamental_group_inv B Tb (apply_fun r y0))
+    phi_r HgrpY HgrpB2 Hphi_r_hom). }
+claim HeB_eq_ry0 : eB = fundamental_group_id B Tb (apply_fun r y0).
+{ rewrite Hry0. reflexivity. }
 claim Hlift_cond :
   forall cls:set,
     cls :e homomorphism_image (fundamental_group E Te e0) phi_p ->
     cls :e homomorphism_image (fundamental_group Y Ty y0) phi_r.
-{ admit. }
+{ let cls. assume Hcls.
+  (** cls :e {apply_fun phi_p x | x :e fundamental_group E Te e0} **)
+  (** Extract witness alpha via ReplE_impred **)
+  apply (ReplE_impred (fundamental_group E Te e0) (fun x:set => apply_fun phi_p x) cls Hcls).
+  let alpha. assume Halpha_mem. assume Hcls_eq.
+  (** alpha :e Sing eE from Hpi1E_triv **)
+  claim Halpha_sing : alpha :e Sing eE.
+  { exact (eq_subst_mem_set alpha (fundamental_group E Te e0) (Sing eE) Halpha_mem Hpi1E_triv). }
+  claim Halpha_eq : alpha = eE. { exact (SingE eE alpha Halpha_sing). }
+  (** cls = apply_fun phi_p eE = eB **)
+  claim Hcls_eB : cls = eB. { rewrite Hcls_eq. rewrite Halpha_eq. exact Hphi_p_id. }
+  (** eB = apply_fun phi_r eY **)
+  claim HeB_phi_r : eB = apply_fun phi_r eY.
+  { rewrite HeB_eq_ry0. rewrite <- Hphi_r_id. reflexivity. }
+  (** So cls = apply_fun phi_r eY :e homomorphism_image **)
+  rewrite Hcls_eB. rewrite HeB_phi_r.
+  exact (homomorphism_image_intro (fundamental_group Y Ty y0) phi_r eY HeY_mem). }
 (** Extract lift from iff + condition **)
 set LiftExist := exists ft:set,
     continuous_map E Te Y Ty ft /\
