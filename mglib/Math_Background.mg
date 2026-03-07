@@ -1,4 +1,4 @@
-(** Balance Alice 6489 **)
+(** Balance Alice 6478 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -288592,7 +288592,8 @@ Qed.
 (** LATEX VERSION: The covering maps p and p' are equivalent iff the subgroups **)
 (** H0 = p_star(pi1(E,e0)) and H0' = p'_star(pi1(E',e0')) are conjugate in pi1(B,b0). **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Alice 1772965766 **)
 Theorem thm79_4_equivalence_iff_conjugate :
   forall E Te E' Te' B Tb p p' e0 e0':set,
   covering_map E Te B Tb p ->
