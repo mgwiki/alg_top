@@ -1,0 +1,30 @@
+CHANGES13467 (from bck13466, 383171 lines to bck13467, 383178 lines)
+
+1. Implemented 3 more admin-approved noticeboard refactors:
+
+   a) Notice 1772587763: lemma73_3_closed_quotient_normal
+      - Added surjective_map E X pi hypothesis
+      - Removed admit for Hsurj (was explicitly waiting for this hypothesis)
+      - Proof still Admitted (for other reasons)
+
+   b) Notice 1772519545: ex59_4a_both_trivial
+      - Added path_connected_space U (subspace_topology X Tx U) hypothesis
+      - Added path_connected_space V (subspace_topology X Tx V) hypothesis
+      - Updated proof intro to accept HpcU and HpcV
+      - Proof still Admitted
+
+   c) Notice 1772491898: ex52_1b_star_convex_simply_connected
+      - Removed arbitrary topology Ta parameter
+      - Statement now uses subspace_topology R R_standard_topology A
+      - Added set Ta := subspace_topology ... at proof start
+      - Proved HtopA via subspace_topology_is_topology
+      - Restructured HstarPair extraction to come before HtopA
+      - Proof still Admitted (for homotopy continuity admit)
+
+2. Guard violations are all from admin-approved statement changes
+
+3. Balance unchanged: Alice 7078
+
+4. Line change: +7 lines (383178 - 383171)
+
+Running totals: 370 Admitted, Alice balance: 7078
