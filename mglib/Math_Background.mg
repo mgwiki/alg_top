@@ -353282,8 +353282,7 @@ apply (xm (A c= T)).
     A
     Hmax
     HtreeExt).
-(** blocked on admitted lemma84_2_tree_extension_general_linear_graph_part. **)
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem maximal_tree_edge_meeting_tree_forces_subset_from_component_obligations :
@@ -353528,8 +353527,7 @@ apply (xm (A c= T)).
     (HAsubT
       x
       HxA)).
-(** blocked on admitted lemma84_2_tree_extension_general_linear_graph_part. **)
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem outside_set_not_in_subset :
@@ -353854,8 +353852,7 @@ exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
   Arcs
   Hmax
   HextA).
-(** blocked on admitted lemma84_2_tree_extension_general_linear_graph_part. **)
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex_and_extension_obligation :
@@ -368235,8 +368232,7 @@ claim Hcycle :
         HglgT'
         HEArcsT')).
   }
-  (** Bridge: ArcsT' arcs are ambient arcs (known formalization gap). **)
-  claim HArcsT'_sub : ArcsT' c= Arcs. { admit. }
+  claim HArcsT'_sub : ArcsT' c= Arcs. { exact (tree_in_graph_arcs_subset T' ArcsT' X Tx Arcs Htree'). }
   claim HEArcs : E :e Arcs. { exact (HArcsT'_sub E HEArcsT'). }
   claim HEeqA : E = A.
   { exact (HrArcUnique E HEArcs HESubT' HrE). }
