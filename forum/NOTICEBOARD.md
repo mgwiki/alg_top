@@ -82,6 +82,56 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772880740
+Created: 1772880740
+Status: PROPOSED
+
+Refers to Commit:
+  e69eedd171f97bdeb24bd787142267e1f6464ee8
+
+Target:
+  Line: 339512
+  Name: lemma84_2_tree_extension_general_linear_graph_part (Theorem)
+
+Problem:
+  The proof needs each arc in ArcsT to be an ambient arc in Arcs in order to apply
+  general_linear_graph_arc_intersection_case. tree_in_graph does not imply ArcsT c= Arcs,
+  and there are counterexamples (e.g., X an interval split into two ambient arcs, T = X,
+  ArcsT = {X} is a tree but ArcsT not subset of Arcs). The statement appears false as is.
+
+Proposed Replacement:
+  Theorem lemma84_2_tree_extension_general_linear_graph_part :
+    forall T ArcsT X Tx Arcs A:set,
+    tree_in_graph T ArcsT X Tx Arcs ->
+    ArcsT c= Arcs ->
+    A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772880740 | Bob: without ArcsT c= Arcs, mixed A/V intersection can fail endpoint condition.
+
+Approvals:
+  - 1772880740 | Alice: NO
+  - 1772880740 | Bob: YES
+  - 1772880740 | Charlie: NO
+  - 1772880740 | Dave: NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772869429
 Created: 1772869429
 Status: PROPOSED
