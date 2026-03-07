@@ -1,4 +1,4 @@
-(** Balance Alice 6641 **)
+(** Balance Alice 6602 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -303277,7 +303277,8 @@ Definition properly_discontinuous : set -> set -> set -> set -> prop :=
 (** iff the action of G is properly discontinuous. In this case, pi is regular **)
 (** and G is its group of covering transformations. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 385 **)
+(** Bounty 424 **)
+(** Lock Alice 1772977022 **)
 Theorem thm81_5_properly_discontinuous_covering :
   forall X Tx G idG:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
