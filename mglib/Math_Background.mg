@@ -1,4 +1,4 @@
-(** Balance Alice 6478 **)
+(** Balance Alice 6599 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -288592,8 +288592,8 @@ Qed.
 (** LATEX VERSION: The covering maps p and p' are equivalent iff the subgroups **)
 (** H0 = p_star(pi1(E,e0)) and H0' = p'_star(pi1(E',e0')) are conjugate in pi1(B,b0). **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 100 **)
-(** Bounty 121 **)
-(** Lock Alice 1772965766 **)
+(** Collected Alice 121 **)
+(** Proven Alice **)
 Theorem thm79_4_equivalence_iff_conjugate :
   forall E Te E' Te' B Tb p p' e0 e0':set,
   covering_map E Te B Tb p ->
@@ -288615,8 +288615,160 @@ Theorem thm79_4_equivalence_iff_conjugate :
      (fundamental_group_mult B Tb (apply_fun p e0))
      (fundamental_group_id B Tb (apply_fun p e0))
      (fundamental_group_inv B Tb (apply_fun p e0))).
-admit.
-Admitted.
+let E Te E' Te' B Tb p p' e0 e0'.
+assume Hcov Hcov' He0E He0'E' Hpe0pe0' HpathE HlpE HpathE' HlpE'.
+set b0 := apply_fun p e0.
+claim Hpe0' : apply_fun p' e0' = b0. { exact (eq_symm b0 (apply_fun p' e0') Hpe0pe0'). }
+set H0 := homomorphism_image (fundamental_group E Te e0) (induced_homomorphism E Te e0 B Tb b0 p).
+set H0' := homomorphism_image (fundamental_group E' Te' e0') (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p').
+apply iffI.
+- (** Forward: equivalent => conjugate **)
+  assume Hequiv.
+  (** Unfold equivalent_covering_maps to extract h **)
+  claim Hequiv_exp : (covering_map E Te B Tb p /\ covering_map E' Te' B Tb p') /\
+    exists h:set, homeomorphism E Te E' Te' h /\
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x)).
+  { exact Hequiv. }
+  claim Hexists_h : exists h:set, homeomorphism E Te E' Te' h /\
+    (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x)).
+  { exact (andER (covering_map E Te B Tb p /\ covering_map E' Te' B Tb p')
+      (exists h:set, homeomorphism E Te E' Te' h /\
+        (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x)))
+      Hequiv_exp). }
+  apply Hexists_h. let h. assume HhPack.
+  claim Hhomeo : homeomorphism E Te E' Te' h.
+  { exact (andEL (homeomorphism E Te E' Te' h)
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x))
+      HhPack). }
+  claim Hph : forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x).
+  { exact (andER (homeomorphism E Te E' Te' h)
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x))
+      HhPack). }
+  (** e0'' = h(e0) **)
+  set e0'' := apply_fun h e0.
+  claim He0''E' : e0'' :e E'.
+  { exact (continuous_map_value_in_space E Te E' Te' h e0
+      (homeomorphism_continuous E Te E' Te' h Hhomeo) He0E). }
+  claim Hpe0_pe0'' : apply_fun p e0 = apply_fun p' e0''.
+  { exact (Hph e0 He0E). }
+  (** By thm79_2 forward: H0 = p'_star(pi1(E', e0'')) **)
+  set H0'' := homomorphism_image (fundamental_group E' Te' e0'')
+    (induced_homomorphism E' Te' e0'' B Tb (apply_fun p' e0'') p').
+  claim HH0_eq_H0'' : H0 = H0''.
+  { claim H79_2_iff : (exists h':set,
+        homeomorphism E Te E' Te' h' /\
+        apply_fun h' e0 = e0'' /\
+        (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x)))
+      <-> H0 = H0''.
+    { exact (thm79_2_equivalence_iff_same_subgroup E Te E' Te' B Tb p p' e0 e0''
+        Hcov Hcov' He0E He0''E' Hpe0_pe0'' HpathE HlpE HpathE' HlpE'). }
+    claim Hfwd : (exists h':set, homeomorphism E Te E' Te' h' /\ apply_fun h' e0 = e0'' /\
+        (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x))) -> H0 = H0''.
+    { exact (andEL
+        ((exists h':set, homeomorphism E Te E' Te' h' /\ apply_fun h' e0 = e0'' /\
+            (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x))) -> H0 = H0'')
+        (H0 = H0'' -> exists h':set, homeomorphism E Te E' Te' h' /\ apply_fun h' e0 = e0'' /\
+            (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x)))
+        H79_2_iff). }
+    claim Hwitness : exists h':set, homeomorphism E Te E' Te' h' /\ apply_fun h' e0 = e0'' /\
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x)).
+    { witness h. apply andI.
+      - exact (andI (homeomorphism E Te E' Te' h) (apply_fun h e0 = e0'') Hhomeo (fun P h => h)).
+      - exact Hph. }
+    exact (Hfwd Hwitness). }
+  (** By lemma79_3a on p' with e0', e0'': conjugate_subgroups(H0'', H0') **)
+  claim Hpe0'_pe0'' : apply_fun p' e0' = apply_fun p' e0''.
+  { rewrite Hpe0'. exact (Hph e0 He0E). }
+  claim H79_3a : conjugate_subgroups H0'' H0'
+    (fundamental_group B Tb (apply_fun p' e0'))
+    (fundamental_group_mult B Tb (apply_fun p' e0'))
+    (fundamental_group_id B Tb (apply_fun p' e0'))
+    (fundamental_group_inv B Tb (apply_fun p' e0')).
+  { exact (lemma79_3a_conjugacy_of_subgroups E' Te' B Tb p' e0' e0''
+      Hcov' He0'E' He0''E' Hpe0'_pe0'' HpathE'). }
+  (** Convert H0 to H0'', then base from b0 to apply_fun p' e0' **)
+  rewrite HH0_eq_H0''.
+  rewrite Hpe0pe0'.
+  exact H79_3a.
+- (** Backward: conjugate => equivalent **)
+  assume Hconj.
+  (** Convert base: Hconj is at FG(B, b0), need FG(B, apply_fun p' e0') for 79.3b **)
+  claim Hconj' : conjugate_subgroups H0 H0'
+    (fundamental_group B Tb (apply_fun p' e0'))
+    (fundamental_group_mult B Tb (apply_fun p' e0'))
+    (fundamental_group_id B Tb (apply_fun p' e0'))
+    (fundamental_group_inv B Tb (apply_fun p' e0')).
+  { exact (Hpe0pe0'
+      (fun a b:set => conjugate_subgroups H0 H0'
+        (fundamental_group B Tb a) (fundamental_group_mult B Tb a)
+        (fundamental_group_id B Tb a) (fundamental_group_inv B Tb a))
+      Hconj). }
+  (** Apply lemma79_3b to covering p': find e1 with p'_star(pi1(E',e1)) = H0 **)
+  claim H79_3b : exists e1:set, e1 :e E' /\ apply_fun p' e1 = apply_fun p' e0' /\
+    homomorphism_image (fundamental_group E' Te' e1)
+      (induced_homomorphism E' Te' e1 B Tb (apply_fun p' e1) p') = H0.
+  { exact (lemma79_3b_conjugacy_converse E' Te' B Tb p' e0' Hcov' He0'E' HpathE' H0 Hconj'). }
+  apply H79_3b. let e1. assume He1Pack.
+  (** He1Pack : (e1 :e E' /\ p'(e1) = p'(e0')) /\ hom_img = H0 -- left-assoc /\ **)
+  claim He1_left : e1 :e E' /\ apply_fun p' e1 = apply_fun p' e0'.
+  { exact (andEL (e1 :e E' /\ apply_fun p' e1 = apply_fun p' e0')
+      (homomorphism_image (fundamental_group E' Te' e1) (induced_homomorphism E' Te' e1 B Tb (apply_fun p' e1) p') = H0)
+      He1Pack). }
+  claim He1E' : e1 :e E'.
+  { exact (andEL (e1 :e E') (apply_fun p' e1 = apply_fun p' e0') He1_left). }
+  claim Hpe1 : apply_fun p' e1 = apply_fun p' e0'.
+  { exact (andER (e1 :e E') (apply_fun p' e1 = apply_fun p' e0') He1_left). }
+  claim HH1_eq_H0 : homomorphism_image (fundamental_group E' Te' e1) (induced_homomorphism E' Te' e1 B Tb (apply_fun p' e1) p') = H0.
+  { exact (andER (e1 :e E' /\ apply_fun p' e1 = apply_fun p' e0')
+      (homomorphism_image (fundamental_group E' Te' e1) (induced_homomorphism E' Te' e1 B Tb (apply_fun p' e1) p') = H0)
+      He1Pack). }
+  (** p(e0) = p'(e1): since p'(e1) = p'(e0') = b0 = p(e0) **)
+  claim Hpe0_pe1 : apply_fun p e0 = apply_fun p' e1.
+  { rewrite Hpe1. exact Hpe0pe0'. }
+  (** By thm79_2 backward: H0 = p'_star(pi1(E',e1)) => equivalent covering maps **)
+  set H1' := homomorphism_image (fundamental_group E' Te' e1)
+    (induced_homomorphism E' Te' e1 B Tb (apply_fun p' e1) p').
+  claim HH0_eq_H1' : H0 = H1'.
+  { exact (eq_symm H1' H0 HH1_eq_H0). }
+  claim H79_2_iff : (exists h':set,
+      homeomorphism E Te E' Te' h' /\
+      apply_fun h' e0 = e1 /\
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x)))
+    <-> H0 = H1'.
+  { exact (thm79_2_equivalence_iff_same_subgroup E Te E' Te' B Tb p p' e0 e1
+      Hcov Hcov' He0E He1E' Hpe0_pe1 HpathE HlpE HpathE' HlpE'). }
+  claim Hexists_h : exists h':set,
+    homeomorphism E Te E' Te' h' /\
+    apply_fun h' e0 = e1 /\
+    (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x)).
+  { exact (andER
+      ((exists h':set, homeomorphism E Te E' Te' h' /\ apply_fun h' e0 = e1 /\
+          (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x))) -> H0 = H1')
+      (H0 = H1' -> exists h':set, homeomorphism E Te E' Te' h' /\ apply_fun h' e0 = e1 /\
+          (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x)))
+      H79_2_iff
+      HH0_eq_H1'). }
+  (** Extract h' and construct equivalent_covering_maps **)
+  apply Hexists_h. let h'. assume Hh'Pack.
+  (** Hh'Pack : (homeo /\ h'(e0) = e1) /\ (forall x, ...) -- left-assoc /\ **)
+  claim Hh'left : homeomorphism E Te E' Te' h' /\ apply_fun h' e0 = e1.
+  { exact (andEL (homeomorphism E Te E' Te' h' /\ apply_fun h' e0 = e1)
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x))
+      Hh'Pack). }
+  claim Hh'homeo : homeomorphism E Te E' Te' h'.
+  { exact (andEL (homeomorphism E Te E' Te' h') (apply_fun h' e0 = e1) Hh'left). }
+  claim Hph' : forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x).
+  { exact (andER (homeomorphism E Te E' Te' h' /\ apply_fun h' e0 = e1)
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h' x))
+      Hh'Pack). }
+  (** Build equivalent_covering_maps **)
+  prove (covering_map E Te B Tb p /\ covering_map E' Te' B Tb p') /\
+    exists h'':set, homeomorphism E Te E' Te' h'' /\
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h'' x)).
+  apply andI.
+  - exact (andI (covering_map E Te B Tb p) (covering_map E' Te' B Tb p') Hcov Hcov').
+  - witness h'. apply andI. exact Hh'homeo. exact Hph'.
+Qed.
 
 (** from S79 Exercises Exercise 5b / Thm (line 4925 in algtop.tex): torus covering spaces **)
 (** LATEX VERSION: If E is a covering space of the torus T, then E is homeomorphic **)
