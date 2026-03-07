@@ -1,0 +1,23 @@
+CHANGES13466 (from bck13465, 383145 lines to bck13466, 383171 lines)
+
+1. Implemented 2 more admin-approved noticeboard refactors:
+
+   a) Notice 1772798197: ex52_3_helper_conj_pair
+      - Added delta_cls = path_homotopy_class_loop X Tx x0 (path_concat beta (reverse_path alpha))
+        hypothesis to theorem statement
+      - Updated proof intro to accept new hypothesis (HdeltaEq)
+      - Theorem is still Admitted (existing proof was incomplete)
+
+   b) Notice 1772757793: external_free_product definition
+      - Added (forall alpha, alpha :e J -> exists ea ia, group_structure ...) conjunct
+      - Updated and3E -> and4E unpacking in lemma68_3_extension_external_free_product
+      - Updated and3E -> and4E unpacking in lemma68_4_uniqueness_external_free_product
+        (4 total and3E -> and4E conversions)
+
+2. Guard violations are all from admin-approved statement changes
+
+3. Balance unchanged: Alice 7078
+
+4. Line change: +26 lines (383171 - 383145)
+
+Running totals: 370 Admitted, Alice balance: 7078
