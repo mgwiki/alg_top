@@ -161306,7 +161306,9 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
     claim HL2_loop : L2 :e loop_space X Tx x0.
     { exact (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx x0 g) L2 HL2_funspace HL2_loop_at). }
     (** TODO: complete the word decomposition using the ball cover property for L2
-        and the homotopy f ~ path_concat L1 L2. **)
+        and the homotopy f ~ path_concat L1 L2. Suggested approach: use
+        unit_interval_ball_chain to get a finite overlap chain of balls, pick
+        intersection points to split L2, and induct on chain length to build the word. **)
     admit.
 Admitted.
 
