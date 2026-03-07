@@ -284289,7 +284289,224 @@ Theorem lemma79_1_general_lifting :
     (forall y:set, y :e Y -> apply_fun p (apply_fun ft1 y) = apply_fun f y) ->
     (forall y:set, y :e Y -> apply_fun p (apply_fun ft2 y) = apply_fun f y) ->
     forall y:set, y :e Y -> apply_fun ft1 y = apply_fun ft2 y).
-admit.
+let E Te B Tb p e0 Y Ty y0 f.
+assume Hcov He0E Hpe0 HpathY HlpY HfCont Hy0Y.
+claim HtopE : topology_on E Te.
+{ exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopB : topology_on B Tb.
+{ exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim HtopY : topology_on Y Ty.
+{ exact (andEL (topology_on Y Ty)
+    (forall x y:set, x :e Y -> y :e Y ->
+      exists pa:set, path_between Y x y pa /\ continuous_map unit_interval unit_interval_topology Y Ty pa)
+    HpathY). }
+claim Hb0B : apply_fun f y0 :e B.
+{ exact (continuous_map_function_on Y Ty B Tb f HfCont y0 Hy0Y). }
+(** Part 1: the iff **)
+(** Part 2: uniqueness **)
+apply andI.
+(** --- IFF PART --- **)
+- apply iffI.
+  (** Forward: lift exists implies f_star(pi1(Y)) subset p_star(pi1(E)) **)
+  + assume Hft.
+    apply Hft. let ft. assume Hft_data.
+    claim HftCont : continuous_map Y Ty E Te ft.
+    { exact (andEL (continuous_map Y Ty E Te ft) (apply_fun ft y0 = e0)
+        (andEL (continuous_map Y Ty E Te ft /\ apply_fun ft y0 = e0)
+          (forall y:set, y :e Y -> apply_fun p (apply_fun ft y) = apply_fun f y)
+          Hft_data)). }
+    claim Hft0 : apply_fun ft y0 = e0.
+    { exact (andER (continuous_map Y Ty E Te ft) (apply_fun ft y0 = e0)
+        (andEL (continuous_map Y Ty E Te ft /\ apply_fun ft y0 = e0)
+          (forall y:set, y :e Y -> apply_fun p (apply_fun ft y) = apply_fun f y)
+          Hft_data)). }
+    claim Hft_comm : forall y:set, y :e Y -> apply_fun p (apply_fun ft y) = apply_fun f y.
+    { exact (andER (continuous_map Y Ty E Te ft /\ apply_fun ft y0 = e0)
+        (forall y:set, y :e Y -> apply_fun p (apply_fun ft y) = apply_fun f y)
+        Hft_data). }
+    (** f_star = p_star o ft_star, so image(f_star) subset image(p_star) **)
+    let cls. assume Hcls.
+    claim HpCont : continuous_map E Te B Tb p.
+    { exact (covering_map_continuous E Te B Tb p Hcov). }
+    claim HpFun : function_on p E B.
+    { exact (continuous_map_function_on E Te B Tb p HpCont). }
+    claim HftFun : function_on ft Y E.
+    { exact (continuous_map_function_on Y Ty E Te ft HftCont). }
+    claim HfFun : function_on f Y B.
+    { exact (continuous_map_function_on Y Ty B Tb f HfCont). }
+    claim Hcls_unfold : exists x:set, x :e fundamental_group Y Ty y0 /\
+      cls = apply_fun (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f) x.
+    { exact (iffEL
+        (cls :e homomorphism_image (fundamental_group Y Ty y0)
+          (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f))
+        (exists x:set, x :e fundamental_group Y Ty y0 /\
+          cls = apply_fun (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f) x)
+        (homomorphism_image_mem
+          (fundamental_group Y Ty y0)
+          (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f)
+          cls)
+        Hcls). }
+    apply Hcls_unfold. let alpha. assume Halpha_pack.
+    claim Halpha_mem : alpha :e fundamental_group Y Ty y0.
+    { exact (andEL (alpha :e fundamental_group Y Ty y0)
+        (cls = apply_fun (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f) alpha)
+        Halpha_pack). }
+    claim Hcls_eq2 : cls = apply_fun (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f) alpha.
+    { exact (andER (alpha :e fundamental_group Y Ty y0)
+        (cls = apply_fun (induced_homomorphism Y Ty y0 B Tb (apply_fun f y0) f) alpha)
+        Halpha_pack). }
+    set gamma_rep := Eps_i (fun g:set => g :e alpha).
+    claim Hgamma_loop : gamma_rep :e loop_space Y Ty y0.
+    { exact (eps_of_fundamental_group_member_in_loop_space Y Ty y0 alpha Halpha_mem). }
+    claim Hgamma_loopat : loop_at Y Ty y0 gamma_rep.
+    { exact (loop_space_has_loop_at Y Ty y0 gamma_rep Hgamma_loop). }
+    claim HgammaCont : continuous_map unit_interval unit_interval_topology Y Ty gamma_rep.
+    { exact (loop_at_continuous Y Ty y0 gamma_rep Hgamma_loopat). }
+    claim HgammaFun : function_on gamma_rep unit_interval Y.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty gamma_rep HgammaCont). }
+    claim Hgamma0 : apply_fun gamma_rep 0 = y0.
+    { exact (loop_at_at_zero Y Ty y0 gamma_rep Hgamma_loopat). }
+    claim Hgamma1 : apply_fun gamma_rep 1 = y0.
+    { exact (loop_at_at_one Y Ty y0 gamma_rep Hgamma_loopat). }
+    set delta := compose_fun unit_interval gamma_rep ft.
+    claim HdeltaCont : continuous_map unit_interval unit_interval_topology E Te delta.
+    { exact (composition_continuous unit_interval unit_interval_topology Y Ty E Te gamma_rep ft HgammaCont HftCont). }
+    claim Hdelta0 : apply_fun delta 0 = e0.
+    { rewrite (compose_fun_apply unit_interval gamma_rep ft 0 zero_in_unit_interval).
+      rewrite Hgamma0. exact Hft0. }
+    claim Hdelta1 : apply_fun delta 1 = e0.
+    { rewrite (compose_fun_apply unit_interval gamma_rep ft 1 one_in_unit_interval).
+      rewrite Hgamma1. exact Hft0. }
+    claim Hdelta_loopat : loop_at E Te e0 delta.
+    { exact (loop_at_fold E Te e0 delta
+        (andI (continuous_map unit_interval unit_interval_topology E Te delta /\ apply_fun delta 0 = e0)
+          (apply_fun delta 1 = e0)
+          (andI (continuous_map unit_interval unit_interval_topology E Te delta)
+            (apply_fun delta 0 = e0) HdeltaCont Hdelta0)
+          Hdelta1)). }
+    claim Hdelta_fs : delta :e function_space unit_interval E.
+    { exact (total_function_space_sub_function_space unit_interval E delta
+        (compose_fun_in_total_function_space unit_interval Y E gamma_rep ft HgammaFun HftFun)). }
+    claim Hdelta_loop : delta :e loop_space E Te e0.
+    { exact (SepI (function_space unit_interval E)
+        (fun g:set => loop_at E Te e0 g) delta Hdelta_fs Hdelta_loopat). }
+    set beta := path_homotopy_class_loop E Te e0 delta.
+    claim Hbeta_mem : beta :e fundamental_group E Te e0.
+    { exact (path_homotopy_class_in_fundamental_group E Te e0 delta Hdelta_loop). }
+    claim HcompYFun : function_on (compose_fun Y ft p) Y B.
+    { let yy. assume HyyY.
+      rewrite (compose_fun_apply Y ft p yy HyyY).
+      exact (HpFun (apply_fun ft yy) (HftFun yy HyyY)). }
+    claim Hcomp_eq : compose_fun unit_interval gamma_rep f = compose_fun unit_interval gamma_rep (compose_fun Y ft p).
+    { apply (total_function_space_extensional unit_interval B
+        (compose_fun unit_interval gamma_rep f)
+        (compose_fun unit_interval gamma_rep (compose_fun Y ft p))).
+      - exact (compose_fun_in_total_function_space unit_interval Y B gamma_rep f HgammaFun HfFun).
+      - exact (compose_fun_in_total_function_space unit_interval Y B gamma_rep (compose_fun Y ft p) HgammaFun HcompYFun).
+      - let t. assume HtI.
+        rewrite (compose_fun_apply unit_interval gamma_rep f t HtI).
+        rewrite (compose_fun_apply unit_interval gamma_rep (compose_fun Y ft p) t HtI).
+        claim HatY : apply_fun gamma_rep t :e Y.
+        { exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty gamma_rep HgammaCont t HtI). }
+        rewrite (compose_fun_apply Y ft p (apply_fun gamma_rep t) HatY).
+        exact (eq_symm (apply_fun p (apply_fun ft (apply_fun gamma_rep t))) (apply_fun f (apply_fun gamma_rep t))
+          (Hft_comm (apply_fun gamma_rep t) HatY)). }
+    claim Hpe0_refl : apply_fun p e0 = apply_fun p e0. { reflexivity. }
+    claim Hfinal_eq : cls = apply_fun (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) beta.
+    { rewrite Hcls_eq2.
+      rewrite (induced_homomorphism_apply Y Ty y0 B Tb (apply_fun f y0) f alpha Halpha_mem).
+      rewrite (eq_symm (apply_fun p e0) (apply_fun f y0) Hpe0).
+      rewrite Hcomp_eq.
+      rewrite (eq_symm
+        (apply_fun (induced_homomorphism Y Ty y0 B Tb (apply_fun p e0) (compose_fun Y ft p)) alpha)
+        (path_homotopy_class_loop B Tb (apply_fun p e0) (compose_fun unit_interval gamma_rep (compose_fun Y ft p)))
+        (induced_homomorphism_apply Y Ty y0 B Tb (apply_fun p e0) (compose_fun Y ft p) alpha Halpha_mem)).
+      rewrite (Theorem_52_4_functorial_composition Y Ty y0 E Te e0 B Tb (apply_fun p e0) ft p
+        HftCont HpCont Hft0 Hpe0_refl Hy0Y alpha Halpha_mem).
+      rewrite (compose_fun_apply (fundamental_group Y Ty y0)
+        (induced_homomorphism Y Ty y0 E Te e0 ft)
+        (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) alpha Halpha_mem).
+      rewrite (induced_homomorphism_apply Y Ty y0 E Te e0 ft alpha Halpha_mem).
+      reflexivity. }
+    rewrite Hfinal_eq.
+    exact (homomorphism_image_intro (fundamental_group E Te e0)
+      (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p)
+      beta Hbeta_mem).
+  (** Backward: subgroup condition implies lift exists **)
+  + assume Hsub.
+    admit.
+(** --- UNIQUENESS PART --- **)
+- let ft1 ft2.
+  assume Hft1Cont Hft2Cont Hft1_0 Hft2_0 Hft1_comm Hft2_comm.
+  let y. assume HyY.
+  claim Hpath_ex : exists alpha:set, path_between Y y0 y alpha /\ continuous_map unit_interval unit_interval_topology Y Ty alpha.
+  { exact (path_connected_space_paths Y Ty y0 y HpathY Hy0Y HyY). }
+  apply Hpath_ex. let alpha. assume Halpha_pack.
+  claim Halpha_path : path_between Y y0 y alpha.
+  { exact (andEL (path_between Y y0 y alpha)
+      (continuous_map unit_interval unit_interval_topology Y Ty alpha)
+      Halpha_pack). }
+  claim HalphaCont : continuous_map unit_interval unit_interval_topology Y Ty alpha.
+  { exact (andER (path_between Y y0 y alpha)
+      (continuous_map unit_interval unit_interval_topology Y Ty alpha)
+      Halpha_pack). }
+  claim Halpha0 : apply_fun alpha 0 = y0.
+  { exact (path_between_at_zero Y y0 y alpha Halpha_path). }
+  claim Halpha1 : apply_fun alpha 1 = y.
+  { exact (path_between_at_one Y y0 y alpha Halpha_path). }
+  set f_alpha := compose_fun unit_interval alpha f.
+  set lift1_u := compose_fun unit_interval alpha ft1.
+  set lift2_u := compose_fun unit_interval alpha ft2.
+  claim Hfa_cont : continuous_map unit_interval unit_interval_topology B Tb f_alpha.
+  { exact (composition_continuous unit_interval unit_interval_topology Y Ty B Tb alpha f HalphaCont HfCont). }
+  claim Hlift1_cont : continuous_map unit_interval unit_interval_topology E Te lift1_u.
+  { exact (composition_continuous unit_interval unit_interval_topology Y Ty E Te alpha ft1 HalphaCont Hft1Cont). }
+  claim Hlift2_cont : continuous_map unit_interval unit_interval_topology E Te lift2_u.
+  { exact (composition_continuous unit_interval unit_interval_topology Y Ty E Te alpha ft2 HalphaCont Hft2Cont). }
+  claim Hlift1_comm : forall t:set, t :e unit_interval -> apply_fun p (apply_fun lift1_u t) = apply_fun f_alpha t.
+  { let t. assume HtI.
+    rewrite (compose_fun_apply unit_interval alpha ft1 t HtI).
+    rewrite (compose_fun_apply unit_interval alpha f t HtI).
+    claim HatY : apply_fun alpha t :e Y.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty alpha HalphaCont t HtI). }
+    exact (Hft1_comm (apply_fun alpha t) HatY). }
+  claim Hlift2_comm : forall t:set, t :e unit_interval -> apply_fun p (apply_fun lift2_u t) = apply_fun f_alpha t.
+  { let t. assume HtI.
+    rewrite (compose_fun_apply unit_interval alpha ft2 t HtI).
+    rewrite (compose_fun_apply unit_interval alpha f t HtI).
+    claim HatY : apply_fun alpha t :e Y.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty alpha HalphaCont t HtI). }
+    exact (Hft2_comm (apply_fun alpha t) HatY). }
+  claim Hlift1_of : lifting_of unit_interval unit_interval_topology E Te B Tb p f_alpha lift1_u.
+  { exact (andI
+      (continuous_map unit_interval unit_interval_topology E Te lift1_u)
+      (forall t:set, t :e unit_interval -> apply_fun p (apply_fun lift1_u t) = apply_fun f_alpha t)
+      Hlift1_cont Hlift1_comm). }
+  claim Hlift2_of : lifting_of unit_interval unit_interval_topology E Te B Tb p f_alpha lift2_u.
+  { exact (andI
+      (continuous_map unit_interval unit_interval_topology E Te lift2_u)
+      (forall t:set, t :e unit_interval -> apply_fun p (apply_fun lift2_u t) = apply_fun f_alpha t)
+      Hlift2_cont Hlift2_comm). }
+  claim Hlift1_start : apply_fun lift1_u 0 = e0.
+  { rewrite (compose_fun_apply unit_interval alpha ft1 0 zero_in_unit_interval).
+    rewrite Halpha0. exact Hft1_0. }
+  claim Hlift2_start : apply_fun lift2_u 0 = e0.
+  { rewrite (compose_fun_apply unit_interval alpha ft2 0 zero_in_unit_interval).
+    rewrite Halpha0. exact Hft2_0. }
+  claim Hall_eq : forall t:set, t :e unit_interval -> apply_fun lift1_u t = apply_fun lift2_u t.
+  { exact (lemma54_1_path_lifting_unique E Te B Tb p e0 f_alpha lift1_u lift2_u
+      Hcov He0E Hfa_cont Hlift1_of Hlift1_start Hlift2_of Hlift2_start). }
+  claim Heq1 : apply_fun lift1_u 1 = apply_fun lift2_u 1.
+  { exact (Hall_eq 1 one_in_unit_interval). }
+  claim Hlift1_at1 : apply_fun lift1_u 1 = apply_fun ft1 y.
+  { rewrite (compose_fun_apply unit_interval alpha ft1 1 one_in_unit_interval).
+    rewrite Halpha1. reflexivity. }
+  claim Hlift2_at1 : apply_fun lift2_u 1 = apply_fun ft2 y.
+  { rewrite (compose_fun_apply unit_interval alpha ft2 1 one_in_unit_interval).
+    rewrite Halpha1. reflexivity. }
+  rewrite (eq_symm (apply_fun lift1_u 1) (apply_fun ft1 y) Hlift1_at1).
+  rewrite (eq_symm (apply_fun lift2_u 1) (apply_fun ft2 y) Hlift2_at1).
+  exact Heq1.
 Admitted.
 
 (** from S79 Thm 79.2 (line 4836 in algtop.tex): equivalence iff same subgroup **)
