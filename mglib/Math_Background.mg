@@ -303892,8 +303892,52 @@ apply iffI.
         HUpack). }
     (** Define W = image of U under pi in B **)
     set W := {w :e B | exists u:set, u :e U /\ apply_fun pi u = w}.
-    (** W is evenly covered **)
-    admit.
+    (** U subset X **)
+    claim HUsub : U c= X.
+    { exact (PowerE X U (topology_sub_Power X Tx HtopX U HUopen)). }
+    (** W is open in Tb: preimage of W is Union of g(U) which is open **)
+    claim HWopen : W :e Tb.
+    { admit. }
+    (** b in W **)
+    claim HbW : b :e W.
+    { prove b :e {w :e B | exists u:set, u :e U /\ apply_fun pi u = w}.
+      apply SepI.
+      - rewrite <- Hpi_x0. exact (Hpi_fn x0 Hx0X).
+      - prove exists u:set, u :e U /\ apply_fun pi u = b.
+        witness x0. apply andI. exact Hx0U. exact (Hpi_x0). }
+    (** Define slices = {image_of g U | g in G} **)
+    set slices := Repl G (fun g:set => image_of g U).
+    witness W. apply andI.
+    - apply andI. exact HWopen. exact HbW.
+    - prove evenly_covered X Tx B Tb pi W.
+      prove topology_on X Tx /\ W :e Tb /\ exists slc:set,
+        slc c= Tx /\ pairwise_disjoint slc /\
+        Union slc = preimage_of X pi W /\
+        (forall V:set, V :e slc ->
+          homeomorphism V (subspace_topology X Tx V) W (subspace_topology B Tb W)
+            (graph V (fun z:set => apply_fun pi z))).
+      apply and3I. exact HtopX. exact HWopen.
+      witness slices.
+      (** slices c= Tx: each g(U) is open since g is a homeomorphism **)
+      claim Hslices_open : slices c= Tx.
+      { let V. assume HV.
+        prove V :e Tx.
+        apply (ReplE_impred G (fun g:set => image_of g U) V HV).
+        let g. assume HgG HVeq.
+        rewrite HVeq.
+        exact (homeomorphism_image_open X Tx X Tx g U (Hhomeo g HgG) HUopen). }
+      (** pairwise_disjoint slices **)
+      claim Hpd_slices : pairwise_disjoint slices.
+      { admit. }
+      (** Union slices = preimage_of X pi W **)
+      claim Hunion_eq : Union slices = preimage_of X pi W.
+      { admit. }
+      (** homeomorphism on each slice **)
+      claim Hhomeo_slices : forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology X Tx V) W (subspace_topology B Tb W)
+          (graph V (fun z:set => apply_fun pi z)).
+      { admit. }
+      apply and4I. exact Hslices_open. exact Hpd_slices. exact Hunion_eq. exact Hhomeo_slices.
 Admitted.
 
 (** from S81 Thm 81.6 (line 5137 in algtop.tex) **)
