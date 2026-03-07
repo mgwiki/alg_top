@@ -82,6 +82,147 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772868965
+Created: 1772868965
+Status: PROPOSED
+
+Refers to Commit:
+  3474eff2077c2a5398d1921db3c77d83f307695f
+
+Target:
+  Line: 95256
+  Name: column_continuity_via_chain (Lemma)
+
+Problem:
+  The statement only assumes pointwise (in t) continuity of vs_choice, but the proof
+  needs joint continuity via a continuous F on I1 x I. The current assumptions are
+  insufficient, as noted by the in-file TODO.
+
+Proposed Replacement:
+  Lemma column_continuity_via_chain : forall E Te B Tb p F start_lift vs_choice I1 t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+    t0 :e unit_interval ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+    continuous_map (setprod I1 unit_interval)
+      (subspace_topology unit_square unit_square_topology (setprod I1 unit_interval))
+      B Tb F ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    (forall s:set, s :e I1 -> forall t:set, t :e unit_interval ->
+      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772868965 | Bob: align with column_continuity_via_chain_with_F (already proved) to avoid missing joint continuity.
+
+Approvals:
+  - 1772868965 | Alice: NO
+  - 1772868965 | Bob: YES
+  - 1772868965 | Charlie: NO
+  - 1772868965 | Dave: NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1772868964
+Created: 1772868964
+Status: PROPOSED
+
+Refers to Commit:
+  3474eff2077c2a5398d1921db3c77d83f307695f
+
+Target:
+  Line: 92650
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  The statement only assumes slice-wise continuity of vs_choice and no continuity of
+  start_lift. This is insufficient to conclude continuity of the t0-column map; the
+  proof already notes the need for joint continuity on I1 x I2.
+
+Proposed Replacement:
+  Lemma path_lift_column_continuous_on_product_ball :
+    forall E Te B Tb p F start_lift vs_choice U slices V0 I1 I2 s0 t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    I2 c= unit_interval ->
+    0 :e I2 ->
+    t0 :e I2 ->
+    connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+    connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+    continuous_map (setprod I1 I2)
+      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+      B Tb F ->
+    (forall z:set, z :e setprod I1 I2 -> apply_fun F z :e U) ->
+    U :e Tb ->
+    slices c= Te ->
+    pairwise_disjoint slices ->
+    Union slices = preimage_of E p U ->
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z))) ->
+    V0 :e slices ->
+    s0 :e I1 ->
+    apply_fun start_lift s0 :e V0 ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772868964 | Bob: make it a corollary of path_lift_column_continuous_on_product_ball_parametric.
+
+Approvals:
+  - 1772868964 | Alice: NO
+  - 1772868964 | Bob: YES
+  - 1772868964 | Charlie: NO
+  - 1772868964 | Dave: NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772868093
 Created: 1772868093
 Status: PROPOSED

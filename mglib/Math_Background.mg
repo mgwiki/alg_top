@@ -92646,7 +92646,7 @@ Qed.
 
 (** Infrastructure: continuity of the t0-column map for product-ball lifts **)
 (** TODO: needs joint continuity (a homotopy) for vs_choice; use the
-  parametric lemma below when F is available. **)
+  parametric lemma below when F is available. See NOTICEBOARD 1772868964. **)
 Lemma path_lift_column_continuous_on_product_ball :
   forall E Te B Tb p start_lift I1 I2 vs_choice t0:set,
   covering_map E Te B Tb p ->
@@ -95272,8 +95272,8 @@ Lemma column_continuity_via_chain :
         t0)).
 admit.
 Admitted.
-  (** TODO: statement likely needs joint continuity of vs_choice via a continuous F;
-      see column_continuity_via_chain_with_F and NOTICEBOARD. **)
+(** TODO: statement likely needs joint continuity of vs_choice via a continuous F;
+    see column_continuity_via_chain_with_F and NOTICEBOARD 1772868965. **)
 
 (** Helper: in a connected metric space, a nonempty set with ball neighborhoods **)
 (** for all points (both in the set and in the complement) equals the whole space. **)
