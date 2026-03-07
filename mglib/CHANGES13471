@@ -1,0 +1,32 @@
+CHANGES13471 (from bck13470, 383277 lines to bck13471, 383288 lines)
+
+1. Implemented 2 more admin-approved noticeboard refactors:
+
+   a) Notice 1772417212: lemma84_2_tree_decomposition
+      - Added ArcsT c= Arcs -> hypothesis (second position after tree_in_graph)
+      - Updated proof intro to accept HArcsT_sub
+      - Removed admitted claim HArcsT_sub (was { admit. }) since now a hypothesis
+      - Also fixed admit in lemma84_2_tree_extension_general_linear_graph_part:
+        replaced admitted HArcsT_sub_here with direct tree_in_graph_arcs_subset call
+
+   b) Notice 1772451836: thm84_4_selected_arc_endpoints_in_T_imply_selected_arc_subset_contradiction
+      - Changed A :e {B :e Arcs | B c= T'} to A :e ArcsT'
+      - Changed p :e T /\ q :e T to
+        p :e graph_vertices T (subspace_topology X Tx T) ArcsT /\
+        q :e graph_vertices T (subspace_topology X Tx T) ArcsT
+      - Updated proof: derive HAT from tree_in_graph_arcs_subset,
+        HpT/HqT from graph_vertices_subset_X, HAsubT' from tree_in_graph_arc_subset_T
+      - Updated caller in thm84_4_backward_selected_arc_endpoint_close_obligation
+        (added admits for type conversion, proof is Admitted)
+
+2. Guard violations are all from admin-approved statement changes
+
+3. Balance unchanged: Alice 7078
+
+4. Line change: +11 lines (383288 - 383277)
+
+5. Removed 2 admits:
+   - lemma84_2_tree_decomposition: HArcsT_sub now from hypothesis
+   - lemma84_2_tree_extension_general_linear_graph_part: HArcsT_sub_here now via tree_in_graph_arcs_subset
+
+Running totals: 368 Admitted (net -1 from removed admits, +1 from caller conversion admits), Alice balance: 7078

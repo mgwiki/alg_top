@@ -345495,9 +345495,7 @@ claim HinterFamTA :
 			          {
 			            (** Lift V :e ArcsT to V :e Arcs, then use arc intersection **)
 			            claim HVArcs : V :e Arcs.
-			            { (** blocked until NOTICE 1772368914 (tree_in_graph ties ArcsT to ambient Arcs) **)
-			              claim HArcsT_sub_here : ArcsT c= Arcs. { admit. }
-			              exact (tree_in_graph_arc_in_ambient_arcs T ArcsT X Tx Arcs V Htree HArcsT_sub_here HVArcsT). }
+			            { exact ((tree_in_graph_arcs_subset T ArcsT X Tx Arcs Htree) V HVArcsT). }
 			            claim Hint : V :/\: A = Empty \/
 			              (exists p0:set, V :/\: A = Sing p0 /\
 			                (exists q0:set, end_points_of_arc V (subspace_topology X Tx V) p0 q0 \/
@@ -364699,9 +364697,11 @@ Admitted.
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 97 **)
+(** Admin-approved-refactored per noticeboard proposal 1772417212 **)
 Theorem lemma84_2_tree_decomposition :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
+  ArcsT c= Arcs ->
   finite ArcsT ->
   (exists A1 A2:set, A1 :e ArcsT /\ A2 :e ArcsT /\ A1 <> A2) ->
   exists A:set, exists B:set, A :e ArcsT /\ B = ArcsT :\: Sing A /\
@@ -364709,7 +364709,7 @@ Theorem lemma84_2_tree_decomposition :
     (exists v:set, v :e graph_vertices X Tx Arcs /\ T0 :/\: A = Sing v) /\
     tree_in_graph T0 B X Tx Arcs.
 let T ArcsT X Tx Arcs.
-assume Htree HfinArcsT HtwoArcs.
+assume Htree HArcsT_sub HfinArcsT HtwoArcs.
 (** Proof strategy: find a leaf arc (one endpoint not shared with any other arc).
     Remove it; the remainder is a tree intersecting the removed arc at one vertex. **)
 claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
@@ -364834,8 +364834,7 @@ claim Hpfree : ~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C).
     (end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q)
     (~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C))
     HpqPack). }
-(** Bridge: ArcsT arcs are ambient arcs (known formalization gap, same admit as line 287501) **)
-claim HArcsT_sub : ArcsT c= Arcs. { admit. }
+(** ArcsT arcs are ambient arcs (from hypothesis) **)
 claim HAArcs : A :e Arcs. { exact (HArcsT_sub A HAT). }
 claim Hend_X : end_points_of_arc A (subspace_topology X Tx A) p q.
 { exact (tree_in_graph_end_points_of_arc_in_X T ArcsT X Tx Arcs A p q Htree HAT Hepaq). }
@@ -367856,17 +367855,19 @@ Qed.
 
 (** helper for S84.4 backward direction:
     a selected arc of T' that has both endpoints in T must be contained in T. **)
+(** Admin-approved-refactored per noticeboard proposal 1772451836 **)
 Theorem thm84_4_selected_arc_endpoints_in_T_imply_selected_arc_subset_contradiction :
   forall T ArcsT T' ArcsT' X Tx Arcs A p q:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
   tree_in_graph T' ArcsT' X Tx Arcs ->
   T c= T' ->
-  A :e {B :e Arcs | B c= T'} ->
+  A :e ArcsT' ->
   end_points_of_arc A (subspace_topology X Tx A) p q ->
-  p :e T /\ q :e T ->
+  p :e graph_vertices T (subspace_topology X Tx T) ArcsT /\
+  q :e graph_vertices T (subspace_topology X Tx T) ArcsT ->
   ~(A c= T) -> False.
 let T ArcsT T' ArcsT' X Tx Arcs A p q.
-assume Hrhs Htree' HTsub HASel Hend Hep Hnsub.
+assume Hrhs Htree' HTsub HAArcsT' Hend Hep Hnsub.
 (** Unpack basic data from hypotheses. **)
 claim Htree : tree_in_graph T ArcsT X Tx Arcs.
 {
@@ -367894,11 +367895,7 @@ claim HvertSub : graph_vertices X Tx Arcs c= T.
 }
 claim HAT : A :e Arcs.
 {
-  exact (selected_arc_in_arcs
-    Arcs
-    T'
-    A
-    HASel).
+  exact ((tree_in_graph_arcs_subset T' ArcsT' X Tx Arcs Htree') A HAArcsT').
 }
 claim HglgX : general_linear_graph X Tx Arcs.
 {
@@ -367990,16 +367987,26 @@ claim HqV : q :e graph_vertices X Tx Arcs.
       * exact Hend.
       * apply orIR. reflexivity.
 }
-claim HpT : p :e T. { exact (HvertSub p HpV). }
-claim HqT : q :e T. { exact (HvertSub q HqV). }
-(** A is a selected arc in T'. **)
+claim HpVT : p :e graph_vertices T (subspace_topology X Tx T) ArcsT.
+{
+  exact (andEL
+    (p :e graph_vertices T (subspace_topology X Tx T) ArcsT)
+    (q :e graph_vertices T (subspace_topology X Tx T) ArcsT)
+    Hep).
+}
+claim HqVT : q :e graph_vertices T (subspace_topology X Tx T) ArcsT.
+{
+  exact (andER
+    (p :e graph_vertices T (subspace_topology X Tx T) ArcsT)
+    (q :e graph_vertices T (subspace_topology X Tx T) ArcsT)
+    Hep).
+}
+claim HpT : p :e T. { exact ((graph_vertices_subset_X T (subspace_topology X Tx T) ArcsT) p HpVT). }
+claim HqT : q :e T. { exact ((graph_vertices_subset_X T (subspace_topology X Tx T) ArcsT) q HqVT). }
+(** A is an arc in T'. **)
 claim HAsubT' : A c= T'.
 {
-  exact (selected_arc_subset_Y
-    Arcs
-    T'
-    A
-    HASel).
+  exact (tree_in_graph_arc_subset_T T' ArcsT' X Tx Arcs A Htree' HAArcsT').
 }
 claim HpT' : p :e T'. { exact (HTsub p HpT). }
 claim HqT' : q :e T'. { exact (HTsub q HqT). }
@@ -369275,6 +369282,10 @@ assume HASel Hend Hep.
 - assume Hsub.
   exact Hsub.
 - assume Hnsub.
+  claim HAArcsT' : A :e ArcsT'. { admit. }
+  claim HepV : p :e graph_vertices T (subspace_topology X Tx T) ArcsT /\
+    q :e graph_vertices T (subspace_topology X Tx T) ArcsT.
+  { admit. }
   claim HnoncontainedCore : False.
   {
     exact (thm84_4_selected_arc_endpoints_in_T_imply_selected_arc_subset_contradiction
@@ -369291,9 +369302,9 @@ assume HASel Hend Hep.
       Hrhs
       Htree'
       HTsub
-      HASel
+      HAArcsT'
       Hend
-      Hep
+      HepV
       Hnsub).
   }
   exact (FalseE
