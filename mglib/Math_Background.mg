@@ -1,4 +1,4 @@
-(** Balance Alice 6104 **)
+(** Balance Alice 6082 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -286893,7 +286893,8 @@ Definition conjugate_subgroups : set -> set -> set -> set -> set -> set -> prop 
 (** then [alpha] H1 [alpha]^{-1} = H0, so H0 and H1 are conjugate. **)
 (** (b) Given e0 and H conjugate to H0, exists e1 in p^{-1}(b0) with H1 = H. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 220 **)
+(** Bounty 242 **)
+(** Lock Alice 1772956027 **)
 Theorem lemma79_3a_conjugacy_of_subgroups :
   forall E Te B Tb p e0 e1:set,
   covering_map E Te B Tb p ->
