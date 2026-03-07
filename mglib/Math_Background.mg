@@ -303467,7 +303467,67 @@ apply iffI.
         apply_fun g x :e X /\ (forall y:set, y :e U -> apply_fun g y /:e U)).
   let x. assume HxX.
   claim HbB : apply_fun pi x :e B. { exact (orbit_map_function_on X G Hfn x HxX). }
-  admit.
+  apply (covering_map_evenly_covered_slices X Tx B Tb pi (apply_fun pi x) Hcov HbB).
+  let W. assume Hinner. apply Hinner. let slices. assume Hpack.
+  apply (and6E
+    (W :e Tb) (apply_fun pi x :e W) (slices c= Tx) (pairwise_disjoint slices)
+    (Union slices = preimage_of X pi W)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology X Tx V) W (subspace_topology B Tb W)
+        (graph V (fun z:set => apply_fun pi z)))
+    Hpack).
+  assume HWopen HxW HslicesTx HpdSlices HUnionSlices Hhomeo_slices.
+  claim HxPre : x :e preimage_of X pi W.
+  { prove x :e {z :e X | apply_fun pi z :e W}. apply SepI. exact HxX. exact HxW. }
+  claim HxUnion : x :e Union slices. { rewrite HUnionSlices. exact HxPre. }
+  apply (UnionE slices x HxUnion). let V0. assume HV0pack.
+  claim HxV0 : x :e V0. { exact (andEL (x :e V0) (V0 :e slices) HV0pack). }
+  claim HV0slices : V0 :e slices. { exact (andER (x :e V0) (V0 :e slices) HV0pack). }
+  claim HV0open : V0 :e Tx. { exact (HslicesTx V0 HV0slices). }
+  apply (locally_path_connected_local X Tx x V0 Hlpc HxX HV0open HxV0).
+  let V'. assume HV'pack.
+  apply (and4E (V' :e Tx) (x :e V') (V' c= V0)
+    (path_connected_space V' (subspace_topology X Tx V')) HV'pack).
+  assume HV'open HxV' HV'sub HV'pc.
+  claim HV'subX : V' c= X.
+  { let z. assume Hz. claim HzV0 : z :e V0. { exact (HV'sub z Hz). }
+    claim HV0sub : V0 c= X.
+    { exact (PowerE X V0 (topology_sub_Power X Tx HtopX V0 HV0open)). }
+    exact (HV0sub z HzV0). }
+  witness V'. apply and3I. exact HV'open. exact HxV'.
+  let g. assume HgG HgNeq.
+  apply andI.
+  - exact (Hfn g HgG x HxX).
+  - let y. assume HyV'.
+    claim HyX : y :e X. { exact (HV'subX y HyV'). }
+    claim HgyX : apply_fun g y :e X. { exact (Hfn g HgG y HyX). }
+    claim Hpi_gy_W : apply_fun pi (apply_fun g y) :e W.
+    { rewrite (Hpi_inv g y HgG HyX).
+      claim HyV0 : y :e V0. { exact (HV'sub y HyV'). }
+      claim HyPre : y :e preimage_of X pi W.
+      { rewrite <- HUnionSlices. exact (UnionI slices y V0 HyV0 HV0slices). }
+      exact (SepE2 X (fun z => apply_fun pi z :e W) y HyPre). }
+    claim HgyPre : apply_fun g y :e Union slices.
+    { rewrite HUnionSlices.
+      prove apply_fun g y :e {z :e X | apply_fun pi z :e W}.
+      apply SepI. exact HgyX. exact Hpi_gy_W. }
+    apply (UnionE slices (apply_fun g y) HgyPre). let Vg. assume HVgpack.
+    claim HgyVg : apply_fun g y :e Vg. { exact (andEL (apply_fun g y :e Vg) (Vg :e slices) HVgpack). }
+    claim HVgslices : Vg :e slices. { exact (andER (apply_fun g y :e Vg) (Vg :e slices) HVgpack). }
+    apply xm (Vg = V0).
+    + assume HVgeq.
+      claim HgyV0 : apply_fun g y :e V0. { rewrite <- HVgeq. exact HgyVg. }
+      (** pi injective on V0, pi(g(y)) = pi(y), both in V0 => g(y) = y **)
+      (** Then g = idG pointwise by lift uniqueness => contradiction **)
+      admit.
+    + assume HVgneq.
+      claim Hdisj : Vg :/\: V0 = Empty. { exact (HpdSlices Vg V0 HVgslices HV0slices HVgneq). }
+      assume HgyV'.
+      claim HgyV0' : apply_fun g y :e V0. { exact (HV'sub (apply_fun g y) HgyV'). }
+      claim HgyBoth : apply_fun g y :e Vg :/\: V0.
+      { exact (binintersectI Vg V0 (apply_fun g y) HgyVg HgyV0'). }
+      claim HgyEmpty : apply_fun g y :e Empty. { rewrite <- Hdisj. exact HgyBoth. }
+      exact (EmptyE (apply_fun g y) HgyEmpty).
 (** Backward: properly_discontinuous ==> covering_map **)
 - assume Hpd.
   admit.
