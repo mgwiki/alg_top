@@ -4913,3 +4913,55 @@ Proposed Replacement:
 Requested Approvals:
   - Alice
   - Charlie
+
+----
+
+NOTICE ID: 1772900990
+Created: 1772900990
+Status: PROPOSED
+
+Refers to Commit:
+  6bf683f3fb6f6771896dedfbaba854802e6a2913
+
+Target:
+  Line: 303779
+  Name: thm81_5_properly_discontinuous_covering (Theorem)
+
+Problem:
+  The theorem statement is missing group closure hypotheses (composition and inverse).
+  The orbit_map_invariant lemma requires that G is closed under composition and inverses,
+  and these properties are used extensively throughout both directions of the proof.
+  Currently the proof has two admits for these missing hypotheses:
+    claim Hcomp : forall g1 g2, g1 :e G -> g2 :e G -> exists g3 :e G, ...  (admit)
+    claim Hinv : forall g0, g0 :e G -> exists ginv :e G, ...  (admit)
+  The backward direction (properly_discontinuous => covering_map) is otherwise fully proved,
+  and the pairwise_disjoint proof also depends on these hypotheses.
+  In Munkres, these are implicit assumptions about G being a group of homeomorphisms.
+
+Proposed Replacement:
+  Add two hypotheses to the theorem statement after the identity axiom:
+
+  Theorem thm81_5_properly_discontinuous_covering :
+    forall X Tx G idG:set,
+    path_connected_space X Tx -> locally_path_connected X Tx ->
+    (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
+    idG :e G -> (forall x:set, x :e X -> apply_fun idG x = x) ->
+    (forall g1 g2:set, g1 :e G -> g2 :e G ->
+      exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+        apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+    (forall g0:set, g0 :e G ->
+      exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+        apply_fun ginv (apply_fun g0 z) = z) ->
+    (covering_map X Tx (orbit_space X G) (orbit_topology X Tx G) (orbit_map X G)
+     <->
+     properly_discontinuous X Tx G idG).
+
+Discussion:
+  - 1772900990 | Alice: The backward direction is fully proved modulo these two admits.
+    Adding them as hypotheses is standard (Munkres assumes G is a group).
+    The pairwise_disjoint proof and inverse continuity proof both depend on Hcomp/Hinv
+    through orbit_map_invariant. This is a structural gap, not a proof difficulty.
+
+Requested Approvals:
+  - Bob
+  - Charlie
