@@ -1,4 +1,4 @@
-(** Balance Alice 5862 **)
+(** Balance Alice 6104 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -286322,8 +286322,8 @@ Qed.
 (** iff H0 = H0', where H0 = p_star(pi1(E,e0)), H0' = p'_star(pi1(E',e0')). **)
 (** If h exists, it is unique. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 242 **)
-(** Lock Alice 1772953432 **)
+(** Collected Alice 242 **)
+(** Proven Alice **)
 Theorem thm79_2_equivalence_iff_same_subgroup :
   forall E Te E' Te' B Tb p p' e0 e0':set,
   covering_map E Te B Tb p ->
@@ -286343,8 +286343,538 @@ Theorem thm79_2_equivalence_iff_same_subgroup :
    homomorphism_image
      (fundamental_group E' Te' e0')
      (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p')).
-admit.
-Admitted.
+let E Te E' Te' B Tb p p' e0 e0'.
+assume Hcov Hcov' He0E He0'E' Hpe0 HpathE HlpE HpathE' HlpE'.
+(** Basic infrastructure **)
+claim HpCont : continuous_map E Te B Tb p.
+{ exact (covering_map_continuous E Te B Tb p Hcov). }
+claim Hp'Cont : continuous_map E' Te' B Tb p'.
+{ exact (covering_map_continuous E' Te' B Tb p' Hcov'). }
+claim Hpe0' : apply_fun p' e0' = apply_fun p e0.
+{ exact (eq_symm (apply_fun p e0) (apply_fun p' e0') Hpe0). }
+claim HtopE : topology_on E Te.
+{ exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopE' : topology_on E' Te'.
+{ exact (covering_map_topology_on_domain E' Te' B Tb p' Hcov'). }
+apply iffI.
+- (** Forward: exists h homeomorphism -> H0 = H0' **)
+  assume Hex.
+  apply Hex.
+  let h.
+  assume HhPack.
+  (** Extract h properties from (homeo /\ h(e0)=e0') /\ p=p'oh **)
+  claim Hph : forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x).
+  { exact (andER
+      (homeomorphism E Te E' Te' h /\ apply_fun h e0 = e0')
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x))
+      HhPack). }
+  claim Hhomeo_he0 : homeomorphism E Te E' Te' h /\ apply_fun h e0 = e0'.
+  { exact (andEL
+      (homeomorphism E Te E' Te' h /\ apply_fun h e0 = e0')
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x))
+      HhPack). }
+  claim Hhomeo : homeomorphism E Te E' Te' h.
+  { exact (andEL (homeomorphism E Te E' Te' h) (apply_fun h e0 = e0') Hhomeo_he0). }
+  claim Hhe0 : apply_fun h e0 = e0'.
+  { exact (andER (homeomorphism E Te E' Te' h) (apply_fun h e0 = e0') Hhomeo_he0). }
+  (** Extract continuous h and inverse g from homeomorphism **)
+  claim Hh_cont : continuous_map E Te E' Te' h.
+  { exact (andEL
+      (continuous_map E Te E' Te' h)
+      (exists g:set, continuous_map E' Te' E Te g /\
+        (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x) /\
+        (forall y:set, y :e E' -> apply_fun h (apply_fun g y) = y))
+      Hhomeo). }
+  claim Hg_ex : exists g:set, continuous_map E' Te' E Te g /\
+    (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x) /\
+    (forall y:set, y :e E' -> apply_fun h (apply_fun g y) = y).
+  { exact (andER
+      (continuous_map E Te E' Te' h)
+      (exists g:set, continuous_map E' Te' E Te g /\
+        (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x) /\
+        (forall y:set, y :e E' -> apply_fun h (apply_fun g y) = y))
+      Hhomeo). }
+  (** Use lemma79_1 forward: h witnesses lift of p through p', so H0 c= H0' **)
+  claim HL1_iff :
+    (exists ft:set,
+        continuous_map E Te E' Te' ft /\
+        apply_fun ft e0 = e0' /\
+        (forall y:set, y :e E -> apply_fun p' (apply_fun ft y) = apply_fun p y))
+     <->
+     (forall cls:set,
+       cls :e homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
+       cls :e homomorphism_image
+         (fundamental_group E' Te' e0')
+         (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p')).
+  { exact (andEL
+      ((exists ft:set,
+          continuous_map E Te E' Te' ft /\
+          apply_fun ft e0 = e0' /\
+          (forall y:set, y :e E -> apply_fun p' (apply_fun ft y) = apply_fun p y))
+       <->
+       (forall cls:set,
+         cls :e homomorphism_image
+           (fundamental_group E Te e0)
+           (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
+         cls :e homomorphism_image
+           (fundamental_group E' Te' e0')
+           (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p')))
+      (forall ft1 ft2:set,
+        continuous_map E Te E' Te' ft1 -> continuous_map E Te E' Te' ft2 ->
+        apply_fun ft1 e0 = e0' -> apply_fun ft2 e0 = e0' ->
+        (forall y:set, y :e E -> apply_fun p' (apply_fun ft1 y) = apply_fun p y) ->
+        (forall y:set, y :e E -> apply_fun p' (apply_fun ft2 y) = apply_fun p y) ->
+        forall y:set, y :e E -> apply_fun ft1 y = apply_fun ft2 y)
+      (lemma79_1_general_lifting E' Te' B Tb p' e0' E Te e0 p
+        Hcov' He0'E' Hpe0' HpathE HlpE HpCont He0E)). }
+  claim Hh_witness : exists ft:set,
+    continuous_map E Te E' Te' ft /\
+    apply_fun ft e0 = e0' /\
+    (forall y:set, y :e E -> apply_fun p' (apply_fun ft y) = apply_fun p y).
+  { witness h. apply andI.
+    - apply andI.
+      - exact Hh_cont.
+      - exact Hhe0.
+    - let y. assume HyE.
+      exact (eq_symm (apply_fun p y) (apply_fun p' (apply_fun h y)) (Hph y HyE)). }
+  claim Hsub1 : forall cls:set,
+    cls :e homomorphism_image
+      (fundamental_group E Te e0)
+      (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
+    cls :e homomorphism_image
+      (fundamental_group E' Te' e0')
+      (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p').
+  { exact (iffEL
+      (exists ft:set,
+          continuous_map E Te E' Te' ft /\
+          apply_fun ft e0 = e0' /\
+          (forall y:set, y :e E -> apply_fun p' (apply_fun ft y) = apply_fun p y))
+      (forall cls:set,
+        cls :e homomorphism_image
+          (fundamental_group E Te e0)
+          (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
+        cls :e homomorphism_image
+          (fundamental_group E' Te' e0')
+          (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p'))
+      HL1_iff Hh_witness). }
+  (** Now get inverse g and show H0' c= H0 via g witness **)
+  apply Hg_ex.
+  let g.
+  assume HgPack.
+  claim Hg_cont_gh : (continuous_map E' Te' E Te g /\
+    (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x)).
+  { exact (andEL
+      (continuous_map E' Te' E Te g /\
+       (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x))
+      (forall y:set, y :e E' -> apply_fun h (apply_fun g y) = y)
+      HgPack). }
+  claim Hg_cont : continuous_map E' Te' E Te g.
+  { exact (andEL
+      (continuous_map E' Te' E Te g)
+      (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x)
+      Hg_cont_gh). }
+  claim Hgh : forall x:set, x :e E -> apply_fun g (apply_fun h x) = x.
+  { exact (andER
+      (continuous_map E' Te' E Te g)
+      (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x)
+      Hg_cont_gh). }
+  claim Hhg : forall y:set, y :e E' -> apply_fun h (apply_fun g y) = y.
+  { exact (andER
+      (continuous_map E' Te' E Te g /\
+       (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x))
+      (forall y:set, y :e E' -> apply_fun h (apply_fun g y) = y)
+      HgPack). }
+  claim Hge0 : apply_fun g e0' = e0.
+  { claim Htmp : apply_fun g e0' = apply_fun g (apply_fun h e0).
+    { rewrite Hhe0. reflexivity. }
+    rewrite Htmp. exact (Hgh e0 He0E). }
+  claim Hpg : forall y:set, y :e E' -> apply_fun p (apply_fun g y) = apply_fun p' y.
+  { let y. assume HyE'.
+    claim HgyE : apply_fun g y :e E.
+    { exact (continuous_map_value_in_space E' Te' E Te g y Hg_cont HyE'). }
+    claim Htmp1 : apply_fun p (apply_fun g y) = apply_fun p' (apply_fun h (apply_fun g y)).
+    { exact (Hph (apply_fun g y) HgyE). }
+    rewrite Htmp1. rewrite (Hhg y HyE'). reflexivity. }
+  (** Use lemma79_1 forward: g witnesses lift of p' through p, so H0' c= H0 **)
+  claim HL2_iff :
+    (exists ft:set,
+        continuous_map E' Te' E Te ft /\
+        apply_fun ft e0' = e0 /\
+        (forall y:set, y :e E' -> apply_fun p (apply_fun ft y) = apply_fun p' y))
+     <->
+     (forall cls:set,
+       cls :e homomorphism_image
+         (fundamental_group E' Te' e0')
+         (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p') ->
+       cls :e homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p)).
+  { exact (andEL
+      ((exists ft:set,
+          continuous_map E' Te' E Te ft /\
+          apply_fun ft e0' = e0 /\
+          (forall y:set, y :e E' -> apply_fun p (apply_fun ft y) = apply_fun p' y))
+       <->
+       (forall cls:set,
+         cls :e homomorphism_image
+           (fundamental_group E' Te' e0')
+           (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p') ->
+         cls :e homomorphism_image
+           (fundamental_group E Te e0)
+           (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p)))
+      (forall ft1 ft2:set,
+        continuous_map E' Te' E Te ft1 -> continuous_map E' Te' E Te ft2 ->
+        apply_fun ft1 e0' = e0 -> apply_fun ft2 e0' = e0 ->
+        (forall y:set, y :e E' -> apply_fun p (apply_fun ft1 y) = apply_fun p' y) ->
+        (forall y:set, y :e E' -> apply_fun p (apply_fun ft2 y) = apply_fun p' y) ->
+        forall y:set, y :e E' -> apply_fun ft1 y = apply_fun ft2 y)
+      (lemma79_1_general_lifting E Te B Tb p e0 E' Te' e0' p'
+        Hcov He0E Hpe0 HpathE' HlpE' Hp'Cont He0'E')). }
+  claim Hg_witness : exists ft:set,
+    continuous_map E' Te' E Te ft /\
+    apply_fun ft e0' = e0 /\
+    (forall y:set, y :e E' -> apply_fun p (apply_fun ft y) = apply_fun p' y).
+  { witness g. apply andI.
+    - apply andI.
+      - exact Hg_cont.
+      - exact Hge0.
+    - exact Hpg. }
+  claim Hsub2 : forall cls:set,
+    cls :e homomorphism_image
+      (fundamental_group E' Te' e0')
+      (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p') ->
+    cls :e homomorphism_image
+      (fundamental_group E Te e0)
+      (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p).
+  { exact (iffEL
+      (exists ft:set,
+          continuous_map E' Te' E Te ft /\
+          apply_fun ft e0' = e0 /\
+          (forall y:set, y :e E' -> apply_fun p (apply_fun ft y) = apply_fun p' y))
+      (forall cls:set,
+        cls :e homomorphism_image
+          (fundamental_group E' Te' e0')
+          (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p') ->
+        cls :e homomorphism_image
+          (fundamental_group E Te e0)
+          (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+      HL2_iff Hg_witness). }
+  exact (set_ext
+    (homomorphism_image (fundamental_group E Te e0)
+      (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+    (homomorphism_image (fundamental_group E' Te' e0')
+      (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p'))
+    Hsub1 Hsub2).
+- (** Backward: H0 = H0' -> exists h homeomorphism **)
+  assume Heq.
+  (** Subgroup conditions from H0 = H0' **)
+  claim Hsub1 : forall cls:set,
+    cls :e homomorphism_image
+      (fundamental_group E Te e0)
+      (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
+    cls :e homomorphism_image
+      (fundamental_group E' Te' e0')
+      (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p').
+  { let cls. assume Hcls.
+    rewrite (eq_symm
+      (homomorphism_image (fundamental_group E Te e0)
+        (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+      (homomorphism_image (fundamental_group E' Te' e0')
+        (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p'))
+      Heq).
+    exact Hcls. }
+  claim Hsub2 : forall cls:set,
+    cls :e homomorphism_image
+      (fundamental_group E' Te' e0')
+      (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p') ->
+    cls :e homomorphism_image
+      (fundamental_group E Te e0)
+      (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p).
+  { let cls. assume Hcls. rewrite Heq. exact Hcls. }
+  (** Apply lemma79_1 backward: H0 c= H0' -> exists h: E->E' **)
+  claim HL1_iff :
+    (exists ft:set,
+        continuous_map E Te E' Te' ft /\
+        apply_fun ft e0 = e0' /\
+        (forall y:set, y :e E -> apply_fun p' (apply_fun ft y) = apply_fun p y))
+     <->
+     (forall cls:set,
+       cls :e homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
+       cls :e homomorphism_image
+         (fundamental_group E' Te' e0')
+         (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p')).
+  { exact (andEL
+      ((exists ft:set,
+          continuous_map E Te E' Te' ft /\
+          apply_fun ft e0 = e0' /\
+          (forall y:set, y :e E -> apply_fun p' (apply_fun ft y) = apply_fun p y))
+       <->
+       (forall cls:set,
+         cls :e homomorphism_image
+           (fundamental_group E Te e0)
+           (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
+         cls :e homomorphism_image
+           (fundamental_group E' Te' e0')
+           (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p')))
+      (forall ft1 ft2:set,
+        continuous_map E Te E' Te' ft1 -> continuous_map E Te E' Te' ft2 ->
+        apply_fun ft1 e0 = e0' -> apply_fun ft2 e0 = e0' ->
+        (forall y:set, y :e E -> apply_fun p' (apply_fun ft1 y) = apply_fun p y) ->
+        (forall y:set, y :e E -> apply_fun p' (apply_fun ft2 y) = apply_fun p y) ->
+        forall y:set, y :e E -> apply_fun ft1 y = apply_fun ft2 y)
+      (lemma79_1_general_lifting E' Te' B Tb p' e0' E Te e0 p
+        Hcov' He0'E' Hpe0' HpathE HlpE HpCont He0E)). }
+  claim Hex_h : exists ft:set,
+    continuous_map E Te E' Te' ft /\
+    apply_fun ft e0 = e0' /\
+    (forall y:set, y :e E -> apply_fun p' (apply_fun ft y) = apply_fun p y).
+  { exact (iffER
+      (exists ft:set,
+          continuous_map E Te E' Te' ft /\
+          apply_fun ft e0 = e0' /\
+          (forall y:set, y :e E -> apply_fun p' (apply_fun ft y) = apply_fun p y))
+      (forall cls:set,
+        cls :e homomorphism_image
+          (fundamental_group E Te e0)
+          (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
+        cls :e homomorphism_image
+          (fundamental_group E' Te' e0')
+          (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p'))
+      HL1_iff Hsub1). }
+  apply Hex_h.
+  let h.
+  assume HhPack.
+  claim Hh_cont_he0 : continuous_map E Te E' Te' h /\ apply_fun h e0 = e0'.
+  { exact (andEL
+      (continuous_map E Te E' Te' h /\ apply_fun h e0 = e0')
+      (forall y:set, y :e E -> apply_fun p' (apply_fun h y) = apply_fun p y)
+      HhPack). }
+  claim Hh_cont : continuous_map E Te E' Te' h.
+  { exact (andEL (continuous_map E Te E' Te' h) (apply_fun h e0 = e0') Hh_cont_he0). }
+  claim Hhe0 : apply_fun h e0 = e0'.
+  { exact (andER (continuous_map E Te E' Te' h) (apply_fun h e0 = e0') Hh_cont_he0). }
+  claim Hp'h : forall y:set, y :e E -> apply_fun p' (apply_fun h y) = apply_fun p y.
+  { exact (andER
+      (continuous_map E Te E' Te' h /\ apply_fun h e0 = e0')
+      (forall y:set, y :e E -> apply_fun p' (apply_fun h y) = apply_fun p y)
+      HhPack). }
+  (** Apply lemma79_1 backward: H0' c= H0 -> exists h': E'->E **)
+  claim HL2_iff :
+    (exists ft:set,
+        continuous_map E' Te' E Te ft /\
+        apply_fun ft e0' = e0 /\
+        (forall y:set, y :e E' -> apply_fun p (apply_fun ft y) = apply_fun p' y))
+     <->
+     (forall cls:set,
+       cls :e homomorphism_image
+         (fundamental_group E' Te' e0')
+         (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p') ->
+       cls :e homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p)).
+  { exact (andEL
+      ((exists ft:set,
+          continuous_map E' Te' E Te ft /\
+          apply_fun ft e0' = e0 /\
+          (forall y:set, y :e E' -> apply_fun p (apply_fun ft y) = apply_fun p' y))
+       <->
+       (forall cls:set,
+         cls :e homomorphism_image
+           (fundamental_group E' Te' e0')
+           (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p') ->
+         cls :e homomorphism_image
+           (fundamental_group E Te e0)
+           (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p)))
+      (forall ft1 ft2:set,
+        continuous_map E' Te' E Te ft1 -> continuous_map E' Te' E Te ft2 ->
+        apply_fun ft1 e0' = e0 -> apply_fun ft2 e0' = e0 ->
+        (forall y:set, y :e E' -> apply_fun p (apply_fun ft1 y) = apply_fun p' y) ->
+        (forall y:set, y :e E' -> apply_fun p (apply_fun ft2 y) = apply_fun p' y) ->
+        forall y:set, y :e E' -> apply_fun ft1 y = apply_fun ft2 y)
+      (lemma79_1_general_lifting E Te B Tb p e0 E' Te' e0' p'
+        Hcov He0E Hpe0 HpathE' HlpE' Hp'Cont He0'E')). }
+  claim Hex_h' : exists ft:set,
+    continuous_map E' Te' E Te ft /\
+    apply_fun ft e0' = e0 /\
+    (forall y:set, y :e E' -> apply_fun p (apply_fun ft y) = apply_fun p' y).
+  { exact (iffER
+      (exists ft:set,
+          continuous_map E' Te' E Te ft /\
+          apply_fun ft e0' = e0 /\
+          (forall y:set, y :e E' -> apply_fun p (apply_fun ft y) = apply_fun p' y))
+      (forall cls:set,
+        cls :e homomorphism_image
+          (fundamental_group E' Te' e0')
+          (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p') ->
+        cls :e homomorphism_image
+          (fundamental_group E Te e0)
+          (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+      HL2_iff Hsub2). }
+  apply Hex_h'.
+  let h'.
+  assume Hh'Pack.
+  claim Hh'_cont_e0 : continuous_map E' Te' E Te h' /\ apply_fun h' e0' = e0.
+  { exact (andEL
+      (continuous_map E' Te' E Te h' /\ apply_fun h' e0' = e0)
+      (forall y:set, y :e E' -> apply_fun p (apply_fun h' y) = apply_fun p' y)
+      Hh'Pack). }
+  claim Hh'_cont : continuous_map E' Te' E Te h'.
+  { exact (andEL (continuous_map E' Te' E Te h') (apply_fun h' e0' = e0) Hh'_cont_e0). }
+  claim Hh'e0 : apply_fun h' e0' = e0.
+  { exact (andER (continuous_map E' Te' E Te h') (apply_fun h' e0' = e0) Hh'_cont_e0). }
+  claim Hph' : forall y:set, y :e E' -> apply_fun p (apply_fun h' y) = apply_fun p' y.
+  { exact (andER
+      (continuous_map E' Te' E Te h' /\ apply_fun h' e0' = e0)
+      (forall y:set, y :e E' -> apply_fun p (apply_fun h' y) = apply_fun p' y)
+      Hh'Pack). }
+  (** Show h' o h = id on E via uniqueness **)
+  claim Hcomp_cont : continuous_map E Te E Te (compose_fun E h h').
+  { exact (composition_continuous E Te E' Te' E Te h h' Hh_cont Hh'_cont). }
+  claim Hid_cont : continuous_map E Te E Te (graph E (fun x:set => x)).
+  { exact (identity_continuous E Te HtopE). }
+  claim Hcomp_e0 : apply_fun (compose_fun E h h') e0 = e0.
+  { rewrite (compose_fun_apply E h h' e0 He0E). rewrite Hhe0. exact Hh'e0. }
+  claim Hid_e0 : apply_fun (graph E (fun x:set => x)) e0 = e0.
+  { exact (apply_fun_graph E (fun x:set => x) e0 He0E). }
+  claim Hcomp_lifts : forall y:set, y :e E ->
+    apply_fun p (apply_fun (compose_fun E h h') y) = apply_fun p y.
+  { let y. assume HyE.
+    rewrite (compose_fun_apply E h h' y HyE).
+    claim HhyE' : apply_fun h y :e E'.
+    { exact (continuous_map_value_in_space E Te E' Te' h y Hh_cont HyE). }
+    rewrite (Hph' (apply_fun h y) HhyE').
+    exact (Hp'h y HyE). }
+  claim Hid_lifts : forall y:set, y :e E ->
+    apply_fun p (apply_fun (graph E (fun x:set => x)) y) = apply_fun p y.
+  { let y. assume HyE.
+    rewrite (apply_fun_graph E (fun x:set => x) y HyE). reflexivity. }
+  claim Huniq_E :
+    forall ft1 ft2:set,
+      continuous_map E Te E Te ft1 -> continuous_map E Te E Te ft2 ->
+      apply_fun ft1 e0 = e0 -> apply_fun ft2 e0 = e0 ->
+      (forall y:set, y :e E -> apply_fun p (apply_fun ft1 y) = apply_fun p y) ->
+      (forall y:set, y :e E -> apply_fun p (apply_fun ft2 y) = apply_fun p y) ->
+      forall y:set, y :e E -> apply_fun ft1 y = apply_fun ft2 y.
+  { exact (andER
+      ((exists ft:set,
+          continuous_map E Te E Te ft /\
+          apply_fun ft e0 = e0 /\
+          (forall y:set, y :e E -> apply_fun p (apply_fun ft y) = apply_fun p y))
+       <->
+       (forall cls:set,
+         cls :e homomorphism_image
+           (fundamental_group E Te e0)
+           (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
+         cls :e homomorphism_image
+           (fundamental_group E Te e0)
+           (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p)))
+      (forall ft1 ft2:set,
+        continuous_map E Te E Te ft1 -> continuous_map E Te E Te ft2 ->
+        apply_fun ft1 e0 = e0 -> apply_fun ft2 e0 = e0 ->
+        (forall y:set, y :e E -> apply_fun p (apply_fun ft1 y) = apply_fun p y) ->
+        (forall y:set, y :e E -> apply_fun p (apply_fun ft2 y) = apply_fun p y) ->
+        forall y:set, y :e E -> apply_fun ft1 y = apply_fun ft2 y)
+      (lemma79_1_general_lifting E Te B Tb p e0 E Te e0 p
+        Hcov He0E (eq_refl (apply_fun p e0)) HpathE HlpE HpCont He0E)). }
+  claim Hh'h_pointwise : forall y:set, y :e E -> apply_fun h' (apply_fun h y) = y.
+  { let y. assume HyE.
+    claim Htmp : apply_fun (compose_fun E h h') y = apply_fun (graph E (fun x:set => x)) y.
+    { exact (Huniq_E (compose_fun E h h') (graph E (fun x:set => x))
+        Hcomp_cont Hid_cont Hcomp_e0 Hid_e0 Hcomp_lifts Hid_lifts y HyE). }
+    claim Htmp1 : apply_fun (compose_fun E h h') y = apply_fun h' (apply_fun h y).
+    { exact (compose_fun_apply E h h' y HyE). }
+    claim Htmp2 : apply_fun (graph E (fun x:set => x)) y = y.
+    { exact (apply_fun_graph E (fun x:set => x) y HyE). }
+    claim Htmp3 : apply_fun h' (apply_fun h y) = apply_fun (graph E (fun x:set => x)) y.
+    { rewrite (eq_symm (apply_fun (compose_fun E h h') y) (apply_fun h' (apply_fun h y)) Htmp1).
+      exact Htmp. }
+    rewrite Htmp3. exact Htmp2. }
+  (** Show h o h' = id on E' via uniqueness **)
+  claim Hcomp'_cont : continuous_map E' Te' E' Te' (compose_fun E' h' h).
+  { exact (composition_continuous E' Te' E Te E' Te' h' h Hh'_cont Hh_cont). }
+  claim Hid'_cont : continuous_map E' Te' E' Te' (graph E' (fun x:set => x)).
+  { exact (identity_continuous E' Te' HtopE'). }
+  claim Hcomp'_e0 : apply_fun (compose_fun E' h' h) e0' = e0'.
+  { rewrite (compose_fun_apply E' h' h e0' He0'E'). rewrite Hh'e0. exact Hhe0. }
+  claim Hid'_e0 : apply_fun (graph E' (fun x:set => x)) e0' = e0'.
+  { exact (apply_fun_graph E' (fun x:set => x) e0' He0'E'). }
+  claim Hcomp'_lifts : forall y:set, y :e E' ->
+    apply_fun p' (apply_fun (compose_fun E' h' h) y) = apply_fun p' y.
+  { let y. assume HyE'.
+    rewrite (compose_fun_apply E' h' h y HyE').
+    claim Hh'yE : apply_fun h' y :e E.
+    { exact (continuous_map_value_in_space E' Te' E Te h' y Hh'_cont HyE'). }
+    rewrite (Hp'h (apply_fun h' y) Hh'yE).
+    exact (Hph' y HyE'). }
+  claim Hid'_lifts : forall y:set, y :e E' ->
+    apply_fun p' (apply_fun (graph E' (fun x:set => x)) y) = apply_fun p' y.
+  { let y. assume HyE'.
+    rewrite (apply_fun_graph E' (fun x:set => x) y HyE'). reflexivity. }
+  claim Huniq_E' :
+    forall ft1 ft2:set,
+      continuous_map E' Te' E' Te' ft1 -> continuous_map E' Te' E' Te' ft2 ->
+      apply_fun ft1 e0' = e0' -> apply_fun ft2 e0' = e0' ->
+      (forall y:set, y :e E' -> apply_fun p' (apply_fun ft1 y) = apply_fun p' y) ->
+      (forall y:set, y :e E' -> apply_fun p' (apply_fun ft2 y) = apply_fun p' y) ->
+      forall y:set, y :e E' -> apply_fun ft1 y = apply_fun ft2 y.
+  { exact (andER
+      ((exists ft:set,
+          continuous_map E' Te' E' Te' ft /\
+          apply_fun ft e0' = e0' /\
+          (forall y:set, y :e E' -> apply_fun p' (apply_fun ft y) = apply_fun p' y))
+       <->
+       (forall cls:set,
+         cls :e homomorphism_image
+           (fundamental_group E' Te' e0')
+           (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p') ->
+         cls :e homomorphism_image
+           (fundamental_group E' Te' e0')
+           (induced_homomorphism E' Te' e0' B Tb (apply_fun p' e0') p')))
+      (forall ft1 ft2:set,
+        continuous_map E' Te' E' Te' ft1 -> continuous_map E' Te' E' Te' ft2 ->
+        apply_fun ft1 e0' = e0' -> apply_fun ft2 e0' = e0' ->
+        (forall y:set, y :e E' -> apply_fun p' (apply_fun ft1 y) = apply_fun p' y) ->
+        (forall y:set, y :e E' -> apply_fun p' (apply_fun ft2 y) = apply_fun p' y) ->
+        forall y:set, y :e E' -> apply_fun ft1 y = apply_fun ft2 y)
+      (lemma79_1_general_lifting E' Te' B Tb p' e0' E' Te' e0' p'
+        Hcov' He0'E' (eq_refl (apply_fun p' e0')) HpathE' HlpE' Hp'Cont He0'E')). }
+  claim Hhh'_pointwise : forall y:set, y :e E' -> apply_fun h (apply_fun h' y) = y.
+  { let y. assume HyE'.
+    claim Htmp : apply_fun (compose_fun E' h' h) y = apply_fun (graph E' (fun x:set => x)) y.
+    { exact (Huniq_E' (compose_fun E' h' h) (graph E' (fun x:set => x))
+        Hcomp'_cont Hid'_cont Hcomp'_e0 Hid'_e0 Hcomp'_lifts Hid'_lifts y HyE'). }
+    claim Htmp1 : apply_fun (compose_fun E' h' h) y = apply_fun h (apply_fun h' y).
+    { exact (compose_fun_apply E' h' h y HyE'). }
+    claim Htmp2 : apply_fun (graph E' (fun x:set => x)) y = y.
+    { exact (apply_fun_graph E' (fun x:set => x) y HyE'). }
+    claim Htmp3 : apply_fun h (apply_fun h' y) = apply_fun (graph E' (fun x:set => x)) y.
+    { rewrite (eq_symm (apply_fun (compose_fun E' h' h) y) (apply_fun h (apply_fun h' y)) Htmp1).
+      exact Htmp. }
+    rewrite Htmp3. exact Htmp2. }
+  (** Construct the homeomorphism and provide witness **)
+  witness h.
+  apply andI.
+  - apply andI.
+    - prove continuous_map E Te E' Te' h /\
+        exists g:set, continuous_map E' Te' E Te g /\
+          (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x) /\
+          (forall y:set, y :e E' -> apply_fun h (apply_fun g y) = y).
+      apply andI.
+      - exact Hh_cont.
+      - witness h'.
+        apply andI.
+        - apply andI.
+          - exact Hh'_cont.
+          - exact Hh'h_pointwise.
+        - exact Hhh'_pointwise.
+    - exact Hhe0.
+  - let x. assume HxE.
+    exact (eq_symm (apply_fun p' (apply_fun h x)) (apply_fun p x) (Hp'h x HxE)).
+Qed.
 
 (** Infrastructure: conjugate subgroups **)
 (** H1 and H2 are conjugate subgroups of G if H2 = alpha H1 alpha^{-1} for some alpha in G **)
