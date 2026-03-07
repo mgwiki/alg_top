@@ -1,0 +1,35 @@
+CHANGES1337 (from bck1336, 373570 lines to bck1337, 373922 lines)
+
+1. Wrote complete structural proof of Hstep (the key one-step transfer claim)
+   in column_map_pointwise_locally_continuous
+   - ~350 line proof skeleton with 35 internal admits
+   - Full proof structure: given t1 in unit_interval:
+     a. Get evenly covered U of F(s, t1) with slices
+     b. Get slice V0 containing lift(s)(t1), and section g
+     c. Get rectangle A_rect x J_rect in product topology with F mapping into U
+     d. Get metric ball in J_rect, and metric ball where lift(s) stays in V0
+     e. Choose r < both epsilon bounds and < 1
+     f. For tau0 in reach_s ∩ B(t1,r) and tau1 in B(t1,r):
+        - Extract N0 from tau0 in reach_s
+        - Build N' = preimage(V0 under col_tau0) ∩ A_rect
+        - Show lifts stay in V0 via connected_lift_stays_in_anchored_sheet
+        - Show col_tau1 = g ∘ F(_, tau1) on N' (continuous)
+        - Conclude tau1 in reach_s
+   - Compiles cleanly with all admits
+
+2. Remaining admits are mostly mechanical:
+   - 6 conjunction extractions from HevPack (covering_map_evenly_covered_slices)
+   - 4 conjunction extractions from homeomorphism_inverse_package
+   - 3 conjunction extractions from product_subbasis_elem_is_rectangle
+   - 2 pair projections (tuple_2_0_eq, tuple_2_1_eq)
+   - 2 open_in_metric_topology conversions
+   - 2 eps_ in R/positive lemmas
+   - 5 r_choice property extractions from exists_eps_lt_four_pos
+   - 3 ball monotonicity/inclusion claims
+   - 2 topology intersection/membership claims
+   - 4 core mathematical claims (lift stays in V0, col equation, continuity, preimage in TI1)
+
+3. Line change: +352 lines
+
+Running totals: 394 Admitted (unchanged), 2826 admit:NO (unchanged)
+Alice balance: 4188 (unchanged)
