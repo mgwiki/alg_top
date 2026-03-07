@@ -26319,6 +26319,89 @@ exact (SepI
   f HfLoop HfRefl).
 Qed.
 
+(** Infrastructure: multiplication corresponds to concatenation of loops **)
+(** Proven Bob **)
+Lemma path_homotopy_class_loop_concat_eq_mult : forall X Tx x0 f g:set,
+  f :e loop_space X Tx x0 ->
+  g :e loop_space X Tx x0 ->
+  path_homotopy_class_loop X Tx x0 (path_concat f g)
+  =
+  apply_fun (fundamental_group_mult X Tx x0)
+    (path_homotopy_class_loop X Tx x0 f, path_homotopy_class_loop X Tx x0 g).
+let X Tx x0 f g.
+assume HfLoop HgLoop.
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_cod
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    (loop_space_continuous X Tx x0 f HfLoop)).
+}
+set clsf := path_homotopy_class_loop X Tx x0 f.
+set clsg := path_homotopy_class_loop X Tx x0 g.
+set f0 := Eps_i (fun h:set => h :e (clsf, clsg) 0).
+set g0 := Eps_i (fun h:set => h :e (clsf, clsg) 1).
+claim Hf0In : f0 :e (clsf, clsg) 0.
+{
+  apply (Eps_i_ex (fun h:set => h :e (clsf, clsg) 0)).
+  witness f.
+  rewrite tuple_2_0_eq.
+  exact (loop_in_own_class_early X Tx x0 f HtopX HfLoop).
+}
+claim Hg0In : g0 :e (clsf, clsg) 1.
+{
+  apply (Eps_i_ex (fun h:set => h :e (clsf, clsg) 1)).
+  witness g.
+  rewrite tuple_2_1_eq.
+  exact (loop_in_own_class_early X Tx x0 g HtopX HgLoop).
+}
+claim Hf0InCls : f0 :e clsf.
+{
+  exact (mem_eqR
+    f0
+    ((clsf, clsg) 0)
+    clsf
+    (tuple_2_0_eq clsf clsg)
+    Hf0In).
+}
+claim Hg0InCls : g0 :e clsg.
+{
+  exact (mem_eqR
+    g0
+    ((clsf, clsg) 1)
+    clsg
+    (tuple_2_1_eq clsf clsg)
+    Hg0In).
+}
+claim Hf0Hom : path_homotopic X Tx x0 x0 f f0.
+{ exact (path_homotopy_class_loop_has_homotopy X Tx x0 f f0 Hf0InCls). }
+claim Hg0Hom : path_homotopic X Tx x0 x0 g g0.
+{ exact (path_homotopy_class_loop_has_homotopy X Tx x0 g g0 Hg0InCls). }
+claim HconcatHom :
+  path_homotopic X Tx x0 x0 (path_concat f g) (path_concat f0 g0).
+{
+  exact (path_concat_well_defined_on_classes
+    X Tx x0 x0 x0 f f0 g g0 Hf0Hom Hg0Hom).
+}
+claim HclassEq :
+  path_homotopy_class_loop X Tx x0 (path_concat f g)
+  = path_homotopy_class_loop X Tx x0 (path_concat f0 g0).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    (path_concat f g)
+    (path_concat f0 g0)
+    HconcatHom).
+}
+rewrite (fundamental_group_mult_apply_on_loop_classes X Tx x0 f g HfLoop HgLoop).
+exact HclassEq.
+Qed.
+
 (** Helper: Eps_i of a fundamental group member is in loop_space (early version) **)
 (** Proven Alice **)
 Theorem eps_in_loop_space_early : forall X Tx x0 cls:set,
@@ -119496,7 +119579,7 @@ Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
   <->
   apply_fun (path_lift E Te B Tb p e0 f) 1 = e0.
 admit.
-Admitted.
+Admitted. (** TODO: statement likely missing parentheses; use thm54_6c_loop_characterization_equiv for intended direction. **)
 
 (** Infrastructure: loop characterization under covering assumptions **)
 (** Proven Alice **)
