@@ -1,4 +1,4 @@
-(** Balance Alice 7111 **)
+(** Balance Alice 7089 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -303714,7 +303714,8 @@ Admitted.
 (** LATEX VERSION: The bijection Phi^{-1} o Psi : C(E,p,B) -> N(H0)/H0 **)
 (** is an isomorphism of groups. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
+(** Bounty 242 **)
+(** Lock Alice 1772992049 **)
 Theorem thm81_2_covering_trans_isomorphism :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
