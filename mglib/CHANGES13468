@@ -1,0 +1,31 @@
+CHANGES13468 (from bck13467, 383178 lines to bck13468, 383172 lines)
+
+1. Implemented 5 more admin-approved noticeboard refactors:
+
+   a) Notice 1772540187: thm67_6_uniqueness_direct_sum
+      - Added efam invfam to quantified variables
+      - Added (forall alpha, alpha :e J -> abelian_group ...) hypothesis
+      - Updated proof intro to accept HabFam
+
+   b) Notice 1772560012: lemma68_5_extension_characterizes_free_product
+      - Added uniqueness clause to exists conclusion:
+        /\ (forall h', group_homomorphism ... h' -> ... -> forall x, x :e G -> apply_fun h' x = apply_fun h x)
+
+   c) Notice 1772623360: cor68_6_side_from_product_G1_ge3
+      - Replaced subgroup_of hypotheses with free_product_of_subgroups hypotheses
+
+   d) Notice 1772623361: cor68_6_side_from_product_G2_ge3
+      - Replaced subgroup_of hypotheses with free_product_of_subgroups hypotheses
+
+   e) Notice 1772562734: lemma68_9_least_normal_generated_by_conjugates
+      - Changed conclusion from subgroups_generate to N = least_normal_subgroup
+      - Simplified proof body to single admit (old proof was wrong for old conclusion)
+
+2. Guard violations are all from admin-approved statement changes
+
+3. Balance unchanged: Alice 7078
+
+4. Line change: -6 lines (383172 - 383178)
+   Decrease due to lemma68_9 proof simplification (30 lines of wrong proof -> 1 line admit)
+
+Running totals: 370 Admitted, Alice balance: 7078
