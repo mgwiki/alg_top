@@ -303276,6 +303276,152 @@ Definition properly_discontinuous : set -> set -> set -> set -> prop :=
 (** from S81 Thm 81.5 (line 5125 in algtop.tex): properly discontinuous covering **)
 (** iff the action of G is properly discontinuous. In this case, pi is regular **)
 (** and G is its group of covering transformations. **)
+(** Helper: orbit_map sends x to its orbit class **)
+Theorem orbit_map_apply : forall X G x:set,
+  x :e X ->
+  apply_fun (orbit_map X G) x = {y :e X | orbit_equiv X G x y}.
+let X G x. assume HxX.
+exact (apply_fun_graph X (fun z:set => {y :e X | orbit_equiv X G z y}) x HxX).
+Qed.
+
+(** Helper: orbit map is function_on **)
+Theorem orbit_map_function_on : forall X G:set,
+  (forall g:set, g :e G -> function_on g X X) ->
+  function_on (orbit_map X G) X (orbit_space X G).
+let X G. assume Hfn.
+apply (graph_function_on X (orbit_space X G) (fun x:set => {y :e X | orbit_equiv X G x y})).
+let x. assume HxX.
+prove {y :e X | orbit_equiv X G x y} :e orbit_space X G.
+prove {y :e X | orbit_equiv X G x y} :e {cls :e Power X | exists z:set, z :e X /\ cls = {y :e X | orbit_equiv X G z y}}.
+apply SepI.
+- prove {y :e X | orbit_equiv X G x y} :e Power X.
+  apply PowerI.
+  let y. assume Hy. exact (SepE1 X (fun y => orbit_equiv X G x y) y Hy).
+- prove exists z:set, z :e X /\ {y :e X | orbit_equiv X G x y} = {y :e X | orbit_equiv X G z y}.
+  witness x. apply andI.
+  + exact HxX.
+  + reflexivity.
+Qed.
+
+(** Helper: orbit equivalence is reflexive when idG in G **)
+Theorem orbit_equiv_refl : forall X G idG x:set,
+  idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
+  x :e X -> orbit_equiv X G x x.
+let X G idG x. assume HidG HidAct HxX.
+prove x :e X /\ x :e X /\ exists g:set, g :e G /\ apply_fun g x = x.
+apply and3I.
+- exact HxX.
+- exact HxX.
+- witness idG. apply andI. exact HidG. exact (HidAct x HxX).
+Qed.
+
+(** Helper: x is in its own orbit **)
+Theorem orbit_self_mem : forall X G idG x:set,
+  idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
+  x :e X ->
+  x :e {y :e X | orbit_equiv X G x y}.
+let X G idG x. assume HidG HidAct HxX.
+apply SepI. exact HxX.
+exact (orbit_equiv_refl X G idG x HidG HidAct HxX).
+Qed.
+
+(** Helper: orbit map orbit contains x **)
+Theorem orbit_map_contains_self : forall X G idG x:set,
+  idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
+  x :e X ->
+  x :e apply_fun (orbit_map X G) x.
+let X G idG x. assume HidG HidAct HxX.
+rewrite (orbit_map_apply X G x HxX).
+exact (orbit_self_mem X G idG x HidG HidAct HxX).
+Qed.
+
+(** Helper: g(x) is in the orbit of x **)
+Theorem orbit_equiv_action : forall X G g x:set,
+  g :e G -> x :e X -> apply_fun g x :e X ->
+  orbit_equiv X G x (apply_fun g x).
+let X G g x. assume HgG HxX HgxX.
+prove x :e X /\ apply_fun g x :e X /\ exists h:set, h :e G /\ apply_fun h x = apply_fun g x.
+apply and3I.
+- exact HxX.
+- exact HgxX.
+- witness g. apply andI. exact HgG. reflexivity.
+Qed.
+
+(** Helper: orbit map commutes with group action **)
+(** Requires composition closure and inverse closure of G **)
+Theorem orbit_map_invariant : forall X G g x:set,
+  g :e G ->
+  (forall h:set, h :e G -> function_on h X X) ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  x :e X ->
+  apply_fun (orbit_map X G) (apply_fun g x) = apply_fun (orbit_map X G) x.
+let X G g x. assume HgG Hfn Hcomp Hinv HxX.
+claim HgxX : apply_fun g x :e X. { exact (Hfn g HgG x HxX). }
+rewrite (orbit_map_apply X G (apply_fun g x) HgxX).
+rewrite (orbit_map_apply X G x HxX).
+apply set_ext.
+- let y. assume Hy.
+  claim HyX : y :e X. { exact (SepE1 X (fun z => orbit_equiv X G (apply_fun g x) z) y Hy). }
+  claim Horb : orbit_equiv X G (apply_fun g x) y.
+  { exact (SepE2 X (fun z => orbit_equiv X G (apply_fun g x) z) y Hy). }
+  apply SepI. exact HyX.
+  prove orbit_equiv X G x y.
+  prove x :e X /\ y :e X /\ exists h:set, h :e G /\ apply_fun h x = y.
+  apply and3I. exact HxX. exact HyX.
+  claim Hoe : apply_fun g x :e X /\ y :e X /\
+    exists h:set, h :e G /\ apply_fun h (apply_fun g x) = y. { exact Horb. }
+  apply (and3E (apply_fun g x :e X) (y :e X)
+    (exists h:set, h :e G /\ apply_fun h (apply_fun g x) = y) Hoe).
+  assume _ _ Hex. apply Hex. let h. assume Hh.
+  claim HhG : h :e G. { exact (andEL (h :e G) (apply_fun h (apply_fun g x) = y) Hh). }
+  claim Hhgx : apply_fun h (apply_fun g x) = y.
+  { exact (andER (h :e G) (apply_fun h (apply_fun g x) = y) Hh). }
+  apply (Hcomp g h HgG HhG). let k. assume Hk.
+  claim HkG : k :e G.
+  { exact (andEL (k :e G) (forall z:set, z :e X ->
+      apply_fun k z = apply_fun h (apply_fun g z)) Hk). }
+  claim Hkact : forall z:set, z :e X -> apply_fun k z = apply_fun h (apply_fun g z).
+  { exact (andER (k :e G) (forall z:set, z :e X ->
+      apply_fun k z = apply_fun h (apply_fun g z)) Hk). }
+  witness k. apply andI. exact HkG.
+  rewrite (Hkact x HxX). exact Hhgx.
+- let y. assume Hy.
+  claim HyX : y :e X. { exact (SepE1 X (fun z => orbit_equiv X G x z) y Hy). }
+  claim Horb : orbit_equiv X G x y.
+  { exact (SepE2 X (fun z => orbit_equiv X G x z) y Hy). }
+  apply SepI. exact HyX.
+  prove orbit_equiv X G (apply_fun g x) y.
+  prove apply_fun g x :e X /\ y :e X /\ exists h:set, h :e G /\ apply_fun h (apply_fun g x) = y.
+  apply and3I. exact HgxX. exact HyX.
+  claim Hoe : x :e X /\ y :e X /\ exists k:set, k :e G /\ apply_fun k x = y. { exact Horb. }
+  apply (and3E (x :e X) (y :e X) (exists k:set, k :e G /\ apply_fun k x = y) Hoe).
+  assume _ _ Hex. apply Hex. let k. assume Hk.
+  claim HkG : k :e G. { exact (andEL (k :e G) (apply_fun k x = y) Hk). }
+  claim Hkx : apply_fun k x = y. { exact (andER (k :e G) (apply_fun k x = y) Hk). }
+  apply (Hinv g HgG). let ginv. assume Hginv.
+  claim HginvG : ginv :e G.
+  { exact (andEL (ginv :e G)
+      (forall z:set, z :e X -> apply_fun ginv (apply_fun g z) = z) Hginv). }
+  claim Hginvact : forall z:set, z :e X -> apply_fun ginv (apply_fun g z) = z.
+  { exact (andER (ginv :e G)
+      (forall z:set, z :e X -> apply_fun ginv (apply_fun g z) = z) Hginv). }
+  apply (Hcomp ginv k HginvG HkG). let m. assume Hm.
+  claim HmG : m :e G.
+  { exact (andEL (m :e G) (forall z:set, z :e X ->
+      apply_fun m z = apply_fun k (apply_fun ginv z)) Hm). }
+  claim Hmact : forall z:set, z :e X -> apply_fun m z = apply_fun k (apply_fun ginv z).
+  { exact (andER (m :e G) (forall z:set, z :e X ->
+      apply_fun m z = apply_fun k (apply_fun ginv z)) Hm). }
+  witness m. apply andI. exact HmG.
+  rewrite (Hmact (apply_fun g x) HgxX).
+  rewrite (Hginvact x HxX). exact Hkx.
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 (** Lock Alice 1772977022 **)
@@ -303287,7 +303433,44 @@ Theorem thm81_5_properly_discontinuous_covering :
   (covering_map X Tx (orbit_space X G) (orbit_topology X Tx G) (orbit_map X G)
    <->
    properly_discontinuous X Tx G idG).
-admit.
+let X Tx G idG. assume Hpc Hlpc Hhomeo HidG HidAct.
+set pi := orbit_map X G.
+set B := orbit_space X G.
+set Tb := orbit_topology X Tx G.
+(** Missing group axioms - needed for orbit_map_invariant **)
+claim Hcomp : forall g1 g2:set, g1 :e G -> g2 :e G ->
+  exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+    apply_fun g3 z = apply_fun g2 (apply_fun g1 z).
+{ admit. }
+claim Hinv : forall g0:set, g0 :e G ->
+  exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+    apply_fun ginv (apply_fun g0 z) = z.
+{ admit. }
+(** Infrastructure **)
+claim HtopX : topology_on X Tx. { exact (path_connected_space_topology X Tx Hpc). }
+claim Hfn : forall g:set, g :e G -> function_on g X X.
+{ let g. assume HgG.
+  exact (continuous_map_function_on X Tx X Tx g
+    (homeomorphism_continuous X Tx X Tx g (Hhomeo g HgG))). }
+claim Hconn : connected_space X Tx. { exact (path_connected_implies_connected X Tx Hpc). }
+claim Hpi_inv : forall g x:set, g :e G -> x :e X ->
+  apply_fun pi (apply_fun g x) = apply_fun pi x.
+{ let g x. assume HgG HxX.
+  exact (orbit_map_invariant X G g x HgG Hfn Hcomp Hinv HxX). }
+apply iffI.
+(** Forward: covering_map ==> properly_discontinuous **)
+- assume Hcov.
+  prove properly_discontinuous X Tx G idG.
+  prove forall x:set, x :e X ->
+    exists U:set, U :e Tx /\ x :e U /\
+      (forall g:set, g :e G -> g <> idG ->
+        apply_fun g x :e X /\ (forall y:set, y :e U -> apply_fun g y /:e U)).
+  let x. assume HxX.
+  claim HbB : apply_fun pi x :e B. { exact (orbit_map_function_on X G Hfn x HxX). }
+  admit.
+(** Backward: properly_discontinuous ==> covering_map **)
+- assume Hpd.
+  admit.
 Admitted.
 
 (** from S81 Thm 81.6 (line 5137 in algtop.tex) **)
