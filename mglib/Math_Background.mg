@@ -303708,7 +303708,121 @@ Theorem lemma81_1_image_of_psi :
         (fundamental_group_mult B Tb (apply_fun p e0))
         (fundamental_group_id B Tb (apply_fun p e0))
         (fundamental_group_inv B Tb (apply_fun p e0))).
-admit.
+let E Te B Tb p e0.
+assume Hcov He0E HpcE HlpE.
+let e1.
+set b0 := apply_fun p e0.
+set H0 := homomorphism_image (fundamental_group E Te e0) (induced_homomorphism E Te e0 B Tb b0 p).
+set G := fundamental_group B Tb b0.
+set multG := fundamental_group_mult B Tb b0.
+set eG := fundamental_group_id B Tb b0.
+set invG := fundamental_group_inv B Tb b0.
+set N := normalizer H0 G multG eG invG.
+(** Infrastructure claims **)
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim Hp_cont : continuous_map E Te B Tb p. { exact (covering_map_continuous E Te B Tb p Hcov). }
+claim Hp_fun : function_on p E B. { exact (continuous_map_function_on E Te B Tb p Hp_cont). }
+claim Hb0B : b0 :e B. { exact (Hp_fun e0 He0E). }
+apply iffI.
+- (** Forward: (e1 :e E -> pe1 = b0 -> exists h cov_trans) -> normalizer condition **)
+  assume Hfwd.
+  let alpha. assume Hloop Hlift_end.
+  (** Extract loop_at components **)
+  claim Halpha_cont : continuous_map unit_interval unit_interval_topology B Tb alpha.
+  { exact (andEL (continuous_map unit_interval unit_interval_topology B Tb alpha)
+      (apply_fun alpha 0 = b0) (andEL
+        (continuous_map unit_interval unit_interval_topology B Tb alpha /\ apply_fun alpha 0 = b0)
+        (apply_fun alpha 1 = b0) Hloop)). }
+  claim Halpha0 : apply_fun alpha 0 = b0.
+  { exact (andER (continuous_map unit_interval unit_interval_topology B Tb alpha)
+      (apply_fun alpha 0 = b0) (andEL
+        (continuous_map unit_interval unit_interval_topology B Tb alpha /\ apply_fun alpha 0 = b0)
+        (apply_fun alpha 1 = b0) Hloop)). }
+  claim Halpha1 : apply_fun alpha 1 = b0.
+  { exact (andER
+      (continuous_map unit_interval unit_interval_topology B Tb alpha /\ apply_fun alpha 0 = b0)
+      (apply_fun alpha 1 = b0) Hloop). }
+  (** Get path_lift properties **)
+  claim Hpe0alpha : apply_fun p e0 = apply_fun alpha 0.
+  { rewrite Halpha0. exact (fun P h => h). }
+  claim Hlift_pack : continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 alpha) /\
+    apply_fun (path_lift E Te B Tb p e0 alpha) 0 = e0 /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 alpha) t) = apply_fun alpha t).
+  { exact (lemma54_1_path_lifting E Te B Tb p e0 alpha Hcov He0E Hpe0alpha Halpha_cont). }
+  claim Hlift_cont : continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 alpha).
+  { exact (andEL (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 alpha))
+      (apply_fun (path_lift E Te B Tb p e0 alpha) 0 = e0)
+      (andEL (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 alpha) /\
+        apply_fun (path_lift E Te B Tb p e0 alpha) 0 = e0)
+        (forall t:set, t :e unit_interval -> apply_fun p (apply_fun (path_lift E Te B Tb p e0 alpha) t) = apply_fun alpha t)
+        Hlift_pack)). }
+  claim Hlift_fun : function_on (path_lift E Te B Tb p e0 alpha) unit_interval E.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 alpha) Hlift_cont). }
+  claim Hlift_comm : forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 alpha) t) = apply_fun alpha t.
+  { exact (andER (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 alpha) /\
+      apply_fun (path_lift E Te B Tb p e0 alpha) 0 = e0)
+      (forall t:set, t :e unit_interval -> apply_fun p (apply_fun (path_lift E Te B Tb p e0 alpha) t) = apply_fun alpha t)
+      Hlift_pack). }
+  (** Derive e1 :e E **)
+  claim He1E : e1 :e E.
+  { rewrite <- Hlift_end. exact (Hlift_fun 1 one_in_unit_interval). }
+  (** Derive p(e1) = b0 **)
+  claim Hpe1b0 : apply_fun p e1 = b0.
+  { rewrite <- Hlift_end. rewrite (Hlift_comm 1 one_in_unit_interval). exact Halpha1. }
+  (** Apply forward hypothesis to get covering transformation **)
+  claim Hh_ex : exists h:set, covering_transformation E Te B Tb p h /\ apply_fun h e0 = e1.
+  { exact (Hfwd He1E Hpe1b0). }
+  (** From covering trans h, show [alpha] in N(H0) **)
+  (** Key idea: h gives equivalence E,e0 ~ E,e1, so H0 = H1 by thm79_2. **)
+  (** Then conjugation by [alpha] maps H0 to H1 = H0, so [alpha] in N(H0). **)
+  admit.
+- (** Backward: normalizer condition -> (e1 :e E -> pe1 = b0 -> exists h cov_trans) **)
+  assume Hbwd He1E Hpe1.
+  claim Hpe0pe1 : apply_fun p e0 = apply_fun p e1.
+  { exact (eq_symm (apply_fun p e1) (apply_fun p e0) Hpe1). }
+  set H1 := homomorphism_image (fundamental_group E Te e1) (induced_homomorphism E Te e1 B Tb (apply_fun p e1) p).
+  (** Key claim: H0 = H1 from the normalizer condition **)
+  (** This follows from: path gamma from e0 to e1 projects to loop alpha at b0, **)
+  (** alpha's lift ends at e1, so by Hbwd [alpha] in N(H0), **)
+  (** and the conjugation relation H1 = alpha_bar H0 alpha gives H0 = H1. **)
+  claim HH0eqH1 : H0 = H1. { admit. }
+  (** Apply thm79_2 backward to get homeomorphism **)
+  claim Hh_ex : exists h:set, homeomorphism E Te E Te h /\ apply_fun h e0 = e1 /\
+    (forall x:set, x :e E -> apply_fun p x = apply_fun p (apply_fun h x)).
+  { exact (iffER
+      (exists h:set, homeomorphism E Te E Te h /\ apply_fun h e0 = e1 /\
+        (forall x:set, x :e E -> apply_fun p x = apply_fun p (apply_fun h x)))
+      (H0 = H1)
+      (thm79_2_equivalence_iff_same_subgroup E Te E Te B Tb p p e0 e1
+        Hcov Hcov He0E He1E Hpe0pe1 HpcE HlpE HpcE HlpE)
+      HH0eqH1). }
+  apply Hh_ex. let h. assume HhPack.
+  (** Extract components **)
+  claim Hh_left : homeomorphism E Te E Te h /\ apply_fun h e0 = e1.
+  { exact (andEL (homeomorphism E Te E Te h /\ apply_fun h e0 = e1)
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p (apply_fun h x))
+      HhPack). }
+  claim Hh_homeo : homeomorphism E Te E Te h.
+  { exact (andEL (homeomorphism E Te E Te h) (apply_fun h e0 = e1) Hh_left). }
+  claim Hh_e0 : apply_fun h e0 = e1.
+  { exact (andER (homeomorphism E Te E Te h) (apply_fun h e0 = e1) Hh_left). }
+  claim Hh_p : forall x:set, x :e E -> apply_fun p x = apply_fun p (apply_fun h x).
+  { exact (andER (homeomorphism E Te E Te h /\ apply_fun h e0 = e1)
+      (forall x:set, x :e E -> apply_fun p x = apply_fun p (apply_fun h x))
+      HhPack). }
+  (** Build covering_transformation **)
+  witness h. apply andI.
+  + prove homeomorphism E Te E Te h /\
+      (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x).
+    apply andI.
+    * exact Hh_homeo.
+    * let x. assume HxE.
+      exact (eq_symm (apply_fun p x) (apply_fun p (apply_fun h x)) (Hh_p x HxE)).
+  + exact Hh_e0.
 Admitted.
 
 (** from S81 Thm 81.2 (line 5055 in algtop.tex) **)
