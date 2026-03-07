@@ -1,0 +1,34 @@
+CHANGES1338 (from bck1337, 373922 lines to bck1338, 374452 lines)
+
+1. Proved 32 of 35 admits in Hstep proof within column_map_pointwise_locally_continuous
+   Down from 35 internal admits to 3 remaining core mathematical claims.
+
+   Proved admits by category:
+   - 6 conjunction extractions from HevPack (covering_map_evenly_covered_slices result)
+     * Proper left-associative andEL/andER chain peeling 6-way conjunction
+   - 4 from homeomorphism_inverse_package (Hgcont, Hg_left, Hg_right)
+     * Plus proved Hgcont_E via continuous_map_range_expand with (fun Q H => H) reflexivity
+   - 3 from product_subbasis_elem_is_rectangle (HA_open, HJ_open, Hb_eq)
+   - 2 pair projections (HsA, Ht1J) via ap0_Sigma + tuple_2_0_eq + eq_subst_mem_rev
+   - 1 product_subspace_topology rewrite (Hprod_eq) via subspace_topology_whole transport
+   - 2 open_in_metric_topology conversions using Hmetric_eq equality transport + open_inI
+   - 2 eps_ positivity (Heps_J_pos, Heps_V_pos) via eps_in_R_omega + RltI + SNo_eps_pos
+   - 5 r_choice property extractions from exists_eps_lt_four_pos (6-way left-assoc conjunction)
+   - 3 ball monotonicity (Htau0_J, Htau1_J, Hlift_tau0_V0) via open_ball_radius_mono
+   - 1 preimage in TI1 (HpreV0_col_TI1) via open_in_subspace_if_ambient_open
+   - 2 topology intersection/membership (HN'_open via topology_binintersect_closed,
+     HsN' via binintersectI)
+   - 1 N' properties (HN'_props) via binintersect elimination + SepE2
+
+2. Only 3 remaining admits (the core mathematical claims):
+   - Hlift_in_V0: for s' in N', lift(s')(tau1) in V0_ev
+     (uses connected_lift_stays_in_anchored_sheet on connected ball domain)
+   - Hcol_tau1_eq: col_tau1(s') = g_sec(F(s', tau1)) for s' in N'
+     (uses g_section inverse + lift in V0)
+   - Hcol_tau1_cont: col_tau1 continuous on N'
+     (uses continuous_map_congr_on with g ∘ F_slice composition)
+
+3. Line change: +530 lines
+
+Running totals: 394 Admitted (unchanged), 2826 admit:NO (unchanged)
+Alice balance: 4188 (unchanged)
