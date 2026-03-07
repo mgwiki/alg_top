@@ -284693,12 +284693,66 @@ apply andI.
       (forall t:set, t :e unit_interval -> apply_fun p (apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) t) = apply_fun (f_alpha y) t).
     { let y. assume HyY.
       exact (lemma54_1_path_lifting E Te B Tb p e0 (f_alpha y) Hcov He0E (Hfa_start y HyY) (Hfa_cont y HyY)). }
+    (** Helper: p . ft = f pointwise **)
+    claim Hpft_eq : forall y:set, y :e Y -> apply_fun p (apply_fun ft y) = apply_fun f y.
+    { let y. assume HyY.
+      claim Hlift_comm_y : forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) t) = apply_fun (f_alpha y) t.
+      { exact (andER
+          (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 (f_alpha y)) /\
+           apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) 0 = e0)
+          (forall t:set, t :e unit_interval -> apply_fun p (apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) t) = apply_fun (f_alpha y) t)
+          (Hlift_props y HyY)). }
+      claim Hlift_at1 : apply_fun p (apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) 1) = apply_fun (f_alpha y) 1.
+      { exact (Hlift_comm_y 1 one_in_unit_interval). }
+      claim Hfa_at1_y : apply_fun (f_alpha y) 1 = apply_fun f y.
+      { claim Htmp_fa1 : apply_fun (f_alpha y) 1 = apply_fun f (apply_fun (alpha_of y) 1).
+        { exact (compose_fun_apply unit_interval (alpha_of y) f 1 one_in_unit_interval). }
+        claim Htmp_fa1b : apply_fun f (apply_fun (alpha_of y) 1) = apply_fun f y.
+        { exact (apply_fun_congr_arg f (apply_fun (alpha_of y) 1) y (Halpha_end y HyY)). }
+        rewrite Htmp_fa1. exact Htmp_fa1b. }
+      claim Hpft_fa1 : apply_fun p (ft_fun y) = apply_fun (f_alpha y) 1.
+      { exact Hlift_at1. }
+      claim Hpft_fy : apply_fun p (ft_fun y) = apply_fun f y.
+      { rewrite Hpft_fa1. exact Hfa_at1_y. }
+      claim Hpft_congr : apply_fun p (apply_fun ft y) = apply_fun p (ft_fun y).
+      { exact (apply_fun_congr_arg p (apply_fun ft y) (ft_fun y) (apply_fun_graph Y ft_fun y HyY)). }
+      rewrite Hpft_congr. exact Hpft_fy. }
+    (** Helper: ft(y) in E for all y in Y **)
+    claim Hfty_in_E : forall y:set, y :e Y -> apply_fun ft y :e E.
+    { let y. assume HyY.
+      claim Hlift_cont_y : continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 (f_alpha y)).
+      { exact (andEL (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 (f_alpha y)))
+          (apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) 0 = e0)
+          (andEL
+            (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 (f_alpha y)) /\
+             apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) 0 = e0)
+            (forall t:set, t :e unit_interval -> apply_fun p (apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) t) = apply_fun (f_alpha y) t)
+            (Hlift_props y HyY))). }
+      claim Hval : ft_fun y :e E.
+      { exact (continuous_map_function_on unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p e0 (f_alpha y)) Hlift_cont_y 1 one_in_unit_interval). }
+      exact (eq_subst_mem (apply_fun ft y) (ft_fun y) E
+        (apply_fun_graph Y ft_fun y HyY) Hval). }
     (** Construct the lift **)
     witness ft.
     apply andI.
     - apply andI.
-      + (** Continuity of ft -- admit for now **)
-        admit.
+      + (** Continuity of ft **)
+        (** Build continuous_map via claims to avoid set abbreviation expansion **)
+        claim Hfn_on : function_on ft Y E.
+        { exact Hfty_in_E. }
+        claim Hpre_open : forall V':set, V' :e Te -> preimage_of Y ft V' :e Ty.
+        { admit. }
+        exact (andI
+          ((topology_on Y Ty /\ topology_on E Te) /\ function_on ft Y E)
+          (forall V':set, V' :e Te -> preimage_of Y ft V' :e Ty)
+          (andI
+            (topology_on Y Ty /\ topology_on E Te)
+            (function_on ft Y E)
+            (andI (topology_on Y Ty) (topology_on E Te) HtopY HtopE)
+            Hfn_on)
+          Hpre_open).
       + (** ft(y0) = e0 **)
         claim Hft_y0_eq : apply_fun ft y0 = ft_fun y0.
         { exact (apply_fun_graph Y ft_fun y0 Hy0Y). }
@@ -284811,30 +284865,7 @@ apply andI.
         (** Apply loop characterization: lift endpoint = e0 **)
         exact (thm54_6c_loop_characterization_forward E Te B Tb p e0 (f_alpha y0) Hcov He0E Hfa0_loopat Hfa0_in_pstar).
     - (** p . ft = f pointwise **)
-      let y. assume HyY.
-      claim Hlift_comm : forall t:set, t :e unit_interval -> apply_fun p (apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) t) = apply_fun (f_alpha y) t.
-      { exact (andER
-          (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 (f_alpha y)) /\
-           apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) 0 = e0)
-          (forall t:set, t :e unit_interval -> apply_fun p (apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) t) = apply_fun (f_alpha y) t)
-          (Hlift_props y HyY)). }
-      claim Hlift_at1 : apply_fun p (apply_fun (path_lift E Te B Tb p e0 (f_alpha y)) 1) = apply_fun (f_alpha y) 1.
-      { exact (Hlift_comm 1 one_in_unit_interval). }
-      claim Hfa_at1 : apply_fun (f_alpha y) 1 = apply_fun f y.
-      { claim Htmp_fa1 : apply_fun (f_alpha y) 1 = apply_fun f (apply_fun (alpha_of y) 1).
-        { exact (compose_fun_apply unit_interval (alpha_of y) f 1 one_in_unit_interval). }
-        claim Htmp_fa1b : apply_fun f (apply_fun (alpha_of y) 1) = apply_fun f y.
-        { exact (apply_fun_congr_arg f (apply_fun (alpha_of y) 1) y (Halpha_end y HyY)). }
-        rewrite Htmp_fa1. exact Htmp_fa1b. }
-      claim Hpft_fa1 : apply_fun p (ft_fun y) = apply_fun (f_alpha y) 1.
-      { exact Hlift_at1. }
-      claim Hpft_fy : apply_fun p (ft_fun y) = apply_fun f y.
-      { rewrite Hpft_fa1. exact Hfa_at1. }
-      claim Hft_y_eq : apply_fun ft y = ft_fun y.
-      { exact (apply_fun_graph Y ft_fun y HyY). }
-      claim Hpft_congr : apply_fun p (apply_fun ft y) = apply_fun p (ft_fun y).
-      { exact (apply_fun_congr_arg p (apply_fun ft y) (ft_fun y) Hft_y_eq). }
-      rewrite Hpft_congr. exact Hpft_fy.
+      exact Hpft_eq.
 (** --- UNIQUENESS PART --- **)
 - let ft1 ft2.
   assume Hft1Cont Hft2Cont Hft1_0 Hft2_0 Hft1_comm Hft2_comm.
