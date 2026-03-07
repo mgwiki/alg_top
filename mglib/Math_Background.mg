@@ -160268,6 +160268,53 @@ apply (Hball c Hc).
 Qed.
 
 (** Proven Bob **)
+(** Infrastructure: ball-cover property gives a Lebesgue number for {preU, preV}. **)
+Lemma ball_property_implies_lebesgue_preimage :
+  forall U V f r:set,
+  r :e R -> Rlt 0 r ->
+  (forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V)) ->
+  lebesgue_number_metric
+    unit_interval
+    R_bounded_metric
+    (UPair (preimage_of unit_interval f U) (preimage_of unit_interval f V))
+    r.
+let U V f r.
+assume HrR Hrpos Hball.
+prove r :e R /\ Rlt 0 r /\
+  forall c:set, c :e unit_interval ->
+    exists U0:set, U0 :e (UPair (preimage_of unit_interval f U) (preimage_of unit_interval f V)) /\
+      open_ball unit_interval R_bounded_metric c r c= U0.
+apply andI.
+- apply andI.
+  + exact HrR.
+  + exact Hrpos.
+- let c. assume Hc.
+  apply xm (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e U).
+  * assume HallU.
+    witness (preimage_of unit_interval f U).
+    apply andI.
+    - exact (UPairI1 (preimage_of unit_interval f U) (preimage_of unit_interval f V)).
+    - let t. assume Ht.
+      exact (SepI unit_interval (fun x:set => apply_fun f x :e U) t
+        (open_ball_subset_X unit_interval R_bounded_metric c r t Ht)
+        (HallU t Ht)).
+  * assume HnotU.
+    claim HallV : forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V.
+    { apply (Hball c Hc).
+      - assume HallU. exact (FalseE (HnotU HallU) (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V)).
+      - assume HallV. exact HallV. }
+    witness (preimage_of unit_interval f V).
+    apply andI.
+    - exact (UPairI2 (preimage_of unit_interval f U) (preimage_of unit_interval f V)).
+    - let t. assume Ht.
+      exact (SepI unit_interval (fun x:set => apply_fun f x :e V) t
+        (open_ball_subset_X unit_interval R_bounded_metric c r t Ht)
+        (HallV t Ht)).
+Qed.
+
+(** Proven Bob **)
 (** Infrastructure: fixed-radius ball chain in unit_interval **)
 Lemma unit_interval_ball_chain : forall r:set,
   r :e R -> Rlt 0 r ->
