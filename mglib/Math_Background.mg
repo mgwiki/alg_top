@@ -119496,7 +119496,7 @@ Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
   <->
   apply_fun (path_lift E Te B Tb p e0 f) 1 = e0.
 admit.
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Admitted.
 
 (** Infrastructure: loop characterization under covering assumptions **)
 (** Proven Alice **)
