@@ -160346,6 +160346,44 @@ exact (connected_space_open_cover_chain
   one_in_unit_interval).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: open balls of radius > 1 in unit_interval are the whole interval **)
+Lemma open_ball_unit_interval_radius_gt1_mem :
+  forall c r t:set,
+  c :e unit_interval ->
+  r :e R -> Rlt 1 r ->
+  t :e unit_interval ->
+  t :e open_ball unit_interval R_bounded_metric c r.
+let c r t.
+assume HcI HrR H1ltR HtI.
+claim HcR : c :e R.
+{ exact (unit_interval_sub_R c HcI). }
+claim HtR : t :e R.
+{ exact (unit_interval_sub_R t HtI). }
+claim Hdist_le1 : Rle (R_bounded_distance c t) 1.
+{ exact (R_bounded_distance_le_1 c t HcR HtR). }
+claim Hdist_lt_r : Rlt (R_bounded_distance c t) r.
+{ exact (Rle_Rlt_tra (R_bounded_distance c t) 1 r Hdist_le1 H1ltR). }
+claim Hmetric_lt : Rlt (apply_fun R_bounded_metric (c, t)) r.
+{ rewrite (R_bounded_metric_apply_early c t HcR HtR). exact Hdist_lt_r. }
+exact (open_ballI unit_interval R_bounded_metric c r t HtI Hmetric_lt).
+Qed.
+
+(** Proven Bob **)
+Lemma open_ball_unit_interval_radius_gt1_eq :
+  forall c r:set,
+  c :e unit_interval ->
+  r :e R -> Rlt 1 r ->
+  open_ball unit_interval R_bounded_metric c r = unit_interval.
+let c r.
+assume HcI HrR H1ltR.
+apply (set_ext (open_ball unit_interval R_bounded_metric c r) unit_interval).
+- let t. assume Ht : t :e open_ball unit_interval R_bounded_metric c r.
+  exact (open_ball_subset_X unit_interval R_bounded_metric c r t Ht).
+- let t. assume Ht : t :e unit_interval.
+  exact (open_ball_unit_interval_radius_gt1_mem c r t HcI HrR H1ltR Ht).
+Qed.
+
 (** Core word construction: given ball property for a loop, produce word decomposition.
     This is the inductive heart of Munkres Thm 59.1, separated from the Lebesgue setup. **)
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
