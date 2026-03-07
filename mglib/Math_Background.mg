@@ -160267,6 +160267,38 @@ apply (Hball c Hc).
   exact (HallV t (open_ball_radius_mono unit_interval R_bounded_metric c r1 r2 Hlt t Ht)).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: fixed-radius ball chain in unit_interval **)
+Lemma unit_interval_ball_chain : forall r:set,
+  r :e R -> Rlt 0 r ->
+  exists U0 U1 n seq:set,
+    U0 :e {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} /\ 0 :e U0 /\
+    U1 :e {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} /\ 1 :e U1 /\
+    n :e omega /\
+    function_on seq (ordsucc n) {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} /\
+    apply_fun seq 0 = U0 /\
+    apply_fun seq n = U1 /\
+    (forall k:set, k :e n ->
+      apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
+let r.
+assume HrR Hrpos.
+set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+claim Hcover : open_cover_of unit_interval unit_interval_topology BallFam.
+{
+  exact (unit_interval_open_cover_by_fixed_radius_balls r HrR Hrpos).
+}
+exact (connected_space_open_cover_chain
+  unit_interval
+  unit_interval_topology
+  BallFam
+  0
+  1
+  unit_interval_connected
+  Hcover
+  zero_in_unit_interval
+  one_in_unit_interval).
+Qed.
+
 (** Core word construction: given ball property for a loop, produce word decomposition.
     This is the inductive heart of Munkres Thm 59.1, separated from the Lebesgue setup. **)
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
