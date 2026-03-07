@@ -160404,6 +160404,58 @@ rewrite <- (open_ball_unit_interval_radius_gt1_eq 0 r zero_in_unit_interval HrR 
 exact Hball0.
 Qed.
 
+(** Infrastructure: shrink a positive radius below 1 **)
+(** Proven Bob **)
+Lemma exists_small_radius_lt1 : forall r:set, r :e R -> Rlt 0 r ->
+  exists r1:set, r1 :e R /\ Rlt 0 r1 /\ Rlt r1 r /\ Rlt r1 1.
+let r. assume HrR Hrpos.
+claim Hex : exists N:set, N :e omega /\ Rlt (inv_nat (ordsucc N)) r.
+{ exact (exists_inv_nat_ordsucc_lt_local r HrR Hrpos). }
+apply Hex. let N0. assume HN0 : N0 :e omega /\ Rlt (inv_nat (ordsucc N0)) r.
+claim HN0omega : N0 :e omega.
+{ exact (andEL (N0 :e omega) (Rlt (inv_nat (ordsucc N0)) r) HN0). }
+claim HinvN0_lt : Rlt (inv_nat (ordsucc N0)) r.
+{ exact (andER (N0 :e omega) (Rlt (inv_nat (ordsucc N0)) r) HN0). }
+set n1 := ordsucc (ordsucc N0).
+set r1 := inv_nat n1.
+witness r1.
+claim Hn1omega : n1 :e omega.
+{ exact (omega_ordsucc (ordsucc N0) (omega_ordsucc N0 HN0omega)). }
+claim Hn1ord : ordinal n1.
+{ exact (ordinal_ordsucc (ordsucc N0)
+    (ordinal_ordsucc N0 (nat_p_ordinal N0 (omega_nat_p N0 HN0omega)))). }
+claim H1in : 1 :e n1.
+{ exact (omega_1_in_ordsucc_ordsucc N0 HN0omega). }
+claim H2sub : 2 c= n1.
+{ rewrite <- ordsucc_1_eq_2_nat.
+  exact (ordinal_ordsucc_In_Subq n1 Hn1ord 1 H1in). }
+claim Hn1nz : n1 :e omega :\: {0}.
+{ exact (omega_ge2_nonzero n1 Hn1omega H2sub). }
+claim Hr1R : r1 :e R.
+{ exact (inv_nat_real n1 Hn1omega). }
+claim Hr1pos : Rlt 0 r1.
+{ exact (inv_nat_pos n1 Hn1nz). }
+claim Hr1_lt_inv : Rlt r1 (inv_nat (ordsucc N0)).
+{ exact (inv_nat_ordsucc_antitone_local2
+    N0 (ordsucc N0)
+    HN0omega
+    (omega_ordsucc N0 HN0omega)
+    (ordsuccI2 N0)). }
+claim Hr1lt : Rlt r1 r.
+{ exact (Rlt_tra r1 (inv_nat (ordsucc N0)) r Hr1_lt_inv HinvN0_lt). }
+claim Hr1_le2 : Rle r1 (inv_nat 2).
+{ exact (inv_nat_Rle_inv_nat_2_of_ge2 n1 Hn1omega H2sub). }
+claim Hr1lt1 : Rlt r1 1.
+{ exact (Rle_Rlt_tra r1 (inv_nat 2) 1 Hr1_le2 inv_nat_2_lt_1). }
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact Hr1R.
+    * exact Hr1pos.
+  + exact Hr1lt.
+- exact Hr1lt1.
+Qed.
+
 (** Core word construction: given ball property for a loop, produce word decomposition.
     This is the inductive heart of Munkres Thm 59.1, separated from the Lebesgue setup. **)
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
@@ -161701,8 +161753,53 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         HfLoop
         Hf_hom_L1L2).
     }
+    (** Ball-image property is monotone under shrinking radii. **)
+    claim Hball_image_mono0 :
+      forall r1:set,
+        r1 :e R ->
+        Rlt 0 r1 ->
+        Rlt r1 r ->
+        forall c:set, c :e unit_interval ->
+          (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e U) \/
+          (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e V).
+    {
+      let r1. assume Hr1R Hr1pos Hr1lt.
+      let c. assume HcI.
+      apply (Hball_image c HcI).
+      - assume HallU.
+        apply orIL.
+        let t. assume Ht.
+        exact (HallU t
+          (open_ball_radius_mono unit_interval R_bounded_metric c r1 r Hr1lt t Ht)).
+      - assume HallV.
+        apply orIR.
+        let t. assume Ht.
+        exact (HallV t
+          (open_ball_radius_mono unit_interval R_bounded_metric c r1 r Hr1lt t Ht)).
+    }
+    (** Shrink radius below 1 to use interval properties of balls. **)
+    claim Hr1_ex : exists r1:set, r1 :e R /\ Rlt 0 r1 /\ Rlt r1 r /\ Rlt r1 1.
+    { exact (exists_small_radius_lt1 r HrR Hrpos). }
+    apply Hr1_ex. let r1. assume Hr1pack.
+    claim Hr1A : (r1 :e R /\ Rlt 0 r1) /\ Rlt r1 r.
+    { exact (andEL ((r1 :e R /\ Rlt 0 r1) /\ Rlt r1 r) (Rlt r1 1) Hr1pack). }
+    claim Hr1lt1 : Rlt r1 1.
+    { exact (andER ((r1 :e R /\ Rlt 0 r1) /\ Rlt r1 r) (Rlt r1 1) Hr1pack). }
+    claim Hr1B : r1 :e R /\ Rlt 0 r1.
+    { exact (andEL (r1 :e R /\ Rlt 0 r1) (Rlt r1 r) Hr1A). }
+    claim Hr1R : r1 :e R.
+    { exact (andEL (r1 :e R) (Rlt 0 r1) Hr1B). }
+    claim Hr1pos : Rlt 0 r1.
+    { exact (andER (r1 :e R) (Rlt 0 r1) Hr1B). }
+    claim Hr1lt : Rlt r1 r.
+    { exact (andER (r1 :e R /\ Rlt 0 r1) (Rlt r1 r) Hr1A). }
+    claim Hball_image1 :
+      forall c:set, c :e unit_interval ->
+        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e U) \/
+        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e V).
+    { exact (Hball_image_mono0 r1 Hr1R Hr1pos Hr1lt). }
     (** Reduce to a finite chain of radius-r balls in unit_interval. **)
-    set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+    set BallFam := {open_ball unit_interval R_bounded_metric x r1 | x :e unit_interval}.
     claim Hchain :
       exists U0 U1 n seq:set,
         U0 :e BallFam /\ 0 :e U0 /\
@@ -161713,7 +161810,7 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         apply_fun seq n = U1 /\
         (forall k:set, k :e n ->
           apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
-    { exact (unit_interval_ball_chain r HrR Hrpos). }
+    { exact (unit_interval_ball_chain r1 Hr1R Hr1pos). }
     (** Extract a point from each consecutive intersection in the chain. **)
     apply Hchain.
     let U0. assume HU0pack.
@@ -161765,12 +161862,12 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
           claim Hseqk_ball : apply_fun seq k :e BallFam.
           { exact (HseqFun k (ordsuccI1 n k Hk)). }
           apply (ReplE_impred unit_interval
-            (fun x:set => open_ball unit_interval R_bounded_metric x r)
+            (fun x:set => open_ball unit_interval R_bounded_metric x r1)
             (apply_fun seq k) Hseqk_ball).
           let c. assume HcI Heq.
-          claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r.
+          claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r1.
           { rewrite <- Heq. exact Ht_left. }
-          exact (open_ball_subset_X unit_interval R_bounded_metric c r t Ht_ball).
+          exact (open_ball_subset_X unit_interval R_bounded_metric c r1 t Ht_ball).
         + exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Ht).
       - exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Ht).
     }
@@ -161892,24 +161989,24 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
       claim Hseqk_ball : apply_fun seq k :e BallFam.
       { exact (HseqFun k Hk). }
       apply (ReplE_impred unit_interval
-        (fun x:set => open_ball unit_interval R_bounded_metric x r)
+        (fun x:set => open_ball unit_interval R_bounded_metric x r1)
         (apply_fun seq k) Hseqk_ball).
       let c. assume HcI Heq.
       claim HcBall :
-        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e U) \/
-        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V).
-      { exact (Hball_image c HcI). }
+        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e U) \/
+        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e V).
+      { exact (Hball_image1 c HcI). }
       apply HcBall.
       - assume HallU.
         apply orIL.
         let t. assume Ht.
-        claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r.
+        claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r1.
         { rewrite <- Heq. exact Ht. }
         exact (HallU t Ht_ball).
       - assume HallV.
         apply orIR.
         let t. assume Ht.
-        claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r.
+        claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r1.
         { rewrite <- Heq. exact Ht. }
         exact (HallV t Ht_ball).
     }
@@ -161954,9 +162051,8 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
       - exact (HallU (apply_fun t_seq k) Ht_in_seqk).
       - exact (HallV (apply_fun t_seq k) Ht_in_seqk1).
     }
-    (** Interval property for chain balls when r < 1. **)
+    (** Interval property for chain balls when r1 < 1. **)
     claim Hball_interval :
-      Rlt r 1 ->
       forall k:set, k :e ordsucc n ->
       forall x y z:set,
         x :e apply_fun seq k ->
@@ -161965,7 +162061,6 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         (Rlt x z /\ Rlt z y \/ Rlt y z /\ Rlt z x) ->
         z :e apply_fun seq k.
     {
-      assume Hrlt1.
       let k. assume Hk.
       claim Hseqk_ball : apply_fun seq k :e BallFam.
       { exact (HseqFun k Hk). }
@@ -161974,20 +162069,20 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
           (subspace_topology unit_interval unit_interval_topology (apply_fun seq k)).
       {
         apply (ReplE_impred unit_interval
-          (fun x0:set => open_ball unit_interval R_bounded_metric x0 r)
+          (fun x0:set => open_ball unit_interval R_bounded_metric x0 r1)
           (apply_fun seq k) Hseqk_ball).
         let c. assume HcI Heq.
         rewrite Heq.
-        exact (open_ball_unit_interval_connected_lt1 c r HcI HrR Hrpos Hrlt1).
+        exact (open_ball_unit_interval_connected_lt1 c r1 HcI Hr1R Hr1pos Hr1lt1).
       }
       claim HballSubI : apply_fun seq k c= unit_interval.
       {
         apply (ReplE_impred unit_interval
-          (fun x0:set => open_ball unit_interval R_bounded_metric x0 r)
+          (fun x0:set => open_ball unit_interval R_bounded_metric x0 r1)
           (apply_fun seq k) Hseqk_ball).
         let c. assume HcI Heq.
         rewrite Heq.
-        exact (open_ball_subset_X unit_interval R_bounded_metric c r).
+        exact (open_ball_subset_X unit_interval R_bounded_metric c r1).
       }
       let x.
       let y.
@@ -162007,30 +162102,6 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         Hy
         HzI
         Hbetween).
-    }
-    (** Ball-image property is monotone under shrinking radii. **)
-    claim Hball_image_mono :
-      forall r1:set,
-        r1 :e R ->
-        Rlt 0 r1 ->
-        Rlt r1 r ->
-        forall c:set, c :e unit_interval ->
-          (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e U) \/
-          (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e V).
-    {
-      let r1. assume Hr1R Hr1pos Hr1lt.
-      let c. assume HcI.
-      apply (Hball_image c HcI).
-      - assume HallU.
-        apply orIL.
-        let t. assume Ht.
-        exact (HallU t
-          (open_ball_radius_mono unit_interval R_bounded_metric c r1 r Hr1lt t Ht)).
-      - assume HallV.
-        apply orIR.
-        let t. assume Ht.
-        exact (HallV t
-          (open_ball_radius_mono unit_interval R_bounded_metric c r1 r Hr1lt t Ht)).
     }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
