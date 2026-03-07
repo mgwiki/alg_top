@@ -1,4 +1,4 @@
-(** Balance Alice 7078 **)
+(** Balance Alice 7212 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -301871,8 +301871,8 @@ Qed.
 (** covering map r: Y -> B, there is a covering map q: E -> Y such that r o q = p. **)
 (** Admin-approved-refactored per noticeboard proposal 1772594849 **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 134 **)
-(** Lock Alice 1772968051 **)
+(** Collected Alice 134 **)
+(** Proven Alice **)
 Theorem thm80_3_universal_covers_everything :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -302528,7 +302528,7 @@ witness q. apply andI.
   + exact Hq_surj.
   + exact Hq_evenly.
 - exact Hq_comm.
-Admitted.
+Qed.
 
 (** from S80 Lem 80.4 (line 4997 in algtop.tex): necessary condition for universal cover **)
 (** LATEX VERSION: Let p: E -> B covering with E simply connected. Then b0 has a **)
