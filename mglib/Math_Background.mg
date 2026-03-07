@@ -1,4 +1,4 @@
-(** Balance Alice 5268 **)
+(** Balance Alice 5206 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -284261,7 +284261,8 @@ Definition equivalent_covering_maps : set -> set -> set -> set -> set -> set -> 
 (** to f_tilde: Y -> E with f_tilde(y0)=e0 iff f_star(pi1(Y,y0)) subset p_star(pi1(E,e0)). **)
 (** Furthermore, if such a lifting exists, it is unique. **)
 (** EFFORT: 40 lines textbook, difficulty 7/10, USD 560 **)
-(** Bounty 616 **)
+(** Bounty 678 **)
+(** Lock Alice 1772934667 **)
 Theorem lemma79_1_general_lifting :
   forall E Te B Tb p e0 Y Ty y0 f:set,
   covering_map E Te B Tb p ->
