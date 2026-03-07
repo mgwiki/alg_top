@@ -284743,7 +284743,185 @@ apply andI.
         claim Hfn_on : function_on ft Y E.
         { exact Hfty_in_E. }
         claim Hpre_open : forall V':set, V' :e Te -> preimage_of Y ft V' :e Ty.
-        { admit. }
+        { let V'. assume HV'Te.
+          (** For each y in the preimage, find open W with ft(W) c= V' **)
+          claim Hloc : forall y:set, y :e Y -> apply_fun ft y :e V' ->
+            exists W:set, W :e Ty /\ y :e W /\ (forall y':set, y' :e W -> apply_fun ft y' :e V').
+          { let y. assume HyY. assume Hfty_V'.
+            claim Hfy_B : apply_fun f y :e B.
+            { exact (continuous_map_function_on Y Ty B Tb f HfCont y HyY). }
+            claim Hfty_E_y : apply_fun ft y :e E.
+            { exact (Hfty_in_E y HyY). }
+            (** Get evenly covered neighborhood of f(y) **)
+            apply (covering_map_evenly_covered_slices E Te B Tb p (apply_fun f y) Hcov Hfy_B).
+            let Ub. assume Hev_inner. apply Hev_inner. let slices.
+            assume HevPack.
+            (** Peel conjunction: HevPack is ((((Ub :e Tb /\ fy :e Ub) /\ slices c= Te) /\ pw_disj) /\ Union=pre) /\ homeo **)
+            claim Hhomeo_prop : forall V0:set, V0 :e slices ->
+              homeomorphism V0 (subspace_topology E Te V0) Ub (subspace_topology B Tb Ub)
+                (graph V0 (fun x:set => apply_fun p x)).
+            { exact (andER
+                (Ub :e Tb /\ apply_fun f y :e Ub /\ slices c= Te /\ pairwise_disjoint slices /\
+                 Union slices = preimage_of E p Ub)
+                (forall V0:set, V0 :e slices ->
+                  homeomorphism V0 (subspace_topology E Te V0) Ub (subspace_topology B Tb Ub)
+                    (graph V0 (fun x:set => apply_fun p x)))
+                HevPack). }
+            claim Hev5 : Ub :e Tb /\ apply_fun f y :e Ub /\ slices c= Te /\ pairwise_disjoint slices /\
+              Union slices = preimage_of E p Ub.
+            { exact (andEL
+                (Ub :e Tb /\ apply_fun f y :e Ub /\ slices c= Te /\ pairwise_disjoint slices /\
+                 Union slices = preimage_of E p Ub)
+                (forall V0:set, V0 :e slices ->
+                  homeomorphism V0 (subspace_topology E Te V0) Ub (subspace_topology B Tb Ub)
+                    (graph V0 (fun x:set => apply_fun p x)))
+                HevPack). }
+            claim HUnionEq : Union slices = preimage_of E p Ub.
+            { exact (andER (Ub :e Tb /\ apply_fun f y :e Ub /\ slices c= Te /\ pairwise_disjoint slices)
+                (Union slices = preimage_of E p Ub) Hev5). }
+            claim Hev4 : Ub :e Tb /\ apply_fun f y :e Ub /\ slices c= Te /\ pairwise_disjoint slices.
+            { exact (andEL (Ub :e Tb /\ apply_fun f y :e Ub /\ slices c= Te /\ pairwise_disjoint slices)
+                (Union slices = preimage_of E p Ub) Hev5). }
+            claim Hpw_disj : pairwise_disjoint slices.
+            { exact (andER (Ub :e Tb /\ apply_fun f y :e Ub /\ slices c= Te)
+                (pairwise_disjoint slices) Hev4). }
+            claim Hev3 : Ub :e Tb /\ apply_fun f y :e Ub /\ slices c= Te.
+            { exact (andEL (Ub :e Tb /\ apply_fun f y :e Ub /\ slices c= Te)
+                (pairwise_disjoint slices) Hev4). }
+            claim HslicesTe : slices c= Te.
+            { exact (andER (Ub :e Tb /\ apply_fun f y :e Ub) (slices c= Te) Hev3). }
+            claim Hev2 : Ub :e Tb /\ apply_fun f y :e Ub.
+            { exact (andEL (Ub :e Tb /\ apply_fun f y :e Ub) (slices c= Te) Hev3). }
+            claim HUbTb : Ub :e Tb.
+            { exact (andEL (Ub :e Tb) (apply_fun f y :e Ub) Hev2). }
+            claim HfyUb : apply_fun f y :e Ub.
+            { exact (andER (Ub :e Tb) (apply_fun f y :e Ub) Hev2). }
+            (** ft(y) :e preimage_of E p Ub = Union slices **)
+            claim Hpfty_Ub : apply_fun p (apply_fun ft y) :e Ub.
+            { exact (eq_subst_mem (apply_fun p (apply_fun ft y)) (apply_fun f y) Ub
+                (Hpft_eq y HyY) HfyUb). }
+            claim Hfty_preUb : apply_fun ft y :e preimage_of E p Ub.
+            { exact (SepI E (fun x:set => apply_fun p x :e Ub) (apply_fun ft y)
+                Hfty_E_y Hpfty_Ub). }
+            claim Hfty_union : apply_fun ft y :e Union slices.
+            { claim HeqRev : preimage_of E p Ub = Union slices.
+              { exact (eq_symm (Union slices) (preimage_of E p Ub) HUnionEq). }
+              exact (eq_subst_mem_set (apply_fun ft y) (preimage_of E p Ub) (Union slices)
+                Hfty_preUb HeqRev). }
+            (** Find sheet S0 containing ft(y) **)
+            apply (UnionE slices (apply_fun ft y) Hfty_union).
+            let S0. assume HS0pack.
+            claim Hfty_S0 : apply_fun ft y :e S0.
+            { exact (andEL (apply_fun ft y :e S0) (S0 :e slices) HS0pack). }
+            claim HS0slices : S0 :e slices.
+            { exact (andER (apply_fun ft y :e S0) (S0 :e slices) HS0pack). }
+            claim HS0Te : S0 :e Te.
+            { exact (HslicesTe S0 HS0slices). }
+            (** S0 :/\: V' is open in Te and contains ft(y) **)
+            claim HS0V'_open : open_in E Te (S0 :/\: V').
+            { exact (binintersect_open E Te S0 V'
+                (open_inI E Te S0 HtopE HS0Te) (open_inI E Te V' HtopE HV'Te)). }
+            claim Hfty_S0V' : apply_fun ft y :e S0 :/\: V'.
+            { exact (binintersectI S0 V' (apply_fun ft y) Hfty_S0 Hfty_V'). }
+            (** Get section s via homeomorphism_inverse_package **)
+            claim Hhomeo_S0 : homeomorphism S0 (subspace_topology E Te S0) Ub (subspace_topology B Tb Ub)
+              (graph S0 (fun x:set => apply_fun p x)).
+            { exact (Hhomeo_prop S0 HS0slices). }
+            apply (homeomorphism_inverse_package S0 (subspace_topology E Te S0) Ub (subspace_topology B Tb Ub)
+              (graph S0 (fun x:set => apply_fun p x)) Hhomeo_S0).
+            let sec. assume Hsec_pack.
+            (** Hsec_pack : ((cont /\ left_inv) /\ right_inv) -- left-assoc **)
+            claim Hsec_right : forall b:set, b :e Ub -> apply_fun (graph S0 (fun x0:set => apply_fun p x0)) (apply_fun sec b) = b.
+            { exact (andER
+                (continuous_map Ub (subspace_topology B Tb Ub) S0 (subspace_topology E Te S0) sec /\
+                 (forall x:set, x :e S0 -> apply_fun sec (apply_fun (graph S0 (fun x0:set => apply_fun p x0)) x) = x))
+                (forall b:set, b :e Ub -> apply_fun (graph S0 (fun x0:set => apply_fun p x0)) (apply_fun sec b) = b)
+                Hsec_pack). }
+            claim Hsec_cl : continuous_map Ub (subspace_topology B Tb Ub) S0 (subspace_topology E Te S0) sec /\
+              (forall x:set, x :e S0 -> apply_fun sec (apply_fun (graph S0 (fun x0:set => apply_fun p x0)) x) = x).
+            { exact (andEL
+                (continuous_map Ub (subspace_topology B Tb Ub) S0 (subspace_topology E Te S0) sec /\
+                 (forall x:set, x :e S0 -> apply_fun sec (apply_fun (graph S0 (fun x0:set => apply_fun p x0)) x) = x))
+                (forall b:set, b :e Ub -> apply_fun (graph S0 (fun x0:set => apply_fun p x0)) (apply_fun sec b) = b)
+                Hsec_pack). }
+            claim Hsec_cont : continuous_map Ub (subspace_topology B Tb Ub) S0 (subspace_topology E Te S0) sec.
+            { exact (andEL
+                (continuous_map Ub (subspace_topology B Tb Ub) S0 (subspace_topology E Te S0) sec)
+                (forall x:set, x :e S0 -> apply_fun sec (apply_fun (graph S0 (fun x0:set => apply_fun p x0)) x) = x)
+                Hsec_cl). }
+            claim Hsec_left : forall x:set, x :e S0 -> apply_fun sec (apply_fun (graph S0 (fun x0:set => apply_fun p x0)) x) = x.
+            { exact (andER
+                (continuous_map Ub (subspace_topology B Tb Ub) S0 (subspace_topology E Te S0) sec)
+                (forall x:set, x :e S0 -> apply_fun sec (apply_fun (graph S0 (fun x0:set => apply_fun p x0)) x) = x)
+                Hsec_cl). }
+            (** sec(f(y)) = sec(p(ft(y))) = ft(y) via section property **)
+            (** f^{-1}(Ub) is open in Y **)
+            claim HpreUb_open : preimage_of Y f Ub :e Ty.
+            { exact (continuous_map_preimage Y Ty B Tb f HfCont Ub HUbTb). }
+            claim HyPreUb : y :e preimage_of Y f Ub.
+            { exact (SepI Y (fun x:set => apply_fun f x :e Ub) y HyY HfyUb). }
+            (** Get path-connected open W c= f^{-1}(Ub) containing y **)
+            apply (locally_path_connected_local Y Ty y (preimage_of Y f Ub) HlpY HyY HpreUb_open HyPreUb).
+            let W. assume HW_lpc_pack.
+            (** HW_lpc_pack : (W :e Ty /\ y :e W) /\ (W c= preimage_of Y f Ub /\ path_connected W (sub Ty W)) **)
+            (** Actually need to check the conjunction structure from locally_path_connected_local **)
+            (** It returns: V :e Tx /\ x :e V /\ V c= U /\ path_connected_space V (subspace_topology X Tx V) **)
+            (** With left-assoc: (((V :e Tx /\ x :e V) /\ V c= U) /\ path_connected_space ...) **)
+            claim HW_pcs : path_connected_space W (subspace_topology Y Ty W).
+            { exact (andER ((W :e Ty /\ y :e W) /\ W c= preimage_of Y f Ub)
+                (path_connected_space W (subspace_topology Y Ty W)) HW_lpc_pack). }
+            claim HW3 : (W :e Ty /\ y :e W) /\ W c= preimage_of Y f Ub.
+            { exact (andEL ((W :e Ty /\ y :e W) /\ W c= preimage_of Y f Ub)
+                (path_connected_space W (subspace_topology Y Ty W)) HW_lpc_pack). }
+            claim HWsubPreUb : W c= preimage_of Y f Ub.
+            { exact (andER (W :e Ty /\ y :e W) (W c= preimage_of Y f Ub) HW3). }
+            claim HW_pair : W :e Ty /\ y :e W.
+            { exact (andEL (W :e Ty /\ y :e W) (W c= preimage_of Y f Ub) HW3). }
+            claim HWTy : W :e Ty.
+            { exact (andEL (W :e Ty) (y :e W) HW_pair). }
+            claim HyW : y :e W.
+            { exact (andER (W :e Ty) (y :e W) HW_pair). }
+            (** Key claim: for all y' in W, ft(y') :e S0 :/\: V' **)
+            (** This needs well-definedness of lift endpoints + section agreement **)
+            claim Hft_in_S0V' : forall y':set, y' :e W -> apply_fun ft y' :e S0 :/\: V'.
+            { admit. }
+            (** Conclude: W witnesses the exists **)
+            witness W.
+            exact (andI (W :e Ty /\ y :e W) (forall y':set, y' :e W -> apply_fun ft y' :e V')
+              (andI (W :e Ty) (y :e W) HWTy HyW)
+              (fun y':set => fun Hy'W : y' :e W =>
+                binintersectE2 S0 V' (apply_fun ft y') (Hft_in_S0V' y' Hy'W))). }
+          claim H_open : open_in Y Ty (preimage_of Y ft V').
+          { apply (ex13_1_local_open_subset Y Ty (preimage_of Y ft V') HtopY).
+            let y. assume HyPre.
+            claim HyY : y :e Y.
+            { exact (SepE1 Y (fun x:set => apply_fun ft x :e V') y HyPre). }
+            claim Hfty_V' : apply_fun ft y :e V'.
+            { exact (SepE2 Y (fun x:set => apply_fun ft x :e V') y HyPre). }
+            claim Hloc_y : exists W:set, (W :e Ty /\ y :e W) /\ (forall y':set, y' :e W -> apply_fun ft y' :e V').
+            { exact (Hloc y HyY Hfty_V'). }
+            apply Hloc_y. let W. assume HWpack.
+            (** HWpack : (W :e Ty /\ y :e W) /\ (forall y':set, y' :e W -> ft y' :e V') **)
+            claim HW_pair : W :e Ty /\ y :e W.
+            { exact (andEL (W :e Ty /\ y :e W) (forall y':set, y' :e W -> apply_fun ft y' :e V')
+                HWpack). }
+            claim HWTy : W :e Ty.
+            { exact (andEL (W :e Ty) (y :e W) HW_pair). }
+            claim HyW : y :e W.
+            { exact (andER (W :e Ty) (y :e W) HW_pair). }
+            claim HWsub : forall y':set, y' :e W -> apply_fun ft y' :e V'.
+            { exact (andER (W :e Ty /\ y :e W) (forall y':set, y' :e W -> apply_fun ft y' :e V')
+                HWpack). }
+            witness W.
+            (** goal: W :e Ty /\ (y :e W /\ W c= preimage_of Y ft V') **)
+            exact (andI (W :e Ty) (y :e W /\ W c= preimage_of Y ft V')
+              HWTy
+              (andI (y :e W) (W c= preimage_of Y ft V') HyW
+                (fun y':set => fun Hy'W : y' :e W =>
+                  SepI Y (fun x:set => apply_fun ft x :e V') y'
+                    (topology_elem_subset Y Ty W HtopY HWTy y' Hy'W)
+                    (HWsub y' Hy'W)))). }
+          exact (open_in_elem Y Ty (preimage_of Y ft V') H_open). }
         exact (andI
           ((topology_on Y Ty /\ topology_on E Te) /\ function_on ft Y E)
           (forall V':set, V' :e Te -> preimage_of Y ft V' :e Ty)
