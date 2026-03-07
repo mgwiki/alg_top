@@ -4660,6 +4660,59 @@ Requested Approvals:
 
 ----
 
+NOTICE ID: 1772872517
+Created: 1772872517
+Status: PROPOSED
+
+Refers to Commit:
+  b0d8aa0dd373bf982b5ae8ffcda2ed4f2faf0321
+
+Target:
+  Line: 20161
+  Name: convex_subspace_topology_eq_R (Theorem)
+
+Problem:
+  The statement is not provable as written: `topology_on A Ta` does not determine
+  Ta uniquely, so `Ta = subspace_topology R R_standard_topology A` cannot be derived.
+  The proof is admitted with an explicit TODO noting the issue.
+
+Proposed Replacement:
+  Strengthen the hypotheses to specify Ta, e.g.:
+    Ta = subspace_topology R R_standard_topology A
+  and/or replace the theorem with the already correct usage pattern:
+    (if Ta is the subspace topology, then ...) as in star_convex_simply_connected_if_subspace.
+
+Requested Approvals:
+  - Alice
+  - Charlie
+
+----
+
+NOTICE ID: 1772872519
+Created: 1772872519
+Status: PROPOSED
+
+Refers to Commit:
+  b0d8aa0dd373bf982b5ae8ffcda2ed4f2faf0321
+
+Target:
+  Line: 39477
+  Name: (Theorem ending at this Admitted; immediately before reverse_path_concat_homotopy_s52)
+
+Problem:
+  The admitted proof notes the statement likely needs a uniform delta in t around t1,
+  requiring compactness or uniform continuity in s. Current hypotheses appear insufficient.
+
+Proposed Replacement:
+  Add the missing uniformity/compactness assumption (e.g. compactness of the parameter
+  domain or uniform continuity in s) or replace with a weaker, provable conclusion.
+
+Requested Approvals:
+  - Alice
+  - Charlie
+
+----
+
 NOTICE ID: 1772831836
 Created: 1772831836
 Status: PROPOSED
