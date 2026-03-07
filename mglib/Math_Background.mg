@@ -161305,6 +161305,344 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
     { exact (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx x0 g) L1 HL1_funspace HL1_loop_at). }
     claim HL2_loop : L2 :e loop_space X Tx x0.
     { exact (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx x0 g) L2 HL2_funspace HL2_loop_at). }
+    (** Homotopy from f to path_concat L1 L2 **)
+    claim HrevCont : continuous_map unit_interval unit_interval_topology X Tx (reverse_path gammaX).
+    { exact (reverse_path_continuous X Tx gammaX HgammaXCont). }
+    claim Hf1Fun : function_on f1 unit_interval X.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f1 Hf1Cont). }
+    claim HfaX : apply_fun f a :e X.
+    { rewrite <- Hf1_1. exact (Hf1Fun 1 one_in_unit_interval). }
+    claim Hrev_gamma_const :
+      path_homotopic X Tx (apply_fun f a) (apply_fun f a)
+        (path_concat (reverse_path gammaX) gammaX)
+        (constant_path (apply_fun f a)).
+    {
+      exact (Theorem_51_2_left_inverse
+        X
+        Tx
+        x0
+        (apply_fun f a)
+        gammaX
+        HgammaXCont
+        Hgamma0
+        Hgamma1).
+    }
+    claim Hf2_refl : path_homotopic X Tx (apply_fun f a) x0 f2 f2.
+    {
+      exact (Lemma_51_1_path_homotopy_refl
+        X
+        Tx
+        (apply_fun f a)
+        x0
+        f2
+        Hf2Cont
+        Hf2_0
+        Hf2_1).
+    }
+    claim Hassoc1 : path_homotopic X Tx x0 x0
+      (path_concat f1 (path_concat (reverse_path gammaX) L2))
+      (path_concat L1 L2).
+    {
+      exact (Theorem_51_2_associativity
+        X
+        Tx
+        x0
+        (apply_fun f a)
+        x0
+        x0
+        f1
+        (reverse_path gammaX)
+        L2
+        Hf1Cont
+        HrevCont
+        HL2_cont
+        Hf1_0
+        Hf1_1
+        Hrev0
+        Hrev1
+        HL2_0
+        HL2_1).
+    }
+    claim Hassoc2 : path_homotopic X Tx (apply_fun f a) x0
+      (path_concat (reverse_path gammaX) L2)
+      (path_concat (path_concat (reverse_path gammaX) gammaX) f2).
+    {
+      exact (Theorem_51_2_associativity
+        X
+        Tx
+        (apply_fun f a)
+        x0
+        (apply_fun f a)
+        x0
+        (reverse_path gammaX)
+        gammaX
+        f2
+        HrevCont
+        HgammaXCont
+        Hf2Cont
+        Hrev0
+        Hrev1
+        Hgamma0
+        Hgamma1
+        Hf2_0
+        Hf2_1).
+    }
+    claim Hconcat_replace :
+      path_homotopic X Tx (apply_fun f a) x0
+        (path_concat (path_concat (reverse_path gammaX) gammaX) f2)
+        (path_concat (constant_path (apply_fun f a)) f2).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        (apply_fun f a)
+        (apply_fun f a)
+        x0
+        (path_concat (reverse_path gammaX) gammaX)
+        (constant_path (apply_fun f a))
+        f2
+        f2
+        Hrev_gamma_const
+        Hf2_refl).
+    }
+    claim Hconst_left :
+      path_homotopic X Tx (apply_fun f a) x0
+        (path_concat (constant_path (apply_fun f a)) f2)
+        f2.
+    {
+      exact (Theorem_51_2_left_identity
+        X
+        Tx
+        (apply_fun f a)
+        x0
+        f2
+        Hf2Cont
+        Hf2_0
+        Hf2_1
+        HfaX).
+    }
+    claim Hf1_refl :
+      path_homotopic X Tx x0 (apply_fun f a) f1 f1.
+    {
+      exact (Lemma_51_1_path_homotopy_refl
+        X
+        Tx
+        x0
+        (apply_fun f a)
+        f1
+        Hf1Cont
+        Hf1_0
+        Hf1_1).
+    }
+    claim Hf1_const :
+      path_homotopic X Tx x0 (apply_fun f a)
+        (path_concat f1 (constant_path (apply_fun f a)))
+        f1.
+    {
+      exact (Theorem_51_2_right_identity
+        X
+        Tx
+        x0
+        (apply_fun f a)
+        f1
+        Hf1Cont
+        Hf1_0
+        Hf1_1
+        HfaX).
+    }
+    claim Hassoc3 : path_homotopic X Tx x0 x0
+      (path_concat f1 (path_concat (constant_path (apply_fun f a)) f2))
+      (path_concat (path_concat f1 (constant_path (apply_fun f a))) f2).
+    {
+      exact (Theorem_51_2_associativity
+        X
+        Tx
+        x0
+        (apply_fun f a)
+        (apply_fun f a)
+        x0
+        f1
+        (constant_path (apply_fun f a))
+        f2
+        Hf1Cont
+        (constant_path_continuous X Tx (apply_fun f a) Htop HfaX)
+        Hf2Cont
+        Hf1_0
+        Hf1_1
+        (constant_path_at_zero (apply_fun f a))
+        (constant_path_at_one (apply_fun f a))
+        Hf2_0
+        Hf2_1).
+    }
+    claim Hconcat_f1_f2 :
+      path_homotopic X Tx x0 x0
+        (path_concat f1 (path_concat (constant_path (apply_fun f a)) f2))
+        (path_concat f1 f2).
+    {
+      claim Hstep1 :
+        path_homotopic X Tx x0 x0
+          (path_concat f1 (path_concat (constant_path (apply_fun f a)) f2))
+          (path_concat (path_concat f1 (constant_path (apply_fun f a))) f2).
+      { exact Hassoc3. }
+      claim Hstep2 :
+        path_homotopic X Tx x0 x0
+          (path_concat (path_concat f1 (constant_path (apply_fun f a))) f2)
+          (path_concat f1 f2).
+      {
+        exact (path_concat_well_defined_on_classes
+          X
+          Tx
+          x0
+          (apply_fun f a)
+          x0
+          (path_concat f1 (constant_path (apply_fun f a)))
+          f1
+          f2
+          f2
+          Hf1_const
+          Hf2_refl).
+      }
+      exact (Lemma_51_1_path_homotopy_trans
+        X
+        Tx
+        x0
+        x0
+        (path_concat f1 (path_concat (constant_path (apply_fun f a)) f2))
+        (path_concat (path_concat f1 (constant_path (apply_fun f a))) f2)
+        (path_concat f1 f2)
+        Hstep1
+        Hstep2).
+    }
+    claim Hf1f2_to_L1L2 :
+      path_homotopic X Tx x0 x0 (path_concat f1 f2) (path_concat L1 L2).
+    {
+      claim HstepA :
+        path_homotopic X Tx x0 x0
+          (path_concat f1 f2)
+          (path_concat f1 (path_concat (constant_path (apply_fun f a)) f2)).
+      { exact (Lemma_51_1_path_homotopy_sym
+          X
+          Tx
+          x0
+          x0
+          (path_concat f1 (path_concat (constant_path (apply_fun f a)) f2))
+          (path_concat f1 f2)
+          Hconcat_f1_f2). }
+      claim HstepB :
+        path_homotopic X Tx x0 x0
+          (path_concat f1 (path_concat (constant_path (apply_fun f a)) f2))
+          (path_concat f1 (path_concat (path_concat (reverse_path gammaX) gammaX) f2)).
+      {
+        exact (path_concat_well_defined_on_classes
+          X
+          Tx
+          x0
+          (apply_fun f a)
+          x0
+          f1
+          f1
+          (path_concat (constant_path (apply_fun f a)) f2)
+          (path_concat (path_concat (reverse_path gammaX) gammaX) f2)
+          Hf1_refl
+          (Lemma_51_1_path_homotopy_sym
+            X
+            Tx
+            (apply_fun f a)
+            x0
+            (path_concat (path_concat (reverse_path gammaX) gammaX) f2)
+            (path_concat (constant_path (apply_fun f a)) f2)
+            Hconcat_replace)).
+      }
+      claim HstepC :
+        path_homotopic X Tx x0 x0
+          (path_concat f1 (path_concat (path_concat (reverse_path gammaX) gammaX) f2))
+          (path_concat f1 (path_concat (reverse_path gammaX) L2)).
+      {
+        exact (path_concat_well_defined_on_classes
+          X
+          Tx
+          x0
+          (apply_fun f a)
+          x0
+          f1
+          f1
+          (path_concat (path_concat (reverse_path gammaX) gammaX) f2)
+          (path_concat (reverse_path gammaX) L2)
+          Hf1_refl
+          (Lemma_51_1_path_homotopy_sym
+            X
+            Tx
+            (apply_fun f a)
+            x0
+            (path_concat (reverse_path gammaX) L2)
+            (path_concat (path_concat (reverse_path gammaX) gammaX) f2)
+            Hassoc2)).
+      }
+      claim HstepD :
+        path_homotopic X Tx x0 x0
+          (path_concat f1 (path_concat (reverse_path gammaX) L2))
+          (path_concat L1 L2).
+      { exact Hassoc1. }
+      exact (Lemma_51_1_path_homotopy_trans
+        X
+        Tx
+        x0
+        x0
+        (path_concat f1 f2)
+        (path_concat f1 (path_concat (constant_path (apply_fun f a)) f2))
+        (path_concat L1 L2)
+        HstepA
+        (Lemma_51_1_path_homotopy_trans
+          X
+          Tx
+          x0
+          x0
+          (path_concat f1 (path_concat (constant_path (apply_fun f a)) f2))
+          (path_concat f1 (path_concat (path_concat (reverse_path gammaX) gammaX) f2))
+          (path_concat L1 L2)
+          HstepB
+          (Lemma_51_1_path_homotopy_trans
+            X
+            Tx
+            x0
+            x0
+            (path_concat f1 (path_concat (path_concat (reverse_path gammaX) gammaX) f2))
+            (path_concat f1 (path_concat (reverse_path gammaX) L2))
+            (path_concat L1 L2)
+            HstepC
+            HstepD))).
+    }
+    claim Hf_hom_L1L2 : path_homotopic X Tx x0 x0 f (path_concat L1 L2).
+    {
+      exact (Lemma_51_1_path_homotopy_trans
+        X
+        Tx
+        x0
+        x0
+        f
+        (path_concat f1 f2)
+        (path_concat L1 L2)
+        Hf_hom_split
+        Hf1f2_to_L1L2).
+    }
+    claim Hclass_f_L1L2 :
+      path_homotopy_class_loop X Tx x0 f =
+        apply_fun (fundamental_group_mult X Tx x0)
+          (path_homotopy_class_loop X Tx x0 L1,
+           path_homotopy_class_loop X Tx x0 L2).
+    {
+      exact (path_homotopy_class_loop_eq_mult_of_concat_homotopic
+        X
+        Tx
+        x0
+        L1
+        L2
+        f
+        HL1_loop
+        HL2_loop
+        HfLoop
+        Hf_hom_L1L2).
+    }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
