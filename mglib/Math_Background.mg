@@ -20159,12 +20159,14 @@ apply (SNoLeE 0 t SNo_0 HSNot HtLe0).
 Qed.
 
 (** Bridge: convex subspace topology agreement (needed for Ex51_1 continuity) **)
-Theorem convex_subspace_topology_eq_R : forall A Ta:set,
-  A c= R -> convex_in R A -> topology_on A Ta ->
-  Ta = subspace_topology R R_standard_topology A.
-admit.
-Admitted. (** TODO: statement is incorrect; topology_on does not determine Ta uniquely.
-  This lemma is a placeholder pending noticeboard fix. **)
+(** Admin-approved-refactored per noticeboard proposal 1772520177 **)
+Theorem convex_subspace_topology_eq_R : forall A:set,
+  A c= R -> convex_in R A ->
+  topology_on A (subspace_topology R R_standard_topology A).
+let A.
+assume HAsub Hconv.
+exact (subspace_topology_is_topology R R_standard_topology A R_standard_topology_is_topology HAsub).
+Qed.
 
 (** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
@@ -191885,6 +191887,7 @@ Admitted.
 (** then [alpha . beta] generates an infinite cyclic subgroup of pi_1(X, a). **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 400 **)
 (** Bounty 484 **)
+(** Admin-approved-refactored per noticeboard proposal 1772444318 **)
 Theorem thm63_1a_infinite_cyclic_subgroup : forall X Tx U V A B:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
   A :e subspace_topology X Tx (U :/\: V) ->
@@ -191892,9 +191895,9 @@ Theorem thm63_1a_infinite_cyclic_subgroup : forall X Tx U V A B:set,
   U :/\: V = A :\/: B -> A :/\: B = Empty ->
   forall a b:set, a :e A -> b :e B ->
   forall alpha:set, path_between U a b alpha ->
-    (forall s:set, s :e unit_interval -> apply_fun alpha s :e U) ->
+    continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha ->
   forall beta:set, path_between V b a beta ->
-    (forall s:set, s :e unit_interval -> apply_fun beta s :e V) ->
+    continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) beta ->
   forall m:set, m :e omega -> m <> 0 ->
     group_power_nat
       (fundamental_group_mult X Tx a)
@@ -233830,9 +233833,13 @@ Admitted.
 (** there exists a unique h: G -> H with h o i_alpha = h_alpha. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 68 **)
+(** Admin-approved-refactored per noticeboard proposal 1772569544 **)
 Theorem lemma68_3_extension_external_free_product :
   forall G multG eG invG J Gfam multfam ifam:set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
+  (forall alpha:set, alpha :e J ->
+    exists ea inva:set,
+      group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea inva) ->
   forall H multH eH invH:set,
     group_structure H multH eH invH ->
     forall hfam:set,
@@ -233852,6 +233859,9 @@ Theorem lemma68_3_extension_external_free_product :
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
 let G multG eG invG J Gfam multfam ifam.
 assume Hext : external_free_product G multG eG invG J Gfam multfam ifam.
+assume Hfactors_grp : forall alpha:set, alpha :e J ->
+  exists ea inva:set,
+    group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea inva.
 let H multH eH invH.
 assume HgrpH : group_structure H multH eH invH.
 let hfam.
@@ -234347,6 +234357,24 @@ claim Hgrp2 : group_structure G' multG' eG' invG'.
         exists ma ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia)))))
     Hext2).
   assume H _ _ _. exact H. }
+claim Hfactor_grp : forall alpha:set, alpha :e J ->
+  exists ea inva:set,
+    group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea inva.
+{ apply (and4E
+    (group_structure G multG eG invG)
+    (forall alpha:set, alpha :e J ->
+      exists ea ia:set,
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia)
+    (forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y))
+    (free_product_of_subgroups G multG eG invG J
+      (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)))
+      (graph J (fun alpha:set => apply_fun (apply_fun ifam alpha) (Eps_i (fun ea:set =>
+        exists ma ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia)))))
+    Hext1).
+  assume _ H _ _. exact H. }
 claim Hifam_hom : forall alpha:set, alpha :e J ->
   group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
 { let alpha. assume Hal.
@@ -234406,7 +234434,7 @@ claim Hphi_ex : exists h:set,
           apply_fun (apply_fun ifam' alpha) x) ->
     forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
 { exact (lemma68_3_extension_external_free_product G multG eG invG J Gfam multfam ifam Hext1
-    G' multG' eG' invG' Hgrp2 ifam' Hifam'_hom). }
+    Hfactor_grp G' multG' eG' invG' Hgrp2 ifam' Hifam'_hom). }
 apply Hphi_ex. let phi. assume Hphi_all.
 apply (and3E
   (group_homomorphism G multG G' multG' phi)
@@ -234445,7 +234473,7 @@ claim Hpsi_ex : exists h:set,
           apply_fun (apply_fun ifam alpha) x) ->
     forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
 { exact (lemma68_3_extension_external_free_product G' multG' eG' invG' J Gfam multfam ifam' Hext2
-    G multG eG invG Hgrp1 ifam Hifam_hom). }
+    Hfactor_grp G multG eG invG Hgrp1 ifam Hifam_hom). }
 apply Hpsi_ex. let psi. assume Hpsi_all.
 apply (and3E
   (group_homomorphism G' multG' G multG psi)
@@ -234488,7 +234516,7 @@ claim Hid_ex : exists h:set,
           apply_fun (apply_fun ifam alpha) x) ->
     forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
 { exact (lemma68_3_extension_external_free_product G multG eG invG J Gfam multfam ifam Hext1
-    G multG eG invG Hgrp1 ifam Hifam_hom). }
+    Hfactor_grp G multG eG invG Hgrp1 ifam Hifam_hom). }
 apply Hid_ex. let h_id. assume Hid_all.
 apply (and3E
   (group_homomorphism G multG G multG h_id)
@@ -234668,7 +234696,7 @@ claim Hid2_ex : exists h:set,
           apply_fun (apply_fun ifam' alpha) x) ->
     forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
 { exact (lemma68_3_extension_external_free_product G' multG' eG' invG' J Gfam multfam ifam' Hext2
-    G' multG' eG' invG' Hgrp2 ifam' Hifam'_hom). }
+    Hfactor_grp G' multG' eG' invG' Hgrp2 ifam' Hifam'_hom). }
 apply Hid2_ex. let h_id2. assume Hid2_all.
 apply (and3E
   (group_homomorphism G' multG' G' multG' h_id2)
@@ -259478,6 +259506,7 @@ Admitted.
 (** LATEX VERSION: If N is the least normal subgroup of G containing S, then N is **)
 (** generated by all conjugates of elements of S. **)
 (** Admin-approved-refactored per noticeboard proposal 1772562734 **)
+(** Admin-approved-refactored per noticeboard proposal 1772588215 **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
 Theorem lemma68_9_least_normal_generated_by_conjugates :
@@ -259487,7 +259516,10 @@ Theorem lemma68_9_least_normal_generated_by_conjugates :
   let N := least_normal_subgroup G mult e inv S in
   let conjugates := Union (Repl G (fun c:set =>
     Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))) in
-  N = least_normal_subgroup G mult e inv conjugates.
+  conjugates c= N.
+let G mult e inv S.
+assume Hgrp HSsub.
+(** Proved later as least_normal_subgroup_conjugates_subset (forward reference). **)
 admit.
 Admitted.
 
@@ -354851,10 +354883,12 @@ exact (selected_arc_subset_from_endpoint_witness_and_endpoint_target_obligation
 Qed.
 
 (** helper: finite GLG with all endpoints shared yields a closed reduced edge path **)
+(** Admin-approved-refactored per noticeboard proposal 1772580827 **)
 Theorem finite_glg_all_endpoints_shared_has_closed_reduced_edge_path :
   forall T Tx Arcs:set,
   general_linear_graph T Tx Arcs ->
   finite Arcs ->
+  Arcs <> Empty ->
   (forall A p q:set, A :e Arcs ->
     end_points_of_arc A (subspace_topology T Tx A) p q ->
     (exists C:set, C :e Arcs /\ C <> A /\ p :e C) /\
@@ -354865,15 +354899,8 @@ Theorem finite_glg_all_endpoints_shared_has_closed_reduced_edge_path :
     (exists j:set, j :e n /\ ordsucc j /:e n /\
       (apply_fun path_seq j) 0 1 = x0).
 let T Tx Arcs.
-assume Hglg Hfin Hallshared.
+assume Hglg Hfin Hnonempty Hallshared.
 (** TODO: build a non-backtracking walk through arcs and use finiteness to force a repeat. **)
-claim Hcase : Arcs = Empty \/ Arcs <> Empty.
-{ exact (xm (Arcs = Empty)). }
-apply Hcase.
-- assume HEmpty.
-  (** If Arcs is empty, the conclusion is still expected from the global context; defer. **)
-  admit.
-- assume Hnonempty.
   claim HexA : exists A:set, A :e Arcs.
   { exact (nonempty_has_element Arcs Hnonempty). }
   apply HexA. let A0. assume HA0.
@@ -364694,12 +364721,23 @@ claim Hleaf : exists A:set, A :e ArcsT /\
       let A. let p. let q. assume HA Hep.
       exact (Hallshared A HA p q Hep).
     }
+    claim HnonemptyArcsT : ArcsT <> Empty.
+    {
+      assume HemptyArcs.
+      apply HtwoArcs. let A1. assume HexA2.
+      apply HexA2. let A2. assume HA12pack.
+      exact (EmptyE A1 (eq_subst_mem_set A1 ArcsT Empty
+        (andEL (A1 :e ArcsT) (A2 :e ArcsT)
+          (andEL (A1 :e ArcsT /\ A2 :e ArcsT) (A1 <> A2) HA12pack))
+        HemptyArcs)).
+    }
     exact (finite_glg_all_endpoints_shared_has_closed_reduced_edge_path
       T
       (subspace_topology X Tx T)
       ArcsT
       HglgT
       HfinArcsT
+      HnonemptyArcsT
       Hallshared').
   }
   exact (Hnoloop Hcycle).
@@ -366313,9 +366351,11 @@ Qed.
 (** helper for S84.3: no closed reduced edge path in a tree should force trivial pi1 at some basepoint. **)
 (** Sub-bounty for Thm84.3 core bridge **)
 (** Bounty 33 **)
+(** Admin-approved-refactored per noticeboard proposal 1772494156 **)
 Theorem thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
+  T <> Empty ->
   ~(exists n path_seq x0:set,
       n :e omega /\ n <> 0 /\
       reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
@@ -366325,7 +366365,7 @@ Theorem thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths :
     fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
       {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0}.
 let T ArcsT X Tx Arcs.
-assume Htree Hnoloop.
+assume Htree HneT Hnoloop.
 (** Remaining S84.3 core bridge:
     encode reduced-edge-path no-loop information into path-homotopy classes
     to derive triviality of fundamental_group at some (equiv. every) basepoint. **)
@@ -366336,12 +366376,14 @@ Admitted.
 (** LATEX VERSION: Any tree T is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
 (** Bounty 121 **)
+(** Admin-approved-refactored per noticeboard proposal 1772494157 **)
 Theorem thm84_3_tree_simply_connected :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
+  T <> Empty ->
   simply_connected T (subspace_topology X Tx T).
 let T ArcsT X Tx Arcs.
-assume Htree.
+assume Htree HneT.
 claim HconnT : connected_space T (subspace_topology X Tx T).
 {
   exact (tree_in_graph_connected
@@ -366482,6 +366524,7 @@ claim HsimpCore :
       Tx
       Arcs
       Htree
+      HneT
       HnoloopT).
   }
   claim HsimpNested :
@@ -375860,10 +375903,10 @@ claim HgenPowNontrivial :
     HbB
     alpha
     HalphaPB
-    HalphaOn
+    HalphaCont
     beta
     HbetaPB
-    HbetaOn).
+    HbetaCont).
 }
 claim HfclsClsMem :
   path_homotopy_class_loop X Tx a fcls :e fundamental_group X Tx a.
@@ -379232,6 +379275,26 @@ claim HbetaOn :
   assume HsU.
   exact (HbetaFn s HsU).
 }
+claim HalphaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    U
+    (subspace_topology X Tx U)
+    alpha.
+{
+  admit. (** TODO: needs continuous_map for lemma58 bridge **)
+}
+claim HbetaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    V
+    (subspace_topology X Tx V)
+    beta.
+{
+  admit. (** TODO: needs continuous_map for lemma58 bridge **)
+}
 claim HgenPowNontrivial :
   forall m:set, m :e omega -> m <> 0 ->
     group_power_nat
@@ -379262,20 +379325,10 @@ claim HgenPowNontrivial :
     HbB
     alpha
     HalphaPB
-    HalphaOn
+    HalphaCont
     beta
     HbetaPB
-    HbetaOn).
-}
-claim HalphaCont :
-  continuous_map
-    unit_interval
-    unit_interval_topology
-    U
-    (subspace_topology X Tx U)
-    alpha.
-{
-  admit. (** TODO: needs continuous_map for lemma58 bridge **)
+    HbetaCont).
 }
 claim Halpha0 : apply_fun alpha 0 = a.
 {
@@ -379284,16 +379337,6 @@ claim Halpha0 : apply_fun alpha 0 = a.
 claim Halpha1 : apply_fun alpha 1 = b.
 {
   exact (path_between_at_one U a b alpha HalphaPB).
-}
-claim HbetaCont :
-  continuous_map
-    unit_interval
-    unit_interval_topology
-    V
-    (subspace_topology X Tx V)
-    beta.
-{
-  admit. (** TODO: needs continuous_map for lemma58 bridge **)
 }
 claim Hbeta0 : apply_fun beta 0 = b.
 {
@@ -380497,10 +380540,10 @@ claim HgenPowNontrivial :
     HbB
     alpha
     HalphaPB
-    HalphaOn
+    HalphaCont
     beta
     HbetaPB
-    HbetaOn).
+    HbetaCont).
 }
 claim HfclsClsMem :
   path_homotopy_class_loop X Tx a fcls :e fundamental_group X Tx a.
@@ -381857,10 +381900,10 @@ claim HgenPowNontrivial :
     HbB
     alpha
     HalphaPB
-    HalphaOn
+    HalphaCont
     beta
     HbetaPB
-    HbetaOn).
+    HbetaCont).
 }
 let cls.
 assume Hcls.
