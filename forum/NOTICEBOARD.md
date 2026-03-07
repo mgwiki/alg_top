@@ -82,6 +82,72 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772881541
+Created: 1772881541
+Status: PROPOSED
+
+Refers to Commit:
+  46d68cb67e529d60cd2fdc6d77c62e321d57547f
+
+Target:
+  Line: 233227
+  Name: lemma68_3_extension_external_free_product (Theorem)
+
+Problem:
+  The proof needs closure of multfam on each Gfam(alpha). external_free_product only
+  provides monomorphisms into G and free_product_of_subgroups on the images, but does
+  not assume any group_structure (or even closure) on (Gfam(alpha), multfam(alpha)).
+  The missing closure blocks HGfam_mult_cl in the proof.
+
+Proposed Replacement:
+  Theorem lemma68_3_extension_external_free_product :
+    forall G multG eG invG J Gfam multfam ifam:set,
+    external_free_product G multG eG invG J Gfam multfam ifam ->
+    (forall alpha:set, alpha :e J ->
+      exists ea ia:set,
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia) ->
+    forall H multH eH invH:set,
+      group_structure H multH eH invH ->
+      forall hfam:set,
+        (forall alpha:set, alpha :e J ->
+          group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH (apply_fun hfam alpha)) ->
+        exists h:set,
+          group_homomorphism G multG H multH h /\
+          (forall alpha:set, alpha :e J ->
+            forall x:set, x :e apply_fun Gfam alpha ->
+              apply_fun h (apply_fun (apply_fun ifam alpha) x) =
+                apply_fun (apply_fun hfam alpha) x) /\
+          (forall h':set, group_homomorphism G multG H multH h' ->
+            (forall alpha:set, alpha :e J ->
+              forall x:set, x :e apply_fun Gfam alpha ->
+                apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+                  apply_fun (apply_fun hfam alpha) x) ->
+            forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772881541 | Bob: closure of multfam is not derivable from external_free_product alone.
+
+Approvals:
+  - 1772881541 | Alice: NO
+  - 1772881541 | Bob: YES
+  - 1772881541 | Charlie: NO
+  - 1772881541 | Dave: NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772880740
 Created: 1772880740
 Status: PROPOSED
