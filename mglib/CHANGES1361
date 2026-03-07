@@ -1,0 +1,11 @@
+CHANGES1361 (from bck1360, 381918 lines to bck1361, 381919 lines)
+
+1. LOCKED lemma81_1_image_of_psi ($121 bounty after 10% lock fee)
+   Lock cost: 11, Balance: 7089 - 11 = 7078
+   Lock expiration: 1772992789
+
+2. Balance update: Alice 7089 -> 7078
+
+3. Line change: +1 line (added lock annotation)
+
+Running totals: 369 Admitted (unchanged), Alice balance: 7078
