@@ -1,4 +1,4 @@
-(** Balance Alice 6599 **)
+(** Balance Alice 6586 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -301462,7 +301462,8 @@ Qed.
 (** NOTE: as stated, this requires a connectedness hypothesis on Y (e.g. path_connected_space Y Ty);
     otherwise it fails for disconnected covering spaces. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 121 **)
+(** Bounty 134 **)
+(** Lock Alice 1772968051 **)
 Theorem thm80_3_universal_covers_everything :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
