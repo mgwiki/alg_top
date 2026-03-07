@@ -302179,7 +302179,62 @@ claim Hq_comm : forall x:set, x :e E -> apply_fun r (apply_fun q x) = apply_fun 
 claim HpcB : path_connected_space B Tb.
 { exact (covering_map_path_connected_codomain E Te B Tb p Hcov HpcE). }
 claim HlpB : locally_path_connected B Tb.
-{ admit. (** derivable: open surjection from locally_path_connected E, tangential **) }
+{
+  claim Hopenp : open_map E Te B Tb p.
+  { exact (covering_map_is_open E Te B Tb p Hcov). }
+  prove topology_on B Tb /\ forall b:set, b :e B -> forall UB:set, UB :e Tb -> b :e UB ->
+    exists VB:set, VB :e Tb /\ b :e VB /\ VB c= UB /\ path_connected_space VB (subspace_topology B Tb VB).
+  apply andI.
+  - exact HtopB.
+  - let b. assume HbB. let UB. assume HUBTb HbUB.
+    claim HpreUB : preimage_of E p UB :e Te.
+    { exact (continuous_map_preimage E Te B Tb p Hpcont UB HUBTb). }
+    apply (surjective_map_has_preimage E B p b (covering_map_surjective E Te B Tb p Hcov) HbB).
+    let e. assume Hepack.
+    claim HeE : e :e E. { exact (andEL (e :e E) (apply_fun p e = b) Hepack). }
+    claim Hpe : apply_fun p e = b. { exact (andER (e :e E) (apply_fun p e = b) Hepack). }
+    claim HpeUB : apply_fun p e :e UB.
+    { rewrite Hpe. exact HbUB. }
+    claim HePre : e :e preimage_of E p UB.
+    { exact (SepI E (fun x:set => apply_fun p x :e UB) e HeE HpeUB). }
+    apply (locally_path_connected_local E Te e (preimage_of E p UB) HlpE HeE HpreUB HePre).
+    let VE. assume HVEpack.
+    apply (and4E (VE :e Te) (e :e VE) (VE c= preimage_of E p UB)
+      (path_connected_space VE (subspace_topology E Te VE)) HVEpack).
+    assume HVETe HeVE HVEsub HpcVE.
+    set VB := image_of p VE.
+    witness VB. apply and4I.
+    + (** VB :e Tb **)
+      exact (open_map_image_open E Te B Tb p VE Hopenp HVETe).
+    + (** b :e VB **)
+      claim HpeImg : apply_fun p e :e VB. { exact (ReplI VE (fun x:set => apply_fun p x) e HeVE). }
+      exact (Hpe (fun z _ => z :e VB) HpeImg).
+    + (** VB c= UB **)
+      let y. assume HyVB.
+      apply (ReplE VE (fun x:set => apply_fun p x) y HyVB). let x. assume Hxpack.
+      claim HxVE : x :e VE. { exact (andEL (x :e VE) (y = apply_fun p x) Hxpack). }
+      claim HyEq : y = apply_fun p x. { exact (andER (x :e VE) (y = apply_fun p x) Hxpack). }
+      rewrite HyEq.
+      claim HxPre : x :e preimage_of E p UB. { exact (HVEsub x HxVE). }
+      exact (SepE2 E (fun x0:set => apply_fun p x0 :e UB) x HxPre).
+    + (** path_connected_space VB (subspace_topology B Tb VB) **)
+      claim HVEsubE : VE c= E. { exact (topology_elem_subset E Te VE HtopE HVETe). }
+      claim HVBsubB : VB c= B. { exact (image_of_sub_codomain p E B VE (continuous_map_function_on E Te B Tb p Hpcont) HVEsubE). }
+      claim HpContVE : continuous_map VE (subspace_topology E Te VE) B Tb p.
+      { exact (continuous_on_subspace_rule E Te B Tb p VE HtopE HtopB HVEsubE Hpcont). }
+      claim HpVals : forall x:set, x :e VE -> apply_fun p x :e VB.
+      { let x. assume HxVE. exact (ReplI VE (fun x0:set => apply_fun p x0) x HxVE). }
+      claim HpContVB : continuous_map VE (subspace_topology E Te VE) VB (subspace_topology B Tb VB) p.
+      { exact (continuous_map_range_restrict VE (subspace_topology E Te VE) B Tb p VB HpContVE HVBsubB HpVals). }
+      claim HpSurjVB : forall y:set, y :e VB -> exists x:set, x :e VE /\ apply_fun p x = y.
+      { let y. assume HyVB.
+        apply (ReplE VE (fun x:set => apply_fun p x) y HyVB). let x. assume Hxpack.
+        witness x. apply andI.
+        - exact (andEL (x :e VE) (y = apply_fun p x) Hxpack).
+        - symmetry. exact (andER (x :e VE) (y = apply_fun p x) Hxpack). }
+      exact (continuous_image_path_connected VE (subspace_topology E Te VE) VB (subspace_topology B Tb VB) p
+        HpcVE HpContVB HpSurjVB).
+}
 claim HpcY : path_connected_space Y Ty.
 { admit. (** NOTICEBOARD 1772594849 pending: needs path_connected_space Y Ty hypothesis **) }
 claim Hfunq : function_on q E Y.
