@@ -95166,6 +95166,39 @@ Admitted.
   (** TODO: statement likely needs joint continuity of vs_choice via a continuous F;
       see column_continuity_via_chain_with_F and NOTICEBOARD. **)
 
+(** For any s in I1 and t in unit_interval, the column map at time t is **)
+(** continuous on some neighborhood of s. Proof: tube lemma chain from 0 to t **)
+(** via connected_lift_stays_in_anchored_sheet + section composition. **)
+Lemma column_map_pointwise_locally_continuous :
+  forall E Te B Tb p F start_lift vs_choice I1 t s:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  I1 c= unit_interval ->
+  I1 <> Empty ->
+  continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+  continuous_map (setprod I1 unit_interval)
+    (subspace_topology unit_square unit_square_topology (setprod I1 unit_interval))
+    B Tb F ->
+  (forall s0:set, s0 :e I1 ->
+    apply_fun p (apply_fun start_lift s0) = apply_fun (apply_fun vs_choice s0) 0) ->
+  (forall s0:set, s0 :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s0)) ->
+  (forall s0:set, s0 :e I1 -> forall t0:set, t0 :e unit_interval ->
+    apply_fun (apply_fun vs_choice s0) t0 = apply_fun F (s0, t0)) ->
+  t :e unit_interval ->
+  s :e I1 ->
+  exists N:set,
+    N :e subspace_topology unit_interval unit_interval_topology I1 /\
+    s :e N /\
+    continuous_map N
+      (subspace_topology I1
+        (subspace_topology unit_interval unit_interval_topology I1) N)
+      E Te
+      (graph I1 (fun s':set =>
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s') (apply_fun vs_choice s')) t)).
+admit.
+Admitted.
+
 (** Helper: within a ball around any time point, column continuity is "all or nothing". **)
 (** Consequence of column_continuity_propagation_step + compactness of I1 via covering map. **)
 (** For any t1, there exists delta such that within B(t1, delta), if column continuity **)
@@ -95248,14 +95281,15 @@ apply andI.
         exact (topology_elem_subset I1 TI1 N HtopI1 HNinTI1 x HxN).
       * (** I1 c= Union UFam: for each s, find open N with col_tb continuous **)
         let s. assume Hs.
-        (** Core claim: covering map structure gives local continuity at each point. **)
-        (** Provable from: path lifts are continuous, covering map sheets give local **)
-        (** homeomorphisms, col_ta continuity anchors nearby lifts in the same sheet. **)
+        (** Apply column_map_pointwise_locally_continuous: section + tube lemma gives **)
+        (** local continuity of the column map at each point. **)
         claim Hlocal :
           exists N:set, N :e TI1 /\ s :e N /\
             continuous_map N (subspace_topology I1 TI1 N) E Te col_tb.
         {
-          admit.
+          exact (column_map_pointwise_locally_continuous
+            E Te B Tb p F start_lift vs_choice I1 t_b s
+            Hcov HtopE HI1sub HI1ne HstartCont HFcont HstartComm HvsCont HvsEval Ht_bI Hs).
         }
         apply Hlocal. let N. assume HNpack.
         claim HNpair : N :e TI1 /\ s :e N.
@@ -221371,7 +221405,6 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
 (** Infrastructure: involutive efam(al) cannot be nontrivial in its subgroup in a free product **)
 (** This isolates the remaining "order 2" subcase in efam_not_in_Gfam_nontrivial. **)
 (** Bounty 88 **)
-(** Lock Charlie 1772841394 **)
 Lemma free_product_efam_involutive_contra : forall G multG eG invG J Gfam efam al:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
   al :e J ->
