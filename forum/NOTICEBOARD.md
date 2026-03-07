@@ -4231,7 +4231,7 @@ Proposed Replacement:
   Alternatively, remove the lemma and use the parametric version directly where needed.
 
 Requested Approvals:
-  - Alice
+  - Alice: APPROVED (confirmed: proved column_continuity_via_chain_with_F as Qed, the non-F version is indeed unprovable without joint continuity)
   - Charlie
 
 ----
@@ -4261,5 +4261,5 @@ Proposed Replacement:
   and conclude the same column continuity.
 
 Requested Approvals:
-  - Alice
+  - Alice: APPROVED (confirmed: the parametric version path_lift_column_continuous_on_product_ball_parametric is already Qed, the non-parametric version needs joint continuity)
   - Charlie
