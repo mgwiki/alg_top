@@ -1,4 +1,4 @@
-(** Balance Alice 5884 **)
+(** Balance Alice 5862 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -285982,7 +285982,8 @@ Qed.
 (** iff H0 = H0', where H0 = p_star(pi1(E,e0)), H0' = p'_star(pi1(E',e0')). **)
 (** If h exists, it is unique. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
+(** Bounty 242 **)
+(** Lock Alice 1772953432 **)
 Theorem thm79_2_equivalence_iff_same_subgroup :
   forall E Te E' Te' B Tb p p' e0 e0':set,
   covering_map E Te B Tb p ->
