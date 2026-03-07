@@ -82,6 +82,60 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772867805
+Created: 1772867805
+Status: PROPOSED
+
+Refers to Commit:
+  3474eff2077c2a5398d1921db3c77d83f307695f
+
+Target:
+  Line: 119594
+  Name: thm54_6c_loop_characterization (Theorem)
+
+Problem:
+  The statement parses as a top-level `<->` between an implication chain and the
+  endpoint equation. This is stronger than intended and not provable. It needs
+  parentheses so the equivalence is the conclusion of the implication chain.
+
+Proposed Replacement:
+  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+       homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+     <->
+     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772867805 | Bob: aligns with thm54_6c_loop_characterization_equiv.
+
+Approvals:
+  - 1772867805 | Alice: NO
+  - 1772867805 | Bob: YES
+  - 1772867805 | Charlie: NO
+  - 1772867805 | Dave: NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772859559
 Created: 1772859559
 Status: PROPOSED
