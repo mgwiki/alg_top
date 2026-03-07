@@ -1,4 +1,4 @@
-(** Balance Alice 6082 **)
+(** Balance Alice 6324 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -286931,8 +286931,8 @@ Definition conjugate_subgroups : set -> set -> set -> set -> set -> set -> prop 
 (** then [alpha] H1 [alpha]^{-1} = H0, so H0 and H1 are conjugate. **)
 (** (b) Given e0 and H conjugate to H0, exists e1 in p^{-1}(b0) with H1 = H. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 242 **)
-(** Lock Alice 1772956027 **)
+(** Collected Alice 242 **)
+(** Proven Alice **)
 Theorem lemma79_3a_conjugacy_of_subgroups :
   forall E Te B Tb p e0 e1:set,
   covering_map E Te B Tb p ->
@@ -287241,8 +287241,167 @@ apply andI.
       { exact (ReplI H1
           (fun h:set => apply_fun multG (apply_fun multG (alpha_class, h), apply_fun invG alpha_class))
           h_witness Hh_in_H1). }
+      (** Compute x = [p o f] via Eps_i chain **)
+      claim Hphi0_eq : apply_fun (induced_homomorphism E Te e0 B Tb b0 p)
+        (path_homotopy_class_loop E Te e0 f)
+        = path_homotopy_class_loop B Tb b0 (compose_fun unit_interval f p).
+      { claim Hih : apply_fun (induced_homomorphism E Te e0 B Tb b0 p)
+          (path_homotopy_class_loop E Te e0 f)
+          = path_homotopy_class_loop B Tb b0
+            (compose_fun unit_interval
+              (Eps_i (fun w:set => w :e path_homotopy_class_loop E Te e0 f)) p).
+        { exact (induced_homomorphism_apply_on_loop_class E Te e0 B Tb b0 p f Hf_ls). }
+        rewrite Hih.
+        set eps_f := Eps_i (fun w:set => w :e path_homotopy_class_loop E Te e0 f).
+        claim Heps_f_in : eps_f :e path_homotopy_class_loop E Te e0 f.
+        { exact (Eps_i_ax (fun w:set => w :e path_homotopy_class_loop E Te e0 f) f
+            (loop_in_own_path_homotopy_class E Te e0 f Hf_ls)). }
+        claim Heps_f_htpy : path_homotopic E Te e0 e0 f eps_f.
+        { exact (path_homotopy_class_loop_has_homotopy E Te e0 f eps_f Heps_f_in). }
+        claim Hpost_f : path_homotopic B Tb b0 b0
+          (compose_fun unit_interval f p) (compose_fun unit_interval eps_f p).
+        { exact (path_homotopic_postcompose E Te B Tb e0 e0 b0 b0 f eps_f p
+            Heps_f_htpy Hp_cont (eq_refl b0) (eq_refl b0)). }
+        exact (eq_symm
+          (path_homotopy_class_loop B Tb b0 (compose_fun unit_interval f p))
+          (path_homotopy_class_loop B Tb b0 (compose_fun unit_interval eps_f p))
+          (path_homotopy_class_loop_eq_of_path_homotopic B Tb b0
+            (compose_fun unit_interval f p) (compose_fun unit_interval eps_f p) Hpost_f)). }
+      claim Hx_is_pof : x = path_homotopy_class_loop B Tb b0 (compose_fun unit_interval f p).
+      { rewrite Hx_eq. rewrite Hcls0_eq. exact Hphi0_eq. }
+      set pof := compose_fun unit_interval f p.
+      claim Hpof_ls : pof :e loop_space B Tb b0.
+      { exact (loop_space_postcompose E Te e0 B Tb b0 f p Hf_ls Hp_cont (eq_refl b0)). }
+      (** Compute h_witness = [p o g1] via Eps_i chain **)
+      claim Hphi1_eq : apply_fun (induced_homomorphism E Te e1 B Tb b0 p)
+        (path_homotopy_class_loop E Te e1 g1)
+        = path_homotopy_class_loop B Tb b0 (compose_fun unit_interval g1 p).
+      { claim Hih1 : apply_fun (induced_homomorphism E Te e1 B Tb b0 p)
+          (path_homotopy_class_loop E Te e1 g1)
+          = path_homotopy_class_loop B Tb b0
+            (compose_fun unit_interval
+              (Eps_i (fun w:set => w :e path_homotopy_class_loop E Te e1 g1)) p).
+        { exact (induced_homomorphism_apply_on_loop_class E Te e1 B Tb b0 p g1 Hg1_ls). }
+        rewrite Hih1.
+        set eps_g := Eps_i (fun w:set => w :e path_homotopy_class_loop E Te e1 g1).
+        claim Heps_g_in : eps_g :e path_homotopy_class_loop E Te e1 g1.
+        { exact (Eps_i_ax (fun w:set => w :e path_homotopy_class_loop E Te e1 g1) g1
+            (loop_in_own_path_homotopy_class E Te e1 g1 Hg1_ls)). }
+        claim Heps_g_htpy : path_homotopic E Te e1 e1 g1 eps_g.
+        { exact (path_homotopy_class_loop_has_homotopy E Te e1 g1 eps_g Heps_g_in). }
+        claim Hpost_g : path_homotopic B Tb b0 b0
+          (compose_fun unit_interval g1 p) (compose_fun unit_interval eps_g p).
+        { exact (path_homotopic_postcompose E Te B Tb e1 e1 b0 b0 g1 eps_g p
+            Heps_g_htpy Hp_cont Hpe1b0 Hpe1b0). }
+        exact (eq_symm
+          (path_homotopy_class_loop B Tb b0 (compose_fun unit_interval g1 p))
+          (path_homotopy_class_loop B Tb b0 (compose_fun unit_interval eps_g p))
+          (path_homotopy_class_loop_eq_of_path_homotopic B Tb b0
+            (compose_fun unit_interval g1 p) (compose_fun unit_interval eps_g p) Hpost_g)). }
+      claim Hh_is_pog1 : h_witness = path_homotopy_class_loop B Tb b0 (compose_fun unit_interval g1 p).
+      { exact Hphi1_eq. }
+      (** Decompose p o g1 = path_concat(p o reverse_path sigma, p o inner1) **)
+      claim Hcomp_g1 : compose_fun unit_interval g1 p
+        = path_concat (compose_fun unit_interval (reverse_path sigma) p)
+            (compose_fun unit_interval inner1 p).
+      { claim Hmatch_ri : apply_fun (reverse_path sigma) 1 = apply_fun inner1 0.
+        { rewrite Hrev_sigma_1. rewrite Hinner1_0. exact (fun P h => h). }
+        exact (compose_path_concat_eq_algtop E B (reverse_path sigma) inner1 p
+          Hrev_sigma_fun Hinner1_fun Hp_fun Hmatch_ri). }
+      claim Hcomp_in1 : compose_fun unit_interval inner1 p
+        = path_concat (compose_fun unit_interval f p)
+            (compose_fun unit_interval sigma p).
+      { claim Hmatch_fs : apply_fun f 1 = apply_fun sigma 0.
+        { rewrite Hf1. rewrite Hsigma0. exact (fun P h => h). }
+        exact (compose_path_concat_eq_algtop E B f sigma p
+          Hf_fun Hsigma_fun Hp_fun Hmatch_fs). }
+      (** p o reverse_path sigma = rev_alpha_path **)
+      (** p o sigma = alpha_path **)
+      (** So p o g1 = path_concat(rev_alpha_path, path_concat(pof, alpha_path)) **)
+      (** Homotopy classes: h_witness = mult(rev_alpha_class, mult([pof], alpha_class)) **)
+      claim Hcomp_in1_ls : compose_fun unit_interval inner1 p :e loop_space B Tb b0.
+      { claim Hci1_cont : continuous_map unit_interval unit_interval_topology B Tb (compose_fun unit_interval inner1 p).
+        { exact (composition_continuous unit_interval unit_interval_topology E Te B Tb inner1 p
+            Hinner1_cont Hp_cont). }
+        claim Hci1_0 : apply_fun (compose_fun unit_interval inner1 p) 0 = b0.
+        { claim H : apply_fun (compose_fun unit_interval inner1 p) 0 = apply_fun p (apply_fun inner1 0).
+          { exact (compose_fun_apply unit_interval inner1 p 0 zero_in_unit_interval). }
+          rewrite H. rewrite Hinner1_0. exact (fun P h => h). }
+        claim Hci1_1 : apply_fun (compose_fun unit_interval inner1 p) 1 = b0.
+        { claim H : apply_fun (compose_fun unit_interval inner1 p) 1 = apply_fun p (apply_fun inner1 1).
+          { exact (compose_fun_apply unit_interval inner1 p 1 one_in_unit_interval). }
+          rewrite H. rewrite Hinner1_1. exact Hpe1b0. }
+        exact (SepI (function_space unit_interval B) (fun u:set => loop_at B Tb b0 u)
+          (compose_fun unit_interval inner1 p)
+          (compose_fun_in_function_space unit_interval E B inner1 p Hinner1_fun Hp_fun)
+          (andI (continuous_map unit_interval unit_interval_topology B Tb (compose_fun unit_interval inner1 p) /\ apply_fun (compose_fun unit_interval inner1 p) 0 = b0)
+            (apply_fun (compose_fun unit_interval inner1 p) 1 = b0)
+            (andI (continuous_map unit_interval unit_interval_topology B Tb (compose_fun unit_interval inner1 p))
+              (apply_fun (compose_fun unit_interval inner1 p) 0 = b0) Hci1_cont Hci1_0) Hci1_1)). }
+      claim Hpof_alpha_ls : path_concat pof alpha_path :e loop_space B Tb b0.
+      { exact (path_concat_preserves_loop_space B Tb b0 pof alpha_path Hpof_ls Halpha_in_ls). }
+      claim Hclass_in1 : path_homotopy_class_loop B Tb b0 (compose_fun unit_interval inner1 p)
+        = path_homotopy_class_loop B Tb b0 (path_concat pof alpha_path).
+      { rewrite Hcomp_in1. exact (fun P h => h). }
+      claim Hmult_in1 : path_homotopy_class_loop B Tb b0 (path_concat pof alpha_path)
+        = apply_fun multG (path_homotopy_class_loop B Tb b0 pof, alpha_class).
+      { exact (path_homotopy_class_loop_concat_eq_mult B Tb b0 pof alpha_path Hpof_ls Halpha_in_ls). }
+      claim Hrev_in1_ls : path_concat rev_alpha_path (compose_fun unit_interval inner1 p) :e loop_space B Tb b0.
+      { exact (path_concat_preserves_loop_space B Tb b0 rev_alpha_path
+          (compose_fun unit_interval inner1 p) Hrev_ls Hcomp_in1_ls). }
+      claim Hclass_g1 : path_homotopy_class_loop B Tb b0 (compose_fun unit_interval g1 p)
+        = path_homotopy_class_loop B Tb b0
+            (path_concat rev_alpha_path (compose_fun unit_interval inner1 p)).
+      { rewrite Hcomp_g1. rewrite Hp_rev_sigma. exact (fun P h => h). }
+      claim Hmult_g1 : path_homotopy_class_loop B Tb b0
+          (path_concat rev_alpha_path (compose_fun unit_interval inner1 p))
+        = apply_fun multG (rev_alpha_class,
+            path_homotopy_class_loop B Tb b0 (compose_fun unit_interval inner1 p)).
+      { exact (path_homotopy_class_loop_concat_eq_mult B Tb b0
+          rev_alpha_path (compose_fun unit_interval inner1 p) Hrev_ls Hcomp_in1_ls). }
+      (** h_witness = mult(inv(alpha), mult(x_class, alpha)) **)
+      set x_class := path_homotopy_class_loop B Tb b0 pof.
+      claim HxG : x_class :e G.
+      { exact (path_homotopy_class_in_fundamental_group B Tb b0 pof Hpof_ls). }
+      claim Hh_eq_formula : h_witness = apply_fun multG (apply_fun invG alpha_class, apply_fun multG (x_class, alpha_class)).
+      { rewrite Hh_is_pog1. rewrite Hclass_g1. rewrite Hmult_g1.
+        rewrite Hclass_in1. rewrite Hmult_in1. rewrite Hinv_eq_rev.
+        exact (fun P h => h). }
+      (** Group algebra: mult(mult(alpha, h_witness), inv(alpha)) = x **)
+      claim Hxa_G : apply_fun multG (x_class, alpha_class) :e G.
+      { exact (HmultFn (x_class, alpha_class) (tuple_2_setprod_by_pair_Sigma G G x_class alpha_class HxG Halpha_in_FG)). }
+      claim Hassoc1 : apply_fun multG (alpha_class, apply_fun multG (apply_fun invG alpha_class, apply_fun multG (x_class, alpha_class)))
+        = apply_fun multG (apply_fun multG (alpha_class, apply_fun invG alpha_class), apply_fun multG (x_class, alpha_class)).
+      { exact (eq_symm
+          (apply_fun multG (apply_fun multG (alpha_class, apply_fun invG alpha_class), apply_fun multG (x_class, alpha_class)))
+          (apply_fun multG (alpha_class, apply_fun multG (apply_fun invG alpha_class, apply_fun multG (x_class, alpha_class))))
+          (HassocG alpha_class (apply_fun invG alpha_class) (apply_fun multG (x_class, alpha_class))
+            Halpha_in_FG Hinv_alpha_G Hxa_G)). }
+      claim Hainva_eG : apply_fun multG (alpha_class, apply_fun invG alpha_class) = eG.
+      { exact (andEL
+          (apply_fun multG (alpha_class, apply_fun invG alpha_class) = eG)
+          (apply_fun multG (apply_fun invG alpha_class, alpha_class) = eG)
+          (HinvAxG alpha_class Halpha_in_FG)). }
+      claim Hlid_xa : apply_fun multG (eG, apply_fun multG (x_class, alpha_class))
+        = apply_fun multG (x_class, alpha_class).
+      { exact (andEL
+          (apply_fun multG (eG, apply_fun multG (x_class, alpha_class)) = apply_fun multG (x_class, alpha_class))
+          (apply_fun multG (apply_fun multG (x_class, alpha_class), eG) = apply_fun multG (x_class, alpha_class))
+          (HidG (apply_fun multG (x_class, alpha_class)) Hxa_G)). }
+      claim Halpha_h_eq_xa : apply_fun multG (alpha_class, h_witness) = apply_fun multG (x_class, alpha_class).
+      { rewrite Hh_eq_formula. rewrite Hassoc1. rewrite Hainva_eG. exact Hlid_xa. }
+      claim Hassoc2 : apply_fun multG (apply_fun multG (x_class, alpha_class), apply_fun invG alpha_class)
+        = apply_fun multG (x_class, apply_fun multG (alpha_class, apply_fun invG alpha_class)).
+      { exact (HassocG x_class alpha_class (apply_fun invG alpha_class)
+          HxG Halpha_in_FG Hinv_alpha_G). }
+      claim Hrid_x : apply_fun multG (x_class, eG) = x_class.
+      { exact (andER
+          (apply_fun multG (eG, x_class) = x_class)
+          (apply_fun multG (x_class, eG) = x_class)
+          (HidG x_class HxG)). }
       claim Hx_eq_conj : x = apply_fun multG (apply_fun multG (alpha_class, h_witness), apply_fun invG alpha_class).
-      { admit. }
+      { rewrite Hx_is_pof. rewrite Halpha_h_eq_xa. rewrite Hassoc2.
+        rewrite Hainva_eG. rewrite Hrid_x. exact (fun P h => h). }
       exact (eq_subst_mem x
         (apply_fun multG (apply_fun multG (alpha_class, h_witness), apply_fun invG alpha_class))
         {apply_fun multG (apply_fun multG (alpha_class, h), apply_fun invG alpha_class) | h :e H1}
@@ -287502,7 +287661,7 @@ apply andI.
         rewrite Hh_is_pog. exact (fun P h => h). }
       exact (eq_subst_mem x (apply_fun (induced_homomorphism E Te e0 B Tb b0 p) cls0)
         H0 Hx_eq_phi Hphi0_in_H0).
-Admitted.
+Qed.
 
 (** from S79 Lem 79.3(b) (line 4862 in algtop.tex): conjugacy converse **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
