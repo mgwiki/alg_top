@@ -286950,7 +286950,118 @@ Theorem lemma79_3a_conjugacy_of_subgroups :
     (fundamental_group_mult B Tb (apply_fun p e0))
     (fundamental_group_id B Tb (apply_fun p e0))
     (fundamental_group_inv B Tb (apply_fun p e0)).
-admit.
+let E Te B Tb p e0 e1.
+assume Hcov He0E He1E Hpe0pe1 HEpc.
+(** Rewrite p(e1) to p(e0) throughout the goal **)
+rewrite (eq_symm (apply_fun p e0) (apply_fun p e1) Hpe0pe1).
+set b0 := apply_fun p e0.
+(** Extract topology and continuity from covering_map **)
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim Hp_cont : continuous_map E Te B Tb p. { exact (covering_map_continuous E Te B Tb p Hcov). }
+claim Hp_fun : function_on p E B. { exact (continuous_map_function_on E Te B Tb p Hp_cont). }
+claim Hb0B : b0 :e B. { exact (Hp_fun e0 He0E). }
+claim Hpe1b0 : apply_fun p e1 = b0. { exact (eq_symm b0 (apply_fun p e1) Hpe0pe1). }
+(** Abbreviations for the fundamental group **)
+set G := fundamental_group B Tb b0.
+set multG := fundamental_group_mult B Tb b0.
+set eG := fundamental_group_id B Tb b0.
+set invG := fundamental_group_inv B Tb b0.
+(** Group structure **)
+claim HgrpG : group_structure G multG eG invG. { exact (fundamental_group_is_group B Tb b0 HtopB Hb0B). }
+(** Abbreviations for subgroups **)
+set H1 := homomorphism_image (fundamental_group E Te e1) (induced_homomorphism E Te e1 B Tb b0 p).
+set H0 := homomorphism_image (fundamental_group E Te e0) (induced_homomorphism E Te e0 B Tb b0 p).
+(** Induced homomorphisms are homomorphisms **)
+claim Hind1_hom : group_homomorphism
+  (fundamental_group E Te e1) (fundamental_group_mult E Te e1)
+  G multG (induced_homomorphism E Te e1 B Tb b0 p).
+{ exact (induced_homomorphism_is_homomorphism E Te e1 B Tb b0 p Hp_cont Hpe1b0 He1E). }
+claim Hind0_hom : group_homomorphism
+  (fundamental_group E Te e0) (fundamental_group_mult E Te e0)
+  G multG (induced_homomorphism E Te e0 B Tb b0 p).
+{ exact (induced_homomorphism_is_homomorphism E Te e0 B Tb b0 p Hp_cont
+    (eq_refl b0) He0E). }
+(** Group structures of source groups **)
+claim HgrpE1 : group_structure (fundamental_group E Te e1) (fundamental_group_mult E Te e1)
+  (fundamental_group_id E Te e1) (fundamental_group_inv E Te e1).
+{ exact (fundamental_group_is_group E Te e1 HtopE He1E). }
+claim HgrpE0 : group_structure (fundamental_group E Te e0) (fundamental_group_mult E Te e0)
+  (fundamental_group_id E Te e0) (fundamental_group_inv E Te e0).
+{ exact (fundamental_group_is_group E Te e0 HtopE He0E). }
+(** Subgroup claims **)
+claim Hsub1 : subgroup_of H1 G multG eG invG.
+{ exact (homomorphism_image_subgroup_of
+    (fundamental_group E Te e1) (fundamental_group_mult E Te e1)
+    (fundamental_group_id E Te e1) (fundamental_group_inv E Te e1)
+    G multG eG invG (induced_homomorphism E Te e1 B Tb b0 p)
+    HgrpE1 HgrpG Hind1_hom). }
+claim Hsub0 : subgroup_of H0 G multG eG invG.
+{ exact (homomorphism_image_subgroup_of
+    (fundamental_group E Te e0) (fundamental_group_mult E Te e0)
+    (fundamental_group_id E Te e0) (fundamental_group_inv E Te e0)
+    G multG eG invG (induced_homomorphism E Te e0 B Tb b0 p)
+    HgrpE0 HgrpG Hind0_hom). }
+(** Unfold conjugate_subgroups and prove **)
+prove (subgroup_of H1 G multG eG invG /\ subgroup_of H0 G multG eG invG) /\
+  (exists alpha:set, alpha :e G /\
+    H0 = {apply_fun multG (apply_fun multG (alpha, h), apply_fun invG alpha) | h :e H1}).
+apply andI.
+- apply andI. exact Hsub1. exact Hsub0.
+- (** exists alpha, alpha in G /\ H0 = {conj(h) | h in H1} **)
+  (** Get path sigma from e0 to e1 **)
+  claim Hsigma_ex : exists sigma:set, path_between E e0 e1 sigma /\
+    continuous_map unit_interval unit_interval_topology E Te sigma.
+  { exact (path_connected_space_paths E Te e0 e1 HEpc He0E He1E). }
+  apply Hsigma_ex. let sigma. assume HsigmaPack.
+  claim Hsigma_cont : continuous_map unit_interval unit_interval_topology E Te sigma.
+  { exact (andER (path_between E e0 e1 sigma)
+      (continuous_map unit_interval unit_interval_topology E Te sigma) HsigmaPack). }
+  claim Hsigma_pb : path_between E e0 e1 sigma.
+  { exact (andEL (path_between E e0 e1 sigma)
+      (continuous_map unit_interval unit_interval_topology E Te sigma) HsigmaPack). }
+  claim Hsigma_fun : function_on sigma unit_interval E.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology E Te sigma Hsigma_cont). }
+  claim Hsigma0 : apply_fun sigma 0 = e0.
+  { exact (andER (function_on sigma unit_interval E) (apply_fun sigma 0 = e0)
+      (andEL (function_on sigma unit_interval E /\ apply_fun sigma 0 = e0) (apply_fun sigma 1 = e1)
+        Hsigma_pb)). }
+  claim Hsigma1 : apply_fun sigma 1 = e1.
+  { exact (andER (function_on sigma unit_interval E /\ apply_fun sigma 0 = e0) (apply_fun sigma 1 = e1)
+      Hsigma_pb). }
+  (** Form alpha_path = p o sigma **)
+  set alpha_path := compose_fun unit_interval sigma p.
+  claim Halpha_cont : continuous_map unit_interval unit_interval_topology B Tb alpha_path.
+  { exact (composition_continuous unit_interval unit_interval_topology E Te B Tb sigma p Hsigma_cont Hp_cont). }
+  claim Halpha_fun : function_on alpha_path unit_interval B.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology B Tb alpha_path Halpha_cont). }
+  claim Halpha0 : apply_fun alpha_path 0 = b0.
+  { claim H : apply_fun alpha_path 0 = apply_fun p (apply_fun sigma 0).
+    { exact (compose_fun_apply unit_interval sigma p 0 zero_in_unit_interval). }
+    rewrite H. rewrite Hsigma0. exact (fun P h => h). }
+  claim Halpha1 : apply_fun alpha_path 1 = b0.
+  { claim H : apply_fun alpha_path 1 = apply_fun p (apply_fun sigma 1).
+    { exact (compose_fun_apply unit_interval sigma p 1 one_in_unit_interval). }
+    rewrite H. rewrite Hsigma1. exact Hpe1b0. }
+  (** alpha_path in loop_space **)
+  claim Halpha_in_ls : alpha_path :e loop_space B Tb b0.
+  { exact (SepI (function_space unit_interval B) (fun u:set => loop_at B Tb b0 u) alpha_path
+      (compose_fun_in_function_space unit_interval E B sigma p Hsigma_fun Hp_fun)
+      (andI (continuous_map unit_interval unit_interval_topology B Tb alpha_path /\ apply_fun alpha_path 0 = b0)
+        (apply_fun alpha_path 1 = b0)
+        (andI (continuous_map unit_interval unit_interval_topology B Tb alpha_path)
+          (apply_fun alpha_path 0 = b0) Halpha_cont Halpha0)
+        Halpha1)). }
+  set alpha_class := path_homotopy_class_loop B Tb b0 alpha_path.
+  claim Halpha_in_FG : alpha_class :e G. { exact (path_homotopy_class_in_fundamental_group B Tb b0 alpha_path Halpha_in_ls). }
+  witness alpha_class. apply andI.
+  + exact Halpha_in_FG.
+  + (** H0 = {conj(h) | h in H1} **)
+    apply set_ext.
+    - (** H0 c= {conj(h) | h in H1} **)
+      admit.
+    - (** {conj(h) | h in H1} c= H0 **)
+      admit.
 Admitted.
 
 (** from S79 Lem 79.3(b) (line 4862 in algtop.tex): conjugacy converse **)
