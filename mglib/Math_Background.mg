@@ -303939,9 +303939,30 @@ apply iffI.
     apply xm (Vg = V0).
     + assume HVgeq.
       claim HgyV0 : apply_fun g y :e V0. { rewrite <- HVgeq. exact HgyVg. }
-      (** pi injective on V0, pi(g(y)) = pi(y), both in V0 => g(y) = y **)
-      (** Then g = idG pointwise by lift uniqueness => contradiction **)
-      admit.
+      (** Step 1: pi injective on V0 via homeomorphism **)
+      set fwd0 := graph V0 (fun z:set => apply_fun pi z).
+      claim HV0homeo : homeomorphism V0 (subspace_topology X Tx V0) W (subspace_topology B Tb W) fwd0.
+      { exact (Hhomeo_slices V0 HV0slices). }
+      claim HyV0 : y :e V0. { exact (HV'sub y HyV'). }
+      claim Hfwd_gy : apply_fun fwd0 (apply_fun g y) = apply_fun pi (apply_fun g y).
+      { exact (apply_fun_graph V0 (fun z:set => apply_fun pi z) (apply_fun g y) HgyV0). }
+      claim Hfwd_y : apply_fun fwd0 y = apply_fun pi y.
+      { exact (apply_fun_graph V0 (fun z:set => apply_fun pi z) y HyV0). }
+      claim Hpi_eq : apply_fun pi (apply_fun g y) = apply_fun pi y.
+      { exact (Hpi_inv g y HgG HyX). }
+      claim Hfwd_eq : apply_fun fwd0 (apply_fun g y) = apply_fun fwd0 y.
+      { rewrite Hfwd_gy. rewrite Hfwd_y. exact Hpi_eq. }
+      (** Step 2: g(y) = y by injectivity of homeomorphism **)
+      claim HgyEqy : apply_fun g y = y.
+      { exact (homeomorphism_injective V0 (subspace_topology X Tx V0)
+          W (subspace_topology B Tb W) fwd0 HV0homeo
+          (apply_fun g y) y HgyV0 HyV0 Hfwd_eq). }
+      (** Step 3: g agrees with idG at y; by lift uniqueness on connected X, **)
+      (** g agrees with idG everywhere. Then g = idG by function extensionality, **)
+      (** contradicting HgNeq. Needs G subset total_function_space - NOTICEBOARD. **)
+      claim HgIsIdG : g = idG.
+      { admit. }
+      assume HgyV'. exact (HgNeq HgIsIdG).
     + assume HVgneq.
       claim Hdisj : Vg :/\: V0 = Empty. { exact (HpdSlices Vg V0 HVgslices HV0slices HVgneq). }
       assume HgyV'.

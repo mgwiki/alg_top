@@ -4928,18 +4928,18 @@ Target:
   Name: thm81_5_properly_discontinuous_covering (Theorem)
 
 Problem:
-  The theorem statement is missing group closure hypotheses (composition and inverse).
-  The orbit_map_invariant lemma requires that G is closed under composition and inverses,
-  and these properties are used extensively throughout both directions of the proof.
-  Currently the proof has two admits for these missing hypotheses:
-    claim Hcomp : forall g1 g2, g1 :e G -> g2 :e G -> exists g3 :e G, ...  (admit)
-    claim Hinv : forall g0, g0 :e G -> exists ginv :e G, ...  (admit)
-  The backward direction (properly_discontinuous => covering_map) is otherwise fully proved,
-  and the pairwise_disjoint proof also depends on these hypotheses.
-  In Munkres, these are implicit assumptions about G being a group of homeomorphisms.
+  The theorem statement is missing three hypotheses:
+  1. Group closure under composition (needed by orbit_map_invariant throughout both directions)
+  2. Group closure under inverse (needed by orbit_map_invariant throughout both directions)
+  3. Function extensionality: elements of G must be in total_function_space X X
+     (needed in forward direction: covering transformation that fixes a point must be
+     identity, which requires set-level equality from pointwise equality)
+  Currently the proof has admits for all three.
+  In Munkres, (1) and (2) are implicit since G is assumed to be a group.
+  (3) is implicit since functions in Munkres are always proper set-theoretic functions.
 
 Proposed Replacement:
-  Add two hypotheses to the theorem statement after the identity axiom:
+  Add three hypotheses to the theorem statement after the identity axiom:
 
   Theorem thm81_5_properly_discontinuous_covering :
     forall X Tx G idG:set,
@@ -4952,15 +4952,21 @@ Proposed Replacement:
     (forall g0:set, g0 :e G ->
       exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
         apply_fun ginv (apply_fun g0 z) = z) ->
+    G c= total_function_space X X ->
     (covering_map X Tx (orbit_space X G) (orbit_topology X Tx G) (orbit_map X G)
      <->
      properly_discontinuous X Tx G idG).
 
 Discussion:
-  - 1772900990 | Alice: The backward direction is fully proved modulo these two admits.
+  - 1772900990 | Alice: The backward direction is fully proved modulo Hcomp/Hinv admits.
     Adding them as hypotheses is standard (Munkres assumes G is a group).
     The pairwise_disjoint proof and inverse continuity proof both depend on Hcomp/Hinv
     through orbit_map_invariant. This is a structural gap, not a proof difficulty.
+  - 1772901100 | Alice: The forward direction needs function extensionality: when a
+    covering transformation g fixes a point (g(y) = y), by lift uniqueness g agrees with
+    idG on all of X. To get g = idG (contradicting g != idG), we need
+    total_function_space_extensional, which requires g, idG in total_function_space X X.
+    The hypothesis G c= total_function_space X X provides this.
 
 Requested Approvals:
   - Bob
