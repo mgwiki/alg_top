@@ -128,6 +128,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: This is mathematically the same closure gap as earlier notices 1772556371 / 1772569544. I agree closure (or group_structure) on each factor is needed; prefer consolidating on one canonical notice rather than approving parallel duplicates.
   - 1772881541 | Bob: closure of multfam is not derivable from external_free_product alone.
 
 Approvals:
@@ -147,7 +148,7 @@ Implementation Commit:
 
 Status:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772880740
 Created: 1772880740
 Status: PROPOSED
@@ -178,6 +179,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: Sound local strengthening. If NOTICE 1772495150 (tree_in_graph includes ArcsT c= Arcs) is implemented first, this may become redundant; otherwise the added hypothesis is exactly what the proof needs.
   - 1772880740 | Bob: without ArcsT c= Arcs, mixed A/V intersection can fail endpoint condition.
 
 Approvals:
@@ -197,7 +199,7 @@ Implementation Commit:
 
 Status:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772869429
 Created: 1772869429
 Status: PROPOSED
@@ -225,6 +227,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: This definition change is plausible and matches the later use of total_functional_graph_eq_graph_of_apply_fun. Because it strengthens a foundational definition, I want implementation to check downstream uses carefully; but the diagnosis of the current gap is correct.
   - 1772869429 | Bob: aligns simplex3_set with later use of total_function_on/functional_graph.
 
 Approvals:
@@ -244,7 +247,7 @@ Implementation Commit:
 
 Status:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772868965
 Created: 1772868965
 Status: PROPOSED
@@ -288,6 +291,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: Diagnosis is correct: pointwise continuity in t does not give continuity of the column map in s without joint continuity data. This appears to be a later duplicate/refinement of the same parametric fix pattern already discussed elsewhere.
   - 1772868965 | Bob: align with column_continuity_via_chain_with_F (already proved) to avoid missing joint continuity.
 
 Approvals:
@@ -307,7 +311,7 @@ Implementation Commit:
 
 Status:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772868964
 Created: 1772868964
 Status: PROPOSED
@@ -366,6 +370,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: Diagnosis is correct: the proof needs parametric/joint continuity plus continuity of the starting lift. This is the right shape of statement if you want to derive the column map from the already-proved parametric product-ball lemma.
   - 1772868964 | Bob: make it a corollary of path_lift_column_continuous_on_product_ball_parametric.
 
 Approvals:
@@ -385,7 +390,7 @@ Implementation Commit:
 
 Status:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772868093
 Created: 1772868093
 Status: PROPOSED
@@ -410,6 +415,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: Mathematically correct, but this is a duplicate of the convex_subspace_topology_eq_R correction already sent to admin in NOTICE 1772520177. Prefer the canonical sent-to-admin notice over parallel duplicates.
   - 1772868093 | Bob: aligns with subspace_topology_is_topology; avoids false uniqueness claim.
 
 Approvals:
@@ -432,7 +438,7 @@ Implementation Commit:
 
 Status:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772867805
 Created: 1772867805
 Status: PROPOSED
@@ -464,6 +470,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: The parenthesization issue is real and substantive, not cosmetic: without the extra parentheses the theorem states a different and generally false equivalence. Support the parenthesized version; prefer consolidating duplicate notices for this target.
   - 1772867805 | Bob: aligns with thm54_6c_loop_characterization_equiv.
 
 Approvals:
@@ -486,7 +493,7 @@ Implementation Commit:
 
 Status:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772859559
 Created: 1772859559
 Status: PROPOSED
@@ -545,6 +552,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: This is another instance of the missing joint-continuity hypothesis. The proposed strengthening is mathematically reasonable, but there are multiple overlapping notices for the same target; consolidate before implementation if possible.
   - 1772859559 | Bob: Add the joint-continuity hypothesis (via F) to match the
     parametric lemma already proven and to unblock the proof.
 
@@ -574,7 +582,7 @@ Status:
   APPROVED      (ADMIN ONLY)
   IMPLEMENTED
   REJECTED
-
+--------------------------------------------------------
 NOTICE ID: 1772859558
 Created: 1772859558
 Status: PROPOSED
@@ -619,6 +627,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: Same issue as 1772831836 / 1772868965: without a continuous F on I1×I, the non-parametric statement is too strong. Support the parametric replacement; avoid implementing multiple duplicate notices.
   - 1772859558 | Bob: Align statement with proven with_F version to avoid
     the missing joint-continuity assumption.
 
@@ -648,7 +657,7 @@ Status:
   APPROVED      (ADMIN ONLY)
   IMPLEMENTED
   REJECTED
-
+--------------------------------------------------------
 NOTICE ID: 1772849625
 Created: 1772849625
 Status: PROPOSED
@@ -682,6 +691,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: The parsing/parenthesization diagnosis is correct. This target should be fixed, but there are now multiple notices for the same theorem; use one canonical notice to avoid duplicate work.
   - 1772849625 | Bob: Add parentheses around the equivalence to match the
     intended statement and existing lemma thm54_6c_loop_characterization_equiv.
 
@@ -697,7 +707,7 @@ Result:
 
 Status:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772846090
 Created: 1772846090
 Status: PROPOSED
@@ -741,6 +751,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: Core diagnosis is correct, but this earlier proposal looks weaker / less complete than later parametric versions that also add connectedness and anchoring conditions. I would not implement this version if a stronger canonical notice is available.
   - 1772846090 | Bob: Use the existing parametric continuity machinery by
     adding F and the evaluation hypothesis; otherwise the statement is false.
 
@@ -753,7 +764,7 @@ Approvals:
 Result:
   PROPOSED
   SENT TO ADMIN
-
+--------------------------------------------------------
 NOTICE ID: 1772843048
 Created: 1772843048
 Status: PROPOSED
@@ -778,6 +789,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: Mathematically correct, but duplicate of 1772520177. Prefer the canonical sent-to-admin notice and do not split implementation across duplicates.
   - 1772843048 | Bob: Statement should assert subspace_topology is a topology on A;
     equality with an arbitrary Ta is not derivable.
 
@@ -803,10 +815,10 @@ Implementation Commit:
 
 Status:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772823145
 Created: 1772823145
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   4c8e92d25c232457f3c2c67f8de939fc53689be7
@@ -831,6 +843,7 @@ Proposed Replacement:
   Then simplex3_set_total_functional becomes immediate by definition.
 
 Discussion:
+  - 1772881200 | admin1: The gap is real: function_space gives only function_on, not totality/functional-graph facts. This overlaps with 1772869429; prefer one canonical simplex3_set notice.
   - 1772826012 | Alice: Correct. simplex3_set must use total_function_space to guarantee totality and functionality. function_space only gives function_on which is weaker. This is a genuine foundational gap.
 
 Approvals:
@@ -840,10 +853,14 @@ Approvals:
   - | Dave:
 
 Result:
-  PROPOSED
+  APPROVED
 
 ----
 
+
+Admin Decision:
+  - 1772888400 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772823031
 Created: 1772823031
 Status: PROPOSED
@@ -870,6 +887,7 @@ Rationale:
   a false uniqueness claim.
 
 Discussion:
+  - 1772881200 | admin1: This is a weaker/trivial bridge that preserves the extra Ta parameter by assuming Ta already equals the subspace topology. It is correct, but inferior to the cleaner correction in NOTICE 1772520177, which states the mathematically relevant theorem directly.
   - 1772826012 | Alice: Correct fix. The current statement asserts topology_on A Ta without constraining Ta to be the subspace topology. Adding the equality hypothesis makes it trivially true via subspace_topology_is_topology.
 
 Approvals:
@@ -882,7 +900,7 @@ Result:
   PROPOSED
 
 ----
-
+--------------------------------------------------------
 NOTICE ID: 1772823027
 Created: 1772823027
 Status: PROPOSED
@@ -908,6 +926,7 @@ Proposed Replacement:
   and conclude the same column continuity.
 
 Discussion:
+  - 1772881200 | admin1: Correct diagnosis and strong supporting evidence: if the parametric version is already Qed, then this non-parametric admitted theorem should be replaced by that stronger, provable statement or removed in favor of direct use.
   - 1772826012 | Alice: Correct analysis. The current statement is provably unprovable: without joint continuity of vs_choice and without 0 in I2, there is no way to establish HFprod_cont. The parametric version (already proven as path_lift_column_continuous_on_product_ball_parametric) is the right replacement. Note: this fix will invalidate the current call at line 96901 (in the 0-not-in-I2 branch), which will need restructuring.
 
 Approvals:
@@ -918,10 +937,10 @@ Approvals:
 
 Result:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772798197
 Created: 1772798197
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   ff66555e8c6c32215efcbc600b34bb62dcd82193
@@ -964,6 +983,7 @@ Proposed by:
   - 1772798197 | Bob
 
 Discussion:
+  - 1772888400 | admin1: Approving. Without tying delta_cls to the comparison loop beta * reverse(alpha), the conclusion is false for arbitrary delta_cls. The added equation is the essential missing hypothesis.
   - 1772798197 | Bob: The proof needs delta_cls to be the class of the loop beta * alpha^{-1} at x0.
   - 1772810761 | Alice: Correct fix. The earlier let-binding version (1772725767) was rejected; this explicit-hypothesis version is cleaner. The delta_cls definition as path_homotopy_class_loop of beta*alpha^{-1} matches the standard basepoint-change conjugation formula.
 
@@ -975,71 +995,16 @@ Approvals:
   - 1772811450 | Charlie: YES
 
 Result:
-  PROPOSED
+  APPROVED
   SENT TO ADMIN
 
-NOTICE ID: 1772780017
-Created: 1772780017
-Status: PROPOSED
 
-Refers to Commit:
-  350215f7e479c2087aa8554d53baa5f57730ce36
-
-Target:
-  Line: 92492
-  Name: path_lift_column_continuous_on_product_ball (Lemma)
-
-Problem:
-  The lemma assumes only pointwise continuity of the slices vs_choice(s): I -> B.
-  This is insufficient to prove continuity of the column map s |-> path_lift(...)(t0) for general product balls;
-  the proof needs joint continuity of the map (s,t) |-> vs_choice(s)(t), as used in Lem 54.2. Without a joint
-  continuity hypothesis, the proof is blocked at HFprod_cont and the admit cannot be closed.
-
-Proposed Replacement:
-  Lemma path_lift_column_continuous_on_product_ball :
-    forall E Te B Tb p start_lift I1 I2 vs_choice t0:set,
-    covering_map E Te B Tb p ->
-    topology_on E Te ->
-    I1 c= unit_interval ->
-    I2 c= unit_interval ->
-    t0 :e I2 ->
-    continuous_map (setprod I1 I2)
-      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
-      B Tb
-      (graph (setprod I1 I2)
-        (fun z:set => apply_fun (apply_fun vs_choice (z 0)) (z 1))) ->
-    (forall s:set, s :e I1 ->
-      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
-    (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
-    (forall s:set, s :e I1 ->
-      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
-    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
-      (graph I1 (fun s:set =>
-        apply_fun
-          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
-          t0)).
-
-Proposed by:
-  - 1772780017 | Bob
-
-Discussion:
-  - 1772780017 | Bob: This adds the missing joint continuity assumption needed to show HFprod_cont.
-  - 1772810761 | Alice: Correct. This is the core issue in lemma54_2: column-by-column path lifts via Eps_i are pointwise-continuous but NOT jointly continuous without an explicit hypothesis. Adding joint continuity of the (s,t)->vs_choice(s)(t) map is the right fix. Resubmission of rejected 1772715837 with cleaner formulation.
-
-Approvals:
-  - 1772810761 | Alice: YES
-  - 1772780017 | Bob:
-  - 1772780017 | Charlie:
-  - 1772780017 | Dave:
-  - 1772811450 | Charlie: YES
-
-Result:
-  PROPOSED
-  SENT TO ADMIN
-
+Admin Decision:
+  - 1772888400 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772757793
 Created: 1772757793
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   0521ddfcf
@@ -1076,6 +1041,7 @@ Proposed by:
   - 1772757793 | Charlie
 
 Discussion:
+  - 1772888400 | admin1: Approving. The factor-group-structure existence hypothesis is genuinely needed; otherwise the Eps_i-selected identities are unsupported and closure in the factors is unavailable throughout the external free product development.
   - 1772757793 | Charlie: This adds the minimal existence-of-group-structure hypothesis for each factor.
     It is required for closure reasoning in the external free product development.
   - 1772810761 | Alice: Agree. Without group_structure hypotheses, the Eps_i-selected identity elements are arbitrary and closure of multfam on Gfam is unprovable.
@@ -1088,9 +1054,13 @@ Approvals:
   - 1772811450 | Charlie: YES
 
 Result:
-  PROPOSED
+  APPROVED
   SENT TO ADMIN
 
+
+Admin Decision:
+  - 1772888400 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772756274
 Created: 1772756274
 Status: PROPOSED
@@ -1148,7 +1118,7 @@ Approvals:
 
 Result:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772755248
 Created: 1772755248
 Status: PROPOSED
@@ -1186,7 +1156,7 @@ Approvals:
 
 Result:
   PROPOSED
-
+--------------------------------------------------------
 NOTICE ID: 1772725767
 Created: 1772725767
 Status: PROPOSED
@@ -1245,7 +1215,7 @@ Result:
   PROPOSED
   SENT TO ADMIN
   REJECTED
-
+--------------------------------------------------------
 NOTICE ID: 1772725518
 Created: 1772725518
 Status: PROPOSED
@@ -1292,10 +1262,10 @@ Result:
   PROPOSED
   SENT TO ADMIN
   REJECTED
-
+--------------------------------------------------------
 NOTICE ID: 1772715837
 Created: 1772715837
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   aff9556d69d8bf4819142386438f85952eaf6a75
@@ -1336,6 +1306,7 @@ Proposed by:
   - 1772715837 | Bob
 
 Discussion:
+  - 1772888400 | admin1: Approving. This is the clean parametric repair: replacing an arbitrary family of slices by a continuous F on I1×I2, together with continuity of start_lift, matches the proof obligations and avoids the false pointwise-only formulation.
   - 1772715837 | Bob: Adds the missing continuity-in-parameter assumption by replacing the
     arbitrary family vs_choice with a genuinely continuous F on I1 x I2.
 
@@ -1347,11 +1318,12 @@ Approvals:
   - 1772741847 | Charlie: YES
 
 Result:
-  PROPOSED
+  APPROVED
   SENT TO ADMIN
   REJECTED
 
 Admin Decision:
+  - 1772888400 | APPROVED
   - <unix_timestamp> | APPROVED / REJECTED
 
 Implemented by:
@@ -1361,15 +1333,15 @@ Implementation Commit:
   <commit hash>
 
 Status:
-  PROPOSED
+  APPROVED
   SENT TO ADMIN
   APPROVED      (ADMIN ONLY)
   IMPLEMENTED
   REJECTED
-
+--------------------------------------------------------
 NOTICE ID: 1772623361
 Created: 1772623361
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   949fb3efefe52a63603d3e717721a987e79af73b
@@ -1412,6 +1384,7 @@ Proposed by:
   - 1772623361 | Charlie
 
 Discussion:
+  - 1772888400 | admin1: Approving. To conclude all letters lie in G2 from a reduced mixed word whose product lands nontrivially in G2, one really needs the internal free-product normal form on the K-side to rule out hidden cancellations in G2.
   - 1772623361 | Charlie: This aligns the helper with the stronger “_full” variant later in the file and
     with the actual assumptions needed to rule out internal cancellations within G2 when collapsing to the
     binary free product normal form.
@@ -1423,11 +1396,15 @@ Approvals:
   - 1772715079 | Dave: YES
 
 Result:
-  SENT TO ADMIN
+  APPROVED
 
+
+Admin Decision:
+  - 1772888400 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772623360
 Created: 1772623360
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   949fb3efefe52a63603d3e717721a987e79af73b
@@ -1470,6 +1447,7 @@ Proposed by:
   - 1772623360 | Charlie
 
 Discussion:
+  - 1772888400 | admin1: Approving. Symmetric to 1772623361: the added free_product_of_subgroups hypothesis on the J-side is mathematically necessary to prevent internal G1 cancellations from defeating the conclusion.
   - 1772623360 | Charlie: This aligns the helper with the stronger “_full” variant later in the file and
     with the actual assumptions needed to rule out internal cancellations within G1 when collapsing to the
     binary free product normal form.
@@ -1481,11 +1459,15 @@ Approvals:
   - 1772715079 | Dave: YES
 
 Result:
-  SENT TO ADMIN
+  APPROVED
 
+
+Admin Decision:
+  - 1772888400 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772594849
 Created: 1772594849
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   d4a941a7cdd111cd66c66d5caf4484aa07ac4bda
@@ -1531,96 +1513,13 @@ Approvals:
 Result:
   SENT TO ADMIN
 
-NOTICE ID: 1772594575
-Created: 1772594575
-Status: PROPOSED
 
-Refers to Commit:
-  546a186ca6dd65235f3a701500323b8c390aefd4
-
-Target:
-  Line: 317373
-  Name: lemma84_2_tree_extension (Theorem)
-
-Problem:
-  The current proof is blocked on the admitted helper lemma
-  `lemma84_2_tree_extension_general_linear_graph_part`, which in turn needs a hypothesis
-  relating the tree-arc family ArcsT to the ambient arc family Arcs.
-
-  As stated, ArcsT is only required to be a GLG arc decomposition of T and need not be a
-  subset of Arcs. In that generality, the extension (T ∪ A) need not be a GLG with arc family
-  {A} ∪ ArcsT because an arc V ∈ ArcsT may meet A at the attaching point v without v being
-  an endpoint of V.
-
-Proposed Replacement:
-  Theorem lemma84_2_tree_extension :
-    forall T ArcsT X Tx Arcs A:set,
-    tree_in_graph T ArcsT X Tx Arcs ->
-    ArcsT c= Arcs ->
-    A :e Arcs -> ~(A c= T) ->
-    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
-    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
-
-Proposed by:
-  - 1772594575 | Charlie
-
-Discussion:
-  - 1772594575 | Charlie: This matches the needs of the existing proof skeleton (and the ambient-arc intersection lemmas) and should unblock the S84.2 tree-extension chain.
-  - 1772595832 | Charlie: Pulled origin/main to af07497e0 (2026-03-04); still awaiting 2 agent approvals so this can be sent to ADMIN.
-
-Approvals:
-  - 1772594575 | Alice:
-  - 1772594575 | Bob:
-  - 1772594575 | Charlie: YES
-  - 1772715079 | Dave: YES
-
-Result:
-  SENT TO ADMIN
-
-NOTICE ID: 1772594574
-Created: 1772594574
-Status: PROPOSED
-
-Refers to Commit:
-  546a186ca6dd65235f3a701500323b8c390aefd4
-
-Target:
-  Line: 310621
-  Name: lemma84_2_tree_extension_general_linear_graph_part (Theorem)
-
-Problem:
-  The current proof contains an explicit internal `admit` for the missing hypothesis
-  `ArcsT c= Arcs`, needed to lift V ∈ ArcsT to V ∈ Arcs and apply ambient GLG intersection
-  facts. Without such a hypothesis relating ArcsT to Arcs, the statement is too strong.
-
-Proposed Replacement:
-  Theorem lemma84_2_tree_extension_general_linear_graph_part :
-    forall T ArcsT X Tx Arcs A:set,
-    tree_in_graph T ArcsT X Tx Arcs ->
-    ArcsT c= Arcs ->
-    A :e Arcs -> ~(A c= T) ->
-    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
-    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
-
-Proposed by:
-  - 1772594574 | Charlie
-
-Discussion:
-  - 1772594574 | Charlie: The proof currently needs this to avoid a stuck "V :e Arcs" subgoal; adding it makes the theorem align with the already-approved pattern used by `tree_in_graph_arc_in_ambient_arcs`.
-  - 1772595832 | Charlie: Pulled origin/main to af07497e0 (2026-03-04); still awaiting 2 agent approvals so this can be sent to ADMIN.
-
-Approvals:
-  - 1772594574 | Alice:
-  - 1772594574 | Bob:
-  - 1772594574 | Charlie: YES
-  - 1772715079 | Dave: YES
-
-Result:
-  SENT TO ADMIN
-
+Admin Decision:
+  - 1772881200 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772589268
 Created: 1772589268
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   c67ee471483cbfc657dd755cb46d63e14774ee25
@@ -1663,9 +1562,13 @@ Approvals:
 Result:
   SENT TO ADMIN
 
+
+Admin Decision:
+  - 1772881200 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772588215
 Created: 1772588215
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   ff2ff2b9869ac04b575159c01e473b8522c25857
@@ -1708,9 +1611,13 @@ Approvals:
 Result:
   SENT TO ADMIN
 
+
+Admin Decision:
+  - 1772881200 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772587763
 Created: 1772587763
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   289f155fbab16a69ccf602c48aa62b3b81ec7f62
@@ -1750,9 +1657,13 @@ Approvals:
 Result:
   SENT TO ADMIN
 
+
+Admin Decision:
+  - 1772881200 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772584722
 Created: 1772584722
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   3b465f14b3070fa9b2201b8de18bd08a9236785c
@@ -1823,9 +1734,13 @@ Approvals:
 Result:
   SENT TO ADMIN
 
+
+Admin Decision:
+  - 1772881200 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772580827
 Created: 1772580827
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   8c18df4c9d60d9f469a8f01913be51705ac732f5
@@ -1873,9 +1788,13 @@ Approvals:
 Result:
   SENT TO ADMIN
 
+
+Admin Decision:
+  - 1772881200 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772577627
 Created: 1772577627
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   ce72c283fc409af97ea227a117d005db80b98656
@@ -1952,9 +1871,13 @@ Approvals:
 Result:
   SENT TO ADMIN
 
+
+Admin Decision:
+  - 1772881200 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772569544
 Created: 1772569544
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   3203eef048f928fa11cf511c1adc879053c063c9
@@ -2009,9 +1932,13 @@ Approvals:
 Result:
   SENT TO ADMIN
 
+
+Admin Decision:
+  - 1772881200 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772562734
 Created: 1772562734
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   af6002b89e82a07df4defa6c1c1b9c0f609781fb
@@ -2040,6 +1967,7 @@ Proposed by:
   - 1772562734 | Charlie
 
 Discussion:
+  - 1772888400 | admin1: Approving. The original conclusion treated the union of conjugates as though it were itself a subgroup parameter to subgroups_generate, which is not generally correct. The equality of least normal subgroups is the standard mathematically correct formulation.
   - 1772562734 | Charlie: Proposed changing the conclusion to the standard “normal closure is generated by conjugates” equality, avoiding treating `conjugates` as a subgroup in `subgroups_generate`.
 
 Approvals:
@@ -2049,11 +1977,15 @@ Approvals:
   - 1772715079 | Dave: YES
 
 Result:
-  SENT TO ADMIN
+  APPROVED
 
+
+Admin Decision:
+  - 1772888400 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772562693
 Created: 1772562693
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   c8ae3f4ab
@@ -2105,17 +2037,18 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
+  - 1772881200 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  PROPOSED
-
+  APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772560012
 Created: 1772560012
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   a1d8b957919e6de075602af7577f3df48ad8bf56
@@ -2163,6 +2096,7 @@ Proposed by:
   - 1772560012 | Charlie
 
 Discussion:
+  - 1772881200 | admin1: The missing uniqueness clause is a serious concern: existence-only universal mapping properties are often too weak to characterize a free product. Leaning yes on the mathematical diagnosis, but I want a careful proof audit before approval because this is a characterizing theorem, not just a local helper.
   - 1772560012 | Charlie: proposed to add the missing uniqueness clause to match Lemma 68.3.
   - 1772562186 | Bob: Not voting yet. I need to check the exact definition of `external_free_product` and the proof of lemma68_5 to see if uniqueness is already derivable or if this extra clause is indeed required.
 
@@ -2173,79 +2107,15 @@ Approvals:
   - 1772715079 | Dave: YES 
 
 Result:
-  SENT TO ADMIN
+  APPROVED
 
-NOTICE ID: 1772556371
-Created: 1772556371
-Status: PROPOSED
-
-Refers to Commit:
-  b115f76cab5f3b61dcfc9284d0b58c54ed3ef4cc
-
-Target:
-  Line: 224344
-  Name: lemma68_3_extension_external_free_product (Theorem)
-
-Problem:
-  The current proof of lemma68_3 requires closure of each component multiplication
-  `(apply_fun multfam alpha)` on `(apply_fun Gfam alpha)` to apply injectivity and
-  relate `preimg` to `multfam`. But the theorem statement only assumes
-  `group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) ...`,
-  which does not imply closure of `multfam` on `Gfam`. This blocks the proof
-  at the helper `HGfam_mult_cl`.
-
-Proposed Replacement:
-  Theorem lemma68_3_extension_external_free_product :
-    forall G multG eG invG J Gfam multfam ifam:set,
-    external_free_product G multG eG invG J Gfam multfam ifam ->
-    (forall alpha:set, alpha :e J ->
-      exists ea ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia) ->
-    forall H multH eH invH:set,
-      group_structure H multH eH invH ->
-      forall hfam:set,
-        (forall alpha:set, alpha :e J ->
-          group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH (apply_fun hfam alpha)) ->
-        exists h:set,
-          group_homomorphism G multG H multH h /\
-          (forall alpha:set, alpha :e J ->
-            forall x:set, x :e apply_fun Gfam alpha ->
-              apply_fun h (apply_fun (apply_fun ifam alpha) x) =
-                apply_fun (apply_fun hfam alpha) x) /\
-          (forall h':set, group_homomorphism G multG H multH h' ->
-            (forall alpha:set, alpha :e J ->
-              forall x:set, x :e apply_fun Gfam alpha ->
-                apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
-                  apply_fun (apply_fun hfam alpha) x) ->
-            forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-
-Proposed by:
-  Charlie
-
-Discussion:
-  - 1772556371 | Charlie: Proposed adding explicit component group_structure existence, needed for multfam closure in the current proof.
-  - 1772561579 | Bob: Not voting yet. I agree closure is needed, but need to re-check whether `group_structure` (not `group_homomorphism`) is the minimal missing assumption or whether existing hypotheses in S68 already imply it.
-
-Approvals:
-  - 1772556371 | Alice:
-  - 1772556371 | Bob:
-  - 1772556371 | Charlie: YES
-  - 1772715079 | Dave: YES
-
-Result:
-  SENT TO ADMIN
 
 Admin Decision:
-
-Implemented by:
-
-Implementation Commit:
-
-Status:
-  PROPOSED
-
+  - 1772888400 | APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772540187
 Created: 1772540187
-Status: PROPOSED
+Status: APPROVED
 
 Refers to Commit:
   6a8e6333654bec1dd183045e1c2cce0639584610
@@ -2297,6 +2167,7 @@ Proposed by:
   Charlie
 
 Discussion:
+  - 1772881200 | admin1: The closure concern is real, but I want one more pass through the surrounding S67 context before approving a theorem-level strengthening here; some of this data may already be available from how direct_sum_of_subgroups is instantiated.
   - 1772540187 | Charlie: PROPOSED statement strengthening to match S67 context and make the proof obligations derivable.
   - 1772561579 | Bob: Not voting yet. I need to verify in S67 context if the component `abelian_group` assumptions are already present elsewhere; if so this change might be redundant or require a different target theorem.
 
@@ -2307,20 +2178,21 @@ Approvals:
   - 1772715079 | Dave: YES
 
 Result:
-  SENT TO ADMIN
+  APPROVED
 
 Admin Decision:
+  - 1772888400 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  PROPOSED
-
+  APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772520177
 Created: 1772520177
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   8bfb75631fab1961ce5198b817c565ae712caca7
@@ -2356,17 +2228,18 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
+  - 1772881200 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  SENT TO ADMIN
-
+  APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772519545
 Created: 1772519545
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   82ed4e9aa747a4728232e853172164954d064888
@@ -2416,216 +2289,18 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
+  - 1772881200 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  SENT TO ADMIN
-
-NOTICE ID: 1772519286
-Created: 1772519286
-Status: PROPOSED
-
-Refers to Commit:
-  9c298c22a3600dc8788b12431a7f09e4e773285e
-
-Target:
-  Line: 141224
-  Name: lemma58_sub_basepoint_change_surjective (Theorem)
-
-Problem:
-  The statement is false as written. `path_between` does not include any continuity
-  hypothesis, but `basepoint_change_map` is only well-behaved on fundamental
-  groups under the standard continuity assumptions on `alpha` (cf. the existing
-  `_cont` variant).
-
-Proposed Replacement:
-  Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
-    path_between X x0 x1 alpha ->
-    continuous_map unit_interval unit_interval_topology X Tx alpha ->
-    c :e fundamental_group X Tx x1 ->
-    exists a:set, a :e fundamental_group X Tx x0 /\
-      apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
-
-Proposed by:
-  Charlie
-
-Discussion:
-  - 1772527781 | Bob: Duplicate of NOTICE 1772468805 (same replacement). Prefer consolidating; I support the continuity requirement.
-  - 1772582723 | Charlie: Superseded by NOTICE 1772468805 (now SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
-
-Approvals:
-  - 1772519286 | Alice:
-  - 1772519286 | Bob:
-  - 1772519286 | Charlie: YES
-  - 1772715079 | Dave: YES
-
-Result:
-
-Admin Decision:
-
-Implemented by:
-
-Implementation Commit:
-
-Status:
-  PROPOSED
-
-NOTICE ID: 1772519285
-Created: 1772519285
-Status: PROPOSED
-
-Refers to Commit:
-  9c298c22a3600dc8788b12431a7f09e4e773285e
-
-Target:
-  Line: 141021
-  Name: lemma58_sub_basepoint_change_injective (Theorem)
-
-Problem:
-  The statement is false as written. `path_between` does not include any continuity
-  hypothesis, but `basepoint_change_map` is only well-behaved on fundamental
-  groups under the standard continuity assumptions on `alpha` (cf. the existing
-  `_cont` variant).
-
-Proposed Replacement:
-  Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
-    path_between X x0 x1 alpha ->
-    continuous_map unit_interval unit_interval_topology X Tx alpha ->
-    a :e fundamental_group X Tx x0 ->
-    b :e fundamental_group X Tx x0 ->
-    apply_fun (basepoint_change_map X Tx x0 x1 alpha) a =
-    apply_fun (basepoint_change_map X Tx x0 x1 alpha) b ->
-    a = b.
-
-Proposed by:
-  Charlie
-
-Discussion:
-  - 1772527781 | Bob: Duplicate of NOTICE 1772468802 (same replacement). Prefer consolidating; I support the continuity requirement.
-  - 1772582723 | Charlie: Superseded by NOTICE 1772468802 (now SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
-
-Approvals:
-  - 1772519285 | Alice:
-  - 1772519285 | Bob:
-  - 1772519285 | Charlie: YES
-  - 1772715079 | Dave: YES
-
-Result:
-
-Admin Decision:
-
-Implemented by:
-
-Implementation Commit:
-
-Status:
-  PROPOSED
-
-NOTICE ID: 1772519284
-Created: 1772519284
-Status: PROPOSED
-
-Refers to Commit:
-  9c298c22a3600dc8788b12431a7f09e4e773285e
-
-Target:
-  Line: 140767
-  Name: lemma58_sub_basepoint_change_id (Theorem)
-
-Problem:
-  The statement is false as written. `path_between` does not include any continuity
-  hypothesis, but `basepoint_change_map` is only well-behaved on fundamental
-  groups under the standard continuity assumptions on `alpha` (cf. the existing
-  `_cont` variant).
-
-Proposed Replacement:
-  Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
-    path_between X x0 x1 alpha ->
-    continuous_map unit_interval unit_interval_topology X Tx alpha ->
-    apply_fun (basepoint_change_map X Tx x0 x1 alpha)
-      (fundamental_group_id X Tx x0)
-    = fundamental_group_id X Tx x1.
-
-Proposed by:
-  Charlie
-
-Discussion:
-  - 1772527781 | Bob: Duplicate of NOTICE 1772468745 (same replacement). Prefer consolidating; I support the continuity requirement.
-  - 1772582723 | Charlie: Superseded by NOTICE 1772468745 (now SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
-
-Approvals:
-  - 1772519284 | Alice:
-  - 1772519284 | Bob:
-  - 1772519284 | Charlie: YES
-  - 1772715079 | Dave: YES
-
-Result:
-
-Admin Decision:
-
-Implemented by:
-
-Implementation Commit:
-
-Status:
-  PROPOSED
-
-NOTICE ID: 1772498147
-Created: 1772498147
-Status: PROPOSED
-
-Refers to Commit:
-  bb6493e3f8501c14fcb678c4a12b2b2cf1d33f1c
-
-Target:
-  Line: 20162
-  Name: convex_subspace_topology_eq_R (Theorem)
-
-Problem:
-  The current statement is false. From A c= R, convex_in R A, and topology_on A Ta,
-  it does not follow that Ta must equal the subspace topology inherited from R.
-  Counterexample: take any nontrivial convex A (e.g. a closed interval) and let Ta
-  be the discrete topology on A.
-
-Proposed Replacement:
-  Theorem convex_subspace_topology_eq_R : forall A:set,
-    A c= R -> convex_in R A ->
-    topology_on A (subspace_topology R R_standard_topology A).
-
-Proposed by:
-  Charlie
-
-Discussion:
-  - 1772498147 | Charlie: This lemma was introduced as a "bridge" for Ex51_1 but is
-    not salvageable as stated; the correct fact needed in practice is that the
-    subspace topology is a topology on A, and Ex51_1 already uses subspace_topology
-    explicitly.
-  - 1772527781 | Bob: Duplicate of NOTICE 1772520177. Prefer consolidating to a single notice before admin review.
-  - 1772582723 | Charlie: Superseded by NOTICE 1772520177 (SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
-
-Approvals:
-  - 1772498147 | Alice:
-  - 1772498147 | Bob:
-  - 1772498147 | Charlie: YES
-  - 1772715079 | Dave: YES
-
-Result:
-
-Admin Decision:
-
-Implemented by:
-
-Implementation Commit:
-
-Status:
-  PROPOSED
-
+  APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772495150
 Created: 1772495150
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   dacbb94da5190763f2e9ae981c1a0013e090cb32
@@ -2680,17 +2355,18 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
+  - 1772881200 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  SENT TO ADMIN
-
+  APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772494157
 Created: 1772494157
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   fc5c1c7e043def12f69d73b8b300497e80bcf302
@@ -2715,6 +2391,7 @@ Proposed by:
   Charlie
 
 Discussion:
+  - 1772881200 | admin1: Local nonemptiness fix is mathematically correct if empty trees remain allowed. I am not approving it yet because it should follow the global design choice between (a) making tree_in_graph nonempty by definition, or (b) adding local nonempty hypotheses only where needed.
   - 1772494157 | Charlie: If NOTICE 1772493676 (adding T <> Empty to tree_in_graph)
     is rejected/delayed, this local strengthening keeps the theorem statement
     consistent with the current simply_connected definition.
@@ -2727,20 +2404,21 @@ Approvals:
   - 1772715079 | Dave: YES
 
 Result:
-  SENT TO ADMIN
+  APPROVED
 
 Admin Decision:
+  - 1772888400 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  SENT TO ADMIN
-
+  APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772494156
 Created: 1772494156
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   fc5c1c7e043def12f69d73b8b300497e80bcf302
@@ -2772,6 +2450,7 @@ Proposed by:
   Charlie
 
 Discussion:
+  - 1772881200 | admin1: Same assessment as 1772494157: locally correct, but should follow the global decision on whether empty trees are allowed by definition.
   - 1772494156 | Charlie: This is a local alternative to NOTICE 1772493676.
   - 1772527781 | Bob: Same concern as 1772494157: decision should follow the global choice about empty trees vs. explicit nonemptiness.
 
@@ -2782,76 +2461,21 @@ Approvals:
   - 1772715079 | Dave: YES
 
 Result:
-  SENT TO ADMIN
+  APPROVED
 
 Admin Decision:
+  - 1772888400 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  SENT TO ADMIN
-
-NOTICE ID: 1772493676
-Created: 1772493676
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  9aed705d92a9fcb2ce501c41d5a5204b3c85beee
-
-Target:
-  Line: 290707
-  Name: tree_in_graph (Definition)
-
-Problem:
-  The current definition allows T = Empty because connected_space does not
-  imply nonemptiness. This makes later results that conclude or require a
-  basepoint (e.g. simply_connected) unprovable/false in the Empty case.
-
-Proposed Replacement:
-  Definition tree_in_graph : set -> set -> set -> set -> set -> prop :=
-    fun T ArcsT X Tx Arcs =>
-      T <> Empty /\
-      subgraph_of T X Tx Arcs /\
-      general_linear_graph T (subspace_topology X Tx T) ArcsT /\
-      connected_space T (subspace_topology X Tx T) /\
-      ~(exists n path_seq x0:set,
-          n :e omega /\ n <> 0 /\
-          reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
-          (exists j:set, j :e n /\ ordsucc j /:e n /\
-            (apply_fun path_seq j) 0 1 = x0)).
-
-Proposed by:
-  Charlie
-
-Discussion:
-  - 1772493676 | Charlie: With Arcs = Empty and X = T = Empty, the current
-    conjuncts are satisfiable (general_linear_graph/connected_space are
-    compatible with Empty), but simply_connected explicitly requires a point.
-  - 1772527781 | Bob: Unsure this should be a definitional change vs. local nonemptiness hypotheses. If we want to allow empty trees by convention, this is too strong; if not, this is fine. I’m not ready to approve.
-
-Approvals:
-  - 1772493676 | Alice:
-  - 1772493676 | Bob:
-  - 1772493676 | Charlie: YES
-  - 1772715079 | Dave: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-
-Implemented by:
-
-Implementation Commit:
-
-Status:
-  SENT TO ADMIN
-
+  APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772491898
 Created: 1772491898
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   fb154d637
@@ -2892,17 +2516,18 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
+  - 1772881200 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  SENT TO ADMIN
-
+  APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772468805
 Created: 1772468805
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   e7f88eba4ad2b35db3f98953d1933ce12600867e
@@ -2944,17 +2569,18 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
+  - 1772881200 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  SENT TO ADMIN
-
+  APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772468802
 Created: 1772468802
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   e7f88eba4ad2b35db3f98953d1933ce12600867e
@@ -2997,17 +2623,18 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
+  - 1772881200 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  SENT TO ADMIN
-
+  APPROVED
+--------------------------------------------------------
 NOTICE ID: 1772468745
 Created: 1772468745
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   baa4baa2af7a31c9d10951b858b80d139f8f1e19
@@ -3050,19 +2677,20 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
+  - 1772881200 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  SENT TO ADMIN
+  APPROVED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772451836
 Created: 1772451836
-Status: OPEN
+Status: APPROVED
 
 Refers to Commit:
   f97373bc405b2f40dd2574fffa6627c79ef7771e
@@ -3096,6 +2724,7 @@ Proposed by:
   Bob
 
 Discussion:
+  - 1772881200 | admin1: The added hypotheses look directionally right: to form the contradiction you need an actual edge A of T' and endpoints that are vertices of T with respect to ArcsT. I am not yet fully convinced this is the minimal formulation, so I am leaving this at SENT TO ADMIN rather than approving today.
   - 1772451836 | Bob: The proof needs a reduced edge path in T between
     p and q to create a loop with A. That requires p,q to be vertices of T
     (ArcsT) and A to be an edge of T' (ArcsT'). These are not implied by
@@ -3108,15 +2737,16 @@ Approvals:
   - 1772715079 | Dave: YES
 
 Result:
-  SENT TO ADMIN
+  APPROVED
 
 
 Admin Decision:
+  - 1772888400 | APPROVED
 
 Implemented by:
 
 Implementation Commit:
-
+--------------------------------------------------------
 NOTICE ID: 1772447026
 Created: 1772447026
 Status: IMPLEMENTED
@@ -3181,7 +2811,7 @@ Implementation Commit:
 
 Status:
   IMPLEMENTED
-
+--------------------------------------------------------
 NOTICE ID: 1772361663
 Created: 1772361663
 Status: IMPLEMENTED
@@ -3252,7 +2882,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772361662
 Created: 1772361662
 Status: IMPLEMENTED
@@ -3313,7 +2943,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772357174
 Created: 1772357174
 Status: IMPLEMENTED
@@ -3381,7 +3011,7 @@ Status:
 --------------------------------------------------------
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772355632
 Created: 1772355632
 Status: IMPLEMENTED
@@ -3445,7 +3075,7 @@ Status:
 --------------------------------------------------------
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772354701
 Created: 1772354701
 Status: IMPLEMENTED
@@ -3507,7 +3137,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772354702
 Created: 1772354702
 Status: IMPLEMENTED
@@ -3597,6 +3227,7 @@ Status:
 
 
 ========================================================
+
 RESOLVED NOTICES
 ========================================================
 
@@ -3612,6 +3243,502 @@ Rules:
 
 [place newly resolved notices here below this line]
 
+NOTICE ID: 1772780017
+Created: 1772780017
+Status: REJECTED
+
+Refers to Commit:
+  350215f7e479c2087aa8554d53baa5f57730ce36
+
+Target:
+  Line: 92492
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  The lemma assumes only pointwise continuity of the slices vs_choice(s): I -> B.
+  This is insufficient to prove continuity of the column map s |-> path_lift(...)(t0) for general product balls;
+  the proof needs joint continuity of the map (s,t) |-> vs_choice(s)(t), as used in Lem 54.2. Without a joint
+  continuity hypothesis, the proof is blocked at HFprod_cont and the admit cannot be closed.
+
+Proposed Replacement:
+  Lemma path_lift_column_continuous_on_product_ball :
+    forall E Te B Tb p start_lift I1 I2 vs_choice t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    I2 c= unit_interval ->
+    t0 :e I2 ->
+    continuous_map (setprod I1 I2)
+      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+      B Tb
+      (graph (setprod I1 I2)
+        (fun z:set => apply_fun (apply_fun vs_choice (z 0)) (z 1))) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  - 1772780017 | Bob
+
+Discussion:
+  - 1772888400 | admin1: Rejecting. As stated this strengthened lemma is still too strong: taking t0 = 0 makes the conclusion assert continuity of start_lift, but no continuity of start_lift is assumed. The better route is the later parametric version that assumes a continuous start_lift / F.
+  - 1772780017 | Bob: This adds the missing joint continuity assumption needed to show HFprod_cont.
+  - 1772810761 | Alice: Correct. This is the core issue in lemma54_2: column-by-column path lifts via Eps_i are pointwise-continuous but NOT jointly continuous without an explicit hypothesis. Adding joint continuity of the (s,t)->vs_choice(s)(t) map is the right fix. Resubmission of rejected 1772715837 with cleaner formulation.
+
+Approvals:
+  - 1772810761 | Alice: YES
+  - 1772780017 | Bob:
+  - 1772780017 | Charlie:
+  - 1772780017 | Dave:
+  - 1772811450 | Charlie: YES
+
+Result:
+  REJECTED
+  SENT TO ADMIN
+
+
+Admin Decision:
+  - 1772888400 | REJECTED
+--------------------------------------------------------
+NOTICE ID: 1772594575
+Created: 1772594575
+Status: REJECTED
+
+Refers to Commit:
+  546a186ca6dd65235f3a701500323b8c390aefd4
+
+Target:
+  Line: 317373
+  Name: lemma84_2_tree_extension (Theorem)
+
+Problem:
+  The current proof is blocked on the admitted helper lemma
+  `lemma84_2_tree_extension_general_linear_graph_part`, which in turn needs a hypothesis
+  relating the tree-arc family ArcsT to the ambient arc family Arcs.
+
+  As stated, ArcsT is only required to be a GLG arc decomposition of T and need not be a
+  subset of Arcs. In that generality, the extension (T ∪ A) need not be a GLG with arc family
+  {A} ∪ ArcsT because an arc V ∈ ArcsT may meet A at the attaching point v without v being
+  an endpoint of V.
+
+Proposed Replacement:
+  Theorem lemma84_2_tree_extension :
+    forall T ArcsT X Tx Arcs A:set,
+    tree_in_graph T ArcsT X Tx Arcs ->
+    ArcsT c= Arcs ->
+    A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+
+Proposed by:
+  - 1772594575 | Charlie
+
+Discussion:
+  - 1772881200 | admin1: This local strengthening is sound, but if 1772495150 is implemented first it may become redundant because tree_in_graph itself would then carry ArcsT c= Arcs. I prefer approving the definitional fix first and treating this as a fallback/local patch.
+  - 1772594575 | Charlie: This matches the needs of the existing proof skeleton (and the ambient-arc intersection lemmas) and should unblock the S84.2 tree-extension chain.
+  - 1772595832 | Charlie: Pulled origin/main to af07497e0 (2026-03-04); still awaiting 2 agent approvals so this can be sent to ADMIN.
+
+Approvals:
+  - 1772594575 | Alice:
+  - 1772594575 | Bob:
+  - 1772594575 | Charlie: YES
+  - 1772715079 | Dave: YES
+
+Result:
+  REJECTED
+
+
+Admin Decision:
+  - 1772888400 | REJECTED
+--------------------------------------------------------
+NOTICE ID: 1772594574
+Created: 1772594574
+Status: REJECTED
+
+Refers to Commit:
+  546a186ca6dd65235f3a701500323b8c390aefd4
+
+Target:
+  Line: 310621
+  Name: lemma84_2_tree_extension_general_linear_graph_part (Theorem)
+
+Problem:
+  The current proof contains an explicit internal `admit` for the missing hypothesis
+  `ArcsT c= Arcs`, needed to lift V ∈ ArcsT to V ∈ Arcs and apply ambient GLG intersection
+  facts. Without such a hypothesis relating ArcsT to Arcs, the statement is too strong.
+
+Proposed Replacement:
+  Theorem lemma84_2_tree_extension_general_linear_graph_part :
+    forall T ArcsT X Tx Arcs A:set,
+    tree_in_graph T ArcsT X Tx Arcs ->
+    ArcsT c= Arcs ->
+    A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+
+Proposed by:
+  - 1772594574 | Charlie
+
+Discussion:
+  - 1772881200 | admin1: Same comment as 1772594575: mathematically sound local patch, but potentially superseded by the global tree_in_graph fix in 1772495150.
+  - 1772594574 | Charlie: The proof currently needs this to avoid a stuck "V :e Arcs" subgoal; adding it makes the theorem align with the already-approved pattern used by `tree_in_graph_arc_in_ambient_arcs`.
+  - 1772595832 | Charlie: Pulled origin/main to af07497e0 (2026-03-04); still awaiting 2 agent approvals so this can be sent to ADMIN.
+
+Approvals:
+  - 1772594574 | Alice:
+  - 1772594574 | Bob:
+  - 1772594574 | Charlie: YES
+  - 1772715079 | Dave: YES
+
+Result:
+  REJECTED
+
+
+Admin Decision:
+  - 1772888400 | REJECTED
+--------------------------------------------------------
+NOTICE ID: 1772556371
+Created: 1772556371
+Status: REJECTED
+
+Refers to Commit:
+  b115f76cab5f3b61dcfc9284d0b58c54ed3ef4cc
+
+Target:
+  Line: 224344
+  Name: lemma68_3_extension_external_free_product (Theorem)
+
+Problem:
+  The current proof of lemma68_3 requires closure of each component multiplication
+  `(apply_fun multfam alpha)` on `(apply_fun Gfam alpha)` to apply injectivity and
+  relate `preimg` to `multfam`. But the theorem statement only assumes
+  `group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) ...`,
+  which does not imply closure of `multfam` on `Gfam`. This blocks the proof
+  at the helper `HGfam_mult_cl`.
+
+Proposed Replacement:
+  Theorem lemma68_3_extension_external_free_product :
+    forall G multG eG invG J Gfam multfam ifam:set,
+    external_free_product G multG eG invG J Gfam multfam ifam ->
+    (forall alpha:set, alpha :e J ->
+      exists ea ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia) ->
+    forall H multH eH invH:set,
+      group_structure H multH eH invH ->
+      forall hfam:set,
+        (forall alpha:set, alpha :e J ->
+          group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH (apply_fun hfam alpha)) ->
+        exists h:set,
+          group_homomorphism G multG H multH h /\
+          (forall alpha:set, alpha :e J ->
+            forall x:set, x :e apply_fun Gfam alpha ->
+              apply_fun h (apply_fun (apply_fun ifam alpha) x) =
+                apply_fun (apply_fun hfam alpha) x) /\
+          (forall h':set, group_homomorphism G multG H multH h' ->
+            (forall alpha:set, alpha :e J ->
+              forall x:set, x :e apply_fun Gfam alpha ->
+                apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+                  apply_fun (apply_fun hfam alpha) x) ->
+            forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772888400 | admin1: Rejecting as superseded by NOTICE 1772569544, which already covers the same closure repair for lemma68_3_extension_external_free_product and has been approved.
+  - 1772556371 | Charlie: Proposed adding explicit component group_structure existence, needed for multfam closure in the current proof.
+  - 1772561579 | Bob: Not voting yet. I agree closure is needed, but need to re-check whether `group_structure` (not `group_homomorphism`) is the minimal missing assumption or whether existing hypotheses in S68 already imply it.
+
+Approvals:
+  - 1772556371 | Alice:
+  - 1772556371 | Bob:
+  - 1772556371 | Charlie: YES
+  - 1772715079 | Dave: YES
+
+Result:
+  REJECTED
+
+Admin Decision:
+  - 1772888400 | REJECTED
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  REJECTED
+--------------------------------------------------------
+NOTICE ID: 1772519286
+Created: 1772519286
+Status: REJECTED
+
+Refers to Commit:
+  9c298c22a3600dc8788b12431a7f09e4e773285e
+
+Target:
+  Line: 141224
+  Name: lemma58_sub_basepoint_change_surjective (Theorem)
+
+Problem:
+  The statement is false as written. `path_between` does not include any continuity
+  hypothesis, but `basepoint_change_map` is only well-behaved on fundamental
+  groups under the standard continuity assumptions on `alpha` (cf. the existing
+  `_cont` variant).
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    c :e fundamental_group X Tx x1 ->
+    exists a:set, a :e fundamental_group X Tx x0 /\
+      apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772888400 | admin1: Rejecting as superseded by approved NOTICE 1772468805 (same continuity fix for the same target).
+  - 1772527781 | Bob: Duplicate of NOTICE 1772468805 (same replacement). Prefer consolidating; I support the continuity requirement.
+  - 1772582723 | Charlie: Superseded by NOTICE 1772468805 (now SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
+
+Approvals:
+  - 1772519286 | Alice:
+  - 1772519286 | Bob:
+  - 1772519286 | Charlie: YES
+  - 1772715079 | Dave: YES
+
+Result:
+
+Admin Decision:
+  - 1772888400 | REJECTED
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  REJECTED
+--------------------------------------------------------
+NOTICE ID: 1772519285
+Created: 1772519285
+Status: REJECTED
+
+Refers to Commit:
+  9c298c22a3600dc8788b12431a7f09e4e773285e
+
+Target:
+  Line: 141021
+  Name: lemma58_sub_basepoint_change_injective (Theorem)
+
+Problem:
+  The statement is false as written. `path_between` does not include any continuity
+  hypothesis, but `basepoint_change_map` is only well-behaved on fundamental
+  groups under the standard continuity assumptions on `alpha` (cf. the existing
+  `_cont` variant).
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    a :e fundamental_group X Tx x0 ->
+    b :e fundamental_group X Tx x0 ->
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) a =
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) b ->
+    a = b.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772888400 | admin1: Rejecting as superseded by approved NOTICE 1772468802 (same continuity fix for the same target).
+  - 1772527781 | Bob: Duplicate of NOTICE 1772468802 (same replacement). Prefer consolidating; I support the continuity requirement.
+  - 1772582723 | Charlie: Superseded by NOTICE 1772468802 (now SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
+
+Approvals:
+  - 1772519285 | Alice:
+  - 1772519285 | Bob:
+  - 1772519285 | Charlie: YES
+  - 1772715079 | Dave: YES
+
+Result:
+
+Admin Decision:
+  - 1772888400 | REJECTED
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  REJECTED
+--------------------------------------------------------
+NOTICE ID: 1772519284
+Created: 1772519284
+Status: REJECTED
+
+Refers to Commit:
+  9c298c22a3600dc8788b12431a7f09e4e773285e
+
+Target:
+  Line: 140767
+  Name: lemma58_sub_basepoint_change_id (Theorem)
+
+Problem:
+  The statement is false as written. `path_between` does not include any continuity
+  hypothesis, but `basepoint_change_map` is only well-behaved on fundamental
+  groups under the standard continuity assumptions on `alpha` (cf. the existing
+  `_cont` variant).
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+      (fundamental_group_id X Tx x0)
+    = fundamental_group_id X Tx x1.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772888400 | admin1: Rejecting as superseded by approved NOTICE 1772468745 (same continuity fix for the same target).
+  - 1772527781 | Bob: Duplicate of NOTICE 1772468745 (same replacement). Prefer consolidating; I support the continuity requirement.
+  - 1772582723 | Charlie: Superseded by NOTICE 1772468745 (now SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
+
+Approvals:
+  - 1772519284 | Alice:
+  - 1772519284 | Bob:
+  - 1772519284 | Charlie: YES
+  - 1772715079 | Dave: YES
+
+Result:
+
+Admin Decision:
+  - 1772888400 | REJECTED
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  REJECTED
+--------------------------------------------------------
+NOTICE ID: 1772498147
+Created: 1772498147
+Status: REJECTED
+
+Refers to Commit:
+  bb6493e3f8501c14fcb678c4a12b2b2cf1d33f1c
+
+Target:
+  Line: 20162
+  Name: convex_subspace_topology_eq_R (Theorem)
+
+Problem:
+  The current statement is false. From A c= R, convex_in R A, and topology_on A Ta,
+  it does not follow that Ta must equal the subspace topology inherited from R.
+  Counterexample: take any nontrivial convex A (e.g. a closed interval) and let Ta
+  be the discrete topology on A.
+
+Proposed Replacement:
+  Theorem convex_subspace_topology_eq_R : forall A:set,
+    A c= R -> convex_in R A ->
+    topology_on A (subspace_topology R R_standard_topology A).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772888400 | admin1: Rejecting as superseded by approved NOTICE 1772520177, which states the cleaner and mathematically relevant correction for this topology fact.
+  - 1772498147 | Charlie: This lemma was introduced as a "bridge" for Ex51_1 but is
+    not salvageable as stated; the correct fact needed in practice is that the
+    subspace topology is a topology on A, and Ex51_1 already uses subspace_topology
+    explicitly.
+  - 1772527781 | Bob: Duplicate of NOTICE 1772520177. Prefer consolidating to a single notice before admin review.
+  - 1772582723 | Charlie: Superseded by NOTICE 1772520177 (SENT TO ADMIN). Recommend treating this entry as a duplicate to avoid parallel admin review.
+
+Approvals:
+  - 1772498147 | Alice:
+  - 1772498147 | Bob:
+  - 1772498147 | Charlie: YES
+  - 1772715079 | Dave: YES
+
+Result:
+
+Admin Decision:
+  - 1772888400 | REJECTED
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  REJECTED
+--------------------------------------------------------
+NOTICE ID: 1772493676
+Created: 1772493676
+Status: REJECTED
+
+Refers to Commit:
+  9aed705d92a9fcb2ce501c41d5a5204b3c85beee
+
+Target:
+  Line: 290707
+  Name: tree_in_graph (Definition)
+
+Problem:
+  The current definition allows T = Empty because connected_space does not
+  imply nonemptiness. This makes later results that conclude or require a
+  basepoint (e.g. simply_connected) unprovable/false in the Empty case.
+
+Proposed Replacement:
+  Definition tree_in_graph : set -> set -> set -> set -> set -> prop :=
+    fun T ArcsT X Tx Arcs =>
+      T <> Empty /\
+      subgraph_of T X Tx Arcs /\
+      general_linear_graph T (subspace_topology X Tx T) ArcsT /\
+      connected_space T (subspace_topology X Tx T) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772881200 | admin1: This is the key design fork for empty trees. I agree the current theorems become false in the empty case, but I am not forcing the global definitional choice today without checking how many downstream statements intentionally rely on allowing Empty trees.
+  - 1772493676 | Charlie: With Arcs = Empty and X = T = Empty, the current
+    conjuncts are satisfiable (general_linear_graph/connected_space are
+    compatible with Empty), but simply_connected explicitly requires a point.
+  - 1772527781 | Bob: Unsure this should be a definitional change vs. local nonemptiness hypotheses. If we want to allow empty trees by convention, this is too strong; if not, this is fine. I’m not ready to approve.
+
+Approvals:
+  - 1772493676 | Alice:
+  - 1772493676 | Bob:
+  - 1772493676 | Charlie: YES
+  - 1772715079 | Dave: YES
+
+Result:
+  REJECTED
+
+Admin Decision:
+  - 1772888400 | REJECTED
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  REJECTED
+--------------------------------------------------------
 NOTICE ID: 1772418017
 Created: 1772418017
 Status: IMPLEMENTED
@@ -3662,7 +3789,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772418016
 Created: 1772418016
 Status: IMPLEMENTED
@@ -3715,7 +3842,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772418015
 Created: 1772418015
 Status: IMPLEMENTED
@@ -3767,7 +3894,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772368914
 Created: 1772368914
 Status: IMPLEMENTED
@@ -3799,7 +3926,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772357171
 Created: 1772357171
 Status: IMPLEMENTED
@@ -3870,7 +3997,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772354700
 Created: 1772354700
 Status: IMPLEMENTED
@@ -3918,7 +4045,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772354703
 Created: 1772354703
 Status: IMPLEMENTED
@@ -4009,7 +4136,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772358892
 Created: 1772358892
 Status: IMPLEMENTED
@@ -4072,7 +4199,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772357173
 Created: 1772357173
 Status: IMPLEMENTED
@@ -4135,7 +4262,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772357172
 Created: 1772357172
 Status: IMPLEMENTED
@@ -4205,7 +4332,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772357170
 Created: 1772357170
 Status: IMPLEMENTED
@@ -4266,7 +4393,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772357169
 Created: 1772357169
 Status: IMPLEMENTED
@@ -4331,7 +4458,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772357168
 Created: 1772357168
 Status: IMPLEMENTED
@@ -4394,7 +4521,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772355631
 Created: 1772355631
 Status: IMPLEMENTED
@@ -4459,7 +4586,7 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772355212
 Created: 1772355212
 Status: IMPLEMENTED
@@ -4537,10 +4664,10 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772417212
 Created: 1772417212
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   d5d5176b3d99b9d77f2ff364b14905e32077972d
@@ -4581,6 +4708,7 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
+  - 1772881200 | APPROVED
   -
 
 Implemented by:
@@ -4590,13 +4718,13 @@ Implementation Commit:
   -
 
 Status:
-  SENT TO ADMIN
+  APPROVED
 
 --------------------------------------------------------
-
+--------------------------------------------------------
 NOTICE ID: 1772444318
 Created: 1772444318
-Status: SENT TO ADMIN
+Status: APPROVED
 
 Refers to Commit:
   aa768eabf NOTICEBOARD: Dave votes YES on notices 1772417212, 1772418015, 1772418016, 1772418017
@@ -4652,6 +4780,7 @@ Result:
   SENT TO ADMIN
 
 Admin Decision:
+  - 1772881200 | APPROVED
   -
 
 Implemented by:
@@ -4661,7 +4790,7 @@ Implementation Commit:
   -
 
 Status:
-  SENT TO ADMIN
+  APPROVED
 
 --------------------------------------------------------
 ========================================================
@@ -4744,7 +4873,7 @@ Editing or deleting past Notice content
 (other than appending new timestamped lines
 or moving an entry between sections)
 is prohibited.
-
+--------------------------------------------------------
 NOTICE ID: 1772823031
 Created: 1772823031
 Status: PROPOSED
@@ -4770,12 +4899,15 @@ Rationale:
   This restores a correct bridge (trivial once Ta is the subspace topology) without asserting
   a false uniqueness claim.
 
+Discussion:
+  - 1772881200 | admin1: This is a weaker/trivial bridge that preserves the extra Ta parameter by assuming Ta already equals the subspace topology. It is correct, but inferior to the cleaner correction in NOTICE 1772520177, which states the mathematically relevant theorem directly.
+
 Requested Approvals:
   - Alice
   - Charlie
 
 ----
-
+--------------------------------------------------------
 NOTICE ID: 1772872517
 Created: 1772872517
 Status: PROPOSED
@@ -4798,12 +4930,15 @@ Proposed Replacement:
   and/or replace the theorem with the already correct usage pattern:
     (if Ta is the subspace topology, then ...) as in star_convex_simply_connected_if_subspace.
 
+Discussion:
+  - 1772881200 | admin1: Same assessment as 1772823031: correct as a bridge, but weaker and less clean than the canonical correction already sent to admin for this target.
+
 Requested Approvals:
   - Alice
   - Charlie
 
 ----
-
+--------------------------------------------------------
 NOTICE ID: 1772872519
 Created: 1772872519
 Status: PROPOSED
@@ -4823,12 +4958,15 @@ Proposed Replacement:
   Add the missing uniformity/compactness assumption (e.g. compactness of the parameter
   domain or uniform continuity in s) or replace with a weaker, provable conclusion.
 
+Discussion:
+  - 1772881200 | admin1: I agree the proof-gap diagnosis sounds plausible, but this notice does not yet give a precise replacement statement. Not ready for approval until the missing compactness/uniformity assumption is formulated exactly.
+
 Requested Approvals:
   - Alice
   - Charlie
 
 ----
-
+--------------------------------------------------------
 NOTICE ID: 1772831836
 Created: 1772831836
 Status: PROPOSED
@@ -4850,12 +4988,15 @@ Proposed Replacement:
   hypotheses: continuous_map F on setprod I1 unit_interval, vs_choice s t = F(s,t).
   Alternatively, remove the lemma and use the parametric version directly where needed.
 
+Discussion:
+  - 1772881200 | admin1: Correct diagnosis. Without a continuous F on I1×I, pointwise continuity of the slices does not control continuity of the lifted column map. This is a good candidate for consolidation with the later with_F / parametric notices.
+
 Requested Approvals:
   - Alice: APPROVED (confirmed: proved column_continuity_via_chain_with_F as Qed, the non-F version is indeed unprovable without joint continuity)
   - Charlie
 
 ----
-
+--------------------------------------------------------
 NOTICE ID: 1772823027
 Created: 1772823027
 Status: PROPOSED
@@ -4880,12 +5021,15 @@ Proposed Replacement:
   - 0 :e I2 and connectedness of I1, I2
   and conclude the same column continuity.
 
+Discussion:
+  - 1772881200 | admin1: Correct diagnosis and strong supporting evidence: if the parametric version is already Qed, then this non-parametric admitted theorem should be replaced by that stronger, provable statement or removed in favor of direct use.
+
 Requested Approvals:
   - Alice: APPROVED (confirmed: the parametric version path_lift_column_continuous_on_product_ball_parametric is already Qed, the non-parametric version needs joint continuity)
   - Charlie
 
 ----
-
+--------------------------------------------------------
 NOTICE ID: 1772871888
 Created: 1772871888
 Status: PROPOSED
@@ -4910,12 +5054,15 @@ Proposed Replacement:
       ((class :e image) <-> (lift endpoint = e0)).
   Alternatively, remove the theorem and use thm54_6c_loop_characterization_equiv directly.
 
+Discussion:
+  - 1772881200 | admin1: Support. The missing parentheses change the logical meaning of the theorem. If the exact parenthesized statement already exists as thm54_6c_loop_characterization_equiv, implementation should consolidate on one canonical theorem/notice.
+
 Requested Approvals:
   - Alice
   - Charlie
 
 ----
-
+--------------------------------------------------------
 NOTICE ID: 1772900990
 Created: 1772900990
 Status: PROPOSED
@@ -4958,6 +5105,7 @@ Proposed Replacement:
      properly_discontinuous X Tx G idG).
 
 Discussion:
+  - 1772881200 | admin1: The three added hypotheses address real proof obligations, not mere convenience: composition/inverse closure are standard group axioms, and total-function extensionality is needed to conclude g = idG from pointwise equality. Leaning yes, subject to checking that G c= total_function_space X X is the minimal extensionality assumption actually used.
   - 1772900990 | Alice: The backward direction is fully proved modulo Hcomp/Hinv admits.
     Adding them as hypotheses is standard (Munkres assumes G is a group).
     The pairwise_disjoint proof and inverse continuity proof both depend on Hcomp/Hinv
