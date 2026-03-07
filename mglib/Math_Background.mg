@@ -1,4 +1,4 @@
-(** Balance Alice 6586 **)
+(** Balance Alice 6580 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -302581,7 +302581,8 @@ Definition regular_covering_map : set -> set -> set -> set -> set -> set -> prop
 (** there is a covering transformation h with h(e1)=e2. In this case, **)
 (** C(E,p,B) is isomorphic to pi1(B,b0)/H0. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Bounty 61 **)
+(** Lock Alice 1772967220 **)
 Theorem cor81_3_normal_iff_transitive :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
