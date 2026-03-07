@@ -303895,9 +303895,78 @@ apply iffI.
     (** U subset X **)
     claim HUsub : U c= X.
     { exact (PowerE X U (topology_sub_Power X Tx HtopX U HUopen)). }
-    (** W is open in Tb: preimage of W is Union of g(U) which is open **)
+    (** Define slices = {image_of g U | g in G} **)
+    set slices := Repl G (fun g:set => image_of g U).
+    (** slices c= Tx: each g(U) is open since g is a homeomorphism **)
+    claim Hslices_open : slices c= Tx.
+    { let V. assume HV.
+      prove V :e Tx.
+      apply (ReplE_impred G (fun g:set => image_of g U) V HV).
+      let g. assume HgG HVeq.
+      rewrite HVeq.
+      exact (homeomorphism_image_open X Tx X Tx g U (Hhomeo g HgG) HUopen). }
+    (** W is open in Tb: preimage of W equals Union slices which is open **)
     claim HWopen : W :e Tb.
-    { admit. }
+    { prove W :e quotient_topology X Tx B pi.
+      prove W :e {V :e Power B | {x :e X | apply_fun pi x :e V} :e Tx}.
+      apply SepI.
+      - prove W :e Power B. apply PowerI. exact (Sep_Subq B (fun w => exists u:set, u :e U /\ apply_fun pi u = w)).
+      - prove {x :e X | apply_fun pi x :e W} :e Tx.
+        (** Show preimage c= Union slices and Union slices c= preimage, then rewrite **)
+        claim Hpre_sub_union : {x :e X | apply_fun pi x :e W} c= Union slices.
+        { let z. assume Hz.
+          claim HzX : z :e X. { exact (SepE1 X (fun x => apply_fun pi x :e W) z Hz). }
+          claim HpiW : apply_fun pi z :e W.
+          { exact (SepE2 X (fun x => apply_fun pi x :e W) z Hz). }
+          claim Hex_u : exists u:set, u :e U /\ apply_fun pi u = apply_fun pi z.
+          { exact (SepE2 B (fun w => exists u:set, u :e U /\ apply_fun pi u = w)
+              (apply_fun pi z) HpiW). }
+          apply Hex_u. let u. assume Hupack.
+          claim HuU : u :e U. { exact (andEL (u :e U) (apply_fun pi u = apply_fun pi z) Hupack). }
+          claim Hpi_eq : apply_fun pi u = apply_fun pi z.
+          { exact (andER (u :e U) (apply_fun pi u = apply_fun pi z) Hupack). }
+          claim HuX : u :e X. { exact (HUsub u HuU). }
+          claim Hz_in_piu : z :e apply_fun pi u.
+          { rewrite Hpi_eq. rewrite (orbit_map_apply X G z HzX).
+            apply SepI. exact HzX.
+            exact (orbit_equiv_refl X G idG z HidG HidAct HzX). }
+          claim Hz_in_piu2 : z :e {y :e X | orbit_equiv X G u y}.
+          { rewrite <- (orbit_map_apply X G u HuX). exact Hz_in_piu. }
+          claim Horb_uz : orbit_equiv X G u z.
+          { exact (SepE2 X (fun y => orbit_equiv X G u y) z Hz_in_piu2). }
+          claim Hgex : exists g:set, g :e G /\ apply_fun g u = z.
+          { exact (andER (u :e X /\ z :e X)
+              (exists g:set, g :e G /\ apply_fun g u = z) Horb_uz). }
+          apply Hgex. let g. assume Hgpack.
+          claim HgG : g :e G. { exact (andEL (g :e G) (apply_fun g u = z) Hgpack). }
+          claim Hgu : apply_fun g u = z. { exact (andER (g :e G) (apply_fun g u = z) Hgpack). }
+          apply (UnionI slices z (image_of g U)).
+          + rewrite <- Hgu.
+            exact (ReplI U (fun y:set => apply_fun g y) u HuU).
+          + exact (ReplI G (fun h:set => image_of h U) g HgG). }
+        claim Hunion_sub_pre : Union slices c= {x :e X | apply_fun pi x :e W}.
+        { let z. assume Hz.
+          apply (UnionE slices z Hz). let V. assume HVpack.
+          claim HzV : z :e V. { exact (andEL (z :e V) (V :e slices) HVpack). }
+          claim HVslices : V :e slices. { exact (andER (z :e V) (V :e slices) HVpack). }
+          apply (ReplE_impred G (fun g:set => image_of g U) V HVslices).
+          let g. assume HgG HVeq.
+          claim HzGU : z :e image_of g U. { rewrite <- HVeq. exact HzV. }
+          apply (ReplE_impred U (fun y:set => apply_fun g y) z HzGU).
+          let y. assume HyU Hzeq.
+          claim HyX : y :e X. { exact (HUsub y HyU). }
+          claim HzX : z :e X. { rewrite Hzeq. exact (Hfn g HgG y HyX). }
+          apply SepI. exact HzX.
+          prove apply_fun pi z :e W.
+          apply SepI.
+          + exact (Hpi_fn z HzX).
+          + prove exists u:set, u :e U /\ apply_fun pi u = apply_fun pi z.
+            witness y. apply andI. exact HyU.
+            rewrite Hzeq. symmetry. exact (Hpi_inv g y HgG HyX). }
+        claim Hpre_eq : {x :e X | apply_fun pi x :e W} = Union slices.
+        { apply set_ext. exact Hpre_sub_union. exact Hunion_sub_pre. }
+        rewrite Hpre_eq.
+        exact (topology_union_closed X Tx slices HtopX Hslices_open). }
     (** b in W **)
     claim HbW : b :e W.
     { prove b :e {w :e B | exists u:set, u :e U /\ apply_fun pi u = w}.
@@ -303905,8 +303974,6 @@ apply iffI.
       - rewrite <- Hpi_x0. exact (Hpi_fn x0 Hx0X).
       - prove exists u:set, u :e U /\ apply_fun pi u = b.
         witness x0. apply andI. exact Hx0U. exact (Hpi_x0). }
-    (** Define slices = {image_of g U | g in G} **)
-    set slices := Repl G (fun g:set => image_of g U).
     witness W. apply andI.
     - apply andI. exact HWopen. exact HbW.
     - prove evenly_covered X Tx B Tb pi W.
@@ -303918,20 +303985,65 @@ apply iffI.
             (graph V (fun z:set => apply_fun pi z))).
       apply and3I. exact HtopX. exact HWopen.
       witness slices.
-      (** slices c= Tx: each g(U) is open since g is a homeomorphism **)
-      claim Hslices_open : slices c= Tx.
-      { let V. assume HV.
-        prove V :e Tx.
-        apply (ReplE_impred G (fun g:set => image_of g U) V HV).
-        let g. assume HgG HVeq.
-        rewrite HVeq.
-        exact (homeomorphism_image_open X Tx X Tx g U (Hhomeo g HgG) HUopen). }
       (** pairwise_disjoint slices **)
       claim Hpd_slices : pairwise_disjoint slices.
       { admit. }
       (** Union slices = preimage_of X pi W **)
       claim Hunion_eq : Union slices = preimage_of X pi W.
-      { admit. }
+      { apply set_ext.
+        - (** Union slices c= preimage_of X pi W **)
+          let z. assume Hz.
+          apply (UnionE slices z Hz). let V. assume HVpack.
+          claim HzV : z :e V. { exact (andEL (z :e V) (V :e slices) HVpack). }
+          claim HVslices : V :e slices. { exact (andER (z :e V) (V :e slices) HVpack). }
+          apply (ReplE_impred G (fun g:set => image_of g U) V HVslices).
+          let g. assume HgG HVeq.
+          claim HzGU : z :e image_of g U. { rewrite <- HVeq. exact HzV. }
+          apply (ReplE_impred U (fun y:set => apply_fun g y) z HzGU).
+          let y. assume HyU Hzeq.
+          claim HyX : y :e X. { exact (HUsub y HyU). }
+          claim HzX : z :e X. { rewrite Hzeq. exact (Hfn g HgG y HyX). }
+          prove z :e {x :e X | apply_fun pi x :e W}.
+          apply SepI. exact HzX.
+          prove apply_fun pi z :e {w :e B | exists u:set, u :e U /\ apply_fun pi u = w}.
+          apply SepI.
+          + exact (Hpi_fn z HzX).
+          + prove exists u:set, u :e U /\ apply_fun pi u = apply_fun pi z.
+            witness y. apply andI. exact HyU.
+            rewrite Hzeq. symmetry. exact (Hpi_inv g y HgG HyX).
+        - (** preimage_of X pi W c= Union slices **)
+          let z. assume Hz.
+          claim HzX : z :e X. { exact (SepE1 X (fun x => apply_fun pi x :e W) z Hz). }
+          claim HpiW : apply_fun pi z :e W.
+          { exact (SepE2 X (fun x => apply_fun pi x :e W) z Hz). }
+          claim Hex_u : exists u:set, u :e U /\ apply_fun pi u = apply_fun pi z.
+          { exact (SepE2 B (fun w => exists u:set, u :e U /\ apply_fun pi u = w)
+              (apply_fun pi z) HpiW). }
+          apply Hex_u. let u. assume Hupack.
+          claim HuU : u :e U. { exact (andEL (u :e U) (apply_fun pi u = apply_fun pi z) Hupack). }
+          claim Hpi_eq : apply_fun pi u = apply_fun pi z.
+          { exact (andER (u :e U) (apply_fun pi u = apply_fun pi z) Hupack). }
+          claim HuX : u :e X. { exact (HUsub u HuU). }
+          (** z in orbit of u: z :e pi(z) = pi(u), extract orbit_equiv **)
+          claim Hz_in_piu : z :e apply_fun pi u.
+          { rewrite Hpi_eq.
+            rewrite (orbit_map_apply X G z HzX).
+            apply SepI. exact HzX.
+            exact (orbit_equiv_refl X G idG z HidG HidAct HzX). }
+          claim Hz_in_piu2 : z :e {y :e X | orbit_equiv X G u y}.
+          { rewrite <- (orbit_map_apply X G u HuX). exact Hz_in_piu. }
+          claim Horb_uz : orbit_equiv X G u z.
+          { exact (SepE2 X (fun y => orbit_equiv X G u y) z Hz_in_piu2). }
+          claim Hgex : exists g:set, g :e G /\ apply_fun g u = z.
+          { exact (andER (u :e X /\ z :e X)
+              (exists g:set, g :e G /\ apply_fun g u = z) Horb_uz). }
+          apply Hgex. let g. assume Hgpack.
+          claim HgG : g :e G. { exact (andEL (g :e G) (apply_fun g u = z) Hgpack). }
+          claim Hgu : apply_fun g u = z. { exact (andER (g :e G) (apply_fun g u = z) Hgpack). }
+          apply (UnionI slices z (image_of g U)).
+          + rewrite <- Hgu.
+            exact (ReplI U (fun y:set => apply_fun g y) u HuU).
+          + exact (ReplI G (fun h:set => image_of h U) g HgG). }
       (** homeomorphism on each slice **)
       claim Hhomeo_slices : forall V:set, V :e slices ->
         homeomorphism V (subspace_topology X Tx V) W (subspace_topology B Tb W)
