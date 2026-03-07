@@ -303532,12 +303532,40 @@ apply iffI.
 - assume Hpd.
   prove covering_map X Tx B Tb pi.
   (** Need: continuous_map, surjective_map, evenly_covered neighborhoods **)
-  (** Step 1: pi is continuous - from quotient topology definition **)
+  (** Step 1: orbit_map is a quotient_map **)
+  claim Hpi_fn : function_on pi X B. { exact (orbit_map_function_on X G Hfn). }
+  claim Hqm : quotient_map X Tx B pi.
+  { prove topology_on X Tx /\ function_on pi X B /\
+      (forall y:set, y :e B -> exists x:set, x :e X /\ apply_fun pi x = y).
+    apply and3I.
+    - exact HtopX.
+    - exact Hpi_fn.
+    - let b. assume HbB.
+      (** b is an orbit class, so exists representative **)
+      claim HbSep : exists z:set, z :e X /\ b = {y :e X | orbit_equiv X G z y}.
+      { exact (SepE2 (Power X)
+          (fun cls:set => exists z:set, z :e X /\ cls = {y :e X | orbit_equiv X G z y})
+          b HbB). }
+      apply HbSep. let z. assume Hzpack.
+      claim HzX : z :e X. { exact (andEL (z :e X) (b = {y :e X | orbit_equiv X G z y}) Hzpack). }
+      claim Hbeq : b = {y :e X | orbit_equiv X G z y}.
+      { exact (andER (z :e X) (b = {y :e X | orbit_equiv X G z y}) Hzpack). }
+      witness z. apply andI.
+      + exact HzX.
+      + rewrite Hbeq. exact (orbit_map_apply X G z HzX). }
+  claim HtopB : topology_on B Tb.
+  { exact (quotient_topology_is_topology X Tx B pi HtopX Hqm). }
+  (** Step 2: pi is continuous from quotient_universal_property **)
   claim Hpi_cont : continuous_map X Tx B Tb pi.
-  { admit. }
-  (** Step 2: pi is surjective **)
+  { exact (quotient_universal_property X Tx B Tb pi Hqm HtopB (Subq_ref Tb)). }
+  (** Step 3: pi is surjective **)
   claim Hpi_surj : surjective_map X B pi.
-  { admit. }
+  { prove function_on pi X B /\ (forall y:set, y :e B -> exists x:set, x :e X /\ apply_fun pi x = y).
+    apply andI.
+    - exact Hpi_fn.
+    - exact (andER (topology_on X Tx /\ function_on pi X B)
+        (forall y:set, y :e B -> exists x:set, x :e X /\ apply_fun pi x = y)
+        Hqm). }
   (** Step 3: evenly covered neighborhoods **)
   prove continuous_map X Tx B Tb pi /\ surjective_map X B pi /\
     (forall b:set, b :e B ->
