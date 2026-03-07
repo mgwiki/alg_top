@@ -1,4 +1,4 @@
-(** Balance Alice 4188 **)
+(** Balance Alice 5268 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -95633,6 +95633,7 @@ Qed.
 (** For any s in I1 and t in unit_interval, the column map at time t is **)
 (** continuous on some neighborhood of s. Proof: tube lemma chain from 0 to t **)
 (** via connected_lift_stays_in_anchored_sheet + section composition. **)
+(** Proven Alice **)
 Lemma column_map_pointwise_locally_continuous :
   forall E Te B Tb p F start_lift vs_choice I1 t s:set,
   covering_map E Te B Tb p ->
@@ -96289,15 +96290,250 @@ claim Hstep : forall t1:set, t1 :e unit_interval ->
     (** This uses connected_lift_stays_in_anchored_sheet on the time domain B(t1, r_choice) **)
     claim Hlift_in_V0 : forall s0:set, s0 :e N'_ev ->
       apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) tau1 :e V0_ev.
-    { admit. (** The hardest sub-claim: uses connected B(t1,r), path_lift continuous, stays in V0 **) }
+    { let s0. assume Hs0N'.
+      claim Hs0I1 : s0 :e I1. { exact (HN'_sub_I1 s0 Hs0N'). }
+      claim Hs0A_local : s0 :e A_rect.
+      { exact (andER (apply_fun (col tau0) s0 :e V0_ev) (s0 :e A_rect)
+          (HN'_props s0 Hs0N')). }
+      set lift_s0 := path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0).
+      set ball_t := open_ball unit_interval d t1 r_choice.
+      set Tball := subspace_topology unit_interval unit_interval_topology ball_t.
+      (** path_lift for s0 is continuous **)
+      claim Hs0E : apply_fun start_lift s0 :e E.
+      { exact (continuous_map_function_on I1 TI1 E Te start_lift HstartCont s0 Hs0I1). }
+      claim Hvs0C : continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s0).
+      { exact (HvsCont s0 Hs0I1). }
+      claim Hstart0Comm : apply_fun p (apply_fun start_lift s0) = apply_fun (apply_fun vs_choice s0) 0.
+      { exact (HstartComm s0 Hs0I1). }
+      claim Hpack54_s0 :
+        continuous_map unit_interval unit_interval_topology E Te lift_s0 /\
+        apply_fun lift_s0 0 = apply_fun start_lift s0 /\
+        (forall t0:set, t0 :e unit_interval ->
+          apply_fun p (apply_fun lift_s0 t0) = apply_fun (apply_fun vs_choice s0) t0).
+      { exact (lemma54_1_path_lifting E Te B Tb p
+          (apply_fun start_lift s0) (apply_fun vs_choice s0)
+          Hcov Hs0E Hstart0Comm Hvs0C). }
+      claim Hlift_s0_cont : continuous_map unit_interval unit_interval_topology E Te lift_s0.
+      { exact (andEL
+          (continuous_map unit_interval unit_interval_topology E Te lift_s0)
+          (apply_fun lift_s0 0 = apply_fun start_lift s0)
+          (andEL
+            (continuous_map unit_interval unit_interval_topology E Te lift_s0 /\
+             apply_fun lift_s0 0 = apply_fun start_lift s0)
+            (forall t0:set, t0 :e unit_interval ->
+              apply_fun p (apply_fun lift_s0 t0) = apply_fun (apply_fun vs_choice s0) t0)
+            Hpack54_s0)). }
+      claim Hlift_s0_comm : forall t0:set, t0 :e unit_interval ->
+        apply_fun p (apply_fun lift_s0 t0) = apply_fun (apply_fun vs_choice s0) t0.
+      { exact (andER
+          (continuous_map unit_interval unit_interval_topology E Te lift_s0 /\
+           apply_fun lift_s0 0 = apply_fun start_lift s0)
+          (forall t0:set, t0 :e unit_interval ->
+            apply_fun p (apply_fun lift_s0 t0) = apply_fun (apply_fun vs_choice s0) t0)
+          Hpack54_s0). }
+      (** ball is a subset of unit_interval **)
+      claim Hball_sub : ball_t c= unit_interval.
+      { exact (open_ball_subset_X unit_interval d t1 r_choice). }
+      (** ball is connected **)
+      claim Hball_conn : connected_space ball_t Tball.
+      { exact (open_ball_unit_interval_connected_lt1 t1 r_choice Ht1 HrR Hrpos Hr_lt_1). }
+      (** lift_s0 continuous on ball **)
+      claim Hlift_s0_ball : continuous_map ball_t Tball E Te lift_s0.
+      { exact (continuous_on_subspace unit_interval unit_interval_topology E Te lift_s0 ball_t
+          unit_interval_topology_on Hball_sub Hlift_s0_cont). }
+      (** p(lift_s0(t)) = vs(s0)(t) = F(s0,t) :e U for t in ball **)
+      claim Hball_in_U : forall t0:set, t0 :e ball_t ->
+        apply_fun (apply_fun vs_choice s0) t0 :e U_ev.
+      { let t0. assume Ht0ball.
+        claim Ht0I : t0 :e unit_interval.
+        { exact (Hball_sub t0 Ht0ball). }
+        claim Ht0J : t0 :e J_rect.
+        { exact (Hball_r_J t0 Ht0ball). }
+        claim Hvs_eq : apply_fun (apply_fun vs_choice s0) t0 = apply_fun F (s0, t0).
+        { exact (HvsEval s0 Hs0I1 t0 Ht0I). }
+        rewrite Hvs_eq. exact (HF_rect_U s0 Hs0A_local t0 Ht0J). }
+      (** lift_s0(tau0) :e V0_ev **)
+      claim Hcol_eq_s0 : apply_fun (col tau0) s0 = apply_fun lift_s0 tau0.
+      { exact (apply_fun_graph I1 (fun s':set =>
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s') (apply_fun vs_choice s')) tau0)
+          s0 Hs0I1). }
+      claim Hcol_tau0_s0_V0 : apply_fun (col tau0) s0 :e V0_ev.
+      { exact (andEL (apply_fun (col tau0) s0 :e V0_ev) (s0 :e A_rect)
+          (HN'_props s0 Hs0N')). }
+      claim Hlift_s0_tau0_V0 : apply_fun lift_s0 tau0 :e V0_ev.
+      { exact (eq_subst_mem_rev (apply_fun (col tau0) s0) (apply_fun lift_s0 tau0) V0_ev
+          Hcol_eq_s0 Hcol_tau0_s0_V0). }
+      (** Apply connected_lift_stays_in_anchored_sheet **)
+      exact (connected_lift_stays_in_anchored_sheet
+        E Te B Tb p U_ev slices_ev V0_ev
+        ball_t Tball
+        (apply_fun vs_choice s0) lift_s0 tau0
+        HtopE HslicesTe Hpw_disj HUnionEq
+        Hball_conn Hlift_s0_ball
+        (fun t0:set => fun Ht0ball : t0 :e ball_t =>
+          Hlift_s0_comm t0 (Hball_sub t0 Ht0ball))
+        Hball_in_U
+        HV0slices Htau0ball Hlift_s0_tau0_V0
+        tau1 Htau1ball). }
     (** col_tau1 is continuous on N' via section g **)
     (** col_tau1(s') = g(F(s', tau1)) for s' in N' **)
     claim Hcol_tau1_eq : forall s0:set, s0 :e N'_ev ->
       apply_fun (col tau1) s0 = apply_fun g_sec (apply_fun F (s0, tau1)).
-    { admit. (** uses g_section + lift in V0 **) }
+    { let s0. assume Hs0N'.
+      claim Hs0I1 : s0 :e I1. { exact (HN'_sub_I1 s0 Hs0N'). }
+      set lift_s0 := path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0).
+      (** col tau1 s0 = lift_s0 tau1 **)
+      claim Hcol_graph : apply_fun (col tau1) s0 = apply_fun lift_s0 tau1.
+      { exact (apply_fun_graph I1 (fun s':set =>
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s') (apply_fun vs_choice s')) tau1)
+          s0 Hs0I1). }
+      (** lift_s0(tau1) :e V0_ev **)
+      claim Hlift_s0_tau1_V0 : apply_fun lift_s0 tau1 :e V0_ev.
+      { exact (Hlift_in_V0 s0 Hs0N'). }
+      (** g(p(lift_s0(tau1))) = lift_s0(tau1) **)
+      claim Hg_inv : apply_fun g_sec (apply_fun p (apply_fun lift_s0 tau1)) = apply_fun lift_s0 tau1.
+      { exact (Hg_section (apply_fun lift_s0 tau1) Hlift_s0_tau1_V0). }
+      (** p(lift_s0(tau1)) = vs(s0)(tau1) **)
+      claim Hs0E : apply_fun start_lift s0 :e E.
+      { exact (continuous_map_function_on I1 TI1 E Te start_lift HstartCont s0 Hs0I1). }
+      claim Hvs0C : continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s0).
+      { exact (HvsCont s0 Hs0I1). }
+      claim Hstart0Comm : apply_fun p (apply_fun start_lift s0) = apply_fun (apply_fun vs_choice s0) 0.
+      { exact (HstartComm s0 Hs0I1). }
+      claim Hpack54_s0 :
+        continuous_map unit_interval unit_interval_topology E Te lift_s0 /\
+        apply_fun lift_s0 0 = apply_fun start_lift s0 /\
+        (forall t0:set, t0 :e unit_interval ->
+          apply_fun p (apply_fun lift_s0 t0) = apply_fun (apply_fun vs_choice s0) t0).
+      { exact (lemma54_1_path_lifting E Te B Tb p
+          (apply_fun start_lift s0) (apply_fun vs_choice s0)
+          Hcov Hs0E Hstart0Comm Hvs0C). }
+      claim Hlift_s0_comm : forall t0:set, t0 :e unit_interval ->
+        apply_fun p (apply_fun lift_s0 t0) = apply_fun (apply_fun vs_choice s0) t0.
+      { exact (andER
+          (continuous_map unit_interval unit_interval_topology E Te lift_s0 /\
+           apply_fun lift_s0 0 = apply_fun start_lift s0)
+          (forall t0:set, t0 :e unit_interval ->
+            apply_fun p (apply_fun lift_s0 t0) = apply_fun (apply_fun vs_choice s0) t0)
+          Hpack54_s0). }
+      claim Hp_lift_tau1 : apply_fun p (apply_fun lift_s0 tau1) = apply_fun (apply_fun vs_choice s0) tau1.
+      { exact (Hlift_s0_comm tau1 Htau1I). }
+      (** vs(s0)(tau1) = F(s0, tau1) **)
+      claim Hvs_eq : apply_fun (apply_fun vs_choice s0) tau1 = apply_fun F (s0, tau1).
+      { exact (HvsEval s0 Hs0I1 tau1 Htau1I). }
+      (** Chain: col(s0) = lift_s0(tau1) = g(p(lift_s0(tau1))) = g(vs(tau1)) = g(F(s0,tau1)) **)
+      rewrite Hcol_graph.
+      rewrite <- Hg_inv.
+      rewrite Hp_lift_tau1.
+      rewrite Hvs_eq.
+      reflexivity. }
     (** g ∘ F(_, tau1) is continuous on N' **)
     claim Hcol_tau1_cont : continuous_map N'_ev (subspace_topology I1 TI1 N'_ev) E Te (col tau1).
-    { admit. (** continuous_map_congr_on with g ∘ F_slice, composition of continuous maps **) }
+    {
+      (** Strategy: col tau1 is pointwise equal to g_sec ∘ F(_, tau1) on N'_ev **)
+      (** Build the continuous reference function and use continuous_map_congr_on **)
+      set idI1 := graph I1 (fun s0':set => s0').
+      set F_slice := compose_fun I1 (pair_map I1 idI1 (const_fun I1 tau1)) F.
+      (** F_slice is continuous from I1 to B **)
+      claim Hunit_sub : unit_interval c= unit_interval.
+      { exact (Subq_ref unit_interval). }
+      claim HFslice_I1 : continuous_map I1 TI1 B Tb F_slice.
+      { exact (continuous_map_product_ball_slice_second B Tb F I1 unit_interval tau1
+          HI1sub Hunit_sub Htau1I HFcont). }
+      (** Restrict to N'_ev **)
+      claim HN'_sub_TI1_set : N'_ev c= I1.
+      { exact HN'_sub_I1. }
+      claim HFslice_N' : continuous_map N'_ev (subspace_topology I1 TI1 N'_ev) B Tb F_slice.
+      { exact (continuous_on_subspace I1 TI1 B Tb F_slice N'_ev HtopI1 HN'_sub_TI1_set HFslice_I1). }
+      (** F_slice maps N'_ev into U_ev (since s0 :e A_rect and tau1 :e J_rect) **)
+      claim HFslice_in_U : forall s0':set, s0' :e N'_ev -> apply_fun F_slice s0' :e U_ev.
+      { let s0'. assume Hs0'N'.
+        claim Hs0'I1 : s0' :e I1. { exact (HN'_sub_I1 s0' Hs0'N'). }
+        claim Hs0'A : s0' :e A_rect.
+        { exact (andER (apply_fun (col tau0) s0' :e V0_ev) (s0' :e A_rect) (HN'_props s0' Hs0'N')). }
+        claim HFslice_eq : apply_fun F_slice s0' = apply_fun F (s0', tau1).
+        { rewrite (compose_fun_apply I1 (pair_map I1 idI1 (const_fun I1 tau1)) F s0' Hs0'I1).
+          rewrite (pair_map_apply I1 I1 unit_interval idI1 (const_fun I1 tau1) s0' Hs0'I1).
+          rewrite (apply_fun_graph I1 (fun s0'':set => s0'') s0' Hs0'I1).
+          rewrite (const_fun_apply I1 tau1 s0' Hs0'I1).
+          reflexivity. }
+        rewrite HFslice_eq. exact (HF_rect_U s0' Hs0'A tau1 Htau1_J). }
+      (** Restrict codomain of F_slice to U_ev **)
+      claim HU_sub_B : U_ev c= B.
+      { exact (topology_elem_subset B Tb U_ev HtopB HUopen). }
+      claim HFslice_U : continuous_map N'_ev (subspace_topology I1 TI1 N'_ev)
+        U_ev (subspace_topology B Tb U_ev) F_slice.
+      { exact (continuous_map_range_restrict N'_ev (subspace_topology I1 TI1 N'_ev)
+          B Tb F_slice U_ev HFslice_N' HU_sub_B HFslice_in_U). }
+      (** Compose with g_sec to get continuous map to E **)
+      set ref_fun := compose_fun N'_ev F_slice g_sec.
+      claim Href_cont : continuous_map N'_ev (subspace_topology I1 TI1 N'_ev) E Te ref_fun.
+      { exact (composition_continuous N'_ev (subspace_topology I1 TI1 N'_ev)
+          U_ev (subspace_topology B Tb U_ev) E Te F_slice g_sec HFslice_U Hgcont_E). }
+      (** Show col tau1 is function_on N'_ev E **)
+      claim Hcol_fun : function_on (col tau1) N'_ev E.
+      { let s0'. assume Hs0'N'.
+        claim Hs0'I1 : s0' :e I1. { exact (HN'_sub_I1 s0' Hs0'N'). }
+        (** apply_fun (col tau1) s0' = apply_fun (path_lift ... s0' ...) tau1 **)
+        claim Hcol_graph_s0' : apply_fun (col tau1) s0' =
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0') (apply_fun vs_choice s0')) tau1.
+        { exact (apply_fun_graph I1 (fun s'':set =>
+            apply_fun (path_lift E Te B Tb p (apply_fun start_lift s'') (apply_fun vs_choice s'')) tau1)
+            s0' Hs0'I1). }
+        claim Hs0'E : apply_fun start_lift s0' :e E.
+        { exact (continuous_map_function_on I1 TI1 E Te start_lift HstartCont s0' Hs0'I1). }
+        claim Hvs0'C : continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s0').
+        { exact (HvsCont s0' Hs0'I1). }
+        claim Hstart0'Comm : apply_fun p (apply_fun start_lift s0') = apply_fun (apply_fun vs_choice s0') 0.
+        { exact (HstartComm s0' Hs0'I1). }
+        claim Hlift_s0'_cont : continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s0') (apply_fun vs_choice s0')).
+        { exact (andEL
+            (continuous_map unit_interval unit_interval_topology E Te
+              (path_lift E Te B Tb p (apply_fun start_lift s0') (apply_fun vs_choice s0')))
+            (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0') (apply_fun vs_choice s0')) 0 =
+              apply_fun start_lift s0')
+            (andEL
+              (continuous_map unit_interval unit_interval_topology E Te
+                (path_lift E Te B Tb p (apply_fun start_lift s0') (apply_fun vs_choice s0')) /\
+               apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0') (apply_fun vs_choice s0')) 0 =
+                 apply_fun start_lift s0')
+              (forall t0:set, t0 :e unit_interval ->
+                apply_fun p (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0') (apply_fun vs_choice s0')) t0) =
+                  apply_fun (apply_fun vs_choice s0') t0)
+              (lemma54_1_path_lifting E Te B Tb p
+                (apply_fun start_lift s0') (apply_fun vs_choice s0')
+                Hcov Hs0'E Hstart0'Comm Hvs0'C))). }
+        claim Hlift_val_E : apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0') (apply_fun vs_choice s0')) tau1 :e E.
+        { exact (continuous_map_function_on unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p (apply_fun start_lift s0') (apply_fun vs_choice s0'))
+            Hlift_s0'_cont tau1 Htau1I). }
+        exact (eq_subst_mem
+          (apply_fun (col tau1) s0')
+          (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0') (apply_fun vs_choice s0')) tau1)
+          E
+          Hcol_graph_s0'
+          Hlift_val_E). }
+      (** Pointwise equality: ref_fun = col tau1 on N'_ev **)
+      claim Hpw_eq : forall s0':set, s0' :e N'_ev ->
+        apply_fun ref_fun s0' = apply_fun (col tau1) s0'.
+      { let s0'. assume Hs0'N'.
+        claim Hs0'I1 : s0' :e I1. { exact (HN'_sub_I1 s0' Hs0'N'). }
+        claim Hcomp_eq : apply_fun ref_fun s0' = apply_fun g_sec (apply_fun F_slice s0').
+        { exact (compose_fun_apply N'_ev F_slice g_sec s0' Hs0'N'). }
+        rewrite Hcomp_eq.
+        claim HFslice_eq : apply_fun F_slice s0' = apply_fun F (s0', tau1).
+        { rewrite (compose_fun_apply I1 (pair_map I1 idI1 (const_fun I1 tau1)) F s0' Hs0'I1).
+          rewrite (pair_map_apply I1 I1 unit_interval idI1 (const_fun I1 tau1) s0' Hs0'I1).
+          rewrite (apply_fun_graph I1 (fun s0'':set => s0'') s0' Hs0'I1).
+          rewrite (const_fun_apply I1 tau1 s0' Hs0'I1).
+          reflexivity. }
+        rewrite HFslice_eq.
+        exact (eq_symm (apply_fun (col tau1) s0') (apply_fun g_sec (apply_fun F (s0', tau1)))
+          (Hcol_tau1_eq s0' Hs0'N')). }
+      (** Apply congr_on **)
+      exact (continuous_map_congr_on N'_ev (subspace_topology I1 TI1 N'_ev) E Te
+        ref_fun (col tau1) Href_cont Hcol_fun Hpw_eq). }
     (** tau1 in reach_s **)
     prove tau1 :e reach_s.
     prove tau1 :e {tau :e unit_interval |
@@ -96401,12 +96637,13 @@ exact (SepE2 unit_interval (fun tau:set =>
   exists N:set, N :e TI1 /\ s :e N /\
     continuous_map N (subspace_topology I1 TI1 N) E Te (col tau))
   t Ht_reach).
-Admitted.
+Qed.
 
 (** Helper: within a ball around any time point, column continuity is "all or nothing". **)
 (** Consequence of column_continuity_propagation_step + compactness of I1 via covering map. **)
 (** For any t1, there exists delta such that within B(t1, delta), if column continuity **)
 (** holds at any t_a, then it holds at any t_b. This is the symmetric local transfer. **)
+(** Proven Alice **)
 Lemma column_continuity_local_transfer :
   forall E Te B Tb p F start_lift vs_choice I1 t1:set,
   covering_map E Te B Tb p ->
@@ -96516,11 +96753,12 @@ apply andI.
     exact (SepE2 TI1 (fun N0:set =>
       continuous_map N0 (subspace_topology I1 TI1 N0) E Te col_tb)
       N HNUFam).
-Admitted.
+Qed.
 
 (** Infrastructure: column continuity with jointly continuous F (provable via chain) **)
 (** Uses open-and-closed argument on unit_interval: the set of times where column **)
 (** continuity holds is clopen in the connected unit_interval, hence all of it. **)
+(** Proven Alice **)
 Lemma column_continuity_via_chain_with_F :
   forall E Te B Tb p F start_lift vs_choice I1 t0:set,
   covering_map E Te B Tb p ->
@@ -97042,9 +97280,10 @@ apply xm (t0 = 0).
     exact (SepE2 unit_interval good_pred t0
       (eq_subst_mem_set t0 unit_interval good_times Ht0
         (eq_symm good_times unit_interval Hgood_eq))).
-Admitted.
+Qed.
 
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
+(** Proven Alice **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -99577,7 +99816,7 @@ exact (andI
     HFt_54_cont
   HFt_54_00)
   HFt_54_comm).
-Admitted. (** TODO: needs parametric path-lift continuity to close HFt54ContOnN. **)
+Qed.
 
 
 (** from S54 Lem 54.2 (line 730 in algtop.tex) **)
@@ -99585,7 +99824,8 @@ Admitted. (** TODO: needs parametric path-lift continuity to close HFt54ContOnN.
 (** continuous with F(0,0) = b0. There is a unique lifting F_tilde: I x I -> E with **)
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 324 **)
+(** Collected Alice 324 **)
+(** Proven Alice **)
 Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -99627,7 +99867,7 @@ exact (homotopy_lift_from_exists_witness
   e0
   F
   Hex).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 (** Infrastructure: a path lift into an evenly covered union stays in the anchored sheet **)
@@ -100329,7 +100569,8 @@ Qed.
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Alice 55 **)
+(** Proven Alice **)
 Theorem lemma54_2_path_homotopy_preserved : forall E Te B Tb p e0 F x0 x1:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -100876,7 +101117,7 @@ exact (andI
   (forall t:set, t :e unit_interval -> apply_fun Ft (1, t) = e1)
   HleftConst
   HrightConst).
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** from S54 Thm 54.3 (line 785 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. Let f and g be paths in B **)
@@ -100885,7 +101126,8 @@ Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 (** If f and g are path homotopic, then f_tilde and g_tilde end at the same point **)
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 107 **)
+(** Collected Alice 107 **)
+(** Proven Alice **)
 Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = b0 ->
@@ -101826,7 +102068,7 @@ apply andI.
       reflexivity.
     * exact HleftEdgeE0.
     * exact HrightEdgeFF1.
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** from S54 Definition (line 791 in algtop.tex) **)
 (** LATEX VERSION: The lifting correspondence phi: pi_1(B,b0) -> p^{-1}(b0) maps **)
@@ -102000,7 +102242,8 @@ Qed.
 (** then phi: pi_1(B,b0) -> p^{-1}(b0) is surjective. **)
 (** If E is simply connected, phi is bijective. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 107 **)
+(** Collected Alice 107 **)
+(** Proven Alice **)
 Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -102602,11 +102845,12 @@ apply andI.
 			    rewrite HlcApply0.
 			    rewrite HendRepEqF0.
 			    exact HendF0.
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** from S54 Thm 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 73 **)
+(** Collected Alice 73 **)
+(** Proven Alice **)
 Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   simply_connected E Te ->
@@ -103764,7 +104008,7 @@ exact (andI
       (forall x':set, x' :e G -> apply_fun lc x' = y -> x' = x))
   Hfun
   Huniq).
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** Infrastructure: the additive group of integers **)
 (** Multiplication is addition of surreal numbers restricted to int **)
@@ -114564,7 +114808,8 @@ Qed.
 (** from S54 Thm 54.6a (line 838 in algtop.tex) **)
 (** LATEX VERSION: The homomorphism p-star: pi_1(E,e0) -> pi_1(B,b0) is a monomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 73 **)
+(** Collected Alice 73 **)
+(** Proven Alice **)
 Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   forall cls1 cls2:set,
@@ -115249,7 +115494,7 @@ claim Hcls2Eq : cls2 = path_homotopy_class_loop E Te e0 f2.
 rewrite Hcls1Eq.
 rewrite Hcls2Eq.
 exact Hclassf1f2.
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** Infrastructure: loop characterization (backward direction) **)
 Lemma thm54_6c_loop_characterization_backward : forall E Te B Tb p e0 f:set,
@@ -115658,7 +115903,8 @@ Qed.
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
 (** an injective map Phi: pi_1(B,b0)/H -> p^{-1}(b0), bijective if E is path connected. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 242 **)
+(** Collected Alice 242 **)
+(** Proven Alice **)
 Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   exists Phi:set,
@@ -117235,11 +117481,12 @@ exact (andI
     c1 = c2)
   HPhiFun
   HPhiInj).
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** from S54 Thm 54.6b surjectivity when E is path connected **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 44 **)
+(** Collected Alice 44 **)
+(** Proven Alice **)
 Theorem thm54_6b_coset_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -118912,9 +119159,10 @@ exact (andI
   (forall y:set, y :e Fib -> exists c:set, c :e cosets /\ apply_fun Phi c = y)
   HPhiFun
   HPhiSurj).
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** Infrastructure: loop characterization (forward direction) **)
+(** Proven Alice **)
 Lemma thm54_6c_loop_characterization_forward : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -119189,10 +119437,11 @@ claim HendEq :
 }
 rewrite HendEq.
 exact HpgEnd.
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 
 (** Infrastructure: loop characterization equivalence (parenthesized) **)
+(** Proven Alice **)
 Lemma thm54_6c_loop_characterization_equiv : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -119231,7 +119480,7 @@ apply iffI.
   He0
   Hloop
   Hend).
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** from S54 Thm 54.6c (line 847 in algtop.tex) **)
 (** LATEX VERSION: [f] in H iff f lifts to a loop in E based at e0. **)
@@ -119250,6 +119499,7 @@ admit.
 Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 
 (** Infrastructure: loop characterization under covering assumptions **)
+(** Proven Alice **)
 Lemma thm54_6c_loop_characterization_assumptions : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -119272,7 +119522,7 @@ exact (thm54_6c_loop_characterization_equiv
   Hcov
   He0
   Hloop).
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** from S54 Exercise 3 (line 871 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering. If alpha and beta are paths in B with **)
@@ -120083,6 +120333,7 @@ Qed.
 (** ex54_7_pi1_torus moved to S60 section (after thm60_1_pi1_product) where it uses the proved theorem directly **)
 
 (** Infrastructure: injectivity of covering map when total space is path connected and base is simply connected **)
+(** Proven Alice **)
 Theorem ex54_8_covering_injective : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te ->
@@ -120579,7 +120830,7 @@ claim Hx2x1 : x2 = x1.
 }
 symmetry.
 exact Hx2x1.
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** Infrastructure: homeomorphisms are open maps **)
 (** Proven Bob **)
@@ -123219,7 +123470,8 @@ Qed.
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
 (** If B is simply connected, then p is a homeomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Alice 55 **)
+(** Proven Alice **)
 Theorem ex54_8_simply_connected_base_homeomorphism : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te ->
@@ -123551,7 +123803,7 @@ apply andI.
       y
       Hbij
       HyB).
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** ======================= S55 RETRACTIONS AND FIXED POINTS ======================= **)
 
@@ -126018,6 +126270,7 @@ exact (andI
   HscWit).
 Qed.
 
+(** Proven Alice **)
 Theorem s54_pi1_nontrivial_from_two_fiber_points : forall E Te B Tb p e0 e1:set,
   covering_map E Te B Tb p ->
   simply_connected E Te ->
@@ -126195,7 +126448,7 @@ apply (xm
   exact (FalseE
     Hfalse
     (exists cls:set, cls :e G /\ cls <> idG)).
-Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
  (** Proven Bob **)
 Theorem s54_pi1_S1_nontrivial_from_two_lifts : forall e0 e1:set,
