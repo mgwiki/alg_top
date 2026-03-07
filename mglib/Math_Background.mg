@@ -160242,6 +160242,206 @@ claim HconnUnion : connected_space (Union (UPair A B)) (subspace_topology X Tx (
  exact HconnUnion.
 Qed.
 
+(** Infrastructure: finite chain of connected subsets has connected union. **)
+(** Proven Bob **)
+Lemma connected_union_chain : forall X Tx n seq:set,
+  topology_on X Tx ->
+  n :e omega ->
+  function_on seq (ordsucc n) (Power X) ->
+  (forall k:set, k :e ordsucc n ->
+    connected_space (apply_fun seq k) (subspace_topology X Tx (apply_fun seq k))) ->
+  (forall k:set, k :e n ->
+    apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty) ->
+  connected_space (Union {apply_fun seq k | k :e ordsucc n})
+    (subspace_topology X Tx (Union {apply_fun seq k | k :e ordsucc n})).
+let X Tx n seq.
+assume Htop HnOmega HseqFun Hconn Hinter.
+claim HnNat : nat_p n.
+{ exact (omega_nat_p n HnOmega). }
+set P := fun m:set =>
+  forall seqm:set,
+    function_on seqm (ordsucc m) (Power X) ->
+    (forall k:set, k :e ordsucc m ->
+      connected_space (apply_fun seqm k) (subspace_topology X Tx (apply_fun seqm k))) ->
+    (forall k:set, k :e m ->
+      apply_fun seqm k :/\: apply_fun seqm (ordsucc k) <> Empty) ->
+    connected_space (Union {apply_fun seqm k | k :e ordsucc m})
+      (subspace_topology X Tx (Union {apply_fun seqm k | k :e ordsucc m})).
+apply (nat_ind P).
+- (** Base case m = 0 **)
+  let seqm. assume HseqFun0 Hconn0 Hinter0.
+  set Fam0 := {apply_fun seqm k | k :e ordsucc 0}.
+  claim HFam0_eq : Fam0 = {apply_fun seqm 0}.
+  {
+    apply (set_ext Fam0 {apply_fun seqm 0}).
+    - let S. assume HS : S :e Fam0.
+      apply (ReplE_impred (ordsucc 0) (fun k:set => apply_fun seqm k) S HS).
+      let k. assume Hk Heq.
+      apply (ordsuccE 0 k Hk).
+      + assume Hk0 : k :e 0.
+        exact (FalseE (EmptyE k Hk0) (S :e {apply_fun seqm 0})).
+      + assume Hk0 : k = 0.
+        rewrite Heq.
+        rewrite Hk0.
+        exact (SingI (apply_fun seqm 0)).
+    - let S. assume HS : S :e {apply_fun seqm 0}.
+      claim HS0 : S = apply_fun seqm 0.
+      { exact (SingE (apply_fun seqm 0) S HS). }
+      rewrite HS0.
+      exact (ReplI (ordsucc 0) (fun k:set => apply_fun seqm k) 0 (ordsuccI2 0)).
+  }
+  claim HUnionEq : Union Fam0 = apply_fun seqm 0.
+  { rewrite HFam0_eq. exact (Union_singleton_eq (apply_fun seqm 0)). }
+  claim HtopEq :
+    subspace_topology X Tx (Union Fam0) =
+    subspace_topology X Tx (apply_fun seqm 0).
+  { rewrite HUnionEq. reflexivity. }
+  rewrite HUnionEq.
+  rewrite HtopEq.
+  exact (Hconn0 0 (ordsuccI2 0)).
+- (** Step m -> ordsucc m **)
+  let m. assume HmNat IH.
+  let seqm. assume HseqFunS HconnS HinterS.
+  set FamM := {apply_fun seqm k | k :e ordsucc m}.
+  set FamS := {apply_fun seqm k | k :e ordsucc (ordsucc m)}.
+  claim HseqFunM : function_on seqm (ordsucc m) (Power X).
+  { exact (function_on_subdomain seqm (ordsucc (ordsucc m)) (Power X) (ordsucc m)
+      HseqFunS (ordsuccI1 (ordsucc m))). }
+  claim HconnM : forall k:set, k :e ordsucc m ->
+    connected_space (apply_fun seqm k) (subspace_topology X Tx (apply_fun seqm k)).
+  {
+    let k. assume Hk.
+    exact (HconnS k (ordsuccI1 (ordsucc m) k Hk)).
+  }
+  claim HinterM : forall k:set, k :e m ->
+    apply_fun seqm k :/\: apply_fun seqm (ordsucc k) <> Empty.
+  {
+    let k. assume Hk.
+    exact (HinterS k (ordsuccI1 m k Hk)).
+  }
+  claim HconnA :
+    connected_space (Union FamM) (subspace_topology X Tx (Union FamM)).
+  { exact (IH seqm HseqFunM HconnM HinterM). }
+  set A := Union FamM.
+  set B := apply_fun seqm (ordsucc m).
+  claim HBsub : B c= X.
+  {
+    claim HBpow : B :e Power X.
+    { exact (HseqFunS (ordsucc m) (ordsuccI2 (ordsucc m))). }
+    exact (PowerE X B HBpow).
+  }
+  claim HAsub : A c= X.
+  {
+    let x. assume HxA : x :e A.
+    apply (UnionE FamM x HxA).
+    let S. assume HS : x :e S /\ S :e FamM.
+    claim HSFam : S :e FamM.
+    { exact (andER (x :e S) (S :e FamM) HS). }
+    apply (ReplE_impred (ordsucc m) (fun k:set => apply_fun seqm k) S HSFam).
+    let k. assume Hk Heq.
+    claim HSsub : S c= X.
+    {
+      claim HSpow : apply_fun seqm k :e Power X.
+      { exact (HseqFunS k (ordsuccI1 (ordsucc m) k Hk)). }
+      rewrite Heq.
+      exact (PowerE X (apply_fun seqm k) HSpow).
+    }
+    exact (HSsub x (andEL (x :e S) (S :e FamM) HS)).
+  }
+  claim HinterAB : A :/\: B <> Empty.
+  {
+    assume Hempty : A :/\: B = Empty.
+    claim HnIn : m :e ordsucc m.
+    { exact (ordsuccI2 m). }
+    claim Hnonempty : apply_fun seqm m :/\: apply_fun seqm (ordsucc m) <> Empty.
+    { exact (HinterS m HnIn). }
+    apply (nonempty_has_element (apply_fun seqm m :/\: apply_fun seqm (ordsucc m)) Hnonempty).
+    let t. assume Ht.
+    claim HtAB : t :e A :/\: B.
+    {
+      apply (binintersectI A B t).
+      - (** t in A **)
+        apply (UnionI FamM t (apply_fun seqm m)).
+        + exact (binintersectE1 (apply_fun seqm m) (apply_fun seqm (ordsucc m)) t Ht).
+        + exact (ReplI (ordsucc m) (fun k:set => apply_fun seqm k) m (ordsuccI2 m)).
+      - (** t in B **)
+        exact (binintersectE2 (apply_fun seqm m) (apply_fun seqm (ordsucc m)) t Ht).
+    }
+    claim HtEmpty : t :e Empty.
+    { rewrite <- Hempty. exact HtAB. }
+    exact (EmptyE t HtEmpty).
+  }
+  claim HconnB :
+    connected_space B (subspace_topology X Tx B).
+  { exact (HconnS (ordsucc m) (ordsuccI2 (ordsucc m))). }
+  claim HUnionEq : Union FamS = A :\/: B.
+  {
+    apply (set_ext (Union FamS) (A :\/: B)).
+    - let x. assume Hx : x :e Union FamS.
+      apply (UnionE FamS x Hx).
+      let S. assume HS : x :e S /\ S :e FamS.
+      claim HSFam : S :e FamS.
+      { exact (andER (x :e S) (S :e FamS) HS). }
+      apply (ReplE_impred (ordsucc (ordsucc m)) (fun k:set => apply_fun seqm k) S HSFam).
+      let k. assume Hk Heq.
+      apply (ordsuccE (ordsucc m) k Hk).
+      + assume HkIn : k :e ordsucc m.
+        claim HxIn : x :e apply_fun seqm k.
+        { rewrite <- Heq. exact (andEL (x :e S) (S :e FamS) HS). }
+        apply binunionI1.
+        apply (UnionI FamM x (apply_fun seqm k)).
+        * exact HxIn.
+        * exact (ReplI (ordsucc m) (fun k0:set => apply_fun seqm k0) k HkIn).
+      + assume HkEq : k = ordsucc m.
+        claim HxInB : x :e B.
+        {
+          claim HxInS : x :e S.
+          { exact (andEL (x :e S) (S :e FamS) HS). }
+          rewrite <- HkEq.
+          rewrite <- Heq.
+          exact HxInS.
+        }
+        apply binunionI2.
+        exact HxInB.
+    - let x. assume Hx : x :e (A :\/: B).
+      apply (binunionE A B x Hx).
+      + assume HxA : x :e A.
+        apply (UnionE FamM x HxA).
+        let S. assume HS : x :e S /\ S :e FamM.
+        claim HSFam : S :e FamM.
+        { exact (andER (x :e S) (S :e FamM) HS). }
+        apply (ReplE_impred (ordsucc m) (fun k:set => apply_fun seqm k) S HSFam).
+        let k. assume Hk Heq.
+        claim HxInSeqk : x :e apply_fun seqm k.
+        {
+          claim HxInS : x :e S.
+          { exact (andEL (x :e S) (S :e FamM) HS). }
+          rewrite <- Heq.
+          exact HxInS.
+        }
+        apply (UnionI FamS x (apply_fun seqm k)).
+        * exact HxInSeqk.
+        * exact (ReplI (ordsucc (ordsucc m)) (fun k0:set => apply_fun seqm k0) k
+            (ordsuccI1 (ordsucc m) k Hk)).
+      + assume HxB : x :e B.
+        apply (UnionI FamS x (apply_fun seqm (ordsucc m))).
+        * exact HxB.
+        * exact (ReplI (ordsucc (ordsucc m)) (fun k0:set => apply_fun seqm k0)
+            (ordsucc m) (ordsuccI2 (ordsucc m))).
+  }
+  claim HtopEq2 :
+    subspace_topology X Tx (Union FamS) =
+    subspace_topology X Tx (A :\/: B).
+  { rewrite HUnionEq. reflexivity. }
+  rewrite HUnionEq.
+  rewrite HtopEq2.
+  exact (connected_union_two_intersect X Tx A B Htop HAsub HBsub HconnA HconnB HinterAB).
+- exact HnNat.
+- exact HseqFun.
+- exact Hconn.
+- exact Hinter.
+Qed.
+
 (** Proven Bob **)
 (** Infrastructure: shrink the ball-cover property to a smaller radius. **)
 Lemma ball_cover_property_shrink : forall U V f r1 r2:set,
