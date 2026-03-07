@@ -82,6 +82,53 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772869429
+Created: 1772869429
+Status: PROPOSED
+
+Refers to Commit:
+  5ba15c4a32ce0f1d347edd7a66b3755c65b47fa2
+
+Target:
+  Line: 144713
+  Name: simplex3_set (Definition)
+
+Problem:
+  simplex3_set is defined using function_space, which only gives function_on.
+  Lemma simplex3_set_total_functional requires total_function_on and functional_graph,
+  which are not derivable from function_space (apply_fun uses Eps_i). This blocks
+  proofs using total_functional_graph_eq_graph_of_apply_fun.
+
+Proposed Replacement:
+  Definition simplex3_set : set :=
+    {v :e total_function_space 3 R |
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun v i) 3 = 1}.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772869429 | Bob: aligns simplex3_set with later use of total_function_on/functional_graph.
+
+Approvals:
+  - 1772869429 | Alice: NO
+  - 1772869429 | Bob: YES
+  - 1772869429 | Charlie: NO
+  - 1772869429 | Dave: NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772868965
 Created: 1772868965
 Status: PROPOSED
