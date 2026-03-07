@@ -16968,8 +16968,8 @@ Theorem Theorem_51_3_reparametrization : forall X Tx x0 x1 f a:set,
     continuous_map unit_interval unit_interval_topology X Tx f1 /\
     continuous_map unit_interval unit_interval_topology X Tx f2 /\
     apply_fun f1 0 = x0 /\ apply_fun f1 1 = apply_fun f a /\
-    apply_fun f2 0 = apply_fun f a /\ apply_fun f2 1 = x1 /\
-    path_homotopic X Tx x0 x1 f (path_concat f1 f2).
+      apply_fun f2 0 = apply_fun f a /\ apply_fun f2 1 = x1 /\
+      path_homotopic X Tx x0 x1 f (path_concat f1 f2).
 let X Tx x0 x1 f a.
 assume Hfcont Hf0 Hf1 HaI Ha0 Ha1.
 set f1 := compose_fun unit_interval (affine_fun_I 0 a) f.
@@ -19965,6 +19965,91 @@ exact (and7I
   Hf2_0
   Hf2_1
   Hreparam_hom).
+Qed.
+
+(** Infrastructure: affine_fun_I bounds on [x,y] for x<y **)
+(** This is used to reparameterize a subpath of f between x and y. **)
+(** Proven Bob **)
+Lemma affine_fun_I_interval_bounds : forall x y t:set,
+  x :e R -> y :e R -> Rlt x y ->
+  t :e unit_interval ->
+  Rle x (apply_fun (affine_fun_I x (add_SNo y (minus_SNo x))) t) /\
+  Rle (apply_fun (affine_fun_I x (add_SNo y (minus_SNo x))) t) y.
+let x y t.
+assume HxR HyR Hxlt HyI.
+set c := add_SNo y (minus_SNo x).
+claim HcR : c :e R.
+{
+  exact (real_add_SNo
+    y
+    HyR
+    (minus_SNo x)
+    (real_minus_SNo x HxR)).
+}
+claim Hcpos : Rlt 0 c.
+{ exact (Rlt_0_diff_of_lt x y Hxlt). }
+claim Hcnonneg : Rle 0 c.
+{ exact (Rlt_implies_Rle 0 c Hcpos). }
+claim Hmul_bounds :
+  Rle 0 (mul_SNo t c) /\ Rle (mul_SNo t c) c.
+{ exact (unit_interval_mul_const_bounds t c HyI HcR Hcnonneg). }
+claim Hmul_le : Rle (mul_SNo t c) c.
+{ exact (andER (Rle 0 (mul_SNo t c)) (Rle (mul_SNo t c) c) Hmul_bounds). }
+claim Hmul_ge0 : Rle 0 (mul_SNo t c).
+{ exact (andEL (Rle 0 (mul_SNo t c)) (Rle (mul_SNo t c) c) Hmul_bounds). }
+claim HxS : SNo x. { exact (real_SNo x HxR). }
+claim HyS : SNo y. { exact (real_SNo y HyR). }
+claim HcS : SNo c. { exact (real_SNo c HcR). }
+claim HtR : t :e R. { exact (unit_interval_sub_R t HyI). }
+claim HtS : SNo t. { exact (real_SNo t HtR). }
+claim HcposR : 0 < c.
+{ exact (RltE_lt 0 c Hcpos). }
+claim Haffine_apply :
+  apply_fun (affine_fun_I x c) t = add_SNo (mul_SNo t c) x.
+{
+  exact (affine_fun_I_apply x c t HxR HcR HcposR HyI).
+}
+claim Hlower :
+  Rle x (add_SNo (mul_SNo t c) x).
+{
+  claim Hstep : Rle (add_SNo 0 x) (add_SNo (mul_SNo t c) x).
+  { exact (Rle_add_SNo_1 0 (mul_SNo t c) x real_0
+      (real_mul_SNo t HtR c HcR) HxR Hmul_ge0). }
+  claim Hstep0 : Rle x (add_SNo 0 x).
+  { rewrite (add_SNo_0L x HxS). exact (Rle_refl x HxR). }
+  exact (Rle_tra x (add_SNo 0 x) (add_SNo (mul_SNo t c) x) Hstep0 Hstep).
+}
+claim Hupper :
+  Rle (add_SNo (mul_SNo t c) x) y.
+{
+  claim Hstep1 :
+    Rle (add_SNo x (mul_SNo t c)) (add_SNo x c).
+  {
+    exact (Rle_add_SNo_2 x (mul_SNo t c) c HxR
+      (real_mul_SNo t HtR c HcR) HcR Hmul_le).
+  }
+  claim Hstep2 :
+    add_SNo x (mul_SNo t c) = add_SNo (mul_SNo t c) x.
+  { exact (add_SNo_com x (mul_SNo t c) HxS (SNo_mul_SNo t c HtS HcS)). }
+  claim Hstep3 :
+    add_SNo x c = y.
+  {
+    claim Hc_eq : c = add_SNo (minus_SNo x) y.
+    {
+      rewrite (add_SNo_com y (minus_SNo x) HyS (SNo_minus_SNo x HxS)).
+      reflexivity.
+    }
+    rewrite Hc_eq.
+    exact (add_SNo_minus_L2' x y HxS HyS).
+  }
+  rewrite <- Hstep2.
+  rewrite <- Hstep3 at 2.
+  exact Hstep1.
+}
+rewrite Haffine_apply.
+apply andI.
+- exact Hlower.
+- exact Hupper.
 Qed.
 
 (** Helper: convex_in R A implies the convex combination property **)
@@ -37308,6 +37393,18 @@ Definition star_convex : set -> set -> prop := fun A a0 =>
   (forall a:set, a :e A ->
     forall t:set, t :e unit_interval ->
       add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a) :e A).
+
+(** Infrastructure: unfold star_convex **)
+(** Proven Bob **)
+Lemma star_convex_unfold : forall A a0:set,
+  star_convex A a0 =
+  (A c= R /\ a0 :e A /\
+   (forall a:set, a :e A ->
+     forall t:set, t :e unit_interval ->
+       add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a) :e A)).
+let A a0.
+reflexivity.
+Qed.
 
 (** from S52 Exercise 1a (line 495 in algtop.tex) **)
 (** LATEX VERSION: Find a star convex set that is not convex. **)
@@ -159906,6 +160003,202 @@ Admitted.
 
 (** ======================= S59 THE FUNDAMENTAL GROUP OF S^n ======================= **)
 
+(** Infrastructure: unit_interval is convex in R **)
+(** Proven Bob **)
+Lemma unit_interval_convex_in : convex_in R unit_interval.
+claim Hsub : unit_interval c= R.
+{ exact unit_interval_sub_R. }
+claim Hconn : connected_space unit_interval (subspace_topology R R_standard_topology unit_interval).
+{ exact unit_interval_connected. }
+exact (connected_subset_R_convex_in unit_interval Hsub Hconn).
+Qed.
+
+(** Infrastructure: unit_interval is star-convex about any point **)
+(** Proven Bob **)
+Lemma unit_interval_star_convex : forall a0:set, a0 :e unit_interval ->
+  star_convex unit_interval a0.
+let a0. assume Ha0.
+claim Hconv : convex_in R unit_interval.
+{ exact unit_interval_convex_in. }
+rewrite (star_convex_unfold unit_interval a0).
+apply andI.
+- apply andI.
+  + exact unit_interval_sub_R.
+  + exact Ha0.
+- let a. assume Ha.
+  let t. assume Ht.
+  exact (convex_in_R_combination unit_interval a0 a t Hconv Ha0 Ha Ht).
+Qed.
+
+(** Infrastructure: open balls in unit_interval (r<1) are convex in R **)
+(** Proven Bob **)
+Lemma open_ball_unit_interval_convex_in_lt1 :
+  forall c r:set,
+    c :e unit_interval ->
+    r :e R -> Rlt 0 r -> Rlt r 1 ->
+    convex_in R (open_ball unit_interval R_bounded_metric c r).
+let c r.
+assume HcI HrR Hrpos Hrlt1.
+claim HsubR : open_ball unit_interval R_bounded_metric c r c= R.
+{
+  exact (Subq_tra
+    (open_ball unit_interval R_bounded_metric c r)
+    unit_interval
+    R
+    (open_ball_subset_X unit_interval R_bounded_metric c r)
+    unit_interval_sub_R).
+}
+claim HtopR : topology_on R R_standard_topology.
+{ exact R_standard_topology_is_topology_local. }
+claim Hsub_eq :
+  subspace_topology unit_interval unit_interval_topology
+    (open_ball unit_interval R_bounded_metric c r)
+  =
+  subspace_topology R R_standard_topology
+    (open_ball unit_interval R_bounded_metric c r).
+{
+  exact (ex16_1_subspace_transitive
+    R R_standard_topology unit_interval
+    (open_ball unit_interval R_bounded_metric c r)
+    HtopR unit_interval_sub_R
+    (open_ball_subset_X unit_interval R_bounded_metric c r)).
+}
+claim Hconn :
+  connected_space
+    (open_ball unit_interval R_bounded_metric c r)
+    (subspace_topology R R_standard_topology
+      (open_ball unit_interval R_bounded_metric c r)).
+{
+  rewrite <- Hsub_eq.
+  exact (open_ball_unit_interval_connected_lt1 c r HcI HrR Hrpos Hrlt1).
+}
+exact (connected_subset_R_convex_in
+  (open_ball unit_interval R_bounded_metric c r) HsubR Hconn).
+Qed.
+
+(** Infrastructure: open balls in unit_interval (r<1) are star-convex about any point **)
+(** Proven Bob **)
+Lemma open_ball_unit_interval_star_convex_lt1 :
+  forall c r x:set,
+    c :e unit_interval ->
+    r :e R -> Rlt 0 r -> Rlt r 1 ->
+    x :e open_ball unit_interval R_bounded_metric c r ->
+    star_convex (open_ball unit_interval R_bounded_metric c r) x.
+let c r x.
+assume HcI HrR Hrpos Hrlt1 Hx.
+claim Hconv : convex_in R (open_ball unit_interval R_bounded_metric c r).
+{ exact (open_ball_unit_interval_convex_in_lt1 c r HcI HrR Hrpos Hrlt1). }
+rewrite (star_convex_unfold (open_ball unit_interval R_bounded_metric c r) x).
+apply andI.
+- apply andI.
+  + exact (Subq_tra
+      (open_ball unit_interval R_bounded_metric c r)
+      unit_interval
+      R
+      (open_ball_subset_X unit_interval R_bounded_metric c r)
+      unit_interval_sub_R).
+  + exact Hx.
+- let a. assume Ha.
+  let t. assume Ht.
+  exact (convex_in_R_combination
+    (open_ball unit_interval R_bounded_metric c r)
+    x a t Hconv Hx Ha Ht).
+Qed.
+
+(** Infrastructure: any path in unit_interval from 0 to 1 is homotopic to the identity **)
+(** Proven Bob **)
+Lemma unit_interval_path_homotopic_to_id :
+  forall h:set,
+  continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h ->
+  apply_fun h 0 = 0 ->
+  apply_fun h 1 = 1 ->
+  path_homotopic unit_interval unit_interval_topology 0 1 h
+    (graph unit_interval (fun t:set => t)).
+let h.
+assume Hhcont Hh0 Hh1.
+claim HsubR : unit_interval c= R.
+{ exact unit_interval_sub_R. }
+claim Hconv : convex_in R unit_interval.
+{ exact unit_interval_convex_in. }
+set idI := graph unit_interval (fun t:set => t).
+claim HidCont :
+  continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology idI.
+{ exact (identity_continuous unit_interval unit_interval_topology unit_interval_topology_on). }
+claim Hid0 : apply_fun idI 0 = 0.
+{ exact (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval). }
+claim Hid1 : apply_fun idI 1 = 1.
+{ exact (apply_fun_graph unit_interval (fun t:set => t) 1 one_in_unit_interval). }
+exact (Example_51_1_convex_paths_homotopic
+  unit_interval
+  0
+  1
+  h
+  idI
+  HsubR
+  Hconv
+  Hhcont
+  HidCont
+  Hh0
+  Hh1
+  Hid0
+  Hid1).
+Qed.
+
+(** Infrastructure: precompose by homotopic paths (via postcompose) **)
+(** Proven Bob **)
+Lemma path_homotopic_precompose :
+  forall X Tx x0 x1 f h h':set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  apply_fun f 0 = x0 ->
+  apply_fun f 1 = x1 ->
+  path_homotopic unit_interval unit_interval_topology 0 1 h h' ->
+  path_homotopic X Tx x0 x1
+    (compose_fun unit_interval h f)
+    (compose_fun unit_interval h' f).
+let X Tx x0 x1 f h h'.
+assume HfCont Hf0 Hf1 HhHom.
+exact (path_homotopic_postcompose
+  unit_interval
+  unit_interval_topology
+  X
+  Tx
+  0
+  1
+  x0
+  x1
+  h
+  h'
+  f
+  HhHom
+  HfCont
+  Hf0
+  Hf1).
+Qed.
+
+(** Infrastructure: segment between two points of a small ball stays in the ball **)
+(** Proven Bob **)
+Lemma open_ball_unit_interval_segment_continuous_lt1 :
+  forall c r x y:set,
+    c :e unit_interval ->
+    r :e R -> Rlt 0 r -> Rlt r 1 ->
+    x :e open_ball unit_interval R_bounded_metric c r ->
+    y :e open_ball unit_interval R_bounded_metric c r ->
+    exists seg:set,
+      continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c r)) seg /\
+      apply_fun seg 0 = x /\
+      apply_fun seg 1 = y.
+let c r x y.
+assume HcI HrR Hrpos Hrlt1 Hx Hy.
+claim Hstar :
+  star_convex (open_ball unit_interval R_bounded_metric c r) x.
+{ exact (open_ball_unit_interval_star_convex_lt1 c r x HcI HrR Hrpos Hrlt1 Hx). }
+exact (star_convex_segment_continuous
+  (open_ball unit_interval R_bounded_metric c r) x y Hstar Hy).
+Qed.
+
 (** Infrastructure: points between two points of an open ball in unit_interval stay in the ball (for r < 1). **)
 (** Proven Bob **)
 Lemma open_ball_unit_interval_between : forall c r x y z:set,
@@ -160464,6 +160757,250 @@ apply andI.
     * exact Hr1pos.
   + exact Hr1lt.
 - exact Hr1lt1.
+Qed.
+
+(** Helper: if a loop lies in a subspace A, its class is in the image of inclusion **)
+(** Proven Bob **)
+Lemma loop_in_subspace_induced_class : forall X Tx A x0 f:set,
+  topology_on X Tx ->
+  A :e Tx ->
+  x0 :e A ->
+  f :e loop_space X Tx x0 ->
+  (forall t:set, t :e unit_interval -> apply_fun f t :e A) ->
+  exists cls:set, cls :e fundamental_group A (subspace_topology X Tx A) x0 /\
+    apply_fun (induced_homomorphism A (subspace_topology X Tx A) x0 X Tx x0
+      (graph A (fun x:set => x))) cls = path_homotopy_class_loop X Tx x0 f.
+let X Tx A x0 f.
+assume Htop HA Hx0A HfLoop HallA.
+claim HAsub : A c= X.
+{ exact (topology_elem_subset X Tx A Htop HA). }
+claim HtopA : topology_on A (subspace_topology X Tx A).
+{ exact (subspace_topology_is_topology X Tx A Htop HAsub). }
+claim HfLoopAt : loop_at X Tx x0 f.
+{ exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f HfLoopAt). }
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
+claim Hf1 : apply_fun f 1 = x0.
+{ exact (loop_at_at_one X Tx x0 f HfLoopAt). }
+(** Restrict f to A **)
+claim HfContA : continuous_map unit_interval unit_interval_topology A (subspace_topology X Tx A) f.
+{ exact (continuous_map_range_restrict unit_interval unit_interval_topology X Tx f A HfCont HAsub HallA). }
+set f_A := graph unit_interval (fun t:set => apply_fun f t).
+claim HfA_total : f_A :e total_function_space unit_interval A.
+{
+  exact (graph_in_total_function_space
+    unit_interval A (fun t:set => apply_fun f t) HallA).
+}
+claim HfA_fun : f_A :e function_space unit_interval A.
+{
+  exact (total_function_space_sub_function_space unit_interval A f_A HfA_total).
+}
+claim HfA_apply : forall t:set, t :e unit_interval ->
+  apply_fun f_A t = apply_fun f t.
+{
+  let t. assume Ht.
+  exact (apply_fun_graph unit_interval (fun t':set => apply_fun f t') t Ht).
+}
+claim HfA_0 : apply_fun f_A 0 = x0.
+{
+  rewrite (HfA_apply 0 zero_in_unit_interval).
+  exact Hf0.
+}
+claim HfA_1 : apply_fun f_A 1 = x0.
+{
+  rewrite (HfA_apply 1 one_in_unit_interval).
+  exact Hf1.
+}
+claim HfA_cont : continuous_map unit_interval unit_interval_topology A (subspace_topology X Tx A) f_A.
+{
+  prove ((topology_on unit_interval unit_interval_topology /\
+    topology_on A (subspace_topology X Tx A)) /\
+    function_on f_A unit_interval A) /\
+    (forall V0:set, V0 :e (subspace_topology X Tx A) ->
+      preimage_of unit_interval f_A V0 :e unit_interval_topology).
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * exact unit_interval_topology_on.
+      * exact HtopA.
+    + exact (total_function_on_function_on f_A unit_interval A
+        (total_function_space_total_function_on_algtop unit_interval A f_A HfA_total)).
+  - let V0. assume HV0 : V0 :e (subspace_topology X Tx A).
+    claim Hpre_eq : preimage_of unit_interval f_A V0 = preimage_of unit_interval f V0.
+    {
+      apply (set_ext (preimage_of unit_interval f_A V0) (preimage_of unit_interval f V0)).
+      - let t. assume Ht : t :e preimage_of unit_interval f_A V0.
+        claim HtI : t :e unit_interval.
+        { exact (SepE1 unit_interval (fun x:set => apply_fun f_A x :e V0) t Ht). }
+        claim Hval : apply_fun f_A t :e V0.
+        { exact (SepE2 unit_interval (fun x:set => apply_fun f_A x :e V0) t Ht). }
+        claim Hval2 : apply_fun f t :e V0.
+        { rewrite <- (HfA_apply t HtI). exact Hval. }
+        exact (SepI unit_interval (fun x:set => apply_fun f x :e V0) t HtI Hval2).
+      - let t. assume Ht : t :e preimage_of unit_interval f V0.
+        claim HtI : t :e unit_interval.
+        { exact (SepE1 unit_interval (fun x:set => apply_fun f x :e V0) t Ht). }
+        claim Hval : apply_fun f t :e V0.
+        { exact (SepE2 unit_interval (fun x:set => apply_fun f x :e V0) t Ht). }
+        claim Hval2 : apply_fun f_A t :e V0.
+        { rewrite (HfA_apply t HtI). exact Hval. }
+        exact (SepI unit_interval (fun x:set => apply_fun f_A x :e V0) t HtI Hval2).
+    }
+    rewrite Hpre_eq.
+    exact (continuous_map_preimage unit_interval unit_interval_topology
+      A (subspace_topology X Tx A) f HfContA V0 HV0).
+}
+claim HfA_loop_at : loop_at A (subspace_topology X Tx A) x0 f_A.
+{
+  prove (continuous_map unit_interval unit_interval_topology A (subspace_topology X Tx A) f_A /\
+    apply_fun f_A 0 = x0) /\ apply_fun f_A 1 = x0.
+  apply andI.
+  - apply andI.
+    + exact HfA_cont.
+    + exact HfA_0.
+  - exact HfA_1.
+}
+claim HfA_loop : f_A :e loop_space A (subspace_topology X Tx A) x0.
+{
+  exact (SepI
+    (function_space unit_interval A)
+    (fun g:set => loop_at A (subspace_topology X Tx A) x0 g)
+    f_A
+    HfA_fun
+    HfA_loop_at).
+}
+set cls := path_homotopy_class_loop A (subspace_topology X Tx A) x0 f_A.
+set f_eps := Eps_i (fun g:set => g :e cls).
+claim HclsMem : cls :e fundamental_group A (subspace_topology X Tx A) x0.
+{ exact (path_homotopy_class_in_fundamental_group A (subspace_topology X Tx A) x0 f_A HfA_loop). }
+claim HincA_cont : continuous_map A (subspace_topology X Tx A) X Tx (graph A (fun x:set => x)).
+{ exact (subspace_inclusion_continuous X Tx A Htop HAsub). }
+claim HincA_x0 : apply_fun (graph A (fun x:set => x)) x0 = x0.
+{ exact (apply_fun_graph A (fun x:set => x) x0 Hx0A). }
+claim HepsHom :
+  path_homotopic A (subspace_topology X Tx A) x0 x0 f_A f_eps.
+{
+  exact (eps_homotopic_to_rep_early
+    A
+    (subspace_topology X Tx A)
+    x0
+    f_A
+    HtopA
+    HfA_loop).
+}
+claim HpostHom :
+  path_homotopic X Tx x0 x0
+    (compose_fun unit_interval f_A (graph A (fun x:set => x)))
+    (compose_fun unit_interval f_eps (graph A (fun x:set => x))).
+{
+  exact (path_homotopic_postcompose
+    A
+    (subspace_topology X Tx A)
+    X
+    Tx
+    x0
+    x0
+    x0
+    x0
+    f_A
+    f_eps
+    (graph A (fun x:set => x))
+    HepsHom
+    HincA_cont
+    HincA_x0
+    HincA_x0).
+}
+claim HclassEq :
+  path_homotopy_class_loop X Tx x0
+    (compose_fun unit_interval f_A (graph A (fun x:set => x)))
+  = path_homotopy_class_loop X Tx x0
+    (compose_fun unit_interval f_eps (graph A (fun x:set => x))).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    (compose_fun unit_interval f_A (graph A (fun x:set => x)))
+    (compose_fun unit_interval f_eps (graph A (fun x:set => x)))
+    HpostHom).
+}
+claim HincA_cls :
+  apply_fun (induced_homomorphism A (subspace_topology X Tx A) x0 X Tx x0
+    (graph A (fun x:set => x))) cls
+  = path_homotopy_class_loop X Tx x0 (compose_fun unit_interval f_A (graph A (fun x:set => x))).
+{
+  claim HincA_cls_eps :
+    apply_fun (induced_homomorphism A (subspace_topology X Tx A) x0 X Tx x0
+      (graph A (fun x:set => x))) cls
+    = path_homotopy_class_loop X Tx x0 (compose_fun unit_interval f_eps (graph A (fun x:set => x))).
+  {
+    exact (induced_homomorphism_apply
+      A
+      (subspace_topology X Tx A)
+      x0
+      X
+      Tx
+      x0
+      (graph A (fun x:set => x))
+      cls
+      HclsMem).
+  }
+  rewrite HincA_cls_eps.
+  symmetry.
+  exact HclassEq.
+}
+claim Hcomp_pw : forall t:set, t :e unit_interval ->
+  apply_fun (compose_fun unit_interval f_A (graph A (fun x:set => x))) t = apply_fun f t.
+{
+  let t. assume Ht.
+  rewrite (compose_fun_apply unit_interval f_A (graph A (fun x:set => x)) t Ht).
+  rewrite (HfA_apply t Ht).
+  claim HftA : apply_fun f t :e A.
+  { exact (HallA t Ht). }
+  rewrite (apply_fun_graph A (fun x:set => x) (apply_fun f t) HftA).
+  reflexivity.
+}
+claim Hcomp_cont : continuous_map unit_interval unit_interval_topology X Tx
+  (compose_fun unit_interval f_A (graph A (fun x:set => x))).
+{ exact (composition_continuous unit_interval unit_interval_topology
+    A (subspace_topology X Tx A) X Tx f_A (graph A (fun x:set => x))
+    HfA_cont HincA_cont). }
+claim Hcomp_0 : apply_fun (compose_fun unit_interval f_A (graph A (fun x:set => x))) 0 = x0.
+{ rewrite (Hcomp_pw 0 zero_in_unit_interval). exact Hf0. }
+claim Hcomp_1 : apply_fun (compose_fun unit_interval f_A (graph A (fun x:set => x))) 1 = x0.
+{ rewrite (Hcomp_pw 1 one_in_unit_interval). exact Hf1. }
+claim Hcomp_hom_f : path_homotopic X Tx x0 x0
+  (compose_fun unit_interval f_A (graph A (fun x:set => x))) f.
+{
+  exact (path_homotopic_of_pointwise_equal
+    X
+    Tx
+    x0
+    x0
+    (compose_fun unit_interval f_A (graph A (fun x:set => x)))
+    f
+    Hcomp_cont
+    HfCont
+    Hcomp_0
+    Hcomp_1
+    Hf0
+    Hf1
+    Hcomp_pw).
+}
+claim Hclass_eq :
+  path_homotopy_class_loop X Tx x0
+    (compose_fun unit_interval f_A (graph A (fun x:set => x)))
+  = path_homotopy_class_loop X Tx x0 f.
+{ exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+    (compose_fun unit_interval f_A (graph A (fun x:set => x))) f Hcomp_hom_f). }
+witness cls.
+rewrite HincA_cls.
+rewrite Hclass_eq.
+apply andI.
+- exact HclsMem.
+- reflexivity.
 Qed.
 
 (** Core word construction: given ball property for a loop, produce word decomposition.
@@ -161853,6 +162390,321 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
       rewrite Hseqn.
       exact H1U1.
     }
+    (** Natural-number structure on n (for later endpoints and unions). **)
+    claim HnNat : nat_p n.
+    { exact (omega_nat_p n HnOmega). }
+    claim Hordsucc_sub_omega : ordsucc n c= omega.
+    {
+      let k. assume Hk.
+      apply (ordsuccE n k Hk).
+      - assume Hk_in_n.
+        exact (ordinal_TransSet omega omega_ordinal n HnOmega k Hk_in_n).
+      - assume Hk_eq.
+        rewrite Hk_eq. exact HnOmega.
+    }
+    (** The chain union equals the whole unit interval (connected union with endpoints). **)
+    set UnionSeq := Union {apply_fun seq k | k :e ordsucc n}.
+    claim HBallFamSubPow : BallFam c= Power unit_interval.
+    {
+      let B. assume HB : B :e BallFam.
+      apply (ReplE_impred unit_interval
+        (fun x0:set => open_ball unit_interval R_bounded_metric x0 r1)
+        B HB).
+      let c. assume HcI Heq.
+      rewrite Heq.
+      apply PowerI.
+      exact (open_ball_subset_X unit_interval R_bounded_metric c r1).
+    }
+    claim HseqFunI : function_on seq (ordsucc n) (Power unit_interval).
+    {
+      exact (function_on_codomain seq (ordsucc n) BallFam (Power unit_interval)
+        HseqFun HBallFamSubPow).
+    }
+    claim Hseq_conn :
+      forall k:set, k :e ordsucc n ->
+        connected_space (apply_fun seq k)
+          (subspace_topology unit_interval unit_interval_topology (apply_fun seq k)).
+    {
+      let k. assume Hk.
+      claim Hseqk_ball : apply_fun seq k :e BallFam.
+      { exact (HseqFun k Hk). }
+      apply (ReplE_impred unit_interval
+        (fun x0:set => open_ball unit_interval R_bounded_metric x0 r1)
+        (apply_fun seq k) Hseqk_ball).
+      let c. assume HcI Heq.
+      rewrite Heq.
+      exact (open_ball_unit_interval_connected_lt1 c r1 HcI Hr1R Hr1pos Hr1lt1).
+    }
+    claim Hunion_conn :
+      connected_space UnionSeq
+        (subspace_topology unit_interval unit_interval_topology UnionSeq).
+    {
+      exact (connected_union_chain unit_interval unit_interval_topology n seq
+        unit_interval_topology_on HnOmega HseqFunI Hseq_conn HseqInter).
+    }
+    claim Hunion_subI : UnionSeq c= unit_interval.
+    {
+      let t. assume HtU : t :e UnionSeq.
+      apply (UnionE {apply_fun seq k | k :e ordsucc n} t HtU).
+      let B. assume HBpack : t :e B /\ B :e {apply_fun seq k | k :e ordsucc n}.
+      claim HtB : t :e B.
+      { exact (andEL (t :e B) (B :e {apply_fun seq k | k :e ordsucc n}) HBpack). }
+      claim HB : B :e {apply_fun seq k | k :e ordsucc n}.
+      { exact (andER (t :e B) (B :e {apply_fun seq k | k :e ordsucc n}) HBpack). }
+      apply (ReplE_impred (ordsucc n) (fun k:set => apply_fun seq k) B HB).
+      let k. assume Hk Heq.
+      claim Hseqk_ball : apply_fun seq k :e BallFam.
+      { exact (HseqFun k Hk). }
+      claim Ht_in_seqk : t :e apply_fun seq k.
+      { rewrite <- Heq. exact HtB. }
+      apply (ReplE_impred unit_interval
+        (fun x0:set => open_ball unit_interval R_bounded_metric x0 r1)
+        (apply_fun seq k) Hseqk_ball).
+      let c. assume HcI HeqB.
+      claim Ht_in_ball : t :e open_ball unit_interval R_bounded_metric c r1.
+      { rewrite <- HeqB. exact Ht_in_seqk. }
+      exact (open_ball_subset_X unit_interval R_bounded_metric c r1 t Ht_in_ball).
+    }
+    claim H0_in_union : 0 :e UnionSeq.
+    {
+      apply (UnionI {apply_fun seq k | k :e ordsucc n} 0 (apply_fun seq 0)).
+      - exact H0_in_seq0.
+      - apply (ReplI (ordsucc n) (fun k:set => apply_fun seq k) 0).
+        exact (nat_0_in_ordsucc n HnNat).
+    }
+    claim H1_in_union : 1 :e UnionSeq.
+    {
+      apply (UnionI {apply_fun seq k | k :e ordsucc n} 1 (apply_fun seq n)).
+      - exact H1_in_seqn.
+      - apply (ReplI (ordsucc n) (fun k:set => apply_fun seq k) n).
+        exact (ordsuccI2 n).
+    }
+    claim Hunion_eq : UnionSeq = unit_interval.
+    {
+      exact (connected_subset_unit_interval_endpoints_all UnionSeq
+        Hunion_subI Hunion_conn H0_in_union H1_in_union).
+    }
+    (** Every point of unit_interval lies in some chain ball. **)
+    claim Hcover_seq :
+      forall t:set, t :e unit_interval ->
+        exists k:set, k :e ordsucc n /\ t :e apply_fun seq k.
+    {
+      let t. assume HtI.
+      claim HtU : t :e UnionSeq.
+      { rewrite Hunion_eq. exact HtI. }
+      apply (UnionE {apply_fun seq k | k :e ordsucc n} t HtU).
+      let B. assume HBpack : t :e B /\ B :e {apply_fun seq k | k :e ordsucc n}.
+      claim HtB : t :e B.
+      { exact (andEL (t :e B) (B :e {apply_fun seq k | k :e ordsucc n}) HBpack). }
+      claim HB : B :e {apply_fun seq k | k :e ordsucc n}.
+      { exact (andER (t :e B) (B :e {apply_fun seq k | k :e ordsucc n}) HBpack). }
+      apply (ReplE_impred (ordsucc n) (fun k:set => apply_fun seq k) B HB).
+      let k. assume Hk Heq.
+      witness k.
+      apply andI.
+      - exact Hk.
+      - rewrite <- Heq. exact HtB.
+    }
+    claim Hchain_allU :
+      (forall k:set, k :e ordsucc n ->
+        forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) ->
+      forall t:set, t :e unit_interval -> apply_fun f t :e U.
+    {
+      assume HallUall.
+      let t. assume HtI.
+      apply (Hcover_seq t HtI).
+      let k. assume Hkpack.
+      claim Hk : k :e ordsucc n.
+      { exact (andEL (k :e ordsucc n) (t :e apply_fun seq k) Hkpack). }
+      claim Ht_in : t :e apply_fun seq k.
+      { exact (andER (k :e ordsucc n) (t :e apply_fun seq k) Hkpack). }
+      exact (HallUall k Hk t Ht_in).
+    }
+    claim Hchain_allV :
+      (forall k:set, k :e ordsucc n ->
+        forall t:set, t :e apply_fun seq k -> apply_fun f t :e V) ->
+      forall t:set, t :e unit_interval -> apply_fun f t :e V.
+    {
+      assume HallVall.
+      let t. assume HtI.
+      apply (Hcover_seq t HtI).
+      let k. assume Hkpack.
+      claim Hk : k :e ordsucc n.
+      { exact (andEL (k :e ordsucc n) (t :e apply_fun seq k) Hkpack). }
+      claim Ht_in : t :e apply_fun seq k.
+      { exact (andER (k :e ordsucc n) (t :e apply_fun seq k) Hkpack). }
+      exact (HallVall k Hk t Ht_in).
+    }
+    set Uset := {k :e ordsucc n | forall t:set, t :e apply_fun seq k -> apply_fun f t :e U}.
+    set Vset := {k :e ordsucc n | forall t:set, t :e apply_fun seq k -> apply_fun f t :e V}.
+    claim HUset_sub_omega : Uset c= omega.
+    {
+      let k. assume HkU : k :e Uset.
+      claim HkOn : k :e ordsucc n.
+      { exact (SepE1 (ordsucc n) (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) k HkU). }
+      exact (Hordsucc_sub_omega k HkOn).
+    }
+    claim HVset_sub_omega : Vset c= omega.
+    {
+      let k. assume HkV : k :e Vset.
+      claim HkOn : k :e ordsucc n.
+      { exact (SepE1 (ordsucc n) (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) k HkV). }
+      exact (Hordsucc_sub_omega k HkOn).
+    }
+    (** Each chain ball is wholly in U or wholly in V. **)
+    claim Hball_map :
+      forall k:set, k :e ordsucc n ->
+        (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) \/
+        (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V).
+    {
+      let k. assume Hk.
+      claim Hseqk_ball : apply_fun seq k :e BallFam.
+      { exact (HseqFun k Hk). }
+      apply (ReplE_impred unit_interval
+        (fun x:set => open_ball unit_interval R_bounded_metric x r1)
+        (apply_fun seq k) Hseqk_ball).
+      let c. assume HcI Heq.
+      claim HcBall :
+        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e U) \/
+        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e V).
+      { exact (Hball_image1 c HcI). }
+      apply HcBall.
+      - assume HallU.
+        apply orIL.
+        let t. assume Ht.
+        claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r1.
+        { rewrite <- Heq. exact Ht. }
+        exact (HallU t Ht_ball).
+      - assume HallV.
+        apply orIR.
+        let t. assume Ht.
+        claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r1.
+        { rewrite <- Heq. exact Ht. }
+        exact (HallV t Ht_ball).
+    }
+    claim Hball_map_index :
+      forall k:set, k :e ordsucc n -> k :e Uset \/ k :e Vset.
+    {
+      let k. assume Hk.
+      apply (Hball_map k Hk).
+      - assume HallU.
+        apply orIL.
+        exact (SepI (ordsucc n) (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) k Hk HallU).
+      - assume HallV.
+        apply orIR.
+        exact (SepI (ordsucc n) (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) k Hk HallV).
+    }
+    claim HUset_nonempty : Uset <> Empty.
+    {
+      assume HUempty : Uset = Empty.
+      claim HallVall :
+        forall k:set, k :e ordsucc n ->
+          forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
+      {
+        let k. assume Hk.
+        let t. assume Ht.
+        apply (Hball_map_index k Hk).
+        - assume HkU : k :e Uset.
+          claim HkEmpty : k :e Empty.
+          { exact (eq_subst_mem_set k Uset Empty HkU HUempty). }
+          claim Hfalse : False.
+          { exact (EmptyE k HkEmpty). }
+          exact (FalseE Hfalse (apply_fun f t :e V)).
+        - assume HkV : k :e Vset.
+          exact (SepE2 (ordsucc n) (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) k HkV t Ht).
+      }
+      exact (HnotAllV (Hchain_allV HallVall)).
+    }
+    claim HVset_nonempty : Vset <> Empty.
+    {
+      assume HVempty : Vset = Empty.
+      claim HallUall :
+        forall k:set, k :e ordsucc n ->
+          forall t:set, t :e apply_fun seq k -> apply_fun f t :e U.
+      {
+        let k. assume Hk.
+        let t. assume Ht.
+        apply (Hball_map_index k Hk).
+        - assume HkU : k :e Uset.
+          exact (SepE2 (ordsucc n) (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) k HkU t Ht).
+        - assume HkV : k :e Vset.
+          claim HkEmpty : k :e Empty.
+          { exact (eq_subst_mem_set k Vset Empty HkV HVempty). }
+          claim Hfalse : False.
+          { exact (EmptyE k HkEmpty). }
+          exact (FalseE Hfalse (apply_fun f t :e U)).
+      }
+      exact (HnotAllU (Hchain_allU HallUall)).
+    }
+    claim HUset_least :
+      exists m:set, m :e Uset /\ forall k:set, k :e Uset -> (m :e k \/ m = k).
+    { exact (omega_nonempty_subset_has_least Uset HUset_sub_omega HUset_nonempty). }
+    claim HVset_least :
+      exists m:set, m :e Vset /\ forall k:set, k :e Vset -> (m :e k \/ m = k).
+    { exact (omega_nonempty_subset_has_least Vset HVset_sub_omega HVset_nonempty). }
+    claim Hnneq0 : n <> 0.
+    {
+      assume Hn0 : n = 0.
+      claim H0inOn : 0 :e ordsucc n.
+      { exact (nat_0_in_ordsucc n HnNat). }
+      apply (Hball_map 0 H0inOn).
+      - assume HallU.
+        claim HallUall :
+          forall k:set, k :e ordsucc n ->
+            forall t:set, t :e apply_fun seq k -> apply_fun f t :e U.
+        {
+          let k. assume Hk.
+          let t. assume Ht.
+          claim Hk0 : k = 0.
+          {
+            claim Hk1 : k :e ordsucc 0.
+            {
+              rewrite <- Hn0.
+              exact Hk.
+            }
+            claim Hk2 : k :e 1.
+            { exact (eq_subst_mem_set k (ordsucc 0) 1 Hk1 ordsucc_0_eq_1_nat). }
+            claim Hk3 : k :e {0}.
+            { exact (eq_subst_mem_set k 1 {0} Hk2 eq_1_Sing0). }
+            exact (SingE 0 k Hk3).
+          }
+          claim Ht0 : t :e apply_fun seq 0.
+          {
+            rewrite <- Hk0.
+            exact Ht.
+          }
+          exact (HallU t Ht0).
+        }
+        exact (HnotAllU (Hchain_allU HallUall)).
+      - assume HallV.
+        claim HallVall :
+          forall k:set, k :e ordsucc n ->
+            forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
+        {
+          let k. assume Hk.
+          let t. assume Ht.
+          claim Hk0 : k = 0.
+          {
+            claim Hk1 : k :e ordsucc 0.
+            {
+              rewrite <- Hn0.
+              exact Hk.
+            }
+            claim Hk2 : k :e 1.
+            { exact (eq_subst_mem_set k (ordsucc 0) 1 Hk1 ordsucc_0_eq_1_nat). }
+            claim Hk3 : k :e {0}.
+            { exact (eq_subst_mem_set k 1 {0} Hk2 eq_1_Sing0). }
+            exact (SingE 0 k Hk3).
+          }
+          claim Ht0 : t :e apply_fun seq 0.
+          {
+            rewrite <- Hk0.
+            exact Ht.
+          }
+          exact (HallV t Ht0).
+        }
+        exact (HnotAllV (Hchain_allV HallVall)).
+    }
     claim Hchain_point :
       forall k:set, k :e n ->
         exists t:set, t :e unit_interval /\
@@ -161989,37 +162841,6 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         Ht_left
         Ht_right).
     }
-    (** Each chain ball is wholly in U or wholly in V. **)
-    claim Hball_map :
-      forall k:set, k :e ordsucc n ->
-        (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) \/
-        (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V).
-    {
-      let k. assume Hk.
-      claim Hseqk_ball : apply_fun seq k :e BallFam.
-      { exact (HseqFun k Hk). }
-      apply (ReplE_impred unit_interval
-        (fun x:set => open_ball unit_interval R_bounded_metric x r1)
-        (apply_fun seq k) Hseqk_ball).
-      let c. assume HcI Heq.
-      claim HcBall :
-        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e U) \/
-        (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e V).
-      { exact (Hball_image1 c HcI). }
-      apply HcBall.
-      - assume HallU.
-        apply orIL.
-        let t. assume Ht.
-        claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r1.
-        { rewrite <- Heq. exact Ht. }
-        exact (HallU t Ht_ball).
-      - assume HallV.
-        apply orIR.
-        let t. assume Ht.
-        claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c r1.
-        { rewrite <- Heq. exact Ht. }
-        exact (HallV t Ht_ball).
-    }
     (** Images of overlap points under f land in U or V (and in U cap V on a change). **)
     claim Ht_seq_image :
       forall k:set, k :e n ->
@@ -162113,6 +162934,884 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         HzI
         Hbetween).
     }
+    (** Segment inside a ball maps entirely to U or V depending on that ball. **)
+    claim Hsegment_ball_image :
+      forall k:set, k :e ordsucc n ->
+        forall x y:set, x :e apply_fun seq k -> y :e apply_fun seq k ->
+          (forall t:set, t :e unit_interval ->
+            (Rlt x t /\ Rlt t y \/ Rlt y t /\ Rlt t x) ->
+            apply_fun f t :e U) \/
+          (forall t:set, t :e unit_interval ->
+            (Rlt x t /\ Rlt t y \/ Rlt y t /\ Rlt t x) ->
+            apply_fun f t :e V).
+    {
+      let k. assume Hk.
+      let x. let y. assume Hx Hy.
+      apply (Hball_map k Hk).
+      - assume HallU.
+        apply orIL.
+        let t. assume HtI Hbetween.
+        claim Ht_in_seqk : t :e apply_fun seq k.
+        { exact (Hball_interval k Hk x y t Hx Hy HtI Hbetween). }
+        exact (HallU t Ht_in_seqk).
+      - assume HallV.
+        apply orIR.
+        let t. assume HtI Hbetween.
+        claim Ht_in_seqk : t :e apply_fun seq k.
+        { exact (Hball_interval k Hk x y t Hx Hy HtI Hbetween). }
+        exact (HallV t Ht_in_seqk).
+    }
+    (** Segment inside a middle ball: consecutive overlap points imply all between lie in that ball. **)
+    claim Hsegment_in_ball :
+      forall k:set, k :e n -> ordsucc k :e n ->
+        forall z:set, z :e unit_interval ->
+          (Rlt (apply_fun t_seq k) z /\ Rlt z (apply_fun t_seq (ordsucc k)) \/
+           Rlt (apply_fun t_seq (ordsucc k)) z /\ Rlt z (apply_fun t_seq k)) ->
+          z :e apply_fun seq (ordsucc k).
+    {
+      let k. assume Hk Hk1.
+      let z. assume HzI Hbetween.
+      claim Ht_in_seqk1 :
+        apply_fun t_seq k :e apply_fun seq (ordsucc k).
+      { exact (andER
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)). }
+      claim Ht1_in_seqk1 :
+        apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc k).
+      { exact (andEL
+          (apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc k))
+          (apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc (ordsucc k)))
+          (Ht_seq_mem (ordsucc k) Hk1)). }
+      exact (Hball_interval
+        (ordsucc k)
+        (ordsuccI1 n (ordsucc k) Hk1)
+        (apply_fun t_seq k)
+        (apply_fun t_seq (ordsucc k))
+        z
+        Ht_in_seqk1
+        Ht1_in_seqk1
+        HzI
+        Hbetween).
+    }
+    (** Images on middle segments lie in U or V depending on the covering ball. **)
+    claim Hsegment_image :
+      forall k:set, k :e n -> ordsucc k :e n ->
+        (forall t:set, t :e unit_interval ->
+          (Rlt (apply_fun t_seq k) t /\ Rlt t (apply_fun t_seq (ordsucc k)) \/
+           Rlt (apply_fun t_seq (ordsucc k)) t /\ Rlt t (apply_fun t_seq k)) ->
+          apply_fun f t :e U) \/
+        (forall t:set, t :e unit_interval ->
+          (Rlt (apply_fun t_seq k) t /\ Rlt t (apply_fun t_seq (ordsucc k)) \/
+           Rlt (apply_fun t_seq (ordsucc k)) t /\ Rlt t (apply_fun t_seq k)) ->
+          apply_fun f t :e V).
+    {
+      let k. assume Hk Hk1.
+      apply (Hball_map (ordsucc k) (ordsuccI1 n (ordsucc k) Hk1)).
+      - assume HallU.
+        apply orIL.
+        let t. assume HtI Hbetween.
+        claim Ht_in_ball : t :e apply_fun seq (ordsucc k).
+        { exact (Hsegment_in_ball k Hk Hk1 t HtI Hbetween). }
+        exact (HallU t Ht_in_ball).
+      - assume HallV.
+        apply orIR.
+        let t. assume HtI Hbetween.
+        claim Ht_in_ball : t :e apply_fun seq (ordsucc k).
+        { exact (Hsegment_in_ball k Hk Hk1 t HtI Hbetween). }
+        exact (HallV t Ht_in_ball).
+    }
+    (** Endpoint segment: between 0 and t_seq 0 (requires n <> 0). **)
+    claim Hsegment0_image :
+      n <> 0 ->
+        (forall t:set, t :e unit_interval ->
+          (Rlt 0 t /\ Rlt t (apply_fun t_seq 0) \/
+           Rlt (apply_fun t_seq 0) t /\ Rlt t 0) ->
+          apply_fun f t :e U) \/
+        (forall t:set, t :e unit_interval ->
+          (Rlt 0 t /\ Rlt t (apply_fun t_seq 0) \/
+           Rlt (apply_fun t_seq 0) t /\ Rlt t 0) ->
+          apply_fun f t :e V).
+    {
+      assume Hnneq0.
+      claim Hn_cases : n = 0 \/ exists m:set, nat_p m /\ n = ordsucc m.
+      { exact (nat_inv n HnNat). }
+      apply Hn_cases.
+      - assume Hn0 : n = 0.
+        exact (FalseE (Hnneq0 Hn0)
+          ((forall t:set, t :e unit_interval ->
+              (Rlt 0 t /\ Rlt t (apply_fun t_seq 0) \/
+               Rlt (apply_fun t_seq 0) t /\ Rlt t 0) ->
+              apply_fun f t :e U) \/
+           (forall t:set, t :e unit_interval ->
+              (Rlt 0 t /\ Rlt t (apply_fun t_seq 0) \/
+               Rlt (apply_fun t_seq 0) t /\ Rlt t 0) ->
+              apply_fun f t :e V))).
+      - assume HmEx : exists m:set, nat_p m /\ n = ordsucc m.
+        apply HmEx.
+        let m. assume HmPack.
+        claim HmNat : nat_p m.
+        { exact (andEL (nat_p m) (n = ordsucc m) HmPack). }
+        claim HnEq : n = ordsucc m.
+        { exact (andER (nat_p m) (n = ordsucc m) HmPack). }
+        claim H0inN : 0 :e n.
+        { rewrite HnEq. exact (nat_0_in_ordsucc m HmNat). }
+        claim H0inOn : 0 :e ordsucc n.
+        { exact (nat_0_in_ordsucc n HnNat). }
+        claim Ht0_in_seq0 :
+          apply_fun t_seq 0 :e apply_fun seq 0.
+        { exact (andEL
+            (apply_fun t_seq 0 :e apply_fun seq 0)
+            (apply_fun t_seq 0 :e apply_fun seq (ordsucc 0))
+            (Ht_seq_mem 0 H0inN)). }
+        apply (Hball_map 0 H0inOn).
+        + assume HallU.
+          apply orIL.
+          let t. assume HtI Hbetween.
+          claim Ht_in_seq0 : t :e apply_fun seq 0.
+          { exact (Hball_interval
+              0
+              H0inOn
+              0
+              (apply_fun t_seq 0)
+              t
+              H0_in_seq0
+              Ht0_in_seq0
+              HtI
+              Hbetween). }
+          exact (HallU t Ht_in_seq0).
+        + assume HallV.
+          apply orIR.
+          let t. assume HtI Hbetween.
+          claim Ht_in_seq0 : t :e apply_fun seq 0.
+          { exact (Hball_interval
+              0
+              H0inOn
+              0
+              (apply_fun t_seq 0)
+              t
+              H0_in_seq0
+              Ht0_in_seq0
+              HtI
+              Hbetween). }
+          exact (HallV t Ht_in_seq0).
+    }
+    (** Endpoint segment: between last overlap and 1 (requires n <> 0). **)
+    claim Hsegment_last_image :
+      n <> 0 ->
+        (forall t:set, t :e unit_interval ->
+          (Rlt (apply_fun t_seq (Eps_i (fun m:set => nat_p m /\ n = ordsucc m))) t /\ Rlt t 1 \/
+           Rlt 1 t /\ Rlt t (apply_fun t_seq (Eps_i (fun m:set => nat_p m /\ n = ordsucc m)))) ->
+          apply_fun f t :e U) \/
+        (forall t:set, t :e unit_interval ->
+          (Rlt (apply_fun t_seq (Eps_i (fun m:set => nat_p m /\ n = ordsucc m))) t /\ Rlt t 1 \/
+           Rlt 1 t /\ Rlt t (apply_fun t_seq (Eps_i (fun m:set => nat_p m /\ n = ordsucc m)))) ->
+          apply_fun f t :e V).
+    {
+      assume Hnneq0.
+      claim Hn_cases : n = 0 \/ exists m:set, nat_p m /\ n = ordsucc m.
+      { exact (nat_inv n HnNat). }
+      apply Hn_cases.
+      - assume Hn0 : n = 0.
+        exact (FalseE (Hnneq0 Hn0)
+          ((forall t:set, t :e unit_interval ->
+              (Rlt (apply_fun t_seq (Eps_i (fun m:set => nat_p m /\ n = ordsucc m))) t /\ Rlt t 1 \/
+               Rlt 1 t /\ Rlt t (apply_fun t_seq (Eps_i (fun m:set => nat_p m /\ n = ordsucc m)))) ->
+              apply_fun f t :e U) \/
+           (forall t:set, t :e unit_interval ->
+              (Rlt (apply_fun t_seq (Eps_i (fun m:set => nat_p m /\ n = ordsucc m))) t /\ Rlt t 1 \/
+               Rlt 1 t /\ Rlt t (apply_fun t_seq (Eps_i (fun m:set => nat_p m /\ n = ordsucc m)))) ->
+              apply_fun f t :e V))).
+      - assume HmEx : exists m:set, nat_p m /\ n = ordsucc m.
+        apply HmEx.
+        let m. assume HmPack.
+        claim HmNat : nat_p m.
+        { exact (andEL (nat_p m) (n = ordsucc m) HmPack). }
+        claim HnEq : n = ordsucc m.
+        { exact (andER (nat_p m) (n = ordsucc m) HmPack). }
+        set mlast := Eps_i (fun m0:set => nat_p m0 /\ n = ordsucc m0).
+        claim Hmlast_prop : nat_p mlast /\ n = ordsucc mlast.
+        {
+          apply (Eps_i_ex (fun m0:set => nat_p m0 /\ n = ordsucc m0)).
+          witness m. exact HmPack.
+        }
+        claim Hmlast_nat : nat_p mlast.
+        { exact (andEL (nat_p mlast) (n = ordsucc mlast) Hmlast_prop). }
+        claim Hmlast_eq : n = ordsucc mlast.
+        { exact (andER (nat_p mlast) (n = ordsucc mlast) Hmlast_prop). }
+        claim Hmlast_in_n : mlast :e n.
+        {
+          exact (eq_subst_mem_set
+            mlast
+            (ordsucc mlast)
+            n
+            (ordsuccI2 mlast)
+            (eq_symm n (ordsucc mlast) Hmlast_eq)).
+        }
+        claim Ht_last_in_seqn :
+          apply_fun t_seq mlast :e apply_fun seq n.
+        {
+          claim Ht_last_in_ordsucc :
+            apply_fun t_seq mlast :e apply_fun seq (ordsucc mlast).
+          {
+            exact (andER
+              (apply_fun t_seq mlast :e apply_fun seq mlast)
+              (apply_fun t_seq mlast :e apply_fun seq (ordsucc mlast))
+              (Ht_seq_mem mlast Hmlast_in_n)).
+          }
+          claim Hseq_eq : apply_fun seq (ordsucc mlast) = apply_fun seq n.
+          {
+            rewrite <- Hmlast_eq.
+            reflexivity.
+          }
+          exact (eq_subst_mem_set
+            (apply_fun t_seq mlast)
+            (apply_fun seq (ordsucc mlast))
+            (apply_fun seq n)
+            Ht_last_in_ordsucc
+            Hseq_eq).
+        }
+        claim Hn_in_On : n :e ordsucc n.
+        { exact (ordsuccI2 n). }
+        apply (Hball_map n Hn_in_On).
+        + assume HallU.
+          apply orIL.
+          let t. assume HtI Hbetween.
+          claim Ht_in_seqn : t :e apply_fun seq n.
+          { exact (Hball_interval
+              n
+              Hn_in_On
+              (apply_fun t_seq mlast)
+              1
+              t
+              Ht_last_in_seqn
+              H1_in_seqn
+              HtI
+              Hbetween). }
+          exact (HallU t Ht_in_seqn).
+        + assume HallV.
+          apply orIR.
+          let t. assume HtI Hbetween.
+          claim Ht_in_seqn : t :e apply_fun seq n.
+          { exact (Hball_interval
+              n
+              Hn_in_On
+              (apply_fun t_seq mlast)
+              1
+              t
+              Ht_last_in_seqn
+              H1_in_seqn
+              HtI
+              Hbetween). }
+          exact (HallV t Ht_in_seqn).
+    }
+    (** Path inside each chain ball between two points (using star-convexity of balls) **)
+    claim Hball_path :
+      forall k:set, k :e ordsucc n ->
+        forall x y:set, x :e apply_fun seq k -> y :e apply_fun seq k ->
+          exists seg:set,
+            continuous_map unit_interval unit_interval_topology
+              (apply_fun seq k)
+              (subspace_topology R R_standard_topology (apply_fun seq k)) seg /\
+            apply_fun seg 0 = x /\
+            apply_fun seg 1 = y.
+    {
+      let k. assume Hk.
+      let x. let y. assume Hx Hy.
+      claim Hseqk_ball : apply_fun seq k :e BallFam.
+      { exact (HseqFun k Hk). }
+      apply (ReplE_impred unit_interval
+        (fun c0:set => open_ball unit_interval R_bounded_metric c0 r1)
+        (apply_fun seq k) Hseqk_ball).
+      let c0. assume Hc0I Heq.
+      claim Hx_ball : x :e open_ball unit_interval R_bounded_metric c0 r1.
+      { exact (eq_subst_mem_set x (apply_fun seq k) (open_ball unit_interval R_bounded_metric c0 r1) Hx Heq). }
+      claim Hy_ball : y :e open_ball unit_interval R_bounded_metric c0 r1.
+      { exact (eq_subst_mem_set y (apply_fun seq k) (open_ball unit_interval R_bounded_metric c0 r1) Hy Heq). }
+      rewrite Heq.
+      exact (open_ball_unit_interval_segment_continuous_lt1
+        c0 r1 x y Hc0I Hr1R Hr1pos Hr1lt1 Hx_ball Hy_ball).
+    }
+    (** Identify a transition between U-only and V-only balls in the chain. **)
+    set Uonly := {k :e ordsucc n |
+      (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) /\
+      ~(forall t:set, t :e apply_fun seq k -> apply_fun f t :e V)}.
+    set Vonly := {k :e ordsucc n |
+      (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V) /\
+      ~(forall t:set, t :e apply_fun seq k -> apply_fun f t :e U)}.
+    claim HUonly_sub_omega : Uonly c= omega.
+    {
+      let k. assume HkU : k :e Uonly.
+      claim HkOn : k :e ordsucc n.
+      { exact (SepE1 (ordsucc n)
+          (fun k0:set =>
+            (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) /\
+            ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V))
+          k HkU). }
+      exact (Hordsucc_sub_omega k HkOn).
+    }
+    claim HVonly_sub_omega : Vonly c= omega.
+    {
+      let k. assume HkV : k :e Vonly.
+      claim HkOn : k :e ordsucc n.
+      { exact (SepE1 (ordsucc n)
+          (fun k0:set =>
+            (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) /\
+            ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U))
+          k HkV). }
+      exact (Hordsucc_sub_omega k HkOn).
+    }
+    claim HUonly_nonempty : Uonly <> Empty.
+    {
+      assume HUonly_empty : Uonly = Empty.
+      apply (Hcover_seq t_V HtV_ui).
+      let kV. assume HkVpack.
+      claim HkV : kV :e ordsucc n.
+      { exact (andEL (kV :e ordsucc n) (t_V :e apply_fun seq kV) HkVpack). }
+      claim HtV_in_seqkV : t_V :e apply_fun seq kV.
+      { exact (andER (kV :e ordsucc n) (t_V :e apply_fun seq kV) HkVpack). }
+      apply (Hball_map_index kV HkV).
+      - assume HkV_Uset : kV :e Uset.
+        claim HkV_Uall : forall t:set, t :e apply_fun seq kV -> apply_fun f t :e U.
+        { exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U)
+            kV HkV_Uset). }
+        claim HkV_notVall :
+          ~(forall t:set, t :e apply_fun seq kV -> apply_fun f t :e V).
+        {
+          assume HallV. exact (HtV_notV (HallV t_V HtV_in_seqkV)).
+        }
+        claim HkV_Uonly : kV :e Uonly.
+        {
+          apply (SepI (ordsucc n)
+            (fun k0:set =>
+              (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) /\
+              ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V))
+            kV
+            HkV).
+          apply andI.
+          - exact HkV_Uall.
+          - exact HkV_notVall.
+        }
+        exact (EmptyE kV (eq_subst_mem_set kV Uonly Empty HkV_Uonly HUonly_empty)).
+      - assume HkV_Vset : kV :e Vset.
+        claim HkV_Vall : forall t:set, t :e apply_fun seq kV -> apply_fun f t :e V.
+        { exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V)
+            kV HkV_Vset). }
+        exact (HtV_notV (HkV_Vall t_V HtV_in_seqkV)).
+    }
+    claim HVonly_nonempty : Vonly <> Empty.
+    {
+      assume HVonly_empty : Vonly = Empty.
+      apply (Hcover_seq t_U HtU_ui).
+      let kU. assume HkUpack.
+      claim HkU : kU :e ordsucc n.
+      { exact (andEL (kU :e ordsucc n) (t_U :e apply_fun seq kU) HkUpack). }
+      claim HtU_in_seqkU : t_U :e apply_fun seq kU.
+      { exact (andER (kU :e ordsucc n) (t_U :e apply_fun seq kU) HkUpack). }
+      apply (Hball_map_index kU HkU).
+      - assume HkU_Uset : kU :e Uset.
+        claim HkU_Uall : forall t:set, t :e apply_fun seq kU -> apply_fun f t :e U.
+        { exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U)
+            kU HkU_Uset). }
+        exact (HtU_notU (HkU_Uall t_U HtU_in_seqkU)).
+      - assume HkU_Vset : kU :e Vset.
+        claim HkU_Vall : forall t:set, t :e apply_fun seq kU -> apply_fun f t :e V.
+        { exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V)
+            kU HkU_Vset). }
+        claim HkU_notUall :
+          ~(forall t:set, t :e apply_fun seq kU -> apply_fun f t :e U).
+        {
+          assume HallU. exact (HtU_notU (HallU t_U HtU_in_seqkU)).
+        }
+        claim HkU_Vonly : kU :e Vonly.
+        {
+          apply (SepI (ordsucc n)
+            (fun k0:set =>
+              (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) /\
+              ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U))
+            kU
+            HkU).
+          apply andI.
+          - exact HkU_Vall.
+          - exact HkU_notUall.
+        }
+        exact (EmptyE kU (eq_subst_mem_set kU Vonly Empty HkU_Vonly HVonly_empty)).
+    }
+    claim HUonly_least :
+      exists m:set, m :e Uonly /\ forall k:set, k :e Uonly -> (m :e k \/ m = k).
+    { exact (omega_nonempty_subset_has_least Uonly HUonly_sub_omega HUonly_nonempty). }
+    claim HVonly_least :
+      exists m:set, m :e Vonly /\ forall k:set, k :e Vonly -> (m :e k \/ m = k).
+    { exact (omega_nonempty_subset_has_least Vonly HVonly_sub_omega HVonly_nonempty). }
+    claim Htransition_index :
+      exists k:set, k :e n /\
+        ((k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset)).
+    {
+      apply HUonly_least.
+      let u0. assume Hu0pack.
+      apply HVonly_least.
+      let v0. assume Hv0pack.
+      claim Hu0Uonly : u0 :e Uonly.
+      { exact (andEL (u0 :e Uonly) (forall k:set, k :e Uonly -> (u0 :e k \/ u0 = k)) Hu0pack). }
+      claim Hv0Vonly : v0 :e Vonly.
+      { exact (andEL (v0 :e Vonly) (forall k:set, k :e Vonly -> (v0 :e k \/ v0 = k)) Hv0pack). }
+      claim Hu0omega : u0 :e omega.
+      { exact (HUonly_sub_omega u0 Hu0Uonly). }
+      claim Hv0omega : v0 :e omega.
+      { exact (HVonly_sub_omega v0 Hv0Vonly). }
+      claim Hu0ord : ordinal u0.
+      { exact (nat_p_ordinal u0 (omega_nat_p u0 Hu0omega)). }
+      claim Hv0ord : ordinal v0.
+      { exact (nat_p_ordinal v0 (omega_nat_p v0 Hv0omega)). }
+      apply (ordinal_trichotomy_or_impred u0 v0 Hu0ord Hv0ord).
+      - (** Case u0 < v0: transition U -> V at predecessor of v0 **)
+        assume Hu0lt : u0 :e v0.
+        claim Hv0neq0 : v0 <> 0.
+        {
+          assume Hv0eq0.
+          claim Hu0Empty : u0 :e Empty.
+          { exact (eq_subst_mem_set u0 v0 Empty Hu0lt Hv0eq0). }
+          exact (EmptyE u0 Hu0Empty).
+        }
+        claim Hv0_cases : v0 = 0 \/ exists k:set, nat_p k /\ v0 = ordsucc k.
+        { exact (nat_inv v0 (omega_nat_p v0 Hv0omega)). }
+        apply Hv0_cases.
+        + assume Hv0eq0. exact (FalseE (Hv0neq0 Hv0eq0)
+            (exists k:set, k :e n /\
+              ((k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset)))). 
+        + assume HkEx : exists k:set, nat_p k /\ v0 = ordsucc k.
+          apply HkEx.
+          let k. assume Hkpack.
+          claim Hk_nat : nat_p k.
+          { exact (andEL (nat_p k) (v0 = ordsucc k) Hkpack). }
+          claim Hv0_eq : v0 = ordsucc k.
+          { exact (andER (nat_p k) (v0 = ordsucc k) Hkpack). }
+          claim Hv0_in_On : v0 :e ordsucc n.
+          { exact (SepE1 (ordsucc n)
+              (fun k0:set =>
+                (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) /\
+                ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U))
+              v0 Hv0Vonly). }
+          claim Hk_in_n : k :e n.
+          {
+            apply (ordsuccE n v0 Hv0_in_On).
+            - assume Hv0_in_n.
+              claim Hk_in_v0 : k :e v0.
+              {
+                exact (eq_subst_mem_set
+                  k
+                  (ordsucc k)
+                  v0
+                  (ordsuccI2 k)
+                  (eq_symm v0 (ordsucc k) Hv0_eq)).
+              }
+              exact (ordinal_TransSet n (nat_p_ordinal n HnNat) v0 Hv0_in_n k Hk_in_v0).
+            - assume Hv0_eq_n.
+              claim Hk_in_v0 : k :e v0.
+              {
+                exact (eq_subst_mem_set
+                  k
+                  (ordsucc k)
+                  v0
+                  (ordsuccI2 k)
+                  (eq_symm v0 (ordsucc k) Hv0_eq)).
+              }
+              exact (eq_subst_mem_set k v0 n Hk_in_v0 Hv0_eq_n).
+          }
+          claim Hv0_Vset : v0 :e Vset.
+          {
+            claim Hv0_Vall :
+              forall t:set, t :e apply_fun seq v0 -> apply_fun f t :e V.
+            {
+              claim Hv0_pack :
+                (forall t:set, t :e apply_fun seq v0 -> apply_fun f t :e V) /\
+                ~(forall t:set, t :e apply_fun seq v0 -> apply_fun f t :e U).
+              {
+                exact (SepE2 (ordsucc n)
+                  (fun k0:set =>
+                    (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) /\
+                    ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U))
+                  v0 Hv0Vonly).
+              }
+              exact (andEL
+                (forall t:set, t :e apply_fun seq v0 -> apply_fun f t :e V)
+                (~(forall t:set, t :e apply_fun seq v0 -> apply_fun f t :e U))
+                Hv0_pack).
+            }
+            apply (SepI (ordsucc n)
+              (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V)
+              v0
+              Hv0_in_On).
+            exact Hv0_Vall.
+          }
+          claim Hk_in_v0 : k :e v0.
+          { rewrite Hv0_eq. exact (ordsuccI2 k). }
+          claim Hk_notVonly : ~(k :e Vonly).
+          {
+            assume HkVonly.
+            claim Hv0_min :
+              forall k0:set, k0 :e Vonly -> (v0 :e k0 \/ v0 = k0).
+            {
+              exact (andER
+                (v0 :e Vonly)
+                (forall k0:set, k0 :e Vonly -> (v0 :e k0 \/ v0 = k0))
+                Hv0pack).
+            }
+            claim Hv0_le_k : v0 :e k \/ v0 = k.
+            { exact (Hv0_min k HkVonly). }
+            apply Hv0_le_k.
+            - assume Hv0_in_k.
+              claim Hv0_in_v0 : v0 :e v0.
+              { exact (ordinal_TransSet v0 Hv0ord k Hk_in_v0 v0 Hv0_in_k). }
+              exact (In_irref v0 Hv0_in_v0).
+            - assume Hv0_eq_k.
+              claim Hk_in_k : k :e k.
+              { exact (eq_subst_mem_set k v0 k Hk_in_v0 Hv0_eq_k). }
+              exact (In_irref k Hk_in_k).
+          }
+          claim Hk_Uset : k :e Uset.
+          {
+            apply xm (k :e Uset).
+            - assume HkU. exact HkU.
+            - assume HkNotU.
+              claim HkV : k :e Vset.
+              {
+                apply (Hball_map_index k (ordsuccI1 n k Hk_in_n)).
+                - assume HkUabs. exact (FalseE (HkNotU HkUabs) (k :e Vset)).
+                - assume HkV'. exact HkV'.
+              }
+              claim HkVall : forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
+              { exact (SepE2 (ordsucc n)
+                  (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V)
+                  k HkV). }
+              claim HkVonly : k :e Vonly.
+              {
+                apply (SepI (ordsucc n)
+                  (fun k0:set =>
+                    (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) /\
+                    ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U))
+                  k
+                  (ordsuccI1 n k Hk_in_n)).
+                apply andI.
+                - exact HkVall.
+                - assume HkUall.
+                  apply HkNotU.
+                  apply (SepI (ordsucc n)
+                    (fun k0:set =>
+                      forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U)
+                    k
+                    (ordsuccI1 n k Hk_in_n)
+                    HkUall).
+              }
+              exact (FalseE (Hk_notVonly HkVonly) (k :e Uset)).
+          }
+          witness k.
+          apply andI.
+          - exact Hk_in_n.
+          - apply orIL.
+            apply andI.
+            + exact Hk_Uset.
+            + rewrite <- Hv0_eq. exact Hv0_Vset.
+      - (** Case u0 = v0 (cannot happen: Uonly and Vonly are disjoint) **)
+        assume Hu0eq : u0 = v0.
+        claim Hu0_Vonly : u0 :e Vonly.
+        { rewrite Hu0eq. exact Hv0Vonly. }
+        claim Hu0_Uall : forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e U.
+        { exact (andEL
+            (forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e U)
+            (~(forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e V))
+            (SepE2 (ordsucc n)
+              (fun k0:set =>
+                (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) /\
+                ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V))
+              u0 Hu0Uonly)). }
+        claim Hu0_notVall :
+          ~(forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e V).
+        { exact (andER
+            (forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e U)
+            (~(forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e V))
+            (SepE2 (ordsucc n)
+              (fun k0:set =>
+                (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) /\
+                ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V))
+              u0 Hu0Uonly)). }
+        claim Hu0_Vall : forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e V.
+        { exact (andEL
+            (forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e V)
+            (~(forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e U))
+            (SepE2 (ordsucc n)
+              (fun k0:set =>
+                (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) /\
+                ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U))
+              u0 Hu0_Vonly)). }
+        exact (FalseE (Hu0_notVall Hu0_Vall)
+          (exists k:set, k :e n /\
+            ((k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset)))).
+      - (** Case v0 < u0: symmetric transition V -> U at predecessor of u0 **)
+        assume Hv0lt : v0 :e u0.
+        claim Hu0neq0 : u0 <> 0.
+        {
+          assume Hu0eq0.
+          claim Hv0_in_0 : v0 :e 0.
+          { exact (eq_subst_mem_set v0 u0 0 Hv0lt Hu0eq0). }
+          exact (EmptyE v0 Hv0_in_0).
+        }
+        claim Hu0_cases : u0 = 0 \/ exists k:set, nat_p k /\ u0 = ordsucc k.
+        { exact (nat_inv u0 (omega_nat_p u0 Hu0omega)). }
+        apply Hu0_cases.
+        + assume Hu0eq0. exact (FalseE (Hu0neq0 Hu0eq0)
+            (exists k:set, k :e n /\
+              ((k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset)))). 
+        + assume Hu0_ex.
+          apply Hu0_ex.
+          let k. assume Hkpack.
+          claim Hk_nat : nat_p k.
+          { exact (andEL (nat_p k) (u0 = ordsucc k) Hkpack). }
+          claim Hu0_eq : u0 = ordsucc k.
+          { exact (andER (nat_p k) (u0 = ordsucc k) Hkpack). }
+          claim Hu0_in_On : u0 :e ordsucc n.
+          { exact (SepE1 (ordsucc n)
+              (fun k0:set =>
+                (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) /\
+                ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V))
+              u0 Hu0Uonly). }
+          claim Hk_in_n : k :e n.
+          {
+            apply (ordsuccE n u0 Hu0_in_On).
+            - assume Hu0_in_n.
+              claim Hk_in_u0 : k :e u0.
+              {
+                exact (eq_subst_mem_set
+                  k
+                  (ordsucc k)
+                  u0
+                  (ordsuccI2 k)
+                  (eq_symm u0 (ordsucc k) Hu0_eq)).
+              }
+              exact (ordinal_TransSet n (nat_p_ordinal n HnNat) u0 Hu0_in_n k Hk_in_u0).
+            - assume Hu0_eq_n.
+              claim Hk_in_u0 : k :e u0.
+              {
+                exact (eq_subst_mem_set
+                  k
+                  (ordsucc k)
+                  u0
+                  (ordsuccI2 k)
+                  (eq_symm u0 (ordsucc k) Hu0_eq)).
+              }
+              exact (eq_subst_mem_set k u0 n Hk_in_u0 Hu0_eq_n).
+          }
+          claim Hu0_Uset : u0 :e Uset.
+          {
+            exact (SepI (ordsucc n)
+              (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U)
+              u0
+              Hu0_in_On
+              (andEL
+                (forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e U)
+                (~(forall t:set, t :e apply_fun seq u0 -> apply_fun f t :e V))
+                (SepE2 (ordsucc n)
+                  (fun k0:set =>
+                    (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) /\
+                    ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V))
+                  u0 Hu0Uonly))).
+          }
+          claim Hk_in_u0 : k :e u0.
+          { rewrite Hu0_eq. exact (ordsuccI2 k). }
+          claim Hk_notUonly : ~(k :e Uonly).
+          {
+            assume HkUonly.
+            claim Hu0_min :
+              forall k0:set, k0 :e Uonly -> (u0 :e k0 \/ u0 = k0).
+            {
+              exact (andER
+                (u0 :e Uonly)
+                (forall k0:set, k0 :e Uonly -> (u0 :e k0 \/ u0 = k0))
+                Hu0pack).
+            }
+            claim Hu0_le_k : u0 :e k \/ u0 = k.
+            { exact (Hu0_min k HkUonly). }
+            apply Hu0_le_k.
+            - assume Hu0_in_k.
+              claim Hu0_in_u0 : u0 :e u0.
+              { exact (ordinal_TransSet u0 Hu0ord k Hk_in_u0 u0 Hu0_in_k). }
+              exact (In_irref u0 Hu0_in_u0).
+            - assume Hu0_eq_k.
+              claim Hk_in_k : k :e k.
+              { exact (eq_subst_mem_set k u0 k Hk_in_u0 Hu0_eq_k). }
+              exact (In_irref k Hk_in_k).
+          }
+          claim Hk_Vset : k :e Vset.
+          {
+            apply xm (k :e Vset).
+            - assume HkV. exact HkV.
+            - assume HkNotV.
+              claim HkU : k :e Uset.
+              {
+                apply (Hball_map_index k (ordsuccI1 n k Hk_in_n)).
+                - assume HkU'. exact HkU'.
+                - assume HkVabs. exact (FalseE (HkNotV HkVabs) (k :e Uset)).
+              }
+              claim HkUall : forall t:set, t :e apply_fun seq k -> apply_fun f t :e U.
+              { exact (SepE2 (ordsucc n)
+                  (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U)
+                  k HkU). }
+              claim HkUonly : k :e Uonly.
+              {
+                apply (SepI (ordsucc n)
+                  (fun k0:set =>
+                    (forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) /\
+                    ~(forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V))
+                  k
+                  (ordsuccI1 n k Hk_in_n)).
+                apply andI.
+                - exact HkUall.
+                - assume HkVall.
+                  apply HkNotV.
+                  apply (SepI (ordsucc n)
+                    (fun k0:set =>
+                      forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V)
+                    k
+                    (ordsuccI1 n k Hk_in_n)
+                    HkVall).
+              }
+              exact (FalseE (Hk_notUonly HkUonly) (k :e Vset)).
+          }
+          witness k.
+          apply andI.
+          - exact Hk_in_n.
+          - apply orIR.
+            apply andI.
+            + exact Hk_Vset.
+            + rewrite <- Hu0_eq. exact Hu0_Uset.
+    }
+    claim Htransition_point :
+      forall k:set, k :e n ->
+        k :e Uset -> ordsucc k :e Vset ->
+          apply_fun f (apply_fun t_seq k) :e U :/\: V.
+    {
+      let k. assume Hk HkU HkV.
+      claim Ht_in_seqk :
+        apply_fun t_seq k :e apply_fun seq k.
+      {
+        exact (andEL
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)).
+      }
+      claim Ht_in_seqk1 :
+        apply_fun t_seq k :e apply_fun seq (ordsucc k).
+      {
+        exact (andER
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)).
+      }
+      claim HkUall : forall t:set, t :e apply_fun seq k -> apply_fun f t :e U.
+      { exact (SepE2 (ordsucc n)
+          (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U)
+          k HkU). }
+      claim HkVall : forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e V.
+      { exact (SepE2 (ordsucc n)
+          (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V)
+          (ordsucc k) HkV). }
+      apply (binintersectI U V (apply_fun f (apply_fun t_seq k))).
+      - exact (HkUall (apply_fun t_seq k) Ht_in_seqk).
+      - exact (HkVall (apply_fun t_seq k) Ht_in_seqk1).
+    }
+    claim Htransition_point_VU :
+      forall k:set, k :e n ->
+        k :e Vset -> ordsucc k :e Uset ->
+          apply_fun f (apply_fun t_seq k) :e U :/\: V.
+    {
+      let k. assume Hk HkV HkU.
+      claim Ht_in_seqk :
+        apply_fun t_seq k :e apply_fun seq k.
+      {
+        exact (andEL
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)).
+      }
+      claim Ht_in_seqk1 :
+        apply_fun t_seq k :e apply_fun seq (ordsucc k).
+      {
+        exact (andER
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)).
+      }
+      claim HkVall : forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
+      { exact (SepE2 (ordsucc n)
+          (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V)
+          k HkV). }
+      claim HkUall : forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e U.
+      { exact (SepE2 (ordsucc n)
+          (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U)
+          (ordsucc k) HkU). }
+      apply (binintersectI U V (apply_fun f (apply_fun t_seq k))).
+      - exact (HkUall (apply_fun t_seq k) Ht_in_seqk1).
+      - exact (HkVall (apply_fun t_seq k) Ht_in_seqk).
+    }
+    claim Htransition_point_both :
+      forall k:set, k :e n ->
+        ((k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset)) ->
+          apply_fun f (apply_fun t_seq k) :e U :/\: V.
+    {
+      let k. assume Hk Hcase.
+      apply Hcase.
+      - assume HUV.
+        exact (Htransition_point k Hk
+          (andEL (k :e Uset) (ordsucc k :e Vset) HUV)
+          (andER (k :e Uset) (ordsucc k :e Vset) HUV)).
+      - assume HVU.
+        exact (Htransition_point_VU k Hk
+          (andEL (k :e Vset) (ordsucc k :e Uset) HVU)
+          (andER (k :e Vset) (ordsucc k :e Uset) HVU)).
+    }
+    claim Htransition_point_exists :
+      exists a:set, a :e unit_interval /\ apply_fun f a :e U :/\: V.
+    {
+      apply Htransition_index.
+      let k. assume Hkpack.
+      claim Hk : k :e n.
+      { exact (andEL (k :e n)
+          ((k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset))
+          Hkpack). }
+      claim Hkcase :
+        (k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset).
+      { exact (andER (k :e n)
+          ((k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset))
+          Hkpack). }
+      set a := apply_fun t_seq k.
+      witness a.
+      apply andI.
+      - exact (Ht_seq_val k Hk).
+      - exact (Htransition_point_both k Hk Hkcase).
+    }
+    apply Htransition_point_exists.
+    let a_trans. assume Ha_trans_pack.
+    claim Ha_trans_ui : a_trans :e unit_interval.
+    { exact (andEL
+        (a_trans :e unit_interval)
+        (apply_fun f a_trans :e U :/\: V)
+        Ha_trans_pack). }
+    claim Ha_trans_UV : apply_fun f a_trans :e U :/\: V.
+    { exact (andER
+        (a_trans :e unit_interval)
+        (apply_fun f a_trans :e U :/\: V)
+        Ha_trans_pack). }
+    claim Hgamma_trans_ex : exists gamma:set,
+      path_between (U :/\: V) x0 (apply_fun f a_trans) gamma /\
+      continuous_map unit_interval unit_interval_topology
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma.
+    { exact (path_connected_space_paths
+        (U :/\: V) (subspace_topology X Tx (U :/\: V))
+        x0 (apply_fun f a_trans) HpcUV Hx0UV Ha_trans_UV). }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
@@ -303542,12 +305241,148 @@ Definition covering_trans_evaluation : set -> set -> set -> set -> set -> set ->
 
 (** from S81 Lem 81.1 (line 5049 in algtop.tex) **)
 (** Infrastructure: loop_at to fundamental_group membership **)
+(** Proven Bob **)
 Lemma loop_at_implies_fundamental_group_member : forall X Tx x0 f:set,
   topology_on X Tx -> x0 :e X ->
   loop_at X Tx x0 f ->
   path_homotopy_class_loop X Tx x0 f :e fundamental_group X Tx x0.
-Admitted.
+let X Tx x0 f.
+assume Htop Hx0 Hloop.
+set f_graph := graphify_on unit_interval f.
+claim Hf_cont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f Hloop). }
+claim Hf_fun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    Hf_cont).
+}
+claim Hfgraph_fs : f_graph :e function_space unit_interval X.
+{
+  exact (graph_in_function_space
+    unit_interval
+    X
+    (fun s:set => apply_fun f s)
+    (fun s Hs => Hf_fun s Hs)).
+}
+claim Hfgraph_fun : function_on f_graph unit_interval X.
+{ exact (function_on_of_function_space f_graph unit_interval X Hfgraph_fs). }
+claim Hfgraph_cont :
+  continuous_map unit_interval unit_interval_topology X Tx f_graph.
+{
+  exact (continuous_map_congr_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    f_graph
+    Hf_cont
+    Hfgraph_fun
+    (fun s Hs =>
+      eq_symm
+        (apply_fun f_graph s)
+        (apply_fun f s)
+        (graphify_on_apply unit_interval f s Hs))).
+}
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 f Hloop). }
+claim Hf1 : apply_fun f 1 = x0.
+{ exact (loop_at_at_one X Tx x0 f Hloop). }
+claim H0I : 0 :e unit_interval.
+{
+  exact (andEL
+    (0 :e unit_interval)
+    (1 :e unit_interval)
+    zero_one_in_unit_interval).
+}
+claim H1I : 1 :e unit_interval.
+{
+  exact (andER
+    (0 :e unit_interval)
+    (1 :e unit_interval)
+    zero_one_in_unit_interval).
+}
+claim Hfgraph0 : apply_fun f_graph 0 = x0.
+{
+  rewrite (graphify_on_apply unit_interval f 0 H0I).
+  exact Hf0.
+}
+claim Hfgraph1 : apply_fun f_graph 1 = x0.
+{
+  rewrite (graphify_on_apply unit_interval f 1 H1I).
+  exact Hf1.
+}
+claim Hfgraph_loop : loop_at X Tx x0 f_graph.
+{
+  apply loop_at_fold.
+  apply andI.
+  - apply andI.
+    + exact Hfgraph_cont.
+    + exact Hfgraph0.
+  - exact Hfgraph1.
+}
+claim Hfgraph_ls : f_graph :e loop_space X Tx x0.
+{
+  exact (SepI
+    (function_space unit_interval X)
+    (fun g:set => loop_at X Tx x0 g)
+    f_graph
+    Hfgraph_fs
+    Hfgraph_loop).
+}
+claim Hffg_hom : path_homotopic X Tx x0 x0 f f_graph.
+{
+  exact (path_homotopic_of_pointwise_equal
+    X
+    Tx
+    x0
+    x0
+    f
+    f_graph
+    Hf_cont
+    Hfgraph_cont
+    Hf0
+    Hf1
+    Hfgraph0
+    Hfgraph1
+    (fun s Hs =>
+      eq_symm
+        (apply_fun f_graph s)
+        (apply_fun f s)
+        (graphify_on_apply unit_interval f s Hs))).
+}
+claim Hclass_eq :
+  path_homotopy_class_loop X Tx x0 f =
+  path_homotopy_class_loop X Tx x0 f_graph.
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    f
+    f_graph
+    Hffg_hom).
+}
+claim Hgraph_in_FG :
+  path_homotopy_class_loop X Tx x0 f_graph :e fundamental_group X Tx x0.
+{
+  exact (path_homotopy_class_in_fundamental_group
+    X
+    Tx
+    x0
+    f_graph
+    Hfgraph_ls).
+}
+rewrite Hclass_eq.
+exact Hgraph_in_FG.
+Qed.
 
+(** Proven Bob **)
 Lemma loop_at_concat_eq_mult : forall X Tx x0 f g:set,
   topology_on X Tx -> x0 :e X ->
   loop_at X Tx x0 f ->
@@ -303555,7 +305390,269 @@ Lemma loop_at_concat_eq_mult : forall X Tx x0 f g:set,
   path_homotopy_class_loop X Tx x0 (path_concat f g)
   = apply_fun (fundamental_group_mult X Tx x0)
     (path_homotopy_class_loop X Tx x0 f, path_homotopy_class_loop X Tx x0 g).
-Admitted.
+let X Tx x0 f g.
+assume Htop Hx0 HfLoop HgLoop.
+set cls_f := path_homotopy_class_loop X Tx x0 f.
+set cls_g := path_homotopy_class_loop X Tx x0 g.
+claim Hcls_f : cls_f :e fundamental_group X Tx x0.
+{
+  exact (loop_at_implies_fundamental_group_member
+    X
+    Tx
+    x0
+    f
+    Htop
+    Hx0
+    HfLoop).
+}
+claim Hcls_g : cls_g :e fundamental_group X Tx x0.
+{
+  exact (loop_at_implies_fundamental_group_member
+    X
+    Tx
+    x0
+    g
+    Htop
+    Hx0
+    HgLoop).
+}
+claim Hp :
+  (cls_f, cls_g) :e
+    setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0)
+    cls_f
+    cls_g
+    Hcls_f
+    Hcls_g).
+}
+set f0 := Eps_i (fun f0:set => f0 :e (cls_f, cls_g) 0).
+set g0 := Eps_i (fun g0:set => g0 :e (cls_f, cls_g) 1).
+claim Hmult_apply :
+  apply_fun (fundamental_group_mult X Tx x0) (cls_f, cls_g)
+  = path_homotopy_class_loop X Tx x0 (path_concat f0 g0).
+{
+  exact (fundamental_group_mult_apply
+    X
+    Tx
+    x0
+    (cls_f, cls_g)
+    Hp).
+}
+claim Hcls_f_nonempty : exists h:set, h :e cls_f.
+{
+  claim Hrep :
+    exists h:set, h :e loop_space X Tx x0 /\
+      cls_f = path_homotopy_class_loop X Tx x0 h.
+  {
+    exact (fundamental_group_member_has_representative
+      X
+      Tx
+      x0
+      cls_f
+      Hcls_f).
+  }
+  apply Hrep.
+  let h.
+  assume Hhpack.
+  claim Hh_loop : h :e loop_space X Tx x0.
+  {
+    exact (andEL
+      (h :e loop_space X Tx x0)
+      (cls_f = path_homotopy_class_loop X Tx x0 h)
+      Hhpack).
+  }
+  claim Hcls_eq : cls_f = path_homotopy_class_loop X Tx x0 h.
+  {
+    exact (andER
+      (h :e loop_space X Tx x0)
+      (cls_f = path_homotopy_class_loop X Tx x0 h)
+      Hhpack).
+  }
+  claim Hh_in_cls_h : h :e path_homotopy_class_loop X Tx x0 h.
+  {
+    claim HhLoopAt : loop_at X Tx x0 h.
+    { exact (loop_space_has_loop_at X Tx x0 h Hh_loop). }
+    claim Hhh : path_homotopic X Tx x0 x0 h h.
+    { exact (Lemma_51_1_path_homotopy_refl X Tx x0 x0 h
+        (loop_at_continuous X Tx x0 h HhLoopAt)
+        (loop_at_at_zero X Tx x0 h HhLoopAt)
+        (loop_at_at_one X Tx x0 h HhLoopAt)). }
+    exact (SepI
+      (loop_space X Tx x0)
+      (fun z:set => path_homotopic X Tx x0 x0 h z)
+      h
+      Hh_loop
+      Hhh).
+  }
+  witness h.
+  exact (mem_eqR
+    h
+    (path_homotopy_class_loop X Tx x0 h)
+    cls_f
+    (eq_symm
+      cls_f
+      (path_homotopy_class_loop X Tx x0 h)
+      Hcls_eq)
+    Hh_in_cls_h).
+}
+claim Hcls_g_nonempty : exists h:set, h :e cls_g.
+{
+  claim Hrep :
+    exists h:set, h :e loop_space X Tx x0 /\
+      cls_g = path_homotopy_class_loop X Tx x0 h.
+  {
+    exact (fundamental_group_member_has_representative
+      X
+      Tx
+      x0
+      cls_g
+      Hcls_g).
+  }
+  apply Hrep.
+  let h.
+  assume Hhpack.
+  claim Hh_loop : h :e loop_space X Tx x0.
+  {
+    exact (andEL
+      (h :e loop_space X Tx x0)
+      (cls_g = path_homotopy_class_loop X Tx x0 h)
+      Hhpack).
+  }
+  claim Hcls_eq : cls_g = path_homotopy_class_loop X Tx x0 h.
+  {
+    exact (andER
+      (h :e loop_space X Tx x0)
+      (cls_g = path_homotopy_class_loop X Tx x0 h)
+      Hhpack).
+  }
+  claim Hh_in_cls_h : h :e path_homotopy_class_loop X Tx x0 h.
+  {
+    claim HhLoopAt : loop_at X Tx x0 h.
+    { exact (loop_space_has_loop_at X Tx x0 h Hh_loop). }
+    claim Hhh : path_homotopic X Tx x0 x0 h h.
+    { exact (Lemma_51_1_path_homotopy_refl X Tx x0 x0 h
+        (loop_at_continuous X Tx x0 h HhLoopAt)
+        (loop_at_at_zero X Tx x0 h HhLoopAt)
+        (loop_at_at_one X Tx x0 h HhLoopAt)). }
+    exact (SepI
+      (loop_space X Tx x0)
+      (fun z:set => path_homotopic X Tx x0 x0 h z)
+      h
+      Hh_loop
+      Hhh).
+  }
+  witness h.
+  exact (mem_eqR
+    h
+    (path_homotopy_class_loop X Tx x0 h)
+    cls_g
+    (eq_symm
+      cls_g
+      (path_homotopy_class_loop X Tx x0 h)
+      Hcls_eq)
+    Hh_in_cls_h).
+}
+claim Hf0_in_cls : f0 :e cls_f.
+{
+  apply Hcls_f_nonempty.
+  let h.
+  assume Hh.
+  claim Hh_in_pair0 : h :e (cls_f, cls_g) 0.
+  {
+    exact (eq_subst_mem_set
+      h
+      cls_f
+      ((cls_f, cls_g) 0)
+      Hh
+      (eq_symm
+        ((cls_f, cls_g) 0)
+        cls_f
+        (tuple_2_0_eq cls_f cls_g))).
+  }
+  claim Hf0_in_pair0 : f0 :e (cls_f, cls_g) 0.
+  {
+    exact (Eps_i_ax (fun z:set => z :e (cls_f, cls_g) 0) h Hh_in_pair0).
+  }
+  exact (eq_subst_mem_set
+    f0
+    ((cls_f, cls_g) 0)
+    cls_f
+    Hf0_in_pair0
+    (tuple_2_0_eq cls_f cls_g)).
+}
+claim Hg0_in_cls : g0 :e cls_g.
+{
+  apply Hcls_g_nonempty.
+  let h.
+  assume Hh.
+  claim Hh_in_pair1 : h :e (cls_f, cls_g) 1.
+  {
+    exact (eq_subst_mem_set
+      h
+      cls_g
+      ((cls_f, cls_g) 1)
+      Hh
+      (eq_symm
+        ((cls_f, cls_g) 1)
+        cls_g
+        (tuple_2_1_eq cls_f cls_g))).
+  }
+  claim Hg0_in_pair1 : g0 :e (cls_f, cls_g) 1.
+  {
+    exact (Eps_i_ax (fun z:set => z :e (cls_f, cls_g) 1) h Hh_in_pair1).
+  }
+  exact (eq_subst_mem_set
+    g0
+    ((cls_f, cls_g) 1)
+    cls_g
+    Hg0_in_pair1
+    (tuple_2_1_eq cls_f cls_g)).
+}
+claim Hf_hom : path_homotopic X Tx x0 x0 f f0.
+{
+  exact (path_homotopy_class_loop_has_homotopy X Tx x0 f f0 Hf0_in_cls).
+}
+claim Hg_hom : path_homotopic X Tx x0 x0 g g0.
+{
+  exact (path_homotopy_class_loop_has_homotopy X Tx x0 g g0 Hg0_in_cls).
+}
+claim Hconcat_hom :
+  path_homotopic X Tx x0 x0 (path_concat f g) (path_concat f0 g0).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x0
+    x0
+    x0
+    f
+    f0
+    g
+    g0
+    Hf_hom
+    Hg_hom).
+}
+claim Hclass_eq :
+  path_homotopy_class_loop X Tx x0 (path_concat f g)
+  = path_homotopy_class_loop X Tx x0 (path_concat f0 g0).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    (path_concat f g)
+    (path_concat f0 g0)
+    Hconcat_hom).
+}
+rewrite Hclass_eq.
+exact (eq_symm
+  (apply_fun (fundamental_group_mult X Tx x0) (cls_f, cls_g))
+  (path_homotopy_class_loop X Tx x0 (path_concat f0 g0))
+  Hmult_apply).
+Qed.
 
 (** LATEX VERSION: The image of Psi equals the image under Phi of the **)
 (** subgroup N(H0)/H0 of pi1(B,b0)/H0. **)
@@ -331782,8 +333879,8 @@ Qed.
 (** then p maps B homeomorphically onto A_alpha. Furthermore, E is a linear graph **)
 (** with path components of p^{-1}(A_alpha) as its edges. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
-(** Collected Alice 509 **)
-(** Proven Alice **)
+(** Collected Bob 509 **)
+(** Proven Bob **)
 Theorem thm83_4_covering_of_graph_is_graph :
   forall X Tx Arcs E Te p:set,
   general_linear_graph X Tx Arcs ->
