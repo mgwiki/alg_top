@@ -303530,7 +303530,52 @@ apply iffI.
       exact (EmptyE (apply_fun g y) HgyEmpty).
 (** Backward: properly_discontinuous ==> covering_map **)
 - assume Hpd.
-  admit.
+  prove covering_map X Tx B Tb pi.
+  (** Need: continuous_map, surjective_map, evenly_covered neighborhoods **)
+  (** Step 1: pi is continuous - from quotient topology definition **)
+  claim Hpi_cont : continuous_map X Tx B Tb pi.
+  { admit. }
+  (** Step 2: pi is surjective **)
+  claim Hpi_surj : surjective_map X B pi.
+  { admit. }
+  (** Step 3: evenly covered neighborhoods **)
+  prove continuous_map X Tx B Tb pi /\ surjective_map X B pi /\
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered X Tx B Tb pi U).
+  apply and3I.
+  - exact Hpi_cont.
+  - exact Hpi_surj.
+  - let b. assume HbB.
+    (** b is an orbit class, pick representative x0 **)
+    claim Hx0_ex : exists x0:set, x0 :e X /\ apply_fun pi x0 = b.
+    { exact (andER (function_on pi X B)
+        (forall y:set, y :e B -> exists x:set, x :e X /\ apply_fun pi x = y)
+        Hpi_surj b HbB). }
+    apply Hx0_ex. let x0. assume Hx0pack.
+    claim Hx0X : x0 :e X. { exact (andEL (x0 :e X) (apply_fun pi x0 = b) Hx0pack). }
+    claim Hpi_x0 : apply_fun pi x0 = b. { exact (andER (x0 :e X) (apply_fun pi x0 = b) Hx0pack). }
+    (** Get properly_discontinuous neighborhood U for x0 **)
+    apply (Hpd x0 Hx0X). let U. assume HUpack.
+    (** HUpack : ((U :e Tx) /\ (x0 :e U)) /\ (forall g ...) by left-assoc **)
+    claim HUleft : U :e Tx /\ x0 :e U.
+    { exact (andEL (U :e Tx /\ x0 :e U)
+        (forall g:set, g :e G -> g <> idG ->
+          apply_fun g x0 :e X /\ (forall y:set, y :e U -> apply_fun g y /:e U))
+        HUpack). }
+    claim HUopen : U :e Tx.
+    { exact (andEL (U :e Tx) (x0 :e U) HUleft). }
+    claim Hx0U : x0 :e U.
+    { exact (andER (U :e Tx) (x0 :e U) HUleft). }
+    claim Hpdact : forall g:set, g :e G -> g <> idG ->
+        apply_fun g x0 :e X /\ (forall y:set, y :e U -> apply_fun g y /:e U).
+    { exact (andER (U :e Tx /\ x0 :e U)
+        (forall g:set, g :e G -> g <> idG ->
+          apply_fun g x0 :e X /\ (forall y:set, y :e U -> apply_fun g y /:e U))
+        HUpack). }
+    (** Define W = image of U under pi in B **)
+    set W := {w :e B | exists u:set, u :e U /\ apply_fun pi u = w}.
+    (** W is evenly covered **)
+    admit.
 Admitted.
 
 (** from S81 Thm 81.6 (line 5137 in algtop.tex) **)
