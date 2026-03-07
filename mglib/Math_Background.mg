@@ -284854,43 +284854,89 @@ apply andI.
                 (continuous_map Ub (subspace_topology B Tb Ub) S0 (subspace_topology E Te S0) sec)
                 (forall x:set, x :e S0 -> apply_fun sec (apply_fun (graph S0 (fun x0:set => apply_fun p x0)) x) = x)
                 Hsec_cl). }
-            (** sec(f(y)) = sec(p(ft(y))) = ft(y) via section property **)
-            (** f^{-1}(Ub) is open in Y **)
-            claim HpreUb_open : preimage_of Y f Ub :e Ty.
-            { exact (continuous_map_preimage Y Ty B Tb f HfCont Ub HUbTb). }
-            claim HyPreUb : y :e preimage_of Y f Ub.
-            { exact (SepI Y (fun x:set => apply_fun f x :e Ub) y HyY HfyUb). }
-            (** Get path-connected open W c= f^{-1}(Ub) containing y **)
-            apply (locally_path_connected_local Y Ty y (preimage_of Y f Ub) HlpY HyY HpreUb_open HyPreUb).
+            (** sec(f(y)) = ft(y) via section property **)
+            (** Chain: f(y) = p(ft(y)) = graph_thing(ft(y)), then sec(graph_thing(ft(y))) = ft(y) **)
+            claim H_fy_eq_pfty : apply_fun f y = apply_fun p (apply_fun ft y).
+            { exact (eq_symm (apply_fun p (apply_fun ft y)) (apply_fun f y) (Hpft_eq y HyY)). }
+            claim H_pfty_eq_graph : apply_fun p (apply_fun ft y) = apply_fun (graph S0 (fun x0:set => apply_fun p x0)) (apply_fun ft y).
+            { exact (eq_symm
+                (apply_fun (graph S0 (fun x0:set => apply_fun p x0)) (apply_fun ft y))
+                (apply_fun p (apply_fun ft y))
+                (apply_fun_graph S0 (fun x0:set => apply_fun p x0) (apply_fun ft y) Hfty_S0)). }
+            claim H_fy_eq_graph : apply_fun f y = apply_fun (graph S0 (fun x0:set => apply_fun p x0)) (apply_fun ft y).
+            { rewrite H_fy_eq_pfty. exact H_pfty_eq_graph. }
+            claim Hsec_fy_eq_fty : apply_fun sec (apply_fun f y) = apply_fun ft y.
+            { claim Hcongr_sec : apply_fun sec (apply_fun f y) = apply_fun sec (apply_fun (graph S0 (fun x0:set => apply_fun p x0)) (apply_fun ft y)).
+              { exact (apply_fun_congr_arg sec
+                  (apply_fun f y) (apply_fun (graph S0 (fun x0:set => apply_fun p x0)) (apply_fun ft y))
+                  H_fy_eq_graph). }
+              rewrite Hcongr_sec.
+              exact (Hsec_left (apply_fun ft y) Hfty_S0). }
+            (** Refined open set: Ub' = preimage under sec of V' :/\: S0 within Ub **)
+            (** Ub' = {b :e Ub | sec(b) :e V' :/\: S0} is open in subspace_topology B Tb Ub **)
+            claim HV'S0_sub_open : (V' :/\: S0) :e subspace_topology E Te S0.
+            { exact (subspace_topologyI E Te S0 V' HV'Te). }
+            claim HUb'_sub_open : preimage_of Ub sec (V' :/\: S0) :e subspace_topology B Tb Ub.
+            { exact (continuous_map_preimage Ub (subspace_topology B Tb Ub) S0 (subspace_topology E Te S0) sec Hsec_cont (V' :/\: S0) HV'S0_sub_open). }
+            (** Convert to open in Tb since Ub :e Tb **)
+            claim HUb'_sub_Ub : preimage_of Ub sec (V' :/\: S0) c= Ub.
+            { exact (Sep_Subq Ub (fun b:set => apply_fun sec b :e V' :/\: S0)). }
+            claim HtopUb_sub : topology_on Ub (subspace_topology B Tb Ub).
+            { exact (subspace_topology_is_topology B Tb Ub HtopB (topology_elem_subset B Tb Ub HtopB HUbTb)). }
+            claim HUb'_open_in : open_in Ub (subspace_topology B Tb Ub) (preimage_of Ub sec (V' :/\: S0)).
+            { exact (open_inI Ub (subspace_topology B Tb Ub) (preimage_of Ub sec (V' :/\: S0)) HtopUb_sub HUb'_sub_open). }
+            claim HUb'Tb : preimage_of Ub sec (V' :/\: S0) :e Tb.
+            { exact (open_in_subspace_if_ambient_open B Tb Ub (preimage_of Ub sec (V' :/\: S0)) HtopB HUbTb HUb'_sub_Ub HUb'_open_in). }
+            (** f(y) :e Ub' **)
+            claim Hsec_fy_in_V'S0 : apply_fun sec (apply_fun f y) :e V' :/\: S0.
+            { exact (eq_subst_mem (apply_fun sec (apply_fun f y)) (apply_fun ft y) (V' :/\: S0)
+                Hsec_fy_eq_fty
+                (binintersectI V' S0 (apply_fun ft y) Hfty_V' Hfty_S0)). }
+            claim Hfy_Ub' : apply_fun f y :e preimage_of Ub sec (V' :/\: S0).
+            { exact (SepI Ub (fun b:set => apply_fun sec b :e V' :/\: S0) (apply_fun f y) HfyUb Hsec_fy_in_V'S0). }
+            (** f^{-1}(Ub') is open in Ty **)
+            claim HpreUb'_open : preimage_of Y f (preimage_of Ub sec (V' :/\: S0)) :e Ty.
+            { exact (continuous_map_preimage Y Ty B Tb f HfCont (preimage_of Ub sec (V' :/\: S0)) HUb'Tb). }
+            claim HyPreUb' : y :e preimage_of Y f (preimage_of Ub sec (V' :/\: S0)).
+            { exact (SepI Y (fun x:set => apply_fun f x :e preimage_of Ub sec (V' :/\: S0)) y HyY Hfy_Ub'). }
+            (** Get path-connected open W c= f^{-1}(Ub') containing y **)
+            apply (locally_path_connected_local Y Ty y (preimage_of Y f (preimage_of Ub sec (V' :/\: S0))) HlpY HyY HpreUb'_open HyPreUb').
             let W. assume HW_lpc_pack.
-            (** HW_lpc_pack : (W :e Ty /\ y :e W) /\ (W c= preimage_of Y f Ub /\ path_connected W (sub Ty W)) **)
-            (** Actually need to check the conjunction structure from locally_path_connected_local **)
-            (** It returns: V :e Tx /\ x :e V /\ V c= U /\ path_connected_space V (subspace_topology X Tx V) **)
-            (** With left-assoc: (((V :e Tx /\ x :e V) /\ V c= U) /\ path_connected_space ...) **)
+            (** left-assoc: (((W :e Ty /\ y :e W) /\ W c= f^{-1}(Ub')) /\ path_connected_space W ...) **)
             claim HW_pcs : path_connected_space W (subspace_topology Y Ty W).
-            { exact (andER ((W :e Ty /\ y :e W) /\ W c= preimage_of Y f Ub)
+            { exact (andER ((W :e Ty /\ y :e W) /\ W c= preimage_of Y f (preimage_of Ub sec (V' :/\: S0)))
                 (path_connected_space W (subspace_topology Y Ty W)) HW_lpc_pack). }
-            claim HW3 : (W :e Ty /\ y :e W) /\ W c= preimage_of Y f Ub.
-            { exact (andEL ((W :e Ty /\ y :e W) /\ W c= preimage_of Y f Ub)
+            claim HW3 : (W :e Ty /\ y :e W) /\ W c= preimage_of Y f (preimage_of Ub sec (V' :/\: S0)).
+            { exact (andEL ((W :e Ty /\ y :e W) /\ W c= preimage_of Y f (preimage_of Ub sec (V' :/\: S0)))
                 (path_connected_space W (subspace_topology Y Ty W)) HW_lpc_pack). }
-            claim HWsubPreUb : W c= preimage_of Y f Ub.
-            { exact (andER (W :e Ty /\ y :e W) (W c= preimage_of Y f Ub) HW3). }
+            claim HWsubPreUb' : W c= preimage_of Y f (preimage_of Ub sec (V' :/\: S0)).
+            { exact (andER (W :e Ty /\ y :e W) (W c= preimage_of Y f (preimage_of Ub sec (V' :/\: S0))) HW3). }
             claim HW_pair : W :e Ty /\ y :e W.
-            { exact (andEL (W :e Ty /\ y :e W) (W c= preimage_of Y f Ub) HW3). }
+            { exact (andEL (W :e Ty /\ y :e W) (W c= preimage_of Y f (preimage_of Ub sec (V' :/\: S0))) HW3). }
             claim HWTy : W :e Ty.
             { exact (andEL (W :e Ty) (y :e W) HW_pair). }
             claim HyW : y :e W.
             { exact (andER (W :e Ty) (y :e W) HW_pair). }
-            (** Key claim: for all y' in W, ft(y') :e S0 :/\: V' **)
-            (** This needs well-definedness of lift endpoints + section agreement **)
-            claim Hft_in_S0V' : forall y':set, y' :e W -> apply_fun ft y' :e S0 :/\: V'.
-            { admit. }
+            (** For y' :e W: f(y') :e Ub', so sec(f(y')) :e V' :/\: S0 **)
+            claim Hft_in_V' : forall y':set, y' :e W -> apply_fun ft y' :e V'.
+            { let y'. assume Hy'W.
+              claim Hy'Y : y' :e Y.
+              { exact (topology_elem_subset Y Ty W HtopY HWTy y' Hy'W). }
+              claim Hy'PreUb' : y' :e preimage_of Y f (preimage_of Ub sec (V' :/\: S0)).
+              { exact (HWsubPreUb' y' Hy'W). }
+              claim Hfy'_Ub' : apply_fun f y' :e preimage_of Ub sec (V' :/\: S0).
+              { exact (SepE2 Y (fun x:set => apply_fun f x :e preimage_of Ub sec (V' :/\: S0)) y' Hy'PreUb'). }
+              claim Hsec_fy'_V'S0 : apply_fun sec (apply_fun f y') :e V' :/\: S0.
+              { exact (SepE2 Ub (fun b:set => apply_fun sec b :e V' :/\: S0) (apply_fun f y') Hfy'_Ub'). }
+              (** Well-definedness: ft(y') = sec(f(y')) for y' in W **)
+              claim Hft_eq_sec : apply_fun ft y' = apply_fun sec (apply_fun f y').
+              { admit. }
+              exact (eq_subst_mem (apply_fun ft y') (apply_fun sec (apply_fun f y')) V'
+                Hft_eq_sec (binintersectE1 V' S0 (apply_fun sec (apply_fun f y')) Hsec_fy'_V'S0)). }
             (** Conclude: W witnesses the exists **)
             witness W.
             exact (andI (W :e Ty /\ y :e W) (forall y':set, y' :e W -> apply_fun ft y' :e V')
-              (andI (W :e Ty) (y :e W) HWTy HyW)
-              (fun y':set => fun Hy'W : y' :e W =>
-                binintersectE2 S0 V' (apply_fun ft y') (Hft_in_S0V' y' Hy'W))). }
+              (andI (W :e Ty) (y :e W) HWTy HyW) Hft_in_V'). }
           claim H_open : open_in Y Ty (preimage_of Y ft V').
           { apply (ex13_1_local_open_subset Y Ty (preimage_of Y ft V') HtopY).
             let y. assume HyPre.
