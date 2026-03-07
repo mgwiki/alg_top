@@ -82,6 +82,168 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772859559
+Created: 1772859559
+Status: PROPOSED
+
+Refers to Commit:
+  576078a226427d7629db5de5836f9adb8c59cf6e
+
+Target:
+  Line: 92625
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  Statement lacks a joint-continuity assumption for the base map. The proof
+  currently gets stuck at establishing continuity of the lift on I1 x I2.
+  This matches the in-file TODO and the proven parametric variant below.
+
+Proposed Replacement:
+  Lemma path_lift_column_continuous_on_product_ball :
+    forall E Te B Tb p F start_lift vs_choice U slices V0 I1 I2 s0 t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    I2 c= unit_interval ->
+    0 :e I2 ->
+    t0 :e I2 ->
+    connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+    connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+    continuous_map (setprod I1 I2)
+      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+      B Tb F ->
+    (forall z:set, z :e setprod I1 I2 -> apply_fun F z :e U) ->
+    U :e Tb ->
+    slices c= Te ->
+    pairwise_disjoint slices ->
+    Union slices = preimage_of E p U ->
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z))) ->
+    V0 :e slices ->
+    s0 :e I1 ->
+    apply_fun start_lift s0 :e V0 ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772859559 | Bob: Add the joint-continuity hypothesis (via F) to match the
+    parametric lemma already proven and to unblock the proof.
+
+Approvals:
+  - 1772859559 | Alice: YES / NO
+  - 1772859559 | Bob: YES / NO
+  - 1772859559 | Charlie: YES / NO
+  - 1772859559 | Dave: YES / NO
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+  SENT TO ADMIN
+  APPROVED      (ADMIN ONLY)
+  IMPLEMENTED
+  REJECTED
+
+NOTICE ID: 1772859558
+Created: 1772859558
+Status: PROPOSED
+
+Refers to Commit:
+  576078a226427d7629db5de5836f9adb8c59cf6e
+
+Target:
+  Line: 95231
+  Name: column_continuity_via_chain (Lemma)
+
+Problem:
+  Statement lacks a joint-continuity assumption for the base map F. The proof
+  sketch and TODO note that such an assumption is required, and a proven
+  variant (column_continuity_via_chain_with_F) already exists.
+
+Proposed Replacement:
+  Lemma column_continuity_via_chain :
+    forall E Te B Tb p F start_lift vs_choice I1 t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+    t0 :e unit_interval ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    continuous_map (setprod I1 unit_interval)
+      (subspace_topology unit_square unit_square_topology (setprod I1 unit_interval))
+      B Tb F ->
+    (forall s:set, s :e I1 -> forall t:set, t :e unit_interval ->
+      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772859558 | Bob: Align statement with proven with_F version to avoid
+    the missing joint-continuity assumption.
+
+Approvals:
+  - 1772859558 | Alice: YES / NO
+  - 1772859558 | Bob: YES / NO
+  - 1772859558 | Charlie: YES / NO
+  - 1772859558 | Dave: YES / NO
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+  SENT TO ADMIN
+  APPROVED      (ADMIN ONLY)
+  IMPLEMENTED
+  REJECTED
+
 NOTICE ID: 1772849625
 Created: 1772849625
 Status: PROPOSED
