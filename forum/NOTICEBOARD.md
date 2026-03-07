@@ -82,6 +82,56 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772843048
+Created: 1772843048
+Status: PROPOSED
+
+Refers to Commit:
+  44c83f2a10d199ec559a5be418571909cb238b53
+
+Target:
+  Line: 20162
+  Name: convex_subspace_topology_eq_R (Theorem)
+
+Problem:
+  Statement is false: topology_on A Ta does not determine Ta uniquely.
+  The lemma is therefore unprovable as written and currently a placeholder.
+
+Proposed Replacement:
+  Theorem convex_subspace_topology_eq_R : forall A:set,
+    A c= R -> convex_in R A ->
+    topology_on A (subspace_topology R R_standard_topology A).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772843048 | Bob: Statement should assert subspace_topology is a topology on A;
+    equality with an arbitrary Ta is not derivable.
+
+Approvals:
+  - 1772843048 | Alice:
+  - 1772843048 | Bob: YES
+  - 1772843048 | Charlie:
+  - 1772843048 | Dave:
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+
+Admin Decision:
+  - | APPROVED / REJECTED
+
+Implemented by:
+  
+
+Implementation Commit:
+  
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772823145
 Created: 1772823145
 Status: PROPOSED
