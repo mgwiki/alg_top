@@ -225050,7 +225050,7 @@ apply (nat_inv n Hn_nat).
 								                      Hcancel1x
 								                      (eq_symm (apply_fun multG (eG, xlast)) xlast HidLx))).
 								                }
-								                (** Remaining work: use this boundary cancellation information to contradict w^2 = eG in a free product. **)
+								                (** Remaining work: need torsion-in-free-product lemma: any involution is conjugate into a factor, then malnormality forces w = eG, contradicting Hefam_ne. **)
 								                admit.
 								            - assume Hp_ne_eG : p <> eG.
 								              apply (xm (p = apply_fun efam alpha0)).
@@ -225060,7 +225060,7 @@ apply (nat_inv n Hn_nat).
 						                { rewrite <- Hp_eq_ef0. exact Hp_in_Ga0. }
 						                claim Hef0_ne_eG : apply_fun efam alpha0 <> eG.
 						                { rewrite <- Hp_eq_ef0. exact Hp_ne_eG. }
-						                (** Remaining work: use this seam value to derive a contradiction with w^2 = eG in a free product. **)
+						                (** Remaining work: need torsion-in-free-product or malnormality lemma to rule out efam alpha0 as boundary product. **)
 						                admit.
 						              - assume Hp_ne_ef0 : p <> apply_fun efam alpha0.
 						                (** Build a reduced word for mult(w,w) by merging (xlast,x0) into p and appending the suffix word. **)
