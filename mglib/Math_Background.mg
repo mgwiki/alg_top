@@ -135874,6 +135874,78 @@ Qed.
 (** LATEX VERSION: If h-star is the trivial homomorphism, then h is nulhomotopic. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 180 **)
 (** Infrastructure: trivial induced homomorphism yields extension over B2. **)
+(** Proven Bob **)
+Lemma loop_class_eq_id_implies_path_homotopic_constant :
+  forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  path_homotopy_class_loop X Tx x0 f = fundamental_group_id X Tx x0 ->
+  path_homotopic X Tx x0 x0 f (constant_path x0).
+let X Tx x0 f.
+assume HfLoop HclsEq.
+claim HfLoopAt : loop_at X Tx x0 f.
+{ exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f HfLoopAt). }
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_cod unit_interval unit_interval_topology X Tx f HfCont). }
+claim HfFun : function_on f unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f HfCont). }
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
+claim Hx0X : x0 :e X.
+{
+  rewrite <- Hf0.
+  exact (HfFun 0 zero_in_unit_interval).
+}
+claim HconstLoopAt : loop_at X Tx x0 (constant_path x0).
+{ exact (loop_at_constant_path X Tx x0 HtopX Hx0X). }
+claim HconstFS : (constant_path x0) :e function_space unit_interval X.
+{
+  exact (graph_in_function_space unit_interval X
+    (fun t:set => x0)
+    (fun t Ht => Hx0X)).
+}
+claim HconstInLoop : (constant_path x0) :e loop_space X Tx x0.
+{
+  exact (SepI
+    (function_space unit_interval X)
+    (fun g:set => loop_at X Tx x0 g)
+    (constant_path x0)
+    HconstFS
+    HconstLoopAt).
+}
+claim HconstInClassConst :
+  (constant_path x0) :e fundamental_group_id X Tx x0.
+{
+  exact (loop_in_own_path_homotopy_class
+    X
+    Tx
+    x0
+    (constant_path x0)
+    HconstInLoop).
+}
+claim HconstInClassF :
+  (constant_path x0) :e path_homotopy_class_loop X Tx x0 f.
+{
+  exact (mem_eqR
+    (constant_path x0)
+    (fundamental_group_id X Tx x0)
+    (path_homotopy_class_loop X Tx x0 f)
+    (eq_symm
+      (path_homotopy_class_loop X Tx x0 f)
+      (fundamental_group_id X Tx x0)
+      HclsEq)
+    HconstInClassConst).
+}
+exact (path_homotopy_class_loop_has_homotopy
+  X
+  Tx
+  x0
+  f
+  (constant_path x0)
+  HconstInClassF).
+Qed.
+
 Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
   b0 :e S1 ->
@@ -136003,14 +136075,52 @@ claim Hloop_triv :
   }
   exact HtrivCls_f.
 }
+claim Hloop_null :
+  forall f:set, f :e loop_space S1 S1_topology b0 ->
+    path_homotopic X Tx (apply_fun h b0) (apply_fun h b0)
+      (compose_fun unit_interval f h)
+      (constant_path (apply_fun h b0)).
+{
+  let f.
+  assume HfLoop.
+  claim HcompLoop :
+    (compose_fun unit_interval f h) :e loop_space X Tx (apply_fun h b0).
+  {
+    exact (loop_space_postcompose
+      S1
+      S1_topology
+      b0
+      X
+      Tx
+      (apply_fun h b0)
+      f
+      h
+      HfLoop
+      Hh
+      (fun Q H => H)).
+  }
+  claim HclsEq :
+    path_homotopy_class_loop X Tx (apply_fun h b0)
+      (compose_fun unit_interval f h)
+    = fundamental_group_id X Tx (apply_fun h b0).
+  { exact (Hloop_triv f HfLoop). }
+  exact (loop_class_eq_id_implies_path_homotopic_constant
+    X
+    Tx
+    (apply_fun h b0)
+    (compose_fun unit_interval f h)
+    HcompLoop
+    HclsEq).
+}
 claim Hnul :
   nulhomotopic S1 S1_topology X Tx h.
 {
-  (** TODO: need to relate loop triviality of h o f to nulhomotopy of h **)
+  (** TODO: need a lemma that a map S1 -> X is nulhomotopic iff all loops in S1
+      map (via postcomposition) to loops path-homotopic to the constant loop. **)
   admit.
 }
 exact Hnul.
-Admitted. (** TODO: needs classification of maps S1 -> X by pi1 (degree zero/loop class). **)
+Admitted. (** TODO: needs classification of maps S1 -> X by pi1/loop classes. **)
 
 Lemma s55_trivial_implies_extends_to_B2 : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
