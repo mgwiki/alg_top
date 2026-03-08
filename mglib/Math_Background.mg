@@ -1,5 +1,5 @@
 (** Balance Alice 7663 **)
-(** Balance Bob 5598 **)
+(** Balance Bob 5671 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
 
@@ -38953,7 +38953,8 @@ Qed.
 (** LATEX VERSION: If A is star convex, A is simply connected. **)
 (** Admin-approved-refactored per noticeboard proposal 1772491898 **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 73 **)
+(** Collected Bob 73 **)
+(** Proven Bob **)
 Theorem ex52_1b_star_convex_simply_connected : forall A a0:set,
   star_convex A a0 ->
   simply_connected A (subspace_topology R R_standard_topology A).
@@ -39001,8 +39002,109 @@ claim HpcA : path_connected_space A Ta.
   {
     let x y.
     assume HxA HyA.
-    (** TODO: update call to star_convex_segment_continuous with new signature (subspace_topology) **)
-    admit.
+    (** Build a path from x to y via a0 using star-convex segments **)
+    claim Hsegx_ex :
+      exists segx:set,
+        continuous_map unit_interval unit_interval_topology A Ta segx /\
+        apply_fun segx 0 = a0 /\
+        apply_fun segx 1 = x.
+    {
+      exact (star_convex_segment_continuous A a0 x Hstar HxA).
+    }
+    claim Hsegy_ex :
+      exists segy:set,
+        continuous_map unit_interval unit_interval_topology A Ta segy /\
+        apply_fun segy 0 = a0 /\
+        apply_fun segy 1 = y.
+    {
+      exact (star_convex_segment_continuous A a0 y Hstar HyA).
+    }
+    apply Hsegx_ex. let segx. assume Hsegx_pack.
+    apply Hsegy_ex. let segy. assume Hsegy_pack.
+    claim Hsegx_packL :
+      continuous_map unit_interval unit_interval_topology A Ta segx /\
+      apply_fun segx 0 = a0.
+    { exact (andEL
+        (continuous_map unit_interval unit_interval_topology A Ta segx /\
+          apply_fun segx 0 = a0)
+        (apply_fun segx 1 = x)
+        Hsegx_pack). }
+    claim Hsegx1 : apply_fun segx 1 = x.
+    { exact (andER
+        (continuous_map unit_interval unit_interval_topology A Ta segx /\
+          apply_fun segx 0 = a0)
+        (apply_fun segx 1 = x)
+        Hsegx_pack). }
+    claim Hsegx_cont :
+      continuous_map unit_interval unit_interval_topology A Ta segx.
+    { exact (andEL
+        (continuous_map unit_interval unit_interval_topology A Ta segx)
+        (apply_fun segx 0 = a0)
+        Hsegx_packL). }
+    claim Hsegx0 : apply_fun segx 0 = a0.
+    { exact (andER
+        (continuous_map unit_interval unit_interval_topology A Ta segx)
+        (apply_fun segx 0 = a0)
+        Hsegx_packL). }
+    claim Hsegy_packL :
+      continuous_map unit_interval unit_interval_topology A Ta segy /\
+      apply_fun segy 0 = a0.
+    { exact (andEL
+        (continuous_map unit_interval unit_interval_topology A Ta segy /\
+          apply_fun segy 0 = a0)
+        (apply_fun segy 1 = y)
+        Hsegy_pack). }
+    claim Hsegy1 : apply_fun segy 1 = y.
+    { exact (andER
+        (continuous_map unit_interval unit_interval_topology A Ta segy /\
+          apply_fun segy 0 = a0)
+        (apply_fun segy 1 = y)
+        Hsegy_pack). }
+    claim Hsegy_cont :
+      continuous_map unit_interval unit_interval_topology A Ta segy.
+    { exact (andEL
+        (continuous_map unit_interval unit_interval_topology A Ta segy)
+        (apply_fun segy 0 = a0)
+        Hsegy_packL). }
+    claim Hsegy0 : apply_fun segy 0 = a0.
+    { exact (andER
+        (continuous_map unit_interval unit_interval_topology A Ta segy)
+        (apply_fun segy 0 = a0)
+        Hsegy_packL). }
+    set rev_segx := reverse_path segx.
+    claim Hrev_cont :
+      continuous_map unit_interval unit_interval_topology A Ta rev_segx.
+    { exact (reverse_path_continuous A Ta segx Hsegx_cont). }
+    claim Hrev_between : path_between A x a0 rev_segx.
+    {
+      exact (reverse_path_between A Ta a0 x segx Hsegx_cont Hsegx0 Hsegx1).
+    }
+    set p := path_concat rev_segx segy.
+    claim Hp_between : path_between A x y p.
+    {
+      exact (path_concat_between
+        A Ta x a0 y rev_segx segy
+        Hrev_cont Hsegy_cont
+        (path_between_at_zero A x a0 rev_segx Hrev_between)
+        (path_between_at_one A x a0 rev_segx Hrev_between)
+        Hsegy0 Hsegy1).
+    }
+    claim Hp_cont :
+      continuous_map unit_interval unit_interval_topology A Ta p.
+    {
+      exact (path_concat_continuous
+        A Ta x a0 y rev_segx segy
+        Hrev_cont Hsegy_cont
+        (path_between_at_zero A x a0 rev_segx Hrev_between)
+        (path_between_at_one A x a0 rev_segx Hrev_between)
+        Hsegy0 Hsegy1).
+    }
+    witness p.
+    exact (andI
+      (path_between A x y p)
+      (continuous_map unit_interval unit_interval_topology A Ta p)
+      Hp_between
+      Hp_cont).
   }
   exact (andI
     (topology_on A Ta)
@@ -39070,7 +39172,7 @@ claim Hpi1Trivial :
           unit_interval unit_interval_topology
           HtopUI HtopUI). }
       claim HTaEq : Ta = subspace_topology R R_standard_topology A.
-      { admit. }
+      { reflexivity. }
       claim HuiEq : unit_interval_topology = subspace_topology R R_standard_topology unit_interval.
       { reflexivity. }
       (** Expand f to be R-valued **)
@@ -39578,8 +39680,7 @@ apply andI.
   apply andI.
   + exact Ha0A.
   + exact Hpi1Trivial.
-Admitted. (** TODO: likely needs a uniform delta in t around t1, requiring compactness
-  or uniform continuity in s; current assumptions appear insufficient. **)
+Qed.
 
 (** S52 helper: reverse of a concatenation is homotopic to concatenation of reverses in opposite order **)
 (** Proven Charlie **)
