@@ -231780,10 +231780,56 @@ apply (and5E
         word_product multG eG xs' n' = x ->
         n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
   Hfp).
-assume Hgrp Hsubfam _ _ _.
+assume Hgrp Hsubfam Hdisjoint _ _.
 
 set p := apply_fun multG (apply_fun xs m, apply_fun xs 0).
 prove p <> eG /\ p <> apply_fun efam alpha0.
+ 
+(** Basic disjointness consequences: x0, xm are not in the factor subgroup Gfam(al). **)
+claim Hx0_not_in_Gal : ~(apply_fun xs 0 :e apply_fun Gfam al).
+{
+  assume Hx0_in_Gal : apply_fun xs 0 :e apply_fun Gfam al.
+  claim Hx0_eq_eG : apply_fun xs 0 = eG.
+  { exact (Hdisjoint alpha0 al Halpha0J Hal Halpha0_ne
+      (apply_fun xs 0) Hx0_in_Ga0 Hx0_in_Gal). }
+  exact (Hx0_ne_eG Hx0_eq_eG).
+}
+claim Hxm_not_in_Gal : ~(apply_fun xs m :e apply_fun Gfam al).
+{
+  assume Hxm_in_Gal : apply_fun xs m :e apply_fun Gfam al.
+  claim Hxm_eq_eG : apply_fun xs m = eG.
+  { exact (Hdisjoint alpha0 al Halpha0J Hal Halpha0_ne
+      (apply_fun xs m) Hxm_in_Ga0 Hxm_in_Gal). }
+  exact (Hxm_ne_eG Hxm_eq_eG).
+}
+(** In particular, m cannot be 1 (otherwise reduced_word adjacency would be violated). **)
+claim Hm_ne1 : m <> 1.
+{
+  assume Hm1 : m = 1.
+  claim Hn2 : n = 2.
+  { rewrite Hn_sm. rewrite Hm1. exact ordsucc_1_eq_2_nat. }
+  claim H0_in_n : 0 :e n. { rewrite Hn2. exact In_0_2. }
+  claim H1_in_n : ordsucc 0 :e n. { rewrite Hn2. exact In_1_2. }
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs i :e apply_fun Gfam alpha /\
+        apply_fun xs i <> apply_fun efam alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall a b:set, a :e J -> b :e J ->
+        apply_fun xs i :e apply_fun Gfam a ->
+        apply_fun xs (ordsucc i) :e apply_fun Gfam b ->
+        a <> b)
+    Hred).
+  assume _ _ Hadj.
+  claim Hs0 : ordsucc 0 = m.
+  { rewrite Hm1. exact ordsucc_0_eq_1_nat. }
+  claim Hxs1_in_Ga0 : apply_fun xs (ordsucc 0) :e apply_fun Gfam alpha0.
+  { rewrite Hs0. exact Hxm_in_Ga0. }
+  exact ((Hadj 0 H0_in_n H1_in_n alpha0 alpha0 Halpha0J Halpha0J Hx0_in_Ga0 Hxs1_in_Ga0) (eq_refl alpha0)).
+}
+
 apply andI.
 
 - (** p <> eG **)
