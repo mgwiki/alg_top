@@ -164057,10 +164057,143 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
     { exact (path_connected_space_paths
         (U :/\: V) (subspace_topology X Tx (U :/\: V))
         x0 (apply_fun f a_trans) HpcUV Hx0UV Ha_trans_UV). }
+    (** Split f at a_trans when it is not an endpoint. **)
+    claim Hsplit_at_trans :
+      a_trans <> 0 -> a_trans <> 1 ->
+      exists f1 f2:set,
+        continuous_map unit_interval unit_interval_topology X Tx f1 /\
+        continuous_map unit_interval unit_interval_topology X Tx f2 /\
+        apply_fun f1 0 = x0 /\ apply_fun f1 1 = apply_fun f a_trans /\
+        apply_fun f2 0 = apply_fun f a_trans /\ apply_fun f2 1 = x0 /\
+        path_homotopic X Tx x0 x0 f (path_concat f1 f2).
+    {
+      assume Ha0ne Ha1ne.
+      claim Ha0le : Rle 0 a_trans.
+      { exact (unit_interval_Rle0 a_trans Ha_trans_ui). }
+      claim Ha1le : Rle a_trans 1.
+      { exact (unit_interval_Rle1 a_trans Ha_trans_ui). }
+      claim Ha0lt : Rlt 0 a_trans.
+      {
+        claim Ha0ne' : ~(0 = a_trans).
+        { assume H0eq. exact (Ha0ne (eq_symm 0 a_trans H0eq)). }
+        exact (Rle_neq_implies_Rlt 0 a_trans Ha0le Ha0ne').
+      }
+      claim Ha1lt : Rlt a_trans 1.
+      { exact (Rle_neq_implies_Rlt a_trans 1 Ha1le Ha1ne). }
+      exact (Theorem_51_3_reparametrization
+        X
+        Tx
+        x0
+        x0
+        f
+        a_trans
+        HfCont
+        Hf0
+        Hf1
+        Ha_trans_ui
+        Ha0lt
+        Ha1lt).
+    }
+    apply Hgamma_trans_ex.
+    let gamma. assume Hgamma_pack.
+    claim Hgamma_between :
+      path_between (U :/\: V) x0 (apply_fun f a_trans) gamma.
+    {
+      exact (andEL
+        (path_between (U :/\: V) x0 (apply_fun f a_trans) gamma)
+        (continuous_map unit_interval unit_interval_topology
+          (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma)
+        Hgamma_pack).
+    }
+    claim Hgamma_cont :
+      continuous_map unit_interval unit_interval_topology
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma.
+    {
+      exact (andER
+        (path_between (U :/\: V) x0 (apply_fun f a_trans) gamma)
+        (continuous_map unit_interval unit_interval_topology
+          (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma)
+        Hgamma_pack).
+    }
+    (** View gamma as a path in X (via inclusion). **)
+    claim HUVsub : (U :/\: V) c= X.
+    {
+      let y. assume HyUV.
+      exact (HUsub y (binintersectE1 U V y HyUV)).
+    }
+    claim HsubTop_eq :
+      subspace_topology X Tx (U :/\: V) = subspace_topology X Tx (U :/\: V).
+    { reflexivity. }
+    claim Hgamma_cont_X :
+      continuous_map unit_interval unit_interval_topology X Tx gamma.
+    {
+      exact (continuous_map_range_expand
+        unit_interval
+        unit_interval_topology
+        (U :/\: V)
+        (subspace_topology X Tx (U :/\: V))
+        X
+        Tx
+        gamma
+        Hgamma_cont
+        HUVsub
+        Htop
+        HsubTop_eq).
+    }
+    claim Hgamma_between_X :
+      path_between X x0 (apply_fun f a_trans) gamma.
+    {
+      apply (path_betweenI X x0 (apply_fun f a_trans) gamma).
+      - exact (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          gamma
+          Hgamma_cont_X).
+      - exact (path_between_at_zero
+          (U :/\: V)
+          x0
+          (apply_fun f a_trans)
+          gamma
+          Hgamma_between).
+      - exact (path_between_at_one
+          (U :/\: V)
+          x0
+          (apply_fun f a_trans)
+          gamma
+          Hgamma_between).
+    }
+    claim Hgamma_rev_between_X :
+      path_between X (apply_fun f a_trans) x0 (reverse_path gamma).
+    {
+      exact (reverse_path_between
+        X
+        Tx
+        x0
+        (apply_fun f a_trans)
+        gamma
+        Hgamma_cont_X
+        (path_between_at_zero
+          (U :/\: V)
+          x0
+          (apply_fun f a_trans)
+          gamma
+          Hgamma_between)
+        (path_between_at_one
+          (U :/\: V)
+          x0
+          (apply_fun f a_trans)
+          gamma
+          Hgamma_between)).
+    }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
-        intersection points to split L2, and induct on chain length to build the word. **)
+        intersection points to split L2, and induct on chain length to build the word.
+        Missing helper: from a chain of overlapping balls in unit_interval, extract an
+        ordered subdivision 0 = t0 < ... < tm = 1 where each subpath stays in a single
+        ball; then build the finite word using path_homotopy_class_loop_concat_eq_mult. **)
     admit.
 Admitted.
 
