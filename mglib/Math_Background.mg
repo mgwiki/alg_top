@@ -1,6 +1,6 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 709 **)
+(** Balance Charlie 679 **)
 (** Balance Dave 2020 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -231432,7 +231432,8 @@ Admitted.
 
 (** Helper bounty: boundary-product nontriviality in free products (p <> eG).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 1773096671 **)
 Lemma free_product_boundary_product_ne_e_helper :
   forall G multG eG invG J Gfam efam al n xs m alpha0:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -231460,7 +231461,8 @@ Admitted.
 
 (** Helper bounty: boundary-product not equal to efam(alpha0).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 1773096671 **)
 Lemma free_product_boundary_product_ne_efam_helper :
   forall G multG eG invG J Gfam efam al n xs m alpha0:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
