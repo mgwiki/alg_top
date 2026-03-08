@@ -1,6 +1,6 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 1009 **)
+(** Balance Charlie 709 **)
 (** Balance Dave 2020 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -231336,6 +231336,62 @@ Theorem efam_not_in_Gfam_nontrivial_early : forall G multG eG invG J Gfam efam:s
 admit.
 Admitted.
 
+(** Helper bounty: boundary-product nontriviality in free products (p <> eG).
+    Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
+(** Bounty 150 **)
+Lemma free_product_boundary_product_ne_e_helper :
+  forall G multG eG invG J Gfam efam al n xs m alpha0:set,
+  free_product_of_subgroups G multG eG invG J Gfam efam ->
+  al :e J ->
+  apply_fun efam al :e apply_fun Gfam al ->
+  apply_fun efam al <> eG ->
+  apply_fun invG (apply_fun efam al) = apply_fun efam al ->
+  reduced_word J Gfam efam n xs ->
+  n = ordsucc m ->
+  nat_p m ->
+  m <> 0 ->
+  alpha0 :e J ->
+  apply_fun xs 0 :e apply_fun Gfam alpha0 ->
+  apply_fun xs 0 <> eG ->
+  apply_fun xs 0 <> apply_fun efam alpha0 ->
+  apply_fun xs m :e apply_fun Gfam alpha0 ->
+  apply_fun xs m <> eG ->
+  apply_fun xs m <> apply_fun efam alpha0 ->
+  alpha0 <> al ->
+  word_product multG eG xs n = apply_fun efam al ->
+  apply_fun multG (apply_fun xs m, apply_fun xs 0) = eG ->
+  False.
+admit.
+Admitted.
+
+(** Helper bounty: boundary-product not equal to efam(alpha0).
+    Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
+(** Bounty 150 **)
+Lemma free_product_boundary_product_ne_efam_helper :
+  forall G multG eG invG J Gfam efam al n xs m alpha0:set,
+  free_product_of_subgroups G multG eG invG J Gfam efam ->
+  al :e J ->
+  apply_fun efam al :e apply_fun Gfam al ->
+  apply_fun efam al <> eG ->
+  apply_fun invG (apply_fun efam al) = apply_fun efam al ->
+  reduced_word J Gfam efam n xs ->
+  n = ordsucc m ->
+  nat_p m ->
+  m <> 0 ->
+  alpha0 :e J ->
+  apply_fun xs 0 :e apply_fun Gfam alpha0 ->
+  apply_fun xs 0 <> eG ->
+  apply_fun xs 0 <> apply_fun efam alpha0 ->
+  apply_fun xs m :e apply_fun Gfam alpha0 ->
+  apply_fun xs m <> eG ->
+  apply_fun xs m <> apply_fun efam alpha0 ->
+  alpha0 <> al ->
+  word_product multG eG xs n = apply_fun efam al ->
+  apply_fun multG (apply_fun xs m, apply_fun xs 0) = apply_fun efam alpha0 ->
+  False.
+admit.
+Admitted.
+
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
 (** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
 (** Bounty 55 **)
@@ -231590,7 +231646,14 @@ apply andI.
     set u := word_product multG eG xs_mid k.
     (** Step 2: express w = mult(x0, mult(u, inv x0)) using x_m = inv x0. **)
     (** TODO: finish the computation and cancellation to conclude u is an involution. **)
-    admit.
+    exact (free_product_boundary_product_ne_e_helper
+      G multG eG invG J Gfam efam al n xs m alpha0
+      Hfp Hal Hefam_Gal Hefam_ne Hefam_invol
+      Hred Hn_sm Hm_nat Hm_ne0
+      Halpha0J Hx0_in_Ga0 Hx0_ne_eG Hx0_ne_ef0
+      Hxm_in_Ga0 Hxm_ne_eG Hxm_ne_ef0
+      Halpha0_ne Hwp
+      Hp_e).
 
 - (** p <> efam(alpha0) **)
   assume Hp_ef0 : p = apply_fun efam alpha0.
@@ -231605,7 +231668,14 @@ apply andI.
       Hx0_in_Ga0).
   }
   (** TODO: the remaining contradiction is part of the same torsion/malnormality analysis. **)
-  admit.
+  exact (free_product_boundary_product_ne_efam_helper
+    G multG eG invG J Gfam efam al n xs m alpha0
+    Hfp Hal Hefam_Gal Hefam_ne Hefam_invol
+    Hred Hn_sm Hm_nat Hm_ne0
+    Halpha0J Hx0_in_Ga0 Hx0_ne_eG Hx0_ne_ef0
+    Hxm_in_Ga0 Hxm_ne_eG Hxm_ne_ef0
+    Halpha0_ne Hwp
+    Hp_ef0).
 Admitted.
 
 (** Infrastructure: involutive efam(al) cannot be nontrivial in its subgroup in a free product **)
