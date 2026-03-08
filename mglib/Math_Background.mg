@@ -1,6 +1,6 @@
 (** Balance Alice 7663 **)
 (** Balance Bob 5789 **)
-(** Balance Charlie 1432 **)
+(** Balance Charlie 1382 **)
 (** Balance Dave 2020 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -230871,6 +230871,7 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
 
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
 (** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
+(** Bounty 50 **)
 Lemma free_product_boundary_product_ne_e_or_efam :
   forall G multG eG invG J Gfam efam al n xs m alpha0:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
