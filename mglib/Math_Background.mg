@@ -167958,6 +167958,43 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
       }
       exact (EmptyE k (eq_subst_mem_set k Trans Empty HkTrans HTempty)).
     }
+    claim HTrans_sub_n : Trans c= n.
+    {
+      let k. assume HkT.
+      exact (SepE1 n
+        (fun k0:set =>
+          (k0 :e Uset /\ ordsucc k0 :e Vset) \/
+          (k0 :e Vset /\ ordsucc k0 :e Uset))
+        k HkT).
+    }
+    claim HTrans_finite : finite Trans.
+    {
+      apply (finite_ordinal_subset_equip_subordinal
+        n
+        Trans
+        HnNat
+        HTrans_sub_n).
+      let m. assume HmPack.
+      claim HmNat : nat_p m.
+      { exact (andEL (nat_p m) (m c= n /\ equip Trans m) HmPack). }
+      claim Hequip : equip Trans m.
+      { exact (andER (m c= n) (equip Trans m)
+          (andER (nat_p m) (m c= n /\ equip Trans m) HmPack)). }
+      claim Hmfinite : finite m.
+      { exact (nat_finite m HmNat). }
+      exact (equip_finite_transfer Trans m Hequip Hmfinite).
+    }
+    claim HTrans_max :
+      exists kmax:set, kmax :e Trans /\ forall k:set, k :e Trans -> k c= kmax.
+    {
+      exact (finite_nonempty_subset_of_ordinal_has_max
+        n
+        Trans
+        (nat_p_ordinal n HnNat)
+        HTrans_finite
+        HTrans_sub_n
+        HTrans_nonempty).
+    }
     claim HTrans_least :
       exists k0:set, k0 :e Trans /\ forall k:set, k :e Trans -> (k0 :e k \/ k0 = k).
     { exact (omega_nonempty_subset_has_least Trans HTrans_sub_omega HTrans_nonempty). }
