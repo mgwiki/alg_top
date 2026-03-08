@@ -165758,6 +165758,181 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
         + exact (HallU (apply_fun t_seq k) Ht_in_seqk1).
         + exact (HallV (apply_fun t_seq k) Ht_in_seqk).
     }
+    (** Paths in U cap V lifted to X, with image staying in U cap V. **)
+    claim HUV_path_to :
+      forall p:set, p :e U :/\: V ->
+        exists gammaX:set,
+          path_between X x0 p gammaX /\
+          continuous_map unit_interval unit_interval_topology X Tx gammaX /\
+          (forall t:set, t :e unit_interval -> apply_fun gammaX t :e U :/\: V).
+    {
+      let p. assume HpUV.
+      claim Hgamma_ex : exists gamma:set,
+        path_between (U :/\: V) x0 p gamma /\
+        continuous_map unit_interval unit_interval_topology
+          (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma.
+      { exact (path_connected_space_paths
+          (U :/\: V) (subspace_topology X Tx (U :/\: V))
+          x0 p HpcUV Hx0UV HpUV). }
+      apply Hgamma_ex.
+      let gamma. assume HgammaPack.
+      claim HgammaPath : path_between (U :/\: V) x0 p gamma.
+      { exact (andEL
+          (path_between (U :/\: V) x0 p gamma)
+          (continuous_map unit_interval unit_interval_topology
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma)
+          HgammaPack). }
+      claim HgammaCont :
+        continuous_map unit_interval unit_interval_topology
+          (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma.
+      { exact (andER
+          (path_between (U :/\: V) x0 p gamma)
+          (continuous_map unit_interval unit_interval_topology
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma)
+          HgammaPack). }
+      claim HgammaFun : function_on gamma unit_interval (U :/\: V).
+      { exact (path_between_function_on (U :/\: V) x0 p gamma HgammaPath). }
+      set incUV := graph (U :/\: V) (fun x:set => x).
+      claim HUVsubX : (U :/\: V) c= X.
+      { let x. assume HxUV.
+        exact (HUsub x (binintersectE1 U V x HxUV)). }
+      claim HincUVCont :
+        continuous_map (U :/\: V) (subspace_topology X Tx (U :/\: V)) X Tx incUV.
+      { exact (subspace_inclusion_continuous X Tx (U :/\: V) Htop HUVsubX). }
+      set gammaX := compose_fun unit_interval gamma incUV.
+      claim HgammaXCont :
+        continuous_map unit_interval unit_interval_topology X Tx gammaX.
+      { exact (composition_continuous unit_interval unit_interval_topology
+          (U :/\: V) (subspace_topology X Tx (U :/\: V)) X Tx
+          gamma incUV HgammaCont HincUVCont). }
+      claim HgammaXrange :
+        forall t:set, t :e unit_interval -> apply_fun gammaX t :e U :/\: V.
+      { let t. assume Ht.
+        rewrite (compose_fun_apply unit_interval gamma incUV t Ht).
+        rewrite (apply_fun_graph (U :/\: V) (fun x:set => x)
+          (apply_fun gamma t) (HgammaFun t Ht)).
+        exact (HgammaFun t Ht). }
+      claim HgammaX0 : apply_fun gammaX 0 = x0.
+      { rewrite (compose_fun_apply unit_interval gamma incUV 0 zero_in_unit_interval).
+        rewrite (apply_fun_graph (U :/\: V) (fun x:set => x)
+          (apply_fun gamma 0) (HgammaFun 0 zero_in_unit_interval)).
+        exact (path_between_at_zero (U :/\: V) x0 p gamma HgammaPath). }
+      claim HgammaX1 : apply_fun gammaX 1 = p.
+      { rewrite (compose_fun_apply unit_interval gamma incUV 1 one_in_unit_interval).
+        rewrite (apply_fun_graph (U :/\: V) (fun x:set => x)
+          (apply_fun gamma 1) (HgammaFun 1 one_in_unit_interval)).
+        exact (path_between_at_one (U :/\: V) x0 p gamma HgammaPath). }
+      claim HgammaXFun : function_on gammaX unit_interval X.
+      { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx gammaX HgammaXCont). }
+      witness gammaX.
+      apply andI.
+      - apply andI.
+        + exact (path_betweenI X x0 p gammaX HgammaXFun HgammaX0 HgammaX1).
+        + exact HgammaXCont.
+      - exact HgammaXrange.
+    }
+    (** Paths in U or V from x0 to points of U cap V. **)
+    claim HUV_path_to_UV :
+      forall p:set, p :e U :/\: V ->
+        (exists gammaU:set,
+          path_between U x0 p gammaU /\
+          continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) gammaU) /\
+        (exists gammaV:set,
+          path_between V x0 p gammaV /\
+          continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) gammaV).
+    {
+      let p. assume HpUV.
+      apply (HUV_path_to p HpUV).
+      let gammaX. assume HgammaPack.
+      claim HgammaAB :
+        path_between X x0 p gammaX /\
+        continuous_map unit_interval unit_interval_topology X Tx gammaX.
+      { exact (andEL
+          (path_between X x0 p gammaX /\
+           continuous_map unit_interval unit_interval_topology X Tx gammaX)
+          (forall t:set, t :e unit_interval -> apply_fun gammaX t :e U :/\: V)
+          HgammaPack). }
+      claim HgammaPathX : path_between X x0 p gammaX.
+      { exact (andEL
+          (path_between X x0 p gammaX)
+          (continuous_map unit_interval unit_interval_topology X Tx gammaX)
+          HgammaAB). }
+      claim HgammaContX :
+        continuous_map unit_interval unit_interval_topology X Tx gammaX.
+      { exact (andER
+          (path_between X x0 p gammaX)
+          (continuous_map unit_interval unit_interval_topology X Tx gammaX)
+          HgammaAB). }
+      claim HgammaRangeUV :
+        forall t:set, t :e unit_interval -> apply_fun gammaX t :e U :/\: V.
+      { exact (andER
+          (path_between X x0 p gammaX /\
+           continuous_map unit_interval unit_interval_topology X Tx gammaX)
+          (forall t:set, t :e unit_interval -> apply_fun gammaX t :e U :/\: V)
+          HgammaPack). }
+      claim HgammaRangeU :
+        forall t:set, t :e unit_interval -> apply_fun gammaX t :e U.
+      { let t. assume Ht. exact (binintersectE1 U V (apply_fun gammaX t) (HgammaRangeUV t Ht)). }
+      claim HgammaRangeV :
+        forall t:set, t :e unit_interval -> apply_fun gammaX t :e V.
+      { let t. assume Ht. exact (binintersectE2 U V (apply_fun gammaX t) (HgammaRangeUV t Ht)). }
+      claim HgammaContU :
+        continuous_map unit_interval unit_interval_topology
+          U (subspace_topology X Tx U) gammaX.
+      { exact (continuous_map_range_restrict
+          unit_interval
+          unit_interval_topology
+          X Tx gammaX U
+          HgammaContX HUsub HgammaRangeU). }
+      claim HgammaContV :
+        continuous_map unit_interval unit_interval_topology
+          V (subspace_topology X Tx V) gammaX.
+      { exact (continuous_map_range_restrict
+          unit_interval
+          unit_interval_topology
+          X Tx gammaX V
+          HgammaContX HVsub HgammaRangeV). }
+      claim HgammaFunU : function_on gammaX unit_interval U.
+      { exact (continuous_map_function_on
+          unit_interval unit_interval_topology
+          U (subspace_topology X Tx U) gammaX HgammaContU). }
+      claim HgammaFunV : function_on gammaX unit_interval V.
+      { exact (continuous_map_function_on
+          unit_interval unit_interval_topology
+          V (subspace_topology X Tx V) gammaX HgammaContV). }
+      claim Hgamma0 : apply_fun gammaX 0 = x0.
+      { exact (path_between_at_zero X x0 p gammaX HgammaPathX). }
+      claim Hgamma1 : apply_fun gammaX 1 = p.
+      { exact (path_between_at_one X x0 p gammaX HgammaPathX). }
+      apply andI.
+      - witness gammaX.
+        apply andI.
+        + exact (path_betweenI U x0 p gammaX HgammaFunU Hgamma0 Hgamma1).
+        + exact HgammaContU.
+      - witness gammaX.
+        apply andI.
+        + exact (path_betweenI V x0 p gammaX HgammaFunV Hgamma0 Hgamma1).
+        + exact HgammaContV.
+    }
+    (** Transition points admit paths in U and in V from x0. **)
+    claim Htransition_paths_UV :
+      forall k:set, k :e n ->
+        ((k :e Uset /\ ordsucc k :e Vset) \/
+         (k :e Vset /\ ordsucc k :e Uset)) ->
+        (exists gammaU:set,
+          path_between U x0 (apply_fun f (apply_fun t_seq k)) gammaU /\
+          continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) gammaU) /\
+        (exists gammaV:set,
+          path_between V x0 (apply_fun f (apply_fun t_seq k)) gammaV /\
+          continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) gammaV).
+    {
+      let k. assume Hk Hktrans.
+      claim HptUV : apply_fun f (apply_fun t_seq k) :e U :/\: V.
+      { exact (Htransition_point_UcapV k Hk Hktrans). }
+      exact (HUV_path_to_UV (apply_fun f (apply_fun t_seq k)) HptUV).
+    }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
