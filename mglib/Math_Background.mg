@@ -195129,6 +195129,7 @@ exact (andI
 Qed.
 
 (** Helper: intended S59.4(a) conclusion for noticeboard proposal 1772562693 (temporary new lemma). **)
+(** Admin-approved-refactored per noticeboard proposal 1772562693 **)
 Theorem lemma59_4a_pi1_trivial_from_data : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
