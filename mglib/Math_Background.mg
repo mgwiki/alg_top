@@ -308187,7 +308187,75 @@ claim Hct_unique : forall h1 h2:set, h1 :e CTG -> h2 :e CTG ->
 claim Hsame_lc_same_coset : forall c1 c2:set, c1 :e N -> c2 :e N ->
   apply_fun lc c1 = apply_fun lc c2 ->
   left_coset multG c1 H0 = left_coset multG c2 H0.
-{ admit. }
+{ let c1 c2. assume Hc1N Hc2N Hlc_eq.
+  claim Hc1G : c1 :e G. { exact (HNsubG c1 Hc1N). }
+  claim Hc2G : c2 :e G. { exact (HNsubG c2 Hc2N). }
+  claim HinvC2_N : apply_fun invG c2 :e N.
+  { exact (andER
+      ((N c= G /\ eG :e N) /\ (forall x y:set, x :e N -> y :e N -> apply_fun multG (x, y) :e N))
+      (forall x:set, x :e N -> apply_fun invG x :e N)
+      HNsub c2 Hc2N). }
+  claim HinvC2_G : apply_fun invG c2 :e G.
+  { exact (HNsubG (apply_fun invG c2) HinvC2_N). }
+  claim Hprod_H0 : apply_fun multG (c1, apply_fun invG c2) :e H0.
+  { admit. }
+  claim Hnormal_conj :
+    apply_fun multG (apply_fun multG (apply_fun invG c2, apply_fun multG (c1, apply_fun invG c2)),
+      apply_fun invG (apply_fun invG c2)) :e H0.
+  { exact (andER (subgroup_of H0 N multG eG invG)
+      (forall n g:set, n :e H0 -> g :e N ->
+        apply_fun multG (apply_fun multG (g, n), apply_fun invG g) :e H0)
+      HH0normalN
+      (apply_fun multG (c1, apply_fun invG c2)) (apply_fun invG c2)
+      Hprod_H0 HinvC2_N). }
+  claim HinvInvC2 : apply_fun invG (apply_fun invG c2) = c2.
+  { exact (group_inv_inv G multG invG eG c2 HmultFn HinvFn HeGmem HassocG HidG HinvAxG Hc2G). }
+  claim HinvC2_c1_G : apply_fun multG (apply_fun invG c2, c1) :e G.
+  { exact (HmultG_cl (apply_fun invG c2) c1 HinvC2_G Hc1G). }
+  claim Hassoc1 :
+    apply_fun multG (apply_fun invG c2, apply_fun multG (c1, apply_fun invG c2))
+    = apply_fun multG (apply_fun multG (apply_fun invG c2, c1), apply_fun invG c2).
+  { exact (eq_symm
+      (apply_fun multG (apply_fun multG (apply_fun invG c2, c1), apply_fun invG c2))
+      (apply_fun multG (apply_fun invG c2, apply_fun multG (c1, apply_fun invG c2)))
+      (HassocG (apply_fun invG c2) c1 (apply_fun invG c2) HinvC2_G Hc1G HinvC2_G)). }
+  claim Hassoc2 :
+    apply_fun multG (apply_fun multG (apply_fun multG (apply_fun invG c2, c1), apply_fun invG c2), c2)
+    = apply_fun multG (apply_fun multG (apply_fun invG c2, c1), apply_fun multG (apply_fun invG c2, c2)).
+  { exact (HassocG (apply_fun multG (apply_fun invG c2, c1)) (apply_fun invG c2) c2
+      HinvC2_c1_G HinvC2_G Hc2G). }
+  claim HinvAxC2 : apply_fun multG (apply_fun invG c2, c2) = eG.
+  { exact (andER (apply_fun multG (c2, apply_fun invG c2) = eG)
+      (apply_fun multG (apply_fun invG c2, c2) = eG)
+      (HinvAxG c2 Hc2G)). }
+  claim HidRight : apply_fun multG (apply_fun multG (apply_fun invG c2, c1), eG) =
+    apply_fun multG (apply_fun invG c2, c1).
+  { exact (andER
+      (apply_fun multG (eG, apply_fun multG (apply_fun invG c2, c1)) = apply_fun multG (apply_fun invG c2, c1))
+      (apply_fun multG (apply_fun multG (apply_fun invG c2, c1), eG) = apply_fun multG (apply_fun invG c2, c1))
+      (HidG (apply_fun multG (apply_fun invG c2, c1)) HinvC2_c1_G)). }
+  claim Hfull_simplify :
+    apply_fun multG (apply_fun multG (apply_fun invG c2, apply_fun multG (c1, apply_fun invG c2)),
+      apply_fun invG (apply_fun invG c2))
+    = apply_fun multG (apply_fun invG c2, c1).
+  { rewrite HinvInvC2.
+    rewrite Hassoc1.
+    rewrite Hassoc2.
+    rewrite HinvAxC2.
+    exact HidRight. }
+  claim HinvC2_c1_H0 : apply_fun multG (apply_fun invG c2, c1) :e H0.
+  { exact (eq_subst_mem
+      (apply_fun multG (apply_fun invG c2, c1))
+      (apply_fun multG (apply_fun multG (apply_fun invG c2, apply_fun multG (c1, apply_fun invG c2)),
+        apply_fun invG (apply_fun invG c2)))
+      H0
+      (eq_symm
+        (apply_fun multG (apply_fun multG (apply_fun invG c2, apply_fun multG (c1, apply_fun invG c2)),
+          apply_fun invG (apply_fun invG c2)))
+        (apply_fun multG (apply_fun invG c2, c1))
+        Hfull_simplify)
+      Hnormal_conj). }
+  exact (left_coset_eq_from_N_mem G multG eG invG H0 HgrpG HH0sub c1 c2 Hc1G Hc2G HinvC2_c1_H0). }
 (** Define phi **)
 set phiFun := fun h:set =>
   left_coset multG
