@@ -307704,11 +307704,38 @@ claim HH0normalN : normal_subgroup H0 N multG eG invG.
 (** Lifting correspondence lands in fiber and is surjective **)
 claim Hlc_surj : forall e1:set, e1 :e E -> apply_fun p e1 = b0 ->
   exists cls:set, cls :e G /\ apply_fun lc cls = e1.
-{ admit. }
+{ let e1. assume He1E Hpe1.
+  claim Hsurj : surjective_map G (Sep E (fun x:set => apply_fun p x = apply_fun p e0)) lc.
+  { exact (thm54_4_lifting_correspondence_surjective E Te B Tb p e0 Hcov He0E HpcE). }
+  claim Hfib : e1 :e Sep E (fun x:set => apply_fun p x = apply_fun p e0).
+  { exact (SepI E (fun x:set => apply_fun p x = apply_fun p e0) e1 He1E Hpe1). }
+  claim Hsurj2 : forall y:set, y :e Sep E (fun x:set => apply_fun p x = apply_fun p e0) ->
+    exists x:set, x :e G /\ apply_fun lc x = y.
+  { exact (andER (function_on lc G (Sep E (fun x:set => apply_fun p x = apply_fun p e0)))
+      (forall y:set, y :e Sep E (fun x:set => apply_fun p x = apply_fun p e0) -> exists x:set, x :e G /\ apply_fun lc x = y)
+      Hsurj). }
+  exact (Hsurj2 e1 Hfib). }
 (** For any h in CTG, h(e0) is in the fiber **)
 claim Hhe0_fiber : forall h:set, h :e CTG ->
   apply_fun h e0 :e E /\ apply_fun p (apply_fun h e0) = b0.
-{ admit. }
+{ let h. assume HhCTG.
+  claim Hct : covering_transformation E Te B Tb p h.
+  { exact (SepE2 (function_space E E) (fun h:set => covering_transformation E Te B Tb p h) h HhCTG). }
+  claim Hhomeo : homeomorphism E Te E Te h.
+  { exact (andEL (homeomorphism E Te E Te h) (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) Hct). }
+  claim Hpcomm : forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x.
+  { exact (andER (homeomorphism E Te E Te h) (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) Hct). }
+  claim Hcont : continuous_map E Te E Te h.
+  { exact (andEL (continuous_map E Te E Te h) (exists g:set, continuous_map E Te E Te g /\ (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x) /\ (forall y:set, y :e E -> apply_fun h (apply_fun g y) = y)) Hhomeo). }
+  claim Hfon : function_on h E E.
+  { exact (continuous_map_function_on E Te E Te h Hcont). }
+  claim Hhe0E : apply_fun h e0 :e E.
+  { exact (Hfon e0 He0E). }
+  claim Hphe0 : apply_fun p (apply_fun h e0) = apply_fun p e0.
+  { exact (Hpcomm e0 He0E). }
+  claim Hphe0_b0 : apply_fun p (apply_fun h e0) = b0.
+  { rewrite Hphe0. exact (eq_refl b0). }
+  exact (andI (apply_fun h e0 :e E) (apply_fun p (apply_fun h e0) = b0) Hhe0E Hphe0_b0). }
 (** For any h in CTG, the Eps_i chosen class is in N **)
 claim Hcls_in_N : forall h:set, h :e CTG ->
   Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0) :e N.
