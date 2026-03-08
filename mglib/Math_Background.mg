@@ -231757,6 +231757,116 @@ Lemma free_product_boundary_product_ne_e_or_efam :
   word_product multG eG xs n = apply_fun efam al ->
   let p := apply_fun multG (apply_fun xs m, apply_fun xs 0) in
     p <> eG /\ p <> apply_fun efam alpha0.
+let G multG eG invG J Gfam efam al n xs m alpha0.
+assume Hfp Hal Hefam_Gal Hefam_ne Hefam_invol.
+assume Hred Hn_sm Hm_nat Hm_ne0.
+assume Halpha0J Hx0_in_Ga0 Hx0_ne_eG Hx0_ne_ef0.
+assume Hxm_in_Ga0 Hxm_ne_eG Hxm_ne_ef0.
+assume Halpha0_ne Hwp.
+
+(** Unpack free product structure (in particular: group structure and subgroup closure). **)
+apply (and5E
+  (group_structure G multG eG invG)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
+  (subgroups_generate G multG eG invG J Gfam)
+  (forall x:set, x :e G -> x <> eG ->
+    exists n0 xs0:set,
+      reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product multG eG xs0 n0 = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = x ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsubfam _ _ _.
+
+set p := apply_fun multG (apply_fun xs m, apply_fun xs 0).
+prove p <> eG /\ p <> apply_fun efam alpha0.
+apply andI.
+
+- (** p <> eG **)
+  assume Hp_e : p = eG.
+  (** Then xs(m) = inv(xs(0)) and xs(0) = inv(xs(m)). **)
+  claim Hxm_eq_inv_x0 : apply_fun xs m = apply_fun invG (apply_fun xs 0).
+  {
+    set xs2 := graph 2 (fun i:set => If_i (i = 0) (apply_fun xs m) (apply_fun xs 0)).
+    claim Hxs2_G : forall i:set, i :e 2 -> apply_fun xs2 i :e G.
+    {
+      let i. assume Hi2.
+      apply (cases_2 i Hi2 (fun j:set => apply_fun xs2 j :e G)).
+      + prove apply_fun xs2 0 :e G.
+        rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 0 In_0_2).
+        rewrite (If_i_1 (0 = 0) (apply_fun xs m) (apply_fun xs 0) (eq_refl 0)).
+        exact (subgroup_of_subset (apply_fun Gfam alpha0) G multG eG invG (Hsubfam alpha0 Halpha0J)
+          (apply_fun xs m) Hxm_in_Ga0).
+      + prove apply_fun xs2 1 :e G.
+        rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 1 In_1_2).
+        rewrite (If_i_0 (1 = 0) (apply_fun xs m) (apply_fun xs 0) neq_1_0).
+        exact (subgroup_of_subset (apply_fun Gfam alpha0) G multG eG invG (Hsubfam alpha0 Halpha0J)
+          (apply_fun xs 0) Hx0_in_Ga0).
+    }
+    claim Hwp2 : word_product multG eG xs2 2 = apply_fun multG (apply_fun xs m, apply_fun xs 0).
+    {
+      exact (word_product_two_graph_group
+        G multG eG invG (apply_fun xs m) (apply_fun xs 0)
+        Hgrp
+        (subgroup_of_subset (apply_fun Gfam alpha0) G multG eG invG (Hsubfam alpha0 Halpha0J)
+          (apply_fun xs m) Hxm_in_Ga0)
+        (subgroup_of_subset (apply_fun Gfam alpha0) G multG eG invG (Hsubfam alpha0 Halpha0J)
+          (apply_fun xs 0) Hx0_in_Ga0)).
+    }
+    claim Hwp2_e : word_product multG eG xs2 2 = eG.
+    { rewrite Hwp2. rewrite <- Hp_e. reflexivity. }
+    (** Use the length-2 inverse lemma. **)
+    claim Htmp : apply_fun xs2 0 = apply_fun invG (apply_fun xs2 1).
+    { exact (word_product_two_eq_inv_left G multG eG invG xs2 Hgrp Hxs2_G Hwp2_e). }
+    (** Unfold xs2 at 0 and 1. **)
+    claim Hxs20 : apply_fun xs2 0 = apply_fun xs m.
+    {
+      rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 0 In_0_2).
+      rewrite (If_i_1 (0 = 0) (apply_fun xs m) (apply_fun xs 0) (eq_refl 0)).
+      reflexivity.
+    }
+    claim Hxs21 : apply_fun xs2 1 = apply_fun xs 0.
+    {
+      rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 1 In_1_2).
+      rewrite (If_i_0 (1 = 0) (apply_fun xs m) (apply_fun xs 0) neq_1_0).
+      reflexivity.
+    }
+    (** Conclude xs(m) = inv(xs(0)). **)
+    claim Hinv_congr : apply_fun invG (apply_fun xs2 1) = apply_fun invG (apply_fun xs 0).
+    { exact (apply_fun_congr_arg invG (apply_fun xs2 1) (apply_fun xs 0) Hxs21). }
+    exact (eq_i_tra
+      (apply_fun xs m)
+      (apply_fun xs2 0)
+      (apply_fun invG (apply_fun xs 0))
+      (eq_symm (apply_fun xs2 0) (apply_fun xs m) Hxs20)
+      (eq_i_tra
+        (apply_fun xs2 0)
+        (apply_fun invG (apply_fun xs2 1))
+        (apply_fun invG (apply_fun xs 0))
+        Htmp
+        Hinv_congr)).
+  }
+  (** TODO: the remaining contradiction is nontrivial and is the core of the "torsion in free products" argument. **)
+  admit.
+
+- (** p <> efam(alpha0) **)
+  assume Hp_ef0 : p = apply_fun efam alpha0.
+  (** Note: p lies in the factor subgroup Gfam(alpha0) by closure. **)
+  claim Hp_in_Ga0 : p :e apply_fun Gfam alpha0.
+  {
+    exact (subgroup_of_mult_closed
+      (apply_fun Gfam alpha0) G multG eG invG
+      (apply_fun xs m) (apply_fun xs 0)
+      (Hsubfam alpha0 Halpha0J)
+      Hxm_in_Ga0
+      Hx0_in_Ga0).
+  }
+  (** TODO: the remaining contradiction is part of the same torsion/malnormality analysis. **)
+  admit.
 Admitted.
 
 (** Infrastructure: involutive efam(al) cannot be nontrivial in its subgroup in a free product **)
