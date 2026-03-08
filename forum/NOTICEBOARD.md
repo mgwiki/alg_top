@@ -5247,7 +5247,7 @@ Result: SENT TO ADMIN
 --------------------------------------------------------
 NOTICE ID: 1772900990
 Created: 1772900990
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   6bf683f3fb6f6771896dedfbaba854802e6a2913
@@ -5303,7 +5303,7 @@ Approvals:
   - 1772999917 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 ========================================================
 
