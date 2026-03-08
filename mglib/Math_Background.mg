@@ -136029,6 +136029,18 @@ exact (path_homotopy_class_loop_has_homotopy
   HconstInClassF).
 Qed.
 
+(** S55 helper: loop-null postcomposition implies nullhomotopy on S1 **)
+Lemma s55_loop_null_implies_nulhomotopic : forall X Tx h b0:set,
+  continuous_map S1 S1_topology X Tx h ->
+  b0 :e S1 ->
+  (forall f:set, f :e loop_space S1 S1_topology b0 ->
+    path_homotopic X Tx (apply_fun h b0) (apply_fun h b0)
+      (compose_fun unit_interval f h)
+      (constant_path (apply_fun h b0))) ->
+  nulhomotopic S1 S1_topology X Tx h.
+admit.
+Admitted. (** TODO: needs quotient model of S1 or pi1(S1) classification. **)
+
 Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
   b0 :e S1 ->
@@ -136198,12 +136210,17 @@ claim Hloop_null :
 claim Hnul :
   nulhomotopic S1 S1_topology X Tx h.
 {
-  (** TODO: need a lemma that a map S1 -> X is nulhomotopic iff all loops in S1
-      map (via postcomposition) to loops path-homotopic to the constant loop. **)
-  admit.
+  exact (s55_loop_null_implies_nulhomotopic
+    X
+    Tx
+    h
+    b0
+    Hh
+    Hb0
+    Hloop_null).
 }
 exact Hnul.
-Admitted. (** TODO: needs classification of maps S1 -> X by pi1/loop classes. **)
+Admitted. (** TODO: depends on s55_loop_null_implies_nulhomotopic. **)
 
 Lemma s55_trivial_implies_extends_to_B2 : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
