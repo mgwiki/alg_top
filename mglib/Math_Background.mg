@@ -168984,6 +168984,461 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
           (add_nat kmax j :e Vset -> ordsucc (add_nat kmax j) :e Vset)
           (Hafter_kmax_same_side (add_nat kmax j) Hk_in_n Hk_ge)) HkV).
     }
+    (** Determine the side of n from the side of ordsucc kmax. **)
+    claim Hn_in_Uset :
+      ordsucc kmax :e Uset -> n :e Uset.
+    {
+      assume HsuccU.
+      apply (xm (m0 = 0)).
+      - assume Hm0eq0.
+        claim Hn_eq : n = ordsucc kmax.
+        { rewrite Hn_eq_succ. rewrite Hm0eq0. rewrite (add_nat_0R kmax). reflexivity. }
+        exact (eq_subst_mem n (ordsucc kmax) Uset Hn_eq HsuccU).
+      - assume Hm0ne0.
+        claim Hm0_cases : exists j0:set, nat_p j0 /\ m0 = ordsucc j0.
+        {
+          apply (nat_inv m0 Hm0Nat).
+          + assume Hm00. exact (FalseE (Hm0ne0 Hm00) (exists j0:set, nat_p j0 /\ m0 = ordsucc j0)).
+          + assume Hj0Ex. exact Hj0Ex.
+        }
+        apply Hm0_cases.
+        let j0. assume Hj0Pack.
+        claim Hj0Nat : nat_p j0.
+        { exact (andEL (nat_p j0) (m0 = ordsucc j0) Hj0Pack). }
+        claim Hm0eq : m0 = ordsucc j0.
+        { exact (andER (nat_p j0) (m0 = ordsucc j0) Hj0Pack). }
+        claim Hj0_in_m0 : j0 :e m0.
+        { exact (eq_subst_mem_set j0 (ordsucc j0) m0 (ordsuccI2 j0)
+            (eq_symm m0 (ordsucc j0) Hm0eq)). }
+        claim Hmlast_eq3 : mlast = add_nat kmax (ordsucc j0).
+        { rewrite Hmlast_eq2. rewrite Hm0eq. reflexivity. }
+        claim Hmlast_eq4 : mlast = ordsucc (add_nat kmax j0).
+        { rewrite Hmlast_eq3. rewrite (add_nat_SR kmax j0 Hj0Nat). reflexivity. }
+        claim Hmlast_in_Uset : mlast :e Uset.
+        {
+          exact (eq_subst_mem mlast (ordsucc (add_nat kmax j0)) Uset
+            Hmlast_eq4
+            (Htail_allU HsuccU j0 Hj0_in_m0)).
+        }
+        claim Hkmax_in_mlast : kmax :e mlast.
+        { exact (eq_subst_mem_set kmax (add_nat kmax m0) mlast
+            (Hkmax_in_sum_pos Hm0ne0)
+            (eq_symm mlast (add_nat kmax m0) Hmlast_eq2)). }
+        claim Hmlast_in_n : mlast :e n.
+        { exact (eq_subst_mem mlast (add_nat kmax m0) n Hmlast_eq2 Hk_last_in_n). }
+        claim HnU : ordsucc mlast :e Uset.
+        { exact ((andEL
+            (mlast :e Uset -> ordsucc mlast :e Uset)
+            (mlast :e Vset -> ordsucc mlast :e Vset)
+            (Hafter_kmax_same_side mlast Hmlast_in_n Hkmax_in_mlast)) Hmlast_in_Uset). }
+        claim HnU' : ordsucc (add_nat kmax m0) :e Uset.
+        { rewrite <- Hmlast_eq2. exact HnU. }
+        exact (eq_subst_mem n (ordsucc (add_nat kmax m0)) Uset Hn_eq_succ HnU').
+    }
+    claim Hn_in_Vset :
+      ordsucc kmax :e Vset -> n :e Vset.
+    {
+      assume HsuccV.
+      apply (xm (m0 = 0)).
+      - assume Hm0eq0.
+        claim Hn_eq : n = ordsucc kmax.
+        { rewrite Hn_eq_succ. rewrite Hm0eq0. rewrite (add_nat_0R kmax). reflexivity. }
+        exact (eq_subst_mem n (ordsucc kmax) Vset Hn_eq HsuccV).
+      - assume Hm0ne0.
+        claim Hm0_cases : exists j0:set, nat_p j0 /\ m0 = ordsucc j0.
+        {
+          apply (nat_inv m0 Hm0Nat).
+          + assume Hm00. exact (FalseE (Hm0ne0 Hm00) (exists j0:set, nat_p j0 /\ m0 = ordsucc j0)).
+          + assume Hj0Ex. exact Hj0Ex.
+        }
+        apply Hm0_cases.
+        let j0. assume Hj0Pack.
+        claim Hj0Nat : nat_p j0.
+        { exact (andEL (nat_p j0) (m0 = ordsucc j0) Hj0Pack). }
+        claim Hm0eq : m0 = ordsucc j0.
+        { exact (andER (nat_p j0) (m0 = ordsucc j0) Hj0Pack). }
+        claim Hj0_in_m0 : j0 :e m0.
+        { exact (eq_subst_mem_set j0 (ordsucc j0) m0 (ordsuccI2 j0)
+            (eq_symm m0 (ordsucc j0) Hm0eq)). }
+        claim Hmlast_eq3 : mlast = add_nat kmax (ordsucc j0).
+        { rewrite Hmlast_eq2. rewrite Hm0eq. reflexivity. }
+        claim Hmlast_eq4 : mlast = ordsucc (add_nat kmax j0).
+        { rewrite Hmlast_eq3. rewrite (add_nat_SR kmax j0 Hj0Nat). reflexivity. }
+        claim Hmlast_in_Vset : mlast :e Vset.
+        {
+          exact (eq_subst_mem mlast (ordsucc (add_nat kmax j0)) Vset
+            Hmlast_eq4
+            (Htail_allV HsuccV j0 Hj0_in_m0)).
+        }
+        claim Hkmax_in_mlast : kmax :e mlast.
+        { exact (eq_subst_mem_set kmax (add_nat kmax m0) mlast
+            (Hkmax_in_sum_pos Hm0ne0)
+            (eq_symm mlast (add_nat kmax m0) Hmlast_eq2)). }
+        claim Hmlast_in_n : mlast :e n.
+        { exact (eq_subst_mem mlast (add_nat kmax m0) n Hmlast_eq2 Hk_last_in_n). }
+        claim HnV : ordsucc mlast :e Vset.
+        { exact ((andER
+            (mlast :e Uset -> ordsucc mlast :e Uset)
+            (mlast :e Vset -> ordsucc mlast :e Vset)
+            (Hafter_kmax_same_side mlast Hmlast_in_n Hkmax_in_mlast)) Hmlast_in_Vset). }
+        claim HnV' : ordsucc (add_nat kmax m0) :e Vset.
+        { rewrite <- Hmlast_eq2. exact HnV. }
+        exact (eq_subst_mem n (ordsucc (add_nat kmax m0)) Vset Hn_eq_succ HnV').
+    }
+    (** Build a tail loop in U from kmax to the last index. **)
+    claim Htail_block_loop_U :
+      kmax :e Vset /\ ordsucc kmax :e Uset ->
+        exists loopU:set,
+          loop_at U (subspace_topology X Tx U) x0 loopU /\
+          continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) loopU.
+    {
+      assume HkVU.
+      claim Hktrans :
+        (kmax :e Uset /\ ordsucc kmax :e Vset) \/
+        (kmax :e Vset /\ ordsucc kmax :e Uset).
+      { apply orIR. exact HkVU. }
+      claim HkptUV : apply_fun f (apply_fun t_seq kmax) :e U :/\: V.
+      { exact (Htransition_point_UcapV kmax Hkmax_in_n Hktrans). }
+      claim HkU : apply_fun f (apply_fun t_seq kmax) :e U.
+      { exact (binintersectE1 U V (apply_fun f (apply_fun t_seq kmax)) HkptUV). }
+      claim Hk_paths :
+        (exists gammaU:set,
+          path_between U x0 (apply_fun f (apply_fun t_seq kmax)) gammaU /\
+          continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) gammaU) /\
+        (exists gammaV:set,
+          path_between V x0 (apply_fun f (apply_fun t_seq kmax)) gammaV /\
+          continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) gammaV).
+      { exact (Htransition_paths_UV kmax Hkmax_in_n Hktrans). }
+      claim Hk_gammaU_ex :
+        exists gammaU1:set,
+          path_between U x0 (apply_fun f (apply_fun t_seq kmax)) gammaU1 /\
+          continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) gammaU1.
+      { exact (andEL
+          (exists gammaU:set,
+            path_between U x0 (apply_fun f (apply_fun t_seq kmax)) gammaU /\
+            continuous_map unit_interval unit_interval_topology
+              U (subspace_topology X Tx U) gammaU)
+          (exists gammaV:set,
+            path_between V x0 (apply_fun f (apply_fun t_seq kmax)) gammaV /\
+            continuous_map unit_interval unit_interval_topology
+              V (subspace_topology X Tx V) gammaV)
+          Hk_paths). }
+      apply Hk_gammaU_ex.
+      let gammaU1. assume HgammaU1Pack.
+      claim HgammaU1 :
+        path_between U x0 (apply_fun f (apply_fun t_seq kmax)) gammaU1.
+      { exact (andEL
+          (path_between U x0 (apply_fun f (apply_fun t_seq kmax)) gammaU1)
+          (continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) gammaU1)
+          HgammaU1Pack). }
+      claim HgammaU1c :
+        continuous_map unit_interval unit_interval_topology
+          U (subspace_topology X Tx U) gammaU1.
+      { exact (andER
+          (path_between U x0 (apply_fun f (apply_fun t_seq kmax)) gammaU1)
+          (continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) gammaU1)
+          HgammaU1Pack). }
+      claim HsuccU : ordsucc kmax :e Uset.
+      { exact (andER (kmax :e Vset) (ordsucc kmax :e Uset) HkVU). }
+      claim HallU : forall j:set, j :e m0 -> ordsucc (add_nat kmax j) :e Uset.
+      { exact (Htail_allU HsuccU). }
+      apply (Hblock_path_U m0 Hm0Omega kmax Hkmax_in_n HkU HallU Hk_last_in_n).
+      let p. assume HpPack.
+      claim HpPack2 :
+        path_between U (apply_fun f (apply_fun t_seq kmax))
+          (apply_fun f (apply_fun t_seq mlast)) p /\
+        continuous_map unit_interval unit_interval_topology
+          U (subspace_topology X Tx U) p.
+      { rewrite Hmlast_eq2. exact HpPack. }
+      claim Hp :
+        path_between U (apply_fun f (apply_fun t_seq kmax))
+          (apply_fun f (apply_fun t_seq mlast)) p.
+      { exact (andEL
+          (path_between U (apply_fun f (apply_fun t_seq kmax))
+            (apply_fun f (apply_fun t_seq mlast)) p)
+          (continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) p)
+          HpPack2). }
+      claim HpC :
+        continuous_map unit_interval unit_interval_topology
+          U (subspace_topology X Tx U) p.
+      { exact (andER
+          (path_between U (apply_fun f (apply_fun t_seq kmax))
+            (apply_fun f (apply_fun t_seq mlast)) p)
+          (continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) p)
+          HpPack2). }
+      claim HnU : n :e Uset.
+      { exact (Hn_in_Uset HsuccU). }
+      claim Hseg_lastU_ex :
+        exists gammaU2:set,
+          path_between U (apply_fun f (apply_fun t_seq mlast)) x0 gammaU2 /\
+          continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) gammaU2.
+      { exact ((andEL
+          (n :e Uset ->
+            exists pk:set,
+              path_between U (apply_fun f (apply_fun t_seq mlast)) x0 pk /\
+              continuous_map unit_interval unit_interval_topology
+                U (subspace_topology X Tx U) pk)
+          (n :e Vset ->
+            exists pk:set,
+              path_between V (apply_fun f (apply_fun t_seq mlast)) x0 pk /\
+              continuous_map unit_interval unit_interval_topology
+                V (subspace_topology X Tx V) pk)
+          Hseg_last_path_between_UV) HnU). }
+      apply Hseg_lastU_ex.
+      let gammaU2. assume HgammaU2Pack.
+      claim HgammaU2 :
+        path_between U (apply_fun f (apply_fun t_seq mlast)) x0 gammaU2.
+      { exact (andEL
+          (path_between U (apply_fun f (apply_fun t_seq mlast)) x0 gammaU2)
+          (continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) gammaU2)
+          HgammaU2Pack). }
+      claim HgammaU2c :
+        continuous_map unit_interval unit_interval_topology
+          U (subspace_topology X Tx U) gammaU2.
+      { exact (andER
+          (path_between U (apply_fun f (apply_fun t_seq mlast)) x0 gammaU2)
+          (continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) gammaU2)
+          HgammaU2Pack). }
+      set betaU := reverse_path gammaU2.
+      claim HbetaU :
+        path_between U x0 (apply_fun f (apply_fun t_seq mlast)) betaU.
+      { exact (reverse_path_between
+          U
+          (subspace_topology X Tx U)
+          (apply_fun f (apply_fun t_seq mlast))
+          x0
+          gammaU2
+          HgammaU2c
+          (path_between_at_zero
+            U
+            (apply_fun f (apply_fun t_seq mlast))
+            x0
+            gammaU2
+            HgammaU2)
+          (path_between_at_one
+            U
+            (apply_fun f (apply_fun t_seq mlast))
+            x0
+            gammaU2
+            HgammaU2)). }
+      claim HbetaUc :
+        continuous_map unit_interval unit_interval_topology
+          U (subspace_topology X Tx U) betaU.
+      { exact (reverse_path_continuous U (subspace_topology X Tx U) gammaU2 HgammaU2c). }
+      set loopU := path_concat gammaU1 (path_concat p (reverse_path betaU)).
+      claim HloopU :
+        loop_at U (subspace_topology X Tx U) x0 loopU.
+      { exact (Hloop_from_path_between
+          U
+          (subspace_topology X Tx U)
+          (apply_fun f (apply_fun t_seq kmax))
+          (apply_fun f (apply_fun t_seq mlast))
+          p
+          gammaU1
+          betaU
+          Hp
+          HpC
+          HgammaU1
+          HgammaU1c
+          HbetaU
+          HbetaUc). }
+      claim HloopUc :
+        continuous_map unit_interval unit_interval_topology
+          U (subspace_topology X Tx U) loopU.
+      { exact (loop_at_continuous U (subspace_topology X Tx U) x0 loopU HloopU). }
+      witness loopU.
+      apply andI.
+      - exact HloopU.
+      - exact HloopUc.
+    }
+    (** Build a tail loop in V from kmax to the last index. **)
+    claim Htail_block_loop_V :
+      kmax :e Uset /\ ordsucc kmax :e Vset ->
+        exists loopV:set,
+          loop_at V (subspace_topology X Tx V) x0 loopV /\
+          continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) loopV.
+    {
+      assume HkUV.
+      claim Hktrans :
+        (kmax :e Uset /\ ordsucc kmax :e Vset) \/
+        (kmax :e Vset /\ ordsucc kmax :e Uset).
+      { apply orIL. exact HkUV. }
+      claim HkptUV : apply_fun f (apply_fun t_seq kmax) :e U :/\: V.
+      { exact (Htransition_point_UcapV kmax Hkmax_in_n Hktrans). }
+      claim HkV : apply_fun f (apply_fun t_seq kmax) :e V.
+      { exact (binintersectE2 U V (apply_fun f (apply_fun t_seq kmax)) HkptUV). }
+      claim Hk_paths :
+        (exists gammaU:set,
+          path_between U x0 (apply_fun f (apply_fun t_seq kmax)) gammaU /\
+          continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) gammaU) /\
+        (exists gammaV:set,
+          path_between V x0 (apply_fun f (apply_fun t_seq kmax)) gammaV /\
+          continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) gammaV).
+      { exact (Htransition_paths_UV kmax Hkmax_in_n Hktrans). }
+      claim Hk_gammaV_ex :
+        exists gammaV1:set,
+          path_between V x0 (apply_fun f (apply_fun t_seq kmax)) gammaV1 /\
+          continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) gammaV1.
+      { exact (andER
+          (exists gammaU:set,
+            path_between U x0 (apply_fun f (apply_fun t_seq kmax)) gammaU /\
+            continuous_map unit_interval unit_interval_topology
+              U (subspace_topology X Tx U) gammaU)
+          (exists gammaV:set,
+            path_between V x0 (apply_fun f (apply_fun t_seq kmax)) gammaV /\
+            continuous_map unit_interval unit_interval_topology
+              V (subspace_topology X Tx V) gammaV)
+          Hk_paths). }
+      apply Hk_gammaV_ex.
+      let gammaV1. assume HgammaV1Pack.
+      claim HgammaV1 :
+        path_between V x0 (apply_fun f (apply_fun t_seq kmax)) gammaV1.
+      { exact (andEL
+          (path_between V x0 (apply_fun f (apply_fun t_seq kmax)) gammaV1)
+          (continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) gammaV1)
+          HgammaV1Pack). }
+      claim HgammaV1c :
+        continuous_map unit_interval unit_interval_topology
+          V (subspace_topology X Tx V) gammaV1.
+      { exact (andER
+          (path_between V x0 (apply_fun f (apply_fun t_seq kmax)) gammaV1)
+          (continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) gammaV1)
+          HgammaV1Pack). }
+      claim HsuccV : ordsucc kmax :e Vset.
+      { exact (andER (kmax :e Uset) (ordsucc kmax :e Vset) HkUV). }
+      claim HallV : forall j:set, j :e m0 -> ordsucc (add_nat kmax j) :e Vset.
+      { exact (Htail_allV HsuccV). }
+      apply (Hblock_path_V m0 Hm0Omega kmax Hkmax_in_n HkV HallV Hk_last_in_n).
+      let p. assume HpPack.
+      claim HpPack2 :
+        path_between V (apply_fun f (apply_fun t_seq kmax))
+          (apply_fun f (apply_fun t_seq mlast)) p /\
+        continuous_map unit_interval unit_interval_topology
+          V (subspace_topology X Tx V) p.
+      { rewrite Hmlast_eq2. exact HpPack. }
+      claim Hp :
+        path_between V (apply_fun f (apply_fun t_seq kmax))
+          (apply_fun f (apply_fun t_seq mlast)) p.
+      { exact (andEL
+          (path_between V (apply_fun f (apply_fun t_seq kmax))
+            (apply_fun f (apply_fun t_seq mlast)) p)
+          (continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) p)
+          HpPack2). }
+      claim HpC :
+        continuous_map unit_interval unit_interval_topology
+          V (subspace_topology X Tx V) p.
+      { exact (andER
+          (path_between V (apply_fun f (apply_fun t_seq kmax))
+            (apply_fun f (apply_fun t_seq mlast)) p)
+          (continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) p)
+          HpPack2). }
+      claim HnV : n :e Vset.
+      { exact (Hn_in_Vset HsuccV). }
+      claim Hseg_lastV_ex :
+        exists gammaV2:set,
+          path_between V (apply_fun f (apply_fun t_seq mlast)) x0 gammaV2 /\
+          continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) gammaV2.
+      { exact ((andER
+          (n :e Uset ->
+            exists pk:set,
+              path_between U (apply_fun f (apply_fun t_seq mlast)) x0 pk /\
+              continuous_map unit_interval unit_interval_topology
+                U (subspace_topology X Tx U) pk)
+          (n :e Vset ->
+            exists pk:set,
+              path_between V (apply_fun f (apply_fun t_seq mlast)) x0 pk /\
+              continuous_map unit_interval unit_interval_topology
+                V (subspace_topology X Tx V) pk)
+          Hseg_last_path_between_UV) HnV). }
+      apply Hseg_lastV_ex.
+      let gammaV2. assume HgammaV2Pack.
+      claim HgammaV2 :
+        path_between V (apply_fun f (apply_fun t_seq mlast)) x0 gammaV2.
+      { exact (andEL
+          (path_between V (apply_fun f (apply_fun t_seq mlast)) x0 gammaV2)
+          (continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) gammaV2)
+          HgammaV2Pack). }
+      claim HgammaV2c :
+        continuous_map unit_interval unit_interval_topology
+          V (subspace_topology X Tx V) gammaV2.
+      { exact (andER
+          (path_between V (apply_fun f (apply_fun t_seq mlast)) x0 gammaV2)
+          (continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) gammaV2)
+          HgammaV2Pack). }
+      set betaV := reverse_path gammaV2.
+      claim HbetaV :
+        path_between V x0 (apply_fun f (apply_fun t_seq mlast)) betaV.
+      { exact (reverse_path_between
+          V
+          (subspace_topology X Tx V)
+          (apply_fun f (apply_fun t_seq mlast))
+          x0
+          gammaV2
+          HgammaV2c
+          (path_between_at_zero
+            V
+            (apply_fun f (apply_fun t_seq mlast))
+            x0
+            gammaV2
+            HgammaV2)
+          (path_between_at_one
+            V
+            (apply_fun f (apply_fun t_seq mlast))
+            x0
+            gammaV2
+            HgammaV2)). }
+      claim HbetaVc :
+        continuous_map unit_interval unit_interval_topology
+          V (subspace_topology X Tx V) betaV.
+      { exact (reverse_path_continuous V (subspace_topology X Tx V) gammaV2 HgammaV2c). }
+      set loopV := path_concat gammaV1 (path_concat p (reverse_path betaV)).
+      claim HloopV :
+        loop_at V (subspace_topology X Tx V) x0 loopV.
+      { exact (Hloop_from_path_between
+          V
+          (subspace_topology X Tx V)
+          (apply_fun f (apply_fun t_seq kmax))
+          (apply_fun f (apply_fun t_seq mlast))
+          p
+          gammaV1
+          betaV
+          Hp
+          HpC
+          HgammaV1
+          HgammaV1c
+          HbetaV
+          HbetaVc). }
+      claim HloopVc :
+        continuous_map unit_interval unit_interval_topology
+          V (subspace_topology X Tx V) loopV.
+      { exact (loop_at_continuous V (subspace_topology X Tx V) x0 loopV HloopV). }
+      witness loopV.
+      apply andI.
+      - exact HloopV.
+      - exact HloopVc.
+    }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
