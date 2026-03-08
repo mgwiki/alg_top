@@ -167082,6 +167082,38 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
     claim HTrans_least :
       exists k0:set, k0 :e Trans /\ forall k:set, k :e Trans -> (k0 :e k \/ k0 = k).
     { exact (omega_nonempty_subset_has_least Trans HTrans_sub_omega HTrans_nonempty). }
+    (** Extract the least transition index and its properties. **)
+    apply HTrans_least.
+    let k0. assume Hk0pack.
+    claim Hk0Trans : k0 :e Trans.
+    { exact (andEL (k0 :e Trans) (forall k:set, k :e Trans -> (k0 :e k \/ k0 = k)) Hk0pack). }
+    claim Hk0TransProp :
+      (k0 :e Uset /\ ordsucc k0 :e Vset) \/ (k0 :e Vset /\ ordsucc k0 :e Uset).
+    {
+      exact (SepE2 n
+        (fun k:set =>
+          (k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset))
+        k0
+        Hk0Trans).
+    }
+    claim Hk0_in_n : k0 :e n.
+    { exact (SepE1 n
+        (fun k:set =>
+          (k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset))
+        k0
+        Hk0Trans). }
+    claim Hk0_uv : apply_fun f (apply_fun t_seq k0) :e U :/\: V.
+    { exact (Htransition_point_UcapV k0 Hk0_in_n Hk0TransProp). }
+    claim Hk0_paths :
+      (exists gammaU:set,
+        path_between U x0 (apply_fun f (apply_fun t_seq k0)) gammaU /\
+        continuous_map unit_interval unit_interval_topology
+          U (subspace_topology X Tx U) gammaU) /\
+      (exists gammaV:set,
+        path_between V x0 (apply_fun f (apply_fun t_seq k0)) gammaV /\
+        continuous_map unit_interval unit_interval_topology
+          V (subspace_topology X Tx V) gammaV).
+    { exact (Htransition_paths_UV k0 Hk0_in_n Hk0TransProp). }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
