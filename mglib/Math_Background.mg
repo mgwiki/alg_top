@@ -161980,6 +161980,123 @@ exact (path_betweenI
   Hcomp1).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: split a natural number n at an element k :e n **)
+Lemma nat_elem_decompose_add : forall n k:set,
+  n :e omega -> k :e n ->
+  exists m:set, nat_p m /\ n = add_nat k m.
+let n k.
+assume HnOmega HkN.
+set P := fun n0:set => forall k0:set, k0 :e n0 -> exists m:set, nat_p m /\ n0 = add_nat k0 m.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - (** base n0 = 0 **)
+    let k0. assume Hk0.
+    exact (FalseE (EmptyE k0 Hk0) (exists m:set, nat_p m /\ 0 = add_nat k0 m)).
+  - (** step n0 -> ordsucc n0 **)
+    let n0. assume Hn0Nat IH.
+    let k0. assume Hk0On : k0 :e ordsucc n0.
+    apply (ordsuccE n0 k0 Hk0On).
+    + assume Hk0_in_n0.
+      apply (IH k0 Hk0_in_n0).
+      let m. assume HmPack.
+      claim HmNat : nat_p m.
+      { exact (andEL (nat_p m) (n0 = add_nat k0 m) HmPack). }
+      claim HmEq : n0 = add_nat k0 m.
+      { exact (andER (nat_p m) (n0 = add_nat k0 m) HmPack). }
+      witness (ordsucc m).
+      apply andI.
+      * exact (nat_ordsucc m HmNat).
+      * rewrite (add_nat_SR k0 m HmNat).
+        rewrite HmEq.
+        reflexivity.
+    + assume Hk0_eq_n0.
+      witness 1.
+      apply andI.
+      * exact nat_1.
+      * rewrite Hk0_eq_n0.
+        rewrite <- ordsucc_0_eq_1_nat.
+        rewrite (add_nat_SR n0 0 nat_0).
+        rewrite (add_nat_0R n0).
+        reflexivity.
+  - exact (omega_nat_p n HnOmega).
+}
+exact (HP k HkN).
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure: left addend is always in the successor of a natural sum. **)
+Lemma nat_left_in_ordsucc_add_nat : forall k j:set,
+  nat_p k -> nat_p j ->
+  k :e ordsucc (add_nat k j).
+let k j.
+assume HkNat HjNat.
+set P := fun j0:set => k :e ordsucc (add_nat k j0).
+claim HP : forall j0:set, nat_p j0 -> P j0.
+{
+  apply nat_ind.
+  - (** base j0 = 0 **)
+    claim H0 : add_nat k 0 = k.
+    { exact (add_nat_0R k). }
+    claim Hord : ordsucc (add_nat k 0) = ordsucc k.
+    { rewrite H0. reflexivity. }
+    exact (eq_subst_mem_set
+      k
+      (ordsucc k)
+      (ordsucc (add_nat k 0))
+      (ordsuccI2 k)
+      (eq_symm (ordsucc (add_nat k 0)) (ordsucc k) Hord)).
+  - (** step j0 -> ordsucc j0 **)
+    let j0. assume Hj0Nat IH.
+    claim Hk_in :
+      k :e ordsucc (ordsucc (add_nat k j0)).
+    { exact (ordsuccI1 (ordsucc (add_nat k j0)) k IH). }
+    claim Heq :
+      ordsucc (add_nat k (ordsucc j0)) = ordsucc (ordsucc (add_nat k j0)).
+    { rewrite (add_nat_SR k j0 Hj0Nat). reflexivity. }
+    exact (eq_subst_mem_set
+      k
+      (ordsucc (ordsucc (add_nat k j0)))
+      (ordsucc (add_nat k (ordsucc j0)))
+      Hk_in
+      (eq_symm (ordsucc (add_nat k (ordsucc j0)))
+        (ordsucc (ordsucc (add_nat k j0))) Heq)).
+}
+exact (HP j HjNat).
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure: left addend lies in the sum when the right addend is nonzero. **)
+Lemma nat_left_in_add_nat_pos : forall k j:set,
+  nat_p k -> nat_p j -> j <> 0 ->
+  k :e add_nat k j.
+let k j.
+assume HkNat HjNat HjNe0.
+claim Hj_cases : j = 0 \/ exists j0:set, nat_p j0 /\ j = ordsucc j0.
+{ exact (nat_inv j HjNat). }
+apply Hj_cases.
+- assume Hj0.
+  exact (FalseE (HjNe0 Hj0) (k :e add_nat k j)).
+- assume HjSucc.
+  apply HjSucc.
+  let j0. assume Hj0Pack.
+  claim Hj0Nat : nat_p j0.
+  { exact (andEL (nat_p j0) (j = ordsucc j0) Hj0Pack). }
+  claim HjEq : j = ordsucc j0.
+  { exact (andER (nat_p j0) (j = ordsucc j0) Hj0Pack). }
+  claim Hk_in : k :e ordsucc (add_nat k j0).
+  { exact (nat_left_in_ordsucc_add_nat k j0 HkNat Hj0Nat). }
+  claim Hadd : add_nat k j = ordsucc (add_nat k j0).
+  { rewrite HjEq. exact (add_nat_SR k j0 Hj0Nat). }
+  exact (eq_subst_mem_set
+    k
+    (ordsucc (add_nat k j0))
+    (add_nat k j)
+    Hk_in
+    (eq_symm (add_nat k j) (ordsucc (add_nat k j0)) Hadd)).
+Qed.
+
 (** Infrastructure: mixed case for ball_cover_word_construction (to be completed). **)
 Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
@@ -168617,6 +168734,255 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
           { exact (Hk_le kmax Hkmax_in_k). }
           exact (FalseE (In_irref kmax Hkmax_in_kmax) (ordsucc k :e Vset)).
         + assume HsuccV. exact HsuccV.
+    }
+    (** Decompose n as kmax + m with m nonzero. **)
+    claim Hn_decomp : exists m:set, nat_p m /\ n = add_nat kmax m.
+    { exact (nat_elem_decompose_add n kmax HnOmega Hkmax_in_n). }
+    claim Hn_decomp_succ :
+      exists m0:set, nat_p m0 /\ n = add_nat kmax (ordsucc m0).
+    {
+      apply Hn_decomp.
+      let m. assume HmPack.
+      claim HmNat : nat_p m.
+      { exact (andEL (nat_p m) (n = add_nat kmax m) HmPack). }
+      claim HnEq : n = add_nat kmax m.
+      { exact (andER (nat_p m) (n = add_nat kmax m) HmPack). }
+      claim Hm_cases : m = 0 \/ exists m0:set, nat_p m0 /\ m = ordsucc m0.
+      { exact (nat_inv m HmNat). }
+      apply Hm_cases.
+      - assume Hm0.
+        claim HkmaxNat : nat_p kmax.
+        { exact (omega_nat_p kmax Hkmax_omega). }
+        claim Hadd : add_nat kmax m = add_nat kmax 0.
+        { rewrite Hm0. reflexivity. }
+        claim Hn_eq0 : n = add_nat kmax 0.
+        { rewrite <- Hadd. exact HnEq. }
+        claim Hn_eq_kmax : n = kmax.
+        { rewrite <- (add_nat_0R kmax). exact Hn_eq0. }
+        claim Hkmax_in_kmax : kmax :e kmax.
+        { exact (eq_subst_mem_set kmax n kmax Hkmax_in_n Hn_eq_kmax). }
+        exact (FalseE (In_irref kmax Hkmax_in_kmax)
+          (exists m0:set, nat_p m0 /\ n = add_nat kmax (ordsucc m0))).
+      - assume HmSucc.
+        apply HmSucc.
+        let m0. assume Hm0Pack.
+        claim Hm0Nat : nat_p m0.
+        { exact (andEL (nat_p m0) (m = ordsucc m0) Hm0Pack). }
+        claim Hm0Eq : m = ordsucc m0.
+        { exact (andER (nat_p m0) (m = ordsucc m0) Hm0Pack). }
+        witness m0.
+        apply andI.
+        + exact Hm0Nat.
+        + claim Hadd2 : add_nat kmax m = add_nat kmax (ordsucc m0).
+          { rewrite Hm0Eq. reflexivity. }
+          rewrite <- Hadd2. exact HnEq.
+    }
+    (** Relate the predecessor of n to the kmax-decomposition. **)
+    apply Hn_decomp_succ.
+    let m0. assume Hm0Pack.
+    claim Hm0Nat : nat_p m0.
+    { exact (andEL (nat_p m0) (n = add_nat kmax (ordsucc m0)) Hm0Pack). }
+    claim Hm0Omega : m0 :e omega.
+    { exact (nat_p_omega m0 Hm0Nat). }
+    claim HnEq2 : n = add_nat kmax (ordsucc m0).
+    { exact (andER (nat_p m0) (n = add_nat kmax (ordsucc m0)) Hm0Pack). }
+    claim Hn_eq_succ : n = ordsucc (add_nat kmax m0).
+    { rewrite HnEq2. rewrite (add_nat_SR kmax m0 Hm0Nat). reflexivity. }
+    claim Hmlast_eq2 : mlast = add_nat kmax m0.
+    {
+      apply (ordsucc_inj mlast (add_nat kmax m0)).
+      rewrite <- Hmlast_eq. exact Hn_eq_succ.
+    }
+    claim Hk_last_in_n : add_nat kmax m0 :e n.
+    {
+      exact (eq_subst_mem (add_nat kmax m0) mlast n
+        (eq_symm mlast (add_nat kmax m0) Hmlast_eq2) Hmlast_in_n).
+    }
+    claim HkmaxNat : nat_p kmax.
+    { exact (omega_nat_p kmax Hkmax_omega). }
+    claim Hadd_in_mlast :
+      forall j:set, j :e m0 -> add_nat kmax j :e mlast.
+    {
+      let j. assume Hj.
+      claim Hj_in_sum : add_nat kmax j :e add_nat kmax m0.
+      { exact (add_nat_In_L kmax HkmaxNat m0 Hm0Nat j Hj). }
+      exact (eq_subst_mem_set (add_nat kmax j) (add_nat kmax m0) mlast
+        Hj_in_sum (eq_symm mlast (add_nat kmax m0) Hmlast_eq2)).
+    }
+    claim Hadd_in_n :
+      forall j:set, j :e m0 -> add_nat kmax j :e n.
+    {
+      let j. assume Hj.
+      claim Hjn : add_nat kmax j :e mlast.
+      { exact (Hadd_in_mlast j Hj). }
+      exact (ordinal_TransSet n (nat_p_ordinal n HnNat) mlast Hmlast_in_n (add_nat kmax j) Hjn).
+    }
+    claim HkmaxTransProp :
+      (kmax :e Uset /\ ordsucc kmax :e Vset) \/
+      (kmax :e Vset /\ ordsucc kmax :e Uset).
+    {
+      exact (SepE2 n
+        (fun k:set =>
+          (k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset))
+        kmax
+        HkmaxTrans).
+    }
+    claim Hkmax_in_sum_pos : m0 <> 0 -> kmax :e add_nat kmax m0.
+    {
+      assume Hm0ne.
+      exact (nat_left_in_add_nat_pos kmax m0 HkmaxNat Hm0Nat Hm0ne).
+    }
+    claim Hm0ord : ordinal m0.
+    { exact (nat_p_ordinal m0 Hm0Nat). }
+    (** After kmax, U-side persists (useful for tail block when ordsucc kmax is in Uset). **)
+    claim Htail_addU :
+      ordsucc kmax :e Uset ->
+      forall j:set, nat_p j -> (j :e m0 -> j <> 0 -> add_nat kmax j :e Uset).
+    {
+      assume HsuccU.
+      set P := fun j:set => j :e m0 -> j <> 0 -> add_nat kmax j :e Uset.
+      claim HP : forall j:set, nat_p j -> P j.
+      {
+        apply nat_ind.
+        - (** base j = 0 **)
+          assume Hj_in Hj_ne.
+          exact (FalseE (Hj_ne (eq_refl 0)) (add_nat kmax 0 :e Uset)).
+        - (** step j -> ordsucc j **)
+          let j0. assume Hj0Nat IH.
+          assume Hj1_in Hj1_ne.
+          apply (xm (j0 = 0)).
+          + assume Hj0_eq0.
+            claim Hadd1 : add_nat kmax (ordsucc j0) = ordsucc kmax.
+            { rewrite Hj0_eq0. rewrite (add_nat_SR kmax 0 nat_0). rewrite (add_nat_0R kmax). reflexivity. }
+            exact (eq_subst_mem (add_nat kmax (ordsucc j0)) (ordsucc kmax) Uset
+              Hadd1 HsuccU).
+          + assume Hj0_ne0.
+            claim Hj0_in_m0 : j0 :e m0.
+            { exact (ordinal_TransSet m0 Hm0ord (ordsucc j0) Hj1_in j0 (ordsuccI2 j0)). }
+            claim Hk0U : add_nat kmax j0 :e Uset.
+            { exact (IH Hj0_in_m0 Hj0_ne0). }
+            claim Hk0_in_n : add_nat kmax j0 :e n.
+            { exact (Hadd_in_n j0 Hj0_in_m0). }
+            claim Hk0_ge : kmax :e add_nat kmax j0.
+            { exact (nat_left_in_add_nat_pos kmax j0 HkmaxNat Hj0Nat Hj0_ne0). }
+            claim HsuccUset :
+              ordsucc (add_nat kmax j0) :e Uset.
+            {
+              exact ((andEL
+                (add_nat kmax j0 :e Uset -> ordsucc (add_nat kmax j0) :e Uset)
+                (add_nat kmax j0 :e Vset -> ordsucc (add_nat kmax j0) :e Vset)
+                (Hafter_kmax_same_side (add_nat kmax j0) Hk0_in_n Hk0_ge)) Hk0U).
+            }
+            claim HaddS : add_nat kmax (ordsucc j0) = ordsucc (add_nat kmax j0).
+            { exact (add_nat_SR kmax j0 Hj0Nat). }
+            exact (eq_subst_mem (add_nat kmax (ordsucc j0)) (ordsucc (add_nat kmax j0)) Uset
+              HaddS HsuccUset).
+      }
+      let j. assume HjNat Hj_in Hj_ne.
+      exact ((HP j HjNat) Hj_in Hj_ne).
+    }
+    claim Htail_allU :
+      ordsucc kmax :e Uset ->
+      forall j:set, j :e m0 -> ordsucc (add_nat kmax j) :e Uset.
+    {
+      assume HsuccU.
+      let j. assume Hj.
+      apply (xm (j = 0)).
+      - assume Hj0.
+        rewrite Hj0.
+        claim Hadd0 : ordsucc (add_nat kmax 0) = ordsucc kmax.
+        { rewrite (add_nat_0R kmax). reflexivity. }
+        exact (eq_subst_mem (ordsucc (add_nat kmax 0)) (ordsucc kmax) Uset
+          Hadd0 HsuccU).
+      - assume Hj_ne0.
+        claim HjOmega : j :e omega.
+        { exact (omega_TransSet m0 (nat_p_omega m0 Hm0Nat) j Hj). }
+        claim HjNat : nat_p j.
+        { exact (omega_nat_p j HjOmega). }
+        claim HkU : add_nat kmax j :e Uset.
+        { exact (Htail_addU HsuccU j HjNat Hj Hj_ne0). }
+        claim Hk_in_n : add_nat kmax j :e n.
+        { exact (Hadd_in_n j Hj). }
+        claim Hk_ge : kmax :e add_nat kmax j.
+        { exact (nat_left_in_add_nat_pos kmax j HkmaxNat HjNat Hj_ne0). }
+        exact ((andEL
+          (add_nat kmax j :e Uset -> ordsucc (add_nat kmax j) :e Uset)
+          (add_nat kmax j :e Vset -> ordsucc (add_nat kmax j) :e Vset)
+          (Hafter_kmax_same_side (add_nat kmax j) Hk_in_n Hk_ge)) HkU).
+    }
+    (** Symmetric tail persistence for V-side. **)
+    claim Htail_addV :
+      ordsucc kmax :e Vset ->
+      forall j:set, nat_p j -> (j :e m0 -> j <> 0 -> add_nat kmax j :e Vset).
+    {
+      assume HsuccV.
+      set P := fun j:set => j :e m0 -> j <> 0 -> add_nat kmax j :e Vset.
+      claim HP : forall j:set, nat_p j -> P j.
+      {
+        apply nat_ind.
+        - assume Hj_in Hj_ne.
+          exact (FalseE (Hj_ne (eq_refl 0)) (add_nat kmax 0 :e Vset)).
+        - let j0. assume Hj0Nat IH.
+          assume Hj1_in Hj1_ne.
+          apply (xm (j0 = 0)).
+          + assume Hj0_eq0.
+            claim Hadd1 : add_nat kmax (ordsucc j0) = ordsucc kmax.
+            { rewrite Hj0_eq0. rewrite (add_nat_SR kmax 0 nat_0). rewrite (add_nat_0R kmax). reflexivity. }
+            exact (eq_subst_mem (add_nat kmax (ordsucc j0)) (ordsucc kmax) Vset
+              Hadd1 HsuccV).
+          + assume Hj0_ne0.
+            claim Hj0_in_m0 : j0 :e m0.
+            { exact (ordinal_TransSet m0 Hm0ord (ordsucc j0) Hj1_in j0 (ordsuccI2 j0)). }
+            claim Hk0V : add_nat kmax j0 :e Vset.
+            { exact (IH Hj0_in_m0 Hj0_ne0). }
+            claim Hk0_in_n : add_nat kmax j0 :e n.
+            { exact (Hadd_in_n j0 Hj0_in_m0). }
+            claim Hk0_ge : kmax :e add_nat kmax j0.
+            { exact (nat_left_in_add_nat_pos kmax j0 HkmaxNat Hj0Nat Hj0_ne0). }
+            claim HsuccVset :
+              ordsucc (add_nat kmax j0) :e Vset.
+            {
+              exact ((andER
+                (add_nat kmax j0 :e Uset -> ordsucc (add_nat kmax j0) :e Uset)
+                (add_nat kmax j0 :e Vset -> ordsucc (add_nat kmax j0) :e Vset)
+                (Hafter_kmax_same_side (add_nat kmax j0) Hk0_in_n Hk0_ge)) Hk0V).
+            }
+            claim HaddS : add_nat kmax (ordsucc j0) = ordsucc (add_nat kmax j0).
+            { exact (add_nat_SR kmax j0 Hj0Nat). }
+            exact (eq_subst_mem (add_nat kmax (ordsucc j0)) (ordsucc (add_nat kmax j0)) Vset
+              HaddS HsuccVset).
+      }
+      let j. assume HjNat Hj_in Hj_ne.
+      exact ((HP j HjNat) Hj_in Hj_ne).
+    }
+    claim Htail_allV :
+      ordsucc kmax :e Vset ->
+      forall j:set, j :e m0 -> ordsucc (add_nat kmax j) :e Vset.
+    {
+      assume HsuccV.
+      let j. assume Hj.
+      apply (xm (j = 0)).
+      - assume Hj0.
+        rewrite Hj0.
+        claim Hadd0 : ordsucc (add_nat kmax 0) = ordsucc kmax.
+        { rewrite (add_nat_0R kmax). reflexivity. }
+        exact (eq_subst_mem (ordsucc (add_nat kmax 0)) (ordsucc kmax) Vset
+          Hadd0 HsuccV).
+      - assume Hj_ne0.
+        claim HjOmega : j :e omega.
+        { exact (omega_TransSet m0 (nat_p_omega m0 Hm0Nat) j Hj). }
+        claim HjNat : nat_p j.
+        { exact (omega_nat_p j HjOmega). }
+        claim HkV : add_nat kmax j :e Vset.
+        { exact (Htail_addV HsuccV j HjNat Hj Hj_ne0). }
+        claim Hk_in_n : add_nat kmax j :e n.
+        { exact (Hadd_in_n j Hj). }
+        claim Hk_ge : kmax :e add_nat kmax j.
+        { exact (nat_left_in_add_nat_pos kmax j HkmaxNat HjNat Hj_ne0). }
+        exact ((andER
+          (add_nat kmax j :e Uset -> ordsucc (add_nat kmax j) :e Uset)
+          (add_nat kmax j :e Vset -> ordsucc (add_nat kmax j) :e Vset)
+          (Hafter_kmax_same_side (add_nat kmax j) Hk_in_n Hk_ge)) HkV).
     }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
