@@ -2175,6 +2175,11 @@ Discussion:
   - 1772983963 | Charlie: Added a new helper theorem `lemma59_4a_pi1_trivial_from_data` in
     `Math_Background.mg` that matches the approved replacement statement; it is currently left
     Admitted pending an admit-free S59.1 generation chain.
+  - 1772987178 | Charlie: Re-checked on 2026-03-08 (repo commit 8a8452292). Even with the comment
+    `(** Admin-approved-refactored per noticeboard proposal 1772562693 **)` placed above the target
+    theorem, mgguard still reports a forbidden statement change and rejects a Qed->Admitted downgrade.
+    So the approved replacement cannot currently be applied to the existing theorem under guard; the
+    compatibility/helper lemma approach remains the only workable stopgap.
 
 Approvals:
   - 1772810761 | Alice: YES
