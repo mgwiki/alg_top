@@ -1,4 +1,4 @@
-(** Balance Alice 7663 **)
+(** Balance Alice 7781 **)
 (** Balance Bob 5671 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -215748,7 +215748,8 @@ Qed.
 (** phi: G -> G' such that phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
 (** Admin-approved-refactored per noticeboard proposal 1772540187 **)
-(** Bounty 118 **)
+(** Collected Alice 118 **)
+(** Proven Alice **)
 Theorem thm67_6_uniqueness_direct_sum :
   forall J Gfam multfam efam invfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   (forall alpha:set, alpha :e J ->
@@ -215982,8 +215983,14 @@ claim Hfwd_hom : forall alpha:set, alpha :e J ->
     (** Use group_structure on Gfam alpha to obtain closure under multfam. **)
     claim Hmult_closed : apply_fun (apply_fun multfam alpha) (a, b) :e apply_fun Gfam alpha.
     {
-      (** TODO: need closure of multfam on Gfam (group_structure assumption for Gfam alpha). **)
-      admit.
+      exact (group_source_mult_closure
+        (apply_fun Gfam alpha) (apply_fun multfam alpha)
+        (apply_fun efam alpha) (apply_fun invfam alpha)
+        (abelian_group_implies_group_structure
+          (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun efam alpha) (apply_fun invfam alpha)
+          (HabFam alpha Halpha))
+        a b Ha Hb).
     }
     rewrite (Hfwd_apply alpha (apply_fun (apply_fun multfam alpha) (a, b)) Halpha Hmult_closed).
     (** RHS: multG'(hfam_fwd(ifam(a)), hfam_fwd(ifam(b))) = multG'(ifam'(a), ifam'(b)) **)
@@ -216135,8 +216142,24 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
               apply_fun (apply_fun ifam alpha) x) ->
         forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
-    { (** TODO: need group_structure (identity/inverse families) on Gfam to apply lemma67_5_extension_external. **)
-      admit. }
+    { claim Hgfam_grp : forall alpha:set, alpha :e J ->
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun efam alpha) (apply_fun invfam alpha).
+      { let alpha. assume Hal.
+        exact (abelian_group_implies_group_structure
+          (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun efam alpha) (apply_fun invfam alpha)
+          (HabFam alpha Hal)). }
+      exact (lemma67_5_extension_external
+        G' multG' eG' invG' J Gfam multfam efam invfam ifam'
+        HabG'
+        Hgfam_grp
+        Hifam'
+        HdsG'
+        G multG eG invG
+        HabG
+        ifam
+        Hifam_hom_only). }
     apply Hpsi_ex. let psi. assume Hpsi_all.
     apply (and3E
       (group_homomorphism G' multG' G multG psi)
@@ -216179,8 +216202,24 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
               apply_fun (apply_fun ifam alpha) x) ->
         forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-    { (** TODO: need group_structure (identity/inverse families) on Gfam to apply lemma67_5_extension_external. **)
-      admit. }
+    { claim Hgfam_grp2 : forall alpha:set, alpha :e J ->
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun efam alpha) (apply_fun invfam alpha).
+      { let alpha. assume Hal.
+        exact (abelian_group_implies_group_structure
+          (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun efam alpha) (apply_fun invfam alpha)
+          (HabFam alpha Hal)). }
+      exact (lemma67_5_extension_external
+        G multG eG invG J Gfam multfam efam invfam ifam
+        HabG
+        Hgfam_grp2
+        Hifam
+        HdsG
+        G multG eG invG
+        HabG
+        ifam
+        Hifam_hom_only). }
     apply Hid_ex. let h_id. assume Hid_all.
     apply (and3E
       (group_homomorphism G multG G multG h_id)
@@ -216298,8 +216337,24 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
               apply_fun (apply_fun ifam' alpha) x) ->
         forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
-    { (** TODO: need group_structure (identity/inverse families) on Gfam to apply lemma67_5_extension_external. **)
-      admit. }
+    { claim Hgfam_grp3 : forall alpha:set, alpha :e J ->
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun efam alpha) (apply_fun invfam alpha).
+      { let alpha. assume Hal.
+        exact (abelian_group_implies_group_structure
+          (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun efam alpha) (apply_fun invfam alpha)
+          (HabFam alpha Hal)). }
+      exact (lemma67_5_extension_external
+        G' multG' eG' invG' J Gfam multfam efam invfam ifam'
+        HabG'
+        Hgfam_grp3
+        Hifam'
+        HdsG'
+        G' multG' eG' invG'
+        HabG'
+        ifam'
+        Hifam'_hom_only). }
     apply Hid2_ex. let h_id2. assume Hid2_all.
     apply (and3E
       (group_homomorphism G' multG' G' multG' h_id2)
@@ -216455,7 +216510,7 @@ apply and3I.
     { symmetry. exact Hfwdy. }
     exact (eq_i_tra (apply_fun phi' y) (apply_fun (apply_fun ifam' alpha) z) (apply_fun (apply_fun hfam_fwd alpha) y) Hphi'y Hfwdy_sym). }
   exact (Hphi_uniq phi' Hphi'_hom Hphi'_ext_sub).
-Admitted.
+Qed.
 
 (** Infrastructure: infinite cyclic subgroup generated by an element **)
 Definition infinite_cyclic_subgroup : set -> set -> set -> set -> set -> prop :=
