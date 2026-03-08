@@ -2172,6 +2172,9 @@ Discussion:
     /project/megalodon rejects keeping it Qed if the proof uses the current (rec-admitted) S59.1
     van Kampen generation chain. To implement, we likely need either (1) admin/guard exception for
     statement changes, or (2) to fully Qed the S59.1 chain first so the new proof is admit-free.
+  - 1772983963 | Charlie: Added a new helper theorem `lemma59_4a_pi1_trivial_from_data` in
+    `Math_Background.mg` that matches the approved replacement statement; it is currently left
+    Admitted pending an admit-free S59.1 generation chain.
 
 Approvals:
   - 1772810761 | Alice: YES
