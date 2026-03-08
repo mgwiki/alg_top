@@ -166231,6 +166231,73 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
       { exact (Htransition_point_UcapV k Hk Hktrans). }
       exact (HUV_path_to_UV (apply_fun f (apply_fun t_seq k)) HptUV).
     }
+    (** Build a loop at x0 by concatenating a path between x and y with paths from x0. **)
+    claim Hloop_from_path_between :
+      forall X0 Tx0 x y p alpha beta:set,
+        path_between X0 x y p ->
+        continuous_map unit_interval unit_interval_topology X0 Tx0 p ->
+        path_between X0 x0 x alpha ->
+        continuous_map unit_interval unit_interval_topology X0 Tx0 alpha ->
+        path_between X0 x0 y beta ->
+        continuous_map unit_interval unit_interval_topology X0 Tx0 beta ->
+        loop_at X0 Tx0 x0 (path_concat alpha (path_concat p (reverse_path beta))).
+    {
+      let X0 Tx0 x y p alpha beta.
+      assume Hp Hcp Halpha HalphaC Hbeta HbetaC.
+      claim Hbeta0 : apply_fun beta 0 = x0.
+      { exact (path_between_at_zero X0 x0 y beta Hbeta). }
+      claim Hbeta1 : apply_fun beta 1 = y.
+      { exact (path_between_at_one X0 x0 y beta Hbeta). }
+      claim HrevCont :
+        continuous_map unit_interval unit_interval_topology X0 Tx0 (reverse_path beta).
+      { exact (reverse_path_continuous X0 Tx0 beta HbetaC). }
+      claim HrevBetween :
+        path_between X0 y x0 (reverse_path beta).
+      { exact (reverse_path_between X0 Tx0 x0 y beta HbetaC Hbeta0 Hbeta1). }
+      claim Halpha_p_pack :
+        path_between X0 x x0 (path_concat p (reverse_path beta)) /\
+        continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat p (reverse_path beta)).
+      {
+        exact (Hconcat_path_between X0 Tx0 x y x0 p (reverse_path beta) Hp Hcp HrevBetween HrevCont).
+      }
+      claim Hp_rev :
+        path_between X0 x x0 (path_concat p (reverse_path beta)).
+      { exact (andEL
+          (path_between X0 x x0 (path_concat p (reverse_path beta)))
+          (continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat p (reverse_path beta)))
+          Halpha_p_pack). }
+      claim Hp_rev_cont :
+        continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat p (reverse_path beta)).
+      { exact (andER
+          (path_between X0 x x0 (path_concat p (reverse_path beta)))
+          (continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat p (reverse_path beta)))
+          Halpha_p_pack). }
+      claim Hall_pack :
+        path_between X0 x0 x0 (path_concat alpha (path_concat p (reverse_path beta))) /\
+        continuous_map unit_interval unit_interval_topology X0 Tx0
+          (path_concat alpha (path_concat p (reverse_path beta))).
+      {
+        exact (Hconcat_path_between X0 Tx0 x0 x x0 alpha (path_concat p (reverse_path beta))
+          Halpha HalphaC Hp_rev Hp_rev_cont).
+      }
+      claim Hall_path :
+        path_between X0 x0 x0 (path_concat alpha (path_concat p (reverse_path beta))).
+      { exact (andEL
+          (path_between X0 x0 x0 (path_concat alpha (path_concat p (reverse_path beta))))
+          (continuous_map unit_interval unit_interval_topology X0 Tx0
+            (path_concat alpha (path_concat p (reverse_path beta))))
+          Hall_pack). }
+      claim Hall_cont :
+        continuous_map unit_interval unit_interval_topology X0 Tx0
+          (path_concat alpha (path_concat p (reverse_path beta))).
+      { exact (andER
+          (path_between X0 x0 x0 (path_concat alpha (path_concat p (reverse_path beta))))
+          (continuous_map unit_interval unit_interval_topology X0 Tx0
+            (path_concat alpha (path_concat p (reverse_path beta))))
+          Hall_pack). }
+      exact (path_between_continuous_loop_at X0 Tx0 x0
+        (path_concat alpha (path_concat p (reverse_path beta))) Hall_path Hall_cont).
+    }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
