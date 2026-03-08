@@ -166298,6 +166298,38 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
       exact (path_between_continuous_loop_at X0 Tx0 x0
         (path_concat alpha (path_concat p (reverse_path beta))) Hall_path Hall_cont).
     }
+    (** Concatenation of three paths yields a path and continuity. **)
+    claim Hconcat3_path_between :
+      forall X0 Tx0 x0 x1 x2 x3 p q r:set,
+        path_between X0 x0 x1 p ->
+        continuous_map unit_interval unit_interval_topology X0 Tx0 p ->
+        path_between X0 x1 x2 q ->
+        continuous_map unit_interval unit_interval_topology X0 Tx0 q ->
+        path_between X0 x2 x3 r ->
+        continuous_map unit_interval unit_interval_topology X0 Tx0 r ->
+        path_between X0 x0 x3 (path_concat p (path_concat q r)) /\
+        continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat p (path_concat q r)).
+    {
+      let X0 Tx0 x0 x1 x2 x3 p q r.
+      assume Hp Hcp Hq Hcq Hr Hcr.
+      claim Hqr_pack :
+        path_between X0 x1 x3 (path_concat q r) /\
+        continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat q r).
+      { exact (Hconcat_path_between X0 Tx0 x1 x2 x3 q r Hq Hcq Hr Hcr). }
+      claim Hqr :
+        path_between X0 x1 x3 (path_concat q r).
+      { exact (andEL
+          (path_between X0 x1 x3 (path_concat q r))
+          (continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat q r))
+          Hqr_pack). }
+      claim Hqr_cont :
+        continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat q r).
+      { exact (andER
+          (path_between X0 x1 x3 (path_concat q r))
+          (continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat q r))
+          Hqr_pack). }
+      exact (Hconcat_path_between X0 Tx0 x0 x1 x3 p (path_concat q r) Hp Hcp Hqr Hqr_cont).
+    }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
