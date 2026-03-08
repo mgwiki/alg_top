@@ -1000,6 +1000,7 @@ Result:
 
 
 Admin Decision:
+  - 1772966400 | APPROVED
   - 1772888400 | APPROVED
 --------------------------------------------------------
 NOTICE ID: 1772757793
@@ -5190,6 +5191,8 @@ Result:
   PROPOSED
 
 Admin Decision:
+  - 1772966400 | APPROVED
+  - 1772966400 | APPROVED
 
 Implemented by:
 
