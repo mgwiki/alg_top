@@ -2180,6 +2180,10 @@ Discussion:
     theorem, mgguard still reports a forbidden statement change and rejects a Qed->Admitted downgrade.
     So the approved replacement cannot currently be applied to the existing theorem under guard; the
     compatibility/helper lemma approach remains the only workable stopgap.
+  - 1772992232 | Charlie: Verified via mgdeps that `ex59_4a_trivial_j_star` is recursively admitted
+    because it depends on `thm59_1_open_cover_generates_pi1` (its core lemma is still Admitted). So
+    `lemma59_4a_pi1_trivial_from_data` cannot be switched to `Qed.` until the S59.1 generation chain
+    is made admit-free.
 
 Approvals:
   - 1772810761 | Alice: YES
