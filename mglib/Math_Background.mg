@@ -307139,7 +307139,81 @@ Theorem thm81_2_covering_trans_isomorphism :
           (fundamental_group E Te e0)
           (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p)))
       phi.
-admit.
+let E Te B Tb p e0.
+assume Hcov He0E HpcE HlpE.
+set b0 := apply_fun p e0.
+set H0 := homomorphism_image (fundamental_group E Te e0) (induced_homomorphism E Te e0 B Tb b0 p).
+set G := fundamental_group B Tb b0.
+set multG := fundamental_group_mult B Tb b0.
+set eG := fundamental_group_id B Tb b0.
+set invG := fundamental_group_inv B Tb b0.
+set N := normalizer H0 G multG eG invG.
+set CTG := covering_transformation_group E Te B Tb p.
+set multCTG := covering_transformation_mult E Te B Tb p.
+set lc := lifting_correspondence E Te B Tb p e0.
+set QGset := quotient_group_set N multG H0.
+set QGmult := quotient_group_mult N multG H0.
+(** Infrastructure **)
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim Hp_cont : continuous_map E Te B Tb p. { exact (covering_map_continuous E Te B Tb p Hcov). }
+claim Hp_fun : function_on p E B. { exact (continuous_map_function_on E Te B Tb p Hp_cont). }
+claim Hb0B : b0 :e B. { exact (Hp_fun e0 He0E). }
+claim HgrpG : group_structure G multG eG invG.
+{ exact (fundamental_group_is_group B Tb b0 HtopB Hb0B). }
+(** H0 is a subgroup of G **)
+claim HH0sub : subgroup_of H0 G multG eG invG.
+{ admit. }
+(** N is a subgroup of G **)
+claim HNsub : subgroup_of N G multG eG invG.
+{ admit. }
+(** N inherits group structure **)
+claim HgrpN : group_structure N multG eG invG.
+{ exact (subgroup_inherits_group_structure G multG eG invG N HgrpG HNsub). }
+(** H0 c= N **)
+claim HH0subN : H0 c= N.
+{ admit. }
+(** H0 is a subgroup of N **)
+claim HH0subN_sub : subgroup_of H0 N multG eG invG.
+{ admit. }
+(** H0 is normal in N **)
+claim HH0normalN : normal_subgroup H0 N multG eG invG.
+{ admit. }
+(** Lifting correspondence lands in fiber and is surjective **)
+claim Hlc_surj : forall e1:set, e1 :e E -> apply_fun p e1 = b0 ->
+  exists cls:set, cls :e G /\ apply_fun lc cls = e1.
+{ admit. }
+(** For any h in CTG, h(e0) is in the fiber **)
+claim Hhe0_fiber : forall h:set, h :e CTG ->
+  apply_fun h e0 :e E /\ apply_fun p (apply_fun h e0) = b0.
+{ admit. }
+(** For any h in CTG, the Eps_i chosen class is in N **)
+claim Hcls_in_N : forall h:set, h :e CTG ->
+  Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0) :e N.
+{ admit. }
+(** Covering transformations determined by value at one point **)
+claim Hct_unique : forall h1 h2:set, h1 :e CTG -> h2 :e CTG ->
+  apply_fun h1 e0 = apply_fun h2 e0 -> h1 = h2.
+{ admit. }
+(** Same lc value implies same left coset in N **)
+claim Hsame_lc_same_coset : forall c1 c2:set, c1 :e N -> c2 :e N ->
+  apply_fun lc c1 = apply_fun lc c2 ->
+  left_coset multG c1 H0 = left_coset multG c2 H0.
+{ admit. }
+(** Define phi **)
+set phiFun := fun h:set =>
+  left_coset multG
+    (Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0))
+    H0.
+set phi := graph CTG phiFun.
+witness phi.
+apply (group_isomorphism_intro CTG multCTG QGset QGmult phi).
+(** Part 1: group_homomorphism **)
+- prove group_homomorphism CTG multCTG QGset QGmult phi.
+  admit.
+(** Part 2: bijection **)
+- prove bijection CTG QGset phi.
+  admit.
 Admitted.
 
 (** from S81 Definition (line 5103 in algtop.tex): regular covering map **)
