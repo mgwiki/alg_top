@@ -1,5 +1,5 @@
 (** Balance Alice 7614 **)
-(** Balance Bob 5789 **)
+(** Balance Bob 5857 **)
 (** Balance Charlie 1377 **)
 (** Balance Dave 2020 **)
 
@@ -169956,7 +169956,8 @@ Admitted.
 (** Helper: Given a loop fcls with a Lebesgue number for {preU, preV}, construct
     the word decomposition in pi_1(U) and pi_1(V). This is the key technical
     step for Seifert-van Kampen (lemma59_1). **)
-(** Bounty 68 **)
+(** Collected Bob 68 **)
+(** Proven Bob **)
 Lemma loop_lebesgue_decomposition : forall X Tx U V x0 fcls Nleb:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -169993,912 +169994,55 @@ assume HNleb : Nleb :e omega.
 assume Hleb : lebesgue_number_metric unit_interval R_bounded_metric
   (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))
   (eps_ Nleb).
-(** Basic facts **)
-claim Hx0U : x0 :e U.
-{ exact (binintersectE1 U V x0 Hx0UV). }
-claim Hx0V : x0 :e V.
-{ exact (binintersectE2 U V x0 Hx0UV). }
-claim HUsub : U c= X.
-{ exact (topology_elem_subset X Tx U Htop HU). }
-claim HVsub : V c= X.
-{ exact (topology_elem_subset X Tx V Htop HV). }
-claim Hx0X : x0 :e X.
-{ exact (HUsub x0 Hx0U). }
-claim HfclsLoopAt : loop_at X Tx x0 fcls.
-{ exact (loop_space_has_loop_at X Tx x0 fcls HfclsLoop). }
-claim HfclsCont : continuous_map unit_interval unit_interval_topology X Tx fcls.
-{ exact (loop_at_continuous X Tx x0 fcls HfclsLoopAt). }
-claim Hfcls0 : apply_fun fcls 0 = x0.
-{ exact (loop_at_at_zero X Tx x0 fcls HfclsLoopAt). }
-claim Hfcls1 : apply_fun fcls 1 = x0.
-{ exact (loop_at_at_one X Tx x0 fcls HfclsLoopAt). }
-claim HfclsFun : function_on fcls unit_interval X.
-{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx fcls HfclsCont). }
-(** Subspace topologies **)
-claim HtopU : topology_on U (subspace_topology X Tx U).
-{ exact (subspace_topology_is_topology X Tx U Htop HUsub). }
-claim HtopV : topology_on V (subspace_topology X Tx V).
-{ exact (subspace_topology_is_topology X Tx V Htop HVsub). }
-(** Group structure on pi_1(X, x0) **)
-claim HgrpX : group_structure
-  (fundamental_group X Tx x0)
-  (fundamental_group_mult X Tx x0)
-  (fundamental_group_id X Tx x0)
-  (fundamental_group_inv X Tx x0).
-{ exact (fundamental_group_is_group X Tx x0 Htop Hx0X). }
-(** Key helper: if loop image is in U, its class is in image of i-star **)
-claim HloopInU_istar :
-  (forall t:set, t :e unit_interval -> apply_fun fcls t :e U) ->
-  exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
-    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-      (graph U (fun x:set => x))) ucls = path_homotopy_class_loop X Tx x0 fcls.
+set r := eps_ Nleb.
+claim HrR : r :e R.
+{ exact (eps_in_R_omega Nleb HNleb). }
+claim Hrpos : Rlt 0 r.
+{ exact (RltI 0 r real_0 HrR (SNo_eps_pos Nleb HNleb)). }
+set preU := preimage_of unit_interval fcls U.
+set preV := preimage_of unit_interval fcls V.
+set Fam := UPair preU preV.
+claim Hball_image :
+  forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun fcls t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun fcls t :e V).
 {
-  assume HallU : forall t:set, t :e unit_interval -> apply_fun fcls t :e U.
-  (** Restrict fcls to U **)
-  claim HfclsContU : continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) fcls.
-  { exact (continuous_map_range_restrict unit_interval unit_interval_topology X Tx fcls U HfclsCont HUsub HallU). }
-  (** Construct graph version of fcls with codomain U **)
-  set f_U := graph unit_interval (fun t:set => apply_fun fcls t).
-  claim Hf_U_total : f_U :e total_function_space unit_interval U.
-  {
-    exact (graph_in_total_function_space
-      unit_interval U (fun t:set => apply_fun fcls t) HallU).
-  }
-  claim Hf_U_fun_space : f_U :e function_space unit_interval U.
-  {
-    exact (total_function_space_sub_function_space unit_interval U f_U Hf_U_total).
-  }
-  (** Pointwise equality: apply_fun f_U t = apply_fun fcls t **)
-  claim Hf_U_apply : forall t:set, t :e unit_interval ->
-    apply_fun f_U t = apply_fun fcls t.
-  {
+  let c. assume HcI.
+  claim Hlebpack :
+    r :e R /\ Rlt 0 r /    forall x:set, x :e unit_interval ->
+      exists U0:set, U0 :e Fam /\ open_ball unit_interval R_bounded_metric x r c= U0.
+  { exact Hleb. }
+  claim Hlebex :
+    exists U0:set, U0 :e Fam /\ open_ball unit_interval R_bounded_metric c r c= U0.
+  { exact (andER (r :e R /\ Rlt 0 r)
+      (forall x:set, x :e unit_interval ->
+        exists U0:set, U0 :e Fam /\ open_ball unit_interval R_bounded_metric x r c= U0)
+      Hlebpack c HcI). }
+  apply Hlebex.
+  let U0. assume HU0pack.
+  claim HU0mem : U0 :e Fam.
+  { exact (andEL (U0 :e Fam)
+      (open_ball unit_interval R_bounded_metric c r c= U0) HU0pack). }
+  claim HballSub : open_ball unit_interval R_bounded_metric c r c= U0.
+  { exact (andER (U0 :e Fam)
+      (open_ball unit_interval R_bounded_metric c r c= U0) HU0pack). }
+  apply (UPairE U0 preU preV HU0mem).
+  - assume HU0eq : U0 = preU.
+    apply orIL.
     let t. assume Ht.
-    exact (apply_fun_graph unit_interval (fun t':set => apply_fun fcls t') t Ht).
-  }
-  (** f_U endpoints **)
-  claim Hf_U_0 : apply_fun f_U 0 = x0.
-  {
-    rewrite (Hf_U_apply 0 zero_in_unit_interval).
-    exact Hfcls0.
-  }
-  claim Hf_U_1 : apply_fun f_U 1 = x0.
-  {
-    rewrite (Hf_U_apply 1 one_in_unit_interval).
-    exact Hfcls1.
-  }
-  (** f_U is continuous to U -- use that it agrees with fcls pointwise **)
-  claim Hf_U_cont : continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) f_U.
-  {
-    prove ((topology_on unit_interval unit_interval_topology /\
-      topology_on U (subspace_topology X Tx U)) /\
-      function_on f_U unit_interval U) /\
-      (forall V0:set, V0 :e (subspace_topology X Tx U) ->
-        preimage_of unit_interval f_U V0 :e unit_interval_topology).
-    apply andI.
-    - apply andI.
-      + apply andI.
-        * exact unit_interval_topology_on.
-        * exact HtopU.
-      + exact (total_function_on_function_on f_U unit_interval U
-          (total_function_space_total_function_on_algtop unit_interval U f_U Hf_U_total)).
-    - let V0. assume HV0 : V0 :e (subspace_topology X Tx U).
-      claim Hpreimage_eq : preimage_of unit_interval f_U V0 = preimage_of unit_interval fcls V0.
-      {
-        apply (set_ext
-          (preimage_of unit_interval f_U V0)
-          (preimage_of unit_interval fcls V0)).
-        - let t. assume Ht : t :e preimage_of unit_interval f_U V0.
-          claim HtI : t :e unit_interval.
-          { exact (SepE1 unit_interval (fun x:set => apply_fun f_U x :e V0) t Ht). }
-          claim Hval : apply_fun f_U t :e V0.
-          { exact (SepE2 unit_interval (fun x:set => apply_fun f_U x :e V0) t Ht). }
-          claim Hval2 : apply_fun fcls t :e V0.
-          { rewrite <- (Hf_U_apply t HtI). exact Hval. }
-          exact (SepI unit_interval (fun x:set => apply_fun fcls x :e V0) t HtI Hval2).
-        - let t. assume Ht : t :e preimage_of unit_interval fcls V0.
-          claim HtI : t :e unit_interval.
-          { exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e V0) t Ht). }
-          claim Hval : apply_fun fcls t :e V0.
-          { exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V0) t Ht). }
-          claim Hval2 : apply_fun f_U t :e V0.
-          { rewrite (Hf_U_apply t HtI). exact Hval. }
-          exact (SepI unit_interval (fun x:set => apply_fun f_U x :e V0) t HtI Hval2).
-      }
-      rewrite Hpreimage_eq.
-      exact (continuous_map_preimage unit_interval unit_interval_topology
-        U (subspace_topology X Tx U) fcls HfclsContU V0 HV0).
-  }
-  (** f_U is a loop in U at x0 **)
-  claim Hf_U_loop_at : loop_at U (subspace_topology X Tx U) x0 f_U.
-  {
-    prove (continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) f_U /\
-      apply_fun f_U 0 = x0) /\
-      apply_fun f_U 1 = x0.
-    apply andI.
-    - apply andI.
-      + exact Hf_U_cont.
-      + exact Hf_U_0.
-    - exact Hf_U_1.
-  }
-  claim Hf_U_loop_space : f_U :e loop_space U (subspace_topology X Tx U) x0.
-  {
-    exact (SepI
-      (function_space unit_interval U)
-      (fun g:set => loop_at U (subspace_topology X Tx U) x0 g)
-      f_U
-      Hf_U_fun_space
-      Hf_U_loop_at).
-  }
-  (** ucls = class of f_U in pi_1(U) **)
-  set ucls := path_homotopy_class_loop U (subspace_topology X Tx U) x0 f_U.
-  claim HuclsMem : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
-  {
-    exact (path_homotopy_class_in_fundamental_group
-      U (subspace_topology X Tx U) x0 f_U Hf_U_loop_space).
-  }
-  witness ucls.
-  apply andI.
-  - exact HuclsMem.
-  - claim Hi_star_ucls :
-      apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-        (graph U (fun x:set => x))) ucls
-      = path_homotopy_class_loop X Tx x0
-          (compose_fun unit_interval (Eps_i (fun g:set => g :e ucls)) (graph U (fun x:set => x))).
-    {
-      exact (induced_homomorphism_apply
-        U (subspace_topology X Tx U) x0 X Tx x0
-        (graph U (fun x:set => x)) ucls HuclsMem).
-    }
-    rewrite Hi_star_ucls.
-    (** Show the compose equals fcls's class via path homotopy **)
-    set rep := Eps_i (fun g:set => g :e ucls).
-    set incU := graph U (fun x:set => x).
-    (** rep is in ucls by Eps_i_ax **)
-    claim HfU_in_ucls : f_U :e ucls.
-    {
-      exact (loop_in_own_class_early U (subspace_topology X Tx U) x0 f_U
-        HtopU Hf_U_loop_space).
-    }
-    claim Hrep_in_ucls : rep :e ucls.
-    {
-      exact (Eps_i_ax (fun g:set => g :e ucls) f_U HfU_in_ucls).
-    }
-    (** rep is in loop_space U **)
-    claim Hrep_loop : rep :e loop_space U (subspace_topology X Tx U) x0.
-    {
-      exact (path_homotopy_class_loop_in_loop_space
-        U (subspace_topology X Tx U) x0 f_U rep Hrep_in_ucls).
-    }
-    claim Hrep_loop_at : loop_at U (subspace_topology X Tx U) x0 rep.
-    {
-      exact (loop_space_has_loop_at U (subspace_topology X Tx U) x0 rep Hrep_loop).
-    }
-    claim Hrep_cont : continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) rep.
-    {
-      exact (loop_at_continuous U (subspace_topology X Tx U) x0 rep Hrep_loop_at).
-    }
-    claim Hrep_fun : function_on rep unit_interval U.
-    {
-      exact (continuous_map_function_on unit_interval unit_interval_topology
-        U (subspace_topology X Tx U) rep Hrep_cont).
-    }
-    (** f_U and rep are path-homotopic in U **)
-    claim Hfg_hom_U : path_homotopic U (subspace_topology X Tx U) x0 x0 f_U rep.
-    {
-      exact (path_homotopy_class_loop_has_homotopy
-        U (subspace_topology X Tx U) x0 f_U rep Hrep_in_ucls).
-    }
-    (** Inclusion is continuous **)
-    claim HincCont : continuous_map U (subspace_topology X Tx U) X Tx incU.
-    {
-      exact (subspace_inclusion_continuous X Tx U Htop HUsub).
-    }
-    claim HincX0 : apply_fun incU x0 = x0.
-    {
-      exact (apply_fun_graph U (fun x:set => x) x0 Hx0U).
-    }
-    (** Post-compose: path-homotopic in X **)
-    claim Hpost_hom : path_homotopic X Tx x0 x0
-      (compose_fun unit_interval f_U incU) (compose_fun unit_interval rep incU).
-    {
-      exact (path_homotopic_postcompose
-        U (subspace_topology X Tx U) X Tx x0 x0 x0 x0
-        f_U rep incU
-        Hfg_hom_U HincCont HincX0 HincX0).
-    }
-    (** compose_fun I f_U incU agrees pointwise with fcls **)
-    claim HfU_inc_cont : continuous_map unit_interval unit_interval_topology X Tx
-      (compose_fun unit_interval f_U incU).
-    {
-      exact (composition_continuous unit_interval unit_interval_topology
-        U (subspace_topology X Tx U) X Tx f_U incU Hf_U_cont HincCont).
-    }
-    claim HfU_inc_pw : forall t:set, t :e unit_interval ->
-      apply_fun (compose_fun unit_interval f_U incU) t = apply_fun fcls t.
-    {
-      let t. assume Ht.
-      rewrite (compose_fun_apply unit_interval f_U incU t Ht).
-      claim HfUt_in_U : apply_fun f_U t :e U.
-      { rewrite (Hf_U_apply t Ht). exact (HallU t Ht). }
-      rewrite (apply_fun_graph U (fun x:set => x) (apply_fun f_U t) HfUt_in_U).
-      exact (Hf_U_apply t Ht).
-    }
-    claim HfU_inc_0 : apply_fun (compose_fun unit_interval f_U incU) 0 = x0.
-    {
-      rewrite (HfU_inc_pw 0 zero_in_unit_interval).
-      exact Hfcls0.
-    }
-    claim HfU_inc_1 : apply_fun (compose_fun unit_interval f_U incU) 1 = x0.
-    {
-      rewrite (HfU_inc_pw 1 one_in_unit_interval).
-      exact Hfcls1.
-    }
-    (** compose_fun I f_U incU is path-homotopic to fcls in X **)
-    claim HfU_inc_hom_fcls : path_homotopic X Tx x0 x0
-      (compose_fun unit_interval f_U incU) fcls.
-    {
-      exact (path_homotopic_of_pointwise_equal X Tx x0 x0
-        (compose_fun unit_interval f_U incU) fcls
-        HfU_inc_cont HfclsCont
-        HfU_inc_0 HfU_inc_1 Hfcls0 Hfcls1
-        HfU_inc_pw).
-    }
-    (** Chain: [compose I rep incU]_X = [compose I f_U incU]_X = [fcls]_X **)
-    claim Hclass_rep_eq_fU : path_homotopy_class_loop X Tx x0
-      (compose_fun unit_interval rep incU)
-      = path_homotopy_class_loop X Tx x0 (compose_fun unit_interval f_U incU).
-    {
-      exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
-        (compose_fun unit_interval rep incU)
-        (compose_fun unit_interval f_U incU)
-        (Lemma_51_1_path_homotopy_sym X Tx x0 x0
-          (compose_fun unit_interval f_U incU)
-          (compose_fun unit_interval rep incU)
-          Hpost_hom)).
-    }
-    claim Hclass_fU_eq_fcls : path_homotopy_class_loop X Tx x0
-      (compose_fun unit_interval f_U incU)
-      = path_homotopy_class_loop X Tx x0 fcls.
-    {
-      exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
-        (compose_fun unit_interval f_U incU) fcls
-        HfU_inc_hom_fcls).
-    }
-    rewrite Hclass_rep_eq_fU.
-    exact Hclass_fU_eq_fcls.
-}
-(** Similarly for V **)
-claim HloopInV_jstar :
-  (forall t:set, t :e unit_interval -> apply_fun fcls t :e V) ->
-  exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
-    apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-      (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 fcls.
-{
-  assume HallV : forall t:set, t :e unit_interval -> apply_fun fcls t :e V.
-  claim HfclsContV : continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) fcls.
-  { exact (continuous_map_range_restrict unit_interval unit_interval_topology X Tx fcls V HfclsCont HVsub HallV). }
-  set f_V := graph unit_interval (fun t:set => apply_fun fcls t).
-  claim Hf_V_total : f_V :e total_function_space unit_interval V.
-  {
-    exact (graph_in_total_function_space
-      unit_interval V (fun t:set => apply_fun fcls t) HallV).
-  }
-  claim Hf_V_fun_space : f_V :e function_space unit_interval V.
-  {
-    exact (total_function_space_sub_function_space unit_interval V f_V Hf_V_total).
-  }
-  claim Hf_V_apply : forall t:set, t :e unit_interval ->
-    apply_fun f_V t = apply_fun fcls t.
-  {
+    claim Htpre : t :e preU.
+    { rewrite <- HU0eq. exact (HballSub t Ht). }
+    exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e U) t Htpre).
+  - assume HU0eq : U0 = preV.
+    apply orIR.
     let t. assume Ht.
-    exact (apply_fun_graph unit_interval (fun t':set => apply_fun fcls t') t Ht).
-  }
-  claim Hf_V_0 : apply_fun f_V 0 = x0.
-  {
-    rewrite (Hf_V_apply 0 zero_in_unit_interval).
-    exact Hfcls0.
-  }
-  claim Hf_V_1 : apply_fun f_V 1 = x0.
-  {
-    rewrite (Hf_V_apply 1 one_in_unit_interval).
-    exact Hfcls1.
-  }
-  claim Hf_V_cont : continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) f_V.
-  {
-    prove ((topology_on unit_interval unit_interval_topology /\
-      topology_on V (subspace_topology X Tx V)) /\
-      function_on f_V unit_interval V) /\
-      (forall V0:set, V0 :e (subspace_topology X Tx V) ->
-        preimage_of unit_interval f_V V0 :e unit_interval_topology).
-    apply andI.
-    - apply andI.
-      + apply andI.
-        * exact unit_interval_topology_on.
-        * exact HtopV.
-      + exact (total_function_on_function_on f_V unit_interval V
-          (total_function_space_total_function_on_algtop unit_interval V f_V Hf_V_total)).
-    - let V0. assume HV0 : V0 :e (subspace_topology X Tx V).
-      claim Hpreimage_eq : preimage_of unit_interval f_V V0 = preimage_of unit_interval fcls V0.
-      {
-        apply (set_ext
-          (preimage_of unit_interval f_V V0)
-          (preimage_of unit_interval fcls V0)).
-        - let t. assume Ht : t :e preimage_of unit_interval f_V V0.
-          claim HtI : t :e unit_interval.
-          { exact (SepE1 unit_interval (fun x:set => apply_fun f_V x :e V0) t Ht). }
-          claim Hval : apply_fun f_V t :e V0.
-          { exact (SepE2 unit_interval (fun x:set => apply_fun f_V x :e V0) t Ht). }
-          claim Hval2 : apply_fun fcls t :e V0.
-          { rewrite <- (Hf_V_apply t HtI). exact Hval. }
-          exact (SepI unit_interval (fun x:set => apply_fun fcls x :e V0) t HtI Hval2).
-        - let t. assume Ht : t :e preimage_of unit_interval fcls V0.
-          claim HtI : t :e unit_interval.
-          { exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e V0) t Ht). }
-          claim Hval : apply_fun fcls t :e V0.
-          { exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V0) t Ht). }
-          claim Hval2 : apply_fun f_V t :e V0.
-          { rewrite (Hf_V_apply t HtI). exact Hval. }
-          exact (SepI unit_interval (fun x:set => apply_fun f_V x :e V0) t HtI Hval2).
-      }
-      rewrite Hpreimage_eq.
-      exact (continuous_map_preimage unit_interval unit_interval_topology
-        V (subspace_topology X Tx V) fcls HfclsContV V0 HV0).
-  }
-  claim Hf_V_loop_at : loop_at V (subspace_topology X Tx V) x0 f_V.
-  {
-    prove (continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) f_V /\
-      apply_fun f_V 0 = x0) /\
-      apply_fun f_V 1 = x0.
-    apply andI.
-    - apply andI.
-      + exact Hf_V_cont.
-      + exact Hf_V_0.
-    - exact Hf_V_1.
-  }
-  claim Hf_V_loop_space : f_V :e loop_space V (subspace_topology X Tx V) x0.
-  {
-    exact (SepI
-      (function_space unit_interval V)
-      (fun g:set => loop_at V (subspace_topology X Tx V) x0 g)
-      f_V
-      Hf_V_fun_space
-      Hf_V_loop_at).
-  }
-  set vcls := path_homotopy_class_loop V (subspace_topology X Tx V) x0 f_V.
-  claim HvclsMem : vcls :e fundamental_group V (subspace_topology X Tx V) x0.
-  {
-    exact (path_homotopy_class_in_fundamental_group
-      V (subspace_topology X Tx V) x0 f_V Hf_V_loop_space).
-  }
-  witness vcls.
-  apply andI.
-  - exact HvclsMem.
-  - claim Hj_star_vcls :
-      apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-        (graph V (fun x:set => x))) vcls
-      = path_homotopy_class_loop X Tx x0
-          (compose_fun unit_interval (Eps_i (fun g:set => g :e vcls)) (graph V (fun x:set => x))).
-    {
-      exact (induced_homomorphism_apply
-        V (subspace_topology X Tx V) x0 X Tx x0
-        (graph V (fun x:set => x)) vcls HvclsMem).
-    }
-    rewrite Hj_star_vcls.
-    set repV := Eps_i (fun g:set => g :e vcls).
-    set incV := graph V (fun x:set => x).
-    claim HfV_in_vcls : f_V :e vcls.
-    {
-      exact (loop_in_own_class_early V (subspace_topology X Tx V) x0 f_V
-        HtopV Hf_V_loop_space).
-    }
-    claim HrepV_in_vcls : repV :e vcls.
-    {
-      exact (Eps_i_ax (fun g:set => g :e vcls) f_V HfV_in_vcls).
-    }
-    claim HrepV_loop : repV :e loop_space V (subspace_topology X Tx V) x0.
-    {
-      exact (path_homotopy_class_loop_in_loop_space
-        V (subspace_topology X Tx V) x0 f_V repV HrepV_in_vcls).
-    }
-    claim HrepV_loop_at : loop_at V (subspace_topology X Tx V) x0 repV.
-    {
-      exact (loop_space_has_loop_at V (subspace_topology X Tx V) x0 repV HrepV_loop).
-    }
-    claim HrepV_cont : continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) repV.
-    {
-      exact (loop_at_continuous V (subspace_topology X Tx V) x0 repV HrepV_loop_at).
-    }
-    claim HfV_rep_hom : path_homotopic V (subspace_topology X Tx V) x0 x0 f_V repV.
-    {
-      exact (path_homotopy_class_loop_has_homotopy
-        V (subspace_topology X Tx V) x0 f_V repV HrepV_in_vcls).
-    }
-    claim HincVCont : continuous_map V (subspace_topology X Tx V) X Tx incV.
-    {
-      exact (subspace_inclusion_continuous X Tx V Htop HVsub).
-    }
-    claim HincVX0 : apply_fun incV x0 = x0.
-    {
-      exact (apply_fun_graph V (fun x:set => x) x0 Hx0V).
-    }
-    claim Hpost_homV : path_homotopic X Tx x0 x0
-      (compose_fun unit_interval f_V incV) (compose_fun unit_interval repV incV).
-    {
-      exact (path_homotopic_postcompose
-        V (subspace_topology X Tx V) X Tx x0 x0 x0 x0
-        f_V repV incV
-        HfV_rep_hom HincVCont HincVX0 HincVX0).
-    }
-    claim HfV_inc_cont : continuous_map unit_interval unit_interval_topology X Tx
-      (compose_fun unit_interval f_V incV).
-    {
-      exact (composition_continuous unit_interval unit_interval_topology
-        V (subspace_topology X Tx V) X Tx f_V incV Hf_V_cont HincVCont).
-    }
-    claim HfV_inc_pw : forall t:set, t :e unit_interval ->
-      apply_fun (compose_fun unit_interval f_V incV) t = apply_fun fcls t.
-    {
-      let t. assume Ht.
-      rewrite (compose_fun_apply unit_interval f_V incV t Ht).
-      claim HfVt_in_V : apply_fun f_V t :e V.
-      { rewrite (Hf_V_apply t Ht). exact (HallV t Ht). }
-      rewrite (apply_fun_graph V (fun x:set => x) (apply_fun f_V t) HfVt_in_V).
-      exact (Hf_V_apply t Ht).
-    }
-    claim HfV_inc_0 : apply_fun (compose_fun unit_interval f_V incV) 0 = x0.
-    {
-      rewrite (HfV_inc_pw 0 zero_in_unit_interval).
-      exact Hfcls0.
-    }
-    claim HfV_inc_1 : apply_fun (compose_fun unit_interval f_V incV) 1 = x0.
-    {
-      rewrite (HfV_inc_pw 1 one_in_unit_interval).
-      exact Hfcls1.
-    }
-    claim HfV_inc_hom_fcls : path_homotopic X Tx x0 x0
-      (compose_fun unit_interval f_V incV) fcls.
-    {
-      exact (path_homotopic_of_pointwise_equal X Tx x0 x0
-        (compose_fun unit_interval f_V incV) fcls
-        HfV_inc_cont HfclsCont
-        HfV_inc_0 HfV_inc_1 Hfcls0 Hfcls1
-        HfV_inc_pw).
-    }
-    claim Hclass_repV_eq_fV : path_homotopy_class_loop X Tx x0
-      (compose_fun unit_interval repV incV)
-      = path_homotopy_class_loop X Tx x0 (compose_fun unit_interval f_V incV).
-    {
-      exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
-        (compose_fun unit_interval repV incV)
-        (compose_fun unit_interval f_V incV)
-        (Lemma_51_1_path_homotopy_sym X Tx x0 x0
-          (compose_fun unit_interval f_V incV)
-          (compose_fun unit_interval repV incV)
-          Hpost_homV)).
-    }
-    claim Hclass_fV_eq_fcls : path_homotopy_class_loop X Tx x0
-      (compose_fun unit_interval f_V incV)
-      = path_homotopy_class_loop X Tx x0 fcls.
-    {
-      exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
-        (compose_fun unit_interval f_V incV) fcls
-        HfV_inc_hom_fcls).
-    }
-    rewrite Hclass_repV_eq_fV.
-    exact Hclass_fV_eq_fcls.
+    claim Htpre : t :e preV.
+    { rewrite <- HU0eq. exact (HballSub t Ht). }
+    exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V) t Htpre).
 }
-(** Main case analysis **)
-apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
-- (** Case 1: Loop entirely in U **)
-  assume HallU : forall t:set, t :e unit_interval -> apply_fun fcls t :e U.
-  apply (HloopInU_istar HallU).
-  let ucls.
-  assume HuPack : ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
-    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-      (graph U (fun x:set => x))) ucls = path_homotopy_class_loop X Tx x0 fcls.
-  claim HuMem : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
-  {
-    exact (andEL
-      (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
-      (apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-        (graph U (fun x:set => x))) ucls = path_homotopy_class_loop X Tx x0 fcls)
-      HuPack).
-  }
-  claim HuEq : apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-    (graph U (fun x:set => x))) ucls = path_homotopy_class_loop X Tx x0 fcls.
-  {
-    exact (andER
-      (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
-      (apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-        (graph U (fun x:set => x))) ucls = path_homotopy_class_loop X Tx x0 fcls)
-      HuPack).
-  }
-  set gX := apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-    (graph U (fun x:set => x))) ucls.
-  claim HgXMem : gX :e fundamental_group X Tx x0.
-  {
-    exact (group_homomorphism_function_on
-      (fundamental_group U (subspace_topology X Tx U) x0)
-      (fundamental_group_mult U (subspace_topology X Tx U) x0)
-      (fundamental_group X Tx x0)
-      (fundamental_group_mult X Tx x0)
-      (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-        (graph U (fun x:set => x)))
-      (induced_homomorphism_is_homomorphism
-        U (subspace_topology X Tx U) x0 X Tx x0
-        (graph U (fun x:set => x))
-        (subspace_inclusion_continuous X Tx U Htop HUsub)
-        (apply_fun_graph U (fun x:set => x) x0 Hx0U)
-        Hx0U)
-      ucls HuMem).
-  }
-  witness 1.
-  apply andI.
-  - exact (nat_p_omega 1 nat_1).
-  - witness (graph 1 (fun _:set => gX)).
-    apply andI.
-    + apply andI.
-      * exact (total_function_on_function_on
-          (graph 1 (fun _:set => gX)) 1 (fundamental_group X Tx x0)
-          (total_function_on_graph 1 (fundamental_group X Tx x0)
-            (fun _:set => gX) (fun i Hi1 => HgXMem))).
-      * let i. assume Hi1 : i :e 1.
-        claim Hi0 : i = 0.
-        {
-          apply (ordsuccE 0 i Hi1).
-          - assume HiEmpty : i :e 0. exact (FalseE (EmptyE i HiEmpty) (i = 0)).
-          - assume HiEq0 : i = 0. exact HiEq0.
-        }
-        claim HgiEqgX : apply_fun (graph 1 (fun _:set => gX)) i = gX.
-        {
-          rewrite Hi0.
-          exact (apply_fun_graph 1 (fun _:set => gX) 0 In_0_1).
-        }
-        apply orIL.
-        witness ucls.
-        apply andI.
-        - exact HuMem.
-        - claim HgXrefl : gX = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-              (graph U (fun x:set => x))) ucls.
-          { reflexivity. }
-          exact (eq_i_tra
-            (apply_fun (graph 1 (fun _:set => gX)) i)
-            gX
-            (apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-              (graph U (fun x:set => x))) ucls)
-            HgiEqgX
-            HgXrefl).
-    + (** Show product = [fcls]_X **)
-      claim HnatStep :
-        nat_primrec (fundamental_group_id X Tx x0)
-          (fun k r => apply_fun (fundamental_group_mult X Tx x0)
-            (r, apply_fun (graph 1 (fun _:set => gX)) k)) 1
-        = apply_fun (fundamental_group_mult X Tx x0)
-            (nat_primrec (fundamental_group_id X Tx x0)
-              (fun k r => apply_fun (fundamental_group_mult X Tx x0)
-                (r, apply_fun (graph 1 (fun _:set => gX)) k)) 0,
-             apply_fun (graph 1 (fun _:set => gX)) 0).
-      {
-        exact (nat_primrec_S
-          (fundamental_group_id X Tx x0)
-          (fun k r => apply_fun (fundamental_group_mult X Tx x0)
-            (r, apply_fun (graph 1 (fun _:set => gX)) k))
-          0 nat_0).
-      }
-      claim Hnat0 :
-        nat_primrec (fundamental_group_id X Tx x0)
-          (fun k r => apply_fun (fundamental_group_mult X Tx x0)
-            (r, apply_fun (graph 1 (fun _:set => gX)) k)) 0
-        = fundamental_group_id X Tx x0.
-      {
-        exact (nat_primrec_0
-          (fundamental_group_id X Tx x0)
-          (fun k r => apply_fun (fundamental_group_mult X Tx x0)
-            (r, apply_fun (graph 1 (fun _:set => gX)) k))).
-      }
-      claim Hg0 : apply_fun (graph 1 (fun _:set => gX)) 0 = gX.
-      { exact (apply_fun_graph 1 (fun _:set => gX) 0 In_0_1). }
-      claim HleftIdOnGX :
-        apply_fun (fundamental_group_mult X Tx x0)
-          (fundamental_group_id X Tx x0, gX) = gX.
-      {
-        apply (and6E
-          (function_on (fundamental_group_mult X Tx x0)
-            (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0))
-            (fundamental_group X Tx x0))
-          (function_on (fundamental_group_inv X Tx x0)
-            (fundamental_group X Tx x0) (fundamental_group X Tx x0))
-          ((fundamental_group_id X Tx x0) :e (fundamental_group X Tx x0))
-          (forall x y z:set,
-            x :e (fundamental_group X Tx x0) ->
-            y :e (fundamental_group X Tx x0) ->
-            z :e (fundamental_group X Tx x0) ->
-            apply_fun (fundamental_group_mult X Tx x0)
-              (apply_fun (fundamental_group_mult X Tx x0) (x, y), z)
-            = apply_fun (fundamental_group_mult X Tx x0)
-              (x, apply_fun (fundamental_group_mult X Tx x0) (y, z)))
-          (forall x:set,
-            x :e (fundamental_group X Tx x0) ->
-            apply_fun (fundamental_group_mult X Tx x0)
-              (fundamental_group_id X Tx x0, x) = x /\
-            apply_fun (fundamental_group_mult X Tx x0)
-              (x, fundamental_group_id X Tx x0) = x)
-          (forall x:set,
-            x :e (fundamental_group X Tx x0) ->
-            apply_fun (fundamental_group_mult X Tx x0)
-              (x, apply_fun (fundamental_group_inv X Tx x0) x)
-            = (fundamental_group_id X Tx x0) /\
-            apply_fun (fundamental_group_mult X Tx x0)
-              (apply_fun (fundamental_group_inv X Tx x0) x, x)
-            = (fundamental_group_id X Tx x0))
-          HgrpX).
-        assume HmX HiX HeX HassocX HidX HinvX.
-        exact (andEL
-          (apply_fun (fundamental_group_mult X Tx x0)
-            (fundamental_group_id X Tx x0, gX) = gX)
-          (apply_fun (fundamental_group_mult X Tx x0)
-            (gX, fundamental_group_id X Tx x0) = gX)
-          (HidX gX HgXMem)).
-      }
-      rewrite HnatStep.
-      rewrite Hnat0.
-      rewrite Hg0.
-      rewrite HleftIdOnGX.
-      symmetry.
-      exact HuEq.
-- (** Case 2: Not entirely in U **)
-  assume HnotAllU : ~(forall t:set, t :e unit_interval -> apply_fun fcls t :e U).
-  apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e V)).
-  + (** Case 2a: Loop entirely in V **)
-    assume HallV : forall t:set, t :e unit_interval -> apply_fun fcls t :e V.
-    apply (HloopInV_jstar HallV).
-    let vcls.
-    assume HvPack : vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
-      apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-        (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 fcls.
-    claim HvMem : vcls :e fundamental_group V (subspace_topology X Tx V) x0.
-    {
-      exact (andEL
-        (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
-        (apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-          (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 fcls)
-        HvPack).
-    }
-    claim HvEq : apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-      (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 fcls.
-    {
-      exact (andER
-        (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
-        (apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-          (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 fcls)
-        HvPack).
-    }
-    set gXV := apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-      (graph V (fun x:set => x))) vcls.
-    claim HgXVMem : gXV :e fundamental_group X Tx x0.
-    {
-      exact (group_homomorphism_function_on
-        (fundamental_group V (subspace_topology X Tx V) x0)
-        (fundamental_group_mult V (subspace_topology X Tx V) x0)
-        (fundamental_group X Tx x0)
-        (fundamental_group_mult X Tx x0)
-        (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-          (graph V (fun x:set => x)))
-        (induced_homomorphism_is_homomorphism
-          V (subspace_topology X Tx V) x0 X Tx x0
-          (graph V (fun x:set => x))
-          (subspace_inclusion_continuous X Tx V Htop HVsub)
-          (apply_fun_graph V (fun x:set => x) x0 Hx0V)
-          Hx0V)
-        vcls HvMem).
-    }
-    witness 1.
-    apply andI.
-    - exact (nat_p_omega 1 nat_1).
-    - witness (graph 1 (fun _:set => gXV)).
-      apply andI.
-      + apply andI.
-        * exact (total_function_on_function_on
-            (graph 1 (fun _:set => gXV)) 1 (fundamental_group X Tx x0)
-            (total_function_on_graph 1 (fundamental_group X Tx x0)
-              (fun _:set => gXV) (fun i Hi1 => HgXVMem))).
-        * let i. assume Hi1 : i :e 1.
-          claim Hi0 : i = 0.
-          {
-            apply (ordsuccE 0 i Hi1).
-            - assume HiEmpty : i :e 0. exact (FalseE (EmptyE i HiEmpty) (i = 0)).
-            - assume HiEq0 : i = 0. exact HiEq0.
-          }
-          claim HgiEqgXV : apply_fun (graph 1 (fun _:set => gXV)) i = gXV.
-          {
-            rewrite Hi0.
-            exact (apply_fun_graph 1 (fun _:set => gXV) 0 In_0_1).
-          }
-          apply orIR.
-          witness vcls.
-          apply andI.
-          - exact HvMem.
-          - claim HgXVrefl : gXV = apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-                (graph V (fun x:set => x))) vcls.
-            { reflexivity. }
-            exact (eq_i_tra
-              (apply_fun (graph 1 (fun _:set => gXV)) i)
-              gXV
-              (apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-                (graph V (fun x:set => x))) vcls)
-              HgiEqgXV
-              HgXVrefl).
-      + claim HnatStepV :
-          nat_primrec (fundamental_group_id X Tx x0)
-            (fun k r => apply_fun (fundamental_group_mult X Tx x0)
-              (r, apply_fun (graph 1 (fun _:set => gXV)) k)) 1
-          = apply_fun (fundamental_group_mult X Tx x0)
-              (nat_primrec (fundamental_group_id X Tx x0)
-                (fun k r => apply_fun (fundamental_group_mult X Tx x0)
-                  (r, apply_fun (graph 1 (fun _:set => gXV)) k)) 0,
-               apply_fun (graph 1 (fun _:set => gXV)) 0).
-        {
-          exact (nat_primrec_S
-            (fundamental_group_id X Tx x0)
-            (fun k r => apply_fun (fundamental_group_mult X Tx x0)
-              (r, apply_fun (graph 1 (fun _:set => gXV)) k))
-            0 nat_0).
-        }
-        claim Hnat0V :
-          nat_primrec (fundamental_group_id X Tx x0)
-            (fun k r => apply_fun (fundamental_group_mult X Tx x0)
-              (r, apply_fun (graph 1 (fun _:set => gXV)) k)) 0
-          = fundamental_group_id X Tx x0.
-        {
-          exact (nat_primrec_0
-            (fundamental_group_id X Tx x0)
-            (fun k r => apply_fun (fundamental_group_mult X Tx x0)
-              (r, apply_fun (graph 1 (fun _:set => gXV)) k))).
-        }
-        claim Hg0V : apply_fun (graph 1 (fun _:set => gXV)) 0 = gXV.
-        { exact (apply_fun_graph 1 (fun _:set => gXV) 0 In_0_1). }
-        claim HleftIdOnGXV :
-          apply_fun (fundamental_group_mult X Tx x0)
-            (fundamental_group_id X Tx x0, gXV) = gXV.
-        {
-          apply (and6E
-            (function_on (fundamental_group_mult X Tx x0)
-              (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0))
-              (fundamental_group X Tx x0))
-            (function_on (fundamental_group_inv X Tx x0)
-              (fundamental_group X Tx x0) (fundamental_group X Tx x0))
-            ((fundamental_group_id X Tx x0) :e (fundamental_group X Tx x0))
-            (forall x y z:set,
-              x :e (fundamental_group X Tx x0) ->
-              y :e (fundamental_group X Tx x0) ->
-              z :e (fundamental_group X Tx x0) ->
-              apply_fun (fundamental_group_mult X Tx x0)
-                (apply_fun (fundamental_group_mult X Tx x0) (x, y), z)
-              = apply_fun (fundamental_group_mult X Tx x0)
-                (x, apply_fun (fundamental_group_mult X Tx x0) (y, z)))
-            (forall x:set,
-              x :e (fundamental_group X Tx x0) ->
-              apply_fun (fundamental_group_mult X Tx x0)
-                (fundamental_group_id X Tx x0, x) = x /\
-              apply_fun (fundamental_group_mult X Tx x0)
-                (x, fundamental_group_id X Tx x0) = x)
-            (forall x:set,
-              x :e (fundamental_group X Tx x0) ->
-              apply_fun (fundamental_group_mult X Tx x0)
-                (x, apply_fun (fundamental_group_inv X Tx x0) x)
-              = (fundamental_group_id X Tx x0) /\
-              apply_fun (fundamental_group_mult X Tx x0)
-                (apply_fun (fundamental_group_inv X Tx x0) x, x)
-              = (fundamental_group_id X Tx x0))
-            HgrpX).
-          assume HmX HiX HeX HassocX HidX HinvX.
-          exact (andEL
-            (apply_fun (fundamental_group_mult X Tx x0)
-              (fundamental_group_id X Tx x0, gXV) = gXV)
-            (apply_fun (fundamental_group_mult X Tx x0)
-              (gXV, fundamental_group_id X Tx x0) = gXV)
-            (HidX gXV HgXVMem)).
-        }
-        rewrite HnatStepV.
-        rewrite Hnat0V.
-        rewrite Hg0V.
-        rewrite HleftIdOnGXV.
-        symmetry.
-        exact HvEq.
-  + (** Case 2b: Mixed - loop crosses between U and V **)
-    assume HnotAllV : ~(forall t:set, t :e unit_interval -> apply_fun fcls t :e V).
-    (** Mixed case: Use Lebesgue number to cover I by balls, each mapping to U or V,
-        then extract a chain and build the word from transition points. **)
-    set preU := preimage_of unit_interval fcls U.
-    set preV := preimage_of unit_interval fcls V.
-    (** Step 1: Refined radius r = eps_(ordsucc Nleb) < eps_Nleb **)
-    set N := ordsucc Nleb.
-    set r := eps_ N.
-    claim HNnat : nat_p N.
-    { exact (nat_ordsucc Nleb (omega_nat_p Nleb HNleb)). }
-    claim HNomega : N :e omega.
-    { exact (nat_p_omega N HNnat). }
-    claim HrR : r :e R.
-    { exact (eps_in_R_omega N HNomega). }
-    claim Hrpos : Rlt 0 r.
-    { exact (RltI 0 r real_0 HrR (SNo_eps_pos N HNomega)). }
-    claim Hrlt1 : Rlt r 1.
-    { exact (eps_ordsucc_lt1_R Nleb HNleb). }
-    claim HrltNleb : Rlt r (eps_ Nleb).
-    { exact (eps_ordsucc_lt_eps Nleb HNleb). }
-    (** Step 2: Each ball of radius r maps entirely to U or V **)
-    (** Key: B(c, r) c= B(c, eps_Nleb) c= preU or preV **)
-    claim Hleb_forall : forall x:set, x :e unit_interval ->
-      exists S:set, S :e UPair preU preV /\
-        open_ball unit_interval R_bounded_metric x (eps_ Nleb) c= S.
-    {
-      exact (andER
-        (eps_ Nleb :e R /\ Rlt 0 (eps_ Nleb))
-        (forall x:set, x :e unit_interval ->
-          exists S:set, S :e UPair preU preV /\
-            open_ball unit_interval R_bounded_metric x (eps_ Nleb) c= S)
-        Hleb).
-    }
-    claim Hball_in_preUV : forall c:set, c :e unit_interval ->
-      exists S:set, S :e UPair preU preV /\
-        open_ball unit_interval R_bounded_metric c r c= S.
-    {
-      let c. assume Hc : c :e unit_interval.
-      apply (Hleb_forall c Hc).
-      let S. assume HS : S :e UPair preU preV /\
-        open_ball unit_interval R_bounded_metric c (eps_ Nleb) c= S.
-      claim HSmem : S :e UPair preU preV.
-      { exact (andEL
-          (S :e UPair preU preV)
-          (open_ball unit_interval R_bounded_metric c (eps_ Nleb) c= S)
-          HS). }
-      claim HSsub : open_ball unit_interval R_bounded_metric c (eps_ Nleb) c= S.
-      { exact (andER
-          (S :e UPair preU preV)
-          (open_ball unit_interval R_bounded_metric c (eps_ Nleb) c= S)
-          HS). }
-      witness S.
-      apply andI.
-      - exact HSmem.
-      - let t. assume Ht : t :e open_ball unit_interval R_bounded_metric c r.
-        exact (HSsub t (open_ball_radius_mono unit_interval R_bounded_metric c r (eps_ Nleb) HrltNleb t Ht)).
-    }
-    (** Step 4: Every point in a chain ball is in preU or preV **)
-    claim Hball_image : forall c:set, c :e unit_interval ->
-      (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun fcls t :e U) \/
-      (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun fcls t :e V).
-    {
-      let c. assume Hc.
-      apply (Hball_in_preUV c Hc).
-      let S. assume HS.
-      claim HSmem : S :e UPair preU preV.
-      { exact (andEL
-          (S :e UPair preU preV)
-          (open_ball unit_interval R_bounded_metric c r c= S)
-          HS). }
-      claim HSsub : open_ball unit_interval R_bounded_metric c r c= S.
-      { exact (andER
-          (S :e UPair preU preV)
-          (open_ball unit_interval R_bounded_metric c r c= S)
-          HS). }
-      apply (UPairE S preU preV HSmem).
-      - assume HSeqU : S = preU.
-        apply orIL.
-        let t. assume Ht : t :e open_ball unit_interval R_bounded_metric c r.
-        claim HtS : t :e S. { exact (HSsub t Ht). }
-        claim HtPreU : t :e preU. { rewrite <- HSeqU. exact HtS. }
-        exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e U) t HtPreU).
-      - assume HSeqV : S = preV.
-        apply orIR.
-        let t. assume Ht : t :e open_ball unit_interval R_bounded_metric c r.
-        claim HtS : t :e S. { exact (HSsub t Ht). }
-        claim HtPreV : t :e preV. { rewrite <- HSeqV. exact HtS. }
-        exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV).
-    }
-    (** Apply the ball cover word construction helper **)
-    exact (ball_cover_word_construction X Tx U V x0 fcls r
-      Htop HU HV Hcover Hx0UV HpcUV HfclsLoop HrR Hrpos Hball_image).
-Admitted.
+exact (ball_cover_word_construction X Tx U V x0 fcls r
+  Htop HU HV Hcover Hx0UV HpcUV HfclsLoop HrR Hrpos Hball_image).
+Qed.
 
 (** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
@@ -207388,6 +206532,174 @@ apply and4I.
 - (** coverage of S **)
   let k. assume HkS.
   exact (Hsurj k HkS).
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure: increasing enumeration of a finite subset of a finite ordinal in omega. **)
+Lemma finite_subset_omega_increasing_enum :
+  forall N S:set, N :e omega -> S c= N -> finite S ->
+  exists m seq:set,
+    m :e omega /\
+    function_on seq m S /\
+    (forall i j:set, i :e m -> j :e m -> i :e j -> apply_fun seq i :e apply_fun seq j) /\
+    (forall k:set, k :e S -> exists i:set, i :e m /\ apply_fun seq i = k).
+let N S.
+assume HNomega HSsub Hfin.
+set P := fun N0:set =>
+  forall S0:set, S0 c= N0 -> finite S0 ->
+  exists m seq:set,
+    m :e omega /\
+    function_on seq m S0 /\
+    (forall i j:set, i :e m -> j :e m -> i :e j -> apply_fun seq i :e apply_fun seq j) /\
+    (forall k:set, k :e S0 -> exists i:set, i :e m /\ apply_fun seq i = k).
+claim HP : P N.
+{
+  apply (nat_ind P).
+- (** base N0 = 0 **)
+  let S0. assume HS0sub HS0fin.
+  claim HS0empty : S0 = Empty.
+  {
+    apply (Empty_eq S0).
+    let x. assume HxS.
+    exact (EmptyE x (HS0sub x HxS)).
+  }
+  witness 0.
+  witness (graph 0 (fun _:set => 0)).
+  apply and4I.
+  - exact (nat_p_omega 0 nat_0).
+  - (** function_on on empty domain **)
+    claim Htf :
+      total_function_on (graph 0 (fun _:set => 0)) 0 S0.
+    {
+      apply (total_function_on_graph 0 S0 (fun _:set => 0)).
+      let i. assume Hi0.
+      exact (FalseE (EmptyE i Hi0) (0 :e S0)).
+    }
+    exact (total_function_on_function_on
+      (graph 0 (fun _:set => 0)) 0 S0 Htf).
+  - (** order property: vacuous **)
+    let i j. assume Hi Hj Hij.
+    exact (FalseE (EmptyE i Hi) (apply_fun (graph 0 (fun _:set => 0)) i :e apply_fun (graph 0 (fun _:set => 0)) j)).
+  - (** coverage: vacuous **)
+    let k. assume HkS0.
+    exact (EmptyE k (eq_subst_mem_set k S0 Empty HkS0 HS0empty)).
+- (** step N0 -> ordsucc N0 **)
+  let N0. assume HN0nat IH.
+  let S0. assume HS0sub HS0fin.
+  apply (xm (N0 :e S0)).
+  * (** Case N0 in S0: append N0 at end **)
+    assume HN0in.
+    set S1 := S0 :\: {N0}.
+    claim HS1sub : S1 c= N0.
+    {
+      let x. assume HxS1.
+      claim HxS0 : x :e S0.
+      { exact (setminusE1 S0 {N0} x HxS1). }
+      claim Hx_in_succ : x :e ordsucc N0.
+      { exact (HS0sub x HxS0). }
+      claim Hx_notN0 : ~(x = N0).
+      { assume HxEq. apply (setminusE2 S0 {N0} x HxS1).
+        rewrite HxEq. exact (SingI N0). }
+      apply (ordsuccE N0 x Hx_in_succ).
+      - assume HxN0. exact HxN0.
+      - assume HxEq. exact (FalseE (Hx_notN0 HxEq) (x :e N0)).
+    }
+    claim HS1fin : finite S1.
+    { exact (Subq_finite S0 HS0fin S1 (setminus_Subq S0 {N0})). }
+    apply (IH S1 HS1sub HS1fin).
+    let m0. assume Hm0pack.
+    apply Hm0pack.
+    let seq0. assume Hseq0pack.
+    apply (and4E
+      (m0 :e omega)
+      (function_on seq0 m0 S1)
+      (forall i j:set, i :e m0 -> j :e m0 -> i :e j -> apply_fun seq0 i :e apply_fun seq0 j)
+      (forall k:set, k :e S1 -> exists i:set, i :e m0 /\ apply_fun seq0 i = k)
+      Hseq0pack).
+    assume Hm0O Hseq0Fun Hseq0ord Hseq0cov.
+    set m := ordsucc m0.
+    set seq := graph m (fun i:set => If_i (i :e m0) (apply_fun seq0 i) N0).
+    witness m.
+    witness seq.
+    apply and4I.
+    - exact (nat_p_omega m (nat_ordsucc m0 (omega_nat_p m0 Hm0O))).
+    - (** function_on seq m S0 **)
+      claim Htf :
+        total_function_on seq m S0.
+      {
+        apply (total_function_on_graph m S0 (fun i:set => If_i (i :e m0) (apply_fun seq0 i) N0)).
+        let i. assume Hi.
+        apply (ordsuccE m0 i Hi).
+        + assume Hi0.
+          claim Hseq0i : apply_fun seq0 i :e S1.
+          { exact (Hseq0Fun i Hi0). }
+          exact (setminusE1 S0 {N0} (apply_fun seq0 i) Hseq0i).
+        + assume HiEq.
+          rewrite HiEq. exact HN0in.
+      }
+      exact (total_function_on_function_on seq m S0 Htf).
+    - (** order property **)
+      let i j. assume Hi Hj Hij.
+      apply (ordsuccE m0 j Hj).
+      + assume Hj0.
+        claim Hi0 : i :e m0.
+        { exact (ordinal_TransSet m0 (nat_p_ordinal m0 (omega_nat_p m0 Hm0O)) j Hj0 i Hij). }
+        rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) i Hi).
+        rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) j Hj).
+        rewrite (If_true (i :e m0) Hi0).
+        rewrite (If_true (j :e m0) Hj0).
+        exact (Hseq0ord i j Hi0 Hj0 Hij).
+      + assume HjEq.
+        claim Hi0 : i :e m0.
+        { exact (ordinal_TransSet m0 (nat_p_ordinal m0 (omega_nat_p m0 Hm0O)) m0 (ordsuccI2 m0) i Hij). }
+        rewrite HjEq.
+        rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) i Hi).
+        rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) m0 (ordsuccI2 m0)).
+        rewrite (If_true (i :e m0) Hi0).
+        rewrite (If_false (m0 :e m0) (In_irref m0)).
+        claim Hseq0i : apply_fun seq0 i :e S1.
+        { exact (Hseq0Fun i Hi0). }
+        claim Hseq0i_in_N0 : apply_fun seq0 i :e N0.
+        { exact (HS1sub (apply_fun seq0 i) Hseq0i). }
+        exact Hseq0i_in_N0.
+    - (** coverage of S0 **)
+      let k. assume HkS0.
+      apply (xm (k = N0)).
+      + assume HkEq.
+        witness m0.
+        apply andI.
+        * exact (ordsuccI2 m0).
+        * rewrite HkEq.
+          rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) m0 (ordsuccI2 m0)).
+          rewrite (If_false (m0 :e m0) (In_irref m0)).
+          reflexivity.
+      + assume HkNe.
+        claim HkS1 : k :e S1.
+        { exact (setminusI S0 {N0} k HkS0 HkNe). }
+        apply (Hseq0cov k HkS1).
+        let i. assume Hipack.
+        apply Hipack.
+        let Hi. assume Hieq.
+        witness i.
+        apply andI.
+        * exact (ordsuccI1 m0 i Hi).
+        * rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) i (ordsuccI1 m0 i Hi)).
+          rewrite (If_true (i :e m0) Hi).
+          exact Hieq.
+  * (** Case N0 notin S0: reduce to N0 **)
+    assume HN0not.
+    claim HS0subN0 : S0 c= N0.
+    {
+      let x. assume HxS0.
+      claim Hx_in_succ : x :e ordsucc N0.
+      { exact (HS0sub x HxS0). }
+      apply (ordsuccE N0 x Hx_in_succ).
+      - assume HxN0. exact HxN0.
+      - assume HxEq. exact (FalseE (HN0not (eq_subst_mem_set N0 x S0 HxEq HxS0)) (x :e N0)).
+    }
+    exact (IH S0 HS0subN0 HS0fin).
+}
+exact (HP N S HSsub Hfin).
 Qed.
 
 (** Infrastructure: kernel of a group homomorphism **)
