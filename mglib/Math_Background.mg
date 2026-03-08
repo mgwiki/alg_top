@@ -164745,13 +164745,177 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         Hgamma0
         Hgamma1).
     }
+    (** Build a chain-ordered reparametrization h: I -> I along seq. **)
+    claim Hchain_path_ex :
+      exists h:set,
+        continuous_map unit_interval unit_interval_topology
+          unit_interval unit_interval_topology h /\
+        apply_fun h 0 = 0 /\
+        apply_fun h 1 = 1.
+    {
+      exact (unit_interval_ball_chain_path_between
+        r1
+        n
+        seq
+        0
+        1
+        Hr1R
+        Hr1pos
+        Hr1lt1
+        HnOmega
+        HseqFun
+        H0_in_seq0
+        H1_in_seqn
+        HseqInter).
+    }
+    apply Hchain_path_ex.
+    let h. assume Hhpack.
+    claim Hh_cont :
+      continuous_map unit_interval unit_interval_topology
+        unit_interval unit_interval_topology h.
+    {
+      exact (andEL
+        (continuous_map unit_interval unit_interval_topology
+          unit_interval unit_interval_topology h)
+        (apply_fun h 0 = 0)
+        (andEL
+          (continuous_map unit_interval unit_interval_topology
+            unit_interval unit_interval_topology h /\
+            apply_fun h 0 = 0)
+          (apply_fun h 1 = 1)
+          Hhpack)).
+    }
+    claim Hh0 : apply_fun h 0 = 0.
+    {
+      exact (andER
+        (continuous_map unit_interval unit_interval_topology
+          unit_interval unit_interval_topology h)
+        (apply_fun h 0 = 0)
+        (andEL
+          (continuous_map unit_interval unit_interval_topology
+            unit_interval unit_interval_topology h /\
+            apply_fun h 0 = 0)
+          (apply_fun h 1 = 1)
+          Hhpack)).
+    }
+    claim Hh1 : apply_fun h 1 = 1.
+    {
+      exact (andER
+        (continuous_map unit_interval unit_interval_topology
+          unit_interval unit_interval_topology h /\
+          apply_fun h 0 = 0)
+        (apply_fun h 1 = 1)
+        Hhpack).
+    }
+    set idI := graph unit_interval (fun t:set => t).
+    claim Hh_hom_id :
+      path_homotopic unit_interval unit_interval_topology 0 1 h idI.
+    { exact (unit_interval_path_homotopic_to_id h Hh_cont Hh0 Hh1). }
+    set fh := compose_fun unit_interval h f.
+    set fid := compose_fun unit_interval idI f.
+    claim Hfh_hom_fid :
+      path_homotopic X Tx x0 x0 fh fid.
+    {
+      exact (path_homotopic_precompose
+        X
+        Tx
+        x0
+        x0
+        f
+        h
+        idI
+        HfCont
+        Hf0
+        Hf1
+        Hh_hom_id).
+    }
+    claim Hfid_cont :
+      continuous_map unit_interval unit_interval_topology X Tx fid.
+    {
+      exact (composition_continuous
+        unit_interval
+        unit_interval_topology
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        idI
+        f
+        (identity_continuous unit_interval unit_interval_topology unit_interval_topology_on)
+        HfCont).
+    }
+    claim Hfid0 : apply_fun fid 0 = x0.
+    {
+      rewrite (compose_fun_apply unit_interval idI f 0 zero_in_unit_interval).
+      rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval).
+      exact Hf0.
+    }
+    claim Hfid1 : apply_fun fid 1 = x0.
+    {
+      rewrite (compose_fun_apply unit_interval idI f 1 one_in_unit_interval).
+      rewrite (apply_fun_graph unit_interval (fun t:set => t) 1 one_in_unit_interval).
+      exact Hf1.
+    }
+    claim Hfid_pw :
+      forall t:set, t :e unit_interval -> apply_fun fid t = apply_fun f t.
+    {
+      let t. assume Ht.
+      rewrite (compose_fun_apply unit_interval idI f t Ht).
+      rewrite (apply_fun_graph unit_interval (fun s:set => s) t Ht).
+      exact (fun P H => H).
+    }
+    claim Hfid_hom_f :
+      path_homotopic X Tx x0 x0 fid f.
+    {
+      exact (path_homotopic_of_pointwise_equal
+        X
+        Tx
+        x0
+        x0
+        fid
+        f
+        Hfid_cont
+        HfCont
+        Hfid0
+        Hfid1
+        Hf0
+        Hf1
+        Hfid_pw).
+    }
+    claim Hfh_hom_f :
+      path_homotopic X Tx x0 x0 fh f.
+    {
+      exact (Lemma_51_1_path_homotopy_trans
+        X
+        Tx
+        x0
+        x0
+        fh
+        fid
+        f
+        Hfh_hom_fid
+        Hfid_hom_f).
+    }
+    claim Hclass_fh_eq :
+      path_homotopy_class_loop X Tx x0 fh =
+        path_homotopy_class_loop X Tx x0 f.
+    {
+      exact (path_homotopy_class_loop_eq_of_path_homotopic
+        X
+        Tx
+        x0
+        fh
+        f
+        Hfh_hom_f).
+    }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
         intersection points to split L2, and induct on chain length to build the word.
-        Missing helper: from a chain of overlapping balls in unit_interval, extract an
-        ordered subdivision 0 = t0 < ... < tm = 1 where each subpath stays in a single
-        ball; then build the finite word using path_homotopy_class_loop_concat_eq_mult. **)
+        Missing helper: from a chain of overlapping balls in unit_interval, build a
+        concatenation of subpaths in chain order (using h) and group consecutive U/V
+        segments by transition points in U cap V; then build the finite word using
+        path_homotopy_class_loop_concat_eq_mult. **)
     admit.
 Admitted.
 
