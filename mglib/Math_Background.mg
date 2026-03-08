@@ -307651,8 +307651,39 @@ claim HNsub : subgroup_of N G multG eG invG.
     { exact (andER (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g1, h), apply_fun invG g1) :e H0) (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g1, h), g1) :e H0) Hg1_norm). }
     claim Hg2_conj2 : forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g2, h), g2) :e H0.
     { exact (andER (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g2, h), apply_fun invG g2) :e H0) (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g2, h), g2) :e H0) Hg2_norm). }
+    claim Hig1G : apply_fun invG g1 :e G. { exact (HinvG_cl g1 Hg1G). }
+    claim Hig2G : apply_fun invG g2 :e G. { exact (HinvG_cl g2 Hg2G). }
+    claim Hig12 : apply_fun invG (apply_fun multG (g1, g2)) = apply_fun multG (apply_fun invG g2, apply_fun invG g1).
+    { exact (group_inv_of_prod G multG eG invG HgrpG g1 g2 Hg1G Hg2G). }
     claim Hg12_pred : (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun multG (g1, g2), h), apply_fun invG (apply_fun multG (g1, g2))) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG (apply_fun multG (g1, g2)), h), apply_fun multG (g1, g2)) :e H0).
-    { admit. }
+    { apply andI.
+      - let h0. assume Hh0H0.
+        claim Hh0G : h0 :e G. { exact (HH0subG h0 Hh0H0). }
+        claim Hg2h0G : apply_fun multG (g2, h0) :e G.
+        { exact (HmultG_cl g2 h0 Hg2G Hh0G). }
+        claim Hig2ig1G : apply_fun multG (apply_fun invG g2, apply_fun invG g1) :e G.
+        { exact (HmultG_cl (apply_fun invG g2) (apply_fun invG g1) Hig2G Hig1G). }
+        rewrite (HassocG g1 g2 h0 Hg1G Hg2G Hh0G).
+        rewrite Hig12.
+        rewrite (HassocG g1 (apply_fun multG (g2, h0)) (apply_fun multG (apply_fun invG g2, apply_fun invG g1)) Hg1G Hg2h0G Hig2ig1G).
+        rewrite <- (HassocG (apply_fun multG (g2, h0)) (apply_fun invG g2) (apply_fun invG g1) Hg2h0G Hig2G Hig1G).
+        claim Hconj2 : apply_fun multG (apply_fun multG (g2, h0), apply_fun invG g2) :e H0. { exact (Hg2_conj h0 Hh0H0). }
+        claim Hconj2G : apply_fun multG (apply_fun multG (g2, h0), apply_fun invG g2) :e G. { exact (HH0subG (apply_fun multG (apply_fun multG (g2, h0), apply_fun invG g2)) Hconj2). }
+        rewrite <- (HassocG g1 (apply_fun multG (apply_fun multG (g2, h0), apply_fun invG g2)) (apply_fun invG g1) Hg1G Hconj2G Hig1G).
+        exact (Hg1_conj (apply_fun multG (apply_fun multG (g2, h0), apply_fun invG g2)) Hconj2).
+      - let h0. assume Hh0H0.
+        claim Hh0G : h0 :e G. { exact (HH0subG h0 Hh0H0). }
+        rewrite Hig12.
+        claim Hig2ig1G2 : apply_fun multG (apply_fun invG g2, apply_fun invG g1) :e G.
+        { exact (HmultG_cl (apply_fun invG g2) (apply_fun invG g1) Hig2G Hig1G). }
+        rewrite (HassocG (apply_fun invG g2) (apply_fun invG g1) h0 Hig2G Hig1G Hh0G).
+        claim Hig1h0G : apply_fun multG (apply_fun invG g1, h0) :e G. { exact (HmultG_cl (apply_fun invG g1) h0 Hig1G Hh0G). }
+        rewrite (HassocG (apply_fun invG g2) (apply_fun multG (apply_fun invG g1, h0)) (apply_fun multG (g1, g2)) Hig2G Hig1h0G Hg12G).
+        rewrite <- (HassocG (apply_fun multG (apply_fun invG g1, h0)) g1 g2 Hig1h0G Hg1G Hg2G).
+        claim Hconj1 : apply_fun multG (apply_fun multG (apply_fun invG g1, h0), g1) :e H0. { exact (Hg1_conj2 h0 Hh0H0). }
+        claim Hconj1G : apply_fun multG (apply_fun multG (apply_fun invG g1, h0), g1) :e G. { exact (HH0subG (apply_fun multG (apply_fun multG (apply_fun invG g1, h0), g1)) Hconj1). }
+        rewrite <- (HassocG (apply_fun invG g2) (apply_fun multG (apply_fun multG (apply_fun invG g1, h0), g1)) g2 Hig2G Hconj1G Hg2G).
+        exact (Hg2_conj2 (apply_fun multG (apply_fun multG (apply_fun invG g1, h0), g1)) Hconj1). }
     exact (SepI G (fun g:set => (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0)) (apply_fun multG (g1, g2)) Hg12G Hg12_pred).
   - (** N closed under inv **)
     let g. assume HgN.
@@ -307660,8 +307691,16 @@ claim HNsub : subgroup_of N G multG eG invG.
     claim HigG : apply_fun invG g :e G. { exact (HinvG_cl g HgG). }
     claim Hg_norm : (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0).
     { exact (SepE2 G (fun g:set => (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0)) g HgN). }
+    claim Hiig : apply_fun invG (apply_fun invG g) = g.
+    { exact (group_inv_inv G multG invG eG g HmultFn HinvFn HeGmem HassocG HidG HinvAxG HgG). }
+    claim Hg_conj : forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0.
+    { exact (andEL (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0) (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0) Hg_norm). }
+    claim Hg_conj2 : forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0.
+    { exact (andER (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0) (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0) Hg_norm). }
     claim Hinv_pred : (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), apply_fun invG (apply_fun invG g)) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG (apply_fun invG g), h), apply_fun invG g) :e H0).
-    { admit. }
+    { apply andI.
+      - let h0. assume Hh0H0. rewrite Hiig. exact (Hg_conj2 h0 Hh0H0).
+      - let h0. assume Hh0H0. rewrite Hiig. exact (Hg_conj h0 Hh0H0). }
     exact (SepI G (fun g:set => (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0)) (apply_fun invG g) HigG Hinv_pred).
 }
 (** N inherits group structure **)
