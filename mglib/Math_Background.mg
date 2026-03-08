@@ -1,4 +1,4 @@
-(** Balance Alice 7542 **)
+(** Balance Alice 7663 **)
 (** Balance Bob 5510 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
@@ -305657,8 +305657,8 @@ Qed.
 (** LATEX VERSION: The image of Psi equals the image under Phi of the **)
 (** subgroup N(H0)/H0 of pi1(B,b0)/H0. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 121 **)
-(** Lock Alice 1772992789 **)
+(** Collected Alice 121 **)
+(** Proven Alice **)
 Theorem lemma81_1_image_of_psi :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
@@ -306855,7 +306855,7 @@ apply iffI.
     * let x. assume HxE.
       exact (eq_symm (apply_fun p x) (apply_fun p (apply_fun h x)) (Hh_p x HxE)).
   + exact Hh_e0.
-Admitted.
+Qed.
 
 (** from S81 Thm 81.2 (line 5055 in algtop.tex) **)
 (** LATEX VERSION: The bijection Phi^{-1} o Psi : C(E,p,B) -> N(H0)/H0 **)
