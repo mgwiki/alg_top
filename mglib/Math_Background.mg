@@ -275025,6 +275025,80 @@ apply andI.
   }
 Qed.
 
+(** Infrastructure: appending one generator-family element to a word product gives a longer word product **)
+(** Proven Alice **)
+Theorem word_product_right_append_in_generated :
+  forall G mult e inv J Gfam n xs g alpha:set,
+  group_structure G mult e inv ->
+  n :e omega ->
+  function_on xs n G ->
+  (forall i:set, i :e n -> exists a:set, a :e J /\ apply_fun xs i :e apply_fun Gfam a) ->
+  alpha :e J ->
+  g :e apply_fun Gfam alpha ->
+  g :e G ->
+  exists n' xs':set, n' :e omega /\ n' <> 0 /\
+    function_on xs' n' G /\
+    (forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a) /\
+    apply_fun mult (word_product mult e xs n, g) = word_product mult e xs' n'.
+let G mult e inv J Gfam n xs g alpha.
+assume Hgrp : group_structure G mult e inv.
+assume HnO : n :e omega.
+assume HxsFn : function_on xs n G.
+assume HxsGfam : forall i:set, i :e n -> exists a:set, a :e J /\ apply_fun xs i :e apply_fun Gfam a.
+assume HalphaJ : alpha :e J.
+assume HgGfam : g :e apply_fun Gfam alpha.
+assume HgG : g :e G.
+claim HnNat : nat_p n. { exact (omega_nat_p n HnO). }
+claim HsnO : ordsucc n :e omega. { exact (omega_ordsucc n HnO). }
+set xs_ext := graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else g).
+(** Key equation from word_product_append_one **)
+claim Happend : word_product mult e xs_ext (ordsucc n) =
+  apply_fun mult (word_product mult e xs n, g).
+{ exact (word_product_append_one mult e xs g n HnO). }
+witness (ordsucc n). witness xs_ext.
+apply andI.
+{ apply andI.
+  { apply andI.
+    { apply andI.
+      { exact HsnO. }
+      { exact (neq_ordsucc_0 n). } }
+    { (** function_on xs_ext (ordsucc n) G **)
+      let i. assume Hisn : i :e ordsucc n.
+      claim Hap : apply_fun xs_ext i =
+        (if i :e n then apply_fun xs i else g).
+      { exact (apply_fun_graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else g) i Hisn). }
+      rewrite Hap.
+      apply (If_i_correct (i :e n) (apply_fun xs i) g).
+      { assume Htrue : (i :e n) /\ (if i :e n then apply_fun xs i else g) = apply_fun xs i.
+        claim Hin : i :e n.
+        { apply (Htrue (i :e n)). assume H1 H2. exact H1. }
+        claim Hif : (if i :e n then apply_fun xs i else g) = apply_fun xs i.
+        { apply (Htrue ((if i :e n then apply_fun xs i else g) = apply_fun xs i)). assume H1 H2. exact H2. }
+        rewrite Hif. exact (HxsFn i Hin). }
+      { assume Hfalse : ~(i :e n) /\ (if i :e n then apply_fun xs i else g) = g.
+        claim Hif : (if i :e n then apply_fun xs i else g) = g.
+        { apply (Hfalse ((if i :e n then apply_fun xs i else g) = g)). assume H1 H2. exact H2. }
+        rewrite Hif. exact HgG. } } }
+  { (** forall i :e ordsucc n, exists alpha, ... **)
+    let i. assume Hisn : i :e ordsucc n.
+    claim Hap : apply_fun xs_ext i =
+      (if i :e n then apply_fun xs i else g).
+    { exact (apply_fun_graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else g) i Hisn). }
+    rewrite Hap.
+    apply (If_i_correct (i :e n) (apply_fun xs i) g).
+    { assume Htrue : (i :e n) /\ (if i :e n then apply_fun xs i else g) = apply_fun xs i.
+      claim Hin : i :e n.
+      { apply (Htrue (i :e n)). assume H1 H2. exact H1. }
+      claim Hif : (if i :e n then apply_fun xs i else g) = apply_fun xs i.
+      { apply (Htrue ((if i :e n then apply_fun xs i else g) = apply_fun xs i)). assume H1 H2. exact H2. }
+      rewrite Hif. exact (HxsGfam i Hin). }
+    { assume Hfalse : ~(i :e n) /\ (if i :e n then apply_fun xs i else g) = g.
+      claim Hif : (if i :e n then apply_fun xs i else g) = g.
+      { apply (Hfalse ((if i :e n then apply_fun xs i else g) = g)). assume H1 H2. exact H2. }
+      rewrite Hif. witness alpha. apply andI. { exact HalphaJ. } { exact HgGfam. } } } }
+{ symmetry. exact Happend. }
+Qed.
+
 (** Infrastructure helper for S69 backward direction:
     extension property forces the free-product decomposition by cyclic generator subgroups. **)
 Theorem extension_property_forces_free_product_generated_subgroups :
@@ -275179,10 +275253,301 @@ apply andI.
                 exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Gfam alpha) /\
               e = word_product mult e xs n.
           apply orIL. reflexivity. }
-      (** Mult closure and inv closure of S - admitted for now **)
+      (** Mult closure of S **)
       claim HSmultClosed : forall a b:set, a :e S -> b :e S ->
         apply_fun mult (a, b) :e S.
-      { admit. }
+      {
+        (** Helper: mult(a, word_product(ys, k)) :e S for any a :e S, by induction on k **)
+        claim Haux : forall k:set, nat_p k ->
+          forall ys:set, (forall i:set, i :e k -> apply_fun ys i :e G) ->
+          (forall i:set, i :e k ->
+            exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha) ->
+          forall a:set, a :e S ->
+          apply_fun mult (a, word_product mult e ys k) :e S.
+        {
+          apply nat_ind.
+          { (** Base case: k = 0 **)
+            let ys. assume HysG HysGfam.
+            let a. assume HaS : a :e S.
+            claim HaG : a :e G. { exact (HSsubG a HaS). }
+            claim Hwp0 : word_product mult e ys 0 = e.
+            { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun ys i))). }
+            rewrite Hwp0.
+            claim Hrid : apply_fun mult (a, e) = a.
+            { exact (andER
+                (apply_fun mult (e, a) = a)
+                (apply_fun mult (a, e) = a)
+                (Hid a HaG)). }
+            rewrite Hrid. exact HaS.
+          }
+          { (** Step case: nat_p k -> P(k) -> P(ordsucc k) **)
+            let k. assume Hk_nat : nat_p k.
+            assume HIH : forall ys:set, (forall i:set, i :e k -> apply_fun ys i :e G) ->
+              (forall i:set, i :e k ->
+                exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha) ->
+              forall a:set, a :e S ->
+              apply_fun mult (a, word_product mult e ys k) :e S.
+            let ys. assume HysG : forall i:set, i :e ordsucc k -> apply_fun ys i :e G.
+            assume HysGfam : forall i:set, i :e ordsucc k ->
+              exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha.
+            let a. assume HaS : a :e S.
+            claim HaG : a :e G. { exact (HSsubG a HaS). }
+            (** word_product(ys, ordsucc k) = mult(word_product(ys, k), ys(k)) **)
+            claim Hwps : word_product mult e ys (ordsucc k) =
+              apply_fun mult (word_product mult e ys k, apply_fun ys k).
+            { exact (word_product_succ mult e ys k Hk_nat). }
+            rewrite Hwps.
+            (** Get membership facts **)
+            claim HykG : apply_fun ys k :e G.
+            { exact (HysG k (ordsuccI2 k)). }
+            claim HwpkG : word_product mult e ys k :e G.
+            { exact (word_product_in_G_group G mult e inv k ys Hgrp Hk_nat
+                (fun i Hi => HysG i (ordsuccI1 k i Hi))). }
+            (** Use associativity: mult(mult(a, wp), yk) = mult(a, mult(wp, yk)) **)
+            claim Hassoc_eq : apply_fun mult (apply_fun mult (a, word_product mult e ys k), apply_fun ys k) =
+              apply_fun mult (a, apply_fun mult (word_product mult e ys k, apply_fun ys k)).
+            { exact (Hassoc a (word_product mult e ys k) (apply_fun ys k) HaG HwpkG HykG). }
+            rewrite <- Hassoc_eq.
+            (** By IH: c := mult(a, wp(ys,k)) :e S **)
+            claim HysG_k : forall i:set, i :e k -> apply_fun ys i :e G.
+            { let i. assume Hin : i :e k. exact (HysG i (ordsuccI1 k i Hin)). }
+            claim HysGfam_k : forall i:set, i :e k ->
+              exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha.
+            { let i. assume Hin : i :e k. exact (HysGfam i (ordsuccI1 k i Hin)). }
+            set c := apply_fun mult (a, word_product mult e ys k).
+            claim HcS : c :e S. { exact (HIH ys HysG_k HysGfam_k a HaS). }
+            claim HcG : c :e G. { exact (HSsubG c HcS). }
+            claim HcWP : WordProd c. { exact (SepE2 G WordProd c HcS). }
+            (** Get ys(k) family membership **)
+            claim HykGfam : exists alpha:set, alpha :e J /\ apply_fun ys k :e apply_fun Gfam alpha.
+            { exact (HysGfam k (ordsuccI2 k)). }
+            (** Case split on c: either c = e or c is a word product **)
+            claim HmultcykG : apply_fun mult (c, apply_fun ys k) :e G.
+            { exact (group_source_mult_closure G mult e inv Hgrp c (apply_fun ys k) HcG HykG). }
+            apply (SepI G WordProd (apply_fun mult (c, apply_fun ys k)) HmultcykG).
+            apply (HcWP (WordProd (apply_fun mult (c, apply_fun ys k)))).
+            { (** c = e: mult(e, ys(k)) = ys(k), which is a word product **)
+              assume Hce : c = e.
+              claim Hlid : apply_fun mult (e, apply_fun ys k) = apply_fun ys k.
+              { exact (andEL
+                  (apply_fun mult (e, apply_fun ys k) = apply_fun ys k)
+                  (apply_fun mult (apply_fun ys k, e) = apply_fun ys k)
+                  (Hid (apply_fun ys k) HykG)). }
+              claim Heq : apply_fun mult (c, apply_fun ys k) = apply_fun ys k.
+              { rewrite Hce. exact Hlid. }
+              prove WordProd (apply_fun mult (c, apply_fun ys k)).
+              rewrite Heq.
+              (** ys(k) is a length-1 word product: use word_product_right_append_in_generated with n=0 **)
+              apply (HykGfam (WordProd (apply_fun ys k))).
+              let alpha. assume Halpha_props : alpha :e J /\ apply_fun ys k :e apply_fun Gfam alpha.
+              claim HalphaJ : alpha :e J.
+              { exact (andEL (alpha :e J) (apply_fun ys k :e apply_fun Gfam alpha) Halpha_props). }
+              claim HykGfam_al : apply_fun ys k :e apply_fun Gfam alpha.
+              { exact (andER (alpha :e J) (apply_fun ys k :e apply_fun Gfam alpha) Halpha_props). }
+              claim Happ0 : exists n' xs':set, n' :e omega /\ n' <> 0 /\
+                function_on xs' n' G /\
+                (forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a) /\
+                apply_fun mult (word_product mult e Empty 0, apply_fun ys k) = word_product mult e xs' n'.
+              { claim Hvac1 : forall i:set, i :e 0 -> apply_fun Empty i :e G.
+                { let i. assume Hi : i :e 0. exact (EmptyE i Hi (apply_fun Empty i :e G)). }
+                claim Hvac2 : forall i:set, i :e 0 -> exists a:set, a :e J /\ apply_fun Empty i :e apply_fun Gfam a.
+                { let i. assume Hi : i :e 0. exact (EmptyE i Hi (exists a:set, a :e J /\ apply_fun Empty i :e apply_fun Gfam a)). }
+                exact (word_product_right_append_in_generated G mult e inv J Gfam 0 Empty (apply_fun ys k) alpha
+                  Hgrp (nat_p_omega 0 nat_0) Hvac1 Hvac2 HalphaJ HykGfam_al HykG). }
+              apply (Happ0 (WordProd (apply_fun ys k))).
+              let n'. assume Hex_xs' : exists xs':set, n' :e omega /\ n' <> 0 /\
+                function_on xs' n' G /\
+                (forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a) /\
+                apply_fun mult (word_product mult e Empty 0, apply_fun ys k) = word_product mult e xs' n'.
+              apply (Hex_xs' (WordProd (apply_fun ys k))).
+              let xs'. assume Hprops : n' :e omega /\ n' <> 0 /\
+                function_on xs' n' G /\
+                (forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a) /\
+                apply_fun mult (word_product mult e Empty 0, apply_fun ys k) = word_product mult e xs' n'.
+              apply (and5E
+                (n' :e omega)
+                (n' <> 0)
+                (function_on xs' n' G)
+                (forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a)
+                (apply_fun mult (word_product mult e Empty 0, apply_fun ys k) = word_product mult e xs' n')
+                Hprops).
+              assume Hn'O : n' :e omega.
+              assume Hn'ne0 : n' <> 0.
+              assume Hxs'Fn : function_on xs' n' G.
+              assume Hxs'Gfam : forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a.
+              assume Hyk_eq : apply_fun mult (word_product mult e Empty 0, apply_fun ys k) = word_product mult e xs' n'.
+              (** word_product(Empty, 0) = e **)
+              claim Hwp0 : word_product mult e Empty 0 = e.
+              { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun Empty i))). }
+              claim Hlid2 : apply_fun mult (e, apply_fun ys k) = apply_fun ys k.
+              { exact (andEL
+                  (apply_fun mult (e, apply_fun ys k) = apply_fun ys k)
+                  (apply_fun mult (apply_fun ys k, e) = apply_fun ys k)
+                  (Hid (apply_fun ys k) HykG)). }
+              claim Hyk_is_wp : apply_fun ys k = word_product mult e xs' n'.
+              { rewrite <- Hyk_eq. rewrite Hwp0. symmetry. exact Hlid2. }
+              prove apply_fun ys k = e \/
+                exists n:set, n :e omega /\ n <> 0 /\
+                exists xs:set, function_on xs n G /\
+                  (forall i:set, i :e n ->
+                    exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Gfam alpha) /\
+                  apply_fun ys k = word_product mult e xs n.
+              apply orIR.
+              witness n'. apply andI. { apply andI. { exact Hn'O. } { exact Hn'ne0. } }
+              { witness xs'. apply andI. { apply andI. { exact Hxs'Fn. } { exact Hxs'Gfam. } }
+                { exact Hyk_is_wp. } }
+            }
+            { (** c is a word product of length m: apply word_product_right_append_in_generated **)
+              assume Hex : exists m:set, m :e omega /\ m <> 0 /\
+                exists zs:set, function_on zs m G /\
+                  (forall i:set, i :e m ->
+                    exists alpha:set, alpha :e J /\ apply_fun zs i :e apply_fun Gfam alpha) /\
+                  c = word_product mult e zs m.
+              apply (Hex (WordProd (apply_fun mult (c, apply_fun ys k)))).
+              let m. assume Hm_ex : m :e omega /\ m <> 0 /\
+                exists zs:set, function_on zs m G /\
+                  (forall i:set, i :e m ->
+                    exists alpha:set, alpha :e J /\ apply_fun zs i :e apply_fun Gfam alpha) /\
+                  c = word_product mult e zs m.
+              apply (and3E (m :e omega) (m <> 0)
+                (exists zs:set, function_on zs m G /\
+                  (forall i:set, i :e m ->
+                    exists alpha:set, alpha :e J /\ apply_fun zs i :e apply_fun Gfam alpha) /\
+                  c = word_product mult e zs m)
+                Hm_ex).
+              assume HmO : m :e omega. assume _ : m <> 0.
+              assume Hrest_m : exists zs:set, function_on zs m G /\
+                (forall i:set, i :e m ->
+                  exists alpha:set, alpha :e J /\ apply_fun zs i :e apply_fun Gfam alpha) /\
+                c = word_product mult e zs m.
+              apply (Hrest_m (WordProd (apply_fun mult (c, apply_fun ys k)))).
+              let zs. assume Hzs_props : function_on zs m G /\
+                (forall i:set, i :e m ->
+                  exists alpha:set, alpha :e J /\ apply_fun zs i :e apply_fun Gfam alpha) /\
+                c = word_product mult e zs m.
+              apply (and3E (function_on zs m G)
+                (forall i:set, i :e m ->
+                  exists alpha:set, alpha :e J /\ apply_fun zs i :e apply_fun Gfam alpha)
+                (c = word_product mult e zs m)
+                Hzs_props).
+              assume HzsFn : function_on zs m G.
+              assume HzsGfam : forall i:set, i :e m ->
+                exists alpha:set, alpha :e J /\ apply_fun zs i :e apply_fun Gfam alpha.
+              assume Hceq : c = word_product mult e zs m.
+              (** Apply word_product_right_append_in_generated **)
+              apply (HykGfam (WordProd (apply_fun mult (c, apply_fun ys k)))).
+              let alpha. assume Halpha_props : alpha :e J /\ apply_fun ys k :e apply_fun Gfam alpha.
+              claim HalphaJ : alpha :e J.
+              { exact (andEL (alpha :e J) (apply_fun ys k :e apply_fun Gfam alpha) Halpha_props). }
+              claim HykGfam_al : apply_fun ys k :e apply_fun Gfam alpha.
+              { exact (andER (alpha :e J) (apply_fun ys k :e apply_fun Gfam alpha) Halpha_props). }
+              claim Happ : exists n' xs':set, n' :e omega /\ n' <> 0 /\
+                function_on xs' n' G /\
+                (forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a) /\
+                apply_fun mult (word_product mult e zs m, apply_fun ys k) = word_product mult e xs' n'.
+              { exact (word_product_right_append_in_generated G mult e inv J Gfam m zs (apply_fun ys k) alpha
+                  Hgrp HmO HzsFn HzsGfam HalphaJ HykGfam_al HykG). }
+              apply (Happ (WordProd (apply_fun mult (c, apply_fun ys k)))).
+              let n'. assume Hex_xs2 : exists xs':set, n' :e omega /\ n' <> 0 /\
+                function_on xs' n' G /\
+                (forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a) /\
+                apply_fun mult (word_product mult e zs m, apply_fun ys k) = word_product mult e xs' n'.
+              apply (Hex_xs2 (WordProd (apply_fun mult (c, apply_fun ys k)))).
+              let xs'. assume Hres : n' :e omega /\ n' <> 0 /\
+                function_on xs' n' G /\
+                (forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a) /\
+                apply_fun mult (word_product mult e zs m, apply_fun ys k) = word_product mult e xs' n'.
+              apply (and5E
+                (n' :e omega)
+                (n' <> 0)
+                (function_on xs' n' G)
+                (forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a)
+                (apply_fun mult (word_product mult e zs m, apply_fun ys k) = word_product mult e xs' n')
+                Hres).
+              assume Hn'O : n' :e omega.
+              assume Hn'ne0 : n' <> 0.
+              assume Hxs'Fn : function_on xs' n' G.
+              assume Hxs'Gfam : forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a.
+              assume Hres_eq : apply_fun mult (word_product mult e zs m, apply_fun ys k) = word_product mult e xs' n'.
+              claim Hfinal_eq : apply_fun mult (c, apply_fun ys k) = word_product mult e xs' n'.
+              { rewrite Hceq. exact Hres_eq. }
+              prove apply_fun mult (c, apply_fun ys k) = e \/
+                exists n:set, n :e omega /\ n <> 0 /\
+                exists xs:set, function_on xs n G /\
+                  (forall i:set, i :e n ->
+                    exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Gfam alpha) /\
+                  apply_fun mult (c, apply_fun ys k) = word_product mult e xs n.
+              apply orIR.
+              witness n'. apply andI. { apply andI. { exact Hn'O. } { exact Hn'ne0. } }
+              { witness xs'. apply andI. { apply andI. { exact Hxs'Fn. } { exact Hxs'Gfam. } }
+                { exact Hfinal_eq. } }
+            }
+          }
+        }
+        (** Now prove the main claim using Haux **)
+        let a b. assume HaS : a :e S. assume HbS : b :e S.
+        claim HaG : a :e G. { exact (HSsubG a HaS). }
+        claim HbG : b :e G. { exact (HSsubG b HbS). }
+        claim HbWP : WordProd b. { exact (SepE2 G WordProd b HbS). }
+        claim HabG : apply_fun mult (a, b) :e G.
+        { exact (group_source_mult_closure G mult e inv Hgrp a b HaG HbG). }
+        apply (SepI G WordProd (apply_fun mult (a, b)) HabG).
+        apply (HbWP (WordProd (apply_fun mult (a, b)))).
+        { (** b = e **)
+          assume Hbe : b = e.
+          claim Hrid : apply_fun mult (a, e) = a.
+          { exact (andER
+              (apply_fun mult (e, a) = a)
+              (apply_fun mult (a, e) = a)
+              (Hid a HaG)). }
+          claim Hab_eq : apply_fun mult (a, b) = a.
+          { rewrite Hbe. exact Hrid. }
+          prove WordProd (apply_fun mult (a, b)).
+          rewrite Hab_eq. exact (SepE2 G WordProd a HaS).
+        }
+        { (** b is a word product **)
+          assume Hex : exists n:set, n :e omega /\ n <> 0 /\
+            exists ys:set, function_on ys n G /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha) /\
+              b = word_product mult e ys n.
+          apply (Hex (WordProd (apply_fun mult (a, b)))).
+          let n. assume Hn_ex : n :e omega /\ n <> 0 /\
+            exists ys:set, function_on ys n G /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha) /\
+              b = word_product mult e ys n.
+          apply (and3E (n :e omega) (n <> 0)
+            (exists ys:set, function_on ys n G /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha) /\
+              b = word_product mult e ys n)
+            Hn_ex).
+          assume HnO : n :e omega. assume _ : n <> 0.
+          assume Hrest : exists ys:set, function_on ys n G /\
+            (forall i:set, i :e n ->
+              exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha) /\
+            b = word_product mult e ys n.
+          apply (Hrest (WordProd (apply_fun mult (a, b)))).
+          let ys. assume Hys_props : function_on ys n G /\
+            (forall i:set, i :e n ->
+              exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha) /\
+            b = word_product mult e ys n.
+          apply (and3E (function_on ys n G)
+            (forall i:set, i :e n ->
+              exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha)
+            (b = word_product mult e ys n)
+            Hys_props).
+          assume HysFn : function_on ys n G.
+          assume HysGfam : forall i:set, i :e n ->
+            exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha.
+          assume Hbeq : b = word_product mult e ys n.
+          prove WordProd (apply_fun mult (a, b)).
+          rewrite Hbeq.
+          exact (SepE2 G WordProd (apply_fun mult (a, word_product mult e ys n))
+            (Haux n (omega_nat_p n HnO) ys HysFn HysGfam a HaS)).
+        }
+      }
       claim HSinvClosed : forall a:set, a :e S -> apply_fun inv a :e S.
       { admit. }
       (** S is a subgroup **)
@@ -394441,80 +394806,7 @@ Admitted.
 
 (** Sandbox Begin Alice **)
 
-(** Helper: word product of extended function agrees with original on first n elements **)
-(** This uses word_product_append_one to show mult(word_product(xs, n), g) = word_product(xs_ext, n+1) **)
-(** Proven Alice **)
-Theorem word_product_right_append_in_generated :
-  forall G mult e inv J Gfam n xs g alpha:set,
-  group_structure G mult e inv ->
-  n :e omega ->
-  function_on xs n G ->
-  (forall i:set, i :e n -> exists a:set, a :e J /\ apply_fun xs i :e apply_fun Gfam a) ->
-  alpha :e J ->
-  g :e apply_fun Gfam alpha ->
-  g :e G ->
-  exists n' xs':set, n' :e omega /\ n' <> 0 /\
-    function_on xs' n' G /\
-    (forall i:set, i :e n' -> exists a:set, a :e J /\ apply_fun xs' i :e apply_fun Gfam a) /\
-    apply_fun mult (word_product mult e xs n, g) = word_product mult e xs' n'.
-let G mult e inv J Gfam n xs g alpha.
-assume Hgrp : group_structure G mult e inv.
-assume HnO : n :e omega.
-assume HxsFn : function_on xs n G.
-assume HxsGfam : forall i:set, i :e n -> exists a:set, a :e J /\ apply_fun xs i :e apply_fun Gfam a.
-assume HalphaJ : alpha :e J.
-assume HgGfam : g :e apply_fun Gfam alpha.
-assume HgG : g :e G.
-claim HnNat : nat_p n. { exact (omega_nat_p n HnO). }
-claim HsnO : ordsucc n :e omega. { exact (omega_ordsucc n HnO). }
-set xs_ext := graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else g).
-(** Key equation from word_product_append_one **)
-claim Happend : word_product mult e xs_ext (ordsucc n) =
-  apply_fun mult (word_product mult e xs n, g).
-{ exact (word_product_append_one mult e xs g n HnO). }
-witness (ordsucc n). witness xs_ext.
-apply andI.
-{ apply andI.
-  { apply andI.
-    { apply andI.
-      { exact HsnO. }
-      { exact (neq_ordsucc_0 n). } }
-    { (** function_on xs_ext (ordsucc n) G **)
-      let i. assume Hisn : i :e ordsucc n.
-      claim Hap : apply_fun xs_ext i =
-        (if i :e n then apply_fun xs i else g).
-      { exact (apply_fun_graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else g) i Hisn). }
-      rewrite Hap.
-      apply (If_i_correct (i :e n) (apply_fun xs i) g).
-      { assume Htrue : (i :e n) /\ (if i :e n then apply_fun xs i else g) = apply_fun xs i.
-        claim Hin : i :e n.
-        { apply (Htrue (i :e n)). assume H1 H2. exact H1. }
-        claim Hif : (if i :e n then apply_fun xs i else g) = apply_fun xs i.
-        { apply (Htrue ((if i :e n then apply_fun xs i else g) = apply_fun xs i)). assume H1 H2. exact H2. }
-        rewrite Hif. exact (HxsFn i Hin). }
-      { assume Hfalse : ~(i :e n) /\ (if i :e n then apply_fun xs i else g) = g.
-        claim Hif : (if i :e n then apply_fun xs i else g) = g.
-        { apply (Hfalse ((if i :e n then apply_fun xs i else g) = g)). assume H1 H2. exact H2. }
-        rewrite Hif. exact HgG. } } }
-  { (** forall i :e ordsucc n, exists alpha, ... **)
-    let i. assume Hisn : i :e ordsucc n.
-    claim Hap : apply_fun xs_ext i =
-      (if i :e n then apply_fun xs i else g).
-    { exact (apply_fun_graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else g) i Hisn). }
-    rewrite Hap.
-    apply (If_i_correct (i :e n) (apply_fun xs i) g).
-    { assume Htrue : (i :e n) /\ (if i :e n then apply_fun xs i else g) = apply_fun xs i.
-      claim Hin : i :e n.
-      { apply (Htrue (i :e n)). assume H1 H2. exact H1. }
-      claim Hif : (if i :e n then apply_fun xs i else g) = apply_fun xs i.
-      { apply (Htrue ((if i :e n then apply_fun xs i else g) = apply_fun xs i)). assume H1 H2. exact H2. }
-      rewrite Hif. exact (HxsGfam i Hin). }
-    { assume Hfalse : ~(i :e n) /\ (if i :e n then apply_fun xs i else g) = g.
-      claim Hif : (if i :e n then apply_fun xs i else g) = g.
-      { apply (Hfalse ((if i :e n then apply_fun xs i else g) = g)). assume H1 H2. exact H2. }
-      rewrite Hif. witness alpha. apply andI. { exact HalphaJ. } { exact HgGfam. } } } }
-{ symmetry. exact Happend. }
-Qed.
+(** word_product_right_append_in_generated moved to main section **)
 
 (** Sandbox End Alice **)
 (** Sandbox Begin Bob **)
