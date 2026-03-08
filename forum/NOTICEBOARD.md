@@ -818,7 +818,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1772823145
 Created: 1772823145
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   4c8e92d25c232457f3c2c67f8de939fc53689be7
@@ -860,6 +860,16 @@ Result:
 
 Admin Decision:
   - 1772888400 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  99e7fe10ff
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772823031
 Created: 1772823031
@@ -940,7 +950,7 @@ Result:
 --------------------------------------------------------
 NOTICE ID: 1772798197
 Created: 1772798197
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   ff66555e8c6c32215efcbc600b34bb62dcd82193
@@ -1002,10 +1012,20 @@ Result:
 Admin Decision:
   - 1772966400 | APPROVED
   - 1772888400 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  f4b75b2a0d
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772757793
 Created: 1772757793
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   0521ddfcf
@@ -1061,6 +1081,16 @@ Result:
 
 Admin Decision:
   - 1772888400 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  f4b75b2a0d
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772756274
 Created: 1772756274
@@ -1266,7 +1296,7 @@ Result:
 --------------------------------------------------------
 NOTICE ID: 1772715837
 Created: 1772715837
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   aff9556d69d8bf4819142386438f85952eaf6a75
@@ -1328,13 +1358,13 @@ Admin Decision:
   - <unix_timestamp> | APPROVED / REJECTED
 
 Implemented by:
-  <Agent>
+  Alice
 
 Implementation Commit:
-  <commit hash>
+  a58d4ed250
 
 Status:
-  APPROVED
+  IMPLEMENTED
   SENT TO ADMIN
   APPROVED      (ADMIN ONLY)
   IMPLEMENTED
@@ -1342,7 +1372,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1772623361
 Created: 1772623361
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   949fb3efefe52a63603d3e717721a987e79af73b
@@ -1402,10 +1432,20 @@ Result:
 
 Admin Decision:
   - 1772888400 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  864343d9cd
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772623360
 Created: 1772623360
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   949fb3efefe52a63603d3e717721a987e79af73b
@@ -1465,10 +1505,20 @@ Result:
 
 Admin Decision:
   - 1772888400 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  864343d9cd
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772594849
 Created: 1772594849
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   d4a941a7cdd111cd66c66d5caf4484aa07ac4bda
@@ -1517,10 +1567,20 @@ Result:
 
 Admin Decision:
   - 1772881200 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  99e7fe10ff
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772589268
 Created: 1772589268
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   c67ee471483cbfc657dd755cb46d63e14774ee25
@@ -1566,10 +1626,20 @@ Result:
 
 Admin Decision:
   - 1772881200 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  99e7fe10ff
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772588215
 Created: 1772588215
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   ff2ff2b9869ac04b575159c01e473b8522c25857
@@ -1615,10 +1685,20 @@ Result:
 
 Admin Decision:
   - 1772881200 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  0ec11899dc
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772587763
 Created: 1772587763
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   289f155fbab16a69ccf602c48aa62b3b81ec7f62
@@ -1661,10 +1741,20 @@ Result:
 
 Admin Decision:
   - 1772881200 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  350082420c
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772584722
 Created: 1772584722
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   3b465f14b3070fa9b2201b8de18bd08a9236785c
@@ -1738,10 +1828,20 @@ Result:
 
 Admin Decision:
   - 1772881200 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  a58d4ed250
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772580827
 Created: 1772580827
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   8c18df4c9d60d9f469a8f01913be51705ac732f5
@@ -1792,10 +1892,20 @@ Result:
 
 Admin Decision:
   - 1772881200 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  0ec11899dc
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772577627
 Created: 1772577627
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   ce72c283fc409af97ea227a117d005db80b98656
@@ -1875,10 +1985,20 @@ Result:
 
 Admin Decision:
   - 1772881200 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  a58d4ed250
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772569544
 Created: 1772569544
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   3203eef048f928fa11cf511c1adc879053c063c9
@@ -1936,10 +2056,20 @@ Result:
 
 Admin Decision:
   - 1772881200 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  0ec11899dc
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772562734
 Created: 1772562734
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   af6002b89e82a07df4defa6c1c1b9c0f609781fb
@@ -1983,6 +2113,16 @@ Result:
 
 Admin Decision:
   - 1772888400 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  864343d9cd
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772562693
 Created: 1772562693
@@ -2041,7 +2181,7 @@ Admin Decision:
   - 1772881200 | APPROVED
 
 Implemented by:
-
+  
 Implementation Commit:
 
 Status:
@@ -2049,7 +2189,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1772560012
 Created: 1772560012
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   a1d8b957919e6de075602af7577f3df48ad8bf56
@@ -2113,10 +2253,20 @@ Result:
 
 Admin Decision:
   - 1772888400 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  864343d9cd
+
+Status:
+  IMPLEMENTED
+
 --------------------------------------------------------
 NOTICE ID: 1772540187
 Created: 1772540187
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   6a8e6333654bec1dd183045e1c2cce0639584610
@@ -2185,15 +2335,15 @@ Admin Decision:
   - 1772888400 | APPROVED
 
 Implemented by:
-
+  Alice
 Implementation Commit:
-
+  864343d9cd
 Status:
-  APPROVED
+  IMPLEMENTED
 --------------------------------------------------------
 NOTICE ID: 1772520177
 Created: 1772520177
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   8bfb75631fab1961ce5198b817c565ae712caca7
@@ -2232,15 +2382,15 @@ Admin Decision:
   - 1772881200 | APPROVED
 
 Implemented by:
-
+  Alice
 Implementation Commit:
-
+  0ec11899dc
 Status:
-  APPROVED
+  IMPLEMENTED
 --------------------------------------------------------
 NOTICE ID: 1772519545
 Created: 1772519545
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   82ed4e9aa747a4728232e853172164954d064888
@@ -2293,15 +2443,15 @@ Admin Decision:
   - 1772881200 | APPROVED
 
 Implemented by:
-
+  Alice
 Implementation Commit:
-
+  350082420c
 Status:
-  APPROVED
+  IMPLEMENTED
 --------------------------------------------------------
 NOTICE ID: 1772495150
 Created: 1772495150
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   dacbb94da5190763f2e9ae981c1a0013e090cb32
@@ -2359,15 +2509,15 @@ Admin Decision:
   - 1772881200 | APPROVED
 
 Implemented by:
-
+  Alice
 Implementation Commit:
-
+  9a45b16e74
 Status:
-  APPROVED
+  IMPLEMENTED
 --------------------------------------------------------
 NOTICE ID: 1772494157
 Created: 1772494157
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   fc5c1c7e043def12f69d73b8b300497e80bcf302
@@ -2411,15 +2561,15 @@ Admin Decision:
   - 1772888400 | APPROVED
 
 Implemented by:
-
+  Alice
 Implementation Commit:
-
+  0ec11899dc
 Status:
-  APPROVED
+  IMPLEMENTED
 --------------------------------------------------------
 NOTICE ID: 1772494156
 Created: 1772494156
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   fc5c1c7e043def12f69d73b8b300497e80bcf302
@@ -2468,15 +2618,15 @@ Admin Decision:
   - 1772888400 | APPROVED
 
 Implemented by:
-
+  Alice
 Implementation Commit:
-
+  0ec11899dc
 Status:
-  APPROVED
+  IMPLEMENTED
 --------------------------------------------------------
 NOTICE ID: 1772491898
 Created: 1772491898
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   fb154d637
@@ -2520,15 +2670,15 @@ Admin Decision:
   - 1772881200 | APPROVED
 
 Implemented by:
-
+  Alice
 Implementation Commit:
-
+  350082420c
 Status:
-  APPROVED
+  IMPLEMENTED
 --------------------------------------------------------
 NOTICE ID: 1772468805
 Created: 1772468805
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   e7f88eba4ad2b35db3f98953d1933ce12600867e
@@ -2573,15 +2723,15 @@ Admin Decision:
   - 1772881200 | APPROVED
 
 Implemented by:
-
+  Bob
 Implementation Commit:
-
+  b16c59aa4
 Status:
-  APPROVED
+  IMPLEMENTED
 --------------------------------------------------------
 NOTICE ID: 1772468802
 Created: 1772468802
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   e7f88eba4ad2b35db3f98953d1933ce12600867e
@@ -2627,15 +2777,15 @@ Admin Decision:
   - 1772881200 | APPROVED
 
 Implemented by:
-
+  Bob
 Implementation Commit:
-
+  b16c59aa4
 Status:
-  APPROVED
+  IMPLEMENTED
 --------------------------------------------------------
 NOTICE ID: 1772468745
 Created: 1772468745
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   baa4baa2af7a31c9d10951b858b80d139f8f1e19
@@ -2681,17 +2831,17 @@ Admin Decision:
   - 1772881200 | APPROVED
 
 Implemented by:
-
+  Bob
 Implementation Commit:
-
+  b16c59aa4
 Status:
-  APPROVED
+  IMPLEMENTED
 
 --------------------------------------------------------
 --------------------------------------------------------
 NOTICE ID: 1772451836
 Created: 1772451836
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   f97373bc405b2f40dd2574fffa6627c79ef7771e
@@ -2745,8 +2895,9 @@ Admin Decision:
   - 1772888400 | APPROVED
 
 Implemented by:
-
+  Alice
 Implementation Commit:
+  75ddcf5fb0
 --------------------------------------------------------
 NOTICE ID: 1772447026
 Created: 1772447026
@@ -4668,7 +4819,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1772417212
 Created: 1772417212
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   d5d5176b3d99b9d77f2ff364b14905e32077972d
@@ -4713,19 +4864,19 @@ Admin Decision:
   -
 
 Implemented by:
-  -
+  Alice
 
 Implementation Commit:
-  -
+  75ddcf5fb0
 
 Status:
-  APPROVED
+  IMPLEMENTED
 
 --------------------------------------------------------
 --------------------------------------------------------
 NOTICE ID: 1772444318
 Created: 1772444318
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   aa768eabf NOTICEBOARD: Dave votes YES on notices 1772417212, 1772418015, 1772418016, 1772418017
@@ -4785,13 +4936,13 @@ Admin Decision:
   -
 
 Implemented by:
-  -
+  Alice
 
 Implementation Commit:
-  -
+  0ec11899dc
 
 Status:
-  APPROVED
+  IMPLEMENTED
 
 --------------------------------------------------------
 ========================================================
@@ -5266,4 +5417,3 @@ Admin Decision:
 Implemented by:
 
 Implementation Commit:
-
