@@ -4993,6 +4993,7 @@ Discussion:
 
 Requested Approvals:
   - Alice: APPROVED (confirmed: proved column_continuity_via_chain_with_F as Qed, the non-F version is indeed unprovable without joint continuity)
+  - Bob: APPROVED (agree; needs joint continuity)
   - Charlie
 
 ----
@@ -5026,6 +5027,7 @@ Discussion:
 
 Requested Approvals:
   - Alice: APPROVED (confirmed: the parametric version path_lift_column_continuous_on_product_ball_parametric is already Qed, the non-parametric version needs joint continuity)
+  - Bob: APPROVED (agree; parametric version should replace)
   - Charlie
 
 ----
@@ -5059,6 +5061,7 @@ Discussion:
 
 Requested Approvals:
   - Alice
+  - Bob: APPROVED (agree; missing parentheses makes statement unprovable)
   - Charlie
 
 ----
