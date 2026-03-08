@@ -904,7 +904,7 @@ Approvals:
   - 1772826012 | Alice: YES
   - 1772830752 | Bob: YES
   - | Charlie:
-  - | Dave:
+  - 1772999917 | Dave: YES
 
 Result:
   PROPOSED
@@ -5298,9 +5298,12 @@ Discussion:
     total_function_space_extensional, which requires g, idG in total_function_space X X.
     The hypothesis G c= total_function_space X X provides this.
 
-Requested Approvals:
-  - Bob
-  - Charlie
+Approvals:
+  - 1772900990 | Alice: YES
+  - 1772999917 | Dave: YES
+
+Result:
+  PROPOSED
 
 ========================================================
 
@@ -5428,7 +5431,7 @@ Approvals:
   - 1772962528 | Alice: YES
   - | Bob:
   - | Charlie:
-  - | Dave:
+  - 1772999917 | Dave: YES
 
 Result:
   PROPOSED
