@@ -1,0 +1,22 @@
+CHANGES13499 (from bck13498, 392425 lines to bck13499, 392426 lines)
+
+1. Moved two new Qed helper theorems from Alice sandbox to main section:
+
+   a. group_power_nat_commutes_with_base (Qed, ~69 lines):
+      - x^k times x = x times x^k in any group
+      - Proof by nat_ind: base case via identity laws, step via associativity + IH
+      - Placed after group_power_nat_identity_cyclic_helper (line ~105431)
+
+   b. inv_of_power_nat_eq_power_inv (Qed, ~177 lines):
+      - inv(a^n) = (inv a)^n in any group
+      - Proof by nat_ind: base uses inv(e)=e, step uses anti-homomorphism
+        property of inv (inv(ab)=inv(b)inv(a)) proved via group_left_cancel,
+        then commutativity helper (a) to swap (inv a)^k and inv(a).
+      - Placed before extension_property_forces_free_product_generated_subgroups
+        (line ~270650) so it can be referenced by the subgroup proof.
+
+2. Cleaned sandbox (removed duplicate markers).
+
+3. Line change: +1 (net: moved content, removed duplicates)
+
+Running totals: 357 Admitted (unchanged), Alice balance: 7663

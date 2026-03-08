@@ -193913,6 +193913,49 @@ claim HscX_if_pcX :
     Hi_triv
     Hj_triv).
 }
+claim HpcU_assumed : path_connected_space U (subspace_topology X Tx U).
+{
+  exact HpcU.
+}
+claim HpcV_assumed : path_connected_space V (subspace_topology X Tx V).
+{
+  exact HpcV.
+}
+claim HpcPieces :
+  path_connected_space U (subspace_topology X Tx U) /\
+  path_connected_space V (subspace_topology X Tx V).
+{
+  exact (lemma59_4a_path_connected_pieces_from_data
+    X
+    Tx
+    U
+    V
+    x0
+    Htop
+    HU
+    HV
+    Hcover
+    Hx0UV
+    HpcUV
+    Hi_triv
+    Hj_triv
+    HpcU_assumed
+    HpcV_assumed).
+}
+claim HpcU : path_connected_space U (subspace_topology X Tx U).
+{
+  exact (andEL
+    (path_connected_space U (subspace_topology X Tx U))
+    (path_connected_space V (subspace_topology X Tx V))
+    HpcPieces).
+}
+claim HpcV : path_connected_space V (subspace_topology X Tx V).
+{
+  exact (andER
+    (path_connected_space U (subspace_topology X Tx U))
+    (path_connected_space V (subspace_topology X Tx V))
+    HpcPieces).
+}
 exact (HscX_if_pcX HpcU HpcV).
 Admitted.
 
