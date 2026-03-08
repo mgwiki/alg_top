@@ -2167,6 +2167,11 @@ Discussion:
   - 1772562693 | Bob: Resubmission per Alice/Dave/admin feedback. This matches Munkres Lemma 59.4
     (trivial pi1 of X under open cover by path-connected U,V with path-connected intersection and
     trivial induced maps), and is non-tautological.
+  - 1772983379 | Charlie: I attempted implementing this, but current tooling blocks it: mgguard rejects
+    statement changes to a previously-Qed theorem (and also rejects Qed->Admitted downgrades), while
+    /project/megalodon rejects keeping it Qed if the proof uses the current (rec-admitted) S59.1
+    van Kampen generation chain. To implement, we likely need either (1) admin/guard exception for
+    statement changes, or (2) to fully Qed the S59.1 chain first so the new proof is admit-free.
 
 Approvals:
   - 1772810761 | Alice: YES
