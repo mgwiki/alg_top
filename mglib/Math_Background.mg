@@ -167042,6 +167042,46 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
       - exact HloopV.
       - exact HloopVc.
     }
+    (** Transition index set and least transition (for block decomposition). **)
+    set Trans := {k :e n |
+      (k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset)}.
+    claim HTrans_sub_omega : Trans c= omega.
+    {
+      let k. assume HkT.
+      claim HkN : k :e n.
+      { exact (SepE1 n
+          (fun k0:set =>
+            (k0 :e Uset /\ ordsucc k0 :e Vset) \/
+            (k0 :e Vset /\ ordsucc k0 :e Uset)) k HkT). }
+      exact (ordinal_TransSet omega omega_ordinal n HnOmega k HkN).
+    }
+    claim HTrans_nonempty : Trans <> Empty.
+    {
+      assume HTempty : Trans = Empty.
+      apply Htransition_index.
+      let k. assume Hkpack.
+      claim HkN : k :e n.
+      { exact (andEL (k :e n)
+          ((k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset))
+          Hkpack). }
+      claim HkT :
+        (k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset).
+      { exact (andER (k :e n)
+          ((k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset))
+          Hkpack). }
+      claim HkTrans : k :e Trans.
+      {
+        apply (SepI n
+          (fun k0:set =>
+            (k0 :e Uset /\ ordsucc k0 :e Vset) \/
+            (k0 :e Vset /\ ordsucc k0 :e Uset))
+          k HkN HkT).
+      }
+      exact (EmptyE k (eq_subst_mem_set k Trans Empty HkTrans HTempty)).
+    }
+    claim HTrans_least :
+      exists k0:set, k0 :e Trans /\ forall k:set, k :e Trans -> (k0 :e k \/ k0 = k).
+    { exact (omega_nonempty_subset_has_least Trans HTrans_sub_omega HTrans_nonempty). }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
@@ -314112,7 +314152,6 @@ Qed.
 
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
-(** Lock Alice 1772977022 **)
 Theorem thm81_5_properly_discontinuous_covering :
   forall X Tx G idG:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
