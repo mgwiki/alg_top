@@ -1,0 +1,10 @@
+CHANGES13504 (from bck13503, 393065 lines to bck13504, 393137 lines)
+
+1. Compiled and fixed word_product_right_append_in_generated in Alice's sandbox:
+   - Fixed left-associative conjunction nesting in apply andI calls
+   - Fixed neq_ordsucc_0 name (was incorrectly ordsucc_not_eq_0)
+   - Changed from Admitted to Qed - fully proved
+
+2. Line change: +72 (structural fixes)
+
+Running totals: 358 Admitted (unchanged), Alice balance: 7663
