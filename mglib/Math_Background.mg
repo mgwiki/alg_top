@@ -1,5 +1,5 @@
-(** Balance Alice 7781 **)
-(** Balance Bob 5671 **)
+(** Balance Alice 7663 **)
+(** Balance Bob 5789 **)
 (** Balance Charlie 1441 **)
 (** Balance Dave 2020 **)
 
@@ -161745,6 +161745,35 @@ exact (connected_subset_unit_interval_interval_property
   HzBetween).
 Qed.
 
+(** Infrastructure: mixed case for ball_cover_word_construction (to be completed). **)
+Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  x0 :e U :/\: V ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  f :e loop_space X Tx x0 ->
+  r :e R -> Rlt 0 r ->
+  (forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V)) ->
+  ~(forall t:set, t :e unit_interval -> apply_fun f t :e U) ->
+  ~(forall t:set, t :e unit_interval -> apply_fun f t :e V) ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 f = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+Admitted.
+
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -165040,6 +165069,307 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         exact (Hball_path n (ordsuccI2 n)
           (apply_fun t_seq mlast) 1
           Ht_last_in_seqn H1_in_seqn).
+    }
+    (** Existence of a transition index between U-set and V-set along the chain. **)
+    set WU := (ordsucc n) :\: Uset.
+    set WV := (ordsucc n) :\: Vset.
+    claim HWU_sub_omega : WU c= omega.
+    {
+      let k. assume HkWU.
+      claim HkOn : k :e ordsucc n.
+      { exact (setminusE1 (ordsucc n) Uset k HkWU). }
+      exact (Hordsucc_sub_omega k HkOn).
+    }
+    claim HWV_sub_omega : WV c= omega.
+    {
+      let k. assume HkWV.
+      claim HkOn : k :e ordsucc n.
+      { exact (setminusE1 (ordsucc n) Vset k HkWV). }
+      exact (Hordsucc_sub_omega k HkOn).
+    }
+    claim HWU_nonempty : WU <> Empty.
+    {
+      assume HWUemp : WU = Empty.
+      claim HallUall :
+        forall k:set, k :e ordsucc n ->
+          forall t:set, t :e apply_fun seq k -> apply_fun f t :e U.
+      {
+        let k. assume Hk.
+        let t. assume Ht.
+        apply (xm (k :e Uset)).
+        - assume HkU : k :e Uset.
+          exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t0:set, t0 :e apply_fun seq k0 -> apply_fun f t0 :e U)
+            k HkU t Ht).
+        - assume HkNotU : ~(k :e Uset).
+          claim HkWU : k :e WU.
+          {
+            exact (setminusI (ordsucc n) Uset k Hk HkNotU).
+          }
+          claim HkEmpty : k :e Empty.
+          { exact (eq_subst_mem_set k WU Empty HkWU HWUemp). }
+          exact (FalseE (EmptyE k HkEmpty) (apply_fun f t :e U)).
+      }
+      exact (HnotAllU (Hchain_allU HallUall)).
+    }
+    claim HWV_nonempty : WV <> Empty.
+    {
+      assume HWVemp : WV = Empty.
+      claim HallVall :
+        forall k:set, k :e ordsucc n ->
+          forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
+      {
+        let k. assume Hk.
+        let t. assume Ht.
+        apply (xm (k :e Vset)).
+        - assume HkV : k :e Vset.
+          exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t0:set, t0 :e apply_fun seq k0 -> apply_fun f t0 :e V)
+            k HkV t Ht).
+        - assume HkNotV : ~(k :e Vset).
+          claim HkWV : k :e WV.
+          {
+            exact (setminusI (ordsucc n) Vset k Hk HkNotV).
+          }
+          claim HkEmpty : k :e Empty.
+          { exact (eq_subst_mem_set k WV Empty HkWV HWVemp). }
+          exact (FalseE (EmptyE k HkEmpty) (apply_fun f t :e V)).
+      }
+      exact (HnotAllV (Hchain_allV HallVall)).
+    }
+    claim HWU_least :
+      exists m:set, m :e WU /\ forall k:set, k :e WU -> (m :e k \/ m = k).
+    { exact (omega_nonempty_subset_has_least WU HWU_sub_omega HWU_nonempty). }
+    claim HWV_least :
+      exists m:set, m :e WV /\ forall k:set, k :e WV -> (m :e k \/ m = k).
+    { exact (omega_nonempty_subset_has_least WV HWV_sub_omega HWV_nonempty). }
+    claim Htransition_index :
+      exists k:set, k :e n /\
+        ((k :e Uset /\ ordsucc k :e Vset) \/
+         (k :e Vset /\ ordsucc k :e Uset)).
+    {
+      apply HWU_least.
+      let mU. assume HmUpack.
+      claim HmU_WU : mU :e WU.
+      { exact (andEL (mU :e WU) (forall k:set, k :e WU -> (mU :e k \/ mU = k)) HmUpack). }
+      claim HmU_least :
+        forall k:set, k :e WU -> (mU :e k \/ mU = k).
+      { exact (andER (mU :e WU) (forall k:set, k :e WU -> (mU :e k \/ mU = k)) HmUpack). }
+      claim HmUOn : mU :e ordsucc n.
+      { exact (setminusE1 (ordsucc n) Uset mU HmU_WU). }
+      claim HmU_notU : ~(mU :e Uset).
+      { exact (setminusE2 (ordsucc n) Uset mU HmU_WU). }
+      claim HmU_omega : mU :e omega.
+      { exact (HWU_sub_omega mU HmU_WU). }
+      claim HmU_nat : nat_p mU.
+      { exact (omega_nat_p mU HmU_omega). }
+      claim HmU_cases : mU = 0 \/ exists k:set, nat_p k /\ mU = ordsucc k.
+      { exact (nat_inv mU HmU_nat). }
+      apply HmU_cases.
+      - assume HmU0 : mU = 0.
+        (** 0 notin Uset, so 0 in Vset; use least index not in Vset to get a transition V->U **)
+        claim H0V : 0 :e Vset.
+        {
+          apply (Hball_map_index 0 H0inOn).
+          - assume H0U : 0 :e Uset.
+            claim HmU_Uset : mU :e Uset.
+            { rewrite HmU0. exact H0U. }
+            exact (FalseE (HmU_notU HmU_Uset) (0 :e Vset)).
+          - assume H0V. exact H0V.
+        }
+        apply HWV_least.
+        let mV. assume HmVpack.
+        claim HmV_WV : mV :e WV.
+        { exact (andEL (mV :e WV) (forall k:set, k :e WV -> (mV :e k \/ mV = k)) HmVpack). }
+        claim HmV_least :
+          forall k:set, k :e WV -> (mV :e k \/ mV = k).
+        { exact (andER (mV :e WV) (forall k:set, k :e WV -> (mV :e k \/ mV = k)) HmVpack). }
+        claim HmVOn : mV :e ordsucc n.
+        { exact (setminusE1 (ordsucc n) Vset mV HmV_WV). }
+        claim HmV_notV : ~(mV :e Vset).
+        { exact (setminusE2 (ordsucc n) Vset mV HmV_WV). }
+        claim HmV_omega : mV :e omega.
+        { exact (HWV_sub_omega mV HmV_WV). }
+        claim HmV_nat : nat_p mV.
+        { exact (omega_nat_p mV HmV_omega). }
+        claim HmV_cases : mV = 0 \/ exists k:set, nat_p k /\ mV = ordsucc k.
+        { exact (nat_inv mV HmV_nat). }
+        apply HmV_cases.
+        + assume HmV0 : mV = 0.
+          claim HmV_Vset : mV :e Vset.
+          { rewrite HmV0. exact H0V. }
+          exact (FalseE (HmV_notV HmV_Vset)
+            (exists k:set, k :e n /\
+              ((k :e Uset /\ ordsucc k :e Vset) \/
+               (k :e Vset /\ ordsucc k :e Uset)))).
+        + assume HmVsucc : exists k:set, nat_p k /\ mV = ordsucc k.
+          apply HmVsucc.
+          let k. assume Hkpack.
+          claim HkNat : nat_p k.
+          { exact (andEL (nat_p k) (mV = ordsucc k) Hkpack). }
+          claim HmVeq : mV = ordsucc k.
+          { exact (andER (nat_p k) (mV = ordsucc k) Hkpack). }
+          claim Hk_in_mV : k :e mV.
+          { rewrite HmVeq. exact (ordsuccI2 k). }
+          claim HkOn : k :e ordsucc n.
+          { exact (ordinal_TransSet (ordsucc n) (ordinal_ordsucc n (nat_p_ordinal n HnNat)) mV HmVOn k Hk_in_mV). }
+          claim Hk_notWV : ~(k :e WV).
+          {
+            assume HkWV : k :e WV.
+            apply (HmV_least k HkWV).
+            - assume HmVin : mV :e k.
+              exact (FalseE (In_no2cycle k mV Hk_in_mV HmVin) False).
+            - assume HmVeqk : mV = k.
+              claim HmV_in_mV : mV :e mV.
+              { exact (eq_subst_mem mV k mV HmVeqk Hk_in_mV). }
+              exact (FalseE (In_irref mV HmV_in_mV) False).
+          }
+          claim HkV : k :e Vset.
+          {
+            apply (xm (k :e Vset)).
+            - assume HkV. exact HkV.
+            - assume HkNotV.
+              claim HkWV : k :e WV.
+              { exact (setminusI (ordsucc n) Vset k HkOn HkNotV). }
+              exact (FalseE (Hk_notWV HkWV) (k :e Vset)).
+          }
+          claim HmVU : mV :e Uset.
+          {
+            apply (Hball_map_index mV HmVOn).
+            - assume HmVU. exact HmVU.
+            - assume HmVV.
+              exact (FalseE (HmV_notV HmVV) (mV :e Uset)).
+          }
+          claim Hk_in_n : k :e n.
+          {
+            apply (ordsuccE n (ordsucc k)).
+            - rewrite <- HmVeq. exact HmVOn.
+            - assume Hk_in_n0.
+              exact (ordinal_TransSet n (nat_p_ordinal n HnNat) (ordsucc k) Hk_in_n0 k (ordsuccI2 k)).
+            - assume HmVeqn : ordsucc k = n.
+              rewrite <- HmVeqn. exact (ordsuccI2 k).
+          }
+          witness k.
+          apply andI.
+          - exact Hk_in_n.
+          - apply orIR.
+            apply andI.
+            + exact HkV.
+            + rewrite <- HmVeq. exact HmVU.
+      - assume HmUsucc : exists k:set, nat_p k /\ mU = ordsucc k.
+        apply HmUsucc.
+        let k. assume Hkpack.
+        claim HkNat : nat_p k.
+        { exact (andEL (nat_p k) (mU = ordsucc k) Hkpack). }
+        claim HmUeq : mU = ordsucc k.
+        { exact (andER (nat_p k) (mU = ordsucc k) Hkpack). }
+        claim Hk_in_mU : k :e mU.
+        { rewrite HmUeq. exact (ordsuccI2 k). }
+        claim HkOn : k :e ordsucc n.
+        { exact (ordinal_TransSet (ordsucc n) (ordinal_ordsucc n (nat_p_ordinal n HnNat)) mU HmUOn k Hk_in_mU). }
+        claim Hk_notWU : ~(k :e WU).
+        {
+          assume HkWU : k :e WU.
+          apply (HmU_least k HkWU).
+          - assume HmUin : mU :e k.
+            exact (FalseE (In_no2cycle k mU Hk_in_mU HmUin) False).
+            - assume HmUeqk : mU = k.
+            claim HmU_in_mU : mU :e mU.
+            { exact (eq_subst_mem mU k mU HmUeqk Hk_in_mU). }
+            exact (FalseE (In_irref mU HmU_in_mU) False).
+        }
+        claim HkU : k :e Uset.
+        {
+          apply (xm (k :e Uset)).
+          - assume HkU. exact HkU.
+          - assume HkNotU.
+            claim HkWU : k :e WU.
+            { exact (setminusI (ordsucc n) Uset k HkOn HkNotU). }
+            exact (FalseE (Hk_notWU HkWU) (k :e Uset)).
+        }
+        claim HmUV : mU :e Vset.
+        {
+          apply (Hball_map_index mU HmUOn).
+          - assume HmUU.
+            exact (FalseE (HmU_notU HmUU) (mU :e Vset)).
+          - assume HmUV. exact HmUV.
+        }
+        claim Hk_in_n : k :e n.
+        {
+          apply (ordsuccE n (ordsucc k)).
+          - rewrite <- HmUeq. exact HmUOn.
+          - assume Hk_in_n0.
+            exact (ordinal_TransSet n (nat_p_ordinal n HnNat) (ordsucc k) Hk_in_n0 k (ordsuccI2 k)).
+          - assume HmUeqn : ordsucc k = n.
+            rewrite <- HmUeqn. exact (ordsuccI2 k).
+        }
+        witness k.
+        apply andI.
+        - exact Hk_in_n.
+        - apply orIL.
+          apply andI.
+          + exact HkU.
+          + rewrite <- HmUeq. exact HmUV.
+    }
+    (** Prefix chain path from 0 to t_seq m for any m :e n. **)
+    claim Hprefix_chain_path :
+      forall m:set, m :e n ->
+        exists hpre:set,
+          continuous_map unit_interval unit_interval_topology
+            unit_interval unit_interval_topology hpre /\
+          apply_fun hpre 0 = 0 /\
+          apply_fun hpre 1 = apply_fun t_seq m.
+    {
+      let m. assume Hm.
+      claim HmOmega : m :e omega.
+      { exact (ordinal_TransSet omega omega_ordinal n HnOmega m Hm). }
+      claim Hm_sub : ordsucc m c= ordsucc n.
+      {
+        let i. assume Hi : i :e ordsucc m.
+        apply (ordsuccE m i Hi).
+        - assume Hi_in_m.
+          claim Hi_in_n : i :e n.
+          { exact (ordinal_TransSet n (nat_p_ordinal n HnNat) m Hm i Hi_in_m). }
+          exact (ordsuccI1 n i Hi_in_n).
+        - assume Hi_eq_m.
+          claim Hm_in_n : m :e n.
+          { exact Hm. }
+          rewrite Hi_eq_m.
+          exact (ordsuccI1 n m Hm_in_n).
+      }
+      claim HseqmFun : function_on seq (ordsucc m) BallFam.
+      { exact (function_on_restrict_dom seq (ordsucc n) (ordsucc m) BallFam HseqFun Hm_sub). }
+      claim H0_in_seqm0 : 0 :e apply_fun seq 0.
+      { exact H0_in_seq0. }
+      claim Hm_in_seqm : apply_fun t_seq m :e apply_fun seq m.
+      {
+        exact (andEL
+          (apply_fun t_seq m :e apply_fun seq m)
+          (apply_fun t_seq m :e apply_fun seq (ordsucc m))
+          (Ht_seq_mem m Hm)).
+      }
+      claim HseqmInter :
+        forall k:set, k :e m -> apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+      {
+        let k. assume Hk.
+        claim Hk_in_n : k :e n.
+        { exact (ordinal_TransSet n (nat_p_ordinal n HnNat) m Hm k Hk). }
+        exact (HseqInter k Hk_in_n).
+      }
+      exact (unit_interval_ball_chain_path_between
+        r1
+        m
+        seq
+        0
+        (apply_fun t_seq m)
+        Hr1R
+        Hr1pos
+        Hr1lt1
+        HmOmega
+        HseqmFun
+        H0_in_seqm0
+        Hm_in_seqm
+        HseqmInter).
     }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
@@ -216045,7 +216375,7 @@ Qed.
 (** phi: G -> G' such that phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
 (** Admin-approved-refactored per noticeboard proposal 1772540187 **)
-(** Collected Alice 118 **)
+(** Collected Bob 118 **)
 (** Proven Alice **)
 Theorem thm67_6_uniqueness_direct_sum :
   forall J Gfam multfam efam invfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
