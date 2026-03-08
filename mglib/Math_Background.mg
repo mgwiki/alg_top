@@ -229435,6 +229435,32 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
       S c= N /\
       (forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> N c= N')).
 
+(** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
+(** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
+Lemma free_product_boundary_product_ne_e_or_efam :
+  forall G multG eG invG J Gfam efam al n xs m alpha0:set,
+  free_product_of_subgroups G multG eG invG J Gfam efam ->
+  al :e J ->
+  apply_fun efam al :e apply_fun Gfam al ->
+  apply_fun efam al <> eG ->
+  apply_fun invG (apply_fun efam al) = apply_fun efam al ->
+  reduced_word J Gfam efam n xs ->
+  n = ordsucc m ->
+  nat_p m ->
+  m <> 0 ->
+  alpha0 :e J ->
+  apply_fun xs 0 :e apply_fun Gfam alpha0 ->
+  apply_fun xs 0 <> eG ->
+  apply_fun xs 0 <> apply_fun efam alpha0 ->
+  apply_fun xs m :e apply_fun Gfam alpha0 ->
+  apply_fun xs m <> eG ->
+  apply_fun xs m <> apply_fun efam alpha0 ->
+  alpha0 <> al ->
+  word_product multG eG xs n = apply_fun efam al ->
+  let p := apply_fun multG (apply_fun xs m, apply_fun xs 0) in
+    p <> eG /\ p <> apply_fun efam alpha0.
+Admitted.
+
 (** Infrastructure: involutive efam(al) cannot be nontrivial in its subgroup in a free product **)
 (** This isolates the remaining "order 2" subcase in efam_not_in_Gfam_nontrivial. **)
 (** Bounty 97 **)
@@ -231073,7 +231099,36 @@ apply (nat_inv n Hn_nat).
 								                      (eq_symm (apply_fun multG (eG, xlast)) xlast HidLx))).
 								                }
 								                (** Remaining work: need torsion-in-free-product lemma: any involution is conjugate into a factor, then malnormality forces w = eG, contradicting Hefam_ne. **)
-								                admit.
+								                claim Hxsm_ne_eG : apply_fun xs m <> eG.
+								                {
+								                  claim Hn_ne0 : n <> 0.
+								                  { rewrite Hn_sm. exact (neq_ordsucc_0 m). }
+								                  claim Hn_ne1 : n <> 1.
+								                  {
+								                    assume Hn1.
+								                    claim Hs : ordsucc m = ordsucc 0.
+								                    { rewrite <- Hn_sm. rewrite <- ordsucc_0_eq_1_nat. exact Hn1. }
+								                    exact (Hm_ne0 (ordsucc_inj m 0 Hs)).
+								                  }
+								                  claim Hm_in_n : m :e n.
+								                  { rewrite Hn_sm. exact (ordsuccI2 m). }
+								                  exact (reduced_word_no_eG_all
+								                    G multG eG invG J Gfam efam n xs
+								                    Hgrp Hsubfam Hred Hn_ne0 Hn_ne1 m Hm_in_n).
+								                }
+								                claim Hp_ne_pack : p <> eG /\ p <> apply_fun efam alpha0.
+								                {
+								                  exact (free_product_boundary_product_ne_e_or_efam
+								                    G multG eG invG J Gfam efam al n xs m alpha0
+								                    Hfp Hal Hefam_Gal Hefam_ne Hinv_eq
+								                    Hred Hn_sm Hm_nat Hm_ne0
+									                    Halpha0J Hx0_in_Ga0 Hxs0_ne_eG Hx0_ne_ef0
+									                    Hxlast_in_Ga0 Hxsm_ne_eG Hxlast_ne_ef0
+									                    Halpha0_ne Hwp).
+									                }
+								                claim Hp_ne_eG2 : p <> eG.
+								                { exact (andEL (p <> eG) (p <> apply_fun efam alpha0) Hp_ne_pack). }
+								                exact (Hp_ne_eG2 Hp_eG).
 								            - assume Hp_ne_eG : p <> eG.
 								              apply (xm (p = apply_fun efam alpha0)).
 						              - assume Hp_eq_ef0 : p = apply_fun efam alpha0.
@@ -231083,7 +231138,36 @@ apply (nat_inv n Hn_nat).
 						                claim Hef0_ne_eG : apply_fun efam alpha0 <> eG.
 						                { rewrite <- Hp_eq_ef0. exact Hp_ne_eG. }
 						                (** Remaining work: need torsion-in-free-product or malnormality lemma to rule out efam alpha0 as boundary product. **)
-						                admit.
+						                claim Hxsm_ne_eG : apply_fun xs m <> eG.
+						                {
+						                  claim Hn_ne0 : n <> 0.
+						                  { rewrite Hn_sm. exact (neq_ordsucc_0 m). }
+						                  claim Hn_ne1 : n <> 1.
+						                  {
+						                    assume Hn1.
+						                    claim Hs : ordsucc m = ordsucc 0.
+						                    { rewrite <- Hn_sm. rewrite <- ordsucc_0_eq_1_nat. exact Hn1. }
+						                    exact (Hm_ne0 (ordsucc_inj m 0 Hs)).
+						                  }
+						                  claim Hm_in_n : m :e n.
+						                  { rewrite Hn_sm. exact (ordsuccI2 m). }
+						                  exact (reduced_word_no_eG_all
+						                    G multG eG invG J Gfam efam n xs
+						                    Hgrp Hsubfam Hred Hn_ne0 Hn_ne1 m Hm_in_n).
+						                }
+						                claim Hp_ne_pack : p <> eG /\ p <> apply_fun efam alpha0.
+						                {
+						                  exact (free_product_boundary_product_ne_e_or_efam
+						                    G multG eG invG J Gfam efam al n xs m alpha0
+						                    Hfp Hal Hefam_Gal Hefam_ne Hinv_eq
+						                    Hred Hn_sm Hm_nat Hm_ne0
+						                    Halpha0J Hx0_in_Ga0 Hxs0_ne_eG Hx0_ne_ef0
+						                    Hxlast_in_Ga0 Hxsm_ne_eG Hxlast_ne_ef0
+						                    Halpha0_ne Hwp).
+						                }
+						                claim Hp_ne_ef0 : p <> apply_fun efam alpha0.
+						                { exact (andER (p <> eG) (p <> apply_fun efam alpha0) Hp_ne_pack). }
+						                exact (Hp_ne_ef0 Hp_eq_ef0).
 						              - assume Hp_ne_ef0 : p <> apply_fun efam alpha0.
 						                (** Build a reduced word for mult(w,w) by merging (xlast,x0) into p and appending the suffix word. **)
 						                claim Hn_nat : nat_p n.
