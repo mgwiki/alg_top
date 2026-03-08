@@ -160863,6 +160863,72 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+(** Infrastructure: ball-cover property yields a Lebesgue number eps_N. **)
+Lemma ball_property_implies_lebesgue_eps :
+  forall U V f r:set,
+  r :e R -> Rlt 0 r ->
+  (forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V)) ->
+  exists N:set, N :e omega /\
+    lebesgue_number_metric
+      unit_interval
+      R_bounded_metric
+      (UPair (preimage_of unit_interval f U) (preimage_of unit_interval f V))
+      (eps_ N).
+let U V f r.
+assume HrR Hrpos Hball.
+claim Hleb_r :
+  lebesgue_number_metric
+    unit_interval
+    R_bounded_metric
+    (UPair (preimage_of unit_interval f U) (preimage_of unit_interval f V))
+    r.
+{
+  exact (ball_property_implies_lebesgue_preimage U V f r HrR Hrpos Hball).
+}
+claim HexN : exists N:set, N :e omega /\ eps_ N < r.
+{ exact (exists_eps_lt_pos r HrR Hrpos). }
+apply HexN.
+let N. assume HNpack.
+claim HNomega : N :e omega.
+{ exact (andEL (N :e omega) (eps_ N < r) HNpack). }
+claim HNlt : eps_ N < r.
+{ exact (andER (N :e omega) (eps_ N < r) HNpack). }
+claim HepsR : eps_ N :e R.
+{ exact (eps_in_R_omega N HNomega). }
+claim Hepspos : Rlt 0 (eps_ N).
+{
+  exact (RltI 0 (eps_ N) real_0 HepsR (SNo_eps_pos N HNomega)).
+}
+claim Hepslt : Rlt (eps_ N) r.
+{ exact (RltI (eps_ N) r HepsR HrR HNlt). }
+claim Hleb_eps :
+  lebesgue_number_metric
+    unit_interval
+    R_bounded_metric
+    (UPair (preimage_of unit_interval f U) (preimage_of unit_interval f V))
+    (eps_ N).
+{
+  exact (lebesgue_number_metric_shrink
+    unit_interval
+    R_bounded_metric
+    (UPair (preimage_of unit_interval f U) (preimage_of unit_interval f V))
+    (eps_ N)
+    r
+    HepsR
+    HrR
+    Hepspos
+    Hepslt
+    Hleb_r).
+}
+witness N.
+apply andI.
+- exact HNomega.
+- exact Hleb_eps.
+Qed.
+
+(** Proven Bob **)
 (** Infrastructure: fixed-radius ball chain in unit_interval **)
 Lemma unit_interval_ball_chain : forall r:set,
   r :e R -> Rlt 0 r ->
