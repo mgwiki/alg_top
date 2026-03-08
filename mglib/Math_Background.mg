@@ -195794,20 +195794,9 @@ claim HpcPieces :
   path_connected_space U (subspace_topology X Tx U) /\
   path_connected_space V (subspace_topology X Tx V).
 {
-  exact (lemma59_4a_path_connected_pieces_from_data
-    X
-    Tx
-    U
-    V
-    x0
-    Htop
-    HU
-    HV
-    Hcover
-    Hx0UV
-    HpcUV
-    Hi_triv
-    Hj_triv
+  exact (andI
+    (path_connected_space U (subspace_topology X Tx U))
+    (path_connected_space V (subspace_topology X Tx V))
     HpcU_assumed
     HpcV_assumed).
 }
