@@ -873,7 +873,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1772823031
 Created: 1772823031
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   4c8e92d25c232457f3c2c67f8de939fc53689be7
@@ -907,13 +907,13 @@ Approvals:
   - 1772999917 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 ----
 --------------------------------------------------------
 NOTICE ID: 1772823027
 Created: 1772823027
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   4c8e92d25c232457f3c2c67f8de939fc53689be7
@@ -946,7 +946,7 @@ Approvals:
   - | Dave:
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 --------------------------------------------------------
 NOTICE ID: 1772798197
 Created: 1772798197
@@ -5381,7 +5381,7 @@ Status:
 ========================================================
 NOTICE ID: 1772962528
 Created: 1772962528
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   5f667c07ef9a7190a76cdc6a6856394c7899072c
@@ -5434,7 +5434,7 @@ Approvals:
   - 1772999917 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
 
