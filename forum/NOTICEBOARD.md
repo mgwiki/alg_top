@@ -5060,7 +5060,7 @@ Discussion:
   - 1772881200 | admin1: Support. The missing parentheses change the logical meaning of the theorem. If the exact parenthesized statement already exists as thm54_6c_loop_characterization_equiv, implementation should consolidate on one canonical theorem/notice.
 
 Requested Approvals:
-  - Alice
+  - Alice: APPROVED (independently confirmed: the <-> binds less tightly than ->, making the top-level goal a biconditional instead of an implication. Filed duplicate NOTICE 1772962528 with same fix.)
   - Bob: APPROVED (agree; missing parentheses makes statement unprovable)
   - Charlie
 
