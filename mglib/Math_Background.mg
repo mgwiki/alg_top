@@ -195905,53 +195905,8 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
   Hpi1X).
 Qed.
 
-(** helper: isolate the remaining S59.4a gap (path-connectedness of U and V) **)
-(** Admin-approved-refactored per noticeboard proposal 1772361663 **)
-Theorem lemma59_4a_path_connected_pieces_from_data : forall X Tx U V x0:set,
-  topology_on X Tx ->
-  U :e Tx -> V :e Tx ->
-  X = U :\/: V ->
-  x0 :e U :/\: V ->
-  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
-  (forall cls:set,
-    cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
-    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-      (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
-  (forall cls:set,
-    cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
-    apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-      (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
-  path_connected_space U (subspace_topology X Tx U) ->
-  path_connected_space V (subspace_topology X Tx V) ->
-  path_connected_space U (subspace_topology X Tx U) /\
-  path_connected_space V (subspace_topology X Tx V).
-let X Tx U V x0.
-assume Htop : topology_on X Tx.
-assume HU : U :e Tx.
-assume HV : V :e Tx.
-assume Hcover : X = U :\/: V.
-assume Hx0UV : x0 :e U :/\: V.
-assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
-assume Hi_triv : forall cls:set,
-  cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
-  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-    (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0.
-assume Hj_triv : forall cls:set,
-  cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
-  apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-    (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0.
-assume HpcU : path_connected_space U (subspace_topology X Tx U).
-assume HpcV : path_connected_space V (subspace_topology X Tx V).
-exact (andI
-  (path_connected_space U (subspace_topology X Tx U))
-  (path_connected_space V (subspace_topology X Tx V))
-  HpcU
-  HpcV).
-Qed.
-
-(** Helper: intended S59.4(a) conclusion for noticeboard proposal 1772562693 (temporary new lemma). **)
 (** Admin-approved-refactored per noticeboard proposal 1772562693 **)
-Theorem lemma59_4a_pi1_trivial_from_data : forall X Tx U V x0:set,
+Theorem lemma59_4a_path_connected_pieces_from_data : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
   X = U :\/: V ->
@@ -196017,6 +195972,49 @@ exact (lemma59_4a_pi1_trivial_from_i_generation
   Hx0U
   Hgen
   Hi_triv).
+Admitted.
+
+(** Helper: intended S59.4(a) conclusion for noticeboard proposal 1772562693 (alias). **)
+(** Admin-approved-refactored per noticeboard proposal 1772562693 **)
+Theorem lemma59_4a_pi1_trivial_from_data : forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  x0 :e U :/\: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  (forall cls:set,
+    cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  (forall cls:set,
+    cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+    apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+      (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  fundamental_group X Tx x0 = Sing (fundamental_group_id X Tx x0).
+let X Tx U V x0.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hcover : X = U :\/: V.
+assume Hx0UV : x0 :e U :/\: V.
+assume HpcU : path_connected_space U (subspace_topology X Tx U).
+assume HpcV : path_connected_space V (subspace_topology X Tx V).
+assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+assume Hi_triv : forall cls:set,
+  cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+assume Hj_triv : forall cls:set,
+  cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+  apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+    (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+exact (lemma59_4a_path_connected_pieces_from_data
+  X Tx U V x0
+  Htop HU HV Hcover Hx0UV
+  HpcU HpcV HpcUV
+  Hi_triv Hj_triv).
 Admitted.
 
 (** Helper: if i-star and j-star are trivial and pieces are path connected, then X is simply connected. **)
