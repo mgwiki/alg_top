@@ -193913,6 +193913,49 @@ claim HscX_if_pcX :
     Hi_triv
     Hj_triv).
 }
+claim HpcU_assumed : path_connected_space U (subspace_topology X Tx U).
+{
+  exact HpcU.
+}
+claim HpcV_assumed : path_connected_space V (subspace_topology X Tx V).
+{
+  exact HpcV.
+}
+claim HpcPieces :
+  path_connected_space U (subspace_topology X Tx U) /\
+  path_connected_space V (subspace_topology X Tx V).
+{
+  exact (lemma59_4a_path_connected_pieces_from_data
+    X
+    Tx
+    U
+    V
+    x0
+    Htop
+    HU
+    HV
+    Hcover
+    Hx0UV
+    HpcUV
+    Hi_triv
+    Hj_triv
+    HpcU_assumed
+    HpcV_assumed).
+}
+claim HpcU : path_connected_space U (subspace_topology X Tx U).
+{
+  exact (andEL
+    (path_connected_space U (subspace_topology X Tx U))
+    (path_connected_space V (subspace_topology X Tx V))
+    HpcPieces).
+}
+claim HpcV : path_connected_space V (subspace_topology X Tx V).
+{
+  exact (andER
+    (path_connected_space U (subspace_topology X Tx U))
+    (path_connected_space V (subspace_topology X Tx V))
+    HpcPieces).
+}
 exact (HscX_if_pcX HpcU HpcV).
 Admitted.
 
@@ -270784,88 +270827,6 @@ exact (HInd n HnNat).
 Qed.
 
 
-(** Infrastructure helper for S69 backward direction:
-    extension property forces each generator to have no nontrivial positive power equal to e. **)
-
-(** Infrastructure helper for S69 backward direction:
-    extension property forces the free-product decomposition by cyclic generator subgroups. **)
-Theorem extension_property_forces_free_product_generated_subgroups :
-  forall G mult e inv J gens:set,
-  group_structure G mult e inv ->
-  function_on gens J G ->
-  (forall H multH eH invH:set,
-    group_structure H multH eH invH ->
-    forall ys:set, function_on ys J H ->
-      exists h:set,
-        group_homomorphism G mult H multH h /\
-        (forall alpha:set, alpha :e J ->
-          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
-        (forall h':set, group_homomorphism G mult H multH h' ->
-          (forall alpha:set, alpha :e J ->
-            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
-          forall x:set, x :e G -> apply_fun h' x = apply_fun h x)) ->
-  free_product_of_subgroups G mult e inv J
-    (graph J (fun alpha:set =>
-      {g :e G | exists n:set, n :e int /\
-        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
-         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
-    (graph J (fun alpha:set => e)).
-let G mult e inv J gens.
-assume Hgrp : group_structure G mult e inv.
-assume Hgens : function_on gens J G.
-assume Hext :
-  forall H multH eH invH:set,
-    group_structure H multH eH invH ->
-    forall ys:set, function_on ys J H ->
-      exists h:set,
-        group_homomorphism G mult H multH h /\
-        (forall alpha:set, alpha :e J ->
-          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
-        (forall h':set, group_homomorphism G mult H multH h' ->
-          (forall alpha:set, alpha :e J ->
-            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
-          forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-set Gfam := graph J (fun alpha:set =>
-  {g :e G | exists n:set, n :e int /\
-    ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
-     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-      g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}).
-set efam := graph J (fun alpha:set => e).
-prove
-  group_structure G mult e inv /\
-  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) /\
-  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
-    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e) /\
-  subgroups_generate G mult e inv J Gfam /\
-  (forall x:set, x :e G -> x <> e ->
-    exists n xs:set,
-      reduced_word J Gfam efam n xs /\ n <> 0 /\
-      word_product mult e xs n = x /\
-      (forall n' xs':set,
-        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
-        word_product mult e xs' n' = x ->
-        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
-apply andI.
-- apply andI.
-  + apply andI.
-    * apply andI.
-      { (** Component 1: group_structure - immediate from hypothesis **)
-        exact Hgrp.
-      }
-      { (** Component 2: each Gfam(alpha) is a subgroup **)
-        admit.
-      }
-    * (** Component 3: disjointness - proved in extension_property_forces_disjointness (below) **)
-      (** Forward reference prevents direct use; this admit is the only gap that is
-          fully resolved by the standalone Qed theorem extension_property_forces_disjointness. **)
-      admit.
-  + (** Component 4: subgroups_generate **)
-    admit.
-- (** Component 5: unique reduced word representation **)
-  admit.
-Admitted.
-
 (** Helper for S69 Lem 69.1: each generator lies in its cyclic factor family. **)
 (** Proven Bob **)
 Theorem lemma69_1_generator_in_factor_family :
@@ -273029,6 +272990,90 @@ apply (xm (x = e)).
   }
   exact (FalseE (Hhxne0 Hhx0) (x = e)).
 Qed.
+(** Infrastructure helper for S69 backward direction:
+    extension property forces each generator to have no nontrivial positive power equal to e. **)
+
+(** Infrastructure helper for S69 backward direction:
+    extension property forces the free-product decomposition by cyclic generator subgroups. **)
+Theorem extension_property_forces_free_product_generated_subgroups :
+  forall G mult e inv J gens:set,
+  group_structure G mult e inv ->
+  function_on gens J G ->
+  (forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x)) ->
+  free_product_of_subgroups G mult e inv J
+    (graph J (fun alpha:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+    (graph J (fun alpha:set => e)).
+let G mult e inv J gens.
+assume Hgrp : group_structure G mult e inv.
+assume Hgens : function_on gens J G.
+assume Hext :
+  forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+set Gfam := graph J (fun alpha:set =>
+  {g :e G | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}).
+set efam := graph J (fun alpha:set => e).
+prove
+  group_structure G mult e inv /\
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) /\
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e) /\
+  subgroups_generate G mult e inv J Gfam /\
+  (forall x:set, x :e G -> x <> e ->
+    exists n xs:set,
+      reduced_word J Gfam efam n xs /\ n <> 0 /\
+      word_product mult e xs n = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+apply andI.
+- apply andI.
+  + apply andI.
+    * apply andI.
+      { (** Component 1: group_structure - immediate from hypothesis **)
+        exact Hgrp.
+      }
+      { (** Component 2: each Gfam(alpha) is a subgroup **)
+        admit.
+      }
+    * (** Component 3: disjointness - resolved by extension_property_forces_disjointness **)
+      let alpha beta. assume HalphaJ HbetaJ Hne.
+      let x. assume HxGfamA HxGfamB.
+      exact (extension_property_forces_disjointness
+        G mult e inv J gens alpha beta x
+        Hgrp Hgens Hext HalphaJ HbetaJ Hne HxGfamA HxGfamB).
+  + (** Component 4: subgroups_generate **)
+    admit.
+- (** Component 5: unique reduced word representation **)
+  admit.
+Admitted.
+
 
 (** from S69 Lem 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
 (** LATEX VERSION: G is a free group with generators {a_alpha} iff for any group H **)
