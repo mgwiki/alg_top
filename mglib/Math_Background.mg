@@ -231317,6 +231317,100 @@ exact (disjoint_subgroups_label_unique
   Hdisjoint HalphaJ HbetaJ HxGa HxGb Hx_ne_e).
 Qed.
 
+(** Infrastructure: in a free product, any nontrivial element from a factor has reduced word length 1 **)
+(** Proven Charlie **)
+Lemma free_product_factor_element_length1 :
+  forall G mult e inv J Gfam efam alpha x n xs:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  alpha :e J ->
+  x :e apply_fun Gfam alpha ->
+  x <> e ->
+  x <> apply_fun efam alpha ->
+  reduced_word J Gfam efam n xs ->
+  n <> 0 ->
+  word_product mult e xs n = x ->
+  n = 1.
+let G mult e inv J Gfam efam alpha x n xs.
+assume Hfp HalphaJ HxGalpha Hx_ne_e Hx_ne_efam Hred Hn_ne0 Hwp.
+apply (and5E
+  (group_structure G mult e inv)
+  (forall a:set, a :e J -> subgroup_of (apply_fun Gfam a) G mult e inv)
+  (forall a b:set, a :e J -> b :e J -> a <> b ->
+    forall y:set, y :e apply_fun Gfam a -> y :e apply_fun Gfam b -> y = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall y:set, y :e G -> y <> e ->
+    exists n0 xs0:set,
+      reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product mult e xs0 n0 = y /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = y ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsubfam _ _ Huniq.
+(** x is a group element via subgroup inclusion **)
+claim HxG : x :e G.
+{
+  exact (subgroup_of_subset (apply_fun Gfam alpha) G mult e inv
+    (Hsubfam alpha HalphaJ)
+    x
+    HxGalpha).
+}
+(** Get the unique reduced word for x from the free product axiom **)
+apply (Huniq x HxG Hx_ne_e).
+let n0. assume Hex : exists xs0:set,
+  reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+  word_product mult e xs0 n0 = x /\
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = x ->
+    n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+apply Hex. let xs0.
+assume Hpack :
+  reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+  word_product mult e xs0 n0 = x /\
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = x ->
+    n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+apply (and4E
+  (reduced_word J Gfam efam n0 xs0)
+  (n0 <> 0)
+  (word_product mult e xs0 n0 = x)
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = x ->
+    n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i))
+  Hpack).
+assume Hred0 Hn0_ne0 Hwp0 Huniq0.
+
+(** Compare the canonical reduced word with the singleton reduced word for x (since x <> efam(alpha)). **)
+set xw := graph 1 (fun _:set => x).
+claim Hxw_red : reduced_word J Gfam efam 1 xw.
+{ exact (reduced_word_singleton J Gfam efam alpha x HalphaJ HxGalpha Hx_ne_efam). }
+claim Hxw_wp : word_product mult e xw 1 = x.
+{
+  exact (word_product_singleton_group G mult e inv x Hgrp HxG).
+}
+claim Hn0_eq_1 : n0 = 1.
+{
+  exact (andEL
+    (n0 = 1)
+    (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xw i)
+    (Huniq0 1 xw Hxw_red (neq_ordsucc_0 0) Hxw_wp)).
+}
+(** Uniqueness against the given reduced word (n,xs) forces n = n0 = 1. **)
+claim Hn0_eq_n : n0 = n.
+{
+  exact (andEL
+    (n0 = n)
+    (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs i)
+    (Huniq0 n xs Hred Hn_ne0 (eq_i_tra (word_product mult e xs n) x x Hwp (eq_refl x)))).
+}
+rewrite <- Hn0_eq_n.
+exact Hn0_eq_1.
+Qed.
+
 (** Infrastructure: the least normal subgroup of G containing a subset S **)
 Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
   fun G mult e inv S =>
