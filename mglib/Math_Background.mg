@@ -164908,6 +164908,139 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         f
         Hfh_hom_f).
     }
+    (** Build explicit chain segments inside balls (for future concatenation). **)
+    claim H0inOn : 0 :e ordsucc n.
+    { exact (nat_0_in_ordsucc n HnNat). }
+    claim H0_in_n : 0 :e n.
+    {
+      claim Hn_cases : n = 0 \/ exists m:set, nat_p m /\ n = ordsucc m.
+      { exact (nat_inv n HnNat). }
+      apply Hn_cases.
+      - assume Hn0 : n = 0.
+        exact (FalseE (Hnneq0 Hn0) (0 :e n)).
+      - assume HmEx : exists m:set, nat_p m /\ n = ordsucc m.
+        apply HmEx.
+        let m. assume HmPack.
+        claim HmNat : nat_p m.
+        { exact (andEL (nat_p m) (n = ordsucc m) HmPack). }
+        claim HnEq : n = ordsucc m.
+        { exact (andER (nat_p m) (n = ordsucc m) HmPack). }
+        rewrite HnEq.
+        exact (nat_0_in_ordsucc m HmNat).
+    }
+    claim Ht0_in_seq0 :
+      apply_fun t_seq 0 :e apply_fun seq 0.
+    { exact (andEL
+        (apply_fun t_seq 0 :e apply_fun seq 0)
+        (apply_fun t_seq 0 :e apply_fun seq (ordsucc 0))
+        (Ht_seq_mem 0 H0_in_n)). }
+    claim Hseg0_ex :
+      exists seg0:set,
+        continuous_map unit_interval unit_interval_topology
+          (apply_fun seq 0)
+          (subspace_topology R R_standard_topology (apply_fun seq 0)) seg0 /\
+        apply_fun seg0 0 = 0 /\
+        apply_fun seg0 1 = apply_fun t_seq 0.
+    {
+      exact (Hball_path 0 H0inOn 0 (apply_fun t_seq 0) H0_in_seq0 Ht0_in_seq0).
+    }
+    claim Hseg_mid_ex :
+      forall k:set, k :e n -> ordsucc k :e n ->
+        exists seg:set,
+          continuous_map unit_interval unit_interval_topology
+            (apply_fun seq (ordsucc k))
+            (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k))) seg /\
+          apply_fun seg 0 = apply_fun t_seq k /\
+          apply_fun seg 1 = apply_fun t_seq (ordsucc k).
+    {
+      let k. assume Hk Hk1.
+      claim HkOn : ordsucc k :e ordsucc n.
+      { exact (ordsuccI1 n (ordsucc k) Hk1). }
+      claim Ht_in_seqk1 :
+        apply_fun t_seq k :e apply_fun seq (ordsucc k).
+      { exact (andER
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)). }
+      claim Ht1_in_seqk1 :
+        apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc k).
+      { exact (andEL
+          (apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc k))
+          (apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc (ordsucc k)))
+          (Ht_seq_mem (ordsucc k) Hk1)). }
+      exact (Hball_path (ordsucc k) HkOn
+        (apply_fun t_seq k) (apply_fun t_seq (ordsucc k))
+        Ht_in_seqk1 Ht1_in_seqk1).
+    }
+    claim Hseg_last_ex :
+      n <> 0 ->
+        exists segL:set,
+          continuous_map unit_interval unit_interval_topology
+            (apply_fun seq n)
+            (subspace_topology R R_standard_topology (apply_fun seq n)) segL /\
+          apply_fun segL 0 = apply_fun t_seq (Eps_i (fun m0:set => nat_p m0 /\ n = ordsucc m0)) /\
+          apply_fun segL 1 = 1.
+    {
+      assume Hnneq0.
+      claim Hn_cases : n = 0 \/ exists m:set, nat_p m /\ n = ordsucc m.
+      { exact (nat_inv n HnNat). }
+      apply Hn_cases.
+      - assume Hn0 : n = 0.
+        exact (FalseE (Hnneq0 Hn0)
+          (exists segL:set,
+            continuous_map unit_interval unit_interval_topology
+              (apply_fun seq n)
+              (subspace_topology R R_standard_topology (apply_fun seq n)) segL /\
+            apply_fun segL 0 =
+              apply_fun t_seq (Eps_i (fun m0:set => nat_p m0 /\ n = ordsucc m0)) /\
+            apply_fun segL 1 = 1)).
+      - assume HmEx : exists m:set, nat_p m /\ n = ordsucc m.
+        apply HmEx.
+        let m. assume HmPack.
+        set mlast := Eps_i (fun m0:set => nat_p m0 /\ n = ordsucc m0).
+        claim Hmlast_prop : nat_p mlast /\ n = ordsucc mlast.
+        {
+          apply (Eps_i_ex (fun m0:set => nat_p m0 /\ n = ordsucc m0)).
+          witness m. exact HmPack.
+        }
+        claim Hmlast_eq : n = ordsucc mlast.
+        { exact (andER (nat_p mlast) (n = ordsucc mlast) Hmlast_prop). }
+        claim Hmlast_in_n : mlast :e n.
+        {
+          exact (eq_subst_mem_set
+            mlast
+            (ordsucc mlast)
+            n
+            (ordsuccI2 mlast)
+            (eq_symm n (ordsucc mlast) Hmlast_eq)).
+        }
+        claim Ht_last_in_seqn :
+          apply_fun t_seq mlast :e apply_fun seq n.
+        {
+          claim Ht_last_in_ordsucc :
+            apply_fun t_seq mlast :e apply_fun seq (ordsucc mlast).
+          {
+            exact (andER
+              (apply_fun t_seq mlast :e apply_fun seq mlast)
+              (apply_fun t_seq mlast :e apply_fun seq (ordsucc mlast))
+              (Ht_seq_mem mlast Hmlast_in_n)).
+          }
+          claim Hseq_eq : apply_fun seq (ordsucc mlast) = apply_fun seq n.
+          {
+            rewrite <- Hmlast_eq.
+            reflexivity.
+          }
+          exact (eq_subst_mem_set
+            (apply_fun t_seq mlast)
+            (apply_fun seq (ordsucc mlast))
+            (apply_fun seq n)
+            Ht_last_in_ordsucc
+            Hseq_eq).
+        }
+        exact (Hball_path n (ordsuccI2 n)
+          (apply_fun t_seq mlast) 1
+          Ht_last_in_seqn H1_in_seqn).
+    }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
