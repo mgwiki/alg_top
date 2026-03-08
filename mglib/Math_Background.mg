@@ -308821,6 +308821,14 @@ exact (iffEL
   Hleft alpha HalphaLoop HliftEnd).
 Qed.
 
+(** Infrastructure: bridge from continuous_map to total_function_space **)
+(** This captures the semantic fact that a continuous map between topological **)
+(** spaces is a well-behaved set of ordered pairs in the total function space. **)
+Theorem continuous_map_in_total_function_space : forall X Tx Y Ty f:set,
+  continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
+admit.
+Admitted.
+
 (** from S81 Thm 81.2 (line 5055 in algtop.tex) **)
 (** LATEX VERSION: The bijection Phi^{-1} o Psi : C(E,p,B) -> N(H0)/H0 **)
 (** is an isomorphism of groups. **)
@@ -309231,8 +309239,10 @@ claim Hct_unique : forall h1 h2:set, h1 :e CTG -> h2 :e CTG ->
   claim Hpointwise : forall x:set, x :e E -> apply_fun h1 x = apply_fun h2 x.
   { exact (covering_map_lifts_agree_on_connected_domain E Te B Tb p E Te p h1 h2 e0 Hcov HconnE Hh1_lift Hh2_lift He0E Heq_e0). }
   (** Function extensionality **)
-  claim Hh1_total : h1 :e total_function_space E E. { admit. }
-  claim Hh2_total : h2 :e total_function_space E E. { admit. }
+  claim Hh1_total : h1 :e total_function_space E E.
+  { exact (continuous_map_in_total_function_space E Te E Te h1 Hh1_cont). }
+  claim Hh2_total : h2 :e total_function_space E E.
+  { exact (continuous_map_in_total_function_space E Te E Te h2 Hh2_cont). }
   exact (total_function_space_extensional E E h1 h2 Hh1_total Hh2_total Hpointwise). }
 (** Same lc value implies same left coset in N **)
 claim Hsame_lc_same_coset : forall c1 c2:set, c1 :e N -> c2 :e N ->
@@ -309377,7 +309387,10 @@ claim Hsame_lc_same_coset : forall c1 c2:set, c1 :e N -> c2 :e N ->
             (andI (apply_fun gamma 0 = e0) (apply_fun gamma 1 = e0)
               Hgamma_0 Hgamma_1_e0))). }
       claim Hgamma_ls : gamma :e loop_space E Te e0.
-      { admit. }
+      { claim Hgamma_fs : gamma :e function_space unit_interval E.
+        { exact (total_function_space_sub_function_space unit_interval E gamma
+            (continuous_map_in_total_function_space unit_interval unit_interval_topology E Te gamma Hgamma_cont)). }
+        exact (SepI (function_space unit_interval E) (fun f:set => loop_at E Te e0 f) gamma Hgamma_fs Hgamma_la). }
       claim Hgamma_FG : path_homotopy_class_loop E Te e0 gamma :e fundamental_group E Te e0.
       { exact (path_homotopy_class_in_fundamental_group E Te e0 gamma Hgamma_ls). }
       set pof := compose_fun unit_interval gamma p.
@@ -309775,7 +309788,10 @@ apply (group_isomorphism_intro CTG multCTG QGset QGmult phi).
               (andI (apply_fun gamma2 0 = e0) (apply_fun gamma2 1 = e0)
                 Hgamma2_0 Hgamma2_1_e0))). }
         claim Hgamma2_ls : gamma2 :e loop_space E Te e0.
-        { admit. }
+        { claim Hgamma2_fs : gamma2 :e function_space unit_interval E.
+          { exact (total_function_space_sub_function_space unit_interval E gamma2
+              (continuous_map_in_total_function_space unit_interval unit_interval_topology E Te gamma2 Hgamma2_cont)). }
+          exact (SepI (function_space unit_interval E) (fun f:set => loop_at E Te e0 f) gamma2 Hgamma2_fs Hgamma2_la). }
         claim Hgamma2_FG : path_homotopy_class_loop E Te e0 gamma2 :e fundamental_group E Te e0.
         { exact (path_homotopy_class_in_fundamental_group E Te e0 gamma2 Hgamma2_ls). }
         (** [delta2] :e H0 via induced_homomorphism **)
@@ -309933,7 +309949,10 @@ apply (group_isomorphism_intro CTG multCTG QGset QGmult phi).
     claim Hh_fun_on : function_on h E E.
     { exact (continuous_map_function_on E Te E Te h Hh_cont). }
     claim HhCTG : h :e CTG.
-    { admit. }
+    { claim Hh_fs : h :e function_space E E.
+      { exact (total_function_space_sub_function_space E E h
+          (continuous_map_in_total_function_space E Te E Te h Hh_cont)). }
+      exact (SepI (function_space E E) (fun h0:set => covering_transformation E Te B Tb p h0) h Hh_fs Hh_ct). }
     (** phi(h) = left_coset cls_h H0 where lc(cls_h) = h(e0) = lc(g) **)
     claim Hphi_h_eq : apply_fun phi h = phiFun h.
     { exact (apply_fun_graph CTG phiFun h HhCTG). }
