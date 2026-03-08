@@ -308194,14 +308194,71 @@ set phiFun := fun h:set =>
     (Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0))
     H0.
 set phi := graph CTG phiFun.
+(** Key property: for any CT h, there exists a class in G mapping to h(e0) via lc **)
+claim Hphi_cls_exists : forall h:set, h :e CTG ->
+  exists cls:set, cls :e G /\ apply_fun lc cls = apply_fun h e0.
+{ let h. assume HhCTG.
+  claim Hct : covering_transformation E Te B Tb p h.
+  { exact (SepE2 (function_space E E) (fun h0:set => covering_transformation E Te B Tb p h0) h HhCTG). }
+  claim Hh_fun : function_on h E E.
+  { exact (continuous_map_function_on E Te E Te h
+      (homeomorphism_continuous E Te E Te h
+        (andEL (homeomorphism E Te E Te h) (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) Hct))). }
+  claim HhE_in_E : apply_fun h e0 :e E.
+  { exact (Hh_fun e0 He0E). }
+  claim HphE : apply_fun p (apply_fun h e0) = apply_fun p e0.
+  { exact (andER (homeomorphism E Te E Te h) (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) Hct e0 He0E). }
+  claim HhE_fib : apply_fun h e0 :e {x :e E | apply_fun p x = apply_fun p e0}.
+  { exact (SepI E (fun x:set => apply_fun p x = apply_fun p e0) (apply_fun h e0) HhE_in_E HphE). }
+  claim Hlc_surj : surjective_map G {x :e E | apply_fun p x = apply_fun p e0} lc.
+  { exact (thm54_4_lifting_correspondence_surjective E Te B Tb p e0 Hcov He0E HpcE). }
+  exact (andER (function_on lc G {x :e E | apply_fun p x = apply_fun p e0})
+    (forall y:set, y :e {x :e E | apply_fun p x = apply_fun p e0} -> exists x:set, x :e G /\ apply_fun lc x = y)
+    Hlc_surj (apply_fun h e0) HhE_fib). }
+(** Eps_i-selected class is in G with correct lc value **)
+claim Hphi_cls_prop : forall h:set, h :e CTG ->
+  Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0) :e G /\
+  apply_fun lc (Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0)) = apply_fun h e0.
+{ let h. assume HhCTG.
+  apply (Hphi_cls_exists h HhCTG).
+  let cls0. assume Hcls0Pack.
+  exact (Eps_i_ax (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0) cls0 Hcls0Pack). }
+(** Eps_i-selected class is in N **)
+claim Hphi_cls_in_N : forall h:set, h :e CTG ->
+  Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0) :e N.
+{ let h. assume HhCTG. exact (Hcls_in_N h HhCTG). }
+(** phi maps CTG to QGset **)
+claim Hphi_fun : function_on phi CTG QGset.
+{ let h. assume HhCTG.
+  claim Hphi_h_eq : apply_fun phi h = phiFun h.
+  { exact (apply_fun_graph CTG phiFun h HhCTG). }
+  claim HclsN : Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0) :e N.
+  { exact (Hphi_cls_in_N h HhCTG). }
+  rewrite Hphi_h_eq.
+  exact (ReplI N (fun g:set => left_coset multG g H0) (Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0)) HclsN). }
 witness phi.
 apply (group_isomorphism_intro CTG multCTG QGset QGmult phi).
 (** Part 1: group_homomorphism **)
 - prove group_homomorphism CTG multCTG QGset QGmult phi.
-  admit.
+  prove function_on phi CTG QGset /\
+    (forall x y:set, x :e CTG -> y :e CTG ->
+      apply_fun phi (apply_fun multCTG (x, y)) =
+      apply_fun QGmult (apply_fun phi x, apply_fun phi y)).
+  apply andI.
+  + exact Hphi_fun.
+  + (** Homomorphism property **)
+    admit.
 (** Part 2: bijection **)
 - prove bijection CTG QGset phi.
-  admit.
+  prove function_on phi CTG QGset /\
+    (forall y:set, y :e QGset ->
+      exists x:set, x :e CTG /\ apply_fun phi x = y /\
+        (forall x':set, x' :e CTG -> apply_fun phi x' = y -> x' = x)).
+  apply andI.
+  + exact Hphi_fun.
+  + let c. assume HcQG.
+    (** c = left_coset multG g H0 for some g :e N **)
+    admit.
 Admitted.
 
 (** from S81 Definition (line 5103 in algtop.tex): regular covering map **)
