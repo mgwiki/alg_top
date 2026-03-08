@@ -236521,7 +236521,15 @@ claim HGfam_mult_cl : forall alpha:set, alpha :e J ->
   { claim Heq : apply_fun ImageFam alpha = homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
     { exact (HIF_eval alpha Hal). }
     rewrite <- Heq. exact (Hfp_sub alpha Hal). }
-  admit. (** TODO: wire up group_structure for injective_homomorphism_source_closure **) }
+  apply (Hfactor_grp alpha Hal).
+  let ea.
+  assume Hex_inva : exists inva:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea inva.
+  apply Hex_inva.
+  let inva.
+  assume Hgs : group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea inva.
+  exact (group_source_mult_closure
+    (apply_fun Gfam alpha) (apply_fun multfam alpha)
+    ea inva Hgs x y Hx Hy). }
 (** Prove kfam(alpha) is a group_homomorphism from ImageFam(alpha) with multG to H with multH **)
 claim Hkfam_hom : forall alpha:set, alpha :e J ->
   group_homomorphism (apply_fun ImageFam alpha) multG H multH (apply_fun kfam alpha).
