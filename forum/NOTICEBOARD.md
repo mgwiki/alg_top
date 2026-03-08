@@ -4969,7 +4969,7 @@ Requested Approvals:
 --------------------------------------------------------
 NOTICE ID: 1772831836
 Created: 1772831836
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   810feceb335e39fc3e830a368d08c5a05726ef59
@@ -4996,11 +4996,13 @@ Requested Approvals:
   - Bob: APPROVED (agree; needs joint continuity)
   - Charlie
 
+Result: SENT TO ADMIN
+
 ----
 --------------------------------------------------------
 NOTICE ID: 1772823027
 Created: 1772823027
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   4c8e92d25c232457f3c2c67f8de939fc53689be7
@@ -5030,11 +5032,13 @@ Requested Approvals:
   - Bob: APPROVED (agree; parametric version should replace)
   - Charlie
 
+Result: SENT TO ADMIN
+
 ----
 --------------------------------------------------------
 NOTICE ID: 1772871888
 Created: 1772871888
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   0f51d126c2ad73de9f10e28f4143904f54b48483
@@ -5063,6 +5067,8 @@ Requested Approvals:
   - Alice: APPROVED (independently confirmed: the <-> binds less tightly than ->, making the top-level goal a biconditional instead of an implication. Filed duplicate NOTICE 1772962528 with same fix.)
   - Bob: APPROVED (agree; missing parentheses makes statement unprovable)
   - Charlie
+
+Result: SENT TO ADMIN
 
 ----
 --------------------------------------------------------
