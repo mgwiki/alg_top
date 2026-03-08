@@ -307657,6 +307657,61 @@ apply iffI.
   + exact Hh_e0.
 Qed.
 
+(** Helper: instantiate a forall-set with two preconditions at a specific set value **)
+(** Proven Alice **)
+Theorem set_forall_imp2_instantiate : forall x:set,
+  forall A:set -> prop, forall B:set -> prop, forall C:set -> prop,
+  (forall y:set, A y -> B y -> C y) -> A x -> B x -> C x.
+let x A B C. assume H Ha Hb. apply (H x). exact Ha. exact Hb.
+Qed.
+
+(** Helper: forward direction of lemma81_1 with clean argument structure **)
+(** Proven Alice **)
+Theorem lemma81_1_forward : forall E Te B Tb p e0 e1:set,
+  covering_map E Te B Tb p -> e0 :e E ->
+  path_connected_space E Te -> locally_path_connected E Te ->
+  e1 :e E -> apply_fun p e1 = apply_fun p e0 ->
+  (exists h:set, covering_transformation E Te B Tb p h /\ apply_fun h e0 = e1) ->
+  forall alpha:set,
+    loop_at B Tb (apply_fun p e0) alpha ->
+    apply_fun (path_lift E Te B Tb p e0 alpha) 1 = e1 ->
+    path_homotopy_class_loop B Tb (apply_fun p e0) alpha :e
+      normalizer
+        (homomorphism_image
+          (fundamental_group E Te e0)
+          (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+        (fundamental_group B Tb (apply_fun p e0))
+        (fundamental_group_mult B Tb (apply_fun p e0))
+        (fundamental_group_id B Tb (apply_fun p e0))
+        (fundamental_group_inv B Tb (apply_fun p e0)).
+let E Te B Tb p e0 e1.
+assume Hcov He0E HpcE HlpE He1E Hpe1 Hexists.
+let alpha. assume HalphaLoop HliftEnd.
+(** iff has lower precedence than -> so lemma81_1 with 11 args gives:
+    iff (e1 :e E -> pe1=pe0 -> exists h, ...) (forall alpha0, ...)
+    The left side includes the membership/equality conditions. **)
+claim Hleft : e1 :e E -> apply_fun p e1 = apply_fun p e0 ->
+  exists h:set, covering_transformation E Te B Tb p h /\ apply_fun h e0 = e1.
+{ assume He1E2 Hpe12. exact Hexists. }
+exact (iffEL
+  (e1 :e E -> apply_fun p e1 = apply_fun p e0 ->
+    exists h:set, covering_transformation E Te B Tb p h /\ apply_fun h e0 = e1)
+  (forall alpha0:set,
+    loop_at B Tb (apply_fun p e0) alpha0 ->
+    apply_fun (path_lift E Te B Tb p e0 alpha0) 1 = e1 ->
+    path_homotopy_class_loop B Tb (apply_fun p e0) alpha0 :e
+      normalizer
+        (homomorphism_image
+          (fundamental_group E Te e0)
+          (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+        (fundamental_group B Tb (apply_fun p e0))
+        (fundamental_group_mult B Tb (apply_fun p e0))
+        (fundamental_group_id B Tb (apply_fun p e0))
+        (fundamental_group_inv B Tb (apply_fun p e0)))
+  (lemma81_1_image_of_psi E Te B Tb p e0 Hcov He0E HpcE HlpE e1)
+  Hleft alpha HalphaLoop HliftEnd).
+Qed.
+
 (** from S81 Thm 81.2 (line 5055 in algtop.tex) **)
 (** LATEX VERSION: The bijection Phi^{-1} o Psi : C(E,p,B) -> N(H0)/H0 **)
 (** is an isomorphism of groups. **)
@@ -307965,7 +308020,75 @@ claim Hhe0_fiber : forall h:set, h :e CTG ->
 (** For any h in CTG, the Eps_i chosen class is in N **)
 claim Hcls_in_N : forall h:set, h :e CTG ->
   Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0) :e N.
-{ admit. }
+{ let h. assume HhCTG.
+  claim Hfib : apply_fun h e0 :e E /\ apply_fun p (apply_fun h e0) = b0.
+  { exact (Hhe0_fiber h HhCTG). }
+  claim HhE_in_E : apply_fun h e0 :e E.
+  { exact (andEL (apply_fun h e0 :e E) (apply_fun p (apply_fun h e0) = b0) Hfib). }
+  claim HphE_eq : apply_fun p (apply_fun h e0) = b0.
+  { exact (andER (apply_fun h e0 :e E) (apply_fun p (apply_fun h e0) = b0) Hfib). }
+  (** Covering transformation for h **)
+  claim Hct2 : covering_transformation E Te B Tb p h.
+  { exact (SepE2 (function_space E E) (fun h0:set => covering_transformation E Te B Tb p h0) h HhCTG). }
+  claim Hexists_ct : exists h0:set, covering_transformation E Te B Tb p h0 /\ apply_fun h0 e0 = apply_fun h e0.
+  { witness h. exact (andI (covering_transformation E Te B Tb p h) (apply_fun h e0 = apply_fun h e0) Hct2 (eq_refl (apply_fun h e0))). }
+  (** Forward direction via lemma81_1_forward helper (avoids parser bug with 13-arg lemma81_1) **)
+  claim Hfwd : forall alpha:set,
+    loop_at B Tb b0 alpha ->
+    apply_fun (path_lift E Te B Tb p e0 alpha) 1 = apply_fun h e0 ->
+    path_homotopy_class_loop B Tb b0 alpha :e N.
+  { exact (lemma81_1_forward E Te B Tb p e0 (apply_fun h e0) Hcov He0E HpcE HlpE HhE_in_E HphE_eq Hexists_ct). }
+  (** Now define cls0 and eps **)
+  set cls0 := Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0).
+  claim Hcls0_pred : cls0 :e G /\ apply_fun lc cls0 = apply_fun h e0.
+  { apply (Hlc_surj (apply_fun h e0) HhE_in_E HphE_eq).
+    let w. assume Hw.
+    exact (Eps_i_ax (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0) w Hw). }
+  claim Hcls0G : cls0 :e G.
+  { exact (andEL (cls0 :e G) (apply_fun lc cls0 = apply_fun h e0) Hcls0_pred). }
+  claim Hlc_cls0 : apply_fun lc cls0 = apply_fun h e0.
+  { exact (andER (cls0 :e G) (apply_fun lc cls0 = apply_fun h e0) Hcls0_pred). }
+  set eps := Eps_i (fun f:set => f :e cls0).
+  claim HepsLoop : eps :e loop_space B Tb b0.
+  { exact (eps_of_fundamental_group_member_in_loop_space B Tb b0 cls0 Hcls0G). }
+  claim HepsLoopAt : loop_at B Tb b0 eps.
+  { exact (loop_space_has_loop_at B Tb b0 eps HepsLoop). }
+  claim Hlc_unfold : apply_fun lc cls0 = apply_fun (path_lift E Te B Tb p e0 eps) 1.
+  { exact (apply_fun_graph G
+    (fun clsX:set => apply_fun (path_lift E Te B Tb p e0 (Eps_i (fun f0:set => f0 :e clsX))) 1)
+    cls0 Hcls0G). }
+  claim Hlift_end : apply_fun (path_lift E Te B Tb p e0 eps) 1 = apply_fun h e0.
+  { rewrite <- Hlc_unfold. exact Hlc_cls0. }
+  (** Apply forward direction to eps to get [eps] in N **)
+  claim Heps_in_N : path_homotopy_class_loop B Tb b0 eps :e N.
+  { apply Hfwd.
+    - exact HepsLoopAt.
+    - exact Hlift_end. }
+  (** Show cls0 = [eps] via representative chain **)
+  claim Heps_class : cls0 = path_homotopy_class_loop B Tb b0 eps.
+  { claim Hrep : exists f:set, f :e loop_space B Tb b0 /\ cls0 = path_homotopy_class_loop B Tb b0 f.
+    { exact (fundamental_group_member_has_representative B Tb b0 cls0 Hcls0G). }
+    apply Hrep. let f. assume HfPack.
+    claim HfLoop : f :e loop_space B Tb b0.
+    { exact (andEL (f :e loop_space B Tb b0) (cls0 = path_homotopy_class_loop B Tb b0 f) HfPack). }
+    claim Hcls0_eq_f : cls0 = path_homotopy_class_loop B Tb b0 f.
+    { exact (andER (f :e loop_space B Tb b0) (cls0 = path_homotopy_class_loop B Tb b0 f) HfPack). }
+    claim HfInCls0 : f :e cls0.
+    { exact (mem_eqL f cls0 (path_homotopy_class_loop B Tb b0 f) Hcls0_eq_f
+        (loop_in_own_class_early B Tb b0 f HtopB HfLoop)). }
+    claim HepsInCls0 : eps :e cls0.
+    { exact (Eps_i_ax (fun g:set => g :e cls0) f HfInCls0). }
+    claim HepsInClassf : eps :e path_homotopy_class_loop B Tb b0 f.
+    { exact (mem_eqR eps cls0 (path_homotopy_class_loop B Tb b0 f) Hcls0_eq_f HepsInCls0). }
+    claim Hph_f_eps : path_homotopic B Tb b0 b0 f eps.
+    { exact (SepE2 (loop_space B Tb b0) (fun g:set => path_homotopic B Tb b0 b0 f g) eps HepsInClassf). }
+    claim Hclass_eq : path_homotopy_class_loop B Tb b0 f = path_homotopy_class_loop B Tb b0 eps.
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic B Tb b0 f eps Hph_f_eps). }
+    transitivity (path_homotopy_class_loop B Tb b0 f).
+    - exact Hcls0_eq_f.
+    - exact Hclass_eq. }
+  (** Conclude cls0 :e N from cls0 = [eps] and [eps] :e N **)
+  exact (eq_subst_mem cls0 (path_homotopy_class_loop B Tb b0 eps) N Heps_class Heps_in_N). }
 (** Covering transformations determined by value at one point **)
 claim Hct_unique : forall h1 h2:set, h1 :e CTG -> h2 :e CTG ->
   apply_fun h1 e0 = apply_fun h2 e0 -> h1 = h2.
