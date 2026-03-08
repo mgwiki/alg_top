@@ -2126,7 +2126,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1772562693
 Created: 1772562693
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   c8ae3f4ab
@@ -2198,11 +2198,12 @@ Admin Decision:
   - 1772881200 | APPROVED
 
 Implemented by:
-  
+	  Charlie
 Implementation Commit:
+	  edaba44b8
 
 Status:
-  APPROVED
+	  IMPLEMENTED
 --------------------------------------------------------
 NOTICE ID: 1772560012
 Created: 1772560012
