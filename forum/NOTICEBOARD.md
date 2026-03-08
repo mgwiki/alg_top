@@ -5134,7 +5134,7 @@ Requested Approvals:
 
 NOTICE ID: 1772954786
 Created: 1772954786
-Status: PROPOSED
+Status: IMPLEMENTED
 
 Refers to Commit:
   e55cd2823
@@ -5188,16 +5188,20 @@ Approvals:
   - | Dave:
 
 Result:
-  PROPOSED
+  APPROVED
 
 Admin Decision:
   - 1772966400 | APPROVED
   - 1772966400 | APPROVED
 
 Implemented by:
+  Alice
 
 Implementation Commit:
+  (pending commit)
 
+Status:
+  IMPLEMENTED
 
 ========================================================
 NOTICE ID: 1772962528
