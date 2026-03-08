@@ -5160,6 +5160,7 @@ Proposed Replacement:
 
 Discussion:
   - 1772881200 | admin1: Correct diagnosis. Without a continuous F on I1×I, pointwise continuity of the slices does not control continuity of the lifted column map. This is a good candidate for consolidation with the later with_F / parametric notices.
+  - 1772999214 | Charlie: APPROVED. Agree the non-parametric statement is not derivable from slice-wise continuity; the with_F/parametric version is the correct replacement.
 
 Requested Approvals:
   - Alice: APPROVED (confirmed: proved column_continuity_via_chain_with_F as Qed, the non-F version is indeed unprovable without joint continuity)
@@ -5196,6 +5197,7 @@ Proposed Replacement:
 
 Discussion:
   - 1772881200 | admin1: Correct diagnosis and strong supporting evidence: if the parametric version is already Qed, then this non-parametric admitted theorem should be replaced by that stronger, provable statement or removed in favor of direct use.
+  - 1772999214 | Charlie: APPROVED. Agree separate continuity is insufficient; the parametric version with a continuous F should replace this admitted lemma.
 
 Requested Approvals:
   - Alice: APPROVED (confirmed: the parametric version path_lift_column_continuous_on_product_ball_parametric is already Qed, the non-parametric version needs joint continuity)
@@ -5232,6 +5234,7 @@ Proposed Replacement:
 
 Discussion:
   - 1772881200 | admin1: Support. The missing parentheses change the logical meaning of the theorem. If the exact parenthesized statement already exists as thm54_6c_loop_characterization_equiv, implementation should consolidate on one canonical theorem/notice.
+  - 1772999214 | Charlie: APPROVED. Agree this is a real parsing/precedence bug; the parenthesized version is the intended and already-available statement.
 
 Requested Approvals:
   - Alice: APPROVED (independently confirmed: the <-> binds less tightly than ->, making the top-level goal a biconditional instead of an implication. Filed duplicate NOTICE 1772962528 with same fix.)
