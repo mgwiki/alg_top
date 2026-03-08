@@ -311741,7 +311741,30 @@ apply iffI.
       (** g agrees with idG everywhere. Then g = idG by function extensionality, **)
       (** contradicting HgNeq. Needs G subset total_function_space - NOTICEBOARD. **)
       claim HgIsIdG : g = idG.
-      { admit. }
+      {
+        claim Hg_cont : continuous_map X Tx X Tx g.
+        { exact (homeomorphism_continuous X Tx X Tx g (Hhomeo g HgG)). }
+        claim HidG_cont : continuous_map X Tx X Tx idG.
+        { exact (homeomorphism_continuous X Tx X Tx idG (Hhomeo idG HidG)). }
+        claim Hg_lift : lifting_of X Tx X Tx B Tb pi pi g.
+        { prove continuous_map X Tx X Tx g /\ (forall x0:set, x0 :e X -> apply_fun pi (apply_fun g x0) = apply_fun pi x0).
+          apply andI. exact Hg_cont. let x0. assume Hx0. exact (Hpi_inv g x0 HgG Hx0). }
+        claim HidG_lift : lifting_of X Tx X Tx B Tb pi pi idG.
+        { prove continuous_map X Tx X Tx idG /\ (forall x0:set, x0 :e X -> apply_fun pi (apply_fun idG x0) = apply_fun pi x0).
+          apply andI. exact HidG_cont.
+          let x0. assume Hx0. rewrite (HidAct x0 Hx0). reflexivity. }
+        claim HeqAtY : apply_fun g y = apply_fun idG y.
+        { rewrite (HidAct y HyX). exact HgyEqy. }
+        claim Hpointwise : forall z:set, z :e X -> apply_fun g z = apply_fun idG z.
+        { exact (covering_map_lifts_agree_on_connected_domain
+            X Tx B Tb pi X Tx pi g idG y
+            Hcov Hconn Hg_lift HidG_lift HyX HeqAtY). }
+        claim Hg_total : g :e total_function_space X X.
+        { exact (continuous_map_in_total_function_space X Tx X Tx g Hg_cont). }
+        claim HidG_total : idG :e total_function_space X X.
+        { exact (continuous_map_in_total_function_space X Tx X Tx idG HidG_cont). }
+        exact (total_function_space_extensional X X g idG Hg_total HidG_total Hpointwise).
+      }
       assume HgyV'. exact (HgNeq HgIsIdG).
     + assume HVgneq.
       claim Hdisj : Vg :/\: V0 = Empty. { exact (HpdSlices Vg V0 HVgslices HV0slices HVgneq). }
