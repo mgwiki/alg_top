@@ -162033,6 +162033,252 @@ rewrite <- Hclass_eq.
 reflexivity.
 Qed.
 
+(** Infrastructure: word data for a single element in the i-star or j-star image. **)
+(** Proven Bob **)
+Lemma word_data_single_image : forall X Tx U V x0 cls:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  x0 :e U :/\: V ->
+  ((exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      cls =
+        apply_fun
+          (induced_homomorphism U (subspace_topology X Tx U) x0
+            X Tx x0 (graph U (fun x:set => x))) ucls) \/
+   (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+      cls =
+        apply_fun
+          (induced_homomorphism V (subspace_topology X Tx V) x0
+            X Tx x0 (graph V (fun x:set => x))) vcls)) ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    cls = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+let X Tx U V x0 cls.
+assume Htop HU HV Hx0UV Himg.
+claim Hx0U : x0 :e U.
+{ exact (binintersectE1 U V x0 Hx0UV). }
+claim Hx0V : x0 :e V.
+{ exact (binintersectE2 U V x0 Hx0UV). }
+claim HUsub : U c= X.
+{ exact (topology_elem_subset X Tx U Htop HU). }
+claim HVsub : V c= X.
+{ exact (topology_elem_subset X Tx V Htop HV). }
+claim Hx0X : x0 :e X.
+{ exact (HUsub x0 Hx0U). }
+apply Himg.
+- (** Case: cls in i-star image **)
+  let ucls.
+  assume HuclsPack :
+    ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    cls =
+      apply_fun
+        (induced_homomorphism U (subspace_topology X Tx U) x0
+          X Tx x0 (graph U (fun x:set => x))) ucls.
+  claim HuclsMem :
+    ucls :e fundamental_group U (subspace_topology X Tx U) x0.
+  { exact (andEL
+      (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+      (cls =
+        apply_fun
+          (induced_homomorphism U (subspace_topology X Tx U) x0
+            X Tx x0 (graph U (fun x:set => x))) ucls)
+      HuclsPack). }
+  claim HclsEq :
+    cls =
+      apply_fun
+        (induced_homomorphism U (subspace_topology X Tx U) x0
+          X Tx x0 (graph U (fun x:set => x))) ucls.
+  { exact (andER
+      (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+      (cls =
+        apply_fun
+          (induced_homomorphism U (subspace_topology X Tx U) x0
+            X Tx x0 (graph U (fun x:set => x))) ucls)
+      HuclsPack). }
+  set incU := graph U (fun x:set => x).
+  claim Hi_hom : group_homomorphism
+    (fundamental_group U (subspace_topology X Tx U) x0)
+    (fundamental_group_mult U (subspace_topology X Tx U) x0)
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU).
+  { exact (induced_homomorphism_is_homomorphism
+      U (subspace_topology X Tx U) x0 X Tx x0
+      incU
+      (subspace_inclusion_continuous X Tx U Htop HUsub)
+      (apply_fun_graph U (fun x:set => x) x0 Hx0U)
+      Hx0U). }
+  claim HclsMem : cls :e fundamental_group X Tx x0.
+  { rewrite HclsEq. exact (group_homomorphism_function_on
+      (fundamental_group U (subspace_topology X Tx U) x0)
+      (fundamental_group_mult U (subspace_topology X Tx U) x0)
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU)
+      Hi_hom
+      ucls HuclsMem). }
+  witness 1.
+  apply andI.
+  - exact (nat_p_omega 1 nat_1).
+  - witness (graph 1 (fun _:set => cls)).
+    apply andI.
+    + apply andI.
+      * exact (total_function_on_function_on (graph 1 (fun _:set => cls)) 1 (fundamental_group X Tx x0)
+          (total_function_space_total_function_on_algtop 1 (fundamental_group X Tx x0)
+            (graph 1 (fun _:set => cls))
+            (graph_in_total_function_space 1 (fundamental_group X Tx x0) (fun _:set => cls)
+              (fun _:set => fun _ : _ :e 1 => HclsMem)))).
+      * let i. assume Hi : i :e 1.
+        apply orIL.
+        witness ucls.
+        apply andI.
+        { exact HuclsMem. }
+        claim Hi0 : i = 0.
+        { apply (ordsuccE 0 i Hi).
+          - assume H : i :e 0. exact (FalseE (EmptyE i H) (i = 0)).
+          - assume H : i = 0. exact H. }
+        rewrite Hi0.
+        rewrite <- HclsEq.
+        exact (apply_fun_graph 1 (fun _:set => cls) 0 In_0_1).
+    + (** Compute the nat_primrec with n=1 **)
+      rewrite (nat_primrec_S (fundamental_group_id X Tx x0)
+        (fun k rr => apply_fun (fundamental_group_mult X Tx x0)
+          (rr, apply_fun (graph 1 (fun _:set => cls)) k)) 0 nat_0).
+      rewrite (nat_primrec_0 (fundamental_group_id X Tx x0)
+        (fun k rr => apply_fun (fundamental_group_mult X Tx x0)
+          (rr, apply_fun (graph 1 (fun _:set => cls)) k))).
+      claim Hcls0 : apply_fun (graph 1 (fun _:set => cls)) 0 = cls.
+      { exact (apply_fun_graph 1 (fun _:set => cls) 0 In_0_1). }
+      rewrite Hcls0.
+      claim HleftId : apply_fun (fundamental_group_mult X Tx x0)
+        (fundamental_group_id X Tx x0, cls) = cls.
+      { apply (and6E
+          (function_on (fundamental_group_mult X Tx x0) (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0)) (fundamental_group X Tx x0))
+          (function_on (fundamental_group_inv X Tx x0) (fundamental_group X Tx x0) (fundamental_group X Tx x0))
+          ((fundamental_group_id X Tx x0) :e (fundamental_group X Tx x0))
+          (forall x y z:set, x :e (fundamental_group X Tx x0) -> y :e (fundamental_group X Tx x0) -> z :e (fundamental_group X Tx x0) -> apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_mult X Tx x0) (x, y), z) = apply_fun (fundamental_group_mult X Tx x0) (x, apply_fun (fundamental_group_mult X Tx x0) (y, z)))
+          (forall x:set, x :e (fundamental_group X Tx x0) -> apply_fun (fundamental_group_mult X Tx x0) (fundamental_group_id X Tx x0, x) = x /\ apply_fun (fundamental_group_mult X Tx x0) (x, fundamental_group_id X Tx x0) = x)
+          (forall x:set, x :e (fundamental_group X Tx x0) -> apply_fun (fundamental_group_mult X Tx x0) (x, apply_fun (fundamental_group_inv X Tx x0) x) = (fundamental_group_id X Tx x0) /\ apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_inv X Tx x0) x, x) = (fundamental_group_id X Tx x0))
+          (fundamental_group_is_group X Tx x0 Htop Hx0X)).
+        assume HmX HiX HeX HassocX HidX HinvX.
+        exact (andEL
+          (apply_fun (fundamental_group_mult X Tx x0) (fundamental_group_id X Tx x0, cls) = cls)
+          (apply_fun (fundamental_group_mult X Tx x0) (cls, fundamental_group_id X Tx x0) = cls)
+          (HidX cls HclsMem)). }
+      rewrite HleftId.
+      reflexivity.
+- (** Case: cls in j-star image **)
+  let vcls.
+  assume HvclsPack :
+    vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+    cls =
+      apply_fun
+        (induced_homomorphism V (subspace_topology X Tx V) x0
+          X Tx x0 (graph V (fun x:set => x))) vcls.
+  claim HvclsMem :
+    vcls :e fundamental_group V (subspace_topology X Tx V) x0.
+  { exact (andEL
+      (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+      (cls =
+        apply_fun
+          (induced_homomorphism V (subspace_topology X Tx V) x0
+            X Tx x0 (graph V (fun x:set => x))) vcls)
+      HvclsPack). }
+  claim HclsEq :
+    cls =
+      apply_fun
+        (induced_homomorphism V (subspace_topology X Tx V) x0
+          X Tx x0 (graph V (fun x:set => x))) vcls.
+  { exact (andER
+      (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+      (cls =
+        apply_fun
+          (induced_homomorphism V (subspace_topology X Tx V) x0
+            X Tx x0 (graph V (fun x:set => x))) vcls)
+      HvclsPack). }
+  set incV := graph V (fun x:set => x).
+  claim Hj_hom : group_homomorphism
+    (fundamental_group V (subspace_topology X Tx V) x0)
+    (fundamental_group_mult V (subspace_topology X Tx V) x0)
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV).
+  { exact (induced_homomorphism_is_homomorphism
+      V (subspace_topology X Tx V) x0 X Tx x0
+      incV
+      (subspace_inclusion_continuous X Tx V Htop HVsub)
+      (apply_fun_graph V (fun x:set => x) x0 Hx0V)
+      Hx0V). }
+  claim HclsMem : cls :e fundamental_group X Tx x0.
+  { rewrite HclsEq. exact (group_homomorphism_function_on
+      (fundamental_group V (subspace_topology X Tx V) x0)
+      (fundamental_group_mult V (subspace_topology X Tx V) x0)
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV)
+      Hj_hom
+      vcls HvclsMem). }
+  witness 1.
+  apply andI.
+  - exact (nat_p_omega 1 nat_1).
+  - witness (graph 1 (fun _:set => cls)).
+    apply andI.
+    + apply andI.
+      * exact (total_function_on_function_on (graph 1 (fun _:set => cls)) 1 (fundamental_group X Tx x0)
+          (total_function_space_total_function_on_algtop 1 (fundamental_group X Tx x0)
+            (graph 1 (fun _:set => cls))
+            (graph_in_total_function_space 1 (fundamental_group X Tx x0) (fun _:set => cls)
+              (fun _:set => fun _ : _ :e 1 => HclsMem)))).
+      * let i. assume Hi : i :e 1.
+        apply orIR.
+        witness vcls.
+        apply andI.
+        { exact HvclsMem. }
+        claim Hi0 : i = 0.
+        { apply (ordsuccE 0 i Hi).
+          - assume H : i :e 0. exact (FalseE (EmptyE i H) (i = 0)).
+          - assume H : i = 0. exact H. }
+        rewrite Hi0.
+        rewrite <- HclsEq.
+        exact (apply_fun_graph 1 (fun _:set => cls) 0 In_0_1).
+    + (** Compute the nat_primrec with n=1 **)
+      rewrite (nat_primrec_S (fundamental_group_id X Tx x0)
+        (fun k rr => apply_fun (fundamental_group_mult X Tx x0)
+          (rr, apply_fun (graph 1 (fun _:set => cls)) k)) 0 nat_0).
+      rewrite (nat_primrec_0 (fundamental_group_id X Tx x0)
+        (fun k rr => apply_fun (fundamental_group_mult X Tx x0)
+          (rr, apply_fun (graph 1 (fun _:set => cls)) k))).
+      claim Hcls0 : apply_fun (graph 1 (fun _:set => cls)) 0 = cls.
+      { exact (apply_fun_graph 1 (fun _:set => cls) 0 In_0_1). }
+      rewrite Hcls0.
+      claim HleftId : apply_fun (fundamental_group_mult X Tx x0)
+        (fundamental_group_id X Tx x0, cls) = cls.
+      { apply (and6E
+          (function_on (fundamental_group_mult X Tx x0) (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0)) (fundamental_group X Tx x0))
+          (function_on (fundamental_group_inv X Tx x0) (fundamental_group X Tx x0) (fundamental_group X Tx x0))
+          ((fundamental_group_id X Tx x0) :e (fundamental_group X Tx x0))
+          (forall x y z:set, x :e (fundamental_group X Tx x0) -> y :e (fundamental_group X Tx x0) -> z :e (fundamental_group X Tx x0) -> apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_mult X Tx x0) (x, y), z) = apply_fun (fundamental_group_mult X Tx x0) (x, apply_fun (fundamental_group_mult X Tx x0) (y, z)))
+          (forall x:set, x :e (fundamental_group X Tx x0) -> apply_fun (fundamental_group_mult X Tx x0) (fundamental_group_id X Tx x0, x) = x /\ apply_fun (fundamental_group_mult X Tx x0) (x, fundamental_group_id X Tx x0) = x)
+          (forall x:set, x :e (fundamental_group X Tx x0) -> apply_fun (fundamental_group_mult X Tx x0) (x, apply_fun (fundamental_group_inv X Tx x0) x) = (fundamental_group_id X Tx x0) /\ apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_inv X Tx x0) x, x) = (fundamental_group_id X Tx x0))
+          (fundamental_group_is_group X Tx x0 Htop Hx0X)).
+        assume HmX HiX HeX HassocX HidX HinvX.
+        exact (andEL
+          (apply_fun (fundamental_group_mult X Tx x0) (fundamental_group_id X Tx x0, cls) = cls)
+          (apply_fun (fundamental_group_mult X Tx x0) (cls, fundamental_group_id X Tx x0) = cls)
+          (HidX cls HclsMem)). }
+      rewrite HleftId.
+      reflexivity.
+Qed.
+
 (** Proven Bob **)
 (** Infrastructure: split a natural number n at an element k :e n **)
 Lemma nat_elem_decompose_add : forall n k:set,
