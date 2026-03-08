@@ -161812,6 +161812,7 @@ exact (connected_subset_unit_interval_interval_property
 Qed.
 
 (** Infrastructure: interval point stays in a chain ball (via open_ball interval property) **)
+(** Proven Bob **)
 Lemma open_ball_chain_interval_property :
   forall r n seq i x y z:set,
   r :e R ->
