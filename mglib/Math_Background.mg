@@ -1,6 +1,6 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 1309 **)
+(** Balance Charlie 1009 **)
 (** Balance Dave 2020 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -231324,6 +231324,17 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
       normal_subgroup N G mult e inv /\
       S c= N /\
       (forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> N c= N')).
+
+(** Helper bounty: early version of efam_not_in_Gfam_nontrivial.
+    This should be proved before finishing the locked free-product lemmas
+    free_product_boundary_product_ne_e_or_efam and free_product_efam_involutive_contra. **)
+(** Bounty 300 **)
+Theorem efam_not_in_Gfam_nontrivial_early : forall G multG eG invG J Gfam efam:set,
+  free_product_of_subgroups G multG eG invG J Gfam efam ->
+  forall al:set, al :e J ->
+    apply_fun efam al :e apply_fun Gfam al -> apply_fun efam al <> eG -> False.
+admit.
+Admitted.
 
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
 (** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
