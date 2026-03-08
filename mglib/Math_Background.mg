@@ -308699,7 +308699,352 @@ apply (group_isomorphism_intro CTG multCTG QGset QGmult phi).
   + exact Hphi_fun.
   + let c. assume HcQG.
     (** c = left_coset multG g H0 for some g :e N **)
-    admit.
+    (** Extract g :e N with c = left_coset g H0 **)
+    claim HcRepl : c :e {left_coset multG g H0 | g :e N}.
+    { exact HcQG. }
+    apply (ReplE_impred N (fun g:set => left_coset multG g H0) c HcRepl).
+    let g. assume HgN.
+    assume Hc_eq : c = left_coset multG g H0.
+    claim HgG : g :e G. { exact (HNsubG g HgN). }
+    (** lc(g) is in fiber **)
+    claim Hlcg_fib : apply_fun lc g :e {x :e E | apply_fun p x = apply_fun p e0}.
+    { exact (lifting_correspondence_in_fiber E Te B Tb p e0 g Hcov He0E HgG). }
+    claim Hlcg_E : apply_fun lc g :e E.
+    { exact (SepE1 E (fun x:set => apply_fun p x = apply_fun p e0) (apply_fun lc g) Hlcg_fib). }
+    claim Hlcg_fib_eq : apply_fun p (apply_fun lc g) = apply_fun p e0.
+    { exact (SepE2 E (fun x:set => apply_fun p x = apply_fun p e0) (apply_fun lc g) Hlcg_fib). }
+    (** Existence of CT h with h(e0) = lc(g) **)
+    claim Hct_ex : exists h:set, covering_transformation E Te B Tb p h /\ apply_fun h e0 = apply_fun lc g.
+    { (** Use backward direction of lemma81_1_image_of_psi **)
+      (** The iff has low precedence: left side includes e1 :e E -> p(e1) = p(e0) -> exists h, ... **)
+      set e1_tgt := apply_fun lc g.
+      claim Hright : forall alpha:set,
+        loop_at B Tb b0 alpha ->
+        apply_fun (path_lift E Te B Tb p e0 alpha) 1 = e1_tgt ->
+        path_homotopy_class_loop B Tb b0 alpha :e N.
+      { let alpha. assume HalphaLoop Hlift_end_alpha.
+        set cls_alpha := path_homotopy_class_loop B Tb b0 alpha.
+        claim HalphaG : cls_alpha :e G.
+        { exact (loop_at_implies_fundamental_group_member B Tb b0 alpha HtopB Hb0B HalphaLoop). }
+        (** Get a loop_space representative f1 of [alpha] **)
+        claim Hf1_ex : exists f1:set, f1 :e loop_space B Tb b0 /\ cls_alpha = path_homotopy_class_loop B Tb b0 f1.
+        { exact (fundamental_group_member_has_representative B Tb b0 cls_alpha HalphaG). }
+        apply Hf1_ex. let f1. assume Hf1Pack.
+        claim Hf1_ls : f1 :e loop_space B Tb b0.
+        { exact (andEL (f1 :e loop_space B Tb b0) (cls_alpha = path_homotopy_class_loop B Tb b0 f1) Hf1Pack). }
+        claim Hcls_eq_f1 : cls_alpha = path_homotopy_class_loop B Tb b0 f1.
+        { exact (andER (f1 :e loop_space B Tb b0) (cls_alpha = path_homotopy_class_loop B Tb b0 f1) Hf1Pack). }
+        (** f1 :e [alpha], so alpha and f1 are path-homotopic **)
+        claim Hf1_in_cls : f1 :e cls_alpha.
+        { rewrite Hcls_eq_f1. exact (loop_in_own_class_early B Tb b0 f1 HtopB Hf1_ls). }
+        claim Hph_alpha_f1 : path_homotopic B Tb b0 b0 alpha f1.
+        { exact (path_homotopy_class_loop_has_homotopy B Tb b0 alpha f1 Hf1_in_cls). }
+        (** By monodromy: lift(e0, alpha)(1) = lift(e0, f1)(1) **)
+        claim Hlift_eq_f1 : apply_fun (path_lift E Te B Tb p e0 alpha) 1
+          = apply_fun (path_lift E Te B Tb p e0 f1) 1.
+        { exact (andEL
+            (apply_fun (path_lift E Te B Tb p e0 alpha) 1 = apply_fun (path_lift E Te B Tb p e0 f1) 1)
+            (path_homotopic E Te e0 (apply_fun (path_lift E Te B Tb p e0 alpha) 1)
+              (path_lift E Te B Tb p e0 alpha) (path_lift E Te B Tb p e0 f1))
+            (thm54_3_homotopic_lifts E Te B Tb p e0 b0 b0 alpha f1
+              Hcov He0E (eq_refl b0) Hph_alpha_f1)). }
+        claim Hlift_f1_end : apply_fun (path_lift E Te B Tb p e0 f1) 1 = e1_tgt.
+        { claim H : e1_tgt = apply_fun (path_lift E Te B Tb p e0 f1) 1.
+          { transitivity (apply_fun (path_lift E Te B Tb p e0 alpha) 1).
+            - exact (eq_symm (apply_fun (path_lift E Te B Tb p e0 alpha) 1) e1_tgt Hlift_end_alpha).
+            - exact Hlift_eq_f1. }
+          exact (eq_symm e1_tgt (apply_fun (path_lift E Te B Tb p e0 f1) 1) H). }
+        (** Get eps_g = Eps_i(f :e g), representative of g **)
+        set eps_g := Eps_i (fun f0:set => f0 :e g).
+        claim Heps_g_ls : eps_g :e loop_space B Tb b0.
+        { exact (eps_of_fundamental_group_member_in_loop_space B Tb b0 g HgG). }
+        claim Hf1_la : loop_at B Tb b0 f1.
+        { exact (loop_space_has_loop_at B Tb b0 f1 Hf1_ls). }
+        claim Heps_g_la : loop_at B Tb b0 eps_g.
+        { exact (loop_space_has_loop_at B Tb b0 eps_g Heps_g_ls). }
+        claim Hf1_cont : continuous_map unit_interval unit_interval_topology B Tb f1.
+        { exact (loop_at_continuous B Tb b0 f1 Hf1_la). }
+        claim Heps_g_cont : continuous_map unit_interval unit_interval_topology B Tb eps_g.
+        { exact (loop_at_continuous B Tb b0 eps_g Heps_g_la). }
+        claim Hf1_0 : apply_fun f1 0 = b0. { exact (loop_at_at_zero B Tb b0 f1 Hf1_la). }
+        claim Hf1_1 : apply_fun f1 1 = b0. { exact (loop_at_at_one B Tb b0 f1 Hf1_la). }
+        claim Heps_g_0 : apply_fun eps_g 0 = b0. { exact (loop_at_at_zero B Tb b0 eps_g Heps_g_la). }
+        claim Heps_g_1 : apply_fun eps_g 1 = b0. { exact (loop_at_at_one B Tb b0 eps_g Heps_g_la). }
+        (** Reverse path and delta2 **)
+        claim Hrev_g_cont : continuous_map unit_interval unit_interval_topology B Tb (reverse_path eps_g).
+        { exact (reverse_path_continuous B Tb eps_g Heps_g_cont). }
+        claim Hrev_g_ls : reverse_path eps_g :e loop_space B Tb b0.
+        { exact (reverse_path_preserves_loop_space_early B Tb b0 eps_g Heps_g_ls). }
+        set delta2 := path_concat f1 (reverse_path eps_g).
+        claim Hdelta2_ls : delta2 :e loop_space B Tb b0.
+        { exact (path_concat_preserves_loop_space_early B Tb b0 f1 (reverse_path eps_g)
+            Hf1_ls Hrev_g_ls). }
+        claim Hdelta2_la : loop_at B Tb b0 delta2.
+        { exact (loop_space_has_loop_at B Tb b0 delta2 Hdelta2_ls). }
+        claim Hdelta2_cont : continuous_map unit_interval unit_interval_topology B Tb delta2.
+        { exact (loop_at_continuous B Tb b0 delta2 Hdelta2_la). }
+        (** Lift delta2 **)
+        claim Hpe0d2 : apply_fun p e0 = apply_fun delta2 0.
+        { claim Hd0 : apply_fun delta2 0 = b0.
+          { exact (loop_at_at_zero B Tb b0 delta2 Hdelta2_la). }
+          rewrite Hd0. exact (eq_refl b0). }
+        set gamma2 := path_lift E Te B Tb p e0 delta2.
+        claim Hlift_data2 : (continuous_map unit_interval unit_interval_topology E Te gamma2 /\
+          apply_fun gamma2 0 = e0) /\
+          (forall t:set, t :e unit_interval ->
+            apply_fun p (apply_fun gamma2 t) = apply_fun delta2 t).
+        { exact (lemma54_1_path_lifting E Te B Tb p e0 delta2 Hcov He0E Hpe0d2 Hdelta2_cont). }
+        claim Hgamma2_cont : continuous_map unit_interval unit_interval_topology E Te gamma2.
+        { exact (andEL (continuous_map unit_interval unit_interval_topology E Te gamma2)
+            (apply_fun gamma2 0 = e0)
+            (andEL (continuous_map unit_interval unit_interval_topology E Te gamma2 /\ apply_fun gamma2 0 = e0)
+              (forall t:set, t :e unit_interval -> apply_fun p (apply_fun gamma2 t) = apply_fun delta2 t)
+              Hlift_data2)). }
+        claim Hgamma2_0 : apply_fun gamma2 0 = e0.
+        { exact (andER (continuous_map unit_interval unit_interval_topology E Te gamma2)
+            (apply_fun gamma2 0 = e0)
+            (andEL (continuous_map unit_interval unit_interval_topology E Te gamma2 /\ apply_fun gamma2 0 = e0)
+              (forall t:set, t :e unit_interval -> apply_fun p (apply_fun gamma2 t) = apply_fun delta2 t)
+              Hlift_data2)). }
+        claim Hgamma2_comm : forall t:set, t :e unit_interval ->
+          apply_fun p (apply_fun gamma2 t) = apply_fun delta2 t.
+        { exact (andER
+            (continuous_map unit_interval unit_interval_topology E Te gamma2 /\ apply_fun gamma2 0 = e0)
+            (forall t:set, t :e unit_interval -> apply_fun p (apply_fun gamma2 t) = apply_fun delta2 t)
+            Hlift_data2). }
+        (** Show gamma2(1) = e0 **)
+        claim Hlcg_unfold : apply_fun lc g = apply_fun (path_lift E Te B Tb p e0 eps_g) 1.
+        { exact (apply_fun_graph G
+            (fun clsX:set => apply_fun (path_lift E Te B Tb p e0 (Eps_i (fun f0:set => f0 :e clsX))) 1)
+            g HgG). }
+        claim Hlift_f1_epsg_eq : apply_fun (path_lift E Te B Tb p e0 f1) 1
+          = apply_fun (path_lift E Te B Tb p e0 eps_g) 1.
+        { transitivity e1_tgt.
+          - exact Hlift_f1_end.
+          - exact Hlcg_unfold. }
+        claim Hf1_match_rev : apply_fun f1 1 = apply_fun (reverse_path eps_g) 0.
+        { rewrite Hf1_1. rewrite (reverse_path_at_zero eps_g). rewrite Heps_g_1.
+          reflexivity. }
+        claim Hpe0_f1 : apply_fun p e0 = apply_fun f1 0.
+        { rewrite Hf1_0. exact (eq_refl b0). }
+        claim Hconcat_end2 :
+          apply_fun gamma2 1
+          = apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 f1) 1) (reverse_path eps_g)) 1.
+        { exact (path_lift_concat_endpoint E Te B Tb p e0 f1 (reverse_path eps_g)
+            Hcov He0E Hf1_cont Hrev_g_cont Hf1_match_rev Hpe0_f1). }
+        claim Hconcat_sub2 :
+          apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 f1) 1) (reverse_path eps_g)) 1
+          = apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 eps_g) 1) (reverse_path eps_g)) 1.
+        { rewrite Hlift_f1_epsg_eq. reflexivity. }
+        claim Hpe0_epsg : apply_fun p e0 = apply_fun eps_g 0.
+        { rewrite Heps_g_0. exact (eq_refl b0). }
+        claim Hrev_end2 :
+          apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 eps_g) 1) (reverse_path eps_g)) 1 = e0.
+        { exact (path_lift_reverse_endpoint E Te B Tb p e0 eps_g
+            Hcov He0E Heps_g_cont Hpe0_epsg). }
+        claim Hgamma2_1_e0 : apply_fun gamma2 1 = e0.
+        { transitivity (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 f1) 1) (reverse_path eps_g)) 1).
+          - exact Hconcat_end2.
+          - transitivity (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 eps_g) 1) (reverse_path eps_g)) 1).
+            + exact Hconcat_sub2.
+            + exact Hrev_end2. }
+        (** gamma2 is a loop at e0 **)
+        claim Hgamma2_la : loop_at E Te e0 gamma2.
+        { exact (loop_at_pack_right E Te e0 gamma2
+            (andI (continuous_map unit_interval unit_interval_topology E Te gamma2)
+              (apply_fun gamma2 0 = e0 /\ apply_fun gamma2 1 = e0)
+              Hgamma2_cont
+              (andI (apply_fun gamma2 0 = e0) (apply_fun gamma2 1 = e0)
+                Hgamma2_0 Hgamma2_1_e0))). }
+        claim Hgamma2_ls : gamma2 :e loop_space E Te e0.
+        { admit. }
+        claim Hgamma2_FG : path_homotopy_class_loop E Te e0 gamma2 :e fundamental_group E Te e0.
+        { exact (path_homotopy_class_in_fundamental_group E Te e0 gamma2 Hgamma2_ls). }
+        (** [delta2] :e H0 via induced_homomorphism **)
+        set pof2 := compose_fun unit_interval gamma2 p.
+        claim Hpof2_cont : continuous_map unit_interval unit_interval_topology B Tb pof2.
+        { exact (composition_continuous unit_interval unit_interval_topology E Te B Tb
+            gamma2 p Hgamma2_cont Hp_cont). }
+        claim Hpof2_0 : apply_fun pof2 0 = b0.
+        { claim H : apply_fun pof2 0 = apply_fun p (apply_fun gamma2 0).
+          { exact (compose_fun_apply unit_interval gamma2 p 0 zero_in_unit_interval). }
+          rewrite H. rewrite Hgamma2_0. exact (eq_refl b0). }
+        claim Hpof2_1 : apply_fun pof2 1 = b0.
+        { claim H : apply_fun pof2 1 = apply_fun p (apply_fun gamma2 1).
+          { exact (compose_fun_apply unit_interval gamma2 p 1 one_in_unit_interval). }
+          rewrite H. rewrite Hgamma2_1_e0. exact (eq_refl b0). }
+        claim Hpof2_delta2_htpy : path_homotopic B Tb b0 b0 pof2 delta2.
+        { claim Hpointwise : forall s:set, s :e unit_interval -> apply_fun pof2 s = apply_fun delta2 s.
+          { let s. assume Hs.
+            claim Hcomp : apply_fun pof2 s = apply_fun p (apply_fun gamma2 s).
+            { exact (compose_fun_apply unit_interval gamma2 p s Hs). }
+            rewrite Hcomp. exact (Hgamma2_comm s Hs). }
+          claim Hdelta2_0 : apply_fun delta2 0 = b0.
+          { exact (loop_at_at_zero B Tb b0 delta2 Hdelta2_la). }
+          claim Hdelta2_1 : apply_fun delta2 1 = b0.
+          { exact (loop_at_at_one B Tb b0 delta2 Hdelta2_la). }
+          exact (path_homotopic_of_pointwise_equal B Tb b0 b0 pof2 delta2
+            Hpof2_cont Hdelta2_cont Hpof2_0 Hpof2_1 Hdelta2_0 Hdelta2_1 Hpointwise). }
+        claim Hpof2_delta2_cls : path_homotopy_class_loop B Tb b0 pof2 = path_homotopy_class_loop B Tb b0 delta2.
+        { exact (path_homotopy_class_loop_eq_of_path_homotopic B Tb b0 pof2 delta2 Hpof2_delta2_htpy). }
+        claim Hpof2_H0 : path_homotopy_class_loop B Tb b0 pof2 :e H0.
+        { claim Hphi0_eq : apply_fun (induced_homomorphism E Te e0 B Tb b0 p)
+              (path_homotopy_class_loop E Te e0 gamma2)
+              = path_homotopy_class_loop B Tb b0 pof2.
+          { claim Hih : apply_fun (induced_homomorphism E Te e0 B Tb b0 p)
+                (path_homotopy_class_loop E Te e0 gamma2)
+                = path_homotopy_class_loop B Tb b0
+                  (compose_fun unit_interval (Eps_i (fun w:set => w :e path_homotopy_class_loop E Te e0 gamma2)) p).
+            { exact (induced_homomorphism_apply_on_loop_class E Te e0 B Tb b0 p gamma2 Hgamma2_ls). }
+            rewrite Hih.
+            set eps_g2 := Eps_i (fun w:set => w :e path_homotopy_class_loop E Te e0 gamma2).
+            claim Heps_in : eps_g2 :e path_homotopy_class_loop E Te e0 gamma2.
+            { exact (Eps_i_ax (fun w:set => w :e path_homotopy_class_loop E Te e0 gamma2) gamma2
+                (loop_in_own_path_homotopy_class E Te e0 gamma2 Hgamma2_ls)). }
+            claim Heps_htpy : path_homotopic E Te e0 e0 gamma2 eps_g2.
+            { exact (path_homotopy_class_loop_has_homotopy E Te e0 gamma2 eps_g2 Heps_in). }
+            claim Hpost : path_homotopic B Tb b0 b0
+              (compose_fun unit_interval gamma2 p) (compose_fun unit_interval eps_g2 p).
+            { exact (path_homotopic_postcompose E Te B Tb e0 e0 b0 b0 gamma2 eps_g2 p
+                Heps_htpy Hp_cont (eq_refl b0) (eq_refl b0)). }
+            exact (eq_symm
+              (path_homotopy_class_loop B Tb b0 pof2)
+              (path_homotopy_class_loop B Tb b0 (compose_fun unit_interval eps_g2 p))
+              (path_homotopy_class_loop_eq_of_path_homotopic B Tb b0
+                pof2 (compose_fun unit_interval eps_g2 p) Hpost)). }
+          exact (eq_subst_mem
+            (path_homotopy_class_loop B Tb b0 pof2)
+            (apply_fun (induced_homomorphism E Te e0 B Tb b0 p) (path_homotopy_class_loop E Te e0 gamma2))
+            H0
+            (eq_symm (apply_fun (induced_homomorphism E Te e0 B Tb b0 p)
+              (path_homotopy_class_loop E Te e0 gamma2))
+              (path_homotopy_class_loop B Tb b0 pof2) Hphi0_eq)
+            (ReplI (fundamental_group E Te e0)
+              (fun cls:set => apply_fun (induced_homomorphism E Te e0 B Tb b0 p) cls)
+              (path_homotopy_class_loop E Te e0 gamma2) Hgamma2_FG)). }
+        claim Hdelta2_H0 : path_homotopy_class_loop B Tb b0 delta2 :e H0.
+        { exact (eq_subst_mem
+            (path_homotopy_class_loop B Tb b0 delta2)
+            (path_homotopy_class_loop B Tb b0 pof2)
+            H0
+            (eq_symm (path_homotopy_class_loop B Tb b0 pof2)
+              (path_homotopy_class_loop B Tb b0 delta2) Hpof2_delta2_cls)
+            Hpof2_H0). }
+        (** [delta2] = [f1] mult inv(g) = [alpha] mult inv(g) **)
+        claim Hconcat_class : path_homotopy_class_loop B Tb b0 delta2
+          = apply_fun multG (path_homotopy_class_loop B Tb b0 f1,
+              path_homotopy_class_loop B Tb b0 (reverse_path eps_g)).
+        { exact (path_homotopy_class_loop_concat_eq_mult B Tb b0 f1 (reverse_path eps_g)
+            Hf1_ls Hrev_g_ls). }
+        claim Hf1_class_eq : cls_alpha = path_homotopy_class_loop B Tb b0 f1.
+        { exact Hcls_eq_f1. }
+        claim Hsym_f1 : path_homotopy_class_loop B Tb b0 f1 = cls_alpha.
+        { exact (eq_symm cls_alpha (path_homotopy_class_loop B Tb b0 f1) Hcls_eq_f1). }
+        claim Hinv_g_eq : apply_fun invG g = path_homotopy_class_loop B Tb b0 (reverse_path eps_g).
+        { exact (fundamental_group_inv_apply B Tb b0 g HgG). }
+        claim Hsym_inv : path_homotopy_class_loop B Tb b0 (reverse_path eps_g) = apply_fun invG g.
+        { exact (eq_symm (apply_fun invG g) (path_homotopy_class_loop B Tb b0 (reverse_path eps_g)) Hinv_g_eq). }
+        claim Hdelta2_eq_prod : path_homotopy_class_loop B Tb b0 delta2
+          = apply_fun multG (cls_alpha, apply_fun invG g).
+        { rewrite Hconcat_class. rewrite Hsym_f1. rewrite Hsym_inv. reflexivity. }
+        claim Hprod_H0 : apply_fun multG (cls_alpha, apply_fun invG g) :e H0.
+        { exact (eq_subst_mem
+            (apply_fun multG (cls_alpha, apply_fun invG g))
+            (path_homotopy_class_loop B Tb b0 delta2)
+            H0
+            (eq_symm (path_homotopy_class_loop B Tb b0 delta2)
+              (apply_fun multG (cls_alpha, apply_fun invG g)) Hdelta2_eq_prod)
+            Hdelta2_H0). }
+        (** [alpha] mult inv(g) :e N via H0 c= N **)
+        claim Hprod_N : apply_fun multG (cls_alpha, apply_fun invG g) :e N.
+        { exact (HH0subN (apply_fun multG (cls_alpha, apply_fun invG g)) Hprod_H0). }
+        (** N is closed under multiplication **)
+        claim HNmult_cl : forall x y:set, x :e N -> y :e N -> apply_fun multG (x, y) :e N.
+        { exact (andER
+            (N c= G /\ eG :e N)
+            (forall x y:set, x :e N -> y :e N -> apply_fun multG (x, y) :e N)
+            (andEL
+              ((N c= G /\ eG :e N) /\ (forall x y:set, x :e N -> y :e N -> apply_fun multG (x, y) :e N))
+              (forall x:set, x :e N -> apply_fun invG x :e N)
+              HNsub)). }
+        (** [alpha] = ([alpha] mult inv(g)) mult g :e N **)
+        claim HinvgG : apply_fun invG g :e G. { exact (HinvG_cl g HgG). }
+        claim Hprod_g_N : apply_fun multG (apply_fun multG (cls_alpha, apply_fun invG g), g) :e N.
+        { exact (HNmult_cl (apply_fun multG (cls_alpha, apply_fun invG g)) g Hprod_N HgN). }
+        claim Hassoc_eq : apply_fun multG (apply_fun multG (cls_alpha, apply_fun invG g), g)
+          = apply_fun multG (cls_alpha, apply_fun multG (apply_fun invG g, g)).
+        { exact (HassocG cls_alpha (apply_fun invG g) g HalphaG HinvgG HgG). }
+        claim HinvAxg : apply_fun multG (apply_fun invG g, g) = eG.
+        { exact (andER (apply_fun multG (g, apply_fun invG g) = eG)
+            (apply_fun multG (apply_fun invG g, g) = eG)
+            (HinvAxG g HgG)). }
+        claim HidRight_alpha : apply_fun multG (cls_alpha, eG) = cls_alpha.
+        { exact (andER
+            (apply_fun multG (eG, cls_alpha) = cls_alpha)
+            (apply_fun multG (cls_alpha, eG) = cls_alpha)
+            (HidG cls_alpha HalphaG)). }
+        claim Halpha_eq_prod : cls_alpha = apply_fun multG (apply_fun multG (cls_alpha, apply_fun invG g), g).
+        { rewrite Hassoc_eq. rewrite HinvAxg.
+          exact (eq_symm (apply_fun multG (cls_alpha, eG)) cls_alpha HidRight_alpha). }
+        exact (eq_subst_mem cls_alpha
+          (apply_fun multG (apply_fun multG (cls_alpha, apply_fun invG g), g))
+          N Halpha_eq_prod Hprod_g_N). }
+      claim Hleft_full : e1_tgt :e E -> apply_fun p e1_tgt = apply_fun p e0 ->
+        exists h:set, covering_transformation E Te B Tb p h /\ apply_fun h e0 = e1_tgt.
+      { exact (iffER
+          (e1_tgt :e E -> apply_fun p e1_tgt = apply_fun p e0 ->
+            exists h:set, covering_transformation E Te B Tb p h /\ apply_fun h e0 = e1_tgt)
+          (forall alpha:set,
+            loop_at B Tb (apply_fun p e0) alpha ->
+            apply_fun (path_lift E Te B Tb p e0 alpha) 1 = e1_tgt ->
+            path_homotopy_class_loop B Tb (apply_fun p e0) alpha :e
+              normalizer H0 G multG eG invG)
+          (lemma81_1_image_of_psi E Te B Tb p e0 Hcov He0E HpcE HlpE e1_tgt)
+          Hright). }
+      exact (Hleft_full Hlcg_E Hlcg_fib_eq). }
+    apply Hct_ex. let h. assume HhPack.
+    claim Hh_ct : covering_transformation E Te B Tb p h.
+    { exact (andEL (covering_transformation E Te B Tb p h) (apply_fun h e0 = apply_fun lc g) HhPack). }
+    claim Hh_e0 : apply_fun h e0 = apply_fun lc g.
+    { exact (andER (covering_transformation E Te B Tb p h) (apply_fun h e0 = apply_fun lc g) HhPack). }
+    (** h is in CTG **)
+    claim Hh_homeo : homeomorphism E Te E Te h.
+    { exact (andEL (homeomorphism E Te E Te h) (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) Hh_ct). }
+    claim Hh_cont : continuous_map E Te E Te h.
+    { exact (homeomorphism_continuous E Te E Te h Hh_homeo). }
+    claim Hh_fun_on : function_on h E E.
+    { exact (continuous_map_function_on E Te E Te h Hh_cont). }
+    claim HhCTG : h :e CTG.
+    { admit. }
+    (** phi(h) = left_coset cls_h H0 where lc(cls_h) = h(e0) = lc(g) **)
+    claim Hphi_h_eq : apply_fun phi h = phiFun h.
+    { exact (apply_fun_graph CTG phiFun h HhCTG). }
+    set cls_h := Eps_i (fun cls:set => cls :e G /\ apply_fun lc cls = apply_fun h e0).
+    claim Hcls_h_prop : cls_h :e G /\ apply_fun lc cls_h = apply_fun h e0.
+    { exact (Hphi_cls_prop h HhCTG). }
+    claim Hcls_hG : cls_h :e G. { exact (andEL (cls_h :e G) (apply_fun lc cls_h = apply_fun h e0) Hcls_h_prop). }
+    claim Hlc_cls_h : apply_fun lc cls_h = apply_fun h e0.
+    { exact (andER (cls_h :e G) (apply_fun lc cls_h = apply_fun h e0) Hcls_h_prop). }
+    claim Hcls_hN : cls_h :e N. { exact (Hphi_cls_in_N h HhCTG). }
+    (** lc(cls_h) = h(e0) = lc(g), so same coset **)
+    claim Hlc_eq_cls_g : apply_fun lc cls_h = apply_fun lc g.
+    { rewrite Hlc_cls_h. exact Hh_e0. }
+    claim Hcoset_eq : left_coset multG cls_h H0 = left_coset multG g H0.
+    { exact (Hsame_lc_same_coset cls_h g Hcls_hN HgN Hlc_eq_cls_g). }
+    claim Hphi_h_val : apply_fun phi h = left_coset multG cls_h H0.
+    { exact Hphi_h_eq. }
+    claim Hphi_h_c : apply_fun phi h = c.
+    { rewrite Hphi_h_val. rewrite Hcoset_eq. exact (eq_symm c (left_coset multG g H0) Hc_eq). }
+    witness h.
+    apply andI.
+    * (** h :e CTG /\ phi(h) = c **)
+      exact (andI (h :e CTG) (apply_fun phi h = c) HhCTG Hphi_h_c).
+    * (** Uniqueness: any h' with phi(h') = c must equal h **)
+      let h'. assume Hh'CTG Hphi_h'_c.
+      (** Both h and h' have phi(h) = phi(h') = c, so cls_h and cls_h' have same lc,
+          hence same coset, and h(e0) = lc(cls_h), h'(e0) = lc(cls_h'). We need h(e0) = h'(e0)
+          to apply Hct_unique. **)
+      admit.
 Admitted.
 
 (** from S81 Definition (line 5103 in algtop.tex): regular covering map **)
