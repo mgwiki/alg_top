@@ -160894,6 +160894,468 @@ exact (connected_space_open_cover_chain
   one_in_unit_interval).
 Qed.
 
+(** Infrastructure: a finite chain of overlapping unit-interval balls yields a path between endpoints. **)
+(** Proven Bob **)
+Lemma unit_interval_ball_chain_path_between :
+  forall r n seq x0 x1:set,
+    r :e R -> Rlt 0 r -> Rlt r 1 ->
+    n :e omega ->
+    function_on seq (ordsucc n) {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} ->
+    x0 :e apply_fun seq 0 ->
+    x1 :e apply_fun seq n ->
+    (forall k:set, k :e n -> apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty) ->
+    exists h:set,
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h /\
+      apply_fun h 0 = x0 /\
+      apply_fun h 1 = x1.
+let r n seq x0 x1.
+assume HrR Hrpos Hrlt1 HnOmega HseqFun Hx0 Hx1 Hinter.
+set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+claim HnNat : nat_p n.
+{ exact (omega_nat_p n HnOmega). }
+set P := fun m:set =>
+  forall seqm a0 a1:set,
+    function_on seqm (ordsucc m) BallFam ->
+    a0 :e apply_fun seqm 0 ->
+    a1 :e apply_fun seqm m ->
+    (forall k:set, k :e m -> apply_fun seqm k :/\: apply_fun seqm (ordsucc k) <> Empty) ->
+    exists h:set,
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h /\
+      apply_fun h 0 = a0 /\
+      apply_fun h 1 = a1.
+claim HPn : P n.
+{
+  apply (nat_ind P).
+- (** base m = 0 **)
+  let seqm a0 a1.
+  assume Hseqm Ha0 Ha1 Hinter0.
+  set B0 := apply_fun seqm 0.
+  claim HB0Fam : B0 :e BallFam.
+  { exact (Hseqm 0 (ordsuccI2 0)). }
+  apply (ReplE_impred unit_interval
+    (fun c:set => open_ball unit_interval R_bounded_metric c r)
+    B0
+    HB0Fam).
+  let c0. assume Hc0I HeqB0.
+  claim Ha0B : a0 :e open_ball unit_interval R_bounded_metric c0 r.
+  { rewrite <- HeqB0. exact Ha0. }
+  claim Ha1B : a1 :e open_ball unit_interval R_bounded_metric c0 r.
+  { rewrite <- HeqB0. exact Ha1. }
+  claim Hseg_ex :
+    exists seg:set,
+      continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r)) seg /\
+      apply_fun seg 0 = a0 /\
+      apply_fun seg 1 = a1.
+  {
+    exact (open_ball_unit_interval_segment_continuous_lt1
+      c0 r a0 a1 Hc0I HrR Hrpos Hrlt1 Ha0B Ha1B).
+  }
+  apply Hseg_ex.
+  let seg. assume HsegPack.
+  claim HsegCont :
+    continuous_map unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c0 r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c0 r)) seg.
+  { exact (andEL
+      (continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r)) seg)
+      (apply_fun seg 0 = a0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology
+          (open_ball unit_interval R_bounded_metric c0 r)
+          (subspace_topology R R_standard_topology
+            (open_ball unit_interval R_bounded_metric c0 r)) seg /\
+          apply_fun seg 0 = a0)
+        (apply_fun seg 1 = a1)
+        HsegPack)). }
+  claim Hseg0 : apply_fun seg 0 = a0.
+  { exact (andER
+      (continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r)) seg)
+      (apply_fun seg 0 = a0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology
+          (open_ball unit_interval R_bounded_metric c0 r)
+          (subspace_topology R R_standard_topology
+            (open_ball unit_interval R_bounded_metric c0 r)) seg /\
+          apply_fun seg 0 = a0)
+        (apply_fun seg 1 = a1)
+        HsegPack)). }
+  claim Hseg1 : apply_fun seg 1 = a1.
+  { exact (andER
+      (continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r)) seg /\
+        apply_fun seg 0 = a0)
+      (apply_fun seg 1 = a1)
+      HsegPack). }
+  set incB := graph (open_ball unit_interval R_bounded_metric c0 r) (fun x:set => x).
+  claim HBsubI : open_ball unit_interval R_bounded_metric c0 r c= unit_interval.
+  { exact (open_ball_subset_X unit_interval R_bounded_metric c0 r). }
+  claim HincCont :
+    continuous_map (open_ball unit_interval R_bounded_metric c0 r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c0 r))
+      unit_interval
+      unit_interval_topology
+      incB.
+  {
+    claim HincCont0 :
+      continuous_map (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology unit_interval unit_interval_topology
+          (open_ball unit_interval R_bounded_metric c0 r))
+        unit_interval
+        unit_interval_topology
+        incB.
+    {
+      exact (subspace_inclusion_continuous
+        unit_interval
+        unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        unit_interval_topology_on
+        HBsubI).
+    }
+    claim Hsubspace_eq :
+      subspace_topology unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r) =
+      subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c0 r).
+    {
+      exact (ex16_1_subspace_transitive
+        R
+        R_standard_topology
+        unit_interval
+        (open_ball unit_interval R_bounded_metric c0 r)
+        R_standard_topology_is_topology
+        unit_interval_sub_R
+        HBsubI).
+    }
+    rewrite <- Hsubspace_eq.
+    exact HincCont0.
+  }
+  set h := compose_fun unit_interval seg incB.
+  witness h.
+  apply andI.
+  - apply andI.
+    + exact (composition_continuous
+        unit_interval
+        unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r))
+        unit_interval
+        unit_interval_topology
+        seg
+        incB
+        HsegCont
+        HincCont).
+    + rewrite (compose_fun_apply unit_interval seg incB 0 zero_in_unit_interval).
+      rewrite (apply_fun_graph
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (fun x:set => x)
+        (apply_fun seg 0)
+        (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          (open_ball unit_interval R_bounded_metric c0 r)
+          (subspace_topology R R_standard_topology
+            (open_ball unit_interval R_bounded_metric c0 r))
+          seg
+          HsegCont
+          0
+          zero_in_unit_interval)).
+      exact Hseg0.
+  - rewrite (compose_fun_apply unit_interval seg incB 1 one_in_unit_interval).
+    rewrite (apply_fun_graph
+      (open_ball unit_interval R_bounded_metric c0 r)
+      (fun x:set => x)
+      (apply_fun seg 1)
+      (continuous_map_function_on
+        unit_interval
+        unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r))
+        seg
+        HsegCont
+        1
+        one_in_unit_interval)).
+    exact Hseg1.
+- (** step m -> ordsucc m **)
+  let m. assume HmNat IH.
+  let seqm a0 a1.
+  assume Hseqm Ha0 Ha1 Hinterm.
+  (** pick an overlap point between seqm 0 and seqm (ordsucc 0) **)
+  claim H0in : 0 :e ordsucc m.
+  { exact (nat_0_in_ordsucc m HmNat). }
+  claim Hnonempty :
+    apply_fun seqm 0 :/\: apply_fun seqm (ordsucc 0) <> Empty.
+  { exact (Hinterm 0 H0in). }
+  apply (nonempty_has_element (apply_fun seqm 0 :/\: apply_fun seqm (ordsucc 0)) Hnonempty).
+  let t. assume Ht.
+  claim Ht0 : t :e apply_fun seqm 0.
+  { exact (binintersectE1 (apply_fun seqm 0) (apply_fun seqm (ordsucc 0)) t Ht). }
+  claim Ht1 : t :e apply_fun seqm (ordsucc 0).
+  { exact (binintersectE2 (apply_fun seqm 0) (apply_fun seqm (ordsucc 0)) t Ht). }
+  (** build a path inside seqm 0 from a0 to t **)
+  set B0 := apply_fun seqm 0.
+  claim HB0Fam : B0 :e BallFam.
+  { exact (Hseqm 0 (ordsuccI1 (ordsucc m) 0 H0in)). }
+  apply (ReplE_impred unit_interval
+    (fun c:set => open_ball unit_interval R_bounded_metric c r)
+    B0
+    HB0Fam).
+  let c0. assume Hc0I HeqB0.
+  claim Ha0B : a0 :e open_ball unit_interval R_bounded_metric c0 r.
+  { rewrite <- HeqB0. exact Ha0. }
+  claim HtB : t :e open_ball unit_interval R_bounded_metric c0 r.
+  { rewrite <- HeqB0. exact Ht0. }
+  claim Hseg_ex :
+    exists seg:set,
+      continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r)) seg /\
+      apply_fun seg 0 = a0 /\
+      apply_fun seg 1 = t.
+  {
+    exact (open_ball_unit_interval_segment_continuous_lt1
+      c0 r a0 t Hc0I HrR Hrpos Hrlt1 Ha0B HtB).
+  }
+  apply Hseg_ex.
+  let seg. assume HsegPack.
+  claim HsegCont :
+    continuous_map unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c0 r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c0 r)) seg.
+  { exact (andEL
+      (continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r)) seg)
+      (apply_fun seg 0 = a0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology
+          (open_ball unit_interval R_bounded_metric c0 r)
+          (subspace_topology R R_standard_topology
+            (open_ball unit_interval R_bounded_metric c0 r)) seg /\
+          apply_fun seg 0 = a0)
+        (apply_fun seg 1 = t)
+        HsegPack)). }
+  claim Hseg0 : apply_fun seg 0 = a0.
+  { exact (andER
+      (continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r)) seg)
+      (apply_fun seg 0 = a0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology
+          (open_ball unit_interval R_bounded_metric c0 r)
+          (subspace_topology R R_standard_topology
+            (open_ball unit_interval R_bounded_metric c0 r)) seg /\
+          apply_fun seg 0 = a0)
+        (apply_fun seg 1 = t)
+        HsegPack)). }
+  claim Hseg1 : apply_fun seg 1 = t.
+  { exact (andER
+      (continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r)) seg /\
+        apply_fun seg 0 = a0)
+      (apply_fun seg 1 = t)
+      HsegPack). }
+  set incB := graph (open_ball unit_interval R_bounded_metric c0 r) (fun x:set => x).
+  claim HBsubI : open_ball unit_interval R_bounded_metric c0 r c= unit_interval.
+  { exact (open_ball_subset_X unit_interval R_bounded_metric c0 r). }
+  claim HincCont :
+    continuous_map (open_ball unit_interval R_bounded_metric c0 r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c0 r))
+      unit_interval
+      unit_interval_topology
+      incB.
+  {
+    claim HincCont0 :
+      continuous_map (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology unit_interval unit_interval_topology
+          (open_ball unit_interval R_bounded_metric c0 r))
+        unit_interval
+        unit_interval_topology
+        incB.
+    {
+      exact (subspace_inclusion_continuous
+        unit_interval
+        unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        unit_interval_topology_on
+        HBsubI).
+    }
+    claim Hsubspace_eq :
+      subspace_topology unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r) =
+      subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c0 r).
+    {
+      exact (ex16_1_subspace_transitive
+        R
+        R_standard_topology
+        unit_interval
+        (open_ball unit_interval R_bounded_metric c0 r)
+        R_standard_topology_is_topology
+        unit_interval_sub_R
+        HBsubI).
+    }
+    rewrite <- Hsubspace_eq.
+    exact HincCont0.
+  }
+  set h0 := compose_fun unit_interval seg incB.
+  claim Hh0Cont :
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h0.
+  {
+    exact (composition_continuous
+      unit_interval
+      unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c0 r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c0 r))
+      unit_interval
+      unit_interval_topology
+      seg
+      incB
+      HsegCont
+      HincCont).
+  }
+  claim Hh0_0 : apply_fun h0 0 = a0.
+  {
+    rewrite (compose_fun_apply unit_interval seg incB 0 zero_in_unit_interval).
+    rewrite (apply_fun_graph
+      (open_ball unit_interval R_bounded_metric c0 r)
+      (fun x:set => x)
+      (apply_fun seg 0)
+      (continuous_map_function_on
+        unit_interval
+        unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r))
+        seg
+        HsegCont
+        0
+        zero_in_unit_interval)).
+    exact Hseg0.
+  }
+  claim Hh0_1 : apply_fun h0 1 = t.
+  {
+    rewrite (compose_fun_apply unit_interval seg incB 1 one_in_unit_interval).
+    rewrite (apply_fun_graph
+      (open_ball unit_interval R_bounded_metric c0 r)
+      (fun x:set => x)
+      (apply_fun seg 1)
+      (continuous_map_function_on
+        unit_interval
+        unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c0 r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c0 r))
+        seg
+        HsegCont
+        1
+        one_in_unit_interval)).
+    exact Hseg1.
+  }
+  (** Tail chain on indices ordsucc k **)
+  set seq_tail := graph (ordsucc m) (fun k:set => apply_fun seqm (ordsucc k)).
+  claim Htail_fun : function_on seq_tail (ordsucc m) BallFam.
+  {
+    let k. assume Hk.
+    rewrite (apply_fun_graph (ordsucc m) (fun k0:set => apply_fun seqm (ordsucc k0)) k Hk).
+    exact (Hseqm (ordsucc k) (nat_ordsucc_mono_in_ordsucc m k HmNat Hk)).
+  }
+  claim Htail_0 : t :e apply_fun seq_tail 0.
+  {
+    rewrite (apply_fun_graph (ordsucc m) (fun k0:set => apply_fun seqm (ordsucc k0)) 0 H0in).
+    exact Ht1.
+  }
+  claim Htail_n : a1 :e apply_fun seq_tail m.
+  {
+    rewrite (apply_fun_graph (ordsucc m) (fun k0:set => apply_fun seqm (ordsucc k0)) m (ordsuccI2 m)).
+    exact Ha1.
+  }
+  claim Htail_inter :
+    forall k:set, k :e m ->
+      apply_fun seq_tail k :/\: apply_fun seq_tail (ordsucc k) <> Empty.
+  {
+    let k. assume Hk.
+    rewrite (apply_fun_graph (ordsucc m) (fun k0:set => apply_fun seqm (ordsucc k0)) k (ordsuccI1 m k Hk)).
+    rewrite (apply_fun_graph (ordsucc m) (fun k0:set => apply_fun seqm (ordsucc k0)) (ordsucc k)
+      (nat_ordsucc_in_ordsucc m HmNat k Hk)).
+    exact (Hinterm (ordsucc k) (nat_ordsucc_in_ordsucc m HmNat k Hk)).
+  }
+  (** apply IH to tail chain **)
+  apply (IH seq_tail t a1 Htail_fun Htail_0 Htail_n Htail_inter).
+  let h1. assume Hh1pack.
+  claim Hh1Cont :
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h1.
+  { exact (andEL
+      (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h1)
+      (apply_fun h1 0 = t)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h1 /\
+          apply_fun h1 0 = t)
+        (apply_fun h1 1 = a1)
+        Hh1pack)). }
+  claim Hh1_0 : apply_fun h1 0 = t.
+  { exact (andER
+      (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h1)
+      (apply_fun h1 0 = t)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h1 /\
+          apply_fun h1 0 = t)
+        (apply_fun h1 1 = a1)
+        Hh1pack)). }
+  claim Hh1_1 : apply_fun h1 1 = a1.
+  { exact (andER
+      (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h1 /\
+        apply_fun h1 0 = t)
+      (apply_fun h1 1 = a1)
+      Hh1pack). }
+  set h := path_concat h0 h1.
+  witness h.
+  apply andI.
+  - apply andI.
+    + exact (path_concat_continuous
+        unit_interval
+        unit_interval_topology
+        a0
+        t
+        a1
+        h0
+        h1
+        Hh0Cont
+        Hh1Cont
+        Hh0_0
+        Hh0_1
+        Hh1_0
+        Hh1_1).
+    + rewrite (path_concat_at_zero h0 h1). exact Hh0_0.
+  - rewrite (path_concat_at_one h0 h1). exact Hh1_1.
+  - exact HnNat.
+}
+apply (HPn seq x0 x1 HseqFun Hx0 Hx1 Hinter).
+Qed.
+
 (** Proven Bob **)
 (** Infrastructure: open balls of radius > 1 in unit_interval are the whole interval **)
 Lemma open_ball_unit_interval_radius_gt1_mem :
