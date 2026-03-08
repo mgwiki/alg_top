@@ -165731,6 +165731,277 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
       - exact (path_between_concat X0 Tx0 x y z p q Hp Hcp Hq Hcq).
       - exact Hcont.
     }
+    (** Two consecutive segments in the same side concatenate to a path in U or V. **)
+    claim Htwo_segment_path_UV :
+      forall k:set, k :e n -> ordsucc k :e n -> ordsucc (ordsucc k) :e n ->
+        (ordsucc k :e Uset -> ordsucc (ordsucc k) :e Uset ->
+          exists p:set,
+            path_between U (apply_fun f (apply_fun t_seq k))
+              (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) p /\
+            continuous_map unit_interval unit_interval_topology
+              U (subspace_topology X Tx U) p) /\
+        (ordsucc k :e Vset -> ordsucc (ordsucc k) :e Vset ->
+          exists p:set,
+            path_between V (apply_fun f (apply_fun t_seq k))
+              (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) p /\
+            continuous_map unit_interval unit_interval_topology
+              V (subspace_topology X Tx V) p).
+    {
+      let k. assume Hk Hk1 Hk2.
+      apply andI.
+      - assume HkU Hk1U.
+        claim Hseg_pair :
+          (ordsucc k :e Uset ->
+            exists pk:set,
+              path_between U (apply_fun f (apply_fun t_seq k))
+                (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                U (subspace_topology X Tx U) pk) /\
+          (ordsucc k :e Vset ->
+            exists pk:set,
+              path_between V (apply_fun f (apply_fun t_seq k))
+                (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                V (subspace_topology X Tx V) pk).
+        {
+          exact (Hsegment_path_between_UV k Hk Hk1).
+        }
+        claim Hseg1 :
+          ordsucc k :e Uset ->
+            exists pk:set,
+              path_between U (apply_fun f (apply_fun t_seq k))
+                (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                U (subspace_topology X Tx U) pk.
+        { exact (andEL
+            (ordsucc k :e Uset ->
+              exists pk:set,
+                path_between U (apply_fun f (apply_fun t_seq k))
+                  (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+                continuous_map unit_interval unit_interval_topology
+                  U (subspace_topology X Tx U) pk)
+            (ordsucc k :e Vset ->
+              exists pk:set,
+                path_between V (apply_fun f (apply_fun t_seq k))
+                  (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+                continuous_map unit_interval unit_interval_topology
+                  V (subspace_topology X Tx V) pk)
+            Hseg_pair). }
+        claim Hseg_pair2 :
+          (ordsucc (ordsucc k) :e Uset ->
+            exists pk:set,
+              path_between U (apply_fun f (apply_fun t_seq (ordsucc k)))
+                (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                U (subspace_topology X Tx U) pk) /\
+          (ordsucc (ordsucc k) :e Vset ->
+            exists pk:set,
+              path_between V (apply_fun f (apply_fun t_seq (ordsucc k)))
+                (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                V (subspace_topology X Tx V) pk).
+        {
+          exact (Hsegment_path_between_UV (ordsucc k) Hk1 Hk2).
+        }
+        claim Hseg2 :
+          ordsucc (ordsucc k) :e Uset ->
+            exists pk:set,
+              path_between U (apply_fun f (apply_fun t_seq (ordsucc k)))
+                (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                U (subspace_topology X Tx U) pk.
+        { exact (andEL
+            (ordsucc (ordsucc k) :e Uset ->
+              exists pk:set,
+                path_between U (apply_fun f (apply_fun t_seq (ordsucc k)))
+                  (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) pk /\
+                continuous_map unit_interval unit_interval_topology
+                  U (subspace_topology X Tx U) pk)
+            (ordsucc (ordsucc k) :e Vset ->
+              exists pk:set,
+                path_between V (apply_fun f (apply_fun t_seq (ordsucc k)))
+                  (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) pk /\
+                continuous_map unit_interval unit_interval_topology
+                  V (subspace_topology X Tx V) pk)
+            Hseg_pair2). }
+        apply (Hseg1 HkU).
+        let p1. assume Hp1Pack.
+        apply (Hseg2 Hk1U).
+        let p2. assume Hp2Pack.
+        claim Hp1 :
+          path_between U (apply_fun f (apply_fun t_seq k))
+            (apply_fun f (apply_fun t_seq (ordsucc k))) p1.
+        { exact (andEL
+            (path_between U (apply_fun f (apply_fun t_seq k))
+              (apply_fun f (apply_fun t_seq (ordsucc k))) p1)
+            (continuous_map unit_interval unit_interval_topology
+              U (subspace_topology X Tx U) p1)
+            Hp1Pack). }
+        claim Hp1c :
+          continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) p1.
+        { exact (andER
+            (path_between U (apply_fun f (apply_fun t_seq k))
+              (apply_fun f (apply_fun t_seq (ordsucc k))) p1)
+            (continuous_map unit_interval unit_interval_topology
+              U (subspace_topology X Tx U) p1)
+            Hp1Pack). }
+        claim Hp2 :
+          path_between U (apply_fun f (apply_fun t_seq (ordsucc k)))
+            (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) p2.
+        { exact (andEL
+            (path_between U (apply_fun f (apply_fun t_seq (ordsucc k)))
+              (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) p2)
+            (continuous_map unit_interval unit_interval_topology
+              U (subspace_topology X Tx U) p2)
+            Hp2Pack). }
+        claim Hp2c :
+          continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) p2.
+        { exact (andER
+            (path_between U (apply_fun f (apply_fun t_seq (ordsucc k)))
+              (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) p2)
+            (continuous_map unit_interval unit_interval_topology
+              U (subspace_topology X Tx U) p2)
+            Hp2Pack). }
+        claim Hconcat_pack :
+          path_between U (apply_fun f (apply_fun t_seq k))
+            (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) (path_concat p1 p2) /\
+          continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) (path_concat p1 p2).
+        { exact (Hconcat_path_between
+            U (subspace_topology X Tx U)
+            (apply_fun f (apply_fun t_seq k))
+            (apply_fun f (apply_fun t_seq (ordsucc k)))
+            (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k))))
+            p1 p2 Hp1 Hp1c Hp2 Hp2c). }
+        witness (path_concat p1 p2).
+        exact Hconcat_pack.
+      - assume HkV Hk1V.
+        claim Hseg_pair :
+          (ordsucc k :e Uset ->
+            exists pk:set,
+              path_between U (apply_fun f (apply_fun t_seq k))
+                (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                U (subspace_topology X Tx U) pk) /\
+          (ordsucc k :e Vset ->
+            exists pk:set,
+              path_between V (apply_fun f (apply_fun t_seq k))
+                (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                V (subspace_topology X Tx V) pk).
+        { exact (Hsegment_path_between_UV k Hk Hk1). }
+        claim Hseg1 :
+          ordsucc k :e Vset ->
+            exists pk:set,
+              path_between V (apply_fun f (apply_fun t_seq k))
+                (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                V (subspace_topology X Tx V) pk.
+        { exact (andER
+            (ordsucc k :e Uset ->
+              exists pk:set,
+                path_between U (apply_fun f (apply_fun t_seq k))
+                  (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+                continuous_map unit_interval unit_interval_topology
+                  U (subspace_topology X Tx U) pk)
+            (ordsucc k :e Vset ->
+              exists pk:set,
+                path_between V (apply_fun f (apply_fun t_seq k))
+                  (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+                continuous_map unit_interval unit_interval_topology
+                  V (subspace_topology X Tx V) pk)
+            Hseg_pair). }
+        claim Hseg_pair2 :
+          (ordsucc (ordsucc k) :e Uset ->
+            exists pk:set,
+              path_between U (apply_fun f (apply_fun t_seq (ordsucc k)))
+                (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                U (subspace_topology X Tx U) pk) /\
+          (ordsucc (ordsucc k) :e Vset ->
+            exists pk:set,
+              path_between V (apply_fun f (apply_fun t_seq (ordsucc k)))
+                (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                V (subspace_topology X Tx V) pk).
+        { exact (Hsegment_path_between_UV (ordsucc k) Hk1 Hk2). }
+        claim Hseg2 :
+          ordsucc (ordsucc k) :e Vset ->
+            exists pk:set,
+              path_between V (apply_fun f (apply_fun t_seq (ordsucc k)))
+                (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) pk /\
+              continuous_map unit_interval unit_interval_topology
+                V (subspace_topology X Tx V) pk.
+        { exact (andER
+            (ordsucc (ordsucc k) :e Uset ->
+              exists pk:set,
+                path_between U (apply_fun f (apply_fun t_seq (ordsucc k)))
+                  (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) pk /\
+                continuous_map unit_interval unit_interval_topology
+                  U (subspace_topology X Tx U) pk)
+            (ordsucc (ordsucc k) :e Vset ->
+              exists pk:set,
+                path_between V (apply_fun f (apply_fun t_seq (ordsucc k)))
+                  (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) pk /\
+                continuous_map unit_interval unit_interval_topology
+                  V (subspace_topology X Tx V) pk)
+            Hseg_pair2). }
+        apply (Hseg1 HkV).
+        let p1. assume Hp1Pack.
+        apply (Hseg2 Hk1V).
+        let p2. assume Hp2Pack.
+        claim Hp1 :
+          path_between V (apply_fun f (apply_fun t_seq k))
+            (apply_fun f (apply_fun t_seq (ordsucc k))) p1.
+        { exact (andEL
+            (path_between V (apply_fun f (apply_fun t_seq k))
+              (apply_fun f (apply_fun t_seq (ordsucc k))) p1)
+            (continuous_map unit_interval unit_interval_topology
+              V (subspace_topology X Tx V) p1)
+            Hp1Pack). }
+        claim Hp1c :
+          continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) p1.
+        { exact (andER
+            (path_between V (apply_fun f (apply_fun t_seq k))
+              (apply_fun f (apply_fun t_seq (ordsucc k))) p1)
+            (continuous_map unit_interval unit_interval_topology
+              V (subspace_topology X Tx V) p1)
+            Hp1Pack). }
+        claim Hp2 :
+          path_between V (apply_fun f (apply_fun t_seq (ordsucc k)))
+            (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) p2.
+        { exact (andEL
+            (path_between V (apply_fun f (apply_fun t_seq (ordsucc k)))
+              (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) p2)
+            (continuous_map unit_interval unit_interval_topology
+              V (subspace_topology X Tx V) p2)
+            Hp2Pack). }
+        claim Hp2c :
+          continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) p2.
+        { exact (andER
+            (path_between V (apply_fun f (apply_fun t_seq (ordsucc k)))
+              (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) p2)
+            (continuous_map unit_interval unit_interval_topology
+              V (subspace_topology X Tx V) p2)
+            Hp2Pack). }
+        claim Hconcat_pack :
+          path_between V (apply_fun f (apply_fun t_seq k))
+            (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k)))) (path_concat p1 p2) /\
+          continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) (path_concat p1 p2).
+        { exact (Hconcat_path_between
+            V (subspace_topology X Tx V)
+            (apply_fun f (apply_fun t_seq k))
+            (apply_fun f (apply_fun t_seq (ordsucc k)))
+            (apply_fun f (apply_fun t_seq (ordsucc (ordsucc k))))
+            p1 p2 Hp1 Hp1c Hp2 Hp2c). }
+        witness (path_concat p1 p2).
+        exact Hconcat_pack.
+    }
     (** Transition points map into U cap V. **)
     claim Htransition_point_UcapV :
       forall k:set, k :e n ->
