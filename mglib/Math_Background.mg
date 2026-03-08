@@ -161811,6 +161811,51 @@ exact (connected_subset_unit_interval_interval_property
   HzBetween).
 Qed.
 
+(** Infrastructure: interval point stays in a chain ball (via open_ball interval property) **)
+Lemma open_ball_chain_interval_property :
+  forall r n seq i x y z:set,
+  r :e R ->
+  Rlt 0 r ->
+  Rlt r 1 ->
+  n :e omega ->
+  function_on seq (ordsucc n) {open_ball unit_interval R_bounded_metric c r | c :e unit_interval} ->
+  i :e ordsucc n ->
+  x :e apply_fun seq i ->
+  y :e apply_fun seq i ->
+  z :e unit_interval ->
+  (Rlt x z /\ Rlt z y \/ Rlt y z /\ Rlt z x) ->
+  z :e apply_fun seq i.
+let r n seq i x y z.
+assume HrR Hrpos Hrlt1 HnOmega HseqFun Hi Hx Hy HzI HzBetween.
+set BallFam := {open_ball unit_interval R_bounded_metric c r | c :e unit_interval}.
+claim Hseqi_ball : apply_fun seq i :e BallFam.
+{ exact (HseqFun i Hi). }
+apply (ReplE_impred unit_interval
+  (fun c:set => open_ball unit_interval R_bounded_metric c r)
+  (apply_fun seq i) Hseqi_ball).
+let c. assume HcI Heq.
+apply (eq_subst_mem_set
+  z
+  (open_ball unit_interval R_bounded_metric c r)
+  (apply_fun seq i)).
+- exact (open_ball_unit_interval_interval_property
+    c r x y z
+    HcI
+    HrR
+    Hrpos
+    Hrlt1
+    (eq_subst_mem_set x (apply_fun seq i)
+      (open_ball unit_interval R_bounded_metric c r) Hx Heq)
+    (eq_subst_mem_set y (apply_fun seq i)
+      (open_ball unit_interval R_bounded_metric c r) Hy Heq)
+    HzI
+    HzBetween).
+- exact (eq_symm
+    (apply_fun seq i)
+    (open_ball unit_interval R_bounded_metric c r)
+    Heq).
+Qed.
+
 (** Infrastructure: mixed case for ball_cover_word_construction (to be completed). **)
 Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
@@ -165011,6 +165056,706 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
         H0_in_seqm0
         Hm_in_seqm
         HseqmInter).
+    }
+    (** Points between consecutive intersection points stay in the shared ball. **)
+    claim Hsegment_in_seq :
+      forall k:set, k :e n -> ordsucc k :e n ->
+        forall z:set, z :e unit_interval ->
+          (Rlt (apply_fun t_seq k) z /\ Rlt z (apply_fun t_seq (ordsucc k)) \/
+           Rlt (apply_fun t_seq (ordsucc k)) z /\ Rlt z (apply_fun t_seq k)) ->
+          z :e apply_fun seq (ordsucc k).
+    {
+      let k. assume Hk HkS.
+      let z. assume HzI HzBetween.
+      claim Hx_in : apply_fun t_seq k :e apply_fun seq (ordsucc k).
+      {
+        exact (andER
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)).
+      }
+      claim Hy_in : apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc k).
+      {
+        exact (andEL
+          (apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc k))
+          (apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc (ordsucc k)))
+          (Ht_seq_mem (ordsucc k) HkS)).
+      }
+      exact (open_ball_chain_interval_property
+        r1
+        n
+        seq
+        (ordsucc k)
+        (apply_fun t_seq k)
+        (apply_fun t_seq (ordsucc k))
+        z
+        Hr1R
+        Hr1pos
+        Hr1lt1
+        HnOmega
+        HseqFun
+        (ordsuccI1 n (ordsucc k) HkS)
+        Hx_in
+        Hy_in
+        HzI
+        HzBetween).
+    }
+    (** Each segment between consecutive intersection points maps into U or V. **)
+    claim Hsegment_map_UV :
+      forall k:set, k :e n -> ordsucc k :e n ->
+        ((ordsucc k :e Uset) ->
+          forall z:set, z :e unit_interval ->
+            (Rlt (apply_fun t_seq k) z /\ Rlt z (apply_fun t_seq (ordsucc k)) \/
+             Rlt (apply_fun t_seq (ordsucc k)) z /\ Rlt z (apply_fun t_seq k)) ->
+            apply_fun f z :e U) /\
+        ((ordsucc k :e Vset) ->
+          forall z:set, z :e unit_interval ->
+            (Rlt (apply_fun t_seq k) z /\ Rlt z (apply_fun t_seq (ordsucc k)) \/
+             Rlt (apply_fun t_seq (ordsucc k)) z /\ Rlt z (apply_fun t_seq k)) ->
+            apply_fun f z :e V).
+    {
+      let k. assume Hk HkS.
+      apply andI.
+      - assume HkU.
+        let z. assume HzI HzBetween.
+        claim Hz_in_seq : z :e apply_fun seq (ordsucc k).
+        { exact (Hsegment_in_seq k Hk HkS z HzI HzBetween). }
+        exact (SepE2 (ordsucc n)
+          (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U)
+          (ordsucc k) HkU z Hz_in_seq).
+      - assume HkV.
+        let z. assume HzI HzBetween.
+        claim Hz_in_seq : z :e apply_fun seq (ordsucc k).
+        { exact (Hsegment_in_seq k Hk HkS z HzI HzBetween). }
+        exact (SepE2 (ordsucc n)
+          (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V)
+          (ordsucc k) HkV z Hz_in_seq).
+    }
+    (** Build a path inside the chain ball from t_seq k to t_seq (ordsucc k). **)
+    claim Hsegment_path :
+      forall k:set, k :e n -> ordsucc k :e n ->
+        exists hk:set,
+          continuous_map unit_interval unit_interval_topology
+            unit_interval unit_interval_topology hk /\
+          apply_fun hk 0 = apply_fun t_seq k /\
+          apply_fun hk 1 = apply_fun t_seq (ordsucc k) /\
+          (forall t:set, t :e unit_interval ->
+            apply_fun hk t :e apply_fun seq (ordsucc k)).
+    {
+      let k. assume Hk HkS.
+      claim Hx_in : apply_fun t_seq k :e apply_fun seq (ordsucc k).
+      {
+        exact (andER
+          (apply_fun t_seq k :e apply_fun seq k)
+          (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+          (Ht_seq_mem k Hk)).
+      }
+      claim Hy_in : apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc k).
+      {
+        exact (andEL
+          (apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc k))
+          (apply_fun t_seq (ordsucc k) :e apply_fun seq (ordsucc (ordsucc k)))
+          (Ht_seq_mem (ordsucc k) HkS)).
+      }
+      apply (Hball_path (ordsucc k) (ordsuccI1 n (ordsucc k) HkS)
+        (apply_fun t_seq k) (apply_fun t_seq (ordsucc k)) Hx_in Hy_in).
+      let seg. assume HsegPack.
+      claim HsegCont :
+        continuous_map unit_interval unit_interval_topology
+          (apply_fun seq (ordsucc k))
+          (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k))) seg.
+      {
+        exact (andEL
+          (continuous_map unit_interval unit_interval_topology
+            (apply_fun seq (ordsucc k))
+            (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k))) seg)
+          (apply_fun seg 0 = apply_fun t_seq k)
+          (andEL
+            (continuous_map unit_interval unit_interval_topology
+              (apply_fun seq (ordsucc k))
+              (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k))) seg /\
+             apply_fun seg 0 = apply_fun t_seq k)
+            (apply_fun seg 1 = apply_fun t_seq (ordsucc k))
+            HsegPack)).
+      }
+      claim Hseg0 : apply_fun seg 0 = apply_fun t_seq k.
+      { exact (andER
+          (continuous_map unit_interval unit_interval_topology
+            (apply_fun seq (ordsucc k))
+            (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k))) seg)
+          (apply_fun seg 0 = apply_fun t_seq k)
+          (andEL
+            (continuous_map unit_interval unit_interval_topology
+              (apply_fun seq (ordsucc k))
+              (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k))) seg /\
+             apply_fun seg 0 = apply_fun t_seq k)
+            (apply_fun seg 1 = apply_fun t_seq (ordsucc k))
+            HsegPack)). }
+      claim Hseg1 : apply_fun seg 1 = apply_fun t_seq (ordsucc k).
+      { exact (andER
+          (continuous_map unit_interval unit_interval_topology
+            (apply_fun seq (ordsucc k))
+            (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k))) seg /\
+           apply_fun seg 0 = apply_fun t_seq k)
+          (apply_fun seg 1 = apply_fun t_seq (ordsucc k))
+          HsegPack). }
+      set incB := graph (apply_fun seq (ordsucc k)) (fun x:set => x).
+      claim HBsubI : apply_fun seq (ordsucc k) c= unit_interval.
+      {
+        claim Hseqk_ball : apply_fun seq (ordsucc k) :e BallFam.
+        { exact (HseqFun (ordsucc k) (ordsuccI1 n (ordsucc k) HkS)). }
+        apply (ReplE_impred unit_interval
+          (fun c0:set => open_ball unit_interval R_bounded_metric c0 r1)
+          (apply_fun seq (ordsucc k)) Hseqk_ball).
+        let c0. assume Hc0I Heq.
+        rewrite Heq.
+        exact (open_ball_subset_X unit_interval R_bounded_metric c0 r1).
+      }
+      claim HincCont0 :
+        continuous_map (apply_fun seq (ordsucc k))
+          (subspace_topology unit_interval unit_interval_topology (apply_fun seq (ordsucc k)))
+          unit_interval
+          unit_interval_topology
+          incB.
+      {
+        exact (subspace_inclusion_continuous
+          unit_interval
+          unit_interval_topology
+          (apply_fun seq (ordsucc k))
+          unit_interval_topology_on
+          HBsubI).
+      }
+      claim Hsubspace_eq :
+        subspace_topology unit_interval unit_interval_topology (apply_fun seq (ordsucc k)) =
+        subspace_topology R R_standard_topology (apply_fun seq (ordsucc k)).
+      {
+        exact (ex16_1_subspace_transitive
+          R
+          R_standard_topology
+          unit_interval
+          (apply_fun seq (ordsucc k))
+          R_standard_topology_is_topology
+          unit_interval_sub_R
+          HBsubI).
+      }
+      claim HincCont :
+        continuous_map (apply_fun seq (ordsucc k))
+          (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k)))
+          unit_interval
+          unit_interval_topology
+          incB.
+      {
+        rewrite <- Hsubspace_eq.
+        exact HincCont0.
+      }
+      set hk := compose_fun unit_interval seg incB.
+      witness hk.
+      apply andI.
+      - apply andI.
+        + apply andI.
+          * exact (composition_continuous
+              unit_interval
+              unit_interval_topology
+              (apply_fun seq (ordsucc k))
+              (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k)))
+              unit_interval
+              unit_interval_topology
+              seg
+              incB
+              HsegCont
+              HincCont).
+          * rewrite (compose_fun_apply unit_interval seg incB 0 zero_in_unit_interval).
+            rewrite (apply_fun_graph (apply_fun seq (ordsucc k)) (fun x:set => x)
+              (apply_fun seg 0)
+              (continuous_map_function_on unit_interval unit_interval_topology
+                (apply_fun seq (ordsucc k))
+                (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k)))
+                seg
+                HsegCont
+                0
+                zero_in_unit_interval)).
+            exact Hseg0.
+        + rewrite (compose_fun_apply unit_interval seg incB 1 one_in_unit_interval).
+          rewrite (apply_fun_graph (apply_fun seq (ordsucc k)) (fun x:set => x)
+            (apply_fun seg 1)
+            (continuous_map_function_on unit_interval unit_interval_topology
+              (apply_fun seq (ordsucc k))
+              (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k)))
+              seg
+              HsegCont
+              1
+              one_in_unit_interval)).
+          exact Hseg1.
+      - let t. assume Ht.
+        rewrite (compose_fun_apply unit_interval seg incB t Ht).
+        rewrite (apply_fun_graph (apply_fun seq (ordsucc k)) (fun x:set => x)
+          (apply_fun seg t)
+          (continuous_map_function_on unit_interval unit_interval_topology
+            (apply_fun seq (ordsucc k))
+            (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k)))
+            seg
+            HsegCont
+            t
+            Ht)).
+        exact (continuous_map_function_on unit_interval unit_interval_topology
+          (apply_fun seq (ordsucc k))
+          (subspace_topology R R_standard_topology (apply_fun seq (ordsucc k)))
+          seg
+          HsegCont
+          t
+          Ht).
+    }
+    (** Segments map into U or V depending on the covering ball. **)
+    claim Hsegment_path_image :
+      forall k:set, k :e n -> ordsucc k :e n ->
+        (ordsucc k :e Uset ->
+          exists hk:set,
+            continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+            apply_fun hk 0 = apply_fun t_seq k /\
+            apply_fun hk 1 = apply_fun t_seq (ordsucc k) /\
+            (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e U)) /\
+        (ordsucc k :e Vset ->
+          exists hk:set,
+            continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+            apply_fun hk 0 = apply_fun t_seq k /\
+            apply_fun hk 1 = apply_fun t_seq (ordsucc k) /\
+            (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e V)).
+    {
+      let k. assume Hk HkS.
+      apply andI.
+      - assume HkU.
+        apply (Hsegment_path k Hk HkS).
+        let hk. assume HkPack.
+        claim Hk_left :
+          (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+           apply_fun hk 0 = apply_fun t_seq k) /\
+          apply_fun hk 1 = apply_fun t_seq (ordsucc k).
+        {
+          exact (andEL
+            ((continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+              apply_fun hk 0 = apply_fun t_seq k) /\
+             apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            (forall t:set, t :e unit_interval -> apply_fun hk t :e apply_fun seq (ordsucc k))
+            HkPack).
+        }
+        claim Hk_range :
+          forall t:set, t :e unit_interval -> apply_fun hk t :e apply_fun seq (ordsucc k).
+        {
+          exact (andER
+            ((continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+              apply_fun hk 0 = apply_fun t_seq k) /\
+             apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            (forall t:set, t :e unit_interval -> apply_fun hk t :e apply_fun seq (ordsucc k))
+            HkPack).
+        }
+        claim Hk_cont0 :
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+          apply_fun hk 0 = apply_fun t_seq k.
+        { exact (andEL
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+             apply_fun hk 0 = apply_fun t_seq k)
+            (apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            Hk_left). }
+        claim Hk1 : apply_fun hk 1 = apply_fun t_seq (ordsucc k).
+        { exact (andER
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+             apply_fun hk 0 = apply_fun t_seq k)
+            (apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            Hk_left). }
+        claim Hk_cont :
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk.
+        { exact (andEL
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk)
+            (apply_fun hk 0 = apply_fun t_seq k)
+            Hk_cont0). }
+        claim Hk0 : apply_fun hk 0 = apply_fun t_seq k.
+        { exact (andER
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk)
+            (apply_fun hk 0 = apply_fun t_seq k)
+            Hk_cont0). }
+        witness hk.
+        apply andI.
+        - apply andI.
+          + apply andI.
+            * exact Hk_cont.
+            * exact Hk0.
+          + exact Hk1.
+        - let t. assume Ht.
+          claim Ht_in_seq : apply_fun hk t :e apply_fun seq (ordsucc k).
+          { exact (Hk_range t Ht). }
+          exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t0:set, t0 :e apply_fun seq k0 -> apply_fun f t0 :e U)
+            (ordsucc k) HkU (apply_fun hk t) Ht_in_seq).
+      - assume HkV.
+        apply (Hsegment_path k Hk HkS).
+        let hk. assume HkPack.
+        claim Hk_left :
+          (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+           apply_fun hk 0 = apply_fun t_seq k) /\
+          apply_fun hk 1 = apply_fun t_seq (ordsucc k).
+        {
+          exact (andEL
+            ((continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+              apply_fun hk 0 = apply_fun t_seq k) /\
+             apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            (forall t:set, t :e unit_interval -> apply_fun hk t :e apply_fun seq (ordsucc k))
+            HkPack).
+        }
+        claim Hk_range :
+          forall t:set, t :e unit_interval -> apply_fun hk t :e apply_fun seq (ordsucc k).
+        {
+          exact (andER
+            ((continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+              apply_fun hk 0 = apply_fun t_seq k) /\
+             apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            (forall t:set, t :e unit_interval -> apply_fun hk t :e apply_fun seq (ordsucc k))
+            HkPack).
+        }
+        claim Hk_cont0 :
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+          apply_fun hk 0 = apply_fun t_seq k.
+        { exact (andEL
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+             apply_fun hk 0 = apply_fun t_seq k)
+            (apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            Hk_left). }
+        claim Hk1 : apply_fun hk 1 = apply_fun t_seq (ordsucc k).
+        { exact (andER
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+             apply_fun hk 0 = apply_fun t_seq k)
+            (apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            Hk_left). }
+        claim Hk_cont :
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk.
+        { exact (andEL
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk)
+            (apply_fun hk 0 = apply_fun t_seq k)
+            Hk_cont0). }
+        claim Hk0 : apply_fun hk 0 = apply_fun t_seq k.
+        { exact (andER
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk)
+            (apply_fun hk 0 = apply_fun t_seq k)
+            Hk_cont0). }
+        witness hk.
+        apply andI.
+        - apply andI.
+          + apply andI.
+            * exact Hk_cont.
+            * exact Hk0.
+          + exact Hk1.
+        - let t. assume Ht.
+          claim Ht_in_seq : apply_fun hk t :e apply_fun seq (ordsucc k).
+          { exact (Hk_range t Ht). }
+          exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t0:set, t0 :e apply_fun seq k0 -> apply_fun f t0 :e V)
+            (ordsucc k) HkV (apply_fun hk t) Ht_in_seq).
+    }
+    (** Each segment gives a path between f(t_seq k) and f(t_seq (ordsucc k)) inside U or V. **)
+    claim Hsegment_path_between_UV :
+      forall k:set, k :e n -> ordsucc k :e n ->
+        (ordsucc k :e Uset ->
+          exists pk:set,
+            path_between U (apply_fun f (apply_fun t_seq k))
+              (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+            continuous_map unit_interval unit_interval_topology
+              U (subspace_topology X Tx U) pk) /\
+        (ordsucc k :e Vset ->
+          exists pk:set,
+            path_between V (apply_fun f (apply_fun t_seq k))
+              (apply_fun f (apply_fun t_seq (ordsucc k))) pk /\
+            continuous_map unit_interval unit_interval_topology
+              V (subspace_topology X Tx V) pk).
+    {
+      let k. assume Hk HkS.
+      apply andI.
+      - assume HkU.
+        claim HsegImgU :
+          ordsucc k :e Uset ->
+            exists hk:set,
+              continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+              apply_fun hk 0 = apply_fun t_seq k /\
+              apply_fun hk 1 = apply_fun t_seq (ordsucc k) /\
+              (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e U).
+        {
+          exact (andEL
+            (ordsucc k :e Uset ->
+              exists hk:set,
+                continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+                apply_fun hk 0 = apply_fun t_seq k /\
+                apply_fun hk 1 = apply_fun t_seq (ordsucc k) /\
+                (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e U))
+            (ordsucc k :e Vset ->
+              exists hk:set,
+                continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+                apply_fun hk 0 = apply_fun t_seq k /\
+                apply_fun hk 1 = apply_fun t_seq (ordsucc k) /\
+                (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e V))
+            (Hsegment_path_image k Hk HkS)).
+        }
+        apply (HsegImgU HkU).
+        let hk. assume HkPack.
+        claim Hk_left :
+          (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+           apply_fun hk 0 = apply_fun t_seq k) /\
+          apply_fun hk 1 = apply_fun t_seq (ordsucc k).
+        {
+          exact (andEL
+            ((continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+              apply_fun hk 0 = apply_fun t_seq k) /\
+             apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e U)
+            HkPack).
+        }
+        claim Hk_range :
+          forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e U.
+        {
+          exact (andER
+            ((continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+              apply_fun hk 0 = apply_fun t_seq k) /\
+             apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e U)
+            HkPack).
+        }
+        claim Hk_cont0 :
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+          apply_fun hk 0 = apply_fun t_seq k.
+        { exact (andEL
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+             apply_fun hk 0 = apply_fun t_seq k)
+            (apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            Hk_left). }
+        claim Hk1 : apply_fun hk 1 = apply_fun t_seq (ordsucc k).
+        { exact (andER
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+             apply_fun hk 0 = apply_fun t_seq k)
+            (apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            Hk_left). }
+        claim Hk_cont :
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk.
+        { exact (andEL
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk)
+            (apply_fun hk 0 = apply_fun t_seq k)
+            Hk_cont0). }
+        claim Hk0 : apply_fun hk 0 = apply_fun t_seq k.
+        { exact (andER
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk)
+            (apply_fun hk 0 = apply_fun t_seq k)
+            Hk_cont0). }
+        set pk := compose_fun unit_interval hk f.
+        claim Hpk_contX :
+          continuous_map unit_interval unit_interval_topology X Tx pk.
+        { exact (composition_continuous unit_interval unit_interval_topology
+            unit_interval unit_interval_topology X Tx hk f Hk_cont HfCont). }
+        claim Hpk_range :
+          forall t:set, t :e unit_interval -> apply_fun pk t :e U.
+        {
+          let t. assume Ht.
+          rewrite (compose_fun_apply unit_interval hk f t Ht).
+          exact (Hk_range t Ht).
+        }
+        claim Hpk_contU :
+          continuous_map unit_interval unit_interval_topology
+            U (subspace_topology X Tx U) pk.
+        {
+          exact (continuous_map_range_restrict
+            unit_interval
+            unit_interval_topology
+            X Tx pk U
+            Hpk_contX HUsub Hpk_range).
+        }
+        claim Hpk_fun : function_on pk unit_interval U.
+        { exact (continuous_map_function_on
+            unit_interval unit_interval_topology
+            U (subspace_topology X Tx U)
+            pk Hpk_contU). }
+        claim Hpk0 : apply_fun pk 0 = apply_fun f (apply_fun t_seq k).
+        {
+          rewrite (compose_fun_apply unit_interval hk f 0 zero_in_unit_interval).
+          rewrite Hk0. reflexivity.
+        }
+        claim Hpk1 : apply_fun pk 1 = apply_fun f (apply_fun t_seq (ordsucc k)).
+        {
+          rewrite (compose_fun_apply unit_interval hk f 1 one_in_unit_interval).
+          rewrite Hk1. reflexivity.
+        }
+        witness pk.
+        apply andI.
+        + exact (path_betweenI U
+            (apply_fun f (apply_fun t_seq k))
+            (apply_fun f (apply_fun t_seq (ordsucc k)))
+            pk Hpk_fun Hpk0 Hpk1).
+        + exact Hpk_contU.
+      - assume HkV.
+        claim HsegImgV :
+          ordsucc k :e Vset ->
+            exists hk:set,
+              continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+              apply_fun hk 0 = apply_fun t_seq k /\
+              apply_fun hk 1 = apply_fun t_seq (ordsucc k) /\
+              (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e V).
+        {
+          exact (andER
+            (ordsucc k :e Uset ->
+              exists hk:set,
+                continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+                apply_fun hk 0 = apply_fun t_seq k /\
+                apply_fun hk 1 = apply_fun t_seq (ordsucc k) /\
+                (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e U))
+            (ordsucc k :e Vset ->
+              exists hk:set,
+                continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+                apply_fun hk 0 = apply_fun t_seq k /\
+                apply_fun hk 1 = apply_fun t_seq (ordsucc k) /\
+                (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e V))
+            (Hsegment_path_image k Hk HkS)).
+        }
+        apply (HsegImgV HkV).
+        let hk. assume HkPack.
+        claim Hk_left :
+          (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+           apply_fun hk 0 = apply_fun t_seq k) /\
+          apply_fun hk 1 = apply_fun t_seq (ordsucc k).
+        {
+          exact (andEL
+            ((continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+              apply_fun hk 0 = apply_fun t_seq k) /\
+             apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e V)
+            HkPack).
+        }
+        claim Hk_range :
+          forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e V.
+        {
+          exact (andER
+            ((continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+              apply_fun hk 0 = apply_fun t_seq k) /\
+             apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            (forall t:set, t :e unit_interval -> apply_fun f (apply_fun hk t) :e V)
+            HkPack).
+        }
+        claim Hk_cont0 :
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+          apply_fun hk 0 = apply_fun t_seq k.
+        { exact (andEL
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+             apply_fun hk 0 = apply_fun t_seq k)
+            (apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            Hk_left). }
+        claim Hk1 : apply_fun hk 1 = apply_fun t_seq (ordsucc k).
+        { exact (andER
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk /\
+             apply_fun hk 0 = apply_fun t_seq k)
+            (apply_fun hk 1 = apply_fun t_seq (ordsucc k))
+            Hk_left). }
+        claim Hk_cont :
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk.
+        { exact (andEL
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk)
+            (apply_fun hk 0 = apply_fun t_seq k)
+            Hk_cont0). }
+        claim Hk0 : apply_fun hk 0 = apply_fun t_seq k.
+        { exact (andER
+            (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hk)
+            (apply_fun hk 0 = apply_fun t_seq k)
+            Hk_cont0). }
+        set pk := compose_fun unit_interval hk f.
+        claim Hpk_contX :
+          continuous_map unit_interval unit_interval_topology X Tx pk.
+        { exact (composition_continuous unit_interval unit_interval_topology
+            unit_interval unit_interval_topology X Tx hk f Hk_cont HfCont). }
+        claim Hpk_range :
+          forall t:set, t :e unit_interval -> apply_fun pk t :e V.
+        {
+          let t. assume Ht.
+          rewrite (compose_fun_apply unit_interval hk f t Ht).
+          exact (Hk_range t Ht).
+        }
+        claim Hpk_contV :
+          continuous_map unit_interval unit_interval_topology
+            V (subspace_topology X Tx V) pk.
+        {
+          exact (continuous_map_range_restrict
+            unit_interval
+            unit_interval_topology
+            X Tx pk V
+            Hpk_contX HVsub Hpk_range).
+        }
+        claim Hpk_fun : function_on pk unit_interval V.
+        { exact (continuous_map_function_on
+            unit_interval unit_interval_topology
+            V (subspace_topology X Tx V)
+            pk Hpk_contV). }
+        claim Hpk0 : apply_fun pk 0 = apply_fun f (apply_fun t_seq k).
+        {
+          rewrite (compose_fun_apply unit_interval hk f 0 zero_in_unit_interval).
+          rewrite Hk0. reflexivity.
+        }
+        claim Hpk1 : apply_fun pk 1 = apply_fun f (apply_fun t_seq (ordsucc k)).
+        {
+          rewrite (compose_fun_apply unit_interval hk f 1 one_in_unit_interval).
+          rewrite Hk1. reflexivity.
+        }
+        witness pk.
+        apply andI.
+        + exact (path_betweenI V
+            (apply_fun f (apply_fun t_seq k))
+            (apply_fun f (apply_fun t_seq (ordsucc k)))
+            pk Hpk_fun Hpk0 Hpk1).
+        + exact Hpk_contV.
+    }
+    (** Transition points map into U cap V. **)
+    claim Htransition_point_UcapV :
+      forall k:set, k :e n ->
+        ((k :e Uset /\ ordsucc k :e Vset) \/
+         (k :e Vset /\ ordsucc k :e Uset)) ->
+        apply_fun f (apply_fun t_seq k) :e U :/\: V.
+    {
+      let k. assume Hk Hktrans.
+      apply Hktrans.
+      - assume HkUV.
+        claim HkU : k :e Uset.
+        { exact (andEL (k :e Uset) (ordsucc k :e Vset) HkUV). }
+        claim HkV : ordsucc k :e Vset.
+        { exact (andER (k :e Uset) (ordsucc k :e Vset) HkUV). }
+        claim HallU :
+          forall t:set, t :e apply_fun seq k -> apply_fun f t :e U.
+        { exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U)
+            k HkU). }
+        claim HallV :
+          forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e V.
+        { exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V)
+            (ordsucc k) HkV). }
+        exact (Ht_seq_in_UcapV k Hk HallU HallV).
+      - assume HkVU.
+        claim HkV : k :e Vset.
+        { exact (andEL (k :e Vset) (ordsucc k :e Uset) HkVU). }
+        claim HkU : ordsucc k :e Uset.
+        { exact (andER (k :e Vset) (ordsucc k :e Uset) HkVU). }
+        claim HallU :
+          forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e U.
+        { exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U)
+            (ordsucc k) HkU). }
+        claim HallV :
+          forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
+        { exact (SepE2 (ordsucc n)
+            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V)
+            k HkV). }
+        claim Ht_in_seqk : apply_fun t_seq k :e apply_fun seq k.
+        { exact (andEL
+            (apply_fun t_seq k :e apply_fun seq k)
+            (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+            (Ht_seq_mem k Hk)). }
+        claim Ht_in_seqk1 : apply_fun t_seq k :e apply_fun seq (ordsucc k).
+        { exact (andER
+            (apply_fun t_seq k :e apply_fun seq k)
+            (apply_fun t_seq k :e apply_fun seq (ordsucc k))
+            (Ht_seq_mem k Hk)). }
+        apply (binintersectI U V (apply_fun f (apply_fun t_seq k))).
+        + exact (HallU (apply_fun t_seq k) Ht_in_seqk1).
+        + exact (HallV (apply_fun t_seq k) Ht_in_seqk).
     }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
