@@ -165704,6 +165704,33 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
             pk Hpk_fun Hpk0 Hpk1).
         + exact Hpk_contV.
     }
+    (** Concatenation of two paths gives a path and is continuous. **)
+    claim Hconcat_path_between :
+      forall X0 Tx0 x y z p q:set,
+        path_between X0 x y p ->
+        continuous_map unit_interval unit_interval_topology X0 Tx0 p ->
+        path_between X0 y z q ->
+        continuous_map unit_interval unit_interval_topology X0 Tx0 q ->
+        path_between X0 x z (path_concat p q) /\
+        continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat p q).
+    {
+      let X0 Tx0 x y z p q.
+      assume Hp Hcp Hq Hcq.
+      claim Hp0 : apply_fun p 0 = x.
+      { exact (path_between_at_zero X0 x y p Hp). }
+      claim Hp1 : apply_fun p 1 = y.
+      { exact (path_between_at_one X0 x y p Hp). }
+      claim Hq0 : apply_fun q 0 = y.
+      { exact (path_between_at_zero X0 y z q Hq). }
+      claim Hq1 : apply_fun q 1 = z.
+      { exact (path_between_at_one X0 y z q Hq). }
+      claim Hcont :
+        continuous_map unit_interval unit_interval_topology X0 Tx0 (path_concat p q).
+      { exact (path_concat_continuous X0 Tx0 x y z p q Hcp Hcq Hp0 Hp1 Hq0 Hq1). }
+      apply andI.
+      - exact (path_between_concat X0 Tx0 x y z p q Hp Hcp Hq Hcq).
+      - exact Hcont.
+    }
     (** Transition points map into U cap V. **)
     claim Htransition_point_UcapV :
       forall k:set, k :e n ->
