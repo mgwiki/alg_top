@@ -191024,11 +191024,11 @@ claim HscX_if_pcX :
 }
 claim HpcU_assumed : path_connected_space U (subspace_topology X Tx U).
 {
-  admit.
+  exact HpcU.
 }
 claim HpcV_assumed : path_connected_space V (subspace_topology X Tx V).
 {
-  admit.
+  exact HpcV.
 }
 claim HpcPieces :
   path_connected_space U (subspace_topology X Tx U) /\
