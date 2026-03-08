@@ -307604,8 +307604,35 @@ claim HNsub : subgroup_of N G multG eG invG.
   - (** N c= G **)
     exact HNsubG.
   - (** eG :e N **)
+    (** inv(eG) = eG **)
+    claim HeG_inv_is_eG : apply_fun invG eG = eG.
+    { claim H1 : apply_fun multG (eG, apply_fun invG eG) = eG.
+      { exact (andEL (apply_fun multG (eG, apply_fun invG eG) = eG) (apply_fun multG (apply_fun invG eG, eG) = eG) (HinvAxG eG HeGmem)). }
+      claim H2 : apply_fun multG (eG, apply_fun invG eG) = apply_fun invG eG.
+      { exact (andEL (apply_fun multG (eG, apply_fun invG eG) = apply_fun invG eG) (apply_fun multG (apply_fun invG eG, eG) = apply_fun invG eG) (HidG (apply_fun invG eG) (HinvG_cl eG HeGmem))). }
+      rewrite <- H2. exact H1. }
     claim HeN_pred : (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (eG, h), apply_fun invG eG) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG eG, h), eG) :e H0).
-    { admit. }
+    { apply andI.
+      - let h. assume HhH0.
+        claim HhG : h :e G. { exact (HH0subG h HhH0). }
+        (** Goal: multG(multG(eG, h), invG(eG)) :e H0 **)
+        (** Step 1: invG(eG) = eG **)
+        rewrite HeG_inv_is_eG.
+        (** Goal: multG(multG(eG, h), eG) :e H0 **)
+        (** Step 2: multG(eG, h) = h **)
+        rewrite (andEL (apply_fun multG (eG, h) = h) (apply_fun multG (h, eG) = h) (HidG h HhG)).
+        (** Goal: multG(h, eG) :e H0 **)
+        (** Step 3: multG(h, eG) = h **)
+        rewrite (andER (apply_fun multG (eG, h) = h) (apply_fun multG (h, eG) = h) (HidG h HhG)).
+        exact HhH0.
+      - let h. assume HhH0.
+        claim HhG : h :e G. { exact (HH0subG h HhH0). }
+        (** Goal: multG(multG(invG(eG), h), eG) :e H0 **)
+        rewrite HeG_inv_is_eG.
+        (** Goal: multG(multG(eG, h), eG) :e H0 **)
+        rewrite (andEL (apply_fun multG (eG, h) = h) (apply_fun multG (h, eG) = h) (HidG h HhG)).
+        rewrite (andER (apply_fun multG (eG, h) = h) (apply_fun multG (h, eG) = h) (HidG h HhG)).
+        exact HhH0. }
     exact (SepI G (fun g:set => (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0)) eG HeGmem HeN_pred).
   - (** N closed under mult **)
     let g1 g2. assume Hg1N Hg2N.
@@ -307640,15 +307667,40 @@ claim HNsub : subgroup_of N G multG eG invG.
 (** N inherits group structure **)
 claim HgrpN : group_structure N multG eG invG.
 { exact (subgroup_inherits_group_structure G multG eG invG N HgrpG HNsub). }
-(** H0 c= N **)
+(** H0 c= N: elements of H0 normalize H0 since H0 is a subgroup **)
 claim HH0subN : H0 c= N.
-{ admit. }
+{ let g0. assume Hg0H0.
+  claim Hg0G : g0 :e G. { exact (HH0subG g0 Hg0H0). }
+  claim Hg0_pred : (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g0, h), apply_fun invG g0) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g0, h), g0) :e H0).
+  { apply andI.
+    - let h. assume HhH0. exact (HH0_mult_cl (apply_fun multG (g0, h)) (apply_fun invG g0) (HH0_mult_cl g0 h Hg0H0 HhH0) (HH0_inv_cl g0 Hg0H0)).
+    - let h. assume HhH0. exact (HH0_mult_cl (apply_fun multG (apply_fun invG g0, h)) g0 (HH0_mult_cl (apply_fun invG g0) h (HH0_inv_cl g0 Hg0H0) HhH0) Hg0H0). }
+  exact (SepI G (fun g:set => (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0)) g0 Hg0G Hg0_pred). }
 (** H0 is a subgroup of N **)
 claim HH0subN_sub : subgroup_of H0 N multG eG invG.
-{ admit. }
+{ prove ((H0 c= N /\ eG :e H0) /\ (forall x y:set, x :e H0 -> y :e H0 -> apply_fun multG (x, y) :e H0)) /\ (forall x:set, x :e H0 -> apply_fun invG x :e H0).
+  claim Hab : H0 c= N /\ eG :e H0. { exact (andI (H0 c= N) (eG :e H0) HH0subN HeG_H0). }
+  claim Habc : (H0 c= N /\ eG :e H0) /\ (forall x y:set, x :e H0 -> y :e H0 -> apply_fun multG (x, y) :e H0).
+  { exact (andI (H0 c= N /\ eG :e H0) (forall x y:set, x :e H0 -> y :e H0 -> apply_fun multG (x, y) :e H0) Hab HH0_mult_cl). }
+  exact (andI
+    ((H0 c= N /\ eG :e H0) /\ (forall x y:set, x :e H0 -> y :e H0 -> apply_fun multG (x, y) :e H0))
+    (forall x:set, x :e H0 -> apply_fun invG x :e H0)
+    Habc HH0_inv_cl).
+}
 (** H0 is normal in N **)
 claim HH0normalN : normal_subgroup H0 N multG eG invG.
-{ admit. }
+{ prove (subgroup_of H0 N multG eG invG) /\ (forall n g:set, n :e H0 -> g :e N -> apply_fun multG (apply_fun multG (g, n), apply_fun invG g) :e H0).
+  exact (andI
+    (subgroup_of H0 N multG eG invG)
+    (forall n g:set, n :e H0 -> g :e N -> apply_fun multG (apply_fun multG (g, n), apply_fun invG g) :e H0)
+    HH0subN_sub
+    (fun n g HnH0 HgN =>
+      andEL
+        (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0)
+        (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0)
+        (SepE2 G (fun g:set => (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (g, h), apply_fun invG g) :e H0) /\ (forall h:set, h :e H0 -> apply_fun multG (apply_fun multG (apply_fun invG g, h), g) :e H0)) g HgN)
+        n HnH0)).
+}
 (** Lifting correspondence lands in fiber and is surjective **)
 claim Hlc_surj : forall e1:set, e1 :e E -> apply_fun p e1 = b0 ->
   exists cls:set, cls :e G /\ apply_fun lc cls = e1.
