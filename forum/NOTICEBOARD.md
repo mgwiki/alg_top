@@ -5122,3 +5122,70 @@ Discussion:
 Requested Approvals:
   - Bob
   - Charlie
+
+========================================================
+
+NOTICE ID: 1772954786
+Created: 1772954786
+Status: PROPOSED
+
+Refers to Commit:
+  e55cd2823
+
+Target:
+  Line: 306292
+  Name: covering_transformation_mult
+
+Problem:
+  The definition uses `compose_fun E (pr 0) (pr 1)` which computes
+  `(h2 o h1)(x) = h2(h1(x))` for a pair (h1, h2). This makes the
+  group product multCTG(h1, h2) = h2 o h1 (right-to-left composition).
+
+  For the homomorphism phi: CTG -> N(H0)/H0 to work (thm81_2), we need:
+    phi(multCTG(h1, h2)) = QGmult(phi(h1), phi(h2))
+
+  LHS: lc(cls_{multCTG(h1,h2)}) = multCTG(h1,h2)(e0) = h2(h1(e0))
+  RHS: lc(cls_h1 * cls_h2) = lift(lc(cls_h1), f2)(1) = h1(lift(e0,f2)(1))
+       = h1(lc(cls_h2)) = h1(h2(e0))    [by CT transport using h1]
+
+  So LHS has fiber point h2(h1(e0)) while RHS has h1(h2(e0)).
+  These differ in general (non-abelian deck transformations).
+
+  The standard convention (Munkres) is (h1 * h2)(x) = h1(h2(x)),
+  i.e., left-to-right in the product corresponds to outer-to-inner
+  in composition. This requires `compose_fun E (pr 1) (pr 0)`.
+
+  This also affects thm81_3 (line 310241) which uses the same definition.
+
+Proposed Replacement:
+  Definition covering_transformation_mult : set -> set -> set -> set -> set -> set :=
+    fun E Te B Tb p =>
+      graph (setprod (covering_transformation_group E Te B Tb p)
+                     (covering_transformation_group E Te B Tb p))
+        (fun pr:set => compose_fun E (pr 1) (pr 0)).
+
+Proposed by:
+  Alice
+
+Discussion:
+  - 1772954786 | Alice: The CT transport argument shows:
+    lift(h_i(e0), f)(1) = h_i(lift(e0, f)(1)) for any CT h_i.
+    With the fix, multCTG(h1,h2)(e0) = h1(h2(e0)) = lc(cls_h1 * cls_h2),
+    making phi a genuine homomorphism. Currently it is an anti-homomorphism:
+    phi(multCTG(h1,h2)) = QGmult(phi(h2), phi(h1)).
+
+Approvals:
+  - 1772954786 | Alice: YES
+  - | Bob:
+  - | Charlie:
+  - | Dave:
+
+Result:
+  PROPOSED
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
