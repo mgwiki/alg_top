@@ -161980,6 +161980,59 @@ exact (path_betweenI
   Hcomp1).
 Qed.
 
+(** Infrastructure: inclusion-induced class for a loop in a subspace. **)
+(** Proven Bob **)
+Lemma induced_homomorphism_inclusion_loop_class :
+  forall X Tx U x0 f:set,
+  topology_on X Tx ->
+  U :e Tx ->
+  x0 :e U ->
+  f :e loop_space U (subspace_topology X Tx U) x0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x)))
+    (path_homotopy_class_loop U (subspace_topology X Tx U) x0 f)
+  = path_homotopy_class_loop X Tx x0
+      (compose_fun unit_interval f (graph U (fun x:set => x))).
+let X Tx U x0 f.
+assume Htop HU Hx0U HfLoop.
+set incU := graph U (fun x:set => x).
+set ucls := path_homotopy_class_loop U (subspace_topology X Tx U) x0 f.
+claim HuclsMem : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
+{ exact (path_homotopy_class_in_fundamental_group U (subspace_topology X Tx U) x0 f HfLoop). }
+claim Hi_star :
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU) ucls
+  = path_homotopy_class_loop X Tx x0
+      (compose_fun unit_interval
+        (Eps_i (fun g:set => g :e ucls)) incU).
+{ exact (induced_homomorphism_apply U (subspace_topology X Tx U) x0 X Tx x0
+    incU ucls HuclsMem). }
+set rep := Eps_i (fun g:set => g :e ucls).
+claim Hf_in_ucls : f :e ucls.
+{ exact (loop_in_own_path_homotopy_class U (subspace_topology X Tx U) x0 f HfLoop). }
+claim Hrep_in_ucls : rep :e ucls.
+{ exact (Eps_i_ax (fun g:set => g :e ucls) f Hf_in_ucls). }
+claim Hfg_hom : path_homotopic U (subspace_topology X Tx U) x0 x0 f rep.
+{ exact (path_homotopy_class_loop_has_homotopy U (subspace_topology X Tx U) x0 f rep Hrep_in_ucls). }
+claim HUsub : U c= X.
+{ exact (topology_elem_subset X Tx U Htop HU). }
+claim HincCont : continuous_map U (subspace_topology X Tx U) X Tx incU.
+{ exact (subspace_inclusion_continuous X Tx U Htop HUsub). }
+claim HincX0 : apply_fun incU x0 = x0.
+{ exact (apply_fun_graph U (fun x:set => x) x0 Hx0U). }
+claim Hpost_hom : path_homotopic X Tx x0 x0
+  (compose_fun unit_interval f incU) (compose_fun unit_interval rep incU).
+{ exact (path_homotopic_postcompose U (subspace_topology X Tx U) X Tx x0 x0 x0 x0
+    f rep incU Hfg_hom HincCont HincX0 HincX0). }
+claim Hclass_eq :
+  path_homotopy_class_loop X Tx x0 (compose_fun unit_interval f incU)
+  = path_homotopy_class_loop X Tx x0 (compose_fun unit_interval rep incU).
+{ exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+    (compose_fun unit_interval f incU) (compose_fun unit_interval rep incU) Hpost_hom). }
+rewrite Hi_star.
+rewrite <- Hclass_eq.
+reflexivity.
+Qed.
+
 (** Proven Bob **)
 (** Infrastructure: split a natural number n at an element k :e n **)
 Lemma nat_elem_decompose_add : forall n k:set,
