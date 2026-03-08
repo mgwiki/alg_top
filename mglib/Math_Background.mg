@@ -273670,7 +273670,40 @@ apply andI.
         G mult e inv J gens alpha beta x
         Hgrp Hgens Hext HalphaJ HbetaJ Hne HxGfamA HxGfamB).
   + (** Component 4: subgroups_generate **)
-    admit.
+    prove group_structure G mult e inv /\
+      (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) /\
+      (forall x:set, x :e G ->
+        x = e \/
+        exists n:set, n :e omega /\ n <> 0 /\
+        exists xs:set, function_on xs n G /\
+          (forall i:set, i :e n ->
+            exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Gfam alpha) /\
+          x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n).
+    apply andI.
+    { apply andI.
+      { exact Hgrp. }
+      { let alpha. assume HalphaJ : alpha :e J.
+        claim HgensAlphaG : apply_fun gens alpha :e G. { exact (Hgens alpha HalphaJ). }
+        claim HapGfam : apply_fun Gfam alpha =
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+        { exact (apply_fun_graph J (fun alpha:set =>
+            {g :e G | exists n:set, n :e int /\
+              ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))})
+            alpha HalphaJ). }
+        rewrite HapGfam.
+        exact (cyclic_generator_subgroup_is_subgroup G mult e inv (apply_fun gens alpha) Hgrp HgensAlphaG).
+      }
+    }
+    { (** Generation property: every x :e G is e or a word product **)
+      (** Strategy: define S = generated subgroup, show S is a group,
+          use extension property with H = S to show S = G **)
+      admit.
+    }
 - (** Component 5: unique reduced word representation **)
   admit.
 Admitted.
