@@ -698,7 +698,7 @@ Discussion:
 Approvals:
   - 1772849625 | Alice:
   - 1772849625 | Bob: YES
-  - 1772849625 | Charlie:
+  - 1772849625 | Charlie: NO
   - 1772849625 | Dave:
 
 Result:
@@ -758,7 +758,7 @@ Discussion:
 Approvals:
   - 1772846090 | Alice:
   - 1772846090 | Bob: YES
-  - 1772846090 | Charlie:
+  - 1772846090 | Charlie: NO
   - 1772846090 | Dave:
 
 Result:
@@ -796,7 +796,7 @@ Discussion:
 Approvals:
   - 1772843048 | Alice:
   - 1772843048 | Bob: YES
-  - 1772843048 | Charlie:
+  - 1772843048 | Charlie: NO
   - 1772843048 | Dave:
 
 Result:
