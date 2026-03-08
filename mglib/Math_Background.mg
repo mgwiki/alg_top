@@ -136030,6 +136030,64 @@ exact (path_homotopy_class_loop_has_homotopy
 Qed.
 
 (** S55 helper: loop-null postcomposition implies nullhomotopy on S1 **)
+(** Proven Bob **)
+Lemma s55_loop_null_implies_trivial_induced : forall X Tx h b0:set,
+  continuous_map S1 S1_topology X Tx h ->
+  b0 :e S1 ->
+  (forall f:set, f :e loop_space S1 S1_topology b0 ->
+    path_homotopic X Tx (apply_fun h b0) (apply_fun h b0)
+      (compose_fun unit_interval f h)
+      (constant_path (apply_fun h b0))) ->
+  forall cls:set, cls :e fundamental_group S1 S1_topology b0 ->
+    apply_fun (induced_homomorphism S1 S1_topology b0 X Tx (apply_fun h b0) h) cls
+    = fundamental_group_id X Tx (apply_fun h b0).
+let X Tx h b0.
+assume Hh Hb0 Hloop_null.
+let cls. assume Hcls.
+set f := Eps_i (fun g:set => g :e cls).
+claim HfLoop : f :e loop_space S1 S1_topology b0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space
+    S1
+    S1_topology
+    b0
+    cls
+    Hcls).
+}
+claim Hhom :
+  path_homotopic X Tx (apply_fun h b0) (apply_fun h b0)
+    (compose_fun unit_interval f h)
+    (constant_path (apply_fun h b0)).
+{ exact (Hloop_null f HfLoop). }
+claim HclassEq :
+  path_homotopy_class_loop X Tx (apply_fun h b0)
+    (compose_fun unit_interval f h)
+  =
+  path_homotopy_class_loop X Tx (apply_fun h b0)
+    (constant_path (apply_fun h b0)).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    (apply_fun h b0)
+    (compose_fun unit_interval f h)
+    (constant_path (apply_fun h b0))
+    Hhom).
+}
+rewrite (induced_homomorphism_apply
+  S1
+  S1_topology
+  b0
+  X
+  Tx
+  (apply_fun h b0)
+  h
+  cls
+  Hcls).
+rewrite HclassEq.
+reflexivity.
+Qed.
+
 Lemma s55_loop_null_implies_nulhomotopic : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
   b0 :e S1 ->
