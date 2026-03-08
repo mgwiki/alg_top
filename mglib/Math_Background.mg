@@ -308150,7 +308150,39 @@ claim Hcls_in_N : forall h:set, h :e CTG ->
 (** Covering transformations determined by value at one point **)
 claim Hct_unique : forall h1 h2:set, h1 :e CTG -> h2 :e CTG ->
   apply_fun h1 e0 = apply_fun h2 e0 -> h1 = h2.
-{ admit. }
+{ let h1 h2. assume Hh1CTG Hh2CTG Heq_e0.
+  claim Hh1_ct : covering_transformation E Te B Tb p h1.
+  { exact (SepE2 (function_space E E) (fun h:set => covering_transformation E Te B Tb p h) h1 Hh1CTG). }
+  claim Hh2_ct : covering_transformation E Te B Tb p h2.
+  { exact (SepE2 (function_space E E) (fun h:set => covering_transformation E Te B Tb p h) h2 Hh2CTG). }
+  claim Hh1_homeo : homeomorphism E Te E Te h1.
+  { exact (andEL (homeomorphism E Te E Te h1) (forall x:set, x :e E -> apply_fun p (apply_fun h1 x) = apply_fun p x) Hh1_ct). }
+  claim Hh2_homeo : homeomorphism E Te E Te h2.
+  { exact (andEL (homeomorphism E Te E Te h2) (forall x:set, x :e E -> apply_fun p (apply_fun h2 x) = apply_fun p x) Hh2_ct). }
+  claim Hh1_comm : forall x:set, x :e E -> apply_fun p (apply_fun h1 x) = apply_fun p x.
+  { exact (andER (homeomorphism E Te E Te h1) (forall x:set, x :e E -> apply_fun p (apply_fun h1 x) = apply_fun p x) Hh1_ct). }
+  claim Hh2_comm : forall x:set, x :e E -> apply_fun p (apply_fun h2 x) = apply_fun p x.
+  { exact (andER (homeomorphism E Te E Te h2) (forall x:set, x :e E -> apply_fun p (apply_fun h2 x) = apply_fun p x) Hh2_ct). }
+  claim Hh1_cont : continuous_map E Te E Te h1.
+  { exact (homeomorphism_continuous E Te E Te h1 Hh1_homeo). }
+  claim Hh2_cont : continuous_map E Te E Te h2.
+  { exact (homeomorphism_continuous E Te E Te h2 Hh2_homeo). }
+  (** Build lifting_of E Te E Te B Tb p p h_i **)
+  claim Hh1_lift : lifting_of E Te E Te B Tb p p h1.
+  { prove continuous_map E Te E Te h1 /\ (forall x:set, x :e E -> apply_fun p (apply_fun h1 x) = apply_fun p x).
+    apply andI. exact Hh1_cont. exact Hh1_comm. }
+  claim Hh2_lift : lifting_of E Te E Te B Tb p p h2.
+  { prove continuous_map E Te E Te h2 /\ (forall x:set, x :e E -> apply_fun p (apply_fun h2 x) = apply_fun p x).
+    apply andI. exact Hh2_cont. exact Hh2_comm. }
+  claim HconnE : connected_space E Te.
+  { exact (path_connected_implies_connected E Te HpcE). }
+  (** Pointwise equality from lift uniqueness on connected domain **)
+  claim Hpointwise : forall x:set, x :e E -> apply_fun h1 x = apply_fun h2 x.
+  { exact (covering_map_lifts_agree_on_connected_domain E Te B Tb p E Te p h1 h2 e0 Hcov HconnE Hh1_lift Hh2_lift He0E Heq_e0). }
+  (** Function extensionality **)
+  claim Hh1_total : h1 :e total_function_space E E. { admit. }
+  claim Hh2_total : h2 :e total_function_space E E. { admit. }
+  exact (total_function_space_extensional E E h1 h2 Hh1_total Hh2_total Hpointwise). }
 (** Same lc value implies same left coset in N **)
 claim Hsame_lc_same_coset : forall c1 c2:set, c1 :e N -> c2 :e N ->
   apply_fun lc c1 = apply_fun lc c2 ->
