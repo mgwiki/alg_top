@@ -231454,8 +231454,96 @@ apply andI.
         Htmp
         Hinv_congr)).
   }
-  (** TODO: the remaining contradiction is nontrivial and is the core of the "torsion in free products" argument. **)
-  admit.
+  claim Hx0_eq_inv_xm : apply_fun xs 0 = apply_fun invG (apply_fun xs m).
+  {
+    set xs2 := graph 2 (fun i:set => If_i (i = 0) (apply_fun xs m) (apply_fun xs 0)).
+    claim Hxs2_G : forall i:set, i :e 2 -> apply_fun xs2 i :e G.
+    {
+      let i. assume Hi2.
+      apply (cases_2 i Hi2 (fun j:set => apply_fun xs2 j :e G)).
+      + prove apply_fun xs2 0 :e G.
+        rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 0 In_0_2).
+        rewrite (If_i_1 (0 = 0) (apply_fun xs m) (apply_fun xs 0) (eq_refl 0)).
+        exact (subgroup_of_subset (apply_fun Gfam alpha0) G multG eG invG (Hsubfam alpha0 Halpha0J)
+          (apply_fun xs m) Hxm_in_Ga0).
+      + prove apply_fun xs2 1 :e G.
+        rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 1 In_1_2).
+        rewrite (If_i_0 (1 = 0) (apply_fun xs m) (apply_fun xs 0) neq_1_0).
+        exact (subgroup_of_subset (apply_fun Gfam alpha0) G multG eG invG (Hsubfam alpha0 Halpha0J)
+          (apply_fun xs 0) Hx0_in_Ga0).
+    }
+    claim Hwp2 : word_product multG eG xs2 2 = apply_fun multG (apply_fun xs m, apply_fun xs 0).
+    {
+      exact (word_product_two_graph_group
+        G multG eG invG (apply_fun xs m) (apply_fun xs 0)
+        Hgrp
+        (subgroup_of_subset (apply_fun Gfam alpha0) G multG eG invG (Hsubfam alpha0 Halpha0J)
+          (apply_fun xs m) Hxm_in_Ga0)
+        (subgroup_of_subset (apply_fun Gfam alpha0) G multG eG invG (Hsubfam alpha0 Halpha0J)
+          (apply_fun xs 0) Hx0_in_Ga0)).
+    }
+    claim Hwp2_e : word_product multG eG xs2 2 = eG.
+    { rewrite Hwp2. rewrite <- Hp_e. reflexivity. }
+    claim Htmp : apply_fun xs2 1 = apply_fun invG (apply_fun xs2 0).
+    { exact (word_product_two_eq_inv G multG eG invG xs2 Hgrp Hxs2_G Hwp2_e). }
+    claim Hxs20 : apply_fun xs2 0 = apply_fun xs m.
+    {
+      rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 0 In_0_2).
+      rewrite (If_i_1 (0 = 0) (apply_fun xs m) (apply_fun xs 0) (eq_refl 0)).
+      reflexivity.
+    }
+    claim Hxs21 : apply_fun xs2 1 = apply_fun xs 0.
+    {
+      rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 1 In_1_2).
+      rewrite (If_i_0 (1 = 0) (apply_fun xs m) (apply_fun xs 0) neq_1_0).
+      reflexivity.
+    }
+    claim Hinv_congr : apply_fun invG (apply_fun xs2 0) = apply_fun invG (apply_fun xs m).
+    { exact (apply_fun_congr_arg invG (apply_fun xs2 0) (apply_fun xs m) Hxs20). }
+    exact (eq_i_tra
+      (apply_fun xs 0)
+      (apply_fun xs2 1)
+      (apply_fun invG (apply_fun xs m))
+      (eq_symm (apply_fun xs2 1) (apply_fun xs 0) Hxs21)
+      (eq_i_tra
+        (apply_fun xs2 1)
+        (apply_fun invG (apply_fun xs2 0))
+        (apply_fun invG (apply_fun xs m))
+        Htmp
+        Hinv_congr)).
+  }
+
+  (** Reduce the boundary-cancellation branch to a shorter involutive word (the "middle"). **)
+  (** Step 1: build the middle reduced word xs_mid representing x1 ... x_{m-1}. **)
+  apply (nat_inv m Hm_nat).
+  - assume Hm0 : m = 0. exact (FalseE (Hm_ne0 Hm0) False).
+  - assume Hex_k : exists k:set, nat_p k /\ m = ordsucc k.
+    apply Hex_k. let k. assume Hk_pack : nat_p k /\ m = ordsucc k.
+    claim Hk_nat : nat_p k. { exact (andEL (nat_p k) (m = ordsucc k) Hk_pack). }
+    claim Hm_eq_sk : m = ordsucc k. { exact (andER (nat_p k) (m = ordsucc k) Hk_pack). }
+    claim Hk_ne0 : k <> 0.
+    {
+      assume Hk0.
+      claim Hm1 : m = 1.
+      { rewrite Hm_eq_sk. rewrite Hk0. exact ordsucc_0_eq_1_nat. }
+      exact (Hm_ne1 Hm1).
+    }
+    claim Hred_sm : reduced_word J Gfam efam (ordsucc m) xs.
+    { rewrite <- Hn_sm. exact Hred. }
+    set xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)).
+    claim Hred_suf : reduced_word J Gfam efam m xs_suf.
+    { exact (reduced_word_suffix J Gfam efam m xs Hred_sm). }
+    set xs_mid := graph k (fun i:set => apply_fun xs_suf i).
+    claim Hk_in_m : k :e m.
+    { rewrite Hm_eq_sk. exact (ordsuccI2 k). }
+    claim Hred_mid : reduced_word J Gfam efam k xs_mid.
+    {
+      exact (reduced_word_prefix J Gfam efam m xs_suf k Hred_suf Hk_in_m).
+    }
+    set u := word_product multG eG xs_mid k.
+    (** Step 2: express w = mult(x0, mult(u, inv x0)) using x_m = inv x0. **)
+    (** TODO: finish the computation and cancellation to conclude u is an involution. **)
+    admit.
 
 - (** p <> efam(alpha0) **)
   assume Hp_ef0 : p = apply_fun efam alpha0.
