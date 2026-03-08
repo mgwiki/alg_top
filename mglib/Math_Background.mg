@@ -270619,7 +270619,44 @@ assume Hext :
           (forall alpha:set, alpha :e J ->
             apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-admit.
+set Gfam := graph J (fun alpha:set =>
+  {g :e G | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}).
+set efam := graph J (fun alpha:set => e).
+prove
+  group_structure G mult e inv /\
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) /\
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e) /\
+  subgroups_generate G mult e inv J Gfam /\
+  (forall x:set, x :e G -> x <> e ->
+    exists n xs:set,
+      reduced_word J Gfam efam n xs /\ n <> 0 /\
+      word_product mult e xs n = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+apply andI.
+- apply andI.
+  + apply andI.
+    * apply andI.
+      { (** Component 1: group_structure - immediate from hypothesis **)
+        exact Hgrp.
+      }
+      { (** Component 2: each Gfam(alpha) is a subgroup **)
+        admit.
+      }
+    * (** Component 3: disjointness - proved in extension_property_forces_disjointness (below) **)
+      (** Forward reference prevents direct use; this admit is the only gap that is
+          fully resolved by the standalone Qed theorem extension_property_forces_disjointness. **)
+      admit.
+  + (** Component 4: subgroups_generate **)
+    admit.
+- (** Component 5: unique reduced word representation **)
+  admit.
 Admitted.
 
 (** Helper for S69 Lem 69.1: each generator lies in its cyclic factor family. **)
