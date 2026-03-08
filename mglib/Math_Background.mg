@@ -168545,6 +168545,79 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
       - exact HloopV.
       - exact HloopVc.
     }
+    (** Extract the maximal transition index and show no transitions after it. **)
+    apply HTrans_max.
+    let kmax. assume HkmaxPack.
+    claim HkmaxTrans : kmax :e Trans.
+    { exact (andEL (kmax :e Trans) (forall k:set, k :e Trans -> k c= kmax) HkmaxPack). }
+    claim Hkmax_bound : forall k:set, k :e Trans -> k c= kmax.
+    { exact (andER (kmax :e Trans) (forall k:set, k :e Trans -> k c= kmax) HkmaxPack). }
+    claim Hkmax_in_n : kmax :e n.
+    { exact (SepE1 n
+        (fun k:set =>
+          (k :e Uset /\ ordsucc k :e Vset) \/ (k :e Vset /\ ordsucc k :e Uset))
+        kmax
+        HkmaxTrans). }
+    claim Hkmax_omega : kmax :e omega.
+    { exact (HTrans_sub_omega kmax HkmaxTrans). }
+    claim Hkmax_ord : ordinal kmax.
+    { exact (nat_p_ordinal kmax (omega_nat_p kmax Hkmax_omega)). }
+    claim Hafter_kmax_same_side :
+      forall k:set, k :e n -> kmax :e k ->
+        (k :e Uset -> ordsucc k :e Uset) /\
+        (k :e Vset -> ordsucc k :e Vset).
+    {
+      let k. assume HkN Hkmax_in_k.
+      apply andI.
+      - assume HkU.
+        claim Hsucc_in_on : ordsucc k :e ordsucc n.
+        { exact (nat_ordsucc_in_ordsucc n HnNat k HkN). }
+        apply (Hball_map_index (ordsucc k) Hsucc_in_on).
+        + assume HsuccU. exact HsuccU.
+        + assume HsuccV.
+          claim HkTrans : k :e Trans.
+          {
+            apply (SepI n
+              (fun k0:set =>
+                (k0 :e Uset /\ ordsucc k0 :e Vset) \/
+                (k0 :e Vset /\ ordsucc k0 :e Uset))
+              k
+              HkN).
+            apply orIL.
+            apply andI.
+            - exact HkU.
+            - exact HsuccV.
+          }
+          claim Hk_le : k c= kmax.
+          { exact (Hkmax_bound k HkTrans). }
+          claim Hkmax_in_kmax : kmax :e kmax.
+          { exact (Hk_le kmax Hkmax_in_k). }
+          exact (FalseE (In_irref kmax Hkmax_in_kmax) (ordsucc k :e Uset)).
+      - assume HkV.
+        claim Hsucc_in_on : ordsucc k :e ordsucc n.
+        { exact (nat_ordsucc_in_ordsucc n HnNat k HkN). }
+        apply (Hball_map_index (ordsucc k) Hsucc_in_on).
+        + assume HsuccU.
+          claim HkTrans : k :e Trans.
+          {
+            apply (SepI n
+              (fun k0:set =>
+                (k0 :e Uset /\ ordsucc k0 :e Vset) \/
+                (k0 :e Vset /\ ordsucc k0 :e Uset))
+              k
+              HkN).
+            apply orIR.
+            apply andI.
+            - exact HkV.
+            - exact HsuccU.
+          }
+          claim Hk_le : k c= kmax.
+          { exact (Hkmax_bound k HkTrans). }
+          claim Hkmax_in_kmax : kmax :e kmax.
+          { exact (Hk_le kmax Hkmax_in_k). }
+          exact (FalseE (In_irref kmax Hkmax_in_kmax) (ordsucc k :e Vset)).
+        + assume HsuccV. exact HsuccV.
+    }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
         unit_interval_ball_chain to get a finite overlap chain of balls, pick
