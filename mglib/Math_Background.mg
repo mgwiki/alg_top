@@ -1,4 +1,4 @@
-(** Balance Alice 7663 **)
+(** Balance Alice 7614 **)
 (** Balance Bob 5789 **)
 (** Balance Charlie 1377 **)
 (** Balance Dave 2020 **)
@@ -198681,7 +198681,8 @@ Admitted.
 (** If alpha in U from a in A to b in B, beta in V from b to a, **)
 (** then [alpha . beta] generates an infinite cyclic subgroup of pi_1(X, a). **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 400 **)
-(** Bounty 484 **)
+(** Bounty 533 **)
+(** Lock Alice 1773078210 **)
 (** Admin-approved-refactored per noticeboard proposal 1772444318 **)
 Theorem thm63_1a_infinite_cyclic_subgroup : forall X Tx U V A B:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
