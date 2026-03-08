@@ -136038,7 +136038,76 @@ Lemma s55_loop_null_implies_nulhomotopic : forall X Tx h b0:set,
       (compose_fun unit_interval f h)
       (constant_path (apply_fun h b0))) ->
   nulhomotopic S1 S1_topology X Tx h.
-admit.
+let X Tx h b0.
+assume Hh Hb0 Hloop_null.
+set y0 := apply_fun h b0.
+claim Hy0X : y0 :e X.
+{
+  exact (continuous_map_value_in_space
+    S1
+    S1_topology
+    X
+    Tx
+    h
+    b0
+    Hh
+    Hb0).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_dom
+    S1
+    S1_topology
+    X
+    Tx
+    h
+    Hh).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_cod
+    S1
+    S1_topology
+    X
+    Tx
+    h
+    Hh).
+}
+claim HconstCont :
+  continuous_map S1 S1_topology X Tx (const_fun S1 y0).
+{
+  exact (const_fun_continuous
+    S1
+    S1_topology
+    X
+    Tx
+    y0
+    HtopS1
+    HtopX
+    Hy0X).
+}
+prove exists y0:set, y0 :e X /\
+  homotopic_maps S1 S1_topology X Tx h (const_fun S1 y0).
+witness y0.
+apply andI.
+- exact Hy0X.
+- (** homotopic_maps S1 h (const_fun S1 y0) **)
+  prove (continuous_map S1 S1_topology X Tx h /\
+    continuous_map S1 S1_topology X Tx (const_fun S1 y0)) /\
+    exists F:set,
+      continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        X Tx F /\
+      (forall x:set, x :e S1 ->
+        apply_fun F (x, 0) = apply_fun h x) /\
+      (forall x:set, x :e S1 ->
+        apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x).
+  apply andI.
+  + apply andI.
+    * exact Hh.
+    * exact HconstCont.
+  + (** TODO: build homotopy via quotient/loop presentation of S1 **)
+    admit.
 Admitted. (** TODO: needs quotient model of S1 or pi1(S1) classification. **)
 
 Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
