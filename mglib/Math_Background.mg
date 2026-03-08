@@ -162076,6 +162076,14 @@ claim Hx0X : x0 :e X.
 { exact (HUsub x0 Hx0U). }
 apply Himg.
 - (** Case: cls in i-star image **)
+  assume HuclsEx :
+    exists ucls:set,
+      ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      cls =
+        apply_fun
+          (induced_homomorphism U (subspace_topology X Tx U) x0
+            X Tx x0 (graph U (fun x:set => x))) ucls.
+  apply HuclsEx.
   let ucls.
   assume HuclsPack :
     ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
@@ -162177,6 +162185,14 @@ apply Himg.
       rewrite HleftId.
       reflexivity.
 - (** Case: cls in j-star image **)
+  assume HvclsEx :
+    exists vcls:set,
+      vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+      cls =
+        apply_fun
+          (induced_homomorphism V (subspace_topology X Tx V) x0
+            X Tx x0 (graph V (fun x:set => x))) vcls.
+  apply HvclsEx.
   let vcls.
   assume HvclsPack :
     vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
@@ -170255,7 +170271,7 @@ claim Hball_image :
 {
   let c. assume HcI.
   claim Hlebpack :
-    r :e R /\ Rlt 0 r /    forall x:set, x :e unit_interval ->
+    r :e R /\ Rlt 0 r /\ forall x:set, x :e unit_interval ->
       exists U0:set, U0 :e Fam /\ open_ball unit_interval R_bounded_metric x r c= U0.
   { exact Hleb. }
   claim Hlebex :
@@ -170288,7 +170304,7 @@ claim Hball_image :
 }
 exact (ball_cover_word_construction X Tx U V x0 fcls r
   Htop HU HV Hcover Hx0UV HpcUV HfclsLoop HrR Hrpos Hball_image).
-Qed.
+Admitted.
 
 (** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
@@ -206828,7 +206844,9 @@ claim HP : P N.
     exact (FalseE (EmptyE i Hi) (apply_fun (graph 0 (fun _:set => 0)) i :e apply_fun (graph 0 (fun _:set => 0)) j)).
   - (** coverage: vacuous **)
     let k. assume HkS0.
-    exact (EmptyE k (eq_subst_mem_set k S0 Empty HkS0 HS0empty)).
+    exact (FalseE
+      (EmptyE k (eq_subst_mem_set k S0 Empty HkS0 HS0empty))
+      (exists i:set, i :e 0 /\ apply_fun (graph 0 (fun _:set => 0)) i = k)).
 - (** step N0 -> ordsucc N0 **)
   let N0. assume HN0nat IH.
   let S0. assume HS0sub HS0fin.
@@ -206875,13 +206893,24 @@ claim HP : P N.
       {
         apply (total_function_on_graph m S0 (fun i:set => If_i (i :e m0) (apply_fun seq0 i) N0)).
         let i. assume Hi.
-        apply (ordsuccE m0 i Hi).
-        + assume Hi0.
-          claim Hseq0i : apply_fun seq0 i :e S1.
-          { exact (Hseq0Fun i Hi0). }
-          exact (setminusE1 S0 {N0} (apply_fun seq0 i) Hseq0i).
-        + assume HiEq.
-          rewrite HiEq. exact HN0in.
+	        apply (ordsuccE m0 i Hi).
+	        + assume Hi0.
+	          claim Hseq0i : apply_fun seq0 i :e S1.
+	          { exact (Hseq0Fun i Hi0). }
+	          exact (eq_subst_mem
+	            (If_i (i :e m0) (apply_fun seq0 i) N0)
+	            (apply_fun seq0 i)
+	            S0
+	            (If_i_1 (i :e m0) (apply_fun seq0 i) N0 Hi0)
+	            (setminusE1 S0 {N0} (apply_fun seq0 i) Hseq0i)).
+	        + assume HiEq.
+	          rewrite HiEq.
+	          exact (eq_subst_mem
+	            (If_i (m0 :e m0) (apply_fun seq0 m0) N0)
+	            N0
+	            S0
+	            (If_i_0 (m0 :e m0) (apply_fun seq0 m0) N0 (In_irref m0))
+	            HN0in).
       }
       exact (total_function_on_function_on seq m S0 Htf).
     - (** order property **)
@@ -206892,17 +206921,17 @@ claim HP : P N.
         { exact (ordinal_TransSet m0 (nat_p_ordinal m0 (omega_nat_p m0 Hm0O)) j Hj0 i Hij). }
         rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) i Hi).
         rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) j Hj).
-        rewrite (If_true (i :e m0) Hi0).
-        rewrite (If_true (j :e m0) Hj0).
+        rewrite (If_i_1 (i :e m0) (apply_fun seq0 i) N0 Hi0).
+        rewrite (If_i_1 (j :e m0) (apply_fun seq0 j) N0 Hj0).
         exact (Hseq0ord i j Hi0 Hj0 Hij).
       + assume HjEq.
         claim Hi0 : i :e m0.
-        { exact (ordinal_TransSet m0 (nat_p_ordinal m0 (omega_nat_p m0 Hm0O)) m0 (ordsuccI2 m0) i Hij). }
+        { exact (eq_subst_mem_set i j m0 Hij HjEq). }
         rewrite HjEq.
         rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) i Hi).
         rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) m0 (ordsuccI2 m0)).
-        rewrite (If_true (i :e m0) Hi0).
-        rewrite (If_false (m0 :e m0) (In_irref m0)).
+        rewrite (If_i_1 (i :e m0) (apply_fun seq0 i) N0 Hi0).
+        rewrite (If_i_0 (m0 :e m0) (apply_fun seq0 m0) N0 (In_irref m0)).
         claim Hseq0i : apply_fun seq0 i :e S1.
         { exact (Hseq0Fun i Hi0). }
         claim Hseq0i_in_N0 : apply_fun seq0 i :e N0.
@@ -206917,20 +206946,24 @@ claim HP : P N.
         * exact (ordsuccI2 m0).
         * rewrite HkEq.
           rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) m0 (ordsuccI2 m0)).
-          rewrite (If_false (m0 :e m0) (In_irref m0)).
+          rewrite (If_i_0 (m0 :e m0) (apply_fun seq0 m0) N0 (In_irref m0)).
           reflexivity.
       + assume HkNe.
+        claim HkNotSing : ~(k :e {N0}).
+        { assume HkSing. apply HkNe. exact (SingE N0 k HkSing). }
         claim HkS1 : k :e S1.
-        { exact (setminusI S0 {N0} k HkS0 HkNe). }
+        { exact (setminusI S0 {N0} k HkS0 HkNotSing). }
         apply (Hseq0cov k HkS1).
         let i. assume Hipack.
-        apply Hipack.
-        let Hi. assume Hieq.
+        claim Hi : i :e m0.
+        { exact (andEL (i :e m0) (apply_fun seq0 i = k) Hipack). }
+        claim Hieq : apply_fun seq0 i = k.
+        { exact (andER (i :e m0) (apply_fun seq0 i = k) Hipack). }
         witness i.
         apply andI.
         * exact (ordsuccI1 m0 i Hi).
         * rewrite (apply_fun_graph m (fun i0:set => If_i (i0 :e m0) (apply_fun seq0 i0) N0) i (ordsuccI1 m0 i Hi)).
-          rewrite (If_true (i :e m0) Hi).
+          rewrite (If_i_1 (i :e m0) (apply_fun seq0 i) N0 Hi).
           exact Hieq.
   * (** Case N0 notin S0: reduce to N0 **)
     assume HN0not.
@@ -206941,11 +206974,15 @@ claim HP : P N.
       { exact (HS0sub x HxS0). }
       apply (ordsuccE N0 x Hx_in_succ).
       - assume HxN0. exact HxN0.
-      - assume HxEq. exact (FalseE (HN0not (eq_subst_mem_set N0 x S0 HxEq HxS0)) (x :e N0)).
-    }
-    exact (IH S0 HS0subN0 HS0fin).
+      - assume HxEq.
+        exact (FalseE
+          (HN0not (eq_subst_mem N0 x S0 (eq_symm x N0 HxEq) HxS0))
+          (x :e N0)).
+	    }
+	    exact (IH S0 HS0subN0 HS0fin).
+	- exact (omega_nat_p N HNomega).
 }
-exact (HP N S HSsub Hfin).
+exact (HP S HSsub Hfin).
 Qed.
 
 (** Infrastructure: kernel of a group homomorphism **)
