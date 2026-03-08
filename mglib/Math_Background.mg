@@ -161250,6 +161250,39 @@ Qed.
 
 (** Core word construction: given ball property for a loop, produce word decomposition.
     This is the inductive heart of Munkres Thm 59.1, separated from the Lebesgue setup. **)
+(** Infrastructure: points between two points in the same open ball stay in the ball. **)
+(** Proven Bob **)
+Lemma open_ball_unit_interval_interval_property :
+  forall c r x y z:set,
+  c :e unit_interval ->
+  r :e R ->
+  Rlt 0 r ->
+  Rlt r 1 ->
+  x :e open_ball unit_interval R_bounded_metric c r ->
+  y :e open_ball unit_interval R_bounded_metric c r ->
+  z :e unit_interval ->
+  (Rlt x z /\ Rlt z y \/ Rlt y z /\ Rlt z x) ->
+  z :e open_ball unit_interval R_bounded_metric c r.
+let c r x y z.
+assume HcI HrR Hrpos Hrlt1 HxB HyB HzI HzBetween.
+set A := open_ball unit_interval R_bounded_metric c r.
+claim HA_sub : A c= unit_interval.
+{ exact (open_ball_subset_X unit_interval R_bounded_metric c r). }
+claim HconnA : connected_space A (subspace_topology unit_interval unit_interval_topology A).
+{ exact (open_ball_unit_interval_connected_lt1 c r HcI HrR Hrpos Hrlt1). }
+exact (connected_subset_unit_interval_interval_property
+  A
+  HA_sub
+  HconnA
+  x
+  y
+  z
+  HxB
+  HyB
+  HzI
+  HzBetween).
+Qed.
+
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -164186,6 +164219,69 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
           (apply_fun f a_trans)
           gamma
           Hgamma_between)).
+    }
+    claim Hgamma0 : apply_fun gamma 0 = x0.
+    {
+      exact (path_between_at_zero
+        (U :/\: V)
+        x0
+        (apply_fun f a_trans)
+        gamma
+        Hgamma_between).
+    }
+    claim Hgamma1 : apply_fun gamma 1 = apply_fun f a_trans.
+    {
+      exact (path_between_at_one
+        (U :/\: V)
+        x0
+        (apply_fun f a_trans)
+        gamma
+        Hgamma_between).
+    }
+    claim Hrev_gamma_cont :
+      continuous_map unit_interval unit_interval_topology X Tx (reverse_path gamma).
+    {
+      exact (reverse_path_continuous X Tx gamma Hgamma_cont_X).
+    }
+    claim Hrev_gamma0 : apply_fun (reverse_path gamma) 0 = apply_fun f a_trans.
+    {
+      rewrite (reverse_path_at_zero gamma).
+      exact Hgamma1.
+    }
+    claim Hrev_gamma1 : apply_fun (reverse_path gamma) 1 = x0.
+    {
+      rewrite (reverse_path_at_one gamma).
+      exact Hgamma0.
+    }
+    claim Hloop_mid_hom :
+      path_homotopic X Tx (apply_fun f a_trans) (apply_fun f a_trans)
+        (path_concat (reverse_path gamma) gamma)
+        (constant_path (apply_fun f a_trans)).
+    {
+      exact (Theorem_51_2_left_inverse
+        X
+        Tx
+        x0
+        (apply_fun f a_trans)
+        gamma
+        Hgamma_cont_X
+        Hgamma0
+        Hgamma1).
+    }
+    claim Hloop_mid_hom_right :
+      path_homotopic X Tx x0 x0
+        (path_concat gamma (reverse_path gamma))
+        (constant_path x0).
+    {
+      exact (Theorem_51_2_right_inverse
+        X
+        Tx
+        x0
+        (apply_fun f a_trans)
+        gamma
+        Hgamma_cont_X
+        Hgamma0
+        Hgamma1).
     }
     (** TODO: complete the word decomposition using the ball cover property for L2
         and the homotopy f ~ path_concat L1 L2. Suggested approach: use
