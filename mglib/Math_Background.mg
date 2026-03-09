@@ -233606,6 +233606,93 @@ claim Hwp_shift : forall k:set, nat_p k -> k :e ordsucc m ->
 exact Hwp_shift.
 Qed.
 
+(** Infrastructure: conjugating a word_product by the first letter shifts it to the suffix **)
+(** Proven Charlie **)
+Lemma word_product_conjugate_by_first : forall G mult e inv m xs:set,
+  group_structure G mult e inv ->
+  nat_p m ->
+  (forall i:set, i :e ordsucc m -> apply_fun xs i :e G) ->
+  let xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)) in
+  apply_fun mult (apply_fun inv (apply_fun xs 0),
+    apply_fun mult (word_product mult e xs (ordsucc m), apply_fun xs 0)) =
+    apply_fun mult (word_product mult e xs_suf m, apply_fun xs 0).
+let G mult e inv m xs.
+assume Hgrp Hm_nat HxsG.
+set xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)).
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvLaw.
+set x0 := apply_fun xs 0.
+claim Hx0_G : x0 :e G.
+{
+  exact (HxsG
+    0
+    (nat_0_in_ordsucc m Hm_nat)).
+}
+claim Hinvx0_G : apply_fun inv x0 :e G.
+{ exact (HinvFn x0 Hx0_G). }
+claim Hxs_suf_in_G : forall i:set, i :e m -> apply_fun xs_suf i :e G.
+{
+  let i. assume Hi_m.
+  rewrite (apply_fun_graph m (fun j:set => apply_fun xs (ordsucc j)) i Hi_m).
+  claim Hsi_sm : ordsucc i :e ordsucc m.
+  {
+    exact (nat_ordsucc_in_ordsucc m Hm_nat i Hi_m).
+  }
+  exact (HxsG (ordsucc i) Hsi_sm).
+}
+claim Hwp_suf_G : word_product mult e xs_suf m :e G.
+{ exact (word_product_in_G_group G mult e inv m xs_suf Hgrp Hm_nat Hxs_suf_in_G). }
+claim Hwp_sm_def :
+  word_product mult e xs (ordsucc m) =
+    apply_fun mult (x0, word_product mult e xs_suf m).
+{
+  exact (word_product_shift_first G mult e inv m xs
+    Hgrp Hm_nat
+    (fun i Hi_sm => HxsG i Hi_sm)
+    m Hm_nat (ordsuccI2 m)).
+}
+claim Hwp_sm_G : word_product mult e xs (ordsucc m) :e G.
+{
+  exact (word_product_in_G_group G mult e inv (ordsucc m) xs
+    Hgrp (nat_ordsucc m Hm_nat) HxsG).
+}
+claim Hmul_u_x0_G : apply_fun mult (word_product mult e xs (ordsucc m), x0) :e G.
+{
+  exact (HmultFn (word_product mult e xs (ordsucc m), x0)
+    (tuple_2_setprod_by_pair_Sigma G G
+      (word_product mult e xs (ordsucc m)) x0
+      Hwp_sm_G Hx0_G)).
+}
+
+(** Expand the word_product at succ m, then reassociate and cancel inv(x0) x0. **)
+rewrite Hwp_sm_def.
+rewrite <- (HassocG (apply_fun inv x0) (apply_fun mult (x0, word_product mult e xs_suf m)) x0
+  Hinvx0_G
+  (HmultFn (x0, word_product mult e xs_suf m)
+    (tuple_2_setprod_by_pair_Sigma G G x0 (word_product mult e xs_suf m) Hx0_G Hwp_suf_G))
+  Hx0_G).
+rewrite <- (HassocG (apply_fun inv x0) x0 (word_product mult e xs_suf m)
+  Hinvx0_G Hx0_G Hwp_suf_G).
+rewrite (andER
+  (apply_fun mult (x0, apply_fun inv x0) = e)
+  (apply_fun mult (apply_fun inv x0, x0) = e)
+  (HinvLaw x0 Hx0_G)).
+rewrite (andEL
+  (apply_fun mult (e, word_product mult e xs_suf m) = word_product mult e xs_suf m)
+  (apply_fun mult (word_product mult e xs_suf m, e) = word_product mult e xs_suf m)
+  (HidG (word_product mult e xs_suf m) Hwp_suf_G)).
+reflexivity.
+Qed.
+
 (** Infrastructure: word_product of length 2 **)
 (** Proven Bob **)
 Theorem word_product_two : forall mult e xs:set,
