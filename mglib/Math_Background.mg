@@ -318380,6 +318380,24 @@ Qed.
 (** Infrastructure: bridge from continuous_map to total_function_space **)
 (** This captures the semantic fact that a continuous map between topological **)
 (** spaces is a well-behaved set of ordered pairs in the total function space. **)
+(** NOTE: the statement below is currently admitted; use the graphified lemma **)
+(** here as a provable substitute when needed. **)
+(** Infrastructure: graphify_on of a continuous map lies in total_function_space **)
+(** Proven Bob **)
+Lemma continuous_map_graphify_in_total_function_space : forall X Tx Y Ty f:set,
+  continuous_map X Tx Y Ty f ->
+  graphify_on X f :e total_function_space X Y.
+let X Tx Y Ty f.
+assume Hcont.
+claim Hfun : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f Hcont). }
+exact (graph_in_total_function_space
+  X
+  Y
+  (fun x:set => apply_fun f x)
+  (fun x Hx => Hfun x Hx)).
+Qed.
+
 Theorem continuous_map_in_total_function_space : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
 admit.
