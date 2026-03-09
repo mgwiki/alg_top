@@ -242156,10 +242156,10 @@ claim HPn : P n.
           apply_fun inv x = x /\
           v = apply_fun mult (apply_fun inv c, apply_fun mult (x, c)))).
 
-      * assume Hcyc_eq : ~(alphaL <> beta0).
-        (** Boundary labels coincide. Split on p = mult(xs(m), xs(0)). **)
-        set p := apply_fun mult (apply_fun xs0 m, apply_fun xs0 0).
-        apply (xm (p = e)).
+	      * assume Hcyc_eq : ~(alphaL <> beta0).
+	        (** Boundary labels coincide. Split on p = mult(xs(m), xs(0)). **)
+	        set p := apply_fun mult (apply_fun xs0 (ordsucc k), apply_fun xs0 0).
+	        apply (xm (p = e)).
         - assume Hp_e : p = e.
            (** Cyclic reduction by boundary cancellation reduces to the middle involution of length k. **)
            claim Hk_in_m : k :e m.
@@ -242198,13 +242198,13 @@ claim HPn : P n.
              v =
                apply_fun mult (apply_fun xs0 0,
                  apply_fun mult (w, apply_fun inv (apply_fun xs0 0))).
-           {
-             claim Hp_e0 : apply_fun mult (apply_fun xs0 m, apply_fun xs0 0) = e.
-             { rewrite <- Hp_e. reflexivity. }
-             apply (free_product_involution_cyclic_reduce_boundary_cancel
-               G mult e inv J Gfam efam t xs0 m k v
-               Hfp Hredt Ht_sm Hm_nat Hm_sm Hk_nat Hp_e0 Hwpv Hv_G Hv_ne_e Hv_invol).
-           }
+	           {
+	             claim Hp_e0 : apply_fun mult (apply_fun xs0 m, apply_fun xs0 0) = e.
+	             { rewrite Hm_sm. exact Hp_e. }
+	             apply (free_product_involution_cyclic_reduce_boundary_cancel
+	               G mult e inv J Gfam efam t xs0 m k v
+	               Hfp Hredt Ht_sm Hm_nat Hm_sm Hk_nat Hp_e0 Hwpv Hv_G Hv_ne_e Hv_invol).
+	           }
            apply (and4E
              (w :e G)
              (w <> e)
@@ -242386,26 +242386,27 @@ claim HPn : P n.
 	             exact Hx0_in_Gb0.
 	           }
 
-	           (** The boundary product p lies in the same factor subgroup, and cannot equal efam(alphaL). **)
-		           claim Hp_in_GaL : p :e apply_fun Gfam alphaL.
-		           {
-		             exact (subgroup_of_mult_closed
-		               (apply_fun Gfam alphaL) G mult e inv
-		               (apply_fun xs0 m) (apply_fun xs0 0)
-		               (Hsubfam alphaL HalphaJ)
-		               HxL_in_GaL
-		               Hx0_in_GaL).
-		           }
-		           claim Hp_ne_ef : p <> apply_fun efam alphaL.
-		           {
-		             assume Hp_ef.
-		             (** Pending: rule out p = efam(alphaL) without using later theorems. **)
+			           (** The boundary product p lies in the same factor subgroup, and cannot equal efam(alphaL). **)
+				           claim Hp_in_GaL : p :e apply_fun Gfam alphaL.
+				           {
+				             claim Hxsk_in_GaL : apply_fun xs0 (ordsucc k) :e apply_fun Gfam alphaL.
+				             { rewrite <- Hm_sm. exact HxL_in_GaL. }
+				             exact (subgroup_of_mult_closed
+				               (apply_fun Gfam alphaL) G mult e inv
+				               (apply_fun xs0 (ordsucc k)) (apply_fun xs0 0)
+				               (Hsubfam alphaL HalphaJ)
+				               Hxsk_in_GaL
+				               Hx0_in_GaL).
+				           }
+		           apply (xm (p = apply_fun efam alphaL)).
+		           - assume Hp_ef : p = apply_fun efam alphaL.
+		             (** Pending: p = efam(alphaL) subcase. **)
 		             admit.
-		           }
+		           - assume Hp_ne_ef : p <> apply_fun efam alphaL.
 
-	           (** k <> 0 (otherwise t = 2 and reducedness forces alphaL <> beta0). **)
-	           claim Hk_ne0 : k <> 0.
-	           {
+		           (** k <> 0 (otherwise t = 2 and reducedness forces alphaL <> beta0). **)
+		           claim Hk_ne0 : k <> 0.
+		           {
 	             assume Hk0.
 	             claim Hm1 : m = 1.
 	             { rewrite Hm_sm. rewrite Hk0. exact ordsucc_0_eq_1_nat. }
@@ -242569,11 +242570,23 @@ claim HPn : P n.
 	             exact Hneq_aK_aL.
 	           }
 
-				           set xs1 := graph (ordsucc k) (fun i:set => if i :e k then apply_fun xs_pre i else p).
-				           claim Hred1 : reduced_word J Gfam efam m xs1.
-				           {
-				             admit.
-				           }
+							           set xs1 := graph (ordsucc k) (fun i:set => if i :e k then apply_fun xs_pre i else p).
+							           claim Hred1 : reduced_word J Gfam efam m xs1.
+							           {
+							             claim Hred1_s : reduced_word J Gfam efam (ordsucc k) xs1.
+							             {
+							               exact (reduced_word_append_one_pre
+							                 J Gfam efam k xs_pre p alphaL
+							                 Hred_pre
+							                 Hk_ne0
+							                 HalphaJ
+							                 Hp_in_GaL
+							                 Hp_ne_ef
+							                 Hlast_diff).
+							             }
+							             rewrite Hm_sm.
+							             exact Hred1_s.
+							           }
 
 	           (** Let u1 := inv(x0) mul (v mul x0). We show u1 is an involution with reduced word xs1. **)
 	           claim Hx0_G : apply_fun xs0 0 :e G.
