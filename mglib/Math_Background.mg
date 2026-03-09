@@ -240016,7 +240016,6 @@ Qed.
 (** Helper bounty: boundary-product nontriviality in free products (p <> eG).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
 (** Bounty 165 **)
-(** Lock Charlie 1773096671 **)
 Lemma free_product_boundary_product_ne_e_helper :
   forall G multG eG invG J Gfam efam al n xs m alpha0:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -240567,7 +240566,6 @@ apply (nat_inv m Hm_nat).
 (** Helper bounty: boundary-product not equal to efam(alpha0).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
 (** Bounty 165 **)
-(** Lock Charlie 1773096671 **)
 Lemma free_product_boundary_product_ne_efam_helper :
   forall G multG eG invG J Gfam efam al n xs m alpha0:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -242622,10 +242620,15 @@ claim HPn : P n.
 	           claim Hu1_sq : apply_fun mult (u1, u1) = e.
 	           { exact (group_involutive_square_e G mult e inv u1 Hgrp Hu1_G Hu1_invol). }
 
-		           (** First and last labels differ: first is label of xs0(1), last is alphaL. **)
-		           claim H1_in_t : ordsucc 0 :e t.
-		           { admit. }
-		           apply (reduced_word_elem J Gfam efam t xs0 (ordsucc 0) Hredt H1_in_t).
+			           (** First and last labels differ: first is label of xs0(1), last is alphaL. **)
+			           claim H1_in_t : ordsucc 0 :e t.
+			           {
+			             rewrite Ht_sm.
+			             claim H0_in_m : 0 :e m.
+			             { rewrite Hm_sm. exact (nat_0_in_ordsucc k Hk_nat). }
+			             exact (nat_ordsucc_in_ordsucc m Hm_nat 0 H0_in_m).
+			           }
+			           apply (reduced_word_elem J Gfam efam t xs0 (ordsucc 0) Hredt H1_in_t).
 	           let beta1. assume Hbeta1_pack :
 	             beta1 :e J /\
 	             apply_fun xs0 (ordsucc 0) :e apply_fun Gfam beta1 /\
@@ -242645,19 +242648,104 @@ claim HPn : P n.
 	               Hgrp Hsubfam Hredt Ht_ne0 Hwpv Hv_ne_e
 	               (ordsucc 0) H1_t2).
 	           }
-		           claim Hbeta1_ne_aL : beta1 <> alphaL.
-		           {
-		             admit.
-		           }
+			           claim Hbeta1_ne_aL : beta1 <> alphaL.
+			           {
+			             apply (and3E
+			               (t :e omega)
+			               (forall i:set, i :e t ->
+			                 exists a:set, a :e J /\
+			                   apply_fun xs0 i :e apply_fun Gfam a /\
+			                   apply_fun xs0 i <> apply_fun efam a)
+			               (forall i:set, i :e t -> ordsucc i :e t ->
+			                 forall a b:set, a :e J -> b :e J ->
+			                   apply_fun xs0 i :e apply_fun Gfam a ->
+			                   apply_fun xs0 (ordsucc i) :e apply_fun Gfam b ->
+			                   a <> b)
+			               Hredt).
+			             assume _ _ Hadj.
+			             claim H0_t : 0 :e t.
+			             { rewrite Ht_sm. exact (nat_0_in_ordsucc m Hm_nat). }
+			             claim Hbeta0_ne_beta1 : beta0 <> beta1.
+			             { exact (Hadj 0 H0_t H1_in_t beta0 beta1 HbetaJ Hbeta1J Hx0_in_Gb0 Hx1_in_Gb1). }
+				             claim Hbeta1_ne_beta0 : beta1 <> beta0.
+				             { assume Heq. exact (Hbeta0_ne_beta1 (eq_symm beta1 beta0 Heq)). }
+			             assume Hbe1_aL.
+			             claim Hbe1_b0 : beta1 = beta0.
+			             { exact (eq_i_tra beta1 alphaL beta0 Hbe1_aL Hab_eq). }
+			             exact (Hbeta1_ne_beta0 Hbe1_b0).
+			           }
 
-		           claim Hcyc_all1 :
-		             forall a b:set, a :e J -> b :e J ->
-		               apply_fun xs1 k :e apply_fun Gfam a ->
-		               apply_fun xs1 0 :e apply_fun Gfam b ->
-		               a <> b.
-		           {
-		             admit.
-		           }
+			           claim Hcyc_all1 :
+			             forall a b:set, a :e J -> b :e J ->
+			               apply_fun xs1 k :e apply_fun Gfam a ->
+			               apply_fun xs1 0 :e apply_fun Gfam b ->
+			               a <> b.
+			           {
+			             let a b.
+			             assume HaJ HbJ Hlast1 Hfirst1.
+			             claim Hk_in_xs1 : k :e ordsucc k.
+			             { exact (ordsuccI2 k). }
+			             claim H0_in_xs1 : 0 :e ordsucc k.
+			             { exact (nat_0_in_ordsucc k Hk_nat). }
+			             claim H0_in_k : 0 :e k.
+			             {
+			               apply (nat_inv k Hk_nat).
+			               - assume Hk0 : k = 0. exact (FalseE (Hk_ne0 Hk0) (0 :e k)).
+			               - assume Hex_k0 : exists k0:set, nat_p k0 /\ k = ordsucc k0.
+			                 apply Hex_k0. let k0. assume Hk0_pack : nat_p k0 /\ k = ordsucc k0.
+			                 claim Hk0_nat : nat_p k0.
+			                 { exact (andEL (nat_p k0) (k = ordsucc k0) Hk0_pack). }
+			                 claim Hk_eq : k = ordsucc k0.
+			                 { exact (andER (nat_p k0) (k = ordsucc k0) Hk0_pack). }
+			                 rewrite Hk_eq. exact (nat_0_in_ordsucc k0 Hk0_nat).
+			             }
+			             claim H0_in_m : 0 :e m.
+			             { rewrite Hm_sm. exact (nat_0_in_ordsucc k Hk_nat). }
+			             claim Hlast_val : apply_fun xs1 k = p.
+			             {
+			               rewrite (apply_fun_graph (ordsucc k)
+			                 (fun i:set => if i :e k then apply_fun xs_pre i else p)
+			                 k Hk_in_xs1).
+			               rewrite (If_i_0 (k :e k) (apply_fun xs_pre k) p (In_irref k)).
+			               reflexivity.
+			             }
+			             claim Hfirst_val : apply_fun xs1 0 = apply_fun xs0 (ordsucc 0).
+			             {
+			               rewrite (apply_fun_graph (ordsucc k)
+			                 (fun i:set => if i :e k then apply_fun xs_pre i else p)
+			                 0 H0_in_xs1).
+			               rewrite (If_i_1 (0 :e k) (apply_fun xs_pre 0) p H0_in_k).
+			               rewrite (apply_fun_graph k (fun i:set => apply_fun xs_suf i) 0 H0_in_k).
+				               rewrite (apply_fun_graph m (fun i:set => apply_fun xs0 (ordsucc i)) 0 H0_in_m).
+				               reflexivity.
+				             }
+				             claim Hp_in_Ga : p :e apply_fun Gfam a.
+				             { rewrite <- Hlast_val. exact Hlast1. }
+				             claim Hx1_in_Gb : apply_fun xs0 (ordsucc 0) :e apply_fun Gfam b.
+				             { rewrite <- Hfirst_val. exact Hfirst1. }
+				             claim Ha_eq : a = alphaL.
+				             {
+				               symmetry.
+				               exact (disjoint_subgroups_label_unique
+				                 G mult e inv J Gfam alphaL a p
+				                 Hdisjoint HalphaJ HaJ
+				                 Hp_in_GaL Hp_in_Ga
+				                 Hp_ne).
+				             }
+				             claim Hb_eq : b = beta1.
+				             {
+				               symmetry.
+				               exact (disjoint_subgroups_label_unique
+				                 G mult e inv J Gfam beta1 b (apply_fun xs0 (ordsucc 0))
+				                 Hdisjoint Hbeta1J HbJ
+				                 Hx1_in_Gb1 Hx1_in_Gb
+				                 Hx1_ne_e).
+				             }
+			             rewrite Ha_eq.
+			             rewrite Hb_eq.
+			             assume Hab.
+			             exact (Hbeta1_ne_aL (eq_symm alphaL beta1 Hab)).
+			           }
 
 	           apply (reduced_word_double_cyclic_word_product
 	             G mult e inv J Gfam efam m xs1 k
