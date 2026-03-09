@@ -232791,12 +232791,219 @@ apply (nat_inv m Hm_nat).
 			    nu = k /\ (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs_mid i).
 			  { exact (Huniqu k xs_mid Hred_mid Hk_ne0 Hwp_mid). }
 
-			  claim Hnu_eq_k : nu = k.
-			  { exact (andEL (nu = k) (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs_mid i) Huniq_mid). }
-
-			  (** TODO: finish the boundary-cancellation "order 2" contradiction from the explicit middle word. **)
-			  admit.
-			Admitted.
+				  claim Hnu_eq_k : nu = k.
+				  { exact (andEL (nu = k) (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs_mid i) Huniq_mid). }
+	
+				  (** TODO: finish the boundary-cancellation "order 2" contradiction from the explicit middle word. **)
+				  (** Reduce the remaining work: if the reduced word for u were cyclically reduced, u^2 could not be eG. **)
+				  claim Hnu_O : nu :e omega.
+				  {
+				    apply (and3E
+				      (nu :e omega)
+				      (forall i:set, i :e nu ->
+				        exists a:set, a :e J /\
+				          apply_fun xsu i :e apply_fun Gfam a /\
+				          apply_fun xsu i <> apply_fun efam a)
+				      (forall i:set, i :e nu -> ordsucc i :e nu ->
+				        forall a b:set, a :e J -> b :e J ->
+				          apply_fun xsu i :e apply_fun Gfam a ->
+				          apply_fun xsu (ordsucc i) :e apply_fun Gfam b ->
+				          a <> b)
+				      Hredu).
+				    assume Hnu0 _ _. exact Hnu0.
+				  }
+				  claim Hnu_nat : nat_p nu.
+				  { exact (omega_nat_p nu Hnu_O). }
+				  apply (nat_inv nu Hnu_nat).
+				  - assume Hnu0 : nu = 0.
+				    exact (FalseE (Hnu_ne0 Hnu0) False).
+				  - assume HexmU : exists mU:set, nat_p mU /\ nu = ordsucc mU.
+				    apply HexmU. let mU.
+				    assume HmU_pack : nat_p mU /\ nu = ordsucc mU.
+				    claim HmU_nat : nat_p mU.
+				    { exact (andEL (nat_p mU) (nu = ordsucc mU) HmU_pack). }
+				    claim Hnu_sm : nu = ordsucc mU.
+				    { exact (andER (nat_p mU) (nu = ordsucc mU) HmU_pack). }
+				    claim H0_in_nu : 0 :e nu.
+				    { rewrite Hnu_sm. exact (nat_0_in_ordsucc mU HmU_nat). }
+				    claim HmU_in_nu : mU :e nu.
+				    { rewrite Hnu_sm. exact (ordsuccI2 mU). }
+	
+				    (** Extract labels for the first and last letters of xsu. **)
+				    apply (reduced_word_elem J Gfam efam nu xsu 0 Hredu H0_in_nu). let betaU0.
+				    assume HbetaU_pack : betaU0 :e J /\
+				      apply_fun xsu 0 :e apply_fun Gfam betaU0 /\
+				      apply_fun xsu 0 <> apply_fun efam betaU0.
+				    apply (and3E
+				      (betaU0 :e J)
+				      (apply_fun xsu 0 :e apply_fun Gfam betaU0)
+				      (apply_fun xsu 0 <> apply_fun efam betaU0)
+				      HbetaU_pack).
+				    assume HbetaUJ HxU0_in_GbU0 HxU0_ne_ef.
+	
+				    apply (reduced_word_elem J Gfam efam nu xsu mU Hredu HmU_in_nu). let alphaUL.
+				    assume HalphaU_pack : alphaUL :e J /\
+				      apply_fun xsu mU :e apply_fun Gfam alphaUL /\
+				      apply_fun xsu mU <> apply_fun efam alphaUL.
+				    apply (and3E
+				      (alphaUL :e J)
+				      (apply_fun xsu mU :e apply_fun Gfam alphaUL)
+				      (apply_fun xsu mU <> apply_fun efam alphaUL)
+				      HalphaU_pack).
+				    assume HalphaUJ HxUL_in_GaUL HxUL_ne_ef.
+	
+				    apply (xm (alphaUL <> betaU0)).
+				    * assume Hcyc_ne : alphaUL <> betaU0.
+				      (** Cyclic case: build a reduced word for u^2 and contradict Hu_sq. **)
+	
+				      claim Hcyc_all :
+				        forall a b:set, a :e J -> b :e J ->
+				          apply_fun xsu mU :e apply_fun Gfam a ->
+				          apply_fun xsu 0 :e apply_fun Gfam b ->
+				          a <> b.
+				      {
+				        let a b. assume HaJ HbJ Hlast Hfirst.
+				        claim HxU0_ne_e : apply_fun xsu 0 <> eG.
+				        {
+				          exact (reduced_word_no_eG_if_product_non_e
+				            G multG eG invG J Gfam efam nu xsu u
+				            Hgrp Hsubfam Hredu Hnu_ne0 Hwpu Hu_ne_eG
+				            0 H0_in_nu).
+				        }
+				        claim HxUL_ne_e : apply_fun xsu mU <> eG.
+				        {
+				          exact (reduced_word_no_eG_if_product_non_e
+				            G multG eG invG J Gfam efam nu xsu u
+				            Hgrp Hsubfam Hredu Hnu_ne0 Hwpu Hu_ne_eG
+				            mU HmU_in_nu).
+				        }
+				        claim Ha_eq : a = alphaUL.
+				        {
+				          symmetry.
+				          exact (disjoint_subgroups_label_unique
+				            G multG eG invG J Gfam alphaUL a (apply_fun xsu mU)
+				            Hdisjoint HalphaUJ HaJ HxUL_in_GaUL Hlast HxUL_ne_e).
+				        }
+				        claim Hb_eq : b = betaU0.
+				        {
+				          symmetry.
+				          exact (disjoint_subgroups_label_unique
+				            G multG eG invG J Gfam betaU0 b (apply_fun xsu 0)
+				            Hdisjoint HbetaUJ HbJ HxU0_in_GbU0 Hfirst HxU0_ne_e).
+				        }
+				        rewrite Ha_eq.
+				        rewrite Hb_eq.
+				        exact Hcyc_ne.
+				      }
+	
+				      apply (reduced_word_double_cyclic_word_product
+				        G multG eG invG J Gfam efam nu xsu mU
+				        Hgrp Hsubfam Hredu Hnu_sm HmU_nat Hcyc_all).
+				      let ys2.
+				      assume Hys2_pack :
+				        reduced_word J Gfam efam (add_nat nu nu) ys2 /\
+				        word_product multG eG ys2 (add_nat nu nu) =
+				          apply_fun multG (word_product multG eG xsu nu, word_product multG eG xsu nu).
+				      claim Hred2 : reduced_word J Gfam efam (add_nat nu nu) ys2.
+				      {
+				        exact (andEL
+				          (reduced_word J Gfam efam (add_nat nu nu) ys2)
+				          (word_product multG eG ys2 (add_nat nu nu) =
+				            apply_fun multG (word_product multG eG xsu nu, word_product multG eG xsu nu))
+				          Hys2_pack).
+				      }
+				      claim Hwp2 :
+				        word_product multG eG ys2 (add_nat nu nu) =
+				          apply_fun multG (word_product multG eG xsu nu, word_product multG eG xsu nu).
+				      {
+				        exact (andER
+				          (reduced_word J Gfam efam (add_nat nu nu) ys2)
+				          (word_product multG eG ys2 (add_nat nu nu) =
+				            apply_fun multG (word_product multG eG xsu nu, word_product multG eG xsu nu))
+				          Hys2_pack).
+				      }
+	
+				      claim Hlen2_ne0 : add_nat nu nu <> 0.
+				      {
+				        rewrite Hnu_sm.
+				        rewrite (add_nat_SR (ordsucc mU) mU HmU_nat).
+				        exact (neq_ordsucc_0 (add_nat (ordsucc mU) mU)).
+				      }
+				      claim Hlen2_ne1 : add_nat nu nu <> 1.
+				      {
+				        assume Habs2 : add_nat nu nu = 1.
+				        claim Htmp1 : add_nat (ordsucc mU) (ordsucc mU) =
+				          ordsucc (add_nat (ordsucc mU) mU).
+				        { exact (add_nat_SR (ordsucc mU) mU HmU_nat). }
+				        claim Heq : ordsucc (add_nat (ordsucc mU) mU) = 1.
+				        {
+				          claim Habs1 : add_nat (ordsucc mU) (ordsucc mU) = 1.
+				          {
+				            rewrite <- Hnu_sm.
+				            exact Habs2.
+				          }
+				          rewrite <- Htmp1.
+				          exact Habs1.
+				        }
+				        claim Hmm_eq0 : add_nat (ordsucc mU) mU = 0.
+				        {
+				          claim Hs : ordsucc (add_nat (ordsucc mU) mU) = ordsucc 0.
+				          { rewrite Heq. symmetry. exact ordsucc_0_eq_1_nat. }
+				          exact (ordsucc_inj (add_nat (ordsucc mU) mU) 0 Hs).
+				        }
+				        claim Hmm_ne0 : add_nat (ordsucc mU) mU <> 0.
+				        {
+				          claim Htmp2 : add_nat (ordsucc mU) mU = ordsucc (add_nat mU mU).
+				          { exact (add_nat_SL mU HmU_nat mU HmU_nat). }
+				          assume H0.
+				          claim Hs0 : ordsucc (add_nat mU mU) = 0.
+				          {
+				            exact (eq_i_tra
+				              (ordsucc (add_nat mU mU))
+				              (add_nat (ordsucc mU) mU)
+				              0
+				              (eq_symm (add_nat (ordsucc mU) mU) (ordsucc (add_nat mU mU)) Htmp2)
+				              H0).
+				          }
+				          exact (neq_ordsucc_0 (add_nat mU mU) Hs0).
+				        }
+				        exact (Hmm_ne0 Hmm_eq0).
+				      }
+				      claim Hys2_in_G : forall i:set, i :e add_nat nu nu -> apply_fun ys2 i :e G.
+				      {
+				        let i. assume Hi.
+				        exact (reduced_word_in_G
+				          G multG eG invG J Gfam efam (add_nat nu nu) ys2
+				          Hsubfam Hred2 i Hi).
+				      }
+				      claim Hys2_ne_e : forall i:set, i :e add_nat nu nu -> apply_fun ys2 i <> eG.
+				      {
+				        let i. assume Hi.
+				        exact (reduced_word_no_eG_all
+				          G multG eG invG J Gfam efam (add_nat nu nu) ys2
+				          Hgrp Hsubfam Hred2 Hlen2_ne0 Hlen2_ne1 i Hi).
+				      }
+				      claim Hwp2_eG : word_product multG eG ys2 (add_nat nu nu) = eG.
+				      {
+				        rewrite Hwp2.
+				        rewrite Hwpu.
+				        exact Hu_sq.
+				      }
+				      claim Hwp2_ne : word_product multG eG ys2 (add_nat nu nu) <> eG.
+				      {
+				        exact (free_product_reduced_word_length_ne0_product_ne_e
+				          G multG eG invG J Gfam efam (add_nat nu nu) ys2
+				          Hfp
+				          Hred2
+				          Hys2_in_G
+				          Hys2_ne_e
+				          Hlen2_ne0).
+				      }
+				      exact (Hwp2_ne Hwp2_eG).
+				    * assume Hcyc_eq : ~(alphaUL <> betaU0).
+				      (** Remaining hard case: boundary labels coincide. **)
+				      admit.
+				Admitted.
 
 (** Helper bounty: boundary-product not equal to efam(alpha0).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
