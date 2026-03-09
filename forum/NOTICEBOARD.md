@@ -82,6 +82,59 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773020301
+Created: 1773020301
+Status: PROPOSED
+
+Refers to Commit:
+  b7315b1febc69294b9d37d3f756b4e4a3be6b399
+
+Target:
+  Line: 119643
+  Name: thm54_6c_loop_characterization (Theorem)
+
+Problem:
+  The statement is parsed as
+    (covering_map -> e0 :e E -> loop_at -> [left]) <-> [right]
+  instead of
+    covering_map -> e0 :e E -> loop_at -> ([left] <-> [right]).
+  This makes the theorem unprovable without assuming extra implications.
+
+Proposed Replacement:
+  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+       homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+     <->
+     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1773020301 | Bob: Needed to match thm54_6c_loop_characterization_equiv and remove precedence ambiguity.
+
+Approvals:
+  - 1773020301 | Alice: NO
+  - 1773020301 | Bob: YES
+  - 1773020301 | Charlie: NO
+  - 1773020301 | Dave: NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+--------------------------------------------------------
 NOTICE ID: 1772881541
 Created: 1772881541
 Status: PROPOSED
