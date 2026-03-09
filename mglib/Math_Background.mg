@@ -232310,20 +232310,70 @@ apply (nat_inv m Hm_nat).
 		      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
 		      word_product multG eG xs' n' = u ->
 		      nu = n' /\ (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs' i)).
-		  apply (and4E
-		    (reduced_word J Gfam efam nu xsu)
-		    (nu <> 0)
-		    (word_product multG eG xsu nu = u)
-		    (forall n' xs':set,
-		      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
-		      word_product multG eG xs' n' = u ->
-		      nu = n' /\ (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs' i))
-		    Hpacku).
-		  assume Hredu Hnu_ne0 Hwpu Huniqu.
-		
-		  (** TODO: complete the torsion or malnormality argument to derive a contradiction. **)
-		  admit.
-		Admitted.
+			  apply (and4E
+			    (reduced_word J Gfam efam nu xsu)
+			    (nu <> 0)
+			    (word_product multG eG xsu nu = u)
+			    (forall n' xs':set,
+			      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+			      word_product multG eG xs' n' = u ->
+			      nu = n' /\ (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs' i))
+			    Hpacku).
+			  assume Hredu Hnu_ne0 Hwpu Huniqu.
+
+			  (** Identify the unique reduced word for u as the explicit middle prefix of xs_suf. **)
+			  claim Hk_ne0 : k <> 0.
+			  {
+			    (** If k = 0 then m = 1, contradicting Hm_ne1. **)
+			    assume Hk0 : k = 0.
+			    claim Hm1 : m = 1.
+			    {
+			      rewrite Hm_eq_sk.
+			      rewrite Hk0.
+			      exact ordsucc_0_eq_1_nat.
+			    }
+			    exact (Hm_ne1 Hm1).
+			  }
+
+			  set xs_mid := graph k (fun i:set => apply_fun xs_suf i).
+			  claim Hk_in_m : k :e m.
+			  { rewrite Hm_eq_sk. exact (ordsuccI2 k). }
+			  claim Hred_mid : reduced_word J Gfam efam k xs_mid.
+			  { exact (reduced_word_prefix J Gfam efam m xs_suf k Hred_suf Hk_in_m). }
+
+			  claim Hwp_mid : word_product multG eG xs_mid k = u.
+			  {
+			    claim HkO : k :e omega.
+			    { exact (nat_p_omega k Hk_nat). }
+			    claim Hext :
+			      word_product multG eG xs_mid k =
+			        word_product multG eG xs_suf k.
+			    {
+			      apply (nat_primrec_ext
+			        eG
+			        (fun i r:set => apply_fun multG (r, apply_fun xs_mid i))
+			        (fun i r:set => apply_fun multG (r, apply_fun xs_suf i))
+			        k
+			        HkO).
+			      let i r. assume Hi_k.
+			      rewrite (apply_fun_graph k (fun j:set => apply_fun xs_suf j) i Hi_k).
+			      reflexivity.
+			    }
+			    rewrite Hext.
+			    rewrite <- Hu_def.
+			    reflexivity.
+			  }
+
+			  claim Huniq_mid :
+			    nu = k /\ (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs_mid i).
+			  { exact (Huniqu k xs_mid Hred_mid Hk_ne0 Hwp_mid). }
+
+			  claim Hnu_eq_k : nu = k.
+			  { exact (andEL (nu = k) (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs_mid i) Huniq_mid). }
+
+			  (** TODO: finish the boundary-cancellation "order 2" contradiction from the explicit middle word. **)
+			  admit.
+			Admitted.
 
 (** Helper bounty: boundary-product not equal to efam(alpha0).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
