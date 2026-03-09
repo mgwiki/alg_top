@@ -1,7 +1,7 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 533 **)
-(** Balance Dave 2383 **)
+(** Balance Dave 2366 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -302716,7 +302716,8 @@ Definition polygon_pasting_topology : set -> set -> set :=
 (** of polygonal regions by pasting edges according to some labelling **)
 (** scheme. Then X is a compact Hausdorff space. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Dave 1773179007 **)
 Theorem thm74_1_polygon_pasting_compact_hausdorff :
   forall n w:set,
   labelling_scheme n w ->
