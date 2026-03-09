@@ -238984,6 +238984,68 @@ exact (and4I
   Humid_G Humid_ne_e Humid_invol Hu_conj).
 Qed.
 
+(** Infrastructure: reverse-index decomposition for naturals.
+    If i :e n, then n = add_nat i (ordsucc j) for a unique "remaining length" j. **)
+(** Proven Charlie **)
+Lemma nat_rev_index_decompose : forall n i:set,
+  nat_p n ->
+  i :e n ->
+  exists j:set, nat_p j /\ n = add_nat i (ordsucc j).
+let n i.
+assume Hn_nat Hi_in.
+claim Hn_O : n :e omega.
+{ exact (nat_p_omega n Hn_nat). }
+apply (nat_elem_decompose_add n i Hn_O Hi_in).
+let m. assume Hm_pack : nat_p m /\ n = add_nat i m.
+claim Hm_nat : nat_p m.
+{ exact (andEL (nat_p m) (n = add_nat i m) Hm_pack). }
+claim Hn_eq : n = add_nat i m.
+{ exact (andER (nat_p m) (n = add_nat i m) Hm_pack). }
+claim Hm_ne0 : m <> 0.
+{
+  assume Hm0 : m = 0.
+	  claim Hn_eq_i : n = i.
+	  { rewrite Hn_eq. rewrite Hm0. exact (add_nat_0R i). }
+	  claim Habs : i :e i.
+	  { exact (eq_subst_mem_set i n i Hi_in Hn_eq_i). }
+	  exact (In_irref i Habs).
+	}
+apply (nat_inv m Hm_nat).
+- assume Hm0 : m = 0.
+  exact (FalseE (Hm_ne0 Hm0) (exists j:set, nat_p j /\ n = add_nat i (ordsucc j))).
+- assume Hj_ex : exists j:set, nat_p j /\ m = ordsucc j.
+  apply Hj_ex. let j. assume Hj_pack : nat_p j /\ m = ordsucc j.
+  witness j.
+  apply andI.
+  * exact (andEL (nat_p j) (m = ordsucc j) Hj_pack).
+  * rewrite Hn_eq.
+    rewrite (andER (nat_p j) (m = ordsucc j) Hj_pack).
+    reflexivity.
+Qed.
+
+(** Infrastructure: define the reverse index j = n - i - 1 via epsilon choice. **)
+Definition nat_rev_index : set -> set -> set :=
+  fun n i:set =>
+    Eps_i (fun j:set => nat_p j /\ n = add_nat i (ordsucc j)).
+
+(** Proven Charlie **)
+Lemma nat_rev_index_prop : forall n i:set,
+  nat_p n ->
+  i :e n ->
+  nat_p (nat_rev_index n i) /\
+  n = add_nat i (ordsucc (nat_rev_index n i)).
+let n i.
+assume Hn_nat Hi_in.
+apply (nat_rev_index_decompose n i Hn_nat Hi_in).
+let j. assume Hj_pack : nat_p j /\ n = add_nat i (ordsucc j).
+set P := fun j0:set => nat_p j0 /\ n = add_nat i (ordsucc j0).
+claim Hex : exists j0:set, P j0.
+{ witness j. exact Hj_pack. }
+claim HEps : P (Eps_i P).
+{ exact (Eps_i_ax P j Hj_pack). }
+exact HEps.
+Qed.
+
 (** Infrastructure bounty: torsion/involution in free products (order 2 case).
     Expected use: discharge the remaining "boundary labels coincide" admit branches by showing
     that an involution is conjugate into some factor subgroup. **)
