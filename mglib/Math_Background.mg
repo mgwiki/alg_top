@@ -230121,6 +230121,72 @@ exact (eq_i_tra
     HidR_z)).
 Qed.
 
+(** Infrastructure: inverse of a product in a group **)
+(** Proven Charlie **)
+Lemma group_inv_mult : forall G mult e inv a b:set,
+  group_structure G mult e inv ->
+  a :e G ->
+  b :e G ->
+  apply_fun inv (apply_fun mult (a, b)) = apply_fun mult (apply_fun inv b, apply_fun inv a).
+let G mult e inv a b.
+assume Hgrp HaG HbG.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG Hassoc Hid Hinv.
+claim HabG : apply_fun mult (a, b) :e G.
+{ exact (group_source_mult_closure G mult e inv Hgrp a b HaG HbG). }
+claim HinvAG : apply_fun inv a :e G.
+{ exact (HinvFn a HaG). }
+claim HinvBG : apply_fun inv b :e G.
+{ exact (HinvFn b HbG). }
+claim HinvABG : apply_fun inv (apply_fun mult (a, b)) :e G.
+{ exact (HinvFn (apply_fun mult (a, b)) HabG). }
+claim HprodInvG : apply_fun mult (apply_fun inv b, apply_fun inv a) :e G.
+{ exact (group_source_mult_closure G mult e inv Hgrp (apply_fun inv b) (apply_fun inv a) HinvBG HinvAG). }
+(** Show mult(mult(a,b), mult(inv(b), inv(a))) = e. **)
+claim Hprod_e : apply_fun mult (apply_fun mult (a, b), apply_fun mult (apply_fun inv b, apply_fun inv a)) = e.
+{
+  rewrite (Hassoc a b (apply_fun mult (apply_fun inv b, apply_fun inv a)) HaG HbG HprodInvG).
+  rewrite <- (Hassoc b (apply_fun inv b) (apply_fun inv a) HbG HinvBG HinvAG).
+  rewrite (andEL
+    (apply_fun mult (b, apply_fun inv b) = e)
+    (apply_fun mult (apply_fun inv b, b) = e)
+    (Hinv b HbG)).
+  rewrite (andEL
+    (apply_fun mult (e, apply_fun inv a) = apply_fun inv a)
+    (apply_fun mult (apply_fun inv a, e) = apply_fun inv a)
+    (Hid (apply_fun inv a) HinvAG)).
+  exact (andEL
+    (apply_fun mult (a, apply_fun inv a) = e)
+    (apply_fun mult (apply_fun inv a, a) = e)
+    (Hinv a HaG)).
+}
+(** Use group_left_inv_solve to conclude mult(inv(b),inv(a)) = inv(mult(a,b)). **)
+claim Hinvprod_symm :
+  apply_fun mult (apply_fun inv b, apply_fun inv a) = apply_fun inv (apply_fun mult (a, b)).
+{
+  apply (group_left_inv_solve G mult inv e
+    (apply_fun inv (apply_fun mult (a, b)))
+    (apply_fun mult (apply_fun inv b, apply_fun inv a))
+    HmultFn HinvFn HeG Hassoc Hid Hinv
+    HinvABG HprodInvG).
+  rewrite (group_inv_inv G mult inv e (apply_fun mult (a, b))
+    HmultFn HinvFn HeG Hassoc Hid Hinv HabG).
+  exact Hprod_e.
+}
+exact (eq_symm (apply_fun mult (apply_fun inv b, apply_fun inv a))
+  (apply_fun inv (apply_fun mult (a, b)))
+  Hinvprod_symm).
+Qed.
+
 (** Infrastructure: solve for the suffix product via left cancellation **)
 (** Proven Bob **)
 Lemma word_product_suffix_by_cancel : forall G mult e inv m xs:set,
