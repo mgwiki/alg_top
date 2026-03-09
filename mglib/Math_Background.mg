@@ -228893,6 +228893,24 @@ rewrite Hxse_m.
 reflexivity.
 Qed.
 
+(** Infrastructure: word_product respects pointwise equality on its index set **)
+(** Proven Charlie **)
+Lemma word_product_congr_on : forall mult e xs ys n:set,
+  n :e omega ->
+  (forall i:set, i :e n -> apply_fun xs i = apply_fun ys i) ->
+  word_product mult e xs n = word_product mult e ys n.
+let mult e xs ys n.
+assume HnO Hxy.
+apply (nat_primrec_ext e
+  (fun i r => apply_fun mult (r, apply_fun xs i))
+  (fun i r => apply_fun mult (r, apply_fun ys i))
+  n
+  HnO).
+let i r. assume Hi.
+rewrite (Hxy i Hi).
+reflexivity.
+Qed.
+
 (** Infrastructure: reduced word entries are non-e if the product is non-e **)
 (** Proven Bob **)
 Lemma reduced_word_no_eG_if_product_non_e :
