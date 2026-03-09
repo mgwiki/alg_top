@@ -303331,6 +303331,421 @@ Definition polygon_pasting_topology : set -> set -> set :=
   fun n w =>
     quotient_topology B2 B2_topology (polygon_pasting_space n w) (polygon_pasting_map n w).
 
+(** Helper: B2 is compact **)
+(** Proven Dave **)
+Lemma B2_compact : compact_space B2 B2_topology.
+set I := closed_interval (minus_SNo 1) 1.
+set SQ := setprod I I.
+set TSQ := subspace_topology (setprod R R) R2_topology SQ.
+claim HIeq : I = closed_interval (minus_SNo 1) 1.
+{ reflexivity. }
+claim HTSQeq : TSQ = subspace_topology (setprod R R) R2_topology SQ.
+{ reflexivity. }
+claim HcompI :
+  compact_space I (closed_interval_topology (minus_SNo 1) 1).
+{ exact closed_interval_minus1_1_compact. }
+claim HcompSQprod :
+  compact_space
+    SQ
+    (product_topology I (closed_interval_topology (minus_SNo 1) 1)
+       I (closed_interval_topology (minus_SNo 1) 1)).
+{
+  exact (finite_product_compact I (closed_interval_topology (minus_SNo 1) 1)
+    I (closed_interval_topology (minus_SNo 1) 1) HcompI HcompI).
+}
+claim HISubR : I c= R.
+{
+  rewrite HIeq.
+  exact (closed_interval_sub_R (minus_SNo 1) 1).
+}
+claim HSQtopEq :
+  product_topology I (closed_interval_topology (minus_SNo 1) 1)
+    I (closed_interval_topology (minus_SNo 1) 1)
+  = TSQ.
+{
+  exact (product_subspace_topology R R_standard_topology R R_standard_topology
+    I I R_standard_topology_is_topology R_standard_topology_is_topology
+    HISubR HISubR).
+}
+claim HcompSQ : compact_space SQ TSQ.
+{
+  rewrite <- HSQtopEq.
+  exact HcompSQprod.
+}
+claim HSQsubR2 : SQ c= setprod R R.
+{
+  exact (setprod_Subq I I R R HISubR HISubR).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology).
+}
+claim HHausR2 : Hausdorff_space (setprod R R) R2_topology.
+{
+  exact (ex17_11_product_Hausdorff R R_standard_topology R R_standard_topology
+    R_standard_topology_Hausdorff R_standard_topology_Hausdorff).
+}
+claim HB2subR2 : B2 c= setprod R R.
+{
+  exact (Sep_Subq (setprod R R) (fun p:set =>
+    ~(Rlt 1 (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))))).
+}
+claim HtopB2 : topology_on B2 B2_topology.
+{
+  exact (subspace_topology_is_topology (setprod R R) R2_topology B2 HtopR2 HB2subR2).
+}
+claim HB2subSQ : B2 c= SQ.
+{
+  let x.
+  assume HxB2.
+  claim HxR2 : x :e setprod R R.
+  { exact (HB2subR2 x HxB2). }
+  claim HxNotBig :
+    ~(Rlt 1 (add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1)))).
+  {
+    exact (SepE2 (setprod R R)
+      (fun p:set => ~(Rlt 1 (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))))
+      x HxB2).
+  }
+  claim HxEta : x = (x 0, x 1).
+  { exact (setprod_eta R R x HxR2). }
+  claim HxCoord0 : R2_xcoord x = x 0. { reflexivity. }
+  claim HxCoord1 : R2_ycoord x = x 1. { reflexivity. }
+  claim Hx0R : x 0 :e R.
+  { rewrite <- HxCoord0. exact (EuclidPlane_xcoord_in_R x HxR2). }
+  claim Hx1R : x 1 :e R.
+  { rewrite <- HxCoord1. exact (EuclidPlane_ycoord_in_R x HxR2). }
+  claim Hx0S : SNo (x 0). { exact (real_SNo (x 0) Hx0R). }
+  claim Hx1S : SNo (x 1). { exact (real_SNo (x 1) Hx1R). }
+  claim H00R2 : (0, 0) :e setprod R R.
+  { exact (tuple_2_setprod_by_pair_Sigma R R 0 0 real_0 real_0). }
+  claim HdistR : distance_R2 x (0, 0) :e R.
+  { exact (distance_R2_in_R x (0, 0) HxR2 H00R2). }
+  claim HdistS : SNo (distance_R2 x (0, 0)).
+  { exact (real_SNo (distance_R2 x (0, 0)) HdistR). }
+  claim HdistNonneg : 0 <= distance_R2 x (0, 0).
+  { exact (distance_R2_nonneg x (0, 0) HxR2 H00R2). }
+  claim HdistSqEq :
+    mul_SNo (distance_R2 x (0, 0)) (distance_R2 x (0, 0))
+    = add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1)).
+  {
+    rewrite (distance_R2_sqr x (0, 0) HxR2 H00R2).
+    rewrite (R2_xcoord_tuple 0 0).
+    rewrite (R2_ycoord_tuple 0 0).
+    rewrite minus_SNo_0.
+    rewrite (add_SNo_0R (R2_xcoord x)
+      (real_SNo (R2_xcoord x) (EuclidPlane_xcoord_in_R x HxR2))).
+    rewrite (add_SNo_0R (R2_ycoord x)
+      (real_SNo (R2_ycoord x) (EuclidPlane_ycoord_in_R x HxR2))).
+    rewrite HxCoord0.
+    rewrite HxCoord1.
+    reflexivity.
+  }
+  claim HdistLe1 : distance_R2 x (0, 0) <= 1.
+  {
+    apply (xm (distance_R2 x (0, 0) <= 1)).
+    - assume H. exact H.
+    - assume Hnot.
+      claim H1ltDist : 1 < distance_R2 x (0, 0).
+      {
+        apply (SNoLt_trichotomy_or_impred (distance_R2 x (0, 0)) 1 HdistS SNo_1).
+        - assume Hlt.
+          exact (FalseE (Hnot (SNoLtLe (distance_R2 x (0, 0)) 1 Hlt)) (1 < distance_R2 x (0, 0))).
+        - assume Heq.
+          claim HdLe1eq : distance_R2 x (0, 0) <= 1.
+          { rewrite Heq. exact (SNoLe_ref 1). }
+          exact (FalseE (Hnot HdLe1eq) (1 < distance_R2 x (0, 0))).
+        - assume Hgt. exact Hgt.
+      }
+      claim H1ltDist2 :
+        mul_SNo 1 1 < mul_SNo (distance_R2 x (0, 0)) (distance_R2 x (0, 0)).
+      {
+        exact (SNoLt_sqr_nonneg 1 (distance_R2 x (0, 0)) SNo_1 HdistS
+          (SNoLtLe 0 1 SNoLt_0_1) HdistNonneg H1ltDist).
+      }
+      claim H1ltNormSq :
+        Rlt 1 (add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1))).
+      {
+        rewrite <- HdistSqEq.
+        claim H1ltDist3 : 1 < mul_SNo (distance_R2 x (0, 0)) (distance_R2 x (0, 0)).
+        {
+          exact ((mul_SNo_oneR 1 SNo_1) (fun z _ => z < mul_SNo (distance_R2 x (0, 0)) (distance_R2 x (0, 0)))
+            H1ltDist2).
+        }
+        exact (RltI 1 (mul_SNo (distance_R2 x (0, 0)) (distance_R2 x (0, 0)))
+          real_1
+          (real_mul_SNo (distance_R2 x (0, 0)) HdistR (distance_R2 x (0, 0)) HdistR)
+          H1ltDist3).
+      }
+      exact (FalseE (HxNotBig H1ltNormSq) (distance_R2 x (0, 0) <= 1)).
+  }
+  claim HabsX0Le1 : abs_SNo (x 0) <= 1.
+  {
+    claim HabsX0LeDist :
+      abs_SNo (x 0) <= distance_R2 x (0, 0).
+    {
+      claim HabsRaw :
+        abs_SNo (add_SNo (R2_xcoord x) (minus_SNo (R2_xcoord (0, 0))))
+        <= distance_R2 x (0, 0).
+      { exact (abs_dx_le_distance_R2 x (0, 0) HxR2 H00R2). }
+      rewrite <- HxCoord0.
+      rewrite <- (add_SNo_0R (R2_xcoord x)
+        (real_SNo (R2_xcoord x) (EuclidPlane_xcoord_in_R x HxR2))).
+      rewrite <- minus_SNo_0 at 1.
+      rewrite <- (R2_xcoord_tuple 0 0) at 1.
+      exact HabsRaw.
+    }
+    exact (SNoLe_tra (abs_SNo (x 0)) (distance_R2 x (0, 0)) 1
+      (real_SNo (abs_SNo (x 0)) (abs_SNo_in_R (x 0) Hx0R))
+      HdistS SNo_1 HabsX0LeDist HdistLe1).
+  }
+  claim HabsX1Le1 : abs_SNo (x 1) <= 1.
+  {
+    claim HabsX1LeDist :
+      abs_SNo (x 1) <= distance_R2 x (0, 0).
+    {
+      claim HabsRaw :
+        abs_SNo (add_SNo (R2_ycoord x) (minus_SNo (R2_ycoord (0, 0))))
+        <= distance_R2 x (0, 0).
+      { exact (abs_dy_le_distance_R2 x (0, 0) HxR2 H00R2). }
+      rewrite <- HxCoord1.
+      rewrite <- (add_SNo_0R (R2_ycoord x)
+        (real_SNo (R2_ycoord x) (EuclidPlane_ycoord_in_R x HxR2))).
+      rewrite <- minus_SNo_0 at 1.
+      rewrite <- (R2_ycoord_tuple 0 0) at 1.
+      exact HabsRaw.
+    }
+    exact (SNoLe_tra (abs_SNo (x 1)) (distance_R2 x (0, 0)) 1
+      (real_SNo (abs_SNo (x 1)) (abs_SNo_in_R (x 1) Hx1R))
+      HdistS SNo_1 HabsX1LeDist HdistLe1).
+  }
+  claim Hm1LeX0 : minus_SNo 1 <= x 0.
+  {
+    exact (SNoLe_tra (minus_SNo 1) (minus_SNo (abs_SNo (x 0))) (x 0)
+      (real_SNo (minus_SNo 1) (real_minus_SNo 1 real_1))
+      (real_SNo (minus_SNo (abs_SNo (x 0))) (real_minus_SNo (abs_SNo (x 0)) (abs_SNo_in_R (x 0) Hx0R)))
+      Hx0S
+      (minus_SNo_Le_contra (abs_SNo (x 0)) 1 (SNo_abs_SNo (x 0) Hx0S) SNo_1 HabsX0Le1)
+      (abs_SNo_lower_bound (x 0) Hx0S)).
+  }
+  claim Hx0Le1 : x 0 <= 1.
+  {
+    exact (SNoLe_tra (x 0) (abs_SNo (x 0)) 1 Hx0S (SNo_abs_SNo (x 0) Hx0S) SNo_1
+      (abs_SNo_upper_bound (x 0) Hx0S) HabsX0Le1).
+  }
+  claim Hm1LeX1 : minus_SNo 1 <= x 1.
+  {
+    exact (SNoLe_tra (minus_SNo 1) (minus_SNo (abs_SNo (x 1))) (x 1)
+      (real_SNo (minus_SNo 1) (real_minus_SNo 1 real_1))
+      (real_SNo (minus_SNo (abs_SNo (x 1))) (real_minus_SNo (abs_SNo (x 1)) (abs_SNo_in_R (x 1) Hx1R)))
+      Hx1S
+      (minus_SNo_Le_contra (abs_SNo (x 1)) 1 (SNo_abs_SNo (x 1) Hx1S) SNo_1 HabsX1Le1)
+      (abs_SNo_lower_bound (x 1) Hx1S)).
+  }
+  claim Hx1Le1 : x 1 <= 1.
+  {
+    exact (SNoLe_tra (x 1) (abs_SNo (x 1)) 1 Hx1S (SNo_abs_SNo (x 1) Hx1S) SNo_1
+      (abs_SNo_upper_bound (x 1) Hx1S) HabsX1Le1).
+  }
+  claim Hx0InI : x 0 :e I.
+  {
+    rewrite HIeq.
+    exact (SepI R (fun t:set => ~ (Rlt t (minus_SNo 1)) /\ ~ (Rlt 1 t)) (x 0) Hx0R
+      (andI (~ (Rlt (x 0) (minus_SNo 1))) (~ (Rlt 1 (x 0)))
+        (RleE_nlt (minus_SNo 1) (x 0) (Rle_of_SNoLe (minus_SNo 1) (x 0)
+           (real_minus_SNo 1 real_1) Hx0R Hm1LeX0))
+        (RleE_nlt (x 0) 1 (Rle_of_SNoLe (x 0) 1 Hx0R real_1 Hx0Le1)))).
+  }
+  claim Hx1InI : x 1 :e I.
+  {
+    rewrite HIeq.
+    exact (SepI R (fun t:set => ~ (Rlt t (minus_SNo 1)) /\ ~ (Rlt 1 t)) (x 1) Hx1R
+      (andI (~ (Rlt (x 1) (minus_SNo 1))) (~ (Rlt 1 (x 1)))
+        (RleE_nlt (minus_SNo 1) (x 1) (Rle_of_SNoLe (minus_SNo 1) (x 1)
+           (real_minus_SNo 1 real_1) Hx1R Hm1LeX1))
+        (RleE_nlt (x 1) 1 (Rle_of_SNoLe (x 1) 1 Hx1R real_1 Hx1Le1)))).
+  }
+  rewrite HxEta.
+  exact (tuple_2_setprod_by_pair_Sigma I I (x 0) (x 1) Hx0InI Hx1InI).
+}
+claim HiSQCont :
+  continuous_map SQ TSQ (setprod R R) R2_topology (graph SQ (fun x:set => x)).
+{
+  exact (subspace_inclusion_continuous (setprod R R) R2_topology SQ HtopR2 HSQsubR2).
+}
+set p0 := projection_map1 R R.
+set p1 := projection_map2 R R.
+set sq0 := compose_fun (setprod R R) (pair_map (setprod R R) p0 p0) mul_fun_R.
+set sq1 := compose_fun (setprod R R) (pair_map (setprod R R) p1 p1) mul_fun_R.
+set nsq := compose_fun (setprod R R) (pair_map (setprod R R) sq0 sq1) add_fun_R.
+claim HpPack :
+  continuous_map (setprod R R) R2_topology R R_standard_topology p0 /\
+  continuous_map (setprod R R) R2_topology R R_standard_topology p1.
+{
+  exact (projection_maps_continuous R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology).
+}
+claim Hp0Cont : continuous_map (setprod R R) R2_topology R R_standard_topology p0.
+{ exact (andEL (continuous_map (setprod R R) R2_topology R R_standard_topology p0)
+    (continuous_map (setprod R R) R2_topology R R_standard_topology p1) HpPack). }
+claim Hp1Cont : continuous_map (setprod R R) R2_topology R R_standard_topology p1.
+{ exact (andER (continuous_map (setprod R R) R2_topology R R_standard_topology p0)
+    (continuous_map (setprod R R) R2_topology R R_standard_topology p1) HpPack). }
+claim Hsq0Cont : continuous_map (setprod R R) R2_topology R R_standard_topology sq0.
+{ exact (mul_two_continuous_R (setprod R R) R2_topology p0 p0 HtopR2 Hp0Cont Hp0Cont). }
+claim Hsq1Cont : continuous_map (setprod R R) R2_topology R R_standard_topology sq1.
+{ exact (mul_two_continuous_R (setprod R R) R2_topology p1 p1 HtopR2 Hp1Cont Hp1Cont). }
+claim HnsqCont : continuous_map (setprod R R) R2_topology R R_standard_topology nsq.
+{ exact (add_two_continuous_R (setprod R R) R2_topology sq0 sq1 HtopR2 Hsq0Cont Hsq1Cont). }
+claim HnsqEval : forall x:set, x :e setprod R R ->
+    apply_fun nsq x = add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1)).
+{
+  let x. assume HxR2.
+  claim Hp0xR : apply_fun p0 x :e R.
+  { exact (continuous_map_function_on (setprod R R) R2_topology R R_standard_topology p0 Hp0Cont x HxR2). }
+  claim Hp1xR : apply_fun p1 x :e R.
+  { exact (continuous_map_function_on (setprod R R) R2_topology R R_standard_topology p1 Hp1Cont x HxR2). }
+  claim Hsq0xR : apply_fun sq0 x :e R.
+  { exact (continuous_map_function_on (setprod R R) R2_topology R R_standard_topology sq0 Hsq0Cont x HxR2). }
+  claim Hsq1xR : apply_fun sq1 x :e R.
+  { exact (continuous_map_function_on (setprod R R) R2_topology R R_standard_topology sq1 Hsq1Cont x HxR2). }
+  rewrite (add_of_pair_map_apply (setprod R R) sq0 sq1 x HxR2 Hsq0xR Hsq1xR).
+  rewrite (mul_of_pair_map_apply (setprod R R) p0 p0 x HxR2 Hp0xR Hp0xR) at 1.
+  rewrite (mul_of_pair_map_apply (setprod R R) p1 p1 x HxR2 Hp1xR Hp1xR) at 1.
+  rewrite (projection1_apply R R x HxR2) at 1.
+  rewrite (projection1_apply R R x HxR2) at 1.
+  rewrite (projection2_apply R R x HxR2) at 1.
+  rewrite (projection2_apply R R x HxR2) at 1.
+  reflexivity.
+}
+set nsqSQ := compose_fun SQ (graph SQ (fun x:set => x)) nsq.
+claim HnsqSQCont : continuous_map SQ TSQ R R_standard_topology nsqSQ.
+{
+  exact (composition_continuous SQ TSQ (setprod R R) R2_topology R R_standard_topology
+    (graph SQ (fun x:set => x)) nsq HiSQCont HnsqCont).
+}
+claim Hconst1Cont : continuous_map SQ TSQ R R_standard_topology (const_fun SQ 1).
+{
+  exact (const_fun_continuous SQ TSQ R R_standard_topology 1
+    (subspace_topology_is_topology (setprod R R) R2_topology SQ HtopR2 HSQsubR2)
+    R_standard_topology_is_topology real_1).
+}
+claim HB2ClosedInSQ : closed_in SQ TSQ B2.
+{
+  claim HB2_eq :
+    B2 = {x :e SQ | Rle (apply_fun nsqSQ x) (apply_fun (const_fun SQ 1) x)}.
+  {
+    apply set_ext.
+    - let x.
+      assume HxB2.
+      claim HxSQ : x :e SQ. { exact (HB2subSQ x HxB2). }
+      claim HxR2 : x :e setprod R R. { exact (HSQsubR2 x HxSQ). }
+      claim HxNotBig :
+        ~(Rlt 1 (add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1)))).
+      {
+        exact (SepE2 (setprod R R)
+          (fun p:set => ~(Rlt 1 (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))))
+          x HxB2).
+      }
+      claim HnsqSQx :
+        apply_fun nsqSQ x = add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1)).
+      {
+        rewrite (compose_fun_apply SQ (graph SQ (fun z:set => z)) nsq x HxSQ).
+        rewrite (apply_fun_graph SQ (fun z:set => z) x HxSQ).
+        exact (HnsqEval x HxR2).
+      }
+      claim Hconst1x : apply_fun (const_fun SQ 1) x = 1.
+      { exact (const_fun_apply SQ 1 x HxSQ). }
+      apply SepI.
+      - exact HxSQ.
+      - claim HnormSqR :
+          add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1)) :e R.
+        {
+          claim Hx0R : x 0 :e R. { exact (EuclidPlane_xcoord_in_R x HxR2). }
+          claim Hx1R : x 1 :e R. { exact (EuclidPlane_ycoord_in_R x HxR2). }
+          exact (real_add_SNo (mul_SNo (x 0) (x 0)) (real_mul_SNo (x 0) Hx0R (x 0) Hx0R)
+            (mul_SNo (x 1) (x 1)) (real_mul_SNo (x 1) Hx1R (x 1) Hx1R)).
+        }
+        claim HnsqSQxR : apply_fun nsqSQ x :e R.
+        { exact ((eq_symm (apply_fun nsqSQ x) (add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1)))
+            HnsqSQx) (fun a _ => a :e R) HnormSqR). }
+        claim Hconst1xR : apply_fun (const_fun SQ 1) x :e R.
+        { exact ((eq_symm (apply_fun (const_fun SQ 1) x) 1 Hconst1x) (fun b _ => b :e R) real_1). }
+        claim HnltGoal :
+          ~(Rlt (apply_fun (const_fun SQ 1) x) (apply_fun nsqSQ x)).
+        {
+          assume HrltGoal.
+          apply HxNotBig.
+          exact (HnsqSQx (fun v _ => Rlt 1 v)
+            (Hconst1x (fun w _ => Rlt w (apply_fun nsqSQ x)) HrltGoal)).
+        }
+        exact (RleI (apply_fun nsqSQ x) (apply_fun (const_fun SQ 1) x)
+          HnsqSQxR Hconst1xR HnltGoal).
+    - let x.
+      assume HxRle.
+      claim HxSQ : x :e SQ.
+      { exact (SepE1 SQ (fun z:set => Rle (apply_fun nsqSQ z) (apply_fun (const_fun SQ 1) z)) x HxRle). }
+      claim HxR2 : x :e setprod R R. { exact (HSQsubR2 x HxSQ). }
+      claim HRleVal : Rle (apply_fun nsqSQ x) (apply_fun (const_fun SQ 1) x).
+      { exact (SepE2 SQ (fun z:set => Rle (apply_fun nsqSQ z) (apply_fun (const_fun SQ 1) z)) x HxRle). }
+      claim HnsqSQx :
+        apply_fun nsqSQ x = add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1)).
+      {
+        rewrite (compose_fun_apply SQ (graph SQ (fun z:set => z)) nsq x HxSQ).
+        rewrite (apply_fun_graph SQ (fun z:set => z) x HxSQ).
+        exact (HnsqEval x HxR2).
+      }
+      claim Hconst1x : apply_fun (const_fun SQ 1) x = 1.
+      { exact (const_fun_apply SQ 1 x HxSQ). }
+      claim HRleVal2 : Rle (add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1))) 1.
+      {
+        exact (Hconst1x (fun b _ => Rle (add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1))) b)
+          (HnsqSQx (fun a _ => Rle a (apply_fun (const_fun SQ 1) x)) HRleVal)).
+      }
+      exact (SepI (setprod R R) (fun p:set => ~(Rlt 1 (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))))
+        x HxR2 (RleE_nlt (add_SNo (mul_SNo (x 0) (x 0)) (mul_SNo (x 1) (x 1))) 1 HRleVal2)).
+  }
+  rewrite HB2_eq.
+  exact (continuous_Rle_preimage_closed SQ TSQ nsqSQ (const_fun SQ 1) HnsqSQCont Hconst1Cont).
+}
+claim HcompB2sq : compact_space B2 (subspace_topology SQ TSQ B2).
+{
+  exact (closed_subspace_compact SQ TSQ B2 HcompSQ HB2ClosedInSQ).
+}
+claim HB2TopEq : subspace_topology SQ TSQ B2 = B2_topology.
+{
+  rewrite HTSQeq.
+  exact (subspace_topology_transitive_weak (setprod R R) R2_topology SQ B2 HB2subSQ).
+}
+rewrite <- HB2TopEq.
+exact HcompB2sq.
+Qed.
+
+(** Helper: B2 is Hausdorff **)
+(** Proven Dave **)
+Lemma B2_Hausdorff : Hausdorff_space B2 B2_topology.
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology).
+}
+claim HHausR2 : Hausdorff_space (setprod R R) R2_topology.
+{
+  exact (ex17_11_product_Hausdorff R R_standard_topology R R_standard_topology
+    R_standard_topology_Hausdorff R_standard_topology_Hausdorff).
+}
+claim HB2subR2 : B2 c= setprod R R.
+{
+  exact (Sep_Subq (setprod R R) (fun p:set =>
+    ~(Rlt 1 (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))))).
+}
+claim HB2TopEq : B2_topology = subspace_topology (setprod R R) R2_topology B2.
+{ reflexivity. }
+rewrite HB2TopEq.
+exact (ex17_12_subspace_Hausdorff (setprod R R) R2_topology B2 HHausR2 HB2subR2).
+Qed.
+
 (** from S74 Thm 74.1 (line 3916 in algtop.tex): compact Hausdorff **)
 (** LATEX VERSION: Let X be the space obtained from a finite collection **)
 (** of polygonal regions by pasting edges according to some labelling **)
@@ -303343,7 +303758,155 @@ Theorem thm74_1_polygon_pasting_compact_hausdorff :
   labelling_scheme n w ->
   compact_space (polygon_pasting_space n w) (polygon_pasting_topology n w) /\
   Hausdorff_space (polygon_pasting_space n w) (polygon_pasting_topology n w).
-admit.
+let n w.
+assume Hlabel.
+set X := polygon_pasting_space n w.
+set Tx := polygon_pasting_topology n w.
+set pi := polygon_pasting_map n w.
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology).
+}
+claim HB2subR2 : B2 c= setprod R R.
+{
+  exact (Sep_Subq (setprod R R) (fun p:set =>
+    ~(Rlt 1 (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))))).
+}
+claim HtopB2 : topology_on B2 B2_topology.
+{
+  exact (subspace_topology_is_topology (setprod R R) R2_topology B2 HtopR2 HB2subR2).
+}
+claim HpiFun : function_on pi B2 X.
+{
+  let x.
+  assume HxB2.
+  claim HclsInPow : {y :e B2 | polygon_pasting_equiv n w x y} :e Power B2.
+  {
+    exact (PowerI B2 {y :e B2 | polygon_pasting_equiv n w x y}
+      (Sep_Subq B2 (fun y:set => polygon_pasting_equiv n w x y))).
+  }
+  claim HxB2_wit : exists x0:set, x0 :e B2 /\
+    {y :e B2 | polygon_pasting_equiv n w x y} = {y :e B2 | polygon_pasting_equiv n w x0 y}.
+  {
+    witness x.
+    exact (andI (x :e B2)
+      ({y :e B2 | polygon_pasting_equiv n w x y} = {y :e B2 | polygon_pasting_equiv n w x y})
+      HxB2 (eq_refl {y :e B2 | polygon_pasting_equiv n w x y})).
+  }
+  claim HclsInX : {y :e B2 | polygon_pasting_equiv n w x y} :e X.
+  {
+    exact (SepI (Power B2)
+      (fun cls:set => exists x0:set, x0 :e B2 /\ cls = {y :e B2 | polygon_pasting_equiv n w x0 y})
+      {y :e B2 | polygon_pasting_equiv n w x y}
+      HclsInPow
+      HxB2_wit).
+  }
+  claim HpiVal : apply_fun pi x = {y :e B2 | polygon_pasting_equiv n w x y}.
+  { exact (apply_fun_graph B2 (fun x0:set => {y :e B2 | polygon_pasting_equiv n w x0 y}) x HxB2). }
+  exact ((eq_symm (apply_fun pi x) {y :e B2 | polygon_pasting_equiv n w x y} HpiVal) (fun v _ => v :e X) HclsInX).
+}
+claim HpiSurj : forall cls:set, cls :e X -> exists x:set, x :e B2 /\ apply_fun pi x = cls.
+{
+  let cls.
+  assume HclsX.
+  claim HclsInPow : cls :e Power B2.
+  {
+    exact (SepE1 (Power B2)
+      (fun c:set => exists x0:set, x0 :e B2 /\ c = {y :e B2 | polygon_pasting_equiv n w x0 y})
+      cls HclsX).
+  }
+  claim HclsWit : exists x0:set, x0 :e B2 /\ cls = {y :e B2 | polygon_pasting_equiv n w x0 y}.
+  {
+    exact (SepE2 (Power B2)
+      (fun c:set => exists x0:set, x0 :e B2 /\ c = {y :e B2 | polygon_pasting_equiv n w x0 y})
+      cls HclsX).
+  }
+  apply HclsWit. let x0. assume Hpack.
+  claim Hx0B2 : x0 :e B2.
+  { exact (andEL (x0 :e B2) (cls = {y :e B2 | polygon_pasting_equiv n w x0 y}) Hpack). }
+  claim HclsEq : cls = {y :e B2 | polygon_pasting_equiv n w x0 y}.
+  { exact (andER (x0 :e B2) (cls = {y :e B2 | polygon_pasting_equiv n w x0 y}) Hpack). }
+  witness x0.
+  exact (andI (x0 :e B2) (apply_fun pi x0 = cls)
+    Hx0B2
+    (eq_i_tra (apply_fun pi x0) {y :e B2 | polygon_pasting_equiv n w x0 y} cls
+      (apply_fun_graph B2 (fun x:set => {y :e B2 | polygon_pasting_equiv n w x y}) x0 Hx0B2)
+      (eq_symm cls {y :e B2 | polygon_pasting_equiv n w x0 y} HclsEq))).
+}
+claim HqMap : quotient_map B2 B2_topology X pi.
+{
+  exact (and3I (topology_on B2 B2_topology) (function_on pi B2 X)
+    (forall cls:set, cls :e X -> exists x:set, x :e B2 /\ apply_fun pi x = cls)
+    HtopB2 HpiFun HpiSurj).
+}
+claim HTxEq : Tx = quotient_topology B2 B2_topology X pi.
+{ reflexivity. }
+claim HtopX : topology_on X Tx.
+{
+  rewrite HTxEq.
+  exact (quotient_topology_is_topology B2 B2_topology X pi HtopB2 HqMap).
+}
+claim HpiCont : continuous_map B2 B2_topology X Tx pi.
+{
+  exact (quotient_universal_property B2 B2_topology X Tx pi HqMap HtopX (Subq_ref Tx)).
+}
+apply andI.
+- claim HimgCompact :
+    compact_space (image_of_fun pi B2) (subspace_topology X Tx (image_of_fun pi B2)).
+  {
+    exact (continuous_image_compact B2 B2_topology X Tx pi B2_compact HpiCont).
+  }
+  claim HimgEqX : image_of_fun pi B2 = X.
+  {
+    apply set_ext.
+    - let cls.
+      assume HclsImg.
+      apply (ReplE_impred B2 (fun x:set => apply_fun pi x) cls HclsImg).
+      let x. assume HxB2 HclsEq.
+      rewrite HclsEq.
+      exact (HpiFun x HxB2).
+    - let cls.
+      assume HclsX.
+      apply (HpiSurj cls HclsX).
+      let x0. assume Hpack.
+      claim Hx0B2 : x0 :e B2.
+      { exact (andEL (x0 :e B2) (apply_fun pi x0 = cls) Hpack). }
+      claim HpiEqCls : apply_fun pi x0 = cls.
+      { exact (andER (x0 :e B2) (apply_fun pi x0 = cls) Hpack). }
+      exact (HpiEqCls (fun v _ => v :e image_of_fun pi B2)
+        (ReplI B2 (fun x:set => apply_fun pi x) x0 Hx0B2)).
+  }
+  claim HimgCompactX : compact_space X (subspace_topology X Tx X).
+  {
+    rewrite <- HimgEqX.
+    exact HimgCompact.
+  }
+  rewrite <- (subspace_topology_whole X Tx HtopX).
+  exact HimgCompactX.
+- claim HnormB2 : normal_space B2 B2_topology.
+  {
+    exact (compact_Hausdorff_normal B2 B2_topology B2_compact B2_Hausdorff).
+  }
+  claim HpiClosedMap : forall C:set, closed_in B2 B2_topology C -> closed_in X Tx (image_of pi C).
+  { admit. }
+  claim HpreimOpen :
+    forall V:set, V :e Tx -> {x :e B2 | apply_fun pi x :e V} :e B2_topology.
+  {
+    let V. assume HVTx.
+    claim HVinQt : V :e quotient_topology B2 B2_topology X pi.
+    { exact (HTxEq (fun T _ => V :e T) HVTx). }
+    exact (SepE2 (Power X) (fun W:set => preimage_of B2 pi W :e B2_topology) V HVinQt).
+  }
+  claim HnormX : normal_space X Tx.
+  {
+    exact (lemma73_3_closed_quotient_normal_with_surjective B2 B2_topology X Tx pi
+      HtopB2 HtopX HnormB2 HpiCont HpiClosedMap HpreimOpen
+      (fun y Hy => HpiSurj y Hy)).
+  }
+  claim HT1X : T1_space X Tx.
+  { admit. }
+  exact (normal_T1_implies_Hausdorff X Tx HnormX HT1X).
 Admitted.
 
 (** from S74 Thm 74.2 (line 3927 in algtop.tex): fundamental group from scheme **)
