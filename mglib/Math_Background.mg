@@ -201213,6 +201213,7 @@ exact (Rlt_Rle_tra 0 1
 Qed.
 
 (** Helper: stereo_S_inv_fn u is in Sn 2 for u in euclidean_space 2 **)
+(** Proven Dave **)
 Lemma stereo_S_inv_fn_in_Sn2 : forall u:set,
   u :e euclidean_space 2 ->
   stereo_S_inv_fn u :e Sn 2.
@@ -201302,11 +201303,286 @@ claim HinvFnE3 : stereo_S_inv_fn u :e euclidean_space 3.
 }
 claim HnormSq1 : euclidean_norm_sq 3 (stereo_S_inv_fn u) = 1.
 {
-  admit.
+  claim H2R : 2 :e R. { exact real_2. }
+  claim H2SNo : SNo 2. { exact SNo_2. }
+  set f := stereo_S_inv_fn u.
+  set f0 := mul_SNo (mul_SNo 2 u0) d.
+  set f1 := mul_SNo (mul_SNo 2 u1) d.
+  set f2 := add_SNo (mul_SNo 2 d) (minus_SNo 1).
+  claim Hf0SNo : SNo f0. { exact (SNo_mul_SNo (mul_SNo 2 u0) d (SNo_mul_SNo 2 u0 H2SNo Hu0SNo) HdSNo). }
+  claim Hf1SNo : SNo f1. { exact (SNo_mul_SNo (mul_SNo 2 u1) d (SNo_mul_SNo 2 u1 H2SNo Hu1SNo) HdSNo). }
+  claim Hf2SNo : SNo f2. { exact (SNo_add_SNo (mul_SNo 2 d) (minus_SNo 1) (SNo_mul_SNo 2 d H2SNo HdSNo) (SNo_minus_SNo 1 SNo_1)). }
+  claim Hf0R : f0 :e R. { exact (real_mul_SNo (mul_SNo 2 u0) (real_mul_SNo 2 H2R u0 Hu0R) d HdR). }
+  claim Hf1R : f1 :e R. { exact (real_mul_SNo (mul_SNo 2 u1) (real_mul_SNo 2 H2R u1 Hu1R) d HdR). }
+  claim Hf2R : f2 :e R. { exact (real_add_SNo (mul_SNo 2 d) (real_mul_SNo 2 H2R d HdR) (minus_SNo 1) (real_minus_SNo 1 real_1)). }
+  claim Hf0eq : apply_fun f 0 = f0.
+  {
+    prove apply_fun (graph 3 (fun i:set =>
+        if i = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1))) 0 = f0.
+    rewrite (apply_fun_graph 3 (fun i:set =>
+        if i = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1)) 0 (ordsuccI1 2 0 In_0_2)).
+    prove (if 0 = 0 then mul_SNo (mul_SNo 2 u0) d
+      else if 0 = 1 then mul_SNo (mul_SNo 2 u1) d
+      else add_SNo (mul_SNo 2 d) (minus_SNo 1)) = f0.
+    rewrite (If_i_1 (0 = 0) (mul_SNo (mul_SNo 2 u0) d)
+      (if 0 = 1 then mul_SNo (mul_SNo 2 u1) d else add_SNo (mul_SNo 2 d) (minus_SNo 1))
+      (eq_refl 0)).
+    reflexivity.
+  }
+  claim Hf1eq : apply_fun f 1 = f1.
+  {
+    prove apply_fun (graph 3 (fun i:set =>
+        if i = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1))) 1 = f1.
+    rewrite (apply_fun_graph 3 (fun i:set =>
+        if i = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1)) 1 (ordsuccI1 2 1 In_1_2)).
+    prove (if 1 = 0 then mul_SNo (mul_SNo 2 u0) d
+      else if 1 = 1 then mul_SNo (mul_SNo 2 u1) d
+      else add_SNo (mul_SNo 2 d) (minus_SNo 1)) = f1.
+    rewrite (If_i_0 (1 = 0) (mul_SNo (mul_SNo 2 u0) d)
+      (if 1 = 1 then mul_SNo (mul_SNo 2 u1) d else add_SNo (mul_SNo 2 d) (minus_SNo 1))
+      (neq_ordsucc_0 0)).
+    rewrite (If_i_1 (1 = 1) (mul_SNo (mul_SNo 2 u1) d)
+      (add_SNo (mul_SNo 2 d) (minus_SNo 1)) (eq_refl 1)).
+    reflexivity.
+  }
+  claim Hf2eq : apply_fun f 2 = f2.
+  {
+    prove apply_fun (graph 3 (fun i:set =>
+        if i = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1))) 2 = f2.
+    rewrite (apply_fun_graph 3 (fun i:set =>
+        if i = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1)) 2 In_2_3).
+    prove (if 2 = 0 then mul_SNo (mul_SNo 2 u0) d
+      else if 2 = 1 then mul_SNo (mul_SNo 2 u1) d
+      else add_SNo (mul_SNo 2 d) (minus_SNo 1)) = f2.
+    rewrite (If_i_0 (2 = 0) (mul_SNo (mul_SNo 2 u0) d)
+      (if 2 = 1 then mul_SNo (mul_SNo 2 u1) d else add_SNo (mul_SNo 2 d) (minus_SNo 1))
+      (neq_ordsucc_0 1)).
+    exact (If_i_0 (2 = 1) (mul_SNo (mul_SNo 2 u1) d) (add_SNo (mul_SNo 2 d) (minus_SNo 1))
+      (fun H:2=1 => In_irref 1 (H (fun z _ => 1 :e z) In_1_2))).
+  }
+  claim Hd_denom : mul_SNo d denom = 1.
+  { exact ((eq_symm (mul_SNo denom d) (mul_SNo d denom) (mul_SNo_com denom d HdenomSNo HdSNo)) (fun _ b => b = 1) Hdenom_d). }
+  claim H4R : 4 :e R.
+  { exact (SNoS_omega_real 4 (omega_SNoS_omega 4 (nat_p_omega 4
+      (nat_ordsucc 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))))))). }
+  claim H4SNo : SNo 4. { exact (real_SNo 4 H4R). }
+  claim H4dR : mul_SNo 4 d :e R.
+  { exact (real_mul_SNo 4 H4R d HdR). }
+  claim H4dSNo : SNo (mul_SNo 4 d). { exact (real_SNo (mul_SNo 4 d) H4dR). }
+  claim HnormExpand :
+    euclidean_norm_sq 3 (stereo_S_inv_fn u) =
+    add_SNo (add_SNo (add_SNo 0
+      (mul_SNo (apply_fun f 0) (apply_fun f 0)))
+      (mul_SNo (apply_fun f 1) (apply_fun f 1)))
+      (mul_SNo (apply_fun f 2) (apply_fun f 2)).
+  {
+    prove finite_real_sum (fun i:set =>
+        mul_SNo (apply_fun (stereo_S_inv_fn u) i) (apply_fun (stereo_S_inv_fn u) i)) 3 =
+      add_SNo (add_SNo (add_SNo 0
+        (mul_SNo (apply_fun f 0) (apply_fun f 0)))
+        (mul_SNo (apply_fun f 1) (apply_fun f 1)))
+        (mul_SNo (apply_fun f 2) (apply_fun f 2)).
+    rewrite (finite_real_sum_S (fun i:set =>
+        mul_SNo (apply_fun f i) (apply_fun f i)) 2 nat_2).
+    rewrite (finite_real_sum_S (fun i:set =>
+        mul_SNo (apply_fun f i) (apply_fun f i)) 1 nat_1).
+    rewrite (finite_real_sum_S (fun i:set =>
+        mul_SNo (apply_fun f i) (apply_fun f i)) 0 nat_0).
+    rewrite (finite_real_sum_0 (fun i:set =>
+        mul_SNo (apply_fun f i) (apply_fun f i))).
+    reflexivity.
+  }
+  claim Hddenom1 : mul_SNo d denom = 1. { exact Hd_denom. }
+  claim Hu0sqSNo : SNo (mul_SNo u0 u0). { exact (SNo_mul_SNo u0 u0 Hu0SNo Hu0SNo). }
+  claim Hu1sqSNo : SNo (mul_SNo u1 u1). { exact (SNo_mul_SNo u1 u1 Hu1SNo Hu1SNo). }
+  claim H2u0SNo : SNo (mul_SNo 2 u0). { exact (SNo_mul_SNo 2 u0 H2SNo Hu0SNo). }
+  claim H2u1SNo : SNo (mul_SNo 2 u1). { exact (SNo_mul_SNo 2 u1 H2SNo Hu1SNo). }
+  claim H22eq4 : mul_SNo 2 2 = 4. { exact mul_SNo_2_2_eq_4. }
+  claim HddSNo : SNo (mul_SNo d d). { exact (SNo_mul_SNo d d HdSNo HdSNo). }
+  (** sq of 2xd equals 4 times xsq times dsq for any x **)
+  claim Hsq2xd : forall x:set, SNo x -> SNo (mul_SNo x x) ->
+      mul_SNo (mul_SNo (mul_SNo 2 x) d) (mul_SNo (mul_SNo 2 x) d) =
+      mul_SNo (mul_SNo 4 (mul_SNo x x)) (mul_SNo d d).
+  {
+    let x. assume HxSNo HxxSNo.
+    claim H2xSNo : SNo (mul_SNo 2 x). { exact (SNo_mul_SNo 2 x H2SNo HxSNo). }
+    rewrite <- (mul_SNo_assoc (mul_SNo 2 x) d (mul_SNo (mul_SNo 2 x) d)
+        H2xSNo HdSNo (SNo_mul_SNo (mul_SNo 2 x) d H2xSNo HdSNo)).
+    rewrite (mul_SNo_assoc d (mul_SNo 2 x) d HdSNo H2xSNo HdSNo).
+    rewrite (mul_SNo_com d (mul_SNo 2 x) HdSNo H2xSNo).
+    rewrite <- (mul_SNo_assoc (mul_SNo 2 x) d d H2xSNo HdSNo HdSNo).
+    rewrite (mul_SNo_assoc (mul_SNo 2 x) (mul_SNo 2 x) (mul_SNo d d) H2xSNo H2xSNo HddSNo).
+    claim H2xsq : mul_SNo (mul_SNo 2 x) (mul_SNo 2 x) = mul_SNo 4 (mul_SNo x x).
+    {
+      rewrite <- (mul_SNo_assoc 2 x (mul_SNo 2 x) H2SNo HxSNo H2xSNo).
+      rewrite (mul_SNo_assoc x 2 x HxSNo H2SNo HxSNo).
+      rewrite (mul_SNo_com x 2 HxSNo H2SNo).
+      rewrite <- (mul_SNo_assoc 2 x x H2SNo HxSNo HxSNo).
+      rewrite (mul_SNo_assoc 2 2 (mul_SNo x x) H2SNo H2SNo HxxSNo).
+      rewrite H22eq4.
+      reflexivity.
+    }
+    rewrite H2xsq.
+    reflexivity.
+  }
+  claim Hf0sq : mul_SNo f0 f0 = mul_SNo (mul_SNo 4 (mul_SNo u0 u0)) (mul_SNo d d).
+  {
+    prove mul_SNo (mul_SNo (mul_SNo 2 u0) d) (mul_SNo (mul_SNo 2 u0) d) =
+      mul_SNo (mul_SNo 4 (mul_SNo u0 u0)) (mul_SNo d d).
+    exact (Hsq2xd u0 Hu0SNo Hu0sqSNo).
+  }
+  claim Hf1sq : mul_SNo f1 f1 = mul_SNo (mul_SNo 4 (mul_SNo u1 u1)) (mul_SNo d d).
+  {
+    prove mul_SNo (mul_SNo (mul_SNo 2 u1) d) (mul_SNo (mul_SNo 2 u1) d) =
+      mul_SNo (mul_SNo 4 (mul_SNo u1 u1)) (mul_SNo d d).
+    exact (Hsq2xd u1 Hu1SNo Hu1sqSNo).
+  }
+  (** f0sq plus f1sq equals 4 times s times dsq **)
+  claim H4sqSNo : SNo (mul_SNo 4 (mul_SNo u0 u0)). { exact (SNo_mul_SNo 4 (mul_SNo u0 u0) H4SNo Hu0sqSNo). }
+  claim H4sq1SNo : SNo (mul_SNo 4 (mul_SNo u1 u1)). { exact (SNo_mul_SNo 4 (mul_SNo u1 u1) H4SNo Hu1sqSNo). }
+  claim H4sSNo : SNo (mul_SNo 4 s). { exact (SNo_mul_SNo 4 s H4SNo HsSNo). }
+  claim H4sddSNo : SNo (mul_SNo (mul_SNo 4 s) (mul_SNo d d)).
+  { exact (SNo_mul_SNo (mul_SNo 4 s) (mul_SNo d d) H4sSNo HddSNo). }
+  claim Hf01sq : add_SNo (mul_SNo f0 f0) (mul_SNo f1 f1) = mul_SNo (mul_SNo 4 s) (mul_SNo d d).
+  {
+    rewrite Hf0sq. rewrite Hf1sq.
+    claim H4s_expand : mul_SNo 4 s = add_SNo (mul_SNo 4 (mul_SNo u0 u0)) (mul_SNo 4 (mul_SNo u1 u1)).
+    { exact (mul_SNo_distrL 4 (mul_SNo u0 u0) (mul_SNo u1 u1) H4SNo Hu0sqSNo Hu1sqSNo). }
+    rewrite H4s_expand.
+    rewrite (mul_SNo_distrR (mul_SNo 4 (mul_SNo u0 u0)) (mul_SNo 4 (mul_SNo u1 u1)) (mul_SNo d d)
+      H4sqSNo H4sq1SNo HddSNo).
+    reflexivity.
+  }
+  (** f2sq equals 4 times dsq minus 4d plus 1 **)
+  claim H2dSNo : SNo (mul_SNo 2 d). { exact (SNo_mul_SNo 2 d H2SNo HdSNo). }
+  claim Hminus1SNo : SNo (minus_SNo 1). { exact (SNo_minus_SNo 1 SNo_1). }
+  claim H4ddSNo : SNo (mul_SNo 4 (mul_SNo d d)). { exact (SNo_mul_SNo 4 (mul_SNo d d) H4SNo HddSNo). }
+  claim Hminus4dSNo : SNo (minus_SNo (mul_SNo 4 d)). { exact (SNo_minus_SNo (mul_SNo 4 d) H4dSNo). }
+  claim Hf2sq : mul_SNo f2 f2 = add_SNo (add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 4 d))) 1.
+  {
+    prove mul_SNo (add_SNo (mul_SNo 2 d) (minus_SNo 1)) (add_SNo (mul_SNo 2 d) (minus_SNo 1)) =
+      add_SNo (add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 4 d))) 1.
+    rewrite (mul_SNo_distrR (mul_SNo 2 d) (minus_SNo 1) (add_SNo (mul_SNo 2 d) (minus_SNo 1))
+        H2dSNo Hminus1SNo (SNo_add_SNo (mul_SNo 2 d) (minus_SNo 1) H2dSNo Hminus1SNo)).
+    rewrite (mul_SNo_distrL (mul_SNo 2 d) (mul_SNo 2 d) (minus_SNo 1) H2dSNo H2dSNo Hminus1SNo).
+    rewrite (mul_SNo_distrL (minus_SNo 1) (mul_SNo 2 d) (minus_SNo 1) Hminus1SNo H2dSNo Hminus1SNo).
+    claim H2d_2d : mul_SNo (mul_SNo 2 d) (mul_SNo 2 d) = mul_SNo 4 (mul_SNo d d).
+    {
+      rewrite <- (mul_SNo_assoc 2 d (mul_SNo 2 d) H2SNo HdSNo H2dSNo).
+      rewrite (mul_SNo_assoc d 2 d HdSNo H2SNo HdSNo).
+      rewrite (mul_SNo_com d 2 HdSNo H2SNo).
+      rewrite <- (mul_SNo_assoc 2 d d H2SNo HdSNo HdSNo).
+      rewrite (mul_SNo_assoc 2 2 (mul_SNo d d) H2SNo H2SNo HddSNo).
+      rewrite H22eq4.
+      reflexivity.
+    }
+    rewrite H2d_2d.
+    rewrite (mul_SNo_minus_distrR (mul_SNo 2 d) 1 H2dSNo SNo_1).
+    rewrite (mul_SNo_oneR (mul_SNo 2 d) H2dSNo).
+    rewrite (mul_SNo_minus_distrL 1 (mul_SNo 2 d) SNo_1 H2dSNo).
+    rewrite (mul_SNo_oneL (mul_SNo 2 d) H2dSNo).
+    rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
+    rewrite (mul_SNo_oneL 1 SNo_1).
+    claim Hminus2dSNo : SNo (minus_SNo (mul_SNo 2 d)). { exact (SNo_minus_SNo (mul_SNo 2 d) H2dSNo). }
+    claim H2times2d : add_SNo (minus_SNo (mul_SNo 2 d)) (minus_SNo (mul_SNo 2 d)) = minus_SNo (mul_SNo 4 d).
+    {
+      rewrite <- (minus_add_SNo_distr (mul_SNo 2 d) (mul_SNo 2 d) H2dSNo H2dSNo).
+      claim H2d_2d_4d : add_SNo (mul_SNo 2 d) (mul_SNo 2 d) = mul_SNo 4 d.
+      {
+        rewrite <- (mul_SNo_distrR 2 2 d H2SNo H2SNo HdSNo).
+        claim H22add4 : add_SNo 2 2 = 4.
+        {
+          claim H3omega' : 3 :e omega. { exact (nat_p_omega 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)))). }
+          claim H3SNo' : SNo 3. { exact (real_SNo 3 (SNoS_omega_real 3 (omega_SNoS_omega 3 (nat_p_omega 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))))))). }
+          claim H2is11 : 2 = add_SNo 1 1. { exact (eq_symm (add_SNo 1 1) 2 add_SNo_1_1_2). }
+          rewrite H2is11.
+          rewrite <- (add_SNo_assoc 1 1 (add_SNo 1 1) SNo_1 SNo_1 (SNo_add_SNo 1 1 SNo_1 SNo_1)).
+          rewrite add_SNo_1_1_2.
+          rewrite (add_SNo_com 1 2 SNo_1 SNo_2).
+          rewrite add_SNo_2_1_eq_3.
+          rewrite (add_SNo_com 1 3 SNo_1 H3SNo').
+          exact (add_SNo_1_ordsucc 3 H3omega').
+        }
+        rewrite H22add4.
+        reflexivity.
+      }
+      rewrite H2d_2d_4d.
+      reflexivity.
+    }
+    rewrite (add_SNo_assoc (add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 2 d)))
+      (minus_SNo (mul_SNo 2 d)) 1
+      (SNo_add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 2 d)) H4ddSNo Hminus2dSNo)
+      Hminus2dSNo SNo_1).
+    rewrite <- (add_SNo_assoc (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 2 d)) (minus_SNo (mul_SNo 2 d))
+      H4ddSNo Hminus2dSNo Hminus2dSNo).
+    rewrite H2times2d.
+    reflexivity.
+  }
+  claim Happly_f0_R : apply_fun f 0 :e R.
+  { rewrite Hf0eq. exact Hf0R. }
+  claim Happly_f0_SNo : SNo (apply_fun f 0).
+  { exact (real_SNo (apply_fun f 0) Happly_f0_R). }
+  (** Main proof: expand norm, substitute coordinates, compute **)
+  rewrite HnormExpand.
+  rewrite (add_SNo_0L (mul_SNo (apply_fun f 0) (apply_fun f 0))
+    (SNo_mul_SNo (apply_fun f 0) (apply_fun f 0) Happly_f0_SNo Happly_f0_SNo)).
+  rewrite Hf0eq. rewrite Hf1eq. rewrite Hf2eq.
+  (** Combine: f01sq plus f2sq = 4s-dsq + 4dsq - 4d + 1 = 4-denom-dsq - 4d + 1 = 4d - 4d + 1 = 1 **)
+  rewrite Hf01sq. rewrite Hf2sq.
+  claim H4sdd_4dd : add_SNo (mul_SNo (mul_SNo 4 s) (mul_SNo d d)) (mul_SNo 4 (mul_SNo d d)) =
+    mul_SNo (mul_SNo 4 denom) (mul_SNo d d).
+  {
+    rewrite <- (mul_SNo_distrR (mul_SNo 4 s) 4 (mul_SNo d d) H4sSNo H4SNo HddSNo).
+    claim Hsum : add_SNo (mul_SNo 4 s) 4 = mul_SNo 4 denom.
+    {
+      prove add_SNo (mul_SNo 4 s) 4 = mul_SNo 4 (add_SNo 1 s).
+      rewrite (mul_SNo_distrL 4 1 s H4SNo SNo_1 HsSNo).
+      rewrite (mul_SNo_oneR 4 H4SNo).
+      rewrite (add_SNo_com (mul_SNo 4 s) 4 H4sSNo H4SNo).
+      reflexivity.
+    }
+    rewrite Hsum.
+    reflexivity.
+  }
+  claim H4denomdd : mul_SNo (mul_SNo 4 denom) (mul_SNo d d) = mul_SNo 4 d.
+  {
+    rewrite <- (mul_SNo_assoc 4 denom (mul_SNo d d) H4SNo HdenomSNo HddSNo).
+    rewrite (mul_SNo_assoc denom d d HdenomSNo HdSNo HdSNo).
+    rewrite Hdenom_d.
+    rewrite (mul_SNo_oneL d HdSNo).
+    reflexivity.
+  }
+  (** Goal: assoc1 step **)
+  rewrite (add_SNo_assoc (mul_SNo (mul_SNo 4 s) (mul_SNo d d))
+    (add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 4 d))) 1
+    H4sddSNo (SNo_add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 4 d)) H4ddSNo Hminus4dSNo)
+    SNo_1).
+  (** Goal: assoc2 step **)
+  rewrite (add_SNo_assoc (mul_SNo (mul_SNo 4 s) (mul_SNo d d)) (mul_SNo 4 (mul_SNo d d))
+    (minus_SNo (mul_SNo 4 d))
+    H4sddSNo H4ddSNo Hminus4dSNo).
+  (** Goal: assoc3 step **)
+  rewrite H4sdd_4dd.
+  rewrite H4denomdd.
+  rewrite (add_SNo_minus_SNo_rinv (mul_SNo 4 d) H4dSNo).
+  rewrite (add_SNo_0L 1 SNo_1).
+  reflexivity.
 }
 exact (SepI (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1)
   (stereo_S_inv_fn u) HinvFnE3 HnormSq1).
-Admitted.
+Qed.
 
 (** Helper: stereo_S_inv_fn u is NOT south_pole_3 for all u in euclidean_space 2 **)
 (** Proven Dave **)
@@ -201398,6 +201674,7 @@ exact (Hfinv2_ne_m1 (Hcoord2 (fun _ b => b = minus_SNo 1) Hsp2)).
 Qed.
 
 (** Helper: stereo_S_inv_map is a function E2 -> Sn2 minus south **)
+(** Proven Dave **)
 Lemma stereo_S_inv_map_function_on :
   function_on (graph (euclidean_space 2) stereo_S_inv_fn)
     (euclidean_space 2)
@@ -201407,7 +201684,7 @@ rewrite (apply_fun_graph (euclidean_space 2) stereo_S_inv_fn u Hu).
 exact (setminusI (Sn 2) {south_pole_3} (stereo_S_inv_fn u)
   (stereo_S_inv_fn_in_Sn2 u Hu)
   (stereo_S_inv_fn_not_south u Hu)).
-Admitted.
+Qed.
 
 (** Helper: left inverse of stereo_S_map: inv_fn(stereo_S_fn(v)) = v **)
 Lemma stereo_S_left_inv : forall v:set,
