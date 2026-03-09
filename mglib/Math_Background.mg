@@ -203710,7 +203710,272 @@ Admitted.
 (** Helper: projective plane is locally 2-Euclidean, using covering map from Sn 2 **)
 Lemma pp_locally_m_euclidean :
   locally_m_euclidean projective_plane projective_plane_topology 2.
-admit.
+set neg_map := graph (Sn 2) (fun v:set => Rn_negate 3 v).
+set D := Sn 2 :\: {south_pole_3}.
+set DTop := subspace_topology (Sn 2) (Sn_topology 2) D.
+set E2 := euclidean_space 2.
+set E2top := euclidean_topology 2.
+prove 2 :e omega /\ topology_on projective_plane projective_plane_topology /\
+  forall y:set, y :e projective_plane ->
+    exists U V f:set,
+      open_in projective_plane projective_plane_topology U /\ y :e U /\
+      V c= E2 /\ open_in E2 E2top V /\
+      homeomorphism U (subspace_topology projective_plane projective_plane_topology U)
+        V (subspace_topology E2 E2top V) f.
+apply and3I.
+- exact (nat_p_omega 2 nat_2).
+- exact projective_plane_topology_on.
+- let y. assume Hy.
+  (** Get x in Sn 2 mapping to y **)
+  apply (projective_plane_map_surjective y Hy).
+  let x. assume HxPack.
+  claim HxSn : x :e Sn 2.
+  { exact (andEL (x :e Sn 2) (apply_fun projective_plane_map x = y) HxPack). }
+  claim Hxy : apply_fun projective_plane_map x = y.
+  { exact (andER (x :e Sn 2) (apply_fun projective_plane_map x = y) HxPack). }
+  (** Get evenly covered neighborhood of y **)
+  apply (pp_evenly_covered_at_x x HxSn).
+  let U_ev. assume HUevPack.
+  (** pp_evenly_covered_at_x gives: (U :e pp_top /\ pp_map x :e U) /\ evenly_covered **)
+  claim HUevPP_and_yU : (U_ev :e projective_plane_topology /\ apply_fun projective_plane_map x :e U_ev) /\
+    evenly_covered (Sn 2) (Sn_topology 2) projective_plane projective_plane_topology projective_plane_map U_ev.
+  { exact HUevPack. }
+  claim HUevPP_yU : U_ev :e projective_plane_topology /\ apply_fun projective_plane_map x :e U_ev.
+  { exact (andEL (U_ev :e projective_plane_topology /\ apply_fun projective_plane_map x :e U_ev)
+      (evenly_covered (Sn 2) (Sn_topology 2) projective_plane projective_plane_topology projective_plane_map U_ev)
+      HUevPP_and_yU). }
+  claim HUevPP : U_ev :e projective_plane_topology.
+  { exact (andEL (U_ev :e projective_plane_topology) (apply_fun projective_plane_map x :e U_ev) HUevPP_yU). }
+  claim HxUev : apply_fun projective_plane_map x :e U_ev.
+  { exact (andER (U_ev :e projective_plane_topology) (apply_fun projective_plane_map x :e U_ev) HUevPP_yU). }
+  claim HyUev : y :e U_ev.
+  { exact (Hxy (fun t _ => t :e U_ev) HxUev). }
+  claim HEven : evenly_covered (Sn 2) (Sn_topology 2) projective_plane projective_plane_topology projective_plane_map U_ev.
+  { exact (andER (U_ev :e projective_plane_topology /\ apply_fun projective_plane_map x :e U_ev)
+      (evenly_covered (Sn 2) (Sn_topology 2) projective_plane projective_plane_topology projective_plane_map U_ev)
+      HUevPP_and_yU). }
+  (** Get slices from evenly covered **)
+  (** /\ is left-assoc: ((slices c= Te /\ pd slices) /\ Union = ...) /\ (forall ...) **)
+  apply (evenly_covered_slices (Sn 2) (Sn_topology 2) projective_plane projective_plane_topology projective_plane_map U_ev HEven).
+  let slices. assume HslicesPack.
+  claim Hslices12 : (slices c= Sn_topology 2 /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of (Sn 2) projective_plane_map U_ev.
+  { exact (andEL ((slices c= Sn_topology 2 /\ pairwise_disjoint slices) /\
+      Union slices = preimage_of (Sn 2) projective_plane_map U_ev)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology (Sn 2) (Sn_topology 2) V) U_ev
+          (subspace_topology projective_plane projective_plane_topology U_ev)
+          (graph V (fun z:set => apply_fun projective_plane_map z)))
+      HslicesPack). }
+  claim HslicesSub : slices c= Sn_topology 2.
+  { exact (andEL (slices c= Sn_topology 2) (pairwise_disjoint slices)
+      (andEL (slices c= Sn_topology 2 /\ pairwise_disjoint slices)
+        (Union slices = preimage_of (Sn 2) projective_plane_map U_ev) Hslices12)). }
+  claim HslicesUnion : Union slices = preimage_of (Sn 2) projective_plane_map U_ev.
+  { exact (andER (slices c= Sn_topology 2 /\ pairwise_disjoint slices)
+      (Union slices = preimage_of (Sn 2) projective_plane_map U_ev) Hslices12). }
+  claim HslicesHomeo : forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology (Sn 2) (Sn_topology 2) V) U_ev
+      (subspace_topology projective_plane projective_plane_topology U_ev)
+      (graph V (fun z:set => apply_fun projective_plane_map z)).
+  { exact (andER ((slices c= Sn_topology 2 /\ pairwise_disjoint slices) /\
+      Union slices = preimage_of (Sn 2) projective_plane_map U_ev)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology (Sn 2) (Sn_topology 2) V) U_ev
+          (subspace_topology projective_plane projective_plane_topology U_ev)
+          (graph V (fun z:set => apply_fun projective_plane_map z)))
+      HslicesPack). }
+  (** x is in the union of slices (as preimage of y :e U_ev) **)
+  claim HxPreimage : x :e preimage_of (Sn 2) projective_plane_map U_ev.
+  { exact (SepI (Sn 2) (fun t:set => apply_fun projective_plane_map t :e U_ev) x HxSn
+      (eq_symm (apply_fun projective_plane_map x) y Hxy (fun t _ => t :e U_ev) HyUev)). }
+  claim HxUnion : x :e Union slices.
+  { exact (eq_symm (Union slices) (preimage_of (Sn 2) projective_plane_map U_ev) HslicesUnion
+      (fun t _ => x :e t) HxPreimage). }
+  (** Find the slice containing x **)
+  apply (UnionE_impred slices x HxUnion).
+  let W. assume HxW HWslice.
+  claim HWopen : W :e Sn_topology 2. { exact (HslicesSub W HWslice). }
+  claim HWsub : W c= Sn 2.
+  { exact (open_in_subset (Sn 2) (Sn_topology 2) W
+      (open_inI (Sn 2) (Sn_topology 2) W (lemma59_3_Sn_topology_on 2) HWopen)). }
+  claim HWhomeo : homeomorphism W (subspace_topology (Sn 2) (Sn_topology 2) W) U_ev
+    (subspace_topology projective_plane projective_plane_topology U_ev)
+    (graph W (fun z:set => apply_fun projective_plane_map z)).
+  { exact (HslicesHomeo W HWslice). }
+  (** Get inverse homeomorphism U_ev -> W **)
+  apply (homeomorphism_inverse_is_homeomorphism_variant W
+    (subspace_topology (Sn 2) (Sn_topology 2) W) U_ev
+    (subspace_topology projective_plane projective_plane_topology U_ev)
+    (graph W (fun z:set => apply_fun projective_plane_map z)) HWhomeo).
+  let hinv. assume HhinvHomeo.
+  (** x ≠ south_pole_3 since W ∩ neg_map(W) = ∅ implies chart goes through D **)
+  (** Case split: does south_pole_3 belong to W? **)
+  apply (xm (south_pole_3 :e W)).
+  + (** Case: south_pole_3 :e W -- use north-pole chart **)
+    assume HspW.
+    (** north_pole = Rn_negate 3 south_pole_3 is NOT in W **)
+    (** because: if north_pole :e W then neg_map(north_pole) = south_pole_3 :e neg_map(W),
+        so south_pole_3 :e W ∩ neg_map(W), but need W ∩ neg_map(W) = ∅ *)
+    (** So W ⊆ Sn 2 :\: {Rn_negate 3 south_pole_3} = D_north **)
+    (** Use neg_map restricted to W then stereo_S_map to get chart **)
+    set D_north := Sn 2 :\: {Rn_negate 3 south_pole_3}.
+    set D_north_top := subspace_topology (Sn 2) (Sn_topology 2) D_north.
+    (** Restrict neg_map to W: homeomorphism W -> image_of neg_map W **)
+    set negW := image_of neg_map W.
+    claim HnegWopen : negW :e Sn_topology 2.
+    {
+      exact (homeomorphism_image_open (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+        neg_map W Rn_negate_3_Sn2_homeomorphism HWopen).
+    }
+    claim HnegWSub : negW c= Sn 2.
+    { exact (open_in_subset (Sn 2) (Sn_topology 2) negW
+        (open_inI (Sn 2) (Sn_topology 2) negW (lemma59_3_Sn_topology_on 2) HnegWopen)). }
+    claim HnegWsubD : negW c= D.
+    {
+      (** neg_map sends W to negW. Since south_pole_3 :e W, neg_map(south_pole_3) = Rn_negate 3 south_pole_3 :e negW.
+          But we need to show south_pole_3 ∉ negW.
+          south_pole_3 :e negW means exists w :e W with neg_map(w) = south_pole_3, i.e. Rn_negate 3 w = south_pole_3,
+          i.e. w = Rn_negate 3 south_pole_3. But then neg_map(w) = south_pole_3 :e W,
+          which gives neg_map(south_pole_3) :e neg_map(W) and south_pole_3 :e W, contradiction with W ∩ neg_map(W) = ∅.
+
+          Actually easier: negW c= D since Rn_negate 3 south_pole_3 ∉ negW.
+          Rn_negate 3 south_pole_3 :e negW would mean south_pole_3 :e W (since neg_map is involution).
+          HspW: south_pole_3 :e W. So actually this doesn't work.
+
+          Let me instead show: south_pole_3 ∉ negW.
+          south_pole_3 :e negW = image_of neg_map W means exists w :e W with apply_fun neg_map w = south_pole_3.
+          apply_fun neg_map w = Rn_negate 3 w (for w :e Sn 2).
+          So Rn_negate 3 w = south_pole_3, which means w = Rn_negate 3 south_pole_3 (since neg_map involution).
+          So Rn_negate 3 south_pole_3 :e W.
+          But then south_pole_3 :e W and Rn_negate 3 south_pole_3 :e W gives south_pole_3 :e W ∩ neg_map(W).
+          Wait, south_pole_3 :e neg_map(W) means exists w :e W with Rn_negate 3 w = south_pole_3.
+          Yes, w = Rn_negate 3 south_pole_3 :e W, and Rn_negate 3 w = south_pole_3. ✓
+          But we don't know W ∩ neg_map(W) = ∅ in this proof...
+      **)
+      admit.
+    }
+    (** Use negW ⊆ D to get stereo_S_map chart on negW **)
+    claim HnegWHomeoD : homeomorphism negW (subspace_topology D DTop negW)
+      (image_of stereo_S_map negW) (subspace_topology E2 E2top (image_of stereo_S_map negW))
+      stereo_S_map.
+    {
+      exact (homeomorphism_restrict_to_image_of_subset D DTop E2 E2top stereo_S_map negW
+        stereo_S_map_homeomorphism HnegWsubD).
+    }
+    (** sub DTop negW = sub Sn_top negW by transitivity **)
+    claim HsubEq1 : subspace_topology D DTop negW = subspace_topology (Sn 2) (Sn_topology 2) negW.
+    {
+      exact (ex16_1_subspace_transitive (Sn 2) (Sn_topology 2) D negW
+        (lemma59_3_Sn_topology_on 2)
+        (open_in_subset (Sn 2) (Sn_topology 2) D (open_inI (Sn 2) (Sn_topology 2) D (lemma59_3_Sn_topology_on 2) Sn2_minus_south_open))
+        HnegWsubD).
+    }
+    claim HnegWHomeoSn : homeomorphism negW (subspace_topology (Sn 2) (Sn_topology 2) negW)
+      (image_of stereo_S_map negW) (subspace_topology E2 E2top (image_of stereo_S_map negW))
+      stereo_S_map.
+    { rewrite <- HsubEq1. exact HnegWHomeoD. }
+    (** Restrict neg_map homeomorphism to W: W ≅ negW **)
+    claim HnegRestr : homeomorphism W (subspace_topology (Sn 2) (Sn_topology 2) W)
+      negW (subspace_topology (Sn 2) (Sn_topology 2) negW) neg_map.
+    {
+      exact (homeomorphism_restrict_to_image_of_subset (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+        neg_map W Rn_negate_3_Sn2_homeomorphism HWsub).
+    }
+    (** stereoS on negW is open in E2 **)
+    claim HVopen : image_of stereo_S_map negW :e E2top.
+    {
+      claim HnegWopenInD : negW :e DTop.
+      {
+        claim HnegWcapD : negW :/\: D = negW.
+        { exact (binintersect_Subq_eq_1 negW D HnegWsubD). }
+        claim HnegW_capD_inDTop : (negW :/\: D) :e DTop.
+        { exact (subspace_topologyI (Sn 2) (Sn_topology 2) D negW HnegWopen). }
+        rewrite <- HnegWcapD. exact HnegW_capD_inDTop.
+      }
+      exact (homeomorphism_image_open D DTop E2 E2top stereo_S_map negW
+        stereo_S_map_homeomorphism HnegWopenInD).
+    }
+    (** Compose: W ≅ negW ≅ image_of stereo_S_map negW **)
+    set WtoV := compose_fun W neg_map stereo_S_map.
+    set V := image_of stereo_S_map negW.
+    claim HWVHomeo : homeomorphism W (subspace_topology (Sn 2) (Sn_topology 2) W)
+      V (subspace_topology E2 E2top V) WtoV.
+    {
+      exact (homeomorphism_compose W (subspace_topology (Sn 2) (Sn_topology 2) W)
+        negW (subspace_topology (Sn 2) (Sn_topology 2) negW)
+        V (subspace_topology E2 E2top V)
+        neg_map stereo_S_map HnegRestr HnegWHomeoSn).
+    }
+    (** Compose hinv: U_ev -> W and WtoV: W -> V to get U_ev -> V **)
+    set UtoV := compose_fun U_ev hinv WtoV.
+    witness U_ev. witness V. witness UtoV.
+    apply and5I.
+    * exact (open_inI projective_plane projective_plane_topology U_ev
+        projective_plane_topology_on HUevPP).
+    * exact HyUev.
+    * exact (image_of_sub_codomain stereo_S_map D E2 negW
+        stereo_S_map_function_on
+        HnegWsubD).
+    * exact (open_inI E2 E2top V (euclidean_topology_is_topology 2) HVopen).
+    * exact (homeomorphism_compose U_ev
+        (subspace_topology projective_plane projective_plane_topology U_ev)
+        W (subspace_topology (Sn 2) (Sn_topology 2) W)
+        V (subspace_topology E2 E2top V)
+        hinv WtoV HhinvHomeo HWVHomeo).
+  + (** Case: south_pole_3 ∉ W -- use south-pole stereographic chart **)
+    assume HspNotW.
+    claim HWsubD : W c= D.
+    { let z. assume HzW. exact (setminusI (Sn 2) {south_pole_3} z (HWsub z HzW)
+        (fun HzSing => HspNotW (SingE south_pole_3 z HzSing (fun t _ => t :e W) HzW))). }
+    (** Restrict stereo_S_map to W **)
+    claim HWHomeoD : homeomorphism W (subspace_topology D DTop W)
+      (image_of stereo_S_map W) (subspace_topology E2 E2top (image_of stereo_S_map W))
+      stereo_S_map.
+    {
+      exact (homeomorphism_restrict_to_image_of_subset D DTop E2 E2top stereo_S_map W
+        stereo_S_map_homeomorphism HWsubD).
+    }
+    claim HsubEq2 : subspace_topology D DTop W = subspace_topology (Sn 2) (Sn_topology 2) W.
+    {
+      exact (ex16_1_subspace_transitive (Sn 2) (Sn_topology 2) D W
+        (lemma59_3_Sn_topology_on 2)
+        (open_in_subset (Sn 2) (Sn_topology 2) D (open_inI (Sn 2) (Sn_topology 2) D (lemma59_3_Sn_topology_on 2) Sn2_minus_south_open))
+        HWsubD).
+    }
+    claim HWHomeoSn : homeomorphism W (subspace_topology (Sn 2) (Sn_topology 2) W)
+      (image_of stereo_S_map W) (subspace_topology E2 E2top (image_of stereo_S_map W))
+      stereo_S_map.
+    { rewrite <- HsubEq2. exact HWHomeoD. }
+    claim HVopen2 : image_of stereo_S_map W :e E2top.
+    {
+      claim HWopenInD : W :e DTop.
+      {
+        claim HWcapD : W :/\: D = W.
+        { exact (binintersect_Subq_eq_1 W D HWsubD). }
+        claim HW_capD_inDTop : (W :/\: D) :e DTop.
+        { exact (subspace_topologyI (Sn 2) (Sn_topology 2) D W HWopen). }
+        rewrite <- HWcapD. exact HW_capD_inDTop.
+      }
+      exact (homeomorphism_image_open D DTop E2 E2top stereo_S_map W
+        stereo_S_map_homeomorphism HWopenInD).
+    }
+    set V2 := image_of stereo_S_map W.
+    set UtoV2 := compose_fun U_ev hinv stereo_S_map.
+    witness U_ev. witness V2. witness UtoV2.
+    apply and5I.
+    * exact (open_inI projective_plane projective_plane_topology U_ev
+        projective_plane_topology_on HUevPP).
+    * exact HyUev.
+    * exact (image_of_sub_codomain stereo_S_map D E2 W
+        stereo_S_map_function_on
+        HWsubD).
+    * exact (open_inI E2 E2top V2 (euclidean_topology_is_topology 2) HVopen2).
+    * exact (homeomorphism_compose U_ev
+        (subspace_topology projective_plane projective_plane_topology U_ev)
+        W (subspace_topology (Sn 2) (Sn_topology 2) W)
+        V2 (subspace_topology E2 E2top V2)
+        hinv stereo_S_map HhinvHomeo HWHomeoSn).
 Admitted.
 
 (** from S60 Thm 60.3 (line 1691 in algtop.tex) **)
