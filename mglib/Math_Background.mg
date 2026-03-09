@@ -233302,10 +233302,221 @@ apply (nat_inv m Hm_nat).
 	        word_product multG eG xs' n' = apply_fun multG (u, ef0) ->
 	        nA = n' /\ (forall i:set, i :e nA -> apply_fun xsA i = apply_fun xs' i))
 	      HpackA).
-		    assume HredA HnA_ne0 HwpA HuniqA.
-		    (** TODO: use the involutive equation to force a contradiction from reducedness/uniqueness. **)
-		    admit.
-		Admitted.
+			    assume HredA HnA_ne0 HwpA HuniqA.
+			    (** If the reduced word for mult(u, ef0) were cyclically reduced, its square could not be eG. **)
+			    claim HnA_O : nA :e omega.
+			    {
+			      apply (and3E
+			        (nA :e omega)
+			        (forall i:set, i :e nA ->
+			          exists a:set, a :e J /\
+			            apply_fun xsA i :e apply_fun Gfam a /\
+			            apply_fun xsA i <> apply_fun efam a)
+			        (forall i:set, i :e nA -> ordsucc i :e nA ->
+			          forall a b:set, a :e J -> b :e J ->
+			            apply_fun xsA i :e apply_fun Gfam a ->
+			            apply_fun xsA (ordsucc i) :e apply_fun Gfam b ->
+			            a <> b)
+			        HredA).
+			      assume HnA0 _ _. exact HnA0.
+			    }
+			    claim HnA_nat : nat_p nA.
+			    { exact (omega_nat_p nA HnA_O). }
+			    apply (nat_inv nA HnA_nat).
+			    - assume HnA0 : nA = 0.
+			      exact (FalseE (HnA_ne0 HnA0) False).
+			    - assume HexmA : exists mA:set, nat_p mA /\ nA = ordsucc mA.
+			      apply HexmA. let mA.
+			      assume HmA_pack : nat_p mA /\ nA = ordsucc mA.
+			      claim HmA_nat : nat_p mA.
+			      { exact (andEL (nat_p mA) (nA = ordsucc mA) HmA_pack). }
+			      claim HnA_sm : nA = ordsucc mA.
+			      { exact (andER (nat_p mA) (nA = ordsucc mA) HmA_pack). }
+			      claim H0_in_nA : 0 :e nA.
+			      { rewrite HnA_sm. exact (nat_0_in_ordsucc mA HmA_nat). }
+			      claim HmA_in_nA : mA :e nA.
+			      { rewrite HnA_sm. exact (ordsuccI2 mA). }
+
+			      (** Extract labels for the first and last letters of xsA. **)
+			      apply (reduced_word_elem J Gfam efam nA xsA 0 HredA H0_in_nA). let beta0.
+			      assume Hbeta0_pack : beta0 :e J /\
+			        apply_fun xsA 0 :e apply_fun Gfam beta0 /\
+			        apply_fun xsA 0 <> apply_fun efam beta0.
+			      apply (and3E
+			        (beta0 :e J)
+			        (apply_fun xsA 0 :e apply_fun Gfam beta0)
+			        (apply_fun xsA 0 <> apply_fun efam beta0)
+			        Hbeta0_pack).
+			      assume Hbeta0J HxA0_in_Gb0 HxA0_ne_ef.
+
+			      apply (reduced_word_elem J Gfam efam nA xsA mA HredA HmA_in_nA). let alphaL.
+			      assume HalphaL_pack : alphaL :e J /\
+			        apply_fun xsA mA :e apply_fun Gfam alphaL /\
+			        apply_fun xsA mA <> apply_fun efam alphaL.
+			      apply (and3E
+			        (alphaL :e J)
+			        (apply_fun xsA mA :e apply_fun Gfam alphaL)
+			        (apply_fun xsA mA <> apply_fun efam alphaL)
+			        HalphaL_pack).
+				      assume HalphaLJ HxAL_in_GaL HxAL_ne_ef.
+
+				      apply (xm (alphaL <> beta0)).
+				      * assume Hcyc_ne : alphaL <> beta0.
+				        (** In this case, we can double the reduced word and contradict y^2 = eG. **)
+				        set y := apply_fun multG (u, ef0).
+
+				        (** Prove the full cyclicity condition needed by reduced_word_double_cyclic_word_product. **)
+				        claim Hcyc_all :
+				          forall a b:set, a :e J -> b :e J ->
+				            apply_fun xsA mA :e apply_fun Gfam a ->
+				            apply_fun xsA 0 :e apply_fun Gfam b ->
+				            a <> b.
+				        {
+				          let a b. assume HaJ HbJ Hlast Hfirst.
+				          (** Use disjointness to pin down the labels of the first/last letters. **)
+				          claim HxA0_ne_e : apply_fun xsA 0 <> eG.
+				          {
+				            exact (reduced_word_no_eG_if_product_non_e
+				              G multG eG invG J Gfam efam nA xsA (apply_fun multG (u, ef0))
+				              Hgrp Hsubfam HredA HnA_ne0 HwpA Hu_ef0_ne_eG
+				              0 H0_in_nA).
+				          }
+				          claim HxAL_ne_e : apply_fun xsA mA <> eG.
+				          {
+				            exact (reduced_word_no_eG_if_product_non_e
+				              G multG eG invG J Gfam efam nA xsA (apply_fun multG (u, ef0))
+				              Hgrp Hsubfam HredA HnA_ne0 HwpA Hu_ef0_ne_eG
+				              mA HmA_in_nA).
+				          }
+				          claim Ha_eq : a = alphaL.
+				          {
+				            symmetry.
+			            exact (disjoint_subgroups_label_unique
+			              G multG eG invG J Gfam alphaL a (apply_fun xsA mA)
+			              Hdisjoint HalphaLJ HaJ HxAL_in_GaL Hlast HxAL_ne_e).
+			          }
+			          claim Hb_eq : b = beta0.
+			          {
+			            symmetry.
+			            exact (disjoint_subgroups_label_unique
+			              G multG eG invG J Gfam beta0 b (apply_fun xsA 0)
+			              Hdisjoint Hbeta0J HbJ HxA0_in_Gb0 Hfirst HxA0_ne_e).
+			          }
+			          rewrite Ha_eq.
+			          rewrite Hb_eq.
+			          exact Hcyc_ne.
+				        }
+
+				        apply (reduced_word_double_cyclic_word_product
+				          G multG eG invG J Gfam efam nA xsA mA
+				          Hgrp Hsubfam HredA HnA_sm HmA_nat Hcyc_all).
+			        let ys2.
+			        assume Hys2_pack :
+			          reduced_word J Gfam efam (add_nat nA nA) ys2 /\
+			          word_product multG eG ys2 (add_nat nA nA) =
+			            apply_fun multG (word_product multG eG xsA nA, word_product multG eG xsA nA).
+				        claim Hred2 : reduced_word J Gfam efam (add_nat nA nA) ys2.
+				        {
+				          exact (andEL
+				            (reduced_word J Gfam efam (add_nat nA nA) ys2)
+				            (word_product multG eG ys2 (add_nat nA nA) =
+				              apply_fun multG (word_product multG eG xsA nA, word_product multG eG xsA nA))
+				            Hys2_pack).
+				        }
+				        claim Hwp2 :
+				          word_product multG eG ys2 (add_nat nA nA) =
+				            apply_fun multG (word_product multG eG xsA nA, word_product multG eG xsA nA).
+				        {
+				          exact (andER
+				            (reduced_word J Gfam efam (add_nat nA nA) ys2)
+				            (word_product multG eG ys2 (add_nat nA nA) =
+				              apply_fun multG (word_product multG eG xsA nA, word_product multG eG xsA nA))
+				            Hys2_pack).
+				        }
+
+			        claim Hlen2_ne0 : add_nat nA nA <> 0.
+			        {
+			          (** add_nat nA nA is a successor since nA = ordsucc mA. **)
+			          rewrite HnA_sm.
+			          rewrite (add_nat_SR (ordsucc mA) mA HmA_nat).
+			          exact (neq_ordsucc_0 (add_nat (ordsucc mA) mA)).
+			        }
+				        claim Hlen2_ne1 : add_nat nA nA <> 1.
+				        {
+				          assume Habs : add_nat nA nA = 1.
+					          claim Htmp1 : add_nat (ordsucc mA) (ordsucc mA) =
+					            ordsucc (add_nat (ordsucc mA) mA).
+					          { exact (add_nat_SR (ordsucc mA) mA HmA_nat). }
+					          claim Heq : ordsucc (add_nat (ordsucc mA) mA) = 1.
+					          {
+					            claim Habs1 : add_nat (ordsucc mA) (ordsucc mA) = 1.
+					            {
+					              rewrite <- HnA_sm.
+					              exact Habs.
+					            }
+					            rewrite <- Htmp1.
+					            exact Habs1.
+					          }
+					          claim Hmm_eq0 : add_nat (ordsucc mA) mA = 0.
+					          {
+					            claim Hs : ordsucc (add_nat (ordsucc mA) mA) = ordsucc 0.
+					            { rewrite Heq. symmetry. exact ordsucc_0_eq_1_nat. }
+				            exact (ordsucc_inj (add_nat (ordsucc mA) mA) 0 Hs).
+				          }
+					          claim Hmm_ne0 : add_nat (ordsucc mA) mA <> 0.
+					          {
+					            claim Htmp2 : add_nat (ordsucc mA) mA = ordsucc (add_nat mA mA).
+					            { exact (add_nat_SL mA HmA_nat mA HmA_nat). }
+					            assume H0.
+					            claim Hs0 : ordsucc (add_nat mA mA) = 0.
+					            {
+					              exact (eq_i_tra
+					                (ordsucc (add_nat mA mA))
+					                (add_nat (ordsucc mA) mA)
+					                0
+					                (eq_symm (add_nat (ordsucc mA) mA) (ordsucc (add_nat mA mA)) Htmp2)
+					                H0).
+					            }
+					            exact (neq_ordsucc_0 (add_nat mA mA) Hs0).
+					          }
+					          exact (Hmm_ne0 Hmm_eq0).
+					        }
+			        claim Hys2_in_G : forall i:set, i :e add_nat nA nA -> apply_fun ys2 i :e G.
+			        {
+			          let i. assume Hi.
+			          exact (reduced_word_in_G
+			            G multG eG invG J Gfam efam (add_nat nA nA) ys2
+			            Hsubfam Hred2 i Hi).
+			        }
+			        claim Hys2_ne_e : forall i:set, i :e add_nat nA nA -> apply_fun ys2 i <> eG.
+			        {
+			          let i. assume Hi.
+			          exact (reduced_word_no_eG_all
+			            G multG eG invG J Gfam efam (add_nat nA nA) ys2
+			            Hgrp Hsubfam Hred2 Hlen2_ne0 Hlen2_ne1 i Hi).
+			        }
+
+					        claim Hwp2_eG : word_product multG eG ys2 (add_nat nA nA) = eG.
+					        {
+					          rewrite Hwp2.
+					          rewrite HwpA.
+					          exact Hu_ef0_sq.
+					        }
+				        claim Hwp2_ne : word_product multG eG ys2 (add_nat nA nA) <> eG.
+				        {
+				          exact (free_product_reduced_word_length_ne0_product_ne_e
+				            G multG eG invG J Gfam efam (add_nat nA nA) ys2
+				            Hfp
+				            Hred2
+				            Hys2_in_G
+				            Hys2_ne_e
+				            Hlen2_ne0).
+				        }
+				        exact (Hwp2_ne Hwp2_eG).
+			      * assume Hcyc_eq : ~(alphaL <> beta0).
+			        (** Remaining hard case: boundary labels coincide. **)
+			        admit.
+			Admitted.
 
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
 (** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
