@@ -230188,6 +230188,47 @@ exact (eq_symm (apply_fun mult (apply_fun inv b, apply_fun inv a))
   Hinvprod_symm).
 Qed.
 
+(** Infrastructure: conjugation preserves involution **)
+(** Proven Charlie **)
+Lemma group_conjugate_involutive :
+  forall G mult e inv x w:set,
+  group_structure G mult e inv ->
+  x :e G ->
+  w :e G ->
+  apply_fun inv w = w ->
+  apply_fun inv (apply_fun mult (apply_fun inv x, apply_fun mult (w, x))) =
+    apply_fun mult (apply_fun inv x, apply_fun mult (w, x)).
+let G mult e inv x w.
+assume Hgrp HxG HwG Hinvw.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvLaw.
+claim HinvxG : apply_fun inv x :e G.
+{ exact (HinvFn x HxG). }
+claim HwxG : apply_fun mult (w, x) :e G.
+{
+  exact (HmultFn (w, x)
+    (tuple_2_setprod_by_pair_Sigma G G w x HwG HxG)).
+}
+rewrite (group_inv_mult G mult e inv (apply_fun inv x) (apply_fun mult (w, x))
+  Hgrp HinvxG HwxG).
+rewrite (group_inv_inv G mult inv e x
+  HmultFn HinvFn HeG HassocG HidG HinvLaw HxG).
+rewrite (group_inv_mult G mult e inv w x
+  Hgrp HwG HxG).
+rewrite Hinvw.
+(** Reassociate mult(mult(inv x, w), x) to mult(inv x, mult(w, x)). **)
+exact (HassocG (apply_fun inv x) w x HinvxG HwG HxG).
+Qed.
+
 (** Infrastructure: solve for the suffix product via left cancellation **)
 (** Proven Bob **)
 Lemma word_product_suffix_by_cancel : forall G mult e inv m xs:set,
