@@ -232189,6 +232189,22 @@ apply (nat_inv m Hm_nat).
       apply_fun multG (apply_fun invG (apply_fun xs 0), word_product multG eG xs (ordsucc m)).
   { exact (word_product_suffix_by_cancel G multG eG invG m xs Hgrp Hm_nat Hxs_in_G_sm). }
 
+  (** If efam(alpha0) = eG, this branch reduces to the p = eG helper. **)
+  apply (xm (apply_fun efam alpha0 = eG)).
+  - assume Hef0_e : apply_fun efam alpha0 = eG.
+    claim Hp_e : apply_fun multG (apply_fun xs m, apply_fun xs 0) = eG.
+    { rewrite Hp_ef0. exact Hef0_e. }
+    exact (free_product_boundary_product_ne_e_helper
+      G multG eG invG J Gfam efam al n xs m alpha0
+      Hfp Hal Hefam_Gal Hefam_ne Hefam_invol
+      Hred Hn_sm Hm_nat Hm_ne0
+      Halpha0J Hx0_in_Ga0 Hx0_ne_eG Hx0_ne_ef0
+      Hxm_in_Ga0 Hxm_ne_eG Hxm_ne_ef0
+      Halpha0_ne Hwp
+      Hp_e).
+  - assume Hef0_ne_e : apply_fun efam alpha0 <> eG.
+    (** Remaining case: efam(alpha0) is nontrivial. Continue the boundary-product analysis. **)
+
   (** TODO: finish the boundary-product analysis in the p = efam(alpha0) branch. **)
   admit.
 Admitted.
