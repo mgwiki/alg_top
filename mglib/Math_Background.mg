@@ -162383,6 +162383,309 @@ apply Himg.
 Qed.
 
 (** Proven Bob **)
+(** Infrastructure: append a single i-star/j-star element to word data **)
+Lemma word_data_append_single : forall X Tx U V x0 cls1 cls2 n gs:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  x0 :e U :/\: V ->
+  n :e omega ->
+  function_on gs n (fundamental_group X Tx x0) ->
+  (forall i:set, i :e n ->
+    (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      apply_fun gs i =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls) \/
+    (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+      apply_fun gs i =
+        apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+          (graph V (fun x:set => x))) vcls)) ->
+  cls1 =
+    nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n ->
+  ((exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      cls2 =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls) \/
+   (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+      cls2 =
+        apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+          (graph V (fun x:set => x))) vcls)) ->
+  exists n2:set, n2 :e omega /\
+  exists gs2:set, function_on gs2 n2 (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n2 ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs2 i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs2 i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    apply_fun (fundamental_group_mult X Tx x0) (cls1, cls2) =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 k)) n2.
+let X Tx U V x0 cls1 cls2 n gs.
+assume Htop HU HV Hx0UV HnO HgsFun HgsTerms Hcls1Eq Hcls2Img.
+claim Hx0U : x0 :e U.
+{ exact (binintersectE1 U V x0 Hx0UV). }
+claim Hx0V : x0 :e V.
+{ exact (binintersectE2 U V x0 Hx0UV). }
+claim HUsub : U c= X. { exact (topology_elem_subset X Tx U Htop HU). }
+claim HVsub : V c= X. { exact (topology_elem_subset X Tx V Htop HV). }
+claim Hx0X : x0 :e X. { exact (HUsub x0 Hx0U). }
+set n2 := ordsucc n.
+set gs2 := graph n2 (fun i:set => if i :e n then apply_fun gs i else cls2).
+claim Hn2O : n2 :e omega.
+{ exact (omega_ordsucc n HnO). }
+claim Hcls2Mem : cls2 :e fundamental_group X Tx x0.
+{
+  apply Hcls2Img.
+  - assume HuEx.
+    apply HuEx.
+    let ucls. assume HuPack.
+    claim HuMem : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
+    { exact (andEL
+        (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+        (cls2 =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls)
+        HuPack). }
+    claim Hcls2Eq :
+      cls2 =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls.
+    { exact (andER
+        (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+        (cls2 =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls)
+        HuPack). }
+    set incU := graph U (fun x:set => x).
+    claim Hi_hom : group_homomorphism
+      (fundamental_group U (subspace_topology X Tx U) x0)
+      (fundamental_group_mult U (subspace_topology X Tx U) x0)
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU).
+    { exact (induced_homomorphism_is_homomorphism
+        U (subspace_topology X Tx U) x0 X Tx x0
+        incU
+        (subspace_inclusion_continuous X Tx U Htop HUsub)
+        (apply_fun_graph U (fun x:set => x) x0 Hx0U)
+        Hx0U). }
+    rewrite Hcls2Eq.
+    exact (group_homomorphism_function_on
+      (fundamental_group U (subspace_topology X Tx U) x0)
+      (fundamental_group_mult U (subspace_topology X Tx U) x0)
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU)
+      Hi_hom
+      ucls HuMem).
+  - assume HvEx.
+    apply HvEx.
+    let vcls. assume HvPack.
+    claim HvMem : vcls :e fundamental_group V (subspace_topology X Tx V) x0.
+    { exact (andEL
+        (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+        (cls2 =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)
+        HvPack). }
+    claim Hcls2Eq :
+      cls2 =
+        apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+          (graph V (fun x:set => x))) vcls.
+    { exact (andER
+        (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+        (cls2 =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)
+        HvPack). }
+    set incV := graph V (fun x:set => x).
+    claim Hj_hom : group_homomorphism
+      (fundamental_group V (subspace_topology X Tx V) x0)
+      (fundamental_group_mult V (subspace_topology X Tx V) x0)
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV).
+    { exact (induced_homomorphism_is_homomorphism
+        V (subspace_topology X Tx V) x0 X Tx x0
+        incV
+        (subspace_inclusion_continuous X Tx V Htop HVsub)
+        (apply_fun_graph V (fun x:set => x) x0 Hx0V)
+        Hx0V). }
+    rewrite Hcls2Eq.
+    exact (group_homomorphism_function_on
+      (fundamental_group V (subspace_topology X Tx V) x0)
+      (fundamental_group_mult V (subspace_topology X Tx V) x0)
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV)
+      Hj_hom
+      vcls HvMem).
+}
+claim Hgs2_total :
+  gs2 :e total_function_space n2 (fundamental_group X Tx x0).
+{
+  apply (graph_in_total_function_space n2 (fundamental_group X Tx x0)
+    (fun i:set => if i :e n then apply_fun gs i else cls2)).
+  let i. assume Hi : i :e n2.
+  apply (If_i_correct (i :e n) (apply_fun gs i) cls2).
+  - assume Htrue : (i :e n) /\ (if i :e n then apply_fun gs i else cls2) = apply_fun gs i.
+    claim HiN : i :e n.
+    { apply (Htrue (i :e n)). assume H1 H2. exact H1. }
+    claim Hif : (if i :e n then apply_fun gs i else cls2) = apply_fun gs i.
+    { apply (Htrue ((if i :e n then apply_fun gs i else cls2) = apply_fun gs i)). assume H1 H2. exact H2. }
+    exact (eq_subst_mem
+      (if i :e n then apply_fun gs i else cls2)
+      (apply_fun gs i)
+      (fundamental_group X Tx x0)
+      Hif
+      (HgsFun i HiN)).
+  - assume Hfalse : ~(i :e n) /\ (if i :e n then apply_fun gs i else cls2) = cls2.
+    claim Hif : (if i :e n then apply_fun gs i else cls2) = cls2.
+    { apply (Hfalse ((if i :e n then apply_fun gs i else cls2) = cls2)). assume H1 H2. exact H2. }
+    exact (eq_subst_mem
+      (if i :e n then apply_fun gs i else cls2)
+      cls2
+      (fundamental_group X Tx x0)
+      Hif
+      Hcls2Mem).
+}
+claim Hgs2Fun : function_on gs2 n2 (fundamental_group X Tx x0).
+{
+  exact (function_on_of_function_space
+    gs2
+    n2
+    (fundamental_group X Tx x0)
+    (total_function_space_sub_function_space
+      n2
+      (fundamental_group X Tx x0)
+      gs2
+      Hgs2_total)).
+}
+claim Hgs2Terms :
+  forall i:set, i :e n2 ->
+    (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      apply_fun gs2 i =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls) \/
+    (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+      apply_fun gs2 i =
+        apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+          (graph V (fun x:set => x))) vcls).
+{
+  let i. assume Hi : i :e n2.
+  claim Hgs2i : apply_fun gs2 i =
+    (if i :e n then apply_fun gs i else cls2).
+  { exact (apply_fun_graph n2 (fun i:set => if i :e n then apply_fun gs i else cls2) i Hi). }
+  rewrite Hgs2i.
+  apply (ordsuccE n i Hi).
+  - assume HiN : i :e n.
+    rewrite (If_i_1 (i :e n) (apply_fun gs i) cls2 HiN).
+    exact (HgsTerms i HiN).
+  - assume HiEq : i = n.
+    rewrite HiEq.
+    claim Hnnot : ~(n :e n).
+    { assume HnIn. exact (In_irref n HnIn). }
+    rewrite (If_i_0 (n :e n) (apply_fun gs n) cls2 Hnnot).
+    exact Hcls2Img.
+}
+witness n2.
+apply andI.
+- exact Hn2O.
+- witness gs2.
+  apply andI.
+  * apply andI.
+    + exact Hgs2Fun.
+    + exact Hgs2Terms.
+  * claim HnNat : nat_p n.
+    { exact (omega_nat_p n HnO). }
+    rewrite (nat_primrec_S (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 k))
+      n HnNat).
+    claim Hgs2n : apply_fun gs2 n = cls2.
+    {
+      claim Hnnot : ~(n :e n).
+      { assume HnIn. exact (In_irref n HnIn). }
+      rewrite (apply_fun_graph n2 (fun i:set => if i :e n then apply_fun gs i else cls2) n (ordsuccI2 n)).
+      rewrite (If_i_0 (n :e n) (apply_fun gs n) cls2 Hnnot).
+      reflexivity.
+    }
+    rewrite Hgs2n.
+    rewrite Hcls1Eq.
+    claim Hext :
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 k)) n.
+    {
+      claim Hnat : forall m:set, nat_p m ->
+        (forall i r:set, i :e m ->
+          apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs i) =
+          apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 i)) ->
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) m =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 k)) m.
+      {
+        apply nat_ind.
+        - assume _.
+          rewrite (nat_primrec_0 (fundamental_group_id X Tx x0)
+            (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k))).
+          rewrite (nat_primrec_0 (fundamental_group_id X Tx x0)
+            (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 k))).
+          reflexivity.
+        - let k. assume HkNat IH.
+          assume Hfg : forall i r:set, i :e ordsucc k ->
+            apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs i) =
+            apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 i).
+          rewrite (nat_primrec_S (fundamental_group_id X Tx x0)
+            (fun i r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs i))
+            k HkNat).
+          rewrite (nat_primrec_S (fundamental_group_id X Tx x0)
+            (fun i r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 i))
+            k HkNat).
+          claim Hfgk : forall r:set,
+            apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k) =
+            apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 k).
+          { let r. exact (Hfg k r (ordsuccI2 k)). }
+          rewrite (Hfgk (nat_primrec (fundamental_group_id X Tx x0)
+            (fun i r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs i)) k)).
+          claim Hfgk' : forall i r:set, i :e k ->
+            apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs i) =
+            apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 i).
+          { let i r. assume Hi. exact (Hfg i r (ordsuccI1 k i Hi)). }
+          rewrite (IH Hfgk').
+          reflexivity.
+      }
+      claim Hfg : forall i r:set, i :e n ->
+        apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs i) =
+        apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 i).
+      {
+        let i r. assume Hi : i :e n.
+        claim Hgs2i : apply_fun gs2 i =
+          (if i :e n then apply_fun gs i else cls2).
+        { exact (apply_fun_graph n2 (fun i:set => if i :e n then apply_fun gs i else cls2) i (ordsuccI1 n i Hi)). }
+        claim Hif : (if i :e n then apply_fun gs i else cls2) = apply_fun gs i.
+        { exact (If_i_1 (i :e n) (apply_fun gs i) cls2 Hi). }
+        claim Hgs2eq : apply_fun gs2 i = apply_fun gs i.
+        {
+          transitivity (if i :e n then apply_fun gs i else cls2).
+          - exact Hgs2i.
+          - exact Hif.
+        }
+        rewrite <- Hgs2eq.
+        reflexivity.
+      }
+      exact (Hnat n (omega_nat_p n HnO) Hfg).
+    }
+    rewrite Hext.
+    reflexivity.
+Qed.
+
+(** Proven Bob **)
 (** Infrastructure: split a natural number n at an element k :e n **)
 Lemma nat_elem_decompose_add : forall n k:set,
   n :e omega -> k :e n ->
