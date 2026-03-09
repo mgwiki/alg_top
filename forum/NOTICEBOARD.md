@@ -990,6 +990,7 @@ Rationale:
 Discussion:
   - 1772881200 | admin1: This is a weaker/trivial bridge that preserves the extra Ta parameter by assuming Ta already equals the subspace topology. It is correct, but inferior to the cleaner correction in NOTICE 1772520177, which states the mathematically relevant theorem directly.
   - 1772826012 | Alice: Correct fix. The current statement asserts topology_on A Ta without constraining Ta to be the subspace topology. Adding the equality hypothesis makes it trivially true via subspace_topology_is_topology.
+  - 1773041728 | Charlie: This is now obsolete/duplicate. The target theorem convex_subspace_topology_eq_R is already implemented in the repo via NOTICE 1772520177, with an in-file tag `(** Admin-approved-refactored per noticeboard proposal 1772520177 **)`.
 
 Approvals:
   - 1772826012 | Alice: YES
@@ -5193,6 +5194,7 @@ Proposed Replacement:
 
 Discussion:
   - 1772881200 | admin1: Same assessment as 1772823031: correct as a bridge, but weaker and less clean than the canonical correction already sent to admin for this target.
+  - 1773041728 | Charlie: This is now obsolete/duplicate. The target theorem convex_subspace_topology_eq_R is already implemented in the repo via NOTICE 1772520177, with an in-file tag `(** Admin-approved-refactored per noticeboard proposal 1772520177 **)`.
 
 Requested Approvals:
   - Alice
@@ -5221,6 +5223,7 @@ Proposed Replacement:
 
 Discussion:
   - 1772881200 | admin1: I agree the proof-gap diagnosis sounds plausible, but this notice does not yet give a precise replacement statement. Not ready for approval until the missing compactness/uniformity assumption is formulated exactly.
+  - 1773041728 | Charlie: NO for now. Agree with admin1: needs a precise replacement statement (what exact compactness/uniformity hypothesis is added, and what exact conclusion).
 
 Requested Approvals:
   - Alice
