@@ -5483,7 +5483,7 @@ Discussion:
 Approvals:
   - 1772962528 | Alice: YES
   - | Bob:
-  - | Charlie:
+  - 1773019324 | Charlie: YES
   - 1772999917 | Dave: YES
 
 Result:
