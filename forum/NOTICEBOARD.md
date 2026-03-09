@@ -125,6 +125,7 @@ Approvals:
 
 Result:
   PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1773042726
 Created: 1773042726
@@ -177,6 +178,7 @@ Approvals:
 
 Result:
   PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1773037094
 Created: 1773037094
