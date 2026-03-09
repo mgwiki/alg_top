@@ -231808,7 +231808,121 @@ Lemma free_product_boundary_product_ne_e_helper :
   word_product multG eG xs n = apply_fun efam al ->
   apply_fun multG (apply_fun xs m, apply_fun xs 0) = eG ->
   False.
-admit.
+let G multG eG invG J Gfam efam al n xs m alpha0.
+assume Hfp Hal Hefam_Gal Hefam_ne Hefam_invol.
+assume Hred Hn_sm Hm_nat Hm_ne0.
+assume Halpha0J Hx0_in_Ga0 Hx0_ne_eG Hx0_ne_ef0.
+assume Hxm_in_Ga0 Hxm_ne_eG Hxm_ne_ef0.
+assume Halpha0_ne Hwp Hp_e.
+
+(** Unpack the free product structure (group laws and subgroup closure). **)
+apply (and5E
+  (group_structure G multG eG invG)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
+  (subgroups_generate G multG eG invG J Gfam)
+  (forall x:set, x :e G -> x <> eG ->
+    exists n0 xs0:set,
+      reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product multG eG xs0 n0 = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = x ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsubfam Hdisjoint _ _.
+
+(** If m = 1 then xs(0), xs(1) lie in the same factor, contradicting reducedness. **)
+claim Hm_ne1 : m <> 1.
+{
+  assume Hm1 : m = 1.
+  claim Hn2 : n = 2.
+  { rewrite Hn_sm. rewrite Hm1. exact ordsucc_1_eq_2_nat. }
+  claim H0_in_n : 0 :e n. { rewrite Hn2. exact In_0_2. }
+  claim H1_in_n : ordsucc 0 :e n. { rewrite Hn2. exact In_1_2. }
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs i :e apply_fun Gfam alpha /\
+        apply_fun xs i <> apply_fun efam alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall a b:set, a :e J -> b :e J ->
+        apply_fun xs i :e apply_fun Gfam a ->
+        apply_fun xs (ordsucc i) :e apply_fun Gfam b ->
+        a <> b)
+    Hred).
+  assume _ _ Hadj.
+  claim Hs0 : ordsucc 0 = m.
+  { rewrite Hm1. exact ordsucc_0_eq_1_nat. }
+  claim Hxs1_in_Ga0 : apply_fun xs (ordsucc 0) :e apply_fun Gfam alpha0.
+  { rewrite Hs0. exact Hxm_in_Ga0. }
+  exact ((Hadj 0 H0_in_n H1_in_n alpha0 alpha0 Halpha0J Halpha0J Hx0_in_Ga0 Hxs1_in_Ga0) (eq_refl alpha0)).
+}
+
+(** Reduce to the shorter "middle" word of length k where m = ordsucc k. **)
+apply (nat_inv m Hm_nat).
+- assume Hm0 : m = 0.
+  exact (FalseE (Hm_ne0 Hm0) False).
+- assume Hex_k : exists k:set, nat_p k /\ m = ordsucc k.
+  apply Hex_k.
+  let k. assume Hk_pack : nat_p k /\ m = ordsucc k.
+  claim Hk_nat : nat_p k.
+  { exact (andEL (nat_p k) (m = ordsucc k) Hk_pack). }
+  claim Hm_eq_sk : m = ordsucc k.
+  { exact (andER (nat_p k) (m = ordsucc k) Hk_pack). }
+
+  claim Hred_sm : reduced_word J Gfam efam (ordsucc m) xs.
+  { rewrite <- Hn_sm. exact Hred. }
+  set xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)).
+  claim Hred_suf : reduced_word J Gfam efam m xs_suf.
+  { exact (reduced_word_suffix J Gfam efam m xs Hred_sm). }
+
+  set u := word_product multG eG xs_suf k.
+  claim Hu_def : u = word_product multG eG xs_suf k.
+  { reflexivity. }
+  claim Hu_eq_raw :
+    word_product multG eG xs_suf k =
+      apply_fun multG (apply_fun invG (apply_fun xs 0),
+        apply_fun multG (apply_fun efam al, apply_fun xs 0)).
+  {
+    exact (free_product_boundary_cancel_middle_conjugate
+      G multG eG invG J Gfam efam n xs m k (apply_fun efam al)
+      Hfp Hred Hn_sm Hm_nat Hm_eq_sk Hk_nat
+      Hp_e Hwp Hefam_invol).
+  }
+  claim Hu_eq :
+    u =
+      apply_fun multG (apply_fun invG (apply_fun xs 0),
+        apply_fun multG (apply_fun efam al, apply_fun xs 0)).
+  { rewrite Hu_def. exact Hu_eq_raw. }
+
+  (** u is also involutive since it is conjugate to efam(al). **)
+  claim Hx0_G : apply_fun xs 0 :e G.
+  {
+    exact (subgroup_of_subset
+      (apply_fun Gfam alpha0) G multG eG invG
+      (Hsubfam alpha0 Halpha0J)
+      (apply_fun xs 0) Hx0_in_Ga0).
+  }
+  claim Hw_G : apply_fun efam al :e G.
+  {
+    exact (subgroup_of_subset
+      (apply_fun Gfam al) G multG eG invG
+      (Hsubfam al Hal)
+      (apply_fun efam al) Hefam_Gal).
+  }
+  claim Hu_invol : apply_fun invG u = u.
+  {
+    rewrite Hu_eq.
+    exact (group_conjugate_involutive
+      G multG eG invG (apply_fun xs 0) (apply_fun efam al)
+      Hgrp Hx0_G Hw_G Hefam_invol).
+  }
+
+  (** TODO: complete the torsion or malnormality argument to derive a contradiction. **)
+  admit.
 Admitted.
 
 (** Helper bounty: boundary-product not equal to efam(alpha0).
