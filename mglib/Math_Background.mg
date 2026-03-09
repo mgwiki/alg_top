@@ -242648,17 +242648,20 @@ claim HPn : P n.
 	           }
 	           claim HkO : k :e omega.
 	           { exact (nat_p_omega k Hk_nat). }
-	           claim Hwp_append :
-	             word_product mult e xs1 (ordsucc k) =
-	               apply_fun mult (word_product mult e xs_pre k, p).
-	           { exact (word_product_append_one mult e xs_pre p k HkO). }
-				           claim Hwp_xs1 :
-				             word_product mult e xs1 m =
-				               apply_fun mult (word_product mult e xs_pre k, p).
-				           { admit. }
-		           claim Hwp_pre_eq :
-		             word_product mult e xs_pre k = word_product mult e xs_suf k.
-		           {
+		           claim Hwp_append :
+		             word_product mult e xs1 (ordsucc k) =
+		               apply_fun mult (word_product mult e xs_pre k, p).
+		           { exact (word_product_append_one mult e xs_pre p k HkO). }
+					           claim Hwp_xs1 :
+					             word_product mult e xs1 m =
+					               apply_fun mult (word_product mult e xs_pre k, p).
+					           {
+					             rewrite Hm_sm.
+					             exact Hwp_append.
+					           }
+			           claim Hwp_pre_eq :
+			             word_product mult e xs_pre k = word_product mult e xs_suf k.
+			           {
 		             apply (word_product_congr_on mult e xs_pre xs_suf k HkO).
 		             let i. assume Hi.
 		             claim Hm_ord : ordinal m.
@@ -242671,10 +242674,18 @@ claim HPn : P n.
 		             rewrite (apply_fun_graph m (fun j:set => apply_fun xs0 (ordsucc j)) i Hi_m).
 		             reflexivity.
 		           }
-			           claim Hwp_suf_succ :
-			             word_product mult e xs_suf m =
-			               apply_fun mult (word_product mult e xs_suf k, apply_fun xs_suf k).
-			           { admit. }
+				           claim Hwp_suf_succ :
+				             word_product mult e xs_suf m =
+				               apply_fun mult (word_product mult e xs_suf k, apply_fun xs_suf k).
+				           {
+				             claim Hxsuf_def :
+				               xs_suf = graph (ordsucc k) (fun i:set => apply_fun xs0 (ordsucc i)).
+				             { rewrite Hm_sm. reflexivity. }
+				             rewrite Hxsuf_def.
+				             rewrite Hm_sm.
+				             exact (word_product_succ
+				               mult e (graph (ordsucc k) (fun i:set => apply_fun xs0 (ordsucc i))) k Hk_nat).
+				           }
 	           claim Hxsuf_k : apply_fun xs_suf k = apply_fun xs0 m.
 	           {
 	             rewrite (apply_fun_graph m (fun i:set => apply_fun xs0 (ordsucc i)) k Hk_in_m).
@@ -242696,21 +242707,76 @@ claim HPn : P n.
 	           { rewrite <- Ht_sm. exact Hwpv. }
 
 	           (** Combine these to get word_product xs1 m = u1. **)
-	           apply (and6E
-	             (function_on mult (setprod G G) G)
-	             (function_on inv G G)
-	             (e :e G)
-	             (forall a b c0:set, a :e G -> b :e G -> c0 :e G ->
-	               apply_fun mult (apply_fun mult (a, b), c0) = apply_fun mult (a, apply_fun mult (b, c0)))
-	             (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
-	             (forall a:set, a :e G ->
-	               apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
-	             Hgrp).
-		           assume _ _ _ Hassoc _ _.
-		           claim Hwp_xs1_eq_u1 : word_product mult e xs1 m = u1.
-		           {
-		             admit.
-		           }
+		           apply (and6E
+		             (function_on mult (setprod G G) G)
+		             (function_on inv G G)
+		             (e :e G)
+		             (forall a b c0:set, a :e G -> b :e G -> c0 :e G ->
+		               apply_fun mult (apply_fun mult (a, b), c0) = apply_fun mult (a, apply_fun mult (b, c0)))
+		             (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+		             (forall a:set, a :e G ->
+		               apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+		             Hgrp).
+			           assume _ HinvF _ Hassoc _ _.
+			           claim Hwp_xs1_eq_u1 : word_product mult e xs1 m = u1.
+			           {
+			             claim Hp_defm : p = apply_fun mult (apply_fun xs0 m, apply_fun xs0 0).
+			             { rewrite <- Hm_sm. reflexivity. }
+
+			             claim Hxsuf_in_Gk : forall i:set, i :e k -> apply_fun xs_suf i :e G.
+			             {
+			               let i. assume Hi : i :e k.
+			               claim Hm_ord : ordinal m.
+			               { exact (nat_p_ordinal m Hm_nat). }
+			               claim Hk_sub : k c= m.
+			               { exact (ordinal_TransSet m Hm_ord k Hk_in_m). }
+			               claim Hi_m : i :e m.
+			               { exact (Hk_sub i Hi). }
+			               rewrite (apply_fun_graph m (fun j:set => apply_fun xs0 (ordsucc j)) i Hi_m).
+			               exact (Hxs0_in_G_sm (ordsucc i) (nat_ordsucc_in_ordsucc m Hm_nat i Hi_m)).
+			             }
+
+			             claim Hwp_suf_k_G : word_product mult e xs_suf k :e G.
+			             {
+			               exact (word_product_in_G_group
+			                 G mult e inv k xs_suf
+			                 Hgrp Hk_nat Hxsuf_in_Gk).
+			             }
+			             claim Hxm_G : apply_fun xs0 m :e G.
+			             { exact (Hxs0_in_G_sm m (ordsuccI2 m)). }
+			             claim Hinvx0_G : apply_fun inv (apply_fun xs0 0) :e G.
+			             { exact (HinvF (apply_fun xs0 0) Hx0_G). }
+
+			             claim Hsuf_eq :
+			               apply_fun mult (word_product mult e xs_suf k, apply_fun xs0 m) =
+			                 apply_fun mult (apply_fun inv (apply_fun xs0 0), v).
+			             {
+			               rewrite <- Hxsuf_k.
+			               rewrite <- Hwp_suf_succ.
+			               rewrite Hwp_suf_m.
+			               rewrite Hwp_full.
+			               reflexivity.
+			             }
+
+			             rewrite Hwp_xs1.
+			             rewrite Hwp_pre_eq.
+			             rewrite Hp_defm.
+			             rewrite <- (Hassoc
+			               (word_product mult e xs_suf k)
+			               (apply_fun xs0 m)
+			               (apply_fun xs0 0)
+			               Hwp_suf_k_G
+			               Hxm_G
+			               Hx0_G).
+			             rewrite Hsuf_eq.
+			             exact (Hassoc
+			               (apply_fun inv (apply_fun xs0 0))
+			               v
+			               (apply_fun xs0 0)
+			               Hinvx0_G
+			               Hv_G
+			               Hx0_G).
+			           }
 		           (** Now doubling xs1 yields a reduced word for u1^2, contradicting u1^2 = e. **)
 	           claim Hu1_sq : apply_fun mult (u1, u1) = e.
 	           { exact (group_involutive_square_e G mult e inv u1 Hgrp Hu1_G Hu1_invol). }
