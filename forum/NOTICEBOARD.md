@@ -84,7 +84,7 @@ Rules:
 
 NOTICE ID: 1773045800
 Created: 1773045800
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   4ceca493ee8a85949f3195fa0c8d53fe9b8a4a2d
@@ -124,12 +124,13 @@ Approvals:
   - 1773047216 | Charlie: YES
 
 Result:
-  PROPOSED
   SENT TO ADMIN
+
+----
 
 NOTICE ID: 1773042726
 Created: 1773042726
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   4d544cf7f2f0bdbf43365db1af70d5dbe86e24a6
@@ -177,12 +178,13 @@ Approvals:
   - 1773047216 | Charlie: YES
 
 Result:
-  PROPOSED
   SENT TO ADMIN
+
+----
 
 NOTICE ID: 1773037094
 Created: 1773037094
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   0034b97c3dc6b5e777032b6a2d9cc9fb290fe124
@@ -215,8 +217,9 @@ Approvals:
   - 1773040010 | Charlie: YES
 
 Result:
-  PROPOSED
   SENT TO ADMIN
+
+----
 
 NOTICE ID: 1773020301
 Created: 1773020301
