@@ -162686,6 +162686,114 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+(** Infrastructure: word data for a loop in U via inclusion **)
+Lemma word_data_of_loop_in_U : forall X Tx U V x0 loopU:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  x0 :e U :/\: V ->
+  loopU :e loop_space U (subspace_topology X Tx U) x0 ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0
+      (compose_fun unit_interval loopU (graph U (fun x:set => x))) =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+let X Tx U V x0 loopU.
+assume Htop HU HV Hx0UV HloopU.
+claim Hx0U : x0 :e U.
+{ exact (binintersectE1 U V x0 Hx0UV). }
+set incU := graph U (fun x:set => x).
+set ucls := path_homotopy_class_loop U (subspace_topology X Tx U) x0 loopU.
+set cls := path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopU incU).
+claim HuclsMem :
+  ucls :e fundamental_group U (subspace_topology X Tx U) x0.
+{ exact (path_homotopy_class_in_fundamental_group
+    U (subspace_topology X Tx U) x0 loopU HloopU). }
+claim HclsEq :
+  cls =
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      incU) ucls.
+{
+  rewrite <- (induced_homomorphism_inclusion_loop_class
+    X Tx U x0 loopU Htop HU Hx0U HloopU).
+  reflexivity.
+}
+apply (word_data_single_image X Tx U V x0 cls).
+- exact Htop.
+- exact HU.
+- exact HV.
+- exact Hx0UV.
+- apply orIL.
+  witness ucls.
+  apply andI.
+  * exact HuclsMem.
+  * exact HclsEq.
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure: word data for a loop in V via inclusion **)
+Lemma word_data_of_loop_in_V : forall X Tx U V x0 loopV:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  x0 :e U :/\: V ->
+  loopV :e loop_space V (subspace_topology X Tx V) x0 ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0
+      (compose_fun unit_interval loopV (graph V (fun x:set => x))) =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+let X Tx U V x0 loopV.
+assume Htop HU HV Hx0UV HloopV.
+claim Hx0V : x0 :e V.
+{ exact (binintersectE2 U V x0 Hx0UV). }
+set incV := graph V (fun x:set => x).
+set vcls := path_homotopy_class_loop V (subspace_topology X Tx V) x0 loopV.
+set cls := path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopV incV).
+claim HvclsMem :
+  vcls :e fundamental_group V (subspace_topology X Tx V) x0.
+{ exact (path_homotopy_class_in_fundamental_group
+    V (subspace_topology X Tx V) x0 loopV HloopV). }
+claim HclsEq :
+  cls =
+    apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+      incV) vcls.
+{
+  rewrite <- (induced_homomorphism_inclusion_loop_class
+    X Tx V x0 loopV Htop HV Hx0V HloopV).
+  reflexivity.
+}
+apply (word_data_single_image X Tx U V x0 cls).
+- exact Htop.
+- exact HU.
+- exact HV.
+- exact Hx0UV.
+- apply orIR.
+  witness vcls.
+  apply andI.
+  * exact HvclsMem.
+  * exact HclsEq.
+Qed.
+
+(** Proven Bob **)
 (** Infrastructure: split a natural number n at an element k :e n **)
 Lemma nat_elem_decompose_add : forall n k:set,
   n :e omega -> k :e n ->
