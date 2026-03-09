@@ -114,6 +114,7 @@ Approvals:
   - 1773037094 | Bob: YES
   - 1773037094 | Charlie:
   - 1773037094 | Dave:
+  - 1773040010 | Charlie: YES
 
 Result:
   PROPOSED
