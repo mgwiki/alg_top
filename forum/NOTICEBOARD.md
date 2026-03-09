@@ -82,6 +82,49 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773045800
+Created: 1773045800
+Status: PROPOSED
+
+Refers to Commit:
+  4ceca493ee8a85949f3195fa0c8d53fe9b8a4a2d
+
+Target:
+  Line: 119643
+  Name: thm54_6c_loop_characterization (Theorem)
+
+Problem:
+  The `<->` is missing parentheses. As written, the statement parses as
+  (covering_map -> e0 :e E -> loop_at ... -> in_image) <-> (lift endpoint = e0),
+  so the proof cannot assume Hcov/He0/Hloop. The intended statement matches the
+  parenthesized equivalence in `thm54_6c_loop_characterization_equiv`.
+
+Proposed Replacement:
+  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+       homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+     <->
+     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1773045800 | Bob: After parenthesizing, the proof is `exact (thm54_6c_loop_characterization_equiv ...)`.
+
+Approvals:
+  - 1773045800 | Alice:
+  - 1773045800 | Bob: YES
+  - 1773045800 | Charlie:
+  - 1773045800 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1773042726
 Created: 1773042726
 Status: PROPOSED
