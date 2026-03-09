@@ -1,6 +1,6 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 533 **)
+(** Balance Charlie 467 **)
 (** Balance Dave 1983 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -157504,8 +157504,7 @@ Admitted.
 
 (** from S58 Exercise 2(c) (line 1479 in algtop.tex): cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Bob 33 **)
-(** Proven Bob **)
+(** Bounty 33 **)
 (** Admin-approved-refactored per noticeboard proposal batch1 **)
 Theorem ex58_2c_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 unit_interval ->
@@ -157523,8 +157522,7 @@ Admitted.
 
 (** from S58 Exercise 2(d) (line 1480 in algtop.tex): infinite cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Bob 33 **)
-(** Proven Bob **)
+(** Bounty 33 **)
 (** Admin-approved-refactored per noticeboard proposal batch1 **)
 Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 R ->
