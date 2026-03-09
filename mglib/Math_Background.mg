@@ -1,6 +1,6 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 679 **)
+(** Balance Charlie 599 **)
 (** Balance Dave 1983 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -233756,6 +233756,23 @@ apply (nat_inv m Hm_nat).
 			        (** Remaining hard case: boundary labels coincide. **)
 			        admit.
 			Admitted.
+
+(** Infrastructure bounty: malnormality of distinct factors in a free product (general index set J).
+    This generalizes ex68_3_conjugate_intersection_trivial (the case J = 2) and is expected to
+    discharge the remaining "torsion/malnormality" admits in the free-product boundary-cancellation
+    chain (free_product_boundary_product_ne_e_or_efam, free_product_efam_involutive_contra). **)
+(** Bounty 80 **)
+Lemma free_product_conjugate_intersection_trivial :
+  forall G mult e inv J Gfam efam alpha beta c x:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  alpha :e J ->
+  beta :e J ->
+  alpha <> beta ->
+  c :e G ->
+  x :e apply_fun Gfam alpha ->
+  apply_fun mult (apply_fun mult (c, x), apply_fun inv c) :e apply_fun Gfam beta ->
+  apply_fun mult (apply_fun mult (c, x), apply_fun inv c) = e.
+Admitted.
 
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
 (** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
