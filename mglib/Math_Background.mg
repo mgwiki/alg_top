@@ -237678,7 +237678,6 @@ Admitted.
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
 (** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
 (** Bounty 55 **)
-(** Lock Charlie 1773075826 **)
 Lemma free_product_boundary_product_ne_e_or_efam :
   forall G multG eG invG J Gfam efam al n xs m alpha0:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
