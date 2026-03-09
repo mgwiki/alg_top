@@ -236484,6 +236484,471 @@ Lemma free_product_involution_conjugate_into_factor :
     x <> e /\
     apply_fun inv x = x /\
     u = apply_fun mult (apply_fun inv c, apply_fun mult (x, c)).
+let G mult e inv J Gfam efam u.
+assume Hfp Hu_G Hu_ne_e Hu_invol.
+
+(** Unpack the free product structure. **)
+apply (and5E
+  (group_structure G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall x:set, x :e G -> x <> e ->
+    exists n xs:set,
+      reduced_word J Gfam efam n xs /\ n <> 0 /\
+      word_product mult e xs n = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsubfam Hdisjoint _ Huniq.
+
+(** u^2 = e in the ambient group. **)
+claim Hu_sq : apply_fun mult (u, u) = e.
+{
+  exact (group_involutive_square_e
+    G mult e inv u Hgrp Hu_G Hu_invol).
+}
+
+(** Choose the canonical reduced word for u. **)
+apply (Huniq u Hu_G Hu_ne_e).
+let n. assume Hex : exists xs:set,
+  reduced_word J Gfam efam n xs /\ n <> 0 /\
+  word_product mult e xs n = u /\
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = u ->
+    n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+apply Hex. let xs. assume Hpack :
+  reduced_word J Gfam efam n xs /\ n <> 0 /\
+  word_product mult e xs n = u /\
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = u ->
+    n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+apply (and4E
+  (reduced_word J Gfam efam n xs)
+  (n <> 0)
+  (word_product mult e xs n = u)
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = u ->
+    n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))
+  Hpack).
+assume Hred Hn_ne0 Hwp _.
+
+apply (and3E
+  (n :e omega)
+  (forall i:set, i :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs i :e apply_fun Gfam alpha /\
+      apply_fun xs i <> apply_fun efam alpha)
+  (forall i:set, i :e n -> ordsucc i :e n ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun xs i :e apply_fun Gfam alpha ->
+      apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+      alpha <> beta)
+  Hred).
+assume Hn_O Hxs_elem Hxs_adj.
+claim Hn_nat : nat_p n.
+{ exact (omega_nat_p n Hn_O). }
+
+(** Split on n = 1 (the base case). **)
+apply (nat_inv n Hn_nat).
+- assume Hn0 : n = 0.
+  exact (FalseE (Hn_ne0 Hn0) (exists alpha c x:set,
+    alpha :e J /\
+    c :e G /\
+    x :e apply_fun Gfam alpha /\
+    x <> e /\
+    apply_fun inv x = x /\
+    u = apply_fun mult (apply_fun inv c, apply_fun mult (x, c)))).
+- assume Hexm : exists m:set, nat_p m /\ n = ordsucc m.
+  apply Hexm. let m.
+  assume Hm_pack : nat_p m /\ n = ordsucc m.
+  claim Hm_nat : nat_p m.
+  { exact (andEL (nat_p m) (n = ordsucc m) Hm_pack). }
+  claim Hn_sm : n = ordsucc m.
+  { exact (andER (nat_p m) (n = ordsucc m) Hm_pack). }
+
+  apply (nat_inv m Hm_nat).
+  - assume Hm0 : m = 0.
+    (** Then n = 1 and u is a single letter in some factor. **)
+    claim Hn1 : n = 1.
+    { rewrite Hn_sm. rewrite Hm0. exact ordsucc_0_eq_1_nat. }
+    claim H0_in_n : 0 :e n.
+    { rewrite Hn1. exact In_0_1. }
+    apply (Hxs_elem 0 H0_in_n). let alpha.
+    assume Halpha_pack : alpha :e J /\
+      apply_fun xs 0 :e apply_fun Gfam alpha /\
+      apply_fun xs 0 <> apply_fun efam alpha.
+    apply (and3E
+      (alpha :e J)
+      (apply_fun xs 0 :e apply_fun Gfam alpha)
+      (apply_fun xs 0 <> apply_fun efam alpha)
+      Halpha_pack).
+      assume HalphaJ Hx0_in_Ga _.
+      set x := apply_fun xs 0.
+      (** Use c = e and x = u. **)
+      witness alpha.
+      witness e.
+      witness x.
+      apply and6I.
+      - exact HalphaJ.
+      - apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall a b c:set, a :e G -> b :e G -> c :e G ->
+            apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+          (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+          (forall a:set, a :e G ->
+            apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+          Hgrp).
+        assume _ _ He_G _ _ _. exact He_G.
+      - exact Hx0_in_Ga.
+      - (** x <> e **)
+        claim Hwp1 : word_product mult e xs 1 =
+          apply_fun mult (word_product mult e xs 0, apply_fun xs 0).
+        { exact (word_product_succ mult e xs 0 nat_0). }
+        claim Hwp0 : word_product mult e xs 0 = e.
+        { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun xs i))). }
+        claim Hx_G : x :e G.
+        {
+          exact (subgroup_of_subset
+            (apply_fun Gfam alpha) G mult e inv
+            (Hsubfam alpha HalphaJ)
+            x Hx0_in_Ga).
+        }
+        claim HidL : apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0.
+        {
+          apply (and6E
+            (function_on mult (setprod G G) G)
+            (function_on inv G G)
+            (e :e G)
+            (forall a b c:set, a :e G -> b :e G -> c :e G ->
+              apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+            (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+            (forall a:set, a :e G ->
+              apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+            Hgrp).
+          assume _ _ _ _ Hid _.
+          exact (andEL
+            (apply_fun mult (e, x) = x)
+            (apply_fun mult (x, e) = x)
+            (Hid x Hx_G)).
+        }
+        claim Hwp1_eq : word_product mult e xs 1 = apply_fun xs 0.
+        { rewrite Hwp1. rewrite Hwp0. exact HidL. }
+        claim Hu_eq_x : u = x.
+        { symmetry. rewrite <- Hwp1_eq. rewrite <- Hn1. exact Hwp. }
+        rewrite <- Hu_eq_x.
+        exact Hu_ne_e.
+      - (** inv x = x **)
+        claim Hwp1 : word_product mult e xs 1 =
+          apply_fun mult (word_product mult e xs 0, apply_fun xs 0).
+        { exact (word_product_succ mult e xs 0 nat_0). }
+        claim Hwp0 : word_product mult e xs 0 = e.
+        { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun xs i))). }
+        claim Hx_G : x :e G.
+        {
+          exact (subgroup_of_subset
+            (apply_fun Gfam alpha) G mult e inv
+            (Hsubfam alpha HalphaJ)
+            x Hx0_in_Ga).
+        }
+        claim HidL : apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0.
+        {
+          apply (and6E
+            (function_on mult (setprod G G) G)
+            (function_on inv G G)
+            (e :e G)
+            (forall a b c:set, a :e G -> b :e G -> c :e G ->
+              apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+            (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+            (forall a:set, a :e G ->
+              apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+            Hgrp).
+          assume _ _ _ _ Hid _.
+          exact (andEL
+            (apply_fun mult (e, x) = x)
+            (apply_fun mult (x, e) = x)
+            (Hid x Hx_G)).
+        }
+        claim Hwp1_eq : word_product mult e xs 1 = apply_fun xs 0.
+        { rewrite Hwp1. rewrite Hwp0. exact HidL. }
+        claim Hu_eq_x : u = x.
+        { symmetry. rewrite <- Hwp1_eq. rewrite <- Hn1. exact Hwp. }
+        rewrite <- Hu_eq_x.
+        rewrite Hu_invol.
+        reflexivity.
+      - (** u = inv e mul (x mul e) **)
+        apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall a b c:set, a :e G -> b :e G -> c :e G ->
+            apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+          (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+          (forall a:set, a :e G ->
+            apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+          Hgrp).
+        assume _ HinvFn He_G _ HidG HinvLaw.
+        claim Hx_G : x :e G.
+        {
+          exact (subgroup_of_subset
+            (apply_fun Gfam alpha) G mult e inv
+            (Hsubfam alpha HalphaJ)
+            x Hx0_in_Ga).
+        }
+        claim Hinv_e : apply_fun inv e = e.
+        {
+          claim Hinv_e_G : apply_fun inv e :e G.
+          { exact (HinvFn e He_G). }
+          claim Hmul_inv_e : apply_fun mult (apply_fun inv e, e) = e.
+          {
+            exact (andER
+              (apply_fun mult (e, apply_fun inv e) = e)
+              (apply_fun mult (apply_fun inv e, e) = e)
+              (HinvLaw e He_G)).
+          }
+          claim Hmul_e_e : apply_fun mult (e, e) = e.
+          {
+            exact (andEL
+              (apply_fun mult (e, e) = e)
+              (apply_fun mult (e, e) = e)
+              (HidG e He_G)).
+          }
+          exact (group_right_cancel
+            G mult e inv e (apply_fun inv e) e
+            Hgrp He_G Hinv_e_G He_G
+            (eq_i_tra
+              (apply_fun mult (apply_fun inv e, e))
+              e
+              (apply_fun mult (e, e))
+              Hmul_inv_e
+              (eq_symm (apply_fun mult (e, e)) e Hmul_e_e))).
+        }
+        claim Hxe : apply_fun mult (x, e) = x.
+        { exact (andER
+            (apply_fun mult (e, x) = x)
+            (apply_fun mult (x, e) = x)
+            (HidG x Hx_G)). }
+        claim Hwp1 : word_product mult e xs 1 =
+          apply_fun mult (word_product mult e xs 0, apply_fun xs 0).
+        { exact (word_product_succ mult e xs 0 nat_0). }
+        claim Hwp0 : word_product mult e xs 0 = e.
+        { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun xs i))). }
+        claim HidL : apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0.
+        {
+          exact (andEL
+            (apply_fun mult (e, x) = x)
+            (apply_fun mult (x, e) = x)
+            (HidG x Hx_G)).
+        }
+        claim Hwp1_eq : word_product mult e xs 1 = apply_fun xs 0.
+        { rewrite Hwp1. rewrite Hwp0. exact HidL. }
+        claim Hu_eq_x : u = x.
+        { symmetry. rewrite <- Hwp1_eq. rewrite <- Hn1. exact Hwp. }
+        rewrite Hu_eq_x.
+        rewrite Hinv_e.
+        rewrite Hxe.
+        exact (eq_symm
+          (apply_fun mult (e, x))
+          x
+          (andEL
+            (apply_fun mult (e, x) = x)
+            (apply_fun mult (x, e) = x)
+            (HidG x Hx_G))).
+
+  - assume Hexk : exists k:set, nat_p k /\ m = ordsucc k.
+    (** Length n >= 2. We show u is conjugate into some factor by cyclic reduction. **)
+    apply Hexk. let k.
+    assume Hk_pack : nat_p k /\ m = ordsucc k.
+    claim Hk_nat : nat_p k.
+    { exact (andEL (nat_p k) (m = ordsucc k) Hk_pack). }
+    claim Hm_sm : m = ordsucc k.
+    { exact (andER (nat_p k) (m = ordsucc k) Hk_pack). }
+
+    (** Extract labels of first and last letters. **)
+    claim H0_in_n : 0 :e n.
+    { rewrite Hn_sm. exact (nat_0_in_ordsucc m Hm_nat). }
+    claim Hm_in_n : m :e n.
+    { rewrite Hn_sm. exact (ordsuccI2 m). }
+    apply (Hxs_elem 0 H0_in_n). let beta0.
+    assume Hbeta_pack : beta0 :e J /\
+      apply_fun xs 0 :e apply_fun Gfam beta0 /\
+      apply_fun xs 0 <> apply_fun efam beta0.
+    apply (and3E
+      (beta0 :e J)
+      (apply_fun xs 0 :e apply_fun Gfam beta0)
+      (apply_fun xs 0 <> apply_fun efam beta0)
+      Hbeta_pack).
+    assume HbetaJ Hx0_in_Gb0 _.
+
+    apply (Hxs_elem m Hm_in_n). let alphaL.
+    assume Halpha_pack : alphaL :e J /\
+      apply_fun xs m :e apply_fun Gfam alphaL /\
+      apply_fun xs m <> apply_fun efam alphaL.
+    apply (and3E
+      (alphaL :e J)
+      (apply_fun xs m :e apply_fun Gfam alphaL)
+      (apply_fun xs m <> apply_fun efam alphaL)
+      Halpha_pack).
+    assume HalphaJ HxL_in_GaL _.
+
+    (** If the boundary labels differ, cyclic doubling yields a reduced word for u^2, contradicting Hu_sq. **)
+    apply (xm (alphaL <> beta0)).
+    * assume Hcyc_ne : alphaL <> beta0.
+      claim Hcyc_all :
+        forall a b:set, a :e J -> b :e J ->
+          apply_fun xs m :e apply_fun Gfam a ->
+          apply_fun xs 0 :e apply_fun Gfam b ->
+          a <> b.
+      {
+        let a b. assume HaJ HbJ Hlast Hfirst.
+        claim Hx0_ne_e : apply_fun xs 0 <> e.
+        {
+          exact (reduced_word_no_eG_if_product_non_e
+            G mult e inv J Gfam efam n xs u
+            Hgrp Hsubfam Hred Hn_ne0 Hwp Hu_ne_e
+            0 H0_in_n).
+        }
+        claim HxL_ne_e : apply_fun xs m <> e.
+        {
+          exact (reduced_word_no_eG_if_product_non_e
+            G mult e inv J Gfam efam n xs u
+            Hgrp Hsubfam Hred Hn_ne0 Hwp Hu_ne_e
+            m Hm_in_n).
+        }
+        claim Ha_eq : a = alphaL.
+        {
+          symmetry.
+          exact (disjoint_subgroups_label_unique
+            G mult e inv J Gfam alphaL a (apply_fun xs m)
+            Hdisjoint HalphaJ HaJ HxL_in_GaL Hlast HxL_ne_e).
+        }
+        claim Hb_eq : b = beta0.
+        {
+          symmetry.
+          exact (disjoint_subgroups_label_unique
+            G mult e inv J Gfam beta0 b (apply_fun xs 0)
+            Hdisjoint HbetaJ HbJ Hx0_in_Gb0 Hfirst Hx0_ne_e).
+        }
+        rewrite Ha_eq. rewrite Hb_eq.
+        exact Hcyc_ne.
+      }
+      apply (reduced_word_double_cyclic_word_product
+        G mult e inv J Gfam efam n xs m
+        Hgrp Hsubfam Hred Hn_sm Hm_nat Hcyc_all).
+      let ys2.
+      assume Hys2_pack :
+        reduced_word J Gfam efam (add_nat n n) ys2 /\
+        word_product mult e ys2 (add_nat n n) =
+          apply_fun mult (word_product mult e xs n, word_product mult e xs n).
+      claim Hred2 : reduced_word J Gfam efam (add_nat n n) ys2.
+      {
+        exact (andEL
+          (reduced_word J Gfam efam (add_nat n n) ys2)
+          (word_product mult e ys2 (add_nat n n) =
+            apply_fun mult (word_product mult e xs n, word_product mult e xs n))
+          Hys2_pack).
+      }
+      claim Hwp2 :
+        word_product mult e ys2 (add_nat n n) =
+          apply_fun mult (word_product mult e xs n, word_product mult e xs n).
+      {
+        exact (andER
+          (reduced_word J Gfam efam (add_nat n n) ys2)
+          (word_product mult e ys2 (add_nat n n) =
+            apply_fun mult (word_product mult e xs n, word_product mult e xs n))
+          Hys2_pack).
+      }
+      claim Hlen2_ne0 : add_nat n n <> 0.
+      {
+        rewrite Hn_sm.
+        rewrite (add_nat_SR (ordsucc m) m Hm_nat).
+        exact (neq_ordsucc_0 (add_nat (ordsucc m) m)).
+      }
+      claim Hlen2_ne1 : add_nat n n <> 1.
+      {
+        assume Habs2 : add_nat n n = 1.
+        claim Htmp1 : add_nat (ordsucc m) (ordsucc m) =
+          ordsucc (add_nat (ordsucc m) m).
+        { exact (add_nat_SR (ordsucc m) m Hm_nat). }
+        claim Heq : ordsucc (add_nat (ordsucc m) m) = 1.
+        {
+          claim Habs1 : add_nat (ordsucc m) (ordsucc m) = 1.
+          { rewrite <- Hn_sm. exact Habs2. }
+          rewrite <- Htmp1. exact Habs1.
+        }
+        claim Hmm_eq0 : add_nat (ordsucc m) m = 0.
+        {
+          claim Hs : ordsucc (add_nat (ordsucc m) m) = ordsucc 0.
+          { rewrite Heq. symmetry. exact ordsucc_0_eq_1_nat. }
+          exact (ordsucc_inj (add_nat (ordsucc m) m) 0 Hs).
+        }
+        claim Hmm_ne0 : add_nat (ordsucc m) m <> 0.
+        {
+          claim Htmp2 : add_nat (ordsucc m) m = ordsucc (add_nat m m).
+          { exact (add_nat_SL m Hm_nat m Hm_nat). }
+          assume H0.
+          claim Hs0 : ordsucc (add_nat m m) = 0.
+          {
+            exact (eq_i_tra
+              (ordsucc (add_nat m m))
+              (add_nat (ordsucc m) m)
+              0
+              (eq_symm (add_nat (ordsucc m) m) (ordsucc (add_nat m m)) Htmp2)
+              H0).
+          }
+          exact (neq_ordsucc_0 (add_nat m m) Hs0).
+        }
+        exact (Hmm_ne0 Hmm_eq0).
+      }
+      claim Hys2_in_G : forall i:set, i :e add_nat n n -> apply_fun ys2 i :e G.
+      {
+        let i. assume Hi.
+        exact (reduced_word_in_G
+          G mult e inv J Gfam efam (add_nat n n) ys2
+          Hsubfam Hred2 i Hi).
+      }
+      claim Hys2_ne_e : forall i:set, i :e add_nat n n -> apply_fun ys2 i <> e.
+      {
+        let i. assume Hi.
+        exact (reduced_word_no_eG_all
+          G mult e inv J Gfam efam (add_nat n n) ys2
+          Hgrp Hsubfam Hred2 Hlen2_ne0 Hlen2_ne1 i Hi).
+      }
+      claim Hwp2_e : word_product mult e ys2 (add_nat n n) = e.
+      {
+        rewrite Hwp2.
+        rewrite Hwp.
+        exact Hu_sq.
+      }
+      claim Hwp2_ne : word_product mult e ys2 (add_nat n n) <> e.
+      {
+        exact (free_product_reduced_word_length_ne0_product_ne_e
+          G mult e inv J Gfam efam (add_nat n n) ys2
+          Hfp
+          Hred2
+          Hys2_in_G
+          Hys2_ne_e
+          Hlen2_ne0).
+      }
+      exact (FalseE (Hwp2_ne Hwp2_e) (exists alpha c x:set,
+        alpha :e J /\
+        c :e G /\
+        x :e apply_fun Gfam alpha /\
+        x <> e /\
+        apply_fun inv x = x /\
+        u = apply_fun mult (apply_fun inv c, apply_fun mult (x, c)))).
+
+    * assume Hcyc_eq : ~(alphaL <> beta0).
+      (** Remaining hard case: boundary labels coincide; needs cyclic reduction/induction on word length. **)
+      admit.
 Admitted.
 
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
