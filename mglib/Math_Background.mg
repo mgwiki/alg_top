@@ -1,7 +1,7 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 533 **)
-(** Balance Dave 1983 **)
+(** Balance Dave 2383 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -203639,6 +203639,7 @@ apply andI.
 Qed.
 
 (** Helper: Sn 2 is locally 2-Euclidean (via stereographic projection) **)
+(** Proven Dave **)
 Lemma Sn_2_locally_m_euclidean :
   locally_m_euclidean (Sn 2) (Sn_topology 2) 2.
 prove 2 :e omega /\ topology_on (Sn 2) (Sn_topology 2) /\
@@ -203678,15 +203679,122 @@ apply and3I.
       assume Hcontra.
       claim Hxeq2 : x = Rn_negate 3 south_pole_3. { exact (SingE (Rn_negate 3 south_pole_3) x Hcontra). }
       claim Hspne : south_pole_3 <> Rn_negate 3 south_pole_3.
-      { admit. }
+      { exact (Sn2_v_neq_neg_v south_pole_3 south_pole_3_in_Sn2). }
       exact (Hspne (Hxeq (fun t _ => t = Rn_negate 3 south_pole_3) Hxeq2)).
     }
     claim HxDnorth : x :e D_north.
     { exact (setminusI (Sn 2) {Rn_negate 3 south_pole_3} x Hx Hxne_north). }
-    (** Compose negate homeomorphism with stereo_S_map homeomorphism **)
-    (** Use: Rn_negate_3_Sn2_homeomorphism maps Sn2 -> Sn2 **)
-    (** For now just use the same chart approach with the neg_map composed **)
-    admit.
+    (** Compose neg_map (D_north -> D) with stereo_S_map (D -> E2) **)
+    set D := Sn 2 :\: {south_pole_3}.
+    set DTop := subspace_topology (Sn 2) (Sn_topology 2) D.
+    set E2 := euclidean_space 2.
+    set E2top := euclidean_topology 2.
+    set neg_map := graph (Sn 2) (fun v:set => Rn_negate 3 v).
+    (** Restrict neg_map to D_north: homeomorphism D_north -> image_of neg_map D_north **)
+    claim HnegDnorthHomeo : homeomorphism D_north (subspace_topology (Sn 2) (Sn_topology 2) D_north)
+      (image_of neg_map D_north) (subspace_topology (Sn 2) (Sn_topology 2) (image_of neg_map D_north))
+      neg_map.
+    {
+      exact (homeomorphism_restrict_to_image_of_subset (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+        neg_map D_north Rn_negate_3_Sn2_homeomorphism
+        (open_in_subset (Sn 2) (Sn_topology 2) D_north
+          (open_inI (Sn 2) (Sn_topology 2) D_north (lemma59_3_Sn_topology_on 2) HDnorth_open))).
+    }
+    (** image_of neg_map D_north = D: neg_map(v) ∉ {south_pole_3} since v ≠ north_pole **)
+    claim HimgSubD : image_of neg_map D_north c= D.
+    {
+      let z. assume HzImg.
+      apply (ReplE_impred D_north (fun u:set => apply_fun neg_map u) z HzImg).
+      let v. assume HvDn HzEq.
+      claim HvSn : v :e Sn 2.
+      { exact (open_in_subset (Sn 2) (Sn_topology 2) D_north
+          (open_inI (Sn 2) (Sn_topology 2) D_north (lemma59_3_Sn_topology_on 2) HDnorth_open) v HvDn). }
+      claim HvNotNorth : ~ (v :e {Rn_negate 3 south_pole_3}).
+      { exact (andER (v :e Sn 2) (v /:e {Rn_negate 3 south_pole_3}) (setminusE (Sn 2) {Rn_negate 3 south_pole_3} v HvDn)). }
+      claim HvApply : apply_fun neg_map v = Rn_negate 3 v.
+      { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) v HvSn). }
+      claim HzEqRn : z = Rn_negate 3 v.
+      { exact (HvApply (fun t _ => z = t) HzEq). }
+      apply setminusI.
+      + exact ((eq_symm z (Rn_negate 3 v) HzEqRn) (fun t _ => t :e Sn 2) (Rn_negate_3_in_Sn2 v HvSn)).
+      + assume HzSing.
+        claim HzSp : z = south_pole_3. { exact (SingE south_pole_3 z HzSing). }
+        claim HRnv_sp : Rn_negate 3 v = south_pole_3.
+        { exact (HzSp (fun t _ => Rn_negate 3 v = t) (eq_symm z (Rn_negate 3 v) HzEqRn)). }
+        claim HvE3 : v :e euclidean_space 3.
+        { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v HvSn). }
+        claim HvEqNorth : v = Rn_negate 3 south_pole_3.
+        {
+          rewrite <- (Rn_negate_3_involution v HvE3).
+          rewrite HRnv_sp.
+          reflexivity.
+        }
+        exact (HvNotNorth ((eq_symm v (Rn_negate 3 south_pole_3) HvEqNorth)
+          (fun t _ => t :e {Rn_negate 3 south_pole_3}) (SingI (Rn_negate 3 south_pole_3)))).
+    }
+    claim HDsubImg : D c= image_of neg_map D_north.
+    {
+      let z. assume HzD.
+      claim HzMinusPack : z :e Sn 2 /\ z /:e {south_pole_3}.
+      { exact (setminusE (Sn 2) {south_pole_3} z HzD). }
+      claim HzSn : z :e Sn 2.
+      { exact (andEL (z :e Sn 2) (z /:e {south_pole_3}) HzMinusPack). }
+      claim HzNotSouth : ~ (z :e {south_pole_3}).
+      { exact (andER (z :e Sn 2) (z /:e {south_pole_3}) HzMinusPack). }
+      claim HRnzSn : Rn_negate 3 z :e Sn 2.
+      { exact (Rn_negate_3_in_Sn2 z HzSn). }
+      claim HRnzNotNorth : ~ (Rn_negate 3 z :e {Rn_negate 3 south_pole_3}).
+      {
+        assume HcontraS.
+        claim HRnzEqNorth : Rn_negate 3 z = Rn_negate 3 south_pole_3.
+        { exact (SingE (Rn_negate 3 south_pole_3) (Rn_negate 3 z) HcontraS). }
+        claim HzEqSp : z = south_pole_3.
+        {
+          rewrite <- (Rn_negate_3_involution z (SepE1 (euclidean_space 3)
+            (fun u:set => euclidean_norm_sq 3 u = 1) z HzSn)).
+          rewrite HRnzEqNorth.
+          exact (Rn_negate_3_involution south_pole_3
+            (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) south_pole_3
+              south_pole_3_in_Sn2)).
+        }
+        exact (HzNotSouth ((eq_symm z south_pole_3 HzEqSp) (fun t _ => t :e {south_pole_3}) (SingI south_pole_3))).
+      }
+      claim HRnzDnorth : Rn_negate 3 z :e D_north.
+      { exact (setminusI (Sn 2) {Rn_negate 3 south_pole_3} (Rn_negate 3 z) HRnzSn HRnzNotNorth). }
+      claim HnegApply : apply_fun neg_map (Rn_negate 3 z) = Rn_negate 3 (Rn_negate 3 z).
+      { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) (Rn_negate 3 z) HRnzSn). }
+      claim HRnRnz_z : Rn_negate 3 (Rn_negate 3 z) = z.
+      { exact (Rn_negate_3_involution z (SepE1 (euclidean_space 3)
+          (fun u:set => euclidean_norm_sq 3 u = 1) z HzSn)). }
+      claim HnegApplyZ : apply_fun neg_map (Rn_negate 3 z) = z.
+      { exact (HRnRnz_z (fun t _ => apply_fun neg_map (Rn_negate 3 z) = t) HnegApply). }
+      claim HzEqImg : z = apply_fun neg_map (Rn_negate 3 z).
+      { exact (eq_symm (apply_fun neg_map (Rn_negate 3 z)) z HnegApplyZ). }
+      exact (HnegApplyZ (fun t _ => t :e image_of neg_map D_north)
+        (ReplI D_north (fun u:set => apply_fun neg_map u) (Rn_negate 3 z) HRnzDnorth)).
+    }
+    claim HimgEq : image_of neg_map D_north = D.
+    { exact (set_ext (image_of neg_map D_north) D HimgSubD HDsubImg). }
+    (** Rewrite topology: subspace_topology ... (image_of neg_map D_north) = DTop **)
+    claim HtopEq : subspace_topology (Sn 2) (Sn_topology 2) (image_of neg_map D_north) = DTop.
+    { rewrite HimgEq. reflexivity. }
+    claim HnegDnorthHomeoD : homeomorphism D_north (subspace_topology (Sn 2) (Sn_topology 2) D_north)
+      D DTop neg_map.
+    { rewrite <- HtopEq. rewrite <- HimgEq. exact HnegDnorthHomeo. }
+    (** Compose with stereo_S_map: D_north -> D -> E2 **)
+    set f_south := compose_fun D_north neg_map stereo_S_map.
+    witness D_north. witness E2. witness f_south.
+    apply and5I.
+    * exact (open_inI (Sn 2) (Sn_topology 2) D_north (lemma59_3_Sn_topology_on 2) HDnorth_open).
+    * exact HxDnorth.
+    * exact (Subq_ref E2).
+    * exact (X_is_open E2 E2top (euclidean_topology_is_topology 2)).
+    * claim Hsubsp_eq2 : subspace_topology E2 E2top E2 = E2top.
+      { exact (subspace_topology_whole E2 E2top (euclidean_topology_is_topology 2)). }
+      rewrite Hsubsp_eq2.
+      exact (homeomorphism_compose D_north (subspace_topology (Sn 2) (Sn_topology 2) D_north)
+        D DTop E2 E2top neg_map stereo_S_map
+        HnegDnorthHomeoD stereo_S_map_homeomorphism).
   + (** Case: x != south_pole_3 - use stereo_S_map directly **)
     assume Hxnotsouth.
     set D := Sn 2 :\: {south_pole_3}.
@@ -203705,9 +203813,10 @@ apply and3I.
       { exact (subspace_topology_whole E2 E2top (euclidean_topology_is_topology 2)). }
       rewrite Hsubsp_eq.
       exact stereo_S_map_homeomorphism.
-Admitted.
+Qed.
 
 (** Helper: projective plane is locally 2-Euclidean, using covering map from Sn 2 **)
+(** Proven Dave **)
 Lemma pp_locally_m_euclidean :
   locally_m_euclidean projective_plane projective_plane_topology 2.
 set neg_map := graph (Sn 2) (fun v:set => Rn_negate 3 v).
@@ -203833,27 +203942,93 @@ apply and3I.
         (open_inI (Sn 2) (Sn_topology 2) negW (lemma59_3_Sn_topology_on 2) HnegWopen)). }
     claim HnegWsubD : negW c= D.
     {
-      (** neg_map sends W to negW. Since south_pole_3 :e W, neg_map(south_pole_3) = Rn_negate 3 south_pole_3 :e negW.
-          But we need to show south_pole_3 ∉ negW.
-          south_pole_3 :e negW means exists w :e W with neg_map(w) = south_pole_3, i.e. Rn_negate 3 w = south_pole_3,
-          i.e. w = Rn_negate 3 south_pole_3. But then neg_map(w) = south_pole_3 :e W,
-          which gives neg_map(south_pole_3) :e neg_map(W) and south_pole_3 :e W, contradiction with W ∩ neg_map(W) = ∅.
-
-          Actually easier: negW c= D since Rn_negate 3 south_pole_3 ∉ negW.
-          Rn_negate 3 south_pole_3 :e negW would mean south_pole_3 :e W (since neg_map is involution).
-          HspW: south_pole_3 :e W. So actually this doesn't work.
-
-          Let me instead show: south_pole_3 ∉ negW.
-          south_pole_3 :e negW = image_of neg_map W means exists w :e W with apply_fun neg_map w = south_pole_3.
-          apply_fun neg_map w = Rn_negate 3 w (for w :e Sn 2).
-          So Rn_negate 3 w = south_pole_3, which means w = Rn_negate 3 south_pole_3 (since neg_map involution).
-          So Rn_negate 3 south_pole_3 :e W.
-          But then south_pole_3 :e W and Rn_negate 3 south_pole_3 :e W gives south_pole_3 :e W ∩ neg_map(W).
-          Wait, south_pole_3 :e neg_map(W) means exists w :e W with Rn_negate 3 w = south_pole_3.
-          Yes, w = Rn_negate 3 south_pole_3 :e W, and Rn_negate 3 w = south_pole_3. ✓
-          But we don't know W ∩ neg_map(W) = ∅ in this proof...
-      **)
-      admit.
+      (** south_pole_3 ∉ negW: if z = Rn_negate 3 w :e negW = south_pole_3, then w = Rn_negate 3 south_pole_3.
+          Both south_pole_3 :e W and Rn_negate 3 south_pole_3 :e W would then hold.
+          They map to the same value under pp_map (by pp_map_neg_eq).
+          By injectivity (homeomorphism left inverse), south_pole_3 = Rn_negate 3 south_pole_3.
+          But Sn2_v_neq_neg_v gives south_pole_3 ≠ Rn_negate 3 south_pole_3. Contradiction. **)
+      (** Get left inverse g of the homeomorphism on W **)
+      apply (homeomorphism_inverse_package W (subspace_topology (Sn 2) (Sn_topology 2) W)
+        U_ev (subspace_topology projective_plane projective_plane_topology U_ev)
+        (graph W (fun z:set => apply_fun projective_plane_map z)) HWhomeo).
+      let g. assume HgPack.
+      (** HgPack structure: (continuous_map /\ leftinv) /\ rightinv, with /\ left-assoc **)
+      claim HgLeftInv : forall x:set, x :e W ->
+        apply_fun g (apply_fun (graph W (fun z:set => apply_fun projective_plane_map z)) x) = x.
+      { exact (andER (continuous_map U_ev (subspace_topology projective_plane projective_plane_topology U_ev)
+            W (subspace_topology (Sn 2) (Sn_topology 2) W) g)
+          (forall x:set, x :e W ->
+            apply_fun g (apply_fun (graph W (fun z:set => apply_fun projective_plane_map z)) x) = x)
+          (andEL (continuous_map U_ev (subspace_topology projective_plane projective_plane_topology U_ev)
+              W (subspace_topology (Sn 2) (Sn_topology 2) W) g /\
+              (forall x:set, x :e W ->
+                apply_fun g (apply_fun (graph W (fun z:set => apply_fun projective_plane_map z)) x) = x))
+            (forall y:set, y :e U_ev ->
+              apply_fun (graph W (fun z:set => apply_fun projective_plane_map z)) (apply_fun g y) = y)
+            HgPack)). }
+      let z. assume HzNegW.
+      apply (ReplE_impred W (fun u:set => apply_fun neg_map u) z HzNegW).
+      let w. assume HwW HzEq.
+      claim HwSn : w :e Sn 2. { exact (HWsub w HwW). }
+      claim HRnwSn : Rn_negate 3 w :e Sn 2. { exact (Rn_negate_3_in_Sn2 w HwSn). }
+      claim HwApply : apply_fun neg_map w = Rn_negate 3 w.
+      { exact (neg_map_apply_eq w HwSn). }
+      claim HRnw_z : Rn_negate 3 w = z.
+      { exact (HwApply (fun t _ => t = z) (eq_symm z (apply_fun neg_map w) HzEq)). }
+      claim HzSn : z :e Sn 2. { exact (HRnw_z (fun t _ => t :e Sn 2) HRnwSn). }
+      apply setminusI.
+      * exact HzSn.
+      * assume HzSing.
+        claim HzSp : z = south_pole_3.
+        { exact (SingE south_pole_3 z HzSing). }
+        (** Rn_negate 3 w = south_pole_3 **)
+        claim HRnw_sp : Rn_negate 3 w = south_pole_3.
+        { exact (HzSp (fun t _ => Rn_negate 3 w = t) HRnw_z). }
+        (** w = Rn_negate 3 south_pole_3 by involution **)
+        claim HwE3 : w :e euclidean_space 3.
+        { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) w HwSn). }
+        claim HwEq : w = Rn_negate 3 south_pole_3.
+        {
+          rewrite <- (Rn_negate_3_involution w HwE3).
+          rewrite HRnw_sp.
+          reflexivity.
+        }
+        (** Rn_negate 3 south_pole_3 :e W **)
+        claim HnspW : Rn_negate 3 south_pole_3 :e W.
+        { exact (HwEq (fun t _ => t :e W) HwW). }
+        (** Both south_pole_3 :e W and Rn_negate 3 south_pole_3 :e W **)
+        (** They have the same image under graph W (fun z => apply_fun projective_plane_map z) **)
+        claim HspSn : south_pole_3 :e Sn 2. { exact south_pole_3_in_Sn2. }
+        claim HnspSn : Rn_negate 3 south_pole_3 :e Sn 2.
+        { exact (Rn_negate_3_in_Sn2 south_pole_3 HspSn). }
+        claim Heq1 : apply_fun (graph W (fun z:set => apply_fun projective_plane_map z)) south_pole_3
+          = apply_fun projective_plane_map south_pole_3.
+        { exact (apply_fun_graph W (fun z:set => apply_fun projective_plane_map z) south_pole_3 HspW). }
+        claim Heq2 : apply_fun (graph W (fun z:set => apply_fun projective_plane_map z)) (Rn_negate 3 south_pole_3)
+          = apply_fun projective_plane_map (Rn_negate 3 south_pole_3).
+        { exact (apply_fun_graph W (fun z:set => apply_fun projective_plane_map z)
+            (Rn_negate 3 south_pole_3) HnspW). }
+        claim Heq3 : apply_fun projective_plane_map (Rn_negate 3 south_pole_3)
+          = apply_fun projective_plane_map south_pole_3.
+        { exact (pp_map_neg_eq south_pole_3 HspSn). }
+        claim HeqImg : apply_fun (graph W (fun z:set => apply_fun projective_plane_map z)) south_pole_3
+          = apply_fun (graph W (fun z:set => apply_fun projective_plane_map z)) (Rn_negate 3 south_pole_3).
+        { rewrite Heq1. rewrite Heq2.
+          exact (eq_symm (apply_fun projective_plane_map (Rn_negate 3 south_pole_3))
+            (apply_fun projective_plane_map south_pole_3) Heq3). }
+        (** By injectivity: south_pole_3 = Rn_negate 3 south_pole_3 **)
+        claim HinvSp : apply_fun g (apply_fun (graph W (fun z:set => apply_fun projective_plane_map z)) south_pole_3)
+          = south_pole_3.
+        { exact (HgLeftInv south_pole_3 HspW). }
+        claim HinvNsp : apply_fun g (apply_fun (graph W (fun z:set => apply_fun projective_plane_map z))
+          (Rn_negate 3 south_pole_3)) = Rn_negate 3 south_pole_3.
+        { exact (HgLeftInv (Rn_negate 3 south_pole_3) HnspW). }
+        set fW := graph W (fun z:set => apply_fun projective_plane_map z).
+        claim HspEqNsp : south_pole_3 = Rn_negate 3 south_pole_3.
+        { exact (HinvNsp (fun t _ => south_pole_3 = t)
+            (HeqImg (fun t _ => south_pole_3 = apply_fun g t)
+              (eq_symm (apply_fun g (apply_fun fW south_pole_3)) south_pole_3 HinvSp))). }
+        exact (Sn2_v_neq_neg_v south_pole_3 HspSn HspEqNsp).
     }
     (** Use negW ⊆ D to get stereo_S_map chart on negW **)
     claim HnegWHomeoD : homeomorphism negW (subspace_topology D DTop negW)
@@ -203976,14 +204151,14 @@ apply and3I.
         W (subspace_topology (Sn 2) (Sn_topology 2) W)
         V2 (subspace_topology E2 E2top V2)
         hinv stereo_S_map HhinvHomeo HWHomeoSn).
-Admitted.
+Qed.
 
 (** from S60 Thm 60.3 (line 1691 in algtop.tex) **)
 (** LATEX VERSION: P^2 is a compact surface, and the quotient map p: S^2 -> P^2 **)
 (** is a covering map. **)
 (** EFFORT: 25 lines textbook, difficulty 6/10, USD 300 **)
-(** Bounty 400 **)
-(** Lock Dave 1773100611 **)
+(** Collected Dave 400 **)
+(** Proven Dave **)
 Theorem thm60_3_projective_plane_surface_covering :
   m_manifold projective_plane projective_plane_topology 2 /\
   compact_space projective_plane projective_plane_topology /\
@@ -204309,7 +204484,7 @@ exact (thm60_3_projective_plane_surface_covering_from_parts
   Hmanifold
   HcompactS2
   Hcover).
-Admitted.
+Qed.
 
 (** from S60 Cor 60.4 (line 1725 in algtop.tex) **)
 (** LATEX VERSION: pi_1(P^2, y) is a group of order 2. **)
