@@ -1,6 +1,6 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 539 **)
+(** Balance Charlie 533 **)
 (** Balance Dave 1983 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -236976,7 +236976,8 @@ Admitted.
 (** Infrastructure bounty: torsion/involution in free products (order 2 case).
     Expected use: discharge the remaining "boundary labels coincide" admit branches by showing
     that an involution is conjugate into some factor subgroup. **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 1773157259 **)
 Lemma free_product_involution_conjugate_into_factor :
   forall G mult e inv J Gfam efam u:set,
   free_product_of_subgroups G mult e inv J Gfam efam ->
