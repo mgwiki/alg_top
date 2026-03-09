@@ -232204,6 +232204,23 @@ apply (nat_inv m Hm_nat).
       Hp_e).
   - assume Hef0_ne_e : apply_fun efam alpha0 <> eG.
     (** Remaining case: efam(alpha0) is nontrivial. Continue the boundary-product analysis. **)
+    claim Hef0_in_Ga0 : apply_fun efam alpha0 :e apply_fun Gfam alpha0.
+    {
+      rewrite <- Hp_ef0.
+      exact (subgroup_of_mult_closed
+        (apply_fun Gfam alpha0) G multG eG invG
+        (apply_fun xs m) (apply_fun xs 0)
+        (Hsubfam alpha0 Halpha0J)
+        Hxm_in_Ga0
+        Hx0_in_Ga0).
+    }
+    claim Hef0_G : apply_fun efam alpha0 :e G.
+    {
+      exact (subgroup_of_subset
+        (apply_fun Gfam alpha0) G multG eG invG
+        (Hsubfam alpha0 Halpha0J)
+        (apply_fun efam alpha0) Hef0_in_Ga0).
+    }
 
   (** TODO: finish the boundary-product analysis in the p = efam(alpha0) branch. **)
   admit.
