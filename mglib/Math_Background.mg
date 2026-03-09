@@ -3239,9 +3239,9 @@ Axiom minus_SNo_Lt_contra : forall x y, SNo x -> SNo y -> x < y -> - y < - x.
 
 Axiom minus_SNo_Le_contra : forall x y, SNo x -> SNo y -> x <= y -> - y <= - x.
 
-Axiom minus_SNo_SNoCutP : forall x, SNo x -> SNoCutP {- z|z :e SNoR x} {- w|w :e SNoL x}.
+Axiom SNo_minus_SNoCutP : forall x, SNo x -> SNoCutP {- z|z :e SNoR x} {- w|w :e SNoL x}.
 
-Axiom minus_SNo_SNoCutP_gen : forall L R, SNoCutP L R -> SNoCutP {- z|z :e R} {- w|w :e L}.
+Axiom SNo_minus_SNoCutP_gen : forall L R, SNoCutP L R -> SNoCutP {- z|z :e R} {- w|w :e L}.
 
 Axiom minus_SNo_Lev_lem1 : forall alpha, ordinal alpha -> forall x :e SNoS_ alpha, SNoLev (- x) c= SNoLev x.
 
@@ -3251,9 +3251,9 @@ Axiom minus_SNo_invol : forall x, SNo x -> - - x = x.
 
 Axiom minus_SNo_Lev : forall x, SNo x -> SNoLev (- x) = SNoLev x.
 
-Axiom minus_SNo_SNo_ : forall alpha, ordinal alpha -> forall x, SNo_ alpha x -> SNo_ alpha (- x).
+Axiom SNo_minus_SNo_ : forall alpha, ordinal alpha -> forall x, SNo_ alpha x -> SNo_ alpha (- x).
 
-Axiom minus_SNo_SNoS_ : forall alpha, ordinal alpha -> forall x, x :e SNoS_ alpha -> - x :e SNoS_ alpha.
+Axiom SNo_minus_SNoS_ : forall alpha, ordinal alpha -> forall x, x :e SNoS_ alpha -> - x :e SNoS_ alpha.
 
 Axiom minus_SNoCut_eq_lem : forall v, SNo v -> forall L R, SNoCutP L R -> v = SNoCut L R -> - v = SNoCut {- z|z :e R} {- w|w :e L}.
 
@@ -3265,7 +3265,7 @@ Axiom minus_SNo_Lt_contra2 : forall x y, SNo x -> SNo y -> x < -y -> y < - x.
 
 Axiom mordinal_SNoLev_min_2 : forall alpha, ordinal alpha -> forall z, SNo z -> SNoLev z :e ordsucc alpha -> - alpha <= z.
 
-Axiom minus_SNo_SNoS_omega : forall x :e SNoS_ omega, - x :e SNoS_ omega.
+Axiom SNo_minus_SNoS_omega : forall x :e SNoS_ omega, - x :e SNoS_ omega.
 
 Axiom SNoL_minus_SNoR: forall x, SNo x -> SNoL (- x) = {- w|w :e SNoR x}.
 
@@ -198628,6 +198628,2117 @@ exact (and3I
   Hcover).
 Qed.
 
+(** Infrastructure for thm60_3: continuity of norm squared on E3 **)
+(** Helper: topology on each factor of const_space_family 3 R R_standard_topology **)
+Lemma sf3R_topology_on : forall i:set, i :e 3 ->
+  topology_on
+    (space_family_set (const_space_family 3 R R_standard_topology) i)
+    (space_family_topology (const_space_family 3 R R_standard_topology) i).
+let i.
+assume Hi.
+rewrite (space_family_set_const_space_family 3 R R_standard_topology i Hi).
+rewrite (space_family_topology_const_space_family 3 R R_standard_topology i Hi).
+exact R_standard_topology_is_topology.
+Qed.
+
+(** Helper: coordinate evaluation map for euclidean_space 3 is continuous **)
+Lemma euclidean_3_eval_continuous : forall i:set, i :e 3 ->
+  continuous_map (euclidean_space 3) (euclidean_topology 3) R R_standard_topology
+    (product_eval_map 3 (const_space_family 3 R R_standard_topology) i).
+let i.
+assume Hi : i :e 3.
+claim HfamTop :
+  forall j:set, j :e 3 ->
+    topology_on
+      (space_family_set (const_space_family 3 R R_standard_topology) j)
+      (space_family_topology (const_space_family 3 R R_standard_topology) j).
+{
+  let j. assume Hj. exact (sf3R_topology_on j Hj).
+}
+claim HevalCont :
+  continuous_map
+    (euclidean_space 3) (euclidean_topology 3)
+    (space_family_set (const_space_family 3 R R_standard_topology) i)
+    (space_family_topology (const_space_family 3 R R_standard_topology) i)
+    (product_eval_map 3 (const_space_family 3 R R_standard_topology) i).
+{
+  exact (product_eval_map_continuous 3 (const_space_family 3 R R_standard_topology) i HfamTop Hi).
+}
+claim HYsub :
+  space_family_set (const_space_family 3 R R_standard_topology) i c= R.
+{
+  let y.
+  assume Hy : y :e space_family_set (const_space_family 3 R R_standard_topology) i.
+  rewrite <- (space_family_set_const_space_family 3 R R_standard_topology i Hi).
+  exact Hy.
+}
+claim HTyEq :
+  space_family_topology (const_space_family 3 R R_standard_topology) i =
+  subspace_topology R R_standard_topology
+    (space_family_set (const_space_family 3 R R_standard_topology) i).
+{
+  rewrite (space_family_set_const_space_family 3 R R_standard_topology i Hi).
+  rewrite (space_family_topology_const_space_family 3 R R_standard_topology i Hi).
+  rewrite (subspace_topology_whole R R_standard_topology R_standard_topology_is_topology).
+  reflexivity.
+}
+exact (continuous_map_range_expand
+  (euclidean_space 3) (euclidean_topology 3)
+  (space_family_set (const_space_family 3 R R_standard_topology) i)
+  (space_family_topology (const_space_family 3 R R_standard_topology) i)
+  R R_standard_topology
+  (product_eval_map 3 (const_space_family 3 R R_standard_topology) i)
+  HevalCont
+  HYsub
+  R_standard_topology_is_topology
+  HTyEq).
+Qed.
+
+(** Helper: apply_fun of product_eval_map gives coordinate **)
+Lemma euclidean_3_eval_apply : forall v:set, forall i:set,
+  v :e euclidean_space 3 -> i :e 3 ->
+  apply_fun (product_eval_map 3 (const_space_family 3 R R_standard_topology) i) v =
+  apply_fun v i.
+let v i.
+assume Hv Hi.
+exact (apply_fun_graph
+  (euclidean_space 3)
+  (fun f:set => apply_fun f i)
+  v
+  Hv).
+Qed.
+
+(** Helper: coordinate of v in euclidean_space 3 is in R **)
+Lemma euclidean_3_coord_in_R : forall v:set, forall i:set,
+  v :e euclidean_space 3 -> i :e 3 ->
+  apply_fun v i :e R.
+let v i.
+assume Hv Hi.
+exact (euclidean_space_coord_in_R 3 v i Hv Hi).
+Qed.
+
+(** Helper: square of coordinate is continuous **)
+Lemma euclidean_3_sq_continuous : forall i:set, i :e 3 ->
+  continuous_map (euclidean_space 3) (euclidean_topology 3) R R_standard_topology
+    (compose_fun (euclidean_space 3)
+      (pair_map (euclidean_space 3)
+        (product_eval_map 3 (const_space_family 3 R R_standard_topology) i)
+        (product_eval_map 3 (const_space_family 3 R R_standard_topology) i))
+      mul_fun_R).
+let i.
+assume Hi.
+claim HE3top : topology_on (euclidean_space 3) (euclidean_topology 3).
+{
+  exact (lemma59_3_euclidean_topology_on 3).
+}
+claim Hcont_i : continuous_map (euclidean_space 3) (euclidean_topology 3) R R_standard_topology
+  (product_eval_map 3 (const_space_family 3 R R_standard_topology) i).
+{
+  exact (euclidean_3_eval_continuous i Hi).
+}
+exact (mul_two_continuous_R
+  (euclidean_space 3)
+  (euclidean_topology 3)
+  (product_eval_map 3 (const_space_family 3 R R_standard_topology) i)
+  (product_eval_map 3 (const_space_family 3 R R_standard_topology) i)
+  HE3top
+  Hcont_i
+  Hcont_i).
+Qed.
+
+(** Helper: norm_sq_fn as a continuous map from E3 to R **)
+Lemma norm_sq_3_continuous :
+  continuous_map (euclidean_space 3) (euclidean_topology 3) R R_standard_topology
+    (graph (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v)).
+set E3 := euclidean_space 3.
+set E3top := euclidean_topology 3.
+set ev := product_eval_map 3 (const_space_family 3 R R_standard_topology).
+set sq := fun i:set => compose_fun E3 (pair_map E3 (ev i) (ev i)) mul_fun_R.
+set sq01 := compose_fun E3 (pair_map E3 (sq 0) (sq 1)) add_fun_R.
+set norm_sq_fn := compose_fun E3 (pair_map E3 sq01 (sq 2)) add_fun_R.
+claim HE3top : topology_on E3 E3top. { exact (lemma59_3_euclidean_topology_on 3). }
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 (ordsuccI1 1 0 (ordsuccI2 0))). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 (ordsuccI2 1)). }
+claim H2in3 : 2 :e 3. { exact In_2_3. }
+claim Hsq0cont : continuous_map E3 E3top R R_standard_topology (sq 0).
+{ exact (euclidean_3_sq_continuous 0 H0in3). }
+claim Hsq1cont : continuous_map E3 E3top R R_standard_topology (sq 1).
+{ exact (euclidean_3_sq_continuous 1 H1in3). }
+claim Hsq2cont : continuous_map E3 E3top R R_standard_topology (sq 2).
+{ exact (euclidean_3_sq_continuous 2 H2in3). }
+claim Hsq01cont : continuous_map E3 E3top R R_standard_topology sq01.
+{ exact (add_two_continuous_R E3 E3top (sq 0) (sq 1) HE3top Hsq0cont Hsq1cont). }
+claim Hnorm_sq_fn_cont : continuous_map E3 E3top R R_standard_topology norm_sq_fn.
+{ exact (add_two_continuous_R E3 E3top sq01 (sq 2) HE3top Hsq01cont Hsq2cont). }
+claim Hnat3 : nat_p 3. { exact (nat_ordsucc 2 nat_2). }
+claim HgraphFnOn :
+  function_on (graph E3 (fun v:set => euclidean_norm_sq 3 v)) E3 R.
+{
+  let v. assume Hv : v :e E3.
+  rewrite (apply_fun_graph E3 (fun u:set => euclidean_norm_sq 3 u) v Hv).
+  exact (finite_real_sum_in_R
+    (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))
+    3 Hnat3
+    (fun i Hi => real_mul_SNo (apply_fun v i)
+      (euclidean_space_coord_in_R 3 v i Hv Hi)
+      (apply_fun v i)
+      (euclidean_space_coord_in_R 3 v i Hv Hi))).
+}
+claim Hpointwise : forall v:set, v :e E3 ->
+  apply_fun norm_sq_fn v =
+  apply_fun (graph E3 (fun u:set => euclidean_norm_sq 3 u)) v.
+{
+  let v. assume Hv : v :e E3.
+  claim Hgraph_eq :
+    apply_fun (graph E3 (fun u:set => euclidean_norm_sq 3 u)) v = euclidean_norm_sq 3 v.
+  { exact (apply_fun_graph E3 (fun u:set => euclidean_norm_sq 3 u) v Hv). }
+  rewrite Hgraph_eq.
+  claim Hv0 : apply_fun v 0 :e R. { exact (euclidean_3_coord_in_R v 0 Hv H0in3). }
+  claim Hv1 : apply_fun v 1 :e R. { exact (euclidean_3_coord_in_R v 1 Hv H1in3). }
+  claim Hv2 : apply_fun v 2 :e R. { exact (euclidean_3_coord_in_R v 2 Hv H2in3). }
+  claim Hev0 : apply_fun (ev 0) v = apply_fun v 0.
+  { exact (euclidean_3_eval_apply v 0 Hv H0in3). }
+  claim Hev1 : apply_fun (ev 1) v = apply_fun v 1.
+  { exact (euclidean_3_eval_apply v 1 Hv H1in3). }
+  claim Hev2 : apply_fun (ev 2) v = apply_fun v 2.
+  { exact (euclidean_3_eval_apply v 2 Hv H2in3). }
+  claim Hev0R : apply_fun (ev 0) v :e R. { rewrite Hev0. exact Hv0. }
+  claim Hev1R : apply_fun (ev 1) v :e R. { rewrite Hev1. exact Hv1. }
+  claim Hev2R : apply_fun (ev 2) v :e R. { rewrite Hev2. exact Hv2. }
+  claim Hsq0v : apply_fun (sq 0) v = mul_SNo (apply_fun v 0) (apply_fun v 0).
+  {
+    claim Hstep0 : apply_fun (sq 0) v = mul_SNo (apply_fun (ev 0) v) (apply_fun (ev 0) v).
+    { exact (mul_of_pair_map_apply E3 (ev 0) (ev 0) v Hv Hev0R Hev0R). }
+    rewrite Hstep0. rewrite Hev0. reflexivity.
+  }
+  claim Hsq1v : apply_fun (sq 1) v = mul_SNo (apply_fun v 1) (apply_fun v 1).
+  {
+    claim Hstep1 : apply_fun (sq 1) v = mul_SNo (apply_fun (ev 1) v) (apply_fun (ev 1) v).
+    { exact (mul_of_pair_map_apply E3 (ev 1) (ev 1) v Hv Hev1R Hev1R). }
+    rewrite Hstep1. rewrite Hev1. reflexivity.
+  }
+  claim Hsq2v : apply_fun (sq 2) v = mul_SNo (apply_fun v 2) (apply_fun v 2).
+  {
+    claim Hstep2 : apply_fun (sq 2) v = mul_SNo (apply_fun (ev 2) v) (apply_fun (ev 2) v).
+    { exact (mul_of_pair_map_apply E3 (ev 2) (ev 2) v Hv Hev2R Hev2R). }
+    rewrite Hstep2. rewrite Hev2. reflexivity.
+  }
+  claim Hmul0R : mul_SNo (apply_fun v 0) (apply_fun v 0) :e R.
+  { exact (real_mul_SNo (apply_fun v 0) Hv0 (apply_fun v 0) Hv0). }
+  claim Hmul1R : mul_SNo (apply_fun v 1) (apply_fun v 1) :e R.
+  { exact (real_mul_SNo (apply_fun v 1) Hv1 (apply_fun v 1) Hv1). }
+  claim Hmul2R : mul_SNo (apply_fun v 2) (apply_fun v 2) :e R.
+  { exact (real_mul_SNo (apply_fun v 2) Hv2 (apply_fun v 2) Hv2). }
+  claim Hsq0R : apply_fun (sq 0) v :e R.
+  { rewrite Hsq0v. exact Hmul0R. }
+  claim Hsq1R : apply_fun (sq 1) v :e R.
+  { rewrite Hsq1v. exact Hmul1R. }
+  claim Hsq2R : apply_fun (sq 2) v :e R.
+  { rewrite Hsq2v. exact Hmul2R. }
+  claim Hsq01v : apply_fun sq01 v =
+    add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+            (mul_SNo (apply_fun v 1) (apply_fun v 1)).
+  {
+    claim Hstep01 : apply_fun sq01 v = add_SNo (apply_fun (sq 0) v) (apply_fun (sq 1) v).
+    { exact (add_of_pair_map_apply E3 (sq 0) (sq 1) v Hv Hsq0R Hsq1R). }
+    rewrite Hstep01. rewrite Hsq0v. rewrite Hsq1v. reflexivity.
+  }
+  claim Hadd01R : add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                          (mul_SNo (apply_fun v 1) (apply_fun v 1)) :e R.
+  { exact (real_add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0)) Hmul0R
+      (mul_SNo (apply_fun v 1) (apply_fun v 1)) Hmul1R). }
+  claim Hsq01R : apply_fun sq01 v :e R.
+  { rewrite Hsq01v. exact Hadd01R. }
+  claim Hnorm_fn_v : apply_fun norm_sq_fn v =
+    add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                     (mul_SNo (apply_fun v 1) (apply_fun v 1)))
+            (mul_SNo (apply_fun v 2) (apply_fun v 2)).
+  {
+    claim Hstepnorm : apply_fun norm_sq_fn v = add_SNo (apply_fun sq01 v) (apply_fun (sq 2) v).
+    { exact (add_of_pair_map_apply E3 sq01 (sq 2) v Hv Hsq01R Hsq2R). }
+    rewrite Hstepnorm. rewrite Hsq01v. rewrite Hsq2v. reflexivity.
+  }
+  claim Hnat2 : nat_p 2. { exact nat_2. }
+  claim Hnat1 : nat_p 1. { exact nat_1. }
+  claim Hnat0 : nat_p 0. { exact nat_0. }
+  set f := fun i:set => mul_SNo (apply_fun v i) (apply_fun v i).
+  claim Hf0R : f 0 :e R.
+  { exact (real_mul_SNo (apply_fun v 0) Hv0 (apply_fun v 0) Hv0). }
+  claim Hnorm_sq_v : euclidean_norm_sq 3 v =
+    add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                     (mul_SNo (apply_fun v 1) (apply_fun v 1)))
+            (mul_SNo (apply_fun v 2) (apply_fun v 2)).
+  {
+    claim Hfrs_eq : euclidean_norm_sq 3 v = finite_real_sum f 3. { reflexivity. }
+    rewrite Hfrs_eq.
+    rewrite (finite_real_sum_S f 2 Hnat2).
+    rewrite (finite_real_sum_S f 1 Hnat1).
+    rewrite (finite_real_sum_S f 0 Hnat0).
+    rewrite (finite_real_sum_0 f).
+    rewrite (add_SNo_0L (f 0) (real_SNo (f 0) Hf0R)).
+    reflexivity.
+  }
+  rewrite Hnorm_fn_v. rewrite <- Hnorm_sq_v. reflexivity.
+}
+exact (continuous_map_congr_on E3 E3top R R_standard_topology norm_sq_fn
+  (graph E3 (fun v:set => euclidean_norm_sq 3 v))
+  Hnorm_sq_fn_cont HgraphFnOn Hpointwise).
+Qed.
+
+(** Helper: Sn 2 is closed in euclidean_space 3 **)
+Lemma Sn_2_closed_in_E3 :
+  closed_in (euclidean_space 3) (euclidean_topology 3) (Sn 2).
+set norm_sq_fn := graph (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v).
+claim Hcont :
+  continuous_map (euclidean_space 3) (euclidean_topology 3) R R_standard_topology norm_sq_fn.
+{ exact norm_sq_3_continuous. }
+claim H1closed : closed_in R R_standard_topology {1}.
+{
+  exact (Hausdorff_singletons_closed R R_standard_topology 1 R_standard_topology_Hausdorff real_1).
+}
+claim HpreEq :
+  preimage_of (euclidean_space 3) norm_sq_fn {1} = Sn 2.
+{
+  apply set_ext.
+  - let v.
+    assume Hv : v :e preimage_of (euclidean_space 3) norm_sq_fn {1}.
+    claim HvE3 : v :e euclidean_space 3.
+    { exact (SepE1 (euclidean_space 3) (fun x:set => apply_fun norm_sq_fn x :e {1}) v Hv). }
+    claim HvNorm : apply_fun norm_sq_fn v :e {1}.
+    { exact (SepE2 (euclidean_space 3) (fun x:set => apply_fun norm_sq_fn x :e {1}) v Hv). }
+    claim HnormEq : apply_fun norm_sq_fn v = 1.
+    {
+      exact (SingE 1 (apply_fun norm_sq_fn v) HvNorm).
+    }
+    claim HnormSq1 : euclidean_norm_sq 3 v = 1.
+    {
+      claim Happly : apply_fun norm_sq_fn v = euclidean_norm_sq 3 v.
+      { exact (apply_fun_graph (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u) v HvE3). }
+      rewrite <- Happly.
+      exact HnormEq.
+    }
+    exact (SepI (euclidean_space 3) (fun u:set => euclidean_norm_sq (ordsucc 2) u = 1) v HvE3 HnormSq1).
+  - let v.
+    assume Hv : v :e Sn 2.
+    claim HvE3 : v :e euclidean_space 3.
+    { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v Hv). }
+    claim HnormSq1 : euclidean_norm_sq 3 v = 1.
+    { exact (SepE2 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v Hv). }
+    claim HapplyEq : apply_fun norm_sq_fn v = euclidean_norm_sq 3 v.
+    { exact (apply_fun_graph (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u) v HvE3). }
+    claim HmemSep : apply_fun norm_sq_fn v :e {1}.
+    { rewrite HapplyEq. rewrite HnormSq1. exact (SingI 1). }
+    exact (SepI (euclidean_space 3) (fun x:set => apply_fun norm_sq_fn x :e {1}) v HvE3 HmemSep).
+}
+rewrite <- HpreEq.
+exact (continuous_map_preimage_closed
+  (euclidean_space 3) (euclidean_topology 3) R R_standard_topology norm_sq_fn {1}
+  Hcont H1closed).
+Qed.
+
+(** Helper: arithmetic lemma: real x with x^2 ≤ 1 implies x ∈ [-1,1] **)
+Lemma real_sqr_le_1_in_closed_interval : forall x:set,
+  x :e R ->
+  mul_SNo x x <= 1 ->
+  x :e closed_interval (minus_SNo 1) 1.
+let x.
+assume HxR : x :e R.
+assume Hxsq1 : mul_SNo x x <= 1.
+claim HxSNo : SNo x. { exact (real_SNo x HxR). }
+claim H1SNo : SNo 1. { exact SNo_1. }
+claim Hminus1SNo : SNo (minus_SNo 1). { exact (SNo_minus_SNo 1 SNo_1). }
+claim H01 : 0 <= 1.
+{ exact (SNoLtLe 0 1 SNoLt_0_1). }
+claim Hmul11 : mul_SNo 1 1 = 1.
+{ exact (mul_SNo_oneR 1 SNo_1). }
+claim Hm1_le_0 : minus_SNo 1 <= 0.
+{
+  claim Hle_m11_01 : add_SNo (minus_SNo 1) 1 <= add_SNo 0 1.
+  {
+    rewrite (add_SNo_minus_SNo_linv 1 SNo_1).
+    rewrite (add_SNo_0L 1 SNo_1).
+    exact H01.
+  }
+  exact (add_SNo_Le1_cancel (minus_SNo 1) 1 0 Hminus1SNo SNo_1 SNo_0 Hle_m11_01).
+}
+claim Hle_lower : minus_SNo 1 <= x.
+{
+  apply (SNoLtLe_or x 0 HxSNo SNo_0).
+  + assume Hxlt0 : x < 0.
+    claim HnxSNo : SNo (minus_SNo x). { exact (SNo_minus_SNo x HxSNo). }
+    claim Hnxnn : 0 <= minus_SNo x.
+    { rewrite <- minus_SNo_0. exact (minus_SNo_Le_contra x 0 HxSNo SNo_0 (SNoLtLe x 0 Hxlt0)). }
+    claim Hnxsq11 : mul_SNo (minus_SNo x) (minus_SNo x) <= mul_SNo 1 1.
+    { rewrite Hmul11. rewrite (mul_SNo_minus_minus x x HxSNo HxSNo). exact Hxsq1. }
+    claim Hnxle1 : minus_SNo x <= 1.
+    { exact (SNo_nonneg_sqr_Le_imp_Le (minus_SNo x) 1 HnxSNo H1SNo Hnxnn H01 Hnxsq11). }
+    claim Hle : minus_SNo 1 <= minus_SNo (minus_SNo x).
+    { exact (minus_SNo_Le_contra (minus_SNo x) 1 HnxSNo H1SNo Hnxle1). }
+    rewrite <- (minus_SNo_invol x HxSNo). exact Hle.
+  + assume H0lex : 0 <= x.
+    exact (SNoLe_tra (minus_SNo 1) 0 x Hminus1SNo SNo_0 HxSNo Hm1_le_0 H0lex).
+}
+claim Hle_upper : x <= 1.
+{
+  apply (SNoLtLe_or x 0 HxSNo SNo_0).
+  + assume Hxlt0 : x < 0.
+    exact (SNoLtLe x 1 (SNoLt_tra x 0 1 HxSNo SNo_0 H1SNo Hxlt0 SNoLt_0_1)).
+  + assume H0lex : 0 <= x.
+    claim Hxsq11 : mul_SNo x x <= mul_SNo 1 1. { rewrite Hmul11. exact Hxsq1. }
+    exact (SNo_nonneg_sqr_Le_imp_Le x 1 HxSNo H1SNo H0lex H01 Hxsq11).
+}
+exact (closed_intervalI_of_Rle (minus_SNo 1) 1 x
+  (real_minus_SNo 1 real_1) real_1 HxR
+  (Rle_of_SNoLe (minus_SNo 1) x (real_minus_SNo 1 real_1) HxR Hle_lower)
+  (Rle_of_SNoLe x 1 HxR real_1 Hle_upper)).
+Qed.
+
+(** Helper: coordinate of Sn 2 point is in [-1,1] **)
+Lemma Sn_2_coord_in_closed_interval : forall v:set, forall i:set,
+  v :e Sn 2 -> i :e 3 ->
+  apply_fun v i :e closed_interval (minus_SNo 1) 1.
+let v i.
+assume Hv : v :e Sn 2.
+assume Hi : i :e 3.
+claim HvE3 : v :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v Hv). }
+claim HviR : apply_fun v i :e R.
+{ exact (euclidean_space_coord_in_R 3 v i HvE3 Hi). }
+claim HviSNo : SNo (apply_fun v i). { exact (real_SNo (apply_fun v i) HviR). }
+claim HnormSq1 : euclidean_norm_sq 3 v = 1.
+{ exact (SepE2 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v Hv). }
+claim Hnat2 : nat_p 2. { exact nat_2. }
+claim Hnat1 : nat_p 1. { exact nat_1. }
+claim Hnat0 : nat_p 0. { exact nat_0. }
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 (ordsuccI1 1 0 (ordsuccI2 0))). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 (ordsuccI2 1)). }
+claim H2in3 : 2 :e 3. { exact In_2_3. }
+set f := fun j:set => mul_SNo (apply_fun v j) (apply_fun v j).
+claim Hf_nonneg : forall j:set, j :e 3 -> 0 <= f j.
+{
+  let j. assume Hj.
+  exact (SNo_sqr_nonneg (apply_fun v j) (real_SNo (apply_fun v j) (euclidean_space_coord_in_R 3 v j HvE3 Hj))).
+}
+claim HnormExpand :
+  add_SNo (add_SNo (f 0) (f 1)) (f 2) = 1.
+{
+  claim Hstep1 : add_SNo (add_SNo (f 0) (f 1)) (f 2) = euclidean_norm_sq 3 v.
+  {
+    claim Hfrs_eq : euclidean_norm_sq 3 v = finite_real_sum f 3.
+    { reflexivity. }
+    rewrite Hfrs_eq.
+    rewrite (finite_real_sum_S f 2 Hnat2).
+    rewrite (finite_real_sum_S f 1 Hnat1).
+    rewrite (finite_real_sum_S f 0 Hnat0).
+    rewrite (finite_real_sum_0 f).
+    rewrite (add_SNo_0L (f 0) (SNo_mul_SNo (apply_fun v 0) (apply_fun v 0)
+      (real_SNo (apply_fun v 0) (euclidean_space_coord_in_R 3 v 0 HvE3 H0in3))
+      (real_SNo (apply_fun v 0) (euclidean_space_coord_in_R 3 v 0 HvE3 H0in3)))).
+    reflexivity.
+  }
+  rewrite Hstep1.
+  exact HnormSq1.
+}
+claim HfiR : forall j:set, j :e 3 -> f j :e R.
+{
+  let j. assume Hj.
+  exact (real_mul_SNo (apply_fun v j) (euclidean_space_coord_in_R 3 v j HvE3 Hj)
+                      (apply_fun v j) (euclidean_space_coord_in_R 3 v j HvE3 Hj)).
+}
+claim Hf01R : f 0 :e R. { exact (HfiR 0 H0in3). }
+claim Hf1R : f 1 :e R. { exact (HfiR 1 H1in3). }
+claim Hf2R : f 2 :e R. { exact (HfiR 2 H2in3). }
+claim Hf0SNo : SNo (f 0). { exact (real_SNo (f 0) Hf01R). }
+claim Hf1SNo : SNo (f 1). { exact (real_SNo (f 1) Hf1R). }
+claim Hf2SNo : SNo (f 2). { exact (real_SNo (f 2) Hf2R). }
+claim Hadd01SNo : SNo (add_SNo (f 0) (f 1)).
+{ exact (SNo_add_SNo (f 0) (f 1) Hf0SNo Hf1SNo). }
+apply (real_sqr_le_1_in_closed_interval (apply_fun v i) HviR).
+apply (SNoLe_tra
+  (mul_SNo (apply_fun v i) (apply_fun v i))
+  (add_SNo (add_SNo (f 0) (f 1)) (f 2))
+  1
+  (SNo_mul_SNo (apply_fun v i) (apply_fun v i) HviSNo HviSNo)
+  (SNo_add_SNo (add_SNo (f 0) (f 1)) (f 2) Hadd01SNo Hf2SNo)
+  SNo_1).
+- apply (ordsuccE 2 i Hi).
+  + assume Hi2 : i :e 2.
+    apply (ordsuccE 1 i Hi2).
+    * assume Hi1 : i :e 1.
+      claim Hi0 : i = 0.
+      {
+        apply (ordsuccE 0 i Hi1).
+        - assume H : i :e 0. exact (EmptyE i H (i = 0)).
+        - assume H : i = 0. exact H.
+      }
+      rewrite Hi0.
+      exact (SNoLe_tra (f 0) (add_SNo (f 0) (f 1)) (add_SNo (add_SNo (f 0) (f 1)) (f 2))
+        Hf0SNo Hadd01SNo (SNo_add_SNo (add_SNo (f 0) (f 1)) (f 2) Hadd01SNo Hf2SNo)
+        (SNoLe_add_nonneg_right (f 0) (f 1) Hf0SNo Hf1SNo (Hf_nonneg 1 H1in3))
+        (SNoLe_add_nonneg_right (add_SNo (f 0) (f 1)) (f 2) Hadd01SNo Hf2SNo (Hf_nonneg 2 H2in3))).
+    * assume Hi1 : i = 1.
+      rewrite Hi1.
+      claim Hf1_le_01 : f 1 <= add_SNo (f 0) (f 1).
+      {
+        claim Hcom : add_SNo (f 0) (f 1) = add_SNo (f 1) (f 0).
+        { exact (add_SNo_com (f 0) (f 1) Hf0SNo Hf1SNo). }
+        rewrite Hcom.
+        exact (SNoLe_add_nonneg_right (f 1) (f 0) Hf1SNo Hf0SNo (Hf_nonneg 0 H0in3)).
+      }
+      exact (SNoLe_tra (f 1) (add_SNo (f 0) (f 1)) (add_SNo (add_SNo (f 0) (f 1)) (f 2))
+        Hf1SNo Hadd01SNo (SNo_add_SNo (add_SNo (f 0) (f 1)) (f 2) Hadd01SNo Hf2SNo)
+        Hf1_le_01
+        (SNoLe_add_nonneg_right (add_SNo (f 0) (f 1)) (f 2) Hadd01SNo Hf2SNo (Hf_nonneg 2 H2in3))).
+  + assume Hi2 : i = 2.
+    rewrite Hi2.
+    claim H01_nonneg : 0 <= add_SNo (f 0) (f 1).
+    {
+      exact (SNoLe_tra 0 (f 0) (add_SNo (f 0) (f 1)) SNo_0 Hf0SNo Hadd01SNo
+        (Hf_nonneg 0 H0in3)
+        (SNoLe_add_nonneg_right (f 0) (f 1) Hf0SNo Hf1SNo (Hf_nonneg 1 H1in3))).
+    }
+    claim Hcom2 : add_SNo (add_SNo (f 0) (f 1)) (f 2) = add_SNo (f 2) (add_SNo (f 0) (f 1)).
+    { exact (add_SNo_com (add_SNo (f 0) (f 1)) (f 2) Hadd01SNo Hf2SNo). }
+    exact ((eq_symm (add_SNo (add_SNo (f 0) (f 1)) (f 2)) (add_SNo (f 2) (add_SNo (f 0) (f 1)))
+           Hcom2)
+           (fun z _ => f 2 <= z)
+           (SNoLe_add_nonneg_right (f 2) (add_SNo (f 0) (f 1)) Hf2SNo Hadd01SNo H01_nonneg)).
+- exact ((eq_symm (add_SNo (add_SNo (f 0) (f 1)) (f 2)) 1 HnormExpand)
+         (fun z _ => z <= 1)
+         (SNoLe_ref 1)).
+Qed.
+
+(** Helper: S^2 is compact (closed subspace of compact cube [-1,1]^3) **)
+Lemma compact_Sn_2 :
+  compact_space (Sn 2) (Sn_topology 2).
+set Xi := const_space_family 3 R R_standard_topology.
+set Xi_cube := const_space_family 3 (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1).
+set cube := product_space 3 Xi_cube.
+set cube_top := subspace_topology (euclidean_space 3) (euclidean_topology 3) cube.
+claim H3ne : 3 <> Empty.
+{
+  assume H. exact (EmptyE 2 (H (fun z _ => 2 :e z) In_2_3)).
+}
+claim HclosedSubR : closed_interval (minus_SNo 1) 1 c= R.
+{ exact (closed_interval_sub_R (minus_SNo 1) 1). }
+claim HXiSet : forall i:set, i :e 3 -> space_family_set Xi i = R.
+{ let i. assume Hi. exact (space_family_set_const_space_family 3 R R_standard_topology i Hi). }
+claim HXicubeSet : forall i:set, i :e 3 -> space_family_set Xi_cube i = closed_interval (minus_SNo 1) 1.
+{ let i. assume Hi. exact (space_family_set_const_space_family 3 (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) i Hi). }
+claim HXicubeTop : forall i:set, i :e 3 -> space_family_topology Xi_cube i = closed_interval_topology (minus_SNo 1) 1.
+{ let i. assume Hi. exact (space_family_topology_const_space_family 3 (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) i Hi). }
+claim HXiTop : forall i:set, i :e 3 -> space_family_topology Xi i = R_standard_topology.
+{ let i. assume Hi. exact (space_family_topology_const_space_family 3 R R_standard_topology i Hi). }
+claim HXiTopOn : forall i:set, i :e 3 -> topology_on (space_family_set Xi i) (space_family_topology Xi i).
+{
+  let i. assume Hi.
+  rewrite (HXiSet i Hi). rewrite (HXiTop i Hi).
+  exact R_standard_topology_is_topology.
+}
+claim HXicubeSub : forall i:set, i :e 3 -> space_family_set Xi_cube i c= space_family_set Xi i.
+{
+  let i. assume Hi.
+  rewrite (HXicubeSet i Hi). rewrite (HXiSet i Hi).
+  exact HclosedSubR.
+}
+claim HXicubeTopEq : forall i:set, i :e 3 ->
+  space_family_topology Xi_cube i = subspace_topology (space_family_set Xi i) (space_family_topology Xi i) (space_family_set Xi_cube i).
+{
+  let i. assume Hi.
+  rewrite (HXicubeTop i Hi). rewrite (HXiSet i Hi). rewrite (HXiTop i Hi). rewrite (HXicubeSet i Hi).
+  reflexivity.
+}
+claim HcubeUniv : forall i:set, i :e 3 ->
+  space_family_union 3 Xi = R.
+{ let i. assume Hi. exact (space_family_union_const_space_family 3 R R_standard_topology H3ne). }
+claim HcubeSpaceFamily : forall i:set, i :e 3 ->
+  compact_space (product_component Xi_cube i) (product_component_topology Xi_cube i).
+{
+  let i. assume Hi.
+  rewrite <- (space_family_set_eq_product_component Xi_cube i).
+  rewrite <- (space_family_topology_eq_product_component_topology Xi_cube i).
+  rewrite (HXicubeSet i Hi). rewrite (HXicubeTop i Hi).
+  exact closed_interval_minus1_1_compact.
+}
+claim Hcube_compact_prod : compact_space cube (product_topology_full 3 Xi_cube).
+{ exact (Tychonoff_theorem 3 Xi_cube HcubeSpaceFamily). }
+claim Htop_eq : product_topology_full 3 Xi_cube = cube_top.
+{
+  exact (eq_symm
+    cube_top
+    (product_topology_full 3 Xi_cube)
+    (product_topology_full_subspace_topology 3 Xi Xi_cube H3ne
+      HXicubeSub HXicubeTopEq HXiTopOn)).
+}
+claim Hcube_compact : compact_space cube cube_top.
+{ rewrite <- Htop_eq. exact Hcube_compact_prod. }
+claim HcubeSubE3 : cube c= euclidean_space 3.
+{
+  exact (product_space_component_sub 3 Xi Xi_cube HXicubeSub).
+}
+claim Hcube_ne : cube <> Empty.
+{
+  claim HiE : closed_interval (minus_SNo 1) 1 <> Empty.
+  { exact (elem_implies_nonempty (closed_interval (minus_SNo 1) 1) 0 zero_in_closed_interval_minus1_1). }
+  exact (product_space_nonempty_of_factors_nonempty 3 Xi_cube
+    (fun i Hi => (HXicubeSet i Hi (fun _ z => z <> Empty) HiE))).
+}
+claim HSnSub : Sn 2 c= cube.
+{
+  let v. assume Hv.
+  claim HvE3 : v :e euclidean_space 3.
+  { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v Hv). }
+  claim HvPow : v :e Power (setprod 3 (space_family_union 3 Xi)).
+  { exact (SepE1 (Power (setprod 3 (space_family_union 3 Xi)))
+      (fun f:set => total_function_on f 3 (space_family_union 3 Xi) /\ functional_graph f /\
+        forall i:set, i :e 3 -> apply_fun f i :e space_family_set Xi i)
+      v HvE3). }
+  claim HvProp : total_function_on v 3 (space_family_union 3 Xi) /\ functional_graph v /\
+    forall i:set, i :e 3 -> apply_fun v i :e space_family_set Xi i.
+  { exact (SepE2 (Power (setprod 3 (space_family_union 3 Xi)))
+      (fun f:set => total_function_on f 3 (space_family_union 3 Xi) /\ functional_graph f /\
+        forall i:set, i :e 3 -> apply_fun f i :e space_family_set Xi i)
+      v HvE3). }
+  claim HvPowR : v :e Power (setprod 3 R).
+  {
+    claim Heq : space_family_union 3 Xi = R.
+    { exact (space_family_union_const_space_family 3 R R_standard_topology H3ne). }
+    rewrite <- Heq. exact HvPow.
+  }
+  claim HvSubR : v c= setprod 3 R.
+  { exact (PowerE (setprod 3 R) v HvPowR). }
+  claim HvTF : total_function_on v 3 R.
+  {
+    claim Heq : space_family_union 3 Xi = R.
+    { exact (space_family_union_const_space_family 3 R R_standard_topology H3ne). }
+    exact (Heq
+      (fun z _ => total_function_on v 3 z)
+      (andEL (total_function_on v 3 (space_family_union 3 Xi))
+        (functional_graph v)
+        (andEL (total_function_on v 3 (space_family_union 3 Xi) /\ functional_graph v)
+          (forall i:set, i :e 3 -> apply_fun v i :e space_family_set Xi i)
+          HvProp))).
+  }
+  claim HvFG : functional_graph v.
+  {
+    exact (andER (total_function_on v 3 (space_family_union 3 Xi))
+      (functional_graph v)
+      (andEL (total_function_on v 3 (space_family_union 3 Xi) /\ functional_graph v)
+        (forall i:set, i :e 3 -> apply_fun v i :e space_family_set Xi i)
+        HvProp)).
+  }
+  claim HvGraph : v = graph 3 (fun i:set => apply_fun v i).
+  { exact (total_functional_graph_eq_graph_of_apply_fun v 3 R HvTF HvFG HvSubR). }
+  rewrite HvGraph.
+  apply (product_space_graphI 3 Xi_cube (fun i:set => apply_fun v i)).
+  let i. assume Hi.
+  rewrite (HXicubeSet i Hi).
+  exact (Sn_2_coord_in_closed_interval v i Hv Hi).
+}
+claim HSn_closed_E3 : closed_in (euclidean_space 3) (euclidean_topology 3) (Sn 2).
+{ exact Sn_2_closed_in_E3. }
+claim HE3top : topology_on (euclidean_space 3) (euclidean_topology 3).
+{ exact (euclidean_topology_is_topology 3). }
+claim HSn_closed_cube : closed_in cube cube_top (Sn 2).
+{
+  claim Hiff : closed_in cube cube_top (Sn 2) <->
+    exists C:set, closed_in (euclidean_space 3) (euclidean_topology 3) C /\ Sn 2 = C :/\: cube.
+  { exact (closed_in_subspace_iff_intersection (euclidean_space 3) (euclidean_topology 3) cube (Sn 2) HE3top HcubeSubE3). }
+  apply (iffER (closed_in cube cube_top (Sn 2))
+    (exists C:set, closed_in (euclidean_space 3) (euclidean_topology 3) C /\ Sn 2 = C :/\: cube)
+    Hiff).
+  witness (Sn 2).
+  apply andI.
+  - exact HSn_closed_E3.
+  - exact (eq_symm (Sn 2 :/\: cube) (Sn 2) (binintersect_Subq_eq_1 (Sn 2) cube HSnSub)).
+}
+claim HSn2_compact_cube : compact_space (Sn 2) (subspace_topology cube cube_top (Sn 2)).
+{ exact (closed_subspace_compact cube cube_top (Sn 2) Hcube_compact HSn_closed_cube). }
+claim HSnTop_eq : subspace_topology cube cube_top (Sn 2) = Sn_topology 2.
+{
+  exact (ex16_1_subspace_transitive (euclidean_space 3) (euclidean_topology 3) cube (Sn 2)
+    HE3top HcubeSubE3 HSnSub).
+}
+rewrite <- HSnTop_eq.
+exact HSn2_compact_cube.
+Qed.
+
+(** Helper: Rn_negate 3 is a continuous self-map of euclidean_space 3 **)
+Lemma Rn_negate_3_E3_continuous :
+  continuous_map (euclidean_space 3) (euclidean_topology 3)
+    (euclidean_space 3) (euclidean_topology 3)
+    (graph (euclidean_space 3) (fun v:set => Rn_negate 3 v)).
+set E3 := euclidean_space 3.
+set E3top := euclidean_topology 3.
+set csf3 := const_space_family 3 R R_standard_topology.
+set ev := fun j:set => product_eval_map 3 csf3 j.
+set F := graph 3 (fun j:set => compose_fun E3 (ev j) neg_fun).
+claim HE3top : topology_on E3 E3top.
+{ exact (euclidean_topology_is_topology 3). }
+claim H3ne : 3 <> Empty.
+{ assume H. exact (EmptyE 2 (H (fun z _ => 2 :e z) In_2_3)). }
+claim HevFun : forall j:set, j :e 3 -> function_on (ev j) E3 R.
+{
+  let j. assume Hj.
+  exact (continuous_map_function_on E3 E3top R R_standard_topology (ev j)
+    (euclidean_3_eval_continuous j Hj)).
+}
+claim HnegFun : function_on neg_fun R R.
+{ exact (function_on_of_function_space neg_fun R R neg_fun_in_function_space). }
+claim HF_tfn : total_function_on F 3 (function_space E3 R).
+{
+  apply (total_function_on_graph 3 (function_space E3 R)).
+  let j. assume Hj.
+  exact (compose_fun_in_function_space E3 R R (ev j) neg_fun (HevFun j Hj) HnegFun).
+}
+claim HF_cond : forall j:set, j :e 3 ->
+  continuous_map E3 E3top R R_standard_topology (apply_fun F j).
+{
+  let j. assume Hj.
+  rewrite (apply_fun_graph 3 (fun j0:set => compose_fun E3 (ev j0) neg_fun) j Hj).
+  exact (composition_continuous E3 E3top R R_standard_topology R R_standard_topology
+    (ev j) neg_fun
+    (euclidean_3_eval_continuous j Hj)
+    neg_fun_continuous).
+}
+claim HdiagCont :
+  continuous_map E3 E3top E3 E3top (diagonal_map E3 F 3).
+{ exact (diagonal_map_continuous_power_real E3 E3top F 3 HE3top H3ne HF_tfn HF_cond). }
+claim HnegMapFun : function_on (graph E3 (fun v:set => Rn_negate 3 v)) E3 E3.
+{
+  let v. assume Hv.
+  rewrite (apply_fun_graph E3 (fun v0:set => Rn_negate 3 v0) v Hv).
+  exact (Rn_negate_in_euclidean_space 3 v Hv).
+}
+claim HdiagFon : function_on (diagonal_map E3 F 3) E3 E3.
+{ exact (diagonal_map_function_on_power_real E3 F 3 HF_tfn). }
+apply (continuous_map_congr_on E3 E3top E3 E3top
+  (diagonal_map E3 F 3) (graph E3 (fun v:set => Rn_negate 3 v))
+  HdiagCont HnegMapFun).
+let v. assume Hv.
+rewrite (apply_fun_graph E3 (fun v0:set => Rn_negate 3 v0) v Hv).
+apply (power_real_ext 3
+  (apply_fun (diagonal_map E3 F 3) v)
+  (Rn_negate 3 v)
+  (HdiagFon v Hv)
+  (Rn_negate_in_euclidean_space 3 v Hv)).
+let j. assume Hj.
+rewrite (diagonal_map_coord_apply E3 F 3 v j Hv Hj).
+rewrite (apply_fun_graph 3 (fun j0:set => compose_fun E3 (ev j0) neg_fun) j Hj).
+rewrite (compose_fun_apply E3 (ev j) neg_fun v Hv).
+rewrite (euclidean_3_eval_apply v j Hv Hj).
+rewrite (Rn_negate_apply 3 v j Hj).
+exact (neg_fun_apply (apply_fun v j) (euclidean_3_coord_in_R v j Hv Hj)).
+Qed.
+
+(** Helper: Sn 2 is Hausdorff **)
+Lemma Sn_2_Hausdorff :
+  Hausdorff_space (Sn 2) (Sn_topology 2).
+claim HhausE3 :
+  Hausdorff_space (euclidean_space (ordsucc 2)) (euclidean_topology (ordsucc 2)).
+{ exact (euclidean_space_Hausdorff (ordsucc 2)). }
+claim HSnSub : Sn 2 c= euclidean_space (ordsucc 2).
+{
+  let z. assume HzSn.
+  exact (SepE1 (euclidean_space (ordsucc 2))
+    (fun v:set => euclidean_norm_sq (ordsucc 2) v = 1) z HzSn).
+}
+exact (ex17_12_subspace_Hausdorff
+  (euclidean_space (ordsucc 2)) (euclidean_topology (ordsucc 2))
+  (Sn 2) HhausE3 HSnSub).
+Qed.
+
+(** Helper: Sn 2 is normal **)
+Lemma Sn_2_normal :
+  normal_space (Sn 2) (Sn_topology 2).
+exact (compact_Hausdorff_normal (Sn 2) (Sn_topology 2) compact_Sn_2 Sn_2_Hausdorff).
+Qed.
+
+(** Helper: Rn_negate 3 maps Sn 2 to Sn 2 **)
+Lemma Rn_negate_3_in_Sn2 : forall v:set,
+  v :e Sn 2 ->
+  Rn_negate 3 v :e Sn 2.
+let v. assume Hv.
+claim HvE3 : v :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3)
+    (fun u:set => euclidean_norm_sq 3 u = 1) v Hv). }
+claim HvNorm : euclidean_norm_sq 3 v = 1.
+{ exact (SepE2 (euclidean_space 3)
+    (fun u:set => euclidean_norm_sq 3 u = 1) v Hv). }
+claim HnegE3 : Rn_negate 3 v :e euclidean_space 3.
+{ exact (Rn_negate_in_euclidean_space 3 v HvE3). }
+claim H0in3 : 0 :e 3.
+{ exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3.
+{ exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3.
+{ exact In_2_3. }
+claim Hv0R : apply_fun v 0 :e R.
+{ exact (euclidean_space_coord_in_R 3 v 0 HvE3 H0in3). }
+claim Hv1R : apply_fun v 1 :e R.
+{ exact (euclidean_space_coord_in_R 3 v 1 HvE3 H1in3). }
+claim Hv2R : apply_fun v 2 :e R.
+{ exact (euclidean_space_coord_in_R 3 v 2 HvE3 H2in3). }
+claim Hneg0 :
+  mul_SNo (apply_fun (Rn_negate 3 v) 0) (apply_fun (Rn_negate 3 v) 0) =
+  mul_SNo (apply_fun v 0) (apply_fun v 0).
+{
+  rewrite (Rn_negate_apply 3 v 0 H0in3).
+  exact (mul_SNo_minus_minus (apply_fun v 0) (apply_fun v 0)
+    (real_SNo (apply_fun v 0) Hv0R) (real_SNo (apply_fun v 0) Hv0R)).
+}
+claim Hneg1 :
+  mul_SNo (apply_fun (Rn_negate 3 v) 1) (apply_fun (Rn_negate 3 v) 1) =
+  mul_SNo (apply_fun v 1) (apply_fun v 1).
+{
+  rewrite (Rn_negate_apply 3 v 1 H1in3).
+  exact (mul_SNo_minus_minus (apply_fun v 1) (apply_fun v 1)
+    (real_SNo (apply_fun v 1) Hv1R) (real_SNo (apply_fun v 1) Hv1R)).
+}
+claim Hneg2 :
+  mul_SNo (apply_fun (Rn_negate 3 v) 2) (apply_fun (Rn_negate 3 v) 2) =
+  mul_SNo (apply_fun v 2) (apply_fun v 2).
+{
+  rewrite (Rn_negate_apply 3 v 2 H2in3).
+  exact (mul_SNo_minus_minus (apply_fun v 2) (apply_fun v 2)
+    (real_SNo (apply_fun v 2) Hv2R) (real_SNo (apply_fun v 2) Hv2R)).
+}
+claim HsumNeg :
+  finite_real_sum
+    (fun i:set =>
+      mul_SNo (apply_fun (Rn_negate 3 v) i) (apply_fun (Rn_negate 3 v) i))
+    3 =
+  add_SNo
+    (add_SNo
+      (add_SNo 0
+        (mul_SNo (apply_fun (Rn_negate 3 v) 0) (apply_fun (Rn_negate 3 v) 0)))
+      (mul_SNo (apply_fun (Rn_negate 3 v) 1) (apply_fun (Rn_negate 3 v) 1)))
+    (mul_SNo (apply_fun (Rn_negate 3 v) 2) (apply_fun (Rn_negate 3 v) 2)).
+{
+  claim HfinNegDef :
+    finite_real_sum
+      (fun i:set =>
+        mul_SNo (apply_fun (Rn_negate 3 v) i) (apply_fun (Rn_negate 3 v) i))
+      3 =
+    nat_primrec
+      0
+      (fun j r:set =>
+        add_SNo r
+          (mul_SNo
+            (apply_fun (Rn_negate 3 v) j)
+            (apply_fun (Rn_negate 3 v) j)))
+      3.
+  {
+    reflexivity.
+  }
+  rewrite HfinNegDef.
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun (Rn_negate 3 v) j)
+        (apply_fun (Rn_negate 3 v) j)))
+    2
+    nat_2).
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun (Rn_negate 3 v) j)
+        (apply_fun (Rn_negate 3 v) j)))
+    1
+    nat_1).
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun (Rn_negate 3 v) j)
+        (apply_fun (Rn_negate 3 v) j)))
+    0
+    nat_0).
+  rewrite (nat_primrec_0
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun (Rn_negate 3 v) j)
+        (apply_fun (Rn_negate 3 v) j)))).
+  reflexivity.
+}
+claim HsumPos :
+  finite_real_sum
+    (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))
+    3 =
+  add_SNo
+    (add_SNo
+      (add_SNo 0
+        (mul_SNo (apply_fun v 0) (apply_fun v 0)))
+      (mul_SNo (apply_fun v 1) (apply_fun v 1)))
+    (mul_SNo (apply_fun v 2) (apply_fun v 2)).
+{
+  claim HfinPosDef :
+    finite_real_sum
+      (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))
+      3 =
+    nat_primrec
+      0
+      (fun j r:set =>
+        add_SNo r
+          (mul_SNo
+            (apply_fun v j)
+            (apply_fun v j)))
+      3.
+  {
+    reflexivity.
+  }
+  rewrite HfinPosDef.
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun v j)
+        (apply_fun v j)))
+    2
+    nat_2).
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun v j)
+        (apply_fun v j)))
+    1
+    nat_1).
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun v j)
+        (apply_fun v j)))
+    0
+    nat_0).
+  rewrite (nat_primrec_0
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun v j)
+        (apply_fun v j)))).
+  reflexivity.
+}
+claim HeuNormEq :
+  euclidean_norm_sq 3 (Rn_negate 3 v) = euclidean_norm_sq 3 v.
+{
+  claim HnormNegDef :
+    euclidean_norm_sq 3 (Rn_negate 3 v) =
+    finite_real_sum
+      (fun i:set =>
+        mul_SNo (apply_fun (Rn_negate 3 v) i) (apply_fun (Rn_negate 3 v) i))
+      3.
+  {
+    reflexivity.
+  }
+  claim HnormPosDef :
+    euclidean_norm_sq 3 v =
+    finite_real_sum (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i)) 3.
+  {
+    reflexivity.
+  }
+  rewrite HnormNegDef.
+  rewrite HnormPosDef.
+  rewrite HsumNeg.
+  rewrite HsumPos.
+  rewrite Hneg0.
+  rewrite Hneg1.
+  rewrite Hneg2.
+  reflexivity.
+}
+claim HSn2Def :
+  Sn 2 = {v0 :e euclidean_space 3 | euclidean_norm_sq 3 v0 = 1}.
+{
+  reflexivity.
+}
+rewrite HSn2Def.
+apply (SepI
+  (euclidean_space 3)
+  (fun v0:set => euclidean_norm_sq 3 v0 = 1)
+  (Rn_negate 3 v)
+  HnegE3).
+rewrite HeuNormEq.
+exact HvNorm.
+Qed.
+
+(** Helper: Rn_negate 3 is an involution on euclidean_space 3 **)
+Lemma Rn_negate_3_involution : forall v:set,
+  v :e euclidean_space 3 ->
+  Rn_negate 3 (Rn_negate 3 v) = v.
+let v.
+assume Hv.
+claim HnegV_in_E3 : Rn_negate 3 v :e euclidean_space 3.
+{ exact (Rn_negate_in_euclidean_space 3 v Hv). }
+claim HnnegV_in_E3 : Rn_negate 3 (Rn_negate 3 v) :e euclidean_space 3.
+{ exact (Rn_negate_in_euclidean_space 3 (Rn_negate 3 v) HnegV_in_E3). }
+apply (power_real_ext 3
+  (Rn_negate 3 (Rn_negate 3 v)) v HnnegV_in_E3 Hv).
+let i. assume Hi.
+claim HviR : apply_fun v i :e R.
+{ exact (euclidean_space_coord_in_R 3 v i Hv Hi). }
+claim HviSNo : SNo (apply_fun v i).
+{ exact (real_SNo (apply_fun v i) HviR). }
+rewrite (Rn_negate_apply 3 (Rn_negate 3 v) i Hi).
+rewrite (Rn_negate_apply 3 v i Hi).
+exact (minus_SNo_invol (apply_fun v i) HviSNo).
+Qed.
+
+(** Helper: Rn_negate 3 is a continuous self-map of Sn 2 **)
+Lemma Rn_negate_3_Sn2_continuous :
+  continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+    (graph (Sn 2) (fun v:set => Rn_negate 3 v)).
+claim HSnSub : Sn 2 c= euclidean_space 3.
+{
+  let v. assume Hv.
+  exact (SepE1 (euclidean_space 3)
+    (fun u:set => euclidean_norm_sq 3 u = 1) v Hv).
+}
+claim HSnTopEq : Sn_topology 2 =
+  subspace_topology (euclidean_space 3) (euclidean_topology 3) (Sn 2).
+{ reflexivity. }
+claim HE3top : topology_on (euclidean_space 3) (euclidean_topology 3).
+{ exact (euclidean_topology_is_topology 3). }
+set E3neg := graph (euclidean_space 3) (fun v:set => Rn_negate 3 v).
+claim HE3neg_cont :
+  continuous_map (Sn 2) (Sn_topology 2) (euclidean_space 3) (euclidean_topology 3) E3neg.
+{
+  rewrite HSnTopEq.
+  exact (continuous_on_subspace
+    (euclidean_space 3) (euclidean_topology 3)
+    (euclidean_space 3) (euclidean_topology 3)
+    E3neg (Sn 2)
+    HE3top HSnSub Rn_negate_3_E3_continuous).
+}
+claim HE3neg_range : forall v:set, v :e Sn 2 -> apply_fun E3neg v :e Sn 2.
+{
+  let v. assume Hv.
+  rewrite (apply_fun_graph (euclidean_space 3) (fun u:set => Rn_negate 3 u) v
+    (HSnSub v Hv)).
+  exact (Rn_negate_3_in_Sn2 v Hv).
+}
+claim HSn2_cont_E3neg :
+  continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) E3neg.
+{
+  rewrite HSnTopEq.
+  exact (continuous_map_range_restrict
+    (Sn 2) (subspace_topology (euclidean_space 3) (euclidean_topology 3) (Sn 2))
+    (euclidean_space 3) (euclidean_topology 3)
+    E3neg (Sn 2)
+    (HSnTopEq (fun T _ => continuous_map (Sn 2) T (euclidean_space 3)
+      (euclidean_topology 3) E3neg) HE3neg_cont)
+    HSnSub HE3neg_range).
+}
+set Sn2neg := graph (Sn 2) (fun v:set => Rn_negate 3 v).
+claim HSn2neg_fun : function_on Sn2neg (Sn 2) (Sn 2).
+{
+  let v. assume Hv.
+  rewrite (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) v Hv).
+  exact (Rn_negate_3_in_Sn2 v Hv).
+}
+apply (continuous_map_congr_on (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+  E3neg Sn2neg HSn2_cont_E3neg HSn2neg_fun).
+let v. assume Hv.
+rewrite (apply_fun_graph (euclidean_space 3) (fun u:set => Rn_negate 3 u) v
+  (HSnSub v Hv)).
+rewrite (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) v Hv).
+reflexivity.
+Qed.
+
+(** Helper: Rn_negate 3 is a bijection on Sn 2 (from involution) **)
+Lemma Rn_negate_3_Sn2_bijection :
+  bijection (Sn 2) (Sn 2) (graph (Sn 2) (fun v:set => Rn_negate 3 v)).
+prove function_on (graph (Sn 2) (fun v:set => Rn_negate 3 v)) (Sn 2) (Sn 2) /\
+  (forall y:set, y :e Sn 2 ->
+    exists x:set, x :e Sn 2 /\ apply_fun (graph (Sn 2) (fun v:set => Rn_negate 3 v)) x = y /\
+      (forall x':set, x' :e Sn 2 ->
+        apply_fun (graph (Sn 2) (fun v:set => Rn_negate 3 v)) x' = y -> x' = x)).
+apply andI.
+- let v. assume Hv.
+  rewrite (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) v Hv).
+  exact (Rn_negate_3_in_Sn2 v Hv).
+- let y. assume Hy.
+  claim HnyIn : Rn_negate 3 y :e Sn 2.
+  { exact (Rn_negate_3_in_Sn2 y Hy). }
+  witness (Rn_negate 3 y).
+  apply andI.
+  + apply andI.
+    * exact HnyIn.
+    * rewrite (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) (Rn_negate 3 y) HnyIn).
+      claim HyE3 : y :e euclidean_space 3.
+      { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) y Hy). }
+      exact (Rn_negate_3_involution y HyE3).
+  + let x'. assume Hx'.
+    assume Hfx'y.
+    claim Happly_eq : apply_fun (graph (Sn 2) (fun u:set => Rn_negate 3 u)) x' = Rn_negate 3 x'.
+    { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) x' Hx'). }
+    claim Hfx'y2 : Rn_negate 3 x' = y.
+    { rewrite <- Happly_eq. exact Hfx'y. }
+    claim Hx'E3 : x' :e euclidean_space 3.
+    { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) x' Hx'). }
+    claim HnnegX' : Rn_negate 3 (Rn_negate 3 x') = x'.
+    { exact (Rn_negate_3_involution x' Hx'E3). }
+    rewrite <- HnnegX'.
+    rewrite Hfx'y2.
+    reflexivity.
+Qed.
+
+(** Helper: Rn_negate 3 is a homeomorphism of Sn 2 **)
+Lemma Rn_negate_3_Sn2_homeomorphism :
+  homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+    (graph (Sn 2) (fun v:set => Rn_negate 3 v)).
+exact (compact_to_Hausdorff_bijection_homeomorphism
+  (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+  (graph (Sn 2) (fun v:set => Rn_negate 3 v))
+  compact_Sn_2 Sn_2_Hausdorff
+  Rn_negate_3_Sn2_continuous
+  Rn_negate_3_Sn2_bijection).
+Qed.
+
+(** Helper: SNo x and x+x=0 implies x=0 **)
+Lemma SNo_double_zero : forall x:set, SNo x -> add_SNo x x = 0 -> x = 0.
+let x.
+assume HxSNo H2x.
+apply (SNoLtLe_or 0 x SNo_0 HxSNo).
+- assume Hlt : 0 < x.
+  claim Hlt3 : add_SNo 0 0 < add_SNo x x.
+  { exact (add_SNo_Lt3 0 0 x x SNo_0 SNo_0 HxSNo HxSNo Hlt Hlt). }
+  claim Hxx_pos : 0 < add_SNo x x.
+  { exact ((add_SNo_0R 0 SNo_0) (fun z _ => z < add_SNo x x) Hlt3). }
+  exact (FalseE (SNoLt_irref 0 (H2x (fun z _ => 0 < z) Hxx_pos)) (x = 0)).
+- assume Hle : x <= 0.
+  apply (SNoLtLe_or x 0 HxSNo SNo_0).
+  + assume Hlt : x < 0.
+    claim Hlt3 : add_SNo x x < add_SNo 0 0.
+    { exact (add_SNo_Lt3 x x 0 0 HxSNo HxSNo SNo_0 SNo_0 Hlt Hlt). }
+    claim Hxx_neg : add_SNo x x < 0.
+    { exact ((add_SNo_0R 0 SNo_0) (fun z _ => add_SNo x x < z) Hlt3). }
+    exact (FalseE (SNoLt_irref 0 (H2x (fun z _ => z < 0) Hxx_neg)) (x = 0)).
+  + assume H0le : 0 <= x.
+    exact (SNoLe_antisym x 0 HxSNo SNo_0 Hle H0le).
+Qed.
+
+(** Helper: for v in Sn 2, v ≠ Rn_negate 3 v **)
+Lemma Sn2_v_neq_neg_v : forall v:set,
+  v :e Sn 2 -> v <> Rn_negate 3 v.
+let v.
+assume Hv.
+claim HvE3 : v :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v Hv). }
+claim HvNorm : euclidean_norm_sq 3 v = 1.
+{ exact (SepE2 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v Hv). }
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3. { exact In_2_3. }
+assume Heq : v = Rn_negate 3 v.
+claim Hv0R : apply_fun v 0 :e R.
+{ exact (euclidean_space_coord_in_R 3 v 0 HvE3 H0in3). }
+claim Hv1R : apply_fun v 1 :e R.
+{ exact (euclidean_space_coord_in_R 3 v 1 HvE3 H1in3). }
+claim Hv2R : apply_fun v 2 :e R.
+{ exact (euclidean_space_coord_in_R 3 v 2 HvE3 H2in3). }
+claim Hv0SNo : SNo (apply_fun v 0). { exact (real_SNo (apply_fun v 0) Hv0R). }
+claim Hv1SNo : SNo (apply_fun v 1). { exact (real_SNo (apply_fun v 1) Hv1R). }
+claim Hv2SNo : SNo (apply_fun v 2). { exact (real_SNo (apply_fun v 2) Hv2R). }
+claim Hv0_zero : apply_fun v 0 = 0.
+{
+  claim Heq0 : apply_fun v 0 = apply_fun (Rn_negate 3 v) 0.
+  { rewrite <- Heq. reflexivity. }
+  claim Heq0' : apply_fun v 0 = minus_SNo (apply_fun v 0).
+  {
+    claim Hrn0 : apply_fun (Rn_negate 3 v) 0 = minus_SNo (apply_fun v 0).
+    { exact (Rn_negate_apply 3 v 0 H0in3). }
+    rewrite <- Hrn0. exact Heq0.
+  }
+  claim H2v0 : add_SNo (apply_fun v 0) (apply_fun v 0) = 0.
+  {
+    exact ((eq_symm (apply_fun v 0) (minus_SNo (apply_fun v 0)) Heq0')
+      (fun x _ => add_SNo (apply_fun v 0) x = 0)
+      (add_SNo_minus_SNo_rinv (apply_fun v 0) Hv0SNo)).
+  }
+  exact (SNo_double_zero (apply_fun v 0) Hv0SNo H2v0).
+}
+claim Hv1_zero : apply_fun v 1 = 0.
+{
+  claim Heq1 : apply_fun v 1 = apply_fun (Rn_negate 3 v) 1.
+  { rewrite <- Heq. reflexivity. }
+  claim Heq1' : apply_fun v 1 = minus_SNo (apply_fun v 1).
+  {
+    claim Hrn1 : apply_fun (Rn_negate 3 v) 1 = minus_SNo (apply_fun v 1).
+    { exact (Rn_negate_apply 3 v 1 H1in3). }
+    rewrite <- Hrn1. exact Heq1.
+  }
+  claim H2v1 : add_SNo (apply_fun v 1) (apply_fun v 1) = 0.
+  {
+    exact ((eq_symm (apply_fun v 1) (minus_SNo (apply_fun v 1)) Heq1')
+      (fun x _ => add_SNo (apply_fun v 1) x = 0)
+      (add_SNo_minus_SNo_rinv (apply_fun v 1) Hv1SNo)).
+  }
+  exact (SNo_double_zero (apply_fun v 1) Hv1SNo H2v1).
+}
+claim Hv2_zero : apply_fun v 2 = 0.
+{
+  claim Heq2 : apply_fun v 2 = apply_fun (Rn_negate 3 v) 2.
+  { rewrite <- Heq. reflexivity. }
+  claim Heq2' : apply_fun v 2 = minus_SNo (apply_fun v 2).
+  {
+    claim Hrn2 : apply_fun (Rn_negate 3 v) 2 = minus_SNo (apply_fun v 2).
+    { exact (Rn_negate_apply 3 v 2 H2in3). }
+    rewrite <- Hrn2. exact Heq2.
+  }
+  claim H2v2 : add_SNo (apply_fun v 2) (apply_fun v 2) = 0.
+  {
+    exact ((eq_symm (apply_fun v 2) (minus_SNo (apply_fun v 2)) Heq2')
+      (fun x _ => add_SNo (apply_fun v 2) x = 0)
+      (add_SNo_minus_SNo_rinv (apply_fun v 2) Hv2SNo)).
+  }
+  exact (SNo_double_zero (apply_fun v 2) Hv2SNo H2v2).
+}
+claim HnormZero : euclidean_norm_sq 3 v = 0.
+{
+  claim Hfrs : euclidean_norm_sq 3 v =
+    add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                     (mul_SNo (apply_fun v 1) (apply_fun v 1)))
+            (mul_SNo (apply_fun v 2) (apply_fun v 2)).
+  {
+    set f := fun i:set => mul_SNo (apply_fun v i) (apply_fun v i).
+    claim Hfrs_eq : euclidean_norm_sq 3 v = finite_real_sum f 3. { reflexivity. }
+    rewrite Hfrs_eq.
+    rewrite (finite_real_sum_S f 2 nat_2).
+    rewrite (finite_real_sum_S f 1 nat_1).
+    rewrite (finite_real_sum_S f 0 nat_0).
+    rewrite (finite_real_sum_0 f).
+    rewrite (add_SNo_0L (f 0)
+      (SNo_mul_SNo (apply_fun v 0) (apply_fun v 0) Hv0SNo Hv0SNo)).
+    reflexivity.
+  }
+  rewrite Hfrs.
+  rewrite Hv0_zero. rewrite Hv1_zero. rewrite Hv2_zero.
+  rewrite (mul_SNo_zeroL 0 SNo_0).
+  rewrite (add_SNo_0L 0 SNo_0).
+  rewrite (add_SNo_0L 0 SNo_0).
+  reflexivity.
+}
+exact (neq_ordsucc_0 0 (HvNorm (fun x _ => x = 0) HnormZero)).
+Qed.
+
+(** Definition: south pole of S^2 **)
+Definition south_pole_3 : set :=
+  graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0).
+
+(** Helper: south_pole_3 is in euclidean_space 3 **)
+Lemma south_pole_3_in_E3 : south_pole_3 :e euclidean_space 3.
+apply (graph3_in_euclidean_space3 (fun i:set => if i = 2 then minus_SNo 1 else 0)).
+let i.
+prove (if i = 2 then minus_SNo 1 else 0) :e R.
+apply (xm (i = 2)).
+- assume Hi2.
+  rewrite (If_i_1 (i = 2) (minus_SNo 1) 0 Hi2).
+  exact (real_minus_SNo 1 real_1).
+- assume Hni2.
+  rewrite (If_i_0 (i = 2) (minus_SNo 1) 0 Hni2).
+  exact real_0.
+Qed.
+
+(** Helper: south_pole_3 is in Sn 2 **)
+Lemma south_pole_3_in_Sn2 : south_pole_3 :e Sn 2.
+claim H2in3 : 2 :e 3. { exact In_2_3. }
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim Hsp0 : apply_fun south_pole_3 0 = 0.
+{
+  rewrite (apply_fun_graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0) 0 H0in3).
+  exact (If_i_0 (0 = 2) (minus_SNo 1) 0
+    (fun H:0=2 => In_irref 0 ((eq_symm 0 2 H) (fun z _ => 0 :e z) In_0_2))).
+}
+claim Hsp1 : apply_fun south_pole_3 1 = 0.
+{
+  rewrite (apply_fun_graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0) 1 H1in3).
+  exact (If_i_0 (1 = 2) (minus_SNo 1) 0
+    (fun H:1=2 => In_irref 2 (H (fun z _ => z :e 2) In_1_2))).
+}
+claim Hsp2 : apply_fun south_pole_3 2 = minus_SNo 1.
+{
+  rewrite (apply_fun_graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0) 2 H2in3).
+  exact (If_i_1 (2 = 2) (minus_SNo 1) 0 (eq_refl 2)).
+}
+claim Hnorm1 : euclidean_norm_sq 3 south_pole_3 = 1.
+{
+  set f := fun i:set => mul_SNo (apply_fun south_pole_3 i) (apply_fun south_pole_3 i).
+  claim Hfrs_eq : euclidean_norm_sq 3 south_pole_3 = finite_real_sum f 3. { reflexivity. }
+  rewrite Hfrs_eq.
+  rewrite (finite_real_sum_S f 2 nat_2).
+  rewrite (finite_real_sum_S f 1 nat_1).
+  rewrite (finite_real_sum_S f 0 nat_0).
+  rewrite (finite_real_sum_0 f).
+  rewrite Hsp0. rewrite Hsp1. rewrite Hsp2.
+  rewrite (mul_SNo_zeroL 0 SNo_0).
+  rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
+  rewrite (add_SNo_0L 0 SNo_0).
+  rewrite (add_SNo_0L 0 SNo_0).
+  rewrite (add_SNo_0L (mul_SNo 1 1) (SNo_mul_SNo 1 1 SNo_1 SNo_1)).
+  exact (mul_SNo_oneR 1 SNo_1).
+}
+exact (SepI (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) south_pole_3
+  south_pole_3_in_E3 Hnorm1).
+Qed.
+
+(** Helper: Sn 2 minus {south_pole_3} is open **)
+Lemma Sn2_minus_south_open :
+  (Sn 2 :\: {south_pole_3}) :e Sn_topology 2.
+claim Hsouth_closed : closed_in (Sn 2) (Sn_topology 2) {south_pole_3}.
+{
+  exact (finite_sets_closed_in_Hausdorff
+    (Sn 2) (Sn_topology 2) Sn_2_Hausdorff
+    {south_pole_3}
+    (singleton_subset south_pole_3 (Sn 2) south_pole_3_in_Sn2)
+    (Sing_finite south_pole_3)).
+}
+exact (open_in_elem (Sn 2) (Sn_topology 2) (Sn 2 :\: {south_pole_3})
+  (open_of_closed_complement (Sn 2) (Sn_topology 2) {south_pole_3} Hsouth_closed)).
+Qed.
+
+(** Helper: sum of non-negatives equals zero => first is zero **)
+Lemma SNo_nonneg_sum_zero_fst : forall a b:set,
+  SNo a -> SNo b -> 0 <= a -> 0 <= b -> add_SNo a b = 0 -> a = 0.
+let a b. assume Ha Hb H0a H0b Hab.
+apply (SNoLtLe_or 0 a SNo_0 Ha).
+- assume Hlt : 0 < a.
+  claim Ha_le_ab : a <= add_SNo a b.
+  {
+    exact ((add_SNo_0R a Ha) (fun x _ => x <= add_SNo a b)
+      (add_SNo_Le2 a 0 b Ha SNo_0 Hb H0b)).
+  }
+  claim Hapos : 0 < add_SNo a b.
+  {
+    exact (SNoLtLe_tra 0 a (add_SNo a b) SNo_0 Ha (SNo_add_SNo a b Ha Hb) Hlt Ha_le_ab).
+  }
+  exact (FalseE (SNoLt_irref 0 (Hab (fun x _ => 0 < x) Hapos)) (a = 0)).
+- assume Hle : a <= 0.
+  exact (SNoLe_antisym a 0 Ha SNo_0 Hle H0a).
+Qed.
+
+(** Helper: sum of non-negatives equals zero => both are zero **)
+Lemma SNo_nonneg_sum_zero : forall a b:set, forall P:prop,
+  SNo a -> SNo b -> 0 <= a -> 0 <= b -> add_SNo a b = 0 ->
+  (a = 0 -> b = 0 -> P) -> P.
+let a b P. assume Ha Hb H0a H0b Hab HaP.
+claim Ha0 : a = 0.
+{ exact (SNo_nonneg_sum_zero_fst a b Ha Hb H0a H0b Hab). }
+claim Hadd0b : add_SNo 0 b = 0.
+{ exact (Ha0 (fun x _ => add_SNo x b = 0) Hab). }
+claim Hb0 : b = 0.
+{ exact ((add_SNo_0L b Hb) (fun x _ => x = 0) Hadd0b). }
+exact (HaP Ha0 Hb0).
+Qed.
+
+(** Helper: square zero implies zero **)
+Lemma SNo_sqr_zero_implies_zero_lemma : forall x:set, SNo x -> mul_SNo x x = 0 -> x = 0.
+let x. assume Hx Hxx.
+apply (SNoLtLe_or 0 x SNo_0 Hx).
+- assume Hlt : 0 < x.
+  claim Hpos : 0 < mul_SNo x x.
+  { exact (mul_SNo_pos_pos x x Hx Hx Hlt Hlt). }
+  exact (FalseE (SNoLt_irref 0 (Hxx (fun z _ => 0 < z) Hpos)) (x = 0)).
+- assume Hle : x <= 0.
+  apply (SNoLtLe_or x 0 Hx SNo_0).
+  + assume Hlt2 : x < 0.
+    claim Hpos : 0 < mul_SNo x x.
+    { exact (mul_SNo_neg_neg x x Hx Hx Hlt2 Hlt2). }
+    exact (FalseE (SNoLt_irref 0 (Hxx (fun z _ => 0 < z) Hpos)) (x = 0)).
+  + assume H0le : 0 <= x.
+    exact (SNoLe_antisym x 0 Hx SNo_0 Hle H0le).
+Qed.
+
+(** Helper: equality of euclidean_space 3 elements from coordinate equality **)
+Lemma euclidean_space_3_eq :
+  forall v w : set,
+  v :e euclidean_space 3 -> w :e euclidean_space 3 ->
+  (forall i : set, i :e 3 -> apply_fun v i = apply_fun w i) ->
+  v = w.
+let v w. assume HvE3 HwE3 Hcoords.
+apply (xm (v = w)).
+- assume H. exact H.
+- assume Hne : v <> w.
+  claim Hdiff : exists i:set, i :e 3 /\ apply_fun v i <> apply_fun w i.
+  {
+    exact (product_space_points_differ_coord 3
+      (const_space_family 3 R R_standard_topology) v w HvE3 HwE3 Hne).
+  }
+  apply Hdiff.
+  let i. assume HiPack.
+  claim Hin3 : i :e 3.
+  { exact (andEL (i :e 3) (apply_fun v i <> apply_fun w i) HiPack). }
+  claim Hne_i : apply_fun v i <> apply_fun w i.
+  { exact (andER (i :e 3) (apply_fun v i <> apply_fun w i) HiPack). }
+  exact (FalseE (Hne_i (Hcoords i Hin3)) (v = w)).
+Qed.
+
+(** Helper: 1 + v_2 > 0 for v in Sn 2 minus south_pole **)
+Lemma stereo_S_denom_pos : forall v:set,
+  v :e Sn 2 :\: {south_pole_3} ->
+  Rlt 0 (add_SNo 1 (apply_fun v 2)).
+let v.
+assume Hv.
+claim HvSn : v :e Sn 2.
+{ exact (setminusE1 (Sn 2) {south_pole_3} v Hv). }
+claim HvNotSouth : ~ (v :e {south_pole_3}).
+{ exact (setminusE2 (Sn 2) {south_pole_3} v Hv). }
+claim HvE3 : v :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v HvSn). }
+claim H2in3 : 2 :e 3. { exact In_2_3. }
+claim Hv2R : apply_fun v 2 :e R.
+{ exact (euclidean_space_coord_in_R 3 v 2 HvE3 H2in3). }
+claim Hv2SNo : SNo (apply_fun v 2). { exact (real_SNo (apply_fun v 2) Hv2R). }
+claim Hv2_in_CI : apply_fun v 2 :e closed_interval (minus_SNo 1) 1.
+{ exact (Sn_2_coord_in_closed_interval v 2 HvSn H2in3). }
+claim Hv2_ge_m1 : Rle (minus_SNo 1) (apply_fun v 2).
+{
+  exact (andEL (Rle (minus_SNo 1) (apply_fun v 2)) (Rle (apply_fun v 2) 1)
+    (closed_interval_bounds (minus_SNo 1) 1 (apply_fun v 2)
+      (real_minus_SNo 1 real_1) real_1 Hv2_in_CI)).
+}
+claim Hm1SNo : SNo (minus_SNo 1). { exact (SNo_minus_SNo 1 SNo_1). }
+claim Hv2_neq_m1 : apply_fun v 2 <> minus_SNo 1.
+{
+  assume Heq : apply_fun v 2 = minus_SNo 1.
+  apply HvNotSouth.
+  claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+  claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+  claim Hv0R : apply_fun v 0 :e R.
+  { exact (euclidean_space_coord_in_R 3 v 0 HvE3 H0in3). }
+  claim Hv1R : apply_fun v 1 :e R.
+  { exact (euclidean_space_coord_in_R 3 v 1 HvE3 H1in3). }
+  claim Hv0SNo : SNo (apply_fun v 0). { exact (real_SNo (apply_fun v 0) Hv0R). }
+  claim Hv1SNo : SNo (apply_fun v 1). { exact (real_SNo (apply_fun v 1) Hv1R). }
+  claim Hv0sq_nn : 0 <= mul_SNo (apply_fun v 0) (apply_fun v 0).
+  { exact (SNo_sqr_nonneg (apply_fun v 0) Hv0SNo). }
+  claim Hv1sq_nn : 0 <= mul_SNo (apply_fun v 1) (apply_fun v 1).
+  { exact (SNo_sqr_nonneg (apply_fun v 1) Hv1SNo). }
+  claim HvNorm : euclidean_norm_sq 3 v = 1.
+  { exact (SepE2 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v HvSn). }
+  claim Hnorm_expand :
+    add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                     (mul_SNo (apply_fun v 1) (apply_fun v 1)))
+            (mul_SNo (apply_fun v 2) (apply_fun v 2)) = 1.
+  {
+    claim Hdef :
+      finite_real_sum (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i)) 3 =
+      add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                       (mul_SNo (apply_fun v 1) (apply_fun v 1)))
+              (mul_SNo (apply_fun v 2) (apply_fun v 2)).
+    {
+      rewrite (finite_real_sum_S (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i)) 2 nat_2).
+      rewrite (finite_real_sum_S (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i)) 1 nat_1).
+      rewrite (finite_real_sum_S (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i)) 0 nat_0).
+      rewrite (finite_real_sum_0 (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))).
+      rewrite (add_SNo_0L (mul_SNo (apply_fun v 0) (apply_fun v 0))
+        (SNo_mul_SNo (apply_fun v 0) (apply_fun v 0) Hv0SNo Hv0SNo)).
+      reflexivity.
+    }
+    claim Hfrs3_1 :
+      finite_real_sum (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i)) 3 = 1.
+    { exact HvNorm. }
+    exact (Hdef (fun x _ => x = 1) Hfrs3_1).
+  }
+  claim Hv2sq1 : mul_SNo (apply_fun v 2) (apply_fun v 2) = 1.
+  {
+    rewrite Heq.
+    rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
+    exact (mul_SNo_oneR 1 SNo_1).
+  }
+  claim Hnorm_simplified :
+    add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                     (mul_SNo (apply_fun v 1) (apply_fun v 1))) 1 = 1.
+  {
+    exact (Hv2sq1 (fun x _ =>
+      add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                       (mul_SNo (apply_fun v 1) (apply_fun v 1))) x = 1)
+      Hnorm_expand).
+  }
+  claim Hadd01SNo : SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                                 (mul_SNo (apply_fun v 1) (apply_fun v 1))).
+  {
+    exact (SNo_add_SNo
+      (mul_SNo (apply_fun v 0) (apply_fun v 0))
+      (mul_SNo (apply_fun v 1) (apply_fun v 1))
+      (SNo_mul_SNo (apply_fun v 0) (apply_fun v 0) Hv0SNo Hv0SNo)
+      (SNo_mul_SNo (apply_fun v 1) (apply_fun v 1) Hv1SNo Hv1SNo)).
+  }
+  claim Hv01sq_zero :
+    add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+            (mul_SNo (apply_fun v 1) (apply_fun v 1)) = 0.
+  {
+    exact (add_SNo_cancel_R
+      (add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+               (mul_SNo (apply_fun v 1) (apply_fun v 1)))
+      1 0 Hadd01SNo SNo_1 SNo_0
+      (eq_i_tra
+        (add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                          (mul_SNo (apply_fun v 1) (apply_fun v 1))) 1)
+        1 (add_SNo 0 1)
+        Hnorm_simplified
+        (eq_symm (add_SNo 0 1) 1 (add_SNo_0L 1 SNo_1)))).
+  }
+  claim Hv0_zero : apply_fun v 0 = 0.
+  {
+    exact (SNo_nonneg_sum_zero
+      (mul_SNo (apply_fun v 0) (apply_fun v 0))
+      (mul_SNo (apply_fun v 1) (apply_fun v 1))
+      (apply_fun v 0 = 0)
+      (SNo_mul_SNo (apply_fun v 0) (apply_fun v 0) Hv0SNo Hv0SNo)
+      (SNo_mul_SNo (apply_fun v 1) (apply_fun v 1) Hv1SNo Hv1SNo)
+      Hv0sq_nn Hv1sq_nn Hv01sq_zero
+      (fun Hv0sq0 _ =>
+        SNo_sqr_zero_implies_zero_lemma (apply_fun v 0) Hv0SNo Hv0sq0)).
+  }
+  claim Hv1_zero : apply_fun v 1 = 0.
+  {
+    exact (SNo_nonneg_sum_zero
+      (mul_SNo (apply_fun v 0) (apply_fun v 0))
+      (mul_SNo (apply_fun v 1) (apply_fun v 1))
+      (apply_fun v 1 = 0)
+      (SNo_mul_SNo (apply_fun v 0) (apply_fun v 0) Hv0SNo Hv0SNo)
+      (SNo_mul_SNo (apply_fun v 1) (apply_fun v 1) Hv1SNo Hv1SNo)
+      Hv0sq_nn Hv1sq_nn Hv01sq_zero
+      (fun _ Hv1sq0 =>
+        SNo_sqr_zero_implies_zero_lemma (apply_fun v 1) Hv1SNo Hv1sq0)).
+  }
+  claim Hvsouth : v = south_pole_3.
+  {
+    apply (euclidean_space_3_eq v south_pole_3 HvE3 south_pole_3_in_E3).
+    let i. assume Hi.
+    apply (ordsuccE 2 i Hi).
+    - assume Hi2 : i :e 2.
+      apply (ordsuccE 1 i Hi2).
+      + assume Hi1 : i :e 1.
+        claim Hi0 : i = 0.
+        {
+          apply (ordsuccE 0 i Hi1).
+          - assume H. exact (EmptyE i H (i = 0)).
+          - assume H. exact H.
+        }
+        rewrite Hi0.
+        rewrite (apply_fun_graph 3 (fun j:set => if j = 2 then minus_SNo 1 else 0) 0
+          (ordsuccI1 2 0 In_0_2)).
+        rewrite (If_i_0 (0 = 2) (minus_SNo 1) 0
+          (fun H:0=2 => In_irref 0 ((eq_symm 0 2 H) (fun z _ => 0 :e z) In_0_2))).
+        exact Hv0_zero.
+      + assume Hi1eq : i = 1.
+        rewrite Hi1eq.
+        rewrite (apply_fun_graph 3 (fun j:set => if j = 2 then minus_SNo 1 else 0) 1
+          (ordsuccI1 2 1 In_1_2)).
+        rewrite (If_i_0 (1 = 2) (minus_SNo 1) 0
+          (fun H:1=2 => In_irref 2 (H (fun z _ => z :e 2) In_1_2))).
+        exact Hv1_zero.
+    - assume Hi2eq : i = 2.
+      rewrite Hi2eq.
+      rewrite (apply_fun_graph 3 (fun j:set => if j = 2 then minus_SNo 1 else 0) 2 H2in3).
+      rewrite (If_i_1 (2 = 2) (minus_SNo 1) 0 (eq_refl 2)).
+      exact Heq.
+  }
+  exact (Hvsouth (fun z _ => v :e {z}) (SingI v)).
+}
+claim H1plus_SNo : SNo (add_SNo 1 (apply_fun v 2)).
+{ exact (SNo_add_SNo 1 (apply_fun v 2) SNo_1 Hv2SNo). }
+apply (SNoLtLe_or (apply_fun v 2) (minus_SNo 1) Hv2SNo Hm1SNo).
+- assume Hlt_m1 : apply_fun v 2 < minus_SNo 1.
+  exact (FalseE
+    (SNoLt_irref (minus_SNo 1)
+      (SNoLeLt_tra (minus_SNo 1) (apply_fun v 2) (minus_SNo 1)
+        Hm1SNo Hv2SNo Hm1SNo
+        (SNoLe_of_Rle (minus_SNo 1) (apply_fun v 2) Hv2_ge_m1)
+        Hlt_m1))
+    (Rlt 0 (add_SNo 1 (apply_fun v 2)))).
+- assume Hge_m1 : minus_SNo 1 <= apply_fun v 2.
+  claim Hgt_m1 : minus_SNo 1 < apply_fun v 2.
+  {
+    apply (SNoLtLe_or (minus_SNo 1) (apply_fun v 2) Hm1SNo Hv2SNo).
+    - assume Hlt. exact Hlt.
+    - assume Hle : apply_fun v 2 <= minus_SNo 1.
+      exact (FalseE
+        (Hv2_neq_m1 (SNoLe_antisym (apply_fun v 2) (minus_SNo 1) Hv2SNo Hm1SNo Hle Hge_m1))
+        (minus_SNo 1 < apply_fun v 2)).
+  }
+  claim Hzero_lt_1pv2 : 0 < add_SNo 1 (apply_fun v 2).
+  {
+    claim Hstep : add_SNo (minus_SNo 1) 1 < add_SNo (apply_fun v 2) 1.
+    {
+      exact (add_SNo_Lt1 (minus_SNo 1) 1 (apply_fun v 2) Hm1SNo SNo_1 Hv2SNo Hgt_m1).
+    }
+    claim Hstep2 : 0 < add_SNo (apply_fun v 2) 1.
+    {
+      exact ((add_SNo_minus_SNo_linv 1 SNo_1) (fun x _ => x < add_SNo (apply_fun v 2) 1) Hstep).
+    }
+    exact ((add_SNo_com (apply_fun v 2) 1 Hv2SNo SNo_1) (fun x _ => 0 < x) Hstep2).
+  }
+  exact (RltI 0 (add_SNo 1 (apply_fun v 2)) real_0
+    (real_add_SNo 1 real_1 (apply_fun v 2) Hv2R)
+    Hzero_lt_1pv2).
+Qed.
+
+(** Definition: stereographic projection map from south pole **)
+Definition stereo_S_fn : set -> set := fun v =>
+  let r := recip_SNo_pos (add_SNo 1 (apply_fun v 2)) in
+  graph 2 (fun i:set => if i = 0
+    then mul_SNo (apply_fun v 0) r
+    else mul_SNo (apply_fun v 1) r).
+
+Definition stereo_S_map : set :=
+  graph (Sn 2 :\: {south_pole_3}) stereo_S_fn.
+
+(** Helper: stereo_S_fn maps into euclidean_space 2 **)
+Lemma stereo_S_into_E2 : forall v:set,
+  v :e Sn 2 :\: {south_pole_3} ->
+  stereo_S_fn v :e euclidean_space 2.
+let v.
+assume Hv.
+claim HvSn : v :e Sn 2. { exact (setminusE1 (Sn 2) {south_pole_3} v Hv). }
+claim HvE3 : v :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v HvSn). }
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3. { exact In_2_3. }
+claim Hv0R : apply_fun v 0 :e R. { exact (euclidean_space_coord_in_R 3 v 0 HvE3 H0in3). }
+claim Hv1R : apply_fun v 1 :e R. { exact (euclidean_space_coord_in_R 3 v 1 HvE3 H1in3). }
+claim Hv2R : apply_fun v 2 :e R. { exact (euclidean_space_coord_in_R 3 v 2 HvE3 H2in3). }
+claim Hdenom_pos : Rlt 0 (add_SNo 1 (apply_fun v 2)).
+{ exact (stereo_S_denom_pos v Hv). }
+claim HdenomR : add_SNo 1 (apply_fun v 2) :e R.
+{ exact (real_add_SNo 1 real_1 (apply_fun v 2) Hv2R). }
+claim HdenomSNo : SNo (add_SNo 1 (apply_fun v 2)).
+{ exact (real_SNo (add_SNo 1 (apply_fun v 2)) HdenomR). }
+claim HdenomSNoLt : 0 < add_SNo 1 (apply_fun v 2).
+{ exact (RltE_lt 0 (add_SNo 1 (apply_fun v 2)) Hdenom_pos). }
+claim HrR : recip_SNo_pos (add_SNo 1 (apply_fun v 2)) :e R.
+{ exact (real_recip_SNo_pos (add_SNo 1 (apply_fun v 2)) HdenomR HdenomSNoLt). }
+claim Hgraph :
+  graph 2 (fun i:set => if i = 0
+    then mul_SNo (apply_fun v 0) (recip_SNo_pos (add_SNo 1 (apply_fun v 2)))
+    else mul_SNo (apply_fun v 1) (recip_SNo_pos (add_SNo 1 (apply_fun v 2))))
+  :e product_space 2 (const_space_family 2 R R_standard_topology).
+{
+  apply (product_space_graphI 2 (const_space_family 2 R R_standard_topology)
+    (fun i:set => if i = 0
+      then mul_SNo (apply_fun v 0) (recip_SNo_pos (add_SNo 1 (apply_fun v 2)))
+      else mul_SNo (apply_fun v 1) (recip_SNo_pos (add_SNo 1 (apply_fun v 2))))).
+  let j. assume Hj.
+  rewrite (space_family_set_const_space_family 2 R R_standard_topology j Hj).
+  claim Hbeta : (fun i:set => if i = 0
+    then mul_SNo (apply_fun v 0) (recip_SNo_pos (add_SNo 1 (apply_fun v 2)))
+    else mul_SNo (apply_fun v 1) (recip_SNo_pos (add_SNo 1 (apply_fun v 2)))) j =
+    if j = 0
+    then mul_SNo (apply_fun v 0) (recip_SNo_pos (add_SNo 1 (apply_fun v 2)))
+    else mul_SNo (apply_fun v 1) (recip_SNo_pos (add_SNo 1 (apply_fun v 2))).
+  { reflexivity. }
+  rewrite Hbeta.
+  apply (ordsuccE 1 j Hj).
+  - assume Hj1.
+    apply (ordsuccE 0 j Hj1).
+    + assume Hj0. apply (FalseE (EmptyE j Hj0)).
+    + assume Hjeq. rewrite Hjeq.
+      rewrite (If_i_1 (0 = 0)
+        (mul_SNo (apply_fun v 0) (recip_SNo_pos (add_SNo 1 (apply_fun v 2))))
+        (mul_SNo (apply_fun v 1) (recip_SNo_pos (add_SNo 1 (apply_fun v 2))))
+        (eq_refl 0)).
+      exact (real_mul_SNo (apply_fun v 0) Hv0R
+        (recip_SNo_pos (add_SNo 1 (apply_fun v 2))) HrR).
+  - assume Hjeq. rewrite Hjeq.
+    claim H10 : ~(1 = 0). { exact (neq_ordsucc_0 0). }
+    rewrite (If_i_0 (1 = 0)
+      (mul_SNo (apply_fun v 0) (recip_SNo_pos (add_SNo 1 (apply_fun v 2))))
+      (mul_SNo (apply_fun v 1) (recip_SNo_pos (add_SNo 1 (apply_fun v 2))))
+      H10).
+    exact (real_mul_SNo (apply_fun v 1) Hv1R
+      (recip_SNo_pos (add_SNo 1 (apply_fun v 2))) HrR).
+}
+exact Hgraph.
+Qed.
+
+(** Helper: UPair is commutative **)
+(** Proven Dave **)
+Lemma UPair_comm : forall x y:set, UPair x y = UPair y x.
+let x y.
+apply set_ext.
+- let z. assume Hz.
+  apply (UPairE z x y Hz).
+  + assume Hzx. rewrite Hzx. exact (UPairI2 y x).
+  + assume Hzy. rewrite Hzy. exact (UPairI1 y x).
+- let z. assume Hz.
+  apply (UPairE z y x Hz).
+  + assume Hzy. rewrite Hzy. exact (UPairI2 x y).
+  + assume Hzx. rewrite Hzx. exact (UPairI1 x y).
+Qed.
+
+(** Helper: neg_map = graph (Sn 2) (fun v => Rn_negate 3 v) apply lemma **)
+(** Proven Dave **)
+Lemma neg_map_apply_eq : forall v:set,
+  v :e Sn 2 ->
+  apply_fun (graph (Sn 2) (fun u:set => Rn_negate 3 u)) v = Rn_negate 3 v.
+let v. assume Hv.
+exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) v Hv).
+Qed.
+
+(** Helper: pp apply at neg gives same value **)
+(** Proven Dave **)
+Lemma pp_map_neg_eq : forall v:set, v :e Sn 2 ->
+  apply_fun projective_plane_map (Rn_negate 3 v) =
+  apply_fun projective_plane_map v.
+let v. assume Hv.
+claim HnvSn : Rn_negate 3 v :e Sn 2.
+{ exact (Rn_negate_3_in_Sn2 v Hv). }
+rewrite (projective_plane_map_apply_eq_pair v Hv).
+rewrite (projective_plane_map_apply_eq_pair (Rn_negate 3 v) HnvSn).
+claim HvE3 : v :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v Hv). }
+rewrite (Rn_negate_3_involution v HvE3).
+exact (eq_symm (UPair v (Rn_negate 3 v)) (UPair (Rn_negate 3 v) v) (UPair_comm v (Rn_negate 3 v))).
+Qed.
+
+(** Helper: W c= Sn 2 -> preimage_of (Sn 2) p (image_of p W) = W ∪ image_of neg_map W **)
+(** i.e., preimage of image equals W union antipodal-image **)
+(** Proven Dave **)
+Lemma pp_preimage_image_eq_binunion : forall W:set,
+  W c= Sn 2 ->
+  preimage_of (Sn 2) projective_plane_map (image_of projective_plane_map W) =
+  W :\/: image_of (graph (Sn 2) (fun v:set => Rn_negate 3 v)) W.
+let W. assume HW.
+set neg_map := graph (Sn 2) (fun v:set => Rn_negate 3 v).
+apply set_ext.
+- let v. assume Hv.
+  claim HvSn : v :e Sn 2.
+  { exact (SepE1 (Sn 2) (fun u:set => apply_fun projective_plane_map u :e image_of projective_plane_map W) v Hv). }
+  claim HpvImg : apply_fun projective_plane_map v :e image_of projective_plane_map W.
+  { exact (SepE2 (Sn 2) (fun u:set => apply_fun projective_plane_map u :e image_of projective_plane_map W) v Hv). }
+  apply (ReplE_impred W (fun u:set => apply_fun projective_plane_map u)
+    (apply_fun projective_plane_map v) HpvImg).
+  let w. assume HwW HpvEq.
+  claim HwSn : w :e Sn 2.
+  { exact (HW w HwW). }
+  claim HpvPair : apply_fun projective_plane_map v = UPair v (Rn_negate 3 v).
+  { exact (projective_plane_map_apply_eq_pair v HvSn). }
+  claim HpwPair : apply_fun projective_plane_map w = UPair w (Rn_negate 3 w).
+  { exact (projective_plane_map_apply_eq_pair w HwSn). }
+  claim HpairEq : UPair v (Rn_negate 3 v) = UPair w (Rn_negate 3 w).
+  {
+    claim Hp1 : UPair v (Rn_negate 3 v) = apply_fun projective_plane_map v.
+    { exact (eq_symm (apply_fun projective_plane_map v) (UPair v (Rn_negate 3 v)) HpvPair). }
+    claim Hp2 : UPair v (Rn_negate 3 v) = apply_fun projective_plane_map w.
+    { exact (HpvEq (fun z _ => UPair v (Rn_negate 3 v) = z) Hp1). }
+    exact (HpwPair (fun z _ => UPair v (Rn_negate 3 v) = z) Hp2).
+  }
+  claim HvMem : v :e UPair w (Rn_negate 3 w).
+  {
+    exact (HpairEq (fun z _ => v :e z) (UPairI1 v (Rn_negate 3 v))).
+  }
+  apply (UPairE v w (Rn_negate 3 w) HvMem).
+  + assume Hvw. rewrite Hvw. exact (binunionI1 W (image_of neg_map W) w HwW).
+  + assume Hvnw.
+    apply (binunionI2 W (image_of neg_map W)).
+    rewrite Hvnw.
+    claim HnwInImg : apply_fun neg_map w :e image_of neg_map W.
+    { exact (ReplI W (fun u:set => apply_fun neg_map u) w HwW). }
+    claim HnegMapw : apply_fun neg_map w = Rn_negate 3 w.
+    { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) w HwSn). }
+    exact (HnegMapw (fun z _ => z :e image_of neg_map W) HnwInImg).
+- let v. assume Hv.
+  apply (binunionE W (image_of neg_map W) v Hv).
+  + assume HvW.
+    claim HvSn : v :e Sn 2.
+    { exact (HW v HvW). }
+    exact (SepI (Sn 2)
+      (fun u:set => apply_fun projective_plane_map u :e image_of projective_plane_map W)
+      v HvSn
+      (ReplI W (fun u:set => apply_fun projective_plane_map u) v HvW)).
+  + assume HvNeg.
+    apply (ReplE_impred W (fun u:set => apply_fun neg_map u) v HvNeg).
+    let w. assume HwW HvEq.
+    claim HwSn : w :e Sn 2.
+    { exact (HW w HwW). }
+    claim HnwSn : Rn_negate 3 w :e Sn 2.
+    { exact (Rn_negate_3_in_Sn2 w HwSn). }
+    claim HnegMapEq : apply_fun neg_map w = Rn_negate 3 w.
+    { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) w HwSn). }
+    rewrite HvEq.
+    rewrite HnegMapEq.
+    claim HpnwRevEq : apply_fun projective_plane_map w = apply_fun projective_plane_map (Rn_negate 3 w).
+    { exact (eq_symm (apply_fun projective_plane_map (Rn_negate 3 w))
+                     (apply_fun projective_plane_map w)
+                     (pp_map_neg_eq w HwSn)). }
+    claim HwInImg : apply_fun projective_plane_map w :e image_of projective_plane_map W.
+    { exact (ReplI W (fun u:set => apply_fun projective_plane_map u) w HwW). }
+    claim HnwInImg : apply_fun projective_plane_map (Rn_negate 3 w) :e image_of projective_plane_map W.
+    { exact (HpnwRevEq (fun z _ => z :e image_of projective_plane_map W) HwInImg). }
+    exact (SepI (Sn 2)
+      (fun u:set => apply_fun projective_plane_map u :e image_of projective_plane_map W)
+      (Rn_negate 3 w) HnwSn HnwInImg).
+Qed.
+
+(** Helper: image_of projective_plane_map W is in projective_plane_topology when W is open **)
+(** Proven Dave **)
+Lemma pp_image_open : forall W:set,
+  W :e Sn_topology 2 ->
+  image_of projective_plane_map W :e projective_plane_topology.
+let W. assume HW.
+claim HWsub : W c= Sn 2.
+{
+  exact (open_in_subset (Sn 2) (Sn_topology 2) W
+    (open_inI (Sn 2) (Sn_topology 2) W (lemma59_3_Sn_topology_on 2) HW)).
+}
+apply (SepI (Power projective_plane)
+  (fun V:set => {x :e Sn 2|apply_fun projective_plane_map x :e V} :e Sn_topology 2)
+  (image_of projective_plane_map W)).
+- apply PowerI.
+  exact (image_of_sub_codomain projective_plane_map (Sn 2) projective_plane W
+    projective_plane_map_function_on HWsub).
+- claim Heq : {x :e Sn 2|apply_fun projective_plane_map x :e image_of projective_plane_map W} =
+    W :\/: image_of (graph (Sn 2) (fun v:set => Rn_negate 3 v)) W.
+  { exact (pp_preimage_image_eq_binunion W HWsub). }
+  rewrite Heq.
+  claim HnegW : image_of (graph (Sn 2) (fun v:set => Rn_negate 3 v)) W :e Sn_topology 2.
+  {
+    exact (homeomorphism_image_open (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+      (graph (Sn 2) (fun v:set => Rn_negate 3 v)) W
+      Rn_negate_3_Sn2_homeomorphism HW).
+  }
+  exact (topology_binunion_closed (Sn 2) (Sn_topology 2) W
+    (image_of (graph (Sn 2) (fun v:set => Rn_negate 3 v)) W)
+    (lemma59_3_Sn_topology_on 2) HW HnegW).
+Qed.
+
+(** Helper: the restriction of p to W is a homeomorphism to image_of p W,
+    provided W is open in Sn_topology 2 and W ∩ image_of neg_map W = ∅ **)
+Lemma pp_restriction_homeomorphism : forall W:set,
+  W :e Sn_topology 2 ->
+  W :/\: image_of (graph (Sn 2) (fun v:set => Rn_negate 3 v)) W = Empty ->
+  homeomorphism W (subspace_topology (Sn 2) (Sn_topology 2) W)
+    (image_of projective_plane_map W)
+    (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W))
+    (graph W (fun x:set => apply_fun projective_plane_map x)).
+let W.
+assume HW HDisj.
+set neg_map := graph (Sn 2) (fun v:set => Rn_negate 3 v).
+claim HWsub : W c= Sn 2.
+{
+  exact (open_in_subset (Sn 2) (Sn_topology 2) W
+    (open_inI (Sn 2) (Sn_topology 2) W (lemma59_3_Sn_topology_on 2) HW)).
+}
+claim HimgSub : image_of projective_plane_map W c= projective_plane.
+{
+  exact (image_of_sub_codomain projective_plane_map (Sn 2) projective_plane W
+    projective_plane_map_function_on HWsub).
+}
+claim Hbij : bijection W (image_of projective_plane_map W)
+  (graph W (fun x:set => apply_fun projective_plane_map x)).
+{
+  prove function_on (graph W (fun x:set => apply_fun projective_plane_map x)) W
+    (image_of projective_plane_map W) /\
+    (forall y:set, y :e image_of projective_plane_map W ->
+      exists x:set, x :e W /\ apply_fun (graph W (fun x0:set => apply_fun projective_plane_map x0)) x = y /\
+        (forall x':set, x' :e W -> apply_fun (graph W (fun x0:set => apply_fun projective_plane_map x0)) x' = y -> x' = x)).
+  apply andI.
+  - let x. assume HxW.
+    rewrite (apply_fun_graph W (fun u:set => apply_fun projective_plane_map u) x HxW).
+    exact (ReplI W (fun u:set => apply_fun projective_plane_map u) x HxW).
+  - let y. assume HyImg.
+    apply (ReplE_impred W (fun u:set => apply_fun projective_plane_map u) y HyImg).
+    let w. assume HwW HyEq.
+    witness w.
+    apply andI.
+    + apply andI.
+      * exact HwW.
+      * rewrite (apply_fun_graph W (fun u:set => apply_fun projective_plane_map u) w HwW).
+        exact (eq_symm y (apply_fun projective_plane_map w) HyEq).
+    + let x'. assume Hx'W.
+      assume Hgx'y.
+      claim HgApply : apply_fun (graph W (fun u:set => apply_fun projective_plane_map u)) x' =
+        apply_fun projective_plane_map x'.
+      { exact (apply_fun_graph W (fun u:set => apply_fun projective_plane_map u) x' Hx'W). }
+      claim Hpx'y : apply_fun projective_plane_map x' = y.
+      { exact (HgApply (fun z _ => z = y) Hgx'y). }
+      claim HwSn : w :e Sn 2. { exact (HWsub w HwW). }
+      claim Hx'Sn : x' :e Sn 2. { exact (HWsub x' Hx'W). }
+      claim HpwPair : apply_fun projective_plane_map w = UPair w (Rn_negate 3 w).
+      { exact (projective_plane_map_apply_eq_pair w HwSn). }
+      claim Hpx'Pair : apply_fun projective_plane_map x' = UPair x' (Rn_negate 3 x').
+      { exact (projective_plane_map_apply_eq_pair x' Hx'Sn). }
+      claim Hpwx' : apply_fun projective_plane_map x' = apply_fun projective_plane_map w.
+      {
+        exact (HyEq (fun z _ => apply_fun projective_plane_map x' = z) Hpx'y).
+      }
+      claim HPairEq : UPair x' (Rn_negate 3 x') = UPair w (Rn_negate 3 w).
+      {
+        claim Hpx'UPairW : apply_fun projective_plane_map x' = UPair w (Rn_negate 3 w).
+        { exact (HpwPair (fun z _ => apply_fun projective_plane_map x' = z) Hpwx'). }
+        exact (Hpx'Pair (fun z _ => z = UPair w (Rn_negate 3 w)) Hpx'UPairW).
+      }
+      claim Hx'mem : x' :e UPair w (Rn_negate 3 w).
+      {
+        exact (HPairEq (fun z _ => x' :e z) (UPairI1 x' (Rn_negate 3 x'))).
+      }
+      apply (UPairE x' w (Rn_negate 3 w) Hx'mem).
+      * assume Hx'w. exact Hx'w.
+      * assume Hx'nw.
+        claim HnwInNegW : Rn_negate 3 w :e image_of neg_map W.
+        {
+          claim HnegMapW : apply_fun neg_map w = Rn_negate 3 w.
+          { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) w HwSn). }
+          exact (HnegMapW (fun z _ => z :e image_of neg_map W)
+            (ReplI W (fun u:set => apply_fun neg_map u) w HwW)).
+        }
+        claim Hx'InNegW : x' :e image_of neg_map W.
+        {
+          claim Hnwx' : Rn_negate 3 w = x'.
+          { exact (eq_symm x' (Rn_negate 3 w) Hx'nw). }
+          exact (Hnwx' (fun z _ => z :e image_of neg_map W) HnwInNegW).
+        }
+        claim Hx'InInter : x' :e W :/\: image_of neg_map W.
+        { exact (binintersectI W (image_of neg_map W) x' Hx'W Hx'InNegW). }
+        exact (FalseE
+          (EmptyE x' (HDisj (fun z _ => x' :e z) Hx'InInter))
+          (x' = w)).
+}
+claim HHausImgW : Hausdorff_space (image_of projective_plane_map W)
+  (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W)).
+{ admit. }
+claim HcontW_to_pp :
+  continuous_map W (subspace_topology (Sn 2) (Sn_topology 2) W)
+    projective_plane projective_plane_topology
+    projective_plane_map.
+{
+  exact (continuous_on_subspace (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology
+    projective_plane_map W
+    (lemma59_3_Sn_topology_on 2) HWsub
+    projective_plane_map_continuous).
+}
+claim HcontinuousW :
+  continuous_map W (subspace_topology (Sn 2) (Sn_topology 2) W)
+    (image_of projective_plane_map W)
+    (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W))
+    projective_plane_map.
+{
+  exact (continuous_map_range_restrict W (subspace_topology (Sn 2) (Sn_topology 2) W)
+    projective_plane projective_plane_topology
+    projective_plane_map
+    (image_of projective_plane_map W)
+    HcontW_to_pp
+    HimgSub
+    (fun x Hx => ReplI W (fun u:set => apply_fun projective_plane_map u) x Hx)).
+}
+claim HcongW :
+  continuous_map W (subspace_topology (Sn 2) (Sn_topology 2) W)
+    (image_of projective_plane_map W)
+    (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W))
+    (graph W (fun x:set => apply_fun projective_plane_map x)).
+{
+  claim Heq_cont : forall x:set, x :e W ->
+    apply_fun (graph W (fun u:set => apply_fun projective_plane_map u)) x =
+    apply_fun projective_plane_map x.
+  { let x. assume Hx. exact (apply_fun_graph W (fun u:set => apply_fun projective_plane_map u) x Hx). }
+  claim HfunW : function_on (graph W (fun u:set => apply_fun projective_plane_map u)) W
+    (image_of projective_plane_map W).
+  {
+    let x. assume HxW.
+    rewrite (apply_fun_graph W (fun u:set => apply_fun projective_plane_map u) x HxW).
+    exact (ReplI W (fun u:set => apply_fun projective_plane_map u) x HxW).
+  }
+  exact (continuous_map_congr_on W (subspace_topology (Sn 2) (Sn_topology 2) W)
+    (image_of projective_plane_map W)
+    (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W))
+    projective_plane_map
+    (graph W (fun x:set => apply_fun projective_plane_map x))
+    HcontinuousW
+    HfunW
+    (fun x Hx => eq_symm
+      (apply_fun (graph W (fun u:set => apply_fun projective_plane_map u)) x)
+      (apply_fun projective_plane_map x)
+      (Heq_cont x Hx))).
+}
+admit.
+Admitted.
+
+(** Helper: for x in Sn 2, with Hausdorff separation, produce evenly covered nbhd **)
+Lemma pp_evenly_covered_at_x : forall x:set, x :e Sn 2 ->
+  exists U:set, U :e projective_plane_topology /\
+    apply_fun projective_plane_map x :e U /\
+    evenly_covered (Sn 2) (Sn_topology 2)
+      projective_plane projective_plane_topology projective_plane_map U.
+let x. assume HxSn.
+set neg_map := graph (Sn 2) (fun v:set => Rn_negate 3 v).
+claim HnxSn : Rn_negate 3 x :e Sn 2.
+{ exact (Rn_negate_3_in_Sn2 x HxSn). }
+claim Hxne : x <> Rn_negate 3 x.
+{ exact (Sn2_v_neq_neg_v x HxSn). }
+claim HHaus : Hausdorff_space (Sn 2) (Sn_topology 2).
+{ exact Sn_2_Hausdorff. }
+claim HHausSep : exists V1 V2:set,
+  V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2 /\ x :e V1 /\ Rn_negate 3 x :e V2 /\ V1 :/\: V2 = Empty.
+{ exact (Hausdorff_space_separation (Sn 2) (Sn_topology 2) x (Rn_negate 3 x)
+    HHaus HxSn HnxSn Hxne). }
+apply HHausSep.
+let V1.
+assume HV1Pack.
+apply HV1Pack.
+let V2.
+assume HPack.
+claim Hpack1 : (V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2 /\ x :e V1 /\ Rn_negate 3 x :e V2) /\ V1 :/\: V2 = Empty.
+{ exact HPack. }
+claim HV12disj : V1 :/\: V2 = Empty.
+{ exact (andER (V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2 /\ x :e V1 /\ Rn_negate 3 x :e V2) (V1 :/\: V2 = Empty) Hpack1). }
+claim Hpack2 : V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2 /\ x :e V1 /\ Rn_negate 3 x :e V2.
+{ exact (andEL (V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2 /\ x :e V1 /\ Rn_negate 3 x :e V2) (V1 :/\: V2 = Empty) Hpack1). }
+claim Hpack3 : (V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2 /\ x :e V1) /\ Rn_negate 3 x :e V2.
+{ exact Hpack2. }
+claim HnxV2 : Rn_negate 3 x :e V2.
+{ exact (andER (V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2 /\ x :e V1) (Rn_negate 3 x :e V2) Hpack3). }
+claim Hpack4 : V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2 /\ x :e V1.
+{ exact (andEL (V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2 /\ x :e V1) (Rn_negate 3 x :e V2) Hpack3). }
+claim Hpack5 : (V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2) /\ x :e V1.
+{ exact Hpack4. }
+claim HxV1 : x :e V1.
+{ exact (andER (V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2) (x :e V1) Hpack5). }
+claim Hpack6 : V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2.
+{ exact (andEL (V1 :e Sn_topology 2 /\ V2 :e Sn_topology 2) (x :e V1) Hpack5). }
+claim HV1open : V1 :e Sn_topology 2.
+{ exact (andEL (V1 :e Sn_topology 2) (V2 :e Sn_topology 2) Hpack6). }
+claim HV2open : V2 :e Sn_topology 2.
+{ exact (andER (V1 :e Sn_topology 2) (V2 :e Sn_topology 2) Hpack6). }
+set nV2 := image_of neg_map V2.
+claim HnV2open : nV2 :e Sn_topology 2.
+{
+  exact (homeomorphism_image_open (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+    neg_map V2 Rn_negate_3_Sn2_homeomorphism HV2open).
+}
+set W := V1 :/\: nV2.
+claim HWopen : W :e Sn_topology 2.
+{
+  exact (topology_binintersect_closed (Sn 2) (Sn_topology 2) V1 nV2
+    (lemma59_3_Sn_topology_on 2) HV1open HnV2open).
+}
+claim HWsub : W c= Sn 2.
+{
+  exact (open_in_subset (Sn 2) (Sn_topology 2) W
+    (open_inI (Sn 2) (Sn_topology 2) W (lemma59_3_Sn_topology_on 2) HWopen)).
+}
+claim HxW : x :e W.
+{
+  apply binintersectI.
+  - exact HxV1.
+  - claim HxE3 : x :e euclidean_space 3.
+    { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) x HxSn). }
+    claim HxInImg : x :e nV2.
+    {
+      claim Hnnx : Rn_negate 3 (Rn_negate 3 x) = x.
+      { exact (Rn_negate_3_involution x HxE3). }
+      claim HnxnV2 : apply_fun neg_map (Rn_negate 3 x) :e nV2.
+      { exact (ReplI V2 (fun u:set => apply_fun neg_map u) (Rn_negate 3 x) HnxV2). }
+      claim HnegNx : apply_fun neg_map (Rn_negate 3 x) = Rn_negate 3 (Rn_negate 3 x).
+      { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) (Rn_negate 3 x) HnxSn). }
+      claim HnnxInNV2 : Rn_negate 3 (Rn_negate 3 x) :e nV2.
+      { exact (HnegNx (fun z _ => z :e nV2) HnxnV2). }
+      exact (Hnnx (fun z _ => z :e nV2) HnnxInNV2).
+    }
+    exact HxInImg.
+}
+claim HDisj_W : W :/\: image_of neg_map W = Empty.
+{ admit. }
+set negW := image_of neg_map W.
+claim HnegWopen : negW :e Sn_topology 2.
+{
+  exact (homeomorphism_image_open (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+    neg_map W Rn_negate_3_Sn2_homeomorphism HWopen).
+}
+set U := image_of projective_plane_map W.
+claim HUopen : U :e projective_plane_topology.
+{ exact (pp_image_open W HWopen). }
+claim HxU : apply_fun projective_plane_map x :e U.
+{ exact (ReplI W (fun u:set => apply_fun projective_plane_map u) x HxW). }
+claim HslicesSub : UPair W negW c= Sn_topology 2.
+{
+  let S. assume HS.
+  apply (UPairE S W negW HS).
+  - assume Heq. rewrite Heq. exact HWopen.
+  - assume Heq. rewrite Heq. exact HnegWopen.
+}
+claim HslicesPD : pairwise_disjoint (UPair W negW).
+{
+  let A B. assume HA HB Hne.
+  apply (UPairE A W negW HA).
+  - assume HAW.
+    apply (UPairE B W negW HB).
+    + assume HBW.
+      exact (FalseE (Hne ((eq_symm B W HBW) (fun z _ => A = z) HAW)) (A :/\: B = Empty)).
+    + assume HBneg.
+      rewrite HAW. rewrite HBneg.
+      exact HDisj_W.
+  - assume HAneg.
+    apply (UPairE B W negW HB).
+    + assume HBW.
+      rewrite HAneg. rewrite HBW.
+      claim Hsymm : negW :/\: W = W :/\: negW.
+      {
+        apply set_ext.
+        - let z. assume Hz.
+          exact (binintersectI W negW z (binintersectE2 negW W z Hz) (binintersectE1 negW W z Hz)).
+        - let z. assume Hz.
+          exact (binintersectI negW W z (binintersectE2 W negW z Hz) (binintersectE1 W negW z Hz)).
+      }
+      rewrite Hsymm. exact HDisj_W.
+    + assume HBneg.
+      exact (FalseE (Hne ((eq_symm B negW HBneg) (fun z _ => A = z) HAneg)) (A :/\: B = Empty)).
+}
+claim HslicesUnion : Union (UPair W negW) = preimage_of (Sn 2) projective_plane_map U.
+{
+  rewrite (Union_UPair_eq_binunion W negW).
+  exact (eq_symm (preimage_of (Sn 2) projective_plane_map U) (W :\/: negW)
+    (pp_preimage_image_eq_binunion W HWsub)).
+}
+claim HslicesHomeo :
+  forall V:set, V :e UPair W negW ->
+    homeomorphism V (subspace_topology (Sn 2) (Sn_topology 2) V) U
+      (subspace_topology projective_plane projective_plane_topology U)
+      (graph V (fun z:set => apply_fun projective_plane_map z)).
+{
+  let V. assume HVslice.
+  apply (UPairE V W negW HVslice).
+  - assume HVW. rewrite HVW.
+    exact (pp_restriction_homeomorphism W HWopen HDisj_W).
+  - assume HVneg. rewrite HVneg.
+    admit.
+}
+witness U.
+apply andI.
+- apply andI.
+  + exact HUopen.
+  + exact HxU.
+- prove topology_on (Sn 2) (Sn_topology 2) /\
+    U :e projective_plane_topology /\
+    exists slices:set,
+      slices c= Sn_topology 2 /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of (Sn 2) projective_plane_map U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology (Sn 2) (Sn_topology 2) V) U
+          (subspace_topology projective_plane projective_plane_topology U)
+          (graph V (fun z:set => apply_fun projective_plane_map z))).
+  apply andI.
+  + apply andI.
+    * exact (lemma59_3_Sn_topology_on 2).
+    * exact HUopen.
+  + witness (UPair W negW).
+    apply andI.
+    * apply andI.
+      + apply andI.
+        { exact HslicesSub. }
+        { exact HslicesPD. }
+      + exact HslicesUnion.
+    * exact HslicesHomeo.
+Admitted.
+
 (** from S60 Thm 60.3 (line 1691 in algtop.tex) **)
 (** LATEX VERSION: P^2 is a compact surface, and the quotient map p: S^2 -> P^2 **)
 (** is a covering map. **)
@@ -198647,7 +200758,7 @@ claim Hmanifold :
 claim HcompactS2 :
   compact_space (Sn 2) (Sn_topology 2).
 {
-  admit.
+  exact compact_Sn_2.
 }
 claim Hcover :
   covering_map (Sn 2) (Sn_topology 2)
