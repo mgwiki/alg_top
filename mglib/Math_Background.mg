@@ -234141,6 +234141,62 @@ rewrite Hinvw.
 exact (HassocG (apply_fun inv x) w x HinvxG HwG HxG).
 Qed.
 
+(** Infrastructure: conjugation preserves nontriviality **)
+(** Proven Charlie **)
+Lemma group_conjugate_ne_e : forall G mult e inv x w:set,
+  group_structure G mult e inv ->
+  x :e G ->
+  w :e G ->
+  w <> e ->
+  apply_fun mult (apply_fun inv x, apply_fun mult (w, x)) <> e.
+let G mult e inv x w.
+assume Hgrp HxG HwG Hw_ne_e.
+assume Hconj_e : apply_fun mult (apply_fun inv x, apply_fun mult (w, x)) = e.
+apply Hw_ne_e.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvLaw.
+claim HinvxG : apply_fun inv x :e G.
+{ exact (HinvFn x HxG). }
+claim HwxG : apply_fun mult (w, x) :e G.
+{
+  exact (HmultFn (w, x)
+    (tuple_2_setprod_by_pair_Sigma G G w x HwG HxG)).
+}
+claim Hwx_eq_x : apply_fun mult (w, x) = x.
+{
+  exact (group_left_inv_solve
+    G mult inv e x (apply_fun mult (w, x))
+    HmultFn HinvFn HeG HassocG HidG HinvLaw
+    HxG HwxG Hconj_e).
+}
+(** w = mult(w, e) = mult(w, mult(x, inv x)) = mult(mult(w, x), inv x) = mult(x, inv x) = e **)
+claim Hw_eq : w = apply_fun mult (w, e).
+{
+  symmetry.
+  exact (andER
+    (apply_fun mult (e, w) = w)
+    (apply_fun mult (w, e) = w)
+    (HidG w HwG)).
+}
+rewrite Hw_eq.
+rewrite <- (andEL
+  (apply_fun mult (x, apply_fun inv x) = e)
+  (apply_fun mult (apply_fun inv x, x) = e)
+  (HinvLaw x HxG)).
+rewrite <- (HassocG w x (apply_fun inv x) HwG HxG HinvxG).
+rewrite Hwx_eq_x.
+reflexivity.
+Qed.
+
 (** Infrastructure: involutive element squares to identity **)
 (** Proven Charlie **)
 Lemma group_involutive_square_e : forall G mult e inv a:set,
