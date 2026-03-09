@@ -82,6 +82,57 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773042726
+Created: 1773042726
+Status: PROPOSED
+
+Refers to Commit:
+  4d544cf7f2f0bdbf43365db1af70d5dbe86e24a6
+
+Target:
+  Line: 92860
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  The statement uses path_lift with f = graph I2 (fun t => F(s,t)),
+  but path_lift requires a path on unit_interval. Without I2 = unit_interval
+  (or an explicit extension to unit_interval), the lemma is unprovable.
+
+Proposed Replacement:
+  Lemma path_lift_column_continuous_on_product_ball : forall E Te B Tb p start_lift F I1 t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    t0 :e unit_interval ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+    continuous_map (setprod I1 unit_interval)
+      (subspace_topology unit_square unit_square_topology (setprod I1 unit_interval))
+      B Tb F ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun F (s, 0)) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p
+            (apply_fun start_lift s)
+            (graph unit_interval (fun t:set => apply_fun F (s, t))))
+          t0)).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1773042726 | Bob: This aligns with the parametric proof pattern and avoids partial-domain paths.
+
+Approvals:
+  - 1773042726 | Alice:
+  - 1773042726 | Bob: YES
+  - 1773042726 | Charlie:
+  - 1773042726 | Dave:
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1773037094
 Created: 1773037094
 Status: PROPOSED
