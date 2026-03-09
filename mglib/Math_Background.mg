@@ -231430,6 +231430,250 @@ Theorem efam_not_in_Gfam_nontrivial_early : forall G multG eG invG J Gfam efam:s
 admit.
 Admitted.
 
+(** Infrastructure: in the boundary-cancellation case mult(x_m,x_0) = e, the middle product is a conjugate **)
+(** Proven Charlie **)
+Lemma free_product_boundary_cancel_middle_conjugate :
+  forall G multG eG invG J Gfam efam n xs m k w:set,
+  free_product_of_subgroups G multG eG invG J Gfam efam ->
+  reduced_word J Gfam efam n xs ->
+  n = ordsucc m ->
+  nat_p m ->
+  m = ordsucc k ->
+  nat_p k ->
+  apply_fun multG (apply_fun xs m, apply_fun xs 0) = eG ->
+  word_product multG eG xs n = w ->
+  apply_fun invG w = w ->
+  let xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)) in
+    word_product multG eG xs_suf k =
+      apply_fun multG (apply_fun invG (apply_fun xs 0),
+        apply_fun multG (w, apply_fun xs 0)).
+let G multG eG invG J Gfam efam n xs m k w.
+assume Hfp Hred Hn_sm Hm_nat Hm_eq_sk Hk_nat Hp_e Hwp Hinvw.
+
+(** Unpack the free product structure to access the group laws and subgroup containment. **)
+apply (and5E
+  (group_structure G multG eG invG)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
+  (subgroups_generate G multG eG invG J Gfam)
+  (forall x:set, x :e G -> x <> eG ->
+    exists n0 xs0:set,
+      reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product multG eG xs0 n0 = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = x ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsubfam _ _ _.
+
+claim Hred_sm : reduced_word J Gfam efam (ordsucc m) xs.
+{ rewrite <- Hn_sm. exact Hred. }
+
+(** Entries of xs (up to ordsucc m) are group elements. **)
+claim Hxs_in_G_sm : forall i:set, i :e ordsucc m -> apply_fun xs i :e G.
+{
+  let i. assume Hi_sm.
+  exact (reduced_word_in_G
+    G multG eG invG J Gfam efam (ordsucc m) xs
+    Hsubfam Hred_sm i Hi_sm).
+}
+
+set xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)).
+
+(** Suffix product: x1 ... xm = mult(inv(x0), w). **)
+claim Hwp_suf_m :
+  word_product multG eG xs_suf m =
+    apply_fun multG (apply_fun invG (apply_fun xs 0), word_product multG eG xs (ordsucc m)).
+{ exact (word_product_suffix_by_cancel G multG eG invG m xs Hgrp Hm_nat Hxs_in_G_sm). }
+
+(** xs_suf entries are group elements up to ordsucc k (since m = ordsucc k). **)
+claim Hxs_suf_in_G_sk : forall i:set, i :e ordsucc k -> apply_fun xs_suf i :e G.
+{
+  let i. assume Hi_sk.
+  claim Hi_m : i :e m.
+  { rewrite Hm_eq_sk. exact Hi_sk. }
+  rewrite (apply_fun_graph m (fun j:set => apply_fun xs (ordsucc j)) i Hi_m).
+  claim Hsi_sm : ordsucc i :e ordsucc m.
+  { exact (nat_ordsucc_in_ordsucc m Hm_nat i Hi_m). }
+  exact (Hxs_in_G_sm (ordsucc i) Hsi_sm).
+}
+
+(** Prefix cancellation on xs_suf to isolate the middle product x1 ... x_{m-1}. **)
+claim Hwp_suf_k :
+  word_product multG eG xs_suf k =
+    apply_fun multG (word_product multG eG xs_suf (ordsucc k), apply_fun invG (apply_fun xs_suf k)).
+{ exact (word_product_prefix_by_cancel G multG eG invG k xs_suf Hgrp Hk_nat Hxs_suf_in_G_sk). }
+
+(** Identify the last term xs_suf(k) = xs(m). **)
+claim Hxsk : apply_fun xs_suf k = apply_fun xs m.
+{
+  claim Hk_in_m : k :e m.
+  { rewrite Hm_eq_sk. exact (ordsuccI2 k). }
+  rewrite (apply_fun_graph m (fun i:set => apply_fun xs (ordsucc i)) k Hk_in_m).
+  rewrite <- Hm_eq_sk.
+  reflexivity.
+}
+
+(** Use mult(x_m,x_0) = e to get inv(x_m) = x_0. **)
+claim Hinv_xm_eq_x0 : apply_fun invG (apply_fun xs m) = apply_fun xs 0.
+{
+  claim Hxs2_G : forall i:set, i :e 2 ->
+    apply_fun (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) i :e G.
+  {
+    let i. assume Hi2.
+    apply (cases_2 i Hi2 (fun j:set =>
+      apply_fun (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) j :e G)).
+    - (** i = 0 **)
+      claim Hx2_0 :
+        apply_fun (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) 0 = apply_fun xs m.
+      {
+        rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 0 In_0_2).
+        rewrite (If_i_1 (0 = 0) (apply_fun xs m) (apply_fun xs 0) (eq_refl 0)).
+        reflexivity.
+      }
+      exact (eq_subst_mem
+        (apply_fun (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) 0)
+        (apply_fun xs m)
+        G
+        Hx2_0
+        (Hxs_in_G_sm m (ordsuccI2 m))).
+    - (** i = 1 **)
+      claim Hx2_1 :
+        apply_fun (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) 1 = apply_fun xs 0.
+      {
+        rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 1 In_1_2).
+        rewrite (If_i_0 (1 = 0) (apply_fun xs m) (apply_fun xs 0) neq_1_0).
+        reflexivity.
+      }
+      exact (eq_subst_mem
+        (apply_fun (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) 1)
+        (apply_fun xs 0)
+        G
+        Hx2_1
+        (Hxs_in_G_sm 0 (nat_0_in_ordsucc m Hm_nat))).
+  }
+  claim Hwp2 :
+    word_product multG eG (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) 2 =
+      apply_fun multG (apply_fun xs m, apply_fun xs 0).
+  {
+    exact (word_product_two_graph_group
+      G multG eG invG (apply_fun xs m) (apply_fun xs 0)
+      Hgrp
+      (Hxs_in_G_sm m (ordsuccI2 m))
+      (Hxs_in_G_sm 0 (nat_0_in_ordsucc m Hm_nat))).
+  }
+  claim Hwp2_e :
+    word_product multG eG (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) 2 = eG.
+  { rewrite Hwp2. exact Hp_e. }
+  claim Hx0inv :
+    apply_fun (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) 0 =
+      apply_fun invG (apply_fun (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) 1).
+  { exact (word_product_two_eq_inv_left G multG eG invG
+      (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)))
+      Hgrp Hxs2_G Hwp2_e). }
+  (** From xs(m) = inv(xs(0)), deduce inv(xs(m)) = xs(0). **)
+  claim Hxm_eq_inv_x0 : apply_fun xs m = apply_fun invG (apply_fun xs 0).
+  {
+    claim Hxs20 :
+      apply_fun (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) 0 = apply_fun xs m.
+    {
+      rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 0 In_0_2).
+      rewrite (If_i_1 (0 = 0) (apply_fun xs m) (apply_fun xs 0) (eq_refl 0)).
+      reflexivity.
+    }
+    claim Hxs21 :
+      apply_fun (graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0))) 1 = apply_fun xs 0.
+    {
+      rewrite (apply_fun_graph 2 (fun t:set => If_i (t = 0) (apply_fun xs m) (apply_fun xs 0)) 1 In_1_2).
+      rewrite (If_i_0 (1 = 0) (apply_fun xs m) (apply_fun xs 0) neq_1_0).
+      reflexivity.
+    }
+    rewrite <- Hxs20.
+    rewrite <- Hxs21 at 2.
+    exact Hx0inv.
+  }
+  claim Hx0_G : apply_fun xs 0 :e G.
+  { exact (Hxs_in_G_sm 0 (nat_0_in_ordsucc m Hm_nat)). }
+  apply (and6E
+    (function_on multG (setprod G G) G)
+    (function_on invG G G)
+    (eG :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+    (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+    (forall a:set, a :e G ->
+      apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+    Hgrp).
+  assume HmultFn HinvFn HeGmem HassocG HidG HinvLaw.
+  rewrite Hxm_eq_inv_x0.
+  rewrite (group_inv_inv G multG invG eG (apply_fun xs 0) HmultFn HinvFn HeGmem HassocG HidG HinvLaw Hx0_G).
+  reflexivity.
+}
+
+(** Rewrite the isolated middle product using the suffix and boundary equalities. **)
+claim Hwp_suf_k' :
+  word_product multG eG xs_suf k =
+    apply_fun multG (apply_fun invG (apply_fun xs 0),
+      apply_fun multG (w, apply_fun xs 0)).
+{
+  rewrite Hwp_suf_k.
+  rewrite <- Hm_eq_sk.
+  rewrite Hwp_suf_m.
+  rewrite <- Hn_sm.
+  rewrite Hwp.
+  rewrite Hxsk.
+  rewrite Hinv_xm_eq_x0.
+  (** Reassociate using associativity to obtain mult(mult(inv x0, w), x0) = mult(inv x0, mult(w, x0)). **)
+  apply (and6E
+    (function_on multG (setprod G G) G)
+    (function_on invG G G)
+    (eG :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+    (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+    (forall a:set, a :e G ->
+      apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+    Hgrp).
+  assume HmultFn HinvFn HeGmem HassocG HidG HinvLaw.
+  claim Hx0_G : apply_fun xs 0 :e G.
+  { exact (Hxs_in_G_sm 0 (nat_0_in_ordsucc m Hm_nat)). }
+  claim Hinvx0_G : apply_fun invG (apply_fun xs 0) :e G.
+  { exact (HinvFn (apply_fun xs 0) Hx0_G). }
+  claim Hw_G : w :e G.
+  {
+    claim Hn_nat : nat_p n.
+    { rewrite Hn_sm. exact (nat_ordsucc m Hm_nat). }
+    claim Hxs_in_G_n : forall i:set, i :e n -> apply_fun xs i :e G.
+    {
+      let i. assume Hi_n.
+      claim Hi_sm : i :e ordsucc m.
+      { rewrite <- Hn_sm. exact Hi_n. }
+      exact (Hxs_in_G_sm i Hi_sm).
+    }
+    exact (eq_subst_mem
+      w
+      (word_product multG eG xs n)
+      G
+      (eq_symm (word_product multG eG xs n) w Hwp)
+      (word_product_in_G_group G multG eG invG n xs Hgrp Hn_nat Hxs_in_G_n)).
+  }
+  claim Hwx0_G : apply_fun multG (w, apply_fun xs 0) :e G.
+  {
+    exact (HmultFn (w, apply_fun xs 0)
+      (tuple_2_setprod_by_pair_Sigma G G w (apply_fun xs 0) Hw_G Hx0_G)).
+  }
+  rewrite (eq_symm
+    (apply_fun multG (apply_fun multG (apply_fun invG (apply_fun xs 0), w), apply_fun xs 0))
+    (apply_fun multG (apply_fun invG (apply_fun xs 0), apply_fun multG (w, apply_fun xs 0)))
+    (HassocG (apply_fun invG (apply_fun xs 0)) w (apply_fun xs 0) Hinvx0_G Hw_G Hx0_G)).
+  reflexivity.
+}
+
+exact Hwp_suf_k'.
+Qed.
+
 (** Helper bounty: boundary-product nontriviality in free products (p <> eG).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
 (** Bounty 165 **)
