@@ -231927,11 +231927,11 @@ apply (and5E
       reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
       word_product multG eG xs0 n0 = x /\
       (forall n' xs':set,
-        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
-        word_product multG eG xs' n' = x ->
-        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
-  Hfp).
-assume Hgrp Hsubfam Hdisjoint _ _.
+	        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+	        word_product multG eG xs' n' = x ->
+	        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+	  Hfp).
+	assume Hgrp Hsubfam Hdisjoint _ Huniq.
 
 (** If m = 1 then xs(0), xs(1) lie in the same factor, contradicting reducedness. **)
 claim Hm_ne1 : m <> 1.
@@ -232133,11 +232133,48 @@ apply (nat_inv m Hm_nat).
 	        (apply_fun multG (eG, x0))
 	        Hwx0_eq_x0
 	        (eq_symm (apply_fun multG (eG, x0)) x0 He_mul_x0))).
-	  }
-	
-	  (** TODO: complete the torsion or malnormality argument to derive a contradiction. **)
-	  admit.
-	Admitted.
+		  }
+		
+		  (** Extract a reduced word representation for u (nontrivial) from the free product axiom. **)
+		  claim Hu_rep : exists n0 xs0:set,
+		    reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+		    word_product multG eG xs0 n0 = u /\
+		    (forall n' xs':set,
+		      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+		      word_product multG eG xs' n' = u ->
+		      n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+		  {
+		    exact (Huniq u Hu_G Hu_ne_eG).
+		  }
+		  apply Hu_rep. let nu. assume Hexu : exists xsu:set,
+		    reduced_word J Gfam efam nu xsu /\ nu <> 0 /\
+		    word_product multG eG xsu nu = u /\
+		    (forall n' xs':set,
+		      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+		      word_product multG eG xs' n' = u ->
+		      nu = n' /\ (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs' i)).
+		  apply Hexu. let xsu.
+		  assume Hpacku :
+		    reduced_word J Gfam efam nu xsu /\ nu <> 0 /\
+		    word_product multG eG xsu nu = u /\
+		    (forall n' xs':set,
+		      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+		      word_product multG eG xs' n' = u ->
+		      nu = n' /\ (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs' i)).
+		  apply (and4E
+		    (reduced_word J Gfam efam nu xsu)
+		    (nu <> 0)
+		    (word_product multG eG xsu nu = u)
+		    (forall n' xs':set,
+		      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+		      word_product multG eG xs' n' = u ->
+		      nu = n' /\ (forall i:set, i :e nu -> apply_fun xsu i = apply_fun xs' i))
+		    Hpacku).
+		  assume Hredu Hnu_ne0 Hwpu Huniqu.
+		
+		  (** TODO: complete the torsion or malnormality argument to derive a contradiction. **)
+		  admit.
+		Admitted.
 
 (** Helper bounty: boundary-product not equal to efam(alpha0).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
