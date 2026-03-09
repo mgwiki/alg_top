@@ -200411,6 +200411,7 @@ Qed.
 
 (** Helper: the restriction of p to W is a homeomorphism to image_of p W,
     provided W is open in Sn_topology 2 and W ∩ image_of neg_map W = ∅ **)
+(** Proven Dave **)
 Lemma pp_restriction_homeomorphism : forall W:set,
   W :e Sn_topology 2 ->
   W :/\: image_of (graph (Sn 2) (fun v:set => Rn_negate 3 v)) W = Empty ->
@@ -200501,9 +200502,6 @@ claim Hbij : bijection W (image_of projective_plane_map W)
           (EmptyE x' (HDisj (fun z _ => x' :e z) Hx'InInter))
           (x' = w)).
 }
-claim HHausImgW : Hausdorff_space (image_of projective_plane_map W)
-  (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W)).
-{ admit. }
 claim HcontW_to_pp :
   continuous_map W (subspace_topology (Sn 2) (Sn_topology 2) W)
     projective_plane projective_plane_topology
@@ -200558,8 +200556,125 @@ claim HcongW :
       (apply_fun projective_plane_map x)
       (Heq_cont x Hx))).
 }
-admit.
-Admitted.
+claim HopenMapW :
+  open_map W (subspace_topology (Sn 2) (Sn_topology 2) W)
+    (image_of projective_plane_map W)
+    (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W))
+    (graph W (fun x:set => apply_fun projective_plane_map x)).
+{
+  prove topology_on W (subspace_topology (Sn 2) (Sn_topology 2) W) /\
+    topology_on (image_of projective_plane_map W)
+      (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W)) /\
+    function_on (graph W (fun x:set => apply_fun projective_plane_map x)) W
+      (image_of projective_plane_map W) /\
+    forall U:set, U :e subspace_topology (Sn 2) (Sn_topology 2) W ->
+      image_of (graph W (fun x:set => apply_fun projective_plane_map x)) U :e
+        subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W).
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * exact (continuous_map_topology_dom W (subspace_topology (Sn 2) (Sn_topology 2) W)
+          (image_of projective_plane_map W)
+          (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W))
+          (graph W (fun x:set => apply_fun projective_plane_map x)) HcongW).
+      * exact (continuous_map_topology_cod W (subspace_topology (Sn 2) (Sn_topology 2) W)
+          (image_of projective_plane_map W)
+          (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W))
+          (graph W (fun x:set => apply_fun projective_plane_map x)) HcongW).
+    + exact (continuous_map_function_on W (subspace_topology (Sn 2) (Sn_topology 2) W)
+        (image_of projective_plane_map W)
+        (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W))
+        (graph W (fun x:set => apply_fun projective_plane_map x)) HcongW).
+  - let U. assume HUsub.
+        claim HUsubW : U c= W.
+        {
+          apply (subspace_topologyE (Sn 2) (Sn_topology 2) W U HUsub).
+          let V0. assume HV0pack.
+          apply HV0pack. assume HV0open HUeq.
+          exact (eq_symm U (V0 :/\: W) HUeq (fun z _ => z c= W) (binintersect_Subq_2 V0 W)).
+        }
+        claim HV0pack : exists V0:set, V0 :e Sn_topology 2 /\ U = V0 :/\: W.
+        { exact (subspace_topologyE (Sn 2) (Sn_topology 2) W U HUsub). }
+        apply HV0pack.
+        let V0. assume HV0inner.
+        apply HV0inner. assume HV0open HUeq.
+        claim HimgEq : image_of (graph W (fun x:set => apply_fun projective_plane_map x)) U =
+          image_of projective_plane_map U.
+        {
+          apply set_ext.
+          - let y. assume Hy.
+            apply (ReplE_impred U (fun x:set => apply_fun (graph W (fun u:set => apply_fun projective_plane_map u)) x) y Hy).
+            let x. assume HxU HyEq.
+            claim HxW : x :e W. { exact (HUsubW x HxU). }
+            claim HgraphEq : apply_fun (graph W (fun u:set => apply_fun projective_plane_map u)) x =
+              apply_fun projective_plane_map x.
+            { exact (apply_fun_graph W (fun u:set => apply_fun projective_plane_map u) x HxW). }
+            claim HxInImgPP : apply_fun projective_plane_map x :e image_of projective_plane_map U.
+            { exact (ReplI U (fun u:set => apply_fun projective_plane_map u) x HxU). }
+            claim HxInImgGraph : apply_fun (graph W (fun u:set => apply_fun projective_plane_map u)) x
+              :e image_of projective_plane_map U.
+            { exact (eq_symm (apply_fun (graph W (fun u:set => apply_fun projective_plane_map u)) x)
+                (apply_fun projective_plane_map x) HgraphEq
+                (fun z _ => z :e image_of projective_plane_map U) HxInImgPP). }
+            exact (eq_symm y (apply_fun (graph W (fun u:set => apply_fun projective_plane_map u)) x) HyEq
+              (fun z _ => z :e image_of projective_plane_map U) HxInImgGraph).
+          - let y. assume Hy.
+            apply (ReplE_impred U (fun x:set => apply_fun projective_plane_map x) y Hy).
+            let x. assume HxU HyEq.
+            claim HxW : x :e W. { exact (HUsubW x HxU). }
+            claim HgraphEq : apply_fun (graph W (fun u:set => apply_fun projective_plane_map u)) x =
+              apply_fun projective_plane_map x.
+            { exact (apply_fun_graph W (fun u:set => apply_fun projective_plane_map u) x HxW). }
+            claim HxInImgGraph2 : apply_fun (graph W (fun u:set => apply_fun projective_plane_map u)) x
+              :e image_of (graph W (fun u:set => apply_fun projective_plane_map u)) U.
+            { exact (ReplI U (fun u:set => apply_fun (graph W (fun v:set => apply_fun projective_plane_map v)) u) x HxU). }
+            claim HxInImgPP2 : apply_fun projective_plane_map x
+              :e image_of (graph W (fun u:set => apply_fun projective_plane_map u)) U.
+            { exact (HgraphEq (fun z _ => z :e image_of (graph W (fun u:set => apply_fun projective_plane_map u)) U)
+                HxInImgGraph2). }
+            exact (eq_symm y (apply_fun projective_plane_map x) HyEq
+              (fun z _ => z :e image_of (graph W (fun u:set => apply_fun projective_plane_map u)) U)
+              HxInImgPP2).
+        }
+        rewrite HimgEq.
+        claim HV0intersectW : V0 :/\: W :e Sn_topology 2.
+        {
+          exact (topology_binintersect_closed (Sn 2) (Sn_topology 2) V0 W
+            (lemma59_3_Sn_topology_on 2) HV0open HW).
+        }
+        claim HUopen : U :e Sn_topology 2.
+        { exact (eq_symm U (V0 :/\: W) HUeq (fun z _ => z :e Sn_topology 2) HV0intersectW). }
+        claim HimgUopen : image_of projective_plane_map U :e projective_plane_topology.
+        { exact (pp_image_open U HUopen). }
+        claim HimgUSub : image_of projective_plane_map U c= image_of projective_plane_map W.
+        {
+          exact (image_of_mono projective_plane_map U W HUsubW).
+        }
+        claim HimgUInSubPP : exists Vp:set, Vp :e projective_plane_topology /\
+          image_of projective_plane_map U = Vp :/\: image_of projective_plane_map W.
+        {
+          witness (image_of projective_plane_map U).
+          apply andI.
+          - exact HimgUopen.
+          - exact (eq_symm (image_of projective_plane_map U :/\: image_of projective_plane_map W)
+              (image_of projective_plane_map U)
+              (binintersect_sub_eq_right (image_of projective_plane_map U) (image_of projective_plane_map W)
+                HimgUSub)).
+        }
+        exact (SepI (Power (image_of projective_plane_map W))
+          (fun V:set => exists Vp:set, Vp :e projective_plane_topology /\
+            V = Vp :/\: image_of projective_plane_map W)
+          (image_of projective_plane_map U)
+          (PowerI (image_of projective_plane_map W) (image_of projective_plane_map U) HimgUSub)
+          HimgUInSubPP).
+}
+exact (open_map_bijection_homeomorphism
+  W (subspace_topology (Sn 2) (Sn_topology 2) W)
+  (image_of projective_plane_map W)
+  (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map W))
+  (graph W (fun x:set => apply_fun projective_plane_map x))
+  HcongW HopenMapW Hbij).
+Qed.
 
 (** Helper: for x in Sn 2, with Hausdorff separation, produce evenly covered nbhd **)
 Lemma pp_evenly_covered_at_x : forall x:set, x :e Sn 2 ->
@@ -200645,7 +200760,57 @@ claim HxW : x :e W.
     exact HxInImg.
 }
 claim HDisj_W : W :/\: image_of neg_map W = Empty.
-{ admit. }
+{
+  apply set_ext.
+  - let z. assume Hz.
+    claim HzW : z :e W. { exact (binintersectE1 W (image_of neg_map W) z Hz). }
+    claim HzNegW : z :e image_of neg_map W. { exact (binintersectE2 W (image_of neg_map W) z Hz). }
+    claim HzV1 : z :e V1. { exact (binintersectE1 V1 nV2 z HzW). }
+    apply (ReplE_impred W (fun u:set => apply_fun neg_map u) z HzNegW).
+    let w. assume HwW HzEqNegW.
+    claim HwV1 : w :e V1. { exact (binintersectE1 V1 nV2 w HwW). }
+    claim HwNV2 : w :e nV2. { exact (binintersectE2 V1 nV2 w HwW). }
+    apply (ReplE_impred V2 (fun u:set => apply_fun neg_map u) w HwNV2).
+    let v2. assume Hv2V2 HwEqNegV2.
+    claim Hv2Sn2 : v2 :e Sn 2. {
+      exact (open_in_subset (Sn 2) (Sn_topology 2) V2
+        (open_inI (Sn 2) (Sn_topology 2) V2 (lemma59_3_Sn_topology_on 2) HV2open) v2 Hv2V2). }
+    claim HwEqNeg3v2 : w = Rn_negate 3 v2.
+    {
+      claim Hneg3v2 : apply_fun neg_map v2 = Rn_negate 3 v2.
+      { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) v2 Hv2Sn2). }
+      exact (Hneg3v2 (fun t _ => w = t) HwEqNegV2).
+    }
+    claim HwSn2 : w :e Sn 2. { exact (HWsub w HwW). }
+    claim HnwSn2 : Rn_negate 3 w :e Sn 2. { exact (Rn_negate_3_in_Sn2 w HwSn2). }
+    claim HzEqNeg3w : z = Rn_negate 3 w.
+    {
+      claim HnegMapW3 : apply_fun neg_map w = Rn_negate 3 w.
+      { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) w HwSn2). }
+      exact (HnegMapW3 (fun t _ => z = t) HzEqNegW).
+    }
+    claim HwE3 : w :e euclidean_space 3.
+    { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) w HwSn2). }
+    claim Hv2E3 : v2 :e euclidean_space 3.
+    { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v2 Hv2Sn2). }
+    claim HnnwEqw2 : Rn_negate 3 (Rn_negate 3 w) = w.
+    { exact (Rn_negate_3_involution w HwE3). }
+    claim HzEqv2 : z = v2.
+    {
+      claim HzEqNegNegw : z = Rn_negate 3 (Rn_negate 3 v2).
+      {
+        exact (HwEqNeg3v2 (fun t _ => z = Rn_negate 3 t) HzEqNeg3w).
+      }
+      claim HnnwEqv2 : Rn_negate 3 (Rn_negate 3 v2) = v2.
+      { exact (Rn_negate_3_involution v2 Hv2E3). }
+      exact (HnnwEqv2 (fun t _ => z = t) HzEqNegNegw).
+    }
+    claim HzV2 : z :e V2. { exact (eq_symm z v2 HzEqv2 (fun t _ => t :e V2) Hv2V2). }
+    claim HzV1V2 : z :e V1 :/\: V2. { exact (binintersectI V1 V2 z HzV1 HzV2). }
+    exact (FalseE (EmptyE z (HV12disj (fun t _ => z :e t) HzV1V2)) (z :e Empty)).
+  - let z. assume Hz.
+    exact (FalseE (EmptyE z Hz) (z :e W :/\: image_of neg_map W)).
+}
 set negW := image_of neg_map W.
 claim HnegWopen : negW :e Sn_topology 2.
 {
@@ -200708,7 +200873,121 @@ claim HslicesHomeo :
   - assume HVW. rewrite HVW.
     exact (pp_restriction_homeomorphism W HWopen HDisj_W).
   - assume HVneg. rewrite HVneg.
-    admit.
+    claim HimgNegNegW : image_of neg_map negW = W.
+    {
+      apply set_ext.
+      - let y. assume Hy.
+        apply (ReplE_impred negW (fun z:set => apply_fun neg_map z) y Hy).
+        let z. assume HzNegW HyEq.
+        apply (ReplE_impred W (fun u:set => apply_fun neg_map u) z HzNegW).
+        let w. assume HwW HzEq.
+        claim HwSn2neg : w :e Sn 2. { exact (HWsub w HwW). }
+        claim HnwSn2 : Rn_negate 3 w :e Sn 2. { exact (Rn_negate_3_in_Sn2 w HwSn2neg). }
+        claim HnegMapW2 : apply_fun neg_map w = Rn_negate 3 w.
+        { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) w HwSn2neg). }
+        claim HzEqNeg2 : z = Rn_negate 3 w.
+        { exact (HnegMapW2 (fun t _ => z = t) HzEq). }
+        claim HnegMapNegW : apply_fun neg_map (Rn_negate 3 w) = Rn_negate 3 (Rn_negate 3 w).
+        { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) (Rn_negate 3 w) HnwSn2). }
+        claim HwE3 : w :e euclidean_space 3.
+        { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) w HwSn2neg). }
+        claim HnnwEqw : Rn_negate 3 (Rn_negate 3 w) = w.
+        { exact (Rn_negate_3_involution w HwE3). }
+        claim HyEqApplyNegNegW : y = apply_fun neg_map (Rn_negate 3 w).
+        { exact (HzEqNeg2 (fun t _ => y = apply_fun neg_map t) HyEq). }
+        claim HyEqNeg3w : y = Rn_negate 3 (Rn_negate 3 w).
+        { exact (HnegMapNegW (fun t _ => y = t) HyEqApplyNegNegW). }
+        claim HyEqw : y = w.
+        { exact (HnnwEqw (fun t _ => y = t) HyEqNeg3w). }
+        exact (eq_symm y w HyEqw (fun t _ => t :e W) HwW).
+      - let w. assume HwW.
+        claim HwSn2neg : w :e Sn 2. { exact (HWsub w HwW). }
+        claim HnwSn2 : Rn_negate 3 w :e Sn 2. { exact (Rn_negate_3_in_Sn2 w HwSn2neg). }
+        claim HnegMapW2 : apply_fun neg_map w = Rn_negate 3 w.
+        { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) w HwSn2neg). }
+        claim HnwInNegW : Rn_negate 3 w :e negW.
+        { exact (HnegMapW2 (fun t _ => t :e negW)
+            (ReplI W (fun u:set => apply_fun neg_map u) w HwW)). }
+        claim HnegMapNegW : apply_fun neg_map (Rn_negate 3 w) = Rn_negate 3 (Rn_negate 3 w).
+        { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) (Rn_negate 3 w) HnwSn2). }
+        claim HwE3 : w :e euclidean_space 3.
+        { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) w HwSn2neg). }
+        claim HnnwEqw : Rn_negate 3 (Rn_negate 3 w) = w.
+        { exact (Rn_negate_3_involution w HwE3). }
+        claim HnegnwInImgNegNegW : apply_fun neg_map (Rn_negate 3 w) :e image_of neg_map negW.
+        { exact (ReplI negW (fun z:set => apply_fun neg_map z) (Rn_negate 3 w) HnwInNegW). }
+        claim HnnwInImgNegNegW : Rn_negate 3 (Rn_negate 3 w) :e image_of neg_map negW.
+        { exact (HnegMapNegW (fun t _ => t :e image_of neg_map negW) HnegnwInImgNegNegW). }
+        exact (HnnwEqw (fun t _ => t :e image_of neg_map negW) HnnwInImgNegNegW).
+    }
+    claim HimgPPnegW : image_of projective_plane_map negW = U.
+    {
+      apply set_ext.
+      - let y. assume Hy.
+        apply (ReplE_impred negW (fun z:set => apply_fun projective_plane_map z) y Hy).
+        let z. assume HzNegW HyEq.
+        apply (ReplE_impred W (fun u:set => apply_fun neg_map u) z HzNegW).
+        let w. assume HwW HzEq.
+        claim HwSn2 : w :e Sn 2. { exact (HWsub w HwW). }
+        claim HzEqNeg : z = Rn_negate 3 w.
+        {
+          claim HnegMapW : apply_fun neg_map w = Rn_negate 3 w.
+          { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) w HwSn2). }
+          exact (HnegMapW (fun t _ => z = t) HzEq).
+        }
+        claim HppzEqppw : apply_fun projective_plane_map z = apply_fun projective_plane_map w.
+        { exact (eq_symm z (Rn_negate 3 w) HzEqNeg
+            (fun t _ => apply_fun projective_plane_map t = apply_fun projective_plane_map w)
+            (pp_map_neg_eq w HwSn2)). }
+        claim HppwInU : apply_fun projective_plane_map w :e U.
+        { exact (ReplI W (fun u:set => apply_fun projective_plane_map u) w HwW). }
+        claim HppzInU : apply_fun projective_plane_map z :e U.
+        { exact (eq_symm (apply_fun projective_plane_map z) (apply_fun projective_plane_map w)
+            HppzEqppw (fun t _ => t :e U) HppwInU). }
+        exact (eq_symm y (apply_fun projective_plane_map z) HyEq (fun t _ => t :e U) HppzInU).
+      - let y. assume Hy.
+        apply (ReplE_impred W (fun u:set => apply_fun projective_plane_map u) y Hy).
+        let w. assume HwW HyEq.
+        claim HwSn2 : w :e Sn 2. { exact (HWsub w HwW). }
+        claim HnwNegW : Rn_negate 3 w :e negW.
+        {
+          claim HnegMapW : apply_fun neg_map w = Rn_negate 3 w.
+          { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) w HwSn2). }
+          exact (HnegMapW (fun t _ => t :e negW)
+            (ReplI W (fun u:set => apply_fun neg_map u) w HwW)).
+        }
+        claim HppNegW : apply_fun projective_plane_map (Rn_negate 3 w) = apply_fun projective_plane_map w.
+        { exact (pp_map_neg_eq w HwSn2). }
+        claim HppNegWinU : apply_fun projective_plane_map (Rn_negate 3 w) :e image_of projective_plane_map negW.
+        { exact (ReplI negW (fun z:set => apply_fun projective_plane_map z) (Rn_negate 3 w) HnwNegW). }
+        claim HppwInNegWImg : apply_fun projective_plane_map w :e image_of projective_plane_map negW.
+        { exact (HppNegW (fun t _ => t :e image_of projective_plane_map negW) HppNegWinU). }
+        exact (eq_symm y (apply_fun projective_plane_map w) HyEq
+          (fun t _ => t :e image_of projective_plane_map negW) HppwInNegWImg).
+    }
+    claim HDisjnegW : negW :/\: image_of neg_map negW = Empty.
+    {
+      rewrite HimgNegNegW.
+      claim Hsymm2 : negW :/\: W = W :/\: negW.
+      {
+        apply set_ext.
+        - let z. assume Hz.
+          exact (binintersectI W negW z (binintersectE2 negW W z Hz) (binintersectE1 negW W z Hz)).
+        - let z. assume Hz.
+          exact (binintersectI negW W z (binintersectE2 W negW z Hz) (binintersectE1 W negW z Hz)).
+      }
+      rewrite Hsymm2. exact HDisj_W.
+    }
+    claim HhomeoNegW : homeomorphism negW (subspace_topology (Sn 2) (Sn_topology 2) negW)
+      (image_of projective_plane_map negW)
+      (subspace_topology projective_plane projective_plane_topology (image_of projective_plane_map negW))
+      (graph negW (fun z:set => apply_fun projective_plane_map z)).
+    { exact (pp_restriction_homeomorphism negW HnegWopen HDisjnegW). }
+    exact (HimgPPnegW (fun Y _ =>
+      homeomorphism negW (subspace_topology (Sn 2) (Sn_topology 2) negW)
+        Y (subspace_topology projective_plane projective_plane_topology Y)
+        (graph negW (fun z:set => apply_fun projective_plane_map z)))
+      HhomeoNegW).
 }
 witness U.
 apply andI.
