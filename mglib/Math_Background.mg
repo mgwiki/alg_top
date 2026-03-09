@@ -238161,6 +238161,184 @@ Lemma free_product_conjugate_intersection_trivial :
   apply_fun mult (apply_fun mult (c, x), apply_fun inv c) = e.
 Admitted.
 
+(** Infrastructure: boundary cancellation implies cyclic reduction of an involution by conjugation **)
+(** Proven Charlie **)
+Lemma free_product_involution_cyclic_reduce_boundary_cancel :
+  forall G mult e inv J Gfam efam n xs m k u:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  reduced_word J Gfam efam n xs ->
+  n = ordsucc m ->
+  nat_p m ->
+  m = ordsucc k ->
+  nat_p k ->
+  apply_fun mult (apply_fun xs m, apply_fun xs 0) = e ->
+  word_product mult e xs n = u ->
+  u :e G ->
+  u <> e ->
+  apply_fun inv u = u ->
+    word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k :e G /\
+    word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k <> e /\
+    apply_fun inv (word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k) =
+      word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k /\
+    u = apply_fun mult (apply_fun xs 0,
+          apply_fun mult
+            (word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k,
+             apply_fun inv (apply_fun xs 0))).
+let G mult e inv J Gfam efam n xs m k u.
+assume Hfp Hred Hn_sm Hm_nat Hm_eq_sk Hk_nat Hp_e Hwp Hu_G Hu_ne_e Hu_invol.
+apply (and5E
+  (group_structure G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall x:set, x :e G -> x <> e ->
+    exists n0 xs0:set,
+      reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product mult e xs0 n0 = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = x ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsubfam _ _ _.
+
+claim Hred_sm : reduced_word J Gfam efam (ordsucc m) xs.
+{ rewrite <- Hn_sm. exact Hred. }
+claim Hxs_in_G_sm : forall i:set, i :e ordsucc m -> apply_fun xs i :e G.
+{
+  exact (reduced_word_in_G
+    G mult e inv J Gfam efam (ordsucc m) xs
+    Hsubfam Hred_sm).
+}
+
+(** The middle product is the conjugate mult(inv(xs0), mult(u, xs0)) by boundary-cancellation. **)
+claim Humid_eq :
+  word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k =
+    apply_fun mult (apply_fun inv (apply_fun xs 0),
+      apply_fun mult (u, apply_fun xs 0)).
+{
+  exact (free_product_boundary_cancel_middle_conjugate
+    G mult e inv J Gfam efam n xs m k u
+    Hfp Hred Hn_sm Hm_nat Hm_eq_sk Hk_nat Hp_e Hwp Hu_invol).
+}
+
+claim Hx0_G : apply_fun xs 0 :e G.
+{ exact (Hxs_in_G_sm 0 (nat_0_in_ordsucc m Hm_nat)). }
+
+(** Middle element is in G, nontrivial, and involutive (as a conjugate). **)
+claim Humid_G : word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k :e G.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+    Hgrp).
+  assume HmultFn HinvFn HeG _ _ _.
+  rewrite Humid_eq.
+  apply HmultFn.
+  exact (tuple_2_setprod_by_pair_Sigma
+    G G
+    (apply_fun inv (apply_fun xs 0))
+    (apply_fun mult (u, apply_fun xs 0))
+    (HinvFn (apply_fun xs 0) Hx0_G)
+    (HmultFn (u, apply_fun xs 0)
+      (tuple_2_setprod_by_pair_Sigma G G u (apply_fun xs 0) Hu_G Hx0_G))).
+}
+
+claim Humid_ne_e : word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k <> e.
+{
+  rewrite Humid_eq.
+  exact (group_conjugate_ne_e
+    G mult e inv (apply_fun xs 0) u
+    Hgrp Hx0_G Hu_G Hu_ne_e).
+}
+
+claim Humid_invol :
+  apply_fun inv (word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k) =
+    word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k.
+{
+  rewrite Humid_eq.
+  exact (group_conjugate_involutive
+    G mult e inv (apply_fun xs 0) u
+    Hgrp Hx0_G Hu_G Hu_invol).
+}
+
+(** Recover u = mult(xs(0), mult(umid, inv(xs(0)))). **)
+claim Hu_conj :
+  u =
+    apply_fun mult (apply_fun xs 0,
+      apply_fun mult
+        (word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k,
+         apply_fun inv (apply_fun xs 0))).
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+    Hgrp).
+  assume HmultFn HinvFn HeG HassocG HidG HinvLaw.
+  claim Hinv_x0_G : apply_fun inv (apply_fun xs 0) :e G.
+  { exact (HinvFn (apply_fun xs 0) Hx0_G). }
+  claim Hmul_u_x0_G : apply_fun mult (u, apply_fun xs 0) :e G.
+  {
+    exact (HmultFn (u, apply_fun xs 0)
+      (tuple_2_setprod_by_pair_Sigma G G u (apply_fun xs 0) Hu_G Hx0_G)).
+  }
+  claim Hx0_invx0_e : apply_fun mult (apply_fun xs 0, apply_fun inv (apply_fun xs 0)) = e.
+  {
+    exact (andEL
+      (apply_fun mult (apply_fun xs 0, apply_fun inv (apply_fun xs 0)) = e)
+      (apply_fun mult (apply_fun inv (apply_fun xs 0), apply_fun xs 0) = e)
+      (HinvLaw (apply_fun xs 0) Hx0_G)).
+  }
+  claim Hu_x0_invx0 : apply_fun mult (apply_fun mult (u, apply_fun xs 0), apply_fun inv (apply_fun xs 0)) = u.
+  {
+    rewrite (HassocG u (apply_fun xs 0) (apply_fun inv (apply_fun xs 0)) Hu_G Hx0_G Hinv_x0_G).
+    rewrite Hx0_invx0_e.
+    exact (andER
+      (apply_fun mult (e, u) = u)
+      (apply_fun mult (u, e) = u)
+      (HidG u Hu_G)).
+  }
+  rewrite <- Hu_x0_invx0.
+  rewrite <- (HassocG (apply_fun xs 0)
+    (word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k)
+    (apply_fun inv (apply_fun xs 0)) Hx0_G Humid_G Hinv_x0_G).
+  rewrite Humid_eq.
+  rewrite <- (HassocG (apply_fun xs 0) (apply_fun inv (apply_fun xs 0))
+    (apply_fun mult (u, apply_fun xs 0)) Hx0_G Hinv_x0_G Hmul_u_x0_G).
+  rewrite Hx0_invx0_e.
+  rewrite (andEL
+    (apply_fun mult (e, apply_fun mult (u, apply_fun xs 0)) = apply_fun mult (u, apply_fun xs 0))
+    (apply_fun mult (apply_fun mult (u, apply_fun xs 0), e) = apply_fun mult (u, apply_fun xs 0))
+    (HidG (apply_fun mult (u, apply_fun xs 0)) Hmul_u_x0_G)).
+  reflexivity.
+}
+
+exact (and4I
+  (word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k :e G)
+  (word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k <> e)
+  (apply_fun inv (word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k) =
+    word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k)
+  (u =
+    apply_fun mult (apply_fun xs 0,
+      apply_fun mult
+        (word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) k,
+         apply_fun inv (apply_fun xs 0))))
+  Humid_G Humid_ne_e Humid_invol Hu_conj).
+Qed.
+
 (** Infrastructure bounty: torsion/involution in free products (order 2 case).
     Expected use: discharge the remaining "boundary labels coincide" admit branches by showing
     that an involution is conjugate into some factor subgroup. **)
