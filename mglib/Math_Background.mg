@@ -231627,17 +231627,6 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
       S c= N /\
       (forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> N c= N')).
 
-(** Helper bounty: early version of efam_not_in_Gfam_nontrivial.
-    This should be proved before finishing the locked free-product lemmas
-    free_product_boundary_product_ne_e_or_efam and free_product_efam_involutive_contra. **)
-(** Bounty 300 **)
-Theorem efam_not_in_Gfam_nontrivial_early : forall G multG eG invG J Gfam efam:set,
-  free_product_of_subgroups G multG eG invG J Gfam efam ->
-  forall al:set, al :e J ->
-    apply_fun efam al :e apply_fun Gfam al -> apply_fun efam al <> eG -> False.
-admit.
-Admitted.
-
 (** Infrastructure: in the boundary-cancellation case mult(x_m,x_0) = e, the middle product is a conjugate **)
 (** Proven Charlie **)
 Lemma free_product_boundary_cancel_middle_conjugate :
@@ -236202,10 +236191,10 @@ apply (nat_inv n Hn_nat).
 					                (eq_i_tra (ordsucc (add_nat m m)) (add_nat n m) 0
 					                  (eq_symm (add_nat n m) (ordsucc (add_nat m m)) Htmp2) Hnm_eq0)).
 				            }
-				            exact (free_product_reduced_word_length_ge2_product_ne_e
-				              G multG eG invG J Gfam efam (add_nat n n) ys2
-				              Hfp Hred2 Hnn_ne0 Hnn_ne1 Hwp2_e).
-	Admitted.
+exact (free_product_reduced_word_length_ge2_product_ne_e
+  G multG eG invG J Gfam efam (add_nat n n) ys2
+  Hfp Hred2 Hnn_ne0 Hnn_ne1 Hwp2_e).
+Admitted. (** depends on free_product_boundary_product_ne_e_or_efam (locked by Charlie) **)
 
 (** Helper lemma: in a free product, efam(alpha) in Gfam(alpha) with efam(alpha) != eG is impossible **)
 (** This captures the key fact that reduced word uniqueness forces efam(alpha) = eG **)
@@ -238031,7 +238020,23 @@ apply Hnw_inv.
                 claim Hsnw_eq_0 : ordsucc nw = 0.
                 { exact (ordsucc_inj (ordsucc nw) 0 Hss_eq_s0). }
 	                exact (neq_ordsucc_0 nw Hsnw_eq_0).
-	Admitted. (** depends on free_product_efam_involutive_contra (locked by Charlie) **)
+Admitted. (** depends on free_product_efam_involutive_contra (locked by Charlie) **)
+
+(** Helper bounty: early version of efam_not_in_Gfam_nontrivial.
+    This should be proved before finishing the locked free-product lemmas
+    free_product_boundary_product_ne_e_or_efam and free_product_efam_involutive_contra. **)
+(** Bounty 300 **)
+Theorem efam_not_in_Gfam_nontrivial_early : forall G multG eG invG J Gfam efam:set,
+  free_product_of_subgroups G multG eG invG J Gfam efam ->
+  forall al:set, al :e J ->
+    apply_fun efam al :e apply_fun Gfam al -> apply_fun efam al <> eG -> False.
+let G multG eG invG J Gfam efam.
+assume Hfp.
+let al. assume Hal Hefam_Gal Hefam_ne.
+exact (efam_not_in_Gfam_nontrivial
+  G multG eG invG J Gfam efam
+  Hfp al Hal Hefam_Gal Hefam_ne).
+Admitted.
 
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
 (** LATEX VERSION: If G is the free product of {G_alpha}, then given any group H and **)
@@ -240281,7 +240286,7 @@ apply and3I.
                         + assume Hinv_eq_efam : apply_fun invG (apply_fun efam al) = apply_fun efam al.
                           (** efam(al)^2 = eG case **)
                           (** This is impossible in a free product when efam(al) is assumed nontrivial. **)
-                          exact (efam_not_in_Gfam_nontrivial
+                          exact (free_product_efam_involutive_contra
                             G
                             multG
                             eG
@@ -240289,11 +240294,12 @@ apply and3I.
                             J
                             Gfam
                             efam
-                            Hfp
                             al
+                            Hfp
                             Hal
                             Hefam_Gal
-                            Hefam_ne).
+                            Hefam_ne
+                            Hinv_eq_efam).
                         + assume Hinv_ne_efam : apply_fun invG (apply_fun efam al) <> apply_fun efam al.
                           (** Construct word [inv(efam(al)), xsw(0), ..., xsw(mw), inv(efam(al))] **)
                           (** of length nw+2 for inv(efam(al)). Contradicts [inv(efam(al))] of length 1. **)
