@@ -240284,6 +240284,42 @@ claim HEps : P (Eps_i P).
 exact HEps.
 Qed.
 
+(** Infrastructure: early strong induction on naturals (available before later nat_strong_ind). **)
+(** Proven Charlie **)
+Theorem nat_strong_ind_early :
+  forall P:set -> prop,
+  (forall n:set, nat_p n -> (forall m:set, m :e n -> P m) -> P n) ->
+  forall n:set, nat_p n -> P n.
+let P.
+assume Hstep.
+let n. assume Hn_nat.
+
+(** Let Q(t) := forall m < t, P(m). We prove Q(t) for all naturals t. **)
+set Q := fun t:set => forall m:set, m :e t -> P m.
+claim HQ : forall t:set, nat_p t -> Q t.
+{
+  apply nat_ind.
+  - let m. assume Hm0.
+    exact (FalseE (EmptyE m (eq_subst_mem_set m 0 Empty Hm0 zero_eq_empty)) (P m)).
+  - let t. assume Ht_nat IHQt.
+    (** Show Q(ordsucc t). **)
+    let m. assume Hm_st.
+    apply (ordsuccE t m Hm_st).
+    + assume Hm_t.
+      exact (IHQt m Hm_t).
+    + assume Hm_eq.
+      (** Need P(t), from the strong step using IHQt. **)
+      claim Pt : P t.
+      { exact (Hstep t Ht_nat IHQt). }
+      rewrite Hm_eq.
+      exact Pt.
+}
+claim HQsn : Q (ordsucc n).
+{ exact (HQ (ordsucc n) (nat_ordsucc n Hn_nat)). }
+(** Since n < succ n, HQsn yields P(n). **)
+exact (HQsn n (ordsuccI2 n)).
+Qed.
+
 (** Infrastructure bounty: torsion/involution in free products (order 2 case).
     Expected use: discharge the remaining "boundary labels coincide" admit branches by showing
     that an involution is conjugate into some factor subgroup. **)
