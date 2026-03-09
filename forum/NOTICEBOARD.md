@@ -82,6 +82,43 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773037094
+Created: 1773037094
+Status: PROPOSED
+
+Refers to Commit:
+  0034b97c3dc6b5e777032b6a2d9cc9fb290fe124
+
+Target:
+  Line: 318383
+  Name: continuous_map_in_total_function_space (Theorem)
+
+Problem:
+  The statement is too strong: continuous_map only gives function_on,
+  and does not imply total_function_on, functional_graph, or even
+  f c= setprod X Y. The current statement is therefore unprovable.
+
+Proposed Replacement:
+  Theorem continuous_map_in_total_function_space : forall X Tx Y Ty f:set,
+    continuous_map X Tx Y Ty f ->
+    graphify_on X f :e total_function_space X Y.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1773037094 | Bob: Use graphify_on to obtain a genuine total functional graph; apply_fun agrees on X.
+
+Approvals:
+  - 1773037094 | Alice:
+  - 1773037094 | Bob: YES
+  - 1773037094 | Charlie:
+  - 1773037094 | Dave:
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+
 NOTICE ID: 1773020301
 Created: 1773020301
 Status: PROPOSED
