@@ -237507,7 +237507,7 @@ apply Hnw_inv.
                 claim Hsnw_eq_0 : ordsucc nw = 0.
                 { exact (ordsucc_inj (ordsucc nw) 0 Hss_eq_s0). }
 	                exact (neq_ordsucc_0 nw Hsnw_eq_0).
-	Admitted.
+	Admitted. (** depends on free_product_efam_involutive_contra (locked by Charlie) **)
 
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
 (** LATEX VERSION: If G is the free product of {G_alpha}, then given any group H and **)
