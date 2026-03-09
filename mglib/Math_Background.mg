@@ -202153,6 +202153,7 @@ exact (setminusI (Sn 2) {south_pole_3} (stereo_S_inv_fn u)
 Qed.
 
 (** Helper: left inverse of stereo_S_map: inv_fn(stereo_S_fn(v)) = v **)
+(** Proven Dave **)
 Lemma stereo_S_left_inv : forall v:set,
   v :e Sn 2 :\: {south_pole_3} ->
   stereo_S_inv_fn (stereo_S_fn v) = v.
@@ -202161,8 +202162,544 @@ claim HvSn : v :e Sn 2. { exact (setminusE1 (Sn 2) {south_pole_3} v Hv). }
 claim HvNotSouth : ~ (v :e {south_pole_3}). { exact (setminusE2 (Sn 2) {south_pole_3} v Hv). }
 claim HvE3 : v :e euclidean_space 3.
 { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v HvSn). }
-admit.
-Admitted.
+set v0 := apply_fun v 0.
+set v1 := apply_fun v 1.
+set v2 := apply_fun v 2.
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3. { exact In_2_3. }
+claim Hv0R : v0 :e R. { exact (euclidean_space_coord_in_R 3 v 0 HvE3 H0in3). }
+claim Hv1R : v1 :e R. { exact (euclidean_space_coord_in_R 3 v 1 HvE3 H1in3). }
+claim Hv2R : v2 :e R. { exact (euclidean_space_coord_in_R 3 v 2 HvE3 H2in3). }
+claim Hv0SNo : SNo v0. { exact (real_SNo v0 Hv0R). }
+claim Hv1SNo : SNo v1. { exact (real_SNo v1 Hv1R). }
+claim Hv2SNo : SNo v2. { exact (real_SNo v2 Hv2R). }
+(** Sphere norm condition: v0^2 + v1^2 + v2^2 = 1 **)
+claim HvNorm : euclidean_norm_sq 3 v = 1.
+{ exact (SepE2 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) v HvSn). }
+(** Expand the norm squared **)
+claim HnormExpand : euclidean_norm_sq 3 v =
+  add_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) (mul_SNo v2 v2).
+{
+  set f := fun i:set => mul_SNo (apply_fun v i) (apply_fun v i).
+  claim Hfrs_eq : euclidean_norm_sq 3 v = finite_real_sum f 3. { reflexivity. }
+  rewrite Hfrs_eq.
+  rewrite (finite_real_sum_S f 2 nat_2).
+  rewrite (finite_real_sum_S f 1 nat_1).
+  rewrite (finite_real_sum_S f 0 nat_0).
+  rewrite (finite_real_sum_0 f).
+  rewrite (add_SNo_0L (f 0) (SNo_mul_SNo v0 v0 Hv0SNo Hv0SNo)).
+  reflexivity.
+}
+(** v0^2 + v1^2 + v2^2 = 1 **)
+claim Hv_sq_sum : add_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) (mul_SNo v2 v2) = 1.
+{
+  exact (eq_i_tra (add_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) (mul_SNo v2 v2))
+    (euclidean_norm_sq 3 v) 1
+    (eq_symm (euclidean_norm_sq 3 v) (add_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) (mul_SNo v2 v2))
+      HnormExpand)
+    HvNorm).
+}
+(** Denom for stereo_S_fn: 1 + v2 > 0 **)
+claim Hdenom_pos : Rlt 0 (add_SNo 1 v2).
+{ exact (stereo_S_denom_pos v Hv). }
+claim Hdenom_R : add_SNo 1 v2 :e R. { exact (real_add_SNo 1 real_1 v2 Hv2R). }
+claim Hdenom_SNo : SNo (add_SNo 1 v2). { exact (real_SNo (add_SNo 1 v2) Hdenom_R). }
+claim Hdenom_SNoLt : SNoLt 0 (add_SNo 1 v2).
+{ exact (RltE_lt 0 (add_SNo 1 v2) Hdenom_pos). }
+(** r = recip_SNo_pos(1+v2) **)
+set r := recip_SNo_pos (add_SNo 1 v2).
+claim HrSNo : SNo r. { exact (SNo_recip_SNo_pos (add_SNo 1 v2) Hdenom_SNo Hdenom_SNoLt). }
+claim HrR : r :e R. { exact (real_recip_SNo_pos (add_SNo 1 v2) Hdenom_R Hdenom_SNoLt). }
+(** (1+v2) times r = 1 **)
+claim Hdenom_r : mul_SNo (add_SNo 1 v2) r = 1.
+{ exact (recip_SNo_pos_invR (add_SNo 1 v2) Hdenom_SNo Hdenom_SNoLt). }
+(** r is positive **)
+claim Hr_pos : SNoLt 0 r.
+{ exact (recip_SNo_pos_is_pos (add_SNo 1 v2) Hdenom_SNo Hdenom_SNoLt). }
+(** stereo_S_fn v has u0 = v0 times r, u1 = v1 times r **)
+set u := stereo_S_fn v.
+claim Hu0_eq : apply_fun u 0 = mul_SNo v0 r.
+{
+  prove apply_fun (graph 2 (fun i:set => if i = 0 then mul_SNo v0 r else mul_SNo v1 r)) 0 = mul_SNo v0 r.
+  rewrite (apply_fun_graph 2 (fun i:set => if i = 0 then mul_SNo v0 r else mul_SNo v1 r) 0 In_0_2).
+  rewrite (If_i_1 (0 = 0) (mul_SNo v0 r) (mul_SNo v1 r) (eq_refl 0)).
+  reflexivity.
+}
+claim Hu1_eq : apply_fun u 1 = mul_SNo v1 r.
+{
+  prove apply_fun (graph 2 (fun i:set => if i = 0 then mul_SNo v0 r else mul_SNo v1 r)) 1 = mul_SNo v1 r.
+  rewrite (apply_fun_graph 2 (fun i:set => if i = 0 then mul_SNo v0 r else mul_SNo v1 r) 1 In_1_2).
+  rewrite (If_i_0 (1 = 0) (mul_SNo v0 r) (mul_SNo v1 r) neq_1_0).
+  reflexivity.
+}
+(** Set up stereo_S_inv_fn u notation **)
+set u0 := apply_fun u 0.
+set u1 := apply_fun u 1.
+claim Hu0_val : u0 = mul_SNo v0 r. { exact Hu0_eq. }
+claim Hu1_val : u1 = mul_SNo v1 r. { exact Hu1_eq. }
+set s := add_SNo (mul_SNo u0 u0) (mul_SNo u1 u1).
+set denom' := add_SNo 1 s.
+set d' := recip_SNo_pos denom'.
+claim Hu0SNo : SNo u0. { exact (Hu0_val (fun _ b => SNo b) (SNo_mul_SNo v0 r Hv0SNo HrSNo)). }
+claim Hu1SNo : SNo u1. { exact (Hu1_val (fun _ b => SNo b) (SNo_mul_SNo v1 r Hv1SNo HrSNo)). }
+claim Hu0sqSNo : SNo (mul_SNo u0 u0). { exact (SNo_mul_SNo u0 u0 Hu0SNo Hu0SNo). }
+claim Hu1sqSNo : SNo (mul_SNo u1 u1). { exact (SNo_mul_SNo u1 u1 Hu1SNo Hu1SNo). }
+claim HsSNo : SNo s. { exact (SNo_add_SNo (mul_SNo u0 u0) (mul_SNo u1 u1) Hu0sqSNo Hu1sqSNo). }
+(** Key identity: (1+v2) times (1+s) = 2 **)
+(** First: s = (v0r)^2 + (v1r)^2 = r^2 times (v0^2+v1^2) **)
+claim Hrrval : mul_SNo r r :e R. { exact (real_mul_SNo r HrR r HrR). }
+claim HrrSNo : SNo (mul_SNo r r). { exact (real_SNo (mul_SNo r r) Hrrval). }
+claim Hv0sqR : mul_SNo v0 v0 :e R. { exact (real_mul_SNo v0 Hv0R v0 Hv0R). }
+claim Hv1sqR : mul_SNo v1 v1 :e R. { exact (real_mul_SNo v1 Hv1R v1 Hv1R). }
+claim Hv2sqR : mul_SNo v2 v2 :e R. { exact (real_mul_SNo v2 Hv2R v2 Hv2R). }
+claim Hv0sqSNo : SNo (mul_SNo v0 v0). { exact (SNo_mul_SNo v0 v0 Hv0SNo Hv0SNo). }
+claim Hv1sqSNo : SNo (mul_SNo v1 v1). { exact (SNo_mul_SNo v1 v1 Hv1SNo Hv1SNo). }
+claim Hv2sqSNo : SNo (mul_SNo v2 v2). { exact (SNo_mul_SNo v2 v2 Hv2SNo Hv2SNo). }
+(** (v0r)^2 = v0^2 times r^2 **)
+claim Hv0r_sq : mul_SNo u0 u0 = mul_SNo (mul_SNo v0 v0) (mul_SNo r r).
+{
+  rewrite Hu0_val.
+  rewrite <- (mul_SNo_assoc v0 r (mul_SNo v0 r) Hv0SNo HrSNo (SNo_mul_SNo v0 r Hv0SNo HrSNo)).
+  rewrite (mul_SNo_assoc r v0 r HrSNo Hv0SNo HrSNo).
+  rewrite (mul_SNo_com r v0 HrSNo Hv0SNo).
+  rewrite <- (mul_SNo_assoc v0 r r Hv0SNo HrSNo HrSNo).
+  rewrite (mul_SNo_assoc v0 v0 (mul_SNo r r) Hv0SNo Hv0SNo HrrSNo).
+  reflexivity.
+}
+claim Hv1r_sq : mul_SNo u1 u1 = mul_SNo (mul_SNo v1 v1) (mul_SNo r r).
+{
+  rewrite Hu1_val.
+  rewrite <- (mul_SNo_assoc v1 r (mul_SNo v1 r) Hv1SNo HrSNo (SNo_mul_SNo v1 r Hv1SNo HrSNo)).
+  rewrite (mul_SNo_assoc r v1 r HrSNo Hv1SNo HrSNo).
+  rewrite (mul_SNo_com r v1 HrSNo Hv1SNo).
+  rewrite <- (mul_SNo_assoc v1 r r Hv1SNo HrSNo HrSNo).
+  rewrite (mul_SNo_assoc v1 v1 (mul_SNo r r) Hv1SNo Hv1SNo HrrSNo).
+  reflexivity.
+}
+(** s = (v0^2 + v1^2) times r^2 **)
+claim Hs_eq : s = mul_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) (mul_SNo r r).
+{
+  rewrite Hv0r_sq. rewrite Hv1r_sq.
+  rewrite <- (mul_SNo_distrR (mul_SNo v0 v0) (mul_SNo v1 v1) (mul_SNo r r)
+    Hv0sqSNo Hv1sqSNo HrrSNo).
+  reflexivity.
+}
+(** v0^2 + v1^2 = 1 - v2^2 from sphere condition **)
+claim Hv0v1sq : add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1) =
+  add_SNo 1 (minus_SNo (mul_SNo v2 v2)).
+{
+  claim H1mv2sqR : add_SNo 1 (minus_SNo (mul_SNo v2 v2)) :e R.
+  { exact (real_add_SNo 1 real_1 (minus_SNo (mul_SNo v2 v2))
+      (real_minus_SNo (mul_SNo v2 v2) (real_mul_SNo v2 Hv2R v2 Hv2R))). }
+  claim H1mv2sqSNo : SNo (add_SNo 1 (minus_SNo (mul_SNo v2 v2))).
+  { exact (real_SNo (add_SNo 1 (minus_SNo (mul_SNo v2 v2))) H1mv2sqR). }
+  claim Hsum01SNo : SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)).
+  { exact (SNo_add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1) Hv0sqSNo Hv1sqSNo). }
+  claim HRHS_eq : add_SNo (add_SNo 1 (minus_SNo (mul_SNo v2 v2))) (mul_SNo v2 v2) = 1.
+  {
+    claim Hstep1 : add_SNo 1 (add_SNo (minus_SNo (mul_SNo v2 v2)) (mul_SNo v2 v2)) =
+      add_SNo (add_SNo 1 (minus_SNo (mul_SNo v2 v2))) (mul_SNo v2 v2).
+    { exact (add_SNo_assoc 1 (minus_SNo (mul_SNo v2 v2)) (mul_SNo v2 v2)
+        SNo_1 (SNo_minus_SNo (mul_SNo v2 v2) Hv2sqSNo) Hv2sqSNo). }
+    claim Hstep2 : add_SNo 1 (add_SNo (minus_SNo (mul_SNo v2 v2)) (mul_SNo v2 v2)) =
+      add_SNo 1 0.
+    {
+      rewrite (add_SNo_minus_SNo_linv (mul_SNo v2 v2) Hv2sqSNo).
+      reflexivity.
+    }
+    claim Hstep3 : add_SNo 1 0 = 1. { exact (add_SNo_0R 1 SNo_1). }
+    exact (eq_i_tra
+      (add_SNo (add_SNo 1 (minus_SNo (mul_SNo v2 v2))) (mul_SNo v2 v2))
+      (add_SNo 1 0)
+      1
+      (eq_i_tra
+        (add_SNo (add_SNo 1 (minus_SNo (mul_SNo v2 v2))) (mul_SNo v2 v2))
+        (add_SNo 1 (add_SNo (minus_SNo (mul_SNo v2 v2)) (mul_SNo v2 v2)))
+        (add_SNo 1 0)
+        (eq_symm
+          (add_SNo 1 (add_SNo (minus_SNo (mul_SNo v2 v2)) (mul_SNo v2 v2)))
+          (add_SNo (add_SNo 1 (minus_SNo (mul_SNo v2 v2))) (mul_SNo v2 v2))
+          Hstep1)
+        Hstep2)
+      Hstep3).
+  }
+  claim Heq_both : add_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) (mul_SNo v2 v2) =
+    add_SNo (add_SNo 1 (minus_SNo (mul_SNo v2 v2))) (mul_SNo v2 v2).
+  { exact (eq_i_tra
+      (add_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) (mul_SNo v2 v2))
+      1
+      (add_SNo (add_SNo 1 (minus_SNo (mul_SNo v2 v2))) (mul_SNo v2 v2))
+      Hv_sq_sum
+      (eq_symm
+        (add_SNo (add_SNo 1 (minus_SNo (mul_SNo v2 v2))) (mul_SNo v2 v2))
+        1
+        HRHS_eq)). }
+  exact (add_SNo_cancel_R
+    (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1))
+    (mul_SNo v2 v2)
+    (add_SNo 1 (minus_SNo (mul_SNo v2 v2)))
+    Hsum01SNo Hv2sqSNo H1mv2sqSNo
+    Heq_both).
+}
+claim H1mv2minusSNo : SNo (add_SNo 1 (minus_SNo v2)).
+{ exact (SNo_add_SNo 1 (minus_SNo v2) SNo_1 (SNo_minus_SNo v2 Hv2SNo)). }
+(** 1 - v2^2 = (1-v2)(1+v2): expand RHS via distributivity **)
+claim H1mv2sq : add_SNo 1 (minus_SNo (mul_SNo v2 v2)) =
+  mul_SNo (add_SNo 1 (minus_SNo v2)) (add_SNo 1 v2).
+{
+  rewrite (mul_SNo_distrR 1 (minus_SNo v2) (add_SNo 1 v2)
+    SNo_1 (SNo_minus_SNo v2 Hv2SNo) Hdenom_SNo).
+  rewrite (mul_SNo_oneL (add_SNo 1 v2) Hdenom_SNo).
+  rewrite (mul_SNo_distrL (minus_SNo v2) 1 v2
+    (SNo_minus_SNo v2 Hv2SNo) SNo_1 Hv2SNo).
+  rewrite (mul_SNo_minus_distrL v2 1 Hv2SNo SNo_1).
+  rewrite (mul_SNo_oneR v2 Hv2SNo).
+  rewrite (mul_SNo_minus_distrL v2 v2 Hv2SNo Hv2SNo).
+  rewrite (add_SNo_assoc (add_SNo 1 v2) (minus_SNo v2) (minus_SNo (mul_SNo v2 v2))
+    Hdenom_SNo (SNo_minus_SNo v2 Hv2SNo) (SNo_minus_SNo (mul_SNo v2 v2) Hv2sqSNo)).
+  rewrite <- (add_SNo_assoc 1 v2 (minus_SNo v2) SNo_1 Hv2SNo (SNo_minus_SNo v2 Hv2SNo)).
+  rewrite (add_SNo_minus_SNo_rinv v2 Hv2SNo).
+  rewrite (add_SNo_0R 1 SNo_1).
+  reflexivity.
+}
+(** (v0^2+v1^2) times r = (1-v2^2) times r = (1-v2) times (1+v2) times r = (1-v2) times 1 = 1-v2 **)
+claim HsumSNo : SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)).
+{ exact (SNo_add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1) Hv0sqSNo Hv1sqSNo). }
+claim Hv0v1_r : mul_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) r =
+  add_SNo 1 (minus_SNo v2).
+{
+  rewrite Hv0v1sq.
+  rewrite H1mv2sq.
+  rewrite <- (mul_SNo_assoc (add_SNo 1 (minus_SNo v2)) (add_SNo 1 v2) r
+    H1mv2minusSNo Hdenom_SNo HrSNo).
+  rewrite Hdenom_r.
+  exact (mul_SNo_oneR (add_SNo 1 (minus_SNo v2)) H1mv2minusSNo).
+}
+(** (1+v2) times s = (1+v2) times (sum times r^2) = ((sum times r) times (1+v2)) times r **)
+(** = (sum times r) times ((1+v2) times r) = (sum times r) times 1 = sum times r = 1-v2 **)
+claim Hsum_r_SNo : SNo (mul_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) r).
+{ exact (SNo_mul_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) r HsumSNo HrSNo). }
+claim H1v2s : mul_SNo (add_SNo 1 v2) s = add_SNo 1 (minus_SNo v2).
+{
+  rewrite Hs_eq.
+  rewrite (mul_SNo_assoc (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) r r HsumSNo HrSNo HrSNo).
+  rewrite (mul_SNo_assoc (add_SNo 1 v2)
+    (mul_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) r) r
+    Hdenom_SNo Hsum_r_SNo HrSNo).
+  rewrite (mul_SNo_com (add_SNo 1 v2) (mul_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) r)
+    Hdenom_SNo Hsum_r_SNo).
+  rewrite <- (mul_SNo_assoc (mul_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) r) (add_SNo 1 v2) r
+    Hsum_r_SNo Hdenom_SNo HrSNo).
+  rewrite Hdenom_r.
+  rewrite (mul_SNo_oneR (mul_SNo (add_SNo (mul_SNo v0 v0) (mul_SNo v1 v1)) r) Hsum_r_SNo).
+  exact Hv0v1_r.
+}
+(** (1+v2) times (1+s) = (1+v2) + (1-v2) = 2 **)
+claim Hdenom'_key : mul_SNo (add_SNo 1 v2) denom' = 2.
+{
+  rewrite (mul_SNo_distrL (add_SNo 1 v2) 1 s Hdenom_SNo SNo_1 HsSNo).
+  rewrite (mul_SNo_oneR (add_SNo 1 v2) Hdenom_SNo).
+  rewrite H1v2s.
+  rewrite <- (add_SNo_assoc 1 v2 (add_SNo 1 (minus_SNo v2)) SNo_1 Hv2SNo H1mv2minusSNo).
+  rewrite (add_SNo_assoc v2 1 (minus_SNo v2) Hv2SNo SNo_1 (SNo_minus_SNo v2 Hv2SNo)).
+  rewrite (add_SNo_com v2 1 Hv2SNo SNo_1).
+  rewrite <- (add_SNo_assoc 1 v2 (minus_SNo v2) SNo_1 Hv2SNo (SNo_minus_SNo v2 Hv2SNo)).
+  rewrite (add_SNo_minus_SNo_rinv v2 Hv2SNo).
+  rewrite (add_SNo_0R 1 SNo_1).
+  exact add_SNo_1_1_2.
+}
+claim HuE2 : u :e euclidean_space 2.
+{ exact (stereo_S_into_E2 v Hv). }
+claim Hdenom'_Rlt : Rlt 0 denom'.
+{ exact (stereo_S_inv_denom_pos u HuE2). }
+claim Hd'_pos : SNoLt 0 denom'.
+{ exact (RltE_lt 0 denom' Hdenom'_Rlt). }
+claim Hdenom'_SNo : SNo denom'.
+{ exact (SNo_add_SNo 1 s SNo_1 HsSNo). }
+claim Hdenom'_d' : mul_SNo denom' d' = 1.
+{ exact (recip_SNo_pos_invR denom' Hdenom'_SNo Hd'_pos). }
+claim Hd'_SNo : SNo d'.
+{ exact (SNo_recip_SNo_pos denom' Hdenom'_SNo Hd'_pos). }
+(** 2 times d' = 1+v2 via: (1+v2) = (1+v2) times 1 = (1+v2) times (denom' times d') = ((1+v2) times denom') times d' = 2 times d' **)
+claim H2d'_eq : mul_SNo 2 d' = add_SNo 1 v2.
+{
+  claim H2d'a : mul_SNo (add_SNo 1 v2) 1 = mul_SNo (add_SNo 1 v2) (mul_SNo denom' d').
+  { rewrite Hdenom'_d'. reflexivity. }
+  claim H2d'b : mul_SNo (add_SNo 1 v2) (mul_SNo denom' d') =
+    mul_SNo (mul_SNo (add_SNo 1 v2) denom') d'.
+  { exact (mul_SNo_assoc (add_SNo 1 v2) denom' d' Hdenom_SNo Hdenom'_SNo Hd'_SNo). }
+  claim H2d'c : mul_SNo (mul_SNo (add_SNo 1 v2) denom') d' = mul_SNo 2 d'.
+  { rewrite Hdenom'_key. reflexivity. }
+  claim H2d'chain : add_SNo 1 v2 = mul_SNo 2 d'.
+  { exact (eq_i_tra (add_SNo 1 v2)
+      (mul_SNo (add_SNo 1 v2) 1)
+      (mul_SNo 2 d')
+      (eq_symm (mul_SNo (add_SNo 1 v2) 1) (add_SNo 1 v2)
+        (mul_SNo_oneR (add_SNo 1 v2) Hdenom_SNo))
+      (eq_i_tra (mul_SNo (add_SNo 1 v2) 1)
+        (mul_SNo (mul_SNo (add_SNo 1 v2) denom') d')
+        (mul_SNo 2 d')
+        (eq_i_tra (mul_SNo (add_SNo 1 v2) 1)
+          (mul_SNo (add_SNo 1 v2) (mul_SNo denom' d'))
+          (mul_SNo (mul_SNo (add_SNo 1 v2) denom') d')
+          H2d'a H2d'b)
+        H2d'c)). }
+  exact (eq_symm (add_SNo 1 v2) (mul_SNo 2 d') H2d'chain).
+}
+(** stereo_S_inv_fn u = graph 3 (3-case lambda) **)
+claim Hw_eq : stereo_S_inv_fn u =
+  graph 3 (fun i:set =>
+    if i = 0 then mul_SNo (mul_SNo 2 u0) d'
+    else if i = 1 then mul_SNo (mul_SNo 2 u1) d'
+    else add_SNo (mul_SNo 2 d') (minus_SNo 1)).
+{ reflexivity. }
+(** Coordinates of stereo_S_inv_fn u **)
+claim Hw0_eq : apply_fun (stereo_S_inv_fn u) 0 = mul_SNo (mul_SNo 2 u0) d'.
+{
+  rewrite Hw_eq.
+  rewrite (apply_fun_graph 3 (fun i:set =>
+    if i = 0 then mul_SNo (mul_SNo 2 u0) d'
+    else if i = 1 then mul_SNo (mul_SNo 2 u1) d'
+    else add_SNo (mul_SNo 2 d') (minus_SNo 1)) 0 H0in3).
+  prove (if 0 = 0 then mul_SNo (mul_SNo 2 u0) d'
+    else if 0 = 1 then mul_SNo (mul_SNo 2 u1) d'
+    else add_SNo (mul_SNo 2 d') (minus_SNo 1)) = mul_SNo (mul_SNo 2 u0) d'.
+  rewrite (If_i_1 (0 = 0) (mul_SNo (mul_SNo 2 u0) d')
+    (if 0 = 1 then mul_SNo (mul_SNo 2 u1) d' else add_SNo (mul_SNo 2 d') (minus_SNo 1))
+    (eq_refl 0)).
+  reflexivity.
+}
+claim Hw1_eq : apply_fun (stereo_S_inv_fn u) 1 = mul_SNo (mul_SNo 2 u1) d'.
+{
+  rewrite Hw_eq.
+  rewrite (apply_fun_graph 3 (fun i:set =>
+    if i = 0 then mul_SNo (mul_SNo 2 u0) d'
+    else if i = 1 then mul_SNo (mul_SNo 2 u1) d'
+    else add_SNo (mul_SNo 2 d') (minus_SNo 1)) 1 H1in3).
+  prove (if 1 = 0 then mul_SNo (mul_SNo 2 u0) d'
+    else if 1 = 1 then mul_SNo (mul_SNo 2 u1) d'
+    else add_SNo (mul_SNo 2 d') (minus_SNo 1)) = mul_SNo (mul_SNo 2 u1) d'.
+  rewrite (If_i_0 (1 = 0) (mul_SNo (mul_SNo 2 u0) d')
+    (if 1 = 1 then mul_SNo (mul_SNo 2 u1) d' else add_SNo (mul_SNo 2 d') (minus_SNo 1))
+    (neq_ordsucc_0 0)).
+  rewrite (If_i_1 (1 = 1) (mul_SNo (mul_SNo 2 u1) d')
+    (add_SNo (mul_SNo 2 d') (minus_SNo 1)) (eq_refl 1)).
+  reflexivity.
+}
+claim Hw2_eq : apply_fun (stereo_S_inv_fn u) 2 = add_SNo (mul_SNo 2 d') (minus_SNo 1).
+{
+  rewrite Hw_eq.
+  rewrite (apply_fun_graph 3 (fun i:set =>
+    if i = 0 then mul_SNo (mul_SNo 2 u0) d'
+    else if i = 1 then mul_SNo (mul_SNo 2 u1) d'
+    else add_SNo (mul_SNo 2 d') (minus_SNo 1)) 2 H2in3).
+  prove (if 2 = 0 then mul_SNo (mul_SNo 2 u0) d'
+    else if 2 = 1 then mul_SNo (mul_SNo 2 u1) d'
+    else add_SNo (mul_SNo 2 d') (minus_SNo 1)) = add_SNo (mul_SNo 2 d') (minus_SNo 1).
+  rewrite (If_i_0 (2 = 0) (mul_SNo (mul_SNo 2 u0) d')
+    (if 2 = 1 then mul_SNo (mul_SNo 2 u1) d' else add_SNo (mul_SNo 2 d') (minus_SNo 1))
+    (neq_ordsucc_0 1)).
+  exact (If_i_0 (2 = 1) (mul_SNo (mul_SNo 2 u1) d')
+    (add_SNo (mul_SNo 2 d') (minus_SNo 1))
+    (fun H:2=1 => In_irref 1 (H (fun z _ => 1 :e z) In_1_2))).
+}
+(** Coord 0: (2 times u0) times d' = v0, since 2 times d' times r = (1+v2) times r = 1 **)
+claim H2d'r_eq : mul_SNo (mul_SNo 2 d') r = 1.
+{
+  rewrite H2d'_eq.
+  exact Hdenom_r.
+}
+claim Hcoord0_eq : mul_SNo (mul_SNo 2 u0) d' = v0.
+{
+  (** (2 times u0) times d' = v0 times ((2 times d') times r) = v0 times 1 = v0 **)
+  claim Hv0rSNo : SNo (mul_SNo v0 r). { exact (SNo_mul_SNo v0 r Hv0SNo HrSNo). }
+  claim H2d'SNo : SNo (mul_SNo 2 d'). { exact (SNo_mul_SNo 2 d' SNo_2 Hd'_SNo). }
+  claim H2v0SNo : SNo (mul_SNo 2 v0). { exact (SNo_mul_SNo 2 v0 SNo_2 Hv0SNo). }
+  (** step: (2 u0) d' = ((2 v0) r) d' **)
+  claim Hcstep1 : mul_SNo (mul_SNo 2 u0) d' = mul_SNo (mul_SNo (mul_SNo 2 v0) r) d'.
+  {
+    rewrite Hu0_val.
+    rewrite (mul_SNo_assoc 2 v0 r SNo_2 Hv0SNo HrSNo).
+    reflexivity.
+  }
+  (** step: ((2 v0) r) d' = (2 v0) (r d') **)
+  claim Hcstep2 : mul_SNo (mul_SNo (mul_SNo 2 v0) r) d' = mul_SNo (mul_SNo 2 v0) (mul_SNo r d').
+  { exact (eq_symm
+      (mul_SNo (mul_SNo 2 v0) (mul_SNo r d'))
+      (mul_SNo (mul_SNo (mul_SNo 2 v0) r) d')
+      (mul_SNo_assoc (mul_SNo 2 v0) r d' H2v0SNo HrSNo Hd'_SNo)). }
+  (** step: (2 v0) (r d') = (2 v0) (d' r) **)
+  claim Hcstep3 : mul_SNo (mul_SNo 2 v0) (mul_SNo r d') = mul_SNo (mul_SNo 2 v0) (mul_SNo d' r).
+  { rewrite (mul_SNo_com r d' HrSNo Hd'_SNo). reflexivity. }
+  (** step: (2 v0) (d' r) = 2 (v0 (d' r)) **)
+  claim Hcstep4 : mul_SNo (mul_SNo 2 v0) (mul_SNo d' r) = mul_SNo 2 (mul_SNo v0 (mul_SNo d' r)).
+  { exact (eq_symm
+      (mul_SNo 2 (mul_SNo v0 (mul_SNo d' r)))
+      (mul_SNo (mul_SNo 2 v0) (mul_SNo d' r))
+      (mul_SNo_assoc 2 v0 (mul_SNo d' r) SNo_2 Hv0SNo (SNo_mul_SNo d' r Hd'_SNo HrSNo))). }
+  (** step: 2 (v0 (d' r)) = v0 (2 (d' r)) **)
+  claim Hcstep5 : mul_SNo 2 (mul_SNo v0 (mul_SNo d' r)) = mul_SNo v0 (mul_SNo 2 (mul_SNo d' r)).
+  {
+    rewrite (mul_SNo_assoc 2 v0 (mul_SNo d' r) SNo_2 Hv0SNo (SNo_mul_SNo d' r Hd'_SNo HrSNo)).
+    rewrite (mul_SNo_com 2 v0 SNo_2 Hv0SNo).
+    rewrite <- (mul_SNo_assoc v0 2 (mul_SNo d' r) Hv0SNo SNo_2 (SNo_mul_SNo d' r Hd'_SNo HrSNo)).
+    reflexivity.
+  }
+  (** step: v0 (2 (d' r)) = v0 ((2 d') r) **)
+  claim Hcstep6 : mul_SNo v0 (mul_SNo 2 (mul_SNo d' r)) = mul_SNo v0 (mul_SNo (mul_SNo 2 d') r).
+  { rewrite (mul_SNo_assoc 2 d' r SNo_2 Hd'_SNo HrSNo). reflexivity. }
+  claim Hcstep7 : mul_SNo v0 (mul_SNo (mul_SNo 2 d') r) = v0.
+  { rewrite H2d'r_eq. exact (mul_SNo_oneR v0 Hv0SNo). }
+  exact (eq_i_tra (mul_SNo (mul_SNo 2 u0) d') (mul_SNo (mul_SNo 2 v0) (mul_SNo r d')) v0
+    (eq_i_tra (mul_SNo (mul_SNo 2 u0) d') (mul_SNo (mul_SNo (mul_SNo 2 v0) r) d') (mul_SNo (mul_SNo 2 v0) (mul_SNo r d'))
+      Hcstep1 Hcstep2)
+    (eq_i_tra (mul_SNo (mul_SNo 2 v0) (mul_SNo r d')) (mul_SNo v0 (mul_SNo (mul_SNo 2 d') r)) v0
+      (eq_i_tra (mul_SNo (mul_SNo 2 v0) (mul_SNo r d')) (mul_SNo v0 (mul_SNo 2 (mul_SNo d' r))) (mul_SNo v0 (mul_SNo (mul_SNo 2 d') r))
+        (eq_i_tra (mul_SNo (mul_SNo 2 v0) (mul_SNo r d')) (mul_SNo (mul_SNo 2 v0) (mul_SNo d' r)) (mul_SNo v0 (mul_SNo 2 (mul_SNo d' r)))
+          Hcstep3 (eq_i_tra (mul_SNo (mul_SNo 2 v0) (mul_SNo d' r)) (mul_SNo 2 (mul_SNo v0 (mul_SNo d' r))) (mul_SNo v0 (mul_SNo 2 (mul_SNo d' r)))
+            Hcstep4 Hcstep5))
+        Hcstep6)
+      Hcstep7)).
+}
+claim Hcoord1_eq : mul_SNo (mul_SNo 2 u1) d' = v1.
+{
+  (** same structure as Hcoord0_eq but for v1 **)
+  claim Hv1rSNo : SNo (mul_SNo v1 r). { exact (SNo_mul_SNo v1 r Hv1SNo HrSNo). }
+  claim H2v1SNo : SNo (mul_SNo 2 v1). { exact (SNo_mul_SNo 2 v1 SNo_2 Hv1SNo). }
+  claim Hd1step1 : mul_SNo (mul_SNo 2 u1) d' = mul_SNo (mul_SNo (mul_SNo 2 v1) r) d'.
+  { rewrite Hu1_val. rewrite (mul_SNo_assoc 2 v1 r SNo_2 Hv1SNo HrSNo). reflexivity. }
+  claim Hd1step2 : mul_SNo (mul_SNo (mul_SNo 2 v1) r) d' = mul_SNo (mul_SNo 2 v1) (mul_SNo r d').
+  { exact (eq_symm
+      (mul_SNo (mul_SNo 2 v1) (mul_SNo r d'))
+      (mul_SNo (mul_SNo (mul_SNo 2 v1) r) d')
+      (mul_SNo_assoc (mul_SNo 2 v1) r d' H2v1SNo HrSNo Hd'_SNo)). }
+  claim Hd1step3 : mul_SNo (mul_SNo 2 v1) (mul_SNo r d') = mul_SNo (mul_SNo 2 v1) (mul_SNo d' r).
+  { rewrite (mul_SNo_com r d' HrSNo Hd'_SNo). reflexivity. }
+  claim Hd1step4 : mul_SNo (mul_SNo 2 v1) (mul_SNo d' r) = mul_SNo 2 (mul_SNo v1 (mul_SNo d' r)).
+  { exact (eq_symm
+      (mul_SNo 2 (mul_SNo v1 (mul_SNo d' r)))
+      (mul_SNo (mul_SNo 2 v1) (mul_SNo d' r))
+      (mul_SNo_assoc 2 v1 (mul_SNo d' r) SNo_2 Hv1SNo (SNo_mul_SNo d' r Hd'_SNo HrSNo))). }
+  claim Hd1step5 : mul_SNo 2 (mul_SNo v1 (mul_SNo d' r)) = mul_SNo v1 (mul_SNo 2 (mul_SNo d' r)).
+  {
+    rewrite (mul_SNo_assoc 2 v1 (mul_SNo d' r) SNo_2 Hv1SNo (SNo_mul_SNo d' r Hd'_SNo HrSNo)).
+    rewrite (mul_SNo_com 2 v1 SNo_2 Hv1SNo).
+    rewrite <- (mul_SNo_assoc v1 2 (mul_SNo d' r) Hv1SNo SNo_2 (SNo_mul_SNo d' r Hd'_SNo HrSNo)).
+    reflexivity.
+  }
+  claim Hd1step6 : mul_SNo v1 (mul_SNo 2 (mul_SNo d' r)) = mul_SNo v1 (mul_SNo (mul_SNo 2 d') r).
+  { rewrite (mul_SNo_assoc 2 d' r SNo_2 Hd'_SNo HrSNo). reflexivity. }
+  claim Hd1step7 : mul_SNo v1 (mul_SNo (mul_SNo 2 d') r) = v1.
+  { rewrite H2d'r_eq. exact (mul_SNo_oneR v1 Hv1SNo). }
+  exact (eq_i_tra (mul_SNo (mul_SNo 2 u1) d') (mul_SNo (mul_SNo 2 v1) (mul_SNo r d')) v1
+    (eq_i_tra (mul_SNo (mul_SNo 2 u1) d') (mul_SNo (mul_SNo (mul_SNo 2 v1) r) d') (mul_SNo (mul_SNo 2 v1) (mul_SNo r d'))
+      Hd1step1 Hd1step2)
+    (eq_i_tra (mul_SNo (mul_SNo 2 v1) (mul_SNo r d')) (mul_SNo v1 (mul_SNo (mul_SNo 2 d') r)) v1
+      (eq_i_tra (mul_SNo (mul_SNo 2 v1) (mul_SNo r d')) (mul_SNo v1 (mul_SNo 2 (mul_SNo d' r))) (mul_SNo v1 (mul_SNo (mul_SNo 2 d') r))
+        (eq_i_tra (mul_SNo (mul_SNo 2 v1) (mul_SNo r d')) (mul_SNo (mul_SNo 2 v1) (mul_SNo d' r)) (mul_SNo v1 (mul_SNo 2 (mul_SNo d' r)))
+          Hd1step3 (eq_i_tra (mul_SNo (mul_SNo 2 v1) (mul_SNo d' r)) (mul_SNo 2 (mul_SNo v1 (mul_SNo d' r))) (mul_SNo v1 (mul_SNo 2 (mul_SNo d' r)))
+            Hd1step4 Hd1step5))
+        Hd1step6)
+      Hd1step7)).
+}
+(** Coord 2: 2 times d' minus 1 = (1+v2) - 1 = v2 **)
+claim Hcoord2_eq : add_SNo (mul_SNo 2 d') (minus_SNo 1) = v2.
+{
+  rewrite H2d'_eq.
+  rewrite (add_SNo_com 1 v2 SNo_1 Hv2SNo).
+  rewrite <- (add_SNo_assoc v2 1 (minus_SNo 1) Hv2SNo SNo_1 (SNo_minus_SNo 1 SNo_1)).
+  rewrite (add_SNo_minus_SNo_rinv 1 SNo_1).
+  exact (add_SNo_0R v2 Hv2SNo).
+}
+(** v is a function 3 -> R, so v = graph 3 (apply_fun v) **)
+claim H3ne : 3 <> Empty.
+{ exact (fun H => EmptyE 0 (H (fun t _ => 0 :e t) (ordsuccI1 2 0 In_0_2))). }
+claim HsfuE3 : space_family_union 3 (const_space_family 3 R R_standard_topology) = R.
+{ exact (space_family_union_const_space_family 3 R R_standard_topology H3ne). }
+claim HvProp : total_function_on v 3 (space_family_union 3 (const_space_family 3 R R_standard_topology)) /\
+  functional_graph v /\ forall i:set, i :e 3 -> apply_fun v i :e space_family_set (const_space_family 3 R R_standard_topology) i.
+{
+  exact (SepE2 (Power (setprod 3 (space_family_union 3 (const_space_family 3 R R_standard_topology))))
+    (fun f => total_function_on f 3 (space_family_union 3 (const_space_family 3 R R_standard_topology)) /\
+      functional_graph f /\ forall i:set, i :e 3 -> apply_fun f i :e space_family_set (const_space_family 3 R R_standard_topology) i)
+    v HvE3).
+}
+claim HvTF_FG : total_function_on v 3 (space_family_union 3 (const_space_family 3 R R_standard_topology)) /\ functional_graph v.
+{ exact (andEL (total_function_on v 3 (space_family_union 3 (const_space_family 3 R R_standard_topology)) /\ functional_graph v)
+    (forall i:set, i :e 3 -> apply_fun v i :e space_family_set (const_space_family 3 R R_standard_topology) i)
+    HvProp). }
+claim HvTF : total_function_on v 3 (space_family_union 3 (const_space_family 3 R R_standard_topology)).
+{ exact (andEL (total_function_on v 3 (space_family_union 3 (const_space_family 3 R R_standard_topology)))
+    (functional_graph v) HvTF_FG). }
+claim HvTF_R : total_function_on v 3 R.
+{ exact (HsfuE3 (fun z _ => total_function_on v 3 z) HvTF). }
+claim HvFG : functional_graph v.
+{ exact (andER (total_function_on v 3 (space_family_union 3 (const_space_family 3 R R_standard_topology)))
+    (functional_graph v) HvTF_FG). }
+claim HvPow : v :e Power (setprod 3 (space_family_union 3 (const_space_family 3 R R_standard_topology))).
+{ exact (SepE1 (Power (setprod 3 (space_family_union 3 (const_space_family 3 R R_standard_topology))))
+    (fun f => total_function_on f 3 (space_family_union 3 (const_space_family 3 R R_standard_topology)) /\
+      functional_graph f /\ forall i:set, i :e 3 -> apply_fun f i :e space_family_set (const_space_family 3 R R_standard_topology) i)
+    v HvE3). }
+claim HvSub : v c= setprod 3 R.
+{ exact (HsfuE3 (fun z _ => v c= setprod 3 z) (PowerE (setprod 3 (space_family_union 3 (const_space_family 3 R R_standard_topology))) v HvPow)). }
+claim Hv_as_graph : v = graph 3 (fun i:set => apply_fun v i).
+{ exact (total_functional_graph_eq_graph_of_apply_fun v 3 R HvTF_R HvFG HvSub). }
+(** stereo_S_inv_fn u = v via pointwise equality **)
+claim Hpointwise : forall i:set, i :e 3 ->
+  (if i = 0 then mul_SNo (mul_SNo 2 u0) d'
+   else if i = 1 then mul_SNo (mul_SNo 2 u1) d'
+   else add_SNo (mul_SNo 2 d') (minus_SNo 1)) = apply_fun v i.
+{
+  let i. assume Hi3.
+  apply (ordsuccE 2 i Hi3).
+  - assume Hi2.
+    apply (ordsuccE 1 i Hi2).
+    + assume Hi1.
+      apply (ordsuccE 0 i Hi1).
+      * assume Hi0. exact (EmptyE i Hi0 ((if i = 0 then mul_SNo (mul_SNo 2 u0) d'
+          else if i = 1 then mul_SNo (mul_SNo 2 u1) d'
+          else add_SNo (mul_SNo 2 d') (minus_SNo 1)) = apply_fun v i)).
+      * assume Hieq0.
+        rewrite Hieq0.
+        rewrite (If_i_1 (0 = 0) (mul_SNo (mul_SNo 2 u0) d')
+          (if 0 = 1 then mul_SNo (mul_SNo 2 u1) d' else add_SNo (mul_SNo 2 d') (minus_SNo 1))
+          (eq_refl 0)).
+        exact Hcoord0_eq.
+    + assume Hieq1.
+      rewrite Hieq1.
+      rewrite (If_i_0 (1 = 0) (mul_SNo (mul_SNo 2 u0) d')
+        (if 1 = 1 then mul_SNo (mul_SNo 2 u1) d' else add_SNo (mul_SNo 2 d') (minus_SNo 1))
+        (neq_ordsucc_0 0)).
+      rewrite (If_i_1 (1 = 1) (mul_SNo (mul_SNo 2 u1) d')
+        (add_SNo (mul_SNo 2 d') (minus_SNo 1)) (eq_refl 1)).
+      exact Hcoord1_eq.
+  - assume Hieq2.
+    rewrite Hieq2.
+    rewrite (If_i_0 (2 = 0) (mul_SNo (mul_SNo 2 u0) d')
+      (if 2 = 1 then mul_SNo (mul_SNo 2 u1) d' else add_SNo (mul_SNo 2 d') (minus_SNo 1))
+      (neq_ordsucc_0 1)).
+    rewrite (If_i_0 (2 = 1) (mul_SNo (mul_SNo 2 u1) d')
+      (add_SNo (mul_SNo 2 d') (minus_SNo 1))
+      (fun H:2=1 => In_irref 1 (H (fun z _ => 1 :e z) In_1_2))).
+    exact Hcoord2_eq.
+}
+claim Hinvfn_graph : stereo_S_inv_fn u = graph 3 (fun i:set => apply_fun v i).
+{
+  rewrite Hw_eq.
+  exact (graph_extensional 3
+    (fun i:set =>
+      if i = 0 then mul_SNo (mul_SNo 2 u0) d'
+      else if i = 1 then mul_SNo (mul_SNo 2 u1) d'
+      else add_SNo (mul_SNo 2 d') (minus_SNo 1))
+    (fun i:set => apply_fun v i)
+    Hpointwise).
+}
+exact (eq_i_tra (stereo_S_inv_fn u) (graph 3 (fun i:set => apply_fun v i)) v
+  Hinvfn_graph
+  (eq_symm v (graph 3 (fun i:set => apply_fun v i)) Hv_as_graph)).
+Qed.
 
 (** Helper: right inverse of stereo_S_map: stereo_S_fn(inv_fn(u)) = u **)
 (** Proven Dave **)
