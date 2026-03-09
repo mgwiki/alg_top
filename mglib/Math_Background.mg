@@ -230229,6 +230229,33 @@ rewrite Hinvw.
 exact (HassocG (apply_fun inv x) w x HinvxG HwG HxG).
 Qed.
 
+(** Infrastructure: involutive element squares to identity **)
+(** Proven Charlie **)
+Lemma group_involutive_square_e : forall G mult e inv a:set,
+  group_structure G mult e inv ->
+  a :e G ->
+  apply_fun inv a = a ->
+  apply_fun mult (a, a) = e.
+let G mult e inv a.
+assume Hgrp HaG Hinv_eq.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume _ _ _ _ _ HinvLaw.
+rewrite <- Hinv_eq at 2.
+exact (andEL
+  (apply_fun mult (a, apply_fun inv a) = e)
+  (apply_fun mult (apply_fun inv a, a) = e)
+  (HinvLaw a HaG)).
+Qed.
+
 (** Infrastructure: solve for the suffix product via left cancellation **)
 (** Proven Bob **)
 Lemma word_product_suffix_by_cancel : forall G mult e inv m xs:set,
@@ -231913,17 +231940,131 @@ apply (nat_inv m Hm_nat).
       (Hsubfam al Hal)
       (apply_fun efam al) Hefam_Gal).
   }
-  claim Hu_invol : apply_fun invG u = u.
-  {
-    rewrite Hu_eq.
-    exact (group_conjugate_involutive
-      G multG eG invG (apply_fun xs 0) (apply_fun efam al)
-      Hgrp Hx0_G Hw_G Hefam_invol).
-  }
+	  claim Hu_invol : apply_fun invG u = u.
+	  {
+	    rewrite Hu_eq.
+	    exact (group_conjugate_involutive
+	      G multG eG invG (apply_fun xs 0) (apply_fun efam al)
+	      Hgrp Hx0_G Hw_G Hefam_invol).
+	  }
 
-  (** TODO: complete the torsion or malnormality argument to derive a contradiction. **)
-  admit.
-Admitted.
+	  claim Hu_G : u :e G.
+	  {
+	    claim Hxs_suf_in_G : forall i:set, i :e k -> apply_fun xs_suf i :e G.
+	    {
+	      let i. assume Hi_k.
+	      claim Hi_m : i :e m.
+	      { rewrite Hm_eq_sk. exact (ordsuccI1 k i Hi_k). }
+	      rewrite (apply_fun_graph m (fun j:set => apply_fun xs (ordsucc j)) i Hi_m).
+	      exact (reduced_word_in_G
+	        G multG eG invG J Gfam efam (ordsucc m) xs
+	        Hsubfam Hred_sm (ordsucc i)
+	        (nat_ordsucc_in_ordsucc m Hm_nat i Hi_m)).
+	    }
+	    exact (word_product_in_G_group G multG eG invG k xs_suf Hgrp Hk_nat Hxs_suf_in_G).
+	  }
+
+	  claim Hu_sq : apply_fun multG (u, u) = eG.
+	  { exact (group_involutive_square_e G multG eG invG u Hgrp Hu_G Hu_invol). }
+
+	  claim Hu_ne_eG : u <> eG.
+	  {
+	    assume Hu_e : u = eG.
+	    apply Hefam_ne.
+	    apply (and6E
+	      (function_on multG (setprod G G) G)
+	      (function_on invG G G)
+	      (eG :e G)
+	      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+	        apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+	      (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+	      (forall a:set, a :e G ->
+	        apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+	      Hgrp).
+	    assume HmultFn HinvFn HeG HassocG HidG HinvLaw.
+	    set x0 := apply_fun xs 0.
+	    set w := apply_fun efam al.
+	    claim Hinvx0_G : apply_fun invG x0 :e G.
+	    { exact (HinvFn x0 Hx0_G). }
+	    claim Hwx0_G : apply_fun multG (w, x0) :e G.
+	    {
+	      exact (HmultFn (w, x0)
+	        (tuple_2_setprod_by_pair_Sigma G G w x0 Hw_G Hx0_G)).
+	    }
+	    claim Hlhs0 :
+	      apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0)) = eG.
+	    {
+	      rewrite <- Hu_eq.
+	      rewrite Hu_e.
+	      reflexivity.
+	    }
+	    claim Hstep1 :
+	      apply_fun multG (x0, apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0))) =
+	        apply_fun multG (apply_fun multG (x0, apply_fun invG x0), apply_fun multG (w, x0)).
+	    {
+	      symmetry.
+	      exact (HassocG x0 (apply_fun invG x0) (apply_fun multG (w, x0)) Hx0_G Hinvx0_G Hwx0_G).
+	    }
+	    claim Hstep2 :
+	      apply_fun multG (x0, apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0))) =
+	        apply_fun multG (w, x0).
+	    {
+	      rewrite Hstep1.
+	      rewrite (andEL
+	        (apply_fun multG (x0, apply_fun invG x0) = eG)
+	        (apply_fun multG (apply_fun invG x0, x0) = eG)
+	        (HinvLaw x0 Hx0_G)).
+	      exact (andEL
+	        (apply_fun multG (eG, apply_fun multG (w, x0)) = apply_fun multG (w, x0))
+	        (apply_fun multG (apply_fun multG (w, x0), eG) = apply_fun multG (w, x0))
+	        (HidG (apply_fun multG (w, x0)) Hwx0_G)).
+	    }
+	    claim Hstep3 :
+	      apply_fun multG (x0, eG) = x0.
+	    {
+	      exact (andER
+	        (apply_fun multG (eG, x0) = x0)
+	        (apply_fun multG (x0, eG) = x0)
+	        (HidG x0 Hx0_G)).
+	    }
+	    claim Hwx0_eq_x0 : apply_fun multG (w, x0) = x0.
+	    {
+	      claim Hlhs_eq_x0 :
+	        apply_fun multG (x0, apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0))) = x0.
+	      {
+	        rewrite Hlhs0.
+	        exact Hstep3.
+	      }
+	      exact (eq_i_tra
+	        (apply_fun multG (w, x0))
+	        (apply_fun multG (x0, apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0))))
+	        x0
+	        (eq_symm
+	          (apply_fun multG (x0, apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0))))
+	          (apply_fun multG (w, x0))
+	          Hstep2)
+	        Hlhs_eq_x0).
+	    }
+	    claim He_mul_x0 : apply_fun multG (eG, x0) = x0.
+	    {
+	      exact (andEL
+	        (apply_fun multG (eG, x0) = x0)
+	        (apply_fun multG (x0, eG) = x0)
+	        (HidG x0 Hx0_G)).
+	    }
+	    exact (group_right_cancel G multG eG invG x0 w eG
+	      Hgrp Hx0_G Hw_G HeG
+	      (eq_i_tra
+	        (apply_fun multG (w, x0))
+	        x0
+	        (apply_fun multG (eG, x0))
+	        Hwx0_eq_x0
+	        (eq_symm (apply_fun multG (eG, x0)) x0 He_mul_x0))).
+	  }
+	
+	  (** TODO: complete the torsion or malnormality argument to derive a contradiction. **)
+	  admit.
+	Admitted.
 
 (** Helper bounty: boundary-product not equal to efam(alpha0).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
