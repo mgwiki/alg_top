@@ -232221,6 +232221,27 @@ apply (nat_inv m Hm_nat).
         (Hsubfam alpha0 Halpha0J)
         (apply_fun efam alpha0) Hef0_in_Ga0).
     }
+    claim Hinv_ef0_in_Ga0 : apply_fun invG (apply_fun efam alpha0) :e apply_fun Gfam alpha0.
+    {
+      exact (subgroup_of_inv_closed
+        (apply_fun Gfam alpha0) G multG eG invG (apply_fun efam alpha0)
+        (Hsubfam alpha0 Halpha0J)
+        Hef0_in_Ga0).
+    }
+    claim Hinv_x0_in_Ga0 : apply_fun invG (apply_fun xs 0) :e apply_fun Gfam alpha0.
+    {
+      exact (subgroup_of_inv_closed
+        (apply_fun Gfam alpha0) G multG eG invG (apply_fun xs 0)
+        (Hsubfam alpha0 Halpha0J)
+        Hx0_in_Ga0).
+    }
+    claim Hinv_xm_in_Ga0 : apply_fun invG (apply_fun xs m) :e apply_fun Gfam alpha0.
+    {
+      exact (subgroup_of_inv_closed
+        (apply_fun Gfam alpha0) G multG eG invG (apply_fun xs m)
+        (Hsubfam alpha0 Halpha0J)
+        Hxm_in_Ga0).
+    }
 
   (** TODO: finish the boundary-product analysis in the p = efam(alpha0) branch. **)
   admit.
