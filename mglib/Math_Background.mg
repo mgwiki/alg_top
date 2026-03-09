@@ -232243,6 +232243,135 @@ apply (nat_inv m Hm_nat).
         Hxm_in_Ga0).
     }
 
+    (** Notation for the boundary computation. **)
+    set x0 := apply_fun xs 0.
+    set xm := apply_fun xs m.
+    set ef0 := apply_fun efam alpha0.
+    set w := apply_fun efam al.
+
+    claim Hx0_G : x0 :e G.
+    {
+      exact (subgroup_of_subset
+        (apply_fun Gfam alpha0) G multG eG invG
+        (Hsubfam alpha0 Halpha0J)
+        x0 Hx0_in_Ga0).
+    }
+    claim Hxm_G : xm :e G.
+    {
+      exact (subgroup_of_subset
+        (apply_fun Gfam alpha0) G multG eG invG
+        (Hsubfam alpha0 Halpha0J)
+        xm Hxm_in_Ga0).
+    }
+    claim Hw_G : w :e G.
+    {
+      exact (subgroup_of_subset
+        (apply_fun Gfam al) G multG eG invG
+        (Hsubfam al Hal)
+        w Hefam_Gal).
+    }
+
+    claim Hwp_full : word_product multG eG xs (ordsucc m) = w.
+    { rewrite <- Hn_sm. exact Hwp. }
+
+    claim Hwp_suf_m_w :
+      word_product multG eG xs_suf m =
+        apply_fun multG (apply_fun invG x0, w).
+    { rewrite Hwp_suf_m. rewrite Hwp_full. reflexivity. }
+
+    claim Hk_in_m : k :e m.
+    { rewrite Hm_eq_sk. exact (ordsuccI2 k). }
+    claim Hxsk : apply_fun xs_suf k = xm.
+    {
+      rewrite (apply_fun_graph m (fun i:set => apply_fun xs (ordsucc i)) k Hk_in_m).
+      rewrite <- Hm_eq_sk.
+      reflexivity.
+    }
+
+    claim Hxs_suf_in_G_sk : forall i:set, i :e ordsucc k -> apply_fun xs_suf i :e G.
+    {
+      let i. assume Hi_sk.
+      claim Hi_m : i :e m.
+      { rewrite Hm_eq_sk. exact Hi_sk. }
+      rewrite (apply_fun_graph m (fun j:set => apply_fun xs (ordsucc j)) i Hi_m).
+      exact (Hxs_in_G_sm (ordsucc i)
+        (nat_ordsucc_in_ordsucc m Hm_nat i Hi_m)).
+    }
+
+    claim Hwp_suf_k :
+      word_product multG eG xs_suf k =
+        apply_fun multG (word_product multG eG xs_suf m, apply_fun invG xm).
+    {
+      claim Htmp :
+        word_product multG eG xs_suf k =
+          apply_fun multG (word_product multG eG xs_suf (ordsucc k), apply_fun invG (apply_fun xs_suf k)).
+      { exact (word_product_prefix_by_cancel G multG eG invG k xs_suf Hgrp Hk_nat Hxs_suf_in_G_sk). }
+      rewrite Htmp.
+      rewrite <- Hm_eq_sk.
+      rewrite Hxsk.
+      reflexivity.
+    }
+
+    claim Hinv_ef0_eq :
+      apply_fun invG ef0 =
+        apply_fun multG (apply_fun invG x0, apply_fun invG xm).
+    {
+      rewrite <- Hp_ef0.
+      exact (group_inv_mult G multG eG invG xm x0 Hgrp Hxm_G Hx0_G).
+    }
+
+    claim Hinv_xm_eq :
+      apply_fun invG xm = apply_fun multG (x0, apply_fun invG ef0).
+    {
+      apply (and6E
+        (function_on multG (setprod G G) G)
+        (function_on invG G G)
+        (eG :e G)
+        (forall a b c:set, a :e G -> b :e G -> c :e G ->
+          apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+        (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+        (forall a:set, a :e G ->
+          apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+        Hgrp).
+      assume _ HinvFn _ HassocG HidG HinvLaw.
+      claim Hinvx0_G : apply_fun invG x0 :e G.
+      { exact (HinvFn x0 Hx0_G). }
+      claim Hinvxm_G : apply_fun invG xm :e G.
+      { exact (HinvFn xm Hxm_G). }
+      claim Hinv_ef0_G : apply_fun invG ef0 :e G.
+      { exact (HinvFn ef0 Hef0_G). }
+      claim Hx0_invx0 : apply_fun multG (x0, apply_fun invG x0) = eG.
+      {
+        exact (andEL
+          (apply_fun multG (x0, apply_fun invG x0) = eG)
+          (apply_fun multG (apply_fun invG x0, x0) = eG)
+          (HinvLaw x0 Hx0_G)).
+      }
+      claim Hrhs :
+        apply_fun multG (x0, apply_fun invG ef0) =
+          apply_fun multG (apply_fun multG (x0, apply_fun invG x0), apply_fun invG xm).
+      {
+        rewrite Hinv_ef0_eq.
+        symmetry.
+        exact (HassocG x0 (apply_fun invG x0) (apply_fun invG xm) Hx0_G Hinvx0_G Hinvxm_G).
+      }
+      claim HidL_invxm : apply_fun multG (eG, apply_fun invG xm) = apply_fun invG xm.
+      {
+        exact (andEL
+          (apply_fun multG (eG, apply_fun invG xm) = apply_fun invG xm)
+          (apply_fun multG (apply_fun invG xm, eG) = apply_fun invG xm)
+          (HidG (apply_fun invG xm) Hinvxm_G)).
+      }
+      claim Hx0inv_simpl :
+        apply_fun multG (x0, apply_fun invG ef0) = apply_fun invG xm.
+      {
+        rewrite Hrhs.
+        rewrite Hx0_invx0.
+        exact HidL_invxm.
+      }
+      exact (eq_symm (apply_fun multG (x0, apply_fun invG ef0)) (apply_fun invG xm) Hx0inv_simpl).
+    }
+
   (** TODO: finish the boundary-product analysis in the p = efam(alpha0) branch. **)
   admit.
 Admitted.
