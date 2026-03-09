@@ -232184,11 +232184,11 @@ apply (and5E
       reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
       word_product multG eG xs0 n0 = x /\
       (forall n' xs':set,
-        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
-        word_product multG eG xs' n' = x ->
-        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
-  Hfp).
-assume Hgrp Hsubfam _ _ _.
+	        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+	        word_product multG eG xs' n' = x ->
+	        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+	  Hfp).
+	assume Hgrp Hsubfam Hdisjoint _ Huniq.
 
 (** If m = 1 then xs(0), xs(1) lie in the same factor, contradicting reducedness. **)
 claim Hm_ne1 : m <> 1.
@@ -232649,9 +232649,36 @@ apply (nat_inv m Hm_nat).
 	    claim Hu_ef0_sq : apply_fun multG (apply_fun multG (u, ef0), apply_fun multG (u, ef0)) = eG.
 	    { exact (group_involutive_square_e G multG eG invG (apply_fun multG (u, ef0)) Hgrp Hu_ef0_G Hu_ef0_invol). }
 
-	  (** TODO: finish the boundary-product analysis in the p = efam(alpha0) branch. **)
-	  admit.
-	Admitted.
+	    (** Unique reduced word representation for the involutive element mult(u, ef0). **)
+	    apply (Huniq (apply_fun multG (u, ef0)) Hu_ef0_G Hu_ef0_ne_eG).
+	    let nA. assume HexA : exists xsA:set,
+	      reduced_word J Gfam efam nA xsA /\ nA <> 0 /\
+	      word_product multG eG xsA nA = apply_fun multG (u, ef0) /\
+	      (forall n' xs':set,
+	        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+	        word_product multG eG xs' n' = apply_fun multG (u, ef0) ->
+	        nA = n' /\ (forall i:set, i :e nA -> apply_fun xsA i = apply_fun xs' i)).
+	    apply HexA. let xsA.
+	    assume HpackA :
+	      reduced_word J Gfam efam nA xsA /\ nA <> 0 /\
+	      word_product multG eG xsA nA = apply_fun multG (u, ef0) /\
+	      (forall n' xs':set,
+	        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+	        word_product multG eG xs' n' = apply_fun multG (u, ef0) ->
+	        nA = n' /\ (forall i:set, i :e nA -> apply_fun xsA i = apply_fun xs' i)).
+	    apply (and4E
+	      (reduced_word J Gfam efam nA xsA)
+	      (nA <> 0)
+	      (word_product multG eG xsA nA = apply_fun multG (u, ef0))
+	      (forall n' xs':set,
+	        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+	        word_product multG eG xs' n' = apply_fun multG (u, ef0) ->
+	        nA = n' /\ (forall i:set, i :e nA -> apply_fun xsA i = apply_fun xs' i))
+	      HpackA).
+		    assume HredA HnA_ne0 HwpA HuniqA.
+		    (** TODO: use the involutive equation to force a contradiction from reducedness/uniqueness. **)
+		    admit.
+		Admitted.
 
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
 (** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
