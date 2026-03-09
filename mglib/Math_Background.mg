@@ -232521,18 +232521,137 @@ apply (nat_inv m Hm_nat).
       exact (HassocG (apply_fun invG x0) w x0 Hinvx0_G Hw_G Hx0_G).
     }
 
-    (** So mult(u, ef0) is a conjugate of w, hence involutive. **)
-    claim Hu_ef0_invol : apply_fun invG (apply_fun multG (u, ef0)) = apply_fun multG (u, ef0).
-    {
-      rewrite Hu_mul_ef0.
-      exact (group_conjugate_involutive
-        G multG eG invG x0 w
-        Hgrp Hx0_G Hw_G Hefam_invol).
-    }
+	    (** So mult(u, ef0) is a conjugate of w, hence involutive. **)
+	    claim Hu_ef0_invol : apply_fun invG (apply_fun multG (u, ef0)) = apply_fun multG (u, ef0).
+	    {
+	      rewrite Hu_mul_ef0.
+	      exact (group_conjugate_involutive
+	        G multG eG invG x0 w
+	        Hgrp Hx0_G Hw_G Hefam_invol).
+	    }
 
-  (** TODO: finish the boundary-product analysis in the p = efam(alpha0) branch. **)
-  admit.
-Admitted.
+	    (** The conjugate mult(u, ef0) is nontrivial: if it were eG then w = eG by cancellation. **)
+	    claim Hu_ef0_ne_eG : apply_fun multG (u, ef0) <> eG.
+	    {
+	      assume Hu_ef0_e : apply_fun multG (u, ef0) = eG.
+	      apply Hefam_ne.
+	      apply (and6E
+	        (function_on multG (setprod G G) G)
+	        (function_on invG G G)
+	        (eG :e G)
+	        (forall a b c:set, a :e G -> b :e G -> c :e G ->
+	          apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+	        (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+	        (forall a:set, a :e G ->
+	          apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+	        Hgrp).
+	      assume HmultFn HinvFn HeG HassocG HidG HinvLaw.
+	      claim Hinvx0_G : apply_fun invG x0 :e G.
+	      { exact (HinvFn x0 Hx0_G). }
+	      claim Hwx0_G : apply_fun multG (w, x0) :e G.
+	      {
+	        exact (HmultFn (w, x0)
+	          (tuple_2_setprod_by_pair_Sigma G G w x0 Hw_G Hx0_G)).
+	      }
+	      claim Hlhs0 :
+	        apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0)) = eG.
+	      {
+	        rewrite <- Hu_mul_ef0.
+	        exact Hu_ef0_e.
+	      }
+	      claim Hstep1 :
+	        apply_fun multG (x0, apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0))) =
+	          apply_fun multG (apply_fun multG (x0, apply_fun invG x0), apply_fun multG (w, x0)).
+	      {
+	        symmetry.
+	        exact (HassocG x0 (apply_fun invG x0) (apply_fun multG (w, x0)) Hx0_G Hinvx0_G Hwx0_G).
+	      }
+	      claim Hstep2 :
+	        apply_fun multG (x0, apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0))) =
+	          apply_fun multG (w, x0).
+	      {
+	        rewrite Hstep1.
+	        rewrite (andEL
+	          (apply_fun multG (x0, apply_fun invG x0) = eG)
+	          (apply_fun multG (apply_fun invG x0, x0) = eG)
+	          (HinvLaw x0 Hx0_G)).
+	        exact (andEL
+	          (apply_fun multG (eG, apply_fun multG (w, x0)) = apply_fun multG (w, x0))
+	          (apply_fun multG (apply_fun multG (w, x0), eG) = apply_fun multG (w, x0))
+	          (HidG (apply_fun multG (w, x0)) Hwx0_G)).
+	      }
+	      claim Hstep3 :
+	        apply_fun multG (x0, eG) = x0.
+	      {
+	        exact (andER
+	          (apply_fun multG (eG, x0) = x0)
+	          (apply_fun multG (x0, eG) = x0)
+	          (HidG x0 Hx0_G)).
+	      }
+	      claim Hwx0_eq_x0 : apply_fun multG (w, x0) = x0.
+	      {
+	        claim Hlhs_eq_x0 :
+	          apply_fun multG (x0, apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0))) = x0.
+	        {
+	          rewrite Hlhs0.
+	          exact Hstep3.
+	        }
+	        exact (eq_i_tra
+	          (apply_fun multG (w, x0))
+	          (apply_fun multG (x0, apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0))))
+	          x0
+	          (eq_symm
+	            (apply_fun multG (x0, apply_fun multG (apply_fun invG x0, apply_fun multG (w, x0))))
+	            (apply_fun multG (w, x0))
+	            Hstep2)
+	          Hlhs_eq_x0).
+	      }
+	      claim He_mul_x0 : apply_fun multG (eG, x0) = x0.
+	      {
+	        exact (andEL
+	          (apply_fun multG (eG, x0) = x0)
+	          (apply_fun multG (x0, eG) = x0)
+	          (HidG x0 Hx0_G)).
+	      }
+	      exact (group_right_cancel G multG eG invG x0 w eG
+	        Hgrp Hx0_G Hw_G HeG
+	        (eq_i_tra
+	          (apply_fun multG (w, x0))
+	          x0
+	          (apply_fun multG (eG, x0))
+	          Hwx0_eq_x0
+	          (eq_symm (apply_fun multG (eG, x0)) x0 He_mul_x0))).
+	    }
+
+	    claim Hu_ef0_G : apply_fun multG (u, ef0) :e G.
+	    {
+	      apply (and6E
+	        (function_on multG (setprod G G) G)
+	        (function_on invG G G)
+	        (eG :e G)
+	        (forall a b c:set, a :e G -> b :e G -> c :e G ->
+	          apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+	        (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+	        (forall a:set, a :e G ->
+	          apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+	        Hgrp).
+	      assume HmultFn _ _ _ _ _.
+	      claim Hu_G : u :e G.
+	      {
+	        apply (word_product_in_G_group G multG eG invG k xs_suf Hgrp Hk_nat).
+	        let i. assume Hi_k.
+	        exact (Hxs_suf_in_G_sk i (ordsuccI1 k i Hi_k)).
+	      }
+	      exact (HmultFn (u, ef0)
+	        (tuple_2_setprod_by_pair_Sigma G G u ef0 Hu_G Hef0_G)).
+	    }
+
+	    claim Hu_ef0_sq : apply_fun multG (apply_fun multG (u, ef0), apply_fun multG (u, ef0)) = eG.
+	    { exact (group_involutive_square_e G multG eG invG (apply_fun multG (u, ef0)) Hgrp Hu_ef0_G Hu_ef0_invol). }
+
+	  (** TODO: finish the boundary-product analysis in the p = efam(alpha0) branch. **)
+	  admit.
+	Admitted.
 
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
 (** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
