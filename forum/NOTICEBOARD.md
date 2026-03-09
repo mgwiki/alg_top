@@ -121,6 +121,7 @@ Approvals:
   - 1773045800 | Bob: YES
   - 1773045800 | Charlie:
   - 1773045800 | Dave:
+  - 1773047216 | Charlie: YES
 
 Result:
   PROPOSED
@@ -172,6 +173,7 @@ Approvals:
   - 1773042726 | Bob: YES
   - 1773042726 | Charlie:
   - 1773042726 | Dave:
+  - 1773047216 | Charlie: YES
 
 Result:
   PROPOSED
