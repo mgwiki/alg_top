@@ -235888,6 +235888,70 @@ exact (Hadj
   Hxsi1).
 Qed.
 
+(** Infrastructure: transport reduced_word along pointwise equality. **)
+(** Proven Charlie **)
+Lemma reduced_word_congr_on :
+  forall J Gfam efam n xs ys:set,
+  reduced_word J Gfam efam n xs ->
+  (forall i:set, i :e n -> apply_fun xs i = apply_fun ys i) ->
+  reduced_word J Gfam efam n ys.
+let J Gfam efam n xs ys.
+assume Hred Hcong.
+
+apply (and3E
+  (n :e omega)
+  (forall i:set, i :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs i :e apply_fun Gfam alpha /\
+      apply_fun xs i <> apply_fun efam alpha)
+  (forall i:set, i :e n -> ordsucc i :e n ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun xs i :e apply_fun Gfam alpha ->
+      apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+      alpha <> beta)
+  Hred).
+assume HnO Helem Hadj.
+
+prove n :e omega /\
+  (forall i:set, i :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun ys i :e apply_fun Gfam alpha /\
+      apply_fun ys i <> apply_fun efam alpha) /\
+  (forall i:set, i :e n -> ordsucc i :e n ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun ys i :e apply_fun Gfam alpha ->
+      apply_fun ys (ordsucc i) :e apply_fun Gfam beta ->
+      alpha <> beta).
+
+apply and3I.
+- exact HnO.
+- let i. assume Hi.
+  apply (Helem i Hi).
+  let alpha. assume Halpha_pack :
+    alpha :e J /\
+    apply_fun xs i :e apply_fun Gfam alpha /\
+    apply_fun xs i <> apply_fun efam alpha.
+  witness alpha.
+  apply (and3E
+    (alpha :e J)
+    (apply_fun xs i :e apply_fun Gfam alpha)
+    (apply_fun xs i <> apply_fun efam alpha)
+    Halpha_pack).
+  assume HaJ HxG Hxne.
+  apply and3I.
+  + exact HaJ.
+  + rewrite <- (Hcong i Hi). exact HxG.
+  + rewrite <- (Hcong i Hi). exact Hxne.
+- let i. assume Hi Hsi.
+  let alpha beta.
+  assume HaJ HbJ Hyi Hyis.
+  claim Hxi : apply_fun xs i :e apply_fun Gfam alpha.
+  { rewrite (Hcong i Hi). exact Hyi. }
+  claim Hxis : apply_fun xs (ordsucc i) :e apply_fun Gfam beta.
+  { rewrite (Hcong (ordsucc i) Hsi). exact Hyis. }
+  exact (Hadj i Hi Hsi alpha beta HaJ HbJ Hxi Hxis).
+Qed.
+
 (** Infrastructure: append one letter to a reduced word (early copy for use before later sections) **)
 (** Proven Charlie **)
 Lemma reduced_word_append_one_pre :
@@ -242384,14 +242448,31 @@ claim HPn : P n.
 	           { rewrite Ht_sm. exact (ordsuccI1 m k Hk_in_m). }
 	           claim Hm_in_t : m :e t.
 	           { rewrite Ht_sm. exact (ordsuccI2 m). }
-	           claim Hred_sm : reduced_word J Gfam efam (ordsucc m) xs0.
-	           { rewrite <- Ht_sm. exact Hredt. }
-	           set xs_suf := graph m (fun i:set => apply_fun xs0 (ordsucc i)).
-	           claim Hred_suf : reduced_word J Gfam efam m xs_suf.
-	           { exact (reduced_word_suffix J Gfam efam m xs0 Hred_sm). }
-	           set xs_pre := graph k (fun i:set => apply_fun xs_suf i).
-	           claim Hred_pre : reduced_word J Gfam efam k xs_pre.
-	           { exact (reduced_word_prefix J Gfam efam m xs_suf k Hred_suf Hk_in_m). }
+		           claim Hred_sm : reduced_word J Gfam efam (ordsucc m) xs0.
+		           { rewrite <- Ht_sm. exact Hredt. }
+		           set xs_suf := graph m (fun i:set => apply_fun xs0 (ordsucc i)).
+		           claim Hred_suf : reduced_word J Gfam efam m xs_suf.
+		           { exact (reduced_word_suffix J Gfam efam m xs0 Hred_sm). }
+		           set xs_pre0 := graph k (fun i:set => apply_fun xs_suf i).
+		           claim Hred_pre0 : reduced_word J Gfam efam k xs_pre0.
+		           { exact (reduced_word_prefix J Gfam efam m xs_suf k Hred_suf Hk_in_m). }
+		           set xs_pre := graph k (fun i:set => apply_fun xs0 (ordsucc i)).
+		           claim Hpre_cong : forall i:set, i :e k -> apply_fun xs_pre0 i = apply_fun xs_pre i.
+		           {
+		             let i. assume Hi.
+		             claim Hm_ord : ordinal m.
+		             { exact (nat_p_ordinal m Hm_nat). }
+		             claim Hk_sub : k c= m.
+		             { exact (ordinal_TransSet m Hm_ord k Hk_in_m). }
+		             claim Hi_m : i :e m.
+		             { exact (Hk_sub i Hi). }
+		             rewrite (apply_fun_graph k (fun j:set => apply_fun xs_suf j) i Hi).
+		             rewrite (apply_fun_graph m (fun j:set => apply_fun xs0 (ordsucc j)) i Hi_m).
+		             rewrite (apply_fun_graph k (fun j:set => apply_fun xs0 (ordsucc j)) i Hi).
+		             reflexivity.
+		           }
+		           claim Hred_pre : reduced_word J Gfam efam k xs_pre.
+		           { exact (reduced_word_congr_on J Gfam efam k xs_pre0 xs_pre Hred_pre0 Hpre_cong). }
 
 	           (** Last-letter label differs from alphaL, needed for appending p. **)
 	           claim Hlast_diff :
@@ -242416,21 +242497,15 @@ claim HPn : P n.
 	                 Hp_ne).
 	             }
 
-	             (** Compute apply_fun xs_pre k0 = apply_fun xs0 k. **)
+		             (** Compute apply_fun xs_pre k0 = apply_fun xs0 k. **)
 		             claim Hk0_in_k : k0 :e k.
 		             { rewrite Hk_sk. exact (ordsuccI2 k0). }
-		             claim Hk0_in_m : k0 :e m.
+		             claim Hxsp : apply_fun xs_pre k0 = apply_fun xs0 k.
 		             {
-		               rewrite Hm_sm.
-		               exact (ordsuccI1 k k0 Hk0_in_k).
+		               rewrite (apply_fun_graph k (fun i:set => apply_fun xs0 (ordsucc i)) k0 Hk0_in_k).
+		               rewrite Hk_sk.
+		               reflexivity.
 		             }
-	             claim Hxsp : apply_fun xs_pre k0 = apply_fun xs0 k.
-	             {
-	               rewrite (apply_fun_graph k (fun i:set => apply_fun xs_suf i) k0 Hk0_in_k).
-	               rewrite (apply_fun_graph m (fun i:set => apply_fun xs0 (ordsucc i)) k0 Hk0_in_m).
-	               rewrite Hk_sk.
-	               reflexivity.
-	             }
 
 	             (** Extract the label alphaK for xs0(k), and show alphaK <> alphaL by adjacency. **)
 	             apply (reduced_word_elem J Gfam efam t xs0 k Hredt Hk_in_t).
@@ -242494,11 +242569,11 @@ claim HPn : P n.
 	             exact Hneq_aK_aL.
 	           }
 
-		           set xs1 := graph (ordsucc k) (fun i:set => if i :e k then apply_fun xs_pre i else p).
-		           claim Hred1 : reduced_word J Gfam efam m xs1.
-		           {
-		             admit.
-		           }
+				           set xs1 := graph (ordsucc k) (fun i:set => if i :e k then apply_fun xs_pre i else p).
+				           claim Hred1 : reduced_word J Gfam efam m xs1.
+				           {
+				             admit.
+				           }
 
 	           (** Let u1 := inv(x0) mul (v mul x0). We show u1 is an involution with reduced word xs1. **)
 	           claim Hx0_G : apply_fun xs0 0 :e G.
@@ -242564,22 +242639,29 @@ claim HPn : P n.
 	             word_product mult e xs1 (ordsucc k) =
 	               apply_fun mult (word_product mult e xs_pre k, p).
 	           { exact (word_product_append_one mult e xs_pre p k HkO). }
-		           claim Hwp_xs1 :
-		             word_product mult e xs1 m =
-		               apply_fun mult (word_product mult e xs_pre k, p).
-		           { admit. }
-	           claim Hwp_pre_eq :
-	             word_product mult e xs_pre k = word_product mult e xs_suf k.
-	           {
-	             apply (word_product_congr_on mult e xs_pre xs_suf k HkO).
-	             let i. assume Hi.
-	             rewrite (apply_fun_graph k (fun j:set => apply_fun xs_suf j) i Hi).
-	             reflexivity.
-	           }
-		           claim Hwp_suf_succ :
-		             word_product mult e xs_suf m =
-		               apply_fun mult (word_product mult e xs_suf k, apply_fun xs_suf k).
-		           { admit. }
+				           claim Hwp_xs1 :
+				             word_product mult e xs1 m =
+				               apply_fun mult (word_product mult e xs_pre k, p).
+				           { admit. }
+		           claim Hwp_pre_eq :
+		             word_product mult e xs_pre k = word_product mult e xs_suf k.
+		           {
+		             apply (word_product_congr_on mult e xs_pre xs_suf k HkO).
+		             let i. assume Hi.
+		             claim Hm_ord : ordinal m.
+		             { exact (nat_p_ordinal m Hm_nat). }
+		             claim Hk_sub : k c= m.
+		             { exact (ordinal_TransSet m Hm_ord k Hk_in_m). }
+		             claim Hi_m : i :e m.
+		             { exact (Hk_sub i Hi). }
+		             rewrite (apply_fun_graph k (fun j:set => apply_fun xs0 (ordsucc j)) i Hi).
+		             rewrite (apply_fun_graph m (fun j:set => apply_fun xs0 (ordsucc j)) i Hi_m).
+		             reflexivity.
+		           }
+			           claim Hwp_suf_succ :
+			             word_product mult e xs_suf m =
+			               apply_fun mult (word_product mult e xs_suf k, apply_fun xs_suf k).
+			           { admit. }
 	           claim Hxsuf_k : apply_fun xs_suf k = apply_fun xs0 m.
 	           {
 	             rewrite (apply_fun_graph m (fun i:set => apply_fun xs0 (ordsucc i)) k Hk_in_m).
@@ -242711,14 +242793,13 @@ claim HPn : P n.
 			             }
 			             claim Hfirst_val : apply_fun xs1 0 = apply_fun xs0 (ordsucc 0).
 			             {
-			               rewrite (apply_fun_graph (ordsucc k)
-			                 (fun i:set => if i :e k then apply_fun xs_pre i else p)
-			                 0 H0_in_xs1).
-			               rewrite (If_i_1 (0 :e k) (apply_fun xs_pre 0) p H0_in_k).
-			               rewrite (apply_fun_graph k (fun i:set => apply_fun xs_suf i) 0 H0_in_k).
-				               rewrite (apply_fun_graph m (fun i:set => apply_fun xs0 (ordsucc i)) 0 H0_in_m).
-				               reflexivity.
-				             }
+				               rewrite (apply_fun_graph (ordsucc k)
+				                 (fun i:set => if i :e k then apply_fun xs_pre i else p)
+				                 0 H0_in_xs1).
+				               rewrite (If_i_1 (0 :e k) (apply_fun xs_pre 0) p H0_in_k).
+				               rewrite (apply_fun_graph k (fun i:set => apply_fun xs0 (ordsucc i)) 0 H0_in_k).
+					               reflexivity.
+					             }
 				             claim Hp_in_Ga : p :e apply_fun Gfam a.
 				             { rewrite <- Hlast_val. exact Hlast1. }
 				             claim Hx1_in_Gb : apply_fun xs0 (ordsucc 0) :e apply_fun Gfam b.
