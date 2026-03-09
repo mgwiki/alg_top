@@ -1,6 +1,6 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 599 **)
+(** Balance Charlie 539 **)
 (** Balance Dave 1983 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -233772,6 +233772,25 @@ Lemma free_product_conjugate_intersection_trivial :
   x :e apply_fun Gfam alpha ->
   apply_fun mult (apply_fun mult (c, x), apply_fun inv c) :e apply_fun Gfam beta ->
   apply_fun mult (apply_fun mult (c, x), apply_fun inv c) = e.
+Admitted.
+
+(** Infrastructure bounty: torsion/involution in free products (order 2 case).
+    Expected use: discharge the remaining "boundary labels coincide" admit branches by showing
+    that an involution is conjugate into some factor subgroup. **)
+(** Bounty 60 **)
+Lemma free_product_involution_conjugate_into_factor :
+  forall G mult e inv J Gfam efam u:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  u :e G ->
+  u <> e ->
+  apply_fun inv u = u ->
+  exists alpha c x:set,
+    alpha :e J /\
+    c :e G /\
+    x :e apply_fun Gfam alpha /\
+    x <> e /\
+    apply_fun inv x = x /\
+    u = apply_fun mult (apply_fun inv c, apply_fun mult (x, c)).
 Admitted.
 
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
