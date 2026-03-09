@@ -1,0 +1,11 @@
+## Changes in bck13521 (vs bck13520)
+
+Removed incorrect (** Proven Dave **) markers from lemmas that are still Admitted:
+- stereo_S_inv_fn_in_Sn2 (HnormSq1 still admitted)
+- stereo_S_inv_map_function_on (depends on stereo_S_inv_fn_in_Sn2)
+- stereo_S_left_inv (still admitted)
+- stereo_S_right_inv (still admitted)
+
+Note: stereo_S_inv_fn_not_south correctly has (** Proven Dave **) as it is Qed.
+
+File compiles cleanly. Line count: ~403959 lines.
