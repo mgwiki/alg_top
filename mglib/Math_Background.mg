@@ -201018,6 +201018,200 @@ apply andI.
     * exact HslicesHomeo.
 Qed.
 
+(** Helper: topology_on helper for const_space_family 2 **)
+(** Proven Dave **)
+Lemma sf2R_topology_on : forall i:set, i :e 2 ->
+  topology_on
+    (space_family_set (const_space_family 2 R R_standard_topology) i)
+    (space_family_topology (const_space_family 2 R R_standard_topology) i).
+let i.
+assume Hi.
+rewrite (space_family_set_const_space_family 2 R R_standard_topology i Hi).
+rewrite (space_family_topology_const_space_family 2 R R_standard_topology i Hi).
+exact R_standard_topology_is_topology.
+Qed.
+
+(** Helper: coordinate evaluation map for euclidean_space 2 is continuous **)
+(** Proven Dave **)
+Lemma euclidean_2_eval_continuous : forall i:set, i :e 2 ->
+  continuous_map (euclidean_space 2) (euclidean_topology 2) R R_standard_topology
+    (product_eval_map 2 (const_space_family 2 R R_standard_topology) i).
+let i.
+assume Hi : i :e 2.
+claim HfamTop :
+  forall j:set, j :e 2 ->
+    topology_on
+      (space_family_set (const_space_family 2 R R_standard_topology) j)
+      (space_family_topology (const_space_family 2 R R_standard_topology) j).
+{
+  let j. assume Hj. exact (sf2R_topology_on j Hj).
+}
+claim HevalCont :
+  continuous_map
+    (euclidean_space 2) (euclidean_topology 2)
+    (space_family_set (const_space_family 2 R R_standard_topology) i)
+    (space_family_topology (const_space_family 2 R R_standard_topology) i)
+    (product_eval_map 2 (const_space_family 2 R R_standard_topology) i).
+{
+  exact (product_eval_map_continuous 2 (const_space_family 2 R R_standard_topology) i HfamTop Hi).
+}
+claim HYsub :
+  space_family_set (const_space_family 2 R R_standard_topology) i c= R.
+{
+  let y.
+  assume Hy : y :e space_family_set (const_space_family 2 R R_standard_topology) i.
+  rewrite <- (space_family_set_const_space_family 2 R R_standard_topology i Hi).
+  exact Hy.
+}
+claim HTyEq :
+  space_family_topology (const_space_family 2 R R_standard_topology) i =
+  subspace_topology R R_standard_topology
+    (space_family_set (const_space_family 2 R R_standard_topology) i).
+{
+  rewrite (space_family_set_const_space_family 2 R R_standard_topology i Hi).
+  rewrite (space_family_topology_const_space_family 2 R R_standard_topology i Hi).
+  rewrite (subspace_topology_whole R R_standard_topology R_standard_topology_is_topology).
+  reflexivity.
+}
+exact (continuous_map_range_expand
+  (euclidean_space 2) (euclidean_topology 2)
+  (space_family_set (const_space_family 2 R R_standard_topology) i)
+  (space_family_topology (const_space_family 2 R R_standard_topology) i)
+  R R_standard_topology
+  (product_eval_map 2 (const_space_family 2 R R_standard_topology) i)
+  HevalCont
+  HYsub
+  R_standard_topology_is_topology
+  HTyEq).
+Qed.
+
+(** Helper: apply_fun of product_eval_map 2 gives coordinate **)
+(** Proven Dave **)
+Lemma euclidean_2_eval_apply : forall v:set, forall i:set,
+  v :e euclidean_space 2 -> i :e 2 ->
+  apply_fun (product_eval_map 2 (const_space_family 2 R R_standard_topology) i) v =
+  apply_fun v i.
+let v i.
+assume Hv Hi.
+exact (apply_fun_graph
+  (euclidean_space 2)
+  (fun f:set => apply_fun f i)
+  v
+  Hv).
+Qed.
+
+(** Helper: stereo_S_map is a function from Sn 2 :\ south to euclidean_space 2 **)
+(** Proven Dave **)
+Lemma stereo_S_map_function_on :
+  function_on stereo_S_map (Sn 2 :\: {south_pole_3}) (euclidean_space 2).
+let v. assume Hv.
+rewrite (apply_fun_graph (Sn 2 :\: {south_pole_3}) stereo_S_fn v Hv).
+exact (stereo_S_into_E2 v Hv).
+Qed.
+
+(** Helper: stereo_S_map is continuous from Sn 2 :\ south to euclidean_space 2 **)
+Lemma stereo_S_map_continuous :
+  continuous_map
+    (Sn 2 :\: {south_pole_3})
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: {south_pole_3}))
+    (euclidean_space 2) (euclidean_topology 2)
+    stereo_S_map.
+admit.
+Admitted.
+
+(** Helper: inverse stereographic projection function **)
+(** Given u in euclidean_space 2, returns the point on Sn 2 minus south pole **)
+Definition stereo_S_inv_fn : set -> set := fun u =>
+  let s := add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                   (mul_SNo (apply_fun u 1) (apply_fun u 1)) in
+  let d := recip_SNo_pos (add_SNo 1 s) in
+  graph 3 (fun i:set =>
+    if i = 0 then mul_SNo (mul_SNo 2 (apply_fun u 0)) d
+    else if i = 1 then mul_SNo (mul_SNo 2 (apply_fun u 1)) d
+    else add_SNo (mul_SNo 2 d) (minus_SNo 1)).
+
+(** Helper: 1 + s > 0 for all u in euclidean_space 2 **)
+(** Proven Dave **)
+Lemma stereo_S_inv_denom_pos : forall u:set,
+  u :e euclidean_space 2 ->
+  Rlt 0 (add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                             (mul_SNo (apply_fun u 1) (apply_fun u 1)))).
+let u. assume Hu.
+claim H0in2 : 0 :e 2. { exact In_0_2. }
+claim H1in2 : 1 :e 2. { exact In_1_2. }
+claim Hu0R : apply_fun u 0 :e R.
+{ exact (euclidean_space_coord_in_R 2 u 0 Hu H0in2). }
+claim Hu1R : apply_fun u 1 :e R.
+{ exact (euclidean_space_coord_in_R 2 u 1 Hu H1in2). }
+claim Hu0SNo : SNo (apply_fun u 0). { exact (real_SNo (apply_fun u 0) Hu0R). }
+claim Hu1SNo : SNo (apply_fun u 1). { exact (real_SNo (apply_fun u 1) Hu1R). }
+claim Hu0sq_nn : 0 <= mul_SNo (apply_fun u 0) (apply_fun u 0).
+{ exact (SNo_sqr_nonneg (apply_fun u 0) Hu0SNo). }
+claim Hu1sq_nn : 0 <= mul_SNo (apply_fun u 1) (apply_fun u 1).
+{ exact (SNo_sqr_nonneg (apply_fun u 1) Hu1SNo). }
+claim HsR : add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                    (mul_SNo (apply_fun u 1) (apply_fun u 1)) :e R.
+{
+  exact (real_add_SNo
+    (mul_SNo (apply_fun u 0) (apply_fun u 0))
+    (real_mul_SNo (apply_fun u 0) Hu0R (apply_fun u 0) Hu0R)
+    (mul_SNo (apply_fun u 1) (apply_fun u 1))
+    (real_mul_SNo (apply_fun u 1) Hu1R (apply_fun u 1) Hu1R)).
+}
+claim Hsum_nn : 0 <= add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                              (mul_SNo (apply_fun u 1) (apply_fun u 1)).
+{
+  exact (SNoLe_tra 0
+    (mul_SNo (apply_fun u 0) (apply_fun u 0))
+    (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+             (mul_SNo (apply_fun u 1) (apply_fun u 1)))
+    SNo_0
+    (SNo_mul_SNo (apply_fun u 0) (apply_fun u 0) Hu0SNo Hu0SNo)
+    (SNo_add_SNo
+      (mul_SNo (apply_fun u 0) (apply_fun u 0))
+      (mul_SNo (apply_fun u 1) (apply_fun u 1))
+      (SNo_mul_SNo (apply_fun u 0) (apply_fun u 0) Hu0SNo Hu0SNo)
+      (SNo_mul_SNo (apply_fun u 1) (apply_fun u 1) Hu1SNo Hu1SNo))
+    Hu0sq_nn
+    (SNoLe_add_nonneg_right
+      (mul_SNo (apply_fun u 0) (apply_fun u 0))
+      (mul_SNo (apply_fun u 1) (apply_fun u 1))
+      (SNo_mul_SNo (apply_fun u 0) (apply_fun u 0) Hu0SNo Hu0SNo)
+      (SNo_mul_SNo (apply_fun u 1) (apply_fun u 1) Hu1SNo Hu1SNo)
+      Hu1sq_nn)).
+}
+claim H1psR : add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                                  (mul_SNo (apply_fun u 1) (apply_fun u 1))) :e R.
+{
+  exact (real_add_SNo 1 real_1
+    (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+             (mul_SNo (apply_fun u 1) (apply_fun u 1)))
+    HsR).
+}
+claim H1le1ps : 1 <= add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                                         (mul_SNo (apply_fun u 1) (apply_fun u 1))).
+{
+  exact ((add_SNo_0R 1 SNo_1)
+    (fun x _ => x <= add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                                         (mul_SNo (apply_fun u 1) (apply_fun u 1))))
+    (add_SNo_Le2 1 0
+      (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+               (mul_SNo (apply_fun u 1) (apply_fun u 1)))
+      SNo_1 SNo_0
+      (real_SNo (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                         (mul_SNo (apply_fun u 1) (apply_fun u 1))) HsR)
+      Hsum_nn)).
+}
+exact (Rlt_Rle_tra 0 1
+  (add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                       (mul_SNo (apply_fun u 1) (apply_fun u 1))))
+  Rlt_0_1
+  (Rle_of_SNoLe 1
+    (add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                         (mul_SNo (apply_fun u 1) (apply_fun u 1))))
+    real_1 H1psR H1le1ps)).
+Qed.
+
 (** Helper: Sn 2 is locally 2-Euclidean (via stereographic projection) **)
 Lemma Sn_2_locally_m_euclidean :
   locally_m_euclidean (Sn 2) (Sn_topology 2) 2.
