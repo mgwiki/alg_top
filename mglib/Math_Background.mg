@@ -131214,6 +131214,7 @@ Qed.
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
 (** Bounty 132 **)
+(** Proven Bob **)
 Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
   continuous_map S1 S1_topology X Tx h ->
   nulhomotopic S1 S1_topology X Tx h ->
