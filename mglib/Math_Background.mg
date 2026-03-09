@@ -201016,6 +201016,18 @@ apply andI.
         { exact HslicesPD. }
       + exact HslicesUnion.
     * exact HslicesHomeo.
+Qed.
+
+(** Helper: Sn 2 is locally 2-Euclidean (via stereographic projection) **)
+Lemma Sn_2_locally_m_euclidean :
+  locally_m_euclidean (Sn 2) (Sn_topology 2) 2.
+admit.
+Admitted.
+
+(** Helper: projective plane is locally 2-Euclidean, using covering map from Sn 2 **)
+Lemma pp_locally_m_euclidean :
+  locally_m_euclidean projective_plane projective_plane_topology 2.
+admit.
 Admitted.
 
 (** from S60 Thm 60.3 (line 1691 in algtop.tex) **)
@@ -201029,11 +201041,6 @@ Theorem thm60_3_projective_plane_surface_covering :
   compact_space projective_plane projective_plane_topology /\
   covering_map (Sn 2) (Sn_topology 2)
     projective_plane projective_plane_topology projective_plane_map.
-claim Hmanifold :
-  m_manifold projective_plane projective_plane_topology 2.
-{
-  admit.
-}
 claim HcompactS2 :
   compact_space (Sn 2) (Sn_topology 2).
 {
@@ -201043,7 +201050,312 @@ claim Hcover :
   covering_map (Sn 2) (Sn_topology 2)
     projective_plane projective_plane_topology projective_plane_map.
 {
-  admit.
+  exact (projective_plane_map_covering_from_pointwise_evenly_covered pp_evenly_covered_at_x).
+}
+claim HcompactPP :
+  compact_space projective_plane projective_plane_topology.
+{
+  exact (projective_plane_compact_from_s2_compact HcompactS2).
+}
+claim HHausSn2 : Hausdorff_space (Sn 2) (Sn_topology 2).
+{ exact Sn_2_Hausdorff. }
+claim HnormalSn2 : normal_space (Sn 2) (Sn_topology 2).
+{ exact (compact_Hausdorff_normal (Sn 2) (Sn_topology 2) HcompactS2 HHausSn2). }
+claim HHausPP : Hausdorff_space projective_plane projective_plane_topology.
+{
+  prove topology_on projective_plane projective_plane_topology /\
+    forall y1 y2:set, y1 :e projective_plane -> y2 :e projective_plane -> y1 <> y2 ->
+      exists U V:set, U :e projective_plane_topology /\ V :e projective_plane_topology /\
+        y1 :e U /\ y2 :e V /\ U :/\: V = Empty.
+  apply andI.
+  - exact (projective_plane_topology_on).
+  - let y1 y2. assume Hy1 Hy2 Hne.
+    set neg_map := graph (Sn 2) (fun v:set => Rn_negate 3 v).
+    apply (projective_plane_map_surjective y1 Hy1).
+    let x1. assume Hx1Pack.
+    claim Hx1Sn : x1 :e Sn 2.
+    { exact (andEL (x1 :e Sn 2) (apply_fun projective_plane_map x1 = y1) Hx1Pack). }
+    claim Hx1y1 : apply_fun projective_plane_map x1 = y1.
+    { exact (andER (x1 :e Sn 2) (apply_fun projective_plane_map x1 = y1) Hx1Pack). }
+    apply (projective_plane_map_surjective y2 Hy2).
+    let x2. assume Hx2Pack.
+    claim Hx2Sn : x2 :e Sn 2.
+    { exact (andEL (x2 :e Sn 2) (apply_fun projective_plane_map x2 = y2) Hx2Pack). }
+    claim Hx2y2 : apply_fun projective_plane_map x2 = y2.
+    { exact (andER (x2 :e Sn 2) (apply_fun projective_plane_map x2 = y2) Hx2Pack). }
+    claim Hnx1Sn : Rn_negate 3 x1 :e Sn 2. { exact (Rn_negate_3_in_Sn2 x1 Hx1Sn). }
+    claim Hnx2Sn : Rn_negate 3 x2 :e Sn 2. { exact (Rn_negate_3_in_Sn2 x2 Hx2Sn). }
+    set A := UPair x1 (Rn_negate 3 x1).
+    set B := UPair x2 (Rn_negate 3 x2).
+    claim HASn2 : A c= Sn 2.
+    { let a. assume Ha. apply (UPairE a x1 (Rn_negate 3 x1) Ha).
+      - assume Heq. rewrite Heq. exact Hx1Sn.
+      - assume Heq. rewrite Heq. exact Hnx1Sn. }
+    claim HBSn2 : B c= Sn 2.
+    { let b. assume Hb. apply (UPairE b x2 (Rn_negate 3 x2) Hb).
+      - assume Heq. rewrite Heq. exact Hx2Sn.
+      - assume Heq. rewrite Heq. exact Hnx2Sn. }
+    claim HAclosed : closed_in (Sn 2) (Sn_topology 2) A.
+    { exact (finite_sets_closed_in_Hausdorff (Sn 2) (Sn_topology 2) HHausSn2
+        A HASn2 (finite_UPair x1 (Rn_negate 3 x1))). }
+    claim HBclosed : closed_in (Sn 2) (Sn_topology 2) B.
+    { exact (finite_sets_closed_in_Hausdorff (Sn 2) (Sn_topology 2) HHausSn2
+        B HBSn2 (finite_UPair x2 (Rn_negate 3 x2))). }
+    claim HABdisj : A :/\: B = Empty.
+    {
+      apply set_ext.
+      - let z. assume Hz.
+        claim HzA : z :e A. { exact (binintersectE1 A B z Hz). }
+        claim HzB : z :e B. { exact (binintersectE2 A B z Hz). }
+        apply (UPairE z x1 (Rn_negate 3 x1) HzA).
+        + assume Hzx1.
+          apply (UPairE z x2 (Rn_negate 3 x2) HzB).
+          * assume Hzx2.
+            claim Hx1x2 : x1 = x2. { exact (Hzx1 (fun t _ => t = x2) Hzx2). }
+            claim Hppx1x2 : apply_fun projective_plane_map x1 = apply_fun projective_plane_map x2.
+            { exact (Hx1x2 (fun t _ => apply_fun projective_plane_map x1 = apply_fun projective_plane_map t)
+                (eq_refl (apply_fun projective_plane_map x1))). }
+            claim Hy12eq1 : y1 = y2.
+            {
+              claim Hppx1y2_ : apply_fun projective_plane_map x1 = y2.
+              { exact (Hx2y2 (fun t _ => apply_fun projective_plane_map x1 = t) Hppx1x2). }
+              exact (Hx1y1 (fun t _ => t = y2) Hppx1y2_).
+            }
+            exact (FalseE (Hne Hy12eq1) (z :e Empty)).
+          * assume Hznx2.
+            claim Hx1nEqx2 : x1 = Rn_negate 3 x2. { exact (Hzx1 (fun t _ => t = Rn_negate 3 x2) Hznx2). }
+            claim Hppnx2y2_ : apply_fun projective_plane_map (Rn_negate 3 x2) = y2.
+            { exact (Hx2y2 (fun t _ => apply_fun projective_plane_map (Rn_negate 3 x2) = t)
+                (pp_map_neg_eq x2 Hx2Sn)). }
+            claim Hppx1y2 : apply_fun projective_plane_map x1 = y2.
+            { exact (eq_symm x1 (Rn_negate 3 x2) Hx1nEqx2
+                (fun t _ => apply_fun projective_plane_map t = y2) Hppnx2y2_). }
+            claim Hy12eq2 : y1 = y2.
+            { exact (Hx1y1 (fun t _ => t = y2) Hppx1y2). }
+            exact (FalseE (Hne Hy12eq2) (z :e Empty)).
+        + assume Hznx1.
+          apply (UPairE z x2 (Rn_negate 3 x2) HzB).
+          * assume Hzx2.
+            claim Hnx1x2 : Rn_negate 3 x1 = x2. { exact (Hznx1 (fun t _ => t = x2) Hzx2). }
+            claim Hppnx1x2 : apply_fun projective_plane_map (Rn_negate 3 x1) = apply_fun projective_plane_map x2.
+            { exact (Hnx1x2 (fun t _ => apply_fun projective_plane_map (Rn_negate 3 x1) = apply_fun projective_plane_map t)
+                (eq_refl (apply_fun projective_plane_map (Rn_negate 3 x1)))). }
+            claim Hppnx1y2a : apply_fun projective_plane_map (Rn_negate 3 x1) = y2.
+            { exact (Hx2y2 (fun t _ => apply_fun projective_plane_map (Rn_negate 3 x1) = t) Hppnx1x2). }
+            claim Hppx1y2a : apply_fun projective_plane_map x1 = y2.
+            { exact (pp_map_neg_eq x1 Hx1Sn (fun t _ => t = y2) Hppnx1y2a). }
+            claim Hy12eq3 : y1 = y2.
+            { exact (Hx1y1 (fun t _ => t = y2) Hppx1y2a). }
+            exact (FalseE (Hne Hy12eq3) (z :e Empty)).
+          * assume Hznx2.
+            claim Hnx1nx2 : Rn_negate 3 x1 = Rn_negate 3 x2. { exact (Hznx1 (fun t _ => t = Rn_negate 3 x2) Hznx2). }
+            claim Hppnx1nx2 : apply_fun projective_plane_map (Rn_negate 3 x1) = apply_fun projective_plane_map (Rn_negate 3 x2).
+            { exact (Hnx1nx2 (fun t _ => apply_fun projective_plane_map (Rn_negate 3 x1) = apply_fun projective_plane_map t)
+                (eq_refl (apply_fun projective_plane_map (Rn_negate 3 x1)))). }
+            claim Hppnx2y2 : apply_fun projective_plane_map (Rn_negate 3 x2) = y2.
+            { exact (Hx2y2 (fun t _ => apply_fun projective_plane_map (Rn_negate 3 x2) = t)
+                (pp_map_neg_eq x2 Hx2Sn)). }
+            claim Hppnx1y2b : apply_fun projective_plane_map (Rn_negate 3 x1) = y2.
+            { exact (Hppnx2y2 (fun t _ => apply_fun projective_plane_map (Rn_negate 3 x1) = t) Hppnx1nx2). }
+            claim Hppx1y2b : apply_fun projective_plane_map x1 = y2.
+            { exact (pp_map_neg_eq x1 Hx1Sn (fun t _ => t = y2) Hppnx1y2b). }
+            claim Hy12eq4 : y1 = y2.
+            { exact (Hx1y1 (fun t _ => t = y2) Hppx1y2b). }
+            exact (FalseE (Hne Hy12eq4) (z :e Empty)).
+      - let z. assume Hz. exact (FalseE (EmptyE z Hz) (z :e A :/\: B)).
+    }
+    claim HnormSep : exists U V:set, U :e Sn_topology 2 /\ V :e Sn_topology 2 /\
+      A c= U /\ B c= V /\ U :/\: V = Empty.
+    { exact (andER (one_point_sets_closed (Sn 2) (Sn_topology 2))
+        (forall A B:set, closed_in (Sn 2) (Sn_topology 2) A -> closed_in (Sn 2) (Sn_topology 2) B ->
+          A :/\: B = Empty -> exists U V:set, U :e Sn_topology 2 /\ V :e Sn_topology 2 /\
+            A c= U /\ B c= V /\ U :/\: V = Empty)
+        HnormalSn2 A B HAclosed HBclosed HABdisj). }
+    apply HnormSep.
+    let U. assume HUexists.
+    apply HUexists.
+    let V. assume HUVPack.
+    claim HUVpack1 : (U :e Sn_topology 2 /\ V :e Sn_topology 2 /\ A c= U /\ B c= V) /\ U :/\: V = Empty.
+    { exact HUVPack. }
+    claim HUVdisj : U :/\: V = Empty.
+    { exact (andER (U :e Sn_topology 2 /\ V :e Sn_topology 2 /\ A c= U /\ B c= V) (U :/\: V = Empty) HUVpack1). }
+    claim HUVpack2 : U :e Sn_topology 2 /\ V :e Sn_topology 2 /\ A c= U /\ B c= V.
+    { exact (andEL (U :e Sn_topology 2 /\ V :e Sn_topology 2 /\ A c= U /\ B c= V) (U :/\: V = Empty) HUVpack1). }
+    claim HUVpack3 : (U :e Sn_topology 2 /\ V :e Sn_topology 2 /\ A c= U) /\ B c= V.
+    { exact HUVpack2. }
+    claim HBV : B c= V.
+    { exact (andER (U :e Sn_topology 2 /\ V :e Sn_topology 2 /\ A c= U) (B c= V) HUVpack3). }
+    claim HUVpack4 : U :e Sn_topology 2 /\ V :e Sn_topology 2 /\ A c= U.
+    { exact (andEL (U :e Sn_topology 2 /\ V :e Sn_topology 2 /\ A c= U) (B c= V) HUVpack3). }
+    claim HUVpack5 : (U :e Sn_topology 2 /\ V :e Sn_topology 2) /\ A c= U.
+    { exact HUVpack4. }
+    claim HAU : A c= U.
+    { exact (andER (U :e Sn_topology 2 /\ V :e Sn_topology 2) (A c= U) HUVpack5). }
+    claim HUVpack6 : U :e Sn_topology 2 /\ V :e Sn_topology 2.
+    { exact (andEL (U :e Sn_topology 2 /\ V :e Sn_topology 2) (A c= U) HUVpack5). }
+    claim HUopen : U :e Sn_topology 2.
+    { exact (andEL (U :e Sn_topology 2) (V :e Sn_topology 2) HUVpack6). }
+    claim HVopen : V :e Sn_topology 2.
+    { exact (andER (U :e Sn_topology 2) (V :e Sn_topology 2) HUVpack6). }
+    set nU := image_of neg_map U.
+    set nV := image_of neg_map V.
+    claim HnUopen : nU :e Sn_topology 2.
+    { exact (homeomorphism_image_open (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+        neg_map U Rn_negate_3_Sn2_homeomorphism HUopen). }
+    claim HnVopen : nV :e Sn_topology 2.
+    { exact (homeomorphism_image_open (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+        neg_map V Rn_negate_3_Sn2_homeomorphism HVopen). }
+    set Usat := U :/\: nU.
+    set Vsat := V :/\: nV.
+    claim HUsatOpen : Usat :e Sn_topology 2.
+    { exact (topology_binintersect_closed (Sn 2) (Sn_topology 2) U nU
+        (lemma59_3_Sn_topology_on 2) HUopen HnUopen). }
+    claim HVsatOpen : Vsat :e Sn_topology 2.
+    { exact (topology_binintersect_closed (Sn 2) (Sn_topology 2) V nV
+        (lemma59_3_Sn_topology_on 2) HVopen HnVopen). }
+    set ppUsat := image_of projective_plane_map Usat.
+    set ppVsat := image_of projective_plane_map Vsat.
+    claim HppUsatOpen : ppUsat :e projective_plane_topology.
+    { exact (pp_image_open Usat HUsatOpen). }
+    claim HppVsatOpen : ppVsat :e projective_plane_topology.
+    { exact (pp_image_open Vsat HVsatOpen). }
+    claim Hx1Usat : x1 :e Usat.
+    {
+      apply binintersectI.
+      - exact (HAU x1 (UPairI1 x1 (Rn_negate 3 x1))).
+      - claim HnegNx1 : Rn_negate 3 (Rn_negate 3 x1) = x1.
+        { exact (Rn_negate_3_involution x1 (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) x1 Hx1Sn)). }
+        claim HnegMapNx1 : apply_fun neg_map (Rn_negate 3 x1) = Rn_negate 3 (Rn_negate 3 x1).
+        { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) (Rn_negate 3 x1) Hnx1Sn). }
+        claim HnegNx1InU : Rn_negate 3 x1 :e U.
+        { exact (HAU (Rn_negate 3 x1) (UPairI2 x1 (Rn_negate 3 x1))). }
+        claim HnegMapNx1InU : apply_fun neg_map (Rn_negate 3 x1) :e nU.
+        { exact (ReplI U (fun u:set => apply_fun neg_map u) (Rn_negate 3 x1) HnegNx1InU). }
+        claim HnnNx1InU : Rn_negate 3 (Rn_negate 3 x1) :e nU.
+        { exact (HnegMapNx1 (fun t _ => t :e nU) HnegMapNx1InU). }
+        exact (HnegNx1 (fun t _ => t :e nU) HnnNx1InU).
+    }
+    claim Hx2Vsat : x2 :e Vsat.
+    {
+      apply binintersectI.
+      - exact (HBV x2 (UPairI1 x2 (Rn_negate 3 x2))).
+      - claim HnegNx2 : Rn_negate 3 (Rn_negate 3 x2) = x2.
+        { exact (Rn_negate_3_involution x2 (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) x2 Hx2Sn)). }
+        claim HnegMapNx2 : apply_fun neg_map (Rn_negate 3 x2) = Rn_negate 3 (Rn_negate 3 x2).
+        { exact (apply_fun_graph (Sn 2) (fun u:set => Rn_negate 3 u) (Rn_negate 3 x2) Hnx2Sn). }
+        claim HnegNx2InV : Rn_negate 3 x2 :e V.
+        { exact (HBV (Rn_negate 3 x2) (UPairI2 x2 (Rn_negate 3 x2))). }
+        claim HnegMapNx2InV : apply_fun neg_map (Rn_negate 3 x2) :e nV.
+        { exact (ReplI V (fun u:set => apply_fun neg_map u) (Rn_negate 3 x2) HnegNx2InV). }
+        claim HnnNx2InV : Rn_negate 3 (Rn_negate 3 x2) :e nV.
+        { exact (HnegMapNx2 (fun t _ => t :e nV) HnegMapNx2InV). }
+        exact (HnegNx2 (fun t _ => t :e nV) HnnNx2InV).
+    }
+    claim Hy1ppUsat : y1 :e ppUsat.
+    {
+      exact (Hx1y1 (fun t _ => t :e ppUsat)
+        (ReplI Usat (fun u:set => apply_fun projective_plane_map u) x1 Hx1Usat)).
+    }
+    claim Hy2ppVsat : y2 :e ppVsat.
+    {
+      exact (Hx2y2 (fun t _ => t :e ppVsat)
+        (ReplI Vsat (fun u:set => apply_fun projective_plane_map u) x2 Hx2Vsat)).
+    }
+    claim HppSatDisj : ppUsat :/\: ppVsat = Empty.
+    {
+      apply set_ext.
+      - let z. assume Hz.
+        claim HzU : z :e ppUsat. { exact (binintersectE1 ppUsat ppVsat z Hz). }
+        claim HzV : z :e ppVsat. { exact (binintersectE2 ppUsat ppVsat z Hz). }
+        apply (ReplE_impred Usat (fun u:set => apply_fun projective_plane_map u) z HzU).
+        let a. assume HaUsat HzEqa.
+        apply (ReplE_impred Vsat (fun u:set => apply_fun projective_plane_map u) z HzV).
+        let b. assume HbVsat HzEqb.
+        claim HaUSub : a :e U.
+        { exact (binintersectE1 U nU a HaUsat). }
+        claim HbVSub : b :e V.
+        { exact (binintersectE1 V nV b HbVsat). }
+        claim HaSn : a :e Sn 2.
+        { exact (open_in_subset (Sn 2) (Sn_topology 2) U
+            (open_inI (Sn 2) (Sn_topology 2) U (lemma59_3_Sn_topology_on 2) HUopen) a HaUSub). }
+        claim HbSn : b :e Sn 2.
+        { exact (open_in_subset (Sn 2) (Sn_topology 2) V
+            (open_inI (Sn 2) (Sn_topology 2) V (lemma59_3_Sn_topology_on 2) HVopen) b HbVSub). }
+        claim HppEq : apply_fun projective_plane_map a = apply_fun projective_plane_map b.
+        { exact (HzEqa (fun t _ => t = apply_fun projective_plane_map b) HzEqb). }
+        claim HppAeqPair : apply_fun projective_plane_map a = UPair a (Rn_negate 3 a).
+        { exact (projective_plane_map_apply_eq_pair a HaSn). }
+        claim HppBeqPair : apply_fun projective_plane_map b = UPair b (Rn_negate 3 b).
+        { exact (projective_plane_map_apply_eq_pair b HbSn). }
+        claim HUPairEq : UPair a (Rn_negate 3 a) = UPair b (Rn_negate 3 b).
+        { exact (HppAeqPair (fun t _ => t = UPair b (Rn_negate 3 b))
+            (HppEq (fun _ t => t = UPair b (Rn_negate 3 b)) HppBeqPair)). }
+        claim HaInUPairB : a :e UPair b (Rn_negate 3 b).
+        { exact (HUPairEq (fun t _ => a :e t) (UPairI1 a (Rn_negate 3 a))). }
+        apply (UPairE a b (Rn_negate 3 b) HaInUPairB).
+        - assume Hab.
+          claim HaUV : a :e U :/\: V.
+          { exact (binintersectI U V a HaUSub
+              (eq_symm a b Hab (fun t _ => t :e V) HbVSub)). }
+          exact (FalseE (EmptyE a (HUVdisj (fun t _ => a :e t) HaUV)) (z :e Empty)).
+        - assume HaNegB.
+          claim HaNU : a :e nU.
+          { exact (binintersectE2 U nU a HaUsat). }
+          claim HbE3 : b :e euclidean_space 3.
+          { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) b HbSn). }
+          claim HaE3 : a :e euclidean_space 3.
+          { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) a HaSn). }
+          claim HNegAeqB : Rn_negate 3 a = b.
+          {
+            claim HaEqNegB2 : a = Rn_negate 3 b.
+            { exact HaNegB. }
+            claim HNegNegB : Rn_negate 3 (Rn_negate 3 b) = b.
+            { exact (Rn_negate_3_involution b HbE3). }
+            exact (HaEqNegB2 (fun _ t => Rn_negate 3 t = b) HNegNegB).
+          }
+          claim HNegAinU : Rn_negate 3 a :e U.
+          {
+            apply (ReplE_impred U (fun u:set => apply_fun neg_map u) a HaNU).
+            let u. assume HuU HaEqNegU.
+            claim HuSn : u :e Sn 2.
+            { exact (open_in_subset (Sn 2) (Sn_topology 2) U
+                (open_inI (Sn 2) (Sn_topology 2) U (lemma59_3_Sn_topology_on 2) HUopen) u HuU). }
+            claim HuE3 : u :e euclidean_space 3.
+            { exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) u HuSn). }
+            claim HnegMapU2 : apply_fun neg_map u = Rn_negate 3 u.
+            { exact (apply_fun_graph (Sn 2) (fun v:set => Rn_negate 3 v) u HuSn). }
+            claim HaEqNegU2 : a = Rn_negate 3 u.
+            { exact (HnegMapU2 (fun t _ => a = t) HaEqNegU). }
+            claim HNegNegU : Rn_negate 3 (Rn_negate 3 u) = u.
+            { exact (Rn_negate_3_involution u HuE3). }
+            exact (HaEqNegU2 (fun _ t => Rn_negate 3 t :e U) (HNegNegU (fun _ t => t :e U) HuU)).
+          }
+          claim HbInU : b :e U.
+          { exact (HNegAeqB (fun t _ => t :e U) HNegAinU). }
+          claim HbUV : b :e U :/\: V.
+          { exact (binintersectI U V b HbInU HbVSub). }
+          exact (FalseE (EmptyE b (HUVdisj (fun t _ => b :e t) HbUV)) (z :e Empty)).
+      - let z. assume Hz. exact (FalseE (EmptyE z Hz) (z :e ppUsat :/\: ppVsat)).
+    }
+    witness ppUsat. witness ppVsat.
+    apply andI.
+    { apply andI.
+      { apply andI.
+        { apply andI.
+          { exact HppUsatOpen. }
+          { exact HppVsatOpen. } }
+        { exact Hy1ppUsat. } }
+      { exact Hy2ppVsat. } }
+    { exact HppSatDisj. }
+}
+claim Hmanifold :
+  m_manifold projective_plane projective_plane_topology 2.
+{
+  exact (supp_ex_locally_euclidean_2_i_implies_ii
+    projective_plane projective_plane_topology 2
+    pp_locally_m_euclidean
+    HcompactPP
+    HHausPP).
 }
 exact (thm60_3_projective_plane_surface_covering_from_parts
   Hmanifold
@@ -237240,7 +237552,6 @@ Admitted.
 (** Infrastructure: involutive efam(al) cannot be nontrivial in its subgroup in a free product **)
 (** This isolates the remaining "order 2" subcase in efam_not_in_Gfam_nontrivial. **)
 (** Bounty 97 **)
-(** Lock Charlie 1773069896 **)
 Lemma free_product_efam_involutive_contra : forall G multG eG invG J Gfam efam al:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
   al :e J ->
