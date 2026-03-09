@@ -230329,6 +230329,166 @@ exact (andEL
   (HinvLaw a HaG)).
 Qed.
 
+(** Infrastructure: if a^2 = e then a is involutive **)
+(** Proven Charlie **)
+Lemma group_square_e_involutive : forall G mult e inv a:set,
+  group_structure G mult e inv ->
+  a :e G ->
+  apply_fun mult (a, a) = e ->
+  apply_fun inv a = a.
+let G mult e inv a.
+assume Hgrp HaG Hsq.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultF HinvF HeG HassocG HidG HinvLaw.
+claim Hinv_a_G : apply_fun inv a :e G.
+{ exact (HinvF a HaG). }
+claim HidR_inva : apply_fun mult (apply_fun inv a, e) = apply_fun inv a.
+{
+  exact (andER
+    (apply_fun mult (e, apply_fun inv a) = apply_fun inv a)
+    (apply_fun mult (apply_fun inv a, e) = apply_fun inv a)
+    (HidG (apply_fun inv a) Hinv_a_G)).
+}
+claim Hassoc_step :
+  apply_fun mult (apply_fun inv a, apply_fun mult (a, a)) =
+    apply_fun mult (apply_fun mult (apply_fun inv a, a), a).
+{
+  exact (eq_symm
+    (apply_fun mult (apply_fun mult (apply_fun inv a, a), a))
+    (apply_fun mult (apply_fun inv a, apply_fun mult (a, a)))
+    (HassocG (apply_fun inv a) a a Hinv_a_G HaG HaG)).
+}
+claim Hlinv : apply_fun mult (apply_fun inv a, a) = e.
+{
+  exact (andER
+    (apply_fun mult (a, apply_fun inv a) = e)
+    (apply_fun mult (apply_fun inv a, a) = e)
+    (HinvLaw a HaG)).
+}
+claim HidL_a : apply_fun mult (e, a) = a.
+{
+  exact (andEL
+    (apply_fun mult (e, a) = a)
+    (apply_fun mult (a, e) = a)
+    (HidG a HaG)).
+}
+claim Hmul1 :
+  apply_fun mult (apply_fun inv a, e) = apply_fun mult (apply_fun inv a, apply_fun mult (a, a)).
+{
+  rewrite <- Hsq.
+  reflexivity.
+}
+claim Hinv_eq :
+  apply_fun inv a = apply_fun mult (apply_fun inv a, apply_fun mult (a, a)).
+{
+  exact (eq_i_tra
+    (apply_fun inv a)
+    (apply_fun mult (apply_fun inv a, e))
+    (apply_fun mult (apply_fun inv a, apply_fun mult (a, a)))
+    (eq_symm (apply_fun mult (apply_fun inv a, e)) (apply_fun inv a) HidR_inva)
+    Hmul1).
+}
+rewrite Hinv_eq.
+rewrite Hassoc_step.
+rewrite Hlinv.
+rewrite HidL_a.
+reflexivity.
+Qed.
+
+(** Infrastructure: if a^2 = a then a = e **)
+(** Proven Charlie **)
+Lemma group_square_eq_self_implies_e : forall G mult e inv a:set,
+  group_structure G mult e inv ->
+  a :e G ->
+  apply_fun mult (a, a) = a ->
+  a = e.
+let G mult e inv a.
+assume Hgrp HaG Hsq.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume _ HinvF HeG HassocG HidG HinvLaw.
+claim Hinv_a_G : apply_fun inv a :e G.
+{ exact (HinvF a HaG). }
+claim Hlinv : apply_fun mult (apply_fun inv a, a) = e.
+{
+  exact (andER
+    (apply_fun mult (a, apply_fun inv a) = e)
+    (apply_fun mult (apply_fun inv a, a) = e)
+    (HinvLaw a HaG)).
+}
+claim Hassoc_step :
+  apply_fun mult (apply_fun inv a, apply_fun mult (a, a)) =
+    apply_fun mult (apply_fun mult (apply_fun inv a, a), a).
+{
+  exact (eq_symm
+    (apply_fun mult (apply_fun mult (apply_fun inv a, a), a))
+    (apply_fun mult (apply_fun inv a, apply_fun mult (a, a)))
+    (HassocG (apply_fun inv a) a a Hinv_a_G HaG HaG)).
+}
+claim HidL_a : apply_fun mult (e, a) = a.
+{
+  exact (andEL
+    (apply_fun mult (e, a) = a)
+    (apply_fun mult (a, e) = a)
+    (HidG a HaG)).
+}
+claim Hmul_congr :
+  apply_fun mult (apply_fun inv a, apply_fun mult (a, a)) =
+    apply_fun mult (apply_fun inv a, a).
+{
+  rewrite Hsq.
+  reflexivity.
+}
+claim Hstep :
+  apply_fun mult (apply_fun mult (apply_fun inv a, a), a) = e.
+{
+  rewrite <- Hassoc_step.
+  exact (eq_i_tra
+    (apply_fun mult (apply_fun inv a, apply_fun mult (a, a)))
+    (apply_fun mult (apply_fun inv a, a))
+    e
+    Hmul_congr
+    Hlinv).
+}
+claim Hstep2 : apply_fun mult (e, a) = e.
+{
+  claim Hmul_e : apply_fun mult (apply_fun mult (apply_fun inv a, a), a) = apply_fun mult (e, a).
+  { rewrite Hlinv. reflexivity. }
+  exact (eq_i_tra
+    (apply_fun mult (e, a))
+    (apply_fun mult (apply_fun mult (apply_fun inv a, a), a))
+    e
+    (eq_symm
+      (apply_fun mult (apply_fun mult (apply_fun inv a, a), a))
+      (apply_fun mult (e, a))
+      Hmul_e)
+    Hstep).
+}
+exact (eq_i_tra
+  a
+  (apply_fun mult (e, a))
+  e
+  (eq_symm (apply_fun mult (e, a)) a HidL_a)
+  Hstep2).
+Qed.
+
 (** Infrastructure: solve for the suffix product via left cancellation **)
 (** Proven Bob **)
 Lemma word_product_suffix_by_cancel : forall G mult e inv m xs:set,
