@@ -1,7 +1,7 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 679 **)
-(** Balance Dave 2020 **)
+(** Balance Dave 1983 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -198242,7 +198242,8 @@ Qed.
 (** LATEX VERSION: P^2 is a compact surface, and the quotient map p: S^2 -> P^2 **)
 (** is a covering map. **)
 (** EFFORT: 25 lines textbook, difficulty 6/10, USD 300 **)
-(** Bounty 363 **)
+(** Bounty 400 **)
+(** Lock Dave 1773100611 **)
 Theorem thm60_3_projective_plane_surface_covering :
   m_manifold projective_plane projective_plane_topology 2 /\
   compact_space projective_plane projective_plane_topology /\
@@ -237111,7 +237112,7 @@ apply Hnw_inv.
                 { rewrite <- ordsucc_0_eq_1_nat. exact Hnw2_eq_1. }
                 claim Hsnw_eq_0 : ordsucc nw = 0.
                 { exact (ordsucc_inj (ordsucc nw) 0 Hss_eq_s0). }
-	                exact (neq_ordsucc_0 nw Hsnw_eq_0). 
+	                exact (neq_ordsucc_0 nw Hsnw_eq_0).
 	Admitted.
 
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
