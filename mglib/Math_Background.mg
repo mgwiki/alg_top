@@ -144582,6 +144582,25 @@ Definition eigenvalue_of_matrix : set -> set -> set -> prop := fun n A lam =>
       finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) n =
       mul_SNo lam (apply_fun v i)).
 
+(** Infrastructure: 2-simplex as subset of function_space 3 R **)
+Definition simplex3_fs : set :=
+  {v :e function_space 3 R |
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun v i) 3 = 1}.
+
+(** Fixed point for the normalized positive-matrix map on the 2-simplex **)
+Lemma simplex3_fixed_point_normalized_map : forall A:set,
+  function_on A (setprod 3 3) R ->
+  (forall i j:set, i :e 3 -> j :e 3 -> Rlt 0 (apply_fun A (i, j))) ->
+  exists v:set, v :e simplex3_fs /\
+    (forall i:set, i :e 3 ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult 3 A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3)).
+admit.
+Admitted. (** TODO: fixed point via Brouwer on triangle/homeomorphism to B2. **)
+
 (** from S55 starred Cor 55.7 (line 994 in algtop.tex) **)
 (** LATEX VERSION: Let A be a 3 by 3 matrix of positive real numbers. Then A has a positive real eigenvalue. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
@@ -144594,9 +144613,7 @@ let A.
 assume HAfun HApos.
 (** Strategy: use a fixed point of the normalized positive-matrix map on the 2-simplex. **)
 (** The analytic/topological step (fixed point on the simplex) is postponed. **)
-set simplex3 := {v :e function_space 3 R |
-  (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
-  finite_real_sum (fun i:set => apply_fun v i) 3 = 1}.
+set simplex3 := simplex3_fs.
 claim Hfixed_implies_eigen :
   forall v:set, v :e simplex3 ->
     (forall i:set, i :e 3 ->
@@ -144878,10 +144895,48 @@ claim Hfixed_implies_eigen :
       HlamR
       Hvexists).
 }
-(** TODO: produce a fixed point for the normalized map on simplex3.
-    This should follow from Brouwer fixed-point on a triangle (homeomorphic to B2). **)
-admit.
-Admitted.
+claim Hfix :
+  exists v:set, v :e simplex3 /\
+    (forall i:set, i :e 3 ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult 3 A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3)).
+{
+  exact (simplex3_fixed_point_normalized_map A HAfun HApos).
+}
+apply Hfix.
+let v.
+assume HvPack.
+claim HvS : v :e simplex3.
+{
+  exact (andEL
+    (v :e simplex3)
+    (forall i:set, i :e 3 ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult 3 A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3))
+    HvPack).
+}
+claim Hfixed :
+  forall i:set, i :e 3 ->
+    apply_fun v i =
+      div_SNo
+        (apply_fun (matrix_vector_mult 3 A v) i)
+        (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3).
+{
+  exact (andER
+    (v :e simplex3)
+    (forall i:set, i :e 3 ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult 3 A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3))
+    HvPack).
+}
+exact (Hfixed_implies_eigen v HvS Hfixed).
+Admitted. (** TODO: depends on simplex3_fixed_point_normalized_map. **)
 
 (** Infrastructure: Euclidean distance in R^2 **)
 Definition R2_distance : set -> set -> set := fun p q =>
