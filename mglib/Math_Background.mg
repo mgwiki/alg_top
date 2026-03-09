@@ -144960,6 +144960,38 @@ Definition simplex3_set : set :=
     (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
     finite_real_sum (fun i:set => apply_fun v i) 3 = 1}.
 
+(** Infrastructure: simplex3_set elements are also in simplex3_fs **)
+(** Proven Bob **)
+Lemma simplex3_set_in_simplex3_fs :
+  forall v:set, v :e simplex3_set -> v :e simplex3_fs.
+let v.
+assume HvS.
+apply (SepI
+  (function_space 3 R)
+  (fun w:set =>
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+  v).
+- claim HvTotal : v :e total_function_space 3 R.
+  {
+    exact (SepE1
+      (total_function_space 3 R)
+      (fun w:set =>
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+        finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+      v
+      HvS).
+  }
+  exact (total_function_space_sub_function_space 3 R v HvTotal).
+- exact (SepE2
+    (total_function_space 3 R)
+    (fun w:set =>
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+    v
+    HvS).
+Qed.
+
 (** Infrastructure: map from triangular region to simplex3 **)
 Definition triangular_region_to_simplex3 : set :=
   graph triangular_region (fun p:set =>
