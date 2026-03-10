@@ -394455,6 +394455,25 @@ exact (arc_has_end_points_of_arc
     HASel)).
 Qed.
 
+(** helper for S84.4: deleting a backtracking pair from a closed edge path yields a shorter closed edge path **)
+Theorem edge_path_delete_backtrack_shorter_closed :
+  forall X Tx Arcs m path_seqm x0 i k2:set,
+  edge_path X Tx Arcs m path_seqm x0 ->
+  m = ordsucc (ordsucc (i + k2)) ->
+  nat_p i ->
+  nat_p k2 ->
+  (exists j0:set, j0 :e m /\ ordsucc j0 /:e m /\ (apply_fun path_seqm j0) 0 1 = x0) ->
+  (apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
+  (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1 /\
+  (apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0 ->
+  exists m' path_seq':set,
+    m' :e omega /\ m' <> 0 /\
+    edge_path X Tx Arcs m' path_seq' x0 /\
+    (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\ (apply_fun path_seq' j0) 0 1 = x0) /\
+    m' :e m.
+admit.
+Admitted.
+
 (** helper for S84.4 backward direction:
     a selected arc of T' that has both endpoints in T must be contained in T. **)
 (** Admin-approved-refactored per noticeboard proposal 1772451836 **)
@@ -395568,89 +395587,132 @@ claim Hcycle :
             Hfinj
             HoriA_rev)).
   }
-  (** Remaining work: reduce the closed edge path to a closed reduced edge path. **)
-  claim HclosedRed :
-    exists n path_seq x0:set,
-      n :e omega /\ n <> 0 /\
-      reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq x0 /\
-      (exists j:set, j :e n /\ ordsucc j /:e n /\
-        (apply_fun path_seq j) 0 1 = x0).
+  (** Strategy: get minimum-length path from p to q INSIDE T (p <> q ensures non-closed
+      so the shortening step always gives m' >= 1).
+      Then lift to T', append arc A reversed, get closed reduced path in T'. **)
+  claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
   {
-    apply HclosedEdge.
+    exact (tree_in_graph_general_linear_graph
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree).
+  }
+  claim HconnT : connected_space T (subspace_topology X Tx T).
+  {
+    exact (tree_in_graph_connected
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree).
+  }
+  claim HedgepqT :
+    exists n path_seq:set,
+      edge_path T (subspace_topology X Tx T) ArcsT n path_seq p /\
+      n <> 0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = q).
+  {
+    exact ((iffEL
+      (connected_space T (subspace_topology X Tx T))
+      (forall x y:set, x :e graph_vertices T (subspace_topology X Tx T) ArcsT ->
+        y :e graph_vertices T (subspace_topology X Tx T) ArcsT ->
+        exists n path_seq:set, edge_path T (subspace_topology X Tx T) ArcsT n path_seq x /\
+          n <> 0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = y))
+      (lemma84_1_connected_iff_edge_paths
+        T
+        (subspace_topology X Tx T)
+        ArcsT
+        HglgT)
+      HconnT)
+      p
+      q
+      HpVT
+      HqVT).
+  }
+  (** Minimize path from p to q in T. Since p <> q, all such paths have length >= 1,
+      so the Hshorten shortening step always yields a non-empty shorter path. **)
+  claim HminpqT :
+    exists n0 path_seq0:set,
+      n0 :e omega /\ n0 <> 0 /\
+      edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p /\
+      (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
+        (apply_fun path_seq0 j0) 0 1 = q) /\
+      forall beta path_seq':set, beta :e omega -> beta <> 0 ->
+        edge_path T (subspace_topology X Tx T) ArcsT beta path_seq' p ->
+        (exists j0:set, j0 :e beta /\ ordsucc j0 /:e beta /\
+          (apply_fun path_seq' j0) 0 1 = q) ->
+        ~(beta :e n0).
+  {
+    apply HedgepqT.
     let n.
     assume Hnpack.
     apply Hnpack.
     let path_seq.
     assume Hpathpack.
     apply (and3E
-      (edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq p)
+      (edge_path T (subspace_topology X Tx T) ArcsT n path_seq p)
       (n <> 0)
       (exists j:set, j :e n /\ ordsucc j /:e n /\
-        (apply_fun path_seq j) 0 1 = p)
+        (apply_fun path_seq j) 0 1 = q)
       Hpathpack).
     assume Hep Hn0 Hjpack.
     claim HnOm : n :e omega.
     {
       exact (edge_path_n_in_omega
-        T'
-        (subspace_topology X Tx T')
-        ArcsT'
+        T
+        (subspace_topology X Tx T)
+        ArcsT
         n
         path_seq
         p
         Hep).
     }
-    claim HPn :
-      n :e omega /\ n <> 0 /\
-      exists path_seq0:set,
-        edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq0 p /\
-        (exists j0:set, j0 :e n /\ ordsucc j0 /:e n /\
-          (apply_fun path_seq0 j0) 0 1 = p).
-    {
-      apply and3I.
-      - exact HnOm.
-      - exact Hn0.
-      - witness path_seq.
-        apply andI.
-        + exact Hep.
-        + exact Hjpack.
-    }
     claim HexP :
       exists alpha, ordinal alpha /\
         (alpha :e omega /\ alpha <> 0 /\
           exists path_seq0:set,
-            edge_path T' (subspace_topology X Tx T') ArcsT' alpha path_seq0 p /\
+            edge_path T (subspace_topology X Tx T) ArcsT alpha path_seq0 p /\
             (exists j0:set, j0 :e alpha /\ ordsucc j0 /:e alpha /\
-              (apply_fun path_seq0 j0) 0 1 = p)).
+              (apply_fun path_seq0 j0) 0 1 = q)).
     {
       witness n.
       apply andI.
-      - exact (nat_p_ordinal
-          n
-          (omega_nat_p
-            n
-            HnOm)).
-      - exact HPn.
+      - exact (nat_p_ordinal n (omega_nat_p n HnOm)).
+      - apply and3I.
+        + exact HnOm.
+        + exact Hn0.
+        + witness path_seq. apply andI.
+          * exact Hep.
+          * exact Hjpack.
     }
     claim Hmin :
       exists alpha, ordinal alpha /\
         (alpha :e omega /\ alpha <> 0 /\
           exists path_seq0:set,
-            edge_path T' (subspace_topology X Tx T') ArcsT' alpha path_seq0 p /\
+            edge_path T (subspace_topology X Tx T) ArcsT alpha path_seq0 p /\
             (exists j0:set, j0 :e alpha /\ ordsucc j0 /:e alpha /\
-              (apply_fun path_seq0 j0) 0 1 = p)) /\
+              (apply_fun path_seq0 j0) 0 1 = q)) /\
         forall beta :e alpha,
           ~(beta :e omega /\ beta <> 0 /\
             exists path_seq0:set,
-              edge_path T' (subspace_topology X Tx T') ArcsT' beta path_seq0 p /\
+              edge_path T (subspace_topology X Tx T) ArcsT beta path_seq0 p /\
               (exists j0:set, j0 :e beta /\ ordsucc j0 /:e beta /\
-                (apply_fun path_seq0 j0) 0 1 = p)).
-    { exact (least_ordinal_ex (fun m:set =>
+                (apply_fun path_seq0 j0) 0 1 = q)).
+    {
+      exact (least_ordinal_ex (fun m:set =>
         m :e omega /\ m <> 0 /\
         exists path_seq0:set,
-          edge_path T' (subspace_topology X Tx T') ArcsT' m path_seq0 p /\
+          edge_path T (subspace_topology X Tx T) ArcsT m path_seq0 p /\
           (exists j0:set, j0 :e m /\ ordsucc j0 /:e m /\
-            (apply_fun path_seq0 j0) 0 1 = p)) HexP). }
+            (apply_fun path_seq0 j0) 0 1 = q)) HexP).
+    }
     apply Hmin.
     let n0.
     assume Hminpack.
@@ -395658,15 +395720,15 @@ claim Hcycle :
       (ordinal n0)
       (n0 :e omega /\ n0 <> 0 /\
         exists path_seq0:set,
-          edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p /\
+          edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p /\
           (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
-            (apply_fun path_seq0 j0) 0 1 = p))
+            (apply_fun path_seq0 j0) 0 1 = q))
       (forall beta :e n0,
         ~(beta :e omega /\ beta <> 0 /\
           exists path_seq0:set,
-            edge_path T' (subspace_topology X Tx T') ArcsT' beta path_seq0 p /\
+            edge_path T (subspace_topology X Tx T) ArcsT beta path_seq0 p /\
             (exists j0:set, j0 :e beta /\ ordsucc j0 /:e beta /\
-              (apply_fun path_seq0 j0) 0 1 = p)))
+              (apply_fun path_seq0 j0) 0 1 = q)))
       Hminpack).
     assume Hord0 HP0 Hmin0.
     claim Hn0Omega : n0 :e omega.
@@ -395677,9 +395739,9 @@ claim Hcycle :
         (andEL
           (n0 :e omega /\ n0 <> 0)
           (exists path_seq0:set,
-            edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p /\
+            edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p /\
             (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
-              (apply_fun path_seq0 j0) 0 1 = p))
+              (apply_fun path_seq0 j0) 0 1 = q))
           HP0)).
     }
     claim Hn0ne0 : n0 <> 0.
@@ -395690,66 +395752,113 @@ claim Hcycle :
         (andEL
           (n0 :e omega /\ n0 <> 0)
           (exists path_seq0:set,
-            edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p /\
+            edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p /\
             (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
-              (apply_fun path_seq0 j0) 0 1 = p))
+              (apply_fun path_seq0 j0) 0 1 = q))
           HP0)).
     }
     claim Hexists0 :
       exists path_seq0:set,
-        edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p /\
+        edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p /\
         (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
-          (apply_fun path_seq0 j0) 0 1 = p).
+          (apply_fun path_seq0 j0) 0 1 = q).
     {
       exact (andER
         (n0 :e omega /\ n0 <> 0)
         (exists path_seq0:set,
-          edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p /\
+          edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p /\
           (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
-            (apply_fun path_seq0 j0) 0 1 = p))
+            (apply_fun path_seq0 j0) 0 1 = q))
         HP0).
     }
     apply Hexists0.
     let path_seq0.
     assume Hpath0pack.
     claim Hep0 :
-      edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p.
+      edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p.
     {
       exact (andEL
-        (edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p)
+        (edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p)
         (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
-          (apply_fun path_seq0 j0) 0 1 = p)
+          (apply_fun path_seq0 j0) 0 1 = q)
         Hpath0pack).
     }
     claim Hj0pack :
       exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
-        (apply_fun path_seq0 j0) 0 1 = p.
+        (apply_fun path_seq0 j0) 0 1 = q.
     {
       exact (andER
-        (edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p)
+        (edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p)
         (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
-          (apply_fun path_seq0 j0) 0 1 = p)
+          (apply_fun path_seq0 j0) 0 1 = q)
         Hpath0pack).
     }
-    claim Hshorten :
+    witness n0. witness path_seq0.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * apply andI.
+          { exact Hn0Omega. }
+          { exact Hn0ne0. }
+        * exact Hep0.
+      + exact Hj0pack.
+    - let beta path_seq'.
+      assume HbOm HbNe0 Hep' Hj0' HbIn.
+      apply (Hmin0 beta HbIn).
+      apply and3I.
+      + exact HbOm.
+      + exact HbNe0.
+      + witness path_seq'. apply andI.
+        * exact Hep'.
+        * exact Hj0'.
+  }
+  claim HclosedRed :
+    exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0).
+  {
+    apply HminpqT.
+    let n0.
+    assume Hn0pack.
+    apply Hn0pack.
+    let path_seq0.
+    assume Hmindata.
+    apply (and5E
+      (n0 :e omega)
+      (n0 <> 0)
+      (edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p)
+      (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
+        (apply_fun path_seq0 j0) 0 1 = q)
+      (forall beta path_seq':set, beta :e omega -> beta <> 0 ->
+        edge_path T (subspace_topology X Tx T) ArcsT beta path_seq' p ->
+        (exists j0:set, j0 :e beta /\ ordsucc j0 /:e beta /\
+          (apply_fun path_seq' j0) 0 1 = q) ->
+        ~(beta :e n0))
+      Hmindata).
+    assume Hn0Om Hn0ne0 Hep0 Hj0pack Hminprop.
+    (** Hshorten_nonclosed: for non-closed paths from p to q (p <> q),
+        backtrack at any position gives a shorter non-empty path. This holds because:
+        if m=2 and backtrack at position 0, then final vertex of edge 1 = ini(0) = p,
+        but final vertex of path = q, so p=q, contradiction. **)
+    claim Hshorten_nonclosed :
       forall m path_seqm:set,
-        edge_path T' (subspace_topology X Tx T') ArcsT' m path_seqm p ->
+        edge_path T (subspace_topology X Tx T) ArcsT m path_seqm p ->
         m <> 0 ->
         (exists j0:set, j0 :e m /\ ordsucc j0 /:e m /\
-          (apply_fun path_seqm j0) 0 1 = p) ->
+          (apply_fun path_seqm j0) 0 1 = q) ->
         (exists i:set, i :e m /\ ordsucc i :e m /\
           ((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
            (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1 /\
            (apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0)) ->
         exists m' path_seq':set,
-          (m' :e omega /\ m' <> 0 /\
-            exists path_seq0:set,
-              edge_path T' (subspace_topology X Tx T') ArcsT' m' path_seq0 p /\
-              (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\
-                (apply_fun path_seq0 j0) 0 1 = p)) /\
+          m' :e omega /\ m' <> 0 /\
+          edge_path T (subspace_topology X Tx T) ArcsT m' path_seq' p /\
+          (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\
+            (apply_fun path_seq' j0) 0 1 = q) /\
           m' :e m.
-    { (** TODO: build shorter closed edge path by deleting a backtracking pair. **)
-      admit. }
+    { admit. }
     claim Hnoback0 :
       forall i:set, i :e n0 -> ordsucc i :e n0 ->
         ~((apply_fun path_seq0 i) 1 = (apply_fun path_seq0 (ordsucc i)) 1 /\
@@ -395764,65 +395873,43 @@ claim Hcycle :
            (apply_fun path_seq0 i0) 0 0 = (apply_fun path_seq0 (ordsucc i0)) 0 1 /\
            (apply_fun path_seq0 i0) 0 1 = (apply_fun path_seq0 (ordsucc i0)) 0 0).
       {
-        witness i.
-        apply and3I.
+        witness i. apply and3I.
         - exact Hi.
         - exact His.
         - exact Hback.
       }
       claim Hshort :
         exists m' path_seq':set,
-          (m' :e omega /\ m' <> 0 /\
-            exists path_seq0:set,
-              edge_path T' (subspace_topology X Tx T') ArcsT' m' path_seq0 p /\
-              (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\
-                (apply_fun path_seq0 j0) 0 1 = p)) /\
+          m' :e omega /\ m' <> 0 /\
+          edge_path T (subspace_topology X Tx T) ArcsT m' path_seq' p /\
+          (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\
+            (apply_fun path_seq' j0) 0 1 = q) /\
           m' :e n0.
       {
-        exact (Hshorten
-          n0
-          path_seq0
-          Hep0
-          Hn0ne0
-          Hj0pack
-          Hbackpack).
+        exact (Hshorten_nonclosed n0 path_seq0 Hep0 Hn0ne0 Hj0pack Hbackpack).
       }
       apply Hshort.
       let m'.
       assume Hmpack.
       apply Hmpack.
       let path_seq'.
-      assume Hmpack2.
-      claim HPm :
-        m' :e omega /\ m' <> 0 /\
-        exists path_seq0:set,
-          edge_path T' (subspace_topology X Tx T') ArcsT' m' path_seq0 p /\
-          (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\
-            (apply_fun path_seq0 j0) 0 1 = p).
-      { exact (andEL
-          (m' :e omega /\ m' <> 0 /\
-            exists path_seq0:set,
-              edge_path T' (subspace_topology X Tx T') ArcsT' m' path_seq0 p /\
-              (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\
-                (apply_fun path_seq0 j0) 0 1 = p))
-          (m' :e n0)
-          Hmpack2). }
-      claim HmIn : m' :e n0.
-      { exact (andER
-          (m' :e omega /\ m' <> 0 /\
-            exists path_seq0:set,
-              edge_path T' (subspace_topology X Tx T') ArcsT' m' path_seq0 p /\
-              (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\
-                (apply_fun path_seq0 j0) 0 1 = p))
-          (m' :e n0)
-          Hmpack2). }
-      exact (Hmin0 m' HmIn HPm).
+      assume Hmdata.
+      apply (and5E
+        (m' :e omega)
+        (m' <> 0)
+        (edge_path T (subspace_topology X Tx T) ArcsT m' path_seq' p)
+        (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\
+          (apply_fun path_seq' j0) 0 1 = q)
+        (m' :e n0)
+        Hmdata).
+      assume HmOm Hmne0 Hep' Hj0' HmIn.
+      exact (Hminprop m' path_seq' HmOm Hmne0 Hep' Hj0' HmIn).
     }
     claim Hred0 :
-      reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p.
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p.
     {
       exact (andI
-        (edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p)
+        (edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p)
         (forall i:set, i :e n0 -> ordsucc i :e n0 ->
           ~((apply_fun path_seq0 i) 1 = (apply_fun path_seq0 (ordsucc i)) 1 /\
             (apply_fun path_seq0 i) 0 0 = (apply_fun path_seq0 (ordsucc i)) 0 1 /\
@@ -395830,33 +395917,135 @@ claim Hcycle :
         Hep0
         Hnoback0).
     }
-    witness n0.
-    witness path_seq0.
+    (** Find j0 (the last index in n0) from the q-endpoint data. **)
+    apply Hj0pack.
+    let j0.
+    assume Hj0data.
+    claim Hj0pair : j0 :e n0 /\ ordsucc j0 /:e n0.
+    {
+      exact (andEL
+        (j0 :e n0 /\ ordsucc j0 /:e n0)
+        ((apply_fun path_seq0 j0) 0 1 = q)
+        Hj0data).
+    }
+    claim Hj0In : j0 :e n0.
+    { exact (andEL (j0 :e n0) (ordsucc j0 /:e n0) Hj0pair). }
+    claim Hsj0Not : ordsucc j0 /:e n0.
+    { exact (andER (j0 :e n0) (ordsucc j0 /:e n0) Hj0pair). }
+    claim Hfinj0 : (apply_fun path_seq0 j0) 0 1 = q.
+    {
+      exact (andER
+        (j0 :e n0 /\ ordsucc j0 /:e n0)
+        ((apply_fun path_seq0 j0) 0 1 = q)
+        Hj0data).
+    }
+    (** Lift the minimum path in T to T'.
+        Since T c= T', ArcsT c= ArcsT', and the subspace topology on each arc E c= T
+        is the same whether computed via T or T' (ex16_1_subspace_transitive), the
+        same path_seq0 is an edge_path in T' with ArcsT'. **)
+    claim HArcsT_sub : ArcsT c= ArcsT'.
+    { admit. }
+    claim Hlift_red0 :
+      reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p.
+    { admit. }
+    (** The arc A is not in ArcsT because A not subset of T, but all arcs in ArcsT are subset of T. **)
+    claim HAnotArcsT : A /:e ArcsT.
+    {
+      assume HAArcsT0.
+      apply Hnsub.
+      exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs A Htree HAArcsT0).
+    }
+    (** The last arc of path_seq0 is in ArcsT, hence different from A. **)
+    claim HlastArcInArcsT : (apply_fun path_seq0 j0) 1 :e ArcsT.
+    {
+      exact (reduced_edge_path_index_arc_in_arcs_at_1
+        T
+        (subspace_topology X Tx T)
+        ArcsT
+        n0
+        path_seq0
+        p
+        j0
+        Hred0
+        Hj0In).
+    }
+    claim HlastArcNeA : (apply_fun path_seq0 j0) 1 <> A.
+    {
+      assume Heq.
+      apply HAnotArcsT.
+      rewrite <- Heq.
+      exact HlastArcInArcsT.
+    }
+    claim HAneLastArc : A <> (apply_fun path_seq0 j0) 1.
+    { exact (neq_i_sym ((apply_fun path_seq0 j0) 1) A HlastArcNeA). }
+    (** Build closed reduced path: path_seq0 from p to q then arc A reversed from q to p. **)
+    set path_seq_closed :=
+      (graph n0 (fun i:set => apply_fun path_seq0 i)) :\/:
+      (graph {n0} (fun _:set => ((q, p), A))).
+    claim HredClosed :
+      reduced_edge_path T' (subspace_topology X Tx T') ArcsT' (ordsucc n0) path_seq_closed p.
+    {
+      exact (reduced_edge_path_append_oriented_edge_distinct
+        T'
+        (subspace_topology X Tx T')
+        ArcsT'
+        n0
+        path_seq0
+        p
+        j0
+        A
+        q
+        p
+        HglgT'
+        Hlift_red0
+        Hj0In
+        Hsj0Not
+        Hfinj0
+        HoriA_rev
+        HAneLastArc).
+    }
+    claim Hn0Om : n0 :e omega. { exact (edge_path_n_in_omega T (subspace_topology X Tx T) ArcsT n0 path_seq0 p Hep0). }
+    witness (ordsucc n0).
+    witness path_seq_closed.
     witness p.
-    claim Hn0pair : n0 :e omega /\ n0 <> 0.
-    {
-      exact (andI
-        (n0 :e omega)
-        (n0 <> 0)
-        Hn0Omega
-        Hn0ne0).
-    }
-    claim Hpairred :
-      (n0 :e omega /\ n0 <> 0) /\ reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p.
-    {
-      exact (andI
-        (n0 :e omega /\ n0 <> 0)
-        (reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p)
-        Hn0pair
-        Hred0).
-    }
-    exact (andI
-      ((n0 :e omega /\ n0 <> 0) /\
-        reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p)
-      (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
-        (apply_fun path_seq0 j0) 0 1 = p)
-      Hpairred
-      Hj0pack).
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * exact (omega_ordsucc n0 Hn0Om).
+        * exact (neq_ordsucc_0 n0).
+      + exact HredClosed.
+    - witness n0.
+      apply andI.
+      + apply andI.
+        * exact (ordsuccI2 n0).
+        * exact (In_irref (ordsucc n0)).
+      + exact (andER
+          ((apply_fun path_seq_closed n0) 0 0 = q)
+          ((apply_fun path_seq_closed n0) 0 1 = p)
+          (edge_path_append_oriented_edge_endpoints_eq_pq
+            T'
+            (subspace_topology X Tx T')
+            ArcsT'
+            n0
+            path_seq0
+            p
+            j0
+            A
+            q
+            p
+            HglgT'
+            (reduced_edge_path_edge_path
+              T'
+              (subspace_topology X Tx T')
+              ArcsT'
+              n0
+              path_seq0
+              p
+              Hlift_red0)
+            Hj0In
+            Hsj0Not
+            Hfinj0
+            HoriA_rev)).
   }
   exact HclosedRed.
 }
