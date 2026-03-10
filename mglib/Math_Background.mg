@@ -1,6 +1,6 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 388 **)
+(** Balance Charlie 376 **)
 (** Balance Dave 2352 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -384242,10 +384242,11 @@ Qed.
 
 	(** helper for S84.3: nontrivial loop class in a finite union of arcs yields a closed reduced edge path. **)
 	(** This is the remaining missing bridge needed for thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths. **)
-	(** NOTE: The natural version of this bridge assumes the basepoint is a graph vertex. **)
-	(** Sub-bounty for the S84.3 core bridge (vertex basepoint). **)
-	(** Bounty 120 **)
-	Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs_at_vertex :
+		(** NOTE: The natural version of this bridge assumes the basepoint is a graph vertex. **)
+		(** Sub-bounty for the S84.3 core bridge (vertex basepoint). **)
+		(** Bounty 132 **)
+		(** Lock Charlie 1773209897 **)
+		Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs_at_vertex :
 	  forall T Tx ArcsT Arcs' x0 f:set,
 	  general_linear_graph T Tx ArcsT ->
 	  x0 :e graph_vertices T Tx ArcsT ->
