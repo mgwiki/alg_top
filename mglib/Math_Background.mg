@@ -384214,6 +384214,25 @@ rewrite <- Heq.
 exact Hcreg.
 Qed.
 
+(** helper for S84.3: nontrivial loop class in a finite union of arcs yields a closed reduced edge path. **)
+(** This is the remaining missing bridge needed for thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths. **)
+Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs :
+  forall T Tx ArcsT Arcs' x0 f:set,
+  general_linear_graph T Tx ArcsT ->
+  x0 :e T ->
+  f :e loop_space T Tx x0 ->
+  Arcs' c= ArcsT ->
+  finite Arcs' ->
+  image_of_fun f unit_interval c= Union Arcs' ->
+  path_homotopy_class_loop T Tx x0 f <> fundamental_group_id T Tx x0 ->
+  exists n path_seq:set,
+    n :e omega /\ n <> 0 /\
+    reduced_edge_path T Tx ArcsT n path_seq x0 /\
+    (exists j:set, j :e n /\ ordsucc j /:e n /\
+      (apply_fun path_seq j) 0 1 = x0).
+admit.
+Admitted.
+
 (** helper for S84.3: no closed reduced edge path in a tree should force trivial pi1 at some basepoint. **)
 (** Sub-bounty for Thm84.3 core bridge **)
 (** Bounty 37 **)
@@ -384283,20 +384302,37 @@ claim Hbridge :
     HArcsPack).
   assume HfLoop HclsEq HArcsData.
   (** Remaining missing step: turn a nontrivial loop-in-finite-subgraph into a closed reduced edge path. **)
-  claim HloopToRed :
-    forall f Arcs':set,
-      f :e loop_space T (subspace_topology X Tx T) x0 ->
-      Arcs' c= ArcsT ->
-      finite Arcs' ->
-      image_of_fun f unit_interval c= Union Arcs' ->
-      path_homotopy_class_loop T (subspace_topology X Tx T) x0 f <>
-        fundamental_group_id T (subspace_topology X Tx T) x0 ->
-      exists n path_seq:set,
-        n :e omega /\ n <> 0 /\
-        reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
-        (exists j:set, j :e n /\ ordsucc j /:e n /\
-          (apply_fun path_seq j) 0 1 = x0).
-  { admit. }
+	  claim HloopToRed :
+	    forall f Arcs':set,
+	      f :e loop_space T (subspace_topology X Tx T) x0 ->
+	      Arcs' c= ArcsT ->
+	      finite Arcs' ->
+	      image_of_fun f unit_interval c= Union Arcs' ->
+	      path_homotopy_class_loop T (subspace_topology X Tx T) x0 f <>
+	        fundamental_group_id T (subspace_topology X Tx T) x0 ->
+	      exists n path_seq:set,
+	        n :e omega /\ n <> 0 /\
+	        reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+	        (exists j:set, j :e n /\ ordsucc j /:e n /\
+	          (apply_fun path_seq j) 0 1 = x0).
+	  {
+	    let f0. let Arcs0.
+	    assume Hf0 Hsub0 Hfin0 Himg0 Hne0.
+	    exact (loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs
+	      T
+	      (subspace_topology X Tx T)
+	      ArcsT
+	      Arcs0
+	      x0
+	      f0
+	      HglgT
+	      Hx0T
+	      Hf0
+	      Hsub0
+	      Hfin0
+	      Himg0
+	      Hne0).
+	  }
   apply (and3E
     (Arcs' c= ArcsT)
     (finite Arcs')
