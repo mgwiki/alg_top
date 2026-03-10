@@ -384214,6 +384214,32 @@ rewrite <- Heq.
 exact Hcreg.
 Qed.
 
+(** helper for S84.x: arc is invariant under definitional equality of topologies. **)
+(** Proven Charlie **)
+Theorem arc_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  arc X T1 ->
+  arc X T2.
+let X T1 T2.
+assume Heq Harc.
+rewrite <- Heq.
+exact Harc.
+Qed.
+
+(** helper for S84.x: end_points_of_arc is invariant under definitional equality of topologies. **)
+(** Proven Charlie **)
+Theorem end_points_of_arc_topology_eq_i_traport :
+  forall X T1 T2 p q:set,
+  T1 = T2 ->
+  end_points_of_arc X T1 p q ->
+  end_points_of_arc X T2 p q.
+let X T1 T2 p q.
+assume Heq Hend.
+rewrite <- Heq.
+exact Hend.
+Qed.
+
 	(** helper for S84.3: nontrivial loop class in a finite union of arcs yields a closed reduced edge path. **)
 	(** This is the remaining missing bridge needed for thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths. **)
 	(** NOTE: The natural version of this bridge assumes the basepoint is a graph vertex. **)
@@ -384456,24 +384482,103 @@ Qed.
 	    x0
 	    Hx0V).
 	}
-	claim HYsubT : Y c= T.
-	{
-	  let x.
-	  assume HxY : x :e Y.
-	  apply (UnionE_impred Arcs' x HxY).
-	  let A.
-	  assume HxA.
-	  assume HAArcs' : A :e Arcs'.
-	  claim HAArcsT : A :e ArcsT.
-	  { exact (HsubArcs A HAArcs'). }
-	  claim HAdata : A c= T /\ arc A (subspace_topology T Tx A).
-	  { exact (general_linear_graph_arc_data T Tx ArcsT A Hglg HAArcsT). }
-	  exact ((andEL (A c= T) (arc A (subspace_topology T Tx A)) HAdata) x HxA).
-	}
-	claim HYeqSelUnion : Y = Union {A :e ArcsT | A c= Y}.
-	{
-	  apply set_ext.
-	  - let x.
+		claim HYsubT : Y c= T.
+		{
+		  let x.
+		  assume HxY : x :e Y.
+		  apply (UnionE_impred Arcs' x HxY).
+		  let A.
+		  assume HxA.
+		  assume HAArcs' : A :e Arcs'.
+		  claim HAArcsT : A :e ArcsT.
+		  { exact (HsubArcs A HAArcs'). }
+		  claim HAdata : A c= T /\ arc A (subspace_topology T Tx A).
+		  { exact (general_linear_graph_arc_data T Tx ArcsT A Hglg HAArcsT). }
+		  exact ((andEL (A c= T) (arc A (subspace_topology T Tx A)) HAdata) x HxA).
+		}
+		(** Transport the endpoint witness to the subspace topology on Y. **)
+		claim HexArcEndpointY :
+		  exists B r:set, B :e Arcs' /\
+		    (end_points_of_arc B (subspace_topology Y (subspace_topology T Tx Y) B) x0 r \/
+		     end_points_of_arc B (subspace_topology Y (subspace_topology T Tx Y) B) r x0).
+		{
+		  apply HexArcEndpoint.
+		  let B.
+		  assume HBpack.
+		  apply HBpack.
+		  let r.
+		  assume Hrpack.
+		  claim HBArcs' : B :e Arcs'.
+		  {
+		    exact (andEL
+		      (B :e Arcs')
+		      (end_points_of_arc B (subspace_topology T Tx B) x0 r \/
+		       end_points_of_arc B (subspace_topology T Tx B) r x0)
+		      Hrpack).
+		  }
+		  claim HendOr : end_points_of_arc B (subspace_topology T Tx B) x0 r \/
+		                 end_points_of_arc B (subspace_topology T Tx B) r x0.
+		  {
+		    exact (andER
+		      (B :e Arcs')
+		      (end_points_of_arc B (subspace_topology T Tx B) x0 r \/
+		       end_points_of_arc B (subspace_topology T Tx B) r x0)
+		      Hrpack).
+		  }
+		  claim HBsubY : B c= Y.
+		  {
+		    let z.
+		    assume HzB : z :e B.
+		    exact (UnionI Arcs' z B HzB HBArcs').
+		  }
+		  claim HeqTopB :
+		    subspace_topology Y (subspace_topology T Tx Y) B = subspace_topology T Tx B.
+		  {
+		    exact (ex16_1_subspace_transitive
+		      T
+		      Tx
+		      Y
+		      B
+		      HtopT
+		      HYsubT
+		      HBsubY).
+		  }
+		  witness B.
+		  witness r.
+		  apply andI.
+		  - exact HBArcs'.
+		  - apply HendOr.
+		    * assume Hend.
+		      apply orIL.
+		      exact (end_points_of_arc_topology_eq_i_traport
+		        B
+		        (subspace_topology T Tx B)
+		        (subspace_topology Y (subspace_topology T Tx Y) B)
+		        x0
+		        r
+		        (eq_symm
+		          (subspace_topology Y (subspace_topology T Tx Y) B)
+		          (subspace_topology T Tx B)
+		          HeqTopB)
+		        Hend).
+		    * assume Hend.
+		      apply orIR.
+		      exact (end_points_of_arc_topology_eq_i_traport
+		        B
+		        (subspace_topology T Tx B)
+		        (subspace_topology Y (subspace_topology T Tx Y) B)
+		        r
+		        x0
+		        (eq_symm
+		          (subspace_topology Y (subspace_topology T Tx Y) B)
+		          (subspace_topology T Tx B)
+		          HeqTopB)
+		        Hend).
+		}
+		claim HYeqSelUnion : Y = Union {A :e ArcsT | A c= Y}.
+		{
+		  apply set_ext.
+		  - let x.
 	    assume HxY : x :e Y.
 	    apply (UnionE_impred Arcs' x HxY).
 	    let A.
