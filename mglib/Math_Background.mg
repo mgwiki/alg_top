@@ -363252,6 +363252,48 @@ claim Hind : forall k0:set, nat_p k0 -> P k0.
 exact (Hind k HkNat path_seq Hred).
 Qed.
 
+(** helper: the image of a loop in a general linear graph is covered by finitely many arcs **)
+(** Proven Charlie **)
+Theorem loop_at_image_in_finite_union_of_arcs :
+  forall X Tx Arcs x0 p:set,
+  general_linear_graph X Tx Arcs ->
+  loop_at X Tx x0 p ->
+  exists Arcs':set,
+    Arcs' c= Arcs /\ finite Arcs' /\ image_of_fun p unit_interval c= Union Arcs'.
+let X Tx Arcs x0 p.
+assume Hglg Hloop.
+set C := image_of_fun p unit_interval.
+claim Hf : function_on p unit_interval X.
+{ exact (loop_at_function_on X Tx x0 p Hloop). }
+claim HCsubX : C c= X.
+{
+  claim Hrefl : unit_interval c= unit_interval.
+  { let t. assume Ht. exact Ht. }
+  exact (image_of_sub_codomain p unit_interval X unit_interval Hf Hrefl).
+}
+claim HcompC : compact_space C (subspace_topology X Tx C).
+{
+  claim Hcont : continuous_map unit_interval unit_interval_topology X Tx p.
+  { exact (loop_at_continuous X Tx x0 p Hloop). }
+  exact (continuous_image_compact
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    p
+    unit_interval_compact_axiom
+    Hcont).
+}
+exact (lemma83_2_compact_finite_subgraph
+  X
+  Tx
+  Arcs
+  C
+  Hglg
+  HCsubX
+  HcompC).
+Qed.
+
 (** Proven Bob **)
 Theorem reduced_edge_path_index_decomposition_endpoints_in_X :
   forall X Tx Arcs n path_seq x0 i:set,
