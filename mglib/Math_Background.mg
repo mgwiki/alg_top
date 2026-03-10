@@ -1,7 +1,7 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 533 **)
-(** Balance Dave 2366 **)
+(** Balance Dave 2352 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -401679,7 +401679,8 @@ Qed.
 (** LATEX VERSION: Let X be a connected graph. A tree T in X is maximal iff it **)
 (** contains all the vertices of X. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
+(** Bounty 146 **)
+(** Lock Dave 1773188292 **)
 Theorem thm84_4_maximal_tree_all_vertices :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
