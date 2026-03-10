@@ -384259,16 +384259,188 @@ Qed.
 	  witness A.
 	  exact (andI (A :e Arcs') (x0 :e A) HAArcs' Hx0A).
 	}
-	claim HArcsNe : Arcs' <> Empty.
-	{
-	  assume Hemp.
-	  apply HexArc.
-	  let A.
-	  assume HApair.
-	  exact (EmptyE A (eq_subst_mem_set A Arcs' Empty (andEL (A :e Arcs') (x0 :e A) HApair) Hemp)).
-	}
-	(** Package the finite subgraph Y := Union Arcs'. **)
-	set Y := Union Arcs'.
+		claim HArcsNe : Arcs' <> Empty.
+		{
+		  assume Hemp.
+		  apply HexArc.
+		  let A.
+		  assume HApair.
+		  exact (EmptyE A (eq_subst_mem_set A Arcs' Empty (andEL (A :e Arcs') (x0 :e A) HApair) Hemp)).
+		}
+		(** Basepoint x0 lies as an endpoint on some arc in Arcs'. **)
+		claim Hx0ArcData :
+		  exists A0:set, A0 :e ArcsT /\
+		    exists p0 q0:set, end_points_of_arc A0 (subspace_topology T Tx A0) p0 q0 /\
+		      (x0 = p0 \/ x0 = q0).
+		{
+			  claim Hx0Vunf :
+			    x0 :e {x :e T | exists A:set, A :e ArcsT /\
+			      exists p q:set, end_points_of_arc A (subspace_topology T Tx A) p q /\
+			        (x = p \/ x = q)}.
+			  {
+			    exact (eq_subst_mem_set
+			      x0
+			      (graph_vertices T Tx ArcsT)
+			      {x :e T | exists A:set, A :e ArcsT /\
+			        exists p q:set, end_points_of_arc A (subspace_topology T Tx A) p q /\
+			          (x = p \/ x = q)}
+			      Hx0V
+			      (graph_vertices_unfold T Tx ArcsT)).
+			  }
+		  exact (SepE2
+		    T
+		    (fun x:set => exists A:set, A :e ArcsT /\
+		      exists p q:set, end_points_of_arc A (subspace_topology T Tx A) p q /\
+		        (x = p \/ x = q))
+		    x0
+		    Hx0Vunf).
+		}
+		claim HexArcEndpoint :
+		  exists B r:set, B :e Arcs' /\
+		    (end_points_of_arc B (subspace_topology T Tx B) x0 r \/
+		     end_points_of_arc B (subspace_topology T Tx B) r x0).
+		{
+		  apply Hx0ArcData.
+		  let A0.
+		  assume HA0pack.
+		  claim HA0ArcsT : A0 :e ArcsT.
+		  { exact (andEL (A0 :e ArcsT)
+		      (exists p0 q0:set, end_points_of_arc A0 (subspace_topology T Tx A0) p0 q0 /\
+		        (x0 = p0 \/ x0 = q0))
+		      HA0pack). }
+		  apply (andER
+		    (A0 :e ArcsT)
+		    (exists p0 q0:set, end_points_of_arc A0 (subspace_topology T Tx A0) p0 q0 /\
+		      (x0 = p0 \/ x0 = q0))
+		    HA0pack).
+		  let p0. assume Hp0pack.
+		  apply Hp0pack.
+		  let q0. assume Hpq0.
+		  claim HendA0 : end_points_of_arc A0 (subspace_topology T Tx A0) p0 q0.
+		  { exact (andEL
+		      (end_points_of_arc A0 (subspace_topology T Tx A0) p0 q0)
+		      (x0 = p0 \/ x0 = q0)
+		      Hpq0). }
+		  claim Hx0eq : x0 = p0 \/ x0 = q0.
+		  { exact (andER
+		      (end_points_of_arc A0 (subspace_topology T Tx A0) p0 q0)
+		      (x0 = p0 \/ x0 = q0)
+		      Hpq0). }
+		  claim Hp0A0 : p0 :e A0.
+		  { exact (end_points_of_arc_left_in_set A0 (subspace_topology T Tx A0) p0 q0 HendA0). }
+		  claim Hq0A0 : q0 :e A0.
+		  { exact (end_points_of_arc_right_in_set A0 (subspace_topology T Tx A0) p0 q0 HendA0). }
+		  claim Hx0A0 : x0 :e A0.
+		  {
+		    apply Hx0eq.
+		    - assume Heq. rewrite Heq. exact Hp0A0.
+		    - assume Heq. rewrite Heq. exact Hq0A0.
+		  }
+		  apply HexArc.
+		  let B.
+		  assume HBpair.
+		  claim HBArcs' : B :e Arcs'.
+		  { exact (andEL (B :e Arcs') (x0 :e B) HBpair). }
+		  claim Hx0B : x0 :e B.
+		  { exact (andER (B :e Arcs') (x0 :e B) HBpair). }
+		  claim HBArcsT : B :e ArcsT.
+		  { exact (HsubArcs B HBArcs'). }
+		  apply (xm (B = A0)).
+		  - assume Heq.
+		    apply Hx0eq.
+		    * assume Hx0p0.
+		      witness B.
+		      witness q0.
+		      apply andI.
+		      + exact HBArcs'.
+		      + apply orIL.
+		        rewrite Heq.
+		        rewrite Hx0p0.
+		        exact HendA0.
+		    * assume Hx0q0.
+		      witness B.
+		      witness p0.
+		      apply andI.
+		      + exact HBArcs'.
+		      + apply orIL.
+		        rewrite Heq.
+		        rewrite Hx0q0.
+		        exact (end_points_of_arc_sym A0 (subspace_topology T Tx A0) p0 q0 HendA0).
+		  - assume HneqBA0.
+		    claim HneqA0B : A0 <> B.
+		    {
+		      assume Heq.
+		      apply HneqBA0.
+		      symmetry.
+		      exact Heq.
+		    }
+		    apply (general_linear_graph_arc_intersection_case
+		      T
+		      Tx
+		      ArcsT
+		      A0
+		      B
+		      Hglg
+		      HA0ArcsT
+		      HBArcsT
+		      HneqA0B).
+		    + assume Hemp.
+		      claim Hx0cap : x0 :e A0 :/\: B.
+		      { exact (binintersectI A0 B x0 Hx0A0 Hx0B). }
+		      claim Hx0emp : x0 :e Empty.
+		      { exact (mem_eqR x0 (A0 :/\: B) Empty Hemp Hx0cap). }
+		      exact (FalseE ((EmptyE x0) Hx0emp)
+		        (exists B0 r:set, B0 :e Arcs' /\
+		          (end_points_of_arc B0 (subspace_topology T Tx B0) x0 r \/
+		           end_points_of_arc B0 (subspace_topology T Tx B0) r x0))).
+		    + assume Hex.
+		      apply Hex.
+		      let p.
+		      assume HpPack.
+		      claim HintEq : A0 :/\: B = Sing p.
+		      {
+		        apply (and3E
+		          (A0 :/\: B = Sing p)
+		          (exists q:set, end_points_of_arc A0 (subspace_topology T Tx A0) p q \/
+		                         end_points_of_arc A0 (subspace_topology T Tx A0) q p)
+		          (exists r:set, end_points_of_arc B (subspace_topology T Tx B) p r \/
+		                         end_points_of_arc B (subspace_topology T Tx B) r p)
+		          HpPack).
+		        assume HintEq0 _ _.
+		        exact HintEq0.
+		      }
+		      claim HBendPack :
+		        exists r:set, end_points_of_arc B (subspace_topology T Tx B) p r \/
+		                       end_points_of_arc B (subspace_topology T Tx B) r p.
+		      {
+		        apply (and3E
+		          (A0 :/\: B = Sing p)
+		          (exists q:set, end_points_of_arc A0 (subspace_topology T Tx A0) p q \/
+		                         end_points_of_arc A0 (subspace_topology T Tx A0) q p)
+		          (exists r:set, end_points_of_arc B (subspace_topology T Tx B) p r \/
+		                         end_points_of_arc B (subspace_topology T Tx B) r p)
+		          HpPack).
+		        assume _ _ HBend0.
+		        exact HBend0.
+		      }
+		      claim Hx0cap : x0 :e A0 :/\: B.
+		      { exact (binintersectI A0 B x0 Hx0A0 Hx0B). }
+		      claim Hx0Sing : x0 :e Sing p.
+		      { exact (mem_eqR x0 (A0 :/\: B) (Sing p) HintEq Hx0cap). }
+		      claim Hx0p : x0 = p.
+		      { exact (SingE p x0 Hx0Sing). }
+		      apply HBendPack.
+		      let r.
+		      assume HrOr.
+		      witness B.
+			      witness r.
+			      apply andI.
+			      - exact HBArcs'.
+			      - rewrite Hx0p.
+			        exact HrOr.
+		}
+		(** Package the finite subgraph Y := Union Arcs'. **)
+		set Y := Union Arcs'.
 	claim Hx0Y : x0 :e Y.
 	{ exact Hx0Union. }
 	claim HtopT : topology_on T Tx.
