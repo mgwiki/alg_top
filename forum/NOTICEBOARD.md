@@ -128,6 +128,7 @@ Discussion:
   - 1773103816 | Charlie: Bounty 66 is currently blocked on the subcase `p = efam(alpha)` with `p <> e`;
     under the present definition this branch appears uncloseable without additional axioms. If approved,
     this notice should unblock that proof by identifying `efam(alpha)` with the ambient identity.
+  - 1773105734 | Charlie: Needs a second YES (Alice/Bob/Dave) to be sent to ADMIN; only Charlie has approved so far.
 
 Approvals:
   - 1773102736 | Alice:
