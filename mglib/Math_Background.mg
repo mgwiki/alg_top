@@ -363385,6 +363385,52 @@ exact (lemma83_2_compact_finite_subgraph
   HcompC).
 Qed.
 
+(** helper: any cls :e pi1(X,x0) has a loop representative whose image lies in a finite union of arcs **)
+(** Proven Charlie **)
+Theorem fundamental_group_member_representative_in_finite_union_of_arcs :
+  forall X Tx Arcs x0 cls:set,
+  general_linear_graph X Tx Arcs ->
+  cls :e fundamental_group X Tx x0 ->
+  exists f Arcs':set,
+    f :e loop_space X Tx x0 /\
+    cls = path_homotopy_class_loop X Tx x0 f /\
+    (Arcs' c= Arcs /\ finite Arcs' /\ image_of_fun f unit_interval c= Union Arcs').
+let X Tx Arcs x0 cls.
+assume Hglg Hcls.
+claim Hrep : exists f:set, f :e loop_space X Tx x0 /\
+  cls = path_homotopy_class_loop X Tx x0 f.
+{ exact (fundamental_group_member_has_representative X Tx x0 cls Hcls). }
+apply Hrep.
+let f.
+assume HfPack.
+claim HfLoop : f :e loop_space X Tx x0.
+{ exact (andEL
+    (f :e loop_space X Tx x0)
+    (cls = path_homotopy_class_loop X Tx x0 f)
+    HfPack). }
+claim HclsEq : cls = path_homotopy_class_loop X Tx x0 f.
+{ exact (andER
+    (f :e loop_space X Tx x0)
+    (cls = path_homotopy_class_loop X Tx x0 f)
+    HfPack). }
+claim Hloop : loop_at X Tx x0 f.
+{ exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HexArcs' :
+  exists Arcs':set,
+    Arcs' c= Arcs /\ finite Arcs' /\ image_of_fun f unit_interval c= Union Arcs'.
+{ exact (loop_at_image_in_finite_union_of_arcs X Tx Arcs x0 f Hglg Hloop). }
+apply HexArcs'.
+let Arcs'.
+assume HArcs'Pack.
+witness f.
+witness Arcs'.
+apply andI.
+- apply andI.
+  + exact HfLoop.
+  + exact HclsEq.
+- exact HArcs'Pack.
+Qed.
+
 (** Proven Bob **)
 Theorem reduced_edge_path_index_decomposition_endpoints_in_X :
   forall X Tx Arcs n path_seq x0 i:set,
