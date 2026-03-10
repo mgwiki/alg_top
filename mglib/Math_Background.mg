@@ -384256,19 +384256,77 @@ claim HexArc : exists A:set, A :e Arcs' /\ x0 :e A.
   witness A.
   exact (andI (A :e Arcs') (x0 :e A) HAArcs' Hx0A).
 }
-claim HArcsNe : Arcs' <> Empty.
-{
-  assume Hemp.
-  apply HexArc.
-  let A.
-  assume HApair.
-  exact (EmptyE A (eq_subst_mem_set A Arcs' Empty (andEL (A :e Arcs') (x0 :e A) HApair) Hemp)).
-}
-(** TODO: main combinatorial bridge.
-    Intended proof: shrink to the finite subgraph Y := Union Arcs' and extract a closed reduced edge path
-    from the assumption that the loop class is nontrivial. **)
-admit.
-Admitted.
+	claim HArcsNe : Arcs' <> Empty.
+	{
+	  assume Hemp.
+	  apply HexArc.
+	  let A.
+	  assume HApair.
+	  exact (EmptyE A (eq_subst_mem_set A Arcs' Empty (andEL (A :e Arcs') (x0 :e A) HApair) Hemp)).
+	}
+	(** Package the finite subgraph Y := Union Arcs' as a subgraph_of T for later use. **)
+	set Y := Union Arcs'.
+	claim HtopT : topology_on T Tx.
+	{ exact (general_linear_graph_topology_on T Tx ArcsT Hglg). }
+	claim HYsubT : Y c= T.
+	{
+	  let x.
+	  assume HxY : x :e Y.
+	  apply (UnionE_impred Arcs' x HxY).
+	  let A.
+	  assume HxA.
+	  assume HAArcs' : A :e Arcs'.
+	  claim HAArcsT : A :e ArcsT.
+	  { exact (HsubArcs A HAArcs'). }
+	  claim HAdata : A c= T /\ arc A (subspace_topology T Tx A).
+	  { exact (general_linear_graph_arc_data T Tx ArcsT A Hglg HAArcsT). }
+	  exact ((andEL (A c= T) (arc A (subspace_topology T Tx A)) HAdata) x HxA).
+	}
+	claim HYeqSelUnion : Y = Union {A :e ArcsT | A c= Y}.
+	{
+	  apply set_ext.
+	  - let x.
+	    assume HxY : x :e Y.
+	    apply (UnionE_impred Arcs' x HxY).
+	    let A.
+	    assume HxA.
+	    assume HAArcs' : A :e Arcs'.
+	    claim HAArcsT : A :e ArcsT.
+	    { exact (HsubArcs A HAArcs'). }
+	    claim HAsubY : A c= Y.
+	    {
+	      let z.
+	      assume HzA : z :e A.
+	      exact (UnionI Arcs' z A HzA HAArcs').
+	    }
+	    claim HAinSel : A :e {B :e ArcsT | B c= Y}.
+	    { exact (SepI ArcsT (fun B:set => B c= Y) A HAArcsT HAsubY). }
+	    exact (UnionI {B :e ArcsT | B c= Y} x A HxA HAinSel).
+	  - let x.
+	    assume HxSel : x :e Union {A :e ArcsT | A c= Y}.
+	    apply (UnionE_impred {A :e ArcsT | A c= Y} x HxSel).
+	    let A.
+	    assume HxA : x :e A.
+	    assume HAinSel : A :e {B :e ArcsT | B c= Y}.
+	    claim HAsubY : A c= Y.
+	    { exact (SepE2 ArcsT (fun B:set => B c= Y) A HAinSel). }
+	    exact (HAsubY x HxA).
+	}
+	claim HsubY : subgraph_of Y T Tx ArcsT.
+	{
+	  exact (and3I
+	    (general_linear_graph T Tx ArcsT)
+	    (Y c= T)
+	    (Y = Union {A :e ArcsT | A c= Y})
+	    Hglg
+	    HYsubT
+	    HYeqSelUnion).
+	}
+	(** TODO: main combinatorial bridge.
+	    Intended proof: shrink to the finite subgraph Y := Union Arcs' and extract a closed reduced edge path
+	    from the assumption that the loop class is nontrivial. **)
+	admit.
+	Admitted.
 
 (** helper for S84.3: no closed reduced edge path in a tree should force trivial pi1 at some basepoint. **)
 (** Sub-bounty for Thm84.3 core bridge **)
