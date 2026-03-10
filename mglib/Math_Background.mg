@@ -241671,6 +241671,14 @@ claim HQsn : Q (ordsucc n).
 exact (HQsn n (ordsuccI2 n)).
 Qed.
 
+(** Infrastructure: efam(alpha) cannot be a nontrivial element of its factor in a free product.
+    This is used to close the p = efam(alphaL) subcase in the involution torsion proof. **)
+Lemma efam_not_in_Gfam_nontrivial_pre : forall G mult e inv J Gfam efam:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  forall al:set, al :e J ->
+    apply_fun efam al :e apply_fun Gfam al -> apply_fun efam al <> e -> False.
+Admitted.
+
 (** Infrastructure bounty: torsion/involution in free products (order 2 case).
     Expected use: discharge the remaining "boundary labels coincide" admit branches by showing
     that an involution is conjugate into some factor subgroup. **)
@@ -242398,11 +242406,26 @@ claim HPn : P n.
 				               Hxsk_in_GaL
 				               Hx0_in_GaL).
 				           }
-		           apply (xm (p = apply_fun efam alphaL)).
-		           - assume Hp_ef : p = apply_fun efam alphaL.
-		             (** Pending: p = efam(alphaL) subcase. **)
-		             admit.
-		           - assume Hp_ne_ef : p <> apply_fun efam alphaL.
+			           apply (xm (p = apply_fun efam alphaL)).
+			           - assume Hp_ef : p = apply_fun efam alphaL.
+			             (** If p = efam(alphaL) and p <> e, then efam(alphaL) is a nontrivial element of Gfam(alphaL), impossible. **)
+			             claim Hefam_in_GaL : apply_fun efam alphaL :e apply_fun Gfam alphaL.
+			             { rewrite <- Hp_ef. exact Hp_in_GaL. }
+			             claim Hefam_ne_e : apply_fun efam alphaL <> e.
+			             { rewrite <- Hp_ef. exact Hp_ne. }
+			             exact (FalseE
+			               (efam_not_in_Gfam_nontrivial_pre
+			                 G mult e inv J Gfam efam
+			                 Hfp
+			                 alphaL HalphaJ Hefam_in_GaL Hefam_ne_e)
+			               (exists alpha c x:set,
+			                 alpha :e J /\
+			                 c :e G /\
+			                 x :e apply_fun Gfam alpha /\
+			                 x <> e /\
+			                 apply_fun inv x = x /\
+			                 v = apply_fun mult (apply_fun inv c, apply_fun mult (x, c)))).
+			           - assume Hp_ne_ef : p <> apply_fun efam alphaL.
 
 		           (** k <> 0 (otherwise t = 2 and reducedness forces alphaL <> beta0). **)
 		           claim Hk_ne0 : k <> 0.
