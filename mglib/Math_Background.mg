@@ -385648,6 +385648,23 @@ Qed.
 		    HfinArcs).
 		}
 
+		(** Useful: work with a graphified loop representative living in the subspace Y. **)
+		claim HfGraphLoopY :
+		  graphify_on unit_interval f :e loop_space Y (subspace_topology T Tx Y) x0.
+		{
+		  exact (loop_space_graphify_on_range_restrict_to_subspace
+		    T
+		    Tx
+		    Y
+		    x0
+		    f
+		    HtopT
+		    HYsubT
+		    Hx0Y
+		    HfLoop
+		    HimgSub).
+		}
+
 		(** TODO: main combinatorial bridge for vertex basepoints. **)
 		admit.
 		Admitted.
