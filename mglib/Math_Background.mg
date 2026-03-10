@@ -1,5 +1,5 @@
 (** Balance Alice 7614 **)
-(** Balance Bob 5989 **)
+(** Balance Bob 5857 **)
 (** Balance Charlie 533 **)
 (** Balance Dave 2366 **)
 
@@ -131213,7 +131213,7 @@ Qed.
 (** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Bob 132 **)
+(** Bounty 132 **)
 (** Proven Bob **)
 Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
   continuous_map S1 S1_topology X Tx h ->
