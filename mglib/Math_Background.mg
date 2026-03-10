@@ -384235,6 +384235,132 @@ Qed.
 	      (apply_fun path_seq j) 0 1 = x0).
 	let T Tx ArcsT Arcs' x0 f.
 	assume Hglg Hx0V HfLoop HsubArcs HfinArcs HimgSub HneCls.
+	(** Nonemptiness of Arcs': x0 belongs to the loop image, hence to Union Arcs'. **)
+	set C := image_of_fun f unit_interval.
+	claim HloopAt : loop_at T Tx x0 f.
+	{ exact (loop_space_has_loop_at T Tx x0 f HfLoop). }
+	claim Hx0C : x0 :e C.
+	{
+	  claim Hf0 : apply_fun f 0 = x0.
+	  { exact (loop_at_at_zero T Tx x0 f HloopAt). }
+	  claim Himg0 : (apply_fun f 0) :e C.
+	  { exact (ReplI unit_interval (fun t:set => apply_fun f t) 0 zero_in_unit_interval). }
+	  rewrite <- Hf0.
+	  exact Himg0.
+	}
+	claim Hx0Union : x0 :e Union Arcs'.
+	{ exact (HimgSub x0 Hx0C). }
+	claim HexArc : exists A:set, A :e Arcs' /\ x0 :e A.
+	{
+	  apply (UnionE_impred Arcs' x0 Hx0Union).
+	  let A.
+	  assume Hx0A.
+	  assume HAArcs'.
+	  witness A.
+	  exact (andI (A :e Arcs') (x0 :e A) HAArcs' Hx0A).
+	}
+	claim HArcsNe : Arcs' <> Empty.
+	{
+	  assume Hemp.
+	  apply HexArc.
+	  let A.
+	  assume HApair.
+	  exact (EmptyE A (eq_subst_mem_set A Arcs' Empty (andEL (A :e Arcs') (x0 :e A) HApair) Hemp)).
+	}
+	(** Package the finite subgraph Y := Union Arcs'. **)
+	set Y := Union Arcs'.
+	claim Hx0Y : x0 :e Y.
+	{ exact Hx0Union. }
+	claim HtopT : topology_on T Tx.
+	{ exact (general_linear_graph_topology_on T Tx ArcsT Hglg). }
+	claim Hx0T : x0 :e T.
+	{
+	  exact (SepE1
+	    T
+	    (fun x:set =>
+	      exists A:set, A :e ArcsT /\
+	        exists p q:set, end_points_of_arc A (subspace_topology T Tx A) p q /\
+	          (x = p \/ x = q))
+	    x0
+	    Hx0V).
+	}
+	claim HYsubT : Y c= T.
+	{
+	  let x.
+	  assume HxY : x :e Y.
+	  apply (UnionE_impred Arcs' x HxY).
+	  let A.
+	  assume HxA.
+	  assume HAArcs' : A :e Arcs'.
+	  claim HAArcsT : A :e ArcsT.
+	  { exact (HsubArcs A HAArcs'). }
+	  claim HAdata : A c= T /\ arc A (subspace_topology T Tx A).
+	  { exact (general_linear_graph_arc_data T Tx ArcsT A Hglg HAArcsT). }
+	  exact ((andEL (A c= T) (arc A (subspace_topology T Tx A)) HAdata) x HxA).
+	}
+	claim HYeqSelUnion : Y = Union {A :e ArcsT | A c= Y}.
+	{
+	  apply set_ext.
+	  - let x.
+	    assume HxY : x :e Y.
+	    apply (UnionE_impred Arcs' x HxY).
+	    let A.
+	    assume HxA.
+	    assume HAArcs' : A :e Arcs'.
+	    claim HAArcsT : A :e ArcsT.
+	    { exact (HsubArcs A HAArcs'). }
+	    claim HAsubY : A c= Y.
+	    {
+	      let z.
+	      assume HzA : z :e A.
+	      exact (UnionI Arcs' z A HzA HAArcs').
+	    }
+	    claim HAinSel : A :e {B :e ArcsT | B c= Y}.
+	    { exact (SepI ArcsT (fun B:set => B c= Y) A HAArcsT HAsubY). }
+	    exact (UnionI {B :e ArcsT | B c= Y} x A HxA HAinSel).
+	  - let x.
+	    assume HxSel : x :e Union {A :e ArcsT | A c= Y}.
+	    apply (UnionE_impred {A :e ArcsT | A c= Y} x HxSel).
+	    let A.
+	    assume HxA : x :e A.
+	    assume HAinSel : A :e {B :e ArcsT | B c= Y}.
+	    claim HAsubY : A c= Y.
+	    { exact (SepE2 ArcsT (fun B:set => B c= Y) A HAinSel). }
+	    exact (HAsubY x HxA).
+	}
+	claim HsubY : subgraph_of Y T Tx ArcsT.
+	{
+	  exact (andI
+	    (general_linear_graph T Tx ArcsT /\ Y c= T)
+	    (Y = Union {A :e ArcsT | A c= Y})
+	    (andI
+	      (general_linear_graph T Tx ArcsT)
+	      (Y c= T)
+	      Hglg
+	      HYsubT)
+	    HYeqSelUnion).
+	}
+	claim HclosedY : closed_in T Tx Y.
+	{
+	  rewrite <- (eq_refl Y).
+	  exact (finite_union_closed_in
+	    T
+	    Tx
+	    Arcs'
+	    HtopT
+	    HfinArcs
+	    (fun A:set => fun HAArcs': A :e Arcs' =>
+	      general_linear_graph_arc_closed_in_X
+	        T
+	        Tx
+	        ArcsT
+	        A
+	        Hglg
+	        (HsubArcs A HAArcs'))).
+	}
+	claim HtopY : topology_on Y (subspace_topology T Tx Y).
+	{ exact (subspace_topology_is_topology T Tx Y HtopT HYsubT). }
+
 	(** TODO: main combinatorial bridge for vertex basepoints. **)
 	admit.
 	Admitted.
