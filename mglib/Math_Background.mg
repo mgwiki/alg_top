@@ -384361,18 +384361,56 @@ Theorem thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths :
       {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0}.
 let T ArcsT X Tx Arcs.
 assume Htree HneT Hnoloop.
-claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
-{ exact (tree_in_graph_general_linear_graph T ArcsT X Tx Arcs Htree). }
-claim HtopT : topology_on T (subspace_topology X Tx T).
-{ exact (general_linear_graph_topology_on T (subspace_topology X Tx T) ArcsT HglgT). }
-(** Pick any basepoint using nonemptiness. **)
-apply (nonempty_has_element T HneT).
-let x0.
-assume Hx0T : x0 :e T.
-(** Core bridge (still missing): nontrivial pi1 class yields a closed reduced edge path. **)
-claim Hbridge :
-  forall cls:set,
-  cls :e fundamental_group T (subspace_topology X Tx T) x0 ->
+	claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+	{ exact (tree_in_graph_general_linear_graph T ArcsT X Tx Arcs Htree). }
+	claim HtopT : topology_on T (subspace_topology X Tx T).
+	{ exact (general_linear_graph_topology_on T (subspace_topology X Tx T) ArcsT HglgT). }
+	(** Pick a basepoint x0 that is a graph vertex (endpoint of some arc). **)
+	claim HTeqUnion : T = Union ArcsT.
+	{ exact (general_linear_graph_union_arcs T (subspace_topology X Tx T) ArcsT HglgT). }
+	claim HUnionNe : Union ArcsT <> Empty.
+	{
+	  assume HUe.
+	  apply HneT.
+	  rewrite HTeqUnion.
+	  exact HUe.
+	}
+	apply (union_nonempty_has_member_nonempty ArcsT HUnionNe).
+	let A0.
+	assume HA0pack : A0 :e ArcsT /\ A0 <> Empty.
+	claim HA0ArcsT : A0 :e ArcsT.
+	{ exact (andEL (A0 :e ArcsT) (A0 <> Empty) HA0pack). }
+	claim HA0dat : A0 c= T /\ arc A0 (subspace_topology T (subspace_topology X Tx T) A0).
+	{ exact (general_linear_graph_arc_data T (subspace_topology X Tx T) ArcsT A0 HglgT HA0ArcsT). }
+	claim HA0subT : A0 c= T.
+	{ exact (andEL (A0 c= T) (arc A0 (subspace_topology T (subspace_topology X Tx T) A0)) HA0dat). }
+	claim HarcA0 : arc A0 (subspace_topology T (subspace_topology X Tx T) A0).
+	{ exact (andER (A0 c= T) (arc A0 (subspace_topology T (subspace_topology X Tx T) A0)) HA0dat). }
+	claim HepA0 :
+	  exists p q:set, end_points_of_arc A0 (subspace_topology T (subspace_topology X Tx T) A0) p q.
+	{ exact (arc_has_end_points_of_arc_pre A0 (subspace_topology T (subspace_topology X Tx T) A0) HarcA0). }
+	apply HepA0.
+	let p.
+	assume HpPack.
+	apply HpPack.
+	let q.
+	assume Hepq : end_points_of_arc A0 (subspace_topology T (subspace_topology X Tx T) A0) p q.
+	set x0 := p.
+	claim Hx0A0 : x0 :e A0.
+	{
+	  exact (end_points_of_arc_left_in_set
+	    A0
+	    (subspace_topology T (subspace_topology X Tx T) A0)
+	    p
+	    q
+	    Hepq).
+	}
+	claim Hx0T : x0 :e T.
+	{ exact (HA0subT x0 Hx0A0). }
+	(** Core bridge (still missing): nontrivial pi1 class yields a closed reduced edge path. **)
+	claim Hbridge :
+	  forall cls:set,
+	  cls :e fundamental_group T (subspace_topology X Tx T) x0 ->
   cls <> fundamental_group_id T (subspace_topology X Tx T) x0 ->
   exists n path_seq:set,
     n :e omega /\ n <> 0 /\
