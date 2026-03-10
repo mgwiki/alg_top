@@ -385047,6 +385047,140 @@ exact (ReplEq_ext
   (fun x Hx => graphify_on_apply X f x Hx)).
 Qed.
 
+(** helper for S84.x: if a loop has image in a subspace Y, its graphify_on representative is a loop in Y. **)
+(** Proven Charlie **)
+Theorem loop_space_graphify_on_range_restrict_to_subspace :
+  forall X Tx Y x0 f:set,
+  topology_on X Tx ->
+  Y c= X ->
+  x0 :e Y ->
+  f :e loop_space X Tx x0 ->
+  image_of_fun f unit_interval c= Y ->
+  graphify_on unit_interval f :e loop_space Y (subspace_topology X Tx Y) x0.
+let X Tx Y x0 f.
+assume HtopX HYsubX Hx0Y HfLoop HimgSub.
+set f_graph := graphify_on unit_interval f.
+claim HloopAt : loop_at X Tx x0 f.
+{ exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f HloopAt). }
+claim HfFun : function_on f unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f HfCont). }
+claim HfValY : forall t:set, t :e unit_interval -> apply_fun f t :e Y.
+{
+  let t.
+  assume HtI.
+  claim HtImg : apply_fun f t :e image_of_fun f unit_interval.
+  { exact (ReplI unit_interval (fun s:set => apply_fun f s) t HtI). }
+  exact (HimgSub (apply_fun f t) HtImg).
+}
+claim HfgraphFSY : f_graph :e function_space unit_interval Y.
+{
+  exact (graph_in_function_space
+    unit_interval
+    Y
+    (fun t:set => apply_fun f t)
+    (fun t Ht => HfValY t Ht)).
+}
+claim HfgraphFunY : function_on f_graph unit_interval Y.
+{ exact (function_on_of_function_space f_graph unit_interval Y HfgraphFSY). }
+claim HtopY : topology_on Y (subspace_topology X Tx Y).
+{ exact (subspace_topology_is_topology X Tx Y HtopX HYsubX). }
+claim HfgraphContY :
+  continuous_map unit_interval unit_interval_topology Y (subspace_topology X Tx Y) f_graph.
+{
+  (** First, f_graph is continuous into X (pointwise equal to f). **)
+  claim HfgraphFSX : f_graph :e function_space unit_interval X.
+  {
+    exact (graph_in_function_space
+      unit_interval
+      X
+      (fun t:set => apply_fun f t)
+      (fun t Ht => HfFun t Ht)).
+  }
+  claim HfgraphFunX : function_on f_graph unit_interval X.
+  { exact (function_on_of_function_space f_graph unit_interval X HfgraphFSX). }
+  claim HfgraphContX :
+    continuous_map unit_interval unit_interval_topology X Tx f_graph.
+  {
+    exact (continuous_map_congr_on
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      f_graph
+      HfCont
+      HfgraphFunX
+      (fun t Ht =>
+        eq_symm
+          (apply_fun f_graph t)
+          (apply_fun f t)
+          (graphify_on_apply unit_interval f t Ht))).
+  }
+  (** Now restrict the codomain to Y using the range hypothesis. **)
+  exact (continuous_map_range_restrict
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f_graph
+    Y
+    HfgraphContX
+    HYsubX
+    (fun t Ht =>
+      eq_subst_mem
+        (apply_fun f_graph t)
+        (apply_fun f t)
+        Y
+        (graphify_on_apply unit_interval f t Ht)
+        (HfValY t Ht))).
+}
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 f HloopAt). }
+claim Hf1 : apply_fun f 1 = x0.
+{ exact (loop_at_at_one X Tx x0 f HloopAt). }
+claim H0I : 0 :e unit_interval.
+{
+  exact (andEL
+    (0 :e unit_interval)
+    (1 :e unit_interval)
+    zero_one_in_unit_interval).
+}
+claim H1I : 1 :e unit_interval.
+{
+  exact (andER
+    (0 :e unit_interval)
+    (1 :e unit_interval)
+    zero_one_in_unit_interval).
+}
+claim Hfgraph0 : apply_fun f_graph 0 = x0.
+{
+  rewrite (graphify_on_apply unit_interval f 0 H0I).
+  exact Hf0.
+}
+claim Hfgraph1 : apply_fun f_graph 1 = x0.
+{
+  rewrite (graphify_on_apply unit_interval f 1 H1I).
+  exact Hf1.
+}
+claim HloopAtY : loop_at Y (subspace_topology X Tx Y) x0 f_graph.
+{
+  apply loop_at_fold.
+  apply andI.
+  - apply andI.
+    + exact HfgraphContY.
+    + exact Hfgraph0.
+  - exact Hfgraph1.
+}
+exact (SepI
+  (function_space unit_interval Y)
+  (fun g:set => loop_at Y (subspace_topology X Tx Y) x0 g)
+  f_graph
+  HfgraphFSY
+  HloopAtY).
+Qed.
+
 	(** helper for S84.3: nontrivial loop class in a finite union of arcs yields a closed reduced edge path. **)
 	(** This is the remaining missing bridge needed for thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths. **)
 		(** NOTE: The natural version of this bridge assumes the basepoint is a graph vertex. **)
