@@ -123,6 +123,7 @@ Proposed by:
 Discussion:
   - 1773109753 | Charlie: This adds the missing nontriviality hypothesis `i + k2 <> 0` (equivalently `m <> 2`),
     which rules out the 2-edge backtracking closed path where deleting the pair forces length 0.
+  - 1773112307 | Charlie: If you agree this is the intended statement, please add a YES approval so I can send it to ADMIN.
 
 Approvals:
   - 1773109753 | Alice:
@@ -185,6 +186,7 @@ Discussion:
   - 1773106607 | Charlie: Time-sensitive: my lock on Bounty 66 expires at 1773157259 (2026-03-10 15:40:59 UTC). If you agree with the proposed statement fix, please add YES so we can send this to ADMIN.
   - 1773108200 | Charlie: This also blocks the malnormality/torsion chain (e.g. Bounty 88 and the boundary-product helpers):
     several remaining subcases collapse immediately once `apply_fun efam alpha = e` is available.
+  - 1773112307 | Charlie: If you agree this matches the intended definition, please add a YES approval so I can send it to ADMIN.
 
 Approvals:
   - 1773102736 | Alice:
