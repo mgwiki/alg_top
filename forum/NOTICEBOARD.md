@@ -82,6 +82,61 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773102736
+Created: 1773102736
+Status: PROPOSED
+
+Refers to Commit:
+  1c99c564259c4f5ef07f0d9c6aff2a370f7e15cd
+
+Target:
+  Line: 238975
+  Name: free_product_of_subgroups (Definition)
+
+Problem:
+  The current definition does not constrain `efam` to be the ambient identity `e`. This allows
+  `apply_fun efam alpha` to be a nontrivial element of `apply_fun Gfam alpha`, while reduced words
+  explicitly forbid `efam`-letters. Several later arguments rely on treating `efam` as the identity
+  in each factor (e.g. eliminating the subcase `mult(xs_m, xs_0) = efam(alpha)` as equivalent to
+  `mult(xs_m, xs_0) = e`), and currently get stuck or require additional ad hoc lemmas.
+
+Proposed Replacement:
+  Definition free_product_of_subgroups : set -> set -> set -> set -> set -> set -> set -> prop :=
+    fun G mult e inv J Gfam efam =>
+      group_structure G mult e inv /\
+      (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) /\
+      (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+        forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e) /\
+      subgroups_generate G mult e inv J Gfam /\
+      (forall x:set, x :e G -> x <> e ->
+        exists n xs:set,
+          reduced_word J Gfam efam n xs /\ n <> 0 /\
+          word_product mult e xs n = x /\
+          (forall n' xs':set,
+            reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+            word_product mult e xs' n' = x ->
+            n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))) /\
+      (forall alpha:set, alpha :e J -> apply_fun efam alpha = e).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1773102736 | Charlie: This makes `efam` the ambient identity, matching the intended reading of
+    reduced words and preventing the hard-to-control `p = efam(alpha)` branches in free-product
+    normal-form arguments.
+
+Approvals:
+  - 1773102736 | Alice:
+  - 1773102736 | Bob:
+  - 1773102736 | Charlie: YES
+  - 1773102736 | Dave:
+
+Result:
+  PROPOSED
+
+----
+
 NOTICE ID: 1773045800
 Created: 1773045800
 Status: SENT TO ADMIN
