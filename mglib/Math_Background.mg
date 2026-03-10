@@ -384251,7 +384251,69 @@ claim Hbridge :
     reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
     (exists j:set, j :e n /\ ordsucc j /:e n /\
       (apply_fun path_seq j) 0 1 = x0).
-{ admit. }
+{
+  let cls.
+  assume Hcls HclsNe.
+  (** Choose a loop representative with image in a finite union of arcs. **)
+  claim HexRep :
+    exists f Arcs':set,
+      f :e loop_space T (subspace_topology X Tx T) x0 /\
+      cls = path_homotopy_class_loop T (subspace_topology X Tx T) x0 f /\
+      (Arcs' c= ArcsT /\ finite Arcs' /\ image_of_fun f unit_interval c= Union Arcs').
+  {
+    exact (fundamental_group_member_representative_in_finite_union_of_arcs
+      T
+      (subspace_topology X Tx T)
+      ArcsT
+      x0
+      cls
+      HglgT
+      Hcls).
+  }
+  apply HexRep.
+  let f.
+  assume HfPack.
+  apply HfPack.
+  let Arcs'.
+  assume HArcsPack.
+  apply (and3E
+    (f :e loop_space T (subspace_topology X Tx T) x0)
+    (cls = path_homotopy_class_loop T (subspace_topology X Tx T) x0 f)
+    (Arcs' c= ArcsT /\ finite Arcs' /\ image_of_fun f unit_interval c= Union Arcs')
+    HArcsPack).
+  assume HfLoop HclsEq HArcsData.
+  (** Remaining missing step: turn a nontrivial loop-in-finite-subgraph into a closed reduced edge path. **)
+  claim HloopToRed :
+    forall f Arcs':set,
+      f :e loop_space T (subspace_topology X Tx T) x0 ->
+      Arcs' c= ArcsT ->
+      finite Arcs' ->
+      image_of_fun f unit_interval c= Union Arcs' ->
+      path_homotopy_class_loop T (subspace_topology X Tx T) x0 f <>
+        fundamental_group_id T (subspace_topology X Tx T) x0 ->
+      exists n path_seq:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0).
+  { admit. }
+  apply (and3E
+    (Arcs' c= ArcsT)
+    (finite Arcs')
+    (image_of_fun f unit_interval c= Union Arcs')
+    HArcsData).
+  assume HArcsSub HfinArcs' HimgSub.
+  claim HclsNe' :
+    path_homotopy_class_loop T (subspace_topology X Tx T) x0 f <>
+      fundamental_group_id T (subspace_topology X Tx T) x0.
+  {
+    assume Heq.
+    apply HclsNe.
+    rewrite HclsEq.
+    exact Heq.
+  }
+  exact (HloopToRed f Arcs' HfLoop HArcsSub HfinArcs' HimgSub HclsNe').
+}
 witness x0.
 apply andI.
 - exact Hx0T.
