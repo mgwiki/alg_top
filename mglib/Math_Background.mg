@@ -386028,6 +386028,414 @@ exact (arc_has_end_points_of_arc
     HASel)).
 Qed.
 
+(** helper for S84.4: deleting a backtracking pair from an edge path yields a shorter edge path **)
+(** Proven Dave **)
+Theorem edge_path_delete_backtrack_shorter :
+  forall X Tx Arcs m path_seqm x0 i k2:set,
+  edge_path X Tx Arcs m path_seqm x0 ->
+  m = ordsucc (ordsucc (i + k2)) ->
+  nat_p i ->
+  nat_p k2 ->
+  (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1 ->
+  (apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0 ->
+  edge_path X Tx Arcs (i + k2)
+    (graph (i + k2) (fun j:set =>
+      if (j :e i)
+      then apply_fun path_seqm j
+      else apply_fun path_seqm (ordsucc (ordsucc j))))
+    x0.
+let X Tx Arcs m path_seqm x0 i k2.
+assume Hepm HmEq HiNat Hk2Nat Hback1 Hback2.
+claim HmNat : nat_p m.
+{ rewrite HmEq. exact (nat_ordsucc (ordsucc (i+k2)) (nat_ordsucc (i+k2) (add_nat_p i HiNat k2 Hk2Nat))). }
+claim HmOm : m :e omega. { exact (nat_p_omega m HmNat). }
+claim HmOrd : ordinal m. { exact (nat_p_ordinal m HmNat). }
+claim Hik2Nat : nat_p (i + k2). { exact (add_nat_p i HiNat k2 Hk2Nat). }
+claim Hik2Om : (i + k2) :e omega. { exact (nat_p_omega (i + k2) Hik2Nat). }
+claim Hik2Ord : ordinal (i + k2). { exact (nat_p_ordinal (i + k2) Hik2Nat). }
+claim HsiNat : nat_p (ordsucc i). { exact (nat_ordsucc i HiNat). }
+claim HssiNat : nat_p (ordsucc (ordsucc i)). { exact (nat_ordsucc (ordsucc i) HsiNat). }
+claim Hsik2Nat : nat_p (ordsucc (i + k2)). { exact (nat_ordsucc (i+k2) Hik2Nat). }
+claim HssiKord : ordinal (ordsucc (ordsucc (i+k2))).
+{ exact (nat_p_ordinal (ordsucc (ordsucc (i+k2))) (nat_ordsucc (ordsucc (i+k2)) (nat_ordsucc (i+k2) Hik2Nat))). }
+(** Key memberships in m = ordsucc(ordsucc(i+k2)). **)
+claim HiInSik2 : i :e ordsucc (i+k2).
+{ exact (nat_p_Subq_imp_in_ordsucc (i+k2) i Hik2Nat HiNat (add_nat_Subq_R' i HiNat k2 Hk2Nat)). }
+claim HiInm : i :e m.
+{
+  rewrite HmEq. exact (ordsuccI1 (ordsucc (i+k2)) i HiInSik2).
+}
+claim HsiInm : ordsucc i :e m.
+{
+  rewrite HmEq.
+  exact (ordinal_ordsucc_In (ordsucc (i+k2)) (nat_p_ordinal (ordsucc (i+k2)) Hsik2Nat) i HiInSik2).
+}
+(** HssiInm only provable when k2 > 0 (else ordsucc(ordsucc i) = m would be self-member) **)
+claim HssiInm : k2 <> 0 -> ordsucc (ordsucc i) :e m.
+{
+  assume Hk2ne0.
+  claim Hk2Pos : exists k2':set, nat_p k2' /\ k2 = ordsucc k2'.
+  {
+    apply (nat_inv k2 Hk2Nat).
+    - assume H. exact (FalseE (Hk2ne0 H) (exists k2':set, nat_p k2' /\ k2 = ordsucc k2')).
+    - assume H. exact H.
+  }
+  apply Hk2Pos. let k2'. assume Hk2pack.
+  claim Hk2eq : k2 = ordsucc k2'. { exact (andER (nat_p k2') (k2 = ordsucc k2') Hk2pack). }
+  claim Hk2'Nat : nat_p k2'. { exact (andEL (nat_p k2') (k2 = ordsucc k2') Hk2pack). }
+  claim HiInIk2 : i :e i + k2.
+  {
+    rewrite Hk2eq.
+    rewrite (add_nat_SR i k2' Hk2'Nat).
+    claim Hik2'Nat : nat_p (i + k2'). { exact (add_nat_p i HiNat k2' Hk2'Nat). }
+    exact (nat_p_Subq_imp_in_ordsucc (i + k2') i Hik2'Nat HiNat
+      (add_nat_Subq_R' i HiNat k2' Hk2'Nat)).
+  }
+  claim HsiInSik2 : ordsucc i :e ordsucc (i+k2).
+  { exact (ordinal_ordsucc_In (i+k2) Hik2Ord i HiInIk2). }
+  rewrite HmEq.
+  exact (ordinal_ordsucc_In (ordsucc (i+k2)) (nat_p_ordinal (ordsucc (i+k2)) Hsik2Nat) (ordsucc i) HsiInSik2).
+}
+claim Hfunm :
+  function_on path_seqm m (setprod (setprod X X) (Power X)).
+{ exact (edge_path_function_on X Tx Arcs m path_seqm x0 Hepm). }
+(** For j :e i+k2, show the appropriate index is in m. **)
+claim HjInm : forall j:set, j :e (i+k2) -> j :e i -> j :e m.
+{
+  let j. assume Hj HjIni.
+  (** j :e i and i :e m (transitive set), so j :e m **)
+  exact ((ordinal_TransSet m HmOrd) i HiInm j HjIni).
+}
+claim HssInm : forall j:set, j :e (i+k2) -> ordsucc (ordsucc j) :e m.
+{
+  let j. assume Hj.
+  claim HsjInSik2 : ordsucc j :e ordsucc (i+k2).
+  { exact (ordinal_ordsucc_In (i+k2) Hik2Ord j Hj). }
+  claim HssjInm : ordsucc (ordsucc j) :e ordsucc (ordsucc (i+k2)).
+  { exact (ordinal_ordsucc_In (ordsucc (i+k2)) (nat_p_ordinal (ordsucc (i+k2)) Hsik2Nat) (ordsucc j) HsjInSik2). }
+  exact (mem_eqR (ordsucc (ordsucc j)) (ordsucc (ordsucc (i+k2))) m (eq_symm m (ordsucc (ordsucc (i+k2))) HmEq) HssjInm).
+}
+(** The concatenated path function. **)
+set path_concat :=
+  graph (i + k2)
+    (fun j:set =>
+      if (j :e i)
+      then apply_fun path_seqm j
+      else apply_fun path_seqm (ordsucc (ordsucc j))).
+(** Prove the five properties of edge_path for path_concat. **)
+(** 1. n :e omega **)
+claim H1 : (i + k2) :e omega. { exact Hik2Om. }
+(** 2. function_on **)
+claim H2 : function_on path_concat (i + k2) (setprod (setprod X X) (Power X)).
+{
+  let j. assume Hj.
+  rewrite (apply_fun_graph (i + k2) (fun j:set => if (j :e i) then apply_fun path_seqm j else apply_fun path_seqm (ordsucc (ordsucc j))) j Hj).
+  apply (xm (j :e i)).
+  - assume HjIni.
+    rewrite (If_i_1 (j :e i) (apply_fun path_seqm j) (apply_fun path_seqm (ordsucc (ordsucc j))) HjIni).
+    exact (Hfunm j (HjInm j Hj HjIni)).
+  - assume HjNoti.
+    rewrite (If_i_0 (j :e i) (apply_fun path_seqm j) (apply_fun path_seqm (ordsucc (ordsucc j))) HjNoti).
+    exact (Hfunm (ordsucc (ordsucc j)) (HssInm j Hj)).
+}
+(** 3. Each index gives an oriented_edge **)
+claim H3 : forall j:set, j :e (i+k2) ->
+  exists A ini fin:set,
+    apply_fun path_concat j = ((ini, fin), A) /\
+    oriented_edge X Tx Arcs A ini fin.
+{
+  let j. assume Hj.
+  rewrite (apply_fun_graph (i + k2) (fun j:set => if (j :e i) then apply_fun path_seqm j else apply_fun path_seqm (ordsucc (ordsucc j))) j Hj).
+  apply (xm (j :e i)).
+  - assume HjIni.
+    rewrite (If_i_1 (j :e i) (apply_fun path_seqm j) (apply_fun path_seqm (ordsucc (ordsucc j))) HjIni).
+    exact (edge_path_edge_decomposition X Tx Arcs m path_seqm x0 j Hepm (HjInm j Hj HjIni)).
+  - assume HjNoti.
+    rewrite (If_i_0 (j :e i) (apply_fun path_seqm j) (apply_fun path_seqm (ordsucc (ordsucc j))) HjNoti).
+    exact (edge_path_edge_decomposition X Tx Arcs m path_seqm x0 (ordsucc (ordsucc j)) Hepm (HssInm j Hj)).
+}
+(** 4. Start vertex = x0 **)
+claim H4 : (i+k2) <> 0 -> (apply_fun path_concat 0) 0 0 = x0.
+{
+  assume Hne0.
+  claim H0Inik2 : 0 :e (i+k2).
+  {
+    apply (nat_inv (i+k2) Hik2Nat).
+    - assume H0eq. exact (FalseE (Hne0 H0eq) (0 :e (i+k2))).
+    - assume Hex. apply Hex. let s. assume Hs.
+      claim Heq : i+k2 = ordsucc s. { exact (andER (nat_p s) (i+k2 = ordsucc s) Hs). }
+      claim HsNat : nat_p s. { exact (andEL (nat_p s) (i+k2 = ordsucc s) Hs). }
+      rewrite Heq.
+      exact (ordinal_0_In_ordsucc s (nat_p_ordinal s HsNat)).
+  }
+  rewrite (apply_fun_graph (i+k2) (fun j:set => if (j :e i) then apply_fun path_seqm j else apply_fun path_seqm (ordsucc (ordsucc j))) 0 H0Inik2).
+  apply (xm (0 :e i)).
+  - assume H0Ini.
+    rewrite (If_i_1 (0 :e i) (apply_fun path_seqm 0) (apply_fun path_seqm (ordsucc (ordsucc 0))) H0Ini).
+    claim Hmne0' : m <> 0. { rewrite HmEq. exact (neq_ordsucc_0 (ordsucc (i+k2))). }
+    exact (edge_path_start_vertex X Tx Arcs m path_seqm x0 Hepm Hmne0').
+  - assume H0NotIni.
+    rewrite (If_i_0 (0 :e i) (apply_fun path_seqm 0) (apply_fun path_seqm (ordsucc (ordsucc 0))) H0NotIni).
+    (** i = 0 (since 0 :e i implies i > 0, here 0 /:e i implies i = 0 since i is a nat).
+        So new path starts with old(ordsucc(ordsucc 0)).
+        We have ini(old 2) = fin(old 1) = ini(old 0) = x0. **)
+    claim Hi0 : i = 0.
+    {
+      apply (nat_inv i HiNat).
+      - assume H. exact H.
+      - assume Hex. apply Hex. let s. assume Hs.
+        claim Heq : i = ordsucc s. { exact (andER (nat_p s) (i = ordsucc s) Hs). }
+        exact (FalseE (H0NotIni (mem_eqR 0 (ordsucc s) i (eq_symm i (ordsucc s) Heq)
+          (ordinal_0_In_ordsucc s (nat_p_ordinal s (andEL (nat_p s) (i = ordsucc s) Hs))))) (i = 0)).
+    }
+    (** i = 0, so ordsucc(ordsucc 0) = 2 = ordsucc(ordsucc i). **)
+    claim Hk2ne0' : k2 <> 0.
+    {
+      assume Hk20.
+      apply Hne0.
+      rewrite Hi0. rewrite Hk20. exact (add_nat_0R 0).
+    }
+    claim HsiInm0 : ordsucc 0 :e m.
+    {
+      claim Heq0 : ordsucc i = ordsucc 0. { rewrite Hi0. reflexivity. }
+      rewrite <- Heq0. exact HsiInm.
+    }
+    claim H01m : 0 :e m.
+    {
+      exact (ordinal_TransSet m HmOrd (ordsucc 0) HsiInm0 0
+        (ordinal_0_In_ordsucc 0 (nat_p_ordinal 0 nat_0))).
+    }
+    claim H1m : ordsucc 0 :e m. { exact HsiInm0. }
+    claim H2m : ordsucc (ordsucc 0) :e m.
+    {
+      claim Heq2 : ordsucc (ordsucc i) = ordsucc (ordsucc 0). { rewrite Hi0. reflexivity. }
+      rewrite <- Heq2. exact (HssiInm Hk2ne0').
+    }
+    claim Hmne0 : m <> 0. { rewrite HmEq. exact (neq_ordsucc_0 (ordsucc (i+k2))). }
+    claim Hstart0 : (apply_fun path_seqm 0) 0 0 = x0.
+    { exact (edge_path_start_vertex X Tx Arcs m path_seqm x0 Hepm Hmne0). }
+    claim Hcons01 : (apply_fun path_seqm 0) 0 1 = (apply_fun path_seqm (ordsucc 0)) 0 0.
+    { exact (edge_path_consecutive_match X Tx Arcs m path_seqm x0 0 Hepm H01m H1m). }
+    claim Hcons12 : (apply_fun path_seqm (ordsucc 0)) 0 1 = (apply_fun path_seqm (ordsucc (ordsucc 0))) 0 0.
+    { exact (edge_path_consecutive_match X Tx Arcs m path_seqm x0 (ordsucc 0) Hepm H1m H2m). }
+    (** Hback1 at i=0: ini(old 0) = fin(old 1), i.e., (old 0) 0 0 = (old 1) 0 1 **)
+    claim HHpmi : apply_fun path_seqm i = apply_fun path_seqm 0.
+    { rewrite Hi0. reflexivity. }
+    claim HHpmsi : apply_fun path_seqm (ordsucc i) = apply_fun path_seqm (ordsucc 0).
+    { rewrite Hi0. reflexivity. }
+    claim Hb1 : (apply_fun path_seqm 0) 0 0 = (apply_fun path_seqm (ordsucc 0)) 0 1.
+    { rewrite <- HHpmi. rewrite <- HHpmsi. exact Hback1. }
+    (** Chain: ini(old 2) = fin(old 1) = ini(old 0) = x0 **)
+    rewrite <- Hcons12.
+    rewrite <- Hb1.
+    exact Hstart0.
+}
+(** 5. Consecutive match **)
+claim H5 : forall j:set, j :e (i+k2) -> ordsucc j :e (i+k2) ->
+  (apply_fun path_concat j) 0 1 = (apply_fun path_concat (ordsucc j)) 0 0.
+{
+  let j. assume Hj Hsj.
+  rewrite (apply_fun_graph (i+k2) (fun j:set => if (j :e i) then apply_fun path_seqm j else apply_fun path_seqm (ordsucc (ordsucc j))) j Hj).
+  rewrite (apply_fun_graph (i+k2) (fun j:set => if (j :e i) then apply_fun path_seqm j else apply_fun path_seqm (ordsucc (ordsucc j))) (ordsucc j) Hsj).
+  apply (xm (j :e i)).
+  - assume HjIni.
+    rewrite (If_i_1 (j :e i) (apply_fun path_seqm j) (apply_fun path_seqm (ordsucc (ordsucc j))) HjIni).
+    apply (xm (ordsucc j :e i)).
+    + assume HsjIni.
+      (** Case A: both j and ordsucc j in i **)
+      rewrite (If_i_1 (ordsucc j :e i) (apply_fun path_seqm (ordsucc j)) (apply_fun path_seqm (ordsucc (ordsucc (ordsucc j)))) HsjIni).
+      exact (edge_path_consecutive_match X Tx Arcs m path_seqm x0 j Hepm
+        (HjInm j Hj HjIni)
+        (HjInm (ordsucc j) Hsj HsjIni)).
+    + assume HsjNotIni.
+      (** Case B: j :e i but ordsucc j /:e i, so ordsucc j = i. **)
+      claim HsjEqi : ordsucc j = i.
+      {
+        apply (ordinal_ordsucc_In_eq i j (nat_p_ordinal i HiNat) HjIni).
+        - assume H. exact (FalseE (HsjNotIni H) (ordsucc j = i)).
+        - assume H. exact (eq_symm i (ordsucc j) H).
+      }
+      (** new(ordsucc j) = new(i): since ordsucc(ordsucc j) = ordsucc i **)
+      claim HssjEqsi : ordsucc (ordsucc j) = ordsucc i.
+      { rewrite HsjEqi. reflexivity. }
+      rewrite (If_i_0 (ordsucc j :e i) (apply_fun path_seqm (ordsucc j)) (apply_fun path_seqm (ordsucc (ordsucc (ordsucc j)))) HsjNotIni).
+      rewrite HssjEqsi.
+      (** fin(old j) = ini(old ordsucc i):
+          fin(old j) = (old j) 0 1
+                     = (old i) 0 0 [consecutive match at j, ordsucc j = i]
+                     = ini(old i)
+          ini(old i) = fin(old ordsucc i) [Hback1]... no wait:
+          Hback1: (old i) 0 0 = (old ordsucc i) 0 1, i.e., ini(old i) = fin(old ordsucc i).
+          I need: (old j) 0 1 = (old ordsucc i) 0 0 = ini(old ordsucc i).
+          (old j) 0 1 = (old i) 0 0 [consecutive match between j and ordsucc j = i]
+          (old i) 0 0 = (old ordsucc i) 0 1 [Hback1]... that's fin(old ordsucc i) not ini.
+          Need another step: consecutive match between i and ordsucc i gives
+          (old i) 0 1 = (old ordsucc i) 0 0. But (old i) 0 1 != (old i) 0 0 in general.
+          Let me use Hback2 instead: (old i) 0 1 = (old ordsucc i) 0 0 = Hback2.
+          And fin(old j) = (old j) 0 1 = ini(old i) = (old i) 0 0 [consecutive match].
+          Hmm I need ini(old i) = ini(old ordsucc i).
+          Wait no, let me re-read:
+          Hback1: (path_seqm i) 0 0 = (path_seqm (ordsucc i)) 0 1
+                  ini(edge i) = fin(edge ordsucc i)
+          Hback2: (path_seqm i) 0 1 = (path_seqm (ordsucc i)) 0 0
+                  fin(edge i) = ini(edge ordsucc i)
+          Consecutive match at j: fin(edge j) = ini(edge ordsucc j = edge i)
+                  (path_seqm j) 0 1 = (path_seqm i) 0 0 = ini(edge i)
+          So fin(edge j) = ini(edge i) = ini(new position i).
+          And (old ordsucc i) is new position i when ~(i :e i), which is always.
+          So ini(new position i) = ini(old ordsucc i) = (old ordsucc i) 0 0.
+          But: fin(edge j) = ini(edge i) = (old i) 0 0.
+          And (old i) 0 0 = ini(edge i). But I need (old ordsucc i) 0 0 = ini(old ordsucc i).
+          I need: ini(edge i) = ini(old ordsucc i)? That would need (old i) 0 0 = (old ordsucc i) 0 0.
+          Wait: from Hback1: (old i) 0 0 = (old ordsucc i) 0 1 = fin(old ordsucc i).
+          From consecutive match at ordsucc i (if ordsucc(ordsucc i) :e m):
+          (old ordsucc i) 0 1 = (old (ordsucc ordsucc i)) 0 0.
+          So: (old i) 0 0 = (old (ordsucc ordsucc i)) 0 0 = ini(old ordsucc(ordsucc i)).
+          But ini(new position i) = ini(old ordsucc i) since ~(i :e i) and new(i) = old(ordsucc(ordsucc i)).
+          So I need: ini(old ordsucc i) = ini(old ordsucc(ordsucc i))?
+          That's: (old ordsucc i) 0 0 = (old ordsucc(ordsucc i)) 0 0, which is NOT necessarily true.
+
+          Wait, I'm confusing myself. Let me restart this calculation.
+
+          new(j) = old(j) since j :e i.
+          new(ordsucc j) = old(ordsucc(ordsucc j)) since ordsucc j /:e i.
+
+          We need: (new j) 0 1 = (new(ordsucc j)) 0 0
+                   (old j) 0 1 = (old(ordsucc(ordsucc j))) 0 0
+                   (old j) 0 1 = (old(ordsucc i)) 0 0   [since ordsucc(ordsucc j) = ordsucc i]
+
+          Chain:
+          (old j) 0 1 [= fin(old j)]
+          = (old(ordsucc j)) 0 0 [= ini(old i)] [consecutive match at j, since ordsucc j = i]
+          = (old i) 0 0 [rewriting ordsucc j = i]
+          Hmm but I need (old i) 0 0 = (old(ordsucc i)) 0 0. That's ini(i) = ini(ordsucc i).
+          But from Hback2: (old i) 0 1 = (old(ordsucc i)) 0 0. That's fin(i) = ini(ordsucc i).
+          So: (old j) 0 1 = ini(old i) and (old(ordsucc i)) 0 0 = fin(old i).
+          These are NOT equal unless ini(i) = fin(i) (which is only for loops).
+
+          So the chain should be:
+          (old j) 0 1 = ini(old(ordsucc j = i)) = (old i) 0 0
+          and we need this = (old(ordsucc i)) 0 0.
+
+          From Hback1: (old i) 0 0 = (old(ordsucc i)) 0 1. [ini(i) = fin(ordsucc i)]
+          But I need (old i) 0 0 = (old(ordsucc i)) 0 0 = ini(ordsucc i).
+          From Hback2: (old i) 0 1 = (old(ordsucc i)) 0 0. [fin(i) = ini(ordsucc i)]
+
+          So actually:
+          fin(old j) = ini(old i) = (old i) 0 0
+          ini(old(ordsucc i)) = (old(ordsucc i)) 0 0
+
+          And from Hback1: (old i) 0 0 = (old(ordsucc i)) 0 1. [NOT the same!]
+          From Hback2: (old i) 0 1 = (old(ordsucc i)) 0 0. [fin(i) = ini(ordsucc i)]
+
+          So: (old j) 0 1 = (old i) 0 0 ≠ (old(ordsucc i)) 0 0 in general.
+
+          Hmm, this means the consecutive match at the boundary case is wrong?
+
+          Wait, let me reconsider the construction. If ordsucc j = i (so j = i-1), then:
+          new(j) = old(j) [since j :e i]
+          new(ordsucc j) = new(i) = old(ordsucc(ordsucc i)) [since i /:e i]
+                         = old(ordsucc i + 1)... NO wait.
+
+          ordsucc(ordsucc j) where j = i-1: ordsucc j = i, ordsucc(ordsucc j) = ordsucc i.
+
+          So new(ordsucc j) = old(ordsucc(ordsucc j)) = old(ordsucc i).
+
+          NOT old(ordsucc(ordsucc i))! I was wrong earlier.
+
+          Let me recompute: new(k) = if k :e i then old(k) else old(ordsucc(ordsucc k)).
+          For k = ordsucc j = i: ~(i :e i), so new(i) = old(ordsucc(ordsucc i)) = old(i+2).
+
+          But ordsucc(ordsucc j) = ordsucc(ordsucc(i-1)) = ordsucc i.
+          So new(ordsucc j) = old(ordsucc(ordsucc(ordsucc j))) = old(ordsucc(ordsucc i)) = old(i+2)?
+
+          Wait, the formula is: if k :e i then old(k) else old(ordsucc(ordsucc k)).
+          For k = ordsucc j = i: ~(i :e i), so new(i) = old(ordsucc(ordsucc i)).
+
+          And: ordsucc(ordsucc j) where j = i-1: ordsucc j = i, ordsucc(ordsucc j) = ordsucc i.
+
+          So new(ordsucc j) = (if ordsucc j :e i then old(ordsucc j) else old(ordsucc(ordsucc(ordsucc j)))).
+          = since ordsucc j = i and i /:e i: old(ordsucc(ordsucc(ordsucc j))) = old(ordsucc(ordsucc i)) = old(i+2).
+
+          OK so new(ordsucc j) = old(i+2) when ordsucc j = i. And I need:
+          fin(new j) = ini(new(ordsucc j))
+          fin(old j) = ini(old(i+2))
+          (old j) 0 1 = (old(ordsucc(ordsucc i))) 0 0
+
+          Chain:
+          (old j) 0 1 [fin(old j)]
+          = (old(ordsucc j)) 0 0 = (old i) 0 0 [consecutive match at j in original, ordsucc j = i]
+          = (old(ordsucc i)) 0 1 [Hback1: ini(old i) = fin(old(ordsucc i))]
+          = (old(ordsucc(ordsucc i))) 0 0 [consecutive match at ordsucc i in original]. ✓
+
+          So the chain is: fin(old j) = ini(old i) = fin(old(ordsucc i)) = ini(old(ordsucc(ordsucc i))) = ini(new(ordsucc j)). ✓
+
+          **)
+      (** In Case B, ordsucc j = i :e i+k2, so i :e i+k2, so k2 > 0. **)
+      claim Hk2ne0 : k2 <> 0.
+      {
+        assume Hk20.
+        claim Hik2eqi : i + k2 = i.
+        { rewrite Hk20. exact (add_nat_0R i). }
+        claim HsjInI : ordsucc j :e i.
+        { exact (mem_eqR (ordsucc j) (i+k2) i Hik2eqi Hsj). }
+        claim HiIni : i :e i.
+        { rewrite <- HsjEqi at 1. exact HsjInI. }
+        exact (In_irref i HiIni).
+      }
+      claim HssiInm' : ordsucc (ordsucc i) :e m. { exact (HssiInm Hk2ne0). }
+      claim HconsBound :
+        (apply_fun path_seqm j) 0 1 = (apply_fun path_seqm (ordsucc (ordsucc i))) 0 0.
+      {
+        claim Hconsjsi : (apply_fun path_seqm j) 0 1 = (apply_fun path_seqm i) 0 0.
+        {
+          claim HsjEqiInm : ordsucc j :e m. { rewrite HsjEqi. exact HiInm. }
+          claim Hraw : (apply_fun path_seqm j) 0 1 = (apply_fun path_seqm (ordsucc j)) 0 0.
+          { exact (edge_path_consecutive_match X Tx Arcs m path_seqm x0 j Hepm
+              (HjInm j Hj HjIni) HsjEqiInm). }
+          claim Hpmsi_eq_pmi : apply_fun path_seqm (ordsucc j) = apply_fun path_seqm i.
+          { rewrite HsjEqi. reflexivity. }
+          rewrite <- Hpmsi_eq_pmi. exact Hraw.
+        }
+        claim HconssIssI :
+          (apply_fun path_seqm (ordsucc i)) 0 1 = (apply_fun path_seqm (ordsucc (ordsucc i))) 0 0.
+        { exact (edge_path_consecutive_match X Tx Arcs m path_seqm x0 (ordsucc i) Hepm
+            HsiInm HssiInm'). }
+        rewrite Hconsjsi.
+        rewrite Hback1.
+        exact HconssIssI.
+      }
+      exact HconsBound.
+  - assume HjNotIni.
+    (** Case C: j /:e i, so ordsucc j /:e i as well. **)
+    rewrite (If_i_0 (j :e i) (apply_fun path_seqm j) (apply_fun path_seqm (ordsucc (ordsucc j))) HjNotIni).
+    claim HsjNotIni : ~(ordsucc j :e i).
+    {
+      assume HsjIni.
+      (** ordsucc j :e i and j /:e i: since i is ordinal and j :e ordsucc j :e i (by ord transset), j :e i. **)
+      exact (HjNotIni (ordinal_TransSet i (nat_p_ordinal i HiNat) (ordsucc j) HsjIni j (ordsuccI2 j))).
+    }
+    rewrite (If_i_0 (ordsucc j :e i) (apply_fun path_seqm (ordsucc j)) (apply_fun path_seqm (ordsucc (ordsucc (ordsucc j)))) HsjNotIni).
+    (** new(j) = old(ordsucc(ordsucc j)), new(ordsucc j) = old(ordsucc(ordsucc(ordsucc j))). **)
+    (** Consecutive match: fin(old(ordsucc(ordsucc j))) = ini(old(ordsucc(ordsucc(ordsucc j)))). **)
+    exact (edge_path_consecutive_match X Tx Arcs m path_seqm x0 (ordsucc (ordsucc j)) Hepm
+      (HssInm j Hj)
+      (HssInm (ordsucc j) Hsj)).
+}
+(** Combine the five properties into edge_path. **)
+exact (and5I
+  ((i+k2) :e omega)
+  (function_on path_concat (i+k2) (setprod (setprod X X) (Power X)))
+  (forall j:set, j :e (i+k2) ->
+    exists A ini fin:set,
+      apply_fun path_concat j = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin)
+  ((i+k2) <> 0 -> (apply_fun path_concat 0) 0 0 = x0)
+  (forall j:set, j :e (i+k2) -> ordsucc j :e (i+k2) ->
+    (apply_fun path_concat j) 0 1 = (apply_fun path_concat (ordsucc j)) 0 0)
+  H1 H2 H3 H4 H5).
+Qed.
+
 (** helper for S84.4: deleting a backtracking pair from a closed edge path yields a shorter closed edge path **)
 Theorem edge_path_delete_backtrack_shorter_closed :
   forall X Tx Arcs m path_seqm x0 i k2:set,
@@ -387431,7 +387839,383 @@ claim Hcycle :
           (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\
             (apply_fun path_seq' j0) 0 1 = q) /\
           m' :e m.
-    { admit. }
+    {
+      let m path_seqm.
+      assume Hepm Hmne0 Hj0pack Hbackpack.
+      (** Step 1: unpack the backtrack at i. **)
+      apply Hbackpack.
+      let i.
+      assume Hiback.
+      claim HiInm : i :e m.
+      {
+        exact (andEL (i :e m) (ordsucc i :e m)
+          (andEL (i :e m /\ ordsucc i :e m)
+            (((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
+              (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1) /\
+             (apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0)
+            Hiback)).
+      }
+      claim HsiInm : ordsucc i :e m.
+      {
+        exact (andER (i :e m) (ordsucc i :e m)
+          (andEL (i :e m /\ ordsucc i :e m)
+            (((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
+              (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1) /\
+             (apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0)
+            Hiback)).
+      }
+      claim Hback_cond2 :
+        ((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
+         (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1) /\
+        (apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0.
+      {
+        exact (andER (i :e m /\ ordsucc i :e m)
+          (((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
+            (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1) /\
+           (apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0)
+          Hiback).
+      }
+      claim Hback1 : (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1.
+      {
+        exact (andER
+          ((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1)
+          ((apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1)
+          (andEL
+            ((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
+             (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1)
+            ((apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0)
+            Hback_cond2)).
+      }
+      claim Hback2 : (apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0.
+      {
+        exact (andER
+          ((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
+           (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1)
+          ((apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0)
+          Hback_cond2).
+      }
+      (** Step 2: get nat_p facts. **)
+      claim HmNat : nat_p m. { exact (omega_nat_p m (edge_path_n_in_omega T (subspace_topology X Tx T) ArcsT m path_seqm p Hepm)). }
+      claim HmOrd : ordinal m. { exact (nat_p_ordinal m HmNat). }
+      claim HiNat : nat_p i. { exact (omega_nat_p i (ordinal_TransSet omega omega_ordinal m (nat_p_omega m HmNat) i HiInm)). }
+      claim HsiNat : nat_p (ordsucc i). { exact (nat_ordsucc i HiNat). }
+      (** Step 3: from ordsucc i :e m, get ordsucc(ordsucc i) c= m, then m = k2 + ordsucc(ordsucc i). **)
+      claim HssiSubqm : ordsucc (ordsucc i) c= m.
+      { exact (ordinal_ordsucc_In_Subq m HmOrd (ordsucc i) HsiInm). }
+      claim HssiNat : nat_p (ordsucc (ordsucc i)). { exact (nat_ordsucc (ordsucc i) HsiNat). }
+      claim Hexk2 : exists k2:set, nat_p k2 /\ m = k2 + ordsucc (ordsucc i).
+      { exact (nat_Subq_add_ex (ordsucc (ordsucc i)) HssiNat m HmNat HssiSubqm). }
+      apply Hexk2.
+      let k2.
+      assume Hk2pack.
+      claim Hk2Nat : nat_p k2. { exact (andEL (nat_p k2) (m = k2 + ordsucc (ordsucc i)) Hk2pack). }
+      claim HmEqRaw : m = k2 + ordsucc (ordsucc i). { exact (andER (nat_p k2) (m = k2 + ordsucc (ordsucc i)) Hk2pack). }
+      (** Rewrite: k2 + ordsucc(ordsucc i) = ordsucc(ordsucc(k2 + i)). **)
+      claim HmEq : m = ordsucc (ordsucc (i + k2)).
+      {
+        claim Hstep1 : k2 + ordsucc (ordsucc i) = ordsucc (k2 + ordsucc i).
+        { exact (add_nat_SR k2 (ordsucc i) HsiNat). }
+        claim Hstep2 : k2 + ordsucc i = ordsucc (k2 + i).
+        { exact (add_nat_SR k2 i HiNat). }
+        claim Hstep3 : k2 + i = i + k2.
+        { exact (add_nat_com k2 Hk2Nat i HiNat). }
+        rewrite HmEqRaw.
+        rewrite Hstep1. rewrite Hstep2. rewrite Hstep3.
+        reflexivity.
+      }
+      claim Hik2Nat : nat_p (i + k2). { exact (add_nat_p i HiNat k2 Hk2Nat). }
+      claim Hik2Om : (i + k2) :e omega. { exact (nat_p_omega (i + k2) Hik2Nat). }
+      (** Step 4: apply edge_path_delete_backtrack_shorter. **)
+      set path_concat :=
+        graph (i + k2)
+          (fun j:set =>
+            if (j :e i)
+            then apply_fun path_seqm j
+            else apply_fun path_seqm (ordsucc (ordsucc j))).
+      claim Hep_new :
+        edge_path T (subspace_topology X Tx T) ArcsT (i + k2) path_concat p.
+      {
+        exact (edge_path_delete_backtrack_shorter
+          T
+          (subspace_topology X Tx T)
+          ArcsT
+          m
+          path_seqm
+          p
+          i
+          k2
+          Hepm
+          HmEq
+          HiNat
+          Hk2Nat
+          Hback1
+          Hback2).
+      }
+      (** Step 5: prove m' = i+k2 is non-zero. **)
+      (** If i+k2 = 0, then i=0 and k2=0 and m=2. The backtrack at 0:
+          (path_seqm 0) 0 0 = (path_seqm 1) 0 1. Start vertex p = (path_seqm 0) 0 0.
+          The last edge j0 of m=2 must be j0=1, so (path_seqm 1) 0 1 = q.
+          Hence p = q. Contradiction. **)
+      claim Hm'ne0 : (i + k2) <> 0.
+      {
+        assume Hik2zero.
+        (** i c= i+k2 = 0 = Empty, so i = 0. **)
+        claim Hi0 : i = 0.
+        {
+          apply Empty_Subq_eq.
+          let x. assume Hx.
+          exact (FalseE
+            (EmptyE x (mem_eqR x (i+k2) 0 Hik2zero (add_nat_Subq_R' i HiNat k2 Hk2Nat x Hx)))
+            (x :e Empty)).
+        }
+        (** k2 c= k2+i = i+k2 = 0 = Empty, so k2 = 0. **)
+        claim Hk20 : k2 = 0.
+        {
+          claim Hk2i0 : k2 + i = 0. { rewrite (add_nat_com k2 Hk2Nat i HiNat). exact Hik2zero. }
+          apply Empty_Subq_eq.
+          let x. assume Hx.
+          exact (FalseE
+            (EmptyE x (mem_eqR x (k2+i) 0 Hk2i0 (add_nat_Subq_R' k2 Hk2Nat i HiNat x Hx)))
+            (x :e Empty)).
+        }
+        (** m = ordsucc(ordsucc(0+0)) = 2. **)
+        claim Hm2 : m = ordsucc (ordsucc 0).
+        {
+          rewrite HmEq. rewrite Hi0. rewrite Hk20. rewrite (add_nat_0R 0). reflexivity.
+        }
+        (** Start vertex p = (path_seqm 0) 0 0. **)
+        claim H0Inm : 0 :e m.
+        { rewrite Hm2. exact (ordinal_0_In_ordsucc (ordsucc 0) (nat_p_ordinal (ordsucc 0) (nat_ordsucc 0 nat_0))). }
+        claim H1Inm : ordsucc 0 :e m.
+        { rewrite Hm2. exact (ordinal_ordsucc_In (ordsucc 0) (nat_p_ordinal (ordsucc 0) (nat_ordsucc 0 nat_0)) 0 (ordinal_0_In_ordsucc 0 (nat_p_ordinal 0 nat_0))). }
+        claim HpStart : (apply_fun path_seqm 0) 0 0 = p.
+        { exact (edge_path_start_vertex T (subspace_topology X Tx T) ArcsT m path_seqm p Hepm Hmne0). }
+        (** The unique j0 for m=2 is j0=1. **)
+        apply Hj0pack.
+        let j0.
+        assume Hj0data.
+        claim Hj0mem : j0 :e m /\ ordsucc j0 /:e m.
+        { exact (andEL (j0 :e m /\ ordsucc j0 /:e m) ((apply_fun path_seqm j0) 0 1 = q) Hj0data). }
+        claim Hj0InM : j0 :e m. { exact (andEL (j0 :e m) (ordsucc j0 /:e m) Hj0mem). }
+        claim HsJ0NotM : ordsucc j0 /:e m. { exact (andER (j0 :e m) (ordsucc j0 /:e m) Hj0mem). }
+        claim Hfinj0 : (apply_fun path_seqm j0) 0 1 = q.
+        { exact (andER (j0 :e m /\ ordsucc j0 /:e m) ((apply_fun path_seqm j0) 0 1 = q) Hj0data). }
+        (** j0 = ordsucc 0 (= 1). **)
+        claim Hj0eq1 : j0 = ordsucc 0.
+        {
+          apply (ordinal_ordsucc_In_eq m j0 HmOrd Hj0InM).
+          - assume HsjInM.
+            exact (FalseE (HsJ0NotM HsjInM) (j0 = ordsucc 0)).
+          - assume HmEqSj0.
+            claim HmEqSj02 : ordsucc (ordsucc 0) = ordsucc j0.
+            { rewrite <- Hm2. exact HmEqSj0. }
+            exact (eq_symm (ordsucc 0) j0 (ordsucc_inj (ordsucc 0) j0 HmEqSj02)).
+        }
+        (** Hback1 at i=0: (path_seqm 0) 0 0 = (path_seqm 1) 0 1. **)
+        claim HpmI_eq_pm0 : apply_fun path_seqm i = apply_fun path_seqm 0.
+        { rewrite Hi0. reflexivity. }
+        claim HpmSI_eq_pm1 : apply_fun path_seqm (ordsucc i) = apply_fun path_seqm (ordsucc 0).
+        { rewrite Hi0. reflexivity. }
+        claim Hback1at0 : (apply_fun path_seqm 0) 0 0 = (apply_fun path_seqm (ordsucc 0)) 0 1.
+        { rewrite <- HpmI_eq_pm0. rewrite <- HpmSI_eq_pm1. exact Hback1. }
+        (** Chain: p = (pm 0) 0 0 = (pm 1) 0 1 = (pm j0) 0 1 = q. **)
+        claim Hpmeq : apply_fun path_seqm j0 = apply_fun path_seqm (ordsucc 0).
+        { rewrite Hj0eq1. reflexivity. }
+        claim Hqeqp : q = p.
+        { rewrite <- Hfinj0. rewrite Hpmeq. rewrite <- Hback1at0. exact HpStart. }
+        exact (FalseE (Hpneqq (eq_symm q p Hqeqp)) False).
+      }
+      (** Step 6: find the last index of the new path. **)
+      (** Since i+k2 <> 0, by nat_inv, i+k2 = ordsucc s for some s. **)
+      claim Hexs : exists s:set, nat_p s /\ (i+k2) = ordsucc s.
+      {
+        apply (nat_inv (i+k2) Hik2Nat).
+        - assume H. exact (FalseE (Hm'ne0 H) (exists s:set, nat_p s /\ (i+k2) = ordsucc s)).
+        - assume H. exact H.
+      }
+      apply Hexs.
+      let s.
+      assume Hspack.
+      claim HsNat : nat_p s. { exact (andEL (nat_p s) ((i+k2) = ordsucc s) Hspack). }
+      claim Hik2eqs : i + k2 = ordsucc s. { exact (andER (nat_p s) ((i+k2) = ordsucc s) Hspack). }
+      (** s is the last new index: s :e i+k2 and ordsucc s /:e i+k2. **)
+      claim HsInIk2 : s :e (i+k2).
+      { rewrite Hik2eqs. exact (ordsuccI2 s). }
+      claim HssNotInIk2 : ordsucc s /:e (i+k2).
+      { rewrite Hik2eqs. exact (In_irref (ordsucc s)). }
+      (** The new path at s gives the final vertex. **)
+      claim HfinalQ : (apply_fun path_concat s) 0 1 = q.
+      {
+        rewrite (apply_fun_graph (i+k2) (fun j:set => if (j :e i) then apply_fun path_seqm j else apply_fun path_seqm (ordsucc (ordsucc j))) s HsInIk2).
+        apply (xm (s :e i)).
+        - assume HsIni.
+          rewrite (If_i_1 (s :e i) (apply_fun path_seqm s) (apply_fun path_seqm (ordsucc (ordsucc s))) HsIni).
+          (** Case s :e i (so k2 = 0 scenario). **)
+          (** New path at s = old path at s. The last old index with fin=q was j0 = ordsucc(i+k2) = ordsucc(ordsucc s). Wait: i+k2 = ordsucc s... **)
+          (** s :e i and i+k2 = ordsucc s, so ordsucc s = i+k2. If s :e i, then i >= 1.
+              The original j0 satisfies j0 = ordsucc(i+k2-1) = ordsucc s? No...
+              j0 is the unique last element of m. Let me compute it.
+              m = ordsucc(ordsucc(i+k2)) = ordsucc(ordsucc(ordsucc s)).
+              The last element of m is ordsucc(ordsucc s). So j0 = ordsucc(ordsucc s).
+              And (path_seqm(ordsucc(ordsucc s))) 0 1 = q.
+              From s :e i and Hback1: (path_seqm i) 0 0 = (path_seqm(ordsucc i)) 0 1.
+              Need to show (path_seqm s) 0 1 = q.
+              Chain: use consecutive match at s, s+1, ..., i-1 to get to (path_seqm i) 0 0 = q.
+              This needs induction or a sequence of steps. It's complex.
+              Better: we know j0 = ordsucc(ordsucc s) and (path_seqm(ordsucc(ordsucc s))) 0 1 = q.
+              Also Hback2: (path_seqm i) 0 1 = (path_seqm(ordsucc i)) 0 0.
+              And Hback1: (path_seqm i) 0 0 = (path_seqm(ordsucc i)) 0 1.
+              And consecutive match at ordsucc i: (path_seqm(ordsucc i)) 0 1 = (path_seqm(ordsucc(ordsucc i))) 0 0.
+              Actually we need to trace: (path_seqm s) 0 1 = ...
+              Let me use the approach: since s :e i and i is the backtrack position,
+              consecutive match at s gives (path_seqm s) 0 1 = (path_seqm(ordsucc s)) 0 0 = (path_seqm i) 0 0 [ordsucc s = i].
+              Then (path_seqm i) 0 0 = (path_seqm(ordsucc i)) 0 1 [Hback1].
+              And (path_seqm(ordsucc i)) 0 1 = (path_seqm(ordsucc(ordsucc i))) 0 0 [consecutive match].
+              But ordsucc(ordsucc i) = ordsucc(ordsucc(s - ... )) hmm.
+              Let me use the last element directly.
+          **)
+          (** s :e i and i+k2 = ordsucc s means s = i+k2-1 = i+k2 :e i contradicts k2=0 if s=i-1.
+              Actually: s :e i means s < i. And i+k2 = ordsucc s. So i+k2 <= i (since s < i implies ordsucc s <= i, i.e. i+k2 <= i). Since k2 >= 0, i+k2 >= i. So i+k2 = i, hence k2 = 0 and ordsucc s = i.
+              So s = i-1 (i.e. ordsucc s = i). **)
+          claim Hk2zero : k2 = 0.
+          {
+            apply (nat_inv k2 Hk2Nat).
+            - assume H. exact H.
+            - assume Hex. apply Hex. let k2'. assume Hk2'pack.
+              claim Hk2eq : k2 = ordsucc k2'. { exact (andER (nat_p k2') (k2 = ordsucc k2') Hk2'pack). }
+              claim Hk2'Nat : nat_p k2'. { exact (andEL (nat_p k2') (k2 = ordsucc k2') Hk2'pack). }
+              claim HsEq : ordsucc s = i + k2. { exact (eq_symm (i+k2) (ordsucc s) Hik2eqs). }
+              (** From s :e i: ordsucc s c= i (ordinal). **)
+              claim HssSubqi : ordsucc s c= i.
+              { exact (ordinal_ordsucc_In_Subq i (nat_p_ordinal i HiNat) s HsIni). }
+              (** i+k2 = ordsucc s c= i. **)
+              claim Hik2LeI : i + k2 c= i.
+              { rewrite <- HsEq. exact HssSubqi. }
+              claim HiLeIk2 : i c= i + k2. { exact (add_nat_Subq_R' i HiNat k2 Hk2Nat). }
+              (** i = i+k2 since i <= i+k2 <= i. **)
+              claim Hii_eq_ik2 : i = i + k2.
+              {
+                claim HiEqik2ord : i :e ordsucc (i+k2).
+                { exact (nat_p_Subq_imp_in_ordsucc (i+k2) i Hik2Nat HiNat (add_nat_Subq_R' i HiNat k2 Hk2Nat)). }
+                claim Hik2EqiOrd : i + k2 :e ordsucc i.
+                { exact (nat_p_Subq_imp_in_ordsucc i (i+k2) HiNat Hik2Nat Hik2LeI). }
+                apply (ordinal_ordsucc_In_eq (ordsucc i) (i+k2) (nat_p_ordinal (ordsucc i) HsiNat) Hik2EqiOrd).
+                - assume HssiInsi.
+                  claim Hik2Inc : ordsucc (i+k2) c= i.
+                  { exact (TransSet_In_ordsucc_Subq (ordsucc (i+k2)) i (ordinal_TransSet i (nat_p_ordinal i HiNat)) HssiInsi). }
+                  claim Hik2ini : i+k2 :e i.
+                  { exact (Hik2Inc (i+k2) (ordsuccI2 (i+k2))). }
+                  exact (FalseE (In_irref (i+k2) (HiLeIk2 (i+k2) Hik2ini)) (i = i+k2)).
+                - assume H. exact (ordsucc_inj i (i+k2) H).
+              }
+              (** i = i+k2 = i+ordsucc k2' = ordsucc(i+k2'). So i :e ordsucc(i+k2') = i. Contradiction. **)
+              claim Hik2eq2 : i + k2 = ordsucc (i + k2').
+              { rewrite Hk2eq. exact (add_nat_SR i k2' Hk2'Nat). }
+              claim Hieqsi : i = ordsucc (i + k2').
+              {
+                rewrite <- Hik2eq2. exact (eq_symm (i+k2) i (eq_symm i (i+k2) Hii_eq_ik2)).
+              }
+              claim Hik2'_in_i : i+k2' :e i.
+              { exact (mem_eqR (i+k2') (ordsucc (i+k2')) i (eq_symm i (ordsucc (i+k2')) Hieqsi) (ordsuccI2 (i+k2'))). }
+              claim HiSubqik2' : i c= i + k2'. { exact (add_nat_Subq_R' i HiNat k2' Hk2'Nat). }
+              exact (FalseE (In_irref (i+k2') (HiSubqik2' (i+k2') Hik2'_in_i)) (k2 = 0)).
+          }
+          (** k2 = 0, so i + k2 = i and s = i - 1 (ordsucc s = i). **)
+          claim Hik2eqi : i + k2 = i.
+          { rewrite Hk2zero. exact (add_nat_0R i). }
+          claim HsiEqsi : ordsucc s = i.
+          { rewrite <- Hik2eqs. rewrite Hik2eqi. reflexivity. }
+          (** Original last index is ordsucc i (= j0 where j0 is the last element of m). **)
+          (** The original j0 has ordsucc j0 /:e m; since m = ordsucc(ordsucc i), j0 = ordsucc i. **)
+          apply Hj0pack.
+          let j0.
+          assume Hj0data.
+          claim Hj0mem : j0 :e m /\ ordsucc j0 /:e m.
+          { exact (andEL (j0 :e m /\ ordsucc j0 /:e m) ((apply_fun path_seqm j0) 0 1 = q) Hj0data). }
+          claim Hj0InM : j0 :e m. { exact (andEL (j0 :e m) (ordsucc j0 /:e m) Hj0mem). }
+          claim HsJ0NotM : ordsucc j0 /:e m. { exact (andER (j0 :e m) (ordsucc j0 /:e m) Hj0mem). }
+          claim Hfinj0 : (apply_fun path_seqm j0) 0 1 = q.
+          { exact (andER (j0 :e m /\ ordsucc j0 /:e m) ((apply_fun path_seqm j0) 0 1 = q) Hj0data). }
+          (** j0 = ordsucc i = last element of m = ordsucc(ordsucc i). **)
+          claim Hj0eqsi : j0 = ordsucc i.
+          {
+            apply (ordinal_ordsucc_In_eq m j0 HmOrd Hj0InM).
+            - assume HsjInM.
+              exact (FalseE (HsJ0NotM HsjInM) (j0 = ordsucc i)).
+            - assume HmEqSj0.
+              claim HssiEqsj0 : ordsucc (ordsucc (i+k2)) = ordsucc j0.
+              { rewrite <- HmEq. exact HmEqSj0. }
+              claim HsiEqj0 : ordsucc (i+k2) = j0.
+              { exact (ordsucc_inj (ordsucc (i+k2)) j0 HssiEqsj0). }
+              claim Hik2i : i + k2 = i. { rewrite Hk2zero. exact (add_nat_0R i). }
+              claim Hsi_eq_sik2 : ordsucc i = ordsucc (i+k2). { rewrite Hik2i. reflexivity. }
+              claim HsiEqj02 : ordsucc i = j0. { rewrite Hsi_eq_sik2. exact HsiEqj0. }
+              exact (eq_symm (ordsucc i) j0 HsiEqj02).
+          }
+          (** (path_seqm j0 = path_seqm(ordsucc i)) 0 1 = q. **)
+          claim HfinSI : (apply_fun path_seqm (ordsucc i)) 0 1 = q.
+          { rewrite <- Hj0eqsi. exact Hfinj0. }
+          (** s = i-1, ordsucc s = i. Consecutive match at s: (path_seqm s) 0 1 = (path_seqm(ordsucc s)) 0 0 = (path_seqm i) 0 0. **)
+          claim HsInm : s :e m.
+          {
+            exact (ordinal_TransSet m HmOrd i HiInm s (mem_eqR s (ordsucc s) i HsiEqsi (ordsuccI2 s))).
+          }
+          claim HsiInm2 : ordsucc s :e m.
+          { rewrite HsiEqsi. exact HiInm. }
+          claim Hconss : (apply_fun path_seqm s) 0 1 = (apply_fun path_seqm (ordsucc s)) 0 0.
+          { exact (edge_path_consecutive_match T (subspace_topology X Tx T) ArcsT m path_seqm p s Hepm HsInm HsiInm2). }
+          (** Chain: (path_seqm s) 0 1 = (path_seqm i) 0 0 = (path_seqm(ordsucc i)) 0 1 = q. **)
+          claim HpmS01_eq : (apply_fun path_seqm s) 0 1 = (apply_fun path_seqm i) 0 0.
+          { rewrite Hconss. rewrite HsiEqsi. reflexivity. }
+          rewrite HpmS01_eq. rewrite Hback1. exact HfinSI.
+        - assume HsNotIni.
+          rewrite (If_i_0 (s :e i) (apply_fun path_seqm s) (apply_fun path_seqm (ordsucc (ordsucc s))) HsNotIni).
+          (** New path at s = old path at ordsucc(ordsucc s). **)
+          (** ordsucc(ordsucc s) = ordsucc(i+k2) = j0 (the last original index). **)
+          claim HssSeqSik2 : ordsucc (ordsucc s) = ordsucc (i + k2).
+          { rewrite <- Hik2eqs. reflexivity. }
+          rewrite HssSeqSik2.
+          (** (path_seqm(ordsucc(i+k2))) 0 1 = q (from j0 = ordsucc(i+k2)). **)
+          apply Hj0pack.
+          let j0.
+          assume Hj0data.
+          claim Hj0mem2 : j0 :e m /\ ordsucc j0 /:e m.
+          { exact (andEL (j0 :e m /\ ordsucc j0 /:e m) ((apply_fun path_seqm j0) 0 1 = q) Hj0data). }
+          claim Hj0InM : j0 :e m. { exact (andEL (j0 :e m) (ordsucc j0 /:e m) Hj0mem2). }
+          claim HsJ0NotM : ordsucc j0 /:e m. { exact (andER (j0 :e m) (ordsucc j0 /:e m) Hj0mem2). }
+          claim Hfinj0 : (apply_fun path_seqm j0) 0 1 = q.
+          { exact (andER (j0 :e m /\ ordsucc j0 /:e m) ((apply_fun path_seqm j0) 0 1 = q) Hj0data). }
+          (** j0 = ordsucc(i+k2). **)
+          claim Hj0eqsik2 : j0 = ordsucc (i+k2).
+          {
+            apply (ordinal_ordsucc_In_eq m j0 HmOrd Hj0InM).
+            - assume HsjInM.
+              exact (FalseE (HsJ0NotM HsjInM) (j0 = ordsucc (i+k2))).
+            - assume HmEqSj0.
+              claim HssiEqsj02 : ordsucc (ordsucc (i+k2)) = ordsucc j0.
+              { rewrite <- HmEq. exact HmEqSj0. }
+              exact (eq_symm (ordsucc (i+k2)) j0 (ordsucc_inj (ordsucc (i+k2)) j0 HssiEqsj02)).
+          }
+          rewrite <- Hj0eqsik2. exact Hfinj0.
+      }
+      (** Step 7: m' = i+k2 :e m. **)
+      claim Hm'Inm : (i+k2) :e m.
+      {
+        rewrite HmEq.
+        exact (ordsuccI1 (ordsucc (i+k2)) (i+k2) (ordsuccI2 (i+k2))).
+      }
+      (** Combine. **)
+      witness (i + k2). witness path_concat.
+      apply and5I.
+      - exact Hik2Om.
+      - exact Hm'ne0.
+      - exact Hep_new.
+      - witness s. apply and3I.
+        + exact HsInIk2.
+        + exact HssNotInIk2.
+        + exact HfinalQ.
+      - exact Hm'Inm.
+    }
     claim Hnoback0 :
       forall i:set, i :e n0 -> ordsucc i :e n0 ->
         ~((apply_fun path_seq0 i) 1 = (apply_fun path_seq0 (ordsucc i)) 1 /\
@@ -387897,7 +388681,7 @@ claim Hcycle :
   exact HclosedRed.
 }
 exact (HnoloopT' Hcycle).
-Admitted.
+Qed.
 
 Theorem thm84_4_backward_selected_arc_endpoint_close_obligation :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
@@ -388292,9 +389076,9 @@ assume HASel Hend Hep.
   exact (FalseE
     HnoncontainedCore
     (A c= T)).
-Admitted.
+Qed.
 
-(** Proven Bob **)
+(** Proven Dave **)
 Theorem thm84_4_backward_selected_arc_endpoint_close_obligation_from_subset_from_rhs :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->

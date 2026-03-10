@@ -1,0 +1,25 @@
+## Changes in bck13548 (vs bck13546)
+
+Proved Hshorten_nonclosed and used it to prove:
+- thm84_4_selected_arc_endpoints_in_T_imply_selected_arc_subset_contradiction (Qed.)
+- thm84_4_backward_selected_arc_endpoint_close_obligation (Qed.)
+Also added (** Proven Dave **) to thm84_4_backward_selected_arc_endpoint_close_obligation_from_subset_from_rhs (it was already proved, just missing annotation).
+
+Key fixes in Hshorten_nonclosed proof:
+1. Fixed eq_symm argument order: (ordsucc 0) j -> correct
+2. Fixed rewrite direction for Hpmeq (use rewrite Hpmeq not rewrite <- Hpmeq)
+3. Fixed `ordsuccI2 (i+k2')` wrong element: replaced with nat_p_Subq_imp_in_ordsucc
+4. Removed dead `claim HssiSubqsi` wrapper, fixed `claim Hk2zero` proof directly
+5. Fixed `ordsucc_inj` arg order for case 2 of ordinal_ordsucc_In_eq
+6. Fixed contradiction argument: used TransSet_In_ordsucc_Subq to get ordsucc(i+k2) c= i,
+   then derived i+k2 :e i, then HiLeIk2(i+k2) gives contradiction In_irref(i+k2)
+7. Fixed Hieqsi via intermediate Hik2eq2 claim (avoid rewriting `i` in `i+k2'`)
+8. Fixed FalseE argument: used mem_eqR to get i+k2' :e i, add_nat_Subq_R' to get i+k2' :e i+k2'
+9. Fixed `rewrite ... in HmEqSj0` (not supported): used chain of claims instead
+10. Fixed `andEL _ _` in all branches: spelled out full prop types
+11. Fixed multiple eq_symm argument orders
+
+Still admitted: thm84_4_forward_meeting_obligation and dependent theorems
+(forward direction of S84.4 that T meets each non-contained arc in a single vertex).
+Still admitted: edge_path_delete_backtrack_shorter_closed.
+Line count: ~402690 lines.
