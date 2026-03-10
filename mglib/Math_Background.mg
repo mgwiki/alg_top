@@ -359014,6 +359014,123 @@ exact (andI
     Hori)).
 Qed.
 
+(** helper: an oriented edge yields a continuous path_between in the ambient graph **)
+(** This is a first step towards relating combinatorial edge paths to topological paths. **)
+(** Proven Charlie **)
+Theorem oriented_edge_has_path_between_continuous_in_X :
+  forall X Tx Arcs A ini fin:set,
+  general_linear_graph X Tx Arcs ->
+  oriented_edge X Tx Arcs A ini fin ->
+  exists p:set,
+    path_between X ini fin p /\
+    continuous_map unit_interval unit_interval_topology X Tx p /\
+    (forall t:set, t :e unit_interval -> apply_fun p t :e A).
+let X Tx Arcs A ini fin.
+assume Hglg Hori.
+claim HtopX : topology_on X Tx.
+{ exact (general_linear_graph_topology_on X Tx Arcs Hglg). }
+claim HAArcs : A :e Arcs.
+{ exact (oriented_edge_in_arcs X Tx Arcs A ini fin Hori). }
+claim HAcX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data X Tx Arcs A Hglg HAArcs)).
+}
+claim HarcA : arc A (subspace_topology X Tx A).
+{
+  exact (andER
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data X Tx Arcs A Hglg HAArcs)).
+}
+claim HpcA : path_connected_space A (subspace_topology X Tx A).
+{ exact (arc_path_connected A (subspace_topology X Tx A) HarcA). }
+claim HiniA : ini :e A.
+{ exact (oriented_edge_initial_in_arc X Tx Arcs A ini fin Hori). }
+claim HfinA : fin :e A.
+{ exact (oriented_edge_final_in_arc X Tx Arcs A ini fin Hori). }
+claim HexP0 :
+  exists p0:set,
+    path_between A ini fin p0 /\
+    continuous_map unit_interval unit_interval_topology A (subspace_topology X Tx A) p0.
+{
+  exact (path_connected_space_has_path_between_continuous
+    A
+    (subspace_topology X Tx A)
+    ini
+    fin
+    HpcA
+    HiniA
+    HfinA).
+}
+apply HexP0.
+let p0.
+assume Hp0pack.
+claim Hp0 : path_between A ini fin p0.
+{ exact (andEL (path_between A ini fin p0)
+    (continuous_map unit_interval unit_interval_topology A (subspace_topology X Tx A) p0)
+    Hp0pack). }
+claim Hp0cont : continuous_map unit_interval unit_interval_topology A (subspace_topology X Tx A) p0.
+{ exact (andER (path_between A ini fin p0)
+    (continuous_map unit_interval unit_interval_topology A (subspace_topology X Tx A) p0)
+    Hp0pack). }
+set incA := graph A (fun x:set => x).
+claim HincCont : continuous_map A (subspace_topology X Tx A) X Tx incA.
+{
+  exact (subspace_inclusion_continuous
+    X
+    Tx
+    A
+    HtopX
+    HAcX).
+}
+set p := compose_fun unit_interval p0 incA.
+claim Hpcont : continuous_map unit_interval unit_interval_topology X Tx p.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    A
+    (subspace_topology X Tx A)
+    X
+    Tx
+    p0
+    incA
+    Hp0cont
+    HincCont).
+}
+claim Hp0fun : function_on p0 unit_interval A.
+{ exact (path_between_function_on A ini fin p0 Hp0). }
+claim Hptwise : forall t:set, t :e unit_interval -> apply_fun p t = apply_fun p0 t.
+{
+  let t.
+  assume Ht.
+  rewrite (compose_fun_apply unit_interval p0 incA t Ht).
+  rewrite (apply_fun_graph A (fun x:set => x) (apply_fun p0 t) (Hp0fun t Ht)).
+  reflexivity.
+}
+claim HpathX : path_between X ini fin p.
+{
+  claim Hpfun : function_on p unit_interval X.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx p Hpcont). }
+  claim Hp0eq : apply_fun p 0 = ini.
+  { rewrite (Hptwise 0 zero_in_unit_interval). exact (path_between_at_zero A ini fin p0 Hp0). }
+  claim Hp1eq : apply_fun p 1 = fin.
+  { rewrite (Hptwise 1 one_in_unit_interval). exact (path_between_at_one A ini fin p0 Hp0). }
+  exact (path_betweenI X ini fin p Hpfun Hp0eq Hp1eq).
+}
+witness p.
+apply and3I.
+- exact HpathX.
+- exact Hpcont.
+  - let t.
+    assume Ht.
+    rewrite (Hptwise t Ht).
+    exact (Hp0fun t Ht).
+Qed.
+
 (** Proven Bob **)
 Theorem oriented_edge_initial_vertex_in_graph_vertices :
   forall X Tx Arcs A ini fin:set,
