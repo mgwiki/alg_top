@@ -384322,6 +384322,20 @@ claim HexArc : exists A:set, A :e Arcs' /\ x0 :e A.
 	    HYsubT
 	    HYeqSelUnion).
 	}
+	(** Y is a finite union of arcs in T, hence closed, and carries the induced topology. **)
+	claim HclosedY : closed_in T Tx Y.
+	{
+	  exact (general_linear_graph_finite_union_arcs_closed
+	    T
+	    Tx
+	    ArcsT
+	    Arcs'
+	    Hglg
+	    HsubArcs
+	    HfinArcs).
+	}
+	claim HtopY : topology_on Y (subspace_topology T Tx Y).
+	{ exact (subspace_topology_is_topology T Tx Y HtopT HYsubT). }
 	(** TODO: main combinatorial bridge.
 	    Intended proof: shrink to the finite subgraph Y := Union Arcs' and extract a closed reduced edge path
 	    from the assumption that the loop class is nontrivial. **)
