@@ -343640,6 +343640,342 @@ exact (Subq_finite
 Qed.
 
 (** Proven Charlie **)
+(** helper: a finite union of arcs in a GLG inherits a GLG structure with the induced topology. **)
+Theorem general_linear_graph_finite_subfamily_union_is_general_linear_graph :
+  forall X Tx Arcs Arcs':set,
+  general_linear_graph X Tx Arcs ->
+  Arcs' c= Arcs ->
+  finite Arcs' ->
+  general_linear_graph (Union Arcs') (subspace_topology X Tx (Union Arcs')) Arcs'.
+let X Tx Arcs Arcs'.
+assume Hglg HsubArcs' HfinArcs'.
+set Y := Union Arcs'.
+set Ty := subspace_topology X Tx Y.
+claim HtopX : topology_on X Tx.
+{ exact (general_linear_graph_topology_on X Tx Arcs Hglg). }
+claim HYsubX : Y c= X.
+{
+  let y.
+  assume HyY : y :e Y.
+  apply (UnionE_impred Arcs' y HyY).
+  let A.
+  assume HyA : y :e A.
+  assume HAArcs' : A :e Arcs'.
+  claim HAArcs : A :e Arcs.
+  { exact (HsubArcs' A HAArcs'). }
+  claim HAdat : A c= X /\ arc A (subspace_topology X Tx A).
+  { exact (general_linear_graph_arc_data X Tx Arcs A Hglg HAArcs). }
+  exact ((andEL (A c= X) (arc A (subspace_topology X Tx A)) HAdat) y HyA).
+}
+claim HtopY : topology_on Y Ty.
+{ exact (subspace_topology_is_topology X Tx Y HtopX HYsubX). }
+claim HclosedY : closed_in X Tx Y.
+{
+  exact (general_linear_graph_finite_union_arcs_closed
+    X
+    Tx
+    Arcs
+    Arcs'
+    Hglg
+    HsubArcs'
+    HfinArcs').
+}
+claim HglgYunf :
+  topology_on Y (subspace_topology X Tx Y) /\
+  (forall A:set, A :e Arcs' -> A c= Y /\ arc A (subspace_topology Y (subspace_topology X Tx Y) A)) /\
+  Y = Union Arcs' /\
+  (forall A B:set, A :e Arcs' -> B :e Arcs' -> A <> B ->
+    A :/\: B = Empty \/
+    (exists p:set, A :/\: B = Sing p /\
+      (exists q:set, end_points_of_arc A (subspace_topology Y (subspace_topology X Tx Y) A) p q \/
+                     end_points_of_arc A (subspace_topology Y (subspace_topology X Tx Y) A) q p) /\
+      (exists r:set, end_points_of_arc B (subspace_topology Y (subspace_topology X Tx Y) B) p r \/
+                     end_points_of_arc B (subspace_topology Y (subspace_topology X Tx Y) B) r p))) /\
+  (forall C:set, C c= Y ->
+    (closed_in Y (subspace_topology X Tx Y) C <->
+     (forall A:set, A :e Arcs' ->
+       closed_in A (subspace_topology Y (subspace_topology X Tx Y) A) (C :/\: A)))).
+{
+apply and5I.
+- exact HtopY.
+- let A.
+  assume HAArcs' : A :e Arcs'.
+  claim HAsubY : A c= Y.
+  {
+    let z.
+    assume HzA : z :e A.
+    exact (UnionI Arcs' z A HzA HAArcs').
+  }
+  claim HAArcs : A :e Arcs.
+  { exact (HsubArcs' A HAArcs'). }
+  claim HarcA_X : arc A (subspace_topology X Tx A).
+  {
+    exact (andER
+      (A c= X)
+      (arc A (subspace_topology X Tx A))
+      (general_linear_graph_arc_data X Tx Arcs A Hglg HAArcs)).
+  }
+  claim HeqTopA :
+    subspace_topology Y (subspace_topology X Tx Y) A = subspace_topology X Tx A.
+	  { exact (subspace_topology_transitive_weak X Tx Y A HAsubY). }
+	  apply andI.
+	  + exact HAsubY.
+	  + rewrite HeqTopA.
+	    exact HarcA_X.
+- reflexivity.
+- let A. let B.
+  assume HAArcs' : A :e Arcs'.
+  assume HBArcs' : B :e Arcs'.
+  assume Hneq : A <> B.
+  claim HAArcs : A :e Arcs.
+  { exact (HsubArcs' A HAArcs'). }
+  claim HBArcs : B :e Arcs.
+  { exact (HsubArcs' B HBArcs'). }
+  claim Hcase :
+    A :/\: B = Empty \/
+    (exists p:set, A :/\: B = Sing p /\
+      (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                     end_points_of_arc A (subspace_topology X Tx A) q p) /\
+      (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                     end_points_of_arc B (subspace_topology X Tx B) r p)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      X
+      Tx
+      Arcs
+      A
+      B
+      Hglg
+      HAArcs
+      HBArcs
+      Hneq).
+  }
+  apply Hcase.
+  + assume Hemp.
+    apply orIL.
+    exact Hemp.
+  + assume Hex.
+    apply orIR.
+    apply Hex.
+    let p.
+    assume HpPack.
+    witness p.
+    claim HpLeft :
+      (A :/\: B = Sing p) /\
+      (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                     end_points_of_arc A (subspace_topology X Tx A) q p).
+    {
+      exact (andEL
+        ((A :/\: B = Sing p) /\
+         (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                        end_points_of_arc A (subspace_topology X Tx A) q p))
+        (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                       end_points_of_arc B (subspace_topology X Tx B) r p)
+        HpPack).
+    }
+    claim HpRight :
+      exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                     end_points_of_arc B (subspace_topology X Tx B) r p.
+    {
+      exact (andER
+        ((A :/\: B = Sing p) /\
+         (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                        end_points_of_arc A (subspace_topology X Tx A) q p))
+        (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                       end_points_of_arc B (subspace_topology X Tx B) r p)
+        HpPack).
+    }
+    claim HintEq : A :/\: B = Sing p.
+    { exact (andEL
+        (A :/\: B = Sing p)
+        (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                       end_points_of_arc A (subspace_topology X Tx A) q p)
+        HpLeft). }
+    claim HexQ :
+      exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                     end_points_of_arc A (subspace_topology X Tx A) q p.
+    { exact (andER
+        (A :/\: B = Sing p)
+        (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                       end_points_of_arc A (subspace_topology X Tx A) q p)
+        HpLeft). }
+    claim HAsubY : A c= Y.
+    {
+      let z. assume HzA.
+      exact (UnionI Arcs' z A HzA HAArcs').
+    }
+    claim HBsubY : B c= Y.
+    {
+      let z. assume HzB.
+      exact (UnionI Arcs' z B HzB HBArcs').
+    }
+    claim HeqTopA :
+      subspace_topology Y (subspace_topology X Tx Y) A = subspace_topology X Tx A.
+    { exact (subspace_topology_transitive_weak X Tx Y A HAsubY). }
+	    claim HeqTopB :
+	      subspace_topology Y (subspace_topology X Tx Y) B = subspace_topology X Tx B.
+	    { exact (subspace_topology_transitive_weak X Tx Y B HBsubY). }
+	    apply andI.
+	    - apply andI.
+	      + exact HintEq.
+	      + apply HexQ.
+	        let q.
+	        assume HqOr.
+	        witness q.
+	        apply HqOr.
+	        { assume Hend.
+	          apply orIL.
+	          rewrite HeqTopA.
+	          exact Hend. }
+	        { assume Hend.
+	          apply orIR.
+	          rewrite HeqTopA.
+	          exact Hend. }
+	    - apply HpRight.
+	      let r.
+	      assume HrOr.
+	      witness r.
+	      apply HrOr.
+	      { assume Hend.
+	        apply orIL.
+	        rewrite HeqTopB.
+	        exact Hend. }
+	      { assume Hend.
+	        apply orIR.
+	        rewrite HeqTopB.
+	        exact Hend. }
+- let C.
+  assume HCsubY : C c= Y.
+  apply (iffI
+    (closed_in Y (subspace_topology X Tx Y) C)
+    (forall A:set, A :e Arcs' ->
+      closed_in A (subspace_topology Y (subspace_topology X Tx Y) A) (C :/\: A))).
+  + assume HclosedSub : closed_in Y (subspace_topology X Tx Y) C.
+    let A.
+    assume HAArcs' : A :e Arcs'.
+    claim HCsubX : C c= X.
+    { let z. assume HzC. exact (HYsubX z (HCsubY z HzC)). }
+    claim HiffSub :
+      closed_in Y (subspace_topology X Tx Y) C <->
+        C c= Y /\ closed_in X Tx C.
+    { exact (closed_in_subspace_iff_closed_ambient_on_closed_subspace X Tx Y C HtopX HclosedY). }
+    claim Hpair : C c= Y /\ closed_in X Tx C.
+    { exact (iffEL
+      (closed_in Y (subspace_topology X Tx Y) C)
+      (C c= Y /\ closed_in X Tx C)
+      HiffSub
+      HclosedSub). }
+    claim HclosedAmb : closed_in X Tx C.
+    { exact (andER (C c= Y) (closed_in X Tx C) Hpair). }
+    claim HiffCohX :
+      closed_in X Tx C <->
+      (forall B:set, B :e Arcs -> closed_in B (subspace_topology X Tx B) (C :/\: B)).
+    { exact (general_linear_graph_coherence_closed X Tx Arcs C Hglg HCsubX). }
+    claim HallArcs : forall B:set, B :e Arcs -> closed_in B (subspace_topology X Tx B) (C :/\: B).
+    { exact (iffEL
+      (closed_in X Tx C)
+      (forall B:set, B :e Arcs -> closed_in B (subspace_topology X Tx B) (C :/\: B))
+      HiffCohX
+      HclosedAmb). }
+    claim HclosedA_X : closed_in A (subspace_topology X Tx A) (C :/\: A).
+    { exact (HallArcs A (HsubArcs' A HAArcs')). }
+    claim HAsubY : A c= Y.
+    { let z. assume HzA. exact (UnionI Arcs' z A HzA HAArcs'). }
+	    claim HeqTopA :
+	      subspace_topology Y (subspace_topology X Tx Y) A = subspace_topology X Tx A.
+	    { exact (subspace_topology_transitive_weak X Tx Y A HAsubY). }
+	    rewrite HeqTopA.
+	    exact HclosedA_X.
+  + assume HallArcs' :
+      forall A:set, A :e Arcs' ->
+        closed_in A (subspace_topology Y (subspace_topology X Tx Y) A) (C :/\: A).
+    claim HCsubX : C c= X.
+    { let z. assume HzC. exact (HYsubX z (HCsubY z HzC)). }
+    claim HiffCohX :
+      closed_in X Tx C <->
+      (forall B:set, B :e Arcs -> closed_in B (subspace_topology X Tx B) (C :/\: B)).
+    { exact (general_linear_graph_coherence_closed X Tx Arcs C Hglg HCsubX). }
+    claim HallArcs : forall B:set, B :e Arcs -> closed_in B (subspace_topology X Tx B) (C :/\: B).
+    {
+      let B.
+      assume HBArcs : B :e Arcs.
+      apply (xm (B :e Arcs')).
+      - assume HBArcs'.
+        claim HBsubY : B c= Y.
+        { let z. assume HzB. exact (UnionI Arcs' z B HzB HBArcs'). }
+        claim HeqTopB :
+          subspace_topology Y (subspace_topology X Tx Y) B = subspace_topology X Tx B.
+        { exact (subspace_topology_transitive_weak X Tx Y B HBsubY). }
+        claim HclosedB_Y :
+          closed_in B (subspace_topology Y (subspace_topology X Tx Y) B) (C :/\: B).
+        { exact (HallArcs' B HBArcs'). }
+	        rewrite <- HeqTopB.
+	        exact HclosedB_Y.
+      - assume HBnotin : ~(B :e Arcs').
+        claim HarcB : arc B (subspace_topology X Tx B).
+        {
+          exact (andER
+            (B c= X)
+            (arc B (subspace_topology X Tx B))
+            (general_linear_graph_arc_data X Tx Arcs B Hglg HBArcs)).
+        }
+        claim HHausB : Hausdorff_space B (subspace_topology X Tx B).
+        { exact (arc_Hausdorff_space B (subspace_topology X Tx B) HarcB). }
+        claim HfinYB : finite (Y :/\: B).
+        {
+          exact (general_linear_graph_union_other_arcs_intersect_arc_finite
+            X
+            Tx
+            Arcs
+            Arcs'
+            B
+            Hglg
+            HsubArcs'
+            HBArcs
+            HBnotin).
+        }
+        claim HCBsubYB : (C :/\: B) c= (Y :/\: B).
+        {
+          let z.
+          assume HzCB : z :e (C :/\: B).
+          claim HzC : z :e C.
+          { exact (binintersectE1 C B z HzCB). }
+          claim HzB : z :e B.
+          { exact (binintersectE2 C B z HzCB). }
+          claim HzY : z :e Y.
+          { exact (HCsubY z HzC). }
+          exact (binintersectI Y B z HzY HzB).
+        }
+        claim HfinCB : finite (C :/\: B).
+        { exact (Subq_finite (Y :/\: B) HfinYB (C :/\: B) HCBsubYB). }
+        exact (finite_sets_closed_in_Hausdorff
+          B
+          (subspace_topology X Tx B)
+          HHausB
+          (C :/\: B)
+          (binintersect_Subq_2 C B)
+          HfinCB).
+    }
+    claim HclosedAmb : closed_in X Tx C.
+    { exact (iffER
+      (closed_in X Tx C)
+      (forall B:set, B :e Arcs -> closed_in B (subspace_topology X Tx B) (C :/\: B))
+      HiffCohX
+      HallArcs). }
+    claim HiffSub :
+      closed_in Y (subspace_topology X Tx Y) C <->
+        C c= Y /\ closed_in X Tx C.
+    { exact (closed_in_subspace_iff_closed_ambient_on_closed_subspace X Tx Y C HtopX HclosedY). }
+    exact (iffER
+      (closed_in Y (subspace_topology X Tx Y) C)
+      (C c= Y /\ closed_in X Tx C)
+      HiffSub
+      (andI (C c= Y) (closed_in X Tx C) HCsubY HclosedAmb)).
+}
+exact HglgYunf.
+Qed.
+
+(** Proven Charlie **)
 (** helper: for a fixed arc, the nonoverlap part is open in the ambient graph topology. **)
 Theorem general_linear_graph_arc_nonoverlap_open_in_X :
   forall X Tx Arcs E:set,
