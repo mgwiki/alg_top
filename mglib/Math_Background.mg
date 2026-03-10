@@ -363252,6 +363252,97 @@ claim Hind : forall k0:set, nat_p k0 -> P k0.
 exact (Hind k HkNat path_seq Hred).
 Qed.
 
+(** helper: a closed successor-length reduced edge path yields a topological loop_at in the ambient graph **)
+(** Proven Charlie **)
+Theorem reduced_edge_path_closed_has_loop_at_in_X :
+  forall X Tx Arcs k path_seq x0:set,
+  general_linear_graph X Tx Arcs ->
+  nat_p k ->
+  reduced_edge_path X Tx Arcs (ordsucc k) path_seq x0 ->
+  (apply_fun path_seq k) 0 1 = x0 ->
+  exists p:set, loop_at X Tx x0 p.
+let X Tx Arcs k path_seq x0.
+assume Hglg HkNat Hred Hclosed.
+claim HexP :
+  exists p:set,
+    path_between X x0 ((apply_fun path_seq k) 0 1) p /\
+    continuous_map unit_interval unit_interval_topology X Tx p.
+{
+  exact (reduced_edge_path_has_path_between_continuous_in_X
+    X
+    Tx
+    Arcs
+    k
+    path_seq
+    x0
+    Hglg
+    HkNat
+    Hred).
+}
+apply HexP.
+let p.
+assume HpPack.
+claim HpbtY :
+  path_between X x0 ((apply_fun path_seq k) 0 1) p.
+{ exact (andEL
+    (path_between X x0 ((apply_fun path_seq k) 0 1) p)
+    (continuous_map unit_interval unit_interval_topology X Tx p)
+    HpPack). }
+claim Hpcont :
+  continuous_map unit_interval unit_interval_topology X Tx p.
+{ exact (andER
+    (path_between X x0 ((apply_fun path_seq k) 0 1) p)
+    (continuous_map unit_interval unit_interval_topology X Tx p)
+    HpPack). }
+claim Hfun : function_on p unit_interval X.
+{
+  exact (path_between_function_on
+    X
+    x0
+    ((apply_fun path_seq k) 0 1)
+    p
+    HpbtY).
+}
+claim Hp0 : apply_fun p 0 = x0.
+{ exact (path_between_at_zero
+    X
+    x0
+    ((apply_fun path_seq k) 0 1)
+    p
+    HpbtY). }
+claim Hp1Y : apply_fun p 1 = (apply_fun path_seq k) 0 1.
+{ exact (path_between_at_one
+    X
+    x0
+    ((apply_fun path_seq k) 0 1)
+    p
+    HpbtY). }
+claim Hp1 : apply_fun p 1 = x0.
+{
+  rewrite <- Hclosed.
+  exact Hp1Y.
+}
+claim Hpbt : path_between X x0 x0 p.
+{
+  exact (path_betweenI
+    X
+    x0
+    x0
+    p
+    Hfun
+    Hp0
+    Hp1).
+}
+witness p.
+exact (path_between_continuous_loop_at
+  X
+  Tx
+  x0
+  p
+  Hpbt
+  Hpcont).
+Qed.
+
 (** helper: the image of a loop in a general linear graph is covered by finitely many arcs **)
 (** Proven Charlie **)
 Theorem loop_at_image_in_finite_union_of_arcs :
