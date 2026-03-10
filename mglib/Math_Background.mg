@@ -384214,12 +384214,33 @@ rewrite <- Heq.
 exact Hcreg.
 Qed.
 
-(** helper for S84.3: nontrivial loop class in a finite union of arcs yields a closed reduced edge path. **)
-(** This is the remaining missing bridge needed for thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths. **)
-Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs :
-  forall T Tx ArcsT Arcs' x0 f:set,
-  general_linear_graph T Tx ArcsT ->
-  x0 :e T ->
+	(** helper for S84.3: nontrivial loop class in a finite union of arcs yields a closed reduced edge path. **)
+	(** This is the remaining missing bridge needed for thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths. **)
+	(** NOTE: The natural version of this bridge assumes the basepoint is a graph vertex. **)
+	Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs_at_vertex :
+	  forall T Tx ArcsT Arcs' x0 f:set,
+	  general_linear_graph T Tx ArcsT ->
+	  x0 :e graph_vertices T Tx ArcsT ->
+	  f :e loop_space T Tx x0 ->
+	  Arcs' c= ArcsT ->
+	  finite Arcs' ->
+	  image_of_fun f unit_interval c= Union Arcs' ->
+	  path_homotopy_class_loop T Tx x0 f <> fundamental_group_id T Tx x0 ->
+	  exists n path_seq:set,
+	    n :e omega /\ n <> 0 /\
+	    reduced_edge_path T Tx ArcsT n path_seq x0 /\
+	    (exists j:set, j :e n /\ ordsucc j /:e n /\
+	      (apply_fun path_seq j) 0 1 = x0).
+	let T Tx ArcsT Arcs' x0 f.
+	assume Hglg Hx0V HfLoop HsubArcs HfinArcs HimgSub HneCls.
+	(** TODO: main combinatorial bridge for vertex basepoints. **)
+	admit.
+	Admitted.
+
+	Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs :
+	  forall T Tx ArcsT Arcs' x0 f:set,
+	  general_linear_graph T Tx ArcsT ->
+	  x0 :e T ->
   f :e loop_space T Tx x0 ->
   Arcs' c= ArcsT ->
   finite Arcs' ->
@@ -384407,6 +384428,28 @@ assume Htree HneT Hnoloop.
 	}
 	claim Hx0T : x0 :e T.
 	{ exact (HA0subT x0 Hx0A0). }
+	claim Hx0V : x0 :e graph_vertices T (subspace_topology X Tx T) ArcsT.
+	{
+	  rewrite (graph_vertices_unfold T (subspace_topology X Tx T) ArcsT).
+	  apply (SepI
+	    T
+	    (fun x:set =>
+	      exists A:set, A :e ArcsT /\
+	        exists p0 q0:set,
+	          end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p0 q0 /\
+	          (x = p0 \/ x = q0))
+	    x0
+	    Hx0T).
+	  witness A0.
+	  apply andI.
+	  - exact HA0ArcsT.
+	  - witness p.
+	    witness q.
+	    apply andI.
+	    - exact Hepq.
+	    - apply orIL.
+	      reflexivity.
+	}
 	(** Core bridge (still missing): nontrivial pi1 class yields a closed reduced edge path. **)
 	claim Hbridge :
 	  forall cls:set,
@@ -384462,22 +384505,22 @@ assume Htree HneT Hnoloop.
 	        reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
 	        (exists j:set, j :e n /\ ordsucc j /:e n /\
 	          (apply_fun path_seq j) 0 1 = x0).
-	  {
-	    let f0. let Arcs0.
-	    assume Hf0 Hsub0 Hfin0 Himg0 Hne0.
-	    exact (loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs
-	      T
-	      (subspace_topology X Tx T)
-	      ArcsT
-	      Arcs0
-	      x0
-	      f0
-	      HglgT
-	      Hx0T
-	      Hf0
-	      Hsub0
-	      Hfin0
-	      Himg0
+		  {
+		    let f0. let Arcs0.
+		    assume Hf0 Hsub0 Hfin0 Himg0 Hne0.
+		    exact (loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs_at_vertex
+		      T
+		      (subspace_topology X Tx T)
+		      ArcsT
+		      Arcs0
+		      x0
+		      f0
+		      HglgT
+		      Hx0V
+		      Hf0
+		      Hsub0
+		      Hfin0
+		      Himg0
 	      Hne0).
 	  }
   apply (and3E
