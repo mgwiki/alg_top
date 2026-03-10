@@ -196536,6 +196536,7 @@ apply andI.
   rewrite HclsWord.
   exact HwordEq.
 Admitted.
+(** Missing: depends on thm59_1_open_cover_generates_pi1. **)
 
 (** Helper: generation by i-star plus trivial i-star forces basepoint pi1 trivial. **)
 Theorem lemma59_4a_pi1_trivial_from_i_generation : forall X Tx U x0:set,
@@ -197148,7 +197149,8 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
   HpcX
   Hx0X
   Hpi1X).
-Qed.
+Admitted.
+(** Missing: depends on lemma59_4a_pi1_trivial_from_word_data_and_both_trivial. **)
 
 (** Admin-approved-refactored per noticeboard proposal 1772562693 **)
 Theorem lemma59_4a_path_connected_pieces_from_data : forall X Tx U V x0:set,
@@ -197218,6 +197220,7 @@ exact (lemma59_4a_pi1_trivial_from_i_generation
   Hgen
   Hi_triv).
 Admitted.
+(** Missing: depends on ex59_4a_trivial_j_star. **)
 
 (** Helper: intended S59.4(a) conclusion for noticeboard proposal 1772562693 (alias). **)
 (** Admin-approved-refactored per noticeboard proposal 1772562693 **)
@@ -197261,6 +197264,7 @@ exact (lemma59_4a_path_connected_pieces_from_data
   HpcU HpcV HpcUV
   Hi_triv Hj_triv).
 Admitted.
+(** Missing: depends on lemma59_4a_path_connected_pieces_from_data. **)
 
 (** Helper: if i-star and j-star are trivial and pieces are path connected, then X is simply connected. **)
 Theorem ex59_4a_both_trivial_if_pieces_path_connected : forall X Tx U V x0:set,
@@ -197365,6 +197369,7 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
   Hx0X
   Hpi1X).
 Admitted.
+(** Missing: depends on ex59_4a_trivial_j_star. **)
 
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
@@ -197514,6 +197519,7 @@ claim HpcV : path_connected_space V (subspace_topology X Tx V).
 }
 exact (HscX_if_pcX HpcU HpcV).
 Admitted.
+(** Missing: depends on ex59_4a_both_trivial_if_pieces_path_connected. **)
 
 (** ============================================================ **)
 (** S60 Fundamental Groups of Some Surfaces                      **)
