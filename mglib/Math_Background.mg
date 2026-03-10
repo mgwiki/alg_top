@@ -242394,11 +242394,13 @@ claim HPn : P n.
 	             exact Hx0_in_Gb0.
 	           }
 
-			           (** The boundary product p lies in the same factor subgroup, and cannot equal efam(alphaL). **)
-				           claim Hp_in_GaL : p :e apply_fun Gfam alphaL.
-				           {
-				             claim Hxsk_in_GaL : apply_fun xs0 (ordsucc k) :e apply_fun Gfam alphaL.
-				             { rewrite <- Hm_sm. exact HxL_in_GaL. }
+				           (** The boundary product p lies in the same factor subgroup, and cannot equal efam(alphaL). **)
+				           (** NOTE: The p = efam(alphaL) branch is only eliminable if efam(alpha) is the ambient identity.
+				              See NOTICE 1773102736. **)
+					           claim Hp_in_GaL : p :e apply_fun Gfam alphaL.
+					           {
+					             claim Hxsk_in_GaL : apply_fun xs0 (ordsucc k) :e apply_fun Gfam alphaL.
+					             { rewrite <- Hm_sm. exact HxL_in_GaL. }
 				             exact (subgroup_of_mult_closed
 				               (apply_fun Gfam alphaL) G mult e inv
 				               (apply_fun xs0 (ordsucc k)) (apply_fun xs0 0)
