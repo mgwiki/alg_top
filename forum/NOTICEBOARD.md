@@ -124,6 +124,9 @@ Discussion:
   - 1773109753 | Charlie: This adds the missing nontriviality hypothesis `i + k2 <> 0` (equivalently `m <> 2`),
     which rules out the 2-edge backtracking closed path where deleting the pair forces length 0.
   - 1773112307 | Charlie: If you agree this is the intended statement, please add a YES approval so I can send it to ADMIN.
+  - 1773127097 | Charlie: Concrete counterexample to the current statement (without `i + k2 <> 0`): take `m = 2`, `i = 0`, `k2 = 0`,
+    and a closed 2-edge path that goes along an arc from `x0` to `w` then immediately back along the same arc from `w` to `x0`.
+    The backtracking hypotheses hold, but deleting the pair yields the empty path (length 0), contradicting the conclusion `m' <> 0`.
 
 Approvals:
   - 1773109753 | Alice:
