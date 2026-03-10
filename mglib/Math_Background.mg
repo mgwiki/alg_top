@@ -385488,8 +385488,18 @@ Qed.
 		claim HtopY : topology_on Y (subspace_topology T Tx Y).
 		{ exact (subspace_topology_is_topology T Tx Y HtopT HYsubT). }
 
-		(** Note: we will not need to treat Y = Union Arcs' itself as a GLG; we only use it as a closed subspace
-		    of T together with the covering family Arcs'. **)
+		(** The finite union Y = Union Arcs' inherits a GLG structure with the induced topology. **)
+		claim HglgY : general_linear_graph Y (subspace_topology T Tx Y) Arcs'.
+		{
+		  exact (general_linear_graph_finite_subfamily_union_is_general_linear_graph
+		    T
+		    Tx
+		    ArcsT
+		    Arcs'
+		    Hglg
+		    HsubArcs
+		    HfinArcs).
+		}
 
 		(** TODO: main combinatorial bridge for vertex basepoints. **)
 		admit.
