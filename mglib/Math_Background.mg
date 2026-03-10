@@ -197149,8 +197149,7 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
   HpcX
   Hx0X
   Hpi1X).
-Admitted.
-(** Missing: depends on lemma59_4a_pi1_trivial_from_word_data_and_both_trivial. **)
+Qed.
 
 (** Admin-approved-refactored per noticeboard proposal 1772562693 **)
 Theorem lemma59_4a_path_connected_pieces_from_data : forall X Tx U V x0:set,
