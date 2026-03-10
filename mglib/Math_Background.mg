@@ -384233,10 +384233,88 @@ Theorem thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths :
       {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0}.
 let T ArcsT X Tx Arcs.
 assume Htree HneT Hnoloop.
-(** Remaining S84.3 core bridge:
-    encode reduced-edge-path no-loop information into path-homotopy classes
-    to derive triviality of fundamental_group at some (equiv. every) basepoint. **)
-admit.
+claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{ exact (tree_in_graph_general_linear_graph T ArcsT X Tx Arcs Htree). }
+claim HtopT : topology_on T (subspace_topology X Tx T).
+{ exact (general_linear_graph_topology_on T (subspace_topology X Tx T) ArcsT HglgT). }
+(** Pick any basepoint using nonemptiness. **)
+apply (nonempty_has_element T HneT).
+let x0.
+assume Hx0T : x0 :e T.
+(** Core bridge (still missing): nontrivial pi1 class yields a closed reduced edge path. **)
+claim Hbridge :
+  forall cls:set,
+  cls :e fundamental_group T (subspace_topology X Tx T) x0 ->
+  cls <> fundamental_group_id T (subspace_topology X Tx T) x0 ->
+  exists n path_seq:set,
+    n :e omega /\ n <> 0 /\
+    reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+    (exists j:set, j :e n /\ ordsucc j /:e n /\
+      (apply_fun path_seq j) 0 1 = x0).
+{ admit. }
+witness x0.
+apply andI.
+- exact Hx0T.
+- (** Rewrite the nested subspace topology away. **)
+  rewrite (subspace_topology_whole T (subspace_topology X Tx T) HtopT).
+  (** Show fundamental_group is the singleton {id} by excluding nontrivial classes via the bridge lemma. **)
+  apply set_ext.
+  + let cls.
+    assume Hcls : cls :e fundamental_group T (subspace_topology X Tx T) x0.
+    apply (xm (cls = fundamental_group_id T (subspace_topology X Tx T) x0)).
+    * assume HclsEq.
+      rewrite HclsEq.
+      exact (SingI (fundamental_group_id T (subspace_topology X Tx T) x0)).
+    * assume HclsNe.
+      claim Hex :
+        exists n path_seq:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0).
+      {
+        exact (Hbridge cls Hcls HclsNe).
+      }
+      apply Hex.
+      let n.
+      assume HnPack.
+      apply HnPack.
+      let path_seq.
+      assume HpathPack.
+      claim Hcontra : False.
+      {
+        apply Hnoloop.
+        witness n.
+        witness path_seq.
+        witness x0.
+        exact HpathPack.
+      }
+      exact (FalseE
+        Hcontra
+        (cls :e {fundamental_group_id T (subspace_topology X Tx T) x0})).
+  + let cls.
+    assume HclsSing : cls :e {fundamental_group_id T (subspace_topology X Tx T) x0}.
+    rewrite (SingE (fundamental_group_id T (subspace_topology X Tx T) x0) cls HclsSing).
+    (** id is always a fundamental group element (as a class of the constant loop). **)
+    claim HconstLoopAt : loop_at T (subspace_topology X Tx T) x0 (constant_path x0).
+    { exact (loop_at_constant_path T (subspace_topology X Tx T) x0 HtopT Hx0T). }
+    claim HconstFS : (constant_path x0) :e function_space unit_interval T.
+    { exact (graph_in_function_space unit_interval T (fun _:set => x0) (fun _ _ => Hx0T)). }
+    claim HconstLoop : (constant_path x0) :e loop_space T (subspace_topology X Tx T) x0.
+    {
+      exact (SepI
+        (function_space unit_interval T)
+        (fun g:set => loop_at T (subspace_topology X Tx T) x0 g)
+        (constant_path x0)
+        HconstFS
+        HconstLoopAt).
+    }
+    exact (path_homotopy_class_in_fundamental_group
+      T
+      (subspace_topology X Tx T)
+      x0
+      (constant_path x0)
+      HconstLoop).
 Admitted.
 
 (** from S84 Thm 84.3 (line 5617 in algtop.tex): tree is simply connected **)
