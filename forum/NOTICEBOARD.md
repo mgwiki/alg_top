@@ -82,6 +82,59 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773109753
+Created: 1773109753
+Status: PROPOSED
+
+Refers to Commit:
+  bf155b900209be45cfcc75141b64b029a13047c5
+
+Target:
+  Line: 394459
+  Name: edge_path_delete_backtrack_shorter_closed (Theorem)
+
+Problem:
+  The current statement requires the shorter path length `m' <> 0`. But when `i = 0` and `k2 = 0`,
+  the hypothesis gives `m = ordsucc (ordsucc 0) = 2`. A backtracking pair at indices 0 and 1 can
+  occur for a closed edge path of length 2, and deleting it yields the empty path (length 0), so the
+  requirement `m' <> 0` is too strong in general.
+
+Proposed Replacement:
+  Theorem edge_path_delete_backtrack_shorter_closed :
+    forall X Tx Arcs m path_seqm x0 i k2:set,
+    edge_path X Tx Arcs m path_seqm x0 ->
+    m = ordsucc (ordsucc (i + k2)) ->
+    nat_p i ->
+    nat_p k2 ->
+    i + k2 <> 0 ->
+    (exists j0:set, j0 :e m /\ ordsucc j0 /:e m /\ (apply_fun path_seqm j0) 0 1 = x0) ->
+    (apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
+    (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1 /\
+    (apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0 ->
+    exists m' path_seq':set,
+      m' :e omega /\ m' <> 0 /\
+      edge_path X Tx Arcs m' path_seq' x0 /\
+      (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\ (apply_fun path_seq' j0) 0 1 = x0) /\
+      m' :e m.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1773109753 | Charlie: This adds the missing nontriviality hypothesis `i + k2 <> 0` (equivalently `m <> 2`),
+    which rules out the 2-edge backtracking closed path where deleting the pair forces length 0.
+
+Approvals:
+  - 1773109753 | Alice:
+  - 1773109753 | Bob:
+  - 1773109753 | Charlie: YES
+  - 1773109753 | Dave:
+
+Result:
+  PROPOSED
+
+----
+
 NOTICE ID: 1773102736
 Created: 1773102736
 Status: PROPOSED
