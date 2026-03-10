@@ -343574,6 +343574,72 @@ exact (Subq_finite
 Qed.
 
 (** Proven Charlie **)
+(** helper: if E is not among Arcs', then (Union Arcs') meets E only in finitely many (overlap) points. **)
+Theorem general_linear_graph_union_other_arcs_intersect_arc_finite :
+  forall X Tx Arcs Arcs' E:set,
+  general_linear_graph X Tx Arcs ->
+  Arcs' c= Arcs ->
+  E :e Arcs ->
+  E /:e Arcs' ->
+  finite ((Union Arcs') :/\: E).
+let X Tx Arcs Arcs' E.
+assume Hglg HsubArcs' HEArcs HEnin.
+set OverE := {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}.
+claim HfinOverE : finite OverE.
+{
+  exact (general_linear_graph_arc_overlap_points_finite
+    X
+    Tx
+    Arcs
+    E
+    Hglg
+    HEArcs).
+}
+claim HsubCap : ((Union Arcs') :/\: E) c= OverE.
+{
+  let p.
+  assume HpCap : p :e (Union Arcs') :/\: E.
+  claim HpU : p :e Union Arcs'.
+  { exact (binintersectE1 (Union Arcs') E p HpCap). }
+  claim HpE : p :e E.
+  { exact (binintersectE2 (Union Arcs') E p HpCap). }
+  apply (UnionE_impred Arcs' p HpU).
+  let F.
+  assume HpF : p :e F.
+  assume HFArcs' : F :e Arcs'.
+  claim HFArcs : F :e Arcs.
+  { exact (HsubArcs' F HFArcs'). }
+  claim HFneqE : F <> E.
+  {
+    assume Heq.
+    apply HEnin.
+    rewrite <- Heq.
+    exact HFArcs'.
+  }
+  claim Hex : exists G:set, G :e Arcs /\ G <> E /\ p :e G.
+  {
+    witness F.
+    apply andI.
+    - apply andI.
+      + exact HFArcs.
+      + exact HFneqE.
+    - exact HpF.
+  }
+  exact (SepI
+    E
+    (fun q:set => exists G:set, G :e Arcs /\ G <> E /\ q :e G)
+    p
+    HpE
+    Hex).
+}
+exact (Subq_finite
+  OverE
+  HfinOverE
+  ((Union Arcs') :/\: E)
+  HsubCap).
+Qed.
+
+(** Proven Charlie **)
 (** helper: for a fixed arc, the nonoverlap part is open in the ambient graph topology. **)
 Theorem general_linear_graph_arc_nonoverlap_open_in_X :
   forall X Tx Arcs E:set,
