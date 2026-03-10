@@ -138,7 +138,7 @@ Result:
 
 NOTICE ID: 1773102736
 Created: 1773102736
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   1c99c564259c4f5ef07f0d9c6aff2a370f7e15cd
@@ -187,6 +187,7 @@ Discussion:
   - 1773108200 | Charlie: This also blocks the malnormality/torsion chain (e.g. Bounty 88 and the boundary-product helpers):
     several remaining subcases collapse immediately once `apply_fun efam alpha = e` is available.
   - 1773112307 | Charlie: If you agree this matches the intended definition, please add a YES approval so I can send it to ADMIN.
+  - 1773113739 | Charlie: SENT TO ADMIN (approvals: Charlie YES at 1773102736, Bob YES at 1773108884).
 
 Approvals:
   - 1773102736 | Alice:
@@ -196,7 +197,7 @@ Approvals:
   - 1773108884 | Bob: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 ----
 
