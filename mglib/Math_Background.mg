@@ -384575,6 +384575,61 @@ Qed.
 		          HeqTopB)
 		        Hend).
 		}
+		(** In particular, x0 is a graph vertex in the induced (finite) subgraph Y with arc family Arcs'. **)
+		claim Hx0VY : x0 :e graph_vertices Y (subspace_topology T Tx Y) Arcs'.
+		{
+		  rewrite (graph_vertices_unfold Y (subspace_topology T Tx Y) Arcs').
+		  apply (SepI
+		    Y
+		    (fun x:set =>
+		      exists A:set, A :e Arcs' /\
+		        exists p q:set, end_points_of_arc A (subspace_topology Y (subspace_topology T Tx Y) A) p q /\
+		          (x = p \/ x = q))
+		    x0
+		    Hx0Y).
+		  apply HexArcEndpointY.
+		  let B.
+		  assume HBpack.
+		  apply HBpack.
+		  let r.
+		  assume Hrpack.
+		  claim HBArcs' : B :e Arcs'.
+		  {
+		    exact (andEL
+		      (B :e Arcs')
+		      (end_points_of_arc B (subspace_topology Y (subspace_topology T Tx Y) B) x0 r \/
+		       end_points_of_arc B (subspace_topology Y (subspace_topology T Tx Y) B) r x0)
+		      Hrpack).
+		  }
+		  claim HendOr :
+		    end_points_of_arc B (subspace_topology Y (subspace_topology T Tx Y) B) x0 r \/
+		    end_points_of_arc B (subspace_topology Y (subspace_topology T Tx Y) B) r x0.
+		  {
+		    exact (andER
+		      (B :e Arcs')
+		      (end_points_of_arc B (subspace_topology Y (subspace_topology T Tx Y) B) x0 r \/
+		       end_points_of_arc B (subspace_topology Y (subspace_topology T Tx Y) B) r x0)
+		      Hrpack).
+		  }
+		  witness B.
+		  apply andI.
+		  - exact HBArcs'.
+		  - witness x0.
+		    witness r.
+		    apply andI.
+		    + apply HendOr.
+		      * assume Hend.
+		        exact Hend.
+		      * assume Hend.
+		        exact (end_points_of_arc_sym
+		          B
+		          (subspace_topology Y (subspace_topology T Tx Y) B)
+		          r
+		          x0
+		          Hend).
+		    + apply orIL.
+		      reflexivity.
+		}
 		claim HYeqSelUnion : Y = Union {A :e ArcsT | A c= Y}.
 		{
 		  apply set_ext.
