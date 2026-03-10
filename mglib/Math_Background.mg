@@ -1,6 +1,6 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 525 **)
+(** Balance Charlie 512 **)
 (** Balance Dave 2352 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -393038,7 +393038,8 @@ Admitted.
 (** from S84 Thm 84.3 (line 5617 in algtop.tex): tree is simply connected **)
 (** LATEX VERSION: Any tree T is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 121 **)
+(** Bounty 134 **)
+(** Lock Charlie 1773192000 **)
 (** Admin-approved-refactored per noticeboard proposal 1772494157 **)
 Theorem thm84_3_tree_simply_connected :
   forall T ArcsT X Tx Arcs:set,
