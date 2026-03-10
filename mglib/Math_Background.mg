@@ -384230,6 +384230,43 @@ Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union
     reduced_edge_path T Tx ArcsT n path_seq x0 /\
     (exists j:set, j :e n /\ ordsucc j /:e n /\
       (apply_fun path_seq j) 0 1 = x0).
+let T Tx ArcsT Arcs' x0 f.
+assume Hglg Hx0T HfLoop HsubArcs HfinArcs HimgSub HneCls.
+(** Nonemptiness of Arcs': x0 belongs to the loop image, hence to Union Arcs'. **)
+set C := image_of_fun f unit_interval.
+claim HloopAt : loop_at T Tx x0 f.
+{ exact (loop_space_has_loop_at T Tx x0 f HfLoop). }
+claim Hx0C : x0 :e C.
+{
+  claim Hf0 : apply_fun f 0 = x0.
+  { exact (loop_at_at_zero T Tx x0 f HloopAt). }
+  claim Himg0 : (apply_fun f 0) :e C.
+  { exact (ReplI unit_interval (fun t:set => apply_fun f t) 0 zero_in_unit_interval). }
+  rewrite <- Hf0.
+  exact Himg0.
+}
+claim Hx0Union : x0 :e Union Arcs'.
+{ exact (HimgSub x0 Hx0C). }
+claim HexArc : exists A:set, A :e Arcs' /\ x0 :e A.
+{
+  apply (UnionE_impred Arcs' x0 Hx0Union).
+  let A.
+  assume Hx0A.
+  assume HAArcs'.
+  witness A.
+  exact (andI (A :e Arcs') (x0 :e A) HAArcs' Hx0A).
+}
+claim HArcsNe : Arcs' <> Empty.
+{
+  assume Hemp.
+  apply HexArc.
+  let A.
+  assume HApair.
+  exact (EmptyE A (eq_subst_mem_set A Arcs' Empty (andEL (A :e Arcs') (x0 :e A) HApair) Hemp)).
+}
+(** TODO: main combinatorial bridge.
+    Intended proof: shrink to the finite subgraph Y := Union Arcs' and extract a closed reduced edge path
+    from the assumption that the loop class is nontrivial. **)
 admit.
 Admitted.
 
