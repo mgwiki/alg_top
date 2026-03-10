@@ -387312,7 +387312,121 @@ claim Hcycle :
     }
     claim Hlift_red0 :
       reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p.
-    { admit. }
+    {
+      claim HepT0 : edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p.
+      { exact (reduced_edge_path_edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p Hred0). }
+      claim HnoBackT0 :
+        forall i:set, i :e n0 -> ordsucc i :e n0 ->
+          ~((apply_fun path_seq0 i) 1 = (apply_fun path_seq0 (ordsucc i)) 1 /\
+            (apply_fun path_seq0 i) 0 0 = (apply_fun path_seq0 (ordsucc i)) 0 1 /\
+            (apply_fun path_seq0 i) 0 1 = (apply_fun path_seq0 (ordsucc i)) 0 0).
+      { exact (andER
+          (edge_path T (subspace_topology X Tx T) ArcsT n0 path_seq0 p)
+          (forall i:set, i :e n0 -> ordsucc i :e n0 ->
+            ~((apply_fun path_seq0 i) 1 = (apply_fun path_seq0 (ordsucc i)) 1 /\
+              (apply_fun path_seq0 i) 0 0 = (apply_fun path_seq0 (ordsucc i)) 0 1 /\
+              (apply_fun path_seq0 i) 0 1 = (apply_fun path_seq0 (ordsucc i)) 0 0))
+          Hred0). }
+      claim HTsubX0 : T c= X. { exact (tree_in_graph_subset_X T ArcsT X Tx Arcs Htree). }
+      (** Build edge_path in T'. **)
+      claim HepT'0 : edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p.
+      {
+        apply (and5E
+          (n0 :e omega)
+          (function_on path_seq0 n0 (setprod (setprod T T) (Power T)))
+          (forall i:set, i :e n0 ->
+            exists A0 ini fin:set,
+              apply_fun path_seq0 i = ((ini, fin), A0) /\
+              oriented_edge T (subspace_topology X Tx T) ArcsT A0 ini fin)
+          (n0 <> 0 -> (apply_fun path_seq0 0) 0 0 = p)
+          (forall i:set, i :e n0 -> ordsucc i :e n0 ->
+            (apply_fun path_seq0 i) 0 1 = (apply_fun path_seq0 (ordsucc i)) 0 0)
+          HepT0).
+        assume Hn0Om0 Hfun0 Hdec0 Hstart0 Hstep0.
+        (** Codomain upgrade: setprod (setprod T T) (Power T) c= setprod (setprod T' T') (Power T'). **)
+        claim HpowTsubT' : Power T c= Power T'.
+        { let z. assume Hz. exact (PowerI T' z (Subq_tra z T T' (PowerE T z Hz) HTsub)). }
+        claim HprodTT : setprod T T c= setprod T' T'.
+        { exact (setprod_Subq T T T' T' HTsub HTsub). }
+        claim HprodFull : setprod (setprod T T) (Power T) c= setprod (setprod T' T') (Power T').
+        { exact (setprod_Subq (setprod T T) (Power T) (setprod T' T') (Power T') HprodTT HpowTsubT'). }
+        claim Hfun'0 : function_on path_seq0 n0 (setprod (setprod T' T') (Power T')).
+        { exact (function_on_codomain path_seq0 n0 (setprod (setprod T T) (Power T)) (setprod (setprod T' T') (Power T')) Hfun0 HprodFull). }
+        (** Oriented edge upgrade for each index. **)
+        claim Hdec'0 :
+          forall i:set, i :e n0 ->
+            exists A0 ini fin:set,
+              apply_fun path_seq0 i = ((ini, fin), A0) /\
+              oriented_edge T' (subspace_topology X Tx T') ArcsT' A0 ini fin.
+        {
+          let i. assume Hi.
+          apply (Hdec0 i Hi).
+          let A0. assume HA0pack.
+          apply HA0pack.
+          let ini. assume Hinipack.
+          apply Hinipack.
+          let fin. assume HedgePack.
+          claim HapplyEq : apply_fun path_seq0 i = ((ini, fin), A0).
+          { exact (andEL (apply_fun path_seq0 i = ((ini, fin), A0))
+                         (oriented_edge T (subspace_topology X Tx T) ArcsT A0 ini fin)
+                         HedgePack). }
+          claim HoriT : oriented_edge T (subspace_topology X Tx T) ArcsT A0 ini fin.
+          { exact (andER (apply_fun path_seq0 i = ((ini, fin), A0))
+                         (oriented_edge T (subspace_topology X Tx T) ArcsT A0 ini fin)
+                         HedgePack). }
+          claim HA0ArcsT : A0 :e ArcsT.
+          { exact (oriented_edge_in_arcs T (subspace_topology X Tx T) ArcsT A0 ini fin HoriT). }
+          claim HA0ArcsT' : A0 :e ArcsT'. { exact (HArcsT_sub A0 HA0ArcsT). }
+          claim HA0subT : A0 c= T. { exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs A0 Htree HA0ArcsT). }
+          claim HendT : end_points_of_arc A0 (subspace_topology T (subspace_topology X Tx T) A0) ini fin.
+          { exact (oriented_edge_endpoints T (subspace_topology X Tx T) ArcsT A0 ini fin HoriT). }
+          (** Subspace topology transfer: sub_T (sub_X T) A0 = sub_X A0 **)
+          claim HsubEqT : subspace_topology T (subspace_topology X Tx T) A0 = subspace_topology X Tx A0.
+          { exact (ex16_1_subspace_transitive X Tx T A0 HtopX HTsubX0 HA0subT). }
+          (** Subspace topology transfer: sub_T' (sub_X T') A0 = sub_X A0 **)
+          claim HsubEqT' : subspace_topology T' (subspace_topology X Tx T') A0 = subspace_topology X Tx A0.
+          { exact (ex16_1_subspace_transitive X Tx T' A0 HtopX HT'subX (Subq_tra A0 T T' HA0subT HTsub)). }
+          (** Transfer endpoint condition from sub_X A0 to sub_T' (sub_X T') A0 **)
+          claim HendX : end_points_of_arc A0 (subspace_topology X Tx A0) ini fin.
+          { rewrite <- HsubEqT. exact HendT. }
+          claim HendT' : end_points_of_arc A0 (subspace_topology T' (subspace_topology X Tx T') A0) ini fin.
+          { rewrite HsubEqT'. exact HendX. }
+          witness A0. witness ini. witness fin.
+          exact (andI
+            (apply_fun path_seq0 i = ((ini, fin), A0))
+            (oriented_edge T' (subspace_topology X Tx T') ArcsT' A0 ini fin)
+            HapplyEq
+            (andI
+              (A0 :e ArcsT')
+              (end_points_of_arc A0 (subspace_topology T' (subspace_topology X Tx T') A0) ini fin)
+              HA0ArcsT'
+              HendT')).
+        }
+        exact (and5I
+          (n0 :e omega)
+          (function_on path_seq0 n0 (setprod (setprod T' T') (Power T')))
+          (forall i:set, i :e n0 ->
+            exists A0 ini fin:set,
+              apply_fun path_seq0 i = ((ini, fin), A0) /\
+              oriented_edge T' (subspace_topology X Tx T') ArcsT' A0 ini fin)
+          (n0 <> 0 -> (apply_fun path_seq0 0) 0 0 = p)
+          (forall i:set, i :e n0 -> ordsucc i :e n0 ->
+            (apply_fun path_seq0 i) 0 1 = (apply_fun path_seq0 (ordsucc i)) 0 0)
+          Hn0Om0
+          Hfun'0
+          Hdec'0
+          Hstart0
+          Hstep0).
+      }
+      exact (andI
+        (edge_path T' (subspace_topology X Tx T') ArcsT' n0 path_seq0 p)
+        (forall i:set, i :e n0 -> ordsucc i :e n0 ->
+          ~((apply_fun path_seq0 i) 1 = (apply_fun path_seq0 (ordsucc i)) 1 /\
+            (apply_fun path_seq0 i) 0 0 = (apply_fun path_seq0 (ordsucc i)) 0 1 /\
+            (apply_fun path_seq0 i) 0 1 = (apply_fun path_seq0 (ordsucc i)) 0 0))
+        HepT'0
+        HnoBackT0).
+    }
     (** The arc A is not in ArcsT because A not subset of T, but all arcs in ArcsT are subset of T. **)
     claim HAnotArcsT : A /:e ArcsT.
     {
