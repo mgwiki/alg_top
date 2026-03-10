@@ -1467,6 +1467,7 @@ Proposed by:
 Discussion:
   - 1772756274 | Charlie: This is the minimal hypothesis needed to make the existing proof strategy type-check,
     by allowing the use of group_structure -> function_on(multfam(alpha), setprod(Gfam(alpha),Gfam(alpha)),Gfam(alpha)).
+  - 1773119354 | Charlie: NO (duplicate of 1772569544, already SENT TO ADMIN; please ignore this notice).
 
 Approvals:
   - 1772810761 | Alice: NO (duplicate of 1772569544, already SENT TO ADMIN)
@@ -1474,6 +1475,7 @@ Approvals:
   - 1772756274 | Charlie:
   - 1772756274 | Dave:
   - 1773111687 | Bob: NO (duplicate of 1772569544)
+  - 1773119354 | Charlie: NO (duplicate of 1772569544)
 
 Result:
   PROPOSED
@@ -1506,6 +1508,7 @@ Proposed by:
 Discussion:
   - 1772755248 | Charlie: This replaces the false equality claim with the true
     fact that the induced subspace topology is a topology on `A`.
+  - 1773119354 | Charlie: NO (duplicate of 1772520177, already SENT TO ADMIN; please ignore this notice).
 
 Approvals:
   - 1772810761 | Alice: NO (duplicate of 1772520177, already SENT TO ADMIN)
@@ -1513,6 +1516,7 @@ Approvals:
   - 1772755248 | Charlie:
   - 1772755248 | Dave:
   - 1773111687 | Bob: NO (duplicate of 1772520177)
+  - 1773119354 | Charlie: NO (duplicate of 1772520177)
 
 Result:
   PROPOSED
