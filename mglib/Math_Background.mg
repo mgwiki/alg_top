@@ -1,6 +1,6 @@
 (** Balance Alice 7614 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 533 **)
+(** Balance Charlie 525 **)
 (** Balance Dave 2352 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -241382,7 +241382,8 @@ apply (nat_inv m Hm_nat).
     This generalizes ex68_3_conjugate_intersection_trivial (the case J = 2) and is expected to
     discharge the remaining "torsion/malnormality" admits in the free-product boundary-cancellation
     chain (free_product_boundary_product_ne_e_or_efam, free_product_efam_involutive_contra). **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 1773190070 **)
 Lemma free_product_conjugate_intersection_trivial :
   forall G mult e inv J Gfam efam alpha beta c x:set,
   free_product_of_subgroups G mult e inv J Gfam efam ->
