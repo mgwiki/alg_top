@@ -362924,6 +362924,334 @@ exact (edge_path_consecutive_match
   His).
 Qed.
 
+(** helper: a successor-length reduced edge path yields a continuous ambient path_between from x0 to its final vertex **)
+(** This is a step towards relating combinatorial reduced edge paths to topological paths/loops. **)
+(** Proven Charlie **)
+Theorem reduced_edge_path_has_path_between_continuous_in_X :
+  forall X Tx Arcs k path_seq x0:set,
+  general_linear_graph X Tx Arcs ->
+  nat_p k ->
+  reduced_edge_path X Tx Arcs (ordsucc k) path_seq x0 ->
+  exists p:set,
+    path_between X x0 ((apply_fun path_seq k) 0 1) p /\
+    continuous_map unit_interval unit_interval_topology X Tx p.
+let X Tx Arcs k path_seq x0.
+assume Hglg HkNat Hred.
+set P := fun k0:set =>
+  forall path_seq0:set,
+    reduced_edge_path X Tx Arcs (ordsucc k0) path_seq0 x0 ->
+    exists p:set,
+      path_between X x0 ((apply_fun path_seq0 k0) 0 1) p /\
+      continuous_map unit_interval unit_interval_topology X Tx p.
+claim Hind : forall k0:set, nat_p k0 -> P k0.
+{
+  apply nat_ind.
+  - (** k0 = 0 **)
+    let path_seq0.
+    assume Hred0 : reduced_edge_path X Tx Arcs (ordsucc 0) path_seq0 x0.
+    claim Hdec :
+      exists A ini fin:set,
+        apply_fun path_seq0 0 = ((ini, fin), A) /\
+        oriented_edge X Tx Arcs A ini fin.
+    { exact (reduced_edge_path_edge_decomposition
+        X
+        Tx
+        Arcs
+        (ordsucc 0)
+        path_seq0
+        x0
+        0
+        Hred0
+        (ordsuccI2 0)). }
+    apply Hdec.
+    let A.
+    assume HA.
+    apply HA.
+    let ini.
+    assume Hini.
+    apply Hini.
+    let fin.
+    assume HfinPack.
+    claim Heq : apply_fun path_seq0 0 = ((ini, fin), A).
+    { exact (andEL
+        (apply_fun path_seq0 0 = ((ini, fin), A))
+        (oriented_edge X Tx Arcs A ini fin)
+        HfinPack). }
+    claim Hori : oriented_edge X Tx Arcs A ini fin.
+    { exact (andER
+        (apply_fun path_seq0 0 = ((ini, fin), A))
+        (oriented_edge X Tx Arcs A ini fin)
+        HfinPack). }
+    claim Hstart : (apply_fun path_seq0 0) 0 0 = x0.
+    { exact (reduced_edge_path_start_vertex
+        X
+        Tx
+        Arcs
+        (ordsucc 0)
+        path_seq0
+        x0
+        Hred0
+        (neq_ordsucc_0 0)). }
+    claim HiniEq : ini = x0.
+    {
+      rewrite <- Hstart.
+      rewrite Heq.
+      rewrite (tuple_2_0_eq (ini, fin) A).
+      rewrite (tuple_2_0_eq ini fin).
+      reflexivity.
+    }
+    claim HpathEdge :
+      exists p:set,
+        path_between X ini fin p /\
+        continuous_map unit_interval unit_interval_topology X Tx p /\
+        (forall t:set, t :e unit_interval -> apply_fun p t :e A).
+    { exact (oriented_edge_has_path_between_continuous_in_X
+        X
+        Tx
+        Arcs
+        A
+        ini
+        fin
+        Hglg
+        Hori). }
+    apply HpathEdge.
+    let p.
+    assume HpPack.
+    apply (and3E
+      (path_between X ini fin p)
+      (continuous_map unit_interval unit_interval_topology X Tx p)
+      (forall t:set, t :e unit_interval -> apply_fun p t :e A)
+      HpPack).
+    assume Hpbt Hpcont Hpinside.
+    witness p.
+    apply andI.
+    - claim HfinDef : (apply_fun path_seq0 0) 0 1 = fin.
+      {
+        rewrite Heq.
+        rewrite (tuple_2_0_eq (ini, fin) A).
+        rewrite (tuple_2_1_eq ini fin).
+        reflexivity.
+      }
+      rewrite HfinDef.
+      rewrite <- HiniEq.
+      exact Hpbt.
+    - exact Hpcont.
+  - (** successor step **)
+    let k1.
+    assume Hk1Nat IHk1.
+    let path_seq1.
+    assume HredSucc :
+      reduced_edge_path X Tx Arcs (ordsucc (ordsucc k1)) path_seq1 x0.
+    claim Hk1In :
+      ordsucc k1 :e ordsucc (ordsucc k1).
+    { exact (ordsuccI2 (ordsucc k1)). }
+    claim HredPref :
+      reduced_edge_path X Tx Arcs (ordsucc k1)
+        (graph (ordsucc k1) (fun i:set => apply_fun path_seq1 i)) x0.
+    { exact (reduced_edge_path_prefix
+        X
+        Tx
+        Arcs
+        (ordsucc (ordsucc k1))
+        path_seq1
+        x0
+        (ordsucc k1)
+        HredSucc
+        Hk1In). }
+    claim Hk1Path :
+      exists p0:set,
+        path_between X x0 ((apply_fun path_seq1 k1) 0 1) p0 /\
+        continuous_map unit_interval unit_interval_topology X Tx p0.
+    {
+      claim Hraw :
+        exists p0:set,
+          path_between X x0
+            ((apply_fun (graph (ordsucc k1) (fun i:set => apply_fun path_seq1 i)) k1) 0 1) p0 /\
+          continuous_map unit_interval unit_interval_topology X Tx p0.
+      {
+        exact (IHk1
+          (graph (ordsucc k1) (fun i:set => apply_fun path_seq1 i))
+          HredPref).
+      }
+      apply Hraw.
+      let p0.
+      assume Hp0raw.
+      witness p0.
+      apply andI.
+      - claim Hp0bt_raw :
+          path_between X x0
+            ((apply_fun (graph (ordsucc k1) (fun i:set => apply_fun path_seq1 i)) k1) 0 1) p0.
+        { exact (andEL
+            (path_between X x0
+              ((apply_fun (graph (ordsucc k1) (fun i:set => apply_fun path_seq1 i)) k1) 0 1) p0)
+            (continuous_map unit_interval unit_interval_topology X Tx p0)
+            Hp0raw). }
+        claim HgraphEq :
+          apply_fun (graph (ordsucc k1) (fun i:set => apply_fun path_seq1 i)) k1 =
+          apply_fun path_seq1 k1.
+        { exact (apply_fun_graph (ordsucc k1) (fun i:set => apply_fun path_seq1 i) k1 (ordsuccI2 k1)). }
+        claim HendEq :
+          ((apply_fun (graph (ordsucc k1) (fun i:set => apply_fun path_seq1 i)) k1) 0 1) =
+          ((apply_fun path_seq1 k1) 0 1).
+        { rewrite HgraphEq. reflexivity. }
+        rewrite <- HendEq.
+        exact Hp0bt_raw.
+      - exact (andER
+          (path_between X x0
+            ((apply_fun (graph (ordsucc k1) (fun i:set => apply_fun path_seq1 i)) k1) 0 1) p0)
+          (continuous_map unit_interval unit_interval_topology X Tx p0)
+          Hp0raw).
+    }
+    apply Hk1Path.
+    let p0.
+    assume Hp0Pack.
+    claim Hp0bt : path_between X x0 ((apply_fun path_seq1 k1) 0 1) p0.
+    { exact (andEL
+        (path_between X x0 ((apply_fun path_seq1 k1) 0 1) p0)
+        (continuous_map unit_interval unit_interval_topology X Tx p0)
+        Hp0Pack). }
+    claim Hp0cont : continuous_map unit_interval unit_interval_topology X Tx p0.
+    { exact (andER
+        (path_between X x0 ((apply_fun path_seq1 k1) 0 1) p0)
+        (continuous_map unit_interval unit_interval_topology X Tx p0)
+        Hp0Pack). }
+    claim HdecLast :
+      exists A ini fin:set,
+        apply_fun path_seq1 (ordsucc k1) = ((ini, fin), A) /\
+        oriented_edge X Tx Arcs A ini fin.
+    { exact (reduced_edge_path_edge_decomposition
+        X
+        Tx
+        Arcs
+        (ordsucc (ordsucc k1))
+        path_seq1
+        x0
+        (ordsucc k1)
+        HredSucc
+        (ordsuccI2 (ordsucc k1))). }
+    apply HdecLast.
+    let A.
+    assume HApack.
+    apply HApack.
+    let ini.
+    assume Hinipack.
+    apply Hinipack.
+    let fin.
+    assume Hfinpack.
+    claim HeqLast : apply_fun path_seq1 (ordsucc k1) = ((ini, fin), A).
+    { exact (andEL
+        (apply_fun path_seq1 (ordsucc k1) = ((ini, fin), A))
+        (oriented_edge X Tx Arcs A ini fin)
+        Hfinpack). }
+    claim HoriLast : oriented_edge X Tx Arcs A ini fin.
+    { exact (andER
+        (apply_fun path_seq1 (ordsucc k1) = ((ini, fin), A))
+        (oriented_edge X Tx Arcs A ini fin)
+        Hfinpack). }
+    claim Hmatch :
+      (apply_fun path_seq1 k1) 0 1 =
+      (apply_fun path_seq1 (ordsucc k1)) 0 0.
+    {
+      exact (reduced_edge_path_consecutive_match
+        X
+        Tx
+        Arcs
+        (ordsucc (ordsucc k1))
+        path_seq1
+        x0
+        k1
+        HredSucc
+        (ordsuccI1 (ordsucc k1) k1 (ordsuccI2 k1))
+        (ordsuccI2 (ordsucc k1))).
+    }
+    claim HiniDef : (apply_fun path_seq1 (ordsucc k1)) 0 0 = ini.
+    {
+      rewrite HeqLast.
+      rewrite (tuple_2_0_eq (ini, fin) A).
+      rewrite (tuple_2_0_eq ini fin).
+      reflexivity.
+    }
+    claim Hjoin : apply_fun p0 1 = ini.
+    {
+      rewrite (path_between_at_one X x0 ((apply_fun path_seq1 k1) 0 1) p0 Hp0bt).
+      rewrite Hmatch.
+      exact HiniDef.
+    }
+    claim HpathEdge :
+      exists p1:set,
+        path_between X ini fin p1 /\
+        continuous_map unit_interval unit_interval_topology X Tx p1 /\
+        (forall t:set, t :e unit_interval -> apply_fun p1 t :e A).
+    { exact (oriented_edge_has_path_between_continuous_in_X
+        X
+        Tx
+        Arcs
+        A
+        ini
+        fin
+        Hglg
+        HoriLast). }
+    apply HpathEdge.
+    let p1.
+    assume Hp1Pack.
+    apply (and3E
+      (path_between X ini fin p1)
+      (continuous_map unit_interval unit_interval_topology X Tx p1)
+      (forall t:set, t :e unit_interval -> apply_fun p1 t :e A)
+      Hp1Pack).
+    assume Hp1bt Hp1cont Hp1inside.
+    set p := path_concat p0 p1.
+    claim Hpcont : continuous_map unit_interval unit_interval_topology X Tx p.
+    {
+      exact (path_concat_continuous
+        X
+        Tx
+        x0
+        ini
+        fin
+        p0
+        p1
+        Hp0cont
+        Hp1cont
+        (path_between_at_zero X x0 ((apply_fun path_seq1 k1) 0 1) p0 Hp0bt)
+        Hjoin
+        (path_between_at_zero X ini fin p1 Hp1bt)
+        (path_between_at_one X ini fin p1 Hp1bt)).
+    }
+    claim Hpbt : path_between X x0 fin p.
+    {
+      exact (path_concat_between
+        X
+        Tx
+        x0
+        ini
+        fin
+        p0
+        p1
+        Hp0cont
+        Hp1cont
+        (path_between_at_zero X x0 ((apply_fun path_seq1 k1) 0 1) p0 Hp0bt)
+        Hjoin
+        (path_between_at_zero X ini fin p1 Hp1bt)
+        (path_between_at_one X ini fin p1 Hp1bt)).
+    }
+    witness p.
+    apply andI.
+    - (** rewrite fin as the final vertex of the last edge **)
+      claim HfinDef : (apply_fun path_seq1 (ordsucc k1)) 0 1 = fin.
+      {
+        rewrite HeqLast.
+        rewrite (tuple_2_0_eq (ini, fin) A).
+        rewrite (tuple_2_1_eq ini fin).
+        reflexivity.
+      }
+      rewrite HfinDef.
+      exact Hpbt.
+    - exact Hpcont.
+}
+exact (Hind k HkNat path_seq Hred).
+Qed.
+
 (** Proven Bob **)
 Theorem reduced_edge_path_index_decomposition_endpoints_in_X :
   forall X Tx Arcs n path_seq x0 i:set,
