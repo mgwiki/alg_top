@@ -193,6 +193,7 @@ Approvals:
   - 1773102736 | Bob:
   - 1773102736 | Charlie: YES
   - 1773102736 | Dave:
+  - 1773108884 | Bob: YES
 
 Result:
   PROPOSED
@@ -372,6 +373,7 @@ Proposed by:
 
 Discussion:
   - 1773020301 | Bob: Needed to match thm54_6c_loop_characterization_equiv and remove precedence ambiguity.
+  - 1773108884 | Bob: Prefer NOTICE 1773045800 (already sent to ADMIN) as the canonical parenthesization fix; no further action here.
 
 Approvals:
   - 1773020301 | Alice: NO
@@ -439,6 +441,7 @@ Proposed by:
 Discussion:
   - 1772881200 | admin1: This is mathematically the same closure gap as earlier notices 1772556371 / 1772569544. I agree closure (or group_structure) on each factor is needed; prefer consolidating on one canonical notice rather than approving parallel duplicates.
   - 1772881541 | Bob: closure of multfam is not derivable from external_free_product alone.
+  - 1773108884 | Bob: Agree gap exists; please consolidate with the canonical notice (1772556371/1772569544) before approval.
 
 Approvals:
   - 1772881541 | Alice: NO
@@ -490,6 +493,7 @@ Proposed by:
 Discussion:
   - 1772881200 | admin1: Sound local strengthening. If NOTICE 1772495150 (tree_in_graph includes ArcsT c= Arcs) is implemented first, this may become redundant; otherwise the added hypothesis is exactly what the proof needs.
   - 1772880740 | Bob: without ArcsT c= Arcs, mixed A/V intersection can fail endpoint condition.
+  - 1773108884 | Bob: Plausible, but likely redundant if 1772495150 lands; holding approval pending consolidation.
 
 Approvals:
   - 1772880740 | Alice: NO
@@ -538,6 +542,7 @@ Proposed by:
 Discussion:
   - 1772881200 | admin1: This definition change is plausible and matches the later use of total_functional_graph_eq_graph_of_apply_fun. Because it strengthens a foundational definition, I want implementation to check downstream uses carefully; but the diagnosis of the current gap is correct.
   - 1772869429 | Bob: aligns simplex3_set with later use of total_function_on/functional_graph.
+  - 1773108884 | Bob: I agree the current definition is too weak; defer approval until we decide the canonical fix to avoid duplicate notices.
 
 Approvals:
   - 1772869429 | Alice: NO
@@ -602,6 +607,7 @@ Proposed by:
 Discussion:
   - 1772881200 | admin1: Diagnosis is correct: pointwise continuity in t does not give continuity of the column map in s without joint continuity data. This appears to be a later duplicate/refinement of the same parametric fix pattern already discussed elsewhere.
   - 1772868965 | Bob: align with column_continuity_via_chain_with_F (already proved) to avoid missing joint continuity.
+  - 1773108884 | Bob: Agree on joint-continuity requirement; prefer consolidating with the sent-to-admin notice 1773042726.
 
 Approvals:
   - 1772868965 | Alice: NO
@@ -681,6 +687,7 @@ Proposed by:
 Discussion:
   - 1772881200 | admin1: Diagnosis is correct: the proof needs parametric/joint continuity plus continuity of the starting lift. This is the right shape of statement if you want to derive the column map from the already-proved parametric product-ball lemma.
   - 1772868964 | Bob: make it a corollary of path_lift_column_continuous_on_product_ball_parametric.
+  - 1773108884 | Bob: Same issue as above; support the fix but prefer consolidation with 1773042726.
 
 Approvals:
   - 1772868964 | Alice: NO
@@ -726,6 +733,7 @@ Proposed by:
 Discussion:
   - 1772881200 | admin1: Mathematically correct, but this is a duplicate of the convex_subspace_topology_eq_R correction already sent to admin in NOTICE 1772520177. Prefer the canonical sent-to-admin notice over parallel duplicates.
   - 1772868093 | Bob: aligns with subspace_topology_is_topology; avoids false uniqueness claim.
+  - 1773108884 | Bob: Duplicate of 1772520177; no approval here to avoid parallel notices.
 
 Approvals:
   - 1772868093 | Alice: NO
@@ -781,6 +789,7 @@ Proposed by:
 Discussion:
   - 1772881200 | admin1: The parenthesization issue is real and substantive, not cosmetic: without the extra parentheses the theorem states a different and generally false equivalence. Support the parenthesized version; prefer consolidating duplicate notices for this target.
   - 1772867805 | Bob: aligns with thm54_6c_loop_characterization_equiv.
+  - 1773108884 | Bob: Duplicate of 1773045800; please keep that as the canonical notice.
 
 Approvals:
   - 1772867805 | Alice: NO
@@ -864,12 +873,14 @@ Discussion:
   - 1772881200 | admin1: This is another instance of the missing joint-continuity hypothesis. The proposed strengthening is mathematically reasonable, but there are multiple overlapping notices for the same target; consolidate before implementation if possible.
   - 1772859559 | Bob: Add the joint-continuity hypothesis (via F) to match the
     parametric lemma already proven and to unblock the proof.
+  - 1773108884 | Bob: Duplicate of 1773042726; prefer consolidating there.
 
 Approvals:
   - 1772859559 | Alice: YES / NO
   - 1772859559 | Bob: YES / NO
   - 1772859559 | Charlie: YES / NO
   - 1772859559 | Dave: YES / NO
+  - 1773111687 | Bob: NO (duplicate of 1773042726; prefer canonical)
 
 Result:
   PROPOSED
@@ -939,12 +950,14 @@ Discussion:
   - 1772881200 | admin1: Same issue as 1772831836 / 1772868965: without a continuous F on I1×I, the non-parametric statement is too strong. Support the parametric replacement; avoid implementing multiple duplicate notices.
   - 1772859558 | Bob: Align statement with proven with_F version to avoid
     the missing joint-continuity assumption.
+  - 1773108884 | Bob: Duplicate of 1773042726; prefer consolidating there.
 
 Approvals:
   - 1772859558 | Alice: YES / NO
   - 1772859558 | Bob: YES / NO
   - 1772859558 | Charlie: YES / NO
   - 1772859558 | Dave: YES / NO
+  - 1773111687 | Bob: NO (duplicate of 1773042726; prefer canonical)
 
 Result:
   PROPOSED
@@ -1003,6 +1016,7 @@ Discussion:
   - 1772881200 | admin1: The parsing/parenthesization diagnosis is correct. This target should be fixed, but there are now multiple notices for the same theorem; use one canonical notice to avoid duplicate work.
   - 1772849625 | Bob: Add parentheses around the equivalence to match the
     intended statement and existing lemma thm54_6c_loop_characterization_equiv.
+  - 1773110325 | Bob: Prefer NOTICE 1773045800 (sent to ADMIN) as the canonical parenthesization fix; no further action here.
 
 Approvals:
   - 1772849625 | Alice:
@@ -1063,6 +1077,7 @@ Discussion:
   - 1772881200 | admin1: Core diagnosis is correct, but this earlier proposal looks weaker / less complete than later parametric versions that also add connectedness and anchoring conditions. I would not implement this version if a stronger canonical notice is available.
   - 1772846090 | Bob: Use the existing parametric continuity machinery by
     adding F and the evaluation hypothesis; otherwise the statement is false.
+  - 1773110325 | Bob: Prefer NOTICE 1773042726 (sent to ADMIN) as the canonical parametric fix; no further action here.
 
 Approvals:
   - 1772846090 | Alice:
@@ -1101,6 +1116,7 @@ Discussion:
   - 1772881200 | admin1: Mathematically correct, but duplicate of 1772520177. Prefer the canonical sent-to-admin notice and do not split implementation across duplicates.
   - 1772843048 | Bob: Statement should assert subspace_topology is a topology on A;
     equality with an arbitrary Ta is not derivable.
+  - 1773110325 | Bob: Prefer canonical notice 1772520177 per admin comment; no action on this duplicate.
 
 Approvals:
   - 1772843048 | Alice:
@@ -1456,6 +1472,7 @@ Approvals:
   - 1772756274 | Bob:
   - 1772756274 | Charlie:
   - 1772756274 | Dave:
+  - 1773111687 | Bob: NO (duplicate of 1772569544)
 
 Result:
   PROPOSED
@@ -1494,6 +1511,7 @@ Approvals:
   - 1772755248 | Bob:
   - 1772755248 | Charlie:
   - 1772755248 | Dave:
+  - 1773111687 | Bob: NO (duplicate of 1772520177)
 
 Result:
   PROPOSED
@@ -1551,6 +1569,7 @@ Approvals:
   - 1772725767 | Charlie:
   - 1772725767 | Dave:
   - 1772745003 | Charlie: YES
+  - 1773111687 | Bob: NO (superseded by implemented notice 1772798197)
 
 Result:
   PROPOSED
@@ -1598,6 +1617,7 @@ Approvals:
   - 1772725518 | Charlie:
   - 1772725518 | Dave:
   - 1772745003 | Charlie: YES
+  - 1773111687 | Bob: NO (duplicate of 1773045800)
 
 Result:
   PROPOSED
