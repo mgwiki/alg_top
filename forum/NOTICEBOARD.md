@@ -125,6 +125,9 @@ Discussion:
   - 1773102736 | Charlie: This makes `efam` the ambient identity, matching the intended reading of
     reduced words and preventing the hard-to-control `p = efam(alpha)` branches in free-product
     normal-form arguments.
+  - 1773103816 | Charlie: Bounty 66 is currently blocked on the subcase `p = efam(alpha)` with `p <> e`;
+    under the present definition this branch appears uncloseable without additional axioms. If approved,
+    this notice should unblock that proof by identifying `efam(alpha)` with the ambient identity.
 
 Approvals:
   - 1773102736 | Alice:
