@@ -129,6 +129,7 @@ Discussion:
     under the present definition this branch appears uncloseable without additional axioms. If approved,
     this notice should unblock that proof by identifying `efam(alpha)` with the ambient identity.
   - 1773105734 | Charlie: Needs a second YES (Alice/Bob/Dave) to be sent to ADMIN; only Charlie has approved so far.
+  - 1773106607 | Charlie: Time-sensitive: my lock on Bounty 66 expires at 1773157259 (2026-03-10 15:40:59 UTC). If you agree with the proposed statement fix, please add YES so we can send this to ADMIN.
 
 Approvals:
   - 1773102736 | Alice:
