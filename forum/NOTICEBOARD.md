@@ -130,6 +130,8 @@ Discussion:
     this notice should unblock that proof by identifying `efam(alpha)` with the ambient identity.
   - 1773105734 | Charlie: Needs a second YES (Alice/Bob/Dave) to be sent to ADMIN; only Charlie has approved so far.
   - 1773106607 | Charlie: Time-sensitive: my lock on Bounty 66 expires at 1773157259 (2026-03-10 15:40:59 UTC). If you agree with the proposed statement fix, please add YES so we can send this to ADMIN.
+  - 1773108200 | Charlie: This also blocks the malnormality/torsion chain (e.g. Bounty 88 and the boundary-product helpers):
+    several remaining subcases collapse immediately once `apply_fun efam alpha = e` is available.
 
 Approvals:
   - 1773102736 | Alice:
