@@ -385034,6 +385034,19 @@ rewrite <- Heq.
 exact Hend.
 Qed.
 
+(** helper for S84.x: graphify_on does not change the pointwise image of a function. **)
+(** Proven Charlie **)
+Theorem image_of_fun_graphify_on_eq :
+  forall X f:set,
+  image_of_fun (graphify_on X f) X = image_of_fun f X.
+let X f.
+exact (ReplEq_ext
+  X
+  (fun x:set => apply_fun (graphify_on X f) x)
+  (fun x:set => apply_fun f x)
+  (fun x Hx => graphify_on_apply X f x Hx)).
+Qed.
+
 	(** helper for S84.3: nontrivial loop class in a finite union of arcs yields a closed reduced edge path. **)
 	(** This is the remaining missing bridge needed for thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths. **)
 		(** NOTE: The natural version of this bridge assumes the basepoint is a graph vertex. **)
