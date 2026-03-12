@@ -145,6 +145,10 @@ Discussion:
     3 0 0. Then x ~ y (t = 1, label 0) and y ~ z (t = 0, label 1) but x is not ~ z (no way to pick
     a common t with matching labels among the two vertex representations), so the one-step relation
     is not transitive in general.
+  - 1773346629 | Charlie: Implementation prep is already in `main` (commit `fcea74d38`): added
+    `polygon_pasting_step` and `polygon_pasting_equiv_chain`. Once this notice is approved, the
+    actual statement change can be implemented as a small dedicated edit replacing
+    `polygon_pasting_equiv` with the chain closure (as described above).
 
 Approvals:
   - 1773340391 | Alice:
