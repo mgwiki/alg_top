@@ -241838,6 +241838,190 @@ Lemma efam_not_in_Gfam_nontrivial_pre : forall G mult e inv J Gfam efam:set,
   free_product_of_subgroups G mult e inv J Gfam efam ->
   forall al:set, al :e J ->
     apply_fun efam al :e apply_fun Gfam al -> apply_fun efam al <> e -> False.
+let G mult e inv J Gfam efam.
+assume Hfp.
+let al.
+assume Hal : al :e J.
+assume Hefam_in : apply_fun efam al :e apply_fun Gfam al.
+assume Hefam_ne : apply_fun efam al <> e.
+(** Unpack free product structure **)
+apply (and5E
+  (group_structure G mult e inv)
+  (forall a:set, a :e J -> subgroup_of (apply_fun Gfam a) G mult e inv)
+  (forall a b:set, a :e J -> b :e J -> a <> b ->
+    forall y:set, y :e apply_fun Gfam a -> y :e apply_fun Gfam b -> y = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall y:set, y :e G -> y <> e ->
+    exists n0 xs0:set,
+      reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product mult e xs0 n0 = y /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = y ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsubfam Hdisjoint _ Huniq.
+(** efam(al) is in G via subgroup inclusion **)
+claim Hefam_G : apply_fun efam al :e G.
+{
+  exact (subgroup_of_subset (apply_fun Gfam al) G mult e inv
+    (Hsubfam al Hal)
+    (apply_fun efam al)
+    Hefam_in).
+}
+(** Get unique reduced word representation for efam(al) **)
+apply (Huniq (apply_fun efam al) Hefam_G Hefam_ne).
+let n0.
+assume Hex : exists xs0:set,
+  reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+  word_product mult e xs0 n0 = (apply_fun efam al) /\
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = (apply_fun efam al) ->
+    n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+apply Hex. let xs0.
+assume Hpack :
+  reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+  word_product mult e xs0 n0 = (apply_fun efam al) /\
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = (apply_fun efam al) ->
+    n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+apply (and4E
+  (reduced_word J Gfam efam n0 xs0)
+  (n0 <> 0)
+  (word_product mult e xs0 n0 = apply_fun efam al)
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = (apply_fun efam al) ->
+    n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i))
+  Hpack).
+assume Hred0 Hn0_ne0 Hwp0 Huniq0.
+(** n0 is in omega from the reduced word **)
+claim Hn0_omega : n0 :e omega.
+{
+  apply (and3E
+    (n0 :e omega)
+    (forall i:set, i :e n0 ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs0 i :e apply_fun Gfam alpha /\
+        apply_fun xs0 i <> apply_fun efam alpha)
+    (forall i:set, i :e n0 -> ordsucc i :e n0 ->
+      forall alpha beta:set, alpha :e J -> beta :e J ->
+        apply_fun xs0 i :e apply_fun Gfam alpha ->
+        apply_fun xs0 (ordsucc i) :e apply_fun Gfam beta ->
+        alpha <> beta)
+    Hred0).
+  assume Hn0 _ _.
+  exact Hn0.
+}
+(** Get entries info from reduced word **)
+claim Hentries_info : forall i:set, i :e n0 ->
+  exists alpha:set, alpha :e J /\
+    apply_fun xs0 i :e apply_fun Gfam alpha /\
+    apply_fun xs0 i <> apply_fun efam alpha.
+{
+  apply (and3E
+    (n0 :e omega)
+    (forall i:set, i :e n0 ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs0 i :e apply_fun Gfam alpha /\
+        apply_fun xs0 i <> apply_fun efam alpha)
+    (forall i:set, i :e n0 -> ordsucc i :e n0 ->
+      forall alpha beta:set, alpha :e J -> beta :e J ->
+        apply_fun xs0 i :e apply_fun Gfam alpha ->
+        apply_fun xs0 (ordsucc i) :e apply_fun Gfam beta ->
+        alpha <> beta)
+    Hred0).
+  assume _ Hentries _.
+  exact Hentries.
+}
+(** Case n0 = 1: the unique entry must be efam(al), giving efam(al) != efam(al). **)
+(** Case n0 >= 2: use inv(efam(al)) to extend and derive contradiction. **)
+(** First, n0 = ordsucc k for some k. **)
+apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
+- (** Case n0 = 0, impossible **)
+  assume Hn0_eq0 : n0 = 0.
+  exact (Hn0_ne0 Hn0_eq0).
+- (** Case n0 = ordsucc k **)
+  assume Hex_k : exists k:set, nat_p k /\ n0 = ordsucc k.
+  apply Hex_k.
+  let k.
+  assume Hk_pack : nat_p k /\ n0 = ordsucc k.
+  claim Hk_nat : nat_p k. { exact (andEL (nat_p k) (n0 = ordsucc k) Hk_pack). }
+  claim Hn0_eq : n0 = ordsucc k. { exact (andER (nat_p k) (n0 = ordsucc k) Hk_pack). }
+  (** n0 = 1 iff k = 0. Handle k = 0 first. **)
+  apply (xm (k = 0)).
+  + (** SUBCASE k = 0, i.e. n0 = 1 **)
+    assume Hk_eq0 : k = 0.
+    claim Hn0_eq1 : n0 = 1.
+    { rewrite Hn0_eq. rewrite Hk_eq0. reflexivity. }
+    claim H0_in_n0 : 0 :e n0.
+    { rewrite Hn0_eq1. exact (ordsuccI2 0). }
+    (** xs0(0) is in some Gfam(alpha0) with xs0(0) != efam(alpha0) **)
+    apply (Hentries_info 0 H0_in_n0).
+    let alpha0.
+    assume Halpha0_pack : alpha0 :e J /\
+      apply_fun xs0 0 :e apply_fun Gfam alpha0 /\
+      apply_fun xs0 0 <> apply_fun efam alpha0.
+    apply (and3E (alpha0 :e J) (apply_fun xs0 0 :e apply_fun Gfam alpha0)
+      (apply_fun xs0 0 <> apply_fun efam alpha0) Halpha0_pack).
+    assume Halpha0J Hxs0_0_in Hxs0_0_ne.
+    (** wp(xs0, 1) = efam(al) **)
+    claim Hwp1 : word_product mult e xs0 1 = apply_fun efam al.
+    { rewrite <- Hn0_eq1. exact Hwp0. }
+    (** wp(xs0, 1) = mult(wp(xs0,0), xs0(0)) = mult(e, xs0(0)) = xs0(0) **)
+    claim Hxs0_0_G : apply_fun xs0 0 :e G.
+    { exact (reduced_word_in_G G mult e inv J Gfam efam n0 xs0 Hsubfam Hred0 0 H0_in_n0). }
+    claim Hwp0_base : word_product mult e xs0 0 = e.
+    { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun xs0 i))). }
+    claim Hwp1_expand : word_product mult e xs0 1 =
+      apply_fun mult (word_product mult e xs0 0, apply_fun xs0 0).
+    { exact (word_product_succ mult e xs0 0 nat_0). }
+    claim Hmult_e_xs0 : apply_fun mult (e, apply_fun xs0 0) = apply_fun xs0 0.
+    {
+      apply (and6E
+        (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+        (forall x y z:set, x :e G -> y :e G -> z :e G ->
+          apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+        (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+        (forall x:set, x :e G ->
+          apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+        Hgrp).
+      assume _ _ _ _ Hid _.
+      exact (andEL
+        (apply_fun mult (e, apply_fun xs0 0) = apply_fun xs0 0)
+        (apply_fun mult (apply_fun xs0 0, e) = apply_fun xs0 0)
+        (Hid (apply_fun xs0 0) Hxs0_0_G)).
+    }
+    claim Hxs0_0_eq_efam : apply_fun xs0 0 = apply_fun efam al.
+    {
+      rewrite <- Hwp1.
+      rewrite Hwp1_expand.
+      rewrite Hwp0_base.
+      exact (eq_symm (apply_fun mult (e, apply_fun xs0 0)) (apply_fun xs0 0) Hmult_e_xs0).
+    }
+    (** xs0(0) = efam(al) is in Gfam(al) and Gfam(alpha0), and != e **)
+    claim Hxs0_0_in_Gal : apply_fun xs0 0 :e apply_fun Gfam al.
+    { rewrite Hxs0_0_eq_efam. exact Hefam_in. }
+    claim Hxs0_0_ne_e : apply_fun xs0 0 <> e.
+    { assume H. exact (Hefam_ne (eq_i_tra (apply_fun efam al) (apply_fun xs0 0) e
+        (eq_symm (apply_fun xs0 0) (apply_fun efam al) Hxs0_0_eq_efam) H)). }
+    (** By disjointness, alpha0 = al **)
+    claim Halpha0_al : alpha0 = al.
+    {
+      exact (disjoint_subgroups_label_unique G mult e inv J Gfam
+        alpha0 al (apply_fun xs0 0) Hdisjoint Halpha0J Hal Hxs0_0_in Hxs0_0_in_Gal Hxs0_0_ne_e).
+    }
+    (** efam(alpha0) = efam(al), so xs0(0) != efam(al). But xs0(0) = efam(al). Contradiction. **)
+    claim Hefam_eq : apply_fun efam alpha0 = apply_fun efam al.
+    { rewrite Halpha0_al. reflexivity. }
+    exact (Hxs0_0_ne (eq_i_tra (apply_fun xs0 0) (apply_fun efam al) (apply_fun efam alpha0)
+      Hxs0_0_eq_efam (eq_symm (apply_fun efam alpha0) (apply_fun efam al) Hefam_eq))).
+  + (** SUBCASE k >= 1, i.e. n0 >= 2 **)
+    assume Hk_ne0 : k <> 0.
+    (** n0 >= 2 case - use append of inv(efam(al)) to derive contradiction **)
+    admit.
 Admitted.
 
 (** Infrastructure bounty: torsion/involution in free products (order 2 case).
