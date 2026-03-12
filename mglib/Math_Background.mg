@@ -1,4 +1,4 @@
-(** Balance Alice 7614 **)
+(** Balance Alice 7657 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 376 **)
 (** Balance Dave 2498 **)
@@ -206457,7 +206457,8 @@ Admitted.
 (** If alpha in U from a in A to b in B, beta in V from b to a, **)
 (** then [alpha . beta] generates an infinite cyclic subgroup of pi_1(X, a). **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 400 **)
-(** Bounty 533 **)
+(** Bounty 587 **)
+(** Lock Alice 1773418614 **)
 (** Admin-approved-refactored per noticeboard proposal 1772444318 **)
 Theorem thm63_1a_infinite_cyclic_subgroup : forall X Tx U V A B:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -241388,7 +241389,6 @@ apply (nat_inv m Hm_nat).
     discharge the remaining "torsion/malnormality" admits in the free-product boundary-cancellation
     chain (free_product_boundary_product_ne_e_or_efam, free_product_efam_involutive_contra). **)
 (** Bounty 88 **)
-(** Lock Charlie 1773190070 **)
 Lemma free_product_conjugate_intersection_trivial :
   forall G mult e inv J Gfam efam alpha beta c x:set,
   free_product_of_subgroups G mult e inv J Gfam efam ->
@@ -241689,7 +241689,6 @@ Admitted.
     Expected use: discharge the remaining "boundary labels coincide" admit branches by showing
     that an involution is conjugate into some factor subgroup. **)
 (** Bounty 66 **)
-(** Lock Charlie 1773157259 **)
 Lemma free_product_involution_conjugate_into_factor :
   forall G mult e inv J Gfam efam u:set,
   free_product_of_subgroups G mult e inv J Gfam efam ->
@@ -303862,7 +303861,6 @@ Qed.
 (** scheme. Then X is a compact Hausdorff space. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 182 **)
-(** Lock Dave 1773179007 **)
 Theorem thm74_1_polygon_pasting_compact_hausdorff :
   forall n w:set,
   labelling_scheme n w ->
@@ -383295,7 +383293,8 @@ Qed.
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
+(** Collected Alice 97 **)
+(** Proven Alice **)
 (** Admin-approved-refactored per noticeboard proposal 1772417212 **)
 Theorem lemma84_2_tree_decomposition :
   forall T ArcsT X Tx Arcs:set,
@@ -384609,7 +384608,7 @@ apply andI.
       - exact Hclosed.
     }
     exact (tree_in_graph_intro T0 B X Tx Arcs HsubT0 HBsubArcs HglgT0 HconnT0 HnoloopT0).
-Admitted.
+Qed.
 
 (** helper for S84.3: a tree is path-connected once local path-connectedness is available on T. **)
 (** Proven Bob **)
@@ -385186,7 +385185,6 @@ Qed.
 		(** NOTE: The natural version of this bridge assumes the basepoint is a graph vertex. **)
 		(** Sub-bounty for the S84.3 core bridge (vertex basepoint). **)
 		(** Bounty 132 **)
-		(** Lock Charlie 1773209897 **)
 		Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs_at_vertex :
 	  forall T Tx ArcsT Arcs' x0 f:set,
 	  general_linear_graph T Tx ArcsT ->
@@ -385798,7 +385796,6 @@ claim HexArc : exists A:set, A :e Arcs' /\ x0 :e A.
 (** helper for S84.3: no closed reduced edge path in a tree should force trivial pi1 at some basepoint. **)
 (** Sub-bounty for Thm84.3 core bridge **)
 (** Bounty 37 **)
-(** Lock Charlie 1773191800 **)
 (** Admin-approved-refactored per noticeboard proposal 1772494156 **)
 Theorem thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths :
   forall T ArcsT X Tx Arcs:set,
@@ -386041,7 +386038,6 @@ Admitted.
 (** LATEX VERSION: Any tree T is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
 (** Bounty 134 **)
-(** Lock Charlie 1773192000 **)
 (** Admin-approved-refactored per noticeboard proposal 1772494157 **)
 Theorem thm84_3_tree_simply_connected :
   forall T ArcsT X Tx Arcs:set,
