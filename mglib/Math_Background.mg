@@ -303861,6 +303861,112 @@ exact (andI
   Hpair HcasesYX).
 Qed.
 
+(** If x is not on the boundary S^1, it can only be related to itself. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_nonS1_left : forall n w x y:set,
+  polygon_pasting_equiv n w x y ->
+  x /:e S1 ->
+  y = x.
+let n w x y.
+assume Hxy HxnotS1.
+claim Hcases :
+  x = y \/
+  (x :e S1 /\ y :e S1 /\
+    exists i j:set, i :e n /\ j :e n /\ i <> j /\
+      (apply_fun w i) 0 = (apply_fun w j) 0 /\
+      exists t:set, t :e unit_interval /\
+        x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+        y = S1_oriented_arc_point n j ((apply_fun w j) 1) t).
+{
+  exact (andER (x :e B2 /\ y :e B2)
+    (x = y \/
+     (x :e S1 /\ y :e S1 /\
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t))
+    Hxy).
+}
+apply Hcases.
+- assume HxyEq.
+  exact (eq_symm x y HxyEq).
+- assume Hbd.
+  claim HxyS1 : x :e S1 /\ y :e S1.
+  {
+    exact (andEL (x :e S1 /\ y :e S1)
+      (exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t)
+      Hbd).
+  }
+  claim HxS1 : x :e S1. { exact (andEL (x :e S1) (y :e S1) HxyS1). }
+  claim Hfalse : False.
+  { exact (HxnotS1 HxS1). }
+  exact (FalseE Hfalse (y = x)).
+Qed.
+
+(** Symmetric version. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_nonS1_right : forall n w x y:set,
+  polygon_pasting_equiv n w x y ->
+  y /:e S1 ->
+  x = y.
+let n w x y.
+assume Hxy HynotS1.
+claim Hyx : polygon_pasting_equiv n w y x.
+{ exact (polygon_pasting_equiv_symm n w x y Hxy). }
+exact (polygon_pasting_equiv_nonS1_left n w y x Hyx HynotS1).
+Qed.
+
+(** If two distinct points are related, they must both lie on S^1. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_neq_implies_S1 : forall n w x y:set,
+  polygon_pasting_equiv n w x y ->
+  x <> y ->
+  x :e S1 /\ y :e S1.
+let n w x y.
+assume Hxy Hneq.
+claim Hcases :
+  x = y \/
+  (x :e S1 /\ y :e S1 /\
+    exists i j:set, i :e n /\ j :e n /\ i <> j /\
+      (apply_fun w i) 0 = (apply_fun w j) 0 /\
+      exists t:set, t :e unit_interval /\
+        x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+        y = S1_oriented_arc_point n j ((apply_fun w j) 1) t).
+{
+  exact (andER (x :e B2 /\ y :e B2)
+    (x = y \/
+     (x :e S1 /\ y :e S1 /\
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t))
+    Hxy).
+}
+apply Hcases.
+- assume Heq.
+  exact (FalseE (Hneq Heq) (x :e S1 /\ y :e S1)).
+- assume Hbd.
+  claim HxyS1 : x :e S1 /\ y :e S1.
+  {
+    exact (andEL (x :e S1 /\ y :e S1)
+      (exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t)
+      Hbd).
+  }
+  claim HxS1 : x :e S1. { exact (andEL (x :e S1) (y :e S1) HxyS1). }
+  claim HyS1 : y :e S1. { exact (andER (x :e S1) (y :e S1) HxyS1). }
+  exact (andI (x :e S1) (y :e S1) HxS1 HyS1).
+Qed.
+
 (** Infrastructure: the quotient space obtained by pasting edges of B^2 **)
 (** according to labelling scheme w with n edges **)
 Definition polygon_pasting_space : set -> set -> set :=
