@@ -242975,7 +242975,113 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
           exact (Hxsk_ne_e Hxsk_eq_e).
         + (** alpha0 ≠ al **)
           assume Halpha0_ne_al : alpha0 <> al.
-          admit.
+          (** Case split on whether first and last entries share a factor **)
+          apply (xm (alphak = alpha0)).
+          - (** alphak = alpha0: boundary cancellation case **)
+            assume Halphak_eq_alpha0 : alphak = alpha0.
+            admit.
+          - (** alphak != alpha0: doubled word approach **)
+            assume Halphak_ne_alpha0 : alphak <> alpha0.
+            (** The boundary condition for the doubled word: last entry in different factor from first **)
+            claim Hcyc : forall alpha beta:set, alpha :e J -> beta :e J ->
+              apply_fun xs0 k :e apply_fun Gfam alpha ->
+              apply_fun xs0 0 :e apply_fun Gfam beta ->
+              alpha <> beta.
+            {
+              let alpha beta. assume HaJ HbJ Hxsk_a Hxs0_b.
+              (** xs0(k) :e Gfam(alphak) and xs0(k) :e Gfam(alpha) **)
+              (** xs0(0) :e Gfam(alpha0) and xs0(0) :e Gfam(beta) **)
+              (** By disjointness: if xs0(k) != e then alpha = alphak; if xs0(0) != e then beta = alpha0 **)
+              claim Hxsk_ne_e2 : apply_fun xs0 k <> e.
+              { exact (Hxs_ne_e k Hk_in_n0). }
+              claim Hxs0_ne_e2 : apply_fun xs0 0 <> e.
+              { exact (Hxs_ne_e 0 H0_in_n0). }
+              claim Halpha_eq_alphak : alpha = alphak.
+              { exact (disjoint_subgroups_label_unique G mult e inv J Gfam
+                  alpha alphak (apply_fun xs0 k) Hdisjoint HaJ HalphakJ Hxsk_a Hxs0_k_in Hxsk_ne_e2). }
+              claim Hbeta_eq_alpha0 : beta = alpha0.
+              { exact (disjoint_subgroups_label_unique G mult e inv J Gfam
+                  beta alpha0 (apply_fun xs0 0) Hdisjoint HbJ Halpha0J Hxs0_b Hxs0_0_in Hxs0_ne_e2). }
+              rewrite Halpha_eq_alphak. rewrite Hbeta_eq_alpha0.
+              exact Halphak_ne_alpha0.
+            }
+            (** n0 = ordsucc k, and Hk_nat **)
+            claim Hred_sk2 : reduced_word J Gfam efam (ordsucc k) xs0.
+            { rewrite <- Hn0_eq. exact Hred0. }
+            (** Apply reduced_word_double_cyclic_word_product **)
+            apply (reduced_word_double_cyclic_word_product G mult e inv J Gfam efam
+              (ordsucc k) xs0 k
+              Hgrp Hsubfam Hred_sk2 (eq_refl (ordsucc k)) Hk_nat Hcyc).
+            let ys.
+            assume Hys_pack : reduced_word J Gfam efam (add_nat (ordsucc k) (ordsucc k)) ys /\
+              word_product mult e ys (add_nat (ordsucc k) (ordsucc k)) =
+                apply_fun mult (word_product mult e xs0 (ordsucc k), word_product mult e xs0 (ordsucc k)).
+            claim Hred_ys : reduced_word J Gfam efam (add_nat (ordsucc k) (ordsucc k)) ys.
+            {
+              exact (andEL
+                (reduced_word J Gfam efam (add_nat (ordsucc k) (ordsucc k)) ys)
+                (word_product mult e ys (add_nat (ordsucc k) (ordsucc k)) =
+                  apply_fun mult (word_product mult e xs0 (ordsucc k), word_product mult e xs0 (ordsucc k)))
+                Hys_pack).
+            }
+            claim Hwp_ys : word_product mult e ys (add_nat (ordsucc k) (ordsucc k)) =
+              apply_fun mult (word_product mult e xs0 (ordsucc k), word_product mult e xs0 (ordsucc k)).
+            {
+              exact (andER
+                (reduced_word J Gfam efam (add_nat (ordsucc k) (ordsucc k)) ys)
+                (word_product mult e ys (add_nat (ordsucc k) (ordsucc k)) =
+                  apply_fun mult (word_product mult e xs0 (ordsucc k), word_product mult e xs0 (ordsucc k)))
+                Hys_pack).
+            }
+            (** wp(xs0, ordsucc k) = wp(xs0, n0) = efam(al) **)
+            claim Hwp_n0_efam : word_product mult e xs0 (ordsucc k) = apply_fun efam al.
+            { rewrite <- Hn0_eq. exact Hwp0. }
+            (** The doubled word product = mult(efam(al), efam(al)) = e **)
+            claim Hwp_ys_eq_sq :
+              word_product mult e ys (add_nat (ordsucc k) (ordsucc k)) =
+                apply_fun mult (apply_fun efam al, apply_fun efam al).
+            {
+              claim Hmid7 :
+                apply_fun mult (word_product mult e xs0 (ordsucc k), word_product mult e xs0 (ordsucc k)) =
+                apply_fun mult (apply_fun efam al, apply_fun efam al).
+              { rewrite Hwp_n0_efam. reflexivity. }
+              exact (eq_i_tra
+                (word_product mult e ys (add_nat (ordsucc k) (ordsucc k)))
+                (apply_fun mult (word_product mult e xs0 (ordsucc k), word_product mult e xs0 (ordsucc k)))
+                (apply_fun mult (apply_fun efam al, apply_fun efam al))
+                Hwp_ys Hmid7).
+            }
+            claim Hwp_ys_e : word_product mult e ys (add_nat (ordsucc k) (ordsucc k)) = e.
+            { exact (eq_i_tra
+                (word_product mult e ys (add_nat (ordsucc k) (ordsucc k)))
+                (apply_fun mult (apply_fun efam al, apply_fun efam al))
+                e Hwp_ys_eq_sq Hefam_sq). }
+            (** add_nat (ordsucc k) (ordsucc k) != 0 **)
+            set nn := add_nat (ordsucc k) (ordsucc k).
+            claim Hnn_eq : nn = ordsucc (add_nat (ordsucc k) k).
+            { exact (add_nat_SR (ordsucc k) k Hk_nat). }
+            claim Hnn_ne0 : nn <> 0.
+            { rewrite Hnn_eq. exact (neq_ordsucc_0 (add_nat (ordsucc k) k)). }
+            (** add_nat (ordsucc k) (ordsucc k) != 1 **)
+            claim Hsk_plus_k : add_nat (ordsucc k) k = ordsucc (add_nat k k).
+            { exact (add_nat_SL k Hk_nat k Hk_nat). }
+            claim Hnn_ne1 : nn <> 1.
+            {
+              assume Hnn_eq1 : nn = 1.
+              claim Hnn_s : nn = ordsucc (ordsucc (add_nat k k)).
+              { rewrite Hnn_eq. rewrite Hsk_plus_k. reflexivity. }
+              claim H1_eq_ss : 1 = ordsucc (ordsucc (add_nat k k)).
+              { exact (eq_i_tra 1 nn (ordsucc (ordsucc (add_nat k k)))
+                  (eq_symm nn 1 Hnn_eq1) Hnn_s). }
+              claim Hs0_eq_ss : ordsucc 0 = ordsucc (ordsucc (add_nat k k)).
+              { rewrite <- ordsucc_0_eq_1_nat. exact H1_eq_ss. }
+              claim H0_eq_skk : 0 = ordsucc (add_nat k k).
+              { exact (ordsucc_inj 0 (ordsucc (add_nat k k)) Hs0_eq_ss). }
+              exact (neq_0_ordsucc (add_nat k k) H0_eq_skk).
+            }
+            (** Contradiction: reduced word of length >= 2 with product = e **)
+            exact (free_product_reduced_word_length_ge2_product_ne_e G mult e inv J Gfam efam
+              nn ys Hfp Hred_ys Hnn_ne0 Hnn_ne1 Hwp_ys_e).
       - (** inv(efam(al)) ≠ efam(al): append inv(efam(al)) to get reduced word for e **)
         assume Hinv_ne_efam : apply_fun inv (apply_fun efam al) <> apply_fun efam al.
         set b := apply_fun inv (apply_fun efam al).
