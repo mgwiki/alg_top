@@ -242979,7 +242979,90 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
           apply (xm (alphak = alpha0)).
           - (** alphak = alpha0: boundary cancellation case **)
             assume Halphak_eq_alpha0 : alphak = alpha0.
-            admit.
+            (** Extract adjacency condition from reduced word **)
+            claim Hadj : forall i:set, i :e n0 -> ordsucc i :e n0 ->
+              forall alpha beta:set, alpha :e J -> beta :e J ->
+                apply_fun xs0 i :e apply_fun Gfam alpha ->
+                apply_fun xs0 (ordsucc i) :e apply_fun Gfam beta ->
+                alpha <> beta.
+            {
+              apply (and3E
+                (n0 :e omega)
+                (forall i:set, i :e n0 ->
+                  exists alpha:set, alpha :e J /\
+                    apply_fun xs0 i :e apply_fun Gfam alpha /\
+                    apply_fun xs0 i <> apply_fun efam alpha)
+                (forall i:set, i :e n0 -> ordsucc i :e n0 ->
+                  forall alpha beta:set, alpha :e J -> beta :e J ->
+                    apply_fun xs0 i :e apply_fun Gfam alpha ->
+                    apply_fun xs0 (ordsucc i) :e apply_fun Gfam beta ->
+                    alpha <> beta)
+                Hred0).
+              assume _ _ Hadj_raw.
+              exact Hadj_raw.
+            }
+            (** k = ordsucc j for some j (since k != 0) **)
+            apply (nat_inv k Hk_nat).
+            * (** k = 0: impossible **)
+              assume Hk_eq0 : k = 0. exact (Hk_ne0 Hk_eq0).
+            * (** k = ordsucc j **)
+              assume Hex_j : exists j:set, nat_p j /\ k = ordsucc j.
+              apply Hex_j. let j.
+              assume Hj_pack : nat_p j /\ k = ordsucc j.
+              claim Hj_nat : nat_p j. { exact (andEL (nat_p j) (k = ordsucc j) Hj_pack). }
+              claim Hk_eq_sj : k = ordsucc j. { exact (andER (nat_p j) (k = ordsucc j) Hj_pack). }
+              (** Case j = 0 (k=1): adjacency contradiction **)
+              apply (xm (j = 0)).
+              + assume Hj_eq0 : j = 0.
+                (** k = ordsucc 0, so k = 1 **)
+                claim Hk_eq_s0 : k = ordsucc 0.
+                { rewrite Hk_eq_sj. rewrite Hj_eq0. reflexivity. }
+                (** n0 = ordsucc k = ordsucc (ordsucc 0) **)
+                (** xs0(0) :e Gfam(alpha0), xs0(k) = xs0(1) :e Gfam(alphak) = Gfam(alpha0) **)
+                (** Adjacency: 0 :e n0, ordsucc 0 :e n0 **)
+                claim H0_in_n0_2 : 0 :e n0. { rewrite Hn0_eq. exact (nat_0_in_ordsucc k Hk_nat). }
+                claim Hs0_in_n0_2 : ordsucc 0 :e n0.
+                { rewrite Hn0_eq. rewrite <- Hk_eq_s0. exact (ordsuccI2 k). }
+                (** xs0(ordsucc 0) = xs0(k) **)
+                claim Hxs_s0_eq_xsk : apply_fun xs0 (ordsucc 0) = apply_fun xs0 k.
+                { rewrite Hk_eq_s0. reflexivity. }
+                claim Hxs_s0_in_alpha0 : apply_fun xs0 (ordsucc 0) :e apply_fun Gfam alpha0.
+                { rewrite Hxs_s0_eq_xsk. rewrite <- Halphak_eq_alpha0. exact Hxs0_k_in. }
+                (** Adjacency gives alpha0 ≠ alpha0 **)
+                exact (Hadj 0 H0_in_n0_2 Hs0_in_n0_2 alpha0 alpha0 Halpha0J Halpha0J
+                  Hxs0_0_in Hxs_s0_in_alpha0 (eq_refl alpha0)).
+              + (** j ≥ 1, so k ≥ 2, n0 ≥ 3 **)
+                assume Hj_ne0 : j <> 0.
+                (** Form z = mult(xs0(k), xs0(0)) :e Gfam(alpha0) **)
+                set z := apply_fun mult (apply_fun xs0 k, apply_fun xs0 0).
+                claim Hz_in_alpha0 : z :e apply_fun Gfam alpha0.
+                {
+                  apply (and4E
+                    (apply_fun Gfam alpha0 c= G)
+                    (e :e apply_fun Gfam alpha0)
+                    (forall x y:set, x :e apply_fun Gfam alpha0 -> y :e apply_fun Gfam alpha0 ->
+                      apply_fun mult (x, y) :e apply_fun Gfam alpha0)
+                    (forall x:set, x :e apply_fun Gfam alpha0 -> apply_fun inv x :e apply_fun Gfam alpha0)
+                    (Hsubfam alpha0 Halpha0J)).
+                  assume _ _ Hmult_cl _.
+                  claim Hxsk_in_a0 : apply_fun xs0 k :e apply_fun Gfam alpha0.
+                  { rewrite <- Halphak_eq_alpha0. exact Hxs0_k_in. }
+                  exact (Hmult_cl (apply_fun xs0 k) (apply_fun xs0 0) Hxsk_in_a0 Hxs0_0_in).
+                }
+                (** Case split on z **)
+                apply (xm (z = e)).
+                - (** z = e: boundary cancellation **)
+                  assume Hz_e : z = e.
+                  admit.
+                - (** z ≠ e **)
+                  assume Hz_ne : z <> e.
+                  apply (xm (z = apply_fun efam alpha0)).
+                  * (** z = efam(alpha0) **)
+                    assume Hz_efam : z = apply_fun efam alpha0.
+                    admit.
+                  * (** z ne e and z ne efam(alpha0): merged doubled word **)
+                    assume Hz_ne_efam : z <> apply_fun efam alpha0.
+                    admit.
           - (** alphak != alpha0: doubled word approach **)
             assume Halphak_ne_alpha0 : alphak <> alpha0.
             (** The boundary condition for the doubled word: last entry in different factor from first **)
