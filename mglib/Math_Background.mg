@@ -296497,6 +296497,39 @@ Admitted.
 Definition real_div : set -> set -> set :=
   fun a b => Eps_i (fun r:set => r :e R /\ mul_SNo b r = a).
 
+(** Helper: real_div agrees with div_SNo on nonzero denominators. **)
+(** This turns the Eps_i-based definition into a usable algebraic division. **)
+(** Proven Charlie **)
+Lemma real_div_eq_div_SNo : forall a b:set,
+  a :e R -> b :e R -> b <> 0 ->
+  real_div a b = div_SNo a b.
+let a b.
+assume HaR HbR HbNe0.
+set P := (fun r:set => r :e R /\ mul_SNo b r = a).
+apply (eq_symm (div_SNo a b) (real_div a b)).
+rewrite <- (Eps_i_unique P (div_SNo a b)).
+- reflexivity.
+- apply andI.
+  - exact (real_div_SNo a HaR b HbR).
+  - exact (mul_div_SNo_invR a b (real_SNo a HaR) (real_SNo b HbR) HbNe0).
+- let r.
+  assume HrP.
+  claim HrR : r :e R.
+  { exact (andEL (r :e R) (mul_SNo b r = a) HrP). }
+  claim Hmul : mul_SNo b r = a.
+  { exact (andER (r :e R) (mul_SNo b r = a) HrP). }
+  claim HaSNo : SNo a. { exact (real_SNo a HaR). }
+  claim HbSNo : SNo b. { exact (real_SNo b HbR). }
+  claim HrSNo : SNo r. { exact (real_SNo r HrR). }
+  claim HdivEq : div_SNo a b = r.
+  {
+    apply (mul_div_SNo_nonzero_eq a b r HaSNo HbSNo HrSNo HbNe0).
+    rewrite <- Hmul.
+    reflexivity.
+  }
+  exact (eq_symm (div_SNo a b) r HdivEq).
+Qed.
+
 (** from S73 Definition (line 3730 in algtop.tex): n-fold dunce cap **)
 (** LATEX VERSION: Form quotient space from B^2 by identifying each x in S^1 with **)
 (** r(x), r^2(x),...,r^{n-1}(x) where r is rotation by 2pi/n. **)
@@ -303643,6 +303676,257 @@ Definition polygon_pasting_equiv : set -> set -> set -> set -> prop :=
         exists t:set, t :e unit_interval /\
           x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
           y = S1_oriented_arc_point n j ((apply_fun w j) 1) t)).
+
+(** Basic properties of polygon_pasting_equiv (reflexive and symmetric). **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_refl : forall n w x:set,
+  x :e B2 -> polygon_pasting_equiv n w x x.
+let n w x.
+assume HxB2.
+claim Hpair : x :e B2 /\ x :e B2.
+{ exact (andI (x :e B2) (x :e B2) HxB2 HxB2). }
+claim Hcases :
+  x = x \/
+  (x :e S1 /\ x :e S1 /\
+    exists i j:set, i :e n /\ j :e n /\ i <> j /\
+      (apply_fun w i) 0 = (apply_fun w j) 0 /\
+      exists t:set, t :e unit_interval /\
+        x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+        x = S1_oriented_arc_point n j ((apply_fun w j) 1) t).
+{
+  apply orIL.
+  reflexivity.
+}
+exact (andI
+  (x :e B2 /\ x :e B2)
+  (x = x \/
+   (x :e S1 /\ x :e S1 /\
+    exists i j:set, i :e n /\ j :e n /\ i <> j /\
+      (apply_fun w i) 0 = (apply_fun w j) 0 /\
+      exists t:set, t :e unit_interval /\
+        x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+        x = S1_oriented_arc_point n j ((apply_fun w j) 1) t))
+  Hpair Hcases).
+Qed.
+
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_symm : forall n w x y:set,
+  polygon_pasting_equiv n w x y -> polygon_pasting_equiv n w y x.
+let n w x y.
+assume Hxy.
+claim HxyB2 : x :e B2 /\ y :e B2.
+{
+  exact (andEL (x :e B2 /\ y :e B2)
+    (x = y \/
+     (x :e S1 /\ y :e S1 /\
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t))
+    Hxy).
+}
+claim Hcases :
+  x = y \/
+  (x :e S1 /\ y :e S1 /\
+    exists i j:set, i :e n /\ j :e n /\ i <> j /\
+      (apply_fun w i) 0 = (apply_fun w j) 0 /\
+      exists t:set, t :e unit_interval /\
+        x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+        y = S1_oriented_arc_point n j ((apply_fun w j) 1) t).
+{
+  exact (andER (x :e B2 /\ y :e B2)
+    (x = y \/
+     (x :e S1 /\ y :e S1 /\
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t))
+    Hxy).
+}
+claim HxB2 : x :e B2. { exact (andEL (x :e B2) (y :e B2) HxyB2). }
+claim HyB2 : y :e B2. { exact (andER (x :e B2) (y :e B2) HxyB2). }
+claim Hpair : y :e B2 /\ x :e B2.
+{ exact (andI (y :e B2) (x :e B2) HyB2 HxB2). }
+claim HcasesYX :
+  y = x \/
+  (y :e S1 /\ x :e S1 /\
+    exists i j:set, i :e n /\ j :e n /\ i <> j /\
+      (apply_fun w i) 0 = (apply_fun w j) 0 /\
+      exists t:set, t :e unit_interval /\
+        y = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+        x = S1_oriented_arc_point n j ((apply_fun w j) 1) t).
+{
+  claim HcaseEq :
+    x = y ->
+    (y = x \/
+     (y :e S1 /\ x :e S1 /\
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          y = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          x = S1_oriented_arc_point n j ((apply_fun w j) 1) t)).
+  {
+    assume HxyEq.
+    exact (orIL
+      (y = x)
+      (y :e S1 /\ x :e S1 /\
+        exists i j:set, i :e n /\ j :e n /\ i <> j /\
+          (apply_fun w i) 0 = (apply_fun w j) 0 /\
+          exists t:set, t :e unit_interval /\
+            y = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+            x = S1_oriented_arc_point n j ((apply_fun w j) 1) t)
+      (eq_symm x y HxyEq)).
+  }
+  claim HcaseBd :
+    (x :e S1 /\ y :e S1 /\
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t) ->
+    (y = x \/
+     (y :e S1 /\ x :e S1 /\
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          y = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          x = S1_oriented_arc_point n j ((apply_fun w j) 1) t)).
+  {
+    assume Hbd.
+    apply orIR.
+    claim HxyS1 : x :e S1 /\ y :e S1.
+    {
+      exact (andEL (x :e S1 /\ y :e S1)
+        (exists i j:set, i :e n /\ j :e n /\ i <> j /\
+          (apply_fun w i) 0 = (apply_fun w j) 0 /\
+          exists t:set, t :e unit_interval /\
+            x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+            y = S1_oriented_arc_point n j ((apply_fun w j) 1) t)
+        Hbd).
+    }
+    claim HxS1 : x :e S1. { exact (andEL (x :e S1) (y :e S1) HxyS1). }
+    claim HyS1 : y :e S1. { exact (andER (x :e S1) (y :e S1) HxyS1). }
+    claim Hex :
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t.
+    {
+      exact (andER (x :e S1 /\ y :e S1)
+        (exists i j:set, i :e n /\ j :e n /\ i <> j /\
+          (apply_fun w i) 0 = (apply_fun w j) 0 /\
+          exists t:set, t :e unit_interval /\
+            x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+            y = S1_oriented_arc_point n j ((apply_fun w j) 1) t)
+        Hbd).
+    }
+    apply andI.
+    - apply andI.
+      + exact HyS1.
+      + exact HxS1.
+    - apply Hex. let i. assume HiEx.
+      apply HiEx. let j. assume HijPack.
+      claim Habcd : ((i :e n /\ j :e n) /\ i <> j) /\ (apply_fun w i) 0 = (apply_fun w j) 0.
+      {
+        exact (andEL (((i :e n /\ j :e n) /\ i <> j) /\ (apply_fun w i) 0 = (apply_fun w j) 0)
+          (exists t:set, t :e unit_interval /\
+            x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+            y = S1_oriented_arc_point n j ((apply_fun w j) 1) t)
+          HijPack).
+      }
+      claim Het :
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t.
+      {
+        exact (andER (((i :e n /\ j :e n) /\ i <> j) /\ (apply_fun w i) 0 = (apply_fun w j) 0)
+          (exists t:set, t :e unit_interval /\
+            x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+            y = S1_oriented_arc_point n j ((apply_fun w j) 1) t)
+          HijPack).
+      }
+      claim Habc : (i :e n /\ j :e n) /\ i <> j.
+      {
+        exact (andEL ((i :e n /\ j :e n) /\ i <> j)
+          ((apply_fun w i) 0 = (apply_fun w j) 0)
+          Habcd).
+      }
+      claim HeqLab : (apply_fun w i) 0 = (apply_fun w j) 0.
+      {
+        exact (andER ((i :e n /\ j :e n) /\ i <> j)
+          ((apply_fun w i) 0 = (apply_fun w j) 0)
+          Habcd).
+      }
+      claim Hab : i :e n /\ j :e n.
+      { exact (andEL (i :e n /\ j :e n) (i <> j) Habc). }
+      claim Hineq : i <> j.
+      { exact (andER (i :e n /\ j :e n) (i <> j) Habc). }
+      claim HiIn : i :e n. { exact (andEL (i :e n) (j :e n) Hab). }
+      claim HjIn : j :e n. { exact (andER (i :e n) (j :e n) Hab). }
+      witness j.
+      witness i.
+      apply andI.
+      - apply andI.
+        + apply andI.
+          * apply andI.
+            { exact HjIn. }
+            { exact HiIn. }
+          * claim Hjnei : j <> i.
+            {
+              assume Hji.
+              apply Hineq.
+              exact (eq_symm j i Hji).
+            }
+            exact Hjnei.
+        + exact (eq_symm ((apply_fun w i) 0) ((apply_fun w j) 0) HeqLab).
+      - apply Het. let t. assume HtPack.
+        witness t.
+        claim Htx : t :e unit_interval /\ x = S1_oriented_arc_point n i ((apply_fun w i) 1) t.
+        {
+          exact (andEL (t :e unit_interval /\ x = S1_oriented_arc_point n i ((apply_fun w i) 1) t)
+            (y = S1_oriented_arc_point n j ((apply_fun w j) 1) t)
+            HtPack).
+        }
+        claim HyEq : y = S1_oriented_arc_point n j ((apply_fun w j) 1) t.
+        {
+          exact (andER (t :e unit_interval /\ x = S1_oriented_arc_point n i ((apply_fun w i) 1) t)
+            (y = S1_oriented_arc_point n j ((apply_fun w j) 1) t)
+            HtPack).
+        }
+        claim HtUnit : t :e unit_interval.
+        { exact (andEL (t :e unit_interval) (x = S1_oriented_arc_point n i ((apply_fun w i) 1) t) Htx). }
+        claim HxEq : x = S1_oriented_arc_point n i ((apply_fun w i)  1) t.
+        { exact (andER (t :e unit_interval) (x = S1_oriented_arc_point n i ((apply_fun w i) 1) t) Htx). }
+        apply andI.
+        + apply andI.
+          * exact HtUnit.
+          * exact HyEq.
+        + exact HxEq.
+  }
+  exact (Hcases
+    (y = x \/
+     (y :e S1 /\ x :e S1 /\
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          y = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          x = S1_oriented_arc_point n j ((apply_fun w j) 1) t))
+    HcaseEq HcaseBd).
+}
+exact (andI
+  (y :e B2 /\ x :e B2)
+  (y = x \/
+   (y :e S1 /\ x :e S1 /\
+    exists i j:set, i :e n /\ j :e n /\ i <> j /\
+      (apply_fun w i) 0 = (apply_fun w j) 0 /\
+      exists t:set, t :e unit_interval /\
+        y = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+        x = S1_oriented_arc_point n j ((apply_fun w j) 1) t))
+  Hpair HcasesYX).
+Qed.
 
 (** Infrastructure: the quotient space obtained by pasting edges of B^2 **)
 (** according to labelling scheme w with n edges **)
