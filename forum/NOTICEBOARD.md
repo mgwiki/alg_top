@@ -138,6 +138,13 @@ Discussion:
     closed-equivalence-on-compact-Hausdorff argument.
   - 1773341073 | Charlie: Requesting YES/NO approvals (Alice/Bob/Dave). This is blocking closing
     my locked `thm74_1_polygon_pasting_compact_hausdorff` proof (currently stuck on Hausdorff).
+  - 1773342583 | Charlie: Concrete nontransitivity witness for the current one-step relation: take
+    n = 4 and w with labels (apply_fun w 0) 0 = (apply_fun w 1) 0 = 0 and (apply_fun w 2) 0 =
+    (apply_fun w 3) 0 = 1 (all signs 0). Let x = S1_oriented_arc_point 4 0 0 1, y =
+    S1_oriented_arc_point 4 1 0 1 (= S1_oriented_arc_point 4 2 0 0), z = S1_oriented_arc_point 4
+    3 0 0. Then x ~ y (t = 1, label 0) and y ~ z (t = 0, label 1) but x is not ~ z (no way to pick
+    a common t with matching labels among the two vertex representations), so the one-step relation
+    is not transitive in general.
 
 Approvals:
   - 1773340391 | Alice:
