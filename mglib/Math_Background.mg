@@ -242020,8 +242020,204 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
       Hxs0_0_eq_efam (eq_symm (apply_fun efam alpha0) (apply_fun efam al) Hefam_eq))).
   + (** SUBCASE k >= 1, i.e. n0 >= 2 **)
     assume Hk_ne0 : k <> 0.
-    (** n0 >= 2 case - use append of inv(efam(al)) to derive contradiction **)
-    admit.
+    claim Hk_omega : k :e omega. { exact (nat_p_omega k Hk_nat). }
+    claim Hk_in_n0 : k :e n0. { rewrite Hn0_eq. exact (ordsuccI2 k). }
+    (** Get factor of last entry xs0(k) **)
+    apply (Hentries_info k Hk_in_n0).
+    let alphak.
+    assume Halphak_pack : alphak :e J /\
+      apply_fun xs0 k :e apply_fun Gfam alphak /\
+      apply_fun xs0 k <> apply_fun efam alphak.
+    apply (and3E (alphak :e J) (apply_fun xs0 k :e apply_fun Gfam alphak)
+      (apply_fun xs0 k <> apply_fun efam alphak) Halphak_pack).
+    assume HalphakJ Hxs0_k_in Hxs0_k_ne.
+    (** Prepare inv(efam(al)) **)
+    claim Hinv_efam_in : apply_fun inv (apply_fun efam al) :e apply_fun Gfam al.
+    {
+      apply (and4E
+        (apply_fun Gfam al c= G)
+        (e :e apply_fun Gfam al)
+        (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+          apply_fun mult (x, y) :e apply_fun Gfam al)
+        (forall x:set, x :e apply_fun Gfam al -> apply_fun inv x :e apply_fun Gfam al)
+        (Hsubfam al Hal)).
+      assume _ _ _ Hinv_cl.
+      exact (Hinv_cl (apply_fun efam al) Hefam_in).
+    }
+    claim Hinv_efam_ne_e : apply_fun inv (apply_fun efam al) <> e.
+    {
+      assume Hinv_eq_e : apply_fun inv (apply_fun efam al) = e.
+      (** If inv(efam(al)) = e, then efam(al) = inv(e) = e (since inv(e) = e in a group). **)
+      (** Actually: mult(efam(al), inv(efam(al))) = e, so mult(efam(al), e) = e, so efam(al) = e. **)
+      apply (and6E
+        (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+        (forall x y z:set, x :e G -> y :e G -> z :e G ->
+          apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+        (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+        (forall x:set, x :e G ->
+          apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+        Hgrp).
+      assume _ _ _ _ Hid Hinv_ax.
+      claim Hmult_inv : apply_fun mult (apply_fun efam al, apply_fun inv (apply_fun efam al)) = e.
+      { exact (andEL
+          (apply_fun mult (apply_fun efam al, apply_fun inv (apply_fun efam al)) = e)
+          (apply_fun mult (apply_fun inv (apply_fun efam al), apply_fun efam al) = e)
+          (Hinv_ax (apply_fun efam al) Hefam_G)). }
+      claim Hmult_e : apply_fun mult (apply_fun efam al, e) = apply_fun efam al.
+      { exact (andER
+          (apply_fun mult (e, apply_fun efam al) = apply_fun efam al)
+          (apply_fun mult (apply_fun efam al, e) = apply_fun efam al)
+          (Hid (apply_fun efam al) Hefam_G)). }
+      claim H_cong : apply_fun mult (apply_fun efam al, e) =
+        apply_fun mult (apply_fun efam al, apply_fun inv (apply_fun efam al)).
+      { rewrite Hinv_eq_e. reflexivity. }
+      claim Hmult_e_eq_e : apply_fun mult (apply_fun efam al, e) = e.
+      { exact (eq_i_tra (apply_fun mult (apply_fun efam al, e))
+          (apply_fun mult (apply_fun efam al, apply_fun inv (apply_fun efam al))) e
+          H_cong Hmult_inv). }
+      claim Hefam_eq_e : apply_fun efam al = e.
+      { exact (eq_i_tra (apply_fun efam al) (apply_fun mult (apply_fun efam al, e)) e
+          (eq_symm (apply_fun mult (apply_fun efam al, e)) (apply_fun efam al) Hmult_e) Hmult_e_eq_e). }
+      exact (Hefam_ne Hefam_eq_e).
+    }
+    (** Case split: alphak = al vs alphak ≠ al **)
+    apply (xm (alphak = al)).
+    * (** alphak = al: prefix approach - admit for now **)
+      assume Halphak_al : alphak = al.
+      admit.
+    * (** alphak ≠ al: append approach **)
+      assume Halphak_ne_al : alphak <> al.
+      apply (xm (apply_fun inv (apply_fun efam al) = apply_fun efam al)).
+      - (** inv(efam(al)) = efam(al): involution - admit for now **)
+        assume Hinv_eq_efam : apply_fun inv (apply_fun efam al) = apply_fun efam al.
+        admit.
+      - (** inv(efam(al)) ≠ efam(al): append inv(efam(al)) to get reduced word for e **)
+        assume Hinv_ne_efam : apply_fun inv (apply_fun efam al) <> apply_fun efam al.
+        set b := apply_fun inv (apply_fun efam al).
+        set xs_ext := graph (ordsucc n0) (fun i:set => if i :e n0 then apply_fun xs0 i else b).
+        (** Hlast_diff: last entry factor differs from al **)
+        claim Hlast_diff : forall j alpha beta0:set,
+          n0 = ordsucc j ->
+          alpha :e J -> beta0 :e J ->
+          apply_fun xs0 j :e apply_fun Gfam alpha ->
+          b :e apply_fun Gfam beta0 ->
+          alpha <> beta0.
+        {
+          let j alpha beta0.
+          assume Hn0_eq_sj HalphaJ2 Hbeta0J Hxsj_in Hb_in_beta0.
+          (** j = k since ordsucc j = ordsucc k **)
+          claim Hj_eq_k : j = k.
+          { exact (ordsucc_inj j k (eq_i_tra (ordsucc j) n0 (ordsucc k)
+              (eq_symm n0 (ordsucc j) Hn0_eq_sj) Hn0_eq)). }
+          (** b = inv(efam(al)) ≠ e, so b is in exactly one factor: al. **)
+          (** By disjointness: beta0 = al. **)
+          claim Hbeta0_al : beta0 = al.
+          {
+            exact (eq_symm al beta0 (disjoint_subgroups_label_unique G mult e inv J Gfam
+              al beta0 b Hdisjoint Hal Hbeta0J Hinv_efam_in Hb_in_beta0 Hinv_efam_ne_e)).
+          }
+          (** alpha is the factor of xs0(j) = xs0(k), which is alphak. **)
+          (** By disjointness: alpha = alphak (since xs0(k) ≠ e... wait, xs0(k) could be e). **)
+          (** Actually, we just need alpha ≠ beta0 = al. **)
+          (** xs0(j) :e Gfam(alpha) and xs0(k) :e Gfam(alphak). **)
+          (** If xs0(k) ≠ e, disjointness gives alpha = alphak ≠ al = beta0. **)
+          (** If xs0(k) = e, alpha could be anything, but we still need alpha ≠ al. **)
+          (** Actually, we know xs0(k) ≠ efam(alphak). If efam(alphak) = e, then xs0(k) ≠ e. **)
+          (** If efam(alphak) ≠ e, xs0(k) could be e. **)
+          (** But: if xs0(k) = e, then xs0(k) :e Gfam(alpha) means e :e Gfam(alpha), which is true **)
+          (** for any alpha (subgroup). So alpha could be anything. We can't pin alpha = alphak. **)
+          (** However, the claim asks us to prove alpha ≠ beta0 for ANY such alpha. **)
+          (** If xs0(k) = e and alpha = al, then alpha = beta0 = al. We'd fail. **)
+          (** But xs0(k) = e means e :e Gfam(alphak) and e ≠ efam(alphak). **)
+          (** Also, the reduced_word condition says xs0(k) ≠ efam(alphak). If xs0(k) = e, then e ≠ efam(alphak). **)
+          (** We need: for ALL beta0 with b :e Gfam(beta0), and for ALL alpha with xs0(j) :e Gfam(alpha), **)
+          (** alpha ≠ beta0. Since beta0 = al, we need alpha ≠ al. **)
+          (** If xs0(k) ≠ e: xs0(k) :e Gfam(alpha) ∩ Gfam(alphak), so alpha = alphak ≠ al. **)
+          (** If xs0(k) = e: we can't determine alpha, but the LEMMA requires us to show it for ALL alpha. **)
+          (** This is a problem if xs0(k) = e, since then e :e Gfam(al) means we could have alpha = al. **)
+          (** BUT: the reduced_word_append_one is called with the SPECIFIC reduced word xs0. **)
+          (** In the reduced word, xs0(k) has a SPECIFIC factor alphak. The universally quantified **)
+          (** alpha in Hlast_diff refers to ANY alpha satisfying xs0(j) :e Gfam(alpha). **)
+          (** So we need: for any alpha with xs0(k) :e Gfam(alpha) and alpha :e J, alpha ≠ al. **)
+          (** This fails when xs0(k) = e (since e :e Gfam(al)). **)
+          (** Fix: we need xs0(k) ≠ e. When is this guaranteed? **)
+          (** In a reduced word with n ≥ 2, entries CAN be e if efam(alpha) ≠ e. **)
+          (** So the general approach fails when xs0(k) = e. **)
+          (** Alternative: instead of appending, use a different argument. **)
+          (** For now, assume xs0(k) ≠ e (this covers many cases) and admit the rest. **)
+          rewrite Hbeta0_al.
+          assume Halpha_al : alpha = al.
+          claim Hxsk_in_Gal : apply_fun xs0 k :e apply_fun Gfam al.
+          { rewrite <- Halpha_al. rewrite <- Hj_eq_k. exact Hxsj_in. }
+          claim Hxsk_in_Gak : apply_fun xs0 k :e apply_fun Gfam alphak.
+          { exact Hxs0_k_in. }
+          claim Halphak_eq_al : alphak = al.
+          {
+            apply (xm (apply_fun xs0 k = e)).
+            - assume Hxsk_e : apply_fun xs0 k = e.
+              (** xs0(k) = e, then xs0(k) ≠ efam(alphak) means e ≠ efam(alphak). **)
+              (** But we're trying to show alphak = al. From xs0(k) = e we can't conclude this. **)
+              (** Actually, this would mean alphak = al, contradicting Halphak_ne_al. **)
+              (** But we DON'T know alphak = al here - we're trying to prove alpha ≠ al. **)
+              (** In this branch, alpha = al (assumption). xs0(k) = e. **)
+              (** We have xs0(k) :e Gfam(alphak). So e :e Gfam(alphak). True. **)
+              (** We need alphak = al to contradict Halphak_ne_al. **)
+              (** But we can't derive alphak = al from xs0(k) = e alone. **)
+              (** THIS CASE IS A GENUINE ISSUE. Admit it. **)
+              admit.
+            - assume Hxsk_ne_e : apply_fun xs0 k <> e.
+              exact (disjoint_subgroups_label_unique G mult e inv J Gfam
+                alphak al (apply_fun xs0 k) Hdisjoint HalphakJ Hal Hxs0_k_in Hxsk_in_Gal Hxsk_ne_e).
+          }
+          exact (Halphak_ne_al Halphak_eq_al).
+        }
+        (** Apply reduced_word_append_one **)
+        claim Hred_ext : reduced_word J Gfam efam (ordsucc n0) xs_ext.
+        {
+          exact (reduced_word_append_one_pre J Gfam efam n0 xs0 b al
+            Hred0 Hn0_ne0 Hal Hinv_efam_in Hinv_ne_efam Hlast_diff).
+        }
+        (** Word product of extended word = mult(efam(al), inv(efam(al))) = e **)
+        claim Hwp_ext : word_product mult e xs_ext (ordsucc n0) =
+          apply_fun mult (word_product mult e xs0 n0, b).
+        { exact (word_product_append_one mult e xs0 b n0 Hn0_omega). }
+        claim Hwp_ext_eq : word_product mult e xs_ext (ordsucc n0) =
+          apply_fun mult (apply_fun efam al, apply_fun inv (apply_fun efam al)).
+        { rewrite Hwp_ext. rewrite Hwp0. reflexivity. }
+        claim Hmult_inv_e : apply_fun mult (apply_fun efam al, apply_fun inv (apply_fun efam al)) = e.
+        {
+          apply (and6E
+            (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+            (forall x y z:set, x :e G -> y :e G -> z :e G ->
+              apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+            (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+            (forall x:set, x :e G ->
+              apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+            Hgrp).
+          assume _ _ _ _ _ Hinv_ax.
+          exact (andEL
+            (apply_fun mult (apply_fun efam al, apply_fun inv (apply_fun efam al)) = e)
+            (apply_fun mult (apply_fun inv (apply_fun efam al), apply_fun efam al) = e)
+            (Hinv_ax (apply_fun efam al) Hefam_G)).
+        }
+        claim Hwp_ext_e : word_product mult e xs_ext (ordsucc n0) = e.
+        { exact (eq_i_tra (word_product mult e xs_ext (ordsucc n0))
+            (apply_fun mult (apply_fun efam al, apply_fun inv (apply_fun efam al))) e
+            Hwp_ext_eq Hmult_inv_e). }
+        (** ordsucc n0 ≠ 0 and ordsucc n0 ≠ 1 **)
+        claim Hsn0_ne0 : ordsucc n0 <> 0.
+        { exact (neq_i_sym 0 (ordsucc n0) (neq_0_ordsucc n0)). }
+        claim Hsn0_ne1 : ordsucc n0 <> 1.
+        {
+          assume Hsn0_eq1 : ordsucc n0 = 1.
+          claim Hn0_eq0 : n0 = 0. { exact (ordsucc_inj n0 0 Hsn0_eq1). }
+          exact (Hn0_ne0 Hn0_eq0).
+        }
+        (** By free_product_reduced_word_length_ge2_product_ne_e, product ≠ e **)
+        exact (free_product_reduced_word_length_ge2_product_ne_e
+          G mult e inv J Gfam efam (ordsucc n0) xs_ext
+          Hfp Hred_ext Hsn0_ne0 Hsn0_ne1
+          Hwp_ext_e).
 Admitted.
 
 (** Infrastructure bounty: torsion/involution in free products (order 2 case).
