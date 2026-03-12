@@ -305723,6 +305723,28 @@ apply set_ext.
   - exact (polygon_pasting_equiv_chain_trans n w x y z Hxy Hyz).
 Qed.
 
+(** polygon_pasting_equiv_chain is an equivalence relation on B2. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_chain_equivalence_relation : forall n w:set,
+  (forall x:set, x :e B2 -> polygon_pasting_equiv_chain n w x x) /\
+  ((forall x y:set, x :e B2 -> y :e B2 ->
+     polygon_pasting_equiv_chain n w x y ->
+     polygon_pasting_equiv_chain n w y x) /\
+   (forall x y z:set, x :e B2 -> y :e B2 -> z :e B2 ->
+     polygon_pasting_equiv_chain n w x y ->
+     polygon_pasting_equiv_chain n w y z ->
+     polygon_pasting_equiv_chain n w x z)).
+let n w.
+apply andI.
+- let x. assume HxB2.
+  exact (polygon_pasting_equiv_chain_refl n w x HxB2).
+- apply andI.
+  * let x y. assume HxB2 HyB2 Hxy.
+    exact (polygon_pasting_equiv_chain_symm n w x y Hxy).
+  * let x y z. assume HxB2 HyB2 HzB2 Hxy Hyz.
+    exact (polygon_pasting_equiv_chain_trans n w x y z Hxy Hyz).
+Qed.
+
 (** If x is not on the boundary S^1, it can only be related to itself. **)
 (** Proven Charlie **)
 Lemma polygon_pasting_equiv_nonS1_left : forall n w x y:set,
