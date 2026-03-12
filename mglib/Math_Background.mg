@@ -303980,6 +303980,44 @@ Definition polygon_pasting_map : set -> set -> set :=
   fun n w =>
     graph B2 (fun x:set => {y :e B2 | polygon_pasting_equiv n w x y}).
 
+(** If two points map to the same class under polygon_pasting_map, they are related. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_map_eq_implies_equiv : forall n w x y:set,
+  x :e B2 ->
+  y :e B2 ->
+  apply_fun (polygon_pasting_map n w) x = apply_fun (polygon_pasting_map n w) y ->
+  polygon_pasting_equiv n w x y.
+let n w x y.
+assume HxB2 HyB2 HpiEq.
+set pi := polygon_pasting_map n w.
+claim HpiX : apply_fun pi x = {z :e B2 | polygon_pasting_equiv n w x z}.
+{
+  exact (apply_fun_graph B2 (fun x0:set => {z :e B2 | polygon_pasting_equiv n w x0 z}) x HxB2).
+}
+claim HpiY : apply_fun pi y = {z :e B2 | polygon_pasting_equiv n w y z}.
+{
+  exact (apply_fun_graph B2 (fun x0:set => {z :e B2 | polygon_pasting_equiv n w x0 z}) y HyB2).
+}
+claim HxInClassX : x :e {z :e B2 | polygon_pasting_equiv n w x z}.
+{
+  apply (SepI B2 (fun z:set => polygon_pasting_equiv n w x z)).
+  - exact HxB2.
+  - exact (polygon_pasting_equiv_refl n w x HxB2).
+}
+claim HxInClassY : x :e {z :e B2 | polygon_pasting_equiv n w y z}.
+{
+  rewrite <- HpiY.
+  rewrite <- HpiEq.
+  rewrite HpiX.
+  exact HxInClassX.
+}
+claim Hyx : polygon_pasting_equiv n w y x.
+{
+  exact (SepE2 B2 (fun z:set => polygon_pasting_equiv n w y z) x HxInClassY).
+}
+exact (polygon_pasting_equiv_symm n w y x Hyx).
+Qed.
+
 (** Infrastructure: the quotient topology for polygon pasting **)
 Definition polygon_pasting_topology : set -> set -> set :=
   fun n w =>
