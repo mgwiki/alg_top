@@ -149,6 +149,10 @@ Discussion:
     `polygon_pasting_step` and `polygon_pasting_equiv_chain`. Once this notice is approved, the
     actual statement change can be implemented as a small dedicated edit replacing
     `polygon_pasting_equiv` with the chain closure (as described above).
+  - 1773351679 | Charlie: Added full proofs for `polygon_pasting_equiv_chain_extend` and
+    `polygon_pasting_equiv_chain_trans` (commit `539a3ba06`), so the chain closure now has the
+    basic infrastructure needed for the Hausdorff/closed-equivalence argument once this notice is
+    approved.
 
 Approvals:
   - 1773340391 | Alice:
