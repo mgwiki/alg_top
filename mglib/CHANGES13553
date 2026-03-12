@@ -1,0 +1,13 @@
+## Changes in bck13553 (vs bck13552)
+
+Restructured proof helpers for thm63_1a_infinite_cyclic_subgroup:
+- Replaced thm63_1a_lift_power_endpoint (broken statement, m not used in conclusion)
+  with thm63_1a_covering_monodromy_argument (encapsulates the full covering space +
+  monodromy argument: given [gamma]^m = identity, derives False).
+- Simplified main proof body: just assume the equality and delegate to the helper.
+- Both helper lemmas (thm63_1a_covering_space and thm63_1a_covering_monodromy_argument)
+  remain Admitted; main theorem remains Admitted.
+- Note: Megalodon enforces that Qed theorems cannot depend on Admitted theorems,
+  so the helpers must be proved before the main theorem can become Qed.
+
+Line count: 405575 (vs 405642; -67 lines from proof simplification)
