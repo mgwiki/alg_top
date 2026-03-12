@@ -305745,6 +305745,50 @@ apply andI.
     exact (polygon_pasting_equiv_chain_trans n w x y z Hxy Hyz).
 Qed.
 
+(** Symmetric non-boundary lemma. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_chain_nonS1_right : forall n w x y:set,
+  polygon_pasting_equiv_chain n w x y ->
+  y /:e S1 ->
+  x = y.
+let n w x y.
+assume Hxy HynotS1.
+claim Hyx : polygon_pasting_equiv_chain n w y x.
+{ exact (polygon_pasting_equiv_chain_symm n w x y Hxy). }
+claim Hxeq : x = y.
+{ exact (polygon_pasting_equiv_chain_nonS1_left n w y x Hyx HynotS1). }
+exact Hxeq.
+Qed.
+
+(** If two points are chain-related and distinct, they must both lie on S^1. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_chain_neq_implies_S1 : forall n w x y:set,
+  polygon_pasting_equiv_chain n w x y ->
+  x <> y ->
+  x :e S1 /\ y :e S1.
+let n w x y.
+assume Hxy Hneq.
+claim HxS1 : x :e S1.
+{
+  apply (xm (x :e S1)).
+  - assume HxS1. exact HxS1.
+  - assume HxnotS1 : ~(x :e S1).
+    claim HyEq : y = x.
+    { exact (polygon_pasting_equiv_chain_nonS1_left n w x y Hxy HxnotS1). }
+    exact (FalseE (Hneq (eq_symm y x HyEq)) (x :e S1)).
+}
+claim HyS1 : y :e S1.
+{
+  apply (xm (y :e S1)).
+  - assume HyS1. exact HyS1.
+  - assume HynotS1 : ~(y :e S1).
+    claim HxEq : x = y.
+    { exact (polygon_pasting_equiv_chain_nonS1_right n w x y Hxy HynotS1). }
+    exact (FalseE (Hneq HxEq) (y :e S1)).
+}
+exact (andI (x :e S1) (y :e S1) HxS1 HyS1).
+Qed.
+
 (** If x is not on the boundary S^1, it can only be related to itself. **)
 (** Proven Charlie **)
 Lemma polygon_pasting_equiv_nonS1_left : forall n w x y:set,
