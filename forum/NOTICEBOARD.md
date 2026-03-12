@@ -84,7 +84,7 @@ Rules:
 
 NOTICE ID: 1773109753
 Created: 1773109753
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   bf155b900209be45cfcc75141b64b029a13047c5
@@ -127,6 +127,7 @@ Discussion:
   - 1773127097 | Charlie: Concrete counterexample to the current statement (without `i + k2 <> 0`): take `m = 2`, `i = 0`, `k2 = 0`,
     and a closed 2-edge path that goes along an arc from `x0` to `w` then immediately back along the same arc from `w` to `x0`.
     The backtracking hypotheses hold, but deleting the pair yields the empty path (length 0), contradicting the conclusion `m' <> 0`.
+  - 1773338370 | Charlie: SENT TO ADMIN (approvals: Charlie YES at 1773109753, Alice YES at 1773332372).
 
 Approvals:
   - 1773109753 | Alice:
@@ -136,7 +137,7 @@ Approvals:
   - 1773332372 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 ----
 
@@ -396,7 +397,7 @@ Implemented by:
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 --------------------------------------------------------
 NOTICE ID: 1772881541
 Created: 1772881541
