@@ -206476,6 +206476,102 @@ Theorem thm63_1a_infinite_cyclic_subgroup : forall X Tx U V A B:set,
       (fundamental_group_id X Tx a)
       (path_homotopy_class_loop X Tx a (path_concat alpha beta)) m <>
     fundamental_group_id X Tx a.
+let X Tx U V A B.
+assume Htop : topology_on X Tx.
+assume HUopen : U :e Tx.
+assume HVopen : V :e Tx.
+assume Hunion : X = U :\/: V.
+assume HAopen : A :e subspace_topology X Tx (U :/\: V).
+assume HBopen : B :e subspace_topology X Tx (U :/\: V).
+assume Hdecomp : U :/\: V = A :\/: B.
+assume Hdisj : A :/\: B = Empty.
+let a b.
+assume HaA : a :e A.
+assume HbB : b :e B.
+let alpha.
+assume Halphapath : path_between U a b alpha.
+assume Halphacont : continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha.
+let beta.
+assume Hbetapath : path_between V b a beta.
+assume Hbetacont : continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) beta.
+let m.
+assume Hm : m :e omega.
+assume Hmne0 : m <> 0.
+(** Proof strategy: construct covering space, use monodromy for contradiction **)
+(** Step 1: Show A and B are open in X (from being open in subspace U cap V) **)
+claim HAopenX : A :e Tx.
+{
+  admit.
+}
+claim HBopenX : B :e Tx.
+{
+  admit.
+}
+(** Step 2: Key properties of a and b in X **)
+claim HaX : a :e X.
+{
+  claim HaAB : a :e A :\/: B. { apply binunionI1. exact HaA. }
+  claim HaUV : a :e U :/\: V. { rewrite Hdecomp. exact HaAB. }
+  claim HaU : a :e U. { exact (binintersectE1 U V a HaUV). }
+  rewrite Hunion. apply binunionI1. exact HaU.
+}
+claim HbX : b :e X.
+{
+  claim HbAB : b :e A :\/: B. { apply binunionI2. exact HbB. }
+  claim HbUV : b :e U :/\: V. { rewrite Hdecomp. exact HbAB. }
+  claim HbV : b :e V. { exact (binintersectE2 U V b HbUV). }
+  rewrite Hunion. apply binunionI2. exact HbV.
+}
+(** Step 3: Build covering space E -> X **)
+(** E consists of copies of U indexed by even integers and V by odd integers, **)
+(** identified along A (sheets 2n and 2n-1) and B (sheets 2n and 2n+1). **)
+(** We encode this as: for each n in omega, the point (x, n) is in E **)
+(** where x is in the appropriate open set for that sheet. **)
+(** Core covering space claim (to be proved via explicit construction) **)
+claim Hcov_exists :
+  exists E Te p:set,
+    covering_map E Te X Tx p /\
+    (forall n:set, n :e omega -> (a, n) :e E) /\
+    (forall n:set, n :e omega -> apply_fun p (a, n) = a) /\
+    (forall n1 n2:set, n1 :e omega -> n2 :e omega -> (a, n1) = (a, n2) -> n1 = n2) /\
+    (** lift of alpha.beta starting at (a,0) ends at (a,1) **)
+    apply_fun (path_lift E Te X Tx p (a, 0)
+      (path_concat alpha beta)) 1 = (a, 1).
+{
+  (** TODO: full construction of the covering space **)
+  admit.
+}
+apply Hcov_exists.
+let E. assume HTexist. apply HTexist.
+let Te. assume Hpexist. apply Hpexist.
+let p.
+assume Hcov_pack :
+    covering_map E Te X Tx p /\
+    (forall n:set, n :e omega -> (a, n) :e E) /\
+    (forall n:set, n :e omega -> apply_fun p (a, n) = a) /\
+    (forall n1 n2:set, n1 :e omega -> n2 :e omega -> (a, n1) = (a, n2) -> n1 = n2) /\
+    apply_fun (path_lift E Te X Tx p (a, 0)
+      (path_concat alpha beta)) 1 = (a, 1).
+(** Extract covering space properties **)
+claim Hcov : covering_map E Te X Tx p. { admit. }
+(** Step 4: The lift of gamma^m starting at (a,0) ends at (a,m) **)
+(** By induction: lift of gamma starts at (a,k) and ends at (a,k+1) **)
+(** So lift of gamma^m starts at (a,0) and ends at (a,m) **)
+claim Hlift_end :
+  apply_fun (path_lift E Te X Tx p (a, 0)
+    (Eps_i (fun h:set => h :e path_homotopy_class_loop X Tx a
+      (path_concat alpha beta)))) 1 <> (a, 0).
+{
+  (** TODO: compute lift endpoint using the covering space properties **)
+  admit.
+}
+(** Step 5: Use monodromy theorem **)
+(** If [gamma]^m = e then gamma^m ~ const_a **)
+(** By monodromy, lifts of homotopic paths end at same point **)
+(** Lift of const_a starts and ends at (a,0) **)
+(** But lift of gamma^m ends at (a,m) != (a,0) **)
+(** Contradiction **)
+(** TODO: connect group_power_nat to actual path concatenation and apply monodromy **)
 admit.
 Admitted.
 
