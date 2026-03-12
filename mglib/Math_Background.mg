@@ -304082,6 +304082,206 @@ exact (andI
   Hpair Hex).
 Qed.
 
+(** If x is not on the boundary S^1, a one-step move can only reach x itself. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_step_nonS1_left : forall n w x y:set,
+  polygon_pasting_step n w x y ->
+  x /:e S1 ->
+  y = x.
+let n w x y.
+assume Hxy HxnotS1.
+claim Hcases :
+  x = y \/
+  (x :e S1 /\ y :e S1 /\
+    exists i j:set, i :e n /\ j :e n /\ i <> j /\
+      (apply_fun w i) 0 = (apply_fun w j) 0 /\
+      exists t:set, t :e unit_interval /\
+        x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+        y = S1_oriented_arc_point n j ((apply_fun w j) 1) t).
+{
+  exact (andER (x :e B2 /\ y :e B2)
+    (x = y \/
+     (x :e S1 /\ y :e S1 /\
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t))
+    Hxy).
+}
+apply Hcases.
+- assume HxyEq.
+  exact (eq_symm x y HxyEq).
+- assume Hbd.
+  claim HxyS1 : x :e S1 /\ y :e S1.
+  {
+    exact (andEL (x :e S1 /\ y :e S1)
+      (exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t)
+      Hbd).
+  }
+  claim HxS1 : x :e S1. { exact (andEL (x :e S1) (y :e S1) HxyS1). }
+  claim Hfalse : False.
+  { exact (HxnotS1 HxS1). }
+  exact (FalseE Hfalse (y = x)).
+Qed.
+
+(** If a polygon_pasting_equiv_chain starts at an interior point, all nodes are equal. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_chain_all_eq_if_start_nonS1 :
+  forall n w m f:set,
+  m :e omega ->
+  function_on f (ordsucc m) B2 ->
+  (forall k:set, k :e m ->
+    polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k))) ->
+  apply_fun f 0 /:e S1 ->
+  forall k:set, k :e ordsucc m -> apply_fun f k = apply_fun f 0.
+let n w m f.
+assume HmOmega HfFun Hsteps H0notS1.
+claim HmNat : nat_p m.
+{ exact (omega_nat_p m HmOmega). }
+set P := fun mm:set =>
+  forall fmm:set,
+  function_on fmm (ordsucc mm) B2 ->
+  (forall k:set, k :e mm ->
+    polygon_pasting_step n w (apply_fun fmm k) (apply_fun fmm (ordsucc k))) ->
+  apply_fun fmm 0 /:e S1 ->
+  forall k:set, k :e ordsucc mm -> apply_fun fmm k = apply_fun fmm 0.
+apply (nat_ind P).
+- (** Base case mm = 0 **)
+  let fmm. assume Hf0 Hsteps0 Hnot0.
+  let k. assume Hk.
+  apply (ordsuccE 0 k Hk).
+  * assume Hk0 : k :e 0.
+    exact (FalseE (EmptyE k Hk0) (apply_fun fmm k = apply_fun fmm 0)).
+  * assume Hk0 : k = 0.
+    rewrite Hk0.
+    reflexivity.
+- (** Step mm -> ordsucc mm **)
+  let mm. assume HmmNat IH.
+  let fmm. assume HfS HstepsS HnotS.
+  claim HfM : function_on fmm (ordsucc mm) B2.
+  { exact (function_on_subdomain fmm (ordsucc (ordsucc mm)) B2 (ordsucc mm)
+      HfS (ordsuccI1 (ordsucc mm))). }
+  claim HstepsM : forall k:set, k :e mm ->
+    polygon_pasting_step n w (apply_fun fmm k) (apply_fun fmm (ordsucc k)).
+  { let k. assume Hk.
+    exact (HstepsS k (ordsuccI1 mm k Hk)). }
+  let k. assume HkS : k :e ordsucc (ordsucc mm).
+  apply (ordsuccE (ordsucc mm) k HkS).
+  * assume HkIn : k :e ordsucc mm.
+    exact (IH fmm HfM HstepsM HnotS k HkIn).
+  * assume HkEq : k = ordsucc mm.
+    rewrite HkEq.
+    claim HmEq0 : apply_fun fmm mm = apply_fun fmm 0.
+    { exact (IH fmm HfM HstepsM HnotS mm (ordsuccI2 mm)). }
+    claim HmNotS1 : apply_fun fmm mm /:e S1.
+    { rewrite HmEq0. exact HnotS. }
+    claim Hlast : polygon_pasting_step n w (apply_fun fmm mm) (apply_fun fmm (ordsucc mm)).
+    { exact (HstepsS mm (ordsuccI2 mm)). }
+    claim HsuccEq : apply_fun fmm (ordsucc mm) = apply_fun fmm mm.
+    { exact (polygon_pasting_step_nonS1_left n w (apply_fun fmm mm) (apply_fun fmm (ordsucc mm)) Hlast HmNotS1). }
+    exact (eq_i_tra (apply_fun fmm (ordsucc mm)) (apply_fun fmm mm) (apply_fun fmm 0)
+      HsuccEq HmEq0).
+- exact HmNat.
+- exact HfFun.
+- exact Hsteps.
+- exact H0notS1.
+Qed.
+
+(** Chain version: if x is not on the boundary S^1, it can only be chain-related to itself. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_chain_nonS1_left : forall n w x y:set,
+  polygon_pasting_equiv_chain n w x y ->
+  x /:e S1 ->
+  y = x.
+let n w x y.
+assume Hxy HxnotS1.
+claim HxyB2 : x :e B2 /\ y :e B2.
+{ exact (andEL (x :e B2 /\ y :e B2)
+    (exists m f:set,
+      m :e omega /\
+      function_on f (ordsucc m) B2 /\
+      apply_fun f 0 = x /\
+      apply_fun f m = y /\
+      forall k:set, k :e m ->
+        polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)))
+    Hxy). }
+claim Hex :
+  exists m f:set,
+    m :e omega /\
+    function_on f (ordsucc m) B2 /\
+    apply_fun f 0 = x /\
+    apply_fun f m = y /\
+    forall k:set, k :e m ->
+      polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)).
+{ exact (andER (x :e B2 /\ y :e B2)
+    (exists m f:set,
+      m :e omega /\
+      function_on f (ordsucc m) B2 /\
+      apply_fun f 0 = x /\
+      apply_fun f m = y /\
+      forall k:set, k :e m ->
+        polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)))
+    Hxy). }
+apply Hex.
+let m.
+assume HmEx.
+apply HmEx.
+let f.
+assume Hpack.
+claim Habcd :
+  ((m :e omega /\ function_on f (ordsucc m) B2) /\ apply_fun f 0 = x) /\ apply_fun f m = y.
+{ exact (andEL
+    (((m :e omega /\ function_on f (ordsucc m) B2) /\ apply_fun f 0 = x) /\ apply_fun f m = y)
+    (forall k:set, k :e m ->
+      polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)))
+    Hpack). }
+claim Hsteps : forall k:set, k :e m ->
+  polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)).
+{ exact (andER
+    (((m :e omega /\ function_on f (ordsucc m) B2) /\ apply_fun f 0 = x) /\ apply_fun f m = y)
+    (forall k:set, k :e m ->
+      polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)))
+    Hpack). }
+claim Hab0 : (m :e omega /\ function_on f (ordsucc m) B2) /\ apply_fun f 0 = x.
+{ exact (andEL
+    ((m :e omega /\ function_on f (ordsucc m) B2) /\ apply_fun f 0 = x)
+    (apply_fun f m = y)
+    Habcd). }
+claim HfmEq : apply_fun f m = y.
+{ exact (andER
+    ((m :e omega /\ function_on f (ordsucc m) B2) /\ apply_fun f 0 = x)
+    (apply_fun f m = y)
+    Habcd). }
+claim Hab : m :e omega /\ function_on f (ordsucc m) B2.
+{ exact (andEL
+    (m :e omega /\ function_on f (ordsucc m) B2)
+    (apply_fun f 0 = x)
+    Hab0). }
+claim Hf0Eq : apply_fun f 0 = x.
+{ exact (andER
+    (m :e omega /\ function_on f (ordsucc m) B2)
+    (apply_fun f 0 = x)
+    Hab0). }
+claim HmOmega : m :e omega.
+{ exact (andEL (m :e omega) (function_on f (ordsucc m) B2) Hab). }
+claim HfFun : function_on f (ordsucc m) B2.
+{ exact (andER (m :e omega) (function_on f (ordsucc m) B2) Hab). }
+claim Hf0notS1 : apply_fun f 0 /:e S1.
+{ rewrite Hf0Eq. exact HxnotS1. }
+claim HmEq0 : apply_fun f m = apply_fun f 0.
+{ exact (polygon_pasting_equiv_chain_all_eq_if_start_nonS1 n w m f
+    HmOmega HfFun Hsteps Hf0notS1 m (ordsuccI2 m)). }
+claim HyEqF0 : y = apply_fun f 0.
+{ exact (eq_i_tra y (apply_fun f m) (apply_fun f 0)
+    (eq_symm (apply_fun f m) y HfmEq) HmEq0). }
+exact (eq_i_tra y (apply_fun f 0) x HyEqF0 Hf0Eq).
+Qed.
+
 (** Basic properties of polygon_pasting_equiv (reflexive and symmetric). **)
 (** Proven Charlie **)
 Lemma polygon_pasting_equiv_refl : forall n w x:set,
