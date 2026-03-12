@@ -303967,6 +303967,35 @@ apply Hcases.
   exact (andI (x :e S1) (y :e S1) HxS1 HyS1).
 Qed.
 
+(** Interior points have singleton equivalence classes. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_class_nonS1_singleton : forall n w x:set,
+  x :e B2 ->
+  x /:e S1 ->
+  {y :e B2 | polygon_pasting_equiv n w x y} = {x}.
+let n w x.
+assume HxB2 HxnotS1.
+apply set_ext.
+- let y.
+  assume HyCls.
+  claim HyB2 : y :e B2.
+  { exact (SepE1 B2 (fun y0:set => polygon_pasting_equiv n w x y0) y HyCls). }
+  claim Hxy : polygon_pasting_equiv n w x y.
+  { exact (SepE2 B2 (fun y0:set => polygon_pasting_equiv n w x y0) y HyCls). }
+  claim HyEqx : y = x.
+  { exact (polygon_pasting_equiv_nonS1_left n w x y Hxy HxnotS1). }
+  rewrite HyEqx.
+  exact (SingI x).
+- let y.
+  assume HySing.
+  claim HyEq : y = x.
+  { exact (SingE x y HySing). }
+  rewrite HyEq.
+  exact (SepI B2 (fun y0:set => polygon_pasting_equiv n w x y0) x
+    HxB2
+    (polygon_pasting_equiv_refl n w x HxB2)).
+Qed.
+
 (** Infrastructure: the quotient space obtained by pasting edges of B^2 **)
 (** according to labelling scheme w with n edges **)
 Definition polygon_pasting_space : set -> set -> set :=
@@ -304016,6 +304045,21 @@ claim Hyx : polygon_pasting_equiv n w y x.
   exact (SepE2 B2 (fun z:set => polygon_pasting_equiv n w y z) x HxInClassY).
 }
 exact (polygon_pasting_equiv_symm n w y x Hyx).
+Qed.
+
+(** polygon_pasting_map is injective on interior points. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_map_inj_nonS1 : forall n w x y:set,
+  x :e B2 ->
+  y :e B2 ->
+  x /:e S1 ->
+  apply_fun (polygon_pasting_map n w) x = apply_fun (polygon_pasting_map n w) y ->
+  y = x.
+let n w x y.
+assume HxB2 HyB2 HxnotS1 HpiEq.
+claim Hxy : polygon_pasting_equiv n w x y.
+{ exact (polygon_pasting_map_eq_implies_equiv n w x y HxB2 HyB2 HpiEq). }
+exact (polygon_pasting_equiv_nonS1_left n w x y Hxy HxnotS1).
 Qed.
 
 (** Infrastructure: the quotient topology for polygon pasting **)
