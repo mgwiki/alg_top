@@ -206452,6 +206452,132 @@ Admitted.
 (** (lines 2013-2249 in algtop.tex)                              **)
 (** ============================================================ **)
 
+(** Helper for Thm 63.1: A and B open in subspace U cap V with U cap V = A cup B, A cap B = empty **)
+(** implies A and B are open in X (since they are intersections of open sets). **)
+Lemma thm63_1_A_open_in_X : forall X Tx U V A B:set,
+  topology_on X Tx -> U :e Tx -> V :e Tx ->
+  A :e subspace_topology X Tx (U :/\: V) ->
+  A :e Tx.
+let X Tx U V A B.
+assume Htop : topology_on X Tx.
+assume HUopen : U :e Tx.
+assume HVopen : V :e Tx.
+assume HAopen : A :e subspace_topology X Tx (U :/\: V).
+(** A is open in subspace of U cap V, so A = W cap (U cap V) for some W in Tx **)
+claim HPred : exists W:set, W :e Tx /\ A = W :/\: (U :/\: V).
+{
+  exact (SepE2 (Power (U :/\: V)) (fun U0:set => exists V0:set, V0 :e Tx /\ U0 = V0 :/\: (U :/\: V)) A HAopen).
+}
+apply HPred. let W. assume HW : W :e Tx /\ A = W :/\: (U :/\: V).
+claim HWTx : W :e Tx. { exact (andEL (W :e Tx) (A = W :/\: (U :/\: V)) HW). }
+claim HAeq : A = W :/\: (U :/\: V). { exact (andER (W :e Tx) (A = W :/\: (U :/\: V)) HW). }
+(** A = W cap (U cap V) = (W cap U) cap V **)
+claim HAeq2 : A = (W :/\: U) :/\: V.
+{
+  rewrite HAeq. exact (eq_symm ((W :/\: U) :/\: V) (W :/\: (U :/\: V)) (binintersect_assoc W U V)).
+}
+(** W cap U is open **)
+claim HWUopen : open_in X Tx (W :/\: U).
+{
+  exact (binintersect_open X Tx W U
+    (andI (topology_on X Tx) (W :e Tx) Htop HWTx)
+    (andI (topology_on X Tx) (U :e Tx) Htop HUopen)).
+}
+claim HWU : W :/\: U :e Tx.
+{ exact (andER (topology_on X Tx) ((W :/\: U) :e Tx) HWUopen). }
+(** (W cap U) cap V is open **)
+claim HWUVopen : open_in X Tx ((W :/\: U) :/\: V).
+{
+  exact (binintersect_open X Tx (W :/\: U) V
+    HWUopen
+    (andI (topology_on X Tx) (V :e Tx) Htop HVopen)).
+}
+claim HWUV : (W :/\: U) :/\: V :e Tx.
+{ exact (andER (topology_on X Tx) (((W :/\: U) :/\: V) :e Tx) HWUVopen). }
+rewrite HAeq2. exact HWUV.
+Qed.
+
+(** Helper for Thm 63.1: B open in X analogously **)
+Lemma thm63_1_B_open_in_X : forall X Tx U V A B:set,
+  topology_on X Tx -> U :e Tx -> V :e Tx ->
+  B :e subspace_topology X Tx (U :/\: V) ->
+  B :e Tx.
+let X Tx U V A B.
+assume Htop : topology_on X Tx.
+assume HUopen : U :e Tx.
+assume HVopen : V :e Tx.
+assume HBopen : B :e subspace_topology X Tx (U :/\: V).
+claim HPred : exists W:set, W :e Tx /\ B = W :/\: (U :/\: V).
+{
+  exact (SepE2 (Power (U :/\: V)) (fun U0:set => exists V0:set, V0 :e Tx /\ U0 = V0 :/\: (U :/\: V)) B HBopen).
+}
+apply HPred. let W. assume HW : W :e Tx /\ B = W :/\: (U :/\: V).
+claim HWTx : W :e Tx. { exact (andEL (W :e Tx) (B = W :/\: (U :/\: V)) HW). }
+claim HBeq : B = W :/\: (U :/\: V). { exact (andER (W :e Tx) (B = W :/\: (U :/\: V)) HW). }
+claim HBeq2 : B = (W :/\: U) :/\: V.
+{
+  rewrite HBeq. exact (eq_symm ((W :/\: U) :/\: V) (W :/\: (U :/\: V)) (binintersect_assoc W U V)).
+}
+claim HWUopen : open_in X Tx (W :/\: U).
+{
+  exact (binintersect_open X Tx W U
+    (andI (topology_on X Tx) (W :e Tx) Htop HWTx)
+    (andI (topology_on X Tx) (U :e Tx) Htop HUopen)).
+}
+claim HWUVopen : open_in X Tx ((W :/\: U) :/\: V).
+{
+  exact (binintersect_open X Tx (W :/\: U) V
+    HWUopen
+    (andI (topology_on X Tx) (V :e Tx) Htop HVopen)).
+}
+rewrite HBeq2. exact (andER (topology_on X Tx) (((W :/\: U) :/\: V) :e Tx) HWUVopen).
+Qed.
+
+(** Helper: covering space construction for X = U cup V with U cap V = A sqcup B **)
+(** Constructs the "infinite spiral staircase" covering space E -> X **)
+(** E = Union_n (U x {2n}) cup (V x {2n+1}) / identifications along A and B **)
+(** Key property: the lift of alpha.beta starting at (a,0) ends at (a,1) **)
+Lemma thm63_1a_covering_space :
+  forall X Tx U V A B a b alpha beta:set,
+  topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
+  A :e subspace_topology X Tx (U :/\: V) ->
+  B :e subspace_topology X Tx (U :/\: V) ->
+  U :/\: V = A :\/: B -> A :/\: B = Empty ->
+  a :e A -> b :e B ->
+  path_between U a b alpha ->
+  continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha ->
+  path_between V b a beta ->
+  continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) beta ->
+  exists E Te p:set,
+    covering_map E Te X Tx p /\
+    (forall n:set, n :e omega -> (a, n) :e E) /\
+    (forall n:set, n :e omega -> apply_fun p (a, n) = a) /\
+    (forall n1 n2:set, n1 :e omega -> n2 :e omega -> (a, n1) = (a, n2) -> n1 = n2) /\
+    apply_fun (path_lift E Te X Tx p (a, 0) (path_concat alpha beta)) 1 = (a, 1).
+admit.
+Admitted.
+
+(** Helper: lift endpoint for m-fold power of a loop **)
+(** If lift of gamma starting at e_k ends at e_{k+1}, then lift of gamma^m **)
+(** starting at e_0 ends at e_m. Uses path lifting uniqueness and induction. **)
+Lemma thm63_1a_lift_power_endpoint :
+  forall E Te X Tx p a:set,
+  covering_map E Te X Tx p ->
+  (forall n:set, n :e omega -> (a, n) :e E) ->
+  (forall n:set, n :e omega -> apply_fun p (a, n) = a) ->
+  forall gamma:set,
+  continuous_map unit_interval unit_interval_topology X Tx gamma ->
+  apply_fun gamma 0 = a -> apply_fun gamma 1 = a ->
+  apply_fun (path_lift E Te X Tx p (a, 0) gamma) 1 = (a, 1) ->
+  forall m:set, m :e omega -> m <> 0 ->
+    apply_fun (path_lift E Te X Tx p (a, 0)
+      (Eps_i (fun h:set =>
+        h :e path_homotopy_class_loop X Tx a gamma /\
+        continuous_map unit_interval unit_interval_topology X Tx h /\
+        apply_fun h 0 = a /\ apply_fun h 1 = a))) 1 <> (a, 0).
+admit.
+Admitted.
+
 (** from S63 Thm 63.1(a) (line 2016 in algtop.tex) **)
 (** LATEX VERSION: Let X = U union V open, U cap V = A disjoint-union B open. **)
 (** If alpha in U from a in A to b in B, beta in V from b to a, **)
@@ -206501,11 +206627,11 @@ assume Hmne0 : m <> 0.
 (** Step 1: Show A and B are open in X (from being open in subspace U cap V) **)
 claim HAopenX : A :e Tx.
 {
-  admit.
+  exact (thm63_1_A_open_in_X X Tx U V A B Htop HUopen HVopen HAopen).
 }
 claim HBopenX : B :e Tx.
 {
-  admit.
+  exact (thm63_1_B_open_in_X X Tx U V A B Htop HUopen HVopen HBopen).
 }
 (** Step 2: Key properties of a and b in X **)
 claim HaX : a :e X.
