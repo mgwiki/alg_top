@@ -305695,6 +305695,34 @@ claim HPm : P m.
 exact (HPm x y f HfFun Hf0Eq HfmEq Hsteps).
 Qed.
 
+(** Equivalence classes for polygon_pasting_equiv_chain are invariant under chain equivalence. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_chain_class_eq : forall n w x y:set,
+  polygon_pasting_equiv_chain n w x y ->
+  {z :e B2 | polygon_pasting_equiv_chain n w x z} =
+  {z :e B2 | polygon_pasting_equiv_chain n w y z}.
+let n w x y.
+assume Hxy.
+apply set_ext.
+- let z. assume Hz.
+  claim HzB2 : z :e B2.
+  { exact (SepE1 B2 (fun z0:set => polygon_pasting_equiv_chain n w x z0) z Hz). }
+  claim Hxz : polygon_pasting_equiv_chain n w x z.
+  { exact (SepE2 B2 (fun z0:set => polygon_pasting_equiv_chain n w x z0) z Hz). }
+  apply (SepI B2 (fun z0:set => polygon_pasting_equiv_chain n w y z0)).
+  - exact HzB2.
+  - exact (polygon_pasting_equiv_chain_trans n w y x z
+      (polygon_pasting_equiv_chain_symm n w x y Hxy) Hxz).
+- let z. assume Hz.
+  claim HzB2 : z :e B2.
+  { exact (SepE1 B2 (fun z0:set => polygon_pasting_equiv_chain n w y z0) z Hz). }
+  claim Hyz : polygon_pasting_equiv_chain n w y z.
+  { exact (SepE2 B2 (fun z0:set => polygon_pasting_equiv_chain n w y z0) z Hz). }
+  apply (SepI B2 (fun z0:set => polygon_pasting_equiv_chain n w x z0)).
+  - exact HzB2.
+  - exact (polygon_pasting_equiv_chain_trans n w x y z Hxy Hyz).
+Qed.
+
 (** If x is not on the boundary S^1, it can only be related to itself. **)
 (** Proven Charlie **)
 Lemma polygon_pasting_equiv_nonS1_left : forall n w x y:set,
