@@ -241730,10 +241730,145 @@ apply (xm (y = e)).
             (apply_fun mult (x, apply_fun inv (apply_fun cs k)))
             Hcsk_Ga
             (HGfam_mult alpha HalJ x (apply_fun inv (apply_fun cs k)) HxGa Hinvcsk_Ga)). }
-        (** y = cprime times xprime times inv(cprime) **)
-        (** This requires showing the associativity chain **)
-        (** For now, admit the gamma ≠ alpha case and this associativity **)
-        admit.
+        (** Membership in G **)
+        claim HcprimeG : cprime :e G.
+        {
+          claim HcsG : forall i:set, i :e nc -> apply_fun cs i :e G.
+          { let i. assume Hi. exact (reduced_word_in_G G mult e inv J Gfam efam nc cs Hsubfam Hredc i Hi). }
+          claim HcsG_sk : forall i:set, i :e ordsucc k -> apply_fun cs i :e G.
+          { let i. assume Hi. claim Hi_nc : i :e nc. { rewrite Hnc_eq. exact Hi. } exact (HcsG i Hi_nc). }
+          claim HcsG_k : forall i:set, i :e k -> apply_fun cs i :e G.
+          { let i. assume Hi. exact (HcsG_sk i (nat_trans (ordsucc k) (nat_ordsucc k Hk_nat) k (ordsuccI2 k) i Hi)). }
+          exact (word_product_in_G_group G mult e inv k cs Hgrp Hk_nat HcsG_k).
+        }
+        claim Hinvcsk_G : apply_fun inv (apply_fun cs k) :e G. { exact (HinvG (apply_fun cs k) Hcsk_G). }
+        claim HinvcprimeG : apply_fun inv cprime :e G. { exact (HinvG cprime HcprimeG). }
+        claim Hx_invcsk_G : apply_fun mult (x, apply_fun inv (apply_fun cs k)) :e G.
+        { exact (HmultG x (apply_fun inv (apply_fun cs k)) HxG Hinvcsk_G). }
+        claim HxprimeG : xprime :e G.
+        { exact (HmultG (apply_fun cs k) (apply_fun mult (x, apply_fun inv (apply_fun cs k)))
+            Hcsk_G Hx_invcsk_G). }
+        (** inv(c) = mult(inv(cs(k)), inv(cprime)) **)
+        claim Hinvc_eq : apply_fun inv c = apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime).
+        { rewrite Hc_eq. exact (group_inv_mult G mult e inv cprime (apply_fun cs k) Hgrp HcprimeG Hcsk_G). }
+        (** Prove y = mult(mult(cprime, xprime), inv(cprime)) **)
+        (** y = mult(mult(c, x), inv(c)) **)
+        (** = mult(mult(mult(cprime, cs(k)), x), mult(inv(cs(k)), inv(cprime))) **)
+        claim Hcx : apply_fun mult (c, x) = apply_fun mult (apply_fun mult (cprime, apply_fun cs k), x).
+        { rewrite Hc_eq. reflexivity. }
+        claim Hcx_G : apply_fun mult (c, x) :e G.
+        { exact (HmultG c x HcG HxG). }
+        claim HcprG_csk : apply_fun mult (cprime, apply_fun cs k) :e G.
+        { exact (HmultG cprime (apply_fun cs k) HcprimeG Hcsk_G). }
+        claim Hcx_assoc : apply_fun mult (apply_fun mult (cprime, apply_fun cs k), x) =
+          apply_fun mult (cprime, apply_fun mult (apply_fun cs k, x)).
+        { exact (Hassoc cprime (apply_fun cs k) x HcprimeG Hcsk_G HxG). }
+        claim Hcsk_x_G : apply_fun mult (apply_fun cs k, x) :e G.
+        { exact (HmultG (apply_fun cs k) x Hcsk_G HxG). }
+        claim Hinvc_parts_G : apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime) :e G.
+        { exact (HmultG (apply_fun inv (apply_fun cs k)) (apply_fun inv cprime) Hinvcsk_G HinvcprimeG). }
+        (** mult(cprime, mult(cs(k), x)) times mult(inv(cs(k)), inv(cprime)) **)
+        claim Hstep1 : y =
+          apply_fun mult
+            (apply_fun mult (cprime, apply_fun mult (apply_fun cs k, x)),
+             apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime)).
+        {
+          prove apply_fun mult (apply_fun mult (c, x), apply_fun inv c) =
+            apply_fun mult
+              (apply_fun mult (cprime, apply_fun mult (apply_fun cs k, x)),
+               apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime)).
+          rewrite Hcx. rewrite Hcx_assoc. rewrite Hinvc_eq. reflexivity.
+        }
+        claim Hcpr_cskx_G : apply_fun mult (cprime, apply_fun mult (apply_fun cs k, x)) :e G.
+        { exact (HmultG cprime (apply_fun mult (apply_fun cs k, x)) HcprimeG Hcsk_x_G). }
+        (** Expand by associativity: mult(A, B) where A = mult(cprime, mult(csk, x)) **)
+        (** and B = mult(inv(csk), inv(cprime)) **)
+        (** = mult(cprime, mult(mult(csk, x), mult(inv(csk), inv(cprime)))) **)
+        claim Hstep2 : y =
+          apply_fun mult (cprime,
+            apply_fun mult (apply_fun mult (apply_fun cs k, x),
+              apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime))).
+        {
+          rewrite Hstep1.
+          exact (Hassoc cprime
+            (apply_fun mult (apply_fun cs k, x))
+            (apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime))
+            HcprimeG Hcsk_x_G Hinvc_parts_G).
+        }
+        (** mult(csk, x) times mult(inv(csk), inv(cprime)) **)
+        (** = mult(csk, mult(x, mult(inv(csk), inv(cprime)))) **)
+        claim Hx_invparts_G : apply_fun mult (x, apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime)) :e G.
+        { exact (HmultG x (apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime)) HxG Hinvc_parts_G). }
+        claim Hstep3_inner :
+          apply_fun mult (apply_fun mult (apply_fun cs k, x),
+            apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime)) =
+          apply_fun mult (apply_fun cs k,
+            apply_fun mult (x, apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime))).
+        { exact (Hassoc (apply_fun cs k) x
+            (apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime))
+            Hcsk_G HxG Hinvc_parts_G). }
+        claim Hstep3 : y =
+          apply_fun mult (cprime,
+            apply_fun mult (apply_fun cs k,
+              apply_fun mult (x, apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime)))).
+        {
+          rewrite Hstep2. rewrite Hstep3_inner. reflexivity.
+        }
+        (** mult(x, mult(inv(csk), inv(cprime))) = mult(mult(x, inv(csk)), inv(cprime)) **)
+        claim Hstep4_inner :
+          apply_fun mult (x, apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime)) =
+          apply_fun mult (apply_fun mult (x, apply_fun inv (apply_fun cs k)), apply_fun inv cprime).
+        { exact (eq_symm
+            (apply_fun mult (apply_fun mult (x, apply_fun inv (apply_fun cs k)), apply_fun inv cprime))
+            (apply_fun mult (x, apply_fun mult (apply_fun inv (apply_fun cs k), apply_fun inv cprime)))
+            (Hassoc x (apply_fun inv (apply_fun cs k)) (apply_fun inv cprime) HxG Hinvcsk_G HinvcprimeG)). }
+        (** mult(csk, mult(mult(x, inv(csk)), inv(cprime))) = mult(mult(csk, mult(x, inv(csk))), inv(cprime)) **)
+        claim Hstep5_inner :
+          apply_fun mult (apply_fun cs k,
+            apply_fun mult (apply_fun mult (x, apply_fun inv (apply_fun cs k)), apply_fun inv cprime)) =
+          apply_fun mult (xprime, apply_fun inv cprime).
+        { exact (eq_symm
+            (apply_fun mult (apply_fun mult (apply_fun cs k, apply_fun mult (x, apply_fun inv (apply_fun cs k))), apply_fun inv cprime))
+            (apply_fun mult (apply_fun cs k, apply_fun mult (apply_fun mult (x, apply_fun inv (apply_fun cs k)), apply_fun inv cprime)))
+            (Hassoc (apply_fun cs k)
+              (apply_fun mult (x, apply_fun inv (apply_fun cs k)))
+              (apply_fun inv cprime)
+              Hcsk_G Hx_invcsk_G HinvcprimeG)). }
+        claim Hstep5 : y = apply_fun mult (cprime, apply_fun mult (xprime, apply_fun inv cprime)).
+        {
+          rewrite Hstep3. rewrite Hstep4_inner. rewrite Hstep5_inner. reflexivity.
+        }
+        (** mult(cprime, mult(xprime, inv(cprime))) = mult(mult(cprime, xprime), inv(cprime)) **)
+        claim Hxpr_invcpr_G : apply_fun mult (xprime, apply_fun inv cprime) :e G.
+        { exact (HmultG xprime (apply_fun inv cprime) HxprimeG HinvcprimeG). }
+        claim Hstep6 :
+          apply_fun mult (cprime, apply_fun mult (xprime, apply_fun inv cprime)) =
+          apply_fun mult (apply_fun mult (cprime, xprime), apply_fun inv cprime).
+        { exact (eq_symm
+            (apply_fun mult (apply_fun mult (cprime, xprime), apply_fun inv cprime))
+            (apply_fun mult (cprime, apply_fun mult (xprime, apply_fun inv cprime)))
+            (Hassoc cprime xprime (apply_fun inv cprime) HcprimeG HxprimeG HinvcprimeG)). }
+        claim Hy_conj : y = apply_fun mult (apply_fun mult (cprime, xprime), apply_fun inv cprime).
+        { exact (eq_i_tra y
+            (apply_fun mult (cprime, apply_fun mult (xprime, apply_fun inv cprime)))
+            (apply_fun mult (apply_fun mult (cprime, xprime), apply_fun inv cprime))
+            Hstep5 Hstep6). }
+        (** Now: y = mult(mult(cprime, xprime), inv(cprime)), y :e Gfam(beta), xprime :e Gfam(alpha) **)
+        (** If xprime = e, then y = mult(mult(cprime, e), inv(cprime)) = mult(cprime, inv(cprime)) = e **)
+        apply (xm (xprime = e)).
+        + assume Hxpe : xprime = e.
+          claim Hcpr_e : apply_fun mult (cprime, e) = cprime.
+          { exact (andER (apply_fun mult (e, cprime) = cprime) (apply_fun mult (cprime, e) = cprime) (Hid cprime HcprimeG)). }
+          claim Hcpr_invcpr : apply_fun mult (cprime, apply_fun inv cprime) = e.
+          { exact (andEL (apply_fun mult (cprime, apply_fun inv cprime) = e) (apply_fun mult (apply_fun inv cprime, cprime) = e) (Hinverse cprime HcprimeG)). }
+          claim Hy_e : y = e.
+          { rewrite Hy_conj. rewrite Hxpe. rewrite Hcpr_e. exact Hcpr_invcpr. }
+          exact (Hyne Hy_e).
+        + (** xprime ≠ e: need induction **)
+          assume Hxpne : xprime <> e.
+          (** cprime has reduced word of length k < nc **)
+          (** Need to apply the same argument recursively **)
+          admit.
       - assume Hgna : gamma <> alpha.
         (** Hard case: last entry not in Gfam(alpha) **)
         (** Consider the first entry instead **)
