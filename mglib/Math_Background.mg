@@ -304506,6 +304506,109 @@ apply set_ext.
   - exact (polygon_pasting_equiv_chain_refl n w x HxB2).
 Qed.
 
+(** A single polygon_pasting_step yields a length-1 polygon_pasting_equiv_chain. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_chain_of_step : forall n w x y:set,
+  polygon_pasting_step n w x y ->
+  polygon_pasting_equiv_chain n w x y.
+let n w x y.
+assume Hstep.
+claim HxyB2 : x :e B2 /\ y :e B2.
+{
+  exact (andEL (x :e B2 /\ y :e B2)
+    (x = y \/
+     (x :e S1 /\ y :e S1 /\
+      exists i j:set, i :e n /\ j :e n /\ i <> j /\
+        (apply_fun w i) 0 = (apply_fun w j) 0 /\
+        exists t:set, t :e unit_interval /\
+          x = S1_oriented_arc_point n i ((apply_fun w i) 1) t /\
+          y = S1_oriented_arc_point n j ((apply_fun w j) 1) t))
+    Hstep).
+}
+claim HxB2 : x :e B2. { exact (andEL (x :e B2) (y :e B2) HxyB2). }
+claim HyB2 : y :e B2. { exact (andER (x :e B2) (y :e B2) HxyB2). }
+claim Hex :
+  exists m f:set,
+    m :e omega /\
+    function_on f (ordsucc m) B2 /\
+    apply_fun f 0 = x /\
+    apply_fun f m = y /\
+    forall k:set, k :e m ->
+      polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)).
+{
+  set f := graph 2 (fun k:set => if k = 0 then x else y).
+  witness 1.
+  witness f.
+  claim H1Omega : 1 :e omega.
+  { exact (nat_p_omega 1 nat_1). }
+  claim HfFun : function_on f (ordsucc 1) B2.
+  { prove forall k:set, k :e ordsucc 1 -> apply_fun f k :e B2.
+    let k. assume Hk2.
+    apply (ordsuccE 1 k Hk2).
+    - assume Hk1.
+      apply (ordsuccE 0 k Hk1).
+      + assume Hk0. exact (FalseE (EmptyE k Hk0) (apply_fun f k :e B2)).
+      + assume HkEq0.
+        rewrite HkEq0.
+        rewrite (apply_fun_graph 2 (fun j:set => if j = 0 then x else y) 0 In_0_2).
+        rewrite (If_i_1 (0 = 0) x y (eq_refl 0)).
+        exact HxB2.
+    - assume HkEq1.
+      rewrite HkEq1.
+      rewrite (apply_fun_graph 2 (fun j:set => if j = 0 then x else y) 1 In_1_2).
+      rewrite (If_i_0 (1 = 0) x y neq_1_0).
+      exact HyB2. }
+  claim Hf0 : apply_fun f 0 = x.
+  {
+    rewrite (apply_fun_graph 2 (fun j:set => if j = 0 then x else y) 0 In_0_2).
+    rewrite (If_i_1 (0 = 0) x y (eq_refl 0)).
+    reflexivity.
+  }
+  claim Hf1 : apply_fun f 1 = y.
+  {
+    rewrite (apply_fun_graph 2 (fun j:set => if j = 0 then x else y) 1 In_1_2).
+    rewrite (If_i_0 (1 = 0) x y neq_1_0).
+    reflexivity.
+  }
+  claim Hsteps : forall k:set, k :e 1 ->
+    polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)).
+  { let k. assume Hk1.
+    apply (ordsuccE 0 k Hk1).
+    - assume Hk0. exact (FalseE (EmptyE k Hk0)
+        (polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)))).
+    - assume HkEq0.
+      rewrite HkEq0.
+      rewrite Hf0.
+      rewrite Hf1.
+      exact Hstep. }
+  claim HAB : 1 :e omega /\ function_on f (ordsucc 1) B2.
+  { exact (andI (1 :e omega) (function_on f (ordsucc 1) B2) H1Omega HfFun). }
+  claim HABC : (1 :e omega /\ function_on f (ordsucc 1) B2) /\ apply_fun f 0 = x.
+  { exact (andI (1 :e omega /\ function_on f (ordsucc 1) B2) (apply_fun f 0 = x) HAB Hf0). }
+  claim HABCD :
+    ((1 :e omega /\ function_on f (ordsucc 1) B2) /\ apply_fun f 0 = x) /\ apply_fun f 1 = y.
+  { exact (andI
+      ((1 :e omega /\ function_on f (ordsucc 1) B2) /\ apply_fun f 0 = x)
+      (apply_fun f 1 = y)
+      HABC Hf1). }
+  exact (andI
+    (((1 :e omega /\ function_on f (ordsucc 1) B2) /\ apply_fun f 0 = x) /\ apply_fun f 1 = y)
+    (forall k:set, k :e 1 ->
+      polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)))
+    HABCD Hsteps).
+}
+exact (andI
+  (x :e B2 /\ y :e B2)
+  (exists m f:set,
+    m :e omega /\
+    function_on f (ordsucc m) B2 /\
+    apply_fun f 0 = x /\
+    apply_fun f m = y /\
+    forall k:set, k :e m ->
+      polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)))
+  HxyB2 Hex).
+Qed.
+
 (** Basic properties of polygon_pasting_equiv (reflexive and symmetric). **)
 (** Proven Charlie **)
 Lemma polygon_pasting_equiv_refl : forall n w x:set,
