@@ -133,6 +133,7 @@ Approvals:
   - 1773109753 | Bob:
   - 1773109753 | Charlie: YES
   - 1773109753 | Dave:
+  - 1773332372 | Alice: YES
 
 Result:
   PROPOSED
