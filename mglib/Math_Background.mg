@@ -304282,6 +304282,33 @@ claim HyEqF0 : y = apply_fun f 0.
 exact (eq_i_tra y (apply_fun f 0) x HyEqF0 Hf0Eq).
 Qed.
 
+(** Singleton equivalence class for interior points (chain closure). **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_chain_class_nonS1_singleton : forall n w x:set,
+  x :e B2 ->
+  x /:e S1 ->
+  {y :e B2 | polygon_pasting_equiv_chain n w x y} = {x}.
+let n w x.
+assume HxB2 HxnotS1.
+apply set_ext.
+- let y. assume HyCls.
+  claim HyB2 : y :e B2.
+  { exact (SepE1 B2 (fun y0:set => polygon_pasting_equiv_chain n w x y0) y HyCls). }
+  claim Hxy : polygon_pasting_equiv_chain n w x y.
+  { exact (SepE2 B2 (fun y0:set => polygon_pasting_equiv_chain n w x y0) y HyCls). }
+  claim HyEq : y = x.
+  { exact (polygon_pasting_equiv_chain_nonS1_left n w x y Hxy HxnotS1). }
+  rewrite HyEq.
+  exact (SingI x).
+- let y. assume HySing.
+  claim HyEq : y = x.
+  { exact (SingE x y HySing). }
+  rewrite HyEq.
+  apply (SepI B2 (fun y0:set => polygon_pasting_equiv_chain n w x y0)).
+  - exact HxB2.
+  - exact (polygon_pasting_equiv_chain_refl n w x HxB2).
+Qed.
+
 (** Basic properties of polygon_pasting_equiv (reflexive and symmetric). **)
 (** Proven Charlie **)
 Lemma polygon_pasting_equiv_refl : forall n w x:set,
