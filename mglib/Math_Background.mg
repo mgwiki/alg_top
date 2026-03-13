@@ -421896,6 +421896,72 @@ exact (thm85_3_rankdata_from_finite
   HcosetFin).
 Qed.
 
+(** Alternative derivation via subgroup-index bundle projections. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_from_nonzero_pack_via_bundle : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+claim HnOmega : n :e omega.
+{
+  exact (andEL
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+}
+claim HJeq : equip J (ordsucc n).
+{
+  exact (andER
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+}
+claim HcosetFin :
+  finite (right_coset_set F multF H).
+{
+  exact (subgroup_index_bundle_nonzero_finite
+    H
+    F
+    multF
+    eF
+    invF
+    k
+    n
+    HkPack).
+}
+claim HidxSpec :
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+{
+  exact (subgroup_index_spec_from_nonzero_pack
+    H
+    F
+    multF
+    eF
+    invF
+    k
+    HkPack).
+}
+apply and5I.
+- exact HnOmega.
+- exact HJeq.
+- exact HcosetFin.
+- exact (andEL
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+- exact (andER
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+Qed.
+
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
 Theorem thm85_3_core_rank_from_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
@@ -421988,7 +422054,7 @@ claim HrankData :
   subgroup_index H F multF eF invF :e omega /\
   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
 {
-  exact (thm85_3_rankdata_from_nonzero_pack_via_finite
+  exact (thm85_3_rankdata_from_nonzero_pack_via_bundle
     F
     multF
     eF
