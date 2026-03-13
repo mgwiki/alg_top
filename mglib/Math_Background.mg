@@ -149108,6 +149108,68 @@ exact (RleE_nlt
   HscaledLe1R).
 Qed.
 
+(** Infrastructure: generic contraction map for B^{n+1} by radial scaling **)
+Definition Bn_closed_contraction_map : set -> set := fun n =>
+  graph (setprod (Bn_closed n) unit_interval)
+    (fun p:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (apply_fun flip_unit_interval (p 1))
+        (p 0)).
+
+(** Proven Charlie **)
+Lemma Bn_closed_contraction_map_function_on : forall n:set,
+  n :e omega ->
+  function_on
+    (Bn_closed_contraction_map n)
+    (setprod (Bn_closed n) unit_interval)
+    (Bn_closed n).
+let n.
+assume Hn_om.
+claim Hdef :
+  Bn_closed_contraction_map n =
+  graph (setprod (Bn_closed n) unit_interval)
+    (fun p:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (apply_fun flip_unit_interval (p 1))
+        (p 0)).
+{
+  reflexivity.
+}
+rewrite Hdef.
+apply (function_on_of_function_space
+  (Bn_closed_contraction_map n)
+  (setprod (Bn_closed n) unit_interval)
+  (Bn_closed n)).
+exact (graph_in_function_space
+  (setprod (Bn_closed n) unit_interval)
+  (Bn_closed n)
+  (fun p:set =>
+    Rn_scalar_mult
+      (ordsucc n)
+      (apply_fun flip_unit_interval (p 1))
+      (p 0))
+  (fun p Hp =>
+    Rn_scalar_mult_unit_interval_on_Bn_closed
+      n
+      (apply_fun flip_unit_interval (p 1))
+      (p 0)
+      Hn_om
+      (flip_unit_interval_function_on
+        (p 1)
+        (ap1_Sigma
+          (Bn_closed n)
+          (fun _ : set => unit_interval)
+          p
+          Hp))
+      (ap0_Sigma
+        (Bn_closed n)
+        (fun _ : set => unit_interval)
+        p
+        Hp))).
+Qed.
+
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
