@@ -283256,10 +283256,40 @@ apply (xm (x = e)).
           claim Hzc_prod : zc = apply_fun mult (apply_fun zs mz, word_product mult e zs mz).
           { rewrite Hzi_eq. reflexivity. }
           (** Now case split on p = mult(zs(mz), zs(0)) **)
+          set p := apply_fun mult (apply_fun zs mz, apply_fun zs 0).
+          claim HpG : p :e G. { exact (HmultG (apply_fun zs mz) (apply_fun zs 0) Hzsmz_G Hzs0_G). }
+          claim Hmz_ne0 : mz <> 0.
+          { assume Hmz0 : mz = 0.
+            claim Hnz1 : nz = 1.
+            { rewrite Hnz_eq. rewrite Hmz0. reflexivity. }
+            exact (Hnz_ne1 Hnz1). }
+          claim Hefam_al : apply_fun efam alpha_last = e.
+          { exact (Hefam_e alpha_last Hal_J). }
+          (** Hex_short_word proof via claims **)
+          claim Hex_short_word_case_pe : p = e ->
+            exists nw ws:set,
+              reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
+              word_product mult e ws nw = zc /\ nw :e nz.
+          { admit. }
+          claim Hex_short_word_case_pne : p <> e ->
+            exists nw ws:set,
+              reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
+              word_product mult e ws nw = zc /\ nw :e nz.
+          { assume Hpne : p <> e.
+            (** p :e Gfam(alpha_last) and p <> e **)
+            (** Use: zc = mult(zs(mz), word_product(zs, mz)) = mult(p_element, rest) **)
+            (** When p <> e, zc lies in Gfam(alpha_first) if mz = 1, otherwise construct a reduced word **)
+            (** For any mz >= 1, we can construct a reduced word of length mz for zc **)
+            (** The word is ws(0) = p, ws(i) = zs(i) for 1 <= i < mz **)
+            witness mz.
+            witness (graph mz (fun i:set => If_i (i = 0) p (apply_fun zs i))).
+            admit. }
           claim Hex_short_word : exists nw ws:set,
             reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
             word_product mult e ws nw = zc /\ nw :e nz.
-          { admit. }
+          { apply (xm (p = e)).
+            - exact Hex_short_word_case_pe.
+            - exact Hex_short_word_case_pne. }
           apply Hex_short_word. let nw.
           assume Hex_ws : exists ws:set,
             reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
