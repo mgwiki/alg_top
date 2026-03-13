@@ -147598,6 +147598,72 @@ exact (real_mul_SNo
   (euclidean_space_coord_in_R n v i Hv Hi)).
 Qed.
 
+(** Proven Charlie **)
+Lemma Rn_scalar_mult_assoc : forall n a b x:set,
+  x :e euclidean_space n ->
+  a :e R ->
+  b :e R ->
+  Rn_scalar_mult n a (Rn_scalar_mult n b x)
+  =
+  Rn_scalar_mult n (mul_SNo a b) x.
+let n a b x.
+assume HxEu HaR HbR.
+claim HaS : SNo a.
+{
+  exact (real_SNo
+    a
+    HaR).
+}
+claim HbS : SNo b.
+{
+  exact (real_SNo
+    b
+    HbR).
+}
+apply (graph_extensional
+  n
+  (fun i:set => mul_SNo a (apply_fun (Rn_scalar_mult n b x) i))
+  (fun i:set => mul_SNo (mul_SNo a b) (apply_fun x i))).
+let i.
+assume Hi.
+claim HxiS : SNo (apply_fun x i).
+{
+  exact (real_SNo
+    (apply_fun x i)
+    (euclidean_space_coord_in_R
+      n
+      x
+      i
+      HxEu
+      Hi)).
+}
+claim Hstep1 :
+  mul_SNo a (apply_fun (Rn_scalar_mult n b x) i)
+  =
+  mul_SNo a (mul_SNo b (apply_fun x i)).
+{
+  rewrite (Rn_scalar_mult_apply
+    n
+    b
+    x
+    i
+    Hi).
+  reflexivity.
+}
+exact (eq_i_tra
+  (mul_SNo a (apply_fun (Rn_scalar_mult n b x) i))
+  (mul_SNo a (mul_SNo b (apply_fun x i)))
+  (mul_SNo (mul_SNo a b) (apply_fun x i))
+  Hstep1
+  (mul_SNo_assoc
+    a
+    b
+    (apply_fun x i)
+    HaS
+    HbS
+    HxiS)).
+Qed.
+
 (** Proven Bob **)
 Lemma Rn_negate_in_euclidean_space : forall n v:set,
   v :e euclidean_space n ->
