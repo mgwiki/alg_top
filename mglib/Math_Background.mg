@@ -1,6 +1,6 @@
 (** Balance Alice 7758 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 357 **)
+(** Balance Charlie 445 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -146499,14 +146499,825 @@ Qed.
 (** LATEX VERSION: If h: S^1 -> S^1 is nulhomotopic, then h has a fixed point and h maps some point x to its antipode -x. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
+Definition s55_S1_antipode_map : set :=
+  graph S1 (fun z:set => (minus_SNo (z 0), minus_SNo (z 1))).
+
+(** Proven Charlie **)
+Theorem s55_S1_antipode_in_S1 : forall z:set,
+  z :e S1 ->
+  (minus_SNo (z 0), minus_SNo (z 1)) :e S1.
+let z.
+assume HzS1.
+claim HzR2 : z :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+claim HzEq1 :
+  add_SNo (mul_SNo (z 0) (z 0))
+    (mul_SNo (z 1) (z 1)) = 1.
+{
+  exact (SepE2
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+claim Hz0R : z 0 :e R.
+{
+  exact (ap0_Sigma
+    R
+    (fun _ : set => R)
+    z
+    HzR2).
+}
+claim Hz1R : z 1 :e R.
+{
+  exact (ap1_Sigma
+    R
+    (fun _ : set => R)
+    z
+    HzR2).
+}
+claim Hz0S : SNo (z 0).
+{
+  exact (real_SNo
+    (z 0)
+    Hz0R).
+}
+claim Hz1S : SNo (z 1).
+{
+  exact (real_SNo
+    (z 1)
+    Hz1R).
+}
+apply (SepI
+  (setprod R R)
+  (fun p:set =>
+    add_SNo (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1)) = 1)
+  (minus_SNo (z 0), minus_SNo (z 1))).
+- exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    (minus_SNo (z 0))
+    (minus_SNo (z 1))
+    (real_minus_SNo
+      (z 0)
+      Hz0R)
+    (real_minus_SNo
+      (z 1)
+      Hz1R)).
+- rewrite tuple_2_0_eq at 1.
+  rewrite tuple_2_0_eq at 1.
+  rewrite tuple_2_1_eq at 1.
+  rewrite tuple_2_1_eq at 1.
+  rewrite (mul_SNo_minus_minus
+    (z 0)
+    (z 0)
+    Hz0S
+    Hz0S).
+  rewrite (mul_SNo_minus_minus
+    (z 1)
+    (z 1)
+    Hz1S
+    Hz1S).
+  exact HzEq1.
+Qed.
+
+(** Proven Charlie **)
+Theorem s55_S1_antipode_map_continuous :
+  continuous_map S1 S1_topology S1 S1_topology s55_S1_antipode_map.
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+set incS1 := graph S1 (fun z:set => z).
+claim HincCont :
+  continuous_map S1 S1_topology (setprod R R) R2_topology incS1.
+{
+  exact (subspace_inclusion_continuous
+    (setprod R R)
+    R2_topology
+    S1
+    HtopR2
+    HS1subR2).
+}
+claim HprojPack :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R) /\
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+{
+  exact (projection_maps_continuous
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim Hproj1Cont :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R).
+{
+  exact (andEL
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+    HprojPack).
+}
+claim Hproj2Cont :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+{
+  exact (andER
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+    HprojPack).
+}
+set x0 := compose_fun S1 incS1 (projection_map1 R R).
+set x1 := compose_fun S1 incS1 (projection_map2 R R).
+claim Hx0Cont :
+  continuous_map S1 S1_topology R R_standard_topology x0.
+{
+  exact (composition_continuous
+    S1
+    S1_topology
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    incS1
+    (projection_map1 R R)
+    HincCont
+    Hproj1Cont).
+}
+claim Hx1Cont :
+  continuous_map S1 S1_topology R R_standard_topology x1.
+{
+  exact (composition_continuous
+    S1
+    S1_topology
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    incS1
+    (projection_map2 R R)
+    HincCont
+    Hproj2Cont).
+}
+set n0 := compose_fun S1 x0 neg_fun.
+set n1 := compose_fun S1 x1 neg_fun.
+claim Hn0Cont :
+  continuous_map S1 S1_topology R R_standard_topology n0.
+{
+  exact (composition_continuous
+    S1
+    S1_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    x0
+    neg_fun
+    Hx0Cont
+    neg_fun_continuous).
+}
+claim Hn1Cont :
+  continuous_map S1 S1_topology R R_standard_topology n1.
+{
+  exact (composition_continuous
+    S1
+    S1_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    x1
+    neg_fun
+    Hx1Cont
+    neg_fun_continuous).
+}
+set antiR2 := pair_map S1 n0 n1.
+claim HantiR2Cont :
+  continuous_map S1 S1_topology (setprod R R) R2_topology antiR2.
+{
+  exact (maps_into_products
+    S1
+    S1_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    n0
+    n1
+    Hn0Cont
+    Hn1Cont).
+}
+claim HantiIntoS1 :
+  forall z:set, z :e S1 -> apply_fun antiR2 z :e S1.
+{
+  let z.
+  assume HzS1.
+  rewrite (pair_map_apply
+    S1
+    R
+    R
+    n0
+    n1
+    z
+    HzS1).
+  rewrite (compose_fun_apply
+    S1
+    x0
+    neg_fun
+    z
+    HzS1).
+  rewrite (compose_fun_apply
+    S1
+    x1
+    neg_fun
+    z
+    HzS1).
+  rewrite (compose_fun_apply
+    S1
+    incS1
+    (projection_map1 R R)
+    z
+    HzS1).
+  rewrite (compose_fun_apply
+    S1
+    incS1
+    (projection_map2 R R)
+    z
+    HzS1).
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set => z0)
+    z
+    HzS1).
+  rewrite (projection1_apply
+    R
+    R
+    z
+    (SepE1
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)) = 1)
+      z
+      HzS1)).
+  rewrite (projection2_apply
+    R
+    R
+    z
+    (SepE1
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)) = 1)
+      z
+      HzS1)).
+  rewrite (neg_fun_apply
+    (z 0)
+    (ap0_Sigma
+      R
+      (fun _ : set => R)
+      z
+      (SepE1
+        (setprod R R)
+        (fun p:set =>
+          add_SNo (mul_SNo (p 0) (p 0))
+            (mul_SNo (p 1) (p 1)) = 1)
+        z
+        HzS1))).
+  rewrite (neg_fun_apply
+    (z 1)
+    (ap1_Sigma
+      R
+      (fun _ : set => R)
+      z
+      (SepE1
+        (setprod R R)
+        (fun p:set =>
+          add_SNo (mul_SNo (p 0) (p 0))
+            (mul_SNo (p 1) (p 1)) = 1)
+        z
+        HzS1))).
+  exact (s55_S1_antipode_in_S1
+    z
+    HzS1).
+}
+claim HantiContS1 :
+  continuous_map S1 S1_topology S1 S1_topology antiR2.
+{
+  exact (continuous_map_range_restrict
+    S1
+    S1_topology
+    (setprod R R)
+    R2_topology
+    antiR2
+    S1
+    HantiR2Cont
+    HS1subR2
+    HantiIntoS1).
+}
+claim HantiFun :
+  function_on s55_S1_antipode_map S1 S1.
+{
+  exact (graph_function_on
+    S1
+    S1
+    (fun z:set => (minus_SNo (z 0), minus_SNo (z 1)))
+    (fun z Hz => s55_S1_antipode_in_S1 z Hz)).
+}
+claim HantiEq :
+  forall z:set, z :e S1 ->
+    apply_fun antiR2 z = apply_fun s55_S1_antipode_map z.
+{
+  let z.
+  assume HzS1.
+  rewrite (pair_map_apply
+    S1
+    R
+    R
+    n0
+    n1
+    z
+    HzS1).
+  rewrite (compose_fun_apply
+    S1
+    x0
+    neg_fun
+    z
+    HzS1).
+  rewrite (compose_fun_apply
+    S1
+    x1
+    neg_fun
+    z
+    HzS1).
+  rewrite (compose_fun_apply
+    S1
+    incS1
+    (projection_map1 R R)
+    z
+    HzS1).
+  rewrite (compose_fun_apply
+    S1
+    incS1
+    (projection_map2 R R)
+    z
+    HzS1).
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set => z0)
+    z
+    HzS1).
+  rewrite (projection1_apply
+    R
+    R
+    z
+    (SepE1
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)) = 1)
+      z
+      HzS1)).
+  rewrite (projection2_apply
+    R
+    R
+    z
+    (SepE1
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)) = 1)
+      z
+      HzS1)).
+  rewrite (neg_fun_apply
+    (z 0)
+    (ap0_Sigma
+      R
+      (fun _ : set => R)
+      z
+      (SepE1
+        (setprod R R)
+        (fun p:set =>
+          add_SNo (mul_SNo (p 0) (p 0))
+            (mul_SNo (p 1) (p 1)) = 1)
+        z
+        HzS1))).
+  rewrite (neg_fun_apply
+    (z 1)
+    (ap1_Sigma
+      R
+      (fun _ : set => R)
+      z
+      (SepE1
+        (setprod R R)
+        (fun p:set =>
+          add_SNo (mul_SNo (p 0) (p 0))
+            (mul_SNo (p 1) (p 1)) = 1)
+        z
+        HzS1))).
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+    z
+    HzS1).
+  reflexivity.
+}
+exact (continuous_map_congr_on
+  S1
+  S1_topology
+  S1
+  S1_topology
+  antiR2
+  s55_S1_antipode_map
+  HantiContS1
+  HantiFun
+  HantiEq).
+Qed.
+
+(** from S55 Exercise 2 (line 1043 in algtop.tex) **)
+(** LATEX VERSION: If h: S^1 -> S^1 is nulhomotopic, then h has a fixed point and h maps some point x to its antipode -x. **)
+(** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex55_2_nulhomotopic_S1_fixed_and_antipodal : forall h:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   nulhomotopic S1 S1_topology S1 S1_topology h ->
   (exists x:set, x :e S1 /\ apply_fun h x = x) /\
   (exists x:set, x :e S1 /\
     apply_fun h x = (minus_SNo (x 0), minus_SNo (x 1))).
-admit.
-Admitted.
+let h.
+assume HhCont Hnul.
+claim HtopB2 : topology_on B2 B2_topology.
+{
+  exact (andEL
+    (topology_on B2 B2_topology)
+    (nulhomotopic B2 B2_topology B2 B2_topology (graph B2 (fun x:set => x)))
+    B2_contractible).
+}
+claim HS1TopEq :
+  S1_topology = subspace_topology B2 B2_topology S1.
+{
+  symmetry.
+  exact (subspace_topology_transitive_weak
+    (setprod R R)
+    R2_topology
+    B2
+    S1
+    S1_subset_B2).
+}
+claim Hext :
+  exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
+{
+  exact (lemma55_3_nulhomotopic_extends_to_B2
+    S1
+    S1_topology
+    h
+    HhCont
+    Hnul).
+}
+apply Hext.
+let k.
+assume HkPack.
+claim HkContS1 :
+  continuous_map B2 B2_topology S1 S1_topology k.
+{
+  exact (andEL
+    (continuous_map B2 B2_topology S1 S1_topology k)
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x)
+    HkPack).
+}
+claim HkBoundary :
+  forall x:set, x :e S1 -> apply_fun k x = apply_fun h x.
+{
+  exact (andER
+    (continuous_map B2 B2_topology S1 S1_topology k)
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x)
+    HkPack).
+}
+claim HkFunS1 : function_on k B2 S1.
+{
+  exact (continuous_map_function_on
+    B2
+    B2_topology
+    S1
+    S1_topology
+    k
+    HkContS1).
+}
+claim HkContB2 :
+  continuous_map B2 B2_topology B2 B2_topology k.
+{
+  exact (continuous_map_range_expand
+    B2
+    B2_topology
+    S1
+    S1_topology
+    B2
+    B2_topology
+    k
+    HkContS1
+    S1_subset_B2
+    HtopB2
+    HS1TopEq).
+}
+apply andI.
+- claim HfixK :
+    exists x:set, x :e B2 /\ apply_fun k x = x.
+  {
+    exact (thm55_6_brouwer_fixed_point_disc
+      k
+      HkContB2).
+  }
+  apply HfixK.
+  let x.
+  assume HxPack.
+  claim HxB2 : x :e B2.
+  {
+    exact (andEL
+      (x :e B2)
+      (apply_fun k x = x)
+      HxPack).
+  }
+  claim HkxEqX : apply_fun k x = x.
+  {
+    exact (andER
+      (x :e B2)
+      (apply_fun k x = x)
+      HxPack).
+  }
+  claim HkxS1 : apply_fun k x :e S1.
+  {
+    exact (HkFunS1
+      x
+      HxB2).
+  }
+  claim HxS1 : x :e S1.
+  {
+    rewrite <- HkxEqX.
+    exact HkxS1.
+  }
+  claim HhxEqX : apply_fun h x = x.
+  {
+    rewrite <- (HkBoundary
+      x
+      HxS1).
+    exact HkxEqX.
+  }
+  witness x.
+  apply andI.
+  * exact HxS1.
+  * exact HhxEqX.
+- set kanti := compose_fun B2 k s55_S1_antipode_map.
+  claim HkantiContS1 :
+    continuous_map B2 B2_topology S1 S1_topology kanti.
+  {
+    exact (composition_continuous
+      B2
+      B2_topology
+      S1
+      S1_topology
+      S1
+      S1_topology
+      k
+      s55_S1_antipode_map
+      HkContS1
+      s55_S1_antipode_map_continuous).
+  }
+  claim HkantiFunS1 : function_on kanti B2 S1.
+  {
+    exact (continuous_map_function_on
+      B2
+      B2_topology
+      S1
+      S1_topology
+      kanti
+      HkantiContS1).
+  }
+  claim HkantiContB2 :
+    continuous_map B2 B2_topology B2 B2_topology kanti.
+  {
+    exact (continuous_map_range_expand
+      B2
+      B2_topology
+      S1
+      S1_topology
+      B2
+      B2_topology
+      kanti
+      HkantiContS1
+      S1_subset_B2
+      HtopB2
+      HS1TopEq).
+  }
+  claim HfixAnti :
+    exists y:set, y :e B2 /\ apply_fun kanti y = y.
+  {
+    exact (thm55_6_brouwer_fixed_point_disc
+      kanti
+      HkantiContB2).
+  }
+  apply HfixAnti.
+  let y.
+  assume HyPack.
+  claim HyB2 : y :e B2.
+  {
+    exact (andEL
+      (y :e B2)
+      (apply_fun kanti y = y)
+      HyPack).
+  }
+  claim HkantiEqY : apply_fun kanti y = y.
+  {
+    exact (andER
+      (y :e B2)
+      (apply_fun kanti y = y)
+      HyPack).
+  }
+  claim HkantiY_S1 : apply_fun kanti y :e S1.
+  {
+    exact (HkantiFunS1
+      y
+      HyB2).
+  }
+  claim HyS1 : y :e S1.
+  {
+    rewrite <- HkantiEqY.
+    exact HkantiY_S1.
+  }
+  claim HkyS1 : apply_fun k y :e S1.
+  {
+    exact (HkFunS1
+      y
+      HyB2).
+  }
+  claim HkantiBoundary :
+    apply_fun kanti y =
+    (minus_SNo (apply_fun h y 0), minus_SNo (apply_fun h y 1)).
+  {
+    rewrite (compose_fun_apply
+      B2
+      k
+      s55_S1_antipode_map
+      y
+      HyB2).
+    rewrite (apply_fun_graph
+      S1
+      (fun z:set => (minus_SNo (z 0), minus_SNo (z 1)))
+      (apply_fun k y)
+      HkyS1).
+    rewrite (HkBoundary
+      y
+      HyS1).
+    reflexivity.
+  }
+  claim HantiHyEqY :
+    (minus_SNo (apply_fun h y 0), minus_SNo (apply_fun h y 1)) = y.
+  {
+    rewrite <- HkantiBoundary.
+    exact HkantiEqY.
+  }
+  claim HyR2 : y :e setprod R R.
+  {
+    exact (SepE1
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)) = 1)
+      y
+      HyS1).
+  }
+  claim HhyS1 : apply_fun h y :e S1.
+  {
+    exact (continuous_map_function_on
+      S1
+      S1_topology
+      S1
+      S1_topology
+      h
+      HhCont
+      y
+      HyS1).
+  }
+  claim HhyR2 : apply_fun h y :e setprod R R.
+  {
+    exact (SepE1
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)) = 1)
+      (apply_fun h y)
+      HhyS1).
+  }
+  claim HyEta : y = (y 0, y 1).
+  {
+    exact (setprod_eta
+      R
+      R
+      y
+      HyR2).
+  }
+  claim HantiPair :
+    (minus_SNo (apply_fun h y 0), minus_SNo (apply_fun h y 1)) = (y 0, y 1).
+  {
+    exact (eq_i_tra
+      (minus_SNo (apply_fun h y 0), minus_SNo (apply_fun h y 1))
+      y
+      (y 0, y 1)
+      HantiHyEqY
+      HyEta).
+  }
+  claim Hcoord0neg :
+    minus_SNo (apply_fun h y 0) = y 0.
+  {
+    exact (pair_eq_fst
+      (minus_SNo (apply_fun h y 0))
+      (minus_SNo (apply_fun h y 1))
+      (y 0)
+      (y 1)
+      HantiPair).
+  }
+  claim Hcoord1neg :
+    minus_SNo (apply_fun h y 1) = y 1.
+  {
+    exact (pair_eq_snd
+      (minus_SNo (apply_fun h y 0))
+      (minus_SNo (apply_fun h y 1))
+      (y 0)
+      (y 1)
+      HantiPair).
+  }
+  claim Hhy0R : apply_fun h y 0 :e R.
+  {
+    exact (ap0_Sigma
+      R
+      (fun _ : set => R)
+      (apply_fun h y)
+      HhyR2).
+  }
+  claim Hhy1R : apply_fun h y 1 :e R.
+  {
+    exact (ap1_Sigma
+      R
+      (fun _ : set => R)
+      (apply_fun h y)
+      HhyR2).
+  }
+  claim HhyEta :
+    apply_fun h y = (apply_fun h y 0, apply_fun h y 1).
+  {
+    exact (setprod_eta
+      R
+      R
+      (apply_fun h y)
+      HhyR2).
+  }
+  claim HhyEqAnti :
+    apply_fun h y = (minus_SNo (y 0), minus_SNo (y 1)).
+  {
+    rewrite HhyEta.
+    apply tuple_2_ext_euclid.
+    - rewrite <- (minus_SNo_minus_SNo_R
+        (apply_fun h y 0)
+        Hhy0R).
+      rewrite Hcoord0neg.
+      reflexivity.
+    - rewrite <- (minus_SNo_minus_SNo_R
+        (apply_fun h y 1)
+        Hhy1R).
+      rewrite Hcoord1neg.
+      reflexivity.
+  }
+  witness y.
+  apply andI.
+  * exact HyS1.
+  * exact HhyEqAnti.
+Qed.
 
 (** from S55 Exercise 3 (line 1044 in algtop.tex) **)
 (** LATEX VERSION: If A is a nonsingular 3x3 matrix having nonnegative entries, then A has a positive real eigenvalue. **)
