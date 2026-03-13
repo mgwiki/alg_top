@@ -422859,24 +422859,6 @@ assume Hsub.
 assume HfreeH.
 assume HnPack.
 assume HkPack.
-claim HrankData :
-  n :e omega /\ equip J (ordsucc n) /\
-  finite (right_coset_set F multF H) /\
-  subgroup_index H F multF eF invF :e omega /\
-  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
-{
-  exact (thm85_3_rankdata_from_nonzero_pack_via_bundle
-    F
-    multF
-    eF
-    invF
-    J
-    H
-    n
-    k
-    HnPack
-    HkPack).
-}
 claim HtargetAtIndex :
   equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
 {
@@ -422894,7 +422876,17 @@ claim HtargetAtIndex :
     HfreeF
     Hsub
     HfreeH
-    HrankData).
+    (thm85_3_rankdata_from_nonzero_pack_via_bundle
+      F
+      multF
+      eF
+      invF
+      J
+      H
+      n
+      k
+      HnPack
+      HkPack)).
 }
 exact (iffEL
   (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
