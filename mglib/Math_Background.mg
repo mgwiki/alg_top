@@ -416648,6 +416648,47 @@ exact (subgroup_index_spec
   Hk).
 Qed.
 
+(** Generic finite-cardinality extraction from the common nonzero-cardinality pack. **)
+(** Proven Bob **)
+Lemma finite_of_nonzero_pack : forall X k:set,
+  k :e omega /\ k <> 0 /\ equip X k ->
+  finite X.
+let X k.
+assume HkPack.
+apply (and3E
+  (k :e omega)
+  (k <> 0)
+  (equip X k)
+  HkPack).
+assume HkOmega HkNe HkEq.
+claim HkFin : finite k.
+{
+  exact (nat_finite
+    k
+    (omega_nat_p
+      k
+      HkOmega)).
+}
+exact (equip_finite_transfer
+  X
+  k
+  HkEq
+  HkFin).
+Qed.
+
+(** Specialized finite-cardinality extraction for right coset sets. **)
+(** Proven Bob **)
+Lemma finite_right_coset_set_of_nonzero_pack : forall H G mult k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  finite (right_coset_set G mult H).
+let H G mult k.
+assume HkPack.
+exact (finite_of_nonzero_pack
+  (right_coset_set G mult H)
+  k
+  HkPack).
+Qed.
+
 (** Projection helper from nonzero pack: subgroup_index is in omega. **)
 (** Proven Bob **)
 Lemma subgroup_index_in_omega_of_nonzero_pack : forall H G mult e inv k:set,
@@ -416870,66 +416911,13 @@ witness JH.
 witness gensH.
 apply andI.
 - exact HfreeH0.
-- claim HidxSpec :
-    subgroup_index H F multF eF invF :e omega /\
-    equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+- claim HcosetFin :
+    finite (right_coset_set F multF H).
   {
-    exact (subgroup_index_spec_from_nonzero_pack
+    exact (finite_right_coset_set_of_nonzero_pack
       H
       F
       multF
-      eF
-      invF
-      k
-      HkPack).
-  }
-  claim HidxOmega :
-    subgroup_index H F multF eF invF :e omega.
-  {
-    exact (andEL
-      (subgroup_index H F multF eF invF :e omega)
-      (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-      HidxSpec).
-  }
-  claim HidxEquip :
-    equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
-  {
-    exact (andER
-      (subgroup_index H F multF eF invF :e omega)
-      (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-      HidxSpec).
-  }
-  claim HkOmega :
-    k :e omega.
-  {
-    apply (and3E
-      (k :e omega)
-      (k <> 0)
-      (equip (right_coset_set F multF H) k)
-      HkPack).
-    assume HkO HkNe HkEq.
-    exact HkO.
-  }
-  claim HkEquip :
-    equip (right_coset_set F multF H) k.
-  {
-    apply (and3E
-      (k :e omega)
-      (k <> 0)
-      (equip (right_coset_set F multF H) k)
-      HkPack).
-    assume HkO HkNe HkEq.
-    exact HkEq.
-  }
-  claim HidxEqk :
-    subgroup_index H F multF eF invF = k.
-  {
-    exact (subgroup_index_eq_of_nonzero_pack_sym
-      H
-      F
-      multF
-      eF
-      invF
       k
       HkPack).
   }
