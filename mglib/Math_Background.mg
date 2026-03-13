@@ -244033,8 +244033,123 @@ apply (xm (y = e)).
                   (Hinverse (apply_fun cs3 0) Hcs30_G)). }
               rewrite He_invcs30. exact Hcs30_invcs30.
           + assume Hd2nb : delta2 <> beta.
-            (** Neither first in beta nor last in alpha: hardest case **)
-            admit.
+            (** Neither first in beta nor last in alpha **)
+            (** Key idea: y3 = cs3(0) z_conj inv(cs3(0)) where z_conj = c_suf x3 inv(c_suf) **)
+            (** cs3(0) in Gfam(delta2), delta2 <> beta. If z_conj in Gfam(delta2) then **)
+            (** y3 in Gfam(delta2) cap Gfam(beta) = {e} by disjointness **)
+            claim Hcs30_G : apply_fun cs3 0 :e G. { exact (Hsub_in_G delta2 Hd2J (apply_fun cs3 0) Hcs30_Gd2). }
+            claim Hinvcs30_G : apply_fun inv (apply_fun cs3 0) :e G. { exact (HinvG (apply_fun cs3 0) Hcs30_G). }
+            claim Hx3G : x3 :e G. { exact (Hsub_in_G alpha HalJ x3 Hx3Ga). }
+            claim Hy3G : y3 :e G. { exact (Hsub_in_G beta HbeJ y3 Hy3Gb). }
+            claim Hinvc3G : apply_fun inv c3 :e G. { exact (HinvG c3 Hc3G). }
+            set xs_sh := graph k2 (fun i:set => apply_fun cs3 (ordsucc i)).
+            set c_suf := word_product mult e xs_sh k2.
+            claim Hc3_left : word_product mult e cs3 m = apply_fun mult (apply_fun cs3 0, c_suf).
+            { rewrite Hm_eq.
+              claim HxsG_sm : forall i:set, i :e ordsucc k2 -> apply_fun cs3 i :e G.
+              { let i. assume Hi. claim Hi_m : i :e m. { rewrite Hm_eq. exact Hi. }
+                exact (reduced_word_in_G G mult e inv J Gfam efam m cs3 Hsubfam Hred3 i Hi_m). }
+              exact (word_product_left_split G mult e inv k2 cs3 Hgrp Hk2_nat HxsG_sm). }
+            claim Hc3_eq_left : c3 = apply_fun mult (apply_fun cs3 0, c_suf).
+            { rewrite <- Hwp3. exact Hc3_left. }
+            claim Hxs_sh_G : forall i:set, i :e k2 -> apply_fun xs_sh i :e G.
+            { let i. assume Hi.
+              claim Happ : apply_fun xs_sh i = apply_fun cs3 (ordsucc i).
+              { exact (apply_fun_graph k2 (fun j:set => apply_fun cs3 (ordsucc j)) i Hi). }
+              claim Hsi_m : ordsucc i :e m.
+              { rewrite Hm_eq. exact (nat_ordsucc_in_ordsucc k2 Hk2_nat i Hi). }
+              rewrite Happ. exact (reduced_word_in_G G mult e inv J Gfam efam m cs3 Hsubfam Hred3 (ordsucc i) Hsi_m). }
+            claim Hc_suf_G : c_suf :e G.
+            { exact (word_product_in_G_group G mult e inv k2 xs_sh Hgrp Hk2_nat Hxs_sh_G). }
+            claim Hinvc_suf_G : apply_fun inv c_suf :e G. { exact (HinvG c_suf Hc_suf_G). }
+            set z_conj := apply_fun mult (apply_fun mult (c_suf, x3), apply_fun inv c_suf).
+            claim Hcsuf_x3_G : apply_fun mult (c_suf, x3) :e G. { exact (HmultG c_suf x3 Hc_suf_G Hx3G). }
+            claim Hz_G : z_conj :e G.
+            { exact (HmultG (apply_fun mult (c_suf, x3)) (apply_fun inv c_suf) Hcsuf_x3_G Hinvc_suf_G). }
+            (** y3 = cs3(0) z_conj inv(cs3(0)) **)
+            claim Hz_invcs30_G : apply_fun mult (z_conj, apply_fun inv (apply_fun cs3 0)) :e G.
+            { exact (HmultG z_conj (apply_fun inv (apply_fun cs3 0)) Hz_G Hinvcs30_G). }
+            claim Hy3_eq : y3 = apply_fun mult (apply_fun cs3 0, apply_fun mult (z_conj, apply_fun inv (apply_fun cs3 0))).
+            {
+              prove apply_fun mult (apply_fun mult (c3, x3), apply_fun inv c3) =
+                apply_fun mult (apply_fun cs3 0, apply_fun mult (z_conj, apply_fun inv (apply_fun cs3 0))).
+              claim Hinvc3_eq : apply_fun inv c3 = apply_fun mult (apply_fun inv c_suf, apply_fun inv (apply_fun cs3 0)).
+              { rewrite Hc3_eq_left.
+                exact (group_inv_mult G mult e inv (apply_fun cs3 0) c_suf Hgrp Hcs30_G Hc_suf_G). }
+              claim Hc3x3 : apply_fun mult (c3, x3) = apply_fun mult (apply_fun cs3 0, apply_fun mult (c_suf, x3)).
+              { rewrite Hc3_eq_left. exact (Hassoc (apply_fun cs3 0) c_suf x3 Hcs30_G Hc_suf_G Hx3G). }
+              claim Hcs30_csufx3_G : apply_fun mult (apply_fun cs3 0, apply_fun mult (c_suf, x3)) :e G.
+              { exact (HmultG (apply_fun cs3 0) (apply_fun mult (c_suf, x3)) Hcs30_G Hcsuf_x3_G). }
+              claim Hinvc_parts_G : apply_fun mult (apply_fun inv c_suf, apply_fun inv (apply_fun cs3 0)) :e G.
+              { exact (HmultG (apply_fun inv c_suf) (apply_fun inv (apply_fun cs3 0)) Hinvc_suf_G Hinvcs30_G). }
+              rewrite Hc3x3. rewrite Hinvc3_eq.
+              claim Ha1 : apply_fun mult (apply_fun mult (apply_fun cs3 0, apply_fun mult (c_suf, x3)),
+                apply_fun mult (apply_fun inv c_suf, apply_fun inv (apply_fun cs3 0))) =
+                apply_fun mult (apply_fun cs3 0,
+                  apply_fun mult (apply_fun mult (c_suf, x3),
+                    apply_fun mult (apply_fun inv c_suf, apply_fun inv (apply_fun cs3 0)))).
+              { exact (Hassoc (apply_fun cs3 0) (apply_fun mult (c_suf, x3))
+                  (apply_fun mult (apply_fun inv c_suf, apply_fun inv (apply_fun cs3 0)))
+                  Hcs30_G Hcsuf_x3_G Hinvc_parts_G). }
+              claim Ha2 : apply_fun mult (apply_fun mult (c_suf, x3),
+                apply_fun mult (apply_fun inv c_suf, apply_fun inv (apply_fun cs3 0))) =
+                apply_fun mult (apply_fun mult (apply_fun mult (c_suf, x3), apply_fun inv c_suf),
+                  apply_fun inv (apply_fun cs3 0)).
+              { exact (eq_symm
+                  (apply_fun mult (apply_fun mult (apply_fun mult (c_suf, x3), apply_fun inv c_suf),
+                    apply_fun inv (apply_fun cs3 0)))
+                  (apply_fun mult (apply_fun mult (c_suf, x3),
+                    apply_fun mult (apply_fun inv c_suf, apply_fun inv (apply_fun cs3 0))))
+                  (Hassoc (apply_fun mult (c_suf, x3)) (apply_fun inv c_suf) (apply_fun inv (apply_fun cs3 0))
+                    Hcsuf_x3_G Hinvc_suf_G Hinvcs30_G)). }
+              rewrite Ha1. rewrite Ha2. reflexivity.
+            }
+            (** Now case split: z_conj in Gfam(delta2) or not **)
+            apply (xm (z_conj :e apply_fun Gfam delta2)).
+            * assume Hz_Gd2 : z_conj :e apply_fun Gfam delta2.
+              (** y3 = cs3(0) z_conj inv(cs3(0)) in Gfam(delta2) by subgroup closure **)
+              claim Hinvcs30_Gd2 : apply_fun inv (apply_fun cs3 0) :e apply_fun Gfam delta2.
+              { exact (HGfam_inv delta2 Hd2J (apply_fun cs3 0) Hcs30_Gd2). }
+              claim Hz_invcs30_Gd2 : apply_fun mult (z_conj, apply_fun inv (apply_fun cs3 0)) :e apply_fun Gfam delta2.
+              { exact (HGfam_mult delta2 Hd2J z_conj (apply_fun inv (apply_fun cs3 0)) Hz_Gd2 Hinvcs30_Gd2). }
+              claim Hy3_Gd2 : y3 :e apply_fun Gfam delta2.
+              { rewrite Hy3_eq.
+                exact (HGfam_mult delta2 Hd2J (apply_fun cs3 0)
+                  (apply_fun mult (z_conj, apply_fun inv (apply_fun cs3 0)))
+                  Hcs30_Gd2 Hz_invcs30_Gd2). }
+              (** y3 in Gfam(delta2) cap Gfam(beta), delta2 <> beta, so y3 = e **)
+              exact (Hdisjoint delta2 beta Hd2J HbeJ Hd2nb y3 Hy3_Gd2 Hy3Gb).
+            * assume Hz_not_Gd2 : ~ (z_conj :e apply_fun Gfam delta2).
+              (** z_conj not in Gfam(delta2): the word [cs3(0), z_conj, inv(cs3(0))] would be **)
+              (** reduced if z_conj were in some single factor, but z_conj may not be. **)
+              (** Use: if z_conj = e, y3 = e. If z_conj <> e, derive contradiction **)
+              (** via free product uniqueness. **)
+              apply (xm (z_conj = e)).
+              { assume Hz_e : z_conj = e.
+                claim He_invcs30 : apply_fun mult (e, apply_fun inv (apply_fun cs3 0)) = apply_fun inv (apply_fun cs3 0).
+                { exact (andEL (apply_fun mult (e, apply_fun inv (apply_fun cs3 0)) = apply_fun inv (apply_fun cs3 0))
+                    (apply_fun mult (apply_fun inv (apply_fun cs3 0), e) = apply_fun inv (apply_fun cs3 0))
+                    (Hid (apply_fun inv (apply_fun cs3 0)) Hinvcs30_G)). }
+                claim Hcs30_invcs30 : apply_fun mult (apply_fun cs3 0, apply_fun inv (apply_fun cs3 0)) = e.
+                { exact (andEL (apply_fun mult (apply_fun cs3 0, apply_fun inv (apply_fun cs3 0)) = e)
+                    (apply_fun mult (apply_fun inv (apply_fun cs3 0), apply_fun cs3 0) = e)
+                    (Hinverse (apply_fun cs3 0) Hcs30_G)). }
+                rewrite Hy3_eq. rewrite Hz_e. rewrite He_invcs30. exact Hcs30_invcs30. }
+              { assume Hz_ne : z_conj <> e.
+                (** z_conj <> e, z_conj not in Gfam(delta2). **)
+                (** z_conj has a unique reduced word of length >= 1. **)
+                (** Use uniqueness: y3 in Gfam(beta), y3 <> e would require length 1. **)
+                (** But y3 = cs3(0) z_conj inv(cs3(0)) with z_conj not in Gfam(delta2) **)
+                (** means the reduced word of y3 has length >= 1 starting outside Gfam(beta). **)
+                (** This is a contradiction. **)
+                (** Actually, the proof requires building the reduced word explicitly. **)
+                (** For now, we note z_conj not in Gfam(delta2) leads to y3 in Gfam(delta2) **)
+                (** by the following argument: **)
+                (** If we can show y3 = e we are done. Otherwise y3 <> e, y3 in Gfam(beta). **)
+                (** The unique reduced word of y3 has length 1 in Gfam(beta). **)
+                (** The product cs3(0) z_conj inv(cs3(0)) = y3 can be analyzed via **)
+                (** the reduced word of z_conj. **)
+                admit. }
     }
     (** Apply the main inductive claim to our specific c, x **)
     (** Get reduced word info **)
