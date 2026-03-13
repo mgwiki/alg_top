@@ -412981,6 +412981,58 @@ claim HrestrictedGeneratorWordUniquePair0 :
       Hxi
       HyiSym).
 }
+claim HgeneratorHasRestrictedDecompositionUnique :
+  forall alpha:set, alpha :e JH0 ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = apply_fun gensH0 alpha /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = apply_fun gensH0 alpha ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+{
+  let alpha.
+  assume HalphaJH0.
+  witness 1.
+  witness (graph 1 (fun _:set => apply_fun gensH0 alpha)).
+  apply and4I.
+  - exact (HreducedSingletonGenH0 alpha HalphaJH0).
+  - exact neq_1_0.
+  - exact (HwordSingletonGenH0 alpha HalphaJH0).
+  - let n' xs'.
+    assume Hred' Hwp'.
+    claim HuniqPair :
+      1 = n' /\
+      (forall i:set, i :e 1 ->
+        apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i =
+        apply_fun xs' i).
+    {
+      exact (HrestrictedGeneratorWordUniquePair0
+        alpha
+        1
+        (graph 1 (fun _:set => apply_fun gensH0 alpha))
+        n'
+        xs'
+        HalphaJH0
+        (HreducedSingletonGenH0 alpha HalphaJH0)
+        (HwordSingletonGenH0 alpha HalphaJH0)
+        Hred'
+        Hwp').
+    }
+    apply andI.
+    + exact (andEL
+        (1 = n')
+        (forall i:set, i :e 1 ->
+          apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i =
+          apply_fun xs' i)
+        HuniqPair).
+    + exact (andER
+        (1 = n')
+        (forall i:set, i :e 1 ->
+          apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i =
+          apply_fun xs' i)
+        HuniqPair).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
