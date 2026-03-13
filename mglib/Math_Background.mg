@@ -419078,20 +419078,17 @@ claim HidxEquip :
 admit. (** TODO S85.3 core gap: derive canonical-index rank target from HfreeF/HfreeH and HnOmega/HJeq/HcosetFin/HidxOmega/HidxEquip. **)
 Admitted.
 
-(** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
-Theorem thm85_3_core_rank_from_witness :
-  forall F multF eF invF J gens H JH gensH n k:set,
-  free_group_with_generators F multF eF invF J gens ->
-  subgroup_of H F multF eF invF ->
-  free_group_with_generators H multF eF invF JH gensH ->
+(** Build bundled rank/index data from explicit witness inputs. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_from_witness : forall F multF eF invF J H n k:set,
   n :e omega ->
   equip J (ordsucc n) ->
   k :e omega /\ equip (right_coset_set F multF H) k ->
-  equip JH (ordsucc (mul_SNo k n)).
-let F multF eF invF J gens H JH gensH n k.
-assume HfreeF.
-assume Hsub.
-assume HfreeH.
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
 assume HnOmega.
 assume HJeq.
 assume Hk.
@@ -419142,24 +419139,55 @@ claim HidxSpec :
     k
     Hk).
 }
+apply and5I.
+- exact HnOmega.
+- exact HJeq.
+- exact HcosetFin.
+- exact (andEL
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+- exact (andER
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+Qed.
+
+(** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
+Theorem thm85_3_core_rank_from_witness :
+  forall F multF eF invF J gens H JH gensH n k:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  n :e omega ->
+  equip J (ordsucc n) ->
+  k :e omega /\ equip (right_coset_set F multF H) k ->
+  equip JH (ordsucc (mul_SNo k n)).
+let F multF eF invF J gens H JH gensH n k.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HnOmega.
+assume HJeq.
+assume Hk.
 claim HrankData :
   n :e omega /\ equip J (ordsucc n) /\
   finite (right_coset_set F multF H) /\
   subgroup_index H F multF eF invF :e omega /\
   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
 {
-  apply and5I.
-  - exact HnOmega.
-  - exact HJeq.
-  - exact HcosetFin.
-  - exact (andEL
-      (subgroup_index H F multF eF invF :e omega)
-      (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-      HidxSpec).
-  - exact (andER
-      (subgroup_index H F multF eF invF :e omega)
-      (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-      HidxSpec).
+  exact (thm85_3_rankdata_from_witness
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnOmega
+    HJeq
+    Hk).
 }
 claim HtargetAtIndex :
   equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
