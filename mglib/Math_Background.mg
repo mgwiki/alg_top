@@ -417439,6 +417439,82 @@ exact (subgroup_index_spec_from_witness
   Hex).
 Qed.
 
+(** Any explicit omega/equip witness fixes the subgroup_index value. **)
+(** Proven Bob **)
+Lemma subgroup_index_eq_of_witness : forall H G mult e inv k:set,
+  k :e omega /\ equip (right_coset_set G mult H) k ->
+  subgroup_index H G mult e inv = k.
+let H G mult e inv k.
+assume Hk.
+claim HkOmega :
+  k :e omega.
+{
+  exact (andEL
+    (k :e omega)
+    (equip (right_coset_set G mult H) k)
+    Hk).
+}
+claim HkEquip :
+  equip (right_coset_set G mult H) k.
+{
+  exact (andER
+    (k :e omega)
+    (equip (right_coset_set G mult H) k)
+    Hk).
+}
+claim HidxSpec :
+  subgroup_index H G mult e inv :e omega /\
+  equip (right_coset_set G mult H) (subgroup_index H G mult e inv).
+{
+  exact (subgroup_index_spec
+    H
+    G
+    mult
+    e
+    inv
+    k
+    Hk).
+}
+claim HidxOmega :
+  subgroup_index H G mult e inv :e omega.
+{
+  exact (andEL
+    (subgroup_index H G mult e inv :e omega)
+    (equip (right_coset_set G mult H) (subgroup_index H G mult e inv))
+    HidxSpec).
+}
+claim HidxEquip :
+  equip (right_coset_set G mult H) (subgroup_index H G mult e inv).
+{
+  exact (andER
+    (subgroup_index H G mult e inv :e omega)
+    (equip (right_coset_set G mult H) (subgroup_index H G mult e inv))
+    HidxSpec).
+}
+claim HkIdxEquip :
+  equip k (subgroup_index H G mult e inv).
+{
+  exact (equip_tra
+    k
+    (right_coset_set G mult H)
+    (subgroup_index H G mult e inv)
+    (equip_sym
+      (right_coset_set G mult H)
+      k
+      HkEquip)
+    HidxEquip).
+}
+exact (eq_symm
+  k
+  (subgroup_index H G mult e inv)
+  (equip_omega_eq
+    k
+    (subgroup_index H G mult e inv)
+    HkOmega
+    HidxOmega
+    HkIdxEquip)).
+Qed.
+
 (** Convenience form from finiteness of the right coset set. **)
 (** Proven Bob **)
 Lemma subgroup_index_spec_from_finite : forall H G mult e inv:set,
@@ -417833,6 +417909,26 @@ apply and3I.
     HkPack).
 Qed.
 
+(** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
+Theorem thm85_3_core_rank_from_witness :
+  forall F multF eF invF J gens H JH gensH n k:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  n :e omega ->
+  equip J (ordsucc n) ->
+  k :e omega /\ equip (right_coset_set F multF H) k ->
+  equip JH (ordsucc (mul_SNo k n)).
+let F multF eF invF J gens H JH gensH n k.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HnOmega.
+assume HJeq.
+assume Hk.
+admit. (** TODO S85.3 core gap: prove Schreier-rank formula at explicit index witness k. **)
+Admitted.
+
 (** Core Schreier-rank step at canonical subgroup_index cardinal. **)
 Theorem thm85_3_core_rank_at_subgroup_index :
   forall F multF eF invF J gens H JH gensH n:set,
@@ -417850,46 +417946,45 @@ assume HfreeH.
 assume HnOmega.
 assume HJeq.
 assume HcosetFin.
-claim HidxSpec :
-  subgroup_index H F multF eF invF :e omega /\
-  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+apply HcosetFin.
+let k.
+assume Hk : k :e omega /\ equip (right_coset_set F multF H) k.
+claim HtargetAtK :
+  equip JH (ordsucc (mul_SNo k n)).
 {
-  exact (subgroup_index_spec_from_finite
+  exact (thm85_3_core_rank_from_witness
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    JH
+    gensH
+    n
+    k
+    HfreeF
+    Hsub
+    HfreeH
+    HnOmega
+    HJeq
+    Hk).
+}
+claim HidxEqk :
+  subgroup_index H F multF eF invF = k.
+{
+  exact (subgroup_index_eq_of_witness
     H
     F
     multF
     eF
     invF
-    HcosetFin).
+    k
+    Hk).
 }
-claim HidxOmega :
-  subgroup_index H F multF eF invF :e omega.
-{
-  exact (andEL
-    (subgroup_index H F multF eF invF :e omega)
-    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-    HidxSpec).
-}
-claim HidxEquip :
-  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
-{
-  exact (andER
-    (subgroup_index H F multF eF invF :e omega)
-    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-    HidxSpec).
-}
-claim HrankData :
-  n :e omega /\ equip J (ordsucc n) /\
-  subgroup_index H F multF eF invF :e omega /\
-  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
-{
-  apply and4I.
-  - exact HnOmega.
-  - exact HJeq.
-  - exact HidxOmega.
-  - exact HidxEquip.
-}
-admit. (** TODO S85.3 core gap: use HfreeF/HfreeH with HrankData to derive Schreier rank formula. **)
+rewrite HidxEqk.
+exact HtargetAtK.
 Admitted.
 
 (** Projection form of Nielsen-Schreier existence for convenient reuse. **)
