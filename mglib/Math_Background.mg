@@ -416882,7 +416882,13 @@ apply andI.
     symmetry.
     exact HkEqIdx.
   }
-  admit.
+  claim HtargetAtIndex :
+    equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+  {
+    admit. (** TODO S85.3 core gap: Schreier rank formula at canonical subgroup_index witness. **)
+  }
+  rewrite <- HidxEqk.
+  exact HtargetAtIndex.
 Admitted.
 
 (** from S85 Exercise 1 (line 5799 in algtop.tex) **)
