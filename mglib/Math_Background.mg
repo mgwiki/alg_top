@@ -417997,7 +417997,41 @@ assume HfreeH.
 assume HnOmega.
 assume HJeq.
 assume Hk.
-admit. (** TODO S85.3 core gap: prove Schreier-rank formula at explicit index witness k. **)
+claim HkOmega :
+  k :e omega.
+{
+  exact (andEL
+    (k :e omega)
+    (equip (right_coset_set F multF H) k)
+    Hk).
+}
+claim HkEquip :
+  equip (right_coset_set F multF H) k.
+{
+  exact (andER
+    (k :e omega)
+    (equip (right_coset_set F multF H) k)
+    Hk).
+}
+claim HidxEqk :
+  subgroup_index H F multF eF invF = k.
+{
+  exact (subgroup_index_eq_of_witness
+    H
+    F
+    multF
+    eF
+    invF
+    k
+    Hk).
+}
+claim HtargetAtIndex :
+  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+{
+  admit. (** TODO S85.3 core gap: Schreier-rank derivation at canonical subgroup_index from free-rank data. **)
+}
+rewrite <- HidxEqk.
+exact HtargetAtIndex.
 Admitted.
 
 (** Core Schreier-rank step at canonical subgroup_index cardinal. **)
