@@ -237793,6 +237793,26 @@ rewrite (andEL
 reflexivity.
 Qed.
 
+Lemma word_product_shift_first_eq : forall G mult e inv m n xs:set,
+  group_structure G mult e inv ->
+  nat_p m -> n = ordsucc m ->
+  (forall i:set, i :e n -> apply_fun xs i :e G) ->
+  word_product mult e xs n =
+    apply_fun mult (apply_fun xs 0,
+      word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) m).
+let G mult e inv m n xs.
+assume Hgrp Hm_nat Hn_sm HxsG.
+claim HxsG_sm : forall i:set, i :e ordsucc m -> apply_fun xs i :e G.
+{ let i. assume Hi.
+  exact (HxsG i (eq_subst_mem_set i (ordsucc m) n Hi (eq_symm n (ordsucc m) Hn_sm))). }
+rewrite Hn_sm.
+claim Hshift : word_product mult e xs (ordsucc m) =
+  apply_fun mult (apply_fun xs 0,
+    word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) m).
+{ exact (word_product_shift_first G mult e inv m xs Hgrp Hm_nat HxsG_sm m Hm_nat (ordsuccI2 m)). }
+exact Hshift.
+Qed.
+
 (** Infrastructure: word_product of length 2 **)
 (** Proven Bob **)
 Theorem word_product_two : forall mult e xs:set,
@@ -282605,6 +282625,49 @@ let n. assume HnO : n :e omega.
 exact (Hmain n (omega_nat_p n HnO)).
 Qed.
 
+(** Helper: word_product agrees when sequences agree on indices **)
+Theorem word_product_agree : forall mult e xs1 xs2 n:set,
+  n :e omega ->
+  (forall j:set, j :e n -> apply_fun xs1 j = apply_fun xs2 j) ->
+  word_product mult e xs1 n = word_product mult e xs2 n.
+let mult e xs1 xs2.
+claim Hnat : forall n:set, nat_p n ->
+  (forall j:set, j :e n -> apply_fun xs1 j = apply_fun xs2 j) ->
+  word_product mult e xs1 n = word_product mult e xs2 n.
+{
+  apply nat_ind.
+  - prove (forall j:set, j :e 0 -> apply_fun xs1 j = apply_fun xs2 j) ->
+      word_product mult e xs1 0 = word_product mult e xs2 0.
+    assume Hagree.
+    claim H1 : word_product mult e xs1 0 = e.
+    { exact (nat_primrec_0 e (fun j r => apply_fun mult (r, apply_fun xs1 j))). }
+    claim H2 : word_product mult e xs2 0 = e.
+    { exact (nat_primrec_0 e (fun j r => apply_fun mult (r, apply_fun xs2 j))). }
+    rewrite H1. rewrite H2. reflexivity.
+  - let k. assume Hk : nat_p k.
+    assume IH : (forall j:set, j :e k -> apply_fun xs1 j = apply_fun xs2 j) ->
+      word_product mult e xs1 k = word_product mult e xs2 k.
+    prove (forall j:set, j :e ordsucc k -> apply_fun xs1 j = apply_fun xs2 j) ->
+      word_product mult e xs1 (ordsucc k) = word_product mult e xs2 (ordsucc k).
+    assume Hagree : forall j:set, j :e ordsucc k -> apply_fun xs1 j = apply_fun xs2 j.
+    claim Hagree_k : forall j:set, j :e k -> apply_fun xs1 j = apply_fun xs2 j.
+    { let j. assume Hjk : j :e k. exact (Hagree j (ordsuccI1 k j Hjk)). }
+    claim Hwp_k : word_product mult e xs1 k = word_product mult e xs2 k.
+    { exact (IH Hagree_k). }
+    claim Hxs_k : apply_fun xs1 k = apply_fun xs2 k.
+    { exact (Hagree k (ordsuccI2 k)). }
+    claim HS1 : word_product mult e xs1 (ordsucc k) =
+      apply_fun mult (word_product mult e xs1 k, apply_fun xs1 k).
+    { exact (nat_primrec_S e (fun j r => apply_fun mult (r, apply_fun xs1 j)) k Hk). }
+    claim HS2 : word_product mult e xs2 (ordsucc k) =
+      apply_fun mult (word_product mult e xs2 k, apply_fun xs2 k).
+    { exact (nat_primrec_S e (fun j r => apply_fun mult (r, apply_fun xs2 j)) k Hk). }
+    rewrite HS1. rewrite HS2. rewrite Hwp_k. rewrite Hxs_k. reflexivity.
+}
+let n. assume Hn : n :e omega.
+exact (Hnat n (omega_nat_p n Hn)).
+Qed.
+
 (** from S68 Exercise 2(c) (line 3028 in algtop.tex) **)
 (** LATEX VERSION: The only elements of G that have finite order are elements **)
 (** of G1 and G2 that have finite order, and their conjugates. **)
@@ -283282,8 +283345,123 @@ apply (xm (x = e)).
             (** For any mz >= 1, we can construct a reduced word of length mz for zc **)
             (** The word is ws(0) = p, ws(i) = zs(i) for 1 <= i < mz **)
             witness mz.
-            witness (graph mz (fun i:set => If_i (i = 0) p (apply_fun zs i))).
-            admit. }
+            set ws_pne := graph mz (fun i:set => If_i (i = 0) p (apply_fun zs i)).
+            witness ws_pne.
+            claim Hmz_in_nz : mz :e nz.
+            { exact (eq_subst_mem_set mz (ordsucc mz) nz (ordsuccI2 mz)
+                (eq_symm nz (ordsucc mz) Hnz_eq)). }
+            claim HmzO : mz :e omega. { exact (nat_p_omega mz Hmz_nat). }
+            (** ws_pne value helpers **)
+            claim H0_in_mz : 0 :e mz.
+            { claim Hmz_cases : mz = 0 \/ (exists k_mz:set, nat_p k_mz /\ mz = ordsucc k_mz).
+              { exact (nat_inv mz Hmz_nat). }
+              apply Hmz_cases.
+              - assume Hmz0 : mz = 0. exact (FalseE (Hmz_ne0 Hmz0) (0 :e mz)).
+              - assume Hex : exists k_mz:set, nat_p k_mz /\ mz = ordsucc k_mz.
+                apply Hex. let k_mz. assume Hk : nat_p k_mz /\ mz = ordsucc k_mz.
+                rewrite (andER (nat_p k_mz) (mz = ordsucc k_mz) Hk).
+                exact (nat_0_in_ordsucc k_mz (andEL (nat_p k_mz) (mz = ordsucc k_mz) Hk)). }
+            claim Hws_val : forall i:set, i :e mz ->
+              apply_fun ws_pne i = If_i (i = 0) p (apply_fun zs i).
+            { let i. assume Hi.
+              exact (apply_fun_graph mz (fun j:set => If_i (j = 0) p (apply_fun zs j)) i Hi). }
+            claim Hws0 : apply_fun ws_pne 0 = p.
+            { exact (eq_i_tra (apply_fun ws_pne 0) (If_i (0 = 0) p (apply_fun zs 0)) p
+                (Hws_val 0 H0_in_mz)
+                (If_i_1 (0 = 0) p (apply_fun zs 0) (eq_refl 0))). }
+            claim Hws_ne0 : forall i:set, i :e mz -> i <> 0 ->
+              apply_fun ws_pne i = apply_fun zs i.
+            { let i. assume Hi Hine0.
+              exact (eq_i_tra (apply_fun ws_pne i) (If_i (i = 0) p (apply_fun zs i))
+                (apply_fun zs i) (Hws_val i Hi)
+                (If_i_0 (i = 0) p (apply_fun zs i) Hine0)). }
+            (** Word product equality: word_product(ws_pne, mz) = zc **)
+            (** Get k_mz such that mz = ordsucc k_mz **)
+            claim Hkmz_ex : exists k_mz:set, nat_p k_mz /\ mz = ordsucc k_mz.
+            { claim H : mz = 0 \/ (exists k_mz:set, nat_p k_mz /\ mz = ordsucc k_mz).
+              { exact (nat_inv mz Hmz_nat). }
+              apply H.
+              - assume Hmz0 : mz = 0. exact (FalseE (Hmz_ne0 Hmz0) (exists k_mz:set, nat_p k_mz /\ mz = ordsucc k_mz)).
+              - assume Hex : exists k_mz:set, nat_p k_mz /\ mz = ordsucc k_mz. exact Hex. }
+            apply Hkmz_ex. let k_mz.
+            assume Hkmz_pack : nat_p k_mz /\ mz = ordsucc k_mz.
+            claim Hkmz_nat : nat_p k_mz. { exact (andEL (nat_p k_mz) (mz = ordsucc k_mz) Hkmz_pack). }
+            claim Hmz_sk : mz = ordsucc k_mz. { exact (andER (nat_p k_mz) (mz = ordsucc k_mz) Hkmz_pack). }
+            (** Elements of ws_pne are in G **)
+            claim Hws_in_G : forall i:set, i :e mz -> apply_fun ws_pne i :e G.
+            { let i. assume Hi : i :e mz.
+              apply (xm (i = 0)).
+              - assume Hi0 : i = 0. rewrite Hi0. rewrite Hws0. exact HpG.
+              - assume Hine0 : i <> 0. rewrite (Hws_ne0 i Hi Hine0).
+                exact (Hzs_in_G_mz i Hi). }
+            (** First-element decomposition of word_product(ws_pne, mz) **)
+            claim Hshift_ws : word_product mult e ws_pne mz =
+              apply_fun mult (apply_fun ws_pne 0,
+                word_product mult e (graph k_mz (fun i:set => apply_fun ws_pne (ordsucc i))) k_mz).
+            { exact (word_product_shift_first_eq G mult e inv k_mz mz ws_pne
+                Hgrp Hkmz_nat Hmz_sk Hws_in_G). }
+            (** Suffix agreement: ws_pne(ordsucc i) = zs(ordsucc i) for i in k_mz **)
+            claim HkmzO : k_mz :e omega. { exact (nat_p_omega k_mz Hkmz_nat). }
+            claim Hagree_suf : forall j:set, j :e k_mz ->
+              apply_fun (graph k_mz (fun i:set => apply_fun ws_pne (ordsucc i))) j =
+              apply_fun (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) j.
+            { let j. assume Hj : j :e k_mz.
+              rewrite (apply_fun_graph k_mz (fun i:set => apply_fun ws_pne (ordsucc i)) j Hj).
+              rewrite (apply_fun_graph k_mz (fun i:set => apply_fun zs (ordsucc i)) j Hj).
+              claim Hsj_in_mz : ordsucc j :e mz.
+              { rewrite Hmz_sk. exact (nat_ordsucc_in_ordsucc k_mz Hkmz_nat j Hj). }
+              exact (Hws_ne0 (ordsucc j) Hsj_in_mz (neq_ordsucc_0 j)). }
+            claim Hwp_suf_agree : word_product mult e (graph k_mz (fun i:set => apply_fun ws_pne (ordsucc i))) k_mz =
+              word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz.
+            { exact (word_product_agree mult e
+                (graph k_mz (fun i:set => apply_fun ws_pne (ordsucc i)))
+                (graph k_mz (fun i:set => apply_fun zs (ordsucc i)))
+                k_mz HkmzO Hagree_suf). }
+            (** First-element decomposition of word_product(zs, mz) **)
+            claim Hshift_zs : word_product mult e zs mz =
+              apply_fun mult (apply_fun zs 0,
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz).
+            { exact (word_product_shift_first_eq G mult e inv k_mz mz zs
+                Hgrp Hkmz_nat Hmz_sk Hzs_in_G_mz). }
+            (** Membership for suffix word product **)
+            claim Hzs_suf_in_G : forall i:set, i :e k_mz ->
+              apply_fun (graph k_mz (fun i0:set => apply_fun zs (ordsucc i0))) i :e G.
+            { let i. assume Hi : i :e k_mz.
+              rewrite (apply_fun_graph k_mz (fun i0:set => apply_fun zs (ordsucc i0)) i Hi).
+              claim Hsi_mz : ordsucc i :e mz.
+              { rewrite Hmz_sk. exact (nat_ordsucc_in_ordsucc k_mz Hkmz_nat i Hi). }
+              exact (Hzs_in_G_mz (ordsucc i) Hsi_mz). }
+            claim Hwp_suf_G : word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz :e G.
+            { exact (word_product_in_G_group G mult e inv k_mz
+                (graph k_mz (fun i:set => apply_fun zs (ordsucc i)))
+                Hgrp Hkmz_nat Hzs_suf_in_G). }
+            (** Associativity: mult(mult(zs(mz), zs(0)), wp_suf) = mult(zs(mz), mult(zs(0), wp_suf)) **)
+            claim Hassoc_step : apply_fun mult (apply_fun mult (apply_fun zs mz, apply_fun zs 0),
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz) =
+              apply_fun mult (apply_fun zs mz,
+                apply_fun mult (apply_fun zs 0,
+                  word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)).
+            { exact (Hassoc (apply_fun zs mz) (apply_fun zs 0)
+                (word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)
+                Hzsmz_G Hzs0_G Hwp_suf_G). }
+            (** Chain: wp(ws_pne, mz) = mult(p, wp_zs_suf) = mult(zs(mz), mult(zs(0), wp_zs_suf)) = zc **)
+            claim Hwp_ws_eq : word_product mult e ws_pne mz = zc.
+            { rewrite Hshift_ws. rewrite Hws0. rewrite Hwp_suf_agree.
+              rewrite Hassoc_step. rewrite Hzc_prod. rewrite Hshift_zs.
+              reflexivity. }
+            (** Reduced word conditions **)
+            claim Hred_ws : reduced_word 2 Gfam efam mz ws_pne.
+            { admit. }
+            (** Goal: (((reduced_word /\ ne0) /\ wp=zc) /\ mz_in_nz) left-associated **)
+            prove ((reduced_word 2 Gfam efam mz ws_pne /\ (mz <> 0)) /\
+              word_product mult e ws_pne mz = zc) /\ mz :e nz.
+            apply andI.
+            - prove (reduced_word 2 Gfam efam mz ws_pne /\ (mz <> 0)) /\
+                word_product mult e ws_pne mz = zc.
+              apply andI.
+              + apply andI. exact Hred_ws. exact Hmz_ne0.
+              + exact Hwp_ws_eq.
+            - exact Hmz_in_nz. }
           claim Hex_short_word : exists nw ws:set,
             reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
             word_product mult e ws nw = zc /\ nw :e nz.
@@ -283531,49 +283709,6 @@ apply (xm (x = e)).
       Hred). assume HnO _ _. exact (omega_nat_p nx HnO). }
   exact (Hmain nx Hnx_nat x HxG Hxne Hfin nx xs Hred Hnx_ne0 Hwp Huniq_x (ordsuccI2 nx)).
 Admitted.
-
-(** Helper: word_product agrees when sequences agree on indices **)
-Theorem word_product_agree : forall mult e xs1 xs2 n:set,
-  n :e omega ->
-  (forall j:set, j :e n -> apply_fun xs1 j = apply_fun xs2 j) ->
-  word_product mult e xs1 n = word_product mult e xs2 n.
-let mult e xs1 xs2.
-claim Hnat : forall n:set, nat_p n ->
-  (forall j:set, j :e n -> apply_fun xs1 j = apply_fun xs2 j) ->
-  word_product mult e xs1 n = word_product mult e xs2 n.
-{
-  apply nat_ind.
-  - prove (forall j:set, j :e 0 -> apply_fun xs1 j = apply_fun xs2 j) ->
-      word_product mult e xs1 0 = word_product mult e xs2 0.
-    assume Hagree.
-    claim H1 : word_product mult e xs1 0 = e.
-    { exact (nat_primrec_0 e (fun j r => apply_fun mult (r, apply_fun xs1 j))). }
-    claim H2 : word_product mult e xs2 0 = e.
-    { exact (nat_primrec_0 e (fun j r => apply_fun mult (r, apply_fun xs2 j))). }
-    rewrite H1. rewrite H2. reflexivity.
-  - let k. assume Hk : nat_p k.
-    assume IH : (forall j:set, j :e k -> apply_fun xs1 j = apply_fun xs2 j) ->
-      word_product mult e xs1 k = word_product mult e xs2 k.
-    prove (forall j:set, j :e ordsucc k -> apply_fun xs1 j = apply_fun xs2 j) ->
-      word_product mult e xs1 (ordsucc k) = word_product mult e xs2 (ordsucc k).
-    assume Hagree : forall j:set, j :e ordsucc k -> apply_fun xs1 j = apply_fun xs2 j.
-    claim Hagree_k : forall j:set, j :e k -> apply_fun xs1 j = apply_fun xs2 j.
-    { let j. assume Hjk : j :e k. exact (Hagree j (ordsuccI1 k j Hjk)). }
-    claim Hwp_k : word_product mult e xs1 k = word_product mult e xs2 k.
-    { exact (IH Hagree_k). }
-    claim Hxs_k : apply_fun xs1 k = apply_fun xs2 k.
-    { exact (Hagree k (ordsuccI2 k)). }
-    claim HS1 : word_product mult e xs1 (ordsucc k) =
-      apply_fun mult (word_product mult e xs1 k, apply_fun xs1 k).
-    { exact (nat_primrec_S e (fun j r => apply_fun mult (r, apply_fun xs1 j)) k Hk). }
-    claim HS2 : word_product mult e xs2 (ordsucc k) =
-      apply_fun mult (word_product mult e xs2 k, apply_fun xs2 k).
-    { exact (nat_primrec_S e (fun j r => apply_fun mult (r, apply_fun xs2 j)) k Hk). }
-    rewrite HS1. rewrite HS2. rewrite Hwp_k. rewrite Hxs_k. reflexivity.
-}
-let n. assume Hn : n :e omega.
-exact (Hnat n (omega_nat_p n Hn)).
-Qed.
 
 (** Helper: word_product of elements in G stays in G **)
 Lemma word_product_in_G : forall mult e G n xs:set,

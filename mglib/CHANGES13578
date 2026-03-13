@@ -1,0 +1,19 @@
+## Changes in bck13578 (vs bck13577)
+
+Proved Hwp_ws_eq admit in ex68_2c_finite_order_elements (p != e case):
+- Moved word_product_shift_first_eq after word_product_shift_first (was before, causing "Unknown proof")
+- Moved word_product_agree before ex68_2c_finite_order_elements (was after)
+- Proved word_product(ws_pne, mz) = zc via:
+  1. First-element decomposition of wp(ws_pne, mz) via word_product_shift_first_eq
+  2. Suffix agreement: ws_pne(ordsucc i) = zs(ordsucc i) via Hws_ne0 + neq_ordsucc_0
+  3. word_product_agree to equate suffix word products
+  4. First-element decomposition of wp(zs, mz)
+  5. Associativity chain: mult(mult(a,b),c) = mult(a,mult(b,c))
+  6. Rewrite chain connecting to Hzc_prod
+
+Remaining admits in ex68_2c_finite_order_elements: 3
+- Hex_short_word_case_pe: p = e case
+- Hred_ws: reduced_word for ws_pne (in p != e case)
+- Cyclically reduced case (alpha_first <> alpha_last): prove False
+
+Line count: 410475 (vs 410384; +91 lines)
