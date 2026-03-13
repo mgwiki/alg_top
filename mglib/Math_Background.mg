@@ -421949,20 +421949,10 @@ claim HtargetAtIndex :
     HfreeH
     HrankData).
 }
-claim HkWitness :
-  k :e omega /\ equip (right_coset_set F multF H) k.
-{
-  exact (right_coset_witness_of_nonzero_pack
-    H
-    F
-    multF
-    k
-    HkPack).
-}
 exact (iffEL
   (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
   (equip JH (ordsucc (mul_SNo k n)))
-  (equip_ordsucc_mul_subgroup_index_iff_any_witness
+  (equip_ordsucc_mul_subgroup_index_iff_witness
     H
     F
     multF
@@ -421971,7 +421961,7 @@ exact (iffEL
     k
     n
     JH
-    HkWitness)
+    HkPack)
   HtargetAtIndex).
 Admitted.
 
