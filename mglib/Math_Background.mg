@@ -241866,9 +241866,44 @@ apply (xm (y = e)).
           exact (Hyne Hy_e).
         + (** xprime ≠ e: need induction **)
           assume Hxpne : xprime <> e.
-          (** cprime has reduced word of length k < nc **)
-          (** Need to apply the same argument recursively **)
-          admit.
+          (** Case k = 0: cprime = e, so y = xprime **)
+          apply (xm (k = 0)).
+          * assume Hk0 : k = 0.
+            claim Hcpr_e : cprime = e.
+            {
+              prove word_product mult e cs k = e.
+              rewrite Hk0. exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun cs i))).
+            }
+            claim Hy_xp : y = xprime.
+            {
+              rewrite Hy_conj. rewrite Hcpr_e.
+              claim Hinve : apply_fun inv e = e.
+              {
+                claim Hee : apply_fun mult (e, apply_fun inv e) = e.
+                { exact (andEL (apply_fun mult (e, apply_fun inv e) = e)
+                    (apply_fun mult (apply_fun inv e, e) = e) (Hinverse e HeG)). }
+                claim Hid_inve : apply_fun mult (e, apply_fun inv e) = apply_fun inv e.
+                { exact (andEL (apply_fun mult (e, apply_fun inv e) = apply_fun inv e)
+                    (apply_fun mult (apply_fun inv e, e) = apply_fun inv e) (Hid (apply_fun inv e) (HinvG e HeG))). }
+                exact (eq_i_tra (apply_fun inv e) (apply_fun mult (e, apply_fun inv e)) e
+                  (eq_symm (apply_fun mult (e, apply_fun inv e)) (apply_fun inv e) Hid_inve) Hee).
+              }
+              rewrite Hinve.
+              claim Hxpe : apply_fun mult (xprime, e) = xprime.
+              { exact (andER (apply_fun mult (e, xprime) = xprime) (apply_fun mult (xprime, e) = xprime) (Hid xprime HxprimeG)). }
+              claim Hexpe : apply_fun mult (e, xprime) = xprime.
+              { exact (andEL (apply_fun mult (e, xprime) = xprime) (apply_fun mult (xprime, e) = xprime) (Hid xprime HxprimeG)). }
+              rewrite Hexpe. exact Hxpe.
+            }
+            (** xprime :e Gfam(alpha) and y = xprime :e Gfam(beta), so xprime :e both **)
+            claim HxpGb : xprime :e apply_fun Gfam beta.
+            { rewrite <- Hy_xp. exact HyGb. }
+            claim Hxp_e : xprime = e.
+            { exact (Hdisjoint alpha beta HalJ HbeJ Hab xprime Hxp_Ga HxpGb). }
+            exact (Hxpne Hxp_e).
+          * (** k ≥ 1: need induction on word length **)
+            assume Hkne0 : k <> 0.
+            admit.
       - assume Hgna : gamma <> alpha.
         (** Hard case: last entry not in Gfam(alpha) **)
         (** Consider the first entry instead **)
