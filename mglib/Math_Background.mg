@@ -416649,6 +416649,46 @@ exact (subgroup_index_spec
   Hk).
 Qed.
 
+(** Projection helper from nonzero pack: subgroup_index is in omega. **)
+(** Proven Bob **)
+Lemma subgroup_index_in_omega_of_nonzero_pack : forall H G mult e inv k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  subgroup_index H G mult e inv :e omega.
+let H G mult e inv k.
+assume HkPack.
+exact (andEL
+  (subgroup_index H G mult e inv :e omega)
+  (equip (right_coset_set G mult H) (subgroup_index H G mult e inv))
+  (subgroup_index_spec_from_nonzero_pack
+    H
+    G
+    mult
+    e
+    inv
+    k
+    HkPack)).
+Qed.
+
+(** Projection helper from nonzero pack: equip witness at subgroup_index. **)
+(** Proven Bob **)
+Lemma subgroup_index_equip_of_nonzero_pack : forall H G mult e inv k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  equip (right_coset_set G mult H) (subgroup_index H G mult e inv).
+let H G mult e inv k.
+assume HkPack.
+exact (andER
+  (subgroup_index H G mult e inv :e omega)
+  (equip (right_coset_set G mult H) (subgroup_index H G mult e inv))
+  (subgroup_index_spec_from_nonzero_pack
+    H
+    G
+    mult
+    e
+    inv
+    k
+    HkPack)).
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
