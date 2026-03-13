@@ -413762,6 +413762,51 @@ claim HfactorElemHasRestrictedDecompositionUnique :
           apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs' i)
         HuniqPair).
 }
+claim HfactorElemHasRestrictedDecompositionUniqueWithNe :
+  forall alpha g:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = g /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' -> n' <> 0 ->
+        word_product multF eF xs' n' = g ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+{
+  let alpha g.
+  assume HalphaJH0 HgGa HgNeEfam.
+  apply (HfactorElemHasRestrictedDecompositionUnique
+    alpha
+    g
+    HalphaJH0
+    HgGa
+    HgNeEfam).
+  let n.
+  assume HnPack.
+  apply HnPack.
+  let xs.
+  assume HxsPack.
+  witness n.
+  witness xs.
+  apply (and4E
+    (reduced_word JH0 GfamH0 efamH0 n xs)
+    (n <> 0)
+    (word_product multF eF xs n = g)
+    (forall n' xs':set,
+      reduced_word JH0 GfamH0 efamH0 n' xs' ->
+      word_product multF eF xs' n' = g ->
+      n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))
+    HxsPack).
+  assume Hred HnNe Hwp Huniq.
+  apply and4I.
+  - exact Hred.
+  - exact HnNe.
+  - exact Hwp.
+  - let n' xs'.
+    assume Hred' Hn'Ne Hwp'.
+    exact (Huniq n' xs' Hred' Hwp').
+}
 claim HfactorElemSubgroupsGenerateWitnessH0 :
   forall alpha g:set, alpha :e JH0 ->
     g :e apply_fun GfamH0 alpha ->
