@@ -415838,6 +415838,43 @@ claim HoutsideUnionExistenceToLengthGE2H0 :
         Hlen).
   - exact Hwp.
 }
+claim HoutsideUnionLengthGE2ToExistenceH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ (n <> 0 /\ n <> 1) /\
+      word_product multF eF xs n = x) ->
+  (forall x:set, x :e H -> x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x).
+{
+  assume Hge2.
+  let x.
+  assume HxH HxNe HxOutUnion.
+  apply (Hge2 x HxH HxNe HxOutUnion).
+  let n.
+  assume HnPack.
+  apply HnPack.
+  let xs.
+  assume HxsPack.
+  apply (and3E
+    (reduced_word JH0 GfamH0 efamH0 n xs)
+    (n <> 0 /\ n <> 1)
+    (word_product multF eF xs n = x)
+    HxsPack).
+  assume Hred Hnn Hwp.
+  witness n.
+  witness xs.
+  apply and3I.
+  - exact Hred.
+  - exact (andEL
+      (n <> 0)
+      (n <> 1)
+      Hnn).
+  - exact Hwp.
+}
 claim HglobalUniqueNoNeReduceToOutsideUnionH0 :
   (forall x:set, x :e H -> x <> eF ->
     (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
@@ -416048,14 +416085,24 @@ apply and4I.
 - exact HgrpH.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
-- claim HoutsideUnionExists :
+- claim HoutsideUnionExistsGE2 :
+    forall x:set, x :e H -> x <> eF ->
+      (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+      exists n xs:set,
+        reduced_word JH0 GfamH0 efamH0 n xs /\ (n <> 0 /\ n <> 1) /\
+        word_product multF eF xs n = x.
+  {
+    admit. (** TODO S85.1: outside-union nontrivial existence with normalized length>=2 representation in H. **)
+  }
+  claim HoutsideUnionExists :
     forall x:set, x :e H -> x <> eF ->
       (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
       exists n xs:set,
         reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
         word_product multF eF xs n = x.
   {
-    admit. (** TODO S85.1: outside-union nontrivial existence of reduced-word representation in H. **)
+    exact (HoutsideUnionLengthGE2ToExistenceH0
+      HoutsideUnionExistsGE2).
   }
   claim HglobalUniqueNoNeOutsideUnion :
     forall x:set, x :e H -> x <> eF ->
