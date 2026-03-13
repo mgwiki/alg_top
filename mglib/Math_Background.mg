@@ -423305,6 +423305,155 @@ assume HnO HJeq Hcfin HidxO HidxEq.
 exact HidxEq.
 Qed.
 
+(** Build bundled rank/index data directly from explicit component assumptions. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_from_components : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+assume HidxOmega.
+assume HidxEquip.
+apply and5I.
+- exact HnOmega.
+- exact HJeq.
+- exact HcosetFin.
+- exact HidxOmega.
+- exact HidxEquip.
+Qed.
+
+(** Build rank/index bundle from the common n-pack plus an explicit witness. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_from_npack_and_witness : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ equip (right_coset_set F multF H) k ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume Hk.
+claim HkOmega :
+  k :e omega.
+{
+  exact (andEL
+    (k :e omega)
+    (equip (right_coset_set F multF H) k)
+    Hk).
+}
+claim HkEquip :
+  equip (right_coset_set F multF H) k.
+{
+  exact (andER
+    (k :e omega)
+    (equip (right_coset_set F multF H) k)
+    Hk).
+}
+claim HkFin :
+  finite k.
+{
+  exact (nat_finite
+    k
+    (omega_nat_p
+      k
+      HkOmega)).
+}
+claim HcosetFin :
+  finite (right_coset_set F multF H).
+{
+  exact (equip_finite_transfer
+    (right_coset_set F multF H)
+    k
+    HkEquip
+    HkFin).
+}
+claim HidxSpec :
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+{
+  exact (subgroup_index_spec
+    H
+    F
+    multF
+    eF
+    invF
+    k
+    Hk).
+}
+apply and5I.
+- exact (andEL
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+- exact (andER
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+- exact HcosetFin.
+- exact (andEL
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+- exact (andER
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+Qed.
+
+(** Build rank/index bundle from the common n-pack plus finite coset set. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_from_npack_and_finite : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnPack.
+assume HcosetFin.
+claim HidxSpec :
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+{
+  exact (subgroup_index_spec_from_finite
+    H
+    F
+    multF
+    eF
+    invF
+    HcosetFin).
+}
+apply and5I.
+- exact (andEL
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+- exact (andER
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+- exact HcosetFin.
+- exact (andEL
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+- exact (andER
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+Qed.
+
 (** Core target from fully extracted component hypotheses. **)
 Theorem thm85_3_core_rank_from_components :
   forall F multF eF invF J gens H JH gensH n:set,
