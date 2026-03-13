@@ -421316,9 +421316,6 @@ assume HfreeH.
 assume HnOmega.
 assume HJeq.
 assume HcosetFin.
-apply HcosetFin.
-let k.
-assume Hk : k :e omega /\ equip (right_coset_set F multF H) k.
 claim HrankData :
   n :e omega /\ equip J (ordsucc n) /\
   finite (right_coset_set F multF H) /\
