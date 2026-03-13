@@ -423424,10 +423424,20 @@ assume HfreeH.
 assume HnOmega.
 assume HJeq.
 assume Hk.
-claim HtargetAtIndex :
-  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
-{
-  exact (thm85_3_core_rank_from_rankdata
+exact (iffEL
+  (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
+  (equip JH (ordsucc (mul_SNo k n)))
+  (equip_ordsucc_mul_subgroup_index_iff_any_witness
+    H
+    F
+    multF
+    eF
+    invF
+    k
+    n
+    JH
+    Hk)
+  (thm85_3_core_rank_from_rankdata
     F
     multF
     eF
@@ -423452,22 +423462,7 @@ claim HtargetAtIndex :
       k
       HnOmega
       HJeq
-      Hk)).
-}
-exact (iffEL
-  (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
-  (equip JH (ordsucc (mul_SNo k n)))
-  (equip_ordsucc_mul_subgroup_index_iff_any_witness
-    H
-    F
-    multF
-    eF
-    invF
-    k
-    n
-    JH
-    Hk)
-  HtargetAtIndex).
+      Hk))).
 Admitted.
 
 (** Core Schreier-rank step from the common nonzero witness pack. **)
@@ -423485,10 +423480,20 @@ assume Hsub.
 assume HfreeH.
 assume HnPack.
 assume HkPack.
-claim HtargetAtIndex :
-  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
-{
-  exact (thm85_3_core_rank_from_rankdata
+exact (iffEL
+  (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
+  (equip JH (ordsucc (mul_SNo k n)))
+  (equip_ordsucc_mul_subgroup_index_iff_witness
+    H
+    F
+    multF
+    eF
+    invF
+    k
+    n
+    JH
+    HkPack)
+  (thm85_3_core_rank_from_rankdata
     F
     multF
     eF
@@ -423512,22 +423517,7 @@ claim HtargetAtIndex :
       n
       k
       HnPack
-      HkPack)).
-}
-exact (iffEL
-  (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
-  (equip JH (ordsucc (mul_SNo k n)))
-  (equip_ordsucc_mul_subgroup_index_iff_witness
-    H
-    F
-    multF
-    eF
-    invF
-    k
-    n
-    JH
-    HkPack)
-  HtargetAtIndex).
+      HkPack))).
 Admitted.
 
 (** Core Schreier-rank step at canonical subgroup_index cardinal. **)
