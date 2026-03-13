@@ -415431,6 +415431,123 @@ claim HreducedEntryInUnionFactorsH0 :
       alpha
       HalphaJH0)).
 }
+claim HoutsideUnionWordNotLengthOneH0 :
+  forall x n xs:set,
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = x ->
+    n <> 1.
+{
+  let x n xs.
+  assume HxOutUnion Hred Hwp.
+  assume Hn1.
+  claim H0inN : 0 :e n.
+  {
+    rewrite Hn1.
+    exact (ordsuccI2 0).
+  }
+  claim Hx0Union :
+    apply_fun xs 0 :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)).
+  {
+    exact (HreducedEntryInUnionFactorsH0
+      n
+      xs
+      0
+      Hred
+      H0inN).
+  }
+  claim Hx0H : apply_fun xs 0 :e H.
+  {
+    exact (reduced_word_in_G
+      H
+      multF
+      eF
+      invF
+      JH0
+      GfamH0
+      efamH0
+      n
+      xs
+      HfactorSubgroupH0
+      Hred
+      0
+      H0inN).
+  }
+  claim Hwp1 :
+    word_product multF eF xs 1 = apply_fun multF (eF, apply_fun xs 0).
+  {
+    claim HwpSucc0 :
+      word_product multF eF xs (ordsucc 0) =
+      apply_fun multF (word_product multF eF xs 0, apply_fun xs 0).
+    {
+      exact (word_product_succ
+        multF
+        eF
+        xs
+        0
+        nat_0).
+    }
+    rewrite <- ordsucc_0_eq_1_nat.
+    rewrite HwpSucc0.
+    claim Hwp0 :
+      word_product multF eF xs 0 = eF.
+    {
+      exact (nat_primrec_0
+        eF
+        (fun i r => apply_fun multF (r, apply_fun xs i))).
+    }
+    rewrite Hwp0.
+    reflexivity.
+  }
+  claim HleftId0 :
+    apply_fun multF (eF, apply_fun xs 0) = apply_fun xs 0.
+  {
+    apply (and6E
+      (function_on multF (setprod H H) H)
+      (function_on invF H H)
+      (eF :e H)
+      (forall a b c:set, a :e H -> b :e H -> c :e H ->
+        apply_fun multF (apply_fun multF (a, b), c) = apply_fun multF (a, apply_fun multF (b, c)))
+      (forall a:set, a :e H -> apply_fun multF (eF, a) = a /\ apply_fun multF (a, eF) = a)
+      (forall a:set, a :e H ->
+        apply_fun multF (a, apply_fun invF a) = eF /\ apply_fun multF (apply_fun invF a, a) = eF)
+      HgrpH).
+    assume HmultH HinvH HeH HassocH HidH HinvLawH.
+    exact (andEL
+      (apply_fun multF (eF, apply_fun xs 0) = apply_fun xs 0)
+      (apply_fun multF (apply_fun xs 0, eF) = apply_fun xs 0)
+      (HidH (apply_fun xs 0) Hx0H)).
+  }
+  claim HxEqx0 : x = apply_fun xs 0.
+  {
+    claim HwpAt1 : word_product multF eF xs 1 = x.
+    {
+      rewrite <- Hn1.
+      exact Hwp.
+    }
+    exact (eq_i_tra
+      x
+      (word_product multF eF xs 1)
+      (apply_fun xs 0)
+      (eq_symm
+        (word_product multF eF xs 1)
+        x
+        HwpAt1)
+      (eq_i_tra
+        (word_product multF eF xs 1)
+        (apply_fun multF (eF, apply_fun xs 0))
+        (apply_fun xs 0)
+        Hwp1
+        HleftId0)).
+  }
+  claim HxUnion :
+    x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)).
+  {
+    rewrite HxEqx0.
+    exact Hx0Union.
+  }
+  exact (HxOutUnion HxUnion).
+}
 claim HglobalUniqueNoNeReduceToOutsideUnionH0 :
   (forall x:set, x :e H -> x <> eF ->
     (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
