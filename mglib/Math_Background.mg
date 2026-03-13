@@ -416108,6 +416108,19 @@ claim HoutsideFactorsExistenceToFreeProductH0 :
     (HoutsideFactorsExistenceToLengthGE2H0
       HexOutsideFactors)).
 }
+claim HoutsideFactorsRawExistenceToFreeProductH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\
+      word_product multF eF xs n = x) ->
+  free_product_of_subgroups H multF eF invF JH0 GfamH0 efamH0.
+{
+  assume HexOutsideFactorsRaw.
+  exact (HoutsideFactorsExistenceToFreeProductH0
+    (HoutsideFactorsRawExistenceToNonzeroH0
+      HexOutsideFactorsRaw)).
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
@@ -416296,9 +416309,8 @@ apply and4I.
 - exact HgrpH.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
-- exact (HoutsideFactorsExistenceToFreeProductH0
-  (HoutsideFactorsRawExistenceToNonzeroH0
-    HoutsideFactorsRawExistenceForThm85_1GapH0)).
+- exact (HoutsideFactorsRawExistenceToFreeProductH0
+  HoutsideFactorsRawExistenceForThm85_1GapH0).
 Admitted.
 
 (** from S85 Definition (line 5764 in algtop.tex): Euler number of finite graph **)
