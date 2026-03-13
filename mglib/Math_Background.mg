@@ -415994,7 +415994,16 @@ apply and4I.
 - exact HgrpH.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
-- claim HglobalUniqueNoNeOutsideUnion :
+- claim HoutsideUnionExists :
+    forall x:set, x :e H -> x <> eF ->
+      (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+      exists n xs:set,
+        reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+        word_product multF eF xs n = x.
+  {
+    admit. (** TODO S85.1: outside-union nontrivial existence of reduced-word representation in H. **)
+  }
+  claim HglobalUniqueNoNeOutsideUnion :
     forall x:set, x :e H -> x <> eF ->
       (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
       exists n xs:set,
@@ -416005,7 +416014,8 @@ apply and4I.
           word_product multF eF xs' n' = x ->
           n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
   {
-    admit. (** TODO S85.1: global no-ne uniqueness/existence for nontrivial x:eH outside Union(Repl JH0 GfamH0). **)
+    exact (HoutsideUnionExistenceToGlobalNoNeH0
+      HoutsideUnionExists).
   }
   claim HglobalUniqueNoNe :
     forall x:set, x :e H -> x <> eF ->
