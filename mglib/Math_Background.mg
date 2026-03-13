@@ -412851,6 +412851,136 @@ claim HrestrictedGeneratorWordAllEntriesNeEfamAlpha0 :
   rewrite HxiEq.
   exact (HgensH0NeEfam alpha HalphaJH0).
 }
+claim HrestrictedGeneratorWordUniquePair0 :
+  forall alpha n xs m ys:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 m ys ->
+    word_product multF eF ys m = apply_fun gensH0 alpha ->
+    n = m /\
+    (forall i:set, i :e n -> apply_fun xs i = apply_fun ys i).
+{
+  let alpha n xs m ys.
+  assume HalphaJH0 HredN HwpN HredM HwpM.
+  claim HuniqN :
+    n = 1 /\
+    (forall i:set, i :e 1 ->
+      apply_fun xs i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i).
+  {
+    exact (HrestrictedGeneratorWordUniqueSingleton0
+      alpha
+      n
+      xs
+      HalphaJH0
+      HredN
+      HwpN).
+  }
+  claim HuniqM :
+    m = 1 /\
+    (forall i:set, i :e 1 ->
+      apply_fun ys i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i).
+  {
+    exact (HrestrictedGeneratorWordUniqueSingleton0
+      alpha
+      m
+      ys
+      HalphaJH0
+      HredM
+      HwpM).
+  }
+  claim Hn1 : n = 1.
+  {
+    exact (andEL
+      (n = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun xs i =
+        apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i)
+      HuniqN).
+  }
+  claim Hm1 : m = 1.
+  {
+    exact (andEL
+      (m = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun ys i =
+        apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i)
+      HuniqM).
+  }
+  claim Hxs1 :
+    forall i:set, i :e 1 ->
+      apply_fun xs i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i.
+  {
+    exact (andER
+      (n = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun xs i =
+        apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i)
+      HuniqN).
+  }
+  claim Hys1 :
+    forall i:set, i :e 1 ->
+      apply_fun ys i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i.
+  {
+    exact (andER
+      (m = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun ys i =
+        apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i)
+      HuniqM).
+  }
+  claim H1m : 1 = m.
+  {
+    symmetry.
+    exact Hm1.
+  }
+  claim Hnm : n = m.
+  {
+    exact (eq_i_tra
+      n
+      1
+      m
+      Hn1
+      H1m).
+  }
+  apply andI.
+  - exact Hnm.
+  - let i.
+    assume HiN.
+    claim Hi1 : i :e 1.
+    {
+      rewrite <- Hn1.
+      exact HiN.
+    }
+    claim Hxi :
+      apply_fun xs i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i.
+    {
+      exact (Hxs1 i Hi1).
+    }
+    claim Hyi :
+      apply_fun ys i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i.
+    {
+      exact (Hys1 i Hi1).
+    }
+    claim HyiSym :
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i =
+      apply_fun ys i.
+    {
+      symmetry.
+      exact Hyi.
+    }
+    exact (eq_i_tra
+      (apply_fun xs i)
+      (apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i)
+      (apply_fun ys i)
+      Hxi
+      HyiSym).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
