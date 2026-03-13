@@ -414810,6 +414810,83 @@ claim HgeneratorSubgroupsGenerateCanonicalWitnessH0ViaGeneral :
     (HgensH0InFactor alpha HalphaJH0)
     (HgensH0NeEfam alpha HalphaJH0)).
 }
+claim HsubgroupsGenerateCoreH0 :
+  group_structure H multF eF invF /\
+  (forall alpha:set, alpha :e JH0 ->
+    subgroup_of (apply_fun GfamH0 alpha) H multF eF invF).
+{
+  apply andI.
+  - exact HgrpH.
+  - exact HfactorSubgroupH0.
+}
+claim HsubgroupsGenerateGeneratorClauseH0 :
+  forall alpha:set, alpha :e JH0 ->
+    apply_fun gensH0 alpha = eF \/
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        apply_fun gensH0 alpha =
+          nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (HgeneratorSubgroupsGenerateDisjH0ViaGeneral
+    alpha
+    HalphaJH0).
+}
+claim HsubgroupsGenerateGeneratorWitnessClauseH0 :
+  forall alpha:set, alpha :e JH0 ->
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        apply_fun gensH0 alpha =
+          nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (HgeneratorSubgroupsGenerateWitnessFromDisjH0ViaGeneral
+    alpha
+    HalphaJH0).
+}
+claim HfreeProductFrameH0 :
+  group_structure H multF eF invF /\
+  (forall alpha:set, alpha :e JH0 ->
+    subgroup_of (apply_fun GfamH0 alpha) H multF eF invF) /\
+  (forall alpha beta:set, alpha :e JH0 -> beta :e JH0 -> alpha <> beta ->
+    forall x:set, x :e apply_fun GfamH0 alpha -> x :e apply_fun GfamH0 beta -> x = eF) /\
+  (forall alpha:set, alpha :e JH0 ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = apply_fun gensH0 alpha /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = apply_fun gensH0 alpha ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+{
+  apply and4I.
+  - exact HgrpH.
+  - exact HfactorSubgroupH0.
+  - exact HfactorDisjointH0.
+  - exact HgeneratorRestrictedDecompositionUniqueViaGeneral.
+}
+claim HgeneratorFreeProductUniqueClauseH0 :
+  forall alpha:set, alpha :e JH0 ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = apply_fun gensH0 alpha /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = apply_fun gensH0 alpha ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (HgeneratorRestrictedDecompositionUniqueViaGeneral
+    alpha
+    HalphaJH0).
+}
 claim HgeneratorSubgroupsGenerateWitnessH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n:set, n :e omega /\ n <> 0 /\
