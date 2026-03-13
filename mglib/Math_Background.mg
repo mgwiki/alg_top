@@ -415654,27 +415654,6 @@ apply and4I.
   {
     admit. (** TODO S85.1: global no-ne uniqueness/existence for nontrivial x:eH outside Union(Repl JH0 GfamH0). **)
   }
-  claim HglobalUniqueNoNeOutsideFactors :
-    forall x:set, x :e H -> x <> eF ->
-      (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
-      exists n xs:set,
-        reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
-        word_product multF eF xs n = x /\
-        (forall n' xs':set,
-          reduced_word JH0 GfamH0 efamH0 n' xs' ->
-          word_product multF eF xs' n' = x ->
-          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
-  {
-    let x.
-    assume HxH HxNe Houtside.
-    exact (HglobalUniqueNoNeOutsideUnion
-      x
-      HxH
-      HxNe
-      (HoutsideFactorsToNotInUnionH0
-        x
-        Houtside)).
-  }
   claim HglobalUniqueNoNe :
     forall x:set, x :e H -> x <> eF ->
       exists n xs:set,
@@ -415685,8 +415664,8 @@ apply and4I.
           word_product multF eF xs' n' = x ->
           n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
   {
-    exact (HglobalUniqueNoNeReduceToOutsideFactorsH0
-      HglobalUniqueNoNeOutsideFactors).
+    exact (HglobalUniqueNoNeReduceToOutsideUnionH0
+      HglobalUniqueNoNeOutsideUnion).
   }
   apply HfreeProductAssembleH0.
   + apply HsubgroupsGenerateFromNontrivialWitnessH0.
