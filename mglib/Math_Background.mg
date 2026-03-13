@@ -431450,6 +431450,115 @@ exact (thm85_3_rankdata_nonzero_direct_index_spec
     HidxSpec)).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_components_index_spec_no_finite_coset_finite : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  finite (right_coset_set F multF H).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HidxSpec.
+exact (thm85_3_rankdata_nonzero_npack_index_spec_coset_finite
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (andI
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnOmega
+    HJeq)
+  HidxSpec).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_components_index_spec_no_finite_n_omega : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  n :e omega.
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HidxSpec.
+exact (thm85_3_rankdata_nonzero_npack_index_spec_n_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (andI
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnOmega
+    HJeq)
+  HidxSpec).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_components_index_spec_no_finite_J_equip : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  equip J (ordsucc n).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HidxSpec.
+exact (thm85_3_rankdata_nonzero_npack_index_spec_J_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (andI
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnOmega
+    HJeq)
+  HidxSpec).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_components_index_spec_no_finite_index_spec : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HidxSpec.
+exact (thm85_3_rankdata_nonzero_npack_index_spec_index_spec
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (andI
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnOmega
+    HJeq)
+  HidxSpec).
+Qed.
+
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
 Theorem thm85_3_core_rank_from_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
