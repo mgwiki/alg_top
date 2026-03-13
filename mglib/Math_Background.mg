@@ -414887,6 +414887,46 @@ claim HgeneratorFreeProductUniqueClauseH0 :
     alpha
     HalphaJH0).
 }
+claim HgeneratorFreeProductUniqueClauseH0WithNe :
+  forall alpha:set, alpha :e JH0 ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = apply_fun gensH0 alpha /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' -> n' <> 0 ->
+        word_product multF eF xs' n' = apply_fun gensH0 alpha ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+{
+  let alpha.
+  assume HalphaJH0.
+  apply (HgeneratorFreeProductUniqueClauseH0
+    alpha
+    HalphaJH0).
+  let n.
+  assume HnPack.
+  apply HnPack.
+  let xs.
+  assume HxsPack.
+  witness n.
+  witness xs.
+  apply (and4E
+    (reduced_word JH0 GfamH0 efamH0 n xs)
+    (n <> 0)
+    (word_product multF eF xs n = apply_fun gensH0 alpha)
+    (forall n' xs':set,
+      reduced_word JH0 GfamH0 efamH0 n' xs' ->
+      word_product multF eF xs' n' = apply_fun gensH0 alpha ->
+      n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))
+    HxsPack).
+  assume Hred HnNe Hwp Huniq.
+  apply and4I.
+  - exact Hred.
+  - exact HnNe.
+  - exact Hwp.
+  - let n' xs'.
+    assume Hred' Hn'Ne Hwp'.
+    exact (Huniq n' xs' Hred' Hwp').
+}
 claim HgeneratorSubgroupsGenerateWitnessH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n:set, n :e omega /\ n <> 0 /\
