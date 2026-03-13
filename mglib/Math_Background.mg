@@ -149281,6 +149281,114 @@ exact (graph_in_function_space
 Qed.
 
 (** Proven Charlie **)
+Lemma sqrt_SNo_nonneg_square_of_nonneg : forall a:set,
+  a :e R ->
+  0 <= a ->
+  sqrt_SNo_nonneg (mul_SNo a a) = a.
+let a.
+assume HaR HaNonneg.
+claim HaS : SNo a.
+{
+  exact (real_SNo
+    a
+    HaR).
+}
+claim HaaR : mul_SNo a a :e R.
+{
+  exact (real_mul_SNo
+    a
+    HaR
+    a
+    HaR).
+}
+claim HaaS : SNo (mul_SNo a a).
+{
+  exact (real_SNo
+    (mul_SNo a a)
+    HaaR).
+}
+claim HaaNonneg : 0 <= mul_SNo a a.
+{
+  exact (SNo_sqr_nonneg
+    a
+    HaS).
+}
+set s := sqrt_SNo_nonneg (mul_SNo a a).
+claim HsR : s :e R.
+{
+  exact (sqrt_SNo_nonneg_real
+    (mul_SNo a a)
+    HaaR
+    HaaNonneg).
+}
+claim HsS : SNo s.
+{
+  exact (real_SNo
+    s
+    HsR).
+}
+claim HsNonneg : 0 <= s.
+{
+  exact (sqrt_SNo_nonneg_nonneg
+    (mul_SNo a a)
+    HaaS
+    HaaNonneg).
+}
+claim HsqEq : mul_SNo s s = mul_SNo a a.
+{
+  exact (sqrt_SNo_nonneg_sqr
+    (mul_SNo a a)
+    HaaS
+    HaaNonneg).
+}
+claim HsqLe :
+  mul_SNo s s <= mul_SNo a a.
+{
+  rewrite HsqEq.
+  exact (SNoLe_ref
+    (mul_SNo a a)).
+}
+claim HaSqLe :
+  mul_SNo a a <= mul_SNo s s.
+{
+  rewrite HsqEq.
+  exact (SNoLe_ref
+    (mul_SNo a a)).
+}
+claim HsLeA :
+  s <= a.
+{
+  exact (SNo_nonneg_sqr_Le_imp_Le
+    s
+    a
+    HsS
+    HaS
+    HsNonneg
+    HaNonneg
+    HsqLe).
+}
+claim HaLeS :
+  a <= s.
+{
+  exact (SNo_nonneg_sqr_Le_imp_Le
+    a
+    s
+    HaS
+    HsS
+    HaNonneg
+    HsNonneg
+    HaSqLe).
+}
+exact (SNoLe_antisym
+  s
+  a
+  HsS
+  HaS
+  HsLeA
+  HaLeS).
+Qed.
+
+(** Proven Charlie **)
 Lemma Bn_closed_norm_sq_le1 : forall n x:set,
   n :e omega ->
   x :e Bn_closed n ->
@@ -149361,6 +149469,145 @@ apply (SNoLt_trichotomy_or_impred
         HxNormR
         Hgt))
     (euclidean_norm_sq (ordsucc n) x <= 1)).
+Qed.
+
+(** Proven Charlie **)
+Lemma Bn_closed_radius_in_unit_interval : forall n x:set,
+  n :e omega ->
+  x :e Bn_closed n ->
+  sqrt_SNo_nonneg (euclidean_norm_sq (ordsucc n) x) :e unit_interval.
+let n x.
+assume Hn_om HxB.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+    x
+    HxB).
+}
+claim HnormR : euclidean_norm_sq (ordsucc n) x :e R.
+{
+  exact (euclidean_norm_sq_in_R
+    (ordsucc n)
+    x
+    Hsn_nat
+    HxEu).
+}
+claim HnormS : SNo (euclidean_norm_sq (ordsucc n) x).
+{
+  exact (real_SNo
+    (euclidean_norm_sq (ordsucc n) x)
+    HnormR).
+}
+claim HnormNonneg : 0 <= euclidean_norm_sq (ordsucc n) x.
+{
+  exact (SNoLe_of_Rle
+    0
+    (euclidean_norm_sq (ordsucc n) x)
+    (euclidean_norm_sq_nonneg
+      (ordsucc n)
+      x
+      Hsn_nat
+      HxEu)).
+}
+claim HnormLe1 :
+  euclidean_norm_sq (ordsucc n) x <= 1.
+{
+  exact (Bn_closed_norm_sq_le1
+    n
+    x
+    Hn_om
+    HxB).
+}
+set r := sqrt_SNo_nonneg (euclidean_norm_sq (ordsucc n) x).
+claim HrR : r :e R.
+{
+  exact (sqrt_SNo_nonneg_real
+    (euclidean_norm_sq (ordsucc n) x)
+    HnormR
+    HnormNonneg).
+}
+claim HrS : SNo r.
+{
+  exact (real_SNo
+    r
+    HrR).
+}
+claim HrNonneg : 0 <= r.
+{
+  exact (sqrt_SNo_nonneg_nonneg
+    (euclidean_norm_sq (ordsucc n) x)
+    HnormS
+    HnormNonneg).
+}
+claim HrSq : mul_SNo r r = euclidean_norm_sq (ordsucc n) x.
+{
+  exact (sqrt_SNo_nonneg_sqr
+    (euclidean_norm_sq (ordsucc n) x)
+    HnormS
+    HnormNonneg).
+}
+claim HrSqLe1 :
+  mul_SNo r r <= mul_SNo 1 1.
+{
+  rewrite HrSq.
+  rewrite (mul_SNo_oneR
+    1
+    SNo_1).
+  exact HnormLe1.
+}
+claim HrLe1 :
+  r <= 1.
+{
+  exact (SNo_nonneg_sqr_Le_imp_Le
+    r
+    1
+    HrS
+    SNo_1
+    HrNonneg
+    (SNoLtLe
+      0
+      1
+      SNoLt_0_1)
+    HrSqLe1).
+}
+apply (SepI
+  R
+  (fun t:set => ~(Rlt t 0) /\ ~(Rlt 1 t))
+  r
+  HrR).
+apply andI.
+- exact (RleE_nlt
+    0
+    r
+    (Rle_of_SNoLe
+      0
+      r
+      real_0
+      HrR
+      HrNonneg)).
+- exact (RleE_nlt
+    r
+    1
+    (Rle_of_SNoLe
+      r
+      1
+      HrR
+      real_1
+      HrLe1)).
 Qed.
 
 (** Proven Charlie **)
