@@ -415081,6 +415081,127 @@ claim HfreeProductUniqueClauseNoNeToWithNeH0 :
     assume Hred' Hn'Ne Hwp'.
     exact (Huniq n' xs' Hred' Hwp').
 }
+claim HnontrivialSubgroupsWitnessFromGlobalUniqueNoNeH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))) ->
+  (forall x:set, x :e H -> x <> eF ->
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        x = nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n).
+{
+  assume HglobalNoNe.
+  let x.
+  assume HxH HxNe.
+  apply (HglobalNoNe x HxH HxNe).
+  let n.
+  assume HnPack.
+  apply HnPack.
+  let xs.
+  assume HxsPack.
+  apply (and4E
+    (reduced_word JH0 GfamH0 efamH0 n xs)
+    (n <> 0)
+    (word_product multF eF xs n = x)
+    (forall n' xs':set,
+      reduced_word JH0 GfamH0 efamH0 n' xs' ->
+      word_product multF eF xs' n' = x ->
+      n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))
+    HxsPack).
+  assume Hred HnNe Hwp Huniq.
+  claim HnO : n :e omega.
+  {
+    exact (andEL
+      (n :e omega)
+      (forall i:set, i :e n ->
+        exists alpha:set, alpha :e JH0 /\
+          apply_fun xs i :e apply_fun GfamH0 alpha /\
+          apply_fun xs i <> apply_fun efamH0 alpha)
+      (andEL
+        ((n :e omega) /\
+          (forall i:set, i :e n ->
+            exists alpha:set, alpha :e JH0 /\
+              apply_fun xs i :e apply_fun GfamH0 alpha /\
+              apply_fun xs i <> apply_fun efamH0 alpha))
+        (forall i:set, i :e n -> ordsucc i :e n ->
+          forall alpha beta:set, alpha :e JH0 -> beta :e JH0 ->
+            apply_fun xs i :e apply_fun GfamH0 alpha ->
+            apply_fun xs (ordsucc i) :e apply_fun GfamH0 beta ->
+            alpha <> beta)
+        Hred)).
+  }
+  claim Helem :
+    forall i:set, i :e n ->
+      exists alpha:set, alpha :e JH0 /\
+        apply_fun xs i :e apply_fun GfamH0 alpha /\
+        apply_fun xs i <> apply_fun efamH0 alpha.
+  {
+    exact (andER
+      (n :e omega)
+      (forall i:set, i :e n ->
+        exists alpha:set, alpha :e JH0 /\
+          apply_fun xs i :e apply_fun GfamH0 alpha /\
+          apply_fun xs i <> apply_fun efamH0 alpha)
+      (andEL
+        ((n :e omega) /\
+          (forall i:set, i :e n ->
+            exists alpha:set, alpha :e JH0 /\
+              apply_fun xs i :e apply_fun GfamH0 alpha /\
+              apply_fun xs i <> apply_fun efamH0 alpha))
+        (forall i:set, i :e n -> ordsucc i :e n ->
+          forall alpha beta:set, alpha :e JH0 -> beta :e JH0 ->
+            apply_fun xs i :e apply_fun GfamH0 alpha ->
+            apply_fun xs (ordsucc i) :e apply_fun GfamH0 beta ->
+            alpha <> beta)
+        Hred)).
+  }
+  witness n.
+  apply and3I.
+  - exact HnO.
+  - exact HnNe.
+  - witness xs.
+    apply and3I.
+    + let i.
+      assume HiN.
+      exact (reduced_word_in_G
+        H
+        multF
+        eF
+        invF
+        JH0
+        GfamH0
+        efamH0
+        n
+        xs
+        HfactorSubgroupH0
+        Hred
+        i
+        HiN).
+    + let i.
+      assume HiN.
+      apply (Helem i HiN).
+      let alpha.
+      assume HalphaPack.
+      apply (and3E
+        (alpha :e JH0)
+        (apply_fun xs i :e apply_fun GfamH0 alpha)
+        (apply_fun xs i <> apply_fun efamH0 alpha)
+        HalphaPack).
+      assume HalphaJH0 HxiGa HxiNe.
+      witness alpha.
+      apply andI.
+      * exact HalphaJH0.
+      * exact HxiGa.
+    + symmetry.
+      exact Hwp.
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
@@ -415261,10 +415382,24 @@ apply and4I.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
 - apply HfreeProductAssembleH0.
-  + apply HsubgroupsGenerateFromNontrivialWitnessH0.
-    admit. (** TODO S85.1: nontrivial decomposition witness for each x :e H wrt JH0/GfamH0. **)
-  + apply HfreeProductUniqueClauseNoNeToWithNeH0.
+- claim HglobalUniqueNoNe :
+    forall x:set, x :e H -> x <> eF ->
+      exists n xs:set,
+        reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+        word_product multF eF xs n = x /\
+        (forall n' xs':set,
+          reduced_word JH0 GfamH0 efamH0 n' xs' ->
+          word_product multF eF xs' n' = x ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+  {
     admit. (** TODO S85.1: global reduced-word existence/uniqueness (no n'<>0 premise) for nontrivial x :e H. **)
+  }
+  apply HfreeProductAssembleH0.
+  + apply HsubgroupsGenerateFromNontrivialWitnessH0.
+    exact (HnontrivialSubgroupsWitnessFromGlobalUniqueNoNeH0
+      HglobalUniqueNoNe).
+  + apply HfreeProductUniqueClauseNoNeToWithNeH0.
+    exact HglobalUniqueNoNe.
 Admitted.
 
 (** from S85 Definition (line 5764 in algtop.tex): Euler number of finite graph **)
