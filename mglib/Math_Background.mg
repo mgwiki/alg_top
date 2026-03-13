@@ -310028,7 +310028,6 @@ Qed.
 (** scheme. Then X is a compact Hausdorff space. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 201 **)
-(** Lock Charlie 1773422152 **)
 Theorem thm74_1_polygon_pasting_compact_hausdorff :
   forall n w:set,
   labelling_scheme n w ->
@@ -416914,6 +416913,27 @@ assume HcosetFin.
 admit. (** TODO S85.3 core gap: complete Schreier-rank proof from free-rank data and finite coset index. **)
 Admitted.
 
+(** Projection form of Nielsen-Schreier existence for convenient reuse. **)
+Lemma subgroup_of_free_has_free_generators : forall F multF eF invF J gens H:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  exists JH gensH:set,
+    free_group_with_generators H multF eF invF JH gensH.
+let F multF eF invF J gens H.
+assume Hfree.
+assume Hsub.
+exact (thm85_1_subgroup_of_free_is_free
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  Hfree
+  H
+  Hsub).
+Admitted. (** depends on admitted thm85_1_subgroup_of_free_is_free **)
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
@@ -416958,15 +416978,15 @@ claim HfreeH :
   exists JH gensH:set,
     free_group_with_generators H multF eF invF JH gensH.
 {
-  exact (thm85_1_subgroup_of_free_is_free
+  exact (subgroup_of_free_has_free_generators
     F
     multF
     eF
     invF
     J
     gens
-    Hfree
     H
+    Hfree
     Hsub).
 }
 apply HfreeH.
