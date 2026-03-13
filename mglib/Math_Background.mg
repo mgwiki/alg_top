@@ -414997,6 +414997,90 @@ claim HfreeProductAssembleH0 :
   - exact HsgH0.
   - exact HuniqH0.
 }
+claim HwordProductEqualsNontrivialImpliesNonzeroLengthH0 :
+  forall x n xs:set,
+    word_product multF eF xs n = x ->
+    x <> eF ->
+    n <> 0.
+{
+  let x n xs.
+  assume Hwp HxNe.
+  assume Hn0.
+  claim HwpAt0 :
+    word_product multF eF xs 0 = x.
+  {
+    rewrite <- Hn0.
+    exact Hwp.
+  }
+  claim Hwp0 :
+    word_product multF eF xs 0 = eF.
+  {
+    exact (nat_primrec_0
+      eF
+      (fun i r => apply_fun multF (r, apply_fun xs i))).
+  }
+  claim HxE :
+    x = eF.
+  {
+    exact (eq_i_tra
+      x
+      (word_product multF eF xs 0)
+      eF
+      (eq_symm
+        (word_product multF eF xs 0)
+        x
+        HwpAt0)
+      Hwp0).
+  }
+  exact (HxNe HxE).
+}
+claim HfreeProductUniqueClauseNoNeToWithNeH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))) ->
+  (forall x:set, x :e H -> x <> eF ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' -> n' <> 0 ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+{
+  assume HuniqNoNe.
+  let x.
+  assume HxH HxNe.
+  apply (HuniqNoNe x HxH HxNe).
+  let n.
+  assume HnPack.
+  apply HnPack.
+  let xs.
+  assume HxsPack.
+  witness n.
+  witness xs.
+  apply (and4E
+    (reduced_word JH0 GfamH0 efamH0 n xs)
+    (n <> 0)
+    (word_product multF eF xs n = x)
+    (forall n' xs':set,
+      reduced_word JH0 GfamH0 efamH0 n' xs' ->
+      word_product multF eF xs' n' = x ->
+      n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))
+    HxsPack).
+  assume Hred HnNe Hwp Huniq.
+  apply and4I.
+  - exact Hred.
+  - exact HnNe.
+  - exact Hwp.
+  - let n' xs'.
+    assume Hred' Hn'Ne Hwp'.
+    exact (Huniq n' xs' Hred' Hwp').
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
