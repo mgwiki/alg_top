@@ -413762,6 +413762,106 @@ claim HfactorElemHasRestrictedDecompositionUnique :
           apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs' i)
         HuniqPair).
 }
+claim HfactorElemSubgroupsGenerateWitnessH0 :
+  forall alpha g:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        g = nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+{
+  let alpha g.
+  assume HalphaJH0 HgGa HgNeEfam.
+  witness 1.
+  apply and3I.
+  - exact (nat_p_omega 1 nat_1).
+  - exact neq_1_0.
+  - witness (graph 1 (fun _:set => g)).
+    apply and3I.
+    + let i.
+      assume Hi1.
+      rewrite (apply_fun_graph
+        1
+        (fun _:set => g)
+        i
+        Hi1).
+      exact (HfactorSubsetH0 alpha HalphaJH0 g HgGa).
+    + let i.
+      assume Hi1.
+      witness alpha.
+      apply andI.
+      * exact HalphaJH0.
+      * rewrite (apply_fun_graph
+          1
+          (fun _:set => g)
+          i
+          Hi1).
+        exact HgGa.
+    + claim Hnat1 :
+        nat_primrec
+          eF
+          (fun i r => apply_fun multF (r, apply_fun (graph 1 (fun _:set => g)) i))
+          1
+        = apply_fun multF (eF, g).
+      {
+        rewrite <- ordsucc_0_eq_1_nat.
+        rewrite (nat_primrec_S
+          eF
+          (fun i r => apply_fun multF (r, apply_fun (graph 1 (fun _:set => g)) i))
+          0
+          nat_0).
+        rewrite (nat_primrec_0
+          eF
+          (fun i r => apply_fun multF (r, apply_fun (graph 1 (fun _:set => g)) i))).
+        rewrite (apply_fun_graph
+          1
+          (fun _:set => g)
+          0
+          (ordsuccI2 0)).
+        reflexivity.
+      }
+      claim HleftId : apply_fun multF (eF, g) = g.
+      {
+        apply (and6E
+          (function_on multF (setprod H H) H)
+          (function_on invF H H)
+          (eF :e H)
+          (forall x y z:set, x :e H -> y :e H -> z :e H ->
+            apply_fun multF (apply_fun multF (x, y), z) = apply_fun multF (x, apply_fun multF (y, z)))
+          (forall x:set, x :e H -> apply_fun multF (eF, x) = x /\ apply_fun multF (x, eF) = x)
+          (forall x:set, x :e H ->
+            apply_fun multF (x, apply_fun invF x) = eF /\ apply_fun multF (apply_fun invF x, x) = eF)
+          HgrpH).
+        assume HmultH HinvH HeH HassocH HidH HinvLawH.
+        exact (andEL
+          (apply_fun multF (eF, g) = g)
+          (apply_fun multF (g, eF) = g)
+          (HidH
+            g
+            (HfactorSubsetH0 alpha HalphaJH0 g HgGa))).
+      }
+      claim HnatEq :
+        nat_primrec
+          eF
+          (fun i r => apply_fun multF (r, apply_fun (graph 1 (fun _:set => g)) i))
+          1
+        = g.
+      {
+        exact (eq_i_tra
+          (nat_primrec
+            eF
+            (fun i r => apply_fun multF (r, apply_fun (graph 1 (fun _:set => g)) i))
+            1)
+          (apply_fun multF (eF, g))
+          g
+          Hnat1
+          HleftId).
+      }
+      symmetry.
+      exact HnatEq.
+}
 claim HfactorElemRestrictedWordConstantOnDomain :
   forall alpha g n xs i j:set, alpha :e JH0 ->
     g :e apply_fun GfamH0 alpha ->
@@ -414450,6 +414550,24 @@ claim HgeneratorRestrictedWordZeroNeEfamAlphaViaGeneral :
     (HgensH0NeEfam alpha HalphaJH0)
     HredH0
     Hwp).
+}
+claim HgeneratorSubgroupsGenerateWitnessH0ViaGeneral :
+  forall alpha:set, alpha :e JH0 ->
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        apply_fun gensH0 alpha =
+          nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (HfactorElemSubgroupsGenerateWitnessH0
+    alpha
+    (apply_fun gensH0 alpha)
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)).
 }
 claim HgeneratorSubgroupsGenerateWitnessH0 :
   forall alpha:set, alpha :e JH0 ->
