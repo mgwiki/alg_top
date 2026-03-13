@@ -415388,6 +415388,49 @@ claim HnotInUnionToOutsideFactorsH0 :
       alpha
       HalphaJH0)).
 }
+claim HreducedEntryInUnionFactorsH0 :
+  forall n xs i:set,
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    i :e n ->
+    apply_fun xs i :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)).
+{
+  let n xs i.
+  assume Hred HiN.
+  claim Hpack :
+    exists alpha:set, alpha :e JH0 /\
+      apply_fun xs i :e apply_fun GfamH0 alpha /\
+      apply_fun xs i <> apply_fun efamH0 alpha.
+  {
+    exact (reduced_word_elem
+      JH0
+      GfamH0
+      efamH0
+      n
+      xs
+      i
+      Hred
+      HiN).
+  }
+  apply Hpack.
+  let alpha.
+  assume HalphaPack.
+  apply (and3E
+    (alpha :e JH0)
+    (apply_fun xs i :e apply_fun GfamH0 alpha)
+    (apply_fun xs i <> apply_fun efamH0 alpha)
+    HalphaPack).
+  assume HalphaJH0 HxiGa HxiNe.
+  exact (UnionI
+    (Repl JH0 (fun alpha0:set => apply_fun GfamH0 alpha0))
+    (apply_fun xs i)
+    (apply_fun GfamH0 alpha)
+    HxiGa
+    (ReplI
+      JH0
+      (fun alpha0:set => apply_fun GfamH0 alpha0)
+      alpha
+      HalphaJH0)).
+}
 claim HglobalUniqueNoNeReduceToOutsideUnionH0 :
   (forall x:set, x :e H -> x <> eF ->
     (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
