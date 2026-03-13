@@ -411538,10 +411538,32 @@ claim HfactorDisjointH0 :
     (HGfamH0MemInGfamF alpha x HalphaJH0 HxA)
     (HGfamH0MemInGfamF beta x HbetaJH0 HxB)).
 }
+claim HefamH0Val :
+  forall alpha:set, alpha :e JH0 -> apply_fun efamH0 alpha = eF.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (apply_fun_graph
+    JH0
+    (fun _:set => eF)
+    alpha
+    HalphaJH0).
+}
+claim HfreeProductCoreH0 :
+  (forall alpha:set, alpha :e JH0 ->
+    subgroup_of (apply_fun GfamH0 alpha) H multF eF invF) /\
+  (forall alpha beta:set, alpha :e JH0 -> beta :e JH0 -> alpha <> beta ->
+    forall x:set, x :e apply_fun GfamH0 alpha -> x :e apply_fun GfamH0 beta -> x = eF).
+{
+  apply andI.
+  - exact HfactorSubgroupH0.
+  - exact HfactorDisjointH0.
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
-   for H (generally larger than JH0), then prove the infinite-cyclic factor family
-   and free-product decomposition in H. **)
+   for H (generally larger than JH0), then prove:
+   - subgroups_generate H multF eF invF JH0 GfamH0
+   - reduced-word existence/uniqueness in H for (JH0, GfamH0, efamH0). **)
 admit.
 Admitted.
 
