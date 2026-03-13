@@ -420286,6 +420286,56 @@ apply and5I.
     HidxSpec).
 Qed.
 
+(** Build bundled rank/index data from the common nonzero witness pack. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_from_nonzero_pack : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+claim HnOmega : n :e omega.
+{
+  exact (andEL
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+}
+claim HJeq : equip J (ordsucc n).
+{
+  exact (andER
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+}
+claim HkWitness :
+  k :e omega /\ equip (right_coset_set F multF H) k.
+{
+  exact (right_coset_witness_of_nonzero_pack
+    H
+    F
+    multF
+    k
+    HkPack).
+}
+exact (thm85_3_rankdata_from_witness
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  k
+  HnOmega
+  HJeq
+  HkWitness).
+Qed.
+
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
 Theorem thm85_3_core_rank_from_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
@@ -420501,7 +420551,25 @@ witness JH.
 witness gensH.
 apply andI.
 - exact HfreeH0.
-- claim HkWitness :
+- claim HrankData :
+    n :e omega /\ equip J (ordsucc n) /\
+    finite (right_coset_set F multF H) /\
+    subgroup_index H F multF eF invF :e omega /\
+    equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+  {
+    exact (thm85_3_rankdata_from_nonzero_pack
+      F
+      multF
+      eF
+      invF
+      J
+      H
+      n
+      k
+      HnPack
+      HkPack).
+  }
+  claim HkWitness :
     k :e omega /\ equip (right_coset_set F multF H) k.
   {
     exact (right_coset_witness_of_nonzero_pack
@@ -420511,24 +420579,39 @@ apply andI.
       k
       HkPack).
   }
-  exact (thm85_3_core_rank_from_witness
-    F
-    multF
-    eF
-    invF
-    J
-    gens
-    H
-    JH
-    gensH
-    n
-    k
-    Hfree
-    Hsub
-    HfreeH0
-    HnOmega
-    HJeq
-    HkWitness).
+  claim HtargetAtIndex :
+    equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+  {
+    exact (thm85_3_core_rank_from_rankdata
+      F
+      multF
+      eF
+      invF
+      J
+      gens
+      H
+      JH
+      gensH
+      n
+      Hfree
+      Hsub
+      HfreeH0
+      HrankData).
+  }
+  exact (iffEL
+    (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
+    (equip JH (ordsucc (mul_SNo k n)))
+    (equip_ordsucc_mul_subgroup_index_iff_any_witness
+      H
+      F
+      multF
+      eF
+      invF
+      k
+      n
+      JH
+      HkWitness)
+    HtargetAtIndex).
 Admitted.
 
 (** from S85 Exercise 1 (line 5799 in algtop.tex) **)
