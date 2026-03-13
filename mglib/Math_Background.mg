@@ -413063,6 +413063,73 @@ claim HrestrictedGeneratorWordIndexIsZero0 :
     (fun j:set => j = 0)).
   exact (eq_refl 0).
 }
+claim HrestrictedGeneratorWordConstantOnDomain0 :
+  forall alpha n xs i j:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    i :e n -> j :e n ->
+    apply_fun xs i = apply_fun xs j.
+{
+  let alpha n xs i j.
+  assume HalphaJH0 HredH0 Hwp HiN HjN.
+  claim Hxi :
+    apply_fun xs i = apply_fun gensH0 alpha.
+  {
+    exact (HrestrictedGeneratorWordPointwiseOnN0
+      alpha
+      n
+      xs
+      HalphaJH0
+      HredH0
+      Hwp
+      i
+      HiN).
+  }
+  claim Hxj :
+    apply_fun xs j = apply_fun gensH0 alpha.
+  {
+    exact (HrestrictedGeneratorWordPointwiseOnN0
+      alpha
+      n
+      xs
+      HalphaJH0
+      HredH0
+      Hwp
+      j
+      HjN).
+  }
+  claim HxjSym :
+    apply_fun gensH0 alpha = apply_fun xs j.
+  {
+    symmetry.
+    exact Hxj.
+  }
+  exact (eq_i_tra
+    (apply_fun xs i)
+    (apply_fun gensH0 alpha)
+    (apply_fun xs j)
+    Hxi
+    HxjSym).
+}
+claim HrestrictedGeneratorWordZeroNeEfamAlpha0 :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    apply_fun xs 0 <> apply_fun efamH0 alpha.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 Hwp.
+  exact (andER
+    (alpha :e JH0 /\ apply_fun xs 0 :e apply_fun GfamH0 alpha)
+    (apply_fun xs 0 <> apply_fun efamH0 alpha)
+    (HrestrictedGeneratorWordElem0Pack0
+      alpha
+      n
+      xs
+      HalphaJH0
+      HredH0
+      Hwp)).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
