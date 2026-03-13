@@ -417795,6 +417795,24 @@ rewrite (subgroup_index_eq_of_nonzero_pack_sym
 reflexivity.
 Qed.
 
+(** Transport helper from a general omega/equip witness (no nonzero premise). **)
+(** Proven Bob **)
+Lemma subgroup_index_mul_ordsucc_eq_of_witness : forall H G mult e inv k n:set,
+  k :e omega /\ equip (right_coset_set G mult H) k ->
+  ordsucc (mul_SNo (subgroup_index H G mult e inv) n) = ordsucc (mul_SNo k n).
+let H G mult e inv k n.
+assume Hk.
+rewrite (subgroup_index_eq_of_witness
+  H
+  G
+  mult
+  e
+  inv
+  k
+  Hk).
+reflexivity.
+Qed.
+
 (** Transport equip target from subgroup_index form to witness-k form. **)
 (** Proven Bob **)
 Lemma equip_ordsucc_mul_subgroup_index_to_witness : forall H G mult e inv k n JH:set,
@@ -417872,6 +417890,41 @@ apply (iffI
     JH
     HkPack
     HeqK).
+Qed.
+
+(** Equivalent target forms using only an omega/equip witness (no nonzero premise). **)
+(** Proven Bob **)
+Lemma equip_ordsucc_mul_subgroup_index_iff_any_witness : forall H G mult e inv k n JH:set,
+  k :e omega /\ equip (right_coset_set G mult H) k ->
+  (equip JH (ordsucc (mul_SNo (subgroup_index H G mult e inv) n)) <->
+   equip JH (ordsucc (mul_SNo k n))).
+let H G mult e inv k n JH.
+assume Hk.
+apply (iffI
+  (equip JH (ordsucc (mul_SNo (subgroup_index H G mult e inv) n)))
+  (equip JH (ordsucc (mul_SNo k n)))).
+- assume HeqIdx.
+  rewrite <- (subgroup_index_mul_ordsucc_eq_of_witness
+    H
+    G
+    mult
+    e
+    inv
+    k
+    n
+    Hk).
+  exact HeqIdx.
+- assume HeqK.
+  rewrite (subgroup_index_mul_ordsucc_eq_of_witness
+    H
+    G
+    mult
+    e
+    inv
+    k
+    n
+    Hk).
+  exact HeqK.
 Qed.
 
 (** Bundled subgroup-index data from the standard nonzero coset-cardinality pack. **)
@@ -418106,10 +418159,23 @@ apply andI.
       HJeq
       HcosetFin).
   }
+  claim HkWitness :
+    k :e omega /\ equip (right_coset_set F multF H) k.
+  {
+    apply (and3E
+      (k :e omega)
+      (k <> 0)
+      (equip (right_coset_set F multF H) k)
+      HkPack).
+    assume HkO HkNe HkEq.
+    apply andI.
+    - exact HkO.
+    - exact HkEq.
+  }
   exact (iffEL
     (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
     (equip JH (ordsucc (mul_SNo k n)))
-    (equip_ordsucc_mul_subgroup_index_iff_witness
+    (equip_ordsucc_mul_subgroup_index_iff_any_witness
       H
       F
       multF
@@ -418118,7 +418184,7 @@ apply andI.
       k
       n
       JH
-      HkPack)
+      HkWitness)
     HtargetAtIndex).
 Admitted.
 
