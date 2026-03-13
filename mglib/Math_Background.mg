@@ -411867,6 +411867,84 @@ claim HwordSingletonGenH0 :
     HgrpH
     (HgensH0InH alpha HalphaJH0)).
 }
+claim HfactorElemSingletonReducedH0 :
+  forall alpha g:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word
+      JH0
+      GfamH0
+      efamH0
+      1
+      (graph 1 (fun _:set => g)).
+{
+  let alpha g.
+  assume HalphaJH0 HgGa HgNeE.
+  exact (reduced_word_singleton
+    JH0
+    GfamH0
+    efamH0
+    alpha
+    g
+    HalphaJH0
+    HgGa
+    HgNeE).
+}
+claim HfactorElemSingletonWordProductH0 :
+  forall alpha g:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    word_product
+      multF
+      eF
+      (graph 1 (fun _:set => g))
+      1
+    = g.
+{
+  let alpha g.
+  assume HalphaJH0 HgGa.
+  claim HgH : g :e H.
+  {
+    exact (HfactorSubsetH0
+      alpha
+      HalphaJH0
+      g
+      HgGa).
+  }
+  exact (word_product_singleton_group
+    H
+    multF
+    eF
+    invF
+    g
+    HgrpH
+    HgH).
+}
+claim HfactorElemHasRestrictedSingletonDecomposition :
+  forall alpha g:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = g.
+{
+  let alpha g.
+  assume HalphaJH0 HgGa HgNeE.
+  witness 1.
+  witness (graph 1 (fun _:set => g)).
+  apply and3I.
+  - exact (HfactorElemSingletonReducedH0
+      alpha
+      g
+      HalphaJH0
+      HgGa
+      HgNeE).
+  - exact neq_1_0.
+  - exact (HfactorElemSingletonWordProductH0
+      alpha
+      g
+      HalphaJH0
+      HgGa).
+}
 claim HgeneratorHasRestrictedDecomposition :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
