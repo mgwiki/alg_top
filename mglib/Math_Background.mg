@@ -283144,7 +283144,51 @@ apply (xm (x = e)).
                 Hinvzsmz_G Hc0G).
             * exact Hy0fac.
           + exact Hy0fin.
-        - admit.
+        - claim Hzc_eq : zc = apply_fun mult (apply_fun mult (c0, y0),
+            apply_fun inv c0).
+          { exact (andER ((c0 :e G /\ (y0 :e G1 \/ y0 :e G2)) /\
+              (exists m:set, m :e omega /\ m <> 0 /\
+                group_power_nat mult e y0 m = e))
+              (zc = apply_fun mult (apply_fun mult (c0, y0),
+                apply_fun inv c0))
+              Hc0y0_pack). }
+          claim Hy0G : y0 :e G.
+          { apply (Hy0fac). - assume Hy0G1 : y0 :e G1.
+              exact (Hsub_in_G 0 In_0_2 y0
+                (eq_subst_mem_set y0 G1 (apply_fun Gfam 0) Hy0G1
+                  (eq_symm (apply_fun Gfam 0) G1 HGfam0))).
+            - assume Hy0G2 : y0 :e G2.
+              exact (Hsub_in_G 1 In_1_2 y0
+                (eq_subst_mem_set y0 G2 (apply_fun Gfam 1) Hy0G2
+                  (eq_symm (apply_fun Gfam 1) G2 HGfam1))). }
+          claim HinvcG : apply_fun inv c0 :e G. { exact (HinvG c0 Hc0G). }
+          claim Hc0y0G : apply_fun mult (c0, y0) :e G. { exact (HmultG c0 y0 Hc0G Hy0G). }
+          claim Hc0y0ic0G : apply_fun mult (apply_fun mult (c0, y0), apply_fun inv c0) :e G.
+          { exact (HmultG (apply_fun mult (c0, y0)) (apply_fun inv c0) Hc0y0G HinvcG). }
+          claim HinvcaG : apply_fun mult (apply_fun inv c0, apply_fun zs mz) :e G.
+          { exact (HmultG (apply_fun inv c0) (apply_fun zs mz) HinvcG Hzsmz_G). }
+          claim Hassoc1 : apply_fun mult (apply_fun mult (apply_fun inv (apply_fun zs mz),
+            apply_fun mult (apply_fun mult (c0, y0), apply_fun inv c0)), apply_fun zs mz) =
+            apply_fun mult (apply_fun inv (apply_fun zs mz), apply_fun mult (
+              apply_fun mult (apply_fun mult (c0, y0), apply_fun inv c0), apply_fun zs mz)).
+          { exact (Hassoc (apply_fun inv (apply_fun zs mz))
+              (apply_fun mult (apply_fun mult (c0, y0), apply_fun inv c0))
+              (apply_fun zs mz) Hinvzsmz_G Hc0y0ic0G Hzsmz_G). }
+          claim Hassoc2 : apply_fun mult (apply_fun mult (apply_fun mult (c0, y0), apply_fun inv c0),
+            apply_fun zs mz) =
+            apply_fun mult (apply_fun mult (c0, y0), apply_fun mult (apply_fun inv c0, apply_fun zs mz)).
+          { exact (Hassoc (apply_fun mult (c0, y0)) (apply_fun inv c0) (apply_fun zs mz)
+              Hc0y0G HinvcG Hzsmz_G). }
+          claim Hassoc3 : apply_fun mult (apply_fun inv (apply_fun zs mz), apply_fun mult (
+            apply_fun mult (c0, y0), apply_fun mult (apply_fun inv c0, apply_fun zs mz))) =
+            apply_fun mult (apply_fun mult (apply_fun inv (apply_fun zs mz), apply_fun mult (c0, y0)),
+              apply_fun mult (apply_fun inv c0, apply_fun zs mz)).
+          { symmetry. exact (Hassoc (apply_fun inv (apply_fun zs mz)) (apply_fun mult (c0, y0))
+              (apply_fun mult (apply_fun inv c0, apply_fun zs mz)) Hinvzsmz_G Hc0y0G HinvcaG). }
+          claim Hassoc4 : apply_fun mult (apply_fun inv (apply_fun zs mz), apply_fun mult (c0, y0)) =
+            apply_fun mult (apply_fun mult (apply_fun inv (apply_fun zs mz), c0), y0).
+          { symmetry. exact (Hassoc (apply_fun inv (apply_fun zs mz)) c0 y0 Hinvzsmz_G Hc0G Hy0G). }
+          admit.
       + assume Haf_nal : alpha_first <> alpha_last.
         (** Cyclically reduced: infinite order, contradiction **)
         prove False.
