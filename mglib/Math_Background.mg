@@ -148931,6 +148931,119 @@ exact (neq_1_0
   H10).
 Qed.
 
+(** Infrastructure: the first basis vector is a nonzero point in R^{n+1}. **)
+(** Proven Charlie **)
+Lemma Rn_basis0_in_minus_origin_ordsucc : forall n:set,
+  n :e omega ->
+  graph (ordsucc n) (fun i:set => If_i (i = 0) 1 0)
+    :e Rn_minus_origin (ordsucc n).
+let n.
+assume Hn_om.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim H0in : 0 :e ordsucc n.
+{
+  exact (nat_0_in_ordsucc
+    n
+    Hn_nat).
+}
+claim HvEu :
+  graph (ordsucc n) (fun i:set => If_i (i = 0) 1 0)
+    :e euclidean_space (ordsucc n).
+{
+  claim HeuDef :
+    euclidean_space (ordsucc n)
+    =
+    product_space
+      (ordsucc n)
+      (const_space_family (ordsucc n) R R_standard_topology).
+  {
+    reflexivity.
+  }
+  rewrite HeuDef.
+  apply (product_space_graphI
+    (ordsucc n)
+    (const_space_family (ordsucc n) R R_standard_topology)
+    (fun i:set => If_i (i = 0) 1 0)).
+  let i.
+  assume Hi : i :e ordsucc n.
+  rewrite (space_family_set_const_space_family
+    (ordsucc n)
+    R
+    R_standard_topology
+    i
+    Hi).
+  apply (If_i_correct
+    (i = 0)
+    1
+    0).
+  - assume Hcase1 : (i = 0) /\ If_i (i = 0) 1 0 = 1.
+    claim HivalSym : 1 = If_i (i = 0) 1 0.
+    {
+      symmetry.
+      exact (andER
+        (i = 0)
+        (If_i (i = 0) 1 0 = 1)
+        Hcase1).
+    }
+    exact (HivalSym
+      (fun a b:set => a :e R)
+      real_1).
+  - assume Hcase0 : ~(i = 0) /\ If_i (i = 0) 1 0 = 0.
+    claim HivalSym : 0 = If_i (i = 0) 1 0.
+    {
+      symmetry.
+      exact (andER
+        (~(i = 0))
+        (If_i (i = 0) 1 0 = 0)
+        Hcase0).
+    }
+    exact (HivalSym
+      (fun a b:set => a :e R)
+      real_0).
+}
+claim Hdef :
+  Rn_minus_origin (ordsucc n) =
+  {v :e euclidean_space (ordsucc n) | ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0)}.
+{
+  reflexivity.
+}
+rewrite Hdef.
+apply (SepI
+  (euclidean_space (ordsucc n))
+  (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+  (graph (ordsucc n) (fun i:set => If_i (i = 0) 1 0))
+  HvEu).
+assume Hall0.
+claim Hv0 :
+  apply_fun (graph (ordsucc n) (fun i:set => If_i (i = 0) 1 0)) 0 = 1.
+{
+  rewrite (apply_fun_graph
+    (ordsucc n)
+    (fun i:set => If_i (i = 0) 1 0)
+    0
+    H0in).
+  exact (If_i_1
+    (0 = 0)
+    1
+    0
+    (eq_refl 0)).
+}
+claim H10 : 1 = 0.
+{
+  rewrite <- Hv0.
+  exact (Hall0
+    0
+    H0in).
+}
+exact (neq_1_0
+  H10).
+Qed.
+
 (** Infrastructure: radial normalization sends nonzero vectors to S^n. **)
 Definition Rn_normalize_to_Sn : set -> set := fun n =>
   graph (Rn_minus_origin (ordsucc n))
@@ -149278,6 +149391,24 @@ exact (graph_in_function_space
           (euclidean_norm_sq (ordsucc n) x)))
       x)
   HimgIn).
+Qed.
+
+(** Infrastructure: every sphere S^n is nonempty. **)
+(** Proven Charlie **)
+Lemma Sn_nonempty : forall n:set,
+  n :e omega ->
+  exists x:set, x :e Sn n.
+let n.
+assume Hn_om.
+set v := graph (ordsucc n) (fun i:set => If_i (i = 0) 1 0).
+witness (apply_fun (Rn_normalize_to_Sn n) v).
+exact (Rn_normalize_to_Sn_value
+  n
+  v
+  Hn_om
+  (Rn_basis0_in_minus_origin_ordsucc
+    n
+    Hn_om)).
 Qed.
 
 (** Proven Charlie **)
