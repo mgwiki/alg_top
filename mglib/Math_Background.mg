@@ -411641,6 +411641,36 @@ claim HefamH0InFactor :
   rewrite (HefamH0Val alpha HalphaJH0).
   exact (HfactorUnitH0 alpha HalphaJH0).
 }
+claim HambientReducedWordOnH :
+  forall x:set, x :e H -> x <> eF ->
+    exists n xs:set,
+      reduced_word J GfamF (graph J (fun _:set => eF)) n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word J GfamF (graph J (fun _:set => eF)) n' xs' -> n' <> 0 ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+{
+  let x.
+  assume HxH HxNe.
+  apply (and5E
+    (group_structure F multF eF invF)
+    (forall alpha:set, alpha :e J -> subgroup_of (apply_fun GfamF alpha) F multF eF invF)
+    (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+      forall y:set, y :e apply_fun GfamF alpha -> y :e apply_fun GfamF beta -> y = eF)
+    (subgroups_generate F multF eF invF J GfamF)
+    (forall y:set, y :e F -> y <> eF ->
+      exists n xs:set,
+        reduced_word J GfamF (graph J (fun _:set => eF)) n xs /\ n <> 0 /\
+        word_product multF eF xs n = y /\
+        (forall n' xs':set,
+          reduced_word J GfamF (graph J (fun _:set => eF)) n' xs' -> n' <> 0 ->
+          word_product multF eF xs' n' = y ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+    HfpFam).
+  assume HgrpF0 HsubF0 HdisjF0 HgenF0 HwordF0.
+  exact (HwordF0 x (HsubF x HxH) HxNe).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
