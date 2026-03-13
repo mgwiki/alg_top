@@ -421394,6 +421394,76 @@ apply and3I.
     HkPack).
 Qed.
 
+(** Projections from subgroup_index_bundle_of_nonzero_pack. **)
+(** Proven Bob **)
+Lemma subgroup_index_bundle_nonzero_finite : forall H G mult e inv k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  finite (right_coset_set G mult H).
+let H G mult e inv k n.
+assume HkPack.
+apply (and3E
+  (finite (right_coset_set G mult H))
+  (subgroup_index H G mult e inv = k)
+  (ordsucc (mul_SNo (subgroup_index H G mult e inv) n) = ordsucc (mul_SNo k n))
+  (subgroup_index_bundle_of_nonzero_pack
+    H
+    G
+    mult
+    e
+    inv
+    k
+    n
+    HkPack)).
+assume Hfin Heq Hord.
+exact Hfin.
+Qed.
+
+(** Proven Bob **)
+Lemma subgroup_index_bundle_nonzero_eq : forall H G mult e inv k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  subgroup_index H G mult e inv = k.
+let H G mult e inv k n.
+assume HkPack.
+apply (and3E
+  (finite (right_coset_set G mult H))
+  (subgroup_index H G mult e inv = k)
+  (ordsucc (mul_SNo (subgroup_index H G mult e inv) n) = ordsucc (mul_SNo k n))
+  (subgroup_index_bundle_of_nonzero_pack
+    H
+    G
+    mult
+    e
+    inv
+    k
+    n
+    HkPack)).
+assume Hfin Heq Hord.
+exact Heq.
+Qed.
+
+(** Proven Bob **)
+Lemma subgroup_index_bundle_nonzero_mul_ordsucc_eq : forall H G mult e inv k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  ordsucc (mul_SNo (subgroup_index H G mult e inv) n) = ordsucc (mul_SNo k n).
+let H G mult e inv k n.
+assume HkPack.
+apply (and3E
+  (finite (right_coset_set G mult H))
+  (subgroup_index H G mult e inv = k)
+  (ordsucc (mul_SNo (subgroup_index H G mult e inv) n) = ordsucc (mul_SNo k n))
+  (subgroup_index_bundle_of_nonzero_pack
+    H
+    G
+    mult
+    e
+    inv
+    k
+    n
+    HkPack)).
+assume Hfin Heq Hord.
+exact Hord.
+Qed.
+
 (** Projections from bundled S85.3 rank/index data. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_n_omega : forall F multF eF invF J H n:set,
