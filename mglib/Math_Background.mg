@@ -411604,6 +411604,43 @@ claim HfactorNonfiniteH0 :
     (HfactorGroupH0 alpha HalphaJH0)
     (HfactorInfiniteCyclicH0 alpha HalphaJH0)).
 }
+claim HfactorSubsetH0 :
+  forall alpha:set, alpha :e JH0 ->
+    apply_fun GfamH0 alpha c= H.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (subgroup_of_subset
+    (apply_fun GfamH0 alpha)
+    H
+    multF
+    eF
+    invF
+    (HfactorSubgroupH0 alpha HalphaJH0)).
+}
+claim HfactorUnitH0 :
+  forall alpha:set, alpha :e JH0 ->
+    eF :e apply_fun GfamH0 alpha.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (subgroup_of_unit
+    (apply_fun GfamH0 alpha)
+    H
+    multF
+    eF
+    invF
+    (HfactorSubgroupH0 alpha HalphaJH0)).
+}
+claim HefamH0InFactor :
+  forall alpha:set, alpha :e JH0 ->
+    apply_fun efamH0 alpha :e apply_fun GfamH0 alpha.
+{
+  let alpha.
+  assume HalphaJH0.
+  rewrite (HefamH0Val alpha HalphaJH0).
+  exact (HfactorUnitH0 alpha HalphaJH0).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
