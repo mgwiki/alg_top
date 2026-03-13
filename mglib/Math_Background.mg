@@ -148037,6 +148037,746 @@ Definition antipode_preserving_Sn : set -> set -> set -> prop := fun n m h =>
   (forall x:set, x :e Sn n ->
     apply_fun h (Rn_negate (ordsucc n) x) = Rn_negate (ordsucc m) (apply_fun h x)).
 
+(** Infrastructure: equatorial inclusion S^1 -> S^2 used in the S57.2 reduction. **)
+Definition S1_equator_in_S2 : set :=
+  graph S1 (fun z:set =>
+    graph 3 (fun i:set =>
+      if i = 0 then z 0 else if i = 1 then z 1 else 0)).
+
+(** Infrastructure: the antipodal point of a circle point still lies on S^1. **)
+Theorem S1_antipode_closed : forall z:set,
+  z :e S1 ->
+  (minus_SNo (z 0), minus_SNo (z 1)) :e S1.
+let z.
+assume HzS1.
+claim HzR2 : z :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+claim HzEq1 :
+  add_SNo (mul_SNo (z 0) (z 0))
+    (mul_SNo (z 1) (z 1)) = 1.
+{
+  exact (SepE2
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+claim Hz0R : z 0 :e R.
+{
+  exact (ap0_Sigma R (fun _ : set => R) z HzR2).
+}
+claim Hz1R : z 1 :e R.
+{
+  exact (ap1_Sigma R (fun _ : set => R) z HzR2).
+}
+apply (SepI
+  (setprod R R)
+  (fun p:set =>
+    add_SNo (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1)) = 1)
+  (minus_SNo (z 0), minus_SNo (z 1))).
+- exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    (minus_SNo (z 0))
+    (minus_SNo (z 1))
+    (real_minus_SNo (z 0) Hz0R)
+    (real_minus_SNo (z 1) Hz1R)).
+- rewrite tuple_2_0_eq at 1.
+  rewrite tuple_2_0_eq at 1.
+  rewrite tuple_2_1_eq at 1.
+  rewrite tuple_2_1_eq at 1.
+  rewrite (mul_SNo_minus_minus
+    (z 0)
+    (z 0)
+    (real_SNo (z 0) Hz0R)
+    (real_SNo (z 0) Hz0R)).
+  rewrite (mul_SNo_minus_minus
+    (z 1)
+    (z 1)
+    (real_SNo (z 1) Hz1R)
+    (real_SNo (z 1) Hz1R)).
+  exact HzEq1.
+Qed.
+
+(** Infrastructure: the equator inclusion commutes with the antipodal action. **)
+Theorem S1_equator_in_S2_antipode : forall z:set,
+  z :e S1 ->
+  apply_fun S1_equator_in_S2 (minus_SNo (z 0), minus_SNo (z 1)) =
+  Rn_negate 3 (apply_fun S1_equator_in_S2 z).
+let z.
+assume HzS1.
+claim HznegS1 : (minus_SNo (z 0), minus_SNo (z 1)) :e S1.
+{
+  exact (S1_antipode_closed z HzS1).
+}
+claim H0in3 : 0 :e 3.
+{ exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3.
+{ exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3.
+{ exact In_2_3. }
+claim Hm0eq0 : minus_SNo 0 = 0.
+{
+  claim Hm0SNo : SNo (minus_SNo 0).
+  { exact (SNo_minus_SNo 0 SNo_0). }
+  exact (eq_i_tra
+    (minus_SNo 0)
+    (add_SNo 0 (minus_SNo 0))
+    0
+    (eq_symm
+      (add_SNo 0 (minus_SNo 0))
+      (minus_SNo 0)
+      (add_SNo_0L (minus_SNo 0) Hm0SNo))
+    (add_SNo_minus_SNo_rinv 0 SNo_0)).
+}
+claim Hequator0 :
+  apply_fun (apply_fun S1_equator_in_S2 z) 0 = z 0.
+{
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set =>
+      graph 3 (fun j:set =>
+        if j = 0 then z0 0 else if j = 1 then z0 1 else 0))
+    z
+    HzS1).
+  rewrite (apply_fun_graph
+    3
+    (fun j:set =>
+      if j = 0 then z 0 else if j = 1 then z 1 else 0)
+    0
+    H0in3).
+  rewrite (If_i_1
+    (0 = 0)
+    (z 0)
+    (if 0 = 1 then z 1 else 0)
+    (eq_refl 0)).
+  reflexivity.
+}
+claim Hequator1 :
+  apply_fun (apply_fun S1_equator_in_S2 z) 1 = z 1.
+{
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set =>
+      graph 3 (fun j:set =>
+        if j = 0 then z0 0 else if j = 1 then z0 1 else 0))
+    z
+    HzS1).
+  rewrite (apply_fun_graph
+    3
+    (fun j:set =>
+      if j = 0 then z 0 else if j = 1 then z 1 else 0)
+    1
+    H1in3).
+  rewrite (If_i_0
+    (1 = 0)
+    (z 0)
+    (if 1 = 1 then z 1 else 0)
+    (neq_1_0)).
+  rewrite (If_i_1
+    (1 = 1)
+    (z 1)
+    0
+    (eq_refl 1)).
+  reflexivity.
+}
+claim Hequator2 :
+  apply_fun (apply_fun S1_equator_in_S2 z) 2 = 0.
+{
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set =>
+      graph 3 (fun j:set =>
+        if j = 0 then z0 0 else if j = 1 then z0 1 else 0))
+    z
+    HzS1).
+  rewrite (apply_fun_graph
+    3
+    (fun j:set =>
+      if j = 0 then z 0 else if j = 1 then z 1 else 0)
+    2
+    H2in3).
+  rewrite (If_i_0
+    (2 = 0)
+    (z 0)
+    (if 2 = 1 then z 1 else 0)
+    (neq_ordsucc_0 1)).
+  rewrite (If_i_0
+    (2 = 1)
+    (z 1)
+    0
+    (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))).
+  reflexivity.
+}
+claim Hequator0_rev :
+  z 0 = apply_fun (apply_fun S1_equator_in_S2 z) 0.
+{
+  exact (eq_symm
+    (apply_fun (apply_fun S1_equator_in_S2 z) 0)
+    (z 0)
+    Hequator0).
+}
+claim Hequator1_rev :
+  z 1 = apply_fun (apply_fun S1_equator_in_S2 z) 1.
+{
+  exact (eq_symm
+    (apply_fun (apply_fun S1_equator_in_S2 z) 1)
+    (z 1)
+    Hequator1).
+}
+claim Hequator2_rev :
+  0 = apply_fun (apply_fun S1_equator_in_S2 z) 2.
+{
+  exact (eq_symm
+    (apply_fun (apply_fun S1_equator_in_S2 z) 2)
+    0
+    Hequator2).
+}
+rewrite (apply_fun_graph
+  S1
+  (fun z0:set =>
+    graph 3 (fun i:set =>
+      if i = 0 then z0 0 else if i = 1 then z0 1 else 0))
+  (minus_SNo (z 0), minus_SNo (z 1))
+  HznegS1).
+claim HrhsDef :
+  Rn_negate 3 (apply_fun S1_equator_in_S2 z) =
+  graph 3 (fun i:set =>
+    minus_SNo (apply_fun (apply_fun S1_equator_in_S2 z) i)).
+{
+  reflexivity.
+}
+rewrite HrhsDef.
+claim Hpointwise : forall i:set, i :e 3 ->
+  (if i = 0 then (minus_SNo (z 0), minus_SNo (z 1)) 0
+   else if i = 1 then (minus_SNo (z 0), minus_SNo (z 1)) 1
+   else 0)
+  =
+  minus_SNo (apply_fun (apply_fun S1_equator_in_S2 z) i).
+{
+let i.
+assume Hi3.
+apply (ordsuccE 2 i Hi3).
+- assume Hi2.
+  apply (ordsuccE 1 i Hi2).
+  + assume Hi1.
+    apply (ordsuccE 0 i Hi1).
+    * assume Hi0.
+      exact (EmptyE i Hi0
+        ((if i = 0 then (minus_SNo (z 0), minus_SNo (z 1)) 0
+          else if i = 1 then (minus_SNo (z 0), minus_SNo (z 1)) 1
+          else 0) =
+          minus_SNo (apply_fun (apply_fun S1_equator_in_S2 z) i))).
+    * assume Hieq0.
+      rewrite Hieq0.
+      rewrite (If_i_1
+        (0 = 0)
+        ((minus_SNo (z 0), minus_SNo (z 1)) 0)
+        (if 0 = 1 then (minus_SNo (z 0), minus_SNo (z 1)) 1 else 0)
+        (eq_refl 0)).
+      rewrite tuple_2_0_eq.
+      exact (Hequator0_rev
+        (fun t _ => minus_SNo (z 0) = minus_SNo t)
+        (eq_refl (minus_SNo (z 0)))).
+  + assume Hieq1.
+    rewrite Hieq1.
+    rewrite (If_i_0
+      (1 = 0)
+      ((minus_SNo (z 0), minus_SNo (z 1)) 0)
+      (if 1 = 1 then (minus_SNo (z 0), minus_SNo (z 1)) 1 else 0)
+      (neq_1_0)).
+    rewrite (If_i_1
+      (1 = 1)
+      ((minus_SNo (z 0), minus_SNo (z 1)) 1)
+      0
+      (eq_refl 1)).
+    rewrite tuple_2_1_eq.
+    exact (Hequator1_rev
+      (fun t _ => minus_SNo (z 1) = minus_SNo t)
+      (eq_refl (minus_SNo (z 1)))).
+- assume Hieq2.
+  rewrite Hieq2.
+  rewrite (If_i_0
+    (2 = 0)
+    ((minus_SNo (z 0), minus_SNo (z 1)) 0)
+    (if 2 = 1 then (minus_SNo (z 0), minus_SNo (z 1)) 1 else 0)
+    (neq_ordsucc_0 1)).
+  rewrite (If_i_0
+    (2 = 1)
+    ((minus_SNo (z 0), minus_SNo (z 1)) 1)
+    0
+    (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))).
+  exact (Hequator2_rev
+    (fun t _ => 0 = minus_SNo t)
+    (eq_symm (minus_SNo 0) 0 Hm0eq0)).
+}
+exact (graph_extensional
+  3
+  (fun i:set =>
+    if i = 0 then (minus_SNo (z 0), minus_SNo (z 1)) 0
+    else if i = 1 then (minus_SNo (z 0), minus_SNo (z 1)) 1
+    else 0)
+  (fun i:set =>
+    minus_SNo (apply_fun (apply_fun S1_equator_in_S2 z) i))
+  Hpointwise).
+Qed.
+
+(** Infrastructure: the equator inclusion lands in S^2. **)
+Theorem S1_equator_in_S2_in_Sn2 : forall z:set,
+  z :e S1 ->
+  apply_fun S1_equator_in_S2 z :e Sn 2.
+let z.
+assume HzS1.
+claim HzR2 : z :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+claim HzEq1 :
+  add_SNo (mul_SNo (z 0) (z 0))
+    (mul_SNo (z 1) (z 1)) = 1.
+{
+  exact (SepE2
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+claim H0in3 : 0 :e 3.
+{ exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3.
+{ exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3.
+{ exact In_2_3. }
+claim Hz0R : z 0 :e R.
+{
+  exact (ap0_Sigma R (fun _ : set => R) z HzR2).
+}
+claim Hz1R : z 1 :e R.
+{
+  exact (ap1_Sigma R (fun _ : set => R) z HzR2).
+}
+claim Hz0S : SNo (z 0).
+{
+  exact (real_SNo (z 0) Hz0R).
+}
+claim Hz1S : SNo (z 1).
+{
+  exact (real_SNo (z 1) Hz1R).
+}
+claim HequatorE3 : apply_fun S1_equator_in_S2 z :e euclidean_space 3.
+{
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set =>
+      graph 3 (fun i:set =>
+        if i = 0 then z0 0 else if i = 1 then z0 1 else 0))
+    z
+    HzS1).
+  claim Heu3 :
+    euclidean_space 3 = product_space 3 (const_space_family 3 R R_standard_topology).
+  {
+    reflexivity.
+  }
+  rewrite Heu3.
+  apply (product_space_graphI
+    3
+    (const_space_family 3 R R_standard_topology)
+    (fun i:set =>
+      if i = 0 then z 0 else if i = 1 then z 1 else 0)).
+  let i.
+  assume Hi3.
+  rewrite (space_family_set_const_space_family 3 R R_standard_topology i Hi3).
+  apply (ordsuccE 2 i Hi3).
+  - assume Hi2.
+    apply (ordsuccE 1 i Hi2).
+    + assume Hi1.
+      apply (ordsuccE 0 i Hi1).
+      * assume Hi0.
+        exact (EmptyE i Hi0
+          ((if i = 0 then z 0 else if i = 1 then z 1 else 0) :e R)).
+      * assume Hieq0.
+        rewrite Hieq0.
+        prove (if 0 = 0 then z 0 else if 0 = 1 then z 1 else 0) :e R.
+        rewrite (If_i_1
+          (0 = 0)
+          (z 0)
+          (if 0 = 1 then z 1 else 0)
+          (eq_refl 0)).
+        exact Hz0R.
+    + assume Hieq1.
+      rewrite Hieq1.
+      prove (if 1 = 0 then z 0 else if 1 = 1 then z 1 else 0) :e R.
+      rewrite (If_i_0
+        (1 = 0)
+        (z 0)
+        (if 1 = 1 then z 1 else 0)
+        (neq_1_0)).
+      rewrite (If_i_1
+        (1 = 1)
+        (z 1)
+        0
+        (eq_refl 1)).
+      exact Hz1R.
+  - assume Hieq2.
+    rewrite Hieq2.
+    prove (if 2 = 0 then z 0 else if 2 = 1 then z 1 else 0) :e R.
+    rewrite (If_i_0
+      (2 = 0)
+      (z 0)
+      (if 2 = 1 then z 1 else 0)
+      (neq_ordsucc_0 1)).
+    rewrite (If_i_0
+      (2 = 1)
+      (z 1)
+      0
+      (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))).
+    exact real_0.
+}
+claim Hequator0 :
+  apply_fun (apply_fun S1_equator_in_S2 z) 0 = z 0.
+{
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set =>
+      graph 3 (fun j:set =>
+        if j = 0 then z0 0 else if j = 1 then z0 1 else 0))
+    z
+    HzS1).
+  rewrite (apply_fun_graph
+    3
+    (fun j:set =>
+      if j = 0 then z 0 else if j = 1 then z 1 else 0)
+    0
+    H0in3).
+  rewrite (If_i_1
+    (0 = 0)
+    (z 0)
+    (if 0 = 1 then z 1 else 0)
+    (eq_refl 0)).
+  reflexivity.
+}
+claim Hequator1 :
+  apply_fun (apply_fun S1_equator_in_S2 z) 1 = z 1.
+{
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set =>
+      graph 3 (fun j:set =>
+        if j = 0 then z0 0 else if j = 1 then z0 1 else 0))
+    z
+    HzS1).
+  rewrite (apply_fun_graph
+    3
+    (fun j:set =>
+      if j = 0 then z 0 else if j = 1 then z 1 else 0)
+    1
+    H1in3).
+  rewrite (If_i_0
+    (1 = 0)
+    (z 0)
+    (if 1 = 1 then z 1 else 0)
+    (neq_1_0)).
+  rewrite (If_i_1
+    (1 = 1)
+    (z 1)
+    0
+    (eq_refl 1)).
+  reflexivity.
+}
+claim Hequator2 :
+  apply_fun (apply_fun S1_equator_in_S2 z) 2 = 0.
+{
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set =>
+      graph 3 (fun j:set =>
+        if j = 0 then z0 0 else if j = 1 then z0 1 else 0))
+    z
+    HzS1).
+  rewrite (apply_fun_graph
+    3
+    (fun j:set =>
+      if j = 0 then z 0 else if j = 1 then z 1 else 0)
+    2
+    H2in3).
+  rewrite (If_i_0
+    (2 = 0)
+    (z 0)
+    (if 2 = 1 then z 1 else 0)
+    (neq_ordsucc_0 1)).
+  rewrite (If_i_0
+    (2 = 1)
+    (z 1)
+    0
+    (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))).
+  reflexivity.
+}
+claim HnormExpand :
+  euclidean_norm_sq 3 (apply_fun S1_equator_in_S2 z) =
+  add_SNo
+    (add_SNo
+      (add_SNo 0
+        (mul_SNo (apply_fun (apply_fun S1_equator_in_S2 z) 0)
+          (apply_fun (apply_fun S1_equator_in_S2 z) 0)))
+      (mul_SNo (apply_fun (apply_fun S1_equator_in_S2 z) 1)
+        (apply_fun (apply_fun S1_equator_in_S2 z) 1)))
+    (mul_SNo (apply_fun (apply_fun S1_equator_in_S2 z) 2)
+      (apply_fun (apply_fun S1_equator_in_S2 z) 2)).
+{
+  set f := fun i:set =>
+    mul_SNo (apply_fun (apply_fun S1_equator_in_S2 z) i)
+      (apply_fun (apply_fun S1_equator_in_S2 z) i).
+  claim Hf0R : f 0 :e R.
+  {
+    prove mul_SNo (apply_fun (apply_fun S1_equator_in_S2 z) 0)
+      (apply_fun (apply_fun S1_equator_in_S2 z) 0) :e R.
+    rewrite Hequator0.
+    exact (real_mul_SNo (z 0) Hz0R (z 0) Hz0R).
+  }
+  claim HfrsEq :
+    euclidean_norm_sq 3 (apply_fun S1_equator_in_S2 z) =
+    finite_real_sum f 3.
+  {
+    reflexivity.
+  }
+  rewrite HfrsEq.
+  rewrite (finite_real_sum_S f 2 nat_2).
+  rewrite (finite_real_sum_S f 1 nat_1).
+  rewrite (finite_real_sum_S f 0 nat_0).
+  rewrite (finite_real_sum_0 f).
+  rewrite (add_SNo_0L (f 0) (real_SNo (f 0) Hf0R)).
+  reflexivity.
+}
+claim HequatorNorm :
+  euclidean_norm_sq 3 (apply_fun S1_equator_in_S2 z) = 1.
+{
+  rewrite HnormExpand.
+  rewrite Hequator0.
+  rewrite Hequator1.
+  rewrite Hequator2.
+  rewrite (mul_SNo_zeroL 0 SNo_0).
+  rewrite (add_SNo_0L
+    (mul_SNo (z 0) (z 0))
+    (SNo_mul_SNo (z 0) (z 0) Hz0S Hz0S)).
+  rewrite (add_SNo_0R
+    (add_SNo (mul_SNo (z 0) (z 0))
+      (mul_SNo (z 1) (z 1)))
+    (SNo_add_SNo
+      (mul_SNo (z 0) (z 0))
+      (mul_SNo (z 1) (z 1))
+      (SNo_mul_SNo (z 0) (z 0) Hz0S Hz0S)
+      (SNo_mul_SNo (z 1) (z 1) Hz1S Hz1S))).
+  exact HzEq1.
+}
+claim HSn2Def :
+  Sn 2 = {v :e euclidean_space 3 | euclidean_norm_sq 3 v = 1}.
+{
+  reflexivity.
+}
+rewrite HSn2Def.
+apply (SepI
+  (euclidean_space 3)
+  (fun v:set => euclidean_norm_sq 3 v = 1)
+  (apply_fun S1_equator_in_S2 z)).
+- exact HequatorE3.
+- exact HequatorNorm.
+Qed.
+
+(** Infrastructure: a point of euclidean_space 2 is the graph of its coordinates. **)
+Theorem euclidean_space_2_eq_graph_of_apply_fun : forall u:set,
+  u :e euclidean_space 2 ->
+  u = graph 2 (fun i:set => apply_fun u i).
+let u.
+assume Hu.
+claim H2ne : 2 <> Empty.
+{
+  exact (fun H => EmptyE 0 (H (fun t _ => 0 :e t) In_0_2)).
+}
+claim Hspace_fam_union : space_family_union 2 (const_space_family 2 R R_standard_topology) = R.
+{
+  exact (space_family_union_const_space_family 2 R R_standard_topology H2ne).
+}
+claim HuProp : total_function_on u 2 (space_family_union 2 (const_space_family 2 R R_standard_topology)) /\
+  functional_graph u /\ forall i:set, i :e 2 -> apply_fun u i :e space_family_set (const_space_family 2 R R_standard_topology) i.
+{
+  exact (SepE2
+    (Power (setprod 2 (space_family_union 2 (const_space_family 2 R R_standard_topology))))
+    (fun f => total_function_on f 2 (space_family_union 2 (const_space_family 2 R R_standard_topology)) /\
+      functional_graph f /\ forall i:set, i :e 2 -> apply_fun f i :e space_family_set (const_space_family 2 R R_standard_topology) i)
+    u
+    Hu).
+}
+claim HuTF_FG : total_function_on u 2 (space_family_union 2 (const_space_family 2 R R_standard_topology)) /\ functional_graph u.
+{
+  exact (andEL
+    (total_function_on u 2 (space_family_union 2 (const_space_family 2 R R_standard_topology)) /\ functional_graph u)
+    (forall i:set, i :e 2 -> apply_fun u i :e space_family_set (const_space_family 2 R R_standard_topology) i)
+    HuProp).
+}
+claim HuTF : total_function_on u 2 (space_family_union 2 (const_space_family 2 R R_standard_topology)).
+{
+  exact (andEL
+    (total_function_on u 2 (space_family_union 2 (const_space_family 2 R R_standard_topology)))
+    (functional_graph u)
+    HuTF_FG).
+}
+claim HuTF_R : total_function_on u 2 R.
+{
+  exact (Hspace_fam_union
+    (fun z _ => total_function_on u 2 z)
+    HuTF).
+}
+claim HuFG : functional_graph u.
+{
+  exact (andER
+    (total_function_on u 2 (space_family_union 2 (const_space_family 2 R R_standard_topology)))
+    (functional_graph u)
+    HuTF_FG).
+}
+claim HuPow : u :e Power (setprod 2 (space_family_union 2 (const_space_family 2 R R_standard_topology))).
+{
+  exact (SepE1
+    (Power (setprod 2 (space_family_union 2 (const_space_family 2 R R_standard_topology))))
+    (fun f => total_function_on f 2 (space_family_union 2 (const_space_family 2 R R_standard_topology)) /\
+      functional_graph f /\ forall i:set, i :e 2 -> apply_fun f i :e space_family_set (const_space_family 2 R R_standard_topology) i)
+    u
+    Hu).
+}
+claim HuSubR : u c= setprod 2 R.
+{
+  exact (Hspace_fam_union
+    (fun z _ => u c= setprod 2 z)
+    (PowerE (setprod 2 (space_family_union 2 (const_space_family 2 R R_standard_topology))) u HuPow)).
+}
+exact (total_functional_graph_eq_graph_of_apply_fun u 2 R HuTF_R HuFG HuSubR).
+Qed.
+
+(** Infrastructure: expand the norm square in euclidean_space 2 into two coordinates. **)
+Theorem euclidean_norm_sq_2_expand : forall u:set,
+  u :e euclidean_space 2 ->
+  euclidean_norm_sq 2 u =
+  add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+    (mul_SNo (apply_fun u 1) (apply_fun u 1)).
+let u.
+assume Hu.
+claim H0in2 : 0 :e 2.
+{ exact In_0_2. }
+claim H1in2 : 1 :e 2.
+{ exact In_1_2. }
+claim Hu0R : apply_fun u 0 :e R.
+{ exact (euclidean_space_coord_in_R 2 u 0 Hu H0in2). }
+claim Hu0S : SNo (apply_fun u 0).
+{ exact (real_SNo (apply_fun u 0) Hu0R). }
+set f := fun i:set => mul_SNo (apply_fun u i) (apply_fun u i).
+claim HfrsEq : euclidean_norm_sq 2 u = finite_real_sum f 2.
+{
+  reflexivity.
+}
+rewrite HfrsEq.
+rewrite (finite_real_sum_S f 1 nat_1).
+rewrite (finite_real_sum_S f 0 nat_0).
+rewrite (finite_real_sum_0 f).
+rewrite (add_SNo_0L (f 0) (real_SNo (f 0)
+  (real_mul_SNo (apply_fun u 0) Hu0R (apply_fun u 0) Hu0R))).
+reflexivity.
+Qed.
+
+(** Infrastructure: the coordinate pair of Rn_negate 2 is the negated coordinate pair. **)
+(** Proven Charlie **)
+Theorem Rn_negate_2_coords_pair : forall u:set,
+  (apply_fun (Rn_negate 2 u) 0, apply_fun (Rn_negate 2 u) 1) =
+  (minus_SNo (apply_fun u 0), minus_SNo (apply_fun u 1)).
+let u.
+apply tuple_2_ext_euclid.
+- rewrite (Rn_negate_apply 2 u 0 In_0_2).
+  reflexivity.
+- rewrite (Rn_negate_apply 2 u 1 In_1_2).
+  reflexivity.
+Qed.
+
+(** Infrastructure: a point of Sn 1 yields the corresponding point of S1 by its two coordinates. **)
+Theorem Sn_1_point_in_S1_pair : forall u:set,
+  u :e Sn 1 ->
+  (apply_fun u 0, apply_fun u 1) :e S1.
+let u.
+assume HuSn1.
+claim HuE2 : u :e euclidean_space 2.
+{
+  exact (SepE1
+    (euclidean_space 2)
+    (fun v:set => euclidean_norm_sq 2 v = 1)
+    u
+    HuSn1).
+}
+claim HuNorm : euclidean_norm_sq 2 u = 1.
+{
+  exact (SepE2
+    (euclidean_space 2)
+    (fun v:set => euclidean_norm_sq 2 v = 1)
+    u
+    HuSn1).
+}
+claim H0in2 : 0 :e 2.
+{ exact In_0_2. }
+claim H1in2 : 1 :e 2.
+{ exact In_1_2. }
+claim Hu0R : apply_fun u 0 :e R.
+{
+  exact (euclidean_space_coord_in_R 2 u 0 HuE2 H0in2).
+}
+claim Hu1R : apply_fun u 1 :e R.
+{
+  exact (euclidean_space_coord_in_R 2 u 1 HuE2 H1in2).
+}
+apply (SepI
+  (setprod R R)
+  (fun p:set =>
+    add_SNo (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1)) = 1)
+  (apply_fun u 0, apply_fun u 1)).
+- exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    (apply_fun u 0)
+    (apply_fun u 1)
+    Hu0R
+    Hu1R).
+- rewrite tuple_2_0_eq at 1.
+  rewrite tuple_2_0_eq at 1.
+  rewrite tuple_2_1_eq at 1.
+  rewrite tuple_2_1_eq at 1.
+  exact (eq_i_tra
+    (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+      (mul_SNo (apply_fun u 1) (apply_fun u 1)))
+    (euclidean_norm_sq 2 u)
+    1
+    (eq_symm
+      (euclidean_norm_sq 2 u)
+      (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+        (mul_SNo (apply_fun u 1) (apply_fun u 1)))
+      (euclidean_norm_sq_2_expand u HuE2))
+    HuNorm).
+Qed.
+
 (** from S57 Thm 57.1 (line 1186 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is continuous and antipode-preserving, then h is not nulhomotopic. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
@@ -148047,13 +148787,158 @@ Theorem thm57_1_antipode_preserving_not_nulhomotopic : forall h:set,
 admit.
 Admitted.
 
+(** Infrastructure helper for S57 Thm 57.2:
+    restricting an antipode-preserving S^2 -> S^1 map to the equator
+    gives an antipode-preserving S^1 -> S^1 map. **)
+Theorem thm57_2_equator_restriction_antipode_helper : forall g:set,
+  antipode_preserving_Sn 2 1 g ->
+  antipode_preserving_S1 (compose_fun S1 S1_equator_in_S2 g).
+let g.
+assume Hg.
+prove
+  continuous_map S1 S1_topology S1 S1_topology
+    (compose_fun S1 S1_equator_in_S2 g) /\
+  (forall z:set, z :e S1 ->
+    apply_fun (compose_fun S1 S1_equator_in_S2 g)
+      (minus_SNo (z 0), minus_SNo (z 1)) =
+    (minus_SNo (apply_fun (compose_fun S1 S1_equator_in_S2 g) z 0),
+     minus_SNo (apply_fun (compose_fun S1 S1_equator_in_S2 g) z 1))).
+apply andI.
+- admit.
+- let z.
+  assume HzS1.
+  claim HznegS1 : (minus_SNo (z 0), minus_SNo (z 1)) :e S1.
+  {
+    exact (S1_antipode_closed z HzS1).
+  }
+  claim Hcontg :
+    continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g.
+  {
+    exact (andEL
+      (continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g)
+      (forall x:set, x :e Sn 2 ->
+        apply_fun g (Rn_negate 3 x) = Rn_negate 2 (apply_fun g x))
+      Hg).
+  }
+  claim Hganti :
+    forall x:set, x :e Sn 2 ->
+      apply_fun g (Rn_negate 3 x) = Rn_negate 2 (apply_fun g x).
+  {
+    exact (andER
+      (continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g)
+      (forall x:set, x :e Sn 2 ->
+        apply_fun g (Rn_negate 3 x) = Rn_negate 2 (apply_fun g x))
+      Hg).
+  }
+  claim HcompNeg :
+    apply_fun (compose_fun S1 S1_equator_in_S2 g)
+      (minus_SNo (z 0), minus_SNo (z 1))
+    =
+    apply_fun g
+      (apply_fun S1_equator_in_S2 (minus_SNo (z 0), minus_SNo (z 1))).
+  {
+    exact (compose_fun_apply
+      S1
+      S1_equator_in_S2
+      g
+      (minus_SNo (z 0), minus_SNo (z 1))
+      HznegS1).
+  }
+  claim HcompPos :
+    apply_fun (compose_fun S1 S1_equator_in_S2 g) z =
+    apply_fun g (apply_fun S1_equator_in_S2 z).
+  {
+    exact (compose_fun_apply
+      S1
+      S1_equator_in_S2
+      g
+      z
+      HzS1).
+  }
+  claim HequatorSn2 : apply_fun S1_equator_in_S2 z :e Sn 2.
+  {
+    exact (S1_equator_in_S2_in_Sn2 z HzS1).
+  }
+  rewrite HcompNeg.
+  rewrite (S1_equator_in_S2_antipode z HzS1).
+  rewrite (Hganti
+    (apply_fun S1_equator_in_S2 z)
+    HequatorSn2).
+  rewrite HcompPos.
+  claim HgzSn1 :
+    apply_fun g (apply_fun S1_equator_in_S2 z) :e Sn 1.
+  {
+    exact (continuous_map_function_on
+      (Sn 2)
+      (Sn_topology 2)
+      (Sn 1)
+      (Sn_topology 1)
+      g
+      Hcontg
+      (apply_fun S1_equator_in_S2 z)
+      HequatorSn2).
+  }
+  claim HhzSn1 :
+    apply_fun (compose_fun S1 S1_equator_in_S2 g) z :e Sn 1.
+  {
+    exact ((eq_symm
+      (apply_fun (compose_fun S1 S1_equator_in_S2 g) z)
+      (apply_fun g (apply_fun S1_equator_in_S2 z))
+      HcompPos)
+      (fun t _ => t :e Sn 1)
+      HgzSn1).
+  }
+  claim HhzPairS1 :
+    (apply_fun (apply_fun (compose_fun S1 S1_equator_in_S2 g) z) 0,
+     apply_fun (apply_fun (compose_fun S1 S1_equator_in_S2 g) z) 1) :e S1.
+  {
+    exact (Sn_1_point_in_S1_pair
+      (apply_fun (compose_fun S1 S1_equator_in_S2 g) z)
+      HhzSn1).
+  }
+  admit.
+Admitted.
+
+(** Infrastructure helper for S57 Thm 57.2:
+    the equator restriction extends over a hemisphere, hence is nulhomotopic. **)
+Theorem thm57_2_equator_restriction_nulhomotopic_helper : forall g:set,
+  antipode_preserving_Sn 2 1 g ->
+  nulhomotopic S1 S1_topology S1 S1_topology
+    (compose_fun S1 S1_equator_in_S2 g).
+admit.
+Admitted.
+
 (** from S57 Thm 57.2 (line 1214 in algtop.tex) **)
 (** LATEX VERSION: There is no continuous antipode-preserving map g: S^2 -> S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
 Theorem thm57_2_no_antipode_preserving_S2_S1 :
   ~(exists g:set, antipode_preserving_Sn 2 1 g).
-admit.
+assume Hexg.
+apply Hexg.
+let g.
+assume Hg.
+set h := compose_fun S1 S1_equator_in_S2 g.
+claim HapS1 : antipode_preserving_S1 h.
+{
+  exact (thm57_2_equator_restriction_antipode_helper
+    g
+    Hg).
+}
+claim HhNotNul : ~(nulhomotopic S1 S1_topology S1 S1_topology h).
+{
+  exact (thm57_1_antipode_preserving_not_nulhomotopic
+    h
+    HapS1).
+}
+claim HhNul : nulhomotopic S1 S1_topology S1 S1_topology h.
+{
+  exact (thm57_2_equator_restriction_nulhomotopic_helper
+    g
+    Hg).
+}
+exact (HhNotNul
+  HhNul).
 Admitted.
 
 (** from S57 Thm 57.3 (line 1217 in algtop.tex): Borsuk-Ulam theorem for S^2 **)
@@ -157505,8 +158390,7 @@ Admitted.
 
 (** from S58 Exercise 2(c) (line 1479 in algtop.tex): cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Bob 33 **)
-(** Proven Bob **)
+(** Bounty 33 **)
 (** Admin-approved-refactored per noticeboard proposal batch1 **)
 Theorem ex58_2c_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 unit_interval ->
@@ -157524,8 +158408,7 @@ Admitted.
 
 (** from S58 Exercise 2(d) (line 1480 in algtop.tex): infinite cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Bob 33 **)
-(** Proven Bob **)
+(** Bounty 33 **)
 (** Admin-approved-refactored per noticeboard proposal batch1 **)
 Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 R ->
@@ -312639,8 +313522,7 @@ Qed.
 (** LATEX VERSION: If N is the least normal subgroup of G1 free-prod G2 containing G1, **)
 (** then (G1 free-prod G2)/N is isomorphic to G2. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Bob 33 **)
-(** Proven Bob **)
+(** Bounty 33 **)
 (** Admin-approved-refactored per noticeboard proposal batch1 **)
 Theorem cor68_8_quotient_by_factor :
   forall G multG eG invG G1 G2:set,
