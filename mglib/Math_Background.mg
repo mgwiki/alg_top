@@ -431119,6 +431119,63 @@ exact (thm85_3_rankdata_nonzero_direct_from_npack_index_spec
   HidxSpec).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_to_index_spec : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume Hdirect.
+exact (thm85_3_rankdata_nonzero_direct_index_spec
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  Hdirect).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_iff_npack_index_spec : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)
+   <->
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n.
+assume HnPack.
+apply iffI.
+- assume Hdirect.
+  exact (thm85_3_rankdata_nonzero_direct_to_index_spec
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    Hdirect).
+- assume HidxSpec.
+  exact (thm85_3_rankdata_nonzero_direct_from_npack_index_spec
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HidxSpec).
+Qed.
+
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
 Theorem thm85_3_core_rank_from_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
