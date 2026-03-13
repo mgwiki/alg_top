@@ -416154,6 +416154,72 @@ claim HoutsideFactorsExistenceToFreeProductH0 :
     (HoutsideFactorsExistenceToLengthGE2H0
       HexOutsideFactors)).
 }
+claim HoutsideFactorsRawExistenceToGlobalNoNeAllH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\
+      word_product multF eF xs n = x) ->
+  (forall x:set, x :e H -> x <> eF ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+{
+  assume HexOutsideFactorsRaw.
+  claim HrawUnion :
+    forall x:set, x :e H -> x <> eF ->
+      (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+      exists n xs:set,
+        reduced_word JH0 GfamH0 efamH0 n xs /\
+        word_product multF eF xs n = x.
+  {
+    exact (HoutsideFactorsRawExistenceToOutsideUnionRawH0
+      HexOutsideFactorsRaw).
+  }
+  claim HnonzeroUnion :
+    forall x:set, x :e H -> x <> eF ->
+      (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+      exists n xs:set,
+        reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+        word_product multF eF xs n = x.
+  {
+    claim HnonzeroFactors :
+      forall x:set, x :e H -> x <> eF ->
+        (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+        exists n xs:set,
+          reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+          word_product multF eF xs n = x.
+    {
+      exact (HoutsideFactorsRawExistenceToNonzeroH0
+        HexOutsideFactorsRaw).
+    }
+    let x.
+    assume HxH HxNe HxOutUnion.
+    exact (HnonzeroFactors
+      x
+      HxH
+      HxNe
+      (HnotInUnionToOutsideFactorsH0
+        x
+        HxOutUnion)).
+  }
+  claim Hlen2Union :
+    forall x:set, x :e H -> x <> eF ->
+      (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+      exists n xs:set,
+        reduced_word JH0 GfamH0 efamH0 n xs /\ (n <> 0 /\ n <> 1) /\
+        word_product multF eF xs n = x.
+  {
+    exact (HoutsideUnionExistenceToLengthGE2H0
+      HnonzeroUnion).
+  }
+  exact (HoutsideUnionLengthGE2ToGlobalNoNeAllH0
+    Hlen2Union).
+}
 claim HoutsideFactorsRawExistenceToFreeProductH0 :
   (forall x:set, x :e H -> x <> eF ->
     (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
@@ -416163,8 +416229,8 @@ claim HoutsideFactorsRawExistenceToFreeProductH0 :
   free_product_of_subgroups H multF eF invF JH0 GfamH0 efamH0.
 {
   assume HexOutsideFactorsRaw.
-  exact (HoutsideFactorsExistenceToFreeProductH0
-    (HoutsideFactorsRawExistenceToNonzeroH0
+  exact (HfreeProductFromGlobalUniqueNoNeH0
+    (HoutsideFactorsRawExistenceToGlobalNoNeAllH0
       HexOutsideFactorsRaw)).
 }
 claim HgeneratorFreeProductUniqueClauseH0 :
