@@ -415784,6 +415784,60 @@ claim HoutsideUnionExistenceToGlobalNoNeH0 :
       HnNe
       Hwp).
 }
+claim HoutsideUnionExistenceToLengthGE2H0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x) ->
+  (forall x:set, x :e H -> x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ (n <> 0 /\ n <> 1) /\
+      word_product multF eF xs n = x).
+{
+  assume HexOutside.
+  let x.
+  assume HxH HxNe HxOutUnion.
+  apply (HexOutside x HxH HxNe HxOutUnion).
+  let n.
+  assume HnPack.
+  apply HnPack.
+  let xs.
+  assume HxsPack.
+  apply (and3E
+    (reduced_word JH0 GfamH0 efamH0 n xs)
+    (n <> 0)
+    (word_product multF eF xs n = x)
+    HxsPack).
+  assume Hred HnNe Hwp.
+  claim Hlen :
+    n <> 0 /\ n <> 1.
+  {
+    exact (HoutsideUnionWordLengthConstraintsH0
+      x
+      n
+      xs
+      HxNe
+      HxOutUnion
+      Hred
+      Hwp).
+  }
+  witness n.
+  witness xs.
+  apply and3I.
+  - exact Hred.
+  - apply andI.
+    + exact (andEL
+        (n <> 0)
+        (n <> 1)
+        Hlen).
+    + exact (andER
+        (n <> 0)
+        (n <> 1)
+        Hlen).
+  - exact Hwp.
+}
 claim HglobalUniqueNoNeReduceToOutsideUnionH0 :
   (forall x:set, x :e H -> x <> eF ->
     (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
