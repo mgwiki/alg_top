@@ -426557,6 +426557,311 @@ apply andI.
     HkPack).
 Qed.
 
+(** Cross-route bridges: reconstruct direct nonzero-pack rankdata from alternatives. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_bundle_to_direct : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+exact (thm85_3_rankdata_from_components
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_nonzero_bundle_n_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_bundle_J_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_bundle_coset_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_bundle_index_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_bundle_index_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_finite_to_direct : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+exact (thm85_3_rankdata_from_components
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_nonzero_via_finite_n_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_finite_J_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_finite_coset_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_finite_index_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_finite_index_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_npack_witness_to_direct : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+exact (thm85_3_rankdata_from_components
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_nonzero_via_npack_witness_n_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_npack_witness_J_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_npack_witness_coset_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_npack_witness_index_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_npack_witness_index_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_npack_finite_to_direct : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+exact (thm85_3_rankdata_from_components
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_nonzero_via_npack_finite_n_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_npack_finite_J_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_npack_finite_coset_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_npack_finite_index_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)
+  (thm85_3_rankdata_nonzero_via_npack_finite_index_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack)).
+Qed.
+
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
 Theorem thm85_3_core_rank_from_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
