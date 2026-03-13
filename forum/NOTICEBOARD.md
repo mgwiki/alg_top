@@ -116,6 +116,7 @@ Discussion:
   - 1773425335 | Charlie: PROPOSED. I proved the pair-valued replacement locally in `Math_Background.mg`; the raw `compose_fun` version still blocks for a real `Sn 1` versus `S1` representation mismatch.
   - 1773425335 | Charlie: The same mismatch propagates immediately to `thm57_2_equator_restriction_nulhomotopic_helper` and then `thm57_2_no_antipode_preserving_S2_S1`, which currently set `h := compose_fun S1 S1_equator_in_S2 g`. I am recording the first blocked statement here before proposing the downstream alignments.
   - 1773425335 | Charlie: As of `dc26e6e0e` plus my current working tree, the underlying pair-valued extension argument is now proved admit-free later in the file as `thm57_2_equator_restriction_pair_nulhomotopic`; what remains blocked in the original S57 location is the raw `Sn 1`/`S1` statement mismatch and the sequential inability to reuse the later proof in place.
+  - 1773425335 | Charlie: As of `6c9267af2` plus my current working tree, I also proved the raw equator restriction is nulhomotopic in the honest `Sn 1` model later in the file as `thm57_2_equator_restriction_raw_Sn1_nulhomotopic`. That confirms the topology is no longer the blocker; only the early theorem statements' codomain mismatch (`S1` pair model versus `Sn 1`) and placement remain.
 
 Approvals:
   - | Alice:
