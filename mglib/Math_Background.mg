@@ -415960,6 +415960,26 @@ claim HoutsideUnionLengthGE2ToFreeProductH0 :
     (HoutsideUnionLengthGE2ToGlobalNoNeAllH0
       Hge2)).
 }
+claim HoutsideFactorsLengthGE2ToFreeProductH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ (n <> 0 /\ n <> 1) /\
+      word_product multF eF xs n = x) ->
+  free_product_of_subgroups H multF eF invF JH0 GfamH0 efamH0.
+{
+  assume Hge2OutsideFactors.
+  apply HoutsideUnionLengthGE2ToFreeProductH0.
+  let x.
+  assume HxH HxNe HxOutUnion.
+  exact (Hge2OutsideFactors
+    x
+    HxH
+    HxNe
+    (HnotInUnionToOutsideFactorsH0
+      x
+      HxOutUnion)).
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
@@ -416139,17 +416159,17 @@ apply and4I.
 - exact HgrpH.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
-- claim HoutsideUnionExistsGE2 :
+- claim HoutsideFactorsExistsGE2 :
     forall x:set, x :e H -> x <> eF ->
-      (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+      (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
       exists n xs:set,
         reduced_word JH0 GfamH0 efamH0 n xs /\ (n <> 0 /\ n <> 1) /\
         word_product multF eF xs n = x.
   {
-    admit. (** TODO S85.1: outside-union nontrivial existence with normalized length>=2 representation in H. **)
+    admit. (** TODO S85.1: outside-factors nontrivial existence with normalized length>=2 representation in H. **)
   }
-  exact (HoutsideUnionLengthGE2ToFreeProductH0
-    HoutsideUnionExistsGE2).
+  exact (HoutsideFactorsLengthGE2ToFreeProductH0
+    HoutsideFactorsExistsGE2).
 Admitted.
 
 (** from S85 Definition (line 5764 in algtop.tex): Euler number of finite graph **)
