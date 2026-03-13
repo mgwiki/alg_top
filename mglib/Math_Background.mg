@@ -416884,6 +416884,21 @@ assume Hsub : subgroup_of H F multF eF invF.
 let k.
 assume HkPack : k :e omega /\ k <> 0 /\
   equip (right_coset_set F multF H) k.
+claim HnOmega : n :e omega.
+{
+  exact (andEL
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+}
+claim HJeq :
+  equip J (ordsucc n).
+{
+  exact (andER
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+}
 claim HfreeH :
   exists JH gensH:set,
     free_group_with_generators H multF eF invF JH gensH.
@@ -416921,10 +416936,21 @@ apply andI.
       k
       HkPack).
   }
+  claim HtargetAtIndexFromData :
+    n :e omega ->
+    equip J (ordsucc n) ->
+    finite (right_coset_set F multF H) ->
+    equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+  {
+    admit. (** TODO S85.3 core gap: Schreier-rank proof from base-generator cardinal and finite coset index. **)
+  }
   claim HtargetAtIndex :
     equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
   {
-    admit. (** TODO S85.3 core gap: Schreier rank formula at canonical subgroup_index witness. **)
+    exact (HtargetAtIndexFromData
+      HnOmega
+      HJeq
+      HcosetFin).
   }
   exact (equip_ordsucc_mul_subgroup_index_to_witness
     H
