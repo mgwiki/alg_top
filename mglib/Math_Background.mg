@@ -148831,6 +148831,455 @@ exact ((Rn_minus_origin_norm_sq_nonzero
   Hnorm0).
 Qed.
 
+(** Infrastructure: points on S^n are nonzero vectors in R^{n+1}. **)
+(** Proven Charlie **)
+Lemma Sn_subset_Rn_minus_origin : forall n x:set,
+  n :e omega ->
+  x :e Sn n ->
+  x :e Rn_minus_origin (ordsucc n).
+let n x.
+assume Hn_om HxSn.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HxNorm : euclidean_norm_sq (ordsucc n) x = 1.
+{
+  exact (SepE2
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim Hdef :
+  Rn_minus_origin (ordsucc n) =
+  {v :e euclidean_space (ordsucc n) | ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0)}.
+{
+  reflexivity.
+}
+rewrite Hdef.
+apply (SepI
+  (euclidean_space (ordsucc n))
+  (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+  x
+  HxEu).
+assume Hall0.
+claim Hnorm0 : euclidean_norm_sq (ordsucc n) x = 0.
+{
+  claim Hterm0 :
+    forall i:set, i :e ordsucc n ->
+      mul_SNo (apply_fun x i) (apply_fun x i) = 0.
+  {
+    let i.
+    assume Hi.
+    claim Hxi0 : apply_fun x i = 0.
+    {
+      exact (Hall0
+        i
+        Hi).
+    }
+    rewrite Hxi0 at 1.
+    rewrite Hxi0 at 1.
+    exact (mul_SNo_zeroL
+      0
+      SNo_0).
+  }
+  exact (finite_real_sum_zero_of_all_zero
+    (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+    (ordsucc n)
+    Hsn_nat
+    (fun i Hi =>
+      real_mul_SNo
+        (apply_fun x i)
+        (euclidean_space_coord_in_R
+          (ordsucc n)
+          x
+          i
+          HxEu
+          Hi)
+        (apply_fun x i)
+        (euclidean_space_coord_in_R
+          (ordsucc n)
+          x
+          i
+          HxEu
+          Hi))
+    Hterm0).
+}
+claim H10 : 1 = 0.
+{
+  rewrite <- HxNorm.
+  exact Hnorm0.
+}
+exact (neq_1_0
+  H10).
+Qed.
+
+(** Infrastructure: radial normalization sends nonzero vectors to S^n. **)
+Definition Rn_normalize_to_Sn : set -> set := fun n =>
+  graph (Rn_minus_origin (ordsucc n))
+    (fun x:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (div_SNo 1
+          (sqrt_SNo_nonneg
+            (euclidean_norm_sq (ordsucc n) x)))
+        x).
+
+(** Proven Charlie **)
+Lemma Rn_normalize_to_Sn_value : forall n x:set,
+  n :e omega ->
+  x :e Rn_minus_origin (ordsucc n) ->
+  apply_fun (Rn_normalize_to_Sn n) x :e Sn n.
+let n x.
+assume Hn_om HxNz.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_om : ordsucc n :e omega.
+{
+  exact (omega_ordsucc
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+    x
+    HxNz).
+}
+claim HnormR : euclidean_norm_sq (ordsucc n) x :e R.
+{
+  exact (euclidean_norm_sq_in_R
+    (ordsucc n)
+    x
+    Hsn_nat
+    HxEu).
+}
+claim HnormS : SNo (euclidean_norm_sq (ordsucc n) x).
+{
+  exact (real_SNo
+    (euclidean_norm_sq (ordsucc n) x)
+    HnormR).
+}
+claim HnormNonnegR : Rle 0 (euclidean_norm_sq (ordsucc n) x).
+{
+  exact (euclidean_norm_sq_nonneg
+    (ordsucc n)
+    x
+    Hsn_nat
+    HxEu).
+}
+claim HnormNonneg : 0 <= euclidean_norm_sq (ordsucc n) x.
+{
+  exact (SNoLe_of_Rle
+    0
+    (euclidean_norm_sq (ordsucc n) x)
+    HnormNonnegR).
+}
+set d := sqrt_SNo_nonneg (euclidean_norm_sq (ordsucc n) x).
+claim HdR : d :e R.
+{
+  exact (sqrt_SNo_nonneg_real
+    (euclidean_norm_sq (ordsucc n) x)
+    HnormR
+    HnormNonneg).
+}
+claim HdS : SNo d.
+{
+  exact (real_SNo
+    d
+    HdR).
+}
+claim HdSq : mul_SNo d d = euclidean_norm_sq (ordsucc n) x.
+{
+  exact (sqrt_SNo_nonneg_sqr
+    (euclidean_norm_sq (ordsucc n) x)
+    HnormS
+    HnormNonneg).
+}
+claim HdNe0 : d <> 0.
+{
+  exact (Rn_minus_origin_norm_nonzero
+    (ordsucc n)
+    x
+    Hsn_om
+    HxNz).
+}
+claim HlamR :
+  div_SNo 1 d :e R.
+{
+  exact (real_div_SNo
+    1
+    real_1
+    d
+    HdR).
+}
+claim HlamS :
+  SNo (div_SNo 1 d).
+{
+  exact (real_SNo
+    (div_SNo 1 d)
+    HlamR).
+}
+claim HscaledEu :
+  Rn_scalar_mult (ordsucc n) (div_SNo 1 d) x :e euclidean_space (ordsucc n).
+{
+  exact (Rn_scalar_mult_in_euclidean_space
+    (ordsucc n)
+    (div_SNo 1 d)
+    x
+    HxEu
+    HlamR).
+}
+claim HscaledNorm :
+  euclidean_norm_sq (ordsucc n) (Rn_scalar_mult (ordsucc n) (div_SNo 1 d) x) =
+  mul_SNo (euclidean_norm_sq (ordsucc n) x)
+    (mul_SNo (div_SNo 1 d) (div_SNo 1 d)).
+{
+  exact (euclidean_norm_sq_scalar_mult
+    (ordsucc n)
+    (div_SNo 1 d)
+    x
+    Hsn_nat
+    HxEu
+    HlamR).
+}
+claim HddS : SNo (mul_SNo d d).
+{
+  exact (SNo_mul_SNo
+    d
+    d
+    HdS
+    HdS).
+}
+claim HddNe0 : mul_SNo d d <> 0.
+{
+  assume Hdd0.
+  apply HdNe0.
+  claim Hnorm0 : euclidean_norm_sq (ordsucc n) x = 0.
+  {
+    rewrite <- HdSq.
+    exact Hdd0.
+  }
+  exact (FalseE
+    ((Rn_minus_origin_norm_sq_nonzero
+      (ordsucc n)
+      x
+      Hsn_om
+      HxNz)
+      Hnorm0)
+    (d = 0)).
+}
+claim HlamSq :
+  mul_SNo (div_SNo 1 d) (div_SNo 1 d) =
+  div_SNo 1 (mul_SNo d d).
+{
+  rewrite (mul_div_SNo_both
+    1
+    d
+    1
+    d
+    SNo_1
+    HdS
+    SNo_1
+    HdS).
+  rewrite (mul_SNo_oneL
+    1
+    SNo_1).
+  reflexivity.
+}
+claim HunitNorm :
+  euclidean_norm_sq (ordsucc n) (Rn_scalar_mult (ordsucc n) (div_SNo 1 d) x) = 1.
+{
+  rewrite HscaledNorm.
+  rewrite HlamSq.
+  rewrite (mul_div_SNo_L
+    1
+    (mul_SNo d d)
+    (euclidean_norm_sq (ordsucc n) x)
+    SNo_1
+    HddS
+    HnormS).
+  rewrite (mul_SNo_oneR
+    (euclidean_norm_sq (ordsucc n) x)
+    HnormS).
+  claim HnormAsDD1 :
+    euclidean_norm_sq (ordsucc n) x =
+    mul_SNo (mul_SNo d d) 1.
+  {
+    exact (eq_i_tra
+      (euclidean_norm_sq (ordsucc n) x)
+      (mul_SNo d d)
+      (mul_SNo (mul_SNo d d) 1)
+      (eq_symm
+        (mul_SNo d d)
+        (euclidean_norm_sq (ordsucc n) x)
+        HdSq)
+      (eq_symm
+        (mul_SNo (mul_SNo d d) 1)
+        (mul_SNo d d)
+        (mul_SNo_oneR
+          (mul_SNo d d)
+          HddS))).
+  }
+  exact (mul_div_SNo_nonzero_eq
+    (euclidean_norm_sq (ordsucc n) x)
+    (mul_SNo d d)
+    1
+    HnormS
+    HddS
+    SNo_1
+    HddNe0
+    HnormAsDD1).
+}
+claim Hdef :
+  Rn_normalize_to_Sn n =
+  graph (Rn_minus_origin (ordsucc n))
+    (fun y:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (div_SNo 1
+          (sqrt_SNo_nonneg
+            (euclidean_norm_sq (ordsucc n) y)))
+        y).
+{
+  reflexivity.
+}
+rewrite Hdef.
+rewrite (apply_fun_graph
+  (Rn_minus_origin (ordsucc n))
+  (fun y:set =>
+    Rn_scalar_mult
+      (ordsucc n)
+      (div_SNo 1
+        (sqrt_SNo_nonneg
+          (euclidean_norm_sq (ordsucc n) y)))
+      y)
+  x
+  HxNz).
+claim HSnDef :
+  Sn n =
+  {v :e euclidean_space (ordsucc n) | euclidean_norm_sq (ordsucc n) v = 1}.
+{
+  reflexivity.
+}
+rewrite HSnDef.
+apply (SepI
+  (euclidean_space (ordsucc n))
+  (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+  (Rn_scalar_mult (ordsucc n) (div_SNo 1 d) x)
+  HscaledEu).
+exact HunitNorm.
+Qed.
+
+(** Proven Charlie **)
+Lemma Rn_normalize_to_Sn_function_on : forall n:set,
+  n :e omega ->
+  function_on
+    (Rn_normalize_to_Sn n)
+    (Rn_minus_origin (ordsucc n))
+    (Sn n).
+let n.
+assume Hn_om.
+claim Hdef :
+  Rn_normalize_to_Sn n =
+  graph (Rn_minus_origin (ordsucc n))
+    (fun x:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (div_SNo 1
+          (sqrt_SNo_nonneg
+            (euclidean_norm_sq (ordsucc n) x)))
+        x).
+{
+  reflexivity.
+}
+rewrite Hdef.
+claim HimgIn :
+  forall x:set, x :e Rn_minus_origin (ordsucc n) ->
+    Rn_scalar_mult
+      (ordsucc n)
+      (div_SNo 1
+        (sqrt_SNo_nonneg
+          (euclidean_norm_sq (ordsucc n) x)))
+      x :e Sn n.
+{
+  let x.
+  assume Hx.
+  claim HrawEq :
+    apply_fun (Rn_normalize_to_Sn n) x =
+    Rn_scalar_mult
+      (ordsucc n)
+      (div_SNo 1
+        (sqrt_SNo_nonneg
+          (euclidean_norm_sq (ordsucc n) x)))
+      x.
+  {
+    rewrite Hdef.
+    exact (apply_fun_graph
+      (Rn_minus_origin (ordsucc n))
+      (fun y:set =>
+        Rn_scalar_mult
+          (ordsucc n)
+          (div_SNo 1
+            (sqrt_SNo_nonneg
+              (euclidean_norm_sq (ordsucc n) y)))
+          y)
+      x
+      Hx).
+  }
+  rewrite <- HrawEq.
+  exact (Rn_normalize_to_Sn_value
+    n
+    x
+    Hn_om
+    Hx).
+}
+apply (function_on_of_function_space
+  (Rn_normalize_to_Sn n)
+  (Rn_minus_origin (ordsucc n))
+  (Sn n)).
+exact (graph_in_function_space
+  (Rn_minus_origin (ordsucc n))
+  (Sn n)
+  (fun x:set =>
+    Rn_scalar_mult
+      (ordsucc n)
+      (div_SNo 1
+        (sqrt_SNo_nonneg
+          (euclidean_norm_sq (ordsucc n) x)))
+      x)
+  HimgIn).
+Qed.
+
 (** Proven Charlie **)
 Lemma Rn_scalar_mult_unit_interval_on_Bn_closed : forall n a x:set,
   n :e omega ->
@@ -149366,6 +149815,95 @@ claim Hleft :
 }
 rewrite Hleft.
 reflexivity.
+Qed.
+
+(** Proven Charlie **)
+Lemma Rn_normalize_to_Sn_fix_on_Sn : forall n x:set,
+  n :e omega ->
+  x :e Sn n ->
+  apply_fun (Rn_normalize_to_Sn n) x = x.
+let n x.
+assume Hn_om HxSn.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HxNorm : euclidean_norm_sq (ordsucc n) x = 1.
+{
+  exact (SepE2
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HxNz : x :e Rn_minus_origin (ordsucc n).
+{
+  exact (Sn_subset_Rn_minus_origin
+    n
+    x
+    Hn_om
+    HxSn).
+}
+claim Hdiv11 : div_SNo 1 1 = 1.
+{
+  exact (mul_div_SNo_nonzero_eq
+    1
+    1
+    1
+    SNo_1
+    SNo_1
+    SNo_1
+    neq_1_0
+    (eq_symm
+      (mul_SNo 1 1)
+      1
+      (mul_SNo_oneR
+        1
+        SNo_1))).
+}
+claim Hdef :
+  Rn_normalize_to_Sn n =
+  graph (Rn_minus_origin (ordsucc n))
+    (fun y:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (div_SNo 1
+          (sqrt_SNo_nonneg
+            (euclidean_norm_sq (ordsucc n) y)))
+        y).
+{
+  reflexivity.
+}
+rewrite Hdef.
+rewrite (apply_fun_graph
+  (Rn_minus_origin (ordsucc n))
+  (fun y:set =>
+    Rn_scalar_mult
+      (ordsucc n)
+      (div_SNo 1
+        (sqrt_SNo_nonneg
+          (euclidean_norm_sq (ordsucc n) y)))
+      y)
+  x
+  HxNz).
+rewrite HxNorm.
+rewrite sqrt_SNo_nonneg_1.
+rewrite Hdiv11.
+exact (Rn_scalar_mult_ordsucc_one
+  n
+  x
+  Hn_nat
+  HxEu).
 Qed.
 
 (** Proven Charlie **)
