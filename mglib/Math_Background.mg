@@ -416797,6 +416797,27 @@ rewrite (subgroup_index_eq_of_nonzero_pack_sym
 reflexivity.
 Qed.
 
+(** Transport equip target from subgroup_index form to witness-k form. **)
+(** Proven Bob **)
+Lemma equip_ordsucc_mul_subgroup_index_to_witness : forall H G mult e inv k n JH:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  equip JH (ordsucc (mul_SNo (subgroup_index H G mult e inv) n)) ->
+  equip JH (ordsucc (mul_SNo k n)).
+let H G mult e inv k n JH.
+assume HkPack.
+assume HeqIdx.
+rewrite <- (subgroup_index_mul_ordsucc_eq_of_nonzero_pack
+  H
+  G
+  mult
+  e
+  inv
+  k
+  n
+  HkPack).
+exact HeqIdx.
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
@@ -416917,8 +416938,17 @@ apply andI.
   {
     admit. (** TODO S85.3 core gap: Schreier rank formula at canonical subgroup_index witness. **)
   }
-  rewrite <- HidxEqk.
-  exact HtargetAtIndex.
+  exact (equip_ordsucc_mul_subgroup_index_to_witness
+    H
+    F
+    multF
+    eF
+    invF
+    k
+    n
+    JH
+    HkPack
+    HtargetAtIndex).
 Admitted.
 
 (** from S85 Exercise 1 (line 5799 in algtop.tex) **)
