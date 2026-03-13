@@ -415142,7 +415142,9 @@ apply and4I.
 - exact HgrpH.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
-- admit.
+- apply HfreeProductAssembleH0.
+  + admit. (** TODO S85.1: Schreier-generation proof for H by factors GfamH0. **)
+  + admit. (** TODO S85.1: global reduced-word existence/uniqueness for nontrivial x :e H. **)
 Admitted.
 
 (** from S85 Definition (line 5764 in algtop.tex): Euler number of finite graph **)
