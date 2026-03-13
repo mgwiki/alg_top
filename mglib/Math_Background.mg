@@ -422275,6 +422275,44 @@ assume Hfin Heq Hord.
 exact Hord.
 Qed.
 
+(** Proven Bob **)
+Lemma subgroup_index_bundle_nonzero_index_omega : forall H G mult e inv k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  subgroup_index H G mult e inv :e omega.
+let H G mult e inv k n.
+assume HkPack.
+exact (andEL
+  (subgroup_index H G mult e inv :e omega)
+  (equip (right_coset_set G mult H) (subgroup_index H G mult e inv))
+  (subgroup_index_spec_from_nonzero_pack
+    H
+    G
+    mult
+    e
+    inv
+    k
+    HkPack)).
+Qed.
+
+(** Proven Bob **)
+Lemma subgroup_index_bundle_nonzero_index_equip : forall H G mult e inv k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  equip (right_coset_set G mult H) (subgroup_index H G mult e inv).
+let H G mult e inv k n.
+assume HkPack.
+exact (andER
+  (subgroup_index H G mult e inv :e omega)
+  (equip (right_coset_set G mult H) (subgroup_index H G mult e inv))
+  (subgroup_index_spec_from_nonzero_pack
+    H
+    G
+    mult
+    e
+    inv
+    k
+    HkPack)).
+Qed.
+
 (** Projections from bundled S85.3 rank/index data. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_n_omega : forall F multF eF invF J H n:set,
