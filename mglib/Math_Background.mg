@@ -416761,6 +416761,42 @@ exact (equip_omega_eq
   HkIdxEquip).
 Qed.
 
+(** Symmetric orientation of subgroup_index_eq_of_nonzero_pack. **)
+(** Proven Bob **)
+Lemma subgroup_index_eq_of_nonzero_pack_sym : forall H G mult e inv k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  subgroup_index H G mult e inv = k.
+let H G mult e inv k.
+assume HkPack.
+symmetry.
+exact (subgroup_index_eq_of_nonzero_pack
+  H
+  G
+  mult
+  e
+  inv
+  k
+  HkPack).
+Qed.
+
+(** Transport helper for the S85.3 target cardinal arithmetic expression. **)
+(** Proven Bob **)
+Lemma subgroup_index_mul_ordsucc_eq_of_nonzero_pack : forall H G mult e inv k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  ordsucc (mul_SNo (subgroup_index H G mult e inv) n) = ordsucc (mul_SNo k n).
+let H G mult e inv k n.
+assume HkPack.
+rewrite (subgroup_index_eq_of_nonzero_pack_sym
+  H
+  G
+  mult
+  e
+  inv
+  k
+  HkPack).
+reflexivity.
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
@@ -416864,10 +416900,10 @@ apply andI.
     assume HkO HkNe HkEq.
     exact HkEq.
   }
-  claim HkEqIdx :
-    k = subgroup_index H F multF eF invF.
+  claim HidxEqk :
+    subgroup_index H F multF eF invF = k.
   {
-    exact (subgroup_index_eq_of_nonzero_pack
+    exact (subgroup_index_eq_of_nonzero_pack_sym
       H
       F
       multF
@@ -416875,12 +416911,6 @@ apply andI.
       invF
       k
       HkPack).
-  }
-  claim HidxEqk :
-    subgroup_index H F multF eF invF = k.
-  {
-    symmetry.
-    exact HkEqIdx.
   }
   claim HtargetAtIndex :
     equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
