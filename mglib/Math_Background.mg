@@ -151459,6 +151459,791 @@ apply andI.
 	          Hx).
 Qed.
 
+(** Infrastructure: generic radial collapse of S^n x I onto B^{n+1}. **)
+Definition Sn_radial_collapse_map : set -> set := fun n =>
+  compose_fun
+    (setprod (Sn n) unit_interval)
+    (pair_map
+      (setprod (Sn n) unit_interval)
+      (compose_fun
+        (setprod (Sn n) unit_interval)
+        (projection_map1 (Sn n) unit_interval)
+        (graph (Sn n) (fun x:set => x)))
+      (projection_map2 (Sn n) unit_interval))
+    (Bn_closed_contraction_map n).
+
+(** Proven Charlie **)
+Lemma Sn_radial_collapse_map_function_on : forall n:set,
+  n :e omega ->
+  function_on
+    (Sn_radial_collapse_map n)
+    (setprod (Sn n) unit_interval)
+    (Bn_closed n).
+let n.
+assume Hn_om.
+set dom := setprod (Sn n) unit_interval.
+set xproj := projection_map1 (Sn n) unit_interval.
+set tproj := projection_map2 (Sn n) unit_interval.
+set inclS := graph (Sn n) (fun x:set => x).
+set xB := compose_fun dom xproj inclS.
+set pairSToB := pair_map dom xB tproj.
+claim HtopSn : topology_on (Sn n) (Sn_topology n).
+{
+  exact (continuous_map_topology_dom
+    (Sn n)
+    (Sn_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    inclS
+    (Sn_inclusion_Bn_closed_continuous
+      n)).
+}
+claim HprojPair :
+  continuous_map dom
+    (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+    (Sn n) (Sn_topology n) xproj /\
+  continuous_map dom
+    (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+    unit_interval unit_interval_topology tproj.
+{
+  exact (projection_maps_continuous
+    (Sn n)
+    (Sn_topology n)
+    unit_interval
+    unit_interval_topology
+    HtopSn
+    unit_interval_topology_on).
+}
+claim HxprojCont :
+  continuous_map dom
+    (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+    (Sn n) (Sn_topology n) xproj.
+{
+  exact (andEL
+    (continuous_map dom
+      (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+      (Sn n) (Sn_topology n) xproj)
+    (continuous_map dom
+      (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+      unit_interval unit_interval_topology tproj)
+    HprojPair).
+}
+claim HtprojCont :
+  continuous_map dom
+    (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+    unit_interval unit_interval_topology tproj.
+{
+  exact (andER
+    (continuous_map dom
+      (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+      (Sn n) (Sn_topology n) xproj)
+    (continuous_map dom
+      (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+      unit_interval unit_interval_topology tproj)
+    HprojPair).
+}
+claim HinclSCont :
+  continuous_map (Sn n) (Sn_topology n)
+    (Bn_closed n) (Bn_closed_topology n)
+    inclS.
+{
+  exact (Sn_inclusion_Bn_closed_continuous
+    n).
+}
+claim HxprojFun :
+  function_on xproj dom (Sn n).
+{
+  exact (continuous_map_function_on
+    dom
+    (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+    (Sn n)
+    (Sn_topology n)
+    xproj
+    HxprojCont).
+}
+claim HtprojFun :
+  function_on tproj dom unit_interval.
+{
+  exact (continuous_map_function_on
+    dom
+    (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    tproj
+    HtprojCont).
+}
+claim HinclSFun :
+  function_on inclS (Sn n) (Bn_closed n).
+{
+  exact (continuous_map_function_on
+    (Sn n)
+    (Sn_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    inclS
+    HinclSCont).
+}
+claim HxBFun :
+  function_on xB dom (Bn_closed n).
+{
+  exact (function_on_compose_fun
+    dom
+    (Sn n)
+    (Bn_closed n)
+    xproj
+    inclS
+    HxprojFun
+    HinclSFun).
+}
+claim HpairFun :
+  function_on pairSToB dom (setprod (Bn_closed n) unit_interval).
+{
+  exact (function_on_of_function_space
+    pairSToB
+    dom
+    (setprod (Bn_closed n) unit_interval)
+    (pair_map_in_function_space
+      dom
+      (Bn_closed n)
+      unit_interval
+      xB
+      tproj
+      HxBFun
+      HtprojFun)).
+}
+exact (function_on_compose_fun
+  dom
+  (setprod (Bn_closed n) unit_interval)
+  (Bn_closed n)
+  pairSToB
+  (Bn_closed_contraction_map n)
+  HpairFun
+  (Bn_closed_contraction_map_function_on
+    n
+    Hn_om)).
+Qed.
+
+(** Proven Charlie **)
+Lemma Sn_radial_collapse_map_bottom_is_inclusion : forall n x:set,
+  n :e omega ->
+  x :e Sn n ->
+  apply_fun (Sn_radial_collapse_map n) (x, 0) = x.
+let n x.
+assume Hn_om HxSn.
+set dom := setprod (Sn n) unit_interval.
+set xproj := projection_map1 (Sn n) unit_interval.
+set tproj := projection_map2 (Sn n) unit_interval.
+set inclS := graph (Sn n) (fun z:set => z).
+set xB := compose_fun dom xproj inclS.
+set pairSToB := pair_map dom xB tproj.
+claim Hx0Dom : (x, 0) :e dom.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (Sn n)
+    unit_interval
+    x
+    0
+    HxSn
+    zero_in_unit_interval).
+}
+claim HxB : x :e Bn_closed n.
+{
+  exact (Sn_subset_Bn_closed
+    n
+    x
+    HxSn).
+}
+claim HpairAt0 :
+  apply_fun pairSToB (x, 0) = (x, 0).
+{
+  claim HincDef : inclS = graph (Sn n) (fun z:set => z).
+  {
+    reflexivity.
+  }
+  claim HtDef : tproj = projection_map2 (Sn n) unit_interval.
+  {
+    reflexivity.
+  }
+  rewrite (pair_map_apply
+    dom
+    (Bn_closed n)
+    unit_interval
+    xB
+    tproj
+    (x, 0)
+    Hx0Dom).
+  rewrite (compose_fun_apply
+    dom
+    xproj
+    inclS
+    (x, 0)
+    Hx0Dom).
+  rewrite (projection1_apply
+    (Sn n)
+    unit_interval
+    (x, 0)
+    Hx0Dom).
+  rewrite tuple_2_0_eq.
+  rewrite HincDef.
+  rewrite (apply_fun_graph
+    (Sn n)
+    (fun z:set => z)
+    x
+    HxSn).
+  rewrite HtDef.
+  rewrite (projection2_apply
+    (Sn n)
+    unit_interval
+    (x, 0)
+    Hx0Dom).
+  rewrite tuple_2_1_eq.
+  reflexivity.
+}
+claim Hdef :
+  Sn_radial_collapse_map n =
+  compose_fun
+    dom
+    pairSToB
+    (Bn_closed_contraction_map n).
+{
+  reflexivity.
+}
+rewrite Hdef.
+rewrite (compose_fun_apply
+  dom
+  pairSToB
+  (Bn_closed_contraction_map n)
+  (x, 0)
+  Hx0Dom).
+rewrite HpairAt0.
+exact (Bn_closed_contraction_map_at_0
+  n
+  x
+  Hn_om
+  HxB).
+Qed.
+
+(** Proven Charlie **)
+Lemma Sn_radial_collapse_map_top_collapses : forall n x:set,
+  n :e omega ->
+  x :e Sn n ->
+  apply_fun (Sn_radial_collapse_map n) (x, 1) = Rn_zero (ordsucc n).
+let n x.
+assume Hn_om HxSn.
+set dom := setprod (Sn n) unit_interval.
+set xproj := projection_map1 (Sn n) unit_interval.
+set tproj := projection_map2 (Sn n) unit_interval.
+set inclS := graph (Sn n) (fun z:set => z).
+set xB := compose_fun dom xproj inclS.
+set pairSToB := pair_map dom xB tproj.
+claim Hx1Dom : (x, 1) :e dom.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (Sn n)
+    unit_interval
+    x
+    1
+    HxSn
+    one_in_unit_interval).
+}
+claim HxB : x :e Bn_closed n.
+{
+  exact (Sn_subset_Bn_closed
+    n
+    x
+    HxSn).
+}
+claim HpairAt1 :
+  apply_fun pairSToB (x, 1) = (x, 1).
+{
+  claim HincDef : inclS = graph (Sn n) (fun z:set => z).
+  {
+    reflexivity.
+  }
+  claim HtDef : tproj = projection_map2 (Sn n) unit_interval.
+  {
+    reflexivity.
+  }
+  rewrite (pair_map_apply
+    dom
+    (Bn_closed n)
+    unit_interval
+    xB
+    tproj
+    (x, 1)
+    Hx1Dom).
+  rewrite (compose_fun_apply
+    dom
+    xproj
+    inclS
+    (x, 1)
+    Hx1Dom).
+  rewrite (projection1_apply
+    (Sn n)
+    unit_interval
+    (x, 1)
+    Hx1Dom).
+  rewrite tuple_2_0_eq.
+  rewrite HincDef.
+  rewrite (apply_fun_graph
+    (Sn n)
+    (fun z:set => z)
+    x
+    HxSn).
+  rewrite HtDef.
+  rewrite (projection2_apply
+    (Sn n)
+    unit_interval
+    (x, 1)
+    Hx1Dom).
+  rewrite tuple_2_1_eq.
+  reflexivity.
+}
+claim Hdef :
+  Sn_radial_collapse_map n =
+  compose_fun
+    dom
+    pairSToB
+    (Bn_closed_contraction_map n).
+{
+  reflexivity.
+}
+rewrite Hdef.
+rewrite (compose_fun_apply
+  dom
+  pairSToB
+  (Bn_closed_contraction_map n)
+  (x, 1)
+  Hx1Dom).
+rewrite HpairAt1.
+exact (Bn_closed_contraction_map_at_1
+  n
+  x
+  Hn_om
+  HxB).
+Qed.
+
+(** Proven Charlie **)
+Lemma Sn_radial_collapse_map_continuous : forall n:set,
+  n :e omega ->
+  continuous_map
+    (setprod (Sn n) unit_interval)
+    (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (Sn_radial_collapse_map n).
+let n.
+assume Hn_om.
+set dom := setprod (Sn n) unit_interval.
+set Tdom := product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology.
+set xproj := projection_map1 (Sn n) unit_interval.
+set tproj := projection_map2 (Sn n) unit_interval.
+set inclS := graph (Sn n) (fun x:set => x).
+set xB := compose_fun dom xproj inclS.
+set pairSToB := pair_map dom xB tproj.
+claim HtopSn : topology_on (Sn n) (Sn_topology n).
+{
+  exact (continuous_map_topology_dom
+    (Sn n)
+    (Sn_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    inclS
+    (Sn_inclusion_Bn_closed_continuous
+      n)).
+}
+claim HtopB : topology_on (Bn_closed n) (Bn_closed_topology n).
+{
+  exact (Bn_closed_topology_on
+    n).
+}
+claim HprojPair :
+  continuous_map dom Tdom (Sn n) (Sn_topology n) xproj /\
+  continuous_map dom Tdom unit_interval unit_interval_topology tproj.
+{
+  exact (projection_maps_continuous
+    (Sn n)
+    (Sn_topology n)
+    unit_interval
+    unit_interval_topology
+    HtopSn
+    unit_interval_topology_on).
+}
+claim HxprojCont :
+  continuous_map dom Tdom (Sn n) (Sn_topology n) xproj.
+{
+  exact (andEL
+    (continuous_map dom Tdom (Sn n) (Sn_topology n) xproj)
+    (continuous_map dom Tdom unit_interval unit_interval_topology tproj)
+    HprojPair).
+}
+claim HtprojCont :
+  continuous_map dom Tdom unit_interval unit_interval_topology tproj.
+{
+  exact (andER
+    (continuous_map dom Tdom (Sn n) (Sn_topology n) xproj)
+    (continuous_map dom Tdom unit_interval unit_interval_topology tproj)
+    HprojPair).
+}
+claim HinclSCont :
+  continuous_map (Sn n) (Sn_topology n)
+    (Bn_closed n) (Bn_closed_topology n)
+    inclS.
+{
+  exact (Sn_inclusion_Bn_closed_continuous
+    n).
+}
+claim HxBCont :
+  continuous_map dom Tdom (Bn_closed n) (Bn_closed_topology n) xB.
+{
+  exact (composition_continuous
+    dom
+    Tdom
+    (Sn n)
+    (Sn_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    xproj
+    inclS
+    HxprojCont
+    HinclSCont).
+}
+claim HxprojFun :
+  function_on xproj dom (Sn n).
+{
+  exact (continuous_map_function_on
+    dom
+    Tdom
+    (Sn n)
+    (Sn_topology n)
+    xproj
+    HxprojCont).
+}
+claim HtprojFun :
+  function_on tproj dom unit_interval.
+{
+  exact (continuous_map_function_on
+    dom
+    Tdom
+    unit_interval
+    unit_interval_topology
+    tproj
+    HtprojCont).
+}
+claim HinclSFun :
+  function_on inclS (Sn n) (Bn_closed n).
+{
+  exact (continuous_map_function_on
+    (Sn n)
+    (Sn_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    inclS
+    HinclSCont).
+}
+claim HxBFun :
+  function_on xB dom (Bn_closed n).
+{
+  exact (function_on_compose_fun
+    dom
+    (Sn n)
+    (Bn_closed n)
+    xproj
+    inclS
+    HxprojFun
+    HinclSFun).
+}
+claim HpairFun :
+  function_on pairSToB dom (setprod (Bn_closed n) unit_interval).
+{
+  exact (function_on_of_function_space
+    pairSToB
+    dom
+    (setprod (Bn_closed n) unit_interval)
+    (pair_map_in_function_space
+      dom
+      (Bn_closed n)
+      unit_interval
+      xB
+      tproj
+      HxBFun
+      HtprojFun)).
+}
+claim HprojPairB :
+  continuous_map
+    (setprod (Bn_closed n) unit_interval)
+    (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (projection_map1 (Bn_closed n) unit_interval) /\
+  continuous_map
+    (setprod (Bn_closed n) unit_interval)
+    (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    (projection_map2 (Bn_closed n) unit_interval).
+{
+  exact (projection_maps_continuous
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    unit_interval
+    unit_interval_topology
+    HtopB
+    unit_interval_topology_on).
+}
+claim Hproj1BCont :
+  continuous_map
+    (setprod (Bn_closed n) unit_interval)
+    (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (projection_map1 (Bn_closed n) unit_interval).
+{
+  exact (andEL
+    (continuous_map
+      (setprod (Bn_closed n) unit_interval)
+      (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      (projection_map1 (Bn_closed n) unit_interval))
+    (continuous_map
+      (setprod (Bn_closed n) unit_interval)
+      (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+      unit_interval
+      unit_interval_topology
+      (projection_map2 (Bn_closed n) unit_interval))
+    HprojPairB).
+}
+claim Hproj2BCont :
+  continuous_map
+    (setprod (Bn_closed n) unit_interval)
+    (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    (projection_map2 (Bn_closed n) unit_interval).
+{
+  exact (andER
+    (continuous_map
+      (setprod (Bn_closed n) unit_interval)
+      (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      (projection_map1 (Bn_closed n) unit_interval))
+    (continuous_map
+      (setprod (Bn_closed n) unit_interval)
+      (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+      unit_interval
+      unit_interval_topology
+      (projection_map2 (Bn_closed n) unit_interval))
+    HprojPairB).
+}
+claim Hcomp1Fun :
+  function_on
+    (compose_fun dom pairSToB (projection_map1 (Bn_closed n) unit_interval))
+    dom
+    (Bn_closed n).
+{
+  exact (function_on_compose_fun
+    dom
+    (setprod (Bn_closed n) unit_interval)
+    (Bn_closed n)
+    pairSToB
+    (projection_map1 (Bn_closed n) unit_interval)
+    HpairFun
+    (continuous_map_function_on
+      (setprod (Bn_closed n) unit_interval)
+      (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      (projection_map1 (Bn_closed n) unit_interval)
+      Hproj1BCont)).
+}
+claim Hcomp2Fun :
+  function_on
+    (compose_fun dom pairSToB (projection_map2 (Bn_closed n) unit_interval))
+    dom
+    unit_interval.
+{
+  exact (function_on_compose_fun
+    dom
+    (setprod (Bn_closed n) unit_interval)
+    unit_interval
+    pairSToB
+    (projection_map2 (Bn_closed n) unit_interval)
+    HpairFun
+    (continuous_map_function_on
+      (setprod (Bn_closed n) unit_interval)
+      (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+      unit_interval
+      unit_interval_topology
+      (projection_map2 (Bn_closed n) unit_interval)
+      Hproj2BCont)).
+}
+claim Hcomp1Eq :
+  forall p:set, p :e dom ->
+    apply_fun
+      (compose_fun dom pairSToB (projection_map1 (Bn_closed n) unit_interval))
+      p
+    = apply_fun xB p.
+{
+  let p.
+  assume Hp.
+  rewrite (compose_fun_apply
+    dom
+    pairSToB
+    (projection_map1 (Bn_closed n) unit_interval)
+    p
+    Hp).
+  rewrite (pair_map_apply
+    dom
+    (Bn_closed n)
+    unit_interval
+    xB
+    tproj
+    p
+    Hp).
+  rewrite (projection1_apply
+    (Bn_closed n)
+    unit_interval
+    (apply_fun xB p, apply_fun tproj p)
+    (tuple_2_setprod_by_pair_Sigma
+      (Bn_closed n)
+      unit_interval
+      (apply_fun xB p)
+      (apply_fun tproj p)
+      (HxBFun
+        p
+        Hp)
+      (HtprojFun
+        p
+        Hp))).
+  rewrite tuple_2_0_eq.
+  reflexivity.
+}
+claim Hcomp2Eq :
+  forall p:set, p :e dom ->
+    apply_fun
+      (compose_fun dom pairSToB (projection_map2 (Bn_closed n) unit_interval))
+      p
+    = apply_fun tproj p.
+{
+  let p.
+  assume Hp.
+  rewrite (compose_fun_apply
+    dom
+    pairSToB
+    (projection_map2 (Bn_closed n) unit_interval)
+    p
+    Hp).
+  rewrite (pair_map_apply
+    dom
+    (Bn_closed n)
+    unit_interval
+    xB
+    tproj
+    p
+    Hp).
+  rewrite (projection2_apply
+    (Bn_closed n)
+    unit_interval
+    (apply_fun xB p, apply_fun tproj p)
+    (tuple_2_setprod_by_pair_Sigma
+      (Bn_closed n)
+      unit_interval
+      (apply_fun xB p)
+      (apply_fun tproj p)
+      (HxBFun
+        p
+        Hp)
+      (HtprojFun
+        p
+        Hp))).
+  rewrite tuple_2_1_eq.
+  reflexivity.
+}
+claim Hcoord1Cont :
+  continuous_map dom Tdom (Bn_closed n) (Bn_closed_topology n)
+    (compose_fun dom pairSToB (projection_map1 (Bn_closed n) unit_interval)).
+{
+  exact (continuous_map_congr_on
+    dom
+    Tdom
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    xB
+    (compose_fun dom pairSToB (projection_map1 (Bn_closed n) unit_interval))
+    HxBCont
+    Hcomp1Fun
+    (fun p Hp =>
+      eq_symm
+        (apply_fun
+          (compose_fun dom pairSToB (projection_map1 (Bn_closed n) unit_interval))
+          p)
+        (apply_fun xB p)
+        (Hcomp1Eq
+          p
+          Hp))).
+}
+claim Hcoord2Cont :
+  continuous_map dom Tdom unit_interval unit_interval_topology
+    (compose_fun dom pairSToB (projection_map2 (Bn_closed n) unit_interval)).
+{
+  exact (continuous_map_congr_on
+    dom
+    Tdom
+    unit_interval
+    unit_interval_topology
+    tproj
+    (compose_fun dom pairSToB (projection_map2 (Bn_closed n) unit_interval))
+    HtprojCont
+    Hcomp2Fun
+    (fun p Hp =>
+      eq_symm
+        (apply_fun
+          (compose_fun dom pairSToB (projection_map2 (Bn_closed n) unit_interval))
+          p)
+        (apply_fun tproj p)
+        (Hcomp2Eq
+          p
+          Hp))).
+}
+claim HpairCont :
+  continuous_map
+    dom
+    Tdom
+    (setprod (Bn_closed n) unit_interval)
+    (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+    pairSToB.
+{
+  exact (maps_into_products_coords_imp
+    dom
+    Tdom
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    unit_interval
+    unit_interval_topology
+    pairSToB
+    HtopB
+    unit_interval_topology_on
+    HpairFun
+    Hcoord1Cont
+    Hcoord2Cont).
+}
+exact (composition_continuous
+  dom
+  Tdom
+  (setprod (Bn_closed n) unit_interval)
+  (product_topology (Bn_closed n) (Bn_closed_topology n) unit_interval unit_interval_topology)
+  (Bn_closed n)
+  (Bn_closed_topology n)
+  pairSToB
+  (Bn_closed_contraction_map n)
+  HpairCont
+  (Bn_closed_contraction_map_continuous
+    n
+    Hn_om)).
+Qed.
+
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
