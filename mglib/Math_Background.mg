@@ -423795,6 +423795,93 @@ Qed.
 
 (** Projection helpers from npack+witness rankdata constructor. **)
 (** Proven Bob **)
+Lemma thm85_3_rankdata_npack_witness_n_omega : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ equip (right_coset_set F multF H) k ->
+  n :e omega.
+let F multF eF invF J H n k.
+assume HnPack.
+assume Hk.
+exact (thm85_3_rankdata_n_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_npack_and_witness
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    Hk)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_npack_witness_J_equip : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ equip (right_coset_set F multF H) k ->
+  equip J (ordsucc n).
+let F multF eF invF J H n k.
+assume HnPack.
+assume Hk.
+exact (thm85_3_rankdata_J_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_npack_and_witness
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    Hk)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_npack_witness_coset_finite : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ equip (right_coset_set F multF H) k ->
+  finite (right_coset_set F multF H).
+let F multF eF invF J H n k.
+assume HnPack.
+assume Hk.
+exact (thm85_3_rankdata_coset_finite
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_npack_and_witness
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    Hk)).
+Qed.
+
+(** Proven Bob **)
 Lemma thm85_3_rankdata_npack_witness_index_omega : forall F multF eF invF J H n k:set,
   n :e omega /\ equip J (ordsucc n) ->
   k :e omega /\ equip (right_coset_set F multF H) k ->
@@ -423853,6 +423940,90 @@ exact (thm85_3_rankdata_index_equip
 Qed.
 
 (** Projection helpers from npack+finite rankdata constructor. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_npack_finite_n_omega : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  n :e omega.
+let F multF eF invF J H n.
+assume HnPack.
+assume HcosetFin.
+exact (thm85_3_rankdata_n_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_npack_and_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HcosetFin)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_npack_finite_J_equip : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  equip J (ordsucc n).
+let F multF eF invF J H n.
+assume HnPack.
+assume HcosetFin.
+exact (thm85_3_rankdata_J_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_npack_and_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HcosetFin)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_npack_finite_coset_finite : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  finite (right_coset_set F multF H).
+let F multF eF invF J H n.
+assume HnPack.
+assume HcosetFin.
+exact (thm85_3_rankdata_coset_finite
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_npack_and_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HcosetFin)).
+Qed.
+
 (** Proven Bob **)
 Lemma thm85_3_rankdata_npack_finite_index_spec : forall F multF eF invF J H n:set,
   n :e omega /\ equip J (ordsucc n) ->
