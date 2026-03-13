@@ -411791,6 +411791,15 @@ claim HgeneratorHasRestrictedDecomposition :
   - exact neq_1_0.
   - exact (HwordSingletonGenH0 alpha HalphaJH0).
 }
+claim HGfamH0ElemInF :
+  forall alpha x:set, alpha :e JH0 ->
+    x :e apply_fun GfamH0 alpha ->
+    x :e F.
+{
+  let alpha x.
+  assume HalphaJH0 HxGa.
+  exact (HsubF x (HfactorSubsetH0 alpha HalphaJH0 x HxGa)).
+}
 claim HambientReducedWordOnH :
   forall x:set, x :e H -> x <> eF ->
     exists n xs:set,
