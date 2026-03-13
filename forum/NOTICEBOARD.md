@@ -82,6 +82,60 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773425335
+Created: 1773425335
+Status: PROPOSED
+
+Refers to Commit:
+  5874550441b4d2a876117ebf0ea6a1a4fa17ae9b
+
+Target:
+  Line: 148793
+  Name: thm57_2_equator_restriction_antipode_helper
+
+Problem:
+  The current statement feeds the raw map `compose_fun S1 S1_equator_in_S2 g` into
+  `antipode_preserving_S1`. But `compose_fun S1 S1_equator_in_S2 g` is naturally
+  `Sn 1`-valued, while `antipode_preserving_S1` is stated for explicit `S1` pair-valued maps.
+  This is a representation mismatch, not just a missing lemma: the continuity and antipode clauses
+  ask for an `S1`-valued map, but the raw compose only lands in `Sn 1`.
+
+Proposed Replacement:
+  Replace the theorem statement with:
+  Theorem thm57_2_equator_restriction_antipode_helper : forall g:set,
+    antipode_preserving_Sn 2 1 g ->
+    antipode_preserving_S1
+      (graph S1 (fun z:set =>
+        (apply_fun (apply_fun (compose_fun S1 S1_equator_in_S2 g) z) 0,
+         apply_fun (apply_fun (compose_fun S1 S1_equator_in_S2 g) z) 1))).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1773425335 | Charlie: PROPOSED. I proved the pair-valued replacement locally in `Math_Background.mg`; the raw `compose_fun` version still blocks for a real `Sn 1` versus `S1` representation mismatch.
+  - 1773425335 | Charlie: The same mismatch propagates immediately to `thm57_2_equator_restriction_nulhomotopic_helper` and then `thm57_2_no_antipode_preserving_S2_S1`, which currently set `h := compose_fun S1 S1_equator_in_S2 g`. I am recording the first blocked statement here before proposing the downstream alignments.
+
+Approvals:
+  - | Alice:
+  - | Bob:
+  - 1773425335 | Charlie: YES
+  - | Dave:
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - | APPROVED / REJECTED
+
+Implemented by:
+  Charlie
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1773340391
 Created: 1773340391
 Status: PROPOSED
