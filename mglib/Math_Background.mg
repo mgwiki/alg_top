@@ -413208,6 +413208,217 @@ claim HrestrictedGeneratorWordZeroNeEfamAlpha0 :
       HredH0
       Hwp)).
 }
+claim HfactorElemRestrictedWordUniqueSingleton :
+  forall alpha g n xs:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    n = 1 /\
+    (forall i:set, i :e 1 ->
+      apply_fun xs i =
+      apply_fun (graph 1 (fun _:set => g)) i).
+{
+  let alpha g n xs.
+  assume HalphaJH0 HgGa HgNeEfam HredH0 Hwp.
+  claim HgNeE : g <> eF.
+  {
+    rewrite <- (HefamH0Val alpha HalphaJH0).
+    exact HgNeEfam.
+  }
+  claim HgH : g :e H.
+  {
+    exact (HfactorSubsetH0
+      alpha
+      HalphaJH0
+      g
+      HgGa).
+  }
+  claim HredAmb :
+    reduced_word J GfamF (graph J (fun _:set => eF)) n xs.
+  {
+    exact (HreducedRestrictedImpliesAmbient
+      n
+      xs
+      HredH0).
+  }
+  claim HredSingleAmb :
+    reduced_word
+      J
+      GfamF
+      (graph J (fun _:set => eF))
+      1
+      (graph 1 (fun _:set => g)).
+  {
+    claim HgNeEfamAmb :
+      g <> apply_fun (graph J (fun _:set => eF)) alpha.
+    {
+      rewrite (apply_fun_graph
+        J
+        (fun _:set => eF)
+        alpha
+        (HJH0subJ alpha HalphaJH0)).
+      exact HgNeE.
+    }
+    exact (reduced_word_singleton
+      J
+      GfamF
+      (graph J (fun _:set => eF))
+      alpha
+      g
+      (HJH0subJ alpha HalphaJH0)
+      (HGfamH0MemInGfamF alpha g HalphaJH0 HgGa)
+      HgNeEfamAmb).
+  }
+  claim HwpSingleAmb :
+    word_product multF eF (graph 1 (fun _:set => g)) 1 = g.
+  {
+    exact (word_product_singleton_group
+      F
+      multF
+      eF
+      invF
+      g
+      HgrpF
+      (HGfamH0ElemInF alpha g HalphaJH0 HgGa)).
+  }
+  apply (HambientReducedWordOnH
+    g
+    HgH
+    HgNeE).
+  let nw.
+  assume HnwEx.
+  apply HnwEx.
+  let xsw.
+  assume Hpack.
+  apply (and4E
+    (reduced_word J GfamF (graph J (fun _:set => eF)) nw xsw)
+    (nw <> 0)
+    (word_product multF eF xsw nw = g)
+    (forall n' xs':set,
+      reduced_word J GfamF (graph J (fun _:set => eF)) n' xs' -> n' <> 0 ->
+      word_product multF eF xs' n' = g ->
+      nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i))
+    Hpack).
+  assume Hredw HnwNe0 Hwpw Huniqw.
+  claim HuniqSingleton :
+    nw = 1 /\
+    (forall i:set, i :e nw ->
+      apply_fun xsw i = apply_fun (graph 1 (fun _:set => g)) i).
+  {
+    exact (Huniqw
+      1
+      (graph 1 (fun _:set => g))
+      HredSingleAmb
+      neq_1_0
+      HwpSingleAmb).
+  }
+  claim HuniqGiven :
+    nw = n /\
+    (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i).
+  {
+    claim HnNe0 : n <> 0.
+    {
+      assume Hn0.
+      claim Hwp0 : word_product multF eF xs 0 = eF.
+      {
+        exact (nat_primrec_0
+          eF
+          (fun i r => apply_fun multF (r, apply_fun xs i))).
+      }
+      claim HgEqE : g = eF.
+      {
+        rewrite <- Hwp.
+        rewrite Hn0.
+        exact Hwp0.
+      }
+      exact (HgNeE HgEqE).
+    }
+    exact (Huniqw
+      n
+      xs
+      HredAmb
+      HnNe0
+      Hwp).
+  }
+  claim Hnw1 : nw = 1.
+  {
+    exact (andEL
+      (nw = 1)
+      (forall i:set, i :e nw ->
+        apply_fun xsw i = apply_fun (graph 1 (fun _:set => g)) i)
+      HuniqSingleton).
+  }
+  claim HxswSingleton :
+    forall i:set, i :e nw ->
+      apply_fun xsw i = apply_fun (graph 1 (fun _:set => g)) i.
+  {
+    exact (andER
+      (nw = 1)
+      (forall i:set, i :e nw ->
+        apply_fun xsw i = apply_fun (graph 1 (fun _:set => g)) i)
+      HuniqSingleton).
+  }
+  claim HnwEqN : nw = n.
+  {
+    exact (andEL
+      (nw = n)
+      (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i)
+      HuniqGiven).
+  }
+  claim HxswEqXs :
+    forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i.
+  {
+    exact (andER
+      (nw = n)
+      (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i)
+      HuniqGiven).
+  }
+  claim HnEqNw : n = nw.
+  {
+    symmetry.
+    exact HnwEqN.
+  }
+  claim Hn1 : n = 1.
+  {
+    exact (eq_i_tra
+      n
+      nw
+      1
+      HnEqNw
+      Hnw1).
+  }
+  apply andI.
+  - exact Hn1.
+  - let i.
+    assume Hi1.
+    claim HiNw : i :e nw.
+    {
+      rewrite Hnw1.
+      exact Hi1.
+    }
+    claim HxswIxs : apply_fun xsw i = apply_fun xs i.
+    {
+      exact (HxswEqXs i HiNw).
+    }
+    claim HxswIsingle :
+      apply_fun xsw i =
+      apply_fun (graph 1 (fun _:set => g)) i.
+    {
+      exact (HxswSingleton i HiNw).
+    }
+    claim HxsIxsw : apply_fun xs i = apply_fun xsw i.
+    {
+      symmetry.
+      exact HxswIxs.
+    }
+    exact (eq_i_tra
+      (apply_fun xs i)
+      (apply_fun xsw i)
+      (apply_fun (graph 1 (fun _:set => g)) i)
+      HxsIxsw
+      HxswIsingle).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
