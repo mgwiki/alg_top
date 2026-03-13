@@ -429337,6 +429337,36 @@ exact (andER
     HkPack)).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_nonzero_pack_coset_finite : forall F multF H k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  finite (right_coset_set F multF H).
+let F multF H k.
+assume HkPack.
+exact (finite_right_coset_set_of_nonzero_pack
+  H
+  F
+  multF
+  k
+  HkPack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_nonzero_pack_subgroup_index_eq : forall F multF eF invF H k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  k = subgroup_index H F multF eF invF.
+let F multF eF invF H k.
+assume HkPack.
+exact (subgroup_index_eq_of_nonzero_pack
+  H
+  F
+  multF
+  eF
+  invF
+  k
+  HkPack).
+Qed.
+
 (** Build bundled rank/index data from the common nonzero witness pack. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_from_nonzero_pack : forall F multF eF invF J H n k:set,
