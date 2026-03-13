@@ -147393,6 +147393,112 @@ rewrite Hnorm.
 exact (not_Rlt_refl 1 real_1).
 Qed.
 
+(** Infrastructure: the closed ball carries its subspace topology. **)
+(** Proven Charlie **)
+Lemma Bn_closed_topology_on : forall n:set,
+  topology_on (Bn_closed n) (Bn_closed_topology n).
+let n.
+claim HBsub :
+  Bn_closed n c= euclidean_space (ordsucc n).
+{
+  exact (Sep_Subq
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))).
+}
+exact (subspace_topology_is_topology
+  (euclidean_space (ordsucc n))
+  (euclidean_topology (ordsucc n))
+  (Bn_closed n)
+  (euclidean_topology_is_topology (ordsucc n))
+  HBsub).
+Qed.
+
+(** Infrastructure: the inclusion S^n -> B^{n+1} is continuous. **)
+(** Proven Charlie **)
+Lemma Sn_inclusion_Bn_closed_continuous : forall n:set,
+  continuous_map (Sn n) (Sn_topology n)
+    (Bn_closed n) (Bn_closed_topology n)
+    (graph (Sn n) (fun x:set => x)).
+let n.
+claim HSnsubEu :
+  Sn n c= euclidean_space (ordsucc n).
+{
+  let x.
+  assume HxSn.
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HSnsubB :
+  Sn n c= Bn_closed n.
+{
+  let x.
+  assume HxSn.
+  exact (Sn_subset_Bn_closed
+    n
+    x
+    HxSn).
+}
+claim HincToEu :
+  continuous_map (Sn n) (Sn_topology n)
+    (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
+    (graph (Sn n) (fun x:set => x)).
+{
+  exact (subspace_inclusion_continuous
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (Sn n)
+    (euclidean_topology_is_topology (ordsucc n))
+    HSnsubEu).
+}
+claim HincIntoB :
+  forall x:set, x :e Sn n ->
+    apply_fun (graph (Sn n) (fun z:set => z)) x :e Bn_closed n.
+{
+  let x.
+  assume Hx.
+  rewrite (apply_fun_graph
+    (Sn n)
+    (fun z:set => z)
+    x
+    Hx).
+  exact (HSnsubB
+    x
+    Hx).
+}
+exact (continuous_map_range_restrict
+  (Sn n)
+  (Sn_topology n)
+  (euclidean_space (ordsucc n))
+  (euclidean_topology (ordsucc n))
+  (graph (Sn n) (fun x:set => x))
+  (Bn_closed n)
+  HincToEu
+  (Sep_Subq
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v))))
+  HincIntoB).
+Qed.
+
+(** Infrastructure: the sphere topology agrees with the subspace topology inherited from the closed ball. **)
+(** Proven Charlie **)
+Lemma Sn_topology_subspace_of_Bn_closed : forall n:set,
+  subspace_topology (Bn_closed n) (Bn_closed_topology n) (Sn n) = Sn_topology n.
+let n.
+exact (subspace_topology_transitive_weak
+  (euclidean_space (ordsucc n))
+  (euclidean_topology (ordsucc n))
+  (Bn_closed n)
+  (Sn n)
+  (fun x HxSn =>
+    Sn_subset_Bn_closed
+      n
+      x
+      HxSn)).
+Qed.
+
 (** Infrastructure: R^n minus the origin (nonzero vectors) **)
 Definition Rn_minus_origin : set -> set := fun n =>
   {v :e euclidean_space n | ~(forall i:set, i :e n -> apply_fun v i = 0)}.
