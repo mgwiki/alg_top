@@ -420286,6 +420286,37 @@ apply and5I.
     HidxSpec).
 Qed.
 
+(** Build bundled rank/index data from finite right-coset cardinality. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_from_finite : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+apply HcosetFin.
+let k.
+assume Hk : k :e omega /\ equip (right_coset_set F multF H) k.
+exact (thm85_3_rankdata_from_witness
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  k
+  HnOmega
+  HJeq
+  Hk).
+Qed.
+
 (** Build bundled rank/index data from the common nonzero witness pack. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_from_nonzero_pack : forall F multF eF invF J H n k:set,
@@ -420492,7 +420523,7 @@ claim HrankData :
   subgroup_index H F multF eF invF :e omega /\
   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
 {
-  exact (thm85_3_rankdata_from_witness
+  exact (thm85_3_rankdata_from_finite
     F
     multF
     eF
@@ -420500,10 +420531,9 @@ claim HrankData :
     J
     H
     n
-    k
     HnOmega
     HJeq
-    Hk).
+    HcosetFin).
 }
 exact (thm85_3_core_rank_from_rankdata
   F
