@@ -419351,20 +419351,20 @@ claim HtargetAtIndex :
     HfreeH
     HrankData).
 }
-claim HidxEqk :
-  subgroup_index H F multF eF invF = k.
-{
-  exact (subgroup_index_eq_of_witness
+exact (iffEL
+  (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
+  (equip JH (ordsucc (mul_SNo k n)))
+  (equip_ordsucc_mul_subgroup_index_iff_any_witness
     H
     F
     multF
     eF
     invF
     k
-    Hk).
-}
-rewrite <- HidxEqk.
-exact HtargetAtIndex.
+    n
+    JH
+    Hk)
+  HtargetAtIndex).
 Admitted.
 
 (** Core Schreier-rank step at canonical subgroup_index cardinal. **)
@@ -419409,20 +419409,20 @@ claim HtargetAtK :
     HJeq
     Hk).
 }
-claim HidxEqk :
-  subgroup_index H F multF eF invF = k.
-{
-  exact (subgroup_index_eq_of_witness
+exact (iffER
+  (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
+  (equip JH (ordsucc (mul_SNo k n)))
+  (equip_ordsucc_mul_subgroup_index_iff_any_witness
     H
     F
     multF
     eF
     invF
     k
-    Hk).
-}
-rewrite HidxEqk.
-exact HtargetAtK.
+    n
+    JH
+    Hk)
+  HtargetAtK).
 Admitted.
 
 (** Projection form of Nielsen-Schreier existence for convenient reuse. **)
