@@ -419513,38 +419513,7 @@ witness JH.
 witness gensH.
 apply andI.
 - exact HfreeH0.
-- claim HcosetFin :
-    finite (right_coset_set F multF H).
-  {
-    exact (finite_right_coset_set_of_nonzero_pack
-      H
-      F
-      multF
-      k
-      HkPack).
-  }
-  claim HtargetAtIndex :
-    equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
-  {
-    exact (thm85_3_core_rank_at_subgroup_index
-      F
-      multF
-      eF
-      invF
-      J
-      gens
-      H
-      JH
-      gensH
-      n
-      Hfree
-      Hsub
-      HfreeH0
-      HnOmega
-      HJeq
-      HcosetFin).
-  }
-  claim HkWitness :
+- claim HkWitness :
     k :e omega /\ equip (right_coset_set F multF H) k.
   {
     exact (right_coset_witness_of_nonzero_pack
@@ -419554,20 +419523,24 @@ apply andI.
       k
       HkPack).
   }
-  exact (iffEL
-    (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
-    (equip JH (ordsucc (mul_SNo k n)))
-    (equip_ordsucc_mul_subgroup_index_iff_any_witness
-      H
-      F
-      multF
-      eF
-      invF
-      k
-      n
-      JH
-      HkWitness)
-    HtargetAtIndex).
+  exact (thm85_3_core_rank_from_witness
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    JH
+    gensH
+    n
+    k
+    Hfree
+    Hsub
+    HfreeH0
+    HnOmega
+    HJeq
+    HkWitness).
 Admitted.
 
 (** from S85 Exercise 1 (line 5799 in algtop.tex) **)
