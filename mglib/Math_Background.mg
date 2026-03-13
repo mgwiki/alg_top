@@ -415077,7 +415077,25 @@ claim HgeneratorSubgroupsGenerateWitnessH0 :
    for H (generally larger than JH0), then prove:
    - subgroups_generate H multF eF invF JH0 GfamH0
    - reduced-word existence/uniqueness in H for (JH0, GfamH0, efamH0). **)
-admit.
+witness JH0.
+witness gensH0.
+prove
+  group_structure H multF eF invF /\
+  function_on gensH0 JH0 H /\
+  (forall alpha:set, alpha :e JH0 ->
+    infinite_cyclic_subgroup H multF eF invF (apply_fun gensH0 alpha)) /\
+  free_product_of_subgroups H multF eF invF JH0
+    (graph JH0 (fun alpha:set =>
+      {g :e H | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m)))}))
+    (graph JH0 (fun _:set => eF)).
+apply and4I.
+- exact HgrpH.
+- exact HgensH0Fn.
+- exact HgensH0InfiniteCyclicInH.
+- admit.
 Admitted.
 
 (** from S85 Definition (line 5764 in algtop.tex): Euler number of finite graph **)
