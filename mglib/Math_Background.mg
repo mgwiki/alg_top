@@ -415548,6 +415548,31 @@ claim HoutsideUnionWordNotLengthOneH0 :
   }
   exact (HxOutUnion HxUnion).
 }
+claim HoutsideUnionWordLengthConstraintsH0 :
+  forall x n xs:set,
+    x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = x ->
+    n <> 0 /\ n <> 1.
+{
+  let x n xs.
+  assume HxNe HxOutUnion Hred Hwp.
+  apply andI.
+  - exact (HwordProductEqualsNontrivialImpliesNonzeroLengthH0
+      x
+      n
+      xs
+      Hwp
+      HxNe).
+  - exact (HoutsideUnionWordNotLengthOneH0
+      x
+      n
+      xs
+      HxOutUnion
+      Hred
+      Hwp).
+}
 claim HglobalUniqueNoNeReduceToOutsideUnionH0 :
   (forall x:set, x :e H -> x <> eF ->
     (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
