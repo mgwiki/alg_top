@@ -412485,6 +412485,100 @@ claim HrestrictedGeneratorWordHeadFactorIndexUnique :
   symmetry.
   exact HbetaEqAlphaJ.
 }
+claim HrestrictedGeneratorWordZeroInLength :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs -> n <> 0 ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    0 :e n.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 HnNe0 Hwp.
+  claim Hn1 :
+    n = 1.
+  {
+    exact (andEL
+      (n = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun xs i =
+        apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i)
+      (HrestrictedGeneratorWordUniqueSingleton
+        alpha
+        n
+        xs
+        HalphaJH0
+        HredH0
+        HnNe0
+        Hwp)).
+  }
+  rewrite Hn1.
+  exact (ordsuccI2 0).
+}
+claim HrestrictedGeneratorWordElem0Pack :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs -> n <> 0 ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    alpha :e JH0 /\
+    apply_fun xs 0 :e apply_fun GfamH0 alpha /\
+    apply_fun xs 0 <> apply_fun efamH0 alpha.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 HnNe0 Hwp.
+  claim H0inN : 0 :e n.
+  {
+    exact (HrestrictedGeneratorWordZeroInLength
+      alpha
+      n
+      xs
+      HalphaJH0
+      HredH0
+      HnNe0
+      Hwp).
+  }
+  claim Hpack0 :
+    exists beta:set, beta :e JH0 /\
+      apply_fun xs 0 :e apply_fun GfamH0 beta /\
+      apply_fun xs 0 <> apply_fun efamH0 beta.
+  {
+    exact (reduced_word_elem
+      JH0
+      GfamH0
+      efamH0
+      n
+      xs
+      0
+      HredH0
+      H0inN).
+  }
+  apply Hpack0.
+  let beta.
+  assume HbetaPack.
+  apply (and3E
+    (beta :e JH0)
+    (apply_fun xs 0 :e apply_fun GfamH0 beta)
+    (apply_fun xs 0 <> apply_fun efamH0 beta)
+    HbetaPack).
+  assume HbetaJH0 Hx0Gb Hx0NeEb.
+  claim HbetaEqAlpha : beta = alpha.
+  {
+    exact (HrestrictedGeneratorWordHeadFactorIndexUnique
+      alpha
+      n
+      xs
+      beta
+      HalphaJH0
+      HredH0
+      HnNe0
+      Hwp
+      HbetaJH0
+      Hx0Gb).
+  }
+  apply and3I.
+  - exact HalphaJH0.
+  - rewrite <- HbetaEqAlpha.
+    exact Hx0Gb.
+  - rewrite <- HbetaEqAlpha.
+    exact Hx0NeEb.
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
