@@ -419387,42 +419387,40 @@ assume HcosetFin.
 apply HcosetFin.
 let k.
 assume Hk : k :e omega /\ equip (right_coset_set F multF H) k.
-claim HtargetAtK :
-  equip JH (ordsucc (mul_SNo k n)).
+claim HrankData :
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
 {
-  exact (thm85_3_core_rank_from_witness
+  exact (thm85_3_rankdata_from_witness
     F
     multF
     eF
     invF
     J
-    gens
     H
-    JH
-    gensH
     n
     k
-    HfreeF
-    Hsub
-    HfreeH
     HnOmega
     HJeq
     Hk).
 }
-exact (iffER
-  (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
-  (equip JH (ordsucc (mul_SNo k n)))
-  (equip_ordsucc_mul_subgroup_index_iff_any_witness
-    H
-    F
-    multF
-    eF
-    invF
-    k
-    n
-    JH
-    Hk)
-  HtargetAtK).
+exact (thm85_3_core_rank_from_rankdata
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  H
+  JH
+  gensH
+  n
+  HfreeF
+  Hsub
+  HfreeH
+  HrankData).
 Admitted.
 
 (** Projection form of Nielsen-Schreier existence for convenient reuse. **)
