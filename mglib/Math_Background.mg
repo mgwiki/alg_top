@@ -414607,6 +414607,87 @@ claim HgeneratorSubgroupsGenerateDisjH0ViaGeneral :
     alpha
     HalphaJH0).
 }
+claim HfactorElemSubgroupsGenerateWitnessFromDisjH0 :
+  forall alpha g:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        g = nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+{
+  let alpha g.
+  assume HalphaJH0 HgGa HgNeEfam.
+  claim Hdisj :
+    g = eF \/
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        g = nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+  {
+    exact (HfactorElemSubgroupsGenerateDisjH0
+      alpha
+      g
+      HalphaJH0
+      HgGa
+      HgNeEfam).
+  }
+  apply Hdisj.
+  - assume HgE.
+    claim HgNeE : g <> eF.
+    {
+      rewrite <- (HefamH0Val alpha HalphaJH0).
+      exact HgNeEfam.
+    }
+    exact (FalseE
+      (HgNeE HgE)
+      (exists n:set, n :e omega /\ n <> 0 /\
+        exists xs:set, function_on xs n H /\
+          (forall i:set, i :e n ->
+            exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+          g = nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n)).
+  - assume Hex.
+    exact Hex.
+}
+claim HgeneratorSubgroupsGenerateWitnessFromDisjH0ViaGeneral :
+  forall alpha:set, alpha :e JH0 ->
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        apply_fun gensH0 alpha =
+          nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+{
+  let alpha.
+  assume HalphaJH0.
+  claim Hdisj :
+    apply_fun gensH0 alpha = eF \/
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        apply_fun gensH0 alpha =
+          nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+  {
+    exact (HgeneratorSubgroupsGenerateDisjH0ViaGeneral
+      alpha
+      HalphaJH0).
+  }
+  apply Hdisj.
+  - assume HgenE.
+    exact (FalseE
+      ((HgensH0NeUnit alpha HalphaJH0) HgenE)
+      (exists n:set, n :e omega /\ n <> 0 /\
+        exists xs:set, function_on xs n H /\
+          (forall i:set, i :e n ->
+            exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+          apply_fun gensH0 alpha =
+            nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n)).
+  - assume Hex.
+    exact Hex.
+}
 claim HgeneratorSubgroupsGenerateWitnessH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n:set, n :e omega /\ n <> 0 /\
