@@ -414916,6 +414916,53 @@ claim HfreeProductFrameH0 :
   - exact HfactorDisjointH0.
   - exact HgeneratorRestrictedDecompositionUniqueViaGeneral.
 }
+claim HfreeProductPrefixH0 :
+  group_structure H multF eF invF /\
+  (forall alpha:set, alpha :e JH0 ->
+    subgroup_of (apply_fun GfamH0 alpha) H multF eF invF) /\
+  (forall alpha beta:set, alpha :e JH0 -> beta :e JH0 -> alpha <> beta ->
+    forall x:set, x :e apply_fun GfamH0 alpha -> x :e apply_fun GfamH0 beta -> x = eF).
+{
+  apply and3I.
+  - exact HgrpH.
+  - exact HfactorSubgroupH0.
+  - exact HfactorDisjointH0.
+}
+claim HfreeProductAssembleH0 :
+  subgroups_generate H multF eF invF JH0 GfamH0 ->
+  (forall x:set, x :e H -> x <> eF ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' -> n' <> 0 ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))) ->
+  free_product_of_subgroups H multF eF invF JH0 GfamH0 efamH0.
+{
+  assume HsgH0 HuniqH0.
+  prove
+    group_structure H multF eF invF /\
+    (forall alpha:set, alpha :e JH0 ->
+      subgroup_of (apply_fun GfamH0 alpha) H multF eF invF) /\
+    (forall alpha beta:set, alpha :e JH0 -> beta :e JH0 -> alpha <> beta ->
+      forall x:set, x :e apply_fun GfamH0 alpha -> x :e apply_fun GfamH0 beta -> x = eF) /\
+    subgroups_generate H multF eF invF JH0 GfamH0 /\
+    (forall x:set, x :e H -> x <> eF ->
+      exists n xs:set,
+        reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+        word_product multF eF xs n = x /\
+        (forall n' xs':set,
+          reduced_word JH0 GfamH0 efamH0 n' xs' -> n' <> 0 ->
+          word_product multF eF xs' n' = x ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+  apply and5I.
+  - exact HgrpH.
+  - exact HfactorSubgroupH0.
+  - exact HfactorDisjointH0.
+  - exact HsgH0.
+  - exact HuniqH0.
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
