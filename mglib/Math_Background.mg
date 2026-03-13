@@ -419010,72 +419010,15 @@ assume HfreeF.
 assume Hsub.
 assume HfreeH.
 assume HrankData.
-claim HnOmega :
-  n :e omega.
-{
-  apply (and5E
-    (n :e omega)
-    (equip J (ordsucc n))
-    (finite (right_coset_set F multF H))
-    (subgroup_index H F multF eF invF :e omega)
-    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-    HrankData).
-  assume HnO HJeq Hcfin HidxO HidxEq.
-  exact HnO.
-}
-claim HJeq :
-  equip J (ordsucc n).
-{
-  apply (and5E
-    (n :e omega)
-    (equip J (ordsucc n))
-    (finite (right_coset_set F multF H))
-    (subgroup_index H F multF eF invF :e omega)
-    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-    HrankData).
-  assume HnO HJeq0 Hcfin HidxO HidxEq.
-  exact HJeq0.
-}
-claim HcosetFin :
-  finite (right_coset_set F multF H).
-{
-  apply (and5E
-    (n :e omega)
-    (equip J (ordsucc n))
-    (finite (right_coset_set F multF H))
-    (subgroup_index H F multF eF invF :e omega)
-    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-    HrankData).
-  assume HnO HJeq0 Hcfin HidxO HidxEq.
-  exact Hcfin.
-}
-claim HidxOmega :
-  subgroup_index H F multF eF invF :e omega.
-{
-  apply (and5E
-    (n :e omega)
-    (equip J (ordsucc n))
-    (finite (right_coset_set F multF H))
-    (subgroup_index H F multF eF invF :e omega)
-    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-    HrankData).
-  assume HnO HJeq0 Hcfin HidxO HidxEq.
-  exact HidxO.
-}
-claim HidxEquip :
-  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
-{
-  apply (and5E
-    (n :e omega)
-    (equip J (ordsucc n))
-    (finite (right_coset_set F multF H))
-    (subgroup_index H F multF eF invF :e omega)
-    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-    HrankData).
-  assume HnO HJeq0 Hcfin HidxO HidxEq.
-  exact HidxEq.
-}
-admit. (** TODO S85.3 core gap: derive canonical-index rank target from HfreeF/HfreeH and HnOmega/HJeq/HcosetFin/HidxOmega/HidxEquip. **)
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  HrankData).
+assume HnOmega HJeq HcosetFin HidxOmega HidxEquip.
+admit. (** TODO S85.3 core gap: derive canonical-index rank target from HfreeF/HfreeH and extracted rank/index components. **)
 Admitted.
 
 (** Build bundled rank/index data from explicit witness inputs. **)
