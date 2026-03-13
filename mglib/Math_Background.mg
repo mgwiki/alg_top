@@ -416859,6 +416859,41 @@ rewrite <- (subgroup_index_mul_ordsucc_eq_of_nonzero_pack
 exact HeqIdx.
 Qed.
 
+(** Bundled subgroup-index data from the standard nonzero coset-cardinality pack. **)
+(** Proven Bob **)
+Lemma subgroup_index_bundle_of_nonzero_pack : forall H G mult e inv k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  finite (right_coset_set G mult H) /\
+  subgroup_index H G mult e inv = k /\
+  ordsucc (mul_SNo (subgroup_index H G mult e inv) n) = ordsucc (mul_SNo k n).
+let H G mult e inv k n.
+assume HkPack.
+apply and3I.
+- exact (finite_right_coset_set_of_nonzero_pack
+    H
+    G
+    mult
+    k
+    HkPack).
+- exact (subgroup_index_eq_of_nonzero_pack_sym
+    H
+    G
+    mult
+    e
+    inv
+    k
+    HkPack).
+- exact (subgroup_index_mul_ordsucc_eq_of_nonzero_pack
+    H
+    G
+    mult
+    e
+    inv
+    k
+    n
+    HkPack).
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
@@ -416926,15 +416961,31 @@ witness JH.
 witness gensH.
 apply andI.
 - exact HfreeH0.
-- claim HcosetFin :
-    finite (right_coset_set F multF H).
+- claim HidxBundle :
+    finite (right_coset_set F multF H) /\
+    subgroup_index H F multF eF invF = k /\
+    ordsucc (mul_SNo (subgroup_index H F multF eF invF) n) = ordsucc (mul_SNo k n).
   {
-    exact (finite_right_coset_set_of_nonzero_pack
+    exact (subgroup_index_bundle_of_nonzero_pack
       H
       F
       multF
+      eF
+      invF
       k
+      n
       HkPack).
+  }
+  claim HcosetFin :
+    finite (right_coset_set F multF H).
+  {
+    apply (and3E
+      (finite (right_coset_set F multF H))
+      (subgroup_index H F multF eF invF = k)
+      (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n) = ordsucc (mul_SNo k n))
+      HidxBundle).
+    assume Hfin HidxEq HmulEq.
+    exact Hfin.
   }
   claim HtargetAtIndexFromData :
     n :e omega ->
