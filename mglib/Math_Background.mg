@@ -147969,6 +147969,456 @@ rewrite HscaledNorm.
 exact HcSqGt1R.
 Qed.
 
+(** Infrastructure: a finite sum of nonnegative real terms is zero only if every term is zero. **)
+(** Proven Charlie **)
+Lemma finite_real_sum_zero_of_all_nonneg : forall f:set->set, forall n:set, nat_p n ->
+  (forall k:set, k :e n -> f k :e R) ->
+  (forall k:set, k :e n -> Rle 0 (f k)) ->
+  finite_real_sum f n = 0 ->
+  forall k:set, k :e n -> f k = 0.
+let f n.
+assume Hn HfR HfNonneg Hsum.
+claim Hnat :
+  forall m:set, nat_p m ->
+    (forall k:set, k :e m -> f k :e R) ->
+    (forall k:set, k :e m -> Rle 0 (f k)) ->
+    finite_real_sum f m = 0 ->
+    forall k:set, k :e m -> f k = 0.
+{
+  apply nat_ind.
+  - assume H0R H0Nonneg Hsum0.
+    let k.
+    assume Hk0.
+    exact (EmptyE
+      k
+      Hk0
+      (f k = 0)).
+  - let m.
+    assume Hm_nat IH.
+    assume HmR HmNonneg HsumSm.
+    claim HsumR : finite_real_sum f m :e R.
+    {
+      exact (finite_real_sum_in_R
+        f
+        m
+        Hm_nat
+        (fun k Hk => HmR k (ordsuccI1 m k Hk))).
+    }
+    claim HsumS : SNo (finite_real_sum f m).
+    {
+      exact (real_SNo
+        (finite_real_sum f m)
+        HsumR).
+    }
+    claim HsumNonnegR : Rle 0 (finite_real_sum f m).
+    {
+      exact (finite_real_sum_nonneg
+        f
+        m
+        Hm_nat
+        (fun k Hk => HmR k (ordsuccI1 m k Hk))
+        (fun k Hk => HmNonneg k (ordsuccI1 m k Hk))).
+    }
+    claim HsumNonneg : 0 <= finite_real_sum f m.
+    {
+      exact (SNoLe_of_Rle
+        0
+        (finite_real_sum f m)
+        HsumNonnegR).
+    }
+    claim HfmR : f m :e R.
+    {
+      exact (HmR
+        m
+        (ordsuccI2 m)).
+    }
+    claim HfmS : SNo (f m).
+    {
+      exact (real_SNo
+        (f m)
+        HfmR).
+    }
+    claim HfmNonneg : 0 <= f m.
+    {
+      exact (SNoLe_of_Rle
+        0
+        (f m)
+        (HmNonneg
+          m
+          (ordsuccI2 m))).
+    }
+    claim HsumExpand :
+      add_SNo (finite_real_sum f m) (f m) = 0.
+    {
+      rewrite <- (finite_real_sum_S
+        f
+        m
+        Hm_nat).
+      exact HsumSm.
+    }
+    claim Hsum0 : finite_real_sum f m = 0.
+    {
+      apply (SNoLtLe_or 0 (finite_real_sum f m) SNo_0 HsumS).
+      - assume Hlt : 0 < finite_real_sum f m.
+        claim Hsum_le_total :
+          finite_real_sum f m <= add_SNo (finite_real_sum f m) (f m).
+        {
+          exact ((add_SNo_0R (finite_real_sum f m) HsumS)
+            (fun x _ => x <= add_SNo (finite_real_sum f m) (f m))
+            (add_SNo_Le2
+              (finite_real_sum f m)
+              0
+              (f m)
+              HsumS
+              SNo_0
+              HfmS
+              HfmNonneg)).
+        }
+        claim HtotalPos : 0 < add_SNo (finite_real_sum f m) (f m).
+        {
+          exact (SNoLtLe_tra
+            0
+            (finite_real_sum f m)
+            (add_SNo (finite_real_sum f m) (f m))
+            SNo_0
+            HsumS
+            (SNo_add_SNo (finite_real_sum f m) (f m) HsumS HfmS)
+            Hlt
+            Hsum_le_total).
+        }
+        exact (FalseE
+          (SNoLt_irref 0
+            (HsumExpand
+              (fun x _ => 0 < x)
+              HtotalPos))
+          (finite_real_sum f m = 0)).
+      - assume Hle0 : finite_real_sum f m <= 0.
+        exact (SNoLe_antisym
+          (finite_real_sum f m)
+          0
+          HsumS
+          SNo_0
+          Hle0
+          HsumNonneg).
+    }
+    claim Hfm0 : f m = 0.
+    {
+      claim Hadd0 : add_SNo 0 (f m) = 0.
+      {
+        exact (Hsum0
+          (fun x _ => add_SNo x (f m) = 0)
+          HsumExpand).
+      }
+      exact ((add_SNo_0L (f m) HfmS)
+        (fun x _ => x = 0)
+        Hadd0).
+    }
+    let k.
+    assume HkSm.
+    apply (ordsuccE
+      m
+      k
+      HkSm).
+    - assume HkM.
+      exact (IH
+        (fun j Hj => HmR j (ordsuccI1 m j Hj))
+        (fun j Hj => HmNonneg j (ordsuccI1 m j Hj))
+        Hsum0
+        k
+        HkM).
+    - assume HkEq.
+      rewrite HkEq.
+      exact Hfm0.
+}
+exact (Hnat
+  n
+  Hn
+  HfR
+  HfNonneg
+  Hsum).
+Qed.
+
+(** Infrastructure: euclidean norm square is a real number. **)
+(** Proven Charlie **)
+Lemma euclidean_norm_sq_in_R : forall n v:set,
+  nat_p n ->
+  v :e euclidean_space n ->
+  euclidean_norm_sq n v :e R.
+let n v.
+assume Hn Hv.
+exact (finite_real_sum_in_R
+  (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))
+  n
+  Hn
+  (fun i Hi =>
+    real_mul_SNo
+      (apply_fun v i)
+      (euclidean_space_coord_in_R n v i Hv Hi)
+      (apply_fun v i)
+      (euclidean_space_coord_in_R n v i Hv Hi))).
+Qed.
+
+(** Infrastructure: euclidean norm square is nonnegative. **)
+(** Proven Charlie **)
+Lemma euclidean_norm_sq_nonneg : forall n v:set,
+  nat_p n ->
+  v :e euclidean_space n ->
+  Rle 0 (euclidean_norm_sq n v).
+let n v.
+assume Hn Hv.
+apply (finite_real_sum_nonneg
+  (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))
+  n
+  Hn).
+- let i.
+  assume Hi.
+  exact (real_mul_SNo
+    (apply_fun v i)
+    (euclidean_space_coord_in_R n v i Hv Hi)
+    (apply_fun v i)
+    (euclidean_space_coord_in_R n v i Hv Hi)).
+- let i.
+  assume Hi.
+  exact (Rle_of_SNoLe
+    0
+    (mul_SNo (apply_fun v i) (apply_fun v i))
+    real_0
+    (real_mul_SNo
+      (apply_fun v i)
+      (euclidean_space_coord_in_R n v i Hv Hi)
+      (apply_fun v i)
+      (euclidean_space_coord_in_R n v i Hv Hi))
+    (SNo_sqr_nonneg
+      (apply_fun v i)
+      (real_SNo
+        (apply_fun v i)
+        (euclidean_space_coord_in_R n v i Hv Hi)))).
+Qed.
+
+(** Infrastructure: vanishing euclidean norm square forces all coordinates to vanish. **)
+(** Proven Charlie **)
+Lemma euclidean_norm_sq_zero_implies_all_coords_zero : forall n v:set,
+  nat_p n ->
+  v :e euclidean_space n ->
+  euclidean_norm_sq n v = 0 ->
+  forall i:set, i :e n -> apply_fun v i = 0.
+let n v.
+assume Hn Hv Hnorm0.
+let i.
+assume Hi.
+claim Hsq0 :
+  mul_SNo (apply_fun v i) (apply_fun v i) = 0.
+{
+  exact (finite_real_sum_zero_of_all_nonneg
+    (fun j:set => mul_SNo (apply_fun v j) (apply_fun v j))
+    n
+    Hn
+    (fun j Hj =>
+      real_mul_SNo
+        (apply_fun v j)
+        (euclidean_space_coord_in_R n v j Hv Hj)
+        (apply_fun v j)
+        (euclidean_space_coord_in_R n v j Hv Hj))
+    (fun j Hj =>
+      Rle_of_SNoLe
+        0
+        (mul_SNo (apply_fun v j) (apply_fun v j))
+        real_0
+        (real_mul_SNo
+          (apply_fun v j)
+          (euclidean_space_coord_in_R n v j Hv Hj)
+          (apply_fun v j)
+          (euclidean_space_coord_in_R n v j Hv Hj))
+        (SNo_sqr_nonneg
+          (apply_fun v j)
+          (real_SNo
+            (apply_fun v j)
+            (euclidean_space_coord_in_R n v j Hv Hj))))
+    Hnorm0
+    i
+    Hi).
+}
+ claim HcoordSNo : SNo (apply_fun v i).
+ {
+   exact (real_SNo
+     (apply_fun v i)
+     (euclidean_space_coord_in_R
+       n
+       v
+       i
+       Hv
+       Hi)).
+ }
+ apply (SNoLtLe_or 0 (apply_fun v i) SNo_0 HcoordSNo).
+ - assume Hlt : 0 < apply_fun v i.
+   claim Hpos : 0 < mul_SNo (apply_fun v i) (apply_fun v i).
+   {
+     exact (mul_SNo_pos_pos
+       (apply_fun v i)
+       (apply_fun v i)
+       HcoordSNo
+       HcoordSNo
+       Hlt
+       Hlt).
+   }
+   exact (FalseE
+     (SNoLt_irref 0
+       (Hsq0
+         (fun z _ => 0 < z)
+         Hpos))
+     (apply_fun v i = 0)).
+ - assume Hle : apply_fun v i <= 0.
+   apply (SNoLtLe_or (apply_fun v i) 0 HcoordSNo SNo_0).
+   + assume Hlt2 : apply_fun v i < 0.
+     claim Hpos : 0 < mul_SNo (apply_fun v i) (apply_fun v i).
+     {
+       exact (mul_SNo_neg_neg
+         (apply_fun v i)
+         (apply_fun v i)
+         HcoordSNo
+         HcoordSNo
+         Hlt2
+         Hlt2).
+     }
+     exact (FalseE
+       (SNoLt_irref 0
+         (Hsq0
+           (fun z _ => 0 < z)
+           Hpos))
+       (apply_fun v i = 0)).
+   + assume H0le : 0 <= apply_fun v i.
+     exact (SNoLe_antisym
+       (apply_fun v i)
+       0
+       HcoordSNo
+       SNo_0
+       Hle
+       H0le).
+Qed.
+
+(** Infrastructure: a point of R^n minus the origin has nonzero norm square. **)
+(** Proven Charlie **)
+Lemma Rn_minus_origin_norm_sq_nonzero : forall n x:set,
+  n :e omega ->
+  x :e Rn_minus_origin n ->
+  euclidean_norm_sq n x <> 0.
+let n x.
+assume Hn_om HxNz Hnorm0.
+claim HxEu : x :e euclidean_space n.
+{
+  exact (SepE1
+    (euclidean_space n)
+    (fun v:set => ~(forall i:set, i :e n -> apply_fun v i = 0))
+    x
+    HxNz).
+}
+claim HxAll0 :
+  forall i:set, i :e n -> apply_fun x i = 0.
+{
+  exact (euclidean_norm_sq_zero_implies_all_coords_zero
+    n
+    x
+    (omega_nat_p
+      n
+      Hn_om)
+    HxEu
+    Hnorm0).
+}
+exact ((SepE2
+  (euclidean_space n)
+  (fun v:set => ~(forall i:set, i :e n -> apply_fun v i = 0))
+  x
+  HxNz)
+  HxAll0).
+Qed.
+
+(** Infrastructure: the square root of the norm square is nonzero on R^n minus origin. **)
+(** Proven Charlie **)
+Lemma Rn_minus_origin_norm_nonzero : forall n x:set,
+  n :e omega ->
+  x :e Rn_minus_origin n ->
+  sqrt_SNo_nonneg (euclidean_norm_sq n x) <> 0.
+let n x.
+assume Hn_om HxNz Hsqrt0.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim HxEu : x :e euclidean_space n.
+{
+  exact (SepE1
+    (euclidean_space n)
+    (fun v:set => ~(forall i:set, i :e n -> apply_fun v i = 0))
+    x
+    HxNz).
+}
+claim HnormR : euclidean_norm_sq n x :e R.
+{
+  exact (euclidean_norm_sq_in_R
+    n
+    x
+    Hn_nat
+    HxEu).
+}
+claim HnormS : SNo (euclidean_norm_sq n x).
+{
+  exact (real_SNo
+    (euclidean_norm_sq n x)
+    HnormR).
+}
+claim HnormNonnegR : Rle 0 (euclidean_norm_sq n x).
+{
+  exact (euclidean_norm_sq_nonneg
+    n
+    x
+    Hn_nat
+    HxEu).
+}
+claim HnormNonneg : 0 <= euclidean_norm_sq n x.
+{
+  exact (SNoLe_of_Rle
+    0
+    (euclidean_norm_sq n x)
+    HnormNonnegR).
+}
+claim HsqrtSq :
+  mul_SNo
+    (sqrt_SNo_nonneg (euclidean_norm_sq n x))
+    (sqrt_SNo_nonneg (euclidean_norm_sq n x))
+  = euclidean_norm_sq n x.
+{
+  exact (sqrt_SNo_nonneg_sqr
+    (euclidean_norm_sq n x)
+    HnormS
+    HnormNonneg).
+}
+claim HsqrtSq0 :
+  mul_SNo
+    (sqrt_SNo_nonneg (euclidean_norm_sq n x))
+    (sqrt_SNo_nonneg (euclidean_norm_sq n x))
+  = 0.
+{
+  rewrite Hsqrt0 at 1.
+  rewrite Hsqrt0 at 1.
+  exact (mul_SNo_zeroR
+    0
+    SNo_0).
+}
+claim Hnorm0 : euclidean_norm_sq n x = 0.
+{
+  rewrite <- HsqrtSq.
+  exact HsqrtSq0.
+}
+exact ((Rn_minus_origin_norm_sq_nonzero
+  n
+  x
+  Hn_om
+  HxNz)
+  Hnorm0).
+Qed.
+
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
