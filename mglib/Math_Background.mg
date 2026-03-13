@@ -415202,6 +415202,25 @@ claim HnontrivialSubgroupsWitnessFromGlobalUniqueNoNeH0 :
     + symmetry.
       exact Hwp.
 }
+claim HfreeProductFromGlobalUniqueNoNeH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))) ->
+  free_product_of_subgroups H multF eF invF JH0 GfamH0 efamH0.
+{
+  assume HglobalNoNe.
+  apply HfreeProductAssembleH0.
+  - apply HsubgroupsGenerateFromNontrivialWitnessH0.
+    exact (HnontrivialSubgroupsWitnessFromGlobalUniqueNoNeH0
+      HglobalNoNe).
+  - apply HfreeProductUniqueClauseNoNeToWithNeH0.
+    exact HglobalNoNe.
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
