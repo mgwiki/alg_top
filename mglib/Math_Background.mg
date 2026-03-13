@@ -414569,6 +414569,44 @@ claim HgeneratorSubgroupsGenerateWitnessH0ViaGeneral :
     (HgensH0InFactor alpha HalphaJH0)
     (HgensH0NeEfam alpha HalphaJH0)).
 }
+claim HfactorElemSubgroupsGenerateDisjH0 :
+  forall alpha g:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    g = eF \/
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        g = nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+{
+  let alpha g.
+  assume HalphaJH0 HgGa HgNeEfam.
+  apply orIR.
+  exact (HfactorElemSubgroupsGenerateWitnessH0
+    alpha
+    g
+    HalphaJH0
+    HgGa
+    HgNeEfam).
+}
+claim HgeneratorSubgroupsGenerateDisjH0ViaGeneral :
+  forall alpha:set, alpha :e JH0 ->
+    apply_fun gensH0 alpha = eF \/
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        apply_fun gensH0 alpha =
+          nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+{
+  let alpha.
+  assume HalphaJH0.
+  apply orIR.
+  exact (HgeneratorSubgroupsGenerateWitnessH0ViaGeneral
+    alpha
+    HalphaJH0).
+}
 claim HgeneratorSubgroupsGenerateWitnessH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n:set, n :e omega /\ n <> 0 /\
