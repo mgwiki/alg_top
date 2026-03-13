@@ -412415,6 +412415,76 @@ claim HrestrictedGeneratorWordHead :
     HnNe0
     Hwp).
 }
+claim HrestrictedGeneratorWordHeadInAlphaFactor :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs -> n <> 0 ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    apply_fun xs 0 :e apply_fun GfamH0 alpha.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 HnNe0 Hwp.
+  claim Hhead :
+    apply_fun xs 0 = apply_fun gensH0 alpha.
+  {
+    exact (HrestrictedGeneratorWordHead
+      alpha
+      n
+      xs
+      HalphaJH0
+      HredH0
+      HnNe0
+      Hwp).
+  }
+  rewrite Hhead.
+  exact (HgensH0InFactor alpha HalphaJH0).
+}
+claim HrestrictedGeneratorWordHeadFactorIndexUnique :
+  forall alpha n xs beta:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs -> n <> 0 ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    beta :e JH0 ->
+    apply_fun xs 0 :e apply_fun GfamH0 beta ->
+    beta = alpha.
+{
+  let alpha n xs beta.
+  assume HalphaJH0 HredH0 HnNe0 Hwp HbetaJH0 Hx0Hb.
+  claim Hhead :
+    apply_fun xs 0 = apply_fun gensH0 alpha.
+  {
+    exact (HrestrictedGeneratorWordHead
+      alpha
+      n
+      xs
+      HalphaJH0
+      HredH0
+      HnNe0
+      Hwp).
+  }
+  claim Hx0Fa : apply_fun xs 0 :e apply_fun GfamF alpha.
+  {
+    rewrite Hhead.
+    exact (HgensH0InAmbientFactor alpha HalphaJH0).
+  }
+  claim Hx0NeE : apply_fun xs 0 <> eF.
+  {
+    rewrite Hhead.
+    exact (HgensH0NeUnit alpha HalphaJH0).
+  }
+  claim HbetaEqAlphaJ : alpha = beta.
+  {
+    exact (HambientIndexUniqueFromRestrictedNontrivial
+      beta
+      alpha
+      (apply_fun xs 0)
+      HbetaJH0
+      (HJH0subJ alpha HalphaJH0)
+      Hx0Hb
+      Hx0Fa
+      Hx0NeE).
+  }
+  symmetry.
+  exact HbetaEqAlphaJ.
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
