@@ -149281,6 +149281,89 @@ exact (graph_in_function_space
 Qed.
 
 (** Proven Charlie **)
+Lemma Bn_closed_norm_sq_le1 : forall n x:set,
+  n :e omega ->
+  x :e Bn_closed n ->
+  euclidean_norm_sq (ordsucc n) x <= 1.
+let n x.
+assume Hn_om HxB.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+    x
+    HxB).
+}
+claim HxNormBound : ~(Rlt 1 (euclidean_norm_sq (ordsucc n) x)).
+{
+  exact (SepE2
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+    x
+    HxB).
+}
+claim HxNormR : euclidean_norm_sq (ordsucc n) x :e R.
+{
+  exact (euclidean_norm_sq_in_R
+    (ordsucc n)
+    x
+    Hsn_nat
+    HxEu).
+}
+claim HxNormS : SNo (euclidean_norm_sq (ordsucc n) x).
+{
+  exact (real_SNo
+    (euclidean_norm_sq (ordsucc n) x)
+    HxNormR).
+}
+apply (SNoLt_trichotomy_or_impred
+  (euclidean_norm_sq (ordsucc n) x)
+  1
+  HxNormS
+  SNo_1).
+- assume Hlt.
+  exact (SNoLe_of_Rle
+    (euclidean_norm_sq (ordsucc n) x)
+    1
+    (Rlt_implies_Rle
+      (euclidean_norm_sq (ordsucc n) x)
+      1
+      (RltI
+        (euclidean_norm_sq (ordsucc n) x)
+        1
+        HxNormR
+        real_1
+        Hlt))).
+- assume Heq.
+  rewrite Heq.
+  exact (SNoLe_ref
+    1).
+- assume Hgt.
+  exact (FalseE
+    (HxNormBound
+      (RltI
+        1
+        (euclidean_norm_sq (ordsucc n) x)
+        real_1
+        HxNormR
+        Hgt))
+    (euclidean_norm_sq (ordsucc n) x <= 1)).
+Qed.
+
+(** Proven Charlie **)
 Lemma Rn_scalar_mult_unit_interval_on_Bn_closed : forall n a x:set,
   n :e omega ->
   a :e unit_interval ->
