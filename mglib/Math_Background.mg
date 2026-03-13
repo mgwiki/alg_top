@@ -148075,6 +148075,165 @@ rewrite HscaledNorm.
 exact HcSqGt1R.
 Qed.
 
+(** Proven Charlie **)
+Lemma Rn_scalar_mult_unit_interval_on_Sn_in_Bn_closed : forall n a x:set,
+  n :e omega ->
+  a :e unit_interval ->
+  x :e Sn n ->
+  Rn_scalar_mult (ordsucc n) a x :e Bn_closed n.
+let n a x.
+assume Hn_om HaI HxSn.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HaR : a :e R.
+{
+  exact (SepE1
+    R
+    (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+    a
+    HaI).
+}
+claim HaS : SNo a.
+{
+  exact (real_SNo
+    a
+    HaR).
+}
+claim HaLe1 : a <= 1.
+{
+  exact (SNoLe_of_Rle
+    a
+    1
+    (unit_interval_Rle1
+      a
+      HaI)).
+}
+claim HaGe0 : 0 <= a.
+{
+  exact (SNoLe_of_Rle
+    0
+    a
+    (unit_interval_Rle0
+      a
+      HaI)).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HxNorm : euclidean_norm_sq (ordsucc n) x = 1.
+{
+  exact (SepE2
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HaaS : SNo (mul_SNo a a).
+{
+  exact (SNo_mul_SNo
+    a
+    a
+    HaS
+    HaS).
+}
+claim HaaLeA : mul_SNo a a <= a.
+{
+  exact (mul_SNo_Le1_nonneg_Le
+    a
+    a
+    HaS
+    HaS
+    HaLe1
+    HaGe0).
+}
+claim HaaLe1 : mul_SNo a a <= 1.
+{
+  exact (SNoLe_tra
+    (mul_SNo a a)
+    a
+    1
+    HaaS
+    HaS
+    SNo_1
+    HaaLeA
+    HaLe1).
+}
+claim HscaledEu : Rn_scalar_mult (ordsucc n) a x :e euclidean_space (ordsucc n).
+{
+  exact (Rn_scalar_mult_in_euclidean_space
+    (ordsucc n)
+    a
+    x
+    HxEu
+    HaR).
+}
+claim HscaledNorm :
+  euclidean_norm_sq (ordsucc n) (Rn_scalar_mult (ordsucc n) a x) = mul_SNo a a.
+{
+  rewrite (euclidean_norm_sq_scalar_mult
+    (ordsucc n)
+    a
+    x
+    Hsn_nat
+    HxEu
+    HaR).
+  rewrite HxNorm.
+  rewrite (mul_SNo_oneL
+    (mul_SNo a a)
+    HaaS).
+  reflexivity.
+}
+claim HaaR : mul_SNo a a :e R.
+{
+  exact (real_mul_SNo
+    a
+    HaR
+    a
+    HaR).
+}
+claim HaaLe1R : Rle (mul_SNo a a) 1.
+{
+  exact (Rle_of_SNoLe
+    (mul_SNo a a)
+    1
+    HaaR
+    real_1
+    HaaLe1).
+}
+claim HBdef :
+  Bn_closed n =
+  {v :e euclidean_space (ordsucc n) | ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v))}.
+{
+  reflexivity.
+}
+rewrite HBdef.
+apply (SepI
+  (euclidean_space (ordsucc n))
+  (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+  (Rn_scalar_mult (ordsucc n) a x)
+  HscaledEu).
+rewrite HscaledNorm.
+exact (RleE_nlt
+  (mul_SNo a a)
+  1
+  HaaLe1R).
+Qed.
+
 (** Infrastructure: a finite sum of nonnegative real terms is zero only if every term is zero. **)
 (** Proven Charlie **)
 Lemma finite_real_sum_zero_of_all_nonneg : forall f:set->set, forall n:set, nat_p n ->
