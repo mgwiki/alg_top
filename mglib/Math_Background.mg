@@ -411776,6 +411776,21 @@ claim HwordSingletonGenH0 :
     HgrpH
     (HgensH0InH alpha HalphaJH0)).
 }
+claim HgeneratorHasRestrictedDecomposition :
+  forall alpha:set, alpha :e JH0 ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = apply_fun gensH0 alpha.
+{
+  let alpha.
+  assume HalphaJH0.
+  witness 1.
+  witness (graph 1 (fun _:set => apply_fun gensH0 alpha)).
+  apply and3I.
+  - exact (HreducedSingletonGenH0 alpha HalphaJH0).
+  - exact neq_1_0.
+  - exact (HwordSingletonGenH0 alpha HalphaJH0).
+}
 claim HambientReducedWordOnH :
   forall x:set, x :e H -> x <> eF ->
     exists n xs:set,
