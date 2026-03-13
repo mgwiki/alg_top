@@ -412041,6 +412041,54 @@ claim HambientGeneratorWordUniqueSingleton :
       HxsIxsw
       HxswIsingle).
 }
+claim HambientGeneratorWordHead :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word J GfamF (graph J (fun _:set => eF)) n xs -> n <> 0 ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    apply_fun xs 0 = apply_fun gensH0 alpha.
+{
+  let alpha n xs.
+  assume HalphaJH0 Hred HnNe0 Hwp.
+  claim Hcanon :
+    n = 1 /\
+    (forall i:set, i :e 1 ->
+      apply_fun xs i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i).
+  {
+    exact (HambientGeneratorWordUniqueSingleton
+      alpha
+      n
+      xs
+      HalphaJH0
+      Hred
+      HnNe0
+      Hwp).
+  }
+  claim Hpt :
+    forall i:set, i :e 1 ->
+      apply_fun xs i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i.
+  {
+    exact (andER
+      (n = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun xs i =
+        apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i)
+      Hcanon).
+  }
+  claim H0eq :
+    apply_fun xs 0 =
+    apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) 0.
+  {
+    exact (Hpt 0 (ordsuccI2 0)).
+  }
+  rewrite H0eq.
+  exact (apply_fun_graph
+    1
+    (fun _:set => apply_fun gensH0 alpha)
+    0
+    (ordsuccI2 0)).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
