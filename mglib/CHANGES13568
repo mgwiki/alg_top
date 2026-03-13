@@ -1,0 +1,18 @@
+## Changes in bck13568 (vs bck13567)
+
+Started proof of ex68_2c_finite_order_elements (Bounty 121, locked by Alice):
+- Binary free product: finite order elements are conjugates of factor elements
+- Proved trivial case (x = e): witnessed c=e, y=e in G1
+- Proved nz=1 case: z is a single factor element, direct conjugation by e
+- Set up strong induction framework on reduced word length
+- Fixed multiple Megalodon syntax issues:
+  - neq_1_0 (not neq_1_0_nat)
+  - subgroup_of_unit for identity membership
+  - eq_subst_mem_set instead of rewrite-in-hypothesis
+  - nat_strong_ind (not strong_nat_ind)
+  - Added nat_p k assumption in strong induction step
+  - Fixed word_product_succ intermediate step (nat_primrec_0)
+  - Fixed bullet nesting (claim-based case analysis for ordsuccE)
+- Remaining admit: nz >= 2 case (not cyclically reduced + cyclically reduced)
+
+Line count: 409541 (vs 409281; +260 lines)
