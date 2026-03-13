@@ -1,4 +1,4 @@
-(** Balance Alice 7648 **)
+(** Balance Alice 7637 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 357 **)
 (** Balance Dave 2498 **)
@@ -282458,7 +282458,8 @@ Qed.
 (** LATEX VERSION: The only elements of G that have finite order are elements **)
 (** of G1 and G2 that have finite order, and their conjugates. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Alice 1773452687 **)
 Theorem ex68_2c_finite_order_elements :
   forall G mult e inv G1 G2:set,
   free_product_of_subgroups G mult e inv 2
