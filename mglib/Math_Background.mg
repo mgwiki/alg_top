@@ -417850,7 +417850,46 @@ assume HfreeH.
 assume HnOmega.
 assume HJeq.
 assume HcosetFin.
-admit. (** TODO S85.3 core gap: complete Schreier-rank proof from free-rank data and finite coset index. **)
+claim HidxSpec :
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+{
+  exact (subgroup_index_spec_from_finite
+    H
+    F
+    multF
+    eF
+    invF
+    HcosetFin).
+}
+claim HidxOmega :
+  subgroup_index H F multF eF invF :e omega.
+{
+  exact (andEL
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+}
+claim HidxEquip :
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+{
+  exact (andER
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+}
+claim HrankData :
+  n :e omega /\ equip J (ordsucc n) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+{
+  apply and4I.
+  - exact HnOmega.
+  - exact HJeq.
+  - exact HidxOmega.
+  - exact HidxEquip.
+}
+admit. (** TODO S85.3 core gap: use HfreeF/HfreeH with HrankData to derive Schreier rank formula. **)
 Admitted.
 
 (** Projection form of Nielsen-Schreier existence for convenient reuse. **)
