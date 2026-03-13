@@ -430049,6 +430049,138 @@ apply iffI.
     HkPack).
 Qed.
 
+(** Direct-route projections from the consolidated nonzero rankdata conjunction. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_n_omega : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  n :e omega.
+let F multF eF invF J H n.
+assume Hdirect.
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  Hdirect).
+assume HnOmega HJeq HcosetFin HidxOmega HidxEquip.
+exact HnOmega.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_J_equip : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  equip J (ordsucc n).
+let F multF eF invF J H n.
+assume Hdirect.
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  Hdirect).
+assume HnOmega HJeq HcosetFin HidxOmega HidxEquip.
+exact HJeq.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_coset_finite : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  finite (right_coset_set F multF H).
+let F multF eF invF J H n.
+assume Hdirect.
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  Hdirect).
+assume HnOmega HJeq HcosetFin HidxOmega HidxEquip.
+exact HcosetFin.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_index_omega : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  subgroup_index H F multF eF invF :e omega.
+let F multF eF invF J H n.
+assume Hdirect.
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  Hdirect).
+assume HnOmega HJeq HcosetFin HidxOmega HidxEquip.
+exact HidxOmega.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_index_equip : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume Hdirect.
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  Hdirect).
+assume HnOmega HJeq HcosetFin HidxOmega HidxEquip.
+exact HidxEquip.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_index_spec : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume Hdirect.
+apply andI.
+- exact (thm85_3_rankdata_nonzero_direct_index_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    Hdirect).
+- exact (thm85_3_rankdata_nonzero_direct_index_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    Hdirect).
+Qed.
+
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
 Theorem thm85_3_core_rank_from_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
@@ -430105,7 +430237,7 @@ exact (iffEL
       HnOmega
       HJeq
       Hk))).
-Admitted.
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_from_rankdata **)
 
 (** Core Schreier-rank step from the common nonzero witness pack. **)
 Theorem thm85_3_core_rank_from_nonzero_pack :
