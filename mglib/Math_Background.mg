@@ -412579,6 +412579,66 @@ claim HrestrictedGeneratorWordElem0Pack :
   - rewrite <- HbetaEqAlpha.
     exact Hx0NeEb.
 }
+claim HrestrictedGeneratorWordNonzero :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    n <> 0.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 Hwp.
+  assume Hn0.
+  claim Hwp0 : word_product multF eF xs 0 = eF.
+  {
+    exact (nat_primrec_0
+      eF
+      (fun i r => apply_fun multF (r, apply_fun xs i))).
+  }
+  claim HgensEqE : apply_fun gensH0 alpha = eF.
+  {
+    rewrite <- Hwp.
+    rewrite Hn0.
+    exact Hwp0.
+  }
+  exact ((HgensH0NeUnit alpha HalphaJH0) HgensEqE).
+}
+claim HrestrictedGeneratorWordUniqueSingleton0 :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    n = 1 /\
+    (forall i:set, i :e 1 ->
+      apply_fun xs i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i).
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 Hwp.
+  exact (HrestrictedGeneratorWordUniqueSingleton
+    alpha
+    n
+    xs
+    HalphaJH0
+    HredH0
+    (HrestrictedGeneratorWordNonzero alpha n xs HalphaJH0 HredH0 Hwp)
+    Hwp).
+}
+claim HrestrictedGeneratorWordHead0 :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    apply_fun xs 0 = apply_fun gensH0 alpha.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 Hwp.
+  exact (HrestrictedGeneratorWordHead
+    alpha
+    n
+    xs
+    HalphaJH0
+    HredH0
+    (HrestrictedGeneratorWordNonzero alpha n xs HalphaJH0 HredH0 Hwp)
+    Hwp).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
