@@ -411910,6 +411910,137 @@ claim HwordSingletonGenAmbient :
     HgrpF
     (HgensH0InF alpha HalphaJH0)).
 }
+claim HambientGeneratorWordUniqueSingleton :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word J GfamF (graph J (fun _:set => eF)) n xs -> n <> 0 ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    n = 1 /\
+    (forall i:set, i :e 1 ->
+      apply_fun xs i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i).
+{
+  let alpha n xs.
+  assume HalphaJH0 Hred HnNe0 Hwp.
+  apply (HgeneratorHasAmbientDecomposition alpha HalphaJH0).
+  let nw.
+  assume HnwEx.
+  apply HnwEx.
+  let xsw.
+  assume Hpack.
+  apply (and4E
+    (reduced_word J GfamF (graph J (fun _:set => eF)) nw xsw)
+    (nw <> 0)
+    (word_product multF eF xsw nw = apply_fun gensH0 alpha)
+    (forall n' xs':set,
+      reduced_word J GfamF (graph J (fun _:set => eF)) n' xs' -> n' <> 0 ->
+      word_product multF eF xs' n' = apply_fun gensH0 alpha ->
+      nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i))
+    Hpack).
+  assume Hredw HnwNe0 Hwpw Huniqw.
+  claim HuniqSingleton :
+    nw = 1 /\
+    (forall i:set, i :e nw ->
+      apply_fun xsw i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i).
+  {
+    exact (Huniqw
+      1
+      (graph 1 (fun _:set => apply_fun gensH0 alpha))
+      (HreducedSingletonGenAmbient alpha HalphaJH0)
+      neq_1_0
+      (HwordSingletonGenAmbient alpha HalphaJH0)).
+  }
+  claim HuniqGiven :
+    nw = n /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i).
+  {
+    exact (Huniqw
+      n
+      xs
+      Hred
+      HnNe0
+      Hwp).
+  }
+  claim Hnw1 : nw = 1.
+  {
+    exact (andEL
+      (nw = 1)
+      (forall i:set, i :e nw ->
+        apply_fun xsw i =
+        apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i)
+      HuniqSingleton).
+  }
+  claim HxswSingleton :
+    forall i:set, i :e nw ->
+      apply_fun xsw i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i.
+  {
+    exact (andER
+      (nw = 1)
+      (forall i:set, i :e nw ->
+        apply_fun xsw i =
+        apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i)
+      HuniqSingleton).
+  }
+  claim HnwEqN : nw = n.
+  {
+    exact (andEL
+      (nw = n)
+      (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i)
+      HuniqGiven).
+  }
+  claim HxswEqXs :
+    forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i.
+  {
+    exact (andER
+      (nw = n)
+      (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i)
+      HuniqGiven).
+  }
+  claim HnEqNw : n = nw.
+  {
+    symmetry.
+    exact HnwEqN.
+  }
+  claim Hn1 : n = 1.
+  {
+    exact (eq_i_tra
+      n
+      nw
+      1
+      HnEqNw
+      Hnw1).
+  }
+  apply andI.
+  - exact Hn1.
+  - let i.
+    assume Hi1.
+    claim HiNw : i :e nw.
+    {
+      rewrite Hnw1.
+      exact Hi1.
+    }
+    claim HxswIxs : apply_fun xsw i = apply_fun xs i.
+    {
+      exact (HxswEqXs i HiNw).
+    }
+    claim HxswIsingle :
+      apply_fun xsw i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i.
+    {
+      exact (HxswSingleton i HiNw).
+    }
+    claim HxsIxsw : apply_fun xs i = apply_fun xsw i.
+    {
+      symmetry.
+      exact HxswIxs.
+    }
+    exact (eq_i_tra
+      (apply_fun xs i)
+      (apply_fun xsw i)
+      (apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i)
+      HxsIxsw
+      HxswIsingle).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
