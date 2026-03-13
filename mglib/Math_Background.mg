@@ -418994,6 +418994,30 @@ apply and3I.
     HkPack).
 Qed.
 
+(** Core target from fully extracted component hypotheses. **)
+Theorem thm85_3_core_rank_from_components :
+  forall F multF eF invF J gens H JH gensH n:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+let F multF eF invF J gens H JH gensH n.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+assume HidxOmega.
+assume HidxEquip.
+admit. (** TODO S85.3 core gap: complete Schreier-rank derivation from explicit components. **)
+Admitted.
+
 (** Schreier-rank core packaged over bundled rank/index data. **)
 Theorem thm85_3_core_rank_from_rankdata :
   forall F multF eF invF J gens H JH gensH n:set,
@@ -419018,7 +419042,25 @@ apply (and5E
   (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
   HrankData).
 assume HnOmega HJeq HcosetFin HidxOmega HidxEquip.
-admit. (** TODO S85.3 core gap: derive canonical-index rank target from HfreeF/HfreeH and extracted rank/index components. **)
+exact (thm85_3_core_rank_from_components
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  H
+  JH
+  gensH
+  n
+  HfreeF
+  Hsub
+  HfreeH
+  HnOmega
+  HJeq
+  HcosetFin
+  HidxOmega
+  HidxEquip).
 Admitted.
 
 (** Build bundled rank/index data from explicit witness inputs. **)
