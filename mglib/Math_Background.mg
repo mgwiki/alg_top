@@ -417740,6 +417740,64 @@ rewrite <- (subgroup_index_mul_ordsucc_eq_of_nonzero_pack
 exact HeqIdx.
 Qed.
 
+(** Transport equip target from witness-k form back to subgroup_index form. **)
+(** Proven Bob **)
+Lemma equip_ordsucc_mul_witness_to_subgroup_index : forall H G mult e inv k n JH:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  equip JH (ordsucc (mul_SNo k n)) ->
+  equip JH (ordsucc (mul_SNo (subgroup_index H G mult e inv) n)).
+let H G mult e inv k n JH.
+assume HkPack.
+assume HeqK.
+rewrite (subgroup_index_mul_ordsucc_eq_of_nonzero_pack
+  H
+  G
+  mult
+  e
+  inv
+  k
+  n
+  HkPack).
+exact HeqK.
+Qed.
+
+(** Equivalent forms of the S85.3 target cardinality expression. **)
+(** Proven Bob **)
+Lemma equip_ordsucc_mul_subgroup_index_iff_witness : forall H G mult e inv k n JH:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  (equip JH (ordsucc (mul_SNo (subgroup_index H G mult e inv) n)) <->
+   equip JH (ordsucc (mul_SNo k n))).
+let H G mult e inv k n JH.
+assume HkPack.
+apply (iffI
+  (equip JH (ordsucc (mul_SNo (subgroup_index H G mult e inv) n)))
+  (equip JH (ordsucc (mul_SNo k n)))).
+- assume HeqIdx.
+  exact (equip_ordsucc_mul_subgroup_index_to_witness
+    H
+    G
+    mult
+    e
+    inv
+    k
+    n
+    JH
+    HkPack
+    HeqIdx).
+- assume HeqK.
+  exact (equip_ordsucc_mul_witness_to_subgroup_index
+    H
+    G
+    mult
+    e
+    inv
+    k
+    n
+    JH
+    HkPack
+    HeqK).
+Qed.
+
 (** Bundled subgroup-index data from the standard nonzero coset-cardinality pack. **)
 (** Proven Bob **)
 Lemma subgroup_index_bundle_of_nonzero_pack : forall H G mult e inv k n:set,
@@ -417914,16 +417972,21 @@ apply andI.
       HJeq
       HcosetFin).
   }
-  exact (equip_ordsucc_mul_subgroup_index_to_witness
-    H
-    F
-    multF
-    eF
-    invF
-    k
-    n
-    JH
-    HkPack
+  exact (andEL
+    (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)) ->
+     equip JH (ordsucc (mul_SNo k n)))
+    (equip JH (ordsucc (mul_SNo k n)) ->
+     equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
+    (equip_ordsucc_mul_subgroup_index_iff_witness
+      H
+      F
+      multF
+      eF
+      invF
+      k
+      n
+      JH
+      HkPack)
     HtargetAtIndex).
 Admitted.
 
