@@ -416087,6 +416087,27 @@ claim HoutsideFactorsRawExistenceToOutsideUnionRawH0 :
       x
       HxOutUnion)).
 }
+claim HoutsideRawExistenceUnionFactorsEquivH0 :
+  ((forall x:set, x :e H -> x <> eF ->
+      (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+      exists n xs:set,
+        reduced_word JH0 GfamH0 efamH0 n xs /\
+        word_product multF eF xs n = x)
+   <->
+   (forall x:set, x :e H -> x <> eF ->
+      (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+      exists n xs:set,
+        reduced_word JH0 GfamH0 efamH0 n xs /\
+        word_product multF eF xs n = x)).
+{
+  apply iffI.
+  - assume HunionRaw.
+    exact (HoutsideUnionRawExistenceToOutsideFactorsRawH0
+      HunionRaw).
+  - assume HfactorsRaw.
+    exact (HoutsideFactorsRawExistenceToOutsideUnionRawH0
+      HfactorsRaw).
+}
 claim HoutsideFactorsRawExistenceToNonzeroH0 :
   (forall x:set, x :e H -> x <> eF ->
     (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
