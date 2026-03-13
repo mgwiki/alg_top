@@ -431420,6 +431420,59 @@ exact (thm85_1_subgroup_of_free_is_free
   Hsub).
 Admitted. (** depends on admitted thm85_1_subgroup_of_free_is_free **)
 
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_pack_existing_generators :
+  forall H multH eH invH JH gensH n k:set,
+  free_group_with_generators H multH eH invH JH gensH ->
+  equip JH (ordsucc (mul_SNo k n)) ->
+  exists J0 gens0:set,
+    free_group_with_generators H multH eH invH J0 gens0 /\
+    equip J0 (ordsucc (mul_SNo k n)).
+let H multH eH invH JH gensH n k.
+assume HfreeH.
+assume Hrank.
+witness JH.
+witness gensH.
+apply andI.
+- exact HfreeH.
+- exact Hrank.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_from_exists_and_rank_builder :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set, free_group_with_generators H multH eH invH JH gensH) ->
+  (forall JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH ->
+    equip JH (ordsucc (mul_SNo k n))) ->
+  exists JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH /\
+    equip JH (ordsucc (mul_SNo k n)).
+let H multH eH invH n k.
+assume Hexists.
+assume Hbuilder.
+apply Hexists.
+let JH.
+assume HJHex.
+apply HJHex.
+let gensH.
+assume HfreeH.
+exact (thm85_3_free_gen_formula_pack_existing_generators
+  H
+  multH
+  eH
+  invH
+  JH
+  gensH
+  n
+  k
+  HfreeH
+  (Hbuilder
+    JH
+    gensH
+    HfreeH)).
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
