@@ -423731,6 +423731,114 @@ apply and5I.
     HidxSpec).
 Qed.
 
+(** Projection helpers from npack+witness rankdata constructor. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_npack_witness_index_omega : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ equip (right_coset_set F multF H) k ->
+  subgroup_index H F multF eF invF :e omega.
+let F multF eF invF J H n k.
+assume HnPack.
+assume Hk.
+exact (thm85_3_rankdata_index_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_npack_and_witness
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    Hk)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_npack_witness_index_equip : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ equip (right_coset_set F multF H) k ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume Hk.
+exact (thm85_3_rankdata_index_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_npack_and_witness
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    Hk)).
+Qed.
+
+(** Projection helpers from npack+finite rankdata constructor. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_npack_finite_index_spec : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnPack.
+assume HcosetFin.
+apply andI.
+- exact (thm85_3_rankdata_index_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    (thm85_3_rankdata_from_npack_and_finite
+      F
+      multF
+      eF
+      invF
+      J
+      H
+      n
+      HnPack
+      HcosetFin)).
+- exact (thm85_3_rankdata_index_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    (thm85_3_rankdata_from_npack_and_finite
+      F
+      multF
+      eF
+      invF
+      J
+      H
+      n
+      HnPack
+      HcosetFin)).
+Qed.
+
 (** Core target from fully extracted component hypotheses. **)
 Theorem thm85_3_core_rank_from_components :
   forall F multF eF invF J gens H JH gensH n:set,
