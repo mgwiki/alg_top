@@ -418994,6 +418994,107 @@ apply and3I.
     HkPack).
 Qed.
 
+(** Projections from bundled S85.3 rank/index data. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_n_omega : forall F multF eF invF J H n:set,
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)) ->
+  n :e omega.
+let F multF eF invF J H n.
+assume HrankData.
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  HrankData).
+assume HnO HJeq Hcfin HidxO HidxEq.
+exact HnO.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_J_equip : forall F multF eF invF J H n:set,
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)) ->
+  equip J (ordsucc n).
+let F multF eF invF J H n.
+assume HrankData.
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  HrankData).
+assume HnO HJeq Hcfin HidxO HidxEq.
+exact HJeq.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_coset_finite : forall F multF eF invF J H n:set,
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)) ->
+  finite (right_coset_set F multF H).
+let F multF eF invF J H n.
+assume HrankData.
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  HrankData).
+assume HnO HJeq Hcfin HidxO HidxEq.
+exact Hcfin.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_index_omega : forall F multF eF invF J H n:set,
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)) ->
+  subgroup_index H F multF eF invF :e omega.
+let F multF eF invF J H n.
+assume HrankData.
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  HrankData).
+assume HnO HJeq Hcfin HidxO HidxEq.
+exact HidxO.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_index_equip : forall F multF eF invF J H n:set,
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)) ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HrankData.
+apply (and5E
+  (n :e omega)
+  (equip J (ordsucc n))
+  (finite (right_coset_set F multF H))
+  (subgroup_index H F multF eF invF :e omega)
+  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+  HrankData).
+assume HnO HJeq Hcfin HidxO HidxEq.
+exact HidxEq.
+Qed.
+
 (** Core target from fully extracted component hypotheses. **)
 Theorem thm85_3_core_rank_from_components :
   forall F multF eF invF J gens H JH gensH n:set,
@@ -419034,14 +419135,71 @@ assume HfreeF.
 assume Hsub.
 assume HfreeH.
 assume HrankData.
-apply (and5E
-  (n :e omega)
-  (equip J (ordsucc n))
-  (finite (right_coset_set F multF H))
-  (subgroup_index H F multF eF invF :e omega)
-  (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
-  HrankData).
-assume HnOmega HJeq HcosetFin HidxOmega HidxEquip.
+claim HnOmega :
+  n :e omega.
+{
+  exact (thm85_3_rankdata_n_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HrankData).
+}
+claim HJeq :
+  equip J (ordsucc n).
+{
+  exact (thm85_3_rankdata_J_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HrankData).
+}
+claim HcosetFin :
+  finite (right_coset_set F multF H).
+{
+  exact (thm85_3_rankdata_coset_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HrankData).
+}
+claim HidxOmega :
+  subgroup_index H F multF eF invF :e omega.
+{
+  exact (thm85_3_rankdata_index_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HrankData).
+}
+claim HidxEquip :
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+{
+  exact (thm85_3_rankdata_index_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HrankData).
+}
 exact (thm85_3_core_rank_from_components
   F
   multF
