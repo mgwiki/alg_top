@@ -414161,6 +414161,96 @@ claim HgeneratorRestrictedWordIndexIsZeroViaGeneral :
     Hwp
     HiN).
 }
+claim HfactorElemRestrictedWordEqualsSingletonOnN :
+  forall alpha g n xs:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    forall i:set, i :e n ->
+      apply_fun xs i = apply_fun (graph 1 (fun _:set => g)) i.
+{
+  let alpha g n xs.
+  assume HalphaJH0 HgGa HgNeEfam HredH0 Hwp.
+  claim Hcanon :
+    1 = n /\
+    (forall i:set, i :e 1 ->
+      apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs i).
+  {
+    exact (HfactorElemRestrictedWordCanonicalWitnessUnique
+      alpha
+      g
+      n
+      xs
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredH0
+      Hwp).
+  }
+  claim H1n : 1 = n.
+  {
+    exact (andEL
+      (1 = n)
+      (forall i:set, i :e 1 ->
+        apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs i)
+      Hcanon).
+  }
+  claim Hpt1 :
+    forall i:set, i :e 1 ->
+      apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs i.
+  {
+    exact (andER
+      (1 = n)
+      (forall i:set, i :e 1 ->
+        apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs i)
+      Hcanon).
+  }
+  claim Hn1 : n = 1.
+  {
+    symmetry.
+    exact H1n.
+  }
+  let i.
+  assume HiN.
+  claim Hi1 : i :e 1.
+  {
+    exact (eq_subst_mem_set
+      i
+      n
+      1
+      HiN
+      Hn1).
+  }
+  claim Hgi :
+    apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs i.
+  {
+    exact (Hpt1 i Hi1).
+  }
+  symmetry.
+  exact Hgi.
+}
+claim HgeneratorRestrictedWordEqualsSingletonOnNViaGeneral :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    forall i:set, i :e n ->
+      apply_fun xs i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 Hwp.
+  exact (HfactorElemRestrictedWordEqualsSingletonOnN
+    alpha
+    (apply_fun gensH0 alpha)
+    n
+    xs
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)
+    HredH0
+    Hwp).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
