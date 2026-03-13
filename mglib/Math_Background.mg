@@ -416041,6 +416041,52 @@ claim HoutsideFactorsExistenceToLengthGE2H0 :
         Hlen).
   - exact Hwp.
 }
+claim HoutsideUnionRawExistenceToOutsideFactorsRawH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\
+      word_product multF eF xs n = x) ->
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\
+      word_product multF eF xs n = x).
+{
+  assume HexUnionRaw.
+  let x.
+  assume HxH HxNe HxOutFactors.
+  exact (HexUnionRaw
+    x
+    HxH
+    HxNe
+    (HoutsideFactorsToNotInUnionH0
+      x
+      HxOutFactors)).
+}
+claim HoutsideFactorsRawExistenceToOutsideUnionRawH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\
+      word_product multF eF xs n = x) ->
+  (forall x:set, x :e H -> x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\
+      word_product multF eF xs n = x).
+{
+  assume HexFactorsRaw.
+  let x.
+  assume HxH HxNe HxOutUnion.
+  exact (HexFactorsRaw
+    x
+    HxH
+    HxNe
+    (HnotInUnionToOutsideFactorsH0
+      x
+      HxOutUnion)).
+}
 claim HoutsideFactorsRawExistenceToNonzeroH0 :
   (forall x:set, x :e H -> x <> eF ->
     (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
