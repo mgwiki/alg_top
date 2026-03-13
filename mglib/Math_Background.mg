@@ -416559,6 +416559,27 @@ exact (subgroup_index_spec_from_witness
   Hex).
 Qed.
 
+(** Convenience form from finiteness of the right coset set. **)
+(** Proven Bob **)
+Lemma subgroup_index_spec_from_finite : forall H G mult e inv:set,
+  finite (right_coset_set G mult H) ->
+  subgroup_index H G mult e inv :e omega /\
+  equip (right_coset_set G mult H) (subgroup_index H G mult e inv).
+let H G mult e inv.
+assume Hfin.
+apply Hfin.
+let k.
+assume Hk.
+exact (subgroup_index_spec
+  H
+  G
+  mult
+  e
+  inv
+  k
+  Hk).
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
