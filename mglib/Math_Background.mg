@@ -283151,7 +283151,72 @@ apply (xm (x = e)).
         (** This follows from: zc has a word representation of length mz **)
         (** Construct the word representation of zc **)
         claim Hnzc_in_nz : nzc :e nz.
-        { admit. }
+        {
+          (** zs(0) :e Gfam(alpha_last) since alpha_first = alpha_last **)
+          claim Hzs0_Gal : apply_fun zs 0 :e apply_fun Gfam alpha_last.
+          { exact (eq_subst_mem_set (apply_fun zs 0) (apply_fun Gfam alpha_first)
+              (apply_fun Gfam alpha_last) Hzs0_Gaf
+              (apply_fun_congr_arg Gfam alpha_first alpha_last Haf_al)). }
+          claim Hsub_al : subgroup_of (apply_fun Gfam alpha_last) G mult e inv.
+          { exact (Hsubfam alpha_last Hal_J). }
+          (** p = mult(zs(mz), zs(0)) is in Gfam(alpha_last) **)
+          claim Hp_in_fac : apply_fun mult (apply_fun zs mz, apply_fun zs 0) :e apply_fun Gfam alpha_last.
+          { exact (subgroup_of_mult_closed (apply_fun Gfam alpha_last) G mult e inv
+              (apply_fun zs mz) (apply_fun zs 0) Hsub_al Hzsmz_Gal Hzs0_Gal). }
+          (** Use the suffix [zs(1), ..., zs(mz)] as a reduced word (reduced_word_suffix) **)
+          claim Hred_suf : reduced_word 2 Gfam efam mz
+            (graph mz (fun i:set => apply_fun zs (ordsucc i))).
+          { claim Hred_sm : reduced_word 2 Gfam efam (ordsucc mz) zs.
+            { rewrite <- Hnz_eq. exact Hredz. }
+            exact (reduced_word_suffix 2 Gfam efam mz zs Hred_sm). }
+          (** The prefix [zs(1), ..., zs(mz-1)] is also reduced (by reduced_word_prefix of suffix) **)
+          (** But we need mz >= 1, which we have since nz >= 2 **)
+          (** Case split on p = e or p <> e **)
+          (** Actually, we need a case split on p = efam(alpha_last) or not **)
+          (** But efam(alpha_last) = e, so this is p = e or p <> e **)
+          (** Strategy: construct a reduced word for zc of length mz (or less) **)
+          (** Since mz :e ordsucc mz = nz, we get nzc :e nz by uniqueness **)
+          (** The construction and its verification are admitted for now **)
+          claim Hex_short_word : exists nw ws:set,
+            reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
+            word_product mult e ws nw = zc /\ nw :e nz.
+          { admit. }
+          apply Hex_short_word. let nw.
+          assume Hex_ws : exists ws:set,
+            reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
+            word_product mult e ws nw = zc /\ nw :e nz.
+          apply Hex_ws. let ws.
+          assume Hshort : reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
+            word_product mult e ws nw = zc /\ nw :e nz.
+          claim Hred_w : reduced_word 2 Gfam efam nw ws.
+          { exact (andEL (reduced_word 2 Gfam efam nw ws) (nw <> 0)
+              (andEL (reduced_word 2 Gfam efam nw ws /\ (nw <> 0))
+                (word_product mult e ws nw = zc)
+                (andEL ((reduced_word 2 Gfam efam nw ws /\ (nw <> 0)) /\
+                  (word_product mult e ws nw = zc))
+                  (nw :e nz) Hshort))). }
+          claim Hnw_ne0 : nw <> 0.
+          { exact (andER (reduced_word 2 Gfam efam nw ws) (nw <> 0)
+              (andEL (reduced_word 2 Gfam efam nw ws /\ (nw <> 0))
+                (word_product mult e ws nw = zc)
+                (andEL ((reduced_word 2 Gfam efam nw ws /\ (nw <> 0)) /\
+                  (word_product mult e ws nw = zc))
+                  (nw :e nz) Hshort))). }
+          claim Hwp_w : word_product mult e ws nw = zc.
+          { exact (andER (reduced_word 2 Gfam efam nw ws /\ (nw <> 0))
+              (word_product mult e ws nw = zc)
+              (andEL ((reduced_word 2 Gfam efam nw ws /\ (nw <> 0)) /\
+                (word_product mult e ws nw = zc))
+                (nw :e nz) Hshort)). }
+          claim Hnw_in_nz : nw :e nz.
+          { exact (andER ((reduced_word 2 Gfam efam nw ws /\ (nw <> 0)) /\
+              (word_product mult e ws nw = zc))
+              (nw :e nz) Hshort). }
+          claim Hnzc_eq_nw : nzc = nw.
+          { exact (andEL (nzc = nw)
+              (forall i:set, i :e nzc -> apply_fun xszc i = apply_fun ws i)
+              (Huniq_zc nw ws Hred_w Hnw_ne0 Hwp_w)). }
+          exact (eq_subst_mem nzc nw nz Hnzc_eq_nw Hnw_in_nz). }
         (** Apply IH **)
         claim HnzcO : nzc :e omega.
         { apply (and3E (nzc :e omega)
