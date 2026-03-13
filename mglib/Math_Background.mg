@@ -421236,19 +421236,42 @@ assume Hsub.
 assume HfreeH.
 assume HnPack.
 assume HkPack.
-claim HnOmega : n :e omega.
+claim HrankData :
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
 {
-  exact (andEL
-    (n :e omega)
-    (equip J (ordsucc n))
-    HnPack).
+  exact (thm85_3_rankdata_from_nonzero_pack_via_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack).
 }
-claim HJeq : equip J (ordsucc n).
+claim HtargetAtIndex :
+  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
 {
-  exact (andER
-    (n :e omega)
-    (equip J (ordsucc n))
-    HnPack).
+  exact (thm85_3_core_rank_from_rankdata
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    JH
+    gensH
+    n
+    HfreeF
+    Hsub
+    HfreeH
+    HrankData).
 }
 claim HkWitness :
   k :e omega /\ equip (right_coset_set F multF H) k.
@@ -421260,24 +421283,20 @@ claim HkWitness :
     k
     HkPack).
 }
-exact (thm85_3_core_rank_from_witness
-  F
-  multF
-  eF
-  invF
-  J
-  gens
-  H
-  JH
-  gensH
-  n
-  k
-  HfreeF
-  Hsub
-  HfreeH
-  HnOmega
-  HJeq
-  HkWitness).
+exact (iffEL
+  (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
+  (equip JH (ordsucc (mul_SNo k n)))
+  (equip_ordsucc_mul_subgroup_index_iff_any_witness
+    H
+    F
+    multF
+    eF
+    invF
+    k
+    n
+    JH
+    HkWitness)
+  HtargetAtIndex).
 Admitted.
 
 (** Core Schreier-rank step at canonical subgroup_index cardinal. **)
