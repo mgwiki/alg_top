@@ -423230,6 +423230,198 @@ exact (thm85_3_rankdata_from_witness
   Hk).
 Qed.
 
+(** Projections from finite-coset-derived rankdata bundle. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_finite_coset_finite : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  finite (right_coset_set F multF H).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+exact (thm85_3_rankdata_coset_finite
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_finite_n_omega : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  n :e omega.
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+exact (thm85_3_rankdata_n_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_finite_J_equip : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  equip J (ordsucc n).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+exact (thm85_3_rankdata_J_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_finite_index_omega : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega.
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+exact (thm85_3_rankdata_index_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_finite_index_equip : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+exact (thm85_3_rankdata_index_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_finite_index_spec : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+apply andI.
+- exact (thm85_3_rankdata_finite_index_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin).
+- exact (thm85_3_rankdata_finite_index_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin).
+Qed.
+
 (** Build bundled rank/index data from the common nonzero witness pack. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_from_nonzero_pack : forall F multF eF invF J H n k:set,
