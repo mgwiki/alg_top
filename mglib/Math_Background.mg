@@ -423992,6 +423992,236 @@ apply and5I.
 - exact HidxEquip.
 Qed.
 
+(** Projections from explicit-components rankdata constructor. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_components_n_omega : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  n :e omega.
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+assume HidxOmega.
+assume HidxEquip.
+exact (thm85_3_rankdata_n_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_components
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin
+    HidxOmega
+    HidxEquip)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_components_J_equip : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  equip J (ordsucc n).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+assume HidxOmega.
+assume HidxEquip.
+exact (thm85_3_rankdata_J_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_components
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin
+    HidxOmega
+    HidxEquip)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_components_coset_finite : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  finite (right_coset_set F multF H).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+assume HidxOmega.
+assume HidxEquip.
+exact (thm85_3_rankdata_coset_finite
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_components
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin
+    HidxOmega
+    HidxEquip)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_components_index_omega : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  subgroup_index H F multF eF invF :e omega.
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+assume HidxOmega.
+assume HidxEquip.
+exact (thm85_3_rankdata_index_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_components
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin
+    HidxOmega
+    HidxEquip)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_components_index_equip : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+assume HidxOmega.
+assume HidxEquip.
+exact (thm85_3_rankdata_index_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_from_components
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin
+    HidxOmega
+    HidxEquip)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_components_index_spec : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+assume HidxOmega.
+assume HidxEquip.
+apply andI.
+- exact (thm85_3_rankdata_components_index_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin
+    HidxOmega
+    HidxEquip).
+- exact (thm85_3_rankdata_components_index_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin
+    HidxOmega
+    HidxEquip).
+Qed.
+
 (** Build rank/index bundle from the common n-pack plus an explicit witness. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_from_npack_and_witness : forall F multF eF invF J H n k:set,
