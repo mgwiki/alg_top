@@ -410484,6 +410484,30 @@ claim HsubF : H c= F.
   assume HsubF0 HeH0 HmulH0 HinvH0.
   exact HsubF0.
 }
+claim HmulH :
+  forall x y:set, x :e H -> y :e H -> apply_fun multF (x, y) :e H.
+{
+  apply (and4E
+    (H c= F)
+    (eF :e H)
+    (forall x y:set, x :e H -> y :e H -> apply_fun multF (x, y) :e H)
+    (forall x:set, x :e H -> apply_fun invF x :e H)
+    Hsub).
+  assume HsubF0 HeH0 HmulH0 HinvH0.
+  exact HmulH0.
+}
+claim HinvH :
+  forall x:set, x :e H -> apply_fun invF x :e H.
+{
+  apply (and4E
+    (H c= F)
+    (eF :e H)
+    (forall x y:set, x :e H -> y :e H -> apply_fun multF (x, y) :e H)
+    (forall x:set, x :e H -> apply_fun invF x :e H)
+    Hsub).
+  assume HsubF0 HeH0 HmulH0 HinvH0.
+  exact HinvH0.
+}
 set JH0 := {alpha :e J | apply_fun gens alpha :e H}.
 set gensH0 := graph JH0 (fun alpha:set => apply_fun gens alpha).
 claim HJH0subJ : JH0 c= J.
@@ -410559,6 +410583,78 @@ claim HgensH0InfiniteCyclicInF :
   { exact (HJH0subJ alpha HalphaJH0). }
   rewrite (HgensH0Eq alpha HalphaJH0).
   exact (HinfFam alpha HalphaJ).
+}
+claim HgensH0InfiniteCyclicInH :
+  forall alpha:set, alpha :e JH0 ->
+    infinite_cyclic_subgroup H multF eF invF (apply_fun gensH0 alpha).
+{
+  let alpha.
+  assume HalphaJH0.
+  claim HinfF :
+    infinite_cyclic_subgroup F multF eF invF (apply_fun gensH0 alpha).
+  { exact (HgensH0InfiniteCyclicInF alpha HalphaJH0). }
+  apply (and4E
+    (apply_fun gensH0 alpha :e F)
+    (forall n:set, n :e omega ->
+      group_power_nat multF eF (apply_fun gensH0 alpha) n :e F)
+    (forall m:set, m :e omega ->
+      group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m) :e F)
+    (~(exists n:set, n :e omega /\ n <> 0 /\
+      group_power_nat multF eF (apply_fun gensH0 alpha) n = eF))
+    HinfF).
+  assume HaF HpowF HpowInvF HnontrivF.
+  claim HaH : apply_fun gensH0 alpha :e H.
+  { exact (HgensH0InH alpha HalphaJH0). }
+  claim HpowH :
+    forall n:set, n :e omega ->
+      group_power_nat multF eF (apply_fun gensH0 alpha) n :e H.
+  {
+    let n.
+    assume HnO.
+    exact (group_power_nat_closed_in_group
+      H
+      multF
+      eF
+      invF
+      (apply_fun gensH0 alpha)
+      n
+      HgrpH
+      HaH
+      HnO).
+  }
+  claim HinvBaseH : apply_fun invF (apply_fun gensH0 alpha) :e H.
+  { exact (HinvH (apply_fun gensH0 alpha) HaH). }
+  claim HpowInvH :
+    forall m:set, m :e omega ->
+      group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m) :e H.
+  {
+    let m.
+    assume HmO.
+    claim HsmO : ordsucc m :e omega.
+    { exact (omega_ordsucc m HmO). }
+    exact (group_power_nat_closed_in_group
+      H
+      multF
+      eF
+      invF
+      (apply_fun invF (apply_fun gensH0 alpha))
+      (ordsucc m)
+      HgrpH
+      HinvBaseH
+      HsmO).
+  }
+  exact (and4I
+    (apply_fun gensH0 alpha :e H)
+    (forall n:set, n :e omega ->
+      group_power_nat multF eF (apply_fun gensH0 alpha) n :e H)
+    (forall m:set, m :e omega ->
+      group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m) :e H)
+    (~(exists n:set, n :e omega /\ n <> 0 /\
+      group_power_nat multF eF (apply_fun gensH0 alpha) n = eF))
+    HaH
+    HpowH
+    HpowInvH
+    HnontrivF).
 }
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
