@@ -414023,6 +414023,77 @@ claim HfactorElemRestrictedWordZeroInLength :
   rewrite Hn1.
   exact (ordsuccI2 0).
 }
+claim HfactorElemRestrictedWordElem0Pack :
+  forall alpha g n xs:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    alpha :e JH0 /\
+    apply_fun xs 0 :e apply_fun GfamH0 alpha /\
+    apply_fun xs 0 <> apply_fun efamH0 alpha.
+{
+  let alpha g n xs.
+  assume HalphaJH0 HgGa HgNeEfam HredH0 Hwp.
+  apply and3I.
+  - exact HalphaJH0.
+  - exact (HfactorElemRestrictedWordZeroInAlphaFactor
+      alpha
+      g
+      n
+      xs
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredH0
+      Hwp).
+  - exact (HfactorElemRestrictedWordZeroNeEfamAlpha
+      alpha
+      g
+      n
+      xs
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredH0
+      Hwp).
+}
+claim HfactorElemRestrictedWordCanonicalWitnessUnique :
+  forall alpha g n xs:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    1 = n /\
+    (forall i:set, i :e 1 ->
+      apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs i).
+{
+  let alpha g n xs.
+  assume HalphaJH0 HgGa HgNeEfam HredH0 Hwp.
+  exact (HfactorElemRestrictedWordUniquePair
+    alpha
+    g
+    1
+    (graph 1 (fun _:set => g))
+    n
+    xs
+    HalphaJH0
+    HgGa
+    HgNeEfam
+    (HfactorElemSingletonReducedH0
+      alpha
+      g
+      HalphaJH0
+      HgGa
+      HgNeEfam)
+    (HfactorElemSingletonWordProductH0
+      alpha
+      g
+      HalphaJH0
+      HgGa)
+    HredH0
+    Hwp).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
