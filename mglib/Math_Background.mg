@@ -414451,6 +414451,106 @@ claim HgeneratorRestrictedWordZeroNeEfamAlphaViaGeneral :
     HredH0
     Hwp).
 }
+claim HgeneratorSubgroupsGenerateWitnessH0 :
+  forall alpha:set, alpha :e JH0 ->
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        apply_fun gensH0 alpha =
+          nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n.
+{
+  let alpha.
+  assume HalphaJH0.
+  witness 1.
+  apply and3I.
+  - exact (nat_p_omega 1 nat_1).
+  - exact neq_1_0.
+  - witness (graph 1 (fun _:set => apply_fun gensH0 alpha)).
+    apply and3I.
+    + let i.
+      assume Hi1.
+      rewrite (apply_fun_graph
+        1
+        (fun _:set => apply_fun gensH0 alpha)
+        i
+        Hi1).
+      exact (HgensH0InH alpha HalphaJH0).
+    + let i.
+      assume Hi1.
+      witness alpha.
+      apply andI.
+      * exact HalphaJH0.
+      * rewrite (apply_fun_graph
+          1
+          (fun _:set => apply_fun gensH0 alpha)
+          i
+          Hi1).
+        exact (HgensH0InFactor alpha HalphaJH0).
+    + claim Hnat1 :
+        nat_primrec
+          eF
+          (fun i r => apply_fun multF (r, apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i))
+          1
+        = apply_fun multF (eF, apply_fun gensH0 alpha).
+      {
+        rewrite <- ordsucc_0_eq_1_nat.
+        rewrite (nat_primrec_S
+          eF
+          (fun i r => apply_fun multF (r, apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i))
+          0
+          nat_0).
+        rewrite (nat_primrec_0
+          eF
+          (fun i r => apply_fun multF (r, apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i))).
+        rewrite (apply_fun_graph
+          1
+          (fun _:set => apply_fun gensH0 alpha)
+          0
+          (ordsuccI2 0)).
+        reflexivity.
+      }
+      claim HleftId :
+        apply_fun multF (eF, apply_fun gensH0 alpha) = apply_fun gensH0 alpha.
+      {
+        apply (and6E
+          (function_on multF (setprod H H) H)
+          (function_on invF H H)
+          (eF :e H)
+          (forall x y z:set, x :e H -> y :e H -> z :e H ->
+            apply_fun multF (apply_fun multF (x, y), z) = apply_fun multF (x, apply_fun multF (y, z)))
+          (forall x:set, x :e H -> apply_fun multF (eF, x) = x /\ apply_fun multF (x, eF) = x)
+          (forall x:set, x :e H ->
+            apply_fun multF (x, apply_fun invF x) = eF /\ apply_fun multF (apply_fun invF x, x) = eF)
+          HgrpH).
+        assume HmultH HinvH HeH HassocH HidH HinvLawH.
+        exact (andEL
+          (apply_fun multF (eF, apply_fun gensH0 alpha) = apply_fun gensH0 alpha)
+          (apply_fun multF (apply_fun gensH0 alpha, eF) = apply_fun gensH0 alpha)
+          (HidH
+            (apply_fun gensH0 alpha)
+            (HgensH0InH alpha HalphaJH0))).
+      }
+      claim HnatEqGen :
+        nat_primrec
+          eF
+          (fun i r => apply_fun multF (r, apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i))
+          1
+        = apply_fun gensH0 alpha.
+      {
+        exact (eq_i_tra
+          (nat_primrec
+            eF
+            (fun i r => apply_fun multF (r, apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i))
+            1)
+          (apply_fun multF (eF, apply_fun gensH0 alpha))
+          (apply_fun gensH0 alpha)
+          Hnat1
+          HleftId).
+      }
+      symmetry.
+      exact HnatEqGen.
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
