@@ -416518,6 +416518,24 @@ Definition subgroup_index : set -> set -> set -> set -> set -> set :=
     Eps_i (fun k:set => k :e omega /\
       equip (right_coset_set G mult H) k).
 
+(** Infrastructure: subgroup_index satisfies the defining omega/equip predicate
+    whenever such a witness exists. **)
+(** Proven Bob **)
+Lemma subgroup_index_spec_from_witness : forall H G mult e inv:set,
+  (exists k:set, k :e omega /\ equip (right_coset_set G mult H) k) ->
+  subgroup_index H G mult e inv :e omega /\
+  equip (right_coset_set G mult H) (subgroup_index H G mult e inv).
+let H G mult e inv.
+assume Hex.
+apply Hex.
+let k.
+assume Hk.
+exact (Eps_i_ax
+  (fun x:set => x :e omega /\ equip (right_coset_set G mult H) x)
+  k
+  Hk).
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
