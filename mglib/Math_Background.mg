@@ -415221,6 +415221,49 @@ claim HfreeProductFromGlobalUniqueNoNeH0 :
   - apply HfreeProductUniqueClauseNoNeToWithNeH0.
     exact HglobalNoNe.
 }
+claim HglobalUniqueNoNeOnFactorH0 :
+  forall x:set, x :e H -> x <> eF ->
+    (exists alpha:set, alpha :e JH0 /\ x :e apply_fun GfamH0 alpha) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+{
+  let x.
+  assume HxH HxNe HxInSomeFactor.
+  apply HxInSomeFactor.
+  let alpha.
+  assume HalphaPack.
+  claim HalphaJH0 : alpha :e JH0.
+  {
+    exact (andEL
+      (alpha :e JH0)
+      (x :e apply_fun GfamH0 alpha)
+      HalphaPack).
+  }
+  claim HxGa : x :e apply_fun GfamH0 alpha.
+  {
+    exact (andER
+      (alpha :e JH0)
+      (x :e apply_fun GfamH0 alpha)
+      HalphaPack).
+  }
+  claim HxNeEfam :
+    x <> apply_fun efamH0 alpha.
+  {
+    rewrite (HefamH0Val alpha HalphaJH0).
+    exact HxNe.
+  }
+  exact (HfactorElemHasRestrictedDecompositionUnique
+    alpha
+    x
+    HalphaJH0
+    HxGa
+    HxNeEfam).
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
