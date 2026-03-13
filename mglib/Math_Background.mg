@@ -283450,8 +283450,94 @@ apply (xm (x = e)).
               rewrite Hassoc_step. rewrite Hzc_prod. rewrite Hshift_zs.
               reflexivity. }
             (** Reduced word conditions **)
+            (** Extract components from Hredz **)
+            claim Hredz_elem : forall i:set, i :e nz ->
+              exists a:set, a :e 2 /\ apply_fun zs i :e apply_fun Gfam a /\ apply_fun zs i <> apply_fun efam a.
+            { apply (and3E (nz :e omega)
+                (forall i:set, i :e nz -> exists a:set, a :e 2 /\ apply_fun zs i :e apply_fun Gfam a /\ apply_fun zs i <> apply_fun efam a)
+                (forall i:set, i :e nz -> ordsucc i :e nz ->
+                  forall a b:set, a :e 2 -> b :e 2 -> apply_fun zs i :e apply_fun Gfam a -> apply_fun zs (ordsucc i) :e apply_fun Gfam b -> a <> b)
+                Hredz). assume _ Helem _. exact Helem. }
+            claim Hredz_adj : forall i:set, i :e nz -> ordsucc i :e nz ->
+              forall a b:set, a :e 2 -> b :e 2 ->
+                apply_fun zs i :e apply_fun Gfam a -> apply_fun zs (ordsucc i) :e apply_fun Gfam b -> a <> b.
+            { apply (and3E (nz :e omega)
+                (forall i:set, i :e nz -> exists a:set, a :e 2 /\ apply_fun zs i :e apply_fun Gfam a /\ apply_fun zs i <> apply_fun efam a)
+                (forall i:set, i :e nz -> ordsucc i :e nz ->
+                  forall a b:set, a :e 2 -> b :e 2 -> apply_fun zs i :e apply_fun Gfam a -> apply_fun zs (ordsucc i) :e apply_fun Gfam b -> a <> b)
+                Hredz). assume _ _ Hadj. exact Hadj. }
             claim Hred_ws : reduced_word 2 Gfam efam mz ws_pne.
-            { admit. }
+            { prove mz :e omega /\
+                (forall i:set, i :e mz ->
+                  exists alpha:set, alpha :e 2 /\
+                    apply_fun ws_pne i :e apply_fun Gfam alpha /\
+                    apply_fun ws_pne i <> apply_fun efam alpha) /\
+                (forall i:set, i :e mz -> ordsucc i :e mz ->
+                  forall alpha beta:set, alpha :e 2 -> beta :e 2 ->
+                    apply_fun ws_pne i :e apply_fun Gfam alpha ->
+                    apply_fun ws_pne (ordsucc i) :e apply_fun Gfam beta -> alpha <> beta).
+              apply and3I.
+              - exact HmzO.
+              - (** Element condition **)
+                let i. assume Hi : i :e mz.
+                apply (xm (i = 0)).
+                + assume Hi0 : i = 0. rewrite Hi0. rewrite Hws0.
+                  witness alpha_last.
+                  prove alpha_last :e 2 /\ p :e apply_fun Gfam alpha_last /\ p <> apply_fun efam alpha_last.
+                  apply and3I.
+                  * exact Hal_J.
+                  * exact Hp_in_fac.
+                  * rewrite Hefam_al. exact Hpne.
+                + assume Hine0 : i <> 0. rewrite (Hws_ne0 i Hi Hine0).
+                  claim Hi_nz : i :e nz.
+                  { exact (ordinal_TransSet nz (nat_p_ordinal nz (omega_nat_p nz HnzO)) mz Hmz_nz i Hi). }
+                  exact (Hredz_elem i Hi_nz).
+              - (** Adjacency condition **)
+                let i. assume Hi : i :e mz. assume Hsi_mz : ordsucc i :e mz.
+                let alpha beta. assume HaJ : alpha :e 2. assume HbJ : beta :e 2.
+                apply (xm (i = 0)).
+                + assume Hi0 : i = 0.
+                  rewrite Hi0. rewrite Hws0.
+                  claim Hsi_ne0 : ordsucc 0 <> 0. { exact (neq_ordsucc_0 0). }
+                  claim Hsi0_mz : ordsucc 0 :e mz. { rewrite <- Hi0. exact Hsi_mz. }
+                  rewrite (Hws_ne0 (ordsucc 0) Hsi0_mz Hsi_ne0).
+                  (** Now: p :e Gfam(alpha), zs(1) :e Gfam(beta), need alpha <> beta **)
+                  assume Hp_Ga : p :e apply_fun Gfam alpha.
+                  assume Hzs1_Gb : apply_fun zs (ordsucc 0) :e apply_fun Gfam beta.
+                  (** From disjointness: p :e Gfam(alpha) and p :e Gfam(alpha_last) and p <> e implies alpha = alpha_last **)
+                  apply (xm (alpha = alpha_last)).
+                  * assume Haeq : alpha = alpha_last.
+                    (** zs(0) :e Gfam(alpha_first) = Gfam(alpha_last) and zs(1) :e Gfam(beta) **)
+                    (** From Hredz adjacency at 0: alpha_last <> beta **)
+                    claim H0_nz2 : 0 :e nz.
+                    { exact (eq_subst_mem_set 0 (ordsucc mz) nz (nat_0_in_ordsucc mz Hmz_nat) (eq_symm nz (ordsucc mz) Hnz_eq)). }
+                    claim H1_nz : ordsucc 0 :e nz.
+                    { exact (ordinal_TransSet nz (nat_p_ordinal nz (omega_nat_p nz HnzO)) mz (eq_subst_mem_set mz (ordsucc mz) nz (ordsuccI2 mz) (eq_symm nz (ordsucc mz) Hnz_eq)) (ordsucc 0) Hsi0_mz). }
+                    claim Hzs0_Gal2 : apply_fun zs 0 :e apply_fun Gfam alpha_last.
+                    { exact (eq_subst_mem_set (apply_fun zs 0) (apply_fun Gfam alpha_first)
+                        (apply_fun Gfam alpha_last) Hzs0_Gaf
+                        (apply_fun_congr_arg Gfam alpha_first alpha_last Haf_al)). }
+                    claim Hadj_orig : alpha_last <> beta.
+                    { exact (Hredz_adj 0 H0_nz2 H1_nz alpha_last beta Hal_J HbJ Hzs0_Gal2 Hzs1_Gb). }
+                    rewrite Haeq. exact Hadj_orig.
+                  * assume Hane : alpha <> alpha_last.
+                    (** p :e Gfam(alpha) and p :e Gfam(alpha_last) and alpha <> alpha_last **)
+                    (** By disjointness: p = e, contradicting Hpne **)
+                    claim Hp_e : p = e.
+                    { exact (Hdisjoint alpha alpha_last HaJ Hal_J Hane p Hp_Ga Hp_in_fac). }
+                    exact (FalseE (Hpne Hp_e) (alpha <> beta)).
+                + assume Hine0 : i <> 0.
+                  claim Hsi_ne0 : ordsucc i <> 0. { exact (neq_ordsucc_0 i). }
+                  rewrite (Hws_ne0 i Hi Hine0).
+                  rewrite (Hws_ne0 (ordsucc i) Hsi_mz Hsi_ne0).
+                  (** Now: zs(i) :e Gfam(alpha), zs(ordsucc i) :e Gfam(beta), need alpha <> beta **)
+                  assume Hzsi_Ga : apply_fun zs i :e apply_fun Gfam alpha.
+                  assume Hzssi_Gb : apply_fun zs (ordsucc i) :e apply_fun Gfam beta.
+                  claim Hi_nz : i :e nz.
+                  { exact (ordinal_TransSet nz (nat_p_ordinal nz (omega_nat_p nz HnzO)) mz Hmz_nz i Hi). }
+                  claim Hsi_nz : ordsucc i :e nz.
+                  { exact (ordinal_TransSet nz (nat_p_ordinal nz (omega_nat_p nz HnzO)) mz Hmz_nz (ordsucc i) Hsi_mz). }
+                  exact (Hredz_adj i Hi_nz Hsi_nz alpha beta HaJ HbJ Hzsi_Ga Hzssi_Gb). }
             (** Goal: (((reduced_word /\ ne0) /\ wp=zc) /\ mz_in_nz) left-associated **)
             prove ((reduced_word 2 Gfam efam mz ws_pne /\ (mz <> 0)) /\
               word_product mult e ws_pne mz = zc) /\ mz :e nz.
