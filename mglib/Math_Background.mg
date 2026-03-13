@@ -411720,6 +411720,42 @@ claim HgensH0NeEfam :
   rewrite (HefamH0Val alpha HalphaJH0).
   exact (HgensH0NeUnit alpha HalphaJH0).
 }
+claim HgensH0InFactor :
+  forall alpha:set, alpha :e JH0 ->
+    apply_fun gensH0 alpha :e apply_fun GfamH0 alpha.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (andEL
+    (apply_fun gensH0 alpha :e apply_fun GfamH0 alpha)
+    (forall g:set, g :e apply_fun GfamH0 alpha ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m))))
+    (HfactorGenH0 alpha HalphaJH0)).
+}
+claim HreducedSingletonGenH0 :
+  forall alpha:set, alpha :e JH0 ->
+    reduced_word
+      JH0
+      GfamH0
+      efamH0
+      1
+      (graph 1 (fun _:set => apply_fun gensH0 alpha)).
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (reduced_word_singleton
+    JH0
+    GfamH0
+    efamH0
+    alpha
+    (apply_fun gensH0 alpha)
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)).
+}
 claim HambientReducedWordOnH :
   forall x:set, x :e H -> x <> eF ->
     exists n xs:set,
