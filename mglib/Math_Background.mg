@@ -411590,6 +411590,58 @@ claim HGfamH0MemInGfamF :
         rewrite (HgensH0Eq alpha HalphaJH0).
         reflexivity.
 }
+claim HambientIndexUniqueFromRestrictedNontrivial :
+  forall alpha0 alpha x:set, alpha0 :e JH0 -> alpha :e J ->
+    x :e apply_fun GfamH0 alpha0 ->
+    x :e apply_fun GfamF alpha ->
+    x <> eF ->
+    alpha = alpha0.
+{
+  let alpha0 alpha x.
+  assume Halpha0JH0 HalphaJ HxH0 HxFa HxNe.
+  claim Halpha0J : alpha0 :e J.
+  {
+    exact (HJH0subJ alpha0 Halpha0JH0).
+  }
+  apply (xm (alpha = alpha0)).
+  - assume Heq.
+    exact Heq.
+  - assume Hneq.
+    claim Hneq0 : alpha0 <> alpha.
+    {
+      assume Heq0.
+      claim Heq : alpha = alpha0.
+      {
+        symmetry.
+        exact Heq0.
+      }
+      exact (Hneq Heq).
+    }
+    claim HxInFa0 : x :e apply_fun GfamF alpha0.
+    {
+      exact (HGfamH0MemInGfamF
+        alpha0
+        x
+        Halpha0JH0
+        HxH0).
+    }
+    claim HxEqE :
+      x = eF.
+    {
+      exact (HfpDisjoint
+        alpha0
+        alpha
+        Halpha0J
+        HalphaJ
+        Hneq0
+        x
+        HxInFa0
+        HxFa).
+    }
+    exact (FalseE
+      (HxNe HxEqE)
+      (alpha = alpha0)).
+}
 claim HfactorDisjointH0 :
   forall alpha beta:set, alpha :e JH0 -> beta :e JH0 -> alpha <> beta ->
     forall x:set, x :e apply_fun GfamH0 alpha -> x :e apply_fun GfamH0 beta -> x = eF.
