@@ -282783,14 +282783,87 @@ apply (xm (x = e)).
         (** z = mult(mult(inv(zsmz), zc), zsmz) **)
         claim Hz_conj : z = apply_fun mult (apply_fun mult
           (apply_fun inv (apply_fun zs mz), zc), apply_fun zs mz).
-        { admit. }
+        { set a := apply_fun zs mz.
+          set ia := apply_fun inv (apply_fun zs mz).
+          claim HaG : a :e G. { exact Hzsmz_G. }
+          claim HiaG : ia :e G. { exact Hinvzsmz_G. }
+          claim Hzia : apply_fun mult (z, ia) :e G.
+          { exact (HmultG z ia HzG HiaG). }
+          claim Hia_a : apply_fun mult (ia, a) = e.
+          { exact (andER (apply_fun mult (a, ia) = e)
+              (apply_fun mult (ia, a) = e) (Hinverse a HaG)). }
+          claim Ha_ia : apply_fun mult (a, ia) = e.
+          { exact (andEL (apply_fun mult (a, ia) = e)
+              (apply_fun mult (ia, a) = e) (Hinverse a HaG)). }
+          claim Hassoc1 : apply_fun mult (ia, zc) =
+            apply_fun mult (ia, apply_fun mult (a, apply_fun mult (z, ia))).
+          { reflexivity. }
+          claim Hassoc2 : apply_fun mult (ia, apply_fun mult (a, apply_fun mult (z, ia))) =
+            apply_fun mult (apply_fun mult (ia, a), apply_fun mult (z, ia)).
+          { symmetry. exact (Hassoc ia a (apply_fun mult (z, ia))
+              HiaG HaG Hzia). }
+          claim Hstep1 : apply_fun mult (apply_fun mult (ia, a), apply_fun mult (z, ia)) =
+            apply_fun mult (e, apply_fun mult (z, ia)).
+          { rewrite Hia_a. reflexivity. }
+          claim Hle : apply_fun mult (e, apply_fun mult (z, ia)) = apply_fun mult (z, ia).
+          { exact (andEL (apply_fun mult (e, apply_fun mult (z, ia)) = apply_fun mult (z, ia))
+              (apply_fun mult (apply_fun mult (z, ia), e) = apply_fun mult (z, ia))
+              (Hid (apply_fun mult (z, ia)) Hzia)). }
+          claim Hia_zc : apply_fun mult (ia, zc) = apply_fun mult (z, ia).
+          { exact (eq_i_tra (apply_fun mult (ia, zc))
+              (apply_fun mult (apply_fun mult (ia, a), apply_fun mult (z, ia)))
+              (apply_fun mult (z, ia))
+              (eq_i_tra (apply_fun mult (ia, zc))
+                (apply_fun mult (ia, apply_fun mult (a, apply_fun mult (z, ia))))
+                (apply_fun mult (apply_fun mult (ia, a), apply_fun mult (z, ia)))
+                Hassoc1 Hassoc2)
+              (eq_i_tra (apply_fun mult (apply_fun mult (ia, a), apply_fun mult (z, ia)))
+                (apply_fun mult (e, apply_fun mult (z, ia)))
+                (apply_fun mult (z, ia)) Hstep1 Hle)). }
+          claim Hassoc3 : apply_fun mult (apply_fun mult (z, ia), a) =
+            apply_fun mult (z, apply_fun mult (ia, a)).
+          { exact (Hassoc z ia a HzG HiaG HaG). }
+          claim Hstep2 : apply_fun mult (z, apply_fun mult (ia, a)) =
+            apply_fun mult (z, e).
+          { rewrite Hia_a. reflexivity. }
+          claim Hre : apply_fun mult (z, e) = z.
+          { exact (andER (apply_fun mult (e, z) = z)
+              (apply_fun mult (z, e) = z) (Hid z HzG)). }
+          claim Hzia_a : apply_fun mult (apply_fun mult (z, ia), a) = z.
+          { exact (eq_i_tra (apply_fun mult (apply_fun mult (z, ia), a))
+              (apply_fun mult (z, apply_fun mult (ia, a)))
+              z
+              Hassoc3
+              (eq_i_tra (apply_fun mult (z, apply_fun mult (ia, a)))
+                (apply_fun mult (z, e)) z Hstep2 Hre)). }
+          claim Hfinal : apply_fun mult (apply_fun mult (ia, zc), a) = z.
+          { claim Hstep : apply_fun mult (apply_fun mult (ia, zc), a) =
+              apply_fun mult (apply_fun mult (z, ia), a).
+            { rewrite Hia_zc. reflexivity. }
+            exact (eq_i_tra (apply_fun mult (apply_fun mult (ia, zc), a))
+              (apply_fun mult (apply_fun mult (z, ia), a)) z Hstep Hzia_a). }
+          symmetry. exact Hfinal. }
         (** zc has finite order **)
         claim Hzcfin : exists m:set, m :e omega /\ m <> 0 /\
           group_power_nat mult e zc m = e.
         { admit. }
         (** zc != e **)
         claim Hzcne : zc <> e.
-        { admit. }
+        { assume Hzce : zc = e.
+          claim Hz_is_e : z = e.
+          { rewrite Hz_conj. rewrite Hzce.
+            claim Hia_e : apply_fun mult (apply_fun inv (apply_fun zs mz), e) =
+              apply_fun inv (apply_fun zs mz).
+            { exact (andER
+                (apply_fun mult (e, apply_fun inv (apply_fun zs mz)) = apply_fun inv (apply_fun zs mz))
+                (apply_fun mult (apply_fun inv (apply_fun zs mz), e) = apply_fun inv (apply_fun zs mz))
+                (Hid (apply_fun inv (apply_fun zs mz)) Hinvzsmz_G)). }
+            rewrite Hia_e.
+            exact (andER
+              (apply_fun mult (apply_fun zs mz, apply_fun inv (apply_fun zs mz)) = e)
+              (apply_fun mult (apply_fun inv (apply_fun zs mz), apply_fun zs mz) = e)
+              (Hinverse (apply_fun zs mz) Hzsmz_G)). }
+          exact (Hzne Hz_is_e). }
         (** By IH, zc = mult(mult(c0,y0),inv(c0)) **)
         claim Hzc_decomp : exists c0 y0:set,
           c0 :e G /\ (y0 :e G1 \/ y0 :e G2) /\
@@ -282816,18 +282889,64 @@ apply (xm (x = e)).
             group_power_nat mult e y0 m = e) /\
           zc = apply_fun mult (apply_fun mult (c0, y0),
             apply_fun inv c0).
-        { admit. }
+        { exact (Eps_i_ex (fun y0:set =>
+            c0 :e G /\ (y0 :e G1 \/ y0 :e G2) /\
+            (exists m:set, m :e omega /\ m <> 0 /\
+              group_power_nat mult e y0 m = e) /\
+            zc = apply_fun mult (apply_fun mult (c0, y0),
+              apply_fun inv c0))
+            (Eps_i_ex (fun c0:set => exists y0:set,
+              c0 :e G /\ (y0 :e G1 \/ y0 :e G2) /\
+              (exists m:set, m :e omega /\ m <> 0 /\
+                group_power_nat mult e y0 m = e) /\
+              zc = apply_fun mult (apply_fun mult (c0, y0),
+                apply_fun inv c0))
+              Hzc_decomp)). }
         (** Construct final witnesses **)
         set cnew := apply_fun mult
           (apply_fun inv (apply_fun zs mz), c0).
-        claim Hresult : exists c y:set,
-          c :e G /\ (y :e G1 \/ y :e G2) /\
-          (exists m:set, m :e omega /\ m <> 0 /\
-            group_power_nat mult e y m = e) /\
-          z = apply_fun mult (apply_fun mult (c, y),
-            apply_fun inv c).
-        { admit. }
-        exact Hresult.
+        claim Hc0G : c0 :e G.
+        { exact (andEL (c0 :e G) (y0 :e G1 \/ y0 :e G2)
+            (andEL (c0 :e G /\ (y0 :e G1 \/ y0 :e G2))
+              (exists m:set, m :e omega /\ m <> 0 /\
+                group_power_nat mult e y0 m = e)
+              (andEL ((c0 :e G /\ (y0 :e G1 \/ y0 :e G2)) /\
+                (exists m:set, m :e omega /\ m <> 0 /\
+                  group_power_nat mult e y0 m = e))
+                (zc = apply_fun mult (apply_fun mult (c0, y0),
+                  apply_fun inv c0))
+                Hc0y0_pack))). }
+        claim Hy0fac : y0 :e G1 \/ y0 :e G2.
+        { exact (andER (c0 :e G) (y0 :e G1 \/ y0 :e G2)
+            (andEL (c0 :e G /\ (y0 :e G1 \/ y0 :e G2))
+              (exists m:set, m :e omega /\ m <> 0 /\
+                group_power_nat mult e y0 m = e)
+              (andEL ((c0 :e G /\ (y0 :e G1 \/ y0 :e G2)) /\
+                (exists m:set, m :e omega /\ m <> 0 /\
+                  group_power_nat mult e y0 m = e))
+                (zc = apply_fun mult (apply_fun mult (c0, y0),
+                  apply_fun inv c0))
+                Hc0y0_pack))). }
+        claim Hy0fin : exists m:set, m :e omega /\ m <> 0 /\
+          group_power_nat mult e y0 m = e.
+        { exact (andER (c0 :e G /\ (y0 :e G1 \/ y0 :e G2))
+            (exists m:set, m :e omega /\ m <> 0 /\
+              group_power_nat mult e y0 m = e)
+            (andEL ((c0 :e G /\ (y0 :e G1 \/ y0 :e G2)) /\
+              (exists m:set, m :e omega /\ m <> 0 /\
+                group_power_nat mult e y0 m = e))
+              (zc = apply_fun mult (apply_fun mult (c0, y0),
+                apply_fun inv c0))
+              Hc0y0_pack)). }
+        witness cnew. witness y0.
+        apply andI.
+        - apply andI.
+          + apply andI.
+            * exact (HmultG (apply_fun inv (apply_fun zs mz)) c0
+                Hinvzsmz_G Hc0G).
+            * exact Hy0fac.
+          + exact Hy0fin.
+        - admit.
       + assume Haf_nal : alpha_first <> alpha_last.
         (** Cyclically reduced: infinite order, contradiction **)
         prove False.
