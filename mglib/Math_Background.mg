@@ -283063,13 +283063,119 @@ apply (xm (x = e)).
               (Hinverse (apply_fun zs mz) Hzsmz_G)). }
           exact (Hzne Hz_is_e). }
         (** By IH, zc = mult(mult(c0,y0),inv(c0)) **)
+        (** zc has a reduced word from free product structure **)
+        claim Hzc_wp : exists nzc xszc:set,
+          reduced_word 2 Gfam efam nzc xszc /\ nzc <> 0 /\
+          word_product mult e xszc nzc = zc /\
+          (forall n' xs':set,
+            reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+            word_product mult e xs' n' = zc ->
+            nzc = n' /\ (forall i:set, i :e nzc -> apply_fun xszc i = apply_fun xs' i)).
+        { apply (and5E
+            (group_structure G mult e inv)
+            (forall alpha:set, alpha :e 2 -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+            (forall alpha beta:set, alpha :e 2 -> beta :e 2 -> alpha <> beta ->
+              forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e)
+            (subgroups_generate G mult e inv 2 Gfam)
+            (forall x:set, x :e G -> x <> e ->
+              exists n0 xs0:set,
+                reduced_word 2 Gfam efam n0 xs0 /\ n0 <> 0 /\
+                word_product mult e xs0 n0 = x /\
+                (forall n' xs':set,
+                  reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+                  word_product mult e xs' n' = x ->
+                  n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+            Hfp).
+          assume _ _ _ _ Huniq_all.
+          exact (Huniq_all zc HzcG Hzcne). }
+        apply Hzc_wp. let nzc.
+        assume Hzc_wp2 : exists xszc:set,
+          reduced_word 2 Gfam efam nzc xszc /\ nzc <> 0 /\
+          word_product mult e xszc nzc = zc /\
+          (forall n' xs':set,
+            reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+            word_product mult e xs' n' = zc ->
+            nzc = n' /\ (forall i:set, i :e nzc -> apply_fun xszc i = apply_fun xs' i)).
+        apply Hzc_wp2. let xszc.
+        assume Hzc_pack : reduced_word 2 Gfam efam nzc xszc /\ nzc <> 0 /\
+          word_product mult e xszc nzc = zc /\
+          (forall n' xs':set,
+            reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+            word_product mult e xs' n' = zc ->
+            nzc = n' /\ (forall i:set, i :e nzc -> apply_fun xszc i = apply_fun xs' i)).
+        (** Extract components using left-assoc /\: ((A /\ B) /\ C) /\ D **)
+        claim Hred_zc : reduced_word 2 Gfam efam nzc xszc.
+        { exact (andEL (reduced_word 2 Gfam efam nzc xszc) (nzc <> 0)
+            (andEL (reduced_word 2 Gfam efam nzc xszc /\ (nzc <> 0))
+              (word_product mult e xszc nzc = zc)
+              (andEL ((reduced_word 2 Gfam efam nzc xszc /\ (nzc <> 0)) /\
+                (word_product mult e xszc nzc = zc))
+                (forall n' xs':set,
+                  reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+                  word_product mult e xs' n' = zc ->
+                  nzc = n' /\ (forall i:set, i :e nzc -> apply_fun xszc i = apply_fun xs' i))
+                Hzc_pack))). }
+        claim Hnzc_ne0 : nzc <> 0.
+        { exact (andER (reduced_word 2 Gfam efam nzc xszc) (nzc <> 0)
+            (andEL (reduced_word 2 Gfam efam nzc xszc /\ (nzc <> 0))
+              (word_product mult e xszc nzc = zc)
+              (andEL ((reduced_word 2 Gfam efam nzc xszc /\ (nzc <> 0)) /\
+                (word_product mult e xszc nzc = zc))
+                (forall n' xs':set,
+                  reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+                  word_product mult e xs' n' = zc ->
+                  nzc = n' /\ (forall i:set, i :e nzc -> apply_fun xszc i = apply_fun xs' i))
+                Hzc_pack))). }
+        claim Hwpzc : word_product mult e xszc nzc = zc.
+        { exact (andER (reduced_word 2 Gfam efam nzc xszc /\ (nzc <> 0))
+              (word_product mult e xszc nzc = zc)
+              (andEL ((reduced_word 2 Gfam efam nzc xszc /\ (nzc <> 0)) /\
+                (word_product mult e xszc nzc = zc))
+                (forall n' xs':set,
+                  reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+                  word_product mult e xs' n' = zc ->
+                  nzc = n' /\ (forall i:set, i :e nzc -> apply_fun xszc i = apply_fun xs' i))
+                Hzc_pack)). }
+        claim Huniq_zc : forall n' xs':set,
+          reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+          word_product mult e xs' n' = zc ->
+          nzc = n' /\ (forall i:set, i :e nzc -> apply_fun xszc i = apply_fun xs' i).
+        { exact (andER ((reduced_word 2 Gfam efam nzc xszc /\ (nzc <> 0)) /\
+                (word_product mult e xszc nzc = zc))
+                (forall n' xs':set,
+                  reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+                  word_product mult e xs' n' = zc ->
+                  nzc = n' /\ (forall i:set, i :e nzc -> apply_fun xszc i = apply_fun xs' i))
+                Hzc_pack). }
+        (** Now need: nzc :e nz (so nzc < nz) **)
+        (** This follows from: zc has a word representation of length mz **)
+        (** Construct the word representation of zc **)
+        claim Hnzc_in_nz : nzc :e nz.
+        { admit. }
+        (** Apply IH **)
+        claim HnzcO : nzc :e omega.
+        { apply (and3E (nzc :e omega)
+            (forall i:set, i :e nzc -> exists a:set, a :e 2 /\ apply_fun xszc i :e apply_fun Gfam a /\ apply_fun xszc i <> apply_fun efam a)
+            (forall i:set, i :e nzc -> ordsucc i :e nzc ->
+              forall a b:set, a :e 2 -> b :e 2 -> apply_fun xszc i :e apply_fun Gfam a -> apply_fun xszc (ordsucc i) :e apply_fun Gfam b -> a <> b)
+            Hred_zc). assume HnO _ _. exact HnO. }
+        claim Hnzc_in_k : nzc :e k.
+        { (** nzc :e nz and nz :e ordsucc k **)
+          (** nz :e ordsucc k means nz :e k or nz = k **)
+          apply (ordsuccE k nz Hnz_bound).
+          - assume Hnz_in_k : nz :e k.
+            exact (ordinal_TransSet k (nat_p_ordinal k Hk_nat) nz Hnz_in_k nzc Hnzc_in_nz).
+          - assume Hnz_eq_k : nz = k.
+            exact (eq_subst_mem_set nzc nz k Hnzc_in_nz Hnz_eq_k). }
         claim Hzc_decomp : exists c0 y0:set,
           c0 :e G /\ (y0 :e G1 \/ y0 :e G2) /\
           (exists m:set, m :e omega /\ m <> 0 /\
             group_power_nat mult e y0 m = e) /\
           zc = apply_fun mult (apply_fun mult (c0, y0),
             apply_fun inv c0).
-        { admit. }
+        { exact (HIH nzc Hnzc_in_k zc HzcG Hzcne Hzcfin
+            nzc xszc Hred_zc Hnzc_ne0 Hwpzc Huniq_zc
+            (ordsuccI2 nzc)). }
         set c0 := Eps_i (fun c0:set => exists y0:set,
           c0 :e G /\ (y0 :e G1 \/ y0 :e G2) /\
           (exists m:set, m :e omega /\ m <> 0 /\
