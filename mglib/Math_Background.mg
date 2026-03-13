@@ -418013,6 +418013,56 @@ claim HkEquip :
     (equip (right_coset_set F multF H) k)
     Hk).
 }
+claim HkFin :
+  finite k.
+{
+  exact (nat_finite
+    k
+    (omega_nat_p
+      k
+      HkOmega)).
+}
+claim HcosetFin :
+  finite (right_coset_set F multF H).
+{
+  exact (equip_finite_transfer
+    (right_coset_set F multF H)
+    k
+    HkEquip
+    HkFin).
+}
+claim HidxSpec :
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+{
+  exact (subgroup_index_spec
+    H
+    F
+    multF
+    eF
+    invF
+    k
+    Hk).
+}
+claim HrankData :
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+{
+  apply and5I.
+  - exact HnOmega.
+  - exact HJeq.
+  - exact HcosetFin.
+  - exact (andEL
+      (subgroup_index H F multF eF invF :e omega)
+      (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+      HidxSpec).
+  - exact (andER
+      (subgroup_index H F multF eF invF :e omega)
+      (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+      HidxSpec).
+}
 claim HidxEqk :
   subgroup_index H F multF eF invF = k.
 {
@@ -418028,7 +418078,7 @@ claim HidxEqk :
 claim HtargetAtIndex :
   equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
 {
-  admit. (** TODO S85.3 core gap: Schreier-rank derivation at canonical subgroup_index from free-rank data. **)
+  admit. (** TODO S85.3 core gap: derive canonical-index rank target from HfreeF/HfreeH and HrankData. **)
 }
 rewrite <- HidxEqk.
 exact HtargetAtIndex.
