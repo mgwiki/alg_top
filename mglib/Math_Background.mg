@@ -424488,6 +424488,65 @@ exact (thm85_3_rankdata_from_witness
   HkWitness).
 Qed.
 
+(** Alternative derivation via npack+witness constructor. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_from_nonzero_pack_via_npack_witness : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+exact (thm85_3_rankdata_from_npack_and_witness
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  k
+  HnPack
+  (thm85_3_nonzero_pack_witness
+    F
+    multF
+    H
+    k
+    HkPack)).
+Qed.
+
+(** Alternative derivation via npack+finite constructor. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_from_nonzero_pack_via_npack_finite : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+exact (thm85_3_rankdata_from_npack_and_finite
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  HnPack
+  (finite_right_coset_set_of_nonzero_pack
+    H
+    F
+    multF
+    k
+    HkPack)).
+Qed.
+
 (** Projections from the direct nonzero-pack rankdata bundle. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_nonzero_pack_coset_finite : forall F multF eF invF J H n k:set,
