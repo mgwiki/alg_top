@@ -148831,6 +148831,283 @@ exact ((Rn_minus_origin_norm_sq_nonzero
   Hnorm0).
 Qed.
 
+(** Proven Charlie **)
+Lemma Rn_scalar_mult_unit_interval_on_Bn_closed : forall n a x:set,
+  n :e omega ->
+  a :e unit_interval ->
+  x :e Bn_closed n ->
+  Rn_scalar_mult (ordsucc n) a x :e Bn_closed n.
+let n a x.
+assume Hn_om HaI HxB.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HaR : a :e R.
+{
+  exact (SepE1
+    R
+    (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+    a
+    HaI).
+}
+claim HaS : SNo a.
+{
+  exact (real_SNo
+    a
+    HaR).
+}
+claim HaLe1R : Rle a 1.
+{
+  exact (unit_interval_Rle1
+    a
+    HaI).
+}
+claim HaLe1 : a <= 1.
+{
+  exact (SNoLe_of_Rle
+    a
+    1
+    HaLe1R).
+}
+claim HaGe0R : Rle 0 a.
+{
+  exact (unit_interval_Rle0
+    a
+    HaI).
+}
+claim HaGe0 : 0 <= a.
+{
+  exact (SNoLe_of_Rle
+    0
+    a
+    HaGe0R).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+    x
+    HxB).
+}
+claim HxNormBound : ~(Rlt 1 (euclidean_norm_sq (ordsucc n) x)).
+{
+  exact (SepE2
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+    x
+    HxB).
+}
+claim HxNormR : euclidean_norm_sq (ordsucc n) x :e R.
+{
+  exact (euclidean_norm_sq_in_R
+    (ordsucc n)
+    x
+    Hsn_nat
+    HxEu).
+}
+claim HxNormS : SNo (euclidean_norm_sq (ordsucc n) x).
+{
+  exact (real_SNo
+    (euclidean_norm_sq (ordsucc n) x)
+    HxNormR).
+}
+claim HxNormNonnegR : Rle 0 (euclidean_norm_sq (ordsucc n) x).
+{
+  exact (euclidean_norm_sq_nonneg
+    (ordsucc n)
+    x
+    Hsn_nat
+    HxEu).
+}
+claim HxNormNonneg : 0 <= euclidean_norm_sq (ordsucc n) x.
+{
+  exact (SNoLe_of_Rle
+    0
+    (euclidean_norm_sq (ordsucc n) x)
+    HxNormNonnegR).
+}
+claim HxNormLe1R : Rle (euclidean_norm_sq (ordsucc n) x) 1.
+{
+  apply (SNoLt_trichotomy_or_impred
+    (euclidean_norm_sq (ordsucc n) x)
+    1
+    HxNormS
+    SNo_1).
+  - assume Hlt.
+    exact (Rlt_implies_Rle
+      (euclidean_norm_sq (ordsucc n) x)
+      1
+      (RltI
+        (euclidean_norm_sq (ordsucc n) x)
+        1
+        HxNormR
+        real_1
+        Hlt)).
+  - assume Heq.
+    rewrite Heq.
+    exact (Rle_refl
+      1
+      real_1).
+  - assume Hgt.
+    exact (FalseE
+      (HxNormBound
+        (RltI
+          1
+          (euclidean_norm_sq (ordsucc n) x)
+          real_1
+          HxNormR
+          Hgt))
+      (Rle (euclidean_norm_sq (ordsucc n) x) 1)).
+}
+claim HxNormLe1 : euclidean_norm_sq (ordsucc n) x <= 1.
+{
+  exact (SNoLe_of_Rle
+    (euclidean_norm_sq (ordsucc n) x)
+    1
+    HxNormLe1R).
+}
+claim HaaS : SNo (mul_SNo a a).
+{
+  exact (SNo_mul_SNo
+    a
+    a
+    HaS
+    HaS).
+}
+claim HaaLeA : mul_SNo a a <= a.
+{
+  exact (mul_SNo_Le1_nonneg_Le
+    a
+    a
+    HaS
+    HaS
+    HaLe1
+    HaGe0).
+}
+claim HaaLe1 : mul_SNo a a <= 1.
+{
+  exact (SNoLe_tra
+    (mul_SNo a a)
+    a
+    1
+    HaaS
+    HaS
+    SNo_1
+    HaaLeA
+    HaLe1).
+}
+claim HscaledEu : Rn_scalar_mult (ordsucc n) a x :e euclidean_space (ordsucc n).
+{
+  exact (Rn_scalar_mult_in_euclidean_space
+    (ordsucc n)
+    a
+    x
+    HxEu
+    HaR).
+}
+claim HscaledNorm :
+  euclidean_norm_sq (ordsucc n) (Rn_scalar_mult (ordsucc n) a x) =
+  mul_SNo (euclidean_norm_sq (ordsucc n) x) (mul_SNo a a).
+{
+  exact (euclidean_norm_sq_scalar_mult
+    (ordsucc n)
+    a
+    x
+    Hsn_nat
+    HxEu
+    HaR).
+}
+claim HscaledLeXnorm :
+  mul_SNo (euclidean_norm_sq (ordsucc n) x) (mul_SNo a a) <=
+  euclidean_norm_sq (ordsucc n) x.
+{
+  rewrite (mul_SNo_com
+    (euclidean_norm_sq (ordsucc n) x)
+    (mul_SNo a a)
+    HxNormS
+    HaaS).
+  exact (mul_SNo_Le1_nonneg_Le
+    (mul_SNo a a)
+    (euclidean_norm_sq (ordsucc n) x)
+    HaaS
+    HxNormS
+    HaaLe1
+    HxNormNonneg).
+}
+claim HscaledS :
+  SNo (mul_SNo (euclidean_norm_sq (ordsucc n) x) (mul_SNo a a)).
+{
+  exact (SNo_mul_SNo
+    (euclidean_norm_sq (ordsucc n) x)
+    (mul_SNo a a)
+    HxNormS
+    HaaS).
+}
+claim HscaledLe1 :
+  mul_SNo (euclidean_norm_sq (ordsucc n) x) (mul_SNo a a) <= 1.
+{
+  exact (SNoLe_tra
+    (mul_SNo (euclidean_norm_sq (ordsucc n) x) (mul_SNo a a))
+    (euclidean_norm_sq (ordsucc n) x)
+    1
+    HscaledS
+    HxNormS
+    SNo_1
+    HscaledLeXnorm
+    HxNormLe1).
+}
+claim HscaledNormR :
+  mul_SNo (euclidean_norm_sq (ordsucc n) x) (mul_SNo a a) :e R.
+{
+  exact (real_mul_SNo
+    (euclidean_norm_sq (ordsucc n) x)
+    HxNormR
+    (mul_SNo a a)
+    (real_mul_SNo
+      a
+      HaR
+      a
+      HaR)).
+}
+claim HscaledLe1R :
+  Rle (mul_SNo (euclidean_norm_sq (ordsucc n) x) (mul_SNo a a)) 1.
+{
+  exact (Rle_of_SNoLe
+    (mul_SNo (euclidean_norm_sq (ordsucc n) x) (mul_SNo a a))
+    1
+    HscaledNormR
+    real_1
+    HscaledLe1).
+}
+claim HBdef :
+  Bn_closed n =
+  {v :e euclidean_space (ordsucc n) | ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v))}.
+{
+  reflexivity.
+}
+rewrite HBdef.
+apply (SepI
+  (euclidean_space (ordsucc n))
+  (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+  (Rn_scalar_mult (ordsucc n) a x)
+  HscaledEu).
+rewrite HscaledNorm.
+exact (RleE_nlt
+  (mul_SNo (euclidean_norm_sq (ordsucc n) x) (mul_SNo a a))
+  1
+  HscaledLe1R).
+Qed.
+
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
