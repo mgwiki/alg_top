@@ -415177,7 +415177,8 @@ apply and4I.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
 - apply HfreeProductAssembleH0.
-  + admit. (** TODO S85.1: Schreier-generation proof for H by factors GfamH0. **)
+  + apply HsubgroupsGenerateFromNontrivialWitnessH0.
+    admit. (** TODO S85.1: nontrivial decomposition witness for each x :e H wrt JH0/GfamH0. **)
   + admit. (** TODO S85.1: global reduced-word existence/uniqueness for nontrivial x :e H. **)
 Admitted.
 
