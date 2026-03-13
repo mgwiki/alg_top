@@ -414094,6 +414094,25 @@ claim HfactorElemRestrictedWordCanonicalWitnessUnique :
     HredH0
     Hwp).
 }
+claim HgeneratorRestrictedDecompositionUniqueViaGeneral :
+  forall alpha:set, alpha :e JH0 ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = apply_fun gensH0 alpha /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = apply_fun gensH0 alpha ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (HfactorElemHasRestrictedDecompositionUnique
+    alpha
+    (apply_fun gensH0 alpha)
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
