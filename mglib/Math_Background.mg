@@ -422790,25 +422790,6 @@ assume HfreeH.
 assume HnOmega.
 assume HJeq.
 assume Hk.
-claim HrankData :
-  n :e omega /\ equip J (ordsucc n) /\
-  finite (right_coset_set F multF H) /\
-  subgroup_index H F multF eF invF :e omega /\
-  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
-{
-  exact (thm85_3_rankdata_from_witness
-    F
-    multF
-    eF
-    invF
-    J
-    H
-    n
-    k
-    HnOmega
-    HJeq
-    Hk).
-}
 claim HtargetAtIndex :
   equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
 {
@@ -422826,7 +422807,18 @@ claim HtargetAtIndex :
     HfreeF
     Hsub
     HfreeH
-    HrankData).
+    (thm85_3_rankdata_from_witness
+      F
+      multF
+      eF
+      invF
+      J
+      H
+      n
+      k
+      HnOmega
+      HJeq
+      Hk)).
 }
 exact (iffEL
   (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
@@ -422921,24 +422913,6 @@ assume HfreeH.
 assume HnOmega.
 assume HJeq.
 assume HcosetFin.
-claim HrankData :
-  n :e omega /\ equip J (ordsucc n) /\
-  finite (right_coset_set F multF H) /\
-  subgroup_index H F multF eF invF :e omega /\
-  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
-{
-  exact (thm85_3_rankdata_from_finite
-    F
-    multF
-    eF
-    invF
-    J
-    H
-    n
-    HnOmega
-    HJeq
-    HcosetFin).
-}
 exact (thm85_3_core_rank_from_rankdata
   F
   multF
@@ -422953,7 +422927,17 @@ exact (thm85_3_core_rank_from_rankdata
   HfreeF
   Hsub
   HfreeH
-  HrankData).
+  (thm85_3_rankdata_from_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HcosetFin)).
 Admitted.
 
 (** Projection form of Nielsen-Schreier existence for convenient reuse. **)
