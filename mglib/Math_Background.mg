@@ -416894,6 +416894,26 @@ apply and3I.
     HkPack).
 Qed.
 
+(** Core Schreier-rank step at canonical subgroup_index cardinal. **)
+Theorem thm85_3_core_rank_at_subgroup_index :
+  forall F multF eF invF J gens H JH gensH n:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+let F multF eF invF J gens H JH gensH n.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+admit. (** TODO S85.3 core gap: complete Schreier-rank proof from free-rank data and finite coset index. **)
+Admitted.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
@@ -416961,44 +416981,33 @@ witness JH.
 witness gensH.
 apply andI.
 - exact HfreeH0.
-- claim HidxBundle :
-    finite (right_coset_set F multF H) /\
-    subgroup_index H F multF eF invF = k /\
-    ordsucc (mul_SNo (subgroup_index H F multF eF invF) n) = ordsucc (mul_SNo k n).
+- claim HcosetFin :
+    finite (right_coset_set F multF H).
   {
-    exact (subgroup_index_bundle_of_nonzero_pack
+    exact (finite_right_coset_set_of_nonzero_pack
       H
       F
       multF
-      eF
-      invF
       k
-      n
       HkPack).
-  }
-  claim HcosetFin :
-    finite (right_coset_set F multF H).
-  {
-    apply (and3E
-      (finite (right_coset_set F multF H))
-      (subgroup_index H F multF eF invF = k)
-      (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n) = ordsucc (mul_SNo k n))
-      HidxBundle).
-    assume Hfin HidxEq HmulEq.
-    exact Hfin.
-  }
-  claim HtargetAtIndexFromData :
-    n :e omega ->
-    equip J (ordsucc n) ->
-    finite (right_coset_set F multF H) ->
-    equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
-  {
-    admit. (** TODO S85.3 core gap: Schreier-rank proof from base-generator cardinal and finite coset index. **)
   }
   claim HtargetAtIndex :
     equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
   {
-    exact (HtargetAtIndexFromData
+    exact (thm85_3_core_rank_at_subgroup_index
+      F
+      multF
+      eF
+      invF
+      J
+      gens
+      H
+      JH
+      gensH
+      n
+      Hfree
+      Hsub
+      HfreeH0
       HnOmega
       HJeq
       HcosetFin).
