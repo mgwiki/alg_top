@@ -147515,6 +147515,10 @@ Definition Rn_scalar_mult : set -> set -> set -> set := fun n lam v =>
 Definition Rn_negate : set -> set -> set := fun n v =>
   graph n (fun i:set => minus_SNo (apply_fun v i)).
 
+(** Infrastructure: the zero vector in R^n **)
+Definition Rn_zero : set -> set := fun n =>
+  graph n (fun i : set => 0).
+
 (** Infrastructure: coordinate access for scalar multiplication and negation **)
 (** Proven Bob **)
 Lemma Rn_scalar_mult_apply : forall n lam v i:set,
@@ -147538,6 +147542,19 @@ assume Hi.
 exact (apply_fun_graph
   n
   (fun j:set => minus_SNo (apply_fun v j))
+  i
+  Hi).
+Qed.
+
+(** Proven Charlie **)
+Lemma Rn_zero_apply : forall n i:set,
+  i :e n ->
+  apply_fun (Rn_zero n) i = 0.
+let n i.
+assume Hi.
+exact (apply_fun_graph
+  n
+  (fun j : set => 0)
   i
   Hi).
 Qed.
@@ -147614,6 +147631,136 @@ rewrite (space_family_set_const_space_family
 exact (real_minus_SNo
   (apply_fun v i)
   (euclidean_space_coord_in_R n v i Hv Hi)).
+Qed.
+
+(** Proven Charlie **)
+Lemma Rn_zero_in_euclidean_space : forall n:set,
+  nat_p n ->
+  Rn_zero n :e euclidean_space n.
+let n.
+assume Hn.
+claim Hdef :
+  Rn_zero n = graph n (fun i:set => 0).
+{
+  reflexivity.
+}
+rewrite Hdef.
+claim Heu :
+  euclidean_space n = product_space n (const_space_family n R R_standard_topology).
+{
+  reflexivity.
+}
+rewrite Heu.
+apply (product_space_graphI
+  n
+  (const_space_family n R R_standard_topology)
+  (fun i : set => 0)).
+let i.
+assume Hi.
+rewrite (space_family_set_const_space_family
+  n
+  R
+  R_standard_topology
+  i
+  Hi).
+exact real_0.
+Qed.
+
+(** Proven Charlie **)
+Lemma euclidean_norm_sq_Rn_zero : forall n:set,
+  nat_p n ->
+  euclidean_norm_sq n (Rn_zero n) = 0.
+let n.
+assume Hn.
+apply (finite_real_sum_zero_of_all_zero
+  (fun i:set =>
+    mul_SNo (apply_fun (Rn_zero n) i) (apply_fun (Rn_zero n) i))
+  n
+  Hn).
+- let i.
+  assume Hi.
+  claim HcoordR :
+    apply_fun (Rn_zero n) i :e R.
+  {
+    rewrite (Rn_zero_apply
+      n
+      i
+      Hi).
+    exact real_0.
+  }
+  exact (real_mul_SNo
+    (apply_fun (Rn_zero n) i)
+    HcoordR
+    (apply_fun (Rn_zero n) i)
+    HcoordR).
+- let i.
+  assume Hi.
+  claim H0 :
+    apply_fun (Rn_zero n) i = 0.
+  {
+    exact (Rn_zero_apply
+      n
+      i
+      Hi).
+  }
+  exact ((eq_symm
+    (apply_fun (Rn_zero n) i)
+    0
+    H0)
+    (fun z _ =>
+      mul_SNo z z = 0)
+    (mul_SNo_zeroL
+      0
+      SNo_0)).
+Qed.
+
+(** Proven Charlie **)
+Lemma Rn_zero_in_Bn_closed : forall n:set,
+  n :e omega ->
+  Rn_zero (ordsucc n) :e Bn_closed n.
+let n.
+assume Hn_om.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HBdef :
+  Bn_closed n =
+  {v :e euclidean_space (ordsucc n) | ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v))}.
+{
+  reflexivity.
+}
+rewrite HBdef.
+apply (SepI
+  (euclidean_space (ordsucc n))
+  (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+  (Rn_zero (ordsucc n))
+  (Rn_zero_in_euclidean_space
+    (ordsucc n)
+    Hsn_nat)).
+rewrite (euclidean_norm_sq_Rn_zero
+  (ordsucc n)
+  Hsn_nat).
+exact (RleE_nlt
+  0
+  1
+  (Rlt_implies_Rle
+    0
+    1
+    (RltI
+      0
+      1
+      real_0
+      real_1
+      SNoLt_0_1))).
 Qed.
 
 (** Infrastructure: vector field on B^{n+1} "points directly inward" at x in S^n **)
