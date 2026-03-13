@@ -144567,6 +144567,111 @@ claim Hnat :
 exact (Hnat n Hn HfR HfNonneg).
 Qed.
 
+(** Proven Charlie **)
+Lemma finite_real_sum_congr : forall f g:set->set, forall n:set, nat_p n ->
+  (forall k:set, k :e n -> f k = g k) ->
+  finite_real_sum f n = finite_real_sum g n.
+let f g n.
+assume Hn Hfg.
+claim Hnat :
+  forall m:set, nat_p m ->
+    (forall k:set, k :e m -> f k = g k) ->
+    finite_real_sum f m = finite_real_sum g m.
+{
+  apply nat_ind.
+  - assume H0fg.
+    rewrite (finite_real_sum_0 f).
+    rewrite (finite_real_sum_0 g).
+    reflexivity.
+  - let m.
+    assume Hm_nat IH.
+    assume Hmf.
+    rewrite (finite_real_sum_S f m Hm_nat).
+    rewrite (finite_real_sum_S g m Hm_nat).
+    rewrite (IH
+      (fun k Hk => Hmf k (ordsuccI1 m k Hk))).
+    rewrite (Hmf
+      m
+      (ordsuccI2 m)).
+    reflexivity.
+}
+exact (Hnat n Hn Hfg).
+Qed.
+
+(** Proven Charlie **)
+Lemma finite_real_sum_mul_const_right : forall f:set->set, forall n r:set,
+  nat_p n ->
+  r :e R ->
+  (forall k:set, k :e n -> f k :e R) ->
+  finite_real_sum (fun k:set => mul_SNo (f k) r) n =
+  mul_SNo (finite_real_sum f n) r.
+let f n r.
+assume Hn Hr HfR.
+claim HrS : SNo r.
+{
+  exact (real_SNo
+    r
+    Hr).
+}
+claim Hnat :
+  forall m:set, nat_p m ->
+    (forall k:set, k :e m -> f k :e R) ->
+    finite_real_sum (fun k:set => mul_SNo (f k) r) m =
+    mul_SNo (finite_real_sum f m) r.
+{
+  apply nat_ind.
+  - assume H0R.
+    rewrite (finite_real_sum_0 (fun k:set => mul_SNo (f k) r)).
+    rewrite (finite_real_sum_0 f).
+    rewrite (mul_SNo_zeroL
+      r
+      HrS).
+    reflexivity.
+  - let m.
+    assume Hm_nat IH.
+    assume HmR.
+    rewrite (finite_real_sum_S (fun k:set => mul_SNo (f k) r) m Hm_nat).
+    rewrite (finite_real_sum_S f m Hm_nat).
+    rewrite (IH
+      (fun k Hk => HmR k (ordsuccI1 m k Hk))).
+    claim HsumR : finite_real_sum f m :e R.
+    {
+      exact (finite_real_sum_in_R
+        f
+        m
+        Hm_nat
+        (fun k Hk => HmR k (ordsuccI1 m k Hk))).
+    }
+    claim HsumS : SNo (finite_real_sum f m).
+    {
+      exact (real_SNo
+        (finite_real_sum f m)
+        HsumR).
+    }
+    claim HfmR : f m :e R.
+    {
+      exact (HmR
+        m
+        (ordsuccI2 m)).
+    }
+    claim HfmS : SNo (f m).
+    {
+      exact (real_SNo
+        (f m)
+        HfmR).
+    }
+    rewrite <- (mul_SNo_distrR
+      (finite_real_sum f m)
+      (f m)
+      r
+      HsumS
+      HfmS
+      HrS).
+    reflexivity.
+}
+exact (Hnat n Hn HfR).
+Qed.
+
 (** Infrastructure: n-by-n matrix applied to n-vector **)
 (** (Av)_i = sum_{j<n} A(i,j) v(j) **)
 Definition matrix_vector_mult : set -> set -> set -> set := fun n A v =>
@@ -146793,6 +146898,266 @@ exact (Rn_scalar_mult_in_euclidean_space
   HaR).
 Qed.
 
+(** Proven Charlie **)
+Lemma euclidean_norm_sq_scalar_mult : forall n lam v:set,
+  nat_p n ->
+  v :e euclidean_space n ->
+  lam :e R ->
+  euclidean_norm_sq n (Rn_scalar_mult n lam v) =
+  mul_SNo (euclidean_norm_sq n v) (mul_SNo lam lam).
+let n lam v.
+assume Hn Hv Hlam.
+set g := fun i:set => mul_SNo (apply_fun v i) (apply_fun v i).
+set h := fun i:set =>
+  mul_SNo (g i) (mul_SNo lam lam).
+claim HlamS : SNo lam.
+{
+  exact (real_SNo
+    lam
+    Hlam).
+}
+claim HllR : mul_SNo lam lam :e R.
+{
+  exact (real_mul_SNo
+    lam
+    Hlam
+    lam
+    Hlam).
+}
+claim HllS : SNo (mul_SNo lam lam).
+{
+  exact (real_SNo
+    (mul_SNo lam lam)
+    HllR).
+}
+claim HgR : forall i:set, i :e n -> g i :e R.
+{
+  let i.
+  assume Hi.
+  exact (real_mul_SNo
+    (apply_fun v i)
+    (euclidean_space_coord_in_R n v i Hv Hi)
+    (apply_fun v i)
+    (euclidean_space_coord_in_R n v i Hv Hi)).
+}
+claim HtermEq : forall i:set, i :e n ->
+  mul_SNo (apply_fun (Rn_scalar_mult n lam v) i)
+    (apply_fun (Rn_scalar_mult n lam v) i)
+  = h i.
+{
+  let i.
+  assume Hi.
+  claim HviR : apply_fun v i :e R.
+  {
+    exact (euclidean_space_coord_in_R
+      n
+      v
+      i
+      Hv
+      Hi).
+  }
+  claim HviS : SNo (apply_fun v i).
+  {
+    exact (real_SNo
+      (apply_fun v i)
+      HviR).
+  }
+  rewrite (Rn_scalar_mult_apply
+    n
+    lam
+    v
+    i
+    Hi).
+  rewrite (mul_SNo_com_4_inner_mid
+    lam
+    (apply_fun v i)
+    lam
+    (apply_fun v i)
+    HlamS
+    HviS
+    HlamS
+    HviS).
+  rewrite (mul_SNo_com
+    (mul_SNo lam lam)
+    (mul_SNo (apply_fun v i) (apply_fun v i))
+    HllS
+    (SNo_mul_SNo
+      (apply_fun v i)
+      (apply_fun v i)
+      HviS
+      HviS)).
+  reflexivity.
+}
+claim HlhsEq :
+  euclidean_norm_sq n (Rn_scalar_mult n lam v) =
+  finite_real_sum
+    (fun i:set =>
+      mul_SNo (apply_fun (Rn_scalar_mult n lam v) i)
+        (apply_fun (Rn_scalar_mult n lam v) i))
+    n.
+{
+  reflexivity.
+}
+rewrite HlhsEq.
+rewrite (finite_real_sum_congr
+  (fun i:set =>
+    mul_SNo (apply_fun (Rn_scalar_mult n lam v) i)
+      (apply_fun (Rn_scalar_mult n lam v) i))
+  h
+  n
+  Hn
+  HtermEq).
+rewrite (finite_real_sum_mul_const_right
+  g
+  n
+  (mul_SNo lam lam)
+  Hn
+  HllR
+  HgR).
+reflexivity.
+Qed.
+
+(** Proven Charlie **)
+Lemma Rn_scalar_mult_gt1_on_Sn_not_in_Bn_closed : forall n c x:set,
+  n :e omega ->
+  x :e Sn n ->
+  c :e R ->
+  Rlt 1 c ->
+  ~(Rn_scalar_mult (ordsucc n) c x :e Bn_closed n).
+let n c x.
+assume Hn_om HxSn HcR H1ltc HxScaledB.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HxNorm : euclidean_norm_sq (ordsucc n) x = 1.
+{
+  exact (SepE2
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HcS : SNo c.
+{
+  exact (real_SNo
+    c
+    HcR).
+}
+claim HcNonneg : 0 <= c.
+{
+  exact (SNoLtLe
+    0
+    c
+    (SNoLt_tra
+      0
+      1
+      c
+      SNo_0
+      SNo_1
+      HcS
+      SNoLt_0_1
+      (RltE_lt
+        1
+        c
+        H1ltc))).
+}
+claim HcSqGt1 :
+  mul_SNo 1 1 < mul_SNo c c.
+{
+  exact (SNoLt_sqr_nonneg
+    1
+    c
+    SNo_1
+    HcS
+    (SNoLtLe
+      0
+      1
+      SNoLt_0_1)
+    HcNonneg
+    (RltE_lt
+      1
+      c
+      H1ltc)).
+}
+claim HcSqR : mul_SNo c c :e R.
+{
+  exact (real_mul_SNo
+    c
+    HcR
+    c
+    HcR).
+}
+claim HcSqGt1R :
+  Rlt 1 (mul_SNo c c).
+{
+  claim HcSqGt1' :
+    1 < mul_SNo c c.
+  {
+    exact ((mul_SNo_oneL
+      1
+      SNo_1)
+      (fun u v:set => u < mul_SNo c c)
+      HcSqGt1).
+  }
+  exact (RltI
+    1
+    (mul_SNo c c)
+    real_1
+    HcSqR
+    HcSqGt1').
+}
+claim HscaledNorm :
+  euclidean_norm_sq (ordsucc n) (Rn_scalar_mult (ordsucc n) c x) =
+  mul_SNo c c.
+{
+  rewrite (euclidean_norm_sq_scalar_mult
+    (ordsucc n)
+    c
+    x
+    Hsn_nat
+    HxEu
+    HcR).
+  rewrite HxNorm.
+  rewrite (mul_SNo_oneL
+    (mul_SNo c c)
+    (SNo_mul_SNo
+      c
+      c
+      HcS
+      HcS)).
+  reflexivity.
+}
+claim HscaledBound :
+  ~(Rlt 1 (euclidean_norm_sq (ordsucc n) (Rn_scalar_mult (ordsucc n) c x))).
+{
+  exact (SepE2
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+    (Rn_scalar_mult (ordsucc n) c x)
+    HxScaledB).
+}
+apply HscaledBound.
+rewrite HscaledNorm.
+exact HcSqGt1R.
+Qed.
+
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
@@ -147831,33 +148196,6 @@ apply (xm (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
       (exists x:set, x :e Sn n /\ points_directly_outward_Rn n vdisp x)
       HioDisp).
   }
-  apply HdispInward.
-  let xin.
-  assume HxinPack.
-  claim HxinSn : xin :e Sn n.
-  {
-    exact (andEL
-      (xin :e Sn n)
-      (points_directly_inward_Rn n vdisp xin)
-      HxinPack).
-  }
-  claim HxinInward : points_directly_inward_Rn n vdisp xin.
-  {
-    exact (andER
-      (xin :e Sn n)
-      (points_directly_inward_Rn n vdisp xin)
-      HxinPack).
-  }
-  claim HinwardScale :
-    exists a:set, a :e R /\ Rlt 0 a /\
-      apply_fun vdisp xin = Rn_scalar_mult (ordsucc n) (minus_SNo a) xin.
-  {
-    exact (andER
-      (xin :e Sn n)
-      (exists a:set, a :e R /\ Rlt 0 a /\
-        apply_fun vdisp xin = Rn_scalar_mult (ordsucc n) (minus_SNo a) xin)
-      HxinInward).
-  }
   apply HdispOutward.
   let xout.
   assume HxoutPack.
@@ -147885,7 +148223,345 @@ apply (xm (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
         apply_fun vdisp xout = Rn_scalar_mult (ordsucc n) a xout)
       HxoutOutward).
   }
-  admit.
+  apply HoutwardScale.
+  let a.
+  assume HaPack.
+  claim HaRPack :
+    a :e R /\ Rlt 0 a.
+  {
+    exact (andEL
+      (a :e R /\ Rlt 0 a)
+      (apply_fun vdisp xout = Rn_scalar_mult (ordsucc n) a xout)
+      HaPack).
+  }
+  claim HaR : a :e R.
+  {
+    exact (andEL
+      (a :e R)
+      (Rlt 0 a)
+      HaRPack).
+  }
+  claim HaPos : Rlt 0 a.
+  {
+    exact (andER
+      (a :e R)
+      (Rlt 0 a)
+      HaRPack).
+  }
+  claim HvxEq :
+    apply_fun vdisp xout = Rn_scalar_mult (ordsucc n) a xout.
+  {
+    exact (andER
+      (a :e R /\ Rlt 0 a)
+      (apply_fun vdisp xout = Rn_scalar_mult (ordsucc n) a xout)
+      HaPack).
+  }
+  claim HxoutB : xout :e Bn_closed n.
+  {
+    exact (Sn_subset_Bn_closed
+      n
+      xout
+      HxoutSn).
+  }
+  claim HfxB : apply_fun f xout :e Bn_closed n.
+  {
+    exact (HfIntoB
+      xout
+      HxoutB).
+  }
+  claim HxoutEu : xout :e euclidean_space (ordsucc n).
+  {
+    exact (SepE1
+      (euclidean_space (ordsucc n))
+      (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+      xout
+      HxoutSn).
+  }
+  claim HfxEu : apply_fun f xout :e euclidean_space (ordsucc n).
+  {
+    exact (SepE1
+      (euclidean_space (ordsucc n))
+      (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+      (apply_fun f xout)
+      HfxB).
+  }
+  claim HaS : SNo a.
+  {
+    exact (real_SNo
+      a
+      HaR).
+  }
+  set c := add_SNo a 1.
+  claim HcR : c :e R.
+  {
+    exact (real_add_SNo
+      a
+      HaR
+      1
+      real_1).
+  }
+  claim HcS : SNo c.
+  {
+    exact (real_SNo
+      c
+      HcR).
+  }
+  claim HoneLtC : 1 < c.
+  {
+    claim HrawLt :
+      add_SNo 0 1 < c.
+    {
+      exact (add_SNo_Lt1
+        0
+        1
+        a
+        SNo_0
+        SNo_1
+        HaS
+        (RltE_lt
+          0
+          a
+          HaPos)).
+    }
+    claim H0Eq1 :
+      add_SNo 0 1 = 1.
+    {
+      exact (add_SNo_0L
+        1
+        SNo_1).
+    }
+    exact (H0Eq1
+      (fun u v:set => u < c)
+      HrawLt).
+  }
+  claim H1ltc : Rlt 1 c.
+  {
+    exact (RltI
+      1
+      c
+      real_1
+      HcR
+      HoneLtC).
+  }
+  claim HfxCoord : forall i:set, i :e ordsucc n ->
+    apply_fun (apply_fun f xout) i = mul_SNo c (apply_fun xout i).
+  {
+    let i.
+    assume Hi.
+    claim HvdispCoord :
+      apply_fun (apply_fun vdisp xout) i =
+      add_SNo (apply_fun (apply_fun f xout) i)
+        (minus_SNo (apply_fun xout i)).
+    {
+      rewrite (apply_fun_graph
+        (Bn_closed n)
+        (fun x0:set =>
+          graph (ordsucc n) (fun i0:set =>
+            add_SNo (apply_fun (apply_fun f x0) i0)
+              (minus_SNo (apply_fun x0 i0))))
+        xout
+        HxoutB).
+      rewrite (apply_fun_graph
+        (ordsucc n)
+        (fun i0:set =>
+          add_SNo (apply_fun (apply_fun f xout) i0)
+            (minus_SNo (apply_fun xout i0)))
+        i
+        Hi).
+      reflexivity.
+    }
+    claim HscaleCoord :
+      apply_fun (apply_fun vdisp xout) i =
+      mul_SNo a (apply_fun xout i).
+    {
+      rewrite HvxEq.
+      exact (Rn_scalar_mult_apply
+        (ordsucc n)
+        a
+        xout
+        i
+        Hi).
+    }
+    claim HfxiR : apply_fun (apply_fun f xout) i :e R.
+    {
+      exact (euclidean_space_coord_in_R
+        (ordsucc n)
+        (apply_fun f xout)
+        i
+        HfxEu
+        Hi).
+    }
+    claim HxiR : apply_fun xout i :e R.
+    {
+      exact (euclidean_space_coord_in_R
+        (ordsucc n)
+        xout
+        i
+        HxoutEu
+        Hi).
+    }
+    claim HfxiS : SNo (apply_fun (apply_fun f xout) i).
+    {
+      exact (real_SNo
+        (apply_fun (apply_fun f xout) i)
+        HfxiR).
+    }
+    claim HxiS : SNo (apply_fun xout i).
+    {
+      exact (real_SNo
+        (apply_fun xout i)
+        HxiR).
+    }
+    claim HlinearEq :
+      add_SNo
+        (add_SNo (apply_fun (apply_fun f xout) i)
+          (minus_SNo (apply_fun xout i)))
+        (apply_fun xout i)
+      =
+      add_SNo (mul_SNo a (apply_fun xout i))
+        (apply_fun xout i).
+    {
+      claim HvdispCoordSym :
+        add_SNo (apply_fun (apply_fun f xout) i)
+          (minus_SNo (apply_fun xout i))
+        =
+        apply_fun (apply_fun vdisp xout) i.
+      {
+        symmetry.
+        exact HvdispCoord.
+      }
+      claim HmidEq1 :
+        add_SNo
+          (add_SNo (apply_fun (apply_fun f xout) i)
+            (minus_SNo (apply_fun xout i)))
+          (apply_fun xout i)
+        =
+        add_SNo (apply_fun (apply_fun vdisp xout) i)
+          (apply_fun xout i).
+      {
+        rewrite HvdispCoordSym.
+        reflexivity.
+      }
+      claim HmidEq2 :
+        add_SNo (apply_fun (apply_fun vdisp xout) i)
+          (apply_fun xout i)
+        =
+        add_SNo (mul_SNo a (apply_fun xout i))
+          (apply_fun xout i).
+      {
+        rewrite HscaleCoord.
+        reflexivity.
+      }
+      exact (eq_i_tra
+        (add_SNo (add_SNo (apply_fun (apply_fun f xout) i)
+          (minus_SNo (apply_fun xout i)))
+          (apply_fun xout i))
+        (add_SNo (apply_fun (apply_fun vdisp xout) i)
+          (apply_fun xout i))
+        (add_SNo (mul_SNo a (apply_fun xout i))
+          (apply_fun xout i))
+        HmidEq1
+        HmidEq2).
+    }
+    claim HlhsSimpl :
+      add_SNo
+        (add_SNo (apply_fun (apply_fun f xout) i)
+          (minus_SNo (apply_fun xout i)))
+        (apply_fun xout i)
+      =
+      apply_fun (apply_fun f xout) i.
+    {
+      exact (add_SNo_minus_R2'
+        (apply_fun (apply_fun f xout) i)
+        (apply_fun xout i)
+        HfxiS
+        HxiS).
+    }
+    claim Hlinear :
+      apply_fun (apply_fun f xout) i =
+      add_SNo (mul_SNo a (apply_fun xout i))
+        (apply_fun xout i).
+    {
+      rewrite <- HlhsSimpl.
+      exact HlinearEq.
+    }
+    rewrite Hlinear.
+    rewrite (mul_SNo_com
+      c
+      (apply_fun xout i)
+      HcS
+      HxiS).
+    rewrite (mul_SNo_distrL
+      (apply_fun xout i)
+      a
+      1
+      HxiS
+      HaS
+      SNo_1).
+    rewrite (mul_SNo_com
+      (apply_fun xout i)
+      a
+      HxiS
+      HaS).
+    rewrite (mul_SNo_oneR
+      (apply_fun xout i)
+      HxiS).
+    reflexivity.
+  }
+  claim HscaledEu :
+    Rn_scalar_mult (ordsucc n) c xout :e euclidean_space (ordsucc n).
+  {
+    exact (Rn_scalar_mult_in_euclidean_space
+      (ordsucc n)
+      c
+      xout
+      HxoutEu
+      HcR).
+  }
+  claim HeuEq :
+    euclidean_space (ordsucc n) = power_real (ordsucc n).
+  {
+    reflexivity.
+  }
+  claim HfxScaled :
+    apply_fun f xout = Rn_scalar_mult (ordsucc n) c xout.
+  {
+    apply (power_real_ext
+      (ordsucc n)
+      (apply_fun f xout)
+      (Rn_scalar_mult (ordsucc n) c xout)).
+    - rewrite <- HeuEq.
+      exact HfxEu.
+    - rewrite <- HeuEq.
+      exact HscaledEu.
+    - let i.
+      assume Hi.
+      rewrite (Rn_scalar_mult_apply
+        (ordsucc n)
+        c
+        xout
+        i
+        Hi).
+      exact (HfxCoord
+        i
+        Hi).
+  }
+  claim Hcontra : False.
+  {
+    apply (Rn_scalar_mult_gt1_on_Sn_not_in_Bn_closed
+      n
+      c
+      xout
+      Hn_om
+      HxoutSn
+      HcR
+      H1ltc).
+    rewrite <- HfxScaled.
+    exact HfxB.
+  }
+  exact (FalseE
+    Hcontra
+    (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
 Admitted.
 
 (** from S55 Exercise 4(e) (line 1050 in algtop.tex) **)
