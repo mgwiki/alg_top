@@ -1,8 +1,0 @@
-CHANGES1307 (from bck1306, 311326 lines to bck1307, 311367 lines)
-
-1. lemma84_1_connected_iff_edge_paths (Qed):
-   - Fixed 2 admits: Hn0 (n <> 0) at both edge_path decomposition sites
-   - Both were extractable from existing Hepn0 hypothesis via andER
-   - Changed Admitted -> Qed (all 30 deps have recadmit:NO)
-
-Running totals: 544 Admitted, 2487 Qed (was 551/2475 at bck1305)
