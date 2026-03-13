@@ -411756,6 +411756,26 @@ claim HreducedSingletonGenH0 :
     (HgensH0InFactor alpha HalphaJH0)
     (HgensH0NeEfam alpha HalphaJH0)).
 }
+claim HwordSingletonGenH0 :
+  forall alpha:set, alpha :e JH0 ->
+    word_product
+      multF
+      eF
+      (graph 1 (fun _:set => apply_fun gensH0 alpha))
+      1
+    = apply_fun gensH0 alpha.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (word_product_singleton_group
+    H
+    multF
+    eF
+    invF
+    (apply_fun gensH0 alpha)
+    HgrpH
+    (HgensH0InH alpha HalphaJH0)).
+}
 claim HambientReducedWordOnH :
   forall x:set, x :e H -> x <> eF ->
     exists n xs:set,
