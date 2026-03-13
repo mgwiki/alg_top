@@ -283333,7 +283333,152 @@ apply (xm (x = e)).
             exists nw ws:set,
               reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
               word_product mult e ws nw = zc /\ nw :e nz.
-          { admit. }
+          { assume Hpe : p = e.
+            (** Get k_mz with mz = ordsucc k_mz **)
+            claim Hkmz_ex2 : exists k:set, nat_p k /\ mz = ordsucc k.
+            { claim H : mz = 0 \/ (exists k:set, nat_p k /\ mz = ordsucc k).
+              { exact (nat_inv mz Hmz_nat). }
+              apply H.
+              - assume Hmz0 : mz = 0. exact (FalseE (Hmz_ne0 Hmz0) (exists k:set, nat_p k /\ mz = ordsucc k)).
+              - assume Hex. exact Hex. }
+            apply Hkmz_ex2. let k_mz.
+            assume Hkmz_pack : nat_p k_mz /\ mz = ordsucc k_mz.
+            claim Hkmz_nat : nat_p k_mz. { exact (andEL (nat_p k_mz) (mz = ordsucc k_mz) Hkmz_pack). }
+            claim Hmz_sk : mz = ordsucc k_mz. { exact (andER (nat_p k_mz) (mz = ordsucc k_mz) Hkmz_pack). }
+            claim HkmzO : k_mz :e omega. { exact (nat_p_omega k_mz Hkmz_nat). }
+            (** First-element decomposition of word_product(zs, mz) **)
+            claim Hshift_zs2 : word_product mult e zs mz =
+              apply_fun mult (apply_fun zs 0,
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz).
+            { exact (word_product_shift_first_eq G mult e inv k_mz mz zs
+                Hgrp Hkmz_nat Hmz_sk Hzs_in_G_mz). }
+            (** Membership for suffix word product **)
+            claim Hzs_suf_in_G2 : forall i:set, i :e k_mz ->
+              apply_fun (graph k_mz (fun i0:set => apply_fun zs (ordsucc i0))) i :e G.
+            { let i. assume Hi : i :e k_mz.
+              rewrite (apply_fun_graph k_mz (fun i0:set => apply_fun zs (ordsucc i0)) i Hi).
+              claim Hsi_mz : ordsucc i :e mz.
+              { rewrite Hmz_sk. exact (nat_ordsucc_in_ordsucc k_mz Hkmz_nat i Hi). }
+              exact (Hzs_in_G_mz (ordsucc i) Hsi_mz). }
+            claim Hwp_suf_G2 : word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz :e G.
+            { exact (word_product_in_G_group G mult e inv k_mz
+                (graph k_mz (fun i:set => apply_fun zs (ordsucc i)))
+                Hgrp Hkmz_nat Hzs_suf_in_G2). }
+            (** zc = word_product(zs_mid, k_mz) **)
+            (** zc = mult(zs(mz), word_product(zs, mz))  [Hzc_prod] **)
+            (**    = mult(zs(mz), mult(zs(0), wp_mid))    [Hshift_zs2] **)
+            (**    = mult(mult(zs(mz), zs(0)), wp_mid)    [assoc] **)
+            (**    = mult(p, wp_mid)                       [p def] **)
+            (**    = mult(e, wp_mid)                       [Hpe] **)
+            (**    = wp_mid                                [left id] **)
+            claim Hassoc_pe : apply_fun mult (apply_fun mult (apply_fun zs mz, apply_fun zs 0),
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz) =
+              apply_fun mult (apply_fun zs mz,
+                apply_fun mult (apply_fun zs 0,
+                  word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)).
+            { exact (Hassoc (apply_fun zs mz) (apply_fun zs 0)
+                (word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)
+                Hzsmz_G Hzs0_G Hwp_suf_G2). }
+            claim Hle_wp : apply_fun mult (e,
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz) =
+              word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz.
+            { exact (andEL
+                (apply_fun mult (e, word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz) =
+                  word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)
+                (apply_fun mult (word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz, e) =
+                  word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)
+                (Hid (word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz) Hwp_suf_G2)). }
+            claim Hstep_a : zc = apply_fun mult (apply_fun zs mz,
+                apply_fun mult (apply_fun zs 0,
+                  word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)).
+            { rewrite Hzc_prod. rewrite Hshift_zs2. reflexivity. }
+            claim Hassoc_pe_sym : apply_fun mult (apply_fun zs mz,
+                apply_fun mult (apply_fun zs 0,
+                  word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)) =
+              apply_fun mult (apply_fun mult (apply_fun zs mz, apply_fun zs 0),
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz).
+            { symmetry. exact Hassoc_pe. }
+            claim Hstep_b : zc = apply_fun mult (p,
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz).
+            { exact (eq_i_tra zc
+                (apply_fun mult (apply_fun zs mz,
+                  apply_fun mult (apply_fun zs 0,
+                    word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)))
+                (apply_fun mult (p,
+                  word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz))
+                Hstep_a Hassoc_pe_sym). }
+            claim Hpe_step : apply_fun mult (p,
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz) =
+              apply_fun mult (e,
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz).
+            { rewrite Hpe. reflexivity. }
+            claim Hstep_c : zc = apply_fun mult (e,
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz).
+            { exact (eq_i_tra zc
+                (apply_fun mult (p,
+                  word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz))
+                (apply_fun mult (e,
+                  word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz))
+                Hstep_b Hpe_step). }
+            claim Hzc_eq_mid : zc = word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz.
+            { exact (eq_i_tra zc
+                (apply_fun mult (e,
+                  word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz))
+                (word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)
+                Hstep_c Hle_wp). }
+            (** Now case split on k_mz **)
+            apply (xm (k_mz = 0)).
+            - assume Hk0 : k_mz = 0.
+              (** k_mz = 0 means mz = 1, nz = 2 **)
+              (** zc = word_product(zs_mid, 0) = e **)
+              claim Hwp0 : word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz = e.
+              { rewrite Hk0.
+                exact (nat_primrec_0 e (fun i r:set =>
+                  apply_fun mult (r, apply_fun (graph 0 (fun i0:set => apply_fun zs (ordsucc i0))) i))). }
+              claim Hzce : zc = e. { exact (eq_i_tra zc
+                (word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz)
+                e Hzc_eq_mid Hwp0). }
+              exact (FalseE (Hzcne Hzce)
+                (exists nw ws:set, reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
+                  word_product mult e ws nw = zc /\ nw :e nz)).
+            - assume Hkne0 : k_mz <> 0.
+              (** k_mz >= 1, use prefix of suffix as reduced word **)
+              witness k_mz.
+              witness (graph k_mz (fun i:set => apply_fun zs (ordsucc i))).
+              (** Reduced word: prefix of Hred_suf **)
+              claim Hkmz_mz : k_mz :e mz.
+              { rewrite Hmz_sk. exact (ordsuccI2 k_mz). }
+              claim Hred_prefix_raw : reduced_word 2 Gfam efam k_mz
+                (graph k_mz (fun j:set => apply_fun (graph mz (fun i:set => apply_fun zs (ordsucc i))) j)).
+              { exact (reduced_word_prefix 2 Gfam efam mz
+                  (graph mz (fun i:set => apply_fun zs (ordsucc i)))
+                  k_mz Hred_suf Hkmz_mz). }
+              claim Hcongr : forall j:set, j :e k_mz ->
+                apply_fun (graph k_mz (fun j0:set => apply_fun (graph mz (fun i:set => apply_fun zs (ordsucc i))) j0)) j =
+                apply_fun (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) j.
+              { let j. assume Hj : j :e k_mz.
+                rewrite (apply_fun_graph k_mz
+                  (fun j0:set => apply_fun (graph mz (fun i:set => apply_fun zs (ordsucc i))) j0) j Hj).
+                rewrite (apply_fun_graph k_mz (fun i:set => apply_fun zs (ordsucc i)) j Hj).
+                claim Hj_mz : j :e mz.
+                { exact (ordinal_TransSet mz (nat_p_ordinal mz Hmz_nat) k_mz Hkmz_mz j Hj). }
+                exact (apply_fun_graph mz (fun i:set => apply_fun zs (ordsucc i)) j Hj_mz). }
+              claim Hred_mid : reduced_word 2 Gfam efam k_mz (graph k_mz (fun i:set => apply_fun zs (ordsucc i))).
+              { exact (reduced_word_congr_on 2 Gfam efam k_mz
+                  (graph k_mz (fun j:set => apply_fun (graph mz (fun i:set => apply_fun zs (ordsucc i))) j))
+                  (graph k_mz (fun i:set => apply_fun zs (ordsucc i)))
+                  Hred_prefix_raw Hcongr). }
+              claim Hkmz_nz : k_mz :e nz.
+              { exact (ordinal_TransSet nz (nat_p_ordinal nz (omega_nat_p nz HnzO)) mz Hmz_nz k_mz Hkmz_mz). }
+              claim Hzc_eq_mid_sym : word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz = zc.
+              { symmetry. exact Hzc_eq_mid. }
+              prove ((reduced_word 2 Gfam efam k_mz (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) /\ (k_mz <> 0)) /\
+                word_product mult e (graph k_mz (fun i:set => apply_fun zs (ordsucc i))) k_mz = zc) /\ k_mz :e nz.
+              apply andI.
+              + apply andI.
+                * apply andI. exact Hred_mid. exact Hkne0.
+                * exact Hzc_eq_mid_sym.
+              + exact Hkmz_nz. }
           claim Hex_short_word_case_pne : p <> e ->
             exists nw ws:set,
               reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\

@@ -1,0 +1,15 @@
+## Changes in bck13580 (vs bck13579)
+
+Proved Hex_short_word_case_pe admit in ex68_2c_finite_order_elements:
+- Showed zc = word_product(zs_mid, k_mz) via eq_i_tra chain:
+  zc = mult(zs(mz), wp(zs, mz)) = mult(zs(mz), mult(zs(0), wp_mid))
+  = mult(mult(zs(mz), zs(0)), wp_mid) = mult(p, wp_mid) = mult(e, wp_mid) = wp_mid
+- Case k_mz = 0: wp_mid = e so zc = e, contradicts Hzcne
+- Case k_mz >= 1: witness k_mz and graph k_mz (fun i => zs(ordsucc i))
+  - Reduced word from reduced_word_prefix of Hred_suf + reduced_word_congr_on
+  - k_mz :e nz via transitivity (k_mz :e mz :e nz)
+
+Remaining admits in ex68_2c_finite_order_elements: 1
+- Cyclically reduced case (alpha_first <> alpha_last): prove False
+
+Line count: 410706 (vs 410561; +145 lines)
