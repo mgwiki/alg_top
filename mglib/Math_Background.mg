@@ -411372,6 +411372,172 @@ claim HfactorSubgroupH0 :
     HgrpH
     HaH).
 }
+set GfamF := graph J (fun alpha:set =>
+  {g :e F | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat multF eF (apply_fun gens alpha) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m)))}).
+claim HfpDisjoint :
+  forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun GfamF alpha -> x :e apply_fun GfamF beta -> x = eF.
+{
+  apply (and5E
+    (group_structure F multF eF invF)
+    (forall alpha0:set, alpha0 :e J -> subgroup_of (apply_fun GfamF alpha0) F multF eF invF)
+    (forall alpha0 beta0:set, alpha0 :e J -> beta0 :e J -> alpha0 <> beta0 ->
+      forall x:set, x :e apply_fun GfamF alpha0 -> x :e apply_fun GfamF beta0 -> x = eF)
+    (subgroups_generate F multF eF invF J GfamF)
+    (forall x:set, x :e F -> x <> eF ->
+      exists n xs:set,
+        reduced_word J GfamF (graph J (fun _:set => eF)) n xs /\ n <> 0 /\
+        word_product multF eF xs n = x /\
+        (forall n' xs':set,
+          reduced_word J GfamF (graph J (fun _:set => eF)) n' xs' -> n' <> 0 ->
+          word_product multF eF xs' n' = x ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+    HfpFam).
+  assume H1 H2 H3 H4 H5.
+  exact H3.
+}
+claim HGfamH0MemInGfamF :
+  forall alpha x:set, alpha :e JH0 ->
+    x :e apply_fun GfamH0 alpha ->
+    x :e apply_fun GfamF alpha.
+{
+  let alpha x.
+  assume HalphaJH0 HxH0.
+  claim HalphaJ : alpha :e J.
+  { exact (HJH0subJ alpha HalphaJH0). }
+  claim HxSepH :
+    x :e {g :e H | exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m)))}.
+  { rewrite <- (HGfamH0Val alpha HalphaJH0). exact HxH0. }
+  claim HxH : x :e H.
+  {
+    exact (SepE1
+      H
+      (fun g:set => exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m))))
+      x
+      HxSepH).
+  }
+  claim HxPow :
+    exists n:set, n :e int /\
+      ((n :e omega /\ x = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        x = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m))).
+  {
+    exact (SepE2
+      H
+      (fun g:set => exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m))))
+      x
+      HxSepH).
+  }
+  rewrite (apply_fun_graph
+    J
+    (fun beta:set =>
+      {g :e F | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat multF eF (apply_fun gens beta) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat multF eF (apply_fun invF (apply_fun gens beta)) (ordsucc m)))})
+    alpha
+    HalphaJ).
+  apply (SepI
+    F
+    (fun g:set => exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat multF eF (apply_fun gens alpha) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m))))
+    x
+    (HsubF x HxH)).
+  apply HxPow.
+  let n.
+  assume HnPack.
+  claim HnInt : n :e int.
+  { exact (andEL
+      (n :e int)
+      ((n :e omega /\ x = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        x = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m)))
+      HnPack). }
+  claim Hor :
+    (n :e omega /\ x = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
+    (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      x = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m)).
+  {
+    exact (andER
+      (n :e int)
+      ((n :e omega /\ x = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        x = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m)))
+      HnPack).
+  }
+  witness n.
+  apply andI.
+  - exact HnInt.
+  - apply Hor.
+    + assume Hpos.
+      apply orIL.
+      apply andI.
+      * exact (andEL
+          (n :e omega)
+          (x = group_power_nat multF eF (apply_fun gensH0 alpha) n)
+          Hpos).
+      * claim HxEq :
+          x = group_power_nat multF eF (apply_fun gensH0 alpha) n.
+        { exact (andER
+            (n :e omega)
+            (x = group_power_nat multF eF (apply_fun gensH0 alpha) n)
+            Hpos). }
+        rewrite HxEq.
+        rewrite (HgensH0Eq alpha HalphaJH0).
+        reflexivity.
+    + assume Hneg.
+      apply orIR.
+      apply Hneg.
+      let m.
+      assume HmPack.
+      witness m.
+      apply andI.
+      * exact (andEL
+          (m :e omega /\ n = minus_SNo (ordsucc m))
+          (x = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m))
+          HmPack).
+      * claim HxEq :
+          x = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m).
+        { exact (andER
+            (m :e omega /\ n = minus_SNo (ordsucc m))
+            (x = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m))
+            HmPack). }
+        rewrite HxEq.
+        rewrite (HgensH0Eq alpha HalphaJH0).
+        reflexivity.
+}
+claim HfactorDisjointH0 :
+  forall alpha beta:set, alpha :e JH0 -> beta :e JH0 -> alpha <> beta ->
+    forall x:set, x :e apply_fun GfamH0 alpha -> x :e apply_fun GfamH0 beta -> x = eF.
+{
+  let alpha beta.
+  assume HalphaJH0 HbetaJH0 Hneq.
+  let x.
+  assume HxA HxB.
+  exact (HfpDisjoint
+    alpha
+    beta
+    (HJH0subJ alpha HalphaJH0)
+    (HJH0subJ beta HbetaJH0)
+    Hneq
+    x
+    (HGfamH0MemInGfamF alpha x HalphaJH0 HxA)
+    (HGfamH0MemInGfamF beta x HbetaJH0 HxB)).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove the infinite-cyclic factor family
