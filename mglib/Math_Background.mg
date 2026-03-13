@@ -152310,6 +152310,1049 @@ exact (composition_continuous
     Hn_om)).
 Qed.
 
+(** Infrastructure: a nonzero Euclidean vector lies in R^n minus the origin. **)
+(** Proven Charlie **)
+Lemma euclidean_nonzero_in_Rn_minus_origin_ordsucc : forall n y:set,
+  n :e omega ->
+  y :e euclidean_space (ordsucc n) ->
+  y <> Rn_zero (ordsucc n) ->
+  y :e Rn_minus_origin (ordsucc n).
+let n y.
+assume Hn_om HyEu HyNe0.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hdef :
+  Rn_minus_origin (ordsucc n) =
+  {v :e euclidean_space (ordsucc n) | ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0)}.
+{
+  reflexivity.
+}
+rewrite Hdef.
+apply (SepI
+  (euclidean_space (ordsucc n))
+  (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+  y
+  HyEu).
+assume Hall0.
+apply HyNe0.
+claim HyGraph :
+  y = graph (ordsucc n) (fun i:set => apply_fun y i).
+{
+  exact (euclidean_space_ordsucc_eq_graph_of_apply_fun
+    n
+    y
+    Hn_nat
+    HyEu).
+}
+claim HyZeroGraph :
+  y = graph (ordsucc n) (fun i:set => 0).
+{
+  rewrite HyGraph.
+  exact (graph_extensional
+    (ordsucc n)
+    (fun i:set => apply_fun y i)
+    (fun i:set => 0)
+    (fun i Hi =>
+      Hall0
+        i
+        Hi)).
+}
+claim HzeroDef :
+  Rn_zero (ordsucc n) = graph (ordsucc n) (fun i:set => 0).
+{
+  reflexivity.
+}
+exact (eq_i_tra
+  y
+  (graph (ordsucc n) (fun i:set => 0))
+  (Rn_zero (ordsucc n))
+  HyZeroGraph
+  (eq_symm
+    (Rn_zero (ordsucc n))
+    (graph (ordsucc n) (fun i:set => 0))
+    HzeroDef)).
+Qed.
+
+(** Infrastructure: renormalizing and rescaling a nonzero vector recovers it. **)
+(** Proven Charlie **)
+Lemma Rn_scalar_mult_sqrt_norm_normalize_eq : forall n y:set,
+  n :e omega ->
+  y :e Rn_minus_origin (ordsucc n) ->
+  Rn_scalar_mult
+    (ordsucc n)
+    (sqrt_SNo_nonneg
+      (euclidean_norm_sq (ordsucc n) y))
+    (apply_fun (Rn_normalize_to_Sn n) y)
+  = y.
+let n y.
+assume Hn_om HyNz.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim Hsn_om : ordsucc n :e omega.
+{
+  exact (omega_ordsucc
+    n
+    Hn_om).
+}
+claim HyEu : y :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+    y
+    HyNz).
+}
+claim HnormR : euclidean_norm_sq (ordsucc n) y :e R.
+{
+  exact (euclidean_norm_sq_in_R
+    (ordsucc n)
+    y
+    Hsn_nat
+    HyEu).
+}
+claim HnormS : SNo (euclidean_norm_sq (ordsucc n) y).
+{
+  exact (real_SNo
+    (euclidean_norm_sq (ordsucc n) y)
+    HnormR).
+}
+claim HnormNonnegR : Rle 0 (euclidean_norm_sq (ordsucc n) y).
+{
+  exact (euclidean_norm_sq_nonneg
+    (ordsucc n)
+    y
+    Hsn_nat
+    HyEu).
+}
+claim HnormNonneg : 0 <= euclidean_norm_sq (ordsucc n) y.
+{
+  exact (SNoLe_of_Rle
+    0
+    (euclidean_norm_sq (ordsucc n) y)
+    HnormNonnegR).
+}
+set d := sqrt_SNo_nonneg (euclidean_norm_sq (ordsucc n) y).
+claim HdR : d :e R.
+{
+  exact (sqrt_SNo_nonneg_real
+    (euclidean_norm_sq (ordsucc n) y)
+    HnormR
+    HnormNonneg).
+}
+claim HdS : SNo d.
+{
+  exact (real_SNo
+    d
+    HdR).
+}
+claim HdNe0 : d <> 0.
+{
+  exact (Rn_minus_origin_norm_nonzero
+    (ordsucc n)
+    y
+    Hsn_om
+    HyNz).
+}
+claim HlamR : div_SNo 1 d :e R.
+{
+  exact (real_div_SNo
+    1
+    real_1
+    d
+    HdR).
+}
+claim Hdef :
+  Rn_normalize_to_Sn n =
+  graph (Rn_minus_origin (ordsucc n))
+    (fun x:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (div_SNo 1
+          (sqrt_SNo_nonneg
+            (euclidean_norm_sq (ordsucc n) x)))
+        x).
+{
+  reflexivity.
+}
+rewrite Hdef.
+rewrite (apply_fun_graph
+  (Rn_minus_origin (ordsucc n))
+  (fun x:set =>
+    Rn_scalar_mult
+      (ordsucc n)
+      (div_SNo 1
+        (sqrt_SNo_nonneg
+          (euclidean_norm_sq (ordsucc n) x)))
+      x)
+  y
+  HyNz).
+rewrite (Rn_scalar_mult_assoc
+  (ordsucc n)
+  d
+  (div_SNo 1 d)
+  y
+  HyEu
+  HdR
+  HlamR).
+rewrite (mul_div_SNo_invR
+  1
+  d
+  SNo_1
+  HdS
+  HdNe0).
+exact (Rn_scalar_mult_ordsucc_one
+  n
+  y
+  Hn_nat
+  HyEu).
+Qed.
+
+(** Infrastructure: explicit evaluation formula for the radial collapse map. **)
+(** Proven Charlie **)
+Lemma Sn_radial_collapse_map_apply : forall n x t:set,
+  n :e omega ->
+  x :e Sn n ->
+  t :e unit_interval ->
+  apply_fun (Sn_radial_collapse_map n) (x, t) =
+  Rn_scalar_mult
+    (ordsucc n)
+    (apply_fun flip_unit_interval t)
+    x.
+let n x t.
+assume Hn_om HxSn HtI.
+set dom := setprod (Sn n) unit_interval.
+set xproj := projection_map1 (Sn n) unit_interval.
+set tproj := projection_map2 (Sn n) unit_interval.
+set inclS := graph (Sn n) (fun z:set => z).
+set xB := compose_fun dom xproj inclS.
+set pairSToB := pair_map dom xB tproj.
+claim HxtDom : (x, t) :e dom.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (Sn n)
+    unit_interval
+    x
+    t
+    HxSn
+    HtI).
+}
+claim HpairAt :
+  apply_fun pairSToB (x, t) = (x, t).
+{
+  claim HincDef : inclS = graph (Sn n) (fun z:set => z).
+  {
+    reflexivity.
+  }
+  claim HtDef : tproj = projection_map2 (Sn n) unit_interval.
+  {
+    reflexivity.
+  }
+  rewrite (pair_map_apply
+    dom
+    (Bn_closed n)
+    unit_interval
+    xB
+    tproj
+    (x, t)
+    HxtDom).
+  rewrite (compose_fun_apply
+    dom
+    xproj
+    inclS
+    (x, t)
+    HxtDom).
+  rewrite (projection1_apply
+    (Sn n)
+    unit_interval
+    (x, t)
+    HxtDom).
+  rewrite tuple_2_0_eq.
+  rewrite HincDef.
+  rewrite (apply_fun_graph
+    (Sn n)
+    (fun z:set => z)
+    x
+    HxSn).
+  rewrite HtDef.
+  rewrite (projection2_apply
+    (Sn n)
+    unit_interval
+    (x, t)
+    HxtDom).
+  rewrite tuple_2_1_eq.
+  reflexivity.
+}
+claim Hdef :
+  Sn_radial_collapse_map n =
+  compose_fun
+    dom
+    pairSToB
+    (Bn_closed_contraction_map n).
+{
+  reflexivity.
+}
+rewrite Hdef.
+rewrite (compose_fun_apply
+  dom
+  pairSToB
+  (Bn_closed_contraction_map n)
+  (x, t)
+  HxtDom).
+rewrite HpairAt.
+claim HxB : x :e Bn_closed n.
+{
+  exact (Sn_subset_Bn_closed
+    n
+    x
+    HxSn).
+}
+claim HxtB : (x, t) :e setprod (Bn_closed n) unit_interval.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (Bn_closed n)
+    unit_interval
+    x
+    t
+    HxB
+    HtI).
+}
+claim Hcdef :
+  Bn_closed_contraction_map n =
+  graph (setprod (Bn_closed n) unit_interval)
+    (fun p:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (apply_fun flip_unit_interval (p 1))
+        (p 0)).
+{
+  reflexivity.
+}
+rewrite Hcdef.
+rewrite (apply_fun_graph
+  (setprod (Bn_closed n) unit_interval)
+  (fun p:set =>
+    Rn_scalar_mult
+      (ordsucc n)
+      (apply_fun flip_unit_interval (p 1))
+      (p 0))
+  (x, t)
+  HxtB).
+rewrite tuple_2_1_eq.
+rewrite tuple_2_0_eq.
+reflexivity.
+Qed.
+
+(** Infrastructure: the radial collapse has norm-square equal to the square of the radial factor. **)
+(** Proven Charlie **)
+Lemma Sn_radial_collapse_map_norm_sq : forall n x t:set,
+  n :e omega ->
+  x :e Sn n ->
+  t :e unit_interval ->
+  euclidean_norm_sq
+    (ordsucc n)
+    (apply_fun (Sn_radial_collapse_map n) (x, t))
+  =
+  mul_SNo
+    (apply_fun flip_unit_interval t)
+    (apply_fun flip_unit_interval t).
+let n x t.
+assume Hn_om HxSn HtI.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HxNorm : euclidean_norm_sq (ordsucc n) x = 1.
+{
+  exact (SepE2
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HlamR : apply_fun flip_unit_interval t :e R.
+{
+  exact (flip_unit_interval_in_R
+    t
+    HtI).
+}
+rewrite (Sn_radial_collapse_map_apply
+  n
+  x
+  t
+  Hn_om
+  HxSn
+  HtI).
+rewrite (euclidean_norm_sq_scalar_mult
+  (ordsucc n)
+  (apply_fun flip_unit_interval t)
+  x
+  Hsn_nat
+  HxEu
+  HlamR).
+rewrite HxNorm.
+rewrite (mul_SNo_oneL
+  (mul_SNo (apply_fun flip_unit_interval t) (apply_fun flip_unit_interval t))
+  (SNo_mul_SNo
+    (apply_fun flip_unit_interval t)
+    (apply_fun flip_unit_interval t)
+    (real_SNo
+      (apply_fun flip_unit_interval t)
+      HlamR)
+    (real_SNo
+      (apply_fun flip_unit_interval t)
+      HlamR))).
+reflexivity.
+Qed.
+
+(** Infrastructure: only the top fiber of the collapse map lands at the origin. **)
+(** Proven Charlie **)
+Lemma Sn_radial_collapse_map_eq_zero_implies_t_one : forall n x t:set,
+  n :e omega ->
+  x :e Sn n ->
+  t :e unit_interval ->
+  apply_fun (Sn_radial_collapse_map n) (x, t) = Rn_zero (ordsucc n) ->
+  t = 1.
+let n x t.
+assume Hn_om HxSn HtI Hq0.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+set a := apply_fun flip_unit_interval t.
+claim HaI : a :e unit_interval.
+{
+  exact (flip_unit_interval_function_on
+    t
+    HtI).
+}
+claim HaR : a :e R.
+{
+  exact (SepE1
+    R
+    (fun u:set => ~(Rlt u 0) /\ ~(Rlt 1 u))
+    a
+    HaI).
+}
+claim HaS : SNo a.
+{
+  exact (real_SNo
+    a
+    HaR).
+}
+claim HaNonneg : 0 <= a.
+{
+  exact (SNoLe_of_Rle
+    0
+    a
+    (unit_interval_Rle0
+      a
+      HaI)).
+}
+claim HaSq0 : mul_SNo a a = 0.
+{
+  rewrite <- (Sn_radial_collapse_map_norm_sq
+    n
+    x
+    t
+    Hn_om
+    HxSn
+    HtI).
+  rewrite Hq0.
+  exact (euclidean_norm_sq_Rn_zero
+    (ordsucc n)
+    Hsn_nat).
+}
+claim HaEq0 : a = 0.
+{
+  apply (SNoLtLe_or
+    0
+    a
+    SNo_0
+    HaS).
+  - assume Hapos : 0 < a.
+    claim HaaPos : 0 < mul_SNo a a.
+    {
+      exact (mul_SNo_pos_pos
+        a
+        a
+        HaS
+        HaS
+        Hapos
+        Hapos).
+    }
+    exact (FalseE
+      (SNoLt_irref
+        0
+        (HaSq0
+          (fun z _ => 0 < z)
+          HaaPos))
+      (a = 0)).
+  - assume Hale0 : a <= 0.
+    exact (SNoLe_antisym
+      a
+      0
+      HaS
+      SNo_0
+      Hale0
+      HaNonneg).
+}
+claim HflipInv :
+  apply_fun flip_unit_interval a = t.
+{
+  exact (flip_unit_interval_involutive
+    t
+    HtI).
+}
+claim HflipInv0 :
+  apply_fun flip_unit_interval 0 = t.
+{
+  rewrite <- HaEq0.
+  exact HflipInv.
+}
+claim HoneEqT : 1 = t.
+{
+  rewrite <- flip_unit_interval_at_0.
+  exact HflipInv0.
+}
+exact (eq_symm
+  1
+  t
+  HoneEqT).
+Qed.
+
+(** Infrastructure: away from the origin the collapse map is injective on fibers. **)
+(** Proven Charlie **)
+Lemma Sn_radial_collapse_map_eq_nonzero_imp_pair_eq : forall n x1 t1 x2 t2:set,
+  n :e omega ->
+  x1 :e Sn n ->
+  t1 :e unit_interval ->
+  x2 :e Sn n ->
+  t2 :e unit_interval ->
+  apply_fun (Sn_radial_collapse_map n) (x1, t1) =
+  apply_fun (Sn_radial_collapse_map n) (x2, t2) ->
+  apply_fun (Sn_radial_collapse_map n) (x1, t1) <> Rn_zero (ordsucc n) ->
+  x1 = x2 /\ t1 = t2.
+let n x1 t1 x2 t2.
+assume Hn_om Hx1Sn Ht1I Hx2Sn Ht2I Heq Hne0.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim Hx1Eu : x1 :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x1
+    Hx1Sn).
+}
+claim Hx2Eu : x2 :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x2
+    Hx2Sn).
+}
+set a1 := apply_fun flip_unit_interval t1.
+set a2 := apply_fun flip_unit_interval t2.
+claim Ha1I : a1 :e unit_interval.
+{
+  exact (flip_unit_interval_function_on
+    t1
+    Ht1I).
+}
+claim Ha2I : a2 :e unit_interval.
+{
+  exact (flip_unit_interval_function_on
+    t2
+    Ht2I).
+}
+claim Ha1R : a1 :e R.
+{
+  exact (SepE1
+    R
+    (fun u:set => ~(Rlt u 0) /\ ~(Rlt 1 u))
+    a1
+    Ha1I).
+}
+claim Ha2R : a2 :e R.
+{
+  exact (SepE1
+    R
+    (fun u:set => ~(Rlt u 0) /\ ~(Rlt 1 u))
+    a2
+    Ha2I).
+}
+claim Ha1S : SNo a1.
+{
+  exact (real_SNo
+    a1
+    Ha1R).
+}
+claim Ha2S : SNo a2.
+{
+  exact (real_SNo
+    a2
+    Ha2R).
+}
+claim Ha1Nonneg : 0 <= a1.
+{
+  exact (SNoLe_of_Rle
+    0
+    a1
+    (unit_interval_Rle0
+      a1
+      Ha1I)).
+}
+claim Ha2Nonneg : 0 <= a2.
+{
+  exact (SNoLe_of_Rle
+    0
+    a2
+    (unit_interval_Rle0
+      a2
+      Ha2I)).
+}
+claim HaSqEq :
+  mul_SNo a1 a1 = mul_SNo a2 a2.
+{
+  rewrite <- (Sn_radial_collapse_map_norm_sq
+    n
+    x1
+    t1
+    Hn_om
+    Hx1Sn
+    Ht1I).
+  rewrite Heq.
+  exact (Sn_radial_collapse_map_norm_sq
+    n
+    x2
+    t2
+    Hn_om
+    Hx2Sn
+    Ht2I).
+}
+claim HaEq : a1 = a2.
+{
+  exact (SNo_nonneg_sqr_uniq
+    a1
+    a2
+    Ha1S
+    Ha2S
+    Ha1Nonneg
+    Ha2Nonneg
+    HaSqEq).
+}
+claim Ha1Ne0 : a1 <> 0.
+{
+  assume Ha10.
+  apply Hne0.
+  rewrite (Sn_radial_collapse_map_apply
+    n
+    x1
+    t1
+    Hn_om
+    Hx1Sn
+    Ht1I).
+  rewrite Ha10.
+  exact (Rn_scalar_mult_ordsucc_zero
+    n
+    x1
+    Hn_nat
+    Hx1Eu).
+}
+claim HscaledEq :
+  Rn_scalar_mult (ordsucc n) a1 x1 =
+  Rn_scalar_mult (ordsucc n) a1 x2.
+{
+  rewrite <- (Sn_radial_collapse_map_apply
+    n
+    x1
+    t1
+    Hn_om
+    Hx1Sn
+    Ht1I).
+  rewrite Heq.
+  rewrite (Sn_radial_collapse_map_apply
+    n
+    x2
+    t2
+    Hn_om
+    Hx2Sn
+    Ht2I).
+  rewrite HaEq.
+  reflexivity.
+}
+claim HxEq : x1 = x2.
+{
+  claim Hx1Graph :
+    x1 = graph (ordsucc n) (fun i:set => apply_fun x1 i).
+  {
+    exact (euclidean_space_ordsucc_eq_graph_of_apply_fun
+      n
+      x1
+      Hn_nat
+      Hx1Eu).
+  }
+  claim Hx2Graph :
+    x2 = graph (ordsucc n) (fun i:set => apply_fun x2 i).
+  {
+    exact (euclidean_space_ordsucc_eq_graph_of_apply_fun
+      n
+      x2
+      Hn_nat
+      Hx2Eu).
+  }
+  rewrite Hx1Graph.
+  rewrite Hx2Graph.
+  apply (graph_extensional
+    (ordsucc n)
+    (fun i:set => apply_fun x1 i)
+    (fun i:set => apply_fun x2 i)).
+  let i.
+  assume Hi.
+  claim HcoordEq :
+    mul_SNo a1 (apply_fun x1 i) =
+    mul_SNo a1 (apply_fun x2 i).
+  {
+    rewrite <- (Rn_scalar_mult_apply
+      (ordsucc n)
+      a1
+      x1
+      i
+      Hi).
+    rewrite HscaledEq.
+    rewrite (Rn_scalar_mult_apply
+      (ordsucc n)
+      a1
+      x2
+      i
+      Hi).
+    reflexivity.
+  }
+  exact (mul_SNo_nonzero_cancel
+    a1
+    (apply_fun x1 i)
+    (apply_fun x2 i)
+    Ha1S
+    Ha1Ne0
+    (real_SNo
+      (apply_fun x1 i)
+      (euclidean_space_coord_in_R
+        (ordsucc n)
+        x1
+        i
+        Hx1Eu
+        Hi))
+    (real_SNo
+      (apply_fun x2 i)
+      (euclidean_space_coord_in_R
+        (ordsucc n)
+        x2
+        i
+        Hx2Eu
+        Hi))
+    HcoordEq).
+}
+claim HtEq : t1 = t2.
+{
+  claim Hflip1 :
+    apply_fun flip_unit_interval a1 = t1.
+  {
+    exact (flip_unit_interval_involutive
+      t1
+      Ht1I).
+  }
+  claim Hflip2 :
+    apply_fun flip_unit_interval a2 = t2.
+  {
+    exact (flip_unit_interval_involutive
+      t2
+      Ht2I).
+  }
+  claim Hflip2' :
+    apply_fun flip_unit_interval a1 = t2.
+  {
+    rewrite HaEq.
+    exact Hflip2.
+  }
+  exact (eq_i_tra
+    t1
+    (apply_fun flip_unit_interval a1)
+    t2
+    (eq_symm
+      (apply_fun flip_unit_interval a1)
+      t1
+      Hflip1)
+    Hflip2').
+}
+exact (andI
+  (x1 = x2)
+  (t1 = t2)
+  HxEq
+  HtEq).
+Qed.
+
+(** Infrastructure: the radial collapse map is surjective onto the closed ball. **)
+(** Proven Charlie **)
+Lemma Sn_radial_collapse_map_surjective : forall n:set,
+  n :e omega ->
+  surjective_map
+    (setprod (Sn n) unit_interval)
+    (Bn_closed n)
+    (Sn_radial_collapse_map n).
+let n.
+assume Hn_om.
+prove
+  function_on
+    (Sn_radial_collapse_map n)
+    (setprod (Sn n) unit_interval)
+    (Bn_closed n) /\
+  forall y:set, y :e Bn_closed n ->
+    exists p:set, p :e setprod (Sn n) unit_interval /\
+      apply_fun (Sn_radial_collapse_map n) p = y.
+apply andI.
+- exact (Sn_radial_collapse_map_function_on
+    n
+    Hn_om).
+- let y.
+  assume HyB.
+  apply (xm (y = Rn_zero (ordsucc n))).
+  * assume Hy0.
+    apply (Sn_nonempty
+      n
+      Hn_om).
+    let x0.
+    assume Hx0Sn.
+    witness (x0, 1).
+    apply andI.
+    { exact (tuple_2_setprod_by_pair_Sigma
+        (Sn n)
+        unit_interval
+        x0
+        1
+        Hx0Sn
+        one_in_unit_interval). }
+    rewrite (Sn_radial_collapse_map_top_collapses
+      n
+      x0
+      Hn_om
+      Hx0Sn).
+    symmetry.
+    exact Hy0.
+  * assume HyNe0.
+    claim HyEu : y :e euclidean_space (ordsucc n).
+    {
+      exact (SepE1
+        (euclidean_space (ordsucc n))
+        (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+        y
+        HyB).
+    }
+    claim HyNz : y :e Rn_minus_origin (ordsucc n).
+    {
+      exact (euclidean_nonzero_in_Rn_minus_origin_ordsucc
+        n
+        y
+        Hn_om
+        HyEu
+        HyNe0).
+    }
+    set r := sqrt_SNo_nonneg (euclidean_norm_sq (ordsucc n) y).
+    claim HrI : r :e unit_interval.
+    {
+      exact (Bn_closed_radius_in_unit_interval
+        n
+        y
+        Hn_om
+        HyB).
+    }
+    set x := apply_fun (Rn_normalize_to_Sn n) y.
+    claim HxSn : x :e Sn n.
+    {
+      exact (Rn_normalize_to_Sn_value
+        n
+        y
+        Hn_om
+        HyNz).
+    }
+    set t := apply_fun flip_unit_interval r.
+    claim HtI : t :e unit_interval.
+    {
+      exact (flip_unit_interval_function_on
+        r
+        HrI).
+    }
+    witness (x, t).
+    apply andI.
+    { exact (tuple_2_setprod_by_pair_Sigma
+        (Sn n)
+        unit_interval
+        x
+        t
+        HxSn
+        HtI). }
+    rewrite (Sn_radial_collapse_map_apply
+      n
+      x
+      t
+      Hn_om
+      HxSn
+      HtI).
+    rewrite (flip_unit_interval_involutive
+      r
+      HrI).
+    exact (Rn_scalar_mult_sqrt_norm_normalize_eq
+      n
+      y
+      Hn_om
+      HyNz).
+Qed.
+
+(** Infrastructure: any top-constant map is constant on collapse fibers. **)
+(** Proven Charlie **)
+Lemma Sn_radial_collapse_map_fiber_constant_for_top_constant :
+  forall n H y0 x1 t1 x2 t2:set,
+    n :e omega ->
+    x1 :e Sn n ->
+    t1 :e unit_interval ->
+    x2 :e Sn n ->
+    t2 :e unit_interval ->
+    (forall x:set, x :e Sn n -> apply_fun H (x, 1) = y0) ->
+    apply_fun (Sn_radial_collapse_map n) (x1, t1) =
+    apply_fun (Sn_radial_collapse_map n) (x2, t2) ->
+    apply_fun H (x1, t1) = apply_fun H (x2, t2).
+let n H y0 x1 t1 x2 t2.
+assume Hn_om Hx1Sn Ht1I Hx2Sn Ht2I Htop Heq.
+apply (xm
+  (apply_fun (Sn_radial_collapse_map n) (x1, t1) = Rn_zero (ordsucc n))).
+- assume Hz1.
+  claim Hz2 :
+    apply_fun (Sn_radial_collapse_map n) (x2, t2) = Rn_zero (ordsucc n).
+  {
+    exact (eq_i_tra
+      (apply_fun (Sn_radial_collapse_map n) (x2, t2))
+      (apply_fun (Sn_radial_collapse_map n) (x1, t1))
+      (Rn_zero (ordsucc n))
+      (eq_symm
+        (apply_fun (Sn_radial_collapse_map n) (x1, t1))
+        (apply_fun (Sn_radial_collapse_map n) (x2, t2))
+        Heq)
+      Hz1).
+  }
+  claim Ht1Eq : t1 = 1.
+  {
+    exact (Sn_radial_collapse_map_eq_zero_implies_t_one
+      n
+      x1
+      t1
+      Hn_om
+      Hx1Sn
+      Ht1I
+      Hz1).
+  }
+  claim Ht2Eq : t2 = 1.
+  {
+    exact (Sn_radial_collapse_map_eq_zero_implies_t_one
+      n
+      x2
+      t2
+      Hn_om
+      Hx2Sn
+      Ht2I
+      Hz2).
+  }
+  rewrite Ht1Eq.
+  rewrite Ht2Eq.
+  exact (eq_i_tra
+    (apply_fun H (x1, 1))
+    y0
+    (apply_fun H (x2, 1))
+    (Htop
+      x1
+      Hx1Sn)
+    (eq_symm
+      (apply_fun H (x2, 1))
+      y0
+      (Htop
+        x2
+        Hx2Sn))).
+- assume Hnz1.
+  claim HpairEq :
+    x1 = x2 /\ t1 = t2.
+  {
+    exact (Sn_radial_collapse_map_eq_nonzero_imp_pair_eq
+      n
+      x1
+      t1
+      x2
+      t2
+      Hn_om
+      Hx1Sn
+      Ht1I
+      Hx2Sn
+      Ht2I
+      Heq
+      Hnz1).
+  }
+  rewrite (andEL
+    (x1 = x2)
+    (t1 = t2)
+    HpairEq).
+  rewrite (andER
+    (x1 = x2)
+    (t1 = t2)
+    HpairEq).
+  reflexivity.
+Qed.
+
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
