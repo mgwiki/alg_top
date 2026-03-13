@@ -411286,6 +411286,76 @@ claim HgensH0InfiniteCyclicInH :
     HpowInvH
     HnontrivF).
 }
+claim HpowOneInH :
+  forall a:set, a :e H ->
+    group_power_nat multF eF a 1 = a.
+{
+  let a.
+  assume HaH.
+  apply (and6E
+    (function_on multF (setprod H H) H)
+    (function_on invF H H)
+    (eF :e H)
+    (forall x y z:set, x :e H -> y :e H -> z :e H ->
+      apply_fun multF (apply_fun multF (x, y), z) = apply_fun multF (x, apply_fun multF (y, z)))
+    (forall x:set, x :e H -> apply_fun multF (eF, x) = x /\ apply_fun multF (x, eF) = x)
+    (forall x:set, x :e H ->
+      apply_fun multF (x, apply_fun invF x) = eF /\ apply_fun multF (apply_fun invF x, x) = eF)
+    HgrpH).
+  assume HmultH HinvHfn HeH HassocH HidH HinvLawH.
+  claim HS :
+    group_power_nat multF eF a (ordsucc 0) =
+    apply_fun multF (a, group_power_nat multF eF a 0).
+  {
+    exact (nat_primrec_S
+      eF
+      (fun _ r => apply_fun multF (a, r))
+      0
+      nat_0).
+  }
+  claim H0 :
+    group_power_nat multF eF a 0 = eF.
+  {
+    exact (nat_primrec_0
+      eF
+      (fun _ r => apply_fun multF (a, r))).
+  }
+  rewrite <- ordsucc_0_eq_1_nat.
+  rewrite HS.
+  rewrite H0.
+  exact (andER
+    (apply_fun multF (eF, a) = a)
+    (apply_fun multF (a, eF) = a)
+    (HidH a HaH)).
+}
+claim HgensH0NeUnit :
+  forall alpha:set, alpha :e JH0 ->
+    apply_fun gensH0 alpha <> eF.
+{
+  let alpha.
+  assume HalphaJH0.
+  claim HinfH :
+    infinite_cyclic_subgroup H multF eF invF (apply_fun gensH0 alpha).
+  { exact (HgensH0InfiniteCyclicInH alpha HalphaJH0). }
+  apply (and4E
+    (apply_fun gensH0 alpha :e H)
+    (forall n:set, n :e omega ->
+      group_power_nat multF eF (apply_fun gensH0 alpha) n :e H)
+    (forall m:set, m :e omega ->
+      group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m) :e H)
+    (~(exists n:set, n :e omega /\ n <> 0 /\
+      group_power_nat multF eF (apply_fun gensH0 alpha) n = eF))
+    HinfH).
+  assume HaH HpowH HpowInvH Hnontriv.
+  assume Hae.
+  apply Hnontriv.
+  witness 1.
+  apply and3I.
+  - exact (nat_p_omega 1 nat_1).
+  - exact neq_1_0.
+  - rewrite (HpowOneInH (apply_fun gensH0 alpha) HaH).
+    exact Hae.
+}
 set GfamH0 := graph JH0 (fun alpha:set =>
   {g :e H | exists n:set, n :e int /\
     ((n :e omega /\ g = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
@@ -411640,6 +411710,15 @@ claim HefamH0InFactor :
   assume HalphaJH0.
   rewrite (HefamH0Val alpha HalphaJH0).
   exact (HfactorUnitH0 alpha HalphaJH0).
+}
+claim HgensH0NeEfam :
+  forall alpha:set, alpha :e JH0 ->
+    apply_fun gensH0 alpha <> apply_fun efamH0 alpha.
+{
+  let alpha.
+  assume HalphaJH0.
+  rewrite (HefamH0Val alpha HalphaJH0).
+  exact (HgensH0NeUnit alpha HalphaJH0).
 }
 claim HambientReducedWordOnH :
   forall x:set, x :e H -> x <> eF ->
