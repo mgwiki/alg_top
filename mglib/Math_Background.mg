@@ -246894,7 +246894,6 @@ Admitted.
     discharge the remaining "torsion/malnormality" admits in the free-product boundary-cancellation
     chain (free_product_boundary_product_ne_e_or_efam, free_product_efam_involutive_contra). **)
 (** Bounty 97 **)
-(** Lock Alice 1773429955 **)
 Lemma free_product_conjugate_intersection_trivial :
   forall G mult e inv J Gfam efam alpha beta c x:set,
   free_product_of_subgroups G mult e inv J Gfam efam ->
@@ -421100,6 +421099,55 @@ exact (thm85_3_rankdata_from_witness
   HnOmega
   HJeq
   HkWitness).
+Qed.
+
+(** Alternative derivation of nonzero-pack rankdata via finite right-coset set. **)
+(** Proven Bob **)
+Lemma thm85_3_rankdata_from_nonzero_pack_via_finite : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+claim HnOmega : n :e omega.
+{
+  exact (andEL
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+}
+claim HJeq : equip J (ordsucc n).
+{
+  exact (andER
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnPack).
+}
+claim HcosetFin :
+  finite (right_coset_set F multF H).
+{
+  exact (finite_right_coset_set_of_nonzero_pack
+    H
+    F
+    multF
+    k
+    HkPack).
+}
+exact (thm85_3_rankdata_from_finite
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  HnOmega
+  HJeq
+  HcosetFin).
 Qed.
 
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
