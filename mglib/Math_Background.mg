@@ -413033,6 +413033,36 @@ claim HgeneratorHasRestrictedDecompositionUnique :
           apply_fun xs' i)
         HuniqPair).
 }
+claim HrestrictedGeneratorWordIndexIsZero0 :
+  forall alpha n xs i:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    i :e n ->
+    i = 0.
+{
+  let alpha n xs i.
+  assume HalphaJH0 HredH0 Hwp HiN.
+  claim Hn1 : n = 1.
+  {
+    exact (HrestrictedGeneratorWordLengthOne0
+      alpha
+      n
+      xs
+      HalphaJH0
+      HredH0
+      Hwp).
+  }
+  claim Hi1 : i :e 1.
+  {
+    rewrite <- Hn1.
+    exact HiN.
+  }
+  apply (cases_1
+    i
+    Hi1
+    (fun j:set => j = 0)).
+  exact (eq_refl 0).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
