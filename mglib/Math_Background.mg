@@ -149170,6 +149170,328 @@ exact (graph_in_function_space
         Hp))).
 Qed.
 
+(** Proven Charlie **)
+Lemma euclidean_space_ordsucc_eq_graph_of_apply_fun : forall n u:set,
+  nat_p n ->
+  u :e euclidean_space (ordsucc n) ->
+  u = graph (ordsucc n) (fun i:set => apply_fun u i).
+let n u.
+assume Hn_nat Hu.
+claim Hsne : ordsucc n <> Empty.
+{
+  assume Habs.
+  exact (EmptyE
+    n
+    (Habs
+      (fun z _ => n :e z)
+      (ordsuccI2 n))
+    False).
+}
+claim Hspace_fam_union :
+  space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology) = R.
+{
+  exact (space_family_union_const_space_family
+    (ordsucc n)
+    R
+    R_standard_topology
+    Hsne).
+}
+claim HuProp :
+  total_function_on u (ordsucc n)
+    (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology)) /\
+  functional_graph u /\
+  forall i:set, i :e ordsucc n ->
+    apply_fun u i :e space_family_set (const_space_family (ordsucc n) R R_standard_topology) i.
+{
+  exact (SepE2
+    (Power (setprod (ordsucc n)
+      (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology))))
+    (fun f => total_function_on f (ordsucc n)
+      (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology)) /\
+      functional_graph f /\
+      forall i:set, i :e ordsucc n ->
+        apply_fun f i :e space_family_set (const_space_family (ordsucc n) R R_standard_topology) i)
+    u
+    Hu).
+}
+claim HuTF_FG :
+  total_function_on u (ordsucc n)
+    (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology)) /\
+  functional_graph u.
+{
+  exact (andEL
+    (total_function_on u (ordsucc n)
+      (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology)) /\
+      functional_graph u)
+    (forall i:set, i :e ordsucc n ->
+      apply_fun u i :e space_family_set (const_space_family (ordsucc n) R R_standard_topology) i)
+    HuProp).
+}
+claim HuTF :
+  total_function_on u (ordsucc n)
+    (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology)).
+{
+  exact (andEL
+    (total_function_on u (ordsucc n)
+      (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology)))
+    (functional_graph u)
+    HuTF_FG).
+}
+claim HuTF_R : total_function_on u (ordsucc n) R.
+{
+  exact (Hspace_fam_union
+    (fun z _ => total_function_on u (ordsucc n) z)
+    HuTF).
+}
+claim HuFG : functional_graph u.
+{
+  exact (andER
+    (total_function_on u (ordsucc n)
+      (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology)))
+    (functional_graph u)
+    HuTF_FG).
+}
+claim HuPow :
+  u :e Power (setprod (ordsucc n)
+    (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology))).
+{
+  exact (SepE1
+    (Power (setprod (ordsucc n)
+      (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology))))
+    (fun f => total_function_on f (ordsucc n)
+      (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology)) /\
+      functional_graph f /\
+      forall i:set, i :e ordsucc n ->
+        apply_fun f i :e space_family_set (const_space_family (ordsucc n) R R_standard_topology) i)
+    u
+    Hu).
+}
+claim HuSubR : u c= setprod (ordsucc n) R.
+{
+  exact (Hspace_fam_union
+    (fun z _ => u c= setprod (ordsucc n) z)
+    (PowerE
+      (setprod (ordsucc n)
+        (space_family_union (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology)))
+      u
+      HuPow)).
+}
+exact (total_functional_graph_eq_graph_of_apply_fun
+  u
+  (ordsucc n)
+  R
+  HuTF_R
+  HuFG
+  HuSubR).
+Qed.
+
+(** Proven Charlie **)
+Lemma Rn_scalar_mult_ordsucc_one : forall n x:set,
+  nat_p n ->
+  x :e euclidean_space (ordsucc n) ->
+  Rn_scalar_mult (ordsucc n) 1 x = x.
+let n x.
+assume Hn_nat HxEu.
+claim HgraphEq :
+  Rn_scalar_mult (ordsucc n) 1 x =
+  graph (ordsucc n) (fun i:set => apply_fun x i).
+{
+  claim Hdef :
+    Rn_scalar_mult (ordsucc n) 1 x =
+    graph (ordsucc n) (fun i:set => mul_SNo 1 (apply_fun x i)).
+  {
+    reflexivity.
+  }
+  rewrite Hdef.
+  exact (graph_extensional
+    (ordsucc n)
+    (fun i:set => mul_SNo 1 (apply_fun x i))
+    (fun i:set => apply_fun x i)
+    (fun i Hi =>
+      mul_SNo_oneL
+        (apply_fun x i)
+        (real_SNo
+          (apply_fun x i)
+          (euclidean_space_coord_in_R
+            (ordsucc n)
+            x
+            i
+            HxEu
+            Hi)))).
+}
+rewrite HgraphEq.
+exact (eq_symm
+  x
+  (graph (ordsucc n) (fun i:set => apply_fun x i))
+  (euclidean_space_ordsucc_eq_graph_of_apply_fun
+    n
+    x
+    Hn_nat
+    HxEu)).
+Qed.
+
+(** Proven Charlie **)
+Lemma Rn_scalar_mult_ordsucc_zero : forall n x:set,
+  nat_p n ->
+  x :e euclidean_space (ordsucc n) ->
+  Rn_scalar_mult (ordsucc n) 0 x = Rn_zero (ordsucc n).
+let n x.
+assume Hn_nat HxEu.
+claim Hleft :
+  Rn_scalar_mult (ordsucc n) 0 x =
+  graph (ordsucc n) (fun i:set => 0).
+{
+  claim Hdef :
+    Rn_scalar_mult (ordsucc n) 0 x =
+    graph (ordsucc n) (fun i:set => mul_SNo 0 (apply_fun x i)).
+  {
+    reflexivity.
+  }
+  rewrite Hdef.
+  exact (graph_extensional
+    (ordsucc n)
+    (fun i:set => mul_SNo 0 (apply_fun x i))
+    (fun i:set => 0)
+    (fun i Hi =>
+      mul_SNo_zeroL
+        (apply_fun x i)
+        (real_SNo
+          (apply_fun x i)
+          (euclidean_space_coord_in_R
+            (ordsucc n)
+            x
+            i
+            HxEu
+            Hi)))).
+}
+rewrite Hleft.
+reflexivity.
+Qed.
+
+(** Proven Charlie **)
+Lemma Bn_closed_contraction_map_at_0 : forall n x:set,
+  n :e omega ->
+  x :e Bn_closed n ->
+  apply_fun (Bn_closed_contraction_map n) (x, 0) = x.
+let n x.
+assume Hn_om HxB.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hx0Dom : (x, 0) :e setprod (Bn_closed n) unit_interval.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (Bn_closed n)
+    unit_interval
+    x
+    0
+    HxB
+    zero_in_unit_interval).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+    x
+    HxB).
+}
+claim Hdef :
+  Bn_closed_contraction_map n =
+  graph (setprod (Bn_closed n) unit_interval)
+    (fun p:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (apply_fun flip_unit_interval (p 1))
+        (p 0)).
+{
+  reflexivity.
+}
+rewrite Hdef.
+rewrite (apply_fun_graph
+  (setprod (Bn_closed n) unit_interval)
+  (fun p:set =>
+    Rn_scalar_mult
+      (ordsucc n)
+      (apply_fun flip_unit_interval (p 1))
+      (p 0))
+  (x, 0)
+  Hx0Dom).
+rewrite tuple_2_1_eq.
+rewrite flip_unit_interval_at_0.
+rewrite tuple_2_0_eq.
+exact (Rn_scalar_mult_ordsucc_one
+  n
+  x
+  Hn_nat
+  HxEu).
+Qed.
+
+(** Proven Charlie **)
+Lemma Bn_closed_contraction_map_at_1 : forall n x:set,
+  n :e omega ->
+  x :e Bn_closed n ->
+  apply_fun (Bn_closed_contraction_map n) (x, 1) = Rn_zero (ordsucc n).
+let n x.
+assume Hn_om HxB.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hx1Dom : (x, 1) :e setprod (Bn_closed n) unit_interval.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (Bn_closed n)
+    unit_interval
+    x
+    1
+    HxB
+    one_in_unit_interval).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+    x
+    HxB).
+}
+claim Hdef :
+  Bn_closed_contraction_map n =
+  graph (setprod (Bn_closed n) unit_interval)
+    (fun p:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (apply_fun flip_unit_interval (p 1))
+        (p 0)).
+{
+  reflexivity.
+}
+rewrite Hdef.
+rewrite (apply_fun_graph
+  (setprod (Bn_closed n) unit_interval)
+  (fun p:set =>
+    Rn_scalar_mult
+      (ordsucc n)
+      (apply_fun flip_unit_interval (p 1))
+      (p 0))
+  (x, 1)
+  Hx1Dom).
+rewrite tuple_2_1_eq.
+rewrite flip_unit_interval_at_1.
+rewrite tuple_2_0_eq.
+exact (Rn_scalar_mult_ordsucc_zero
+  n
+  x
+  Hn_nat
+  HxEu).
+Qed.
+
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
