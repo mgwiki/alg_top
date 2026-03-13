@@ -414113,6 +414113,54 @@ claim HgeneratorRestrictedDecompositionUniqueViaGeneral :
     (HgensH0InFactor alpha HalphaJH0)
     (HgensH0NeEfam alpha HalphaJH0)).
 }
+claim HgeneratorRestrictedWordUniquePairViaGeneral :
+  forall alpha n xs m ys:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 m ys ->
+    word_product multF eF ys m = apply_fun gensH0 alpha ->
+    n = m /\
+    (forall i:set, i :e n -> apply_fun xs i = apply_fun ys i).
+{
+  let alpha n xs m ys.
+  assume HalphaJH0 HredN HwpN HredM HwpM.
+  exact (HfactorElemRestrictedWordUniquePair
+    alpha
+    (apply_fun gensH0 alpha)
+    n
+    xs
+    m
+    ys
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)
+    HredN
+    HwpN
+    HredM
+    HwpM).
+}
+claim HgeneratorRestrictedWordIndexIsZeroViaGeneral :
+  forall alpha n xs i:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    i :e n ->
+    i = 0.
+{
+  let alpha n xs i.
+  assume HalphaJH0 HredH0 Hwp HiN.
+  exact (HfactorElemRestrictedWordIndexIsZero
+    alpha
+    (apply_fun gensH0 alpha)
+    n
+    xs
+    i
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)
+    HredH0
+    Hwp
+    HiN).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
