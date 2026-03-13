@@ -415927,6 +415927,26 @@ claim HglobalUniqueNoNeReduceToOutsideUnionH0 :
       x
       Houtside)).
 }
+claim HoutsideUnionLengthGE2ToGlobalNoNeAllH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ (n <> 0 /\ n <> 1) /\
+      word_product multF eF xs n = x) ->
+  (forall x:set, x :e H -> x <> eF ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+{
+  assume Hge2.
+  exact (HglobalUniqueNoNeReduceToOutsideUnionH0
+    (HoutsideUnionLengthGE2ToGlobalNoNeH0
+      Hge2)).
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
@@ -416115,20 +416135,6 @@ apply and4I.
   {
     admit. (** TODO S85.1: outside-union nontrivial existence with normalized length>=2 representation in H. **)
   }
-  claim HglobalUniqueNoNeOutsideUnion :
-    forall x:set, x :e H -> x <> eF ->
-      (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
-      exists n xs:set,
-        reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
-        word_product multF eF xs n = x /\
-        (forall n' xs':set,
-          reduced_word JH0 GfamH0 efamH0 n' xs' ->
-          word_product multF eF xs' n' = x ->
-          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
-  {
-    exact (HoutsideUnionLengthGE2ToGlobalNoNeH0
-      HoutsideUnionExistsGE2).
-  }
   claim HglobalUniqueNoNe :
     forall x:set, x :e H -> x <> eF ->
       exists n xs:set,
@@ -416139,8 +416145,8 @@ apply and4I.
           word_product multF eF xs' n' = x ->
           n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
   {
-    exact (HglobalUniqueNoNeReduceToOutsideUnionH0
-      HglobalUniqueNoNeOutsideUnion).
+    exact (HoutsideUnionLengthGE2ToGlobalNoNeAllH0
+      HoutsideUnionExistsGE2).
   }
   apply HfreeProductAssembleH0.
   + apply HsubgroupsGenerateFromNontrivialWitnessH0.
