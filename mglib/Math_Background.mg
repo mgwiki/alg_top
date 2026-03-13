@@ -417980,6 +417980,25 @@ apply and3I.
     HkPack).
 Qed.
 
+(** Schreier-rank core packaged over bundled rank/index data. **)
+Theorem thm85_3_core_rank_from_rankdata :
+  forall F multF eF invF J gens H JH gensH n:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)) ->
+  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+let F multF eF invF J gens H JH gensH n.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HrankData.
+admit. (** TODO S85.3 core gap: derive canonical-index rank target from free data and bundled rank/index hypotheses. **)
+Admitted.
+
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
 Theorem thm85_3_core_rank_from_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
@@ -418063,6 +418082,25 @@ claim HrankData :
       (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
       HidxSpec).
 }
+claim HtargetAtIndex :
+  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+{
+  exact (thm85_3_core_rank_from_rankdata
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    JH
+    gensH
+    n
+    HfreeF
+    Hsub
+    HfreeH
+    HrankData).
+}
 claim HidxEqk :
   subgroup_index H F multF eF invF = k.
 {
@@ -418074,11 +418112,6 @@ claim HidxEqk :
     invF
     k
     Hk).
-}
-claim HtargetAtIndex :
-  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
-{
-  admit. (** TODO S85.3 core gap: derive canonical-index rank target from HfreeF/HfreeH and HrankData. **)
 }
 rewrite <- HidxEqk.
 exact HtargetAtIndex.
