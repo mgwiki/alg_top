@@ -415263,7 +415263,8 @@ apply and4I.
 - apply HfreeProductAssembleH0.
   + apply HsubgroupsGenerateFromNontrivialWitnessH0.
     admit. (** TODO S85.1: nontrivial decomposition witness for each x :e H wrt JH0/GfamH0. **)
-  + admit. (** TODO S85.1: global reduced-word existence/uniqueness for nontrivial x :e H. **)
+  + apply HfreeProductUniqueClauseNoNeToWithNeH0.
+    admit. (** TODO S85.1: global reduced-word existence/uniqueness (no n'<>0 premise) for nontrivial x :e H. **)
 Admitted.
 
 (** from S85 Definition (line 5764 in algtop.tex): Euler number of finite graph **)
