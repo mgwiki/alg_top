@@ -282720,8 +282720,118 @@ apply (xm (x = e)).
         { exact (andER (apply_fun mult (e, z) = z) (apply_fun mult (z, e) = z) (Hid z HzG)). }
         rewrite Hinve. rewrite Hez. exact (eq_symm (apply_fun mult (z, e)) z Hze).
     * assume Hnz_ne1 : nz <> 1.
-      (** nz >= 2: not cyclically reduced => conjugate to shorter word; cyclically reduced => infinite order **)
-      admit. (** PLACEHOLDER: nz >= 2 case - will fill in after fixing compilation **)
+      (** nz >= 2 **)
+      claim HnzO : nz :e omega.
+      { apply (and3E (nz :e omega)
+          (forall i:set, i :e nz -> exists a:set, a :e 2 /\ apply_fun zs i :e apply_fun Gfam a /\ apply_fun zs i <> apply_fun efam a)
+          (forall i:set, i :e nz -> ordsucc i :e nz ->
+            forall a b:set, a :e 2 -> b :e 2 -> apply_fun zs i :e apply_fun Gfam a -> apply_fun zs (ordsucc i) :e apply_fun Gfam b -> a <> b)
+          Hredz). assume HnO _ _. exact HnO. }
+      claim Hnz_nat : nat_p nz. { exact (omega_nat_p nz HnzO). }
+      (** nz = ordsucc mz **)
+      claim Hex_mz : exists mz:set, nat_p mz /\ nz = ordsucc mz.
+      { apply (nat_inv nz Hnz_nat).
+        - assume Hnz0 : nz = 0. exact (FalseE (Hnz_ne0 Hnz0) (exists mz:set, nat_p mz /\ nz = ordsucc mz)).
+        - assume H. exact H. }
+      set mz := Eps_i (fun m:set => nat_p m /\ nz = ordsucc m).
+      claim Hmz_pack : nat_p mz /\ nz = ordsucc mz. { exact (Eps_i_ex (fun m:set => nat_p m /\ nz = ordsucc m) Hex_mz). }
+      claim Hmz_nat : nat_p mz. { exact (andEL (nat_p mz) (nz = ordsucc mz) Hmz_pack). }
+      claim Hnz_eq : nz = ordsucc mz. { exact (andER (nat_p mz) (nz = ordsucc mz) Hmz_pack). }
+      claim H0_nz : 0 :e nz.
+      { exact (eq_subst_mem_set 0 (ordsucc mz) nz (nat_0_in_ordsucc mz Hmz_nat) (eq_symm nz (ordsucc mz) Hnz_eq)). }
+      claim Hmz_nz : mz :e nz.
+      { exact (eq_subst_mem_set mz (ordsucc mz) nz (ordsuccI2 mz) (eq_symm nz (ordsucc mz) Hnz_eq)). }
+      (** Get factor labels **)
+      set alpha_first := Eps_i (fun a:set => a :e 2 /\ apply_fun zs 0 :e apply_fun Gfam a /\ apply_fun zs 0 <> apply_fun efam a).
+      claim Haf_pack : alpha_first :e 2 /\ apply_fun zs 0 :e apply_fun Gfam alpha_first /\ apply_fun zs 0 <> apply_fun efam alpha_first.
+      { exact (Eps_i_ex (fun a:set => a :e 2 /\ apply_fun zs 0 :e apply_fun Gfam a /\ apply_fun zs 0 <> apply_fun efam a)
+          (reduced_word_elem 2 Gfam efam nz zs 0 Hredz H0_nz)). }
+      claim Haf_AB : alpha_first :e 2 /\ apply_fun zs 0 :e apply_fun Gfam alpha_first.
+      { exact (andEL (alpha_first :e 2 /\ apply_fun zs 0 :e apply_fun Gfam alpha_first)
+          (apply_fun zs 0 <> apply_fun efam alpha_first) Haf_pack). }
+      claim Haf_J : alpha_first :e 2.
+      { exact (andEL (alpha_first :e 2) (apply_fun zs 0 :e apply_fun Gfam alpha_first) Haf_AB). }
+      claim Hzs0_Gaf : apply_fun zs 0 :e apply_fun Gfam alpha_first.
+      { exact (andER (alpha_first :e 2) (apply_fun zs 0 :e apply_fun Gfam alpha_first) Haf_AB). }
+      set alpha_last := Eps_i (fun a:set => a :e 2 /\ apply_fun zs mz :e apply_fun Gfam a /\ apply_fun zs mz <> apply_fun efam a).
+      claim Hal_pack : alpha_last :e 2 /\ apply_fun zs mz :e apply_fun Gfam alpha_last /\ apply_fun zs mz <> apply_fun efam alpha_last.
+      { exact (Eps_i_ex (fun a:set => a :e 2 /\ apply_fun zs mz :e apply_fun Gfam a /\ apply_fun zs mz <> apply_fun efam a)
+          (reduced_word_elem 2 Gfam efam nz zs mz Hredz Hmz_nz)). }
+      claim Hal_AB : alpha_last :e 2 /\ apply_fun zs mz :e apply_fun Gfam alpha_last.
+      { exact (andEL (alpha_last :e 2 /\ apply_fun zs mz :e apply_fun Gfam alpha_last)
+          (apply_fun zs mz <> apply_fun efam alpha_last) Hal_pack). }
+      claim Hal_J : alpha_last :e 2.
+      { exact (andEL (alpha_last :e 2) (apply_fun zs mz :e apply_fun Gfam alpha_last) Hal_AB). }
+      claim Hzsmz_Gal : apply_fun zs mz :e apply_fun Gfam alpha_last.
+      { exact (andER (alpha_last :e 2) (apply_fun zs mz :e apply_fun Gfam alpha_last) Hal_AB). }
+      claim Hzsmz_G : apply_fun zs mz :e G. { exact (Hsub_in_G alpha_last Hal_J (apply_fun zs mz) Hzsmz_Gal). }
+      claim Hzs0_G : apply_fun zs 0 :e G. { exact (Hsub_in_G alpha_first Haf_J (apply_fun zs 0) Hzs0_Gaf). }
+      claim Hinvzsmz_G : apply_fun inv (apply_fun zs mz) :e G. { exact (HinvG (apply_fun zs mz) Hzsmz_G). }
+      (** Case split **)
+      apply (xm (alpha_first = alpha_last)).
+      + assume Haf_al : alpha_first = alpha_last.
+        (** Not cyclically reduced: conjugate to shorter word **)
+        set zc := apply_fun mult (apply_fun zs mz,
+          apply_fun mult (z, apply_fun inv (apply_fun zs mz))).
+        claim Hzi_G : apply_fun mult (z, apply_fun inv (apply_fun zs mz)) :e G.
+        { exact (HmultG z (apply_fun inv (apply_fun zs mz))
+            HzG Hinvzsmz_G). }
+        claim HzcG : zc :e G.
+        { exact (HmultG (apply_fun zs mz)
+            (apply_fun mult (z, apply_fun inv (apply_fun zs mz)))
+            Hzsmz_G Hzi_G). }
+        (** z = mult(mult(inv(zsmz), zc), zsmz) **)
+        claim Hz_conj : z = apply_fun mult (apply_fun mult
+          (apply_fun inv (apply_fun zs mz), zc), apply_fun zs mz).
+        { admit. }
+        (** zc has finite order **)
+        claim Hzcfin : exists m:set, m :e omega /\ m <> 0 /\
+          group_power_nat mult e zc m = e.
+        { admit. }
+        (** zc != e **)
+        claim Hzcne : zc <> e.
+        { admit. }
+        (** By IH, zc = mult(mult(c0,y0),inv(c0)) **)
+        claim Hzc_decomp : exists c0 y0:set,
+          c0 :e G /\ (y0 :e G1 \/ y0 :e G2) /\
+          (exists m:set, m :e omega /\ m <> 0 /\
+            group_power_nat mult e y0 m = e) /\
+          zc = apply_fun mult (apply_fun mult (c0, y0),
+            apply_fun inv c0).
+        { admit. }
+        set c0 := Eps_i (fun c0:set => exists y0:set,
+          c0 :e G /\ (y0 :e G1 \/ y0 :e G2) /\
+          (exists m:set, m :e omega /\ m <> 0 /\
+            group_power_nat mult e y0 m = e) /\
+          zc = apply_fun mult (apply_fun mult (c0, y0),
+            apply_fun inv c0)).
+        set y0 := Eps_i (fun y0:set =>
+          c0 :e G /\ (y0 :e G1 \/ y0 :e G2) /\
+          (exists m:set, m :e omega /\ m <> 0 /\
+            group_power_nat mult e y0 m = e) /\
+          zc = apply_fun mult (apply_fun mult (c0, y0),
+            apply_fun inv c0)).
+        claim Hc0y0_pack : c0 :e G /\ (y0 :e G1 \/ y0 :e G2) /\
+          (exists m:set, m :e omega /\ m <> 0 /\
+            group_power_nat mult e y0 m = e) /\
+          zc = apply_fun mult (apply_fun mult (c0, y0),
+            apply_fun inv c0).
+        { admit. }
+        (** Construct final witnesses **)
+        set cnew := apply_fun mult
+          (apply_fun inv (apply_fun zs mz), c0).
+        claim Hresult : exists c y:set,
+          c :e G /\ (y :e G1 \/ y :e G2) /\
+          (exists m:set, m :e omega /\ m <> 0 /\
+            group_power_nat mult e y m = e) /\
+          z = apply_fun mult (apply_fun mult (c, y),
+            apply_fun inv c).
+        { admit. }
+        exact Hresult.
+      + assume Haf_nal : alpha_first <> alpha_last.
+        (** Cyclically reduced: infinite order, contradiction **)
+        prove False.
+        admit.
   }
   (** Apply the main claim to x **)
   claim Hnx_nat : nat_p nx.
