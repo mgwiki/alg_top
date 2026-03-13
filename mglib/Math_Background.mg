@@ -415311,6 +415311,114 @@ claim HglobalUniqueNoNeReduceToOutsideFactorsH0 :
       HxNe
       Houtside).
 }
+claim HoutsideFactorsToNotInUnionH0 :
+  forall x:set,
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) ->
+    False.
+{
+  let x.
+  assume Houtside HxUnion.
+  apply (UnionE
+    (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha))
+    x
+    HxUnion).
+  let Y.
+  assume HYPack.
+  claim HxY : x :e Y.
+  {
+    exact (andEL
+      (x :e Y)
+      (Y :e Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha))
+      HYPack).
+  }
+  claim HYRepl : Y :e Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha).
+  {
+    exact (andER
+      (x :e Y)
+      (Y :e Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha))
+      HYPack).
+  }
+  apply (ReplE
+    JH0
+    (fun alpha:set => apply_fun GfamH0 alpha)
+    Y
+    HYRepl).
+  let alpha.
+  assume HalphaPack.
+  claim HalphaJH0 : alpha :e JH0.
+  {
+    exact (andEL
+      (alpha :e JH0)
+      (Y = apply_fun GfamH0 alpha)
+      HalphaPack).
+  }
+  claim HYEq : Y = apply_fun GfamH0 alpha.
+  {
+    exact (andER
+      (alpha :e JH0)
+      (Y = apply_fun GfamH0 alpha)
+      HalphaPack).
+  }
+  claim HxGa : x :e apply_fun GfamH0 alpha.
+  {
+    rewrite <- HYEq.
+    exact HxY.
+  }
+  exact (Houtside alpha HalphaJH0 HxGa).
+}
+claim HnotInUnionToOutsideFactorsH0 :
+  forall x:set,
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False.
+{
+  let x.
+  assume HnotUnion.
+  let alpha.
+  assume HalphaJH0 HxGa.
+  apply HnotUnion.
+  exact (UnionI
+    (Repl JH0 (fun alpha0:set => apply_fun GfamH0 alpha0))
+    x
+    (apply_fun GfamH0 alpha)
+    HxGa
+    (ReplI
+      JH0
+      (fun alpha0:set => apply_fun GfamH0 alpha0)
+      alpha
+      HalphaJH0)).
+}
+claim HglobalUniqueNoNeReduceToOutsideUnionH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))) ->
+  (forall x:set, x :e H -> x <> eF ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+{
+  assume HoutsideUnionCase.
+  apply HglobalUniqueNoNeReduceToOutsideFactorsH0.
+  let x.
+  assume HxH HxNe Houtside.
+  exact (HoutsideUnionCase
+    x
+    HxH
+    HxNe
+    (HoutsideFactorsToNotInUnionH0
+      x
+      Houtside)).
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
