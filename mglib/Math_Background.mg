@@ -415980,6 +415980,80 @@ claim HoutsideFactorsLengthGE2ToFreeProductH0 :
       x
       HxOutUnion)).
 }
+claim HoutsideFactorsExistenceToLengthGE2H0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x) ->
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ (n <> 0 /\ n <> 1) /\
+      word_product multF eF xs n = x).
+{
+  assume HexOutsideFactors.
+  let x.
+  assume HxH HxNe HxOutFactors.
+  apply (HexOutsideFactors x HxH HxNe HxOutFactors).
+  let n.
+  assume HnPack.
+  apply HnPack.
+  let xs.
+  assume HxsPack.
+  apply (and3E
+    (reduced_word JH0 GfamH0 efamH0 n xs)
+    (n <> 0)
+    (word_product multF eF xs n = x)
+    HxsPack).
+  assume Hred HnNe Hwp.
+  claim HxOutUnion :
+    x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False.
+  {
+    exact (HoutsideFactorsToNotInUnionH0
+      x
+      HxOutFactors).
+  }
+  claim Hlen :
+    n <> 0 /\ n <> 1.
+  {
+    exact (HoutsideUnionWordLengthConstraintsH0
+      x
+      n
+      xs
+      HxNe
+      HxOutUnion
+      Hred
+      Hwp).
+  }
+  witness n.
+  witness xs.
+  apply and3I.
+  - exact Hred.
+  - apply andI.
+    + exact (andEL
+        (n <> 0)
+        (n <> 1)
+        Hlen).
+    + exact (andER
+        (n <> 0)
+        (n <> 1)
+        Hlen).
+  - exact Hwp.
+}
+claim HoutsideFactorsExistenceToFreeProductH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x) ->
+  free_product_of_subgroups H multF eF invF JH0 GfamH0 efamH0.
+{
+  assume HexOutsideFactors.
+  exact (HoutsideFactorsLengthGE2ToFreeProductH0
+    (HoutsideFactorsExistenceToLengthGE2H0
+      HexOutsideFactors)).
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
@@ -416159,17 +416233,17 @@ apply and4I.
 - exact HgrpH.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
-- claim HoutsideFactorsExistsGE2 :
+- claim HoutsideFactorsExists :
     forall x:set, x :e H -> x <> eF ->
       (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
       exists n xs:set,
-        reduced_word JH0 GfamH0 efamH0 n xs /\ (n <> 0 /\ n <> 1) /\
+        reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
         word_product multF eF xs n = x.
   {
-    admit. (** TODO S85.1: outside-factors nontrivial existence with normalized length>=2 representation in H. **)
+    admit. (** TODO S85.1: outside-factors nontrivial existence with nonzero reduced representation in H. **)
   }
-  exact (HoutsideFactorsLengthGE2ToFreeProductH0
-    HoutsideFactorsExistsGE2).
+  exact (HoutsideFactorsExistenceToFreeProductH0
+    HoutsideFactorsExists).
 Admitted.
 
 (** from S85 Definition (line 5764 in algtop.tex): Euler number of finite graph **)
