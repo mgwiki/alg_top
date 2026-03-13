@@ -236830,6 +236830,148 @@ exact (HwpG
   HxsG).
 Qed.
 
+(** Infrastructure: left split of word product in a group **)
+(** Proven Alice **)
+Lemma word_product_left_split : forall G mult e inv n xs:set,
+  group_structure G mult e inv ->
+  nat_p n ->
+  (forall i:set, i :e ordsucc n -> apply_fun xs i :e G) ->
+  word_product mult e xs (ordsucc n) =
+    apply_fun mult (apply_fun xs 0,
+      word_product mult e (graph n (fun i:set => apply_fun xs (ordsucc i))) n).
+let G mult e inv n xs.
+assume Hgrp Hn_nat HxsG.
+(** Extract group operations **)
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b d:set, a :e G -> b :e G -> d :e G ->
+    apply_fun mult (apply_fun mult (a, b), d) = apply_fun mult (a, apply_fun mult (b, d)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultF HinvF HeG Hassoc Hid Hinverse.
+claim HmultG : forall a b:set, a :e G -> b :e G -> apply_fun mult (a, b) :e G.
+{ let a b. assume Ha Hb. exact (HmultF (a, b) (tuple_2_setprod_by_pair_Sigma G G a b Ha Hb)). }
+set xs_sh := graph n (fun i:set => apply_fun xs (ordsucc i)).
+claim Hxs0_G : apply_fun xs 0 :e G.
+{ exact (HxsG 0 (nat_0_in_ordsucc n Hn_nat)). }
+(** Shifted word entries are in G **)
+claim Hxs_sh_G : forall i:set, i :e n -> apply_fun xs_sh i :e G.
+{ let i. assume Hi.
+  claim Hsi_sn : ordsucc i :e ordsucc n.
+  { exact (nat_ordsucc_in_ordsucc n Hn_nat i Hi). }
+  claim Hxs_sh_i : apply_fun xs_sh i = apply_fun xs (ordsucc i).
+  { exact (apply_fun_graph n (fun j:set => apply_fun xs (ordsucc j)) i Hi). }
+  rewrite Hxs_sh_i. exact (HxsG (ordsucc i) Hsi_sn). }
+(** By induction on n **)
+claim Hmain : forall m:set, nat_p m ->
+  (forall i:set, i :e ordsucc m -> apply_fun xs i :e G) ->
+  word_product mult e xs (ordsucc m) =
+    apply_fun mult (apply_fun xs 0,
+      word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) m).
+{
+  apply nat_ind.
+  - (** Base case: m = 0 **)
+    assume HxsG0 : forall i:set, i :e ordsucc 0 -> apply_fun xs i :e G.
+    claim Hxs0_G0 : apply_fun xs 0 :e G. { exact (HxsG0 0 (ordsuccI2 0)). }
+    claim Hwp_lhs0 : word_product mult e xs 1 = apply_fun mult (word_product mult e xs 0, apply_fun xs 0).
+    { exact (word_product_succ mult e xs 0 nat_0). }
+    claim Hwp0 : word_product mult e xs 0 = e.
+    { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun xs i))). }
+    claim Hwp_lhs : word_product mult e xs 1 = apply_fun mult (e, apply_fun xs 0).
+    { rewrite Hwp_lhs0. rewrite Hwp0. reflexivity. }
+    claim Hwp_rhs : word_product mult e (graph 0 (fun i:set => apply_fun xs (ordsucc i))) 0 = e.
+    { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun (graph 0 (fun j:set => apply_fun xs (ordsucc j))) i))). }
+    claim Hle : apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0.
+    { exact (andEL (apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0)
+        (apply_fun mult (apply_fun xs 0, e) = apply_fun xs 0) (Hid (apply_fun xs 0) Hxs0_G0)). }
+    claim Hre : apply_fun mult (apply_fun xs 0, e) = apply_fun xs 0.
+    { exact (andER (apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0)
+        (apply_fun mult (apply_fun xs 0, e) = apply_fun xs 0) (Hid (apply_fun xs 0) Hxs0_G0)). }
+    rewrite Hwp_lhs. rewrite Hwp_rhs. rewrite Hle.
+    exact (eq_symm (apply_fun mult (apply_fun xs 0, e)) (apply_fun xs 0) Hre).
+  - (** Inductive step: m -> ordsucc m **)
+    let m. assume Hm_nat.
+    assume HIH_ls : (forall i:set, i :e ordsucc m -> apply_fun xs i :e G) ->
+      word_product mult e xs (ordsucc m) =
+        apply_fun mult (apply_fun xs 0,
+          word_product mult e (graph m (fun i:set => apply_fun xs (ordsucc i))) m).
+    assume HxsG_sm : forall i:set, i :e ordsucc (ordsucc m) -> apply_fun xs i :e G.
+    claim HxsG_m : forall i:set, i :e ordsucc m -> apply_fun xs i :e G.
+    { let i. assume Hi. exact (HxsG_sm i (nat_trans (ordsucc (ordsucc m)) (nat_ordsucc (ordsucc m) (nat_ordsucc m Hm_nat)) (ordsucc m) (ordsuccI2 (ordsucc m)) i Hi)). }
+    claim Hxs0_G_s : apply_fun xs 0 :e G. { exact (HxsG_m 0 (nat_0_in_ordsucc m Hm_nat)). }
+    set xs_shm := graph m (fun i:set => apply_fun xs (ordsucc i)).
+    set xs_shsm := graph (ordsucc m) (fun i:set => apply_fun xs (ordsucc i)).
+    claim Hxs_shm_G : forall i:set, i :e m -> apply_fun xs_shm i :e G.
+    { let i. assume Hi.
+      claim Hsi_sm : ordsucc i :e ordsucc m. { exact (nat_ordsucc_in_ordsucc m Hm_nat i Hi). }
+      claim Happ : apply_fun xs_shm i = apply_fun xs (ordsucc i).
+      { exact (apply_fun_graph m (fun j:set => apply_fun xs (ordsucc j)) i Hi). }
+      rewrite Happ. exact (HxsG_m (ordsucc i) Hsi_sm). }
+    claim Hxs_shsm_G : forall i:set, i :e ordsucc m -> apply_fun xs_shsm i :e G.
+    { let i. assume Hi.
+      claim Hsi_ssm : ordsucc i :e ordsucc (ordsucc m). { exact (nat_ordsucc_in_ordsucc (ordsucc m) (nat_ordsucc m Hm_nat) i Hi). }
+      claim Happ : apply_fun xs_shsm i = apply_fun xs (ordsucc i).
+      { exact (apply_fun_graph (ordsucc m) (fun j:set => apply_fun xs (ordsucc j)) i Hi). }
+      rewrite Happ. exact (HxsG_sm (ordsucc i) Hsi_ssm). }
+    claim Hxs_sm_G : apply_fun xs (ordsucc m) :e G.
+    { exact (HxsG_sm (ordsucc m) (ordsuccI2 (ordsucc m))). }
+    (** LHS: wp(xs, ordsucc(ordsucc m)) = mult(wp(xs, ordsucc m), xs(ordsucc m)) **)
+    claim Hwp_lhs : word_product mult e xs (ordsucc (ordsucc m)) =
+      apply_fun mult (word_product mult e xs (ordsucc m), apply_fun xs (ordsucc m)).
+    { exact (word_product_succ mult e xs (ordsucc m) (nat_ordsucc m Hm_nat)). }
+    (** By IH: wp(xs, ordsucc m) = mult(xs(0), wp(xs_shm, m)) **)
+    claim Hwp_ih : word_product mult e xs (ordsucc m) =
+      apply_fun mult (apply_fun xs 0, word_product mult e xs_shm m).
+    { exact (HIH_ls HxsG_m). }
+    (** So LHS = mult(mult(xs(0), wp(xs_shm, m)), xs(ordsucc m)) **)
+    (** = mult(xs(0), mult(wp(xs_shm, m), xs(ordsucc m))) by associativity **)
+    claim Hwp_shm_G : word_product mult e xs_shm m :e G.
+    { exact (word_product_in_G_group G mult e inv m xs_shm Hgrp Hm_nat Hxs_shm_G). }
+    claim Hstep_assoc : apply_fun mult (apply_fun mult (apply_fun xs 0, word_product mult e xs_shm m), apply_fun xs (ordsucc m)) =
+      apply_fun mult (apply_fun xs 0, apply_fun mult (word_product mult e xs_shm m, apply_fun xs (ordsucc m))).
+    { exact (Hassoc (apply_fun xs 0) (word_product mult e xs_shm m) (apply_fun xs (ordsucc m)) Hxs0_G_s Hwp_shm_G Hxs_sm_G). }
+    (** RHS: mult(xs(0), wp(xs_shsm, ordsucc m)) **)
+    (** wp(xs_shsm, ordsucc m) = mult(wp(xs_shsm, m), xs_shsm(m)) **)
+    claim Hwp_rhs_succ : word_product mult e xs_shsm (ordsucc m) =
+      apply_fun mult (word_product mult e xs_shsm m, apply_fun xs_shsm m).
+    { exact (word_product_succ mult e xs_shsm m Hm_nat). }
+    (** xs_shsm(m) = xs(ordsucc m) **)
+    claim Hshsm_m : apply_fun xs_shsm m = apply_fun xs (ordsucc m).
+    { exact (apply_fun_graph (ordsucc m) (fun j:set => apply_fun xs (ordsucc j)) m (ordsuccI2 m)). }
+    (** wp(xs_shsm, m) = wp(xs_shm, m) since they agree on [0, m) **)
+    claim Hwp_sh_eq : word_product mult e xs_shsm m = word_product mult e xs_shm m.
+    {
+      claim Hentries_eq : forall i:set, i :e m -> apply_fun xs_shsm i = apply_fun xs_shm i.
+      { let i. assume Hi.
+        claim Hi_sm : i :e ordsucc m. { exact (nat_trans (ordsucc m) (nat_ordsucc m Hm_nat) m (ordsuccI2 m) i Hi). }
+        claim Hshsm_i : apply_fun xs_shsm i = apply_fun xs (ordsucc i).
+        { exact (apply_fun_graph (ordsucc m) (fun j:set => apply_fun xs (ordsucc j)) i Hi_sm). }
+        claim Hshm_i : apply_fun xs_shm i = apply_fun xs (ordsucc i).
+        { exact (apply_fun_graph m (fun j:set => apply_fun xs (ordsucc j)) i Hi). }
+        rewrite Hshsm_i. exact (eq_symm (apply_fun xs_shm i) (apply_fun xs (ordsucc i)) Hshm_i).
+      }
+      claim Hm_omega : m :e omega. { exact (nat_p_omega m Hm_nat). }
+      claim Hfg_eq : forall i r:set, i :e m ->
+        apply_fun mult (r, apply_fun xs_shsm i) = apply_fun mult (r, apply_fun xs_shm i).
+      { let i r. assume Hi. rewrite (Hentries_eq i Hi). reflexivity. }
+      exact (nat_primrec_ext e
+        (fun i r => apply_fun mult (r, apply_fun xs_shsm i))
+        (fun i r => apply_fun mult (r, apply_fun xs_shm i))
+        m Hm_omega Hfg_eq).
+    }
+    (** Combine: wp(xs_shsm, ordsucc m) = mult(wp(xs_shm, m), xs(ordsucc m)) **)
+    claim Hwp_rhs_eq : word_product mult e xs_shsm (ordsucc m) =
+      apply_fun mult (word_product mult e xs_shm m, apply_fun xs (ordsucc m)).
+    { rewrite Hwp_rhs_succ. rewrite Hshsm_m. rewrite Hwp_sh_eq. reflexivity. }
+    (** Final: LHS = mult(xs(0), mult(wp(xs_shm, m), xs(sm))) = mult(xs(0), wp(xs_shsm, sm)) = RHS **)
+    rewrite Hwp_lhs. rewrite Hwp_ih. rewrite Hstep_assoc.
+    rewrite <- Hwp_rhs_eq. reflexivity.
+}
+exact (Hmain n Hn_nat HxsG).
+Qed.
+
 (** Infrastructure: doubling a cyclically reduced word (build a reduced word for the square) **)
 (** Proven Charlie **)
 Lemma reduced_word_double_cyclic_word_product :
