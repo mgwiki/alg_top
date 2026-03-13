@@ -423928,6 +423928,90 @@ apply andI.
     HcosetFin).
 Qed.
 
+(** Input-pack projections for S85.3 nonzero witness assumptions. **)
+(** Proven Bob **)
+Lemma thm85_3_npack_n_omega : forall J n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  n :e omega.
+let J n.
+assume HnPack.
+exact (andEL
+  (n :e omega)
+  (equip J (ordsucc n))
+  HnPack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_npack_J_equip : forall J n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  equip J (ordsucc n).
+let J n.
+assume HnPack.
+exact (andER
+  (n :e omega)
+  (equip J (ordsucc n))
+  HnPack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_nonzero_pack_k_omega : forall F multF H k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  k :e omega.
+let F multF H k.
+assume HkPack.
+apply (and3E
+  (k :e omega)
+  (k <> 0)
+  (equip (right_coset_set F multF H) k)
+  HkPack).
+assume HkOmega HkNe HkEq.
+exact HkOmega.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_nonzero_pack_k_nonzero : forall F multF H k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  k <> 0.
+let F multF H k.
+assume HkPack.
+apply (and3E
+  (k :e omega)
+  (k <> 0)
+  (equip (right_coset_set F multF H) k)
+  HkPack).
+assume HkOmega HkNe HkEq.
+exact HkNe.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_nonzero_pack_k_equip : forall F multF H k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  equip (right_coset_set F multF H) k.
+let F multF H k.
+assume HkPack.
+apply (and3E
+  (k :e omega)
+  (k <> 0)
+  (equip (right_coset_set F multF H) k)
+  HkPack).
+assume HkOmega HkNe HkEq.
+exact HkEq.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_nonzero_pack_witness : forall F multF H k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  k :e omega /\ equip (right_coset_set F multF H) k.
+let F multF H k.
+assume HkPack.
+exact (right_coset_witness_of_nonzero_pack
+  H
+  F
+  multF
+  k
+  HkPack).
+Qed.
+
 (** Build bundled rank/index data from the common nonzero witness pack. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_from_nonzero_pack : forall F multF eF invF J H n k:set,
