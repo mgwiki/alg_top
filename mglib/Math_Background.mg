@@ -420598,21 +420598,6 @@ assume Hsub : subgroup_of H F multF eF invF.
 let k.
 assume HkPack : k :e omega /\ k <> 0 /\
   equip (right_coset_set F multF H) k.
-claim HnOmega : n :e omega.
-{
-  exact (andEL
-    (n :e omega)
-    (equip J (ordsucc n))
-    HnPack).
-}
-claim HJeq :
-  equip J (ordsucc n).
-{
-  exact (andER
-    (n :e omega)
-    (equip J (ordsucc n))
-    HnPack).
-}
 claim HfreeH :
   exists JH gensH:set,
     free_group_with_generators H multF eF invF JH gensH.
