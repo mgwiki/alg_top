@@ -416264,6 +416264,15 @@ claim HgeneratorSubgroupsGenerateWitnessH0 :
       symmetry.
       exact HnatEqGen.
 }
+claim HoutsideFactorsRawExistenceForThm85_1GapH0 :
+  forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\
+      word_product multF eF xs n = x.
+{
+  admit. (** TODO S85.1 core gap: outside-factors nontrivial reduced-word existence in H. **)
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
@@ -416287,18 +416296,9 @@ apply and4I.
 - exact HgrpH.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
-- claim HoutsideFactorsExistsRaw :
-    forall x:set, x :e H -> x <> eF ->
-      (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
-      exists n xs:set,
-        reduced_word JH0 GfamH0 efamH0 n xs /\
-        word_product multF eF xs n = x.
-  {
-    admit. (** TODO S85.1: outside-factors nontrivial reduced-word existence in H. **)
-  }
-  exact (HoutsideFactorsExistenceToFreeProductH0
-    (HoutsideFactorsRawExistenceToNonzeroH0
-      HoutsideFactorsExistsRaw)).
+- exact (HoutsideFactorsExistenceToFreeProductH0
+  (HoutsideFactorsRawExistenceToNonzeroH0
+    HoutsideFactorsRawExistenceForThm85_1GapH0)).
 Admitted.
 
 (** from S85 Definition (line 5764 in algtop.tex): Euler number of finite graph **)
