@@ -415264,6 +415264,53 @@ claim HglobalUniqueNoNeOnFactorH0 :
     HxGa
     HxNeEfam).
 }
+claim HglobalUniqueNoNeReduceToOutsideFactorsH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))) ->
+  (forall x:set, x :e H -> x <> eF ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+{
+  assume HoutsideCase.
+  let x.
+  assume HxH HxNe.
+  apply (xm (exists alpha:set, alpha :e JH0 /\ x :e apply_fun GfamH0 alpha)).
+  - assume HinFactor.
+    exact (HglobalUniqueNoNeOnFactorH0
+      x
+      HxH
+      HxNe
+      HinFactor).
+  - assume HnotInFactor.
+    claim Houtside :
+      forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False.
+    {
+      let alpha.
+      assume HalphaJH0 HxGa.
+      apply HnotInFactor.
+      witness alpha.
+      apply andI.
+      - exact HalphaJH0.
+      - exact HxGa.
+    }
+    exact (HoutsideCase
+      x
+      HxH
+      HxNe
+      Houtside).
+}
 claim HgeneratorFreeProductUniqueClauseH0 :
   forall alpha:set, alpha :e JH0 ->
     exists n xs:set,
@@ -415443,8 +415490,20 @@ apply and4I.
 - exact HgrpH.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
-- apply HfreeProductAssembleH0.
-- claim HglobalUniqueNoNe :
+- claim HglobalUniqueNoNeOutsideFactors :
+    forall x:set, x :e H -> x <> eF ->
+      (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+      exists n xs:set,
+        reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+        word_product multF eF xs n = x /\
+        (forall n' xs':set,
+          reduced_word JH0 GfamH0 efamH0 n' xs' ->
+          word_product multF eF xs' n' = x ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+  {
+    admit. (** TODO S85.1: global no-ne uniqueness/existence for nontrivial x:eH outside all factors GfamH0(alpha). **)
+  }
+  claim HglobalUniqueNoNe :
     forall x:set, x :e H -> x <> eF ->
       exists n xs:set,
         reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
@@ -415454,7 +415513,8 @@ apply and4I.
           word_product multF eF xs' n' = x ->
           n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
   {
-    admit. (** TODO S85.1: global reduced-word existence/uniqueness (no n'<>0 premise) for nontrivial x :e H. **)
+    exact (HglobalUniqueNoNeReduceToOutsideFactorsH0
+      HglobalUniqueNoNeOutsideFactors).
   }
   apply HfreeProductAssembleH0.
   + apply HsubgroupsGenerateFromNontrivialWitnessH0.
