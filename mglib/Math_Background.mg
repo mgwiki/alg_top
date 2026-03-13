@@ -412141,6 +412141,280 @@ claim HambientGeneratorWordHead :
     0
     (ordsuccI2 0)).
 }
+claim HreducedRestrictedImpliesAmbient :
+  forall n xs:set,
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    reduced_word J GfamF (graph J (fun _:set => eF)) n xs.
+{
+  let n xs.
+  assume Hred0.
+  claim HnO : n :e omega.
+  {
+    apply (and3E
+      (n :e omega)
+      (forall i:set, i :e n ->
+        exists alpha:set, alpha :e JH0 /\
+          apply_fun xs i :e apply_fun GfamH0 alpha /\
+          apply_fun xs i <> apply_fun efamH0 alpha)
+      (forall i:set, i :e n -> ordsucc i :e n ->
+        forall alpha beta:set, alpha :e JH0 -> beta :e JH0 ->
+          apply_fun xs i :e apply_fun GfamH0 alpha ->
+          apply_fun xs (ordsucc i) :e apply_fun GfamH0 beta ->
+          alpha <> beta)
+      Hred0).
+    assume HnO0 _ _.
+    exact HnO0.
+  }
+  claim Helem0 :
+    forall i:set, i :e n ->
+      exists alpha:set, alpha :e JH0 /\
+        apply_fun xs i :e apply_fun GfamH0 alpha /\
+        apply_fun xs i <> apply_fun efamH0 alpha.
+  {
+    apply (and3E
+      (n :e omega)
+      (forall i:set, i :e n ->
+        exists alpha:set, alpha :e JH0 /\
+          apply_fun xs i :e apply_fun GfamH0 alpha /\
+          apply_fun xs i <> apply_fun efamH0 alpha)
+      (forall i:set, i :e n -> ordsucc i :e n ->
+        forall alpha beta:set, alpha :e JH0 -> beta :e JH0 ->
+          apply_fun xs i :e apply_fun GfamH0 alpha ->
+          apply_fun xs (ordsucc i) :e apply_fun GfamH0 beta ->
+          alpha <> beta)
+      Hred0).
+    assume _ Helem00 _.
+    exact Helem00.
+  }
+  claim Hadj0 :
+    forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e JH0 -> beta :e JH0 ->
+        apply_fun xs i :e apply_fun GfamH0 alpha ->
+        apply_fun xs (ordsucc i) :e apply_fun GfamH0 beta ->
+        alpha <> beta.
+  {
+    apply (and3E
+      (n :e omega)
+      (forall i:set, i :e n ->
+        exists alpha:set, alpha :e JH0 /\
+          apply_fun xs i :e apply_fun GfamH0 alpha /\
+          apply_fun xs i <> apply_fun efamH0 alpha)
+      (forall i:set, i :e n -> ordsucc i :e n ->
+        forall alpha beta:set, alpha :e JH0 -> beta :e JH0 ->
+          apply_fun xs i :e apply_fun GfamH0 alpha ->
+          apply_fun xs (ordsucc i) :e apply_fun GfamH0 beta ->
+          alpha <> beta)
+      Hred0).
+    assume _ _ Hadj00.
+    exact Hadj00.
+  }
+  prove n :e omega /\
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs i :e apply_fun GfamF alpha /\
+        apply_fun xs i <> apply_fun (graph J (fun _:set => eF)) alpha) /\
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e J -> beta :e J ->
+        apply_fun xs i :e apply_fun GfamF alpha ->
+        apply_fun xs (ordsucc i) :e apply_fun GfamF beta ->
+        alpha <> beta).
+  apply and3I.
+  - exact HnO.
+  - let i.
+    assume HiN.
+    claim Hpack0 :
+      exists alpha0:set, alpha0 :e JH0 /\
+        apply_fun xs i :e apply_fun GfamH0 alpha0 /\
+        apply_fun xs i <> apply_fun efamH0 alpha0.
+    {
+      exact (Helem0 i HiN).
+    }
+    apply Hpack0.
+    let alpha0.
+    assume Hpack0.
+    apply (and3E
+      (alpha0 :e JH0)
+      (apply_fun xs i :e apply_fun GfamH0 alpha0)
+      (apply_fun xs i <> apply_fun efamH0 alpha0)
+      Hpack0).
+    assume Halpha0JH0 HxH0 HxNeEfam0.
+    witness alpha0.
+    apply and3I.
+    + exact (HJH0subJ alpha0 Halpha0JH0).
+    + exact (HGfamH0MemInGfamF alpha0 (apply_fun xs i) Halpha0JH0 HxH0).
+    + claim HxNeE : apply_fun xs i <> eF.
+      {
+        rewrite <- (HefamH0Val alpha0 Halpha0JH0).
+        exact HxNeEfam0.
+      }
+      rewrite (apply_fun_graph
+        J
+        (fun _:set => eF)
+        alpha0
+        (HJH0subJ alpha0 Halpha0JH0)).
+      exact HxNeE.
+  - let i.
+    assume HiN HSiN.
+    let alpha beta.
+    assume HalphaJ HbetaJ HxiFa HxsiFb.
+    claim HpackA :
+      exists alpha0:set, alpha0 :e JH0 /\
+        apply_fun xs i :e apply_fun GfamH0 alpha0 /\
+        apply_fun xs i <> apply_fun efamH0 alpha0.
+    {
+      exact (Helem0 i HiN).
+    }
+    apply HpackA.
+    let alpha0.
+    assume HpackA.
+    apply (and3E
+      (alpha0 :e JH0)
+      (apply_fun xs i :e apply_fun GfamH0 alpha0)
+      (apply_fun xs i <> apply_fun efamH0 alpha0)
+      HpackA).
+    assume Halpha0JH0 HxiH0 HxiNeEfam0.
+    claim HpackB :
+      exists beta0:set, beta0 :e JH0 /\
+        apply_fun xs (ordsucc i) :e apply_fun GfamH0 beta0 /\
+        apply_fun xs (ordsucc i) <> apply_fun efamH0 beta0.
+    {
+      exact (Helem0 (ordsucc i) HSiN).
+    }
+    apply HpackB.
+    let beta0.
+    assume HpackB.
+    apply (and3E
+      (beta0 :e JH0)
+      (apply_fun xs (ordsucc i) :e apply_fun GfamH0 beta0)
+      (apply_fun xs (ordsucc i) <> apply_fun efamH0 beta0)
+      HpackB).
+    assume Hbeta0JH0 HxsiH0 HxsiNeEfam0.
+    claim HxiNeE : apply_fun xs i <> eF.
+    {
+      rewrite <- (HefamH0Val alpha0 Halpha0JH0).
+      exact HxiNeEfam0.
+    }
+    claim HxsiNeE : apply_fun xs (ordsucc i) <> eF.
+    {
+      rewrite <- (HefamH0Val beta0 Hbeta0JH0).
+      exact HxsiNeEfam0.
+    }
+    claim HalphaEq : alpha = alpha0.
+    {
+      exact (HambientIndexUniqueFromRestrictedNontrivial
+        alpha0
+        alpha
+        (apply_fun xs i)
+        Halpha0JH0
+        HalphaJ
+        HxiH0
+        HxiFa
+        HxiNeE).
+    }
+    claim HbetaEq : beta = beta0.
+    {
+      exact (HambientIndexUniqueFromRestrictedNontrivial
+        beta0
+        beta
+        (apply_fun xs (ordsucc i))
+        Hbeta0JH0
+        HbetaJ
+        HxsiH0
+        HxsiFb
+        HxsiNeE).
+    }
+    claim Hneq0 : alpha0 <> beta0.
+    {
+      exact (Hadj0
+        i
+        HiN
+        HSiN
+        alpha0
+        beta0
+        Halpha0JH0
+        Hbeta0JH0
+        HxiH0
+        HxsiH0).
+    }
+    assume HeqAB.
+    claim Halpha0EqAlpha : alpha0 = alpha.
+    {
+      symmetry.
+      exact HalphaEq.
+    }
+    claim Halpha0EqBeta : alpha0 = beta.
+    {
+      exact (eq_i_tra
+        alpha0
+        alpha
+        beta
+        Halpha0EqAlpha
+        HeqAB).
+    }
+    claim Halpha0EqBeta0 : alpha0 = beta0.
+    {
+      exact (eq_i_tra
+        alpha0
+        beta
+        beta0
+        Halpha0EqBeta
+        HbetaEq).
+    }
+    exact (Hneq0 Halpha0EqBeta0).
+}
+claim HrestrictedGeneratorWordUniqueSingleton :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs -> n <> 0 ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    n = 1 /\
+    (forall i:set, i :e 1 ->
+      apply_fun xs i =
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i).
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 HnNe0 Hwp.
+  claim HredAmbient :
+    reduced_word J GfamF (graph J (fun _:set => eF)) n xs.
+  {
+    exact (HreducedRestrictedImpliesAmbient
+      n
+      xs
+      HredH0).
+  }
+  exact (HambientGeneratorWordUniqueSingleton
+    alpha
+    n
+    xs
+    HalphaJH0
+    HredAmbient
+    HnNe0
+    Hwp).
+}
+claim HrestrictedGeneratorWordHead :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs -> n <> 0 ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    apply_fun xs 0 = apply_fun gensH0 alpha.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 HnNe0 Hwp.
+  claim HredAmbient :
+    reduced_word J GfamF (graph J (fun _:set => eF)) n xs.
+  {
+    exact (HreducedRestrictedImpliesAmbient
+      n
+      xs
+      HredH0).
+  }
+  exact (HambientGeneratorWordHead
+    alpha
+    n
+    xs
+    HalphaJH0
+    HredAmbient
+    HnNe0
+    Hwp).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
