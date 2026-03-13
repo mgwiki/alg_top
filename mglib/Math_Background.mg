@@ -413972,6 +413972,57 @@ claim HfactorElemRestrictedWordZeroNeEfamAlpha :
     0
     H0inN).
 }
+claim HfactorElemRestrictedWordLengthOne :
+  forall alpha g n xs:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    n = 1.
+{
+  let alpha g n xs.
+  assume HalphaJH0 HgGa HgNeEfam HredH0 Hwp.
+  exact (andEL
+    (n = 1)
+    (forall i:set, i :e 1 ->
+      apply_fun xs i = apply_fun (graph 1 (fun _:set => g)) i)
+    (HfactorElemRestrictedWordUniqueSingleton
+      alpha
+      g
+      n
+      xs
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredH0
+      Hwp)).
+}
+claim HfactorElemRestrictedWordZeroInLength :
+  forall alpha g n xs:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    0 :e n.
+{
+  let alpha g n xs.
+  assume HalphaJH0 HgGa HgNeEfam HredH0 Hwp.
+  claim Hn1 : n = 1.
+  {
+    exact (HfactorElemRestrictedWordLengthOne
+      alpha
+      g
+      n
+      xs
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredH0
+      Hwp).
+  }
+  rewrite Hn1.
+  exact (ordsuccI2 0).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
