@@ -414895,6 +414895,40 @@ claim HsubgroupsGenerateGeneratorWitnessClauseH0 :
     alpha
     HalphaJH0).
 }
+claim HsubgroupsGenerateFromNontrivialWitnessH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n H /\
+        (forall i:set, i :e n ->
+          exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+        x = nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n) ->
+  subgroups_generate H multF eF invF JH0 GfamH0.
+{
+  assume HnontrivW.
+  prove
+    group_structure H multF eF invF /\
+    (forall alpha:set, alpha :e JH0 ->
+      subgroup_of (apply_fun GfamH0 alpha) H multF eF invF) /\
+    (forall x:set, x :e H ->
+      x = eF \/
+      exists n:set, n :e omega /\ n <> 0 /\
+        exists xs:set, function_on xs n H /\
+          (forall i:set, i :e n ->
+            exists beta:set, beta :e JH0 /\ apply_fun xs i :e apply_fun GfamH0 beta) /\
+          x = nat_primrec eF (fun i r => apply_fun multF (r, apply_fun xs i)) n).
+  apply and3I.
+  - exact HgrpH.
+  - exact HfactorSubgroupH0.
+  - let x.
+    assume HxH.
+    apply (xm (x = eF)).
+    + assume HxE.
+      apply orIL.
+      exact HxE.
+    + assume HxNe.
+      apply orIR.
+      exact (HnontrivW x HxH HxNe).
+}
 claim HfreeProductFrameH0 :
   group_structure H multF eF invF /\
   (forall alpha:set, alpha :e JH0 ->
