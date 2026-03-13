@@ -417605,6 +417605,24 @@ exact (subgroup_index_spec
   Hk).
 Qed.
 
+(** Projection helper: drop nonzero from the standard witness pack. **)
+(** Proven Bob **)
+Lemma right_coset_witness_of_nonzero_pack : forall H G mult k:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  k :e omega /\ equip (right_coset_set G mult H) k.
+let H G mult k.
+assume HkPack.
+apply (and3E
+  (k :e omega)
+  (k <> 0)
+  (equip (right_coset_set G mult H) k)
+  HkPack).
+assume HkO HkNe HkEq.
+apply andI.
+- exact HkO.
+- exact HkEq.
+Qed.
+
 (** Generic finite-cardinality extraction from the common nonzero-cardinality pack. **)
 (** Proven Bob **)
 Lemma finite_of_nonzero_pack : forall X k:set,
@@ -418162,15 +418180,12 @@ apply andI.
   claim HkWitness :
     k :e omega /\ equip (right_coset_set F multF H) k.
   {
-    apply (and3E
-      (k :e omega)
-      (k <> 0)
-      (equip (right_coset_set F multF H) k)
+    exact (right_coset_witness_of_nonzero_pack
+      H
+      F
+      multF
+      k
       HkPack).
-    assume HkO HkNe HkEq.
-    apply andI.
-    - exact HkO.
-    - exact HkEq.
   }
   exact (iffEL
     (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
