@@ -413762,6 +413762,124 @@ claim HfactorElemHasRestrictedDecompositionUnique :
           apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs' i)
         HuniqPair).
 }
+claim HfactorElemRestrictedWordConstantOnDomain :
+  forall alpha g n xs i j:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    i :e n -> j :e n ->
+    apply_fun xs i = apply_fun xs j.
+{
+  let alpha g n xs i j.
+  assume HalphaJH0 HgGa HgNeEfam HredH0 Hwp HiN HjN.
+  claim Hxi :
+    apply_fun xs i = g.
+  {
+    exact (HfactorElemRestrictedWordPointwiseOnN
+      alpha
+      g
+      n
+      xs
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredH0
+      Hwp
+      i
+      HiN).
+  }
+  claim Hxj :
+    apply_fun xs j = g.
+  {
+    exact (HfactorElemRestrictedWordPointwiseOnN
+      alpha
+      g
+      n
+      xs
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredH0
+      Hwp
+      j
+      HjN).
+  }
+  claim HxjSym :
+    g = apply_fun xs j.
+  {
+    symmetry.
+    exact Hxj.
+  }
+  exact (eq_i_tra
+    (apply_fun xs i)
+    g
+    (apply_fun xs j)
+    Hxi
+    HxjSym).
+}
+claim HfactorElemRestrictedWordAllEntriesInAlphaFactor :
+  forall alpha g n xs:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    forall i:set, i :e n -> apply_fun xs i :e apply_fun GfamH0 alpha.
+{
+  let alpha g n xs.
+  assume HalphaJH0 HgGa HgNeEfam HredH0 Hwp.
+  let i.
+  assume HiN.
+  claim Hxi :
+    apply_fun xs i = g.
+  {
+    exact (HfactorElemRestrictedWordPointwiseOnN
+      alpha
+      g
+      n
+      xs
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredH0
+      Hwp
+      i
+      HiN).
+  }
+  rewrite Hxi.
+  exact HgGa.
+}
+claim HfactorElemRestrictedWordAllEntriesNeEfamAlpha :
+  forall alpha g n xs:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    forall i:set, i :e n -> apply_fun xs i <> apply_fun efamH0 alpha.
+{
+  let alpha g n xs.
+  assume HalphaJH0 HgGa HgNeEfam HredH0 Hwp.
+  let i.
+  assume HiN.
+  claim Hxi :
+    apply_fun xs i = g.
+  {
+    exact (HfactorElemRestrictedWordPointwiseOnN
+      alpha
+      g
+      n
+      xs
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredH0
+      Hwp
+      i
+      HiN).
+  }
+  rewrite Hxi.
+  exact HgNeEfam.
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
