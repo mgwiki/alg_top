@@ -411787,6 +411787,45 @@ claim HgensH0InFactor :
           g = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m))))
     (HfactorGenH0 alpha HalphaJH0)).
 }
+claim HgensH0InjectiveOnJH0 :
+  forall alpha beta:set, alpha :e JH0 -> beta :e JH0 ->
+    apply_fun gensH0 alpha = apply_fun gensH0 beta ->
+    alpha = beta.
+{
+  let alpha beta.
+  assume HalphaJH0 HbetaJH0 Heq.
+  apply (xm (alpha = beta)).
+  - assume Hab.
+    exact Hab.
+  - assume Hneq.
+    claim HxA :
+      apply_fun gensH0 alpha :e apply_fun GfamH0 alpha.
+    {
+      exact (HgensH0InFactor alpha HalphaJH0).
+    }
+    claim HxB :
+      apply_fun gensH0 alpha :e apply_fun GfamH0 beta.
+    {
+      rewrite Heq.
+      exact (HgensH0InFactor beta HbetaJH0).
+    }
+    claim HxE :
+      apply_fun gensH0 alpha = eF.
+    {
+      exact (HfactorDisjointH0
+        alpha
+        beta
+        HalphaJH0
+        HbetaJH0
+        Hneq
+        (apply_fun gensH0 alpha)
+        HxA
+        HxB).
+    }
+    exact (FalseE
+      ((HgensH0NeUnit alpha HalphaJH0) HxE)
+      (alpha = beta)).
+}
 claim HreducedSingletonGenH0 :
   forall alpha:set, alpha :e JH0 ->
     reduced_word
