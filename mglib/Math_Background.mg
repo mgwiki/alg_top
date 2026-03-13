@@ -416536,6 +416536,29 @@ exact (Eps_i_ax
   Hk).
 Qed.
 
+(** Convenience form with an explicit witness k. **)
+(** Proven Bob **)
+Lemma subgroup_index_spec : forall H G mult e inv k:set,
+  k :e omega /\ equip (right_coset_set G mult H) k ->
+  subgroup_index H G mult e inv :e omega /\
+  equip (right_coset_set G mult H) (subgroup_index H G mult e inv).
+let H G mult e inv k.
+assume Hk.
+claim Hex :
+  exists x:set, x :e omega /\ equip (right_coset_set G mult H) x.
+{
+  witness k.
+  exact Hk.
+}
+exact (subgroup_index_spec_from_witness
+  H
+  G
+  mult
+  e
+  inv
+  Hex).
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
