@@ -413521,6 +413521,174 @@ claim HfactorElemRestrictedWordPointwiseOnN :
     HredH0
     Hwp).
 }
+claim HfactorElemRestrictedWordUniquePair :
+  forall alpha g n xs m ys:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    reduced_word JH0 GfamH0 efamH0 m ys ->
+    word_product multF eF ys m = g ->
+    n = m /\
+    (forall i:set, i :e n -> apply_fun xs i = apply_fun ys i).
+{
+  let alpha g n xs m ys.
+  assume HalphaJH0 HgGa HgNeEfam HredN HwpN HredM HwpM.
+  claim HuniqN :
+    n = 1 /\
+    (forall i:set, i :e 1 ->
+      apply_fun xs i = apply_fun (graph 1 (fun _:set => g)) i).
+  {
+    exact (HfactorElemRestrictedWordUniqueSingleton
+      alpha
+      g
+      n
+      xs
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredN
+      HwpN).
+  }
+  claim HuniqM :
+    m = 1 /\
+    (forall i:set, i :e 1 ->
+      apply_fun ys i = apply_fun (graph 1 (fun _:set => g)) i).
+  {
+    exact (HfactorElemRestrictedWordUniqueSingleton
+      alpha
+      g
+      m
+      ys
+      HalphaJH0
+      HgGa
+      HgNeEfam
+      HredM
+      HwpM).
+  }
+  claim Hn1 : n = 1.
+  {
+    exact (andEL
+      (n = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun xs i = apply_fun (graph 1 (fun _:set => g)) i)
+      HuniqN).
+  }
+  claim Hm1 : m = 1.
+  {
+    exact (andEL
+      (m = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun ys i = apply_fun (graph 1 (fun _:set => g)) i)
+      HuniqM).
+  }
+  claim Hxs1 :
+    forall i:set, i :e 1 ->
+      apply_fun xs i = apply_fun (graph 1 (fun _:set => g)) i.
+  {
+    exact (andER
+      (n = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun xs i = apply_fun (graph 1 (fun _:set => g)) i)
+      HuniqN).
+  }
+  claim Hys1 :
+    forall i:set, i :e 1 ->
+      apply_fun ys i = apply_fun (graph 1 (fun _:set => g)) i.
+  {
+    exact (andER
+      (m = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun ys i = apply_fun (graph 1 (fun _:set => g)) i)
+      HuniqM).
+  }
+  claim H1m : 1 = m.
+  {
+    symmetry.
+    exact Hm1.
+  }
+  claim Hnm : n = m.
+  {
+    exact (eq_i_tra
+      n
+      1
+      m
+      Hn1
+      H1m).
+  }
+  apply andI.
+  - exact Hnm.
+  - let i.
+    assume HiN.
+    claim Hi1 : i :e 1.
+    {
+      rewrite <- Hn1.
+      exact HiN.
+    }
+    claim Hxi :
+      apply_fun xs i = apply_fun (graph 1 (fun _:set => g)) i.
+    {
+      exact (Hxs1 i Hi1).
+    }
+    claim Hyi :
+      apply_fun ys i = apply_fun (graph 1 (fun _:set => g)) i.
+    {
+      exact (Hys1 i Hi1).
+    }
+    claim HyiSym :
+      apply_fun (graph 1 (fun _:set => g)) i = apply_fun ys i.
+    {
+      symmetry.
+      exact Hyi.
+    }
+    exact (eq_i_tra
+      (apply_fun xs i)
+      (apply_fun (graph 1 (fun _:set => g)) i)
+      (apply_fun ys i)
+      Hxi
+      HyiSym).
+}
+claim HfactorElemRestrictedWordIndexIsZero :
+  forall alpha g n xs i:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = g ->
+    i :e n ->
+    i = 0.
+{
+  let alpha g n xs i.
+  assume HalphaJH0 HgGa HgNeEfam HredH0 Hwp HiN.
+  claim Hn1 :
+    n = 1.
+  {
+    exact (andEL
+      (n = 1)
+      (forall i:set, i :e 1 ->
+        apply_fun xs i =
+        apply_fun (graph 1 (fun _:set => g)) i)
+      (HfactorElemRestrictedWordUniqueSingleton
+        alpha
+        g
+        n
+        xs
+        HalphaJH0
+        HgGa
+        HgNeEfam
+        HredH0
+        Hwp)).
+  }
+  claim Hi1 : i :e 1.
+  {
+    rewrite <- Hn1.
+    exact HiN.
+  }
+  apply (cases_1
+    i
+    Hi1
+    (fun j:set => j = 0)).
+  exact (eq_refl 0).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
