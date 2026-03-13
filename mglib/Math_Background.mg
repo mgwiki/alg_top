@@ -236572,6 +236572,16 @@ exact (nat_primrec_S
   Hn).
 Qed.
 
+Lemma word_product_succ_eq : forall mult e xs n m:set,
+  nat_p m -> n = ordsucc m ->
+  word_product mult e xs n = apply_fun mult (word_product mult e xs m, apply_fun xs m).
+let mult e xs n m.
+assume Hm : nat_p m.
+assume Hnm : n = ordsucc m.
+rewrite Hnm.
+exact (word_product_succ mult e xs m Hm).
+Qed.
+
 (** Infrastructure: word_product after appending one element **)
 (** Proven Bob **)
 Lemma word_product_append_one : forall mult e xs b m:set,
@@ -283177,6 +283187,75 @@ apply (xm (x = e)).
           (** Strategy: construct a reduced word for zc of length mz (or less) **)
           (** Since mz :e ordsucc mz = nz, we get nzc :e nz by uniqueness **)
           (** The construction and its verification are admitted for now **)
+          (** First establish: z = mult(word_product(zs, mz), zs(mz)) **)
+          claim Hwp_nz_expanded : word_product mult e zs nz =
+            apply_fun mult (word_product mult e zs mz, apply_fun zs mz).
+          { exact (word_product_succ_eq mult e zs nz mz Hmz_nat Hnz_eq). }
+          claim Hwp_decomp : z = apply_fun mult (word_product mult e zs mz, apply_fun zs mz).
+          { exact (eq_i_tra z (word_product mult e zs nz)
+              (apply_fun mult (word_product mult e zs mz, apply_fun zs mz))
+              (eq_symm (word_product mult e zs nz) z Hwpz)
+              Hwp_nz_expanded). }
+          (** Now prove zc = mult(zs(mz), word_product(zs, mz)) via associativity chain **)
+          claim Hzs_in_G_mz : forall i:set, i :e mz -> apply_fun zs i :e G.
+          { let i. assume Hi : i :e mz.
+            exact (reduced_word_in_G G mult e inv 2 Gfam efam nz zs Hsubfam Hredz i
+              (ordinal_TransSet nz (nat_p_ordinal nz (omega_nat_p nz HnzO)) mz Hmz_nz i Hi)). }
+          claim Hwp_mz_G : word_product mult e zs mz :e G.
+          { exact (word_product_in_G_group G mult e inv mz zs Hgrp Hmz_nat Hzs_in_G_mz). }
+          claim HzmzG : apply_fun zs mz :e G. { exact Hzsmz_G. }
+          claim HinvzmzG : apply_fun inv (apply_fun zs mz) :e G. { exact Hinvzsmz_G. }
+          claim Ha_inva : apply_fun mult (apply_fun zs mz, apply_fun inv (apply_fun zs mz)) = e.
+          { exact (andEL
+              (apply_fun mult (apply_fun zs mz, apply_fun inv (apply_fun zs mz)) = e)
+              (apply_fun mult (apply_fun inv (apply_fun zs mz), apply_fun zs mz) = e)
+              (Hinverse (apply_fun zs mz) HzmzG)). }
+          claim Hwpmz_a_inva : apply_fun mult (apply_fun mult (word_product mult e zs mz, apply_fun zs mz),
+            apply_fun inv (apply_fun zs mz)) =
+            apply_fun mult (word_product mult e zs mz,
+              apply_fun mult (apply_fun zs mz, apply_fun inv (apply_fun zs mz))).
+          { exact (Hassoc (word_product mult e zs mz) (apply_fun zs mz)
+              (apply_fun inv (apply_fun zs mz)) Hwp_mz_G HzmzG HinvzmzG). }
+          claim Hwpmz_e : apply_fun mult (word_product mult e zs mz, e) = word_product mult e zs mz.
+          { exact (andER
+              (apply_fun mult (e, word_product mult e zs mz) = word_product mult e zs mz)
+              (apply_fun mult (word_product mult e zs mz, e) = word_product mult e zs mz)
+              (Hid (word_product mult e zs mz) Hwp_mz_G)). }
+          claim Hzi_eq : apply_fun mult (z, apply_fun inv (apply_fun zs mz)) =
+            word_product mult e zs mz.
+          { claim Hstep1 : apply_fun mult (z, apply_fun inv (apply_fun zs mz)) =
+              apply_fun mult (apply_fun mult (word_product mult e zs mz, apply_fun zs mz),
+                apply_fun inv (apply_fun zs mz)).
+            { rewrite Hwp_decomp. reflexivity. }
+            claim Hstep2a : apply_fun mult (word_product mult e zs mz,
+                apply_fun mult (apply_fun zs mz, apply_fun inv (apply_fun zs mz))) =
+              apply_fun mult (word_product mult e zs mz, e).
+            { rewrite Ha_inva. reflexivity. }
+            claim Hstep2 : apply_fun mult (apply_fun mult (word_product mult e zs mz, apply_fun zs mz),
+                apply_fun inv (apply_fun zs mz)) =
+              apply_fun mult (word_product mult e zs mz, e).
+            { exact (eq_i_tra
+                (apply_fun mult (apply_fun mult (word_product mult e zs mz, apply_fun zs mz),
+                  apply_fun inv (apply_fun zs mz)))
+                (apply_fun mult (word_product mult e zs mz,
+                  apply_fun mult (apply_fun zs mz, apply_fun inv (apply_fun zs mz))))
+                (apply_fun mult (word_product mult e zs mz, e))
+                Hwpmz_a_inva Hstep2a). }
+            exact (eq_i_tra
+              (apply_fun mult (z, apply_fun inv (apply_fun zs mz)))
+              (apply_fun mult (apply_fun mult (word_product mult e zs mz, apply_fun zs mz),
+                apply_fun inv (apply_fun zs mz)))
+              (word_product mult e zs mz)
+              Hstep1
+              (eq_i_tra
+                (apply_fun mult (apply_fun mult (word_product mult e zs mz, apply_fun zs mz),
+                  apply_fun inv (apply_fun zs mz)))
+                (apply_fun mult (word_product mult e zs mz, e))
+                (word_product mult e zs mz)
+                Hstep2 Hwpmz_e)). }
+          claim Hzc_prod : zc = apply_fun mult (apply_fun zs mz, word_product mult e zs mz).
+          { rewrite Hzi_eq. reflexivity. }
+          (** Now case split on p = mult(zs(mz), zs(0)) **)
           claim Hex_short_word : exists nw ws:set,
             reduced_word 2 Gfam efam nw ws /\ nw <> 0 /\
             word_product mult e ws nw = zc /\ nw :e nz.
