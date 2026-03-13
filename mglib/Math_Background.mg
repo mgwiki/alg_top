@@ -410704,6 +410704,44 @@ claim HfactorInfiniteCyclicH0 :
     HgensH0InfiniteCyclicInH
     HalphaJH0).
 }
+claim HGfamH0Val :
+  forall alpha:set, alpha :e JH0 ->
+    apply_fun GfamH0 alpha =
+    {g :e H | exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat multF eF (apply_fun gensH0 alpha) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 alpha)) (ordsucc m)))}.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (apply_fun_graph
+    JH0
+    (fun beta:set =>
+      {g :e H | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat multF eF (apply_fun gensH0 beta) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat multF eF (apply_fun invF (apply_fun gensH0 beta)) (ordsucc m)))})
+    alpha
+    HalphaJH0).
+}
+claim HfactorSubgroupH0 :
+  forall alpha:set, alpha :e JH0 ->
+    subgroup_of (apply_fun GfamH0 alpha) H multF eF invF.
+{
+  let alpha.
+  assume HalphaJH0.
+  claim HaH : apply_fun gensH0 alpha :e H.
+  { exact (HgensH0InH alpha HalphaJH0). }
+  rewrite (HGfamH0Val alpha HalphaJH0).
+  exact (cyclic_generator_subgroup_is_subgroup
+    H
+    multF
+    eF
+    invF
+    (apply_fun gensH0 alpha)
+    HgrpH
+    HaH).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove the infinite-cyclic factor family
