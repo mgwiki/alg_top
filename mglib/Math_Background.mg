@@ -417972,11 +417972,9 @@ apply andI.
       HJeq
       HcosetFin).
   }
-  exact (andEL
-    (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)) ->
-     equip JH (ordsucc (mul_SNo k n)))
-    (equip JH (ordsucc (mul_SNo k n)) ->
-     equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
+  exact (iffEL
+    (equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)))
+    (equip JH (ordsucc (mul_SNo k n)))
     (equip_ordsucc_mul_subgroup_index_iff_witness
       H
       F
