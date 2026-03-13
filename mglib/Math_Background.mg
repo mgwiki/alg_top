@@ -416041,6 +416041,60 @@ claim HoutsideFactorsExistenceToLengthGE2H0 :
         Hlen).
   - exact Hwp.
 }
+claim HoutsideFactorsRawExistenceToNonzeroH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\
+      word_product multF eF xs n = x) ->
+  (forall x:set, x :e H -> x <> eF ->
+    (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x).
+{
+  assume HexRaw.
+  let x.
+  assume HxH HxNe HxOutFactors.
+  apply (HexRaw x HxH HxNe HxOutFactors).
+  let n.
+  assume HnPack.
+  apply HnPack.
+  let xs.
+  assume HxsPack.
+  claim Hred :
+    reduced_word JH0 GfamH0 efamH0 n xs.
+  {
+    exact (andEL
+      (reduced_word JH0 GfamH0 efamH0 n xs)
+      (word_product multF eF xs n = x)
+      HxsPack).
+  }
+  claim Hwp :
+    word_product multF eF xs n = x.
+  {
+    exact (andER
+      (reduced_word JH0 GfamH0 efamH0 n xs)
+      (word_product multF eF xs n = x)
+      HxsPack).
+  }
+  claim HnNe :
+    n <> 0.
+  {
+    exact (HwordProductEqualsNontrivialImpliesNonzeroLengthH0
+      x
+      n
+      xs
+      Hwp
+      HxNe).
+  }
+  witness n.
+  witness xs.
+  apply and3I.
+  - exact Hred.
+  - exact HnNe.
+  - exact Hwp.
+}
 claim HoutsideFactorsExistenceToFreeProductH0 :
   (forall x:set, x :e H -> x <> eF ->
     (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
@@ -416233,17 +416287,18 @@ apply and4I.
 - exact HgrpH.
 - exact HgensH0Fn.
 - exact HgensH0InfiniteCyclicInH.
-- claim HoutsideFactorsExists :
+- claim HoutsideFactorsExistsRaw :
     forall x:set, x :e H -> x <> eF ->
       (forall alpha:set, alpha :e JH0 -> x :e apply_fun GfamH0 alpha -> False) ->
       exists n xs:set,
-        reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+        reduced_word JH0 GfamH0 efamH0 n xs /\
         word_product multF eF xs n = x.
   {
-    admit. (** TODO S85.1: outside-factors nontrivial existence with nonzero reduced representation in H. **)
+    admit. (** TODO S85.1: outside-factors nontrivial reduced-word existence in H. **)
   }
   exact (HoutsideFactorsExistenceToFreeProductH0
-    HoutsideFactorsExists).
+    (HoutsideFactorsRawExistenceToNonzeroH0
+      HoutsideFactorsExistsRaw)).
 Admitted.
 
 (** from S85 Definition (line 5764 in algtop.tex): Euler number of finite graph **)
