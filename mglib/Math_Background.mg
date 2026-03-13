@@ -430966,6 +430966,70 @@ apply andI.
     Hdirect).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_from_components_index_spec : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HcosetFin.
+assume HidxSpec.
+apply and5I.
+- exact HnOmega.
+- exact HJeq.
+- exact HcosetFin.
+- exact (andEL
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+- exact (andER
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HidxSpec).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_from_npack_finite_index_spec : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  finite (right_coset_set F multF H) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnPack.
+assume HcosetFin.
+assume HidxSpec.
+exact (thm85_3_rankdata_nonzero_direct_from_components_index_spec
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_npack_n_omega
+    J
+    n
+    HnPack)
+  (thm85_3_npack_J_equip
+    J
+    n
+    HnPack)
+  HcosetFin
+  HidxSpec).
+Qed.
+
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
 Theorem thm85_3_core_rank_from_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
