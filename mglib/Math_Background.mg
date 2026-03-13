@@ -282454,6 +282454,147 @@ claim HaG2 : a :e G2.
 exact (Hane (Hinter_simple a HaG1 HaG2)).
 Qed.
 
+(** Helper: group power of conjugate equals conjugate of group power **)
+(** Proven Alice **)
+Theorem conjugate_power_nat :
+  forall G mult e inv a x:set,
+  group_structure G mult e inv ->
+  a :e G -> x :e G ->
+  forall n:set, n :e omega ->
+  group_power_nat mult e (apply_fun mult (a, apply_fun mult (x, apply_fun inv a))) n =
+  apply_fun mult (a, apply_fun mult (group_power_nat mult e x n, apply_fun inv a)).
+let G mult e inv a x.
+assume Hgrp : group_structure G mult e inv.
+assume HaG : a :e G. assume HxG : x :e G.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultF HinvF HeG Hassoc Hid Hinverse.
+claim HmG : forall u v:set, u :e G -> v :e G -> apply_fun mult (u, v) :e G.
+{ let u v. assume HuG HvG.
+  exact (HmultF (u, v) (tuple_2_setprod_by_pair_Sigma G G u v HuG HvG)). }
+claim HinvG : forall u:set, u :e G -> apply_fun inv u :e G.
+{ let u. assume HuG. exact (HinvF u HuG). }
+set ainv := apply_fun inv a.
+claim HainvG : ainv :e G. { exact (HinvG a HaG). }
+claim Ha_ainv : apply_fun mult (a, ainv) = e.
+{ exact (andEL (apply_fun mult (a, ainv) = e) (apply_fun mult (ainv, a) = e)
+    (Hinverse a HaG)). }
+claim Hainv_a : apply_fun mult (ainv, a) = e.
+{ exact (andER (apply_fun mult (a, ainv) = e) (apply_fun mult (ainv, a) = e)
+    (Hinverse a HaG)). }
+set conj := apply_fun mult (a, apply_fun mult (x, ainv)).
+claim HconjG : conj :e G. { exact (HmG a (apply_fun mult (x, ainv)) HaG (HmG x ainv HxG HainvG)). }
+claim HpowG : forall n:set, nat_p n -> group_power_nat mult e x n :e G.
+{ apply nat_ind.
+  - claim H0 : group_power_nat mult e x 0 = e.
+    { exact (nat_primrec_0 e (fun _ r => apply_fun mult (x, r))). }
+    rewrite H0. exact HeG.
+  - let j. assume Hj IH.
+    claim HS : group_power_nat mult e x (ordsucc j) = apply_fun mult (x, group_power_nat mult e x j).
+    { exact (nat_primrec_S e (fun _ r => apply_fun mult (x, r)) j Hj). }
+    rewrite HS. exact (HmG x (group_power_nat mult e x j) HxG IH). }
+claim HconjpowG : forall n:set, nat_p n -> group_power_nat mult e conj n :e G.
+{ apply nat_ind.
+  - claim H0 : group_power_nat mult e conj 0 = e.
+    { exact (nat_primrec_0 e (fun _ r => apply_fun mult (conj, r))). }
+    rewrite H0. exact HeG.
+  - let j. assume Hj IH.
+    claim HS : group_power_nat mult e conj (ordsucc j) = apply_fun mult (conj, group_power_nat mult e conj j).
+    { exact (nat_primrec_S e (fun _ r => apply_fun mult (conj, r)) j Hj). }
+    rewrite HS. exact (HmG conj (group_power_nat mult e conj j) HconjG IH). }
+claim Hmain : forall n:set, nat_p n ->
+  group_power_nat mult e conj n =
+  apply_fun mult (a, apply_fun mult (group_power_nat mult e x n, ainv)).
+{ apply nat_ind.
+  - prove group_power_nat mult e conj 0 =
+      apply_fun mult (a, apply_fun mult (group_power_nat mult e x 0, ainv)).
+    claim Hc0 : group_power_nat mult e conj 0 = e.
+    { exact (nat_primrec_0 e (fun _ r => apply_fun mult (conj, r))). }
+    claim Hx0 : group_power_nat mult e x 0 = e.
+    { exact (nat_primrec_0 e (fun _ r => apply_fun mult (x, r))). }
+    claim Hrhs : apply_fun mult (a, apply_fun mult (e, ainv)) =
+      apply_fun mult (a, ainv).
+    { claim Hle : apply_fun mult (e, ainv) = ainv.
+      { exact (andEL (apply_fun mult (e, ainv) = ainv) (apply_fun mult (ainv, e) = ainv) (Hid ainv HainvG)). }
+      rewrite Hle. reflexivity. }
+    rewrite Hc0. rewrite Hx0. rewrite Hrhs. symmetry. exact Ha_ainv.
+  - let n. assume Hn : nat_p n.
+    assume IH : group_power_nat mult e conj n =
+      apply_fun mult (a, apply_fun mult (group_power_nat mult e x n, ainv)).
+    prove group_power_nat mult e conj (ordsucc n) =
+      apply_fun mult (a, apply_fun mult (group_power_nat mult e x (ordsucc n), ainv)).
+    claim HcS : group_power_nat mult e conj (ordsucc n) =
+      apply_fun mult (conj, group_power_nat mult e conj n).
+    { exact (nat_primrec_S e (fun _ r => apply_fun mult (conj, r)) n Hn). }
+    claim HxS : group_power_nat mult e x (ordsucc n) =
+      apply_fun mult (x, group_power_nat mult e x n).
+    { exact (nat_primrec_S e (fun _ r => apply_fun mult (x, r)) n Hn). }
+    claim HpnG : group_power_nat mult e x n :e G. { exact (HpowG n Hn). }
+    claim HcpnG : group_power_nat mult e conj n :e G. { exact (HconjpowG n Hn). }
+    claim HxainvG : apply_fun mult (x, ainv) :e G. { exact (HmG x ainv HxG HainvG). }
+    claim HpnainvG : apply_fun mult (group_power_nat mult e x n, ainv) :e G.
+    { exact (HmG (group_power_nat mult e x n) ainv HpnG HainvG). }
+    claim Hapn : apply_fun mult (a, apply_fun mult (group_power_nat mult e x n, ainv)) :e G.
+    { exact (HmG a (apply_fun mult (group_power_nat mult e x n, ainv)) HaG HpnainvG). }
+    claim Hstep1 : apply_fun mult (conj, group_power_nat mult e conj n) =
+      apply_fun mult (conj, apply_fun mult (a, apply_fun mult (group_power_nat mult e x n, ainv))).
+    { rewrite IH. reflexivity. }
+    claim Hstep2 : apply_fun mult (conj, apply_fun mult (a, apply_fun mult (group_power_nat mult e x n, ainv))) =
+      apply_fun mult (apply_fun mult (conj, a), apply_fun mult (group_power_nat mult e x n, ainv)).
+    { symmetry. exact (Hassoc conj a (apply_fun mult (group_power_nat mult e x n, ainv)) HconjG HaG HpnainvG). }
+    claim Hconj_a : apply_fun mult (conj, a) =
+      apply_fun mult (a, apply_fun mult (apply_fun mult (x, ainv), a)).
+    { exact (Hassoc a (apply_fun mult (x, ainv)) a HaG HxainvG HaG). }
+    claim Hassoc_x_ainv_a : apply_fun mult (apply_fun mult (x, ainv), a) =
+      apply_fun mult (x, apply_fun mult (ainv, a)).
+    { exact (Hassoc x ainv a HxG HainvG HaG). }
+    claim Hxa_simp : apply_fun mult (apply_fun mult (x, ainv), a) = x.
+    { claim Hx_ainv_a : apply_fun mult (x, apply_fun mult (ainv, a)) =
+        apply_fun mult (x, e).
+      { rewrite Hainv_a. reflexivity. }
+      claim Hx_e : apply_fun mult (x, e) = x.
+      { exact (andER (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x)
+          (Hid x HxG)). }
+      exact (eq_i_tra (apply_fun mult (apply_fun mult (x, ainv), a))
+        (apply_fun mult (x, apply_fun mult (ainv, a)))
+        x Hassoc_x_ainv_a
+        (eq_i_tra (apply_fun mult (x, apply_fun mult (ainv, a)))
+          (apply_fun mult (x, e)) x Hx_ainv_a Hx_e)). }
+    claim Hconj_a_simp : apply_fun mult (conj, a) =
+      apply_fun mult (a, x).
+    { claim Hrew : apply_fun mult (a, apply_fun mult (apply_fun mult (x, ainv), a)) =
+        apply_fun mult (a, x). { rewrite Hxa_simp. reflexivity. }
+      exact (eq_i_tra (apply_fun mult (conj, a))
+        (apply_fun mult (a, apply_fun mult (apply_fun mult (x, ainv), a)))
+        (apply_fun mult (a, x)) Hconj_a Hrew). }
+    claim Hstep3 : apply_fun mult (apply_fun mult (conj, a), apply_fun mult (group_power_nat mult e x n, ainv)) =
+      apply_fun mult (apply_fun mult (a, x), apply_fun mult (group_power_nat mult e x n, ainv)).
+    { rewrite Hconj_a_simp. reflexivity. }
+    claim HaxG : apply_fun mult (a, x) :e G. { exact (HmG a x HaG HxG). }
+    claim Hassoc_ax_pn_ainv : apply_fun mult (apply_fun mult (a, x), apply_fun mult (group_power_nat mult e x n, ainv)) =
+      apply_fun mult (a, apply_fun mult (x, apply_fun mult (group_power_nat mult e x n, ainv))).
+    { exact (Hassoc a x (apply_fun mult (group_power_nat mult e x n, ainv)) HaG HxG HpnainvG). }
+    claim Hassoc_x_pn_ainv : apply_fun mult (x, apply_fun mult (group_power_nat mult e x n, ainv)) =
+      apply_fun mult (apply_fun mult (x, group_power_nat mult e x n), ainv).
+    { symmetry. exact (Hassoc x (group_power_nat mult e x n) ainv HxG HpnG HainvG). }
+    claim Hgoal_rhs : apply_fun mult (a, apply_fun mult (group_power_nat mult e x (ordsucc n), ainv)) =
+      apply_fun mult (a, apply_fun mult (apply_fun mult (x, group_power_nat mult e x n), ainv)).
+    { rewrite HxS. reflexivity. }
+    rewrite HcS. rewrite Hstep1. rewrite Hstep2. rewrite Hstep3.
+    rewrite Hassoc_ax_pn_ainv. rewrite Hassoc_x_pn_ainv.
+    symmetry. exact Hgoal_rhs. }
+let n. assume HnO : n :e omega.
+exact (Hmain n (omega_nat_p n HnO)).
+Qed.
+
 (** from S68 Exercise 2(c) (line 3028 in algtop.tex) **)
 (** LATEX VERSION: The only elements of G that have finite order are elements **)
 (** of G1 and G2 that have finite order, and their conjugates. **)
@@ -282846,7 +282987,64 @@ apply (xm (x = e)).
         (** zc has finite order **)
         claim Hzcfin : exists m:set, m :e omega /\ m <> 0 /\
           group_power_nat mult e zc m = e.
-        { admit. }
+        { set m0 := Eps_i (fun m => m :e omega /\ m <> 0 /\ group_power_nat mult e z m = e).
+          claim Hm0 : m0 :e omega /\ m0 <> 0 /\ group_power_nat mult e z m0 = e.
+          { exact (Eps_i_ex (fun m => m :e omega /\ m <> 0 /\ group_power_nat mult e z m = e)
+              Hzfin). }
+          apply (and3E (m0 :e omega) (m0 <> 0) (group_power_nat mult e z m0 = e) Hm0).
+          assume Hm0O : m0 :e omega. assume Hm0ne : m0 <> 0.
+          assume Hzm0 : group_power_nat mult e z m0 = e.
+          witness m0. apply and3I.
+          - exact Hm0O.
+          - exact Hm0ne.
+          - claim Hconj_eq : group_power_nat mult e zc m0 =
+              apply_fun mult (apply_fun zs mz,
+                apply_fun mult (group_power_nat mult e z m0,
+                  apply_fun inv (apply_fun zs mz))).
+            { exact (conjugate_power_nat G mult e inv (apply_fun zs mz) z
+                Hgrp Hzsmz_G HzG m0 Hm0O). }
+            claim Hstep1 : apply_fun mult (apply_fun zs mz,
+              apply_fun mult (group_power_nat mult e z m0,
+                apply_fun inv (apply_fun zs mz))) =
+              apply_fun mult (apply_fun zs mz,
+                apply_fun mult (e, apply_fun inv (apply_fun zs mz))).
+            { rewrite Hzm0. reflexivity. }
+            claim Hle_inv : apply_fun mult (e, apply_fun inv (apply_fun zs mz)) =
+              apply_fun inv (apply_fun zs mz).
+            { exact (andEL
+                (apply_fun mult (e, apply_fun inv (apply_fun zs mz)) =
+                  apply_fun inv (apply_fun zs mz))
+                (apply_fun mult (apply_fun inv (apply_fun zs mz), e) =
+                  apply_fun inv (apply_fun zs mz))
+                (Hid (apply_fun inv (apply_fun zs mz)) Hinvzsmz_G)). }
+            claim Hstep2 : apply_fun mult (apply_fun zs mz,
+              apply_fun mult (e, apply_fun inv (apply_fun zs mz))) =
+              apply_fun mult (apply_fun zs mz, apply_fun inv (apply_fun zs mz)).
+            { rewrite Hle_inv. reflexivity. }
+            claim Hinv_cancel : apply_fun mult (apply_fun zs mz,
+              apply_fun inv (apply_fun zs mz)) = e.
+            { exact (andEL
+                (apply_fun mult (apply_fun zs mz, apply_fun inv (apply_fun zs mz)) = e)
+                (apply_fun mult (apply_fun inv (apply_fun zs mz), apply_fun zs mz) = e)
+                (Hinverse (apply_fun zs mz) Hzsmz_G)). }
+            exact (eq_i_tra (group_power_nat mult e zc m0)
+              (apply_fun mult (apply_fun zs mz,
+                apply_fun mult (group_power_nat mult e z m0,
+                  apply_fun inv (apply_fun zs mz))))
+              e Hconj_eq
+              (eq_i_tra (apply_fun mult (apply_fun zs mz,
+                apply_fun mult (group_power_nat mult e z m0,
+                  apply_fun inv (apply_fun zs mz))))
+                (apply_fun mult (apply_fun zs mz, apply_fun inv (apply_fun zs mz)))
+                e
+                (eq_i_tra (apply_fun mult (apply_fun zs mz,
+                  apply_fun mult (group_power_nat mult e z m0,
+                    apply_fun inv (apply_fun zs mz))))
+                  (apply_fun mult (apply_fun zs mz,
+                    apply_fun mult (e, apply_fun inv (apply_fun zs mz))))
+                  (apply_fun mult (apply_fun zs mz, apply_fun inv (apply_fun zs mz)))
+                  Hstep1 Hstep2)
+                Hinv_cancel)). }
         (** zc != e **)
         claim Hzcne : zc <> e.
         { assume Hzce : zc = e.
