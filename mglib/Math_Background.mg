@@ -422763,6 +422763,34 @@ exact (andER
     HkPack)).
 Qed.
 
+(** Proven Bob **)
+Lemma subgroup_index_bundle_nonzero_index_spec : forall H G mult e inv k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set G mult H) k ->
+  subgroup_index H G mult e inv :e omega /\
+  equip (right_coset_set G mult H) (subgroup_index H G mult e inv).
+let H G mult e inv k n.
+assume HkPack.
+apply andI.
+- exact (subgroup_index_bundle_nonzero_index_omega
+    H
+    G
+    mult
+    e
+    inv
+    k
+    n
+    HkPack).
+- exact (subgroup_index_bundle_nonzero_index_equip
+    H
+    G
+    mult
+    e
+    inv
+    k
+    n
+    HkPack).
+Qed.
+
 (** Projections from bundled S85.3 rank/index data. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_n_omega : forall F multF eF invF J H n:set,
@@ -423405,6 +423433,40 @@ apply (and5E
     HkPack)).
 assume HnO HJeq Hcfin HidxO HidxEq.
 exact HidxEq.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_bundle_index_spec : forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+apply andI.
+- exact (thm85_3_rankdata_nonzero_bundle_index_omega
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack).
+- exact (thm85_3_rankdata_nonzero_bundle_index_equip
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    k
+    HnPack
+    HkPack).
 Qed.
 
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
