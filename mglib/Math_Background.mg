@@ -411830,6 +411830,86 @@ claim HambientReducedWordOnH :
   assume HgrpF0 HsubF0 HdisjF0 HgenF0 HwordF0.
   exact (HwordF0 x (HsubF x HxH) HxNe).
 }
+claim HgeneratorHasAmbientDecomposition :
+  forall alpha:set, alpha :e JH0 ->
+    exists n xs:set,
+      reduced_word J GfamF (graph J (fun _:set => eF)) n xs /\ n <> 0 /\
+      word_product multF eF xs n = apply_fun gensH0 alpha /\
+      (forall n' xs':set,
+        reduced_word J GfamF (graph J (fun _:set => eF)) n' xs' -> n' <> 0 ->
+        word_product multF eF xs' n' = apply_fun gensH0 alpha ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (HambientReducedWordOnH
+    (apply_fun gensH0 alpha)
+    (HgensH0InH alpha HalphaJH0)
+    (HgensH0NeUnit alpha HalphaJH0)).
+}
+claim HgensH0InAmbientFactor :
+  forall alpha:set, alpha :e JH0 ->
+    apply_fun gensH0 alpha :e apply_fun GfamF alpha.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (HGfamH0MemInGfamF
+    alpha
+    (apply_fun gensH0 alpha)
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)).
+}
+claim HreducedSingletonGenAmbient :
+  forall alpha:set, alpha :e JH0 ->
+    reduced_word
+      J
+      GfamF
+      (graph J (fun _:set => eF))
+      1
+      (graph 1 (fun _:set => apply_fun gensH0 alpha)).
+{
+  let alpha.
+  assume HalphaJH0.
+  claim HgensNeEfamAmbient :
+    apply_fun gensH0 alpha <> apply_fun (graph J (fun _:set => eF)) alpha.
+  {
+    rewrite (apply_fun_graph
+      J
+      (fun _:set => eF)
+      alpha
+      (HJH0subJ alpha HalphaJH0)).
+    exact (HgensH0NeUnit alpha HalphaJH0).
+  }
+  exact (reduced_word_singleton
+    J
+    GfamF
+    (graph J (fun _:set => eF))
+    alpha
+    (apply_fun gensH0 alpha)
+    (HJH0subJ alpha HalphaJH0)
+    (HgensH0InAmbientFactor alpha HalphaJH0)
+    HgensNeEfamAmbient).
+}
+claim HwordSingletonGenAmbient :
+  forall alpha:set, alpha :e JH0 ->
+    word_product
+      multF
+      eF
+      (graph 1 (fun _:set => apply_fun gensH0 alpha))
+      1
+    = apply_fun gensH0 alpha.
+{
+  let alpha.
+  assume HalphaJH0.
+  exact (word_product_singleton_group
+    F
+    multF
+    eF
+    invF
+    (apply_fun gensH0 alpha)
+    HgrpF
+    (HgensH0InF alpha HalphaJH0)).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
