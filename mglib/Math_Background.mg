@@ -415573,6 +415573,217 @@ claim HoutsideUnionWordLengthConstraintsH0 :
       Hred
       Hwp).
 }
+claim HrestrictedWitnessUniqueNoNeFromAmbientH0 :
+  forall x n xs:set,
+    x :e H -> x <> eF ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    n <> 0 ->
+    word_product multF eF xs n = x ->
+    forall n' xs':set,
+      reduced_word JH0 GfamH0 efamH0 n' xs' ->
+      word_product multF eF xs' n' = x ->
+      n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i).
+{
+  let x n xs.
+  assume HxH HxNe Hred HnNe Hwp.
+  claim HredAmbient :
+    reduced_word J GfamF (graph J (fun _:set => eF)) n xs.
+  {
+    exact (HreducedRestrictedImpliesAmbient
+      n
+      xs
+      Hred).
+  }
+  claim Hamb :
+    exists nw xsw:set,
+      reduced_word J GfamF (graph J (fun _:set => eF)) nw xsw /\ nw <> 0 /\
+      word_product multF eF xsw nw = x /\
+      (forall n'' xs'':set,
+        reduced_word J GfamF (graph J (fun _:set => eF)) n'' xs'' -> n'' <> 0 ->
+        word_product multF eF xs'' n'' = x ->
+        nw = n'' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs'' i)).
+  {
+    exact (HambientReducedWordOnH
+      x
+      HxH
+      HxNe).
+  }
+  apply Hamb.
+  let nw.
+  assume HnwPack.
+  apply HnwPack.
+  let xsw.
+  assume HxswPack.
+  apply (and4E
+    (reduced_word J GfamF (graph J (fun _:set => eF)) nw xsw)
+    (nw <> 0)
+    (word_product multF eF xsw nw = x)
+    (forall n'' xs'':set,
+      reduced_word J GfamF (graph J (fun _:set => eF)) n'' xs'' -> n'' <> 0 ->
+      word_product multF eF xs'' n'' = x ->
+      nw = n'' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs'' i))
+    HxswPack).
+  assume HredW HnwNe HwpW HuniqW.
+  claim HuniqN :
+    nw = n /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i).
+  {
+    exact (HuniqW
+      n
+      xs
+      HredAmbient
+      HnNe
+      Hwp).
+  }
+  let n' xs'.
+  assume Hred' Hwp'.
+  claim Hn'Ne :
+    n' <> 0.
+  {
+    exact (HwordProductEqualsNontrivialImpliesNonzeroLengthH0
+      x
+      n'
+      xs'
+      Hwp'
+      HxNe).
+  }
+  claim HredAmbient' :
+    reduced_word J GfamF (graph J (fun _:set => eF)) n' xs'.
+  {
+    exact (HreducedRestrictedImpliesAmbient
+      n'
+      xs'
+      Hred').
+  }
+  claim HuniqN' :
+    nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i).
+  {
+    exact (HuniqW
+      n'
+      xs'
+      HredAmbient'
+      Hn'Ne
+      Hwp').
+  }
+  claim HnwN : nw = n.
+  {
+    exact (andEL
+      (nw = n)
+      (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i)
+      HuniqN).
+  }
+  claim HnwN' : nw = n'.
+  {
+    exact (andEL
+      (nw = n')
+      (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i)
+      HuniqN').
+  }
+  claim HxswXs :
+    forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i.
+  {
+    exact (andER
+      (nw = n)
+      (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs i)
+      HuniqN).
+  }
+  claim HxswXs' :
+    forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i.
+  {
+    exact (andER
+      (nw = n')
+      (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i)
+      HuniqN').
+  }
+  claim HnNw : n = nw.
+  {
+    symmetry.
+    exact HnwN.
+  }
+  claim HnEqN' : n = n'.
+  {
+    exact (eq_i_tra
+      n
+      nw
+      n'
+      HnNw
+      HnwN').
+  }
+  apply andI.
+  - exact HnEqN'.
+  - let i.
+    assume HiN.
+    claim HiNw : i :e nw.
+    {
+      rewrite HnwN.
+      exact HiN.
+    }
+    claim HxswEqXs : apply_fun xsw i = apply_fun xs i.
+    {
+      exact (HxswXs i HiNw).
+    }
+    claim HxswEqXs' : apply_fun xsw i = apply_fun xs' i.
+    {
+      exact (HxswXs' i HiNw).
+    }
+    claim HxsEqXsw : apply_fun xs i = apply_fun xsw i.
+    {
+      symmetry.
+      exact HxswEqXs.
+    }
+    exact (eq_i_tra
+      (apply_fun xs i)
+      (apply_fun xsw i)
+      (apply_fun xs' i)
+      HxsEqXsw
+      HxswEqXs').
+}
+claim HoutsideUnionExistenceToGlobalNoNeH0 :
+  (forall x:set, x :e H -> x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x) ->
+  (forall x:set, x :e H -> x <> eF ->
+    (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+{
+  assume HexOutside.
+  let x.
+  assume HxH HxNe HxOutUnion.
+  apply (HexOutside x HxH HxNe HxOutUnion).
+  let n.
+  assume HnPack.
+  apply HnPack.
+  let xs.
+  assume HxsPack.
+  apply (and3E
+    (reduced_word JH0 GfamH0 efamH0 n xs)
+    (n <> 0)
+    (word_product multF eF xs n = x)
+    HxsPack).
+  assume Hred HnNe Hwp.
+  witness n.
+  witness xs.
+  apply and4I.
+  - exact Hred.
+  - exact HnNe.
+  - exact Hwp.
+  - exact (HrestrictedWitnessUniqueNoNeFromAmbientH0
+      x
+      n
+      xs
+      HxH
+      HxNe
+      Hred
+      HnNe
+      Hwp).
+}
 claim HglobalUniqueNoNeReduceToOutsideUnionH0 :
   (forall x:set, x :e H -> x <> eF ->
     (x :e Union (Repl JH0 (fun alpha:set => apply_fun GfamH0 alpha)) -> False) ->
