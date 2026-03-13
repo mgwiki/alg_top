@@ -413689,6 +413689,79 @@ claim HfactorElemRestrictedWordIndexIsZero :
     (fun j:set => j = 0)).
   exact (eq_refl 0).
 }
+claim HfactorElemHasRestrictedDecompositionUnique :
+  forall alpha g:set, alpha :e JH0 ->
+    g :e apply_fun GfamH0 alpha ->
+    g <> apply_fun efamH0 alpha ->
+    exists n xs:set,
+      reduced_word JH0 GfamH0 efamH0 n xs /\ n <> 0 /\
+      word_product multF eF xs n = g /\
+      (forall n' xs':set,
+        reduced_word JH0 GfamH0 efamH0 n' xs' ->
+        word_product multF eF xs' n' = g ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+{
+  let alpha g.
+  assume HalphaJH0 HgGa HgNeEfam.
+  witness 1.
+  witness (graph 1 (fun _:set => g)).
+  apply and4I.
+  - exact (HfactorElemSingletonReducedH0
+      alpha
+      g
+      HalphaJH0
+      HgGa
+      HgNeEfam).
+  - exact neq_1_0.
+  - exact (HfactorElemSingletonWordProductH0
+      alpha
+      g
+      HalphaJH0
+      HgGa).
+  - let n' xs'.
+    assume Hred' Hwp'.
+    claim HuniqPair :
+      1 = n' /\
+      (forall i:set, i :e 1 ->
+        apply_fun (graph 1 (fun _:set => g)) i =
+        apply_fun xs' i).
+    {
+      exact (HfactorElemRestrictedWordUniquePair
+        alpha
+        g
+        1
+        (graph 1 (fun _:set => g))
+        n'
+        xs'
+        HalphaJH0
+        HgGa
+        HgNeEfam
+        (HfactorElemSingletonReducedH0
+          alpha
+          g
+          HalphaJH0
+          HgGa
+          HgNeEfam)
+        (HfactorElemSingletonWordProductH0
+          alpha
+          g
+          HalphaJH0
+          HgGa)
+        Hred'
+        Hwp').
+    }
+    apply andI.
+    + exact (andEL
+        (1 = n')
+        (forall i:set, i :e 1 ->
+          apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs' i)
+        HuniqPair).
+    + exact (andER
+        (1 = n')
+        (forall i:set, i :e 1 ->
+          apply_fun (graph 1 (fun _:set => g)) i = apply_fun xs' i)
+        HuniqPair).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
