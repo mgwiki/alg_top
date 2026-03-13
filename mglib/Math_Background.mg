@@ -414251,6 +414251,111 @@ claim HgeneratorRestrictedWordEqualsSingletonOnNViaGeneral :
     HredH0
     Hwp).
 }
+claim HgeneratorRestrictedWordLengthOneViaGeneral :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    n = 1.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 Hwp.
+  exact (HfactorElemRestrictedWordLengthOne
+    alpha
+    (apply_fun gensH0 alpha)
+    n
+    xs
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)
+    HredH0
+    Hwp).
+}
+claim HgeneratorRestrictedWordZeroInLengthViaGeneral :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    0 :e n.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 Hwp.
+  exact (HfactorElemRestrictedWordZeroInLength
+    alpha
+    (apply_fun gensH0 alpha)
+    n
+    xs
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)
+    HredH0
+    Hwp).
+}
+claim HgeneratorRestrictedWordElem0PackViaGeneral :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    alpha :e JH0 /\
+    apply_fun xs 0 :e apply_fun GfamH0 alpha /\
+    apply_fun xs 0 <> apply_fun efamH0 alpha.
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 Hwp.
+  exact (HfactorElemRestrictedWordElem0Pack
+    alpha
+    (apply_fun gensH0 alpha)
+    n
+    xs
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)
+    HredH0
+    Hwp).
+}
+claim HgeneratorRestrictedWordCanonicalWitnessUniqueViaGeneral :
+  forall alpha n xs:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    1 = n /\
+    (forall i:set, i :e 1 ->
+      apply_fun (graph 1 (fun _:set => apply_fun gensH0 alpha)) i =
+      apply_fun xs i).
+{
+  let alpha n xs.
+  assume HalphaJH0 HredH0 Hwp.
+  exact (HfactorElemRestrictedWordCanonicalWitnessUnique
+    alpha
+    (apply_fun gensH0 alpha)
+    n
+    xs
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)
+    HredH0
+    Hwp).
+}
+claim HgeneratorRestrictedWordConstantOnDomainViaGeneral :
+  forall alpha n xs i j:set, alpha :e JH0 ->
+    reduced_word JH0 GfamH0 efamH0 n xs ->
+    word_product multF eF xs n = apply_fun gensH0 alpha ->
+    i :e n -> j :e n ->
+    apply_fun xs i = apply_fun xs j.
+{
+  let alpha n xs i j.
+  assume HalphaJH0 HredH0 Hwp HiN HjN.
+  exact (HfactorElemRestrictedWordConstantOnDomain
+    alpha
+    (apply_fun gensH0 alpha)
+    n
+    xs
+    i
+    j
+    HalphaJH0
+    (HgensH0InFactor alpha HalphaJH0)
+    (HgensH0NeEfam alpha HalphaJH0)
+    HredH0
+    Hwp
+    HiN
+    HjN).
+}
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
    for H (generally larger than JH0), then prove:
