@@ -437053,6 +437053,105 @@ exact (thm85_3_free_gen_formula_pack_existing_generators
     HfreeH)).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_implies_exists_free :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH /\
+    equip JH (ordsucc (mul_SNo k n))) ->
+  exists JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH.
+let H multH eH invH n k.
+assume HexPack.
+apply HexPack.
+let JH.
+assume HJHex.
+apply HJHex.
+let gensH.
+assume Hpack.
+witness JH.
+witness gensH.
+exact (andEL
+  (free_group_with_generators H multH eH invH JH gensH)
+  (equip JH (ordsucc (mul_SNo k n)))
+  Hpack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_implies_exists_rank :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH /\
+    equip JH (ordsucc (mul_SNo k n))) ->
+  exists JH gensH:set,
+    equip JH (ordsucc (mul_SNo k n)).
+let H multH eH invH n k.
+assume HexPack.
+apply HexPack.
+let JH.
+assume HJHex.
+apply HJHex.
+let gensH.
+assume Hpack.
+witness JH.
+witness gensH.
+exact (andER
+  (free_group_with_generators H multH eH invH JH gensH)
+  (equip JH (ordsucc (mul_SNo k n)))
+  Hpack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_rank_on_index :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH /\
+    equip JH (ordsucc (mul_SNo k n))) ->
+  exists JH:set,
+    equip JH (ordsucc (mul_SNo k n)).
+let H multH eH invH n k.
+assume HexPack.
+apply (thm85_3_free_gen_formula_exists_implies_exists_rank
+  H
+  multH
+  eH
+  invH
+  n
+  k
+  HexPack).
+let JH.
+assume HJHex.
+apply HJHex.
+let gensH.
+assume Hrank.
+witness JH.
+exact Hrank.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_repack :
+  forall H multH eH invH JH gensH n k:set,
+  free_group_with_generators H multH eH invH JH gensH ->
+  equip JH (ordsucc (mul_SNo k n)) ->
+  exists J0 gens0:set,
+    free_group_with_generators H multH eH invH J0 gens0 /\
+    equip J0 (ordsucc (mul_SNo k n)).
+let H multH eH invH JH gensH n k.
+assume Hfree.
+assume Hrank.
+exact (thm85_3_free_gen_formula_pack_existing_generators
+  H
+  multH
+  eH
+  invH
+  JH
+  gensH
+  n
+  k
+  Hfree
+  Hrank).
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
