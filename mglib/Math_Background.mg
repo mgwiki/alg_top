@@ -161591,11 +161591,154 @@ claim HnoInImplInclusionNulAux :
 {
   let w wS.
   assume HwCont HwSCont HwSEq HnoInW HwSNul.
-  (** With Sn_affine_boundary_homotopy_map and its t=0 endpoint now available,
-      the remaining work is to show this affine homotopy is continuous into
-      R^{n+1} :\: {0} and lands at the sphere inclusion when t = 1.
-      Any zero of that homotopy would force an inward-pointing boundary value. **)
-  admit.
+  set dom := setprod (Sn n) unit_interval.
+  set Tdom := product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology.
+  set Fraw := Sn_affine_boundary_homotopy_map n wS.
+  claim HFrawCont :
+    continuous_map
+      dom
+      Tdom
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      Fraw.
+  {
+    (** Remaining geometric/topological core:
+        prove the affine homotopy is continuous into Euclidean space and
+        avoids the origin, using HnoInW to rule out zeros. **)
+    admit.
+  }
+  claim HwSToInc :
+    homotopic_maps
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      wS
+      (graph (Sn n) (fun x:set => x)).
+  {
+    prove
+      continuous_map
+        (Sn n)
+        (Sn_topology n)
+        (Rn_minus_origin (ordsucc n))
+        (Rn_minus_origin_topology (ordsucc n))
+        wS
+      /\
+      continuous_map
+        (Sn n)
+        (Sn_topology n)
+        (Rn_minus_origin (ordsucc n))
+        (Rn_minus_origin_topology (ordsucc n))
+        (graph (Sn n) (fun x:set => x))
+      /\
+      exists F:set,
+        continuous_map
+          dom
+          Tdom
+          (Rn_minus_origin (ordsucc n))
+          (Rn_minus_origin_topology (ordsucc n))
+          F
+        /\
+        (forall x:set, x :e Sn n ->
+          apply_fun F (x, 0) = apply_fun wS x)
+        /\
+        (forall x:set, x :e Sn n ->
+          apply_fun F (x, 1) = apply_fun (graph (Sn n) (fun z:set => z)) x).
+    apply andI.
+    - apply andI.
+      + exact HwSCont.
+      + exact (Sn_inclusion_Rn_minus_origin_continuous
+          n
+          Hn_om).
+    - witness Fraw.
+      apply andI.
+      + apply andI.
+        * exact HFrawCont.
+        * let x.
+          assume HxSn.
+          exact (Sn_affine_boundary_homotopy_map_at_0
+            n
+            wS
+            x
+            Hn_om
+            HwSCont
+            HxSn).
+      + let x.
+        assume HxSn.
+        exact (Sn_affine_boundary_homotopy_map_at_1
+          n
+          wS
+          x
+          Hn_om
+          HwSCont
+          HxSn).
+  }
+  prove exists y0:set,
+    y0 :e Rn_minus_origin (ordsucc n) /\
+    homotopic_maps
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      (graph (Sn n) (fun x:set => x))
+      (const_fun (Sn n) y0).
+  apply HwSNul.
+  let y0.
+  assume Hy0Pack.
+  claim Hy0Nz :
+    y0 :e Rn_minus_origin (ordsucc n).
+  {
+    exact (andEL
+      (y0 :e Rn_minus_origin (ordsucc n))
+      (homotopic_maps
+        (Sn n)
+        (Sn_topology n)
+        (Rn_minus_origin (ordsucc n))
+        (Rn_minus_origin_topology (ordsucc n))
+        wS
+        (const_fun (Sn n) y0))
+      Hy0Pack).
+  }
+  claim HwSConst :
+    homotopic_maps
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      wS
+      (const_fun (Sn n) y0).
+  {
+    exact (andER
+      (y0 :e Rn_minus_origin (ordsucc n))
+      (homotopic_maps
+        (Sn n)
+        (Sn_topology n)
+        (Rn_minus_origin (ordsucc n))
+        (Rn_minus_origin_topology (ordsucc n))
+        wS
+        (const_fun (Sn n) y0))
+      Hy0Pack).
+  }
+  witness y0.
+  apply andI.
+  - exact Hy0Nz.
+  - exact (Lemma_51_1_homotopy_trans
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      (graph (Sn n) (fun x:set => x))
+      wS
+      (const_fun (Sn n) y0)
+      (Lemma_51_1_homotopy_sym
+        (Sn n)
+        (Sn_topology n)
+        (Rn_minus_origin (ordsucc n))
+        (Rn_minus_origin_topology (ordsucc n))
+        wS
+        (graph (Sn n) (fun x:set => x))
+        HwSToInc)
+      HwSConst).
 }
 claim HnoInImplInclusionNul :
   ~(exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x) ->
