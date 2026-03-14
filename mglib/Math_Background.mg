@@ -1,6 +1,6 @@
 (** Balance Alice 7758 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 651 **)
+(** Balance Charlie 634 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -146378,7 +146378,8 @@ Admitted. (** TODO: fixed point via Brouwer on triangle/homeomorphism to B2. **)
 (** from S55 starred Cor 55.7 (line 994 in algtop.tex) **)
 (** LATEX VERSION: Let A be a 3 by 3 matrix of positive real numbers. Then A has a positive real eigenvalue. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Charlie 1773565194 **)
 Theorem cor55_7_positive_matrix_eigenvalue : forall A:set,
   function_on A (setprod 3 3) R ->
   (forall i j:set, i :e 3 -> j :e 3 -> Rlt 0 (apply_fun A (i, j))) ->
