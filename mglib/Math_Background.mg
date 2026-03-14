@@ -282848,9 +282848,32 @@ apply (nat_inv nw Hnw_nat).
             claim Hwpym_eG : word_product multG eG ys_m (add_nat nw mw) = eG.
             { rewrite Hwp_ym. rewrite Hwp_efam. exact Hefam_sq. }
             claim Hlen_ne0 : add_nat nw mw <> 0.
-            { admit. }
+            { assume Habs : add_nat nw mw = 0.
+              claim Hnw_sub : nw c= add_nat nw mw.
+              { exact (add_nat_Subq_R' nw Hnw_nat mw Hmw_nat). }
+              claim H0_in_nw : 0 :e nw. { rewrite Hnw_sm. exact (nat_0_in_ordsucc mw Hmw_nat). }
+              claim H0_in_sum : 0 :e add_nat nw mw. { exact (Hnw_sub 0 H0_in_nw). }
+              claim H0_in_0 : 0 :e 0. { exact (eq_subst_mem_set 0 (add_nat nw mw) 0 H0_in_sum Habs). }
+              exact (In_irref 0 H0_in_0). }
             claim Hlen_ne1 : add_nat nw mw <> 1.
-            { admit. }
+            { assume Habs : add_nat nw mw = 1.
+              (** nw >= 2, mw >= 1, so add_nat nw mw >= 3 > 1. **)
+              (** nw c= add_nat nw mw (by add_nat_Subq_R'), so nw c= 1. **)
+              (** But nw = ordsucc mw >= 2 (since mw >= 1). **)
+              (** ordsucc 0 :e ordsucc mw = nw. If nw c= 1, then ordsucc 0 :e 1 = {0}. **)
+              (** ordsucc 0 = 0. Contradiction via neq_ordsucc_0. **)
+              claim Hnw_sub_1 : nw c= 1.
+              { claim Hnw_sub_sum : nw c= add_nat nw mw.
+                { exact (add_nat_Subq_R' nw Hnw_nat mw Hmw_nat). }
+                let x. assume Hx : x :e nw.
+                exact (eq_subst_mem_set x (add_nat nw mw) 1 (Hnw_sub_sum x Hx) Habs). }
+              claim Hmw_in_nw : mw :e nw. { rewrite Hnw_sm. exact (ordsuccI2 mw). }
+              claim Hmw_in_1 : mw :e 1. { exact (Hnw_sub_1 mw Hmw_in_nw). }
+              claim Hmw_eq_0 : mw = 0.
+              { apply (ordsuccE 0 mw Hmw_in_1).
+                - assume Hmw_in_0 : mw :e 0. exact (FalseE (EmptyE mw Hmw_in_0) (mw = 0)).
+                - assume Hmw0 : mw = 0. exact Hmw0. }
+              exact (Hmw_ne0z Hmw_eq_0). }
             exact (free_product_reduced_word_length_ge2_product_ne_e
               G multG eG invG J Gfam efam (add_nat nw mw) ys_m
               Hfp Hred_ym Hlen_ne0 Hlen_ne1 Hwpym_eG).
