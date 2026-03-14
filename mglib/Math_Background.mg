@@ -469148,12 +469148,55 @@ apply (nat_inv nw Hnw_nat).
         (** Step 1: q = mult(inv(xsw(0)), efam(al)) **)
         (** From mult(xsw(0), q) = efam(al), left-cancel xsw(0) **)
         claim Hinvxsw0_G : apply_fun invG (apply_fun xsw 0) :e G. { exact (HinvF (apply_fun xsw 0) Hxsw0_G). }
-        set invxsw0_efam := apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al).
-        claim Hinvxsw0_efam_G : invxsw0_efam :e G.
-        { exact (HmultG (apply_fun invG (apply_fun xsw 0)) (apply_fun efam al) Hinvxsw0_G Hefam_G). }
-        (** b0 = al group algebra: set variable issues, using admit for now **)
-        admit. }
-      admit.
+        claim Hqef_G : apply_fun multG (q, apply_fun efam al) :e G.
+        { exact (HmultG q (apply_fun efam al) Hq_G Hefam_G). }
+        (** Show mult(xsw(0), mult(q, efam(al))) = eG **)
+        claim Hassoc_xsw0_q_ef : apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al)) =
+          apply_fun multG (apply_fun multG (apply_fun xsw 0, q), apply_fun efam al).
+        { exact (eq_symm
+            (apply_fun multG (apply_fun multG (apply_fun xsw 0, q), apply_fun efam al))
+            (apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al)))
+            (HassocG (apply_fun xsw 0) q (apply_fun efam al) Hxsw0_G Hq_G Hefam_G)). }
+        claim Hxsw0_qef_eG : apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al)) = eG.
+        { rewrite Hassoc_xsw0_q_ef. rewrite Hxsw0_q_efam. exact Hefam_sq. }
+        claim Hrinv_xsw0 : apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG.
+        { exact (andEL (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG)
+            (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG)
+            (HinvG (apply_fun xsw 0) Hxsw0_G)). }
+        (** By group_left_cancel: mult(q, efam(al)) = inv(xsw(0)) **)
+        claim Hqef_eq_inv : apply_fun multG (q, apply_fun efam al) = apply_fun invG (apply_fun xsw 0).
+        { exact (group_left_cancel G multG eG invG (apply_fun xsw 0)
+            (apply_fun multG (q, apply_fun efam al)) (apply_fun invG (apply_fun xsw 0))
+            Hgrp Hxsw0_G Hqef_G Hinvxsw0_G
+            (eq_i_tra (apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al))) eG
+              (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)))
+              Hxsw0_qef_eG (eq_symm (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0))) eG Hrinv_xsw0))). }
+        (** mult(inv(xsw(0)), xsw(0)) = eG **)
+        claim Hlinv_xsw0 : apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG.
+        { exact (andER (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG)
+            (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG)
+            (HinvG (apply_fun xsw 0) Hxsw0_G)). }
+        (** Final: mult(mult(q, efam(al)), xsw(0)) = mult(inv(xsw(0)), xsw(0)) = eG **)
+        claim Hfinal : apply_fun multG (apply_fun multG (q, apply_fun efam al), apply_fun xsw 0) = eG.
+        { rewrite Hqef_eq_inv. exact Hlinv_xsw0. }
+        rewrite Hassoc1. exact Hfinal. }
+      (** Now connect word product to eG and derive contradiction **)
+      claim Hwp_eG_suf : word_product multG eG
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
+        (ordsucc mw) = eG.
+      { rewrite Hwp_suf_val. exact Hq_z0. }
+      claim Hnw_ne_0b : nw <> 0. { rewrite Hnw_sm. exact (neq_ordsucc_0 mw). }
+      claim Hred_new_nwb : reduced_word J Gfam efam nw
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0)).
+      { rewrite Hnw_sm. exact Hred_new_suf. }
+      claim Hwp_eG_nwb : word_product multG eG
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
+        nw = eG.
+      { rewrite Hnw_sm. exact Hwp_eG_suf. }
+      exact (free_product_reduced_word_length_ge2_product_ne_e
+        G multG eG invG J Gfam efam nw
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
+        Hfp Hred_new_nwb Hnw_ne_0b Hnw_ne1c Hwp_eG_nwb).
     * assume Hb0_ne_al : b0 <> al.
       (** Both first and last NOT in Gfam(al) **)
       (** Use: if Gfam(al) has a 3rd element z != eG, z != efam(al), append z. **)
