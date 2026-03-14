@@ -79842,6 +79842,83 @@ exact (Rmax_const_right_continuous
   real_0).
 Qed.
 
+(** Infrastructure: max(x,0) is always nonnegative. **)
+(** Proven Charlie **)
+Theorem Rmax_zero_nonneg : forall t:set,
+  t :e R ->
+  Rle 0 (Rmax t 0).
+let t.
+assume HtR.
+apply (xm (Rlt t 0)).
+- assume Htlt0.
+  rewrite (Rmax_unfold
+    t
+    0).
+  rewrite (If_i_1
+    (Rlt t 0)
+    0
+    t
+    Htlt0).
+  exact (Rle_refl
+    0
+    real_0).
+- assume Hnlt.
+  rewrite (Rmax_unfold
+    t
+    0).
+  rewrite (If_i_0
+    (Rlt t 0)
+    0
+    t
+    Hnlt).
+  exact (RleI
+    0
+    t
+    real_0
+    HtR
+    Hnlt).
+Qed.
+
+(** Infrastructure: max(x,1) is always strictly positive. **)
+(** Proven Charlie **)
+Theorem Rmax_one_positive : forall t:set,
+  t :e R ->
+  Rlt 0 (Rmax t 1).
+let t.
+assume HtR.
+apply (xm (Rlt t 1)).
+- assume Htlt1.
+  rewrite (Rmax_unfold
+    t
+    1).
+  rewrite (If_i_1
+    (Rlt t 1)
+    1
+    t
+    Htlt1).
+  exact Rlt_0_1.
+- assume Hnlt.
+  rewrite (Rmax_unfold
+    t
+    1).
+  rewrite (If_i_0
+    (Rlt t 1)
+    1
+    t
+    Hnlt).
+  exact (Rlt_Rle_tra
+    0
+    1
+    t
+    Rlt_0_1
+    (RleI
+      1
+      t
+      real_1
+      HtR
+      Hnlt)).
+Qed.
+
 (** Infrastructure: intersection of open intervals is an open interval with If-defined endpoints. **)
 (** Proven Charlie **)
 Theorem open_interval_binintersect_open_interval_eq :
