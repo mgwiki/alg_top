@@ -1,6 +1,6 @@
 (** Balance Alice 7735 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 816 **)
+(** Balance Charlie 810 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -157233,7 +157233,8 @@ Admitted. (** reduced to normalized-map-into-simplex and continuity for the nonn
 (** from S55 Exercise 3 (line 1044 in algtop.tex) **)
 (** LATEX VERSION: If A is a nonsingular 3x3 matrix having nonnegative entries, then A has a positive real eigenvalue. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Bounty 61 **)
+(** Lock Charlie 1773579591 **)
 Theorem ex55_3_nonneg_nonsingular_matrix_eigenvalue : forall A:set,
   function_on A (setprod 3 3) R ->
   (forall i j:set, i :e 3 -> j :e 3 -> ~(Rlt (apply_fun A (i, j)) 0)) ->
