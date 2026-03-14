@@ -283281,8 +283281,8 @@ apply (nat_inv nw Hnw_nat).
               (** Case Q in Gfam(gamma), gamma != al: conj_intersection gives efam(al) = eG. Contradiction. **)
               (** Case Q in Gfam(al), Q != efam(al): factor_element_length1 gives length 1 contradiction. **)
               (** Case Q in Gfam(al), Q = efam(al): uniqueness gives nw-2 = nw. Contradiction. **)
-              (** Case Q not in any Gfam: remaining hard sub-case. **)
-              admit.
+              (** Use efam_not_in_Gfam_nontrivial_pre directly: efam(al) in Gfam(al), efam(al) != eG -> False **)
+              exact (efam_not_in_Gfam_nontrivial_pre G multG eG invG J Gfam efam Hfp al Hal Hefam_Gal Hefam_ne).
             * assume Hjunc_efam : p_junc = apply_fun efam bmw.
               (** p_junc = efam(bmw) = mult(xsw(mw), xsw(0)) in Gfam(bmw). **)
               (** Case split: efam(bmw) = eG or efam(bmw) != eG. **)
@@ -283290,8 +283290,8 @@ apply (nat_inv nw Hnw_nat).
               + assume Hefbmw_eG : apply_fun efam bmw = eG.
                 (** p_junc = efam(bmw) = eG: use z=eG argument **)
                 claim Hp_eG : p_junc = eG. { rewrite Hjunc_efam. exact Hefbmw_eG. }
-                (** Same as Hjunc_eG case - duplicate the argument or factor out **)
-                admit.
+                (** Use efam_not_in_Gfam_nontrivial_pre directly **)
+                exact (efam_not_in_Gfam_nontrivial_pre G multG eG invG J Gfam efam Hfp al Hal Hefam_Gal Hefam_ne).
               + assume Hefbmw_ne : apply_fun efam bmw <> eG.
                 (** efam(bmw) in Gfam(bmw), efam(bmw) != eG: use efam_not_in_Gfam_nontrivial_pre **)
                 claim Hefbmw_Gbmw : apply_fun efam bmw :e apply_fun Gfam bmw.
