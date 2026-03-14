@@ -276611,8 +276611,24 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
                 }
                 (** Case split on z **)
                 apply (xm (z = e)).
-                - (** z = e: boundary cancellation **)
+                - (** z = e: boundary cancellation. xs0(k) = inv(xs0(0)). **)
+                  (** Doubled word cancels at junction. Remaining: prefix + suffix of length 2k. **)
+                  (** Product = efam(al)^2. Next junction: xs0(k-1) and xs0(1). **)
+                  (** If they're in different factors: use reduced_word_concat + efam(al)^2 analysis. **)
+                  (** If same factor: further recursive analysis needed. **)
                   assume Hz_e : z = e.
+                  (** Build prefix [xs0(0),...,xs0(k-1)] and suffix [xs0(1),...,xs0(k)] **)
+                  set xs0_pre := graph k (fun i:set => apply_fun xs0 i).
+                  set xs0_suf := graph k (fun i:set => apply_fun xs0 (ordsucc i)).
+                  claim Hred_pre : reduced_word J Gfam efam k xs0_pre.
+                  { exact (reduced_word_prefix J Gfam efam n0 xs0 k Hred0 Hk_in_n0). }
+                  claim Hredw_sm : reduced_word J Gfam efam (ordsucc k) xs0.
+                  { rewrite <- Hn0_eq. exact Hred0. }
+                  claim Hred_suf : reduced_word J Gfam efam k xs0_suf.
+                  { exact (reduced_word_suffix J Gfam efam k xs0 Hredw_sm). }
+                  (** For the concat, check if xs0(k-1) and xs0(1) are in different factors **)
+                  (** Requires knowing k >= 2 (from j >= 1, k = ordsucc j) **)
+                  (** For now, admit this case - needs either strong induction or concat analysis **)
                   admit.
                 - (** z ≠ e **)
                   assume Hz_ne : z <> e.
