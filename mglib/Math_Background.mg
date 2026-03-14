@@ -161280,6 +161280,181 @@ rewrite (add_SNo_0R
 reflexivity.
 Qed.
 
+(** Proven Charlie **)
+Lemma Sn_affine_boundary_homotopy_map_at_1 :
+  forall n wS x:set,
+    n :e omega ->
+    continuous_map
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      wS ->
+    x :e Sn n ->
+    apply_fun
+      (Sn_affine_boundary_homotopy_map n wS)
+      (x, 1)
+    =
+    apply_fun (graph (Sn n) (fun z:set => z)) x.
+let n wS x.
+assume Hn_om HwSCont HxSn.
+claim Hn_nat :
+  nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hx1Dom :
+  (x, 1) :e setprod (Sn n) unit_interval.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (Sn n)
+    unit_interval
+    x
+    1
+    HxSn
+    one_in_unit_interval).
+}
+claim HxEu :
+  x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim HwSEu :
+  apply_fun wS x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+    (apply_fun wS x)
+    (continuous_map_function_on
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      wS
+      HwSCont
+      x
+      HxSn)).
+}
+claim Hdef :
+  Sn_affine_boundary_homotopy_map n wS =
+  graph
+    (setprod (Sn n) unit_interval)
+    (fun p:set =>
+      graph (ordsucc n) (fun i:set =>
+        add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i)))).
+{
+  reflexivity.
+}
+claim HgraphEq :
+  apply_fun (Sn_affine_boundary_homotopy_map n wS) (x, 1)
+  =
+  graph (ordsucc n) (fun i:set => apply_fun x i).
+{
+  rewrite Hdef.
+  rewrite (apply_fun_graph
+    (setprod (Sn n) unit_interval)
+    (fun p:set =>
+      graph (ordsucc n) (fun i:set =>
+        add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (apply_fun (apply_fun wS (p 0)) i))
+        (mul_SNo
+          (p 1)
+          (apply_fun (p 0) i))))
+    (x, 1)
+    Hx1Dom).
+  claim HcoordEq :
+    forall i:set, i :e ordsucc n ->
+      add_SNo
+        (mul_SNo
+          (apply_fun flip_unit_interval ((x, 1) 1))
+          (apply_fun (apply_fun wS ((x, 1) 0)) i))
+        (mul_SNo
+          ((x, 1) 1)
+          (apply_fun ((x, 1) 0) i))
+      =
+      apply_fun x i.
+  {
+    let i.
+    assume Hi.
+    rewrite tuple_2_1_eq.
+    rewrite tuple_2_0_eq.
+    rewrite flip_unit_interval_at_1.
+    rewrite (mul_SNo_zeroL
+      (apply_fun (apply_fun wS x) i)
+      (real_SNo
+        (apply_fun (apply_fun wS x) i)
+        (euclidean_space_coord_in_R
+          (ordsucc n)
+          (apply_fun wS x)
+          i
+          HwSEu
+          Hi))).
+    rewrite (mul_SNo_oneL
+      (apply_fun x i)
+      (real_SNo
+        (apply_fun x i)
+        (euclidean_space_coord_in_R
+          (ordsucc n)
+          x
+          i
+          HxEu
+          Hi))).
+    rewrite (add_SNo_0L
+      (apply_fun x i)
+      (real_SNo
+        (apply_fun x i)
+        (euclidean_space_coord_in_R
+          (ordsucc n)
+          x
+          i
+          HxEu
+          Hi))).
+    reflexivity.
+  }
+  exact (graph_extensional
+    (ordsucc n)
+    (fun i:set =>
+      add_SNo
+        (mul_SNo
+          (apply_fun flip_unit_interval ((x, 1) 1))
+          (apply_fun (apply_fun wS ((x, 1) 0)) i))
+        (mul_SNo
+          ((x, 1) 1)
+          (apply_fun ((x, 1) 0) i)))
+    (fun i:set => apply_fun x i)
+    HcoordEq).
+}
+rewrite HgraphEq.
+rewrite (apply_fun_graph
+  (Sn n)
+  (fun z:set => z)
+  x
+  HxSn).
+exact (eq_symm
+  x
+  (graph (ordsucc n) (fun i:set => apply_fun x i))
+  (euclidean_space_ordsucc_eq_graph_of_apply_fun
+    n
+    x
+    Hn_nat
+    HxEu)).
+Qed.
+
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
