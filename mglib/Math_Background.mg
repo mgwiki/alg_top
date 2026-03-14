@@ -1,6 +1,6 @@
 (** Balance Alice 7758 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 660 **)
+(** Balance Charlie 651 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -165460,7 +165460,8 @@ Qed.
 (** from S55 Exercise 4(e) (line 1050 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every (n+1) by (n+1) matrix with positive entries has a positive eigenvalue. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Charlie 1773556892 **)
 Theorem ex55_4e_positive_matrix_eigenvalue_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall A:set,
