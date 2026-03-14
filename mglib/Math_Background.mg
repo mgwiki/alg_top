@@ -282090,6 +282090,698 @@ exact (free_product_reduced_word_length_ge2_product_ne_e
   Hfp Hred2 Hnn_ne0 Hnn_ne1 Hwp2_e).
 Admitted.
 
+(** Direct proof: involutive efam(al) in Gfam(al) with efam(al) != eG is impossible **)
+(** This bypasses the boundary-labels-coincide helpers **)
+Lemma efam_involutive_contra_direct : forall G multG eG invG J Gfam efam al:set,
+  free_product_of_subgroups G multG eG invG J Gfam efam ->
+  al :e J ->
+  apply_fun efam al :e apply_fun Gfam al ->
+  apply_fun efam al <> eG ->
+  apply_fun invG (apply_fun efam al) = apply_fun efam al ->
+  False.
+let G multG eG invG J Gfam efam al.
+assume Hfp Hal Hefam_Gal Hefam_ne Hinv_eq.
+(** Unpack free product **)
+apply (and5E
+  (group_structure G multG eG invG)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
+  (subgroups_generate G multG eG invG J Gfam)
+  (forall x:set, x :e G -> x <> eG ->
+    exists n xs:set,
+      reduced_word J Gfam efam n xs /\ n <> 0 /\
+      word_product multG eG xs n = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsubfam Hdisjoint _ Huniq.
+(** Unpack group **)
+apply (and6E
+  (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+  (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+  (forall a:set, a :e G -> apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+  Hgrp).
+assume HmultF HinvF HeGG HassocG HidG HinvG.
+claim HmultG : forall a b:set, a :e G -> b :e G -> apply_fun multG (a, b) :e G.
+{ let a b. assume Ha Hb. exact (HmultF (a, b) (tuple_2_setprod_by_pair_Sigma G G a b Ha Hb)). }
+claim Hsub_in_G : forall alpha:set, alpha :e J -> apply_fun Gfam alpha c= G.
+{ let alpha. assume HaJ.
+  apply (and4E (apply_fun Gfam alpha c= G) (eG :e apply_fun Gfam alpha)
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+       apply_fun multG (x, y) :e apply_fun Gfam alpha)
+    (forall x:set, x :e apply_fun Gfam alpha -> apply_fun invG x :e apply_fun Gfam alpha)
+    (Hsubfam alpha HaJ)).
+  assume HA _ _ _. exact HA. }
+claim HGfam_mult : forall alpha:set, alpha :e J ->
+  forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+  apply_fun multG (x, y) :e apply_fun Gfam alpha.
+{ let alpha. assume HaJ.
+  apply (and4E (apply_fun Gfam alpha c= G) (eG :e apply_fun Gfam alpha)
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+       apply_fun multG (x, y) :e apply_fun Gfam alpha)
+    (forall x:set, x :e apply_fun Gfam alpha -> apply_fun invG x :e apply_fun Gfam alpha)
+    (Hsubfam alpha HaJ)).
+  assume _ _ Hmc _. exact Hmc. }
+claim Hefam_G : apply_fun efam al :e G. { exact (Hsub_in_G al Hal (apply_fun efam al) Hefam_Gal). }
+(** efam(al)^2 = eG **)
+claim Hefam_sq : apply_fun multG (apply_fun efam al, apply_fun efam al) = eG.
+{ claim H1 : apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG.
+  { exact (andEL (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
+      (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
+      (HinvG (apply_fun efam al) Hefam_G)). }
+  claim H2 : apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) =
+    apply_fun multG (apply_fun efam al, apply_fun efam al).
+  { rewrite Hinv_eq. reflexivity. }
+  exact (eq_i_tra (apply_fun multG (apply_fun efam al, apply_fun efam al))
+    (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)))
+    eG (eq_symm (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)))
+      (apply_fun multG (apply_fun efam al, apply_fun efam al)) H2) H1). }
+(** No entry of a reduced word can equal efam(al) **)
+claim Hno_efam_entry : forall n xs:set, reduced_word J Gfam efam n xs ->
+  forall i:set, i :e n -> apply_fun xs i <> apply_fun efam al.
+{ let n xs. assume Hred. let i. assume Hi.
+  assume Heq : apply_fun xs i = apply_fun efam al.
+  apply (and3E (n :e omega)
+    (forall j:set, j :e n -> exists a:set, a :e J /\ apply_fun xs j :e apply_fun Gfam a /\ apply_fun xs j <> apply_fun efam a)
+    (forall j:set, j :e n -> ordsucc j :e n -> forall a b:set, a :e J -> b :e J ->
+      apply_fun xs j :e apply_fun Gfam a -> apply_fun xs (ordsucc j) :e apply_fun Gfam b -> a <> b)
+    Hred).
+  assume _ Helem _.
+  apply (Helem i Hi). let ai.
+  assume Haip : ai :e J /\ apply_fun xs i :e apply_fun Gfam ai /\ apply_fun xs i <> apply_fun efam ai.
+  apply (and3E (ai :e J) (apply_fun xs i :e apply_fun Gfam ai) (apply_fun xs i <> apply_fun efam ai) Haip).
+  assume HaiJ Hxi_Gai Hxi_ne_efai.
+  apply (xm (ai = al)).
+  - assume Hai_al : ai = al.
+    claim Hne : apply_fun xs i <> apply_fun efam al.
+    { exact (Hai_al (fun a b:set => apply_fun xs i <> apply_fun efam a) Hxi_ne_efai). }
+    exact (Hne Heq).
+  - assume Hai_ne : ai <> al.
+    claim Hxi_Gal : apply_fun xs i :e apply_fun Gfam al. { rewrite Heq. exact Hefam_Gal. }
+    claim Hxi_eG : apply_fun xs i = eG. { exact (Hdisjoint ai al HaiJ Hal Hai_ne (apply_fun xs i) Hxi_Gai Hxi_Gal). }
+    exact (Hefam_ne (eq_i_tra (apply_fun efam al) (apply_fun xs i) eG (eq_symm (apply_fun xs i) (apply_fun efam al) Heq) Hxi_eG)). }
+(** Get reduced word for efam(al) **)
+apply (Huniq (apply_fun efam al) Hefam_G Hefam_ne).
+let nw. assume Hex_w. apply Hex_w. let xsw.
+assume Hwprops : reduced_word J Gfam efam nw xsw /\ nw <> 0 /\
+  word_product multG eG xsw nw = apply_fun efam al /\
+  (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product multG eG xs' n' = apply_fun efam al ->
+    nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i)).
+apply (and4E (reduced_word J Gfam efam nw xsw) (nw <> 0)
+  (word_product multG eG xsw nw = apply_fun efam al)
+  (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product multG eG xs' n' = apply_fun efam al ->
+    nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i))
+  Hwprops).
+assume Hredw Hnw_ne0 Hwp_efam Huniq_w.
+(** nw >= 2: build modified word with product eG **)
+(** Get last entry info **)
+apply (and3E (nw :e omega)
+  (forall i:set, i :e nw -> exists a:set, a :e J /\ apply_fun xsw i :e apply_fun Gfam a /\ apply_fun xsw i <> apply_fun efam a)
+  (forall i:set, i :e nw -> ordsucc i :e nw ->
+    forall a b:set, a :e J -> b :e J -> apply_fun xsw i :e apply_fun Gfam a -> apply_fun xsw (ordsucc i) :e apply_fun Gfam b -> a <> b)
+  Hredw).
+assume Hnw_omega Helem Hadj.
+claim Hnw_nat : nat_p nw. { exact (omega_nat_p nw Hnw_omega). }
+(** nw = ordsucc mw for some mw **)
+apply (nat_inv nw Hnw_nat).
+- assume Hnw0 : nw = 0. exact (Hnw_ne0 Hnw0).
+- assume Hex_mw : exists mw:set, nat_p mw /\ nw = ordsucc mw.
+  apply Hex_mw. let mw. assume Hmwp : nat_p mw /\ nw = ordsucc mw.
+  claim Hmw_nat : nat_p mw. { exact (andEL (nat_p mw) (nw = ordsucc mw) Hmwp). }
+  claim Hnw_sm : nw = ordsucc mw. { exact (andER (nat_p mw) (nw = ordsucc mw) Hmwp). }
+  claim Hmw_nw : mw :e nw. { rewrite Hnw_sm. exact (ordsuccI2 mw). }
+  claim Hmw_omega : mw :e omega. { exact (nat_p_omega mw Hmw_nat). }
+  (** Get last entry factor **)
+  apply (Helem mw Hmw_nw). let bmw.
+  assume Hbmw_p : bmw :e J /\ apply_fun xsw mw :e apply_fun Gfam bmw /\ apply_fun xsw mw <> apply_fun efam bmw.
+  apply (and3E (bmw :e J) (apply_fun xsw mw :e apply_fun Gfam bmw) (apply_fun xsw mw <> apply_fun efam bmw) Hbmw_p).
+  assume HbmwJ Hxsmw_Gbmw Hxsmw_ne_efbmw.
+  claim Hxsmw_ne_efam : apply_fun xsw mw <> apply_fun efam al.
+  { exact (Hno_efam_entry nw xsw Hredw mw Hmw_nw). }
+  claim Hxsmw_ne_eG : apply_fun xsw mw <> eG.
+  { assume Habs : apply_fun xsw mw = eG.
+    (** If xsw(mw) = eG, then nw must be 0 or 1 (by reduced_word_no_eG_all for nw >= 2) **)
+    (** But we need to show nw >= 2, i.e., nw != 1 **)
+    (** If nw = 1: xsw(0) = efam(al) (from word product). But xsw(0) != efam(al) by Hno_efam_entry. **)
+    apply (xm (nw = 1)).
+    - assume Hnw1 : nw = 1.
+      claim Hmw0 : mw = 0. { exact (ordsucc_inj mw 0
+        (eq_i_tra (ordsucc mw) nw 1 (eq_symm nw (ordsucc mw) Hnw_sm) Hnw1)). }
+      claim Hxsw0_efam : apply_fun xsw 0 = apply_fun efam al.
+      { claim Hxsw0_G : apply_fun xsw 0 :e G.
+        { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0
+            (eq_subst_mem_set 0 1 nw (ordsuccI2 0) (eq_symm nw 1 Hnw1))). }
+        claim HwpS0 : word_product multG eG xsw (ordsucc 0) =
+          apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
+        { exact (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun xsw i)) 0 nat_0). }
+        claim Hwp0 : word_product multG eG xsw 0 = eG.
+        { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))). }
+        claim Hwp1 : word_product multG eG xsw 1 = apply_fun xsw 0.
+        { claim H1 : word_product multG eG xsw (ordsucc 0) = apply_fun multG (eG, apply_fun xsw 0).
+          { rewrite HwpS0. rewrite Hwp0. reflexivity. }
+          claim H2 : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
+          { exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+              (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxsw0_G)). }
+          rewrite <- ordsucc_0_eq_1_nat.
+          exact (eq_i_tra (word_product multG eG xsw (ordsucc 0)) (apply_fun multG (eG, apply_fun xsw 0)) (apply_fun xsw 0) H1 H2). }
+        exact (eq_i_tra (apply_fun xsw 0) (word_product multG eG xsw 1) (apply_fun efam al)
+          (eq_symm (word_product multG eG xsw 1) (apply_fun xsw 0) Hwp1)
+          (eq_i_tra (word_product multG eG xsw 1) (word_product multG eG xsw nw) (apply_fun efam al)
+            (eq_symm (word_product multG eG xsw nw) (word_product multG eG xsw 1)
+              (Hnw1 (fun z b:set => word_product multG eG xsw nw = word_product multG eG xsw z) (eq_refl (word_product multG eG xsw nw))))
+            Hwp_efam)). }
+      exact (Hno_efam_entry nw xsw Hredw 0 (eq_subst_mem_set 0 1 nw (ordsuccI2 0) (eq_symm nw 1 Hnw1)) Hxsw0_efam).
+    - assume Hnw_ne1 : nw <> 1.
+      exact (reduced_word_no_eG_all G multG eG invG J Gfam efam nw xsw Hgrp Hsubfam Hredw Hnw_ne0 Hnw_ne1 mw Hmw_nw Habs). }
+  claim Hxsmw_G : apply_fun xsw mw :e G. { exact (Hsub_in_G bmw HbmwJ (apply_fun xsw mw) Hxsmw_Gbmw). }
+  (** Case: bmw = al (last entry in same factor as efam(al)) **)
+  apply (xm (bmw = al)).
+  + assume Hbmw_al : bmw = al.
+    claim Hxsmw_Gal : apply_fun xsw mw :e apply_fun Gfam al. { rewrite <- Hbmw_al. exact Hxsmw_Gbmw. }
+    (** z = mult(xsw(mw), efam(al)) in Gfam(al) **)
+    set z := apply_fun multG (apply_fun xsw mw, apply_fun efam al).
+    claim Hz_Gal : z :e apply_fun Gfam al.
+    { exact (HGfam_mult al Hal (apply_fun xsw mw) (apply_fun efam al) Hxsmw_Gal Hefam_Gal). }
+    claim Hz_ne_eG : z <> eG.
+    { assume Hz_e : z = eG.
+      (** mult(xsw(mw), efam(al)) = eG means xsw(mw) = inv(efam(al)) = efam(al) **)
+      claim Hinv_ef_G : apply_fun invG (apply_fun efam al) :e G. { exact (HinvF (apply_fun efam al) Hefam_G). }
+      claim Hlinv : apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG.
+      { exact (andER (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
+          (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
+          (HinvG (apply_fun efam al) Hefam_G)). }
+      claim Hprod_eq : apply_fun multG (apply_fun xsw mw, apply_fun efam al) =
+        apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al).
+      { rewrite Hz_e. symmetry. exact Hlinv. }
+      claim Hxsmw_eq : apply_fun xsw mw = apply_fun invG (apply_fun efam al).
+      { exact (group_right_cancel G multG eG invG (apply_fun efam al) (apply_fun xsw mw) (apply_fun invG (apply_fun efam al))
+          Hgrp Hefam_G Hxsmw_G Hinv_ef_G Hprod_eq). }
+      claim Hxsmw_efam2 : apply_fun xsw mw = apply_fun efam al.
+      { rewrite Hxsmw_eq. exact Hinv_eq. }
+      exact (Hxsmw_ne_efam Hxsmw_efam2). }
+    claim Hz_ne_efam : z <> apply_fun efam al.
+    { assume Hz_ef : z = apply_fun efam al.
+      (** mult(xsw(mw), efam(al)) = efam(al) means xsw(mw) = eG **)
+      claim HidL : apply_fun multG (eG, apply_fun efam al) = apply_fun efam al.
+      { exact (andEL (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
+          (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al) (HidG (apply_fun efam al) Hefam_G)). }
+      claim Hprod_eq : apply_fun multG (apply_fun xsw mw, apply_fun efam al) =
+        apply_fun multG (eG, apply_fun efam al).
+      { rewrite Hz_ef. symmetry. exact HidL. }
+      claim Hxsmw_eG : apply_fun xsw mw = eG.
+      { exact (group_right_cancel G multG eG invG (apply_fun efam al) (apply_fun xsw mw) eG
+          Hgrp Hefam_G Hxsmw_G HeGG Hprod_eq). }
+      exact (Hxsmw_ne_eG Hxsmw_eG). }
+    (** mw != 0 (otherwise nw = 1 and xsw(0) = efam(al), contradicting Hno_efam_entry) **)
+    claim Hmw_ne0 : mw <> 0.
+    { assume Hmw0 : mw = 0.
+      claim Hnw1 : nw = 1. { rewrite Hnw_sm. rewrite Hmw0. reflexivity. }
+      claim H0nw : 0 :e nw. { rewrite Hnw1. exact (ordsuccI2 0). }
+      claim Hxsw0_G : apply_fun xsw 0 :e G.
+      { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw). }
+      claim Hwp1 : word_product multG eG xsw 1 = apply_fun xsw 0.
+      { claim HwpS0 : word_product multG eG xsw (ordsucc 0) =
+          apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
+        { exact (word_product_succ multG eG xsw 0 nat_0). }
+        claim Hwp0 : word_product multG eG xsw 0 = eG.
+        { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))). }
+        claim H1eq : word_product multG eG xsw (ordsucc 0) = apply_fun multG (eG, apply_fun xsw 0).
+        { rewrite HwpS0. rewrite Hwp0. reflexivity. }
+        claim HidL0 : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
+        { exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+            (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxsw0_G)). }
+        claim Hwp_s0 : word_product multG eG xsw (ordsucc 0) = apply_fun xsw 0.
+        { exact (eq_i_tra (word_product multG eG xsw (ordsucc 0)) (apply_fun multG (eG, apply_fun xsw 0)) (apply_fun xsw 0) H1eq HidL0). }
+        prove word_product multG eG xsw 1 = apply_fun xsw 0.
+        rewrite <- ordsucc_0_eq_1_nat. exact Hwp_s0. }
+      claim Hxsw0_efam : apply_fun xsw 0 = apply_fun efam al.
+      { claim H1 : word_product multG eG xsw nw = word_product multG eG xsw 1.
+        { rewrite Hnw1. reflexivity. }
+        exact (eq_i_tra (apply_fun xsw 0) (word_product multG eG xsw 1) (apply_fun efam al)
+          (eq_symm (word_product multG eG xsw 1) (apply_fun xsw 0) Hwp1)
+          (eq_i_tra (word_product multG eG xsw 1) (word_product multG eG xsw nw) (apply_fun efam al)
+            (eq_symm (word_product multG eG xsw nw) (word_product multG eG xsw 1) H1) Hwp_efam)). }
+      exact (Hno_efam_entry nw xsw Hredw 0 H0nw Hxsw0_efam). }
+    (** Build prefix reduced word **)
+    set xsw_pre := graph mw (fun i:set => apply_fun xsw i).
+    claim Hred_prefix : reduced_word J Gfam efam mw xsw_pre.
+    { exact (reduced_word_prefix J Gfam efam nw xsw mw Hredw Hmw_nw). }
+    (** Adjacency: last of prefix and z in different factors **)
+    claim Hlast_diff : forall k a2 b2:set, mw = ordsucc k -> a2 :e J -> b2 :e J ->
+      apply_fun xsw_pre k :e apply_fun Gfam a2 -> z :e apply_fun Gfam b2 -> a2 <> b2.
+    { let k a2 b2. assume Hmw_sk Ha2J Hb2J Hxsk_Ga2 Hz_Gb2.
+      claim Hk_mw : k :e mw. { rewrite Hmw_sk. exact (ordsuccI2 k). }
+      claim Hk_nw : k :e nw. { rewrite Hnw_sm. exact (ordsuccI1 mw k Hk_mw). }
+      claim Hsk_nw : ordsucc k :e nw.
+      { claim Hsk_eq_mw : ordsucc k = mw. { symmetry. exact Hmw_sk. }
+        rewrite Hsk_eq_mw. exact Hmw_nw. }
+      claim Hxsk_eq : apply_fun xsw_pre k = apply_fun xsw k.
+      { exact (apply_fun_graph mw (fun i:set => apply_fun xsw i) k Hk_mw). }
+      claim Hxsk_Ga2_real : apply_fun xsw k :e apply_fun Gfam a2.
+      { rewrite <- Hxsk_eq. exact Hxsk_Ga2. }
+      claim Hxsmw_Gal_sk : apply_fun xsw (ordsucc k) :e apply_fun Gfam al.
+      { claim Heq : ordsucc k = mw. { symmetry. exact Hmw_sk. }
+        rewrite Heq. exact Hxsmw_Gal. }
+      claim Ha2_ne_al : a2 <> al. { exact (Hadj k Hk_nw Hsk_nw a2 al Ha2J Hal Hxsk_Ga2_real Hxsmw_Gal_sk). }
+      claim Hb2_al : b2 = al.
+      { exact (eq_symm al b2 (disjoint_subgroups_label_unique G multG eG invG J Gfam al b2 z Hdisjoint Hal Hb2J Hz_Gal Hz_Gb2 Hz_ne_eG)). }
+      rewrite Hb2_al. exact Ha2_ne_al. }
+    (** Build new reduced word by appending z to prefix **)
+    claim Hred_new : reduced_word J Gfam efam (ordsucc mw)
+      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z)).
+    { exact (reduced_word_append_one_pre J Gfam efam mw xsw_pre z al Hred_prefix Hmw_ne0 Hal Hz_Gal Hz_ne_efam Hlast_diff). }
+    (** Compute word product **)
+    claim Hwp_new : word_product multG eG
+      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z))
+      (ordsucc mw) = apply_fun multG (word_product multG eG xsw_pre mw, z).
+    { exact (word_product_append_one multG eG xsw_pre z mw Hmw_omega). }
+    set p := word_product multG eG xsw_pre mw.
+    (** p = word_product(xsw, mw) since xsw_pre agrees with xsw on domain mw **)
+    claim Hp_eq_orig : p = word_product multG eG xsw mw.
+    { prove word_product multG eG xsw_pre mw = word_product multG eG xsw mw.
+      apply (nat_primrec_ext eG
+        (fun i r => apply_fun multG (r, apply_fun xsw_pre i))
+        (fun i r => apply_fun multG (r, apply_fun xsw i))
+        mw Hmw_omega).
+      let i r. assume Hi_mw.
+      rewrite (apply_fun_graph mw (fun j:set => apply_fun xsw j) i Hi_mw).
+      reflexivity. }
+    (** mult(p, z) = mult(p, mult(xsw(mw), efam(al))) **)
+    (** = mult(mult(p, xsw(mw)), efam(al)) by assoc **)
+    (** = mult(efam(al), efam(al)) since p mult xsw(mw) = efam(al) by wp **)
+    (** = eG by efam_sq **)
+    claim Hp_G : p :e G.
+    { rewrite Hp_eq_orig.
+      exact (word_product_in_G_group G multG eG invG mw xsw Hgrp Hmw_nat
+        (fun i Hi => reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw i
+          (eq_subst_mem_set i (ordsucc mw) nw (ordsuccI1 mw i Hi) (eq_symm nw (ordsucc mw) Hnw_sm)))). }
+    claim HwpS : word_product multG eG xsw nw =
+      apply_fun multG (word_product multG eG xsw mw, apply_fun xsw mw).
+    { rewrite Hnw_sm.
+      exact (word_product_succ multG eG xsw mw Hmw_nat). }
+    claim Hp_xsmw : apply_fun multG (p, apply_fun xsw mw) = apply_fun efam al.
+    { rewrite Hp_eq_orig.
+      exact (eq_i_tra (apply_fun multG (word_product multG eG xsw mw, apply_fun xsw mw))
+        (word_product multG eG xsw nw) (apply_fun efam al)
+        (eq_symm (word_product multG eG xsw nw) (apply_fun multG (word_product multG eG xsw mw, apply_fun xsw mw)) HwpS) Hwp_efam). }
+    claim Hp_z : apply_fun multG (p, z) = eG.
+    { claim Hassoc1 : apply_fun multG (p, z) =
+        apply_fun multG (apply_fun multG (p, apply_fun xsw mw), apply_fun efam al).
+      { exact (eq_symm
+          (apply_fun multG (apply_fun multG (p, apply_fun xsw mw), apply_fun efam al))
+          (apply_fun multG (p, apply_fun multG (apply_fun xsw mw, apply_fun efam al)))
+          (HassocG p (apply_fun xsw mw) (apply_fun efam al) Hp_G Hxsmw_G Hefam_G)). }
+      rewrite Hassoc1. rewrite Hp_xsmw. exact Hefam_sq. }
+    claim Hwp_eG : word_product multG eG
+      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z))
+      (ordsucc mw) = eG.
+    { rewrite Hwp_new. exact Hp_z. }
+    claim Hnw_ne_0 : nw <> 0. { rewrite Hnw_sm. exact (neq_ordsucc_0 mw). }
+    claim Hnw_ne_1 : nw <> 1.
+    { assume Hnw1 : nw = 1.
+      exact (Hmw_ne0 (ordsucc_inj mw 0
+        (eq_i_tra (ordsucc mw) nw 1 (eq_symm nw (ordsucc mw) Hnw_sm) Hnw1))). }
+    claim Hred_nw : reduced_word J Gfam efam nw
+      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z)).
+    { rewrite Hnw_sm. exact Hred_new. }
+    claim Hwp_eG_nw : word_product multG eG
+      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z))
+      nw = eG.
+    { rewrite Hnw_sm. exact Hwp_eG. }
+    exact (free_product_reduced_word_length_ge2_product_ne_e
+      G multG eG invG J Gfam efam nw
+      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z))
+      Hfp Hred_nw Hnw_ne_0 Hnw_ne_1 Hwp_eG_nw).
+  + assume Hbmw_ne_al : bmw <> al.
+    (** Last entry NOT in Gfam(al). Check first entry. **)
+    claim H0nw : 0 :e nw. { rewrite Hnw_sm. exact (nat_0_in_ordsucc mw Hmw_nat). }
+    apply (Helem 0 H0nw). let b0.
+    assume Hb0p : b0 :e J /\ apply_fun xsw 0 :e apply_fun Gfam b0 /\ apply_fun xsw 0 <> apply_fun efam b0.
+    apply (and3E (b0 :e J) (apply_fun xsw 0 :e apply_fun Gfam b0) (apply_fun xsw 0 <> apply_fun efam b0) Hb0p).
+    assume Hb0J Hxsw0_Gb0 Hxsw0_ne_efb0.
+    apply (xm (b0 = al)).
+    * assume Hb0_al : b0 = al.
+      (** First entry in Gfam(al): merge efam(al) into first entry **)
+      claim Hxsw0_Gal : apply_fun xsw 0 :e apply_fun Gfam al. { rewrite <- Hb0_al. exact Hxsw0_Gb0. }
+      claim Hxsw0_G : apply_fun xsw 0 :e G. { exact (Hsub_in_G al Hal (apply_fun xsw 0) Hxsw0_Gal). }
+      claim Hxsw0_ne_efam : apply_fun xsw 0 <> apply_fun efam al.
+      { exact (Hno_efam_entry nw xsw Hredw 0 H0nw). }
+      claim Hnw_ne1c : nw <> 1.
+      { assume Hnw1 : nw = 1.
+        apply (Hno_efam_entry nw xsw Hredw 0 H0nw).
+        claim Hxsw0_Gb : apply_fun xsw 0 :e G.
+        { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw). }
+        claim HwpS0 : word_product multG eG xsw (ordsucc 0) =
+          apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
+        { exact (word_product_succ multG eG xsw 0 nat_0). }
+        claim Hwp0 : word_product multG eG xsw 0 = eG.
+        { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))). }
+        claim HidL : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
+        { exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+            (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxsw0_Gb)). }
+        claim Hwp1_step : word_product multG eG xsw (ordsucc 0) = apply_fun multG (eG, apply_fun xsw 0).
+        { rewrite HwpS0. rewrite Hwp0. reflexivity. }
+        claim Hwp1_val : word_product multG eG xsw (ordsucc 0) = apply_fun xsw 0.
+        { exact (eq_i_tra (word_product multG eG xsw (ordsucc 0))
+            (apply_fun multG (eG, apply_fun xsw 0)) (apply_fun xsw 0) Hwp1_step HidL). }
+        claim Hwp_nw_eq_1 : word_product multG eG xsw nw = word_product multG eG xsw (ordsucc 0).
+        { rewrite Hnw1. rewrite <- ordsucc_0_eq_1_nat. reflexivity. }
+        exact (eq_i_tra (apply_fun xsw 0) (word_product multG eG xsw (ordsucc 0)) (apply_fun efam al)
+          (eq_symm (word_product multG eG xsw (ordsucc 0)) (apply_fun xsw 0) Hwp1_val)
+          (eq_i_tra (word_product multG eG xsw (ordsucc 0)) (word_product multG eG xsw nw) (apply_fun efam al)
+            (eq_symm (word_product multG eG xsw nw) (word_product multG eG xsw (ordsucc 0)) Hwp_nw_eq_1)
+            Hwp_efam)). }
+      claim Hxsw0_ne_eG : apply_fun xsw 0 <> eG.
+      { exact (reduced_word_no_eG_all G multG eG invG J Gfam efam nw xsw Hgrp Hsubfam Hredw Hnw_ne0
+          Hnw_ne1c 0 H0nw). }
+      set z0 := apply_fun multG (apply_fun efam al, apply_fun xsw 0).
+      claim Hz0_Gal : z0 :e apply_fun Gfam al.
+      { exact (HGfam_mult al Hal (apply_fun efam al) (apply_fun xsw 0) Hefam_Gal Hxsw0_Gal). }
+      claim Hz0_ne_eG : z0 <> eG.
+      { assume Hz0_e : z0 = eG.
+        claim Hxsw0_eq : apply_fun xsw 0 = apply_fun invG (apply_fun efam al).
+        { exact (group_left_cancel G multG eG invG (apply_fun efam al) (apply_fun xsw 0) (apply_fun invG (apply_fun efam al))
+            Hgrp Hefam_G Hxsw0_G (HinvF (apply_fun efam al) Hefam_G)
+            (eq_i_tra (apply_fun multG (apply_fun efam al, apply_fun xsw 0)) eG
+              (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)))
+              Hz0_e (eq_symm (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))) eG
+                (andEL (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
+                  (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
+                  (HinvG (apply_fun efam al) Hefam_G))))). }
+        exact (Hxsw0_ne_efam (eq_i_tra (apply_fun xsw 0) (apply_fun invG (apply_fun efam al)) (apply_fun efam al) Hxsw0_eq Hinv_eq)). }
+      claim Hz0_ne_efam : z0 <> apply_fun efam al.
+      { assume Hz0_ef : z0 = apply_fun efam al.
+        exact (Hxsw0_ne_eG (group_left_cancel G multG eG invG (apply_fun efam al) (apply_fun xsw 0) eG
+          Hgrp Hefam_G Hxsw0_G HeGG
+          (eq_i_tra (apply_fun multG (apply_fun efam al, apply_fun xsw 0))
+            (apply_fun efam al) (apply_fun multG (apply_fun efam al, eG))
+            Hz0_ef (eq_symm (apply_fun multG (apply_fun efam al, eG)) (apply_fun efam al)
+              (andER (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
+                (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al) (HidG (apply_fun efam al) Hefam_G)))))). }
+      (** Take suffix [xsw(1),...,xsw(mw)] of length mw, append z0 **)
+      set xsw_suf := graph mw (fun i:set => apply_fun xsw (ordsucc i)).
+      claim Hredw_sm : reduced_word J Gfam efam (ordsucc mw) xsw.
+      { rewrite <- Hnw_sm. exact Hredw. }
+      claim Hred_suf : reduced_word J Gfam efam mw xsw_suf.
+      { exact (reduced_word_suffix J Gfam efam mw xsw Hredw_sm). }
+      claim Hmw_ne0b : mw <> 0.
+      { assume Hmw0 : mw = 0.
+        exact (Hnw_ne1c (eq_i_tra nw (ordsucc mw) 1 Hnw_sm
+          (eq_i_tra (ordsucc mw) (ordsucc 0) 1 (Hmw0 (fun z b:set => ordsucc mw = ordsucc z) (eq_refl (ordsucc mw))) ordsucc_0_eq_1_nat))). }
+      (** Append z0 to suffix **)
+      claim Hlast_diff_suf : forall k a2 b2:set, mw = ordsucc k -> a2 :e J -> b2 :e J ->
+        apply_fun xsw_suf k :e apply_fun Gfam a2 -> z0 :e apply_fun Gfam b2 -> a2 <> b2.
+      { let k a2 b2. assume Hmw_sk Ha2J Hb2J Hxsk_Ga2 Hz0_Gb2.
+        claim Hxsk_eq : apply_fun xsw_suf k = apply_fun xsw (ordsucc k).
+        { claim Hk_mw : k :e mw. { rewrite Hmw_sk. exact (ordsuccI2 k). }
+          exact (apply_fun_graph mw (fun i:set => apply_fun xsw (ordsucc i)) k Hk_mw). }
+        claim Hsk_eq_mw : ordsucc k = mw. { symmetry. exact Hmw_sk. }
+        claim Hxsmw2 : apply_fun xsw (ordsucc k) :e apply_fun Gfam bmw.
+        { rewrite Hsk_eq_mw. exact Hxsmw_Gbmw. }
+        claim Hxsk_ne_eG2 : apply_fun xsw (ordsucc k) <> eG. { rewrite Hsk_eq_mw. exact Hxsmw_ne_eG. }
+        claim Hxsk_real_Ga2 : apply_fun xsw (ordsucc k) :e apply_fun Gfam a2.
+        { rewrite <- Hxsk_eq. exact Hxsk_Ga2. }
+        claim Ha2_eq_bmw : a2 = bmw.
+        { exact (eq_symm bmw a2 (disjoint_subgroups_label_unique G multG eG invG J Gfam bmw a2
+            (apply_fun xsw (ordsucc k)) Hdisjoint HbmwJ Ha2J Hxsmw2
+            Hxsk_real_Ga2 Hxsk_ne_eG2)). }
+        claim Hb2_eq_al : b2 = al.
+        { exact (eq_symm al b2 (disjoint_subgroups_label_unique G multG eG invG J Gfam al b2 z0
+            Hdisjoint Hal Hb2J Hz0_Gal Hz0_Gb2 Hz0_ne_eG)). }
+        rewrite Ha2_eq_bmw. rewrite Hb2_eq_al. exact Hbmw_ne_al. }
+      claim Hred_new_suf : reduced_word J Gfam efam (ordsucc mw)
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0)).
+      { exact (reduced_word_append_one_pre J Gfam efam mw xsw_suf z0 al Hred_suf Hmw_ne0b Hal Hz0_Gal Hz0_ne_efam Hlast_diff_suf). }
+      claim Hred_new_nw : reduced_word J Gfam efam nw
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0)).
+      { rewrite Hnw_sm. exact Hred_new_suf. }
+      (** Compute word product **)
+      claim Hwp_suf_val : word_product multG eG
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
+        (ordsucc mw) = apply_fun multG (word_product multG eG xsw_suf mw, z0).
+      { exact (word_product_append_one multG eG xsw_suf z0 mw Hmw_omega). }
+      (** By word_product_left_split: wp(xsw, nw) = mult(xsw(0), wp(xsw_suf, mw)) **)
+      claim HxsG_snw : forall i:set, i :e ordsucc mw -> apply_fun xsw i :e G.
+      { let i. assume Hi. exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw i
+          (eq_subst_mem_set i (ordsucc mw) nw Hi (eq_symm nw (ordsucc mw) Hnw_sm))). }
+      claim Hwpl : word_product multG eG xsw (ordsucc mw) =
+        apply_fun multG (apply_fun xsw 0, word_product multG eG xsw_suf mw).
+      { exact (word_product_left_split G multG eG invG mw xsw Hgrp Hmw_nat HxsG_snw). }
+      claim Hwpl_nw : word_product multG eG xsw nw =
+        apply_fun multG (apply_fun xsw 0, word_product multG eG xsw_suf mw).
+      { rewrite Hnw_sm. exact Hwpl. }
+      set q := word_product multG eG xsw_suf mw.
+      claim Hxsw0_q_efam : apply_fun multG (apply_fun xsw 0, q) = apply_fun efam al.
+      { exact (eq_i_tra (apply_fun multG (apply_fun xsw 0, q))
+          (word_product multG eG xsw nw) (apply_fun efam al)
+          (eq_symm (word_product multG eG xsw nw) (apply_fun multG (apply_fun xsw 0, q)) Hwpl_nw) Hwp_efam). }
+      (** q = inv(xsw(0)) mult efam(al) **)
+      claim Hinv_xsw0_G : apply_fun invG (apply_fun xsw 0) :e G. { exact (HinvF (apply_fun xsw 0) Hxsw0_G). }
+      claim Hxsw_suf_in_G : forall i:set, i :e mw -> apply_fun xsw_suf i :e G.
+      { let i. assume Hi.
+        claim Hgi : apply_fun xsw_suf i = apply_fun xsw (ordsucc i).
+        { exact (apply_fun_graph mw (fun j:set => apply_fun xsw (ordsucc j)) i Hi). }
+        rewrite Hgi.
+        exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw (ordsucc i)
+          (eq_subst_mem_set (ordsucc i) (ordsucc mw) nw
+            (nat_ordsucc_in_ordsucc mw Hmw_nat i Hi)
+            (eq_symm nw (ordsucc mw) Hnw_sm))). }
+      claim Hq_G : q :e G.
+      { exact (word_product_in_G_group G multG eG invG mw xsw_suf Hgrp Hmw_nat Hxsw_suf_in_G). }
+      (** Product of new word: mult(q, z0) **)
+      claim Hz0_G : z0 :e G. { exact (HmultG (apply_fun efam al) (apply_fun xsw 0) Hefam_G Hxsw0_G). }
+      claim Hq_z0 : apply_fun multG (q, z0) = eG.
+      { (** mult(q, z0) = mult(q, mult(efam(al), xsw(0))) **)
+        (** = mult(mult(q, efam(al)), xsw(0)) by assoc **)
+        claim Hassoc1 : apply_fun multG (q, z0) =
+          apply_fun multG (apply_fun multG (q, apply_fun efam al), apply_fun xsw 0).
+        { exact (eq_symm
+            (apply_fun multG (apply_fun multG (q, apply_fun efam al), apply_fun xsw 0))
+            (apply_fun multG (q, apply_fun multG (apply_fun efam al, apply_fun xsw 0)))
+            (HassocG q (apply_fun efam al) (apply_fun xsw 0) Hq_G Hefam_G Hxsw0_G)). }
+        (** mult(q, efam(al)) = inv(xsw(0)) by: **)
+        (** xsw(0) mult q = efam(al), so q = inv(xsw(0)) mult efam(al) **)
+        (** q mult efam(al) = inv(xsw(0)) mult efam(al) mult efam(al) = inv(xsw(0)) mult eG = inv(xsw(0)) **)
+        (** Step 1: q = mult(inv(xsw(0)), efam(al)) **)
+        (** From mult(xsw(0), q) = efam(al), left-cancel xsw(0) **)
+        claim Hinvxsw0_G : apply_fun invG (apply_fun xsw 0) :e G. { exact (HinvF (apply_fun xsw 0) Hxsw0_G). }
+        claim Hqef_G : apply_fun multG (q, apply_fun efam al) :e G.
+        { exact (HmultG q (apply_fun efam al) Hq_G Hefam_G). }
+        (** Show mult(xsw(0), mult(q, efam(al))) = eG **)
+        claim Hassoc_xsw0_q_ef : apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al)) =
+          apply_fun multG (apply_fun multG (apply_fun xsw 0, q), apply_fun efam al).
+        { exact (eq_symm
+            (apply_fun multG (apply_fun multG (apply_fun xsw 0, q), apply_fun efam al))
+            (apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al)))
+            (HassocG (apply_fun xsw 0) q (apply_fun efam al) Hxsw0_G Hq_G Hefam_G)). }
+        claim Hxsw0_qef_eG : apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al)) = eG.
+        { rewrite Hassoc_xsw0_q_ef. rewrite Hxsw0_q_efam. exact Hefam_sq. }
+        claim Hrinv_xsw0 : apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG.
+        { exact (andEL (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG)
+            (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG)
+            (HinvG (apply_fun xsw 0) Hxsw0_G)). }
+        (** By group_left_cancel: mult(q, efam(al)) = inv(xsw(0)) **)
+        claim Hqef_eq_inv : apply_fun multG (q, apply_fun efam al) = apply_fun invG (apply_fun xsw 0).
+        { exact (group_left_cancel G multG eG invG (apply_fun xsw 0)
+            (apply_fun multG (q, apply_fun efam al)) (apply_fun invG (apply_fun xsw 0))
+            Hgrp Hxsw0_G Hqef_G Hinvxsw0_G
+            (eq_i_tra (apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al))) eG
+              (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)))
+              Hxsw0_qef_eG (eq_symm (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0))) eG Hrinv_xsw0))). }
+        (** mult(inv(xsw(0)), xsw(0)) = eG **)
+        claim Hlinv_xsw0 : apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG.
+        { exact (andER (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG)
+            (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG)
+            (HinvG (apply_fun xsw 0) Hxsw0_G)). }
+        (** Final: mult(mult(q, efam(al)), xsw(0)) = mult(inv(xsw(0)), xsw(0)) = eG **)
+        claim Hfinal : apply_fun multG (apply_fun multG (q, apply_fun efam al), apply_fun xsw 0) = eG.
+        { rewrite Hqef_eq_inv. exact Hlinv_xsw0. }
+        rewrite Hassoc1. exact Hfinal. }
+      (** Now connect word product to eG and derive contradiction **)
+      claim Hwp_eG_suf : word_product multG eG
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
+        (ordsucc mw) = eG.
+      { rewrite Hwp_suf_val. exact Hq_z0. }
+      claim Hnw_ne_0b : nw <> 0. { rewrite Hnw_sm. exact (neq_ordsucc_0 mw). }
+      claim Hred_new_nwb : reduced_word J Gfam efam nw
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0)).
+      { rewrite Hnw_sm. exact Hred_new_suf. }
+      claim Hwp_eG_nwb : word_product multG eG
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
+        nw = eG.
+      { rewrite Hnw_sm. exact Hwp_eG_suf. }
+      exact (free_product_reduced_word_length_ge2_product_ne_e
+        G multG eG invG J Gfam efam nw
+        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
+        Hfp Hred_new_nwb Hnw_ne_0b Hnw_ne1c Hwp_eG_nwb).
+    * assume Hb0_ne_al : b0 <> al.
+      (** Both first and last NOT in Gfam(al) **)
+      (** Use: if Gfam(al) has a 3rd element z != eG, z != efam(al), append z. **)
+      (** free_product_factor_element_length1 on efam(al) mult z gives n+1 = 1, contradiction **)
+      apply (xm (exists z2:set, z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al)).
+      + assume Hex_z2 : exists z2:set, z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al.
+        apply Hex_z2. let z2. assume Hz2p : z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al.
+        apply (and3E (z2 :e apply_fun Gfam al) (z2 <> eG) (z2 <> apply_fun efam al) Hz2p).
+        assume Hz2_Gal Hz2_ne_eG Hz2_ne_efam.
+        (** Product efam(al) mult z2 in Gfam(al), != eG, != efam(al) **)
+        set w := apply_fun multG (apply_fun efam al, z2).
+        claim Hw_Gal : w :e apply_fun Gfam al. { exact (HGfam_mult al Hal (apply_fun efam al) z2 Hefam_Gal Hz2_Gal). }
+        claim Hz2_G : z2 :e G. { exact (Hsub_in_G al Hal z2 Hz2_Gal). }
+        claim Hw_ne_eG : w <> eG.
+        { assume Hw_e : w = eG.
+          claim Hz2_eq : z2 = apply_fun invG (apply_fun efam al).
+          { exact (group_left_cancel G multG eG invG (apply_fun efam al) z2 (apply_fun invG (apply_fun efam al))
+              Hgrp Hefam_G Hz2_G (HinvF (apply_fun efam al) Hefam_G)
+              (eq_i_tra (apply_fun multG (apply_fun efam al, z2)) eG
+                (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)))
+                Hw_e (eq_symm (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))) eG
+                  (andEL (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
+                    (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
+                    (HinvG (apply_fun efam al) Hefam_G))))). }
+          exact (Hz2_ne_efam (eq_i_tra z2 (apply_fun invG (apply_fun efam al)) (apply_fun efam al) Hz2_eq Hinv_eq)). }
+        claim Hw_ne_efam : w <> apply_fun efam al.
+        { assume Hw_ef : w = apply_fun efam al.
+          exact (Hz2_ne_eG (group_left_cancel G multG eG invG (apply_fun efam al) z2 eG
+            Hgrp Hefam_G Hz2_G HeGG
+            (eq_i_tra (apply_fun multG (apply_fun efam al, z2))
+              (apply_fun efam al) (apply_fun multG (apply_fun efam al, eG))
+              Hw_ef (eq_symm (apply_fun multG (apply_fun efam al, eG)) (apply_fun efam al)
+                (andER (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
+                  (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al) (HidG (apply_fun efam al) Hefam_G)))))). }
+        (** Append z2 to xsw to get reduced word of length ordsucc(nw) **)
+        claim Hlast_diff2 : forall k a2 b2:set, nw = ordsucc k -> a2 :e J -> b2 :e J ->
+          apply_fun xsw k :e apply_fun Gfam a2 -> z2 :e apply_fun Gfam b2 -> a2 <> b2.
+        { let k a2 b2. assume Hnw_sk Ha2J Hb2J Hxsk_Ga2 Hz2_Gb2.
+          claim Hk_eq_mw : k = mw. { exact (ordsucc_inj k mw (eq_i_tra (ordsucc k) nw (ordsucc mw) (eq_symm nw (ordsucc k) Hnw_sk) Hnw_sm)). }
+          claim Hxsk_Gbmw : apply_fun xsw k :e apply_fun Gfam bmw.
+          { rewrite Hk_eq_mw. exact Hxsmw_Gbmw. }
+          claim Hxsk_ne_eG2 : apply_fun xsw k <> eG. { rewrite Hk_eq_mw. exact Hxsmw_ne_eG. }
+          claim Ha2_eq_bmw : a2 = bmw.
+          { exact (eq_symm bmw a2 (disjoint_subgroups_label_unique G multG eG invG J Gfam bmw a2 (apply_fun xsw k)
+              Hdisjoint HbmwJ Ha2J Hxsk_Gbmw Hxsk_Ga2 Hxsk_ne_eG2)). }
+          claim Hb2_eq_al : b2 = al.
+          { exact (eq_symm al b2 (disjoint_subgroups_label_unique G multG eG invG J Gfam al b2 z2
+              Hdisjoint Hal Hb2J Hz2_Gal Hz2_Gb2 Hz2_ne_eG)). }
+          rewrite Ha2_eq_bmw. rewrite Hb2_eq_al. exact Hbmw_ne_al. }
+        claim Hred_ext : reduced_word J Gfam efam (ordsucc nw)
+          (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2)).
+        { exact (reduced_word_append_one_pre J Gfam efam nw xsw z2 al Hredw Hnw_ne0 Hal Hz2_Gal Hz2_ne_efam Hlast_diff2). }
+        claim Hwp_ext : word_product multG eG
+          (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2))
+          (ordsucc nw) = apply_fun multG (word_product multG eG xsw nw, z2).
+        { exact (word_product_append_one multG eG xsw z2 nw Hnw_omega). }
+        claim Hwp_ext_w : word_product multG eG
+          (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2))
+          (ordsucc nw) = w.
+        { rewrite Hwp_ext. rewrite Hwp_efam. reflexivity. }
+        claim Hsnw_ne0 : ordsucc nw <> 0. { exact (neq_ordsucc_0 nw). }
+        claim Hsnw_eq_1 : ordsucc nw = 1.
+        { exact (free_product_factor_element_length1 G multG eG invG J Gfam efam al w (ordsucc nw)
+            (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2))
+            Hfp Hal Hw_Gal Hw_ne_eG Hw_ne_efam Hred_ext Hsnw_ne0 Hwp_ext_w). }
+        claim H1_ne_ordsucc_nw : 1 <> ordsucc nw.
+        { assume H1eq : 1 = ordsucc nw.
+          claim Hnw_0 : nw = 0. { exact (eq_symm 0 nw (ordsucc_inj 0 nw (eq_i_tra (ordsucc 0) 1 (ordsucc nw) ordsucc_0_eq_1_nat H1eq))). }
+          exact (Hnw_ne0 Hnw_0). }
+        exact (H1_ne_ordsucc_nw (eq_symm (ordsucc nw) 1 Hsnw_eq_1)).
+      + assume Hno_z2 : ~(exists z2:set, z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al).
+        (** Both first and last NOT in Gfam(al), and no 3rd element in Gfam(al). **)
+        (** Case split: b0 = bmw or b0 != bmw **)
+        apply (xm (b0 = bmw)).
+        - assume Hb0_eq_bmw : b0 = bmw.
+          (** First and last in same factor F (= b0 = bmw, F != al). **)
+          (** Use doubled word analysis. **)
+          (** First try: xsw(mw) mult xsw(0) might be != eG and != efam(b0). **)
+          (** Then merge gives reduced word of length 2nw-1 >= 3 with product eG. **)
+          admit.
+        - assume Hb0_ne_bmw : b0 <> bmw.
+          (** First and last in DIFFERENT factors. Use reduced_word_double_cyclic_word_product. **)
+          claim Hnw_ne1d : nw <> 1.
+          { assume Hnw1 : nw = 1.
+            apply (Hno_efam_entry nw xsw Hredw 0 H0nw).
+            claim Hxsw0_G2 : apply_fun xsw 0 :e G.
+            { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw). }
+            claim HwpS0 : word_product multG eG xsw (ordsucc 0) =
+              apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
+            { exact (word_product_succ multG eG xsw 0 nat_0). }
+            claim Hwp0 : word_product multG eG xsw 0 = eG.
+            { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))). }
+            claim Hwp1_step : word_product multG eG xsw (ordsucc 0) = apply_fun multG (eG, apply_fun xsw 0).
+            { rewrite HwpS0. rewrite Hwp0. reflexivity. }
+            claim HidL0 : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
+            { exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+                (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxsw0_G2)). }
+            claim Hwp_s0_val : word_product multG eG xsw (ordsucc 0) = apply_fun xsw 0.
+            { exact (eq_i_tra (word_product multG eG xsw (ordsucc 0))
+                (apply_fun multG (eG, apply_fun xsw 0)) (apply_fun xsw 0) Hwp1_step HidL0). }
+            claim Hwp_nw_s0 : word_product multG eG xsw nw = word_product multG eG xsw (ordsucc 0).
+            { rewrite Hnw1. rewrite <- ordsucc_0_eq_1_nat. reflexivity. }
+            exact (eq_i_tra (apply_fun xsw 0)
+              (word_product multG eG xsw (ordsucc 0)) (apply_fun efam al)
+              (eq_symm (word_product multG eG xsw (ordsucc 0)) (apply_fun xsw 0) Hwp_s0_val)
+              (eq_i_tra (word_product multG eG xsw (ordsucc 0))
+                (word_product multG eG xsw nw) (apply_fun efam al)
+                (eq_symm (word_product multG eG xsw nw) (word_product multG eG xsw (ordsucc 0)) Hwp_nw_s0)
+                Hwp_efam)). }
+          claim Hxsw0_ne_eG2 : apply_fun xsw 0 <> eG.
+          { exact (reduced_word_no_eG_all G multG eG invG J Gfam efam nw xsw Hgrp Hsubfam Hredw Hnw_ne0 Hnw_ne1d 0 H0nw). }
+          claim Hcyc : forall alpha beta:set, alpha :e J -> beta :e J ->
+            apply_fun xsw mw :e apply_fun Gfam alpha ->
+            apply_fun xsw 0 :e apply_fun Gfam beta ->
+            alpha <> beta.
+          { let alpha beta. assume HaJ HbJ Hxsmw_Ga Hxsw0_Gb.
+            claim Ha_bmw : alpha = bmw.
+            { exact (eq_symm bmw alpha (disjoint_subgroups_label_unique G multG eG invG J Gfam bmw alpha
+                (apply_fun xsw mw) Hdisjoint HbmwJ HaJ Hxsmw_Gbmw Hxsmw_Ga Hxsmw_ne_eG)). }
+            claim Hb_b0 : beta = b0.
+            { exact (eq_symm b0 beta (disjoint_subgroups_label_unique G multG eG invG J Gfam b0 beta
+                (apply_fun xsw 0) Hdisjoint Hb0J HbJ Hxsw0_Gb0 Hxsw0_Gb Hxsw0_ne_eG2)). }
+            rewrite Ha_bmw. rewrite Hb_b0. exact (neq_i_sym b0 bmw Hb0_ne_bmw). }
+          apply (reduced_word_double_cyclic_word_product G multG eG invG J Gfam efam nw xsw mw
+            Hgrp Hsubfam Hredw Hnw_sm Hmw_nat Hcyc).
+          let ys2. assume Hys2_pack : reduced_word J Gfam efam (add_nat nw nw) ys2 /\
+            word_product multG eG ys2 (add_nat nw nw) =
+              apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw).
+          claim Hred2 : reduced_word J Gfam efam (add_nat nw nw) ys2.
+          { exact (andEL (reduced_word J Gfam efam (add_nat nw nw) ys2)
+              (word_product multG eG ys2 (add_nat nw nw) =
+                apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw))
+              Hys2_pack). }
+          claim Hwp2 : word_product multG eG ys2 (add_nat nw nw) =
+            apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw).
+          { exact (andER (reduced_word J Gfam efam (add_nat nw nw) ys2)
+              (word_product multG eG ys2 (add_nat nw nw) =
+                apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw))
+              Hys2_pack). }
+          (** Product = mult(efam(al), efam(al)) = eG **)
+          claim Hwp2_eG : word_product multG eG ys2 (add_nat nw nw) = eG.
+          { rewrite Hwp2. rewrite Hwp_efam. exact Hefam_sq. }
+          (** add_nat nw nw != 0 **)
+          claim Hnw_omega2 : nw :e omega. { exact (nat_p_omega nw Hnw_nat). }
+          claim Hnn_ne0 : add_nat nw nw <> 0.
+          { rewrite Hnw_sm. rewrite (add_nat_SR (ordsucc mw) mw Hmw_nat).
+            exact (neq_ordsucc_0 (add_nat (ordsucc mw) mw)). }
+          (** add_nat nw nw != 1 **)
+          claim Hnn_ne1 : add_nat nw nw <> 1.
+          { rewrite Hnw_sm.
+            rewrite (add_nat_SR (ordsucc mw) mw Hmw_nat).
+            rewrite (add_nat_SL mw Hmw_nat mw Hmw_nat).
+            assume H1eq : ordsucc (ordsucc (add_nat mw mw)) = 1.
+            claim Hs0 : ordsucc (add_nat mw mw) = 0.
+            { exact (ordsucc_inj (ordsucc (add_nat mw mw)) 0 H1eq). }
+            exact (neq_ordsucc_0 (add_nat mw mw) Hs0). }
+          exact (free_product_reduced_word_length_ge2_product_ne_e
+            G multG eG invG J Gfam efam (add_nat nw nw) ys2
+            Hfp Hred2 Hnn_ne0 Hnn_ne1 Hwp2_eG).
+Admitted.
+
 (** Helper lemma: in a free product, efam(alpha) in Gfam(alpha) with efam(alpha) != eG is impossible **)
 (** This captures the key fact that reduced word uniqueness forces efam(alpha) = eG **)
 Theorem efam_not_in_Gfam_nontrivial : forall G multG eG invG J Gfam efam:set,
@@ -286295,20 +286987,9 @@ apply and3I.
                         + assume Hinv_eq_efam : apply_fun invG (apply_fun efam al) = apply_fun efam al.
                           (** efam(al)^2 = eG case **)
                           (** This is impossible in a free product when efam(al) is assumed nontrivial. **)
-                          exact (free_product_efam_involutive_contra
-                            G
-                            multG
-                            eG
-                            invG
-                            J
-                            Gfam
-                            efam
-                            al
-                            Hfp
-                            Hal
-                            Hefam_Gal
-                            Hefam_ne
-                            Hinv_eq_efam).
+                          exact (efam_involutive_contra_direct
+                            G multG eG invG J Gfam efam al
+                            Hfp Hal Hefam_Gal Hefam_ne Hinv_eq_efam).
                         + assume Hinv_ne_efam : apply_fun invG (apply_fun efam al) <> apply_fun efam al.
                           (** Construct word [inv(efam(al)), xsw(0), ..., xsw(mw), inv(efam(al))] **)
                           (** of length nw+2 for inv(efam(al)). Contradicts [inv(efam(al))] of length 1. **)
@@ -468817,698 +469498,7 @@ Admitted.
 (** Sandbox Begin Alice **)
 
 (** word_product_right_append_in_generated moved to main section **)
-
-(** Direct proof: involutive efam(al) in Gfam(al) with efam(al) != eG is impossible **)
-(** This bypasses the boundary-labels-coincide helpers **)
-Lemma efam_involutive_contra_direct : forall G multG eG invG J Gfam efam al:set,
-  free_product_of_subgroups G multG eG invG J Gfam efam ->
-  al :e J ->
-  apply_fun efam al :e apply_fun Gfam al ->
-  apply_fun efam al <> eG ->
-  apply_fun invG (apply_fun efam al) = apply_fun efam al ->
-  False.
-let G multG eG invG J Gfam efam al.
-assume Hfp Hal Hefam_Gal Hefam_ne Hinv_eq.
-(** Unpack free product **)
-apply (and5E
-  (group_structure G multG eG invG)
-  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG)
-  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
-    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
-  (subgroups_generate G multG eG invG J Gfam)
-  (forall x:set, x :e G -> x <> eG ->
-    exists n xs:set,
-      reduced_word J Gfam efam n xs /\ n <> 0 /\
-      word_product multG eG xs n = x /\
-      (forall n' xs':set,
-        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
-        word_product multG eG xs' n' = x ->
-        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
-  Hfp).
-assume Hgrp Hsubfam Hdisjoint _ Huniq.
-(** Unpack group **)
-apply (and6E
-  (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
-  (forall a b c:set, a :e G -> b :e G -> c :e G ->
-    apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
-  (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
-  (forall a:set, a :e G -> apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
-  Hgrp).
-assume HmultF HinvF HeGG HassocG HidG HinvG.
-claim HmultG : forall a b:set, a :e G -> b :e G -> apply_fun multG (a, b) :e G.
-{ let a b. assume Ha Hb. exact (HmultF (a, b) (tuple_2_setprod_by_pair_Sigma G G a b Ha Hb)). }
-claim Hsub_in_G : forall alpha:set, alpha :e J -> apply_fun Gfam alpha c= G.
-{ let alpha. assume HaJ.
-  apply (and4E (apply_fun Gfam alpha c= G) (eG :e apply_fun Gfam alpha)
-    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
-       apply_fun multG (x, y) :e apply_fun Gfam alpha)
-    (forall x:set, x :e apply_fun Gfam alpha -> apply_fun invG x :e apply_fun Gfam alpha)
-    (Hsubfam alpha HaJ)).
-  assume HA _ _ _. exact HA. }
-claim HGfam_mult : forall alpha:set, alpha :e J ->
-  forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
-  apply_fun multG (x, y) :e apply_fun Gfam alpha.
-{ let alpha. assume HaJ.
-  apply (and4E (apply_fun Gfam alpha c= G) (eG :e apply_fun Gfam alpha)
-    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
-       apply_fun multG (x, y) :e apply_fun Gfam alpha)
-    (forall x:set, x :e apply_fun Gfam alpha -> apply_fun invG x :e apply_fun Gfam alpha)
-    (Hsubfam alpha HaJ)).
-  assume _ _ Hmc _. exact Hmc. }
-claim Hefam_G : apply_fun efam al :e G. { exact (Hsub_in_G al Hal (apply_fun efam al) Hefam_Gal). }
-(** efam(al)^2 = eG **)
-claim Hefam_sq : apply_fun multG (apply_fun efam al, apply_fun efam al) = eG.
-{ claim H1 : apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG.
-  { exact (andEL (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
-      (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
-      (HinvG (apply_fun efam al) Hefam_G)). }
-  claim H2 : apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) =
-    apply_fun multG (apply_fun efam al, apply_fun efam al).
-  { rewrite Hinv_eq. reflexivity. }
-  exact (eq_i_tra (apply_fun multG (apply_fun efam al, apply_fun efam al))
-    (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)))
-    eG (eq_symm (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)))
-      (apply_fun multG (apply_fun efam al, apply_fun efam al)) H2) H1). }
-(** No entry of a reduced word can equal efam(al) **)
-claim Hno_efam_entry : forall n xs:set, reduced_word J Gfam efam n xs ->
-  forall i:set, i :e n -> apply_fun xs i <> apply_fun efam al.
-{ let n xs. assume Hred. let i. assume Hi.
-  assume Heq : apply_fun xs i = apply_fun efam al.
-  apply (and3E (n :e omega)
-    (forall j:set, j :e n -> exists a:set, a :e J /\ apply_fun xs j :e apply_fun Gfam a /\ apply_fun xs j <> apply_fun efam a)
-    (forall j:set, j :e n -> ordsucc j :e n -> forall a b:set, a :e J -> b :e J ->
-      apply_fun xs j :e apply_fun Gfam a -> apply_fun xs (ordsucc j) :e apply_fun Gfam b -> a <> b)
-    Hred).
-  assume _ Helem _.
-  apply (Helem i Hi). let ai.
-  assume Haip : ai :e J /\ apply_fun xs i :e apply_fun Gfam ai /\ apply_fun xs i <> apply_fun efam ai.
-  apply (and3E (ai :e J) (apply_fun xs i :e apply_fun Gfam ai) (apply_fun xs i <> apply_fun efam ai) Haip).
-  assume HaiJ Hxi_Gai Hxi_ne_efai.
-  apply (xm (ai = al)).
-  - assume Hai_al : ai = al.
-    claim Hne : apply_fun xs i <> apply_fun efam al.
-    { exact (Hai_al (fun a b:set => apply_fun xs i <> apply_fun efam a) Hxi_ne_efai). }
-    exact (Hne Heq).
-  - assume Hai_ne : ai <> al.
-    claim Hxi_Gal : apply_fun xs i :e apply_fun Gfam al. { rewrite Heq. exact Hefam_Gal. }
-    claim Hxi_eG : apply_fun xs i = eG. { exact (Hdisjoint ai al HaiJ Hal Hai_ne (apply_fun xs i) Hxi_Gai Hxi_Gal). }
-    exact (Hefam_ne (eq_i_tra (apply_fun efam al) (apply_fun xs i) eG (eq_symm (apply_fun xs i) (apply_fun efam al) Heq) Hxi_eG)). }
-(** Get reduced word for efam(al) **)
-apply (Huniq (apply_fun efam al) Hefam_G Hefam_ne).
-let nw. assume Hex_w. apply Hex_w. let xsw.
-assume Hwprops : reduced_word J Gfam efam nw xsw /\ nw <> 0 /\
-  word_product multG eG xsw nw = apply_fun efam al /\
-  (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
-    word_product multG eG xs' n' = apply_fun efam al ->
-    nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i)).
-apply (and4E (reduced_word J Gfam efam nw xsw) (nw <> 0)
-  (word_product multG eG xsw nw = apply_fun efam al)
-  (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
-    word_product multG eG xs' n' = apply_fun efam al ->
-    nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i))
-  Hwprops).
-assume Hredw Hnw_ne0 Hwp_efam Huniq_w.
-(** nw >= 2: build modified word with product eG **)
-(** Get last entry info **)
-apply (and3E (nw :e omega)
-  (forall i:set, i :e nw -> exists a:set, a :e J /\ apply_fun xsw i :e apply_fun Gfam a /\ apply_fun xsw i <> apply_fun efam a)
-  (forall i:set, i :e nw -> ordsucc i :e nw ->
-    forall a b:set, a :e J -> b :e J -> apply_fun xsw i :e apply_fun Gfam a -> apply_fun xsw (ordsucc i) :e apply_fun Gfam b -> a <> b)
-  Hredw).
-assume Hnw_omega Helem Hadj.
-claim Hnw_nat : nat_p nw. { exact (omega_nat_p nw Hnw_omega). }
-(** nw = ordsucc mw for some mw **)
-apply (nat_inv nw Hnw_nat).
-- assume Hnw0 : nw = 0. exact (Hnw_ne0 Hnw0).
-- assume Hex_mw : exists mw:set, nat_p mw /\ nw = ordsucc mw.
-  apply Hex_mw. let mw. assume Hmwp : nat_p mw /\ nw = ordsucc mw.
-  claim Hmw_nat : nat_p mw. { exact (andEL (nat_p mw) (nw = ordsucc mw) Hmwp). }
-  claim Hnw_sm : nw = ordsucc mw. { exact (andER (nat_p mw) (nw = ordsucc mw) Hmwp). }
-  claim Hmw_nw : mw :e nw. { rewrite Hnw_sm. exact (ordsuccI2 mw). }
-  claim Hmw_omega : mw :e omega. { exact (nat_p_omega mw Hmw_nat). }
-  (** Get last entry factor **)
-  apply (Helem mw Hmw_nw). let bmw.
-  assume Hbmw_p : bmw :e J /\ apply_fun xsw mw :e apply_fun Gfam bmw /\ apply_fun xsw mw <> apply_fun efam bmw.
-  apply (and3E (bmw :e J) (apply_fun xsw mw :e apply_fun Gfam bmw) (apply_fun xsw mw <> apply_fun efam bmw) Hbmw_p).
-  assume HbmwJ Hxsmw_Gbmw Hxsmw_ne_efbmw.
-  claim Hxsmw_ne_efam : apply_fun xsw mw <> apply_fun efam al.
-  { exact (Hno_efam_entry nw xsw Hredw mw Hmw_nw). }
-  claim Hxsmw_ne_eG : apply_fun xsw mw <> eG.
-  { assume Habs : apply_fun xsw mw = eG.
-    (** If xsw(mw) = eG, then nw must be 0 or 1 (by reduced_word_no_eG_all for nw >= 2) **)
-    (** But we need to show nw >= 2, i.e., nw != 1 **)
-    (** If nw = 1: xsw(0) = efam(al) (from word product). But xsw(0) != efam(al) by Hno_efam_entry. **)
-    apply (xm (nw = 1)).
-    - assume Hnw1 : nw = 1.
-      claim Hmw0 : mw = 0. { exact (ordsucc_inj mw 0
-        (eq_i_tra (ordsucc mw) nw 1 (eq_symm nw (ordsucc mw) Hnw_sm) Hnw1)). }
-      claim Hxsw0_efam : apply_fun xsw 0 = apply_fun efam al.
-      { claim Hxsw0_G : apply_fun xsw 0 :e G.
-        { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0
-            (eq_subst_mem_set 0 1 nw (ordsuccI2 0) (eq_symm nw 1 Hnw1))). }
-        claim HwpS0 : word_product multG eG xsw (ordsucc 0) =
-          apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
-        { exact (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun xsw i)) 0 nat_0). }
-        claim Hwp0 : word_product multG eG xsw 0 = eG.
-        { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))). }
-        claim Hwp1 : word_product multG eG xsw 1 = apply_fun xsw 0.
-        { claim H1 : word_product multG eG xsw (ordsucc 0) = apply_fun multG (eG, apply_fun xsw 0).
-          { rewrite HwpS0. rewrite Hwp0. reflexivity. }
-          claim H2 : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
-          { exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
-              (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxsw0_G)). }
-          rewrite <- ordsucc_0_eq_1_nat.
-          exact (eq_i_tra (word_product multG eG xsw (ordsucc 0)) (apply_fun multG (eG, apply_fun xsw 0)) (apply_fun xsw 0) H1 H2). }
-        exact (eq_i_tra (apply_fun xsw 0) (word_product multG eG xsw 1) (apply_fun efam al)
-          (eq_symm (word_product multG eG xsw 1) (apply_fun xsw 0) Hwp1)
-          (eq_i_tra (word_product multG eG xsw 1) (word_product multG eG xsw nw) (apply_fun efam al)
-            (eq_symm (word_product multG eG xsw nw) (word_product multG eG xsw 1)
-              (Hnw1 (fun z b:set => word_product multG eG xsw nw = word_product multG eG xsw z) (eq_refl (word_product multG eG xsw nw))))
-            Hwp_efam)). }
-      exact (Hno_efam_entry nw xsw Hredw 0 (eq_subst_mem_set 0 1 nw (ordsuccI2 0) (eq_symm nw 1 Hnw1)) Hxsw0_efam).
-    - assume Hnw_ne1 : nw <> 1.
-      exact (reduced_word_no_eG_all G multG eG invG J Gfam efam nw xsw Hgrp Hsubfam Hredw Hnw_ne0 Hnw_ne1 mw Hmw_nw Habs). }
-  claim Hxsmw_G : apply_fun xsw mw :e G. { exact (Hsub_in_G bmw HbmwJ (apply_fun xsw mw) Hxsmw_Gbmw). }
-  (** Case: bmw = al (last entry in same factor as efam(al)) **)
-  apply (xm (bmw = al)).
-  + assume Hbmw_al : bmw = al.
-    claim Hxsmw_Gal : apply_fun xsw mw :e apply_fun Gfam al. { rewrite <- Hbmw_al. exact Hxsmw_Gbmw. }
-    (** z = mult(xsw(mw), efam(al)) in Gfam(al) **)
-    set z := apply_fun multG (apply_fun xsw mw, apply_fun efam al).
-    claim Hz_Gal : z :e apply_fun Gfam al.
-    { exact (HGfam_mult al Hal (apply_fun xsw mw) (apply_fun efam al) Hxsmw_Gal Hefam_Gal). }
-    claim Hz_ne_eG : z <> eG.
-    { assume Hz_e : z = eG.
-      (** mult(xsw(mw), efam(al)) = eG means xsw(mw) = inv(efam(al)) = efam(al) **)
-      claim Hinv_ef_G : apply_fun invG (apply_fun efam al) :e G. { exact (HinvF (apply_fun efam al) Hefam_G). }
-      claim Hlinv : apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG.
-      { exact (andER (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
-          (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
-          (HinvG (apply_fun efam al) Hefam_G)). }
-      claim Hprod_eq : apply_fun multG (apply_fun xsw mw, apply_fun efam al) =
-        apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al).
-      { rewrite Hz_e. symmetry. exact Hlinv. }
-      claim Hxsmw_eq : apply_fun xsw mw = apply_fun invG (apply_fun efam al).
-      { exact (group_right_cancel G multG eG invG (apply_fun efam al) (apply_fun xsw mw) (apply_fun invG (apply_fun efam al))
-          Hgrp Hefam_G Hxsmw_G Hinv_ef_G Hprod_eq). }
-      claim Hxsmw_efam2 : apply_fun xsw mw = apply_fun efam al.
-      { rewrite Hxsmw_eq. exact Hinv_eq. }
-      exact (Hxsmw_ne_efam Hxsmw_efam2). }
-    claim Hz_ne_efam : z <> apply_fun efam al.
-    { assume Hz_ef : z = apply_fun efam al.
-      (** mult(xsw(mw), efam(al)) = efam(al) means xsw(mw) = eG **)
-      claim HidL : apply_fun multG (eG, apply_fun efam al) = apply_fun efam al.
-      { exact (andEL (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
-          (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al) (HidG (apply_fun efam al) Hefam_G)). }
-      claim Hprod_eq : apply_fun multG (apply_fun xsw mw, apply_fun efam al) =
-        apply_fun multG (eG, apply_fun efam al).
-      { rewrite Hz_ef. symmetry. exact HidL. }
-      claim Hxsmw_eG : apply_fun xsw mw = eG.
-      { exact (group_right_cancel G multG eG invG (apply_fun efam al) (apply_fun xsw mw) eG
-          Hgrp Hefam_G Hxsmw_G HeGG Hprod_eq). }
-      exact (Hxsmw_ne_eG Hxsmw_eG). }
-    (** mw != 0 (otherwise nw = 1 and xsw(0) = efam(al), contradicting Hno_efam_entry) **)
-    claim Hmw_ne0 : mw <> 0.
-    { assume Hmw0 : mw = 0.
-      claim Hnw1 : nw = 1. { rewrite Hnw_sm. rewrite Hmw0. reflexivity. }
-      claim H0nw : 0 :e nw. { rewrite Hnw1. exact (ordsuccI2 0). }
-      claim Hxsw0_G : apply_fun xsw 0 :e G.
-      { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw). }
-      claim Hwp1 : word_product multG eG xsw 1 = apply_fun xsw 0.
-      { claim HwpS0 : word_product multG eG xsw (ordsucc 0) =
-          apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
-        { exact (word_product_succ multG eG xsw 0 nat_0). }
-        claim Hwp0 : word_product multG eG xsw 0 = eG.
-        { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))). }
-        claim H1eq : word_product multG eG xsw (ordsucc 0) = apply_fun multG (eG, apply_fun xsw 0).
-        { rewrite HwpS0. rewrite Hwp0. reflexivity. }
-        claim HidL0 : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
-        { exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
-            (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxsw0_G)). }
-        claim Hwp_s0 : word_product multG eG xsw (ordsucc 0) = apply_fun xsw 0.
-        { exact (eq_i_tra (word_product multG eG xsw (ordsucc 0)) (apply_fun multG (eG, apply_fun xsw 0)) (apply_fun xsw 0) H1eq HidL0). }
-        prove word_product multG eG xsw 1 = apply_fun xsw 0.
-        rewrite <- ordsucc_0_eq_1_nat. exact Hwp_s0. }
-      claim Hxsw0_efam : apply_fun xsw 0 = apply_fun efam al.
-      { claim H1 : word_product multG eG xsw nw = word_product multG eG xsw 1.
-        { rewrite Hnw1. reflexivity. }
-        exact (eq_i_tra (apply_fun xsw 0) (word_product multG eG xsw 1) (apply_fun efam al)
-          (eq_symm (word_product multG eG xsw 1) (apply_fun xsw 0) Hwp1)
-          (eq_i_tra (word_product multG eG xsw 1) (word_product multG eG xsw nw) (apply_fun efam al)
-            (eq_symm (word_product multG eG xsw nw) (word_product multG eG xsw 1) H1) Hwp_efam)). }
-      exact (Hno_efam_entry nw xsw Hredw 0 H0nw Hxsw0_efam). }
-    (** Build prefix reduced word **)
-    set xsw_pre := graph mw (fun i:set => apply_fun xsw i).
-    claim Hred_prefix : reduced_word J Gfam efam mw xsw_pre.
-    { exact (reduced_word_prefix J Gfam efam nw xsw mw Hredw Hmw_nw). }
-    (** Adjacency: last of prefix and z in different factors **)
-    claim Hlast_diff : forall k a2 b2:set, mw = ordsucc k -> a2 :e J -> b2 :e J ->
-      apply_fun xsw_pre k :e apply_fun Gfam a2 -> z :e apply_fun Gfam b2 -> a2 <> b2.
-    { let k a2 b2. assume Hmw_sk Ha2J Hb2J Hxsk_Ga2 Hz_Gb2.
-      claim Hk_mw : k :e mw. { rewrite Hmw_sk. exact (ordsuccI2 k). }
-      claim Hk_nw : k :e nw. { rewrite Hnw_sm. exact (ordsuccI1 mw k Hk_mw). }
-      claim Hsk_nw : ordsucc k :e nw.
-      { claim Hsk_eq_mw : ordsucc k = mw. { symmetry. exact Hmw_sk. }
-        rewrite Hsk_eq_mw. exact Hmw_nw. }
-      claim Hxsk_eq : apply_fun xsw_pre k = apply_fun xsw k.
-      { exact (apply_fun_graph mw (fun i:set => apply_fun xsw i) k Hk_mw). }
-      claim Hxsk_Ga2_real : apply_fun xsw k :e apply_fun Gfam a2.
-      { rewrite <- Hxsk_eq. exact Hxsk_Ga2. }
-      claim Hxsmw_Gal_sk : apply_fun xsw (ordsucc k) :e apply_fun Gfam al.
-      { claim Heq : ordsucc k = mw. { symmetry. exact Hmw_sk. }
-        rewrite Heq. exact Hxsmw_Gal. }
-      claim Ha2_ne_al : a2 <> al. { exact (Hadj k Hk_nw Hsk_nw a2 al Ha2J Hal Hxsk_Ga2_real Hxsmw_Gal_sk). }
-      claim Hb2_al : b2 = al.
-      { exact (eq_symm al b2 (disjoint_subgroups_label_unique G multG eG invG J Gfam al b2 z Hdisjoint Hal Hb2J Hz_Gal Hz_Gb2 Hz_ne_eG)). }
-      rewrite Hb2_al. exact Ha2_ne_al. }
-    (** Build new reduced word by appending z to prefix **)
-    claim Hred_new : reduced_word J Gfam efam (ordsucc mw)
-      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z)).
-    { exact (reduced_word_append_one_pre J Gfam efam mw xsw_pre z al Hred_prefix Hmw_ne0 Hal Hz_Gal Hz_ne_efam Hlast_diff). }
-    (** Compute word product **)
-    claim Hwp_new : word_product multG eG
-      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z))
-      (ordsucc mw) = apply_fun multG (word_product multG eG xsw_pre mw, z).
-    { exact (word_product_append_one multG eG xsw_pre z mw Hmw_omega). }
-    set p := word_product multG eG xsw_pre mw.
-    (** p = word_product(xsw, mw) since xsw_pre agrees with xsw on domain mw **)
-    claim Hp_eq_orig : p = word_product multG eG xsw mw.
-    { prove word_product multG eG xsw_pre mw = word_product multG eG xsw mw.
-      apply (nat_primrec_ext eG
-        (fun i r => apply_fun multG (r, apply_fun xsw_pre i))
-        (fun i r => apply_fun multG (r, apply_fun xsw i))
-        mw Hmw_omega).
-      let i r. assume Hi_mw.
-      rewrite (apply_fun_graph mw (fun j:set => apply_fun xsw j) i Hi_mw).
-      reflexivity. }
-    (** mult(p, z) = mult(p, mult(xsw(mw), efam(al))) **)
-    (** = mult(mult(p, xsw(mw)), efam(al)) by assoc **)
-    (** = mult(efam(al), efam(al)) since p mult xsw(mw) = efam(al) by wp **)
-    (** = eG by efam_sq **)
-    claim Hp_G : p :e G.
-    { rewrite Hp_eq_orig.
-      exact (word_product_in_G_group G multG eG invG mw xsw Hgrp Hmw_nat
-        (fun i Hi => reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw i
-          (eq_subst_mem_set i (ordsucc mw) nw (ordsuccI1 mw i Hi) (eq_symm nw (ordsucc mw) Hnw_sm)))). }
-    claim HwpS : word_product multG eG xsw nw =
-      apply_fun multG (word_product multG eG xsw mw, apply_fun xsw mw).
-    { rewrite Hnw_sm.
-      exact (word_product_succ multG eG xsw mw Hmw_nat). }
-    claim Hp_xsmw : apply_fun multG (p, apply_fun xsw mw) = apply_fun efam al.
-    { rewrite Hp_eq_orig.
-      exact (eq_i_tra (apply_fun multG (word_product multG eG xsw mw, apply_fun xsw mw))
-        (word_product multG eG xsw nw) (apply_fun efam al)
-        (eq_symm (word_product multG eG xsw nw) (apply_fun multG (word_product multG eG xsw mw, apply_fun xsw mw)) HwpS) Hwp_efam). }
-    claim Hp_z : apply_fun multG (p, z) = eG.
-    { claim Hassoc1 : apply_fun multG (p, z) =
-        apply_fun multG (apply_fun multG (p, apply_fun xsw mw), apply_fun efam al).
-      { exact (eq_symm
-          (apply_fun multG (apply_fun multG (p, apply_fun xsw mw), apply_fun efam al))
-          (apply_fun multG (p, apply_fun multG (apply_fun xsw mw, apply_fun efam al)))
-          (HassocG p (apply_fun xsw mw) (apply_fun efam al) Hp_G Hxsmw_G Hefam_G)). }
-      rewrite Hassoc1. rewrite Hp_xsmw. exact Hefam_sq. }
-    claim Hwp_eG : word_product multG eG
-      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z))
-      (ordsucc mw) = eG.
-    { rewrite Hwp_new. exact Hp_z. }
-    claim Hnw_ne_0 : nw <> 0. { rewrite Hnw_sm. exact (neq_ordsucc_0 mw). }
-    claim Hnw_ne_1 : nw <> 1.
-    { assume Hnw1 : nw = 1.
-      exact (Hmw_ne0 (ordsucc_inj mw 0
-        (eq_i_tra (ordsucc mw) nw 1 (eq_symm nw (ordsucc mw) Hnw_sm) Hnw1))). }
-    claim Hred_nw : reduced_word J Gfam efam nw
-      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z)).
-    { rewrite Hnw_sm. exact Hred_new. }
-    claim Hwp_eG_nw : word_product multG eG
-      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z))
-      nw = eG.
-    { rewrite Hnw_sm. exact Hwp_eG. }
-    exact (free_product_reduced_word_length_ge2_product_ne_e
-      G multG eG invG J Gfam efam nw
-      (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z))
-      Hfp Hred_nw Hnw_ne_0 Hnw_ne_1 Hwp_eG_nw).
-  + assume Hbmw_ne_al : bmw <> al.
-    (** Last entry NOT in Gfam(al). Check first entry. **)
-    claim H0nw : 0 :e nw. { rewrite Hnw_sm. exact (nat_0_in_ordsucc mw Hmw_nat). }
-    apply (Helem 0 H0nw). let b0.
-    assume Hb0p : b0 :e J /\ apply_fun xsw 0 :e apply_fun Gfam b0 /\ apply_fun xsw 0 <> apply_fun efam b0.
-    apply (and3E (b0 :e J) (apply_fun xsw 0 :e apply_fun Gfam b0) (apply_fun xsw 0 <> apply_fun efam b0) Hb0p).
-    assume Hb0J Hxsw0_Gb0 Hxsw0_ne_efb0.
-    apply (xm (b0 = al)).
-    * assume Hb0_al : b0 = al.
-      (** First entry in Gfam(al): merge efam(al) into first entry **)
-      claim Hxsw0_Gal : apply_fun xsw 0 :e apply_fun Gfam al. { rewrite <- Hb0_al. exact Hxsw0_Gb0. }
-      claim Hxsw0_G : apply_fun xsw 0 :e G. { exact (Hsub_in_G al Hal (apply_fun xsw 0) Hxsw0_Gal). }
-      claim Hxsw0_ne_efam : apply_fun xsw 0 <> apply_fun efam al.
-      { exact (Hno_efam_entry nw xsw Hredw 0 H0nw). }
-      claim Hnw_ne1c : nw <> 1.
-      { assume Hnw1 : nw = 1.
-        apply (Hno_efam_entry nw xsw Hredw 0 H0nw).
-        claim Hxsw0_Gb : apply_fun xsw 0 :e G.
-        { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw). }
-        claim HwpS0 : word_product multG eG xsw (ordsucc 0) =
-          apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
-        { exact (word_product_succ multG eG xsw 0 nat_0). }
-        claim Hwp0 : word_product multG eG xsw 0 = eG.
-        { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))). }
-        claim HidL : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
-        { exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
-            (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxsw0_Gb)). }
-        claim Hwp1_step : word_product multG eG xsw (ordsucc 0) = apply_fun multG (eG, apply_fun xsw 0).
-        { rewrite HwpS0. rewrite Hwp0. reflexivity. }
-        claim Hwp1_val : word_product multG eG xsw (ordsucc 0) = apply_fun xsw 0.
-        { exact (eq_i_tra (word_product multG eG xsw (ordsucc 0))
-            (apply_fun multG (eG, apply_fun xsw 0)) (apply_fun xsw 0) Hwp1_step HidL). }
-        claim Hwp_nw_eq_1 : word_product multG eG xsw nw = word_product multG eG xsw (ordsucc 0).
-        { rewrite Hnw1. rewrite <- ordsucc_0_eq_1_nat. reflexivity. }
-        exact (eq_i_tra (apply_fun xsw 0) (word_product multG eG xsw (ordsucc 0)) (apply_fun efam al)
-          (eq_symm (word_product multG eG xsw (ordsucc 0)) (apply_fun xsw 0) Hwp1_val)
-          (eq_i_tra (word_product multG eG xsw (ordsucc 0)) (word_product multG eG xsw nw) (apply_fun efam al)
-            (eq_symm (word_product multG eG xsw nw) (word_product multG eG xsw (ordsucc 0)) Hwp_nw_eq_1)
-            Hwp_efam)). }
-      claim Hxsw0_ne_eG : apply_fun xsw 0 <> eG.
-      { exact (reduced_word_no_eG_all G multG eG invG J Gfam efam nw xsw Hgrp Hsubfam Hredw Hnw_ne0
-          Hnw_ne1c 0 H0nw). }
-      set z0 := apply_fun multG (apply_fun efam al, apply_fun xsw 0).
-      claim Hz0_Gal : z0 :e apply_fun Gfam al.
-      { exact (HGfam_mult al Hal (apply_fun efam al) (apply_fun xsw 0) Hefam_Gal Hxsw0_Gal). }
-      claim Hz0_ne_eG : z0 <> eG.
-      { assume Hz0_e : z0 = eG.
-        claim Hxsw0_eq : apply_fun xsw 0 = apply_fun invG (apply_fun efam al).
-        { exact (group_left_cancel G multG eG invG (apply_fun efam al) (apply_fun xsw 0) (apply_fun invG (apply_fun efam al))
-            Hgrp Hefam_G Hxsw0_G (HinvF (apply_fun efam al) Hefam_G)
-            (eq_i_tra (apply_fun multG (apply_fun efam al, apply_fun xsw 0)) eG
-              (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)))
-              Hz0_e (eq_symm (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))) eG
-                (andEL (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
-                  (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
-                  (HinvG (apply_fun efam al) Hefam_G))))). }
-        exact (Hxsw0_ne_efam (eq_i_tra (apply_fun xsw 0) (apply_fun invG (apply_fun efam al)) (apply_fun efam al) Hxsw0_eq Hinv_eq)). }
-      claim Hz0_ne_efam : z0 <> apply_fun efam al.
-      { assume Hz0_ef : z0 = apply_fun efam al.
-        exact (Hxsw0_ne_eG (group_left_cancel G multG eG invG (apply_fun efam al) (apply_fun xsw 0) eG
-          Hgrp Hefam_G Hxsw0_G HeGG
-          (eq_i_tra (apply_fun multG (apply_fun efam al, apply_fun xsw 0))
-            (apply_fun efam al) (apply_fun multG (apply_fun efam al, eG))
-            Hz0_ef (eq_symm (apply_fun multG (apply_fun efam al, eG)) (apply_fun efam al)
-              (andER (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
-                (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al) (HidG (apply_fun efam al) Hefam_G)))))). }
-      (** Take suffix [xsw(1),...,xsw(mw)] of length mw, append z0 **)
-      set xsw_suf := graph mw (fun i:set => apply_fun xsw (ordsucc i)).
-      claim Hredw_sm : reduced_word J Gfam efam (ordsucc mw) xsw.
-      { rewrite <- Hnw_sm. exact Hredw. }
-      claim Hred_suf : reduced_word J Gfam efam mw xsw_suf.
-      { exact (reduced_word_suffix J Gfam efam mw xsw Hredw_sm). }
-      claim Hmw_ne0b : mw <> 0.
-      { assume Hmw0 : mw = 0.
-        exact (Hnw_ne1c (eq_i_tra nw (ordsucc mw) 1 Hnw_sm
-          (eq_i_tra (ordsucc mw) (ordsucc 0) 1 (Hmw0 (fun z b:set => ordsucc mw = ordsucc z) (eq_refl (ordsucc mw))) ordsucc_0_eq_1_nat))). }
-      (** Append z0 to suffix **)
-      claim Hlast_diff_suf : forall k a2 b2:set, mw = ordsucc k -> a2 :e J -> b2 :e J ->
-        apply_fun xsw_suf k :e apply_fun Gfam a2 -> z0 :e apply_fun Gfam b2 -> a2 <> b2.
-      { let k a2 b2. assume Hmw_sk Ha2J Hb2J Hxsk_Ga2 Hz0_Gb2.
-        claim Hxsk_eq : apply_fun xsw_suf k = apply_fun xsw (ordsucc k).
-        { claim Hk_mw : k :e mw. { rewrite Hmw_sk. exact (ordsuccI2 k). }
-          exact (apply_fun_graph mw (fun i:set => apply_fun xsw (ordsucc i)) k Hk_mw). }
-        claim Hsk_eq_mw : ordsucc k = mw. { symmetry. exact Hmw_sk. }
-        claim Hxsmw2 : apply_fun xsw (ordsucc k) :e apply_fun Gfam bmw.
-        { rewrite Hsk_eq_mw. exact Hxsmw_Gbmw. }
-        claim Hxsk_ne_eG2 : apply_fun xsw (ordsucc k) <> eG. { rewrite Hsk_eq_mw. exact Hxsmw_ne_eG. }
-        claim Hxsk_real_Ga2 : apply_fun xsw (ordsucc k) :e apply_fun Gfam a2.
-        { rewrite <- Hxsk_eq. exact Hxsk_Ga2. }
-        claim Ha2_eq_bmw : a2 = bmw.
-        { exact (eq_symm bmw a2 (disjoint_subgroups_label_unique G multG eG invG J Gfam bmw a2
-            (apply_fun xsw (ordsucc k)) Hdisjoint HbmwJ Ha2J Hxsmw2
-            Hxsk_real_Ga2 Hxsk_ne_eG2)). }
-        claim Hb2_eq_al : b2 = al.
-        { exact (eq_symm al b2 (disjoint_subgroups_label_unique G multG eG invG J Gfam al b2 z0
-            Hdisjoint Hal Hb2J Hz0_Gal Hz0_Gb2 Hz0_ne_eG)). }
-        rewrite Ha2_eq_bmw. rewrite Hb2_eq_al. exact Hbmw_ne_al. }
-      claim Hred_new_suf : reduced_word J Gfam efam (ordsucc mw)
-        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0)).
-      { exact (reduced_word_append_one_pre J Gfam efam mw xsw_suf z0 al Hred_suf Hmw_ne0b Hal Hz0_Gal Hz0_ne_efam Hlast_diff_suf). }
-      claim Hred_new_nw : reduced_word J Gfam efam nw
-        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0)).
-      { rewrite Hnw_sm. exact Hred_new_suf. }
-      (** Compute word product **)
-      claim Hwp_suf_val : word_product multG eG
-        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
-        (ordsucc mw) = apply_fun multG (word_product multG eG xsw_suf mw, z0).
-      { exact (word_product_append_one multG eG xsw_suf z0 mw Hmw_omega). }
-      (** By word_product_left_split: wp(xsw, nw) = mult(xsw(0), wp(xsw_suf, mw)) **)
-      claim HxsG_snw : forall i:set, i :e ordsucc mw -> apply_fun xsw i :e G.
-      { let i. assume Hi. exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw i
-          (eq_subst_mem_set i (ordsucc mw) nw Hi (eq_symm nw (ordsucc mw) Hnw_sm))). }
-      claim Hwpl : word_product multG eG xsw (ordsucc mw) =
-        apply_fun multG (apply_fun xsw 0, word_product multG eG xsw_suf mw).
-      { exact (word_product_left_split G multG eG invG mw xsw Hgrp Hmw_nat HxsG_snw). }
-      claim Hwpl_nw : word_product multG eG xsw nw =
-        apply_fun multG (apply_fun xsw 0, word_product multG eG xsw_suf mw).
-      { rewrite Hnw_sm. exact Hwpl. }
-      set q := word_product multG eG xsw_suf mw.
-      claim Hxsw0_q_efam : apply_fun multG (apply_fun xsw 0, q) = apply_fun efam al.
-      { exact (eq_i_tra (apply_fun multG (apply_fun xsw 0, q))
-          (word_product multG eG xsw nw) (apply_fun efam al)
-          (eq_symm (word_product multG eG xsw nw) (apply_fun multG (apply_fun xsw 0, q)) Hwpl_nw) Hwp_efam). }
-      (** q = inv(xsw(0)) mult efam(al) **)
-      claim Hinv_xsw0_G : apply_fun invG (apply_fun xsw 0) :e G. { exact (HinvF (apply_fun xsw 0) Hxsw0_G). }
-      claim Hxsw_suf_in_G : forall i:set, i :e mw -> apply_fun xsw_suf i :e G.
-      { let i. assume Hi.
-        claim Hgi : apply_fun xsw_suf i = apply_fun xsw (ordsucc i).
-        { exact (apply_fun_graph mw (fun j:set => apply_fun xsw (ordsucc j)) i Hi). }
-        rewrite Hgi.
-        exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw (ordsucc i)
-          (eq_subst_mem_set (ordsucc i) (ordsucc mw) nw
-            (nat_ordsucc_in_ordsucc mw Hmw_nat i Hi)
-            (eq_symm nw (ordsucc mw) Hnw_sm))). }
-      claim Hq_G : q :e G.
-      { exact (word_product_in_G_group G multG eG invG mw xsw_suf Hgrp Hmw_nat Hxsw_suf_in_G). }
-      (** Product of new word: mult(q, z0) **)
-      claim Hz0_G : z0 :e G. { exact (HmultG (apply_fun efam al) (apply_fun xsw 0) Hefam_G Hxsw0_G). }
-      claim Hq_z0 : apply_fun multG (q, z0) = eG.
-      { (** mult(q, z0) = mult(q, mult(efam(al), xsw(0))) **)
-        (** = mult(mult(q, efam(al)), xsw(0)) by assoc **)
-        claim Hassoc1 : apply_fun multG (q, z0) =
-          apply_fun multG (apply_fun multG (q, apply_fun efam al), apply_fun xsw 0).
-        { exact (eq_symm
-            (apply_fun multG (apply_fun multG (q, apply_fun efam al), apply_fun xsw 0))
-            (apply_fun multG (q, apply_fun multG (apply_fun efam al, apply_fun xsw 0)))
-            (HassocG q (apply_fun efam al) (apply_fun xsw 0) Hq_G Hefam_G Hxsw0_G)). }
-        (** mult(q, efam(al)) = inv(xsw(0)) by: **)
-        (** xsw(0) mult q = efam(al), so q = inv(xsw(0)) mult efam(al) **)
-        (** q mult efam(al) = inv(xsw(0)) mult efam(al) mult efam(al) = inv(xsw(0)) mult eG = inv(xsw(0)) **)
-        (** Step 1: q = mult(inv(xsw(0)), efam(al)) **)
-        (** From mult(xsw(0), q) = efam(al), left-cancel xsw(0) **)
-        claim Hinvxsw0_G : apply_fun invG (apply_fun xsw 0) :e G. { exact (HinvF (apply_fun xsw 0) Hxsw0_G). }
-        claim Hqef_G : apply_fun multG (q, apply_fun efam al) :e G.
-        { exact (HmultG q (apply_fun efam al) Hq_G Hefam_G). }
-        (** Show mult(xsw(0), mult(q, efam(al))) = eG **)
-        claim Hassoc_xsw0_q_ef : apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al)) =
-          apply_fun multG (apply_fun multG (apply_fun xsw 0, q), apply_fun efam al).
-        { exact (eq_symm
-            (apply_fun multG (apply_fun multG (apply_fun xsw 0, q), apply_fun efam al))
-            (apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al)))
-            (HassocG (apply_fun xsw 0) q (apply_fun efam al) Hxsw0_G Hq_G Hefam_G)). }
-        claim Hxsw0_qef_eG : apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al)) = eG.
-        { rewrite Hassoc_xsw0_q_ef. rewrite Hxsw0_q_efam. exact Hefam_sq. }
-        claim Hrinv_xsw0 : apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG.
-        { exact (andEL (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG)
-            (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG)
-            (HinvG (apply_fun xsw 0) Hxsw0_G)). }
-        (** By group_left_cancel: mult(q, efam(al)) = inv(xsw(0)) **)
-        claim Hqef_eq_inv : apply_fun multG (q, apply_fun efam al) = apply_fun invG (apply_fun xsw 0).
-        { exact (group_left_cancel G multG eG invG (apply_fun xsw 0)
-            (apply_fun multG (q, apply_fun efam al)) (apply_fun invG (apply_fun xsw 0))
-            Hgrp Hxsw0_G Hqef_G Hinvxsw0_G
-            (eq_i_tra (apply_fun multG (apply_fun xsw 0, apply_fun multG (q, apply_fun efam al))) eG
-              (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)))
-              Hxsw0_qef_eG (eq_symm (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0))) eG Hrinv_xsw0))). }
-        (** mult(inv(xsw(0)), xsw(0)) = eG **)
-        claim Hlinv_xsw0 : apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG.
-        { exact (andER (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG)
-            (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG)
-            (HinvG (apply_fun xsw 0) Hxsw0_G)). }
-        (** Final: mult(mult(q, efam(al)), xsw(0)) = mult(inv(xsw(0)), xsw(0)) = eG **)
-        claim Hfinal : apply_fun multG (apply_fun multG (q, apply_fun efam al), apply_fun xsw 0) = eG.
-        { rewrite Hqef_eq_inv. exact Hlinv_xsw0. }
-        rewrite Hassoc1. exact Hfinal. }
-      (** Now connect word product to eG and derive contradiction **)
-      claim Hwp_eG_suf : word_product multG eG
-        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
-        (ordsucc mw) = eG.
-      { rewrite Hwp_suf_val. exact Hq_z0. }
-      claim Hnw_ne_0b : nw <> 0. { rewrite Hnw_sm. exact (neq_ordsucc_0 mw). }
-      claim Hred_new_nwb : reduced_word J Gfam efam nw
-        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0)).
-      { rewrite Hnw_sm. exact Hred_new_suf. }
-      claim Hwp_eG_nwb : word_product multG eG
-        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
-        nw = eG.
-      { rewrite Hnw_sm. exact Hwp_eG_suf. }
-      exact (free_product_reduced_word_length_ge2_product_ne_e
-        G multG eG invG J Gfam efam nw
-        (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
-        Hfp Hred_new_nwb Hnw_ne_0b Hnw_ne1c Hwp_eG_nwb).
-    * assume Hb0_ne_al : b0 <> al.
-      (** Both first and last NOT in Gfam(al) **)
-      (** Use: if Gfam(al) has a 3rd element z != eG, z != efam(al), append z. **)
-      (** free_product_factor_element_length1 on efam(al) mult z gives n+1 = 1, contradiction **)
-      apply (xm (exists z2:set, z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al)).
-      + assume Hex_z2 : exists z2:set, z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al.
-        apply Hex_z2. let z2. assume Hz2p : z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al.
-        apply (and3E (z2 :e apply_fun Gfam al) (z2 <> eG) (z2 <> apply_fun efam al) Hz2p).
-        assume Hz2_Gal Hz2_ne_eG Hz2_ne_efam.
-        (** Product efam(al) mult z2 in Gfam(al), != eG, != efam(al) **)
-        set w := apply_fun multG (apply_fun efam al, z2).
-        claim Hw_Gal : w :e apply_fun Gfam al. { exact (HGfam_mult al Hal (apply_fun efam al) z2 Hefam_Gal Hz2_Gal). }
-        claim Hz2_G : z2 :e G. { exact (Hsub_in_G al Hal z2 Hz2_Gal). }
-        claim Hw_ne_eG : w <> eG.
-        { assume Hw_e : w = eG.
-          claim Hz2_eq : z2 = apply_fun invG (apply_fun efam al).
-          { exact (group_left_cancel G multG eG invG (apply_fun efam al) z2 (apply_fun invG (apply_fun efam al))
-              Hgrp Hefam_G Hz2_G (HinvF (apply_fun efam al) Hefam_G)
-              (eq_i_tra (apply_fun multG (apply_fun efam al, z2)) eG
-                (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)))
-                Hw_e (eq_symm (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))) eG
-                  (andEL (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
-                    (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
-                    (HinvG (apply_fun efam al) Hefam_G))))). }
-          exact (Hz2_ne_efam (eq_i_tra z2 (apply_fun invG (apply_fun efam al)) (apply_fun efam al) Hz2_eq Hinv_eq)). }
-        claim Hw_ne_efam : w <> apply_fun efam al.
-        { assume Hw_ef : w = apply_fun efam al.
-          exact (Hz2_ne_eG (group_left_cancel G multG eG invG (apply_fun efam al) z2 eG
-            Hgrp Hefam_G Hz2_G HeGG
-            (eq_i_tra (apply_fun multG (apply_fun efam al, z2))
-              (apply_fun efam al) (apply_fun multG (apply_fun efam al, eG))
-              Hw_ef (eq_symm (apply_fun multG (apply_fun efam al, eG)) (apply_fun efam al)
-                (andER (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
-                  (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al) (HidG (apply_fun efam al) Hefam_G)))))). }
-        (** Append z2 to xsw to get reduced word of length ordsucc(nw) **)
-        claim Hlast_diff2 : forall k a2 b2:set, nw = ordsucc k -> a2 :e J -> b2 :e J ->
-          apply_fun xsw k :e apply_fun Gfam a2 -> z2 :e apply_fun Gfam b2 -> a2 <> b2.
-        { let k a2 b2. assume Hnw_sk Ha2J Hb2J Hxsk_Ga2 Hz2_Gb2.
-          claim Hk_eq_mw : k = mw. { exact (ordsucc_inj k mw (eq_i_tra (ordsucc k) nw (ordsucc mw) (eq_symm nw (ordsucc k) Hnw_sk) Hnw_sm)). }
-          claim Hxsk_Gbmw : apply_fun xsw k :e apply_fun Gfam bmw.
-          { rewrite Hk_eq_mw. exact Hxsmw_Gbmw. }
-          claim Hxsk_ne_eG2 : apply_fun xsw k <> eG. { rewrite Hk_eq_mw. exact Hxsmw_ne_eG. }
-          claim Ha2_eq_bmw : a2 = bmw.
-          { exact (eq_symm bmw a2 (disjoint_subgroups_label_unique G multG eG invG J Gfam bmw a2 (apply_fun xsw k)
-              Hdisjoint HbmwJ Ha2J Hxsk_Gbmw Hxsk_Ga2 Hxsk_ne_eG2)). }
-          claim Hb2_eq_al : b2 = al.
-          { exact (eq_symm al b2 (disjoint_subgroups_label_unique G multG eG invG J Gfam al b2 z2
-              Hdisjoint Hal Hb2J Hz2_Gal Hz2_Gb2 Hz2_ne_eG)). }
-          rewrite Ha2_eq_bmw. rewrite Hb2_eq_al. exact Hbmw_ne_al. }
-        claim Hred_ext : reduced_word J Gfam efam (ordsucc nw)
-          (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2)).
-        { exact (reduced_word_append_one_pre J Gfam efam nw xsw z2 al Hredw Hnw_ne0 Hal Hz2_Gal Hz2_ne_efam Hlast_diff2). }
-        claim Hwp_ext : word_product multG eG
-          (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2))
-          (ordsucc nw) = apply_fun multG (word_product multG eG xsw nw, z2).
-        { exact (word_product_append_one multG eG xsw z2 nw Hnw_omega). }
-        claim Hwp_ext_w : word_product multG eG
-          (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2))
-          (ordsucc nw) = w.
-        { rewrite Hwp_ext. rewrite Hwp_efam. reflexivity. }
-        claim Hsnw_ne0 : ordsucc nw <> 0. { exact (neq_ordsucc_0 nw). }
-        claim Hsnw_eq_1 : ordsucc nw = 1.
-        { exact (free_product_factor_element_length1 G multG eG invG J Gfam efam al w (ordsucc nw)
-            (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2))
-            Hfp Hal Hw_Gal Hw_ne_eG Hw_ne_efam Hred_ext Hsnw_ne0 Hwp_ext_w). }
-        claim H1_ne_ordsucc_nw : 1 <> ordsucc nw.
-        { assume H1eq : 1 = ordsucc nw.
-          claim Hnw_0 : nw = 0. { exact (eq_symm 0 nw (ordsucc_inj 0 nw (eq_i_tra (ordsucc 0) 1 (ordsucc nw) ordsucc_0_eq_1_nat H1eq))). }
-          exact (Hnw_ne0 Hnw_0). }
-        exact (H1_ne_ordsucc_nw (eq_symm (ordsucc nw) 1 Hsnw_eq_1)).
-      + assume Hno_z2 : ~(exists z2:set, z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al).
-        (** Both first and last NOT in Gfam(al), and no 3rd element in Gfam(al). **)
-        (** Case split: b0 = bmw or b0 != bmw **)
-        apply (xm (b0 = bmw)).
-        - assume Hb0_eq_bmw : b0 = bmw.
-          (** First and last in same factor F (= b0 = bmw, F != al). **)
-          (** Use doubled word analysis. **)
-          (** First try: xsw(mw) mult xsw(0) might be != eG and != efam(b0). **)
-          (** Then merge gives reduced word of length 2nw-1 >= 3 with product eG. **)
-          admit.
-        - assume Hb0_ne_bmw : b0 <> bmw.
-          (** First and last in DIFFERENT factors. Use reduced_word_double_cyclic_word_product. **)
-          claim Hnw_ne1d : nw <> 1.
-          { assume Hnw1 : nw = 1.
-            apply (Hno_efam_entry nw xsw Hredw 0 H0nw).
-            claim Hxsw0_G2 : apply_fun xsw 0 :e G.
-            { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw). }
-            claim HwpS0 : word_product multG eG xsw (ordsucc 0) =
-              apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
-            { exact (word_product_succ multG eG xsw 0 nat_0). }
-            claim Hwp0 : word_product multG eG xsw 0 = eG.
-            { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))). }
-            claim Hwp1_step : word_product multG eG xsw (ordsucc 0) = apply_fun multG (eG, apply_fun xsw 0).
-            { rewrite HwpS0. rewrite Hwp0. reflexivity. }
-            claim HidL0 : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
-            { exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
-                (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxsw0_G2)). }
-            claim Hwp_s0_val : word_product multG eG xsw (ordsucc 0) = apply_fun xsw 0.
-            { exact (eq_i_tra (word_product multG eG xsw (ordsucc 0))
-                (apply_fun multG (eG, apply_fun xsw 0)) (apply_fun xsw 0) Hwp1_step HidL0). }
-            claim Hwp_nw_s0 : word_product multG eG xsw nw = word_product multG eG xsw (ordsucc 0).
-            { rewrite Hnw1. rewrite <- ordsucc_0_eq_1_nat. reflexivity. }
-            exact (eq_i_tra (apply_fun xsw 0)
-              (word_product multG eG xsw (ordsucc 0)) (apply_fun efam al)
-              (eq_symm (word_product multG eG xsw (ordsucc 0)) (apply_fun xsw 0) Hwp_s0_val)
-              (eq_i_tra (word_product multG eG xsw (ordsucc 0))
-                (word_product multG eG xsw nw) (apply_fun efam al)
-                (eq_symm (word_product multG eG xsw nw) (word_product multG eG xsw (ordsucc 0)) Hwp_nw_s0)
-                Hwp_efam)). }
-          claim Hxsw0_ne_eG2 : apply_fun xsw 0 <> eG.
-          { exact (reduced_word_no_eG_all G multG eG invG J Gfam efam nw xsw Hgrp Hsubfam Hredw Hnw_ne0 Hnw_ne1d 0 H0nw). }
-          claim Hcyc : forall alpha beta:set, alpha :e J -> beta :e J ->
-            apply_fun xsw mw :e apply_fun Gfam alpha ->
-            apply_fun xsw 0 :e apply_fun Gfam beta ->
-            alpha <> beta.
-          { let alpha beta. assume HaJ HbJ Hxsmw_Ga Hxsw0_Gb.
-            claim Ha_bmw : alpha = bmw.
-            { exact (eq_symm bmw alpha (disjoint_subgroups_label_unique G multG eG invG J Gfam bmw alpha
-                (apply_fun xsw mw) Hdisjoint HbmwJ HaJ Hxsmw_Gbmw Hxsmw_Ga Hxsmw_ne_eG)). }
-            claim Hb_b0 : beta = b0.
-            { exact (eq_symm b0 beta (disjoint_subgroups_label_unique G multG eG invG J Gfam b0 beta
-                (apply_fun xsw 0) Hdisjoint Hb0J HbJ Hxsw0_Gb0 Hxsw0_Gb Hxsw0_ne_eG2)). }
-            rewrite Ha_bmw. rewrite Hb_b0. exact (neq_i_sym b0 bmw Hb0_ne_bmw). }
-          apply (reduced_word_double_cyclic_word_product G multG eG invG J Gfam efam nw xsw mw
-            Hgrp Hsubfam Hredw Hnw_sm Hmw_nat Hcyc).
-          let ys2. assume Hys2_pack : reduced_word J Gfam efam (add_nat nw nw) ys2 /\
-            word_product multG eG ys2 (add_nat nw nw) =
-              apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw).
-          claim Hred2 : reduced_word J Gfam efam (add_nat nw nw) ys2.
-          { exact (andEL (reduced_word J Gfam efam (add_nat nw nw) ys2)
-              (word_product multG eG ys2 (add_nat nw nw) =
-                apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw))
-              Hys2_pack). }
-          claim Hwp2 : word_product multG eG ys2 (add_nat nw nw) =
-            apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw).
-          { exact (andER (reduced_word J Gfam efam (add_nat nw nw) ys2)
-              (word_product multG eG ys2 (add_nat nw nw) =
-                apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw))
-              Hys2_pack). }
-          (** Product = mult(efam(al), efam(al)) = eG **)
-          claim Hwp2_eG : word_product multG eG ys2 (add_nat nw nw) = eG.
-          { rewrite Hwp2. rewrite Hwp_efam. exact Hefam_sq. }
-          (** add_nat nw nw != 0 **)
-          claim Hnw_omega2 : nw :e omega. { exact (nat_p_omega nw Hnw_nat). }
-          claim Hnn_ne0 : add_nat nw nw <> 0.
-          { rewrite Hnw_sm. rewrite (add_nat_SR (ordsucc mw) mw Hmw_nat).
-            exact (neq_ordsucc_0 (add_nat (ordsucc mw) mw)). }
-          (** add_nat nw nw != 1 **)
-          claim Hnn_ne1 : add_nat nw nw <> 1.
-          { rewrite Hnw_sm.
-            rewrite (add_nat_SR (ordsucc mw) mw Hmw_nat).
-            rewrite (add_nat_SL mw Hmw_nat mw Hmw_nat).
-            assume H1eq : ordsucc (ordsucc (add_nat mw mw)) = 1.
-            claim Hs0 : ordsucc (add_nat mw mw) = 0.
-            { exact (ordsucc_inj (ordsucc (add_nat mw mw)) 0 H1eq). }
-            exact (neq_ordsucc_0 (add_nat mw mw) Hs0). }
-          exact (free_product_reduced_word_length_ge2_product_ne_e
-            G multG eG invG J Gfam efam (add_nat nw nw) ys2
-            Hfp Hred2 Hnn_ne0 Hnn_ne1 Hwp2_eG).
-Admitted.
+(** efam_involutive_contra_direct moved to main section **)
 
 (** Sandbox End Alice **)
 (** Sandbox Begin Bob **)
