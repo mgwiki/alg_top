@@ -436404,6 +436404,236 @@ apply andI.
     HkPack).
 Admitted.
 
+(** Free-generators formula from an explicit finite-cardinality witness for cosets. **)
+Theorem thm85_3_free_gen_formula_from_witness :
+  forall F multF eF invF J gens:set,
+  free_group_with_generators F multF eF invF J gens ->
+  forall n:set, n :e omega ->
+  forall H:set,
+    subgroup_of H F multF eF invF ->
+    forall JH gensH k:set,
+      free_group_with_generators H multF eF invF JH gensH ->
+      equip J (ordsucc n) ->
+      k :e omega /\ equip (right_coset_set F multF H) k ->
+      equip JH (ordsucc (mul_SNo k n)).
+let F multF eF invF J gens.
+assume HfreeF.
+let n.
+assume HnOmega.
+let H.
+assume Hsub.
+let JH gensH k.
+assume HfreeH.
+assume HJeq.
+assume Hk.
+exact (thm85_3_core_rank_from_witness
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  H
+  JH
+  gensH
+  n
+  k
+  HfreeF
+  Hsub
+  HfreeH
+  HnOmega
+  HJeq
+  Hk).
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_from_witness **)
+
+(** Free-generators formula at the canonical subgroup_index cardinal from finite cosets. **)
+Theorem thm85_3_free_gen_formula_at_subgroup_index_from_finite :
+  forall F multF eF invF J gens:set,
+  free_group_with_generators F multF eF invF J gens ->
+  forall n:set, n :e omega /\ equip J (ordsucc n) ->
+  forall H:set,
+    subgroup_of H F multF eF invF ->
+    finite (right_coset_set F multF H) ->
+    exists JH gensH:set,
+      free_group_with_generators H multF eF invF JH gensH /\
+      equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+let F multF eF invF J gens.
+assume HfreeF.
+let n.
+assume HnPack.
+let H.
+assume Hsub.
+assume HcosetFin.
+claim HfreeHex :
+  exists JH gensH:set,
+    free_group_with_generators H multF eF invF JH gensH.
+{
+  exact (subgroup_of_free_has_free_generators
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    HfreeF
+    Hsub).
+}
+apply HfreeHex.
+let JH.
+assume HJHex : exists gensH:set, free_group_with_generators H multF eF invF JH gensH.
+apply HJHex.
+let gensH.
+assume HfreeH.
+witness JH.
+witness gensH.
+apply andI.
+- exact HfreeH.
+- exact (thm85_3_core_rank_at_subgroup_index
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    JH
+    gensH
+    n
+    HfreeF
+    Hsub
+    HfreeH
+    (andEL (n :e omega) (equip J (ordsucc n)) HnPack)
+    (andER (n :e omega) (equip J (ordsucc n)) HnPack)
+    HcosetFin).
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_at_subgroup_index **)
+
+(** Free-generators formula at subgroup_index from npack index-spec assumptions. **)
+Theorem thm85_3_free_gen_formula_at_subgroup_index_from_npack_index_spec :
+  forall F multF eF invF J gens:set,
+  free_group_with_generators F multF eF invF J gens ->
+  forall n:set, n :e omega /\ equip J (ordsucc n) ->
+  forall H:set,
+    subgroup_of H F multF eF invF ->
+    subgroup_index H F multF eF invF :e omega /\
+    equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+    exists JH gensH:set,
+      free_group_with_generators H multF eF invF JH gensH /\
+      equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+let F multF eF invF J gens.
+assume HfreeF.
+let n.
+assume HnPack.
+let H.
+assume Hsub.
+assume HidxSpec.
+claim HfreeHex :
+  exists JH gensH:set,
+    free_group_with_generators H multF eF invF JH gensH.
+{
+  exact (subgroup_of_free_has_free_generators
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    HfreeF
+    Hsub).
+}
+apply HfreeHex.
+let JH.
+assume HJHex : exists gensH:set, free_group_with_generators H multF eF invF JH gensH.
+apply HJHex.
+let gensH.
+assume HfreeH.
+witness JH.
+witness gensH.
+apply andI.
+- exact HfreeH.
+- exact (thm85_3_core_rank_at_subgroup_index_from_npack_index_spec
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    JH
+    gensH
+    n
+    HfreeF
+    Hsub
+    HfreeH
+    HnPack
+    HidxSpec).
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_at_subgroup_index_from_npack_index_spec **)
+
+(** Free-generators formula at subgroup_index from split components+exists assumptions. **)
+Theorem thm85_3_free_gen_formula_at_subgroup_index_from_components_exists_witness :
+  forall F multF eF invF J gens:set,
+  free_group_with_generators F multF eF invF J gens ->
+  forall n:set, n :e omega ->
+  forall H:set,
+    subgroup_of H F multF eF invF ->
+    equip J (ordsucc n) ->
+    (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k) ->
+    exists JH gensH:set,
+      free_group_with_generators H multF eF invF JH gensH /\
+      equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+let F multF eF invF J gens.
+assume HfreeF.
+let n.
+assume HnOmega.
+let H.
+assume Hsub.
+assume HJeq.
+assume HkEx.
+claim HfreeHex :
+  exists JH gensH:set,
+    free_group_with_generators H multF eF invF JH gensH.
+{
+  exact (subgroup_of_free_has_free_generators
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    HfreeF
+    Hsub).
+}
+apply HfreeHex.
+let JH.
+assume HJHex : exists gensH:set, free_group_with_generators H multF eF invF JH gensH.
+apply HJHex.
+let gensH.
+assume HfreeH.
+witness JH.
+witness gensH.
+apply andI.
+- exact HfreeH.
+- exact (thm85_3_core_rank_at_subgroup_index_from_components_exists_witness
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    JH
+    gensH
+    n
+    HfreeF
+    Hsub
+    HfreeH
+    HnOmega
+    HJeq
+    HkEx).
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_at_subgroup_index_from_components_exists_witness **)
+
 (** from S85 Exercise 1 (line 5799 in algtop.tex) **)
 (** LATEX VERSION: Show that the Euler number of a finite linear graph X **)
 (** is a topological invariant of X. **)
