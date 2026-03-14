@@ -79061,6 +79061,607 @@ let a b.
 reflexivity.
 Qed.
 
+(** Infrastructure: max on R^2 is continuous. **)
+(** Proven Charlie **)
+Theorem Rmax_pair_continuous :
+  continuous_map
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    (graph (setprod R R) (fun p:set => Rmax (p 0) (p 1))).
+set X := setprod R R.
+set A := {p :e X | Rle (p 0) (p 1)}.
+set B := {p :e X | Rle (p 1) (p 0)}.
+set fA := projection_map2 R R.
+set fB := projection_map1 R R.
+set f := graph X (fun p:set => Rmax (p 0) (p 1)).
+claim HtopR2 : topology_on X R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HprojPack :
+  continuous_map X R2_topology R R_standard_topology fB /\
+  continuous_map X R2_topology R R_standard_topology fA.
+{
+  exact (projection_maps_continuous
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HfBCont :
+  continuous_map X R2_topology R R_standard_topology fB.
+{
+  exact (andEL
+    (continuous_map X R2_topology R R_standard_topology fB)
+    (continuous_map X R2_topology R R_standard_topology fA)
+    HprojPack).
+}
+claim HfACont :
+  continuous_map X R2_topology R R_standard_topology fA.
+{
+  exact (andER
+    (continuous_map X R2_topology R R_standard_topology fB)
+    (continuous_map X R2_topology R R_standard_topology fA)
+    HprojPack).
+}
+claim HAsub : A c= X.
+{
+  exact (Sep_Subq
+    X
+    (fun p:set => Rle (p 0) (p 1))).
+}
+claim HBsub : B c= X.
+{
+  exact (Sep_Subq
+    X
+    (fun p:set => Rle (p 1) (p 0))).
+}
+claim HAeq :
+  A = {p :e X | Rle (apply_fun fB p) (apply_fun fA p)}.
+{
+  apply set_ext.
+  - let p.
+    assume HpA.
+    claim HpX : p :e X.
+    {
+      exact (HAsub p HpA).
+    }
+    apply (SepI
+      X
+      (fun q:set => Rle (apply_fun fB q) (apply_fun fA q))
+      p
+      HpX).
+    rewrite (projection1_apply
+      R
+      R
+      p
+      HpX).
+    rewrite (projection2_apply
+      R
+      R
+      p
+      HpX).
+    exact (SepE2
+      X
+      (fun q:set => Rle (q 0) (q 1))
+      p
+      HpA).
+  - let p.
+    assume HpA.
+    claim HpX : p :e X.
+    {
+      exact (SepE1
+        X
+        (fun q:set => Rle (apply_fun fB q) (apply_fun fA q))
+        p
+        HpA).
+    }
+    apply (SepI
+      X
+      (fun q:set => Rle (q 0) (q 1))
+      p
+      HpX).
+    rewrite <- (projection1_apply
+      R
+      R
+      p
+      HpX).
+    rewrite <- (projection2_apply
+      R
+      R
+      p
+      HpX).
+    exact (SepE2
+      X
+      (fun q:set => Rle (apply_fun fB q) (apply_fun fA q))
+      p
+      HpA).
+}
+claim HBeq :
+  B = {p :e X | Rle (apply_fun fA p) (apply_fun fB p)}.
+{
+  apply set_ext.
+  - let p.
+    assume HpB.
+    claim HpX : p :e X.
+    {
+      exact (HBsub p HpB).
+    }
+    apply (SepI
+      X
+      (fun q:set => Rle (apply_fun fA q) (apply_fun fB q))
+      p
+      HpX).
+    rewrite (projection2_apply
+      R
+      R
+      p
+      HpX).
+    rewrite (projection1_apply
+      R
+      R
+      p
+      HpX).
+    exact (SepE2
+      X
+      (fun q:set => Rle (q 1) (q 0))
+      p
+      HpB).
+  - let p.
+    assume HpB.
+    claim HpX : p :e X.
+    {
+      exact (SepE1
+        X
+        (fun q:set => Rle (apply_fun fA q) (apply_fun fB q))
+        p
+        HpB).
+    }
+    apply (SepI
+      X
+      (fun q:set => Rle (q 1) (q 0))
+      p
+      HpX).
+    rewrite <- (projection2_apply
+      R
+      R
+      p
+      HpX).
+    rewrite <- (projection1_apply
+      R
+      R
+      p
+      HpX).
+    exact (SepE2
+      X
+      (fun q:set => Rle (apply_fun fA q) (apply_fun fB q))
+      p
+      HpB).
+}
+claim HAclosed : closed_in X R2_topology A.
+{
+  rewrite HAeq.
+  exact (continuous_Rle_preimage_closed
+    X
+    R2_topology
+    fB
+    fA
+    HfBCont
+    HfACont).
+}
+claim HBclosed : closed_in X R2_topology B.
+{
+  rewrite HBeq.
+  exact (continuous_Rle_preimage_closed
+    X
+    R2_topology
+    fA
+    fB
+    HfACont
+    HfBCont).
+}
+claim HAunionB : A :\/: B = X.
+{
+  apply set_ext.
+  - let p.
+    assume HpAB.
+    apply (binunionE
+      A
+      B
+      p
+      HpAB).
+    + exact (HAsub p).
+    + exact (HBsub p).
+  - let p.
+    assume HpX.
+    claim Hp0R : p 0 :e R.
+    {
+      exact (ap0_Sigma
+        R
+        (fun _ : set => R)
+        p
+        HpX).
+    }
+    claim Hp1R : p 1 :e R.
+    {
+      exact (ap1_Sigma
+        R
+        (fun _ : set => R)
+        p
+        HpX).
+    }
+    apply (order_rel_trichotomy_or_impred
+      R
+      (p 0)
+      (p 1)
+      simply_ordered_set_R
+      Hp0R
+      Hp1R
+      (p :e A :\/: B)).
+    + assume Hp01Ord.
+      apply (binunionI1
+        A
+        B
+        p).
+      apply (SepI
+        X
+        (fun q:set => Rle (q 0) (q 1))
+        p
+        HpX
+        (Rlt_implies_Rle
+          (p 0)
+          (p 1)
+          (order_rel_R_implies_Rlt
+            (p 0)
+            (p 1)
+            Hp01Ord))).
+    + assume Hp01Eq.
+      apply (binunionI1
+        A
+        B
+        p).
+      apply (SepI
+        X
+        (fun q:set => Rle (q 0) (q 1))
+        p
+        HpX).
+      rewrite Hp01Eq.
+      exact (Rle_refl
+        (p 1)
+        Hp1R).
+    + assume Hp10Ord.
+      apply (binunionI2
+        A
+        B
+        p).
+      apply (SepI
+        X
+        (fun q:set => Rle (q 1) (q 0))
+        p
+        HpX
+        (Rlt_implies_Rle
+          (p 1)
+          (p 0)
+          (order_rel_R_implies_Rlt
+            (p 1)
+            (p 0)
+            Hp10Ord))).
+}
+claim HfAonA :
+  continuous_map
+    A
+    (subspace_topology X R2_topology A)
+    R
+    R_standard_topology
+    fA.
+{
+  exact (continuous_on_subspace
+    X
+    R2_topology
+    R
+    R_standard_topology
+    fA
+    A
+    HtopR2
+    HAsub
+    HfACont).
+}
+claim HfBonB :
+  continuous_map
+    B
+    (subspace_topology X R2_topology B)
+    R
+    R_standard_topology
+    fB.
+{
+  exact (continuous_on_subspace
+    X
+    R2_topology
+    R
+    R_standard_topology
+    fB
+    B
+    HtopR2
+    HBsub
+    HfBCont).
+}
+claim Hagree :
+  forall p:set, p :e (A :/\: B) ->
+    apply_fun fA p = apply_fun fB p.
+{
+  let p.
+  assume HpAB.
+  claim HpA : p :e A.
+  {
+    exact (binintersectE1
+      A
+      B
+      p
+      HpAB).
+  }
+  claim HpB : p :e B.
+  {
+    exact (binintersectE2
+      A
+      B
+      p
+      HpAB).
+  }
+  claim HpX : p :e X.
+  {
+    exact (HAsub
+      p
+      HpA).
+  }
+  claim Hle01 : Rle (p 0) (p 1).
+  {
+    exact (SepE2
+      X
+      (fun q:set => Rle (q 0) (q 1))
+      p
+      HpA).
+  }
+  claim Hle10 : Rle (p 1) (p 0).
+  {
+    exact (SepE2
+      X
+      (fun q:set => Rle (q 1) (q 0))
+      p
+      HpB).
+  }
+  claim Hpeq : p 0 = p 1.
+  {
+    exact (Rle_antisym
+      (p 0)
+      (p 1)
+      Hle01
+      Hle10).
+  }
+  rewrite (projection2_apply
+    R
+    R
+    p
+    HpX).
+  rewrite (projection1_apply
+    R
+    R
+    p
+    HpX).
+  exact (eq_symm
+    (p 0)
+    (p 1)
+    Hpeq).
+}
+apply (pasting_lemma
+  X
+  A
+  B
+  R
+  R2_topology
+  R_standard_topology
+  fA
+  fB
+  HtopR2
+  HAclosed
+  HBclosed
+  HAunionB
+  HfAonA
+  HfBonB
+  Hagree).
+let h.
+assume HhPack.
+claim HhCont : continuous_map X R2_topology R R_standard_topology h.
+{
+  exact (andEL
+    (continuous_map X R2_topology R R_standard_topology h)
+    ((forall p:set, p :e A -> apply_fun h p = apply_fun fA p) /\
+     (forall p:set, p :e B -> apply_fun h p = apply_fun fB p))
+    HhPack).
+}
+claim HhA :
+  forall p:set, p :e A -> apply_fun h p = apply_fun fA p.
+{
+  exact (andEL
+    (forall p:set, p :e A -> apply_fun h p = apply_fun fA p)
+    (forall p:set, p :e B -> apply_fun h p = apply_fun fB p)
+    (andER
+      (continuous_map X R2_topology R R_standard_topology h)
+      ((forall p:set, p :e A -> apply_fun h p = apply_fun fA p) /\
+       (forall p:set, p :e B -> apply_fun h p = apply_fun fB p))
+      HhPack)).
+}
+claim HhB :
+  forall p:set, p :e B -> apply_fun h p = apply_fun fB p.
+{
+  exact (andER
+    (forall p:set, p :e A -> apply_fun h p = apply_fun fA p)
+    (forall p:set, p :e B -> apply_fun h p = apply_fun fB p)
+    (andER
+      (continuous_map X R2_topology R R_standard_topology h)
+      ((forall p:set, p :e A -> apply_fun h p = apply_fun fA p) /\
+       (forall p:set, p :e B -> apply_fun h p = apply_fun fB p))
+      HhPack)).
+}
+claim HfFun :
+  function_on
+    f
+    X
+    R.
+{
+  let p.
+  assume HpX.
+  claim Hp0R : p 0 :e R.
+  {
+    exact (ap0_Sigma
+      R
+      (fun _ : set => R)
+      p
+      HpX).
+  }
+  claim Hp1R : p 1 :e R.
+  {
+    exact (ap1_Sigma
+      R
+      (fun _ : set => R)
+      p
+      HpX).
+  }
+  rewrite (apply_fun_graph
+    X
+    (fun q:set => Rmax (q 0) (q 1))
+    p
+    HpX).
+  rewrite (Rmax_unfold
+    (p 0)
+    (p 1)).
+  apply (If_i_or
+    (Rlt (p 0) (p 1))
+    (p 1)
+    (p 0)).
+  - assume Hlt.
+    rewrite Hlt.
+    exact Hp1R.
+  - assume Hnlt.
+    rewrite Hnlt.
+    exact Hp0R.
+}
+claim Hheq :
+  forall p:set, p :e X -> apply_fun h p = apply_fun f p.
+{
+  let p.
+  assume HpX.
+  apply (xm (Rlt (p 0) (p 1))).
+  - assume Hlt.
+    claim HpA : p :e A.
+    {
+      exact (SepI
+        X
+        (fun q:set => Rle (q 0) (q 1))
+        p
+        HpX
+        (Rlt_implies_Rle
+          (p 0)
+          (p 1)
+          Hlt)).
+    }
+    rewrite (HhA
+      p
+      HpA).
+    rewrite (projection2_apply
+      R
+      R
+      p
+      HpX).
+    rewrite (apply_fun_graph
+      X
+      (fun q:set => Rmax (q 0) (q 1))
+      p
+      HpX).
+    rewrite (Rmax_unfold
+      (p 0)
+      (p 1)).
+    rewrite (If_i_1
+      (Rlt (p 0) (p 1))
+      (p 1)
+      (p 0)
+      Hlt).
+    reflexivity.
+  - assume Hnlt.
+    claim HpB : p :e B.
+    {
+      claim Hp0R : p 0 :e R.
+      {
+        exact (ap0_Sigma
+          R
+          (fun _ : set => R)
+          p
+          HpX).
+      }
+      claim Hp1R : p 1 :e R.
+      {
+        exact (ap1_Sigma
+          R
+          (fun _ : set => R)
+          p
+          HpX).
+      }
+      exact (SepI
+        X
+        (fun q:set => Rle (q 1) (q 0))
+        p
+        HpX
+        (RleI
+          (p 1)
+          (p 0)
+          Hp1R
+          Hp0R
+          Hnlt)).
+    }
+    rewrite (HhB
+      p
+      HpB).
+    rewrite (projection1_apply
+      R
+      R
+      p
+      HpX).
+    rewrite (apply_fun_graph
+      X
+      (fun q:set => Rmax (q 0) (q 1))
+      p
+      HpX).
+    rewrite (Rmax_unfold
+      (p 0)
+      (p 1)).
+    rewrite (If_i_0
+      (Rlt (p 0) (p 1))
+      (p 1)
+      (p 0)
+      Hnlt).
+    reflexivity.
+}
+exact (continuous_map_congr_on
+  X
+  R2_topology
+  R
+  R_standard_topology
+  h
+  f
+  HhCont
+  HfFun
+  Hheq).
+Qed.
+
 (** Infrastructure: intersection of open intervals is an open interval with If-defined endpoints. **)
 (** Proven Charlie **)
 Theorem open_interval_binintersect_open_interval_eq :
