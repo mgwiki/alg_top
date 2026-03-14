@@ -439069,6 +439069,66 @@ apply iffI.
     HkPack).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_bundle_iff_via_npack_finite_alias :
+  forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)
+   <->
+   n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+exact (thm85_3_rankdata_nonzero_via_bundle_iff_via_npack_finite
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  k
+  HnPack
+  HkPack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_npack_finite_iff_via_npack_witness_alias :
+  forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)
+   <->
+   n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+exact (thm85_3_rankdata_nonzero_via_npack_finite_iff_via_npack_witness
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  k
+  HnPack
+  HkPack).
+Qed.
+
 (** Direct-route projections from the consolidated nonzero rankdata conjunction. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_nonzero_direct_n_omega : forall F multF eF invF J H n:set,
