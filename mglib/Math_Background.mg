@@ -434911,6 +434911,66 @@ exact (thm85_3_rankdata_nonzero_direct_index_spec
 Qed.
 
 (** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_npack_exists_witness_iff_npack_index_spec : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  ((exists k:set, k :e omega /\ equip (right_coset_set F multF H) k)
+   <->
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n.
+assume HnPack.
+apply iffI.
+- assume HkEx.
+  exact (thm85_3_rankdata_nonzero_npack_exists_witness_index_spec
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HkEx).
+- assume HidxSpec.
+  exact (thm85_3_rankdata_nonzero_npack_index_spec_exists_witness
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HidxSpec).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_components_exists_witness_iff_components_index_spec_no_finite : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  ((exists k:set, k :e omega /\ equip (right_coset_set F multF H) k)
+   <->
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+exact (thm85_3_rankdata_nonzero_npack_exists_witness_iff_npack_index_spec
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (andI
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnOmega
+    HJeq)).
+Qed.
+
+(** Proven Bob **)
 Lemma thm85_3_rankdata_nonzero_components_exists_witness_coset_finite : forall F multF eF invF J H n:set,
   n :e omega ->
   equip J (ordsucc n) ->
