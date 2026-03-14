@@ -156106,6 +156106,314 @@ apply andI.
   * exact HhyEqAnti.
 Qed.
 
+(** Infrastructure: a simplex fixed point of the normalized matrix map yields a positive eigenvalue. **)
+(** Proven Charlie **)
+Lemma simplex3_fixedpoint_equation_implies_eigenvalue : forall A v:set,
+  function_on A (setprod 3 3) R ->
+  (forall i j:set, i :e 3 -> j :e 3 -> ~(Rlt (apply_fun A (i, j)) 0)) ->
+  v :e simplex3_fs ->
+  (forall i:set, i :e 3 ->
+    apply_fun v i =
+      div_SNo
+        (apply_fun (matrix_vector_mult 3 A v) i)
+        (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3)) ->
+  exists lam:set, Rlt 0 lam /\ eigenvalue_of_matrix 3 A lam.
+let A v.
+assume HAfun HAnonneg HvS Hfixed.
+set Av := matrix_vector_mult 3 A v.
+set lam := finite_real_sum (fun k:set => apply_fun Av k) 3.
+claim Hvfun : function_on v 3 R.
+{ exact (function_on_of_function_space v 3 R (SepE1 (function_space 3 R) (fun w:set =>
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun w i) 3 = 1) v HvS)). }
+claim Hnotzero : ~(forall i:set, i :e 3 -> apply_fun v i = 0).
+{
+  assume Hzero.
+  claim HvSprop :
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+  {
+    exact (SepE2
+      (function_space 3 R)
+      (fun w:set =>
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+        finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+      v
+      HvS).
+  }
+  claim Hsum1 : finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+  {
+    exact (andER
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+      (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+      HvSprop).
+  }
+  claim H3nat_local : nat_p 3.
+  { exact (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))). }
+  claim Hsum0 : finite_real_sum (fun i:set => apply_fun v i) 3 = 0.
+  {
+    apply (finite_real_sum_zero_of_all_zero (fun i:set => apply_fun v i) 3 H3nat_local).
+    - let i. assume Hi3. exact (Hvfun i Hi3).
+    - exact Hzero.
+  }
+  claim H10 : 1 = 0.
+  { rewrite <- Hsum1. exact Hsum0. }
+  exact (neq_1_0 H10).
+}
+claim H3nat : nat_p 3.
+{ exact (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))). }
+claim HvSprop :
+  (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+  finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+{
+  exact (SepE2
+    (function_space 3 R)
+    (fun w:set =>
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+    v
+    HvS).
+}
+claim HvNonneg : forall i:set, i :e 3 -> Rle 0 (apply_fun v i).
+{
+  let i. assume Hi3.
+  claim Hnonlt : ~(Rlt (apply_fun v i) 0).
+  {
+    exact (andEL
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+      (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+      HvSprop
+      i
+      Hi3).
+  }
+  exact (RleI 0 (apply_fun v i) real_0 (Hvfun i Hi3) Hnonlt).
+}
+claim HAvRall : forall k:set, k :e 3 -> apply_fun Av k :e R.
+{
+  let k. assume Hk3.
+  claim HavkEq :
+    apply_fun Av k =
+      finite_real_sum (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3.
+  {
+    exact (apply_fun_graph
+      3
+      (fun i:set =>
+        finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+      k
+      Hk3).
+  }
+  rewrite HavkEq.
+  apply (finite_real_sum_in_R (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3 H3nat).
+  let j.
+  assume Hj3.
+  claim HakjR : apply_fun A (k, j) :e R.
+  {
+    exact (HAfun
+      (k, j)
+      (tuple_2_setprod_by_pair_Sigma 3 3 k j Hk3 Hj3)).
+  }
+  claim HvjR : apply_fun v j :e R.
+  { exact (Hvfun j Hj3). }
+  exact (real_mul_SNo (apply_fun A (k, j)) HakjR (apply_fun v j) HvjR).
+}
+claim HAvNonneg : forall k:set, k :e 3 -> Rle 0 (apply_fun Av k).
+{
+  let k. assume Hk3.
+  claim HavkEq :
+    apply_fun Av k =
+      finite_real_sum (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3.
+  {
+    exact (apply_fun_graph
+      3
+      (fun i:set =>
+        finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+      k
+      Hk3).
+  }
+  rewrite HavkEq.
+  apply (finite_real_sum_nonneg
+    (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3 H3nat).
+  - let j. assume Hj3.
+    claim HakjR : apply_fun A (k, j) :e R.
+    {
+      exact (HAfun
+        (k, j)
+        (tuple_2_setprod_by_pair_Sigma 3 3 k j Hk3 Hj3)).
+    }
+    claim HvjR : apply_fun v j :e R.
+    { exact (Hvfun j Hj3). }
+    exact (real_mul_SNo (apply_fun A (k, j)) HakjR (apply_fun v j) HvjR).
+  - let j. assume Hj3.
+    claim HakjR : apply_fun A (k, j) :e R.
+    {
+      exact (HAfun
+        (k, j)
+        (tuple_2_setprod_by_pair_Sigma 3 3 k j Hk3 Hj3)).
+    }
+    claim HvjR : apply_fun v j :e R.
+    { exact (Hvfun j Hj3). }
+    claim HakjNonneg : Rle 0 (apply_fun A (k, j)).
+    {
+      exact (RleI
+        0
+        (apply_fun A (k, j))
+        real_0
+        HakjR
+        (HAnonneg
+          k
+          j
+          Hk3
+          Hj3)).
+    }
+    claim HvjNonneg : Rle 0 (apply_fun v j).
+    { exact (HvNonneg j Hj3). }
+    claim HakjSNo : SNo (apply_fun A (k, j)).
+    { exact (real_SNo (apply_fun A (k, j)) HakjR). }
+    claim HvjSNo : SNo (apply_fun v j).
+    { exact (real_SNo (apply_fun v j) HvjR). }
+    claim Hakj_le : 0 <= apply_fun A (k, j).
+    { exact (SNoLe_of_Rle 0 (apply_fun A (k, j)) HakjNonneg). }
+    claim Hvj_le : 0 <= apply_fun v j.
+    { exact (SNoLe_of_Rle 0 (apply_fun v j) HvjNonneg). }
+    claim Hprod_le :
+      0 <= mul_SNo (apply_fun A (k, j)) (apply_fun v j).
+    {
+      exact (mul_SNo_nonneg_nonneg
+        (apply_fun A (k, j))
+        (apply_fun v j)
+        HakjSNo
+        HvjSNo
+        Hakj_le
+        Hvj_le).
+    }
+    claim HprodR : mul_SNo (apply_fun A (k, j)) (apply_fun v j) :e R.
+    { exact (real_mul_SNo (apply_fun A (k, j)) HakjR (apply_fun v j) HvjR). }
+    exact (Rle_of_SNoLe
+      0
+      (mul_SNo (apply_fun A (k, j)) (apply_fun v j))
+      real_0
+      HprodR
+      Hprod_le).
+}
+claim HlamR : lam :e R.
+{
+  apply (finite_real_sum_in_R (fun k:set => apply_fun Av k) 3 H3nat).
+  let k. assume Hk3. exact (HAvRall k Hk3).
+}
+claim HlamNonneg : Rle 0 lam.
+{
+  apply (finite_real_sum_nonneg (fun k:set => apply_fun Av k) 3 H3nat).
+  - let k. assume Hk3. exact (HAvRall k Hk3).
+  - let k. assume Hk3. exact (HAvNonneg k Hk3).
+}
+claim Hlamneq0 : lam <> 0.
+{
+  assume Hlam0.
+  claim Hvzero : forall i:set, i :e 3 -> apply_fun v i = 0.
+  {
+    let i. assume Hi3.
+    claim HAvSNo : SNo (apply_fun Av i).
+    { exact (real_SNo (apply_fun Av i) (HAvRall i Hi3)). }
+    rewrite (Hfixed i Hi3).
+    rewrite Hlam0.
+    exact (div_SNo_0_denum (apply_fun Av i) HAvSNo).
+  }
+  exact (Hnotzero Hvzero).
+}
+claim Hlampos : Rlt 0 lam.
+{
+  exact (Rle_neq_implies_Rlt
+    0
+    lam
+    HlamNonneg
+    (fun H0 => Hlamneq0 (eq_symm 0 lam H0))).
+}
+witness lam.
+apply andI.
+- exact Hlampos.
+- claim Hvexists :
+    exists v0:set,
+      function_on v0 3 R /\
+      ~(forall i:set, i :e 3 -> apply_fun v0 i = 0) /\
+      (forall i:set, i :e 3 ->
+        finite_real_sum (fun j:set =>
+          mul_SNo (apply_fun A (i, j)) (apply_fun v0 j)) 3 =
+        mul_SNo lam (apply_fun v0 i)).
+  {
+    witness v.
+    apply andI.
+    - apply andI.
+      + exact Hvfun.
+      + exact Hnotzero.
+    - let i. assume Hi3.
+      claim Hav_i :
+        apply_fun Av i =
+          finite_real_sum (fun j:set =>
+            mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3.
+      {
+        exact (apply_fun_graph
+          3
+          (fun i0:set =>
+            finite_real_sum (fun j:set =>
+              mul_SNo (apply_fun A (i0, j)) (apply_fun v j)) 3)
+          i
+          Hi3).
+      }
+      rewrite <- Hav_i.
+      rewrite (Hfixed i Hi3).
+      claim HAvR : apply_fun Av i :e R.
+      {
+        rewrite Hav_i.
+        apply (finite_real_sum_in_R
+          (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3 H3nat).
+        let j. assume Hj3.
+        claim HakjR : apply_fun A (i, j) :e R.
+        {
+          exact (HAfun
+            (i, j)
+            (tuple_2_setprod_by_pair_Sigma 3 3 i j Hi3 Hj3)).
+        }
+        claim HvjR : apply_fun v j :e R.
+        { exact (Hvfun j Hj3). }
+        exact (real_mul_SNo (apply_fun A (i, j)) HakjR (apply_fun v j) HvjR).
+      }
+      claim HAvSNo : SNo (apply_fun Av i).
+      { exact (real_SNo (apply_fun Av i) HAvR). }
+      claim HlamSNo : SNo lam.
+      { exact (real_SNo lam HlamR). }
+      exact (eq_symm
+        (mul_SNo lam (div_SNo (apply_fun Av i) lam))
+        (apply_fun Av i)
+        (mul_div_SNo_invR (apply_fun Av i) lam HAvSNo HlamSNo Hlamneq0)).
+  }
+  exact (andI
+    (lam :e R)
+    (exists v0:set,
+      function_on v0 3 R /\
+      ~(forall i:set, i :e 3 -> apply_fun v0 i = 0) /\
+      (forall i:set, i :e 3 ->
+        finite_real_sum (fun j:set =>
+          mul_SNo (apply_fun A (i, j)) (apply_fun v0 j)) 3 =
+        mul_SNo lam (apply_fun v0 i)))
+    HlamR
+    Hvexists).
+Qed.
+
+(** Infrastructure: Brouwer fixed point on the simplex for nonnegative matrices once Av never vanishes on the simplex. **)
+Lemma simplex3_fixed_point_nonneg_matrix : forall A:set,
+  function_on A (setprod 3 3) R ->
+  (forall i j:set, i :e 3 -> j :e 3 -> ~(Rlt (apply_fun A (i, j)) 0)) ->
+  (forall v:set, v :e simplex3_fs ->
+    ~(forall i:set, i :e 3 -> apply_fun (matrix_vector_mult 3 A v) i = 0)) ->
+  exists v:set, v :e simplex3_fs /\
+    (forall i:set, i :e 3 ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult 3 A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3)).
+admit.
+Admitted.
+
 (** from S55 Exercise 3 (line 1044 in algtop.tex) **)
 (** LATEX VERSION: If A is a nonsingular 3x3 matrix having nonnegative entries, then A has a positive real eigenvalue. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
@@ -156118,8 +156426,152 @@ Theorem ex55_3_nonneg_nonsingular_matrix_eigenvalue : forall A:set,
     ~(forall i:set, i :e 3 ->
       finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3 = 0)) ->
   exists lam:set, Rlt 0 lam /\ eigenvalue_of_matrix 3 A lam.
-admit.
-Admitted.
+let A.
+assume HAfun HAnonneg Hnonsing.
+claim HsimplexNoZero :
+  forall v:set, v :e simplex3_fs ->
+    ~(forall i:set, i :e 3 -> apply_fun (matrix_vector_mult 3 A v) i = 0).
+{
+  let v.
+  assume HvS.
+  claim Hvfun : function_on v 3 R.
+  {
+    exact (function_on_of_function_space
+      v
+      3
+      R
+      (SepE1
+        (function_space 3 R)
+        (fun w:set =>
+          (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+          finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+        v
+        HvS)).
+  }
+  claim Hnotzero : ~(forall i:set, i :e 3 -> apply_fun v i = 0).
+  {
+    assume Hzero.
+    claim HvSprop :
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+    {
+      exact (SepE2
+        (function_space 3 R)
+        (fun w:set =>
+          (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+          finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+        v
+        HvS).
+    }
+    claim Hsum1 : finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+    {
+      exact (andER
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+        (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+        HvSprop).
+    }
+    claim H3nat : nat_p 3.
+    {
+      exact (nat_ordsucc
+        2
+        (nat_ordsucc
+          1
+          (nat_ordsucc 0 nat_0))).
+    }
+    claim Hsum0 : finite_real_sum (fun i:set => apply_fun v i) 3 = 0.
+    {
+      apply (finite_real_sum_zero_of_all_zero
+        (fun i:set => apply_fun v i)
+        3
+        H3nat).
+      - let i.
+        assume Hi3.
+        exact (Hvfun i Hi3).
+      - exact Hzero.
+    }
+    claim H10 : 1 = 0.
+    {
+      rewrite <- Hsum1.
+      exact Hsum0.
+    }
+    exact (neq_1_0 H10).
+  }
+  assume HAvZero.
+  apply (Hnonsing
+    v
+    Hvfun
+    Hnotzero).
+  let i.
+  assume Hi3.
+  exact (eq_i_tra
+    (finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+    (apply_fun (matrix_vector_mult 3 A v) i)
+    0
+    (eq_symm
+      (apply_fun (matrix_vector_mult 3 A v) i)
+      (finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+      (apply_fun_graph
+        3
+        (fun i0:set =>
+          finite_real_sum (fun j:set => mul_SNo (apply_fun A (i0, j)) (apply_fun v j)) 3)
+        i
+        Hi3))
+    (HAvZero
+      i
+      Hi3)).
+}
+claim Hfix :
+  exists v:set, v :e simplex3_fs /\
+    (forall i:set, i :e 3 ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult 3 A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3)).
+{
+  exact (simplex3_fixed_point_nonneg_matrix
+    A
+    HAfun
+    HAnonneg
+    HsimplexNoZero).
+}
+apply Hfix.
+let v.
+assume HvPack.
+claim HvS : v :e simplex3_fs.
+{
+  exact (andEL
+    (v :e simplex3_fs)
+    (forall i:set, i :e 3 ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult 3 A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3))
+    HvPack).
+}
+claim Hfixed :
+  forall i:set, i :e 3 ->
+    apply_fun v i =
+      div_SNo
+        (apply_fun (matrix_vector_mult 3 A v) i)
+        (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3).
+{
+  exact (andER
+    (v :e simplex3_fs)
+    (forall i:set, i :e 3 ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult 3 A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3))
+    HvPack).
+}
+exact (simplex3_fixedpoint_equation_implies_eigenvalue
+  A
+  v
+  HAfun
+  HAnonneg
+  HvS
+  Hfixed).
+Admitted. (** reduced to admitted simplex3_fixed_point_nonneg_matrix helper **)
 
 (** Infrastructure for Exercise 55.4: norm squared in Euclidean n-space **)
 (** euclidean_norm_sq n v = sum_{i<n} v(i)^2 **)
