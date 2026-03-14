@@ -157623,6 +157623,7 @@ apply (SepI
 Qed.
 
 (** Infrastructure: Brouwer fixed point on the simplex for nonnegative matrices once Av never vanishes on the simplex. **)
+(** Proven Charlie **)
 Lemma simplex3_fixed_point_nonneg_matrix : forall A:set,
   function_on A (setprod 3 3) R ->
   (forall i j:set, i :e 3 -> j :e 3 -> ~(Rlt (apply_fun A (i, j)) 0)) ->
@@ -157809,7 +157810,2443 @@ claim HFCont :
     (subspace_topology B2 B2_topology simplex3_triangle_region)
     F.
 {
-  admit. (** remaining nonnegative-case gap: continuity of normalized map once reciprocal denominator is handled using Hnozero on the simplex **)
+  rewrite <- simplex3_triangle_topology_eq_subspace_B2.
+  set incT := graph simplex3_triangle_region (fun p:set => p).
+  set p0 := projection_map1 R R.
+  set p1 := projection_map2 R R.
+  set x0 := compose_fun simplex3_triangle_region incT p0.
+  set x1 := compose_fun simplex3_triangle_region incT p1.
+  set xsum := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region x0 x1) add_fun_R.
+  set x2 := compose_fun simplex3_triangle_region xsum one_minus_fun.
+  set t00 := compose_fun simplex3_triangle_region x0 (mul_const_fun (apply_fun A (0, 0))).
+  set t01 := compose_fun simplex3_triangle_region x1 (mul_const_fun (apply_fun A (0, 1))).
+  set t02 := compose_fun simplex3_triangle_region x2 (mul_const_fun (apply_fun A (0, 2))).
+  set t10 := compose_fun simplex3_triangle_region x0 (mul_const_fun (apply_fun A (1, 0))).
+  set t11 := compose_fun simplex3_triangle_region x1 (mul_const_fun (apply_fun A (1, 1))).
+  set t12 := compose_fun simplex3_triangle_region x2 (mul_const_fun (apply_fun A (1, 2))).
+  set t20 := compose_fun simplex3_triangle_region x0 (mul_const_fun (apply_fun A (2, 0))).
+  set t21 := compose_fun simplex3_triangle_region x1 (mul_const_fun (apply_fun A (2, 1))).
+  set t22 := compose_fun simplex3_triangle_region x2 (mul_const_fun (apply_fun A (2, 2))).
+  set row0_01 := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region t00 t01) add_fun_R.
+  set row0 := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region row0_01 t02) add_fun_R.
+  set row1_01 := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region t10 t11) add_fun_R.
+  set row1 := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region row1_01 t12) add_fun_R.
+  set row2_01 := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region t20 t21) add_fun_R.
+  set row2 := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region row2_01 t22) add_fun_R.
+  set lamf_01 := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region row0 row1) add_fun_R.
+  set lamf := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region lamf_01 row2) add_fun_R.
+  set invlam := compose_fun simplex3_triangle_region lamf
+    (compose_fun (open_ray_upper R 0) (compose_fun R bounded_transform_phi one_minus_fun) bounded_transform_psi).
+  set q0 := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region row0 invlam) mul_fun_R.
+  set q1 := compose_fun simplex3_triangle_region (pair_map simplex3_triangle_region row1 invlam) mul_fun_R.
+  set Fraw := pair_map simplex3_triangle_region q0 q1.
+  claim HsubT : simplex3_triangle_region c= setprod R R.
+  {
+    exact (Sep_Subq
+      (setprod R R)
+      (fun q:set =>
+        ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+        ~(Rlt 1 (add_SNo (q 0) (q 1))))).
+  }
+  claim HtopR2 : topology_on (setprod R R) R2_topology.
+  {
+    exact (product_topology_is_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      R_standard_topology_is_topology
+      R_standard_topology_is_topology).
+  }
+  claim HTtop : topology_on simplex3_triangle_region simplex3_triangle_topology.
+  {
+    exact (subspace_topology_is_topology
+      (setprod R R)
+      R2_topology
+      simplex3_triangle_region
+      HtopR2
+      HsubT).
+  }
+  claim HincTCont :
+    continuous_map
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      (setprod R R)
+      R2_topology
+      incT.
+  {
+    exact (subspace_inclusion_continuous
+      (setprod R R)
+      R2_topology
+      simplex3_triangle_region
+      HtopR2
+      HsubT).
+  }
+  claim HprojPack :
+    continuous_map (setprod R R) R2_topology R R_standard_topology p0 /\
+    continuous_map (setprod R R) R2_topology R R_standard_topology p1.
+  {
+    exact (projection_maps_continuous
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      R_standard_topology_is_topology
+      R_standard_topology_is_topology).
+  }
+  claim Hp0Cont :
+    continuous_map (setprod R R) R2_topology R R_standard_topology p0.
+  {
+    exact (andEL
+      (continuous_map (setprod R R) R2_topology R R_standard_topology p0)
+      (continuous_map (setprod R R) R2_topology R R_standard_topology p1)
+      HprojPack).
+  }
+  claim Hp1Cont :
+    continuous_map (setprod R R) R2_topology R R_standard_topology p1.
+  {
+    exact (andER
+      (continuous_map (setprod R R) R2_topology R R_standard_topology p0)
+      (continuous_map (setprod R R) R2_topology R R_standard_topology p1)
+      HprojPack).
+  }
+  claim Hx0Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology x0.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      incT
+      p0
+      HincTCont
+      Hp0Cont).
+  }
+  claim Hx1Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology x1.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      incT
+      p1
+      HincTCont
+      Hp1Cont).
+  }
+  claim HxsumCont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology xsum.
+  {
+    exact (add_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      x0
+      x1
+      HTtop
+      Hx0Cont
+      Hx1Cont).
+  }
+  claim Hx2Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology x2.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      xsum
+      one_minus_fun
+      HxsumCont
+      one_minus_fun_continuous).
+  }
+  claim H0in3 : 0 :e 3.
+  {
+    exact (ordsuccI1 2 0 In_0_2).
+  }
+  claim H1in3 : 1 :e 3.
+  {
+    exact (ordsuccI1 2 1 In_1_2).
+  }
+  claim H2in3 : 2 :e 3.
+  {
+    exact (ordsuccI2 2).
+  }
+  claim H1nat : nat_p 1.
+  {
+    exact (nat_ordsucc 0 nat_0).
+  }
+  claim H2nat : nat_p 2.
+  {
+    exact (nat_ordsucc 1 H1nat).
+  }
+  claim HA00R : apply_fun A (0, 0) :e R.
+  {
+    exact (HAfun
+      (0, 0)
+      (tuple_2_setprod_by_pair_Sigma 3 3 0 0 H0in3 H0in3)).
+  }
+  claim HA01R : apply_fun A (0, 1) :e R.
+  {
+    exact (HAfun
+      (0, 1)
+      (tuple_2_setprod_by_pair_Sigma 3 3 0 1 H0in3 H1in3)).
+  }
+  claim HA02R : apply_fun A (0, 2) :e R.
+  {
+    exact (HAfun
+      (0, 2)
+      (tuple_2_setprod_by_pair_Sigma 3 3 0 2 H0in3 H2in3)).
+  }
+  claim HA10R : apply_fun A (1, 0) :e R.
+  {
+    exact (HAfun
+      (1, 0)
+      (tuple_2_setprod_by_pair_Sigma 3 3 1 0 H1in3 H0in3)).
+  }
+  claim HA11R : apply_fun A (1, 1) :e R.
+  {
+    exact (HAfun
+      (1, 1)
+      (tuple_2_setprod_by_pair_Sigma 3 3 1 1 H1in3 H1in3)).
+  }
+  claim HA12R : apply_fun A (1, 2) :e R.
+  {
+    exact (HAfun
+      (1, 2)
+      (tuple_2_setprod_by_pair_Sigma 3 3 1 2 H1in3 H2in3)).
+  }
+  claim HA20R : apply_fun A (2, 0) :e R.
+  {
+    exact (HAfun
+      (2, 0)
+      (tuple_2_setprod_by_pair_Sigma 3 3 2 0 H2in3 H0in3)).
+  }
+  claim HA21R : apply_fun A (2, 1) :e R.
+  {
+    exact (HAfun
+      (2, 1)
+      (tuple_2_setprod_by_pair_Sigma 3 3 2 1 H2in3 H1in3)).
+  }
+  claim HA22R : apply_fun A (2, 2) :e R.
+  {
+    exact (HAfun
+      (2, 2)
+      (tuple_2_setprod_by_pair_Sigma 3 3 2 2 H2in3 H2in3)).
+  }
+  claim Ht00Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology t00.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x0
+      (mul_const_fun (apply_fun A (0, 0)))
+      Hx0Cont
+      (mul_const_fun_continuous
+        (apply_fun A (0, 0))
+        HA00R)).
+  }
+  claim Ht01Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology t01.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x1
+      (mul_const_fun (apply_fun A (0, 1)))
+      Hx1Cont
+      (mul_const_fun_continuous
+        (apply_fun A (0, 1))
+        HA01R)).
+  }
+  claim Ht02Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology t02.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x2
+      (mul_const_fun (apply_fun A (0, 2)))
+      Hx2Cont
+      (mul_const_fun_continuous
+        (apply_fun A (0, 2))
+        HA02R)).
+  }
+  claim Ht10Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology t10.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x0
+      (mul_const_fun (apply_fun A (1, 0)))
+      Hx0Cont
+      (mul_const_fun_continuous
+        (apply_fun A (1, 0))
+        HA10R)).
+  }
+  claim Ht11Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology t11.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x1
+      (mul_const_fun (apply_fun A (1, 1)))
+      Hx1Cont
+      (mul_const_fun_continuous
+        (apply_fun A (1, 1))
+        HA11R)).
+  }
+  claim Ht12Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology t12.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x2
+      (mul_const_fun (apply_fun A (1, 2)))
+      Hx2Cont
+      (mul_const_fun_continuous
+        (apply_fun A (1, 2))
+        HA12R)).
+  }
+  claim Ht20Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology t20.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x0
+      (mul_const_fun (apply_fun A (2, 0)))
+      Hx0Cont
+      (mul_const_fun_continuous
+        (apply_fun A (2, 0))
+        HA20R)).
+  }
+  claim Ht21Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology t21.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x1
+      (mul_const_fun (apply_fun A (2, 1)))
+      Hx1Cont
+      (mul_const_fun_continuous
+        (apply_fun A (2, 1))
+        HA21R)).
+  }
+  claim Ht22Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology t22.
+  {
+    exact (composition_continuous
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x2
+      (mul_const_fun (apply_fun A (2, 2)))
+      Hx2Cont
+      (mul_const_fun_continuous
+        (apply_fun A (2, 2))
+        HA22R)).
+  }
+  claim Hrow0_01Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology row0_01.
+  {
+    exact (add_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      t00
+      t01
+      HTtop
+      Ht00Cont
+      Ht01Cont).
+  }
+  claim Hrow0Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology row0.
+  {
+    exact (add_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      row0_01
+      t02
+      HTtop
+      Hrow0_01Cont
+      Ht02Cont).
+  }
+  claim Hrow1_01Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology row1_01.
+  {
+    exact (add_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      t10
+      t11
+      HTtop
+      Ht10Cont
+      Ht11Cont).
+  }
+  claim Hrow1Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology row1.
+  {
+    exact (add_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      row1_01
+      t12
+      HTtop
+      Hrow1_01Cont
+      Ht12Cont).
+  }
+  claim Hrow2_01Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology row2_01.
+  {
+    exact (add_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      t20
+      t21
+      HTtop
+      Ht20Cont
+      Ht21Cont).
+  }
+  claim Hrow2Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology row2.
+  {
+    exact (add_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      row2_01
+      t22
+      HTtop
+      Hrow2_01Cont
+      Ht22Cont).
+  }
+  claim Hlamf_01Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology lamf_01.
+  {
+    exact (add_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      row0
+      row1
+      HTtop
+      Hrow0Cont
+      Hrow1Cont).
+  }
+  claim HlamfCont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology lamf.
+  {
+    exact (add_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      lamf_01
+      row2
+      HTtop
+      Hlamf_01Cont
+      Hrow2Cont).
+  }
+  claim Hrow0Eq :
+    forall p:set, p :e simplex3_triangle_region ->
+      let v := apply_fun simplex3_triangle_region_to_fs p in
+      let Av := matrix_vector_mult 3 A v in
+      apply_fun row0 p = apply_fun Av 0.
+  {
+    let p.
+    assume HpT.
+    set v := apply_fun simplex3_triangle_region_to_fs p.
+    set Av := matrix_vector_mult 3 A v.
+    claim HpR2 : p :e setprod R R.
+    {
+      exact (HsubT p HpT).
+    }
+    claim Hp0R : p 0 :e R.
+    {
+      exact (ap0_Sigma R (fun _ : set => R) p HpR2).
+    }
+    claim Hp1R : p 1 :e R.
+    {
+      exact (ap1_Sigma R (fun _ : set => R) p HpR2).
+    }
+    claim Hp0S : SNo (p 0).
+    {
+      exact (real_SNo (p 0) Hp0R).
+    }
+    claim Hp1S : SNo (p 1).
+    {
+      exact (real_SNo (p 1) Hp1R).
+    }
+    claim Hx0R : apply_fun x0 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        x0
+        Hx0Cont
+        p
+        HpT).
+    }
+    claim Hx1R : apply_fun x1 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        x1
+        Hx1Cont
+        p
+        HpT).
+    }
+    claim Hx0Val : apply_fun x0 p = p 0.
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        incT
+        p0
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun q:set => q)
+        p
+        HpT).
+      exact (projection1_apply
+        R
+        R
+        p
+        HpR2).
+    }
+    claim Hx1Val : apply_fun x1 p = p 1.
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        incT
+        p1
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun q:set => q)
+        p
+        HpT).
+      exact (projection2_apply
+        R
+        R
+        p
+        HpR2).
+    }
+    claim HxsumR : apply_fun xsum p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        xsum
+        HxsumCont
+        p
+        HpT).
+    }
+    claim HxsumVal :
+      apply_fun xsum p = add_SNo (p 0) (p 1).
+    {
+      rewrite (add_of_pair_map_apply
+        simplex3_triangle_region
+        x0
+        x1
+        p
+        HpT
+        Hx0R
+        Hx1R).
+      rewrite Hx0Val.
+      rewrite Hx1Val.
+      reflexivity.
+    }
+    claim Hx2R : apply_fun x2 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        x2
+        Hx2Cont
+        p
+        HpT).
+    }
+    claim Hx2S : SNo (apply_fun x2 p).
+    {
+      exact (real_SNo (apply_fun x2 p) Hx2R).
+    }
+    claim Hx2Val :
+      apply_fun x2 p = add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        xsum
+        one_minus_fun
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        R
+        (fun t:set => add_SNo 1 (minus_SNo t))
+        (apply_fun xsum p)
+        HxsumR).
+      rewrite HxsumVal.
+      reflexivity.
+    }
+    claim Ht00Val :
+      apply_fun t00 p = mul_SNo (apply_fun A (0, 0)) (p 0).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        x0
+        (mul_const_fun (apply_fun A (0, 0)))
+        p
+        HpT).
+      rewrite Hx0Val.
+      rewrite (mul_const_fun_apply
+        (apply_fun A (0, 0))
+        (p 0)
+        HA00R
+        Hp0R).
+      exact (mul_SNo_com
+        (p 0)
+        (apply_fun A (0, 0))
+        Hp0S
+        (real_SNo (apply_fun A (0, 0)) HA00R)).
+    }
+    claim Ht01Val :
+      apply_fun t01 p = mul_SNo (apply_fun A (0, 1)) (p 1).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        x1
+        (mul_const_fun (apply_fun A (0, 1)))
+        p
+        HpT).
+      rewrite Hx1Val.
+      rewrite (mul_const_fun_apply
+        (apply_fun A (0, 1))
+        (p 1)
+        HA01R
+        Hp1R).
+      exact (mul_SNo_com
+        (p 1)
+        (apply_fun A (0, 1))
+        Hp1S
+        (real_SNo (apply_fun A (0, 1)) HA01R)).
+    }
+    claim Ht02Val :
+      apply_fun t02 p = mul_SNo (apply_fun A (0, 2)) (apply_fun x2 p).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        x2
+        (mul_const_fun (apply_fun A (0, 2)))
+        p
+        HpT).
+      rewrite (mul_const_fun_apply
+        (apply_fun A (0, 2))
+        (apply_fun x2 p)
+        HA02R
+        Hx2R).
+      exact (mul_SNo_com
+        (apply_fun x2 p)
+        (apply_fun A (0, 2))
+        Hx2S
+        (real_SNo (apply_fun A (0, 2)) HA02R)).
+    }
+    claim Hrow0_01R : apply_fun row0_01 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        row0_01
+        Hrow0_01Cont
+        p
+        HpT).
+    }
+    claim Ht02R : apply_fun t02 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        t02
+        Ht02Cont
+        p
+        HpT).
+    }
+    claim Hrow0_01Val :
+      apply_fun row0_01 p =
+      add_SNo
+        (mul_SNo (apply_fun A (0, 0)) (p 0))
+        (mul_SNo (apply_fun A (0, 1)) (p 1)).
+    {
+      rewrite (add_of_pair_map_apply
+        simplex3_triangle_region
+        t00
+        t01
+        p
+        HpT
+        (continuous_map_function_on
+          simplex3_triangle_region
+          simplex3_triangle_topology
+          R
+          R_standard_topology
+          t00
+          Ht00Cont
+          p
+          HpT)
+        (continuous_map_function_on
+          simplex3_triangle_region
+          simplex3_triangle_topology
+          R
+          R_standard_topology
+          t01
+          Ht01Cont
+          p
+          HpT)).
+      rewrite Ht00Val.
+      rewrite Ht01Val.
+      reflexivity.
+    }
+    claim Hrow0Val :
+      apply_fun row0 p =
+      add_SNo
+        (add_SNo
+          (mul_SNo (apply_fun A (0, 0)) (p 0))
+          (mul_SNo (apply_fun A (0, 1)) (p 1)))
+        (mul_SNo (apply_fun A (0, 2)) (apply_fun x2 p)).
+    {
+      rewrite (add_of_pair_map_apply
+        simplex3_triangle_region
+        row0_01
+        t02
+        p
+        HpT
+        Hrow0_01R
+        Ht02R).
+      rewrite Hrow0_01Val.
+      rewrite Ht02Val.
+      reflexivity.
+    }
+    claim Hv0 :
+      apply_fun v 0 = p 0.
+    {
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun p0:set =>
+          graph 3 (fun i:set =>
+            if i = 0 then p0 0 else
+            if i = 1 then p0 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        3
+        (fun i:set =>
+          if i = 0 then p 0 else
+          if i = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        0
+        H0in3).
+      exact (If_i_1
+        (0 = 0)
+        (p 0)
+        (if 0 = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        (eq_refl 0)).
+    }
+    claim Hv1 :
+      apply_fun v 1 = p 1.
+    {
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun p0:set =>
+          graph 3 (fun i:set =>
+            if i = 0 then p0 0 else
+            if i = 1 then p0 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        3
+        (fun i:set =>
+          if i = 0 then p 0 else
+          if i = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        1
+        H1in3).
+      rewrite (If_i_0
+        (1 = 0)
+        (p 0)
+        (if 1 = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        neq_1_0).
+      exact (If_i_1
+        (1 = 1)
+        (p 1)
+        (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        (eq_refl 1)).
+    }
+    claim Hneq21 : 2 <> 1.
+    {
+      assume H21.
+      claim H1in2 : 1 :e 2.
+      {
+        exact In_1_2.
+      }
+      claim H1in1 : 1 :e 1.
+      {
+        exact (H21 (fun a b => 1 :e a) H1in2).
+      }
+      apply (ordsuccE 0 1 H1in1).
+      - assume H1in0.
+        exact (EmptyE 1 H1in0).
+      - assume H10.
+        exact (neq_1_0 H10).
+    }
+    claim Hv2 :
+      apply_fun v 2 = add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))).
+    {
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun p0:set =>
+          graph 3 (fun i:set =>
+            if i = 0 then p0 0 else
+            if i = 1 then p0 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        3
+        (fun i:set =>
+          if i = 0 then p 0 else
+          if i = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        2
+        H2in3).
+      rewrite (If_i_0
+        (2 = 0)
+        (p 0)
+        (if 2 = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        neq_2_0).
+      exact (If_i_0
+        (2 = 1)
+        (p 1)
+        (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        Hneq21).
+    }
+    claim Hav0Eq :
+      apply_fun Av 0 =
+      finite_real_sum (fun j:set => mul_SNo (apply_fun A (0, j)) (apply_fun v j)) 3.
+    {
+      exact (apply_fun_graph
+        3
+        (fun i:set =>
+          finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+        0
+        H0in3).
+    }
+    rewrite Hrow0Val.
+    rewrite Hx2Val.
+    rewrite Hav0Eq.
+    rewrite (finite_real_sum_S
+      (fun j:set => mul_SNo (apply_fun A (0, j)) (apply_fun v j))
+      2
+      H2nat).
+    rewrite (finite_real_sum_S
+      (fun j:set => mul_SNo (apply_fun A (0, j)) (apply_fun v j))
+      1
+      H1nat).
+    rewrite (finite_real_sum_S
+      (fun j:set => mul_SNo (apply_fun A (0, j)) (apply_fun v j))
+      0
+      nat_0).
+    rewrite (finite_real_sum_0
+      (fun j:set => mul_SNo (apply_fun A (0, j)) (apply_fun v j))).
+    rewrite Hv0.
+    rewrite Hv1.
+    rewrite Hv2.
+    rewrite (add_SNo_0L
+      (mul_SNo (apply_fun A (0, 0)) (p 0))
+      (real_SNo
+        (mul_SNo (apply_fun A (0, 0)) (p 0))
+        (real_mul_SNo
+          (apply_fun A (0, 0))
+          HA00R
+          (p 0)
+          Hp0R))).
+    reflexivity.
+  }
+  claim Hrow1Eq :
+    forall p:set, p :e simplex3_triangle_region ->
+      let v := apply_fun simplex3_triangle_region_to_fs p in
+      let Av := matrix_vector_mult 3 A v in
+      apply_fun row1 p = apply_fun Av 1.
+  {
+    let p.
+    assume HpT.
+    set v := apply_fun simplex3_triangle_region_to_fs p.
+    set Av := matrix_vector_mult 3 A v.
+    claim HpR2 : p :e setprod R R.
+    {
+      exact (HsubT p HpT).
+    }
+    claim Hp0R : p 0 :e R.
+    {
+      exact (ap0_Sigma R (fun _ : set => R) p HpR2).
+    }
+    claim Hp1R : p 1 :e R.
+    {
+      exact (ap1_Sigma R (fun _ : set => R) p HpR2).
+    }
+    claim Hp0S : SNo (p 0).
+    {
+      exact (real_SNo (p 0) Hp0R).
+    }
+    claim Hp1S : SNo (p 1).
+    {
+      exact (real_SNo (p 1) Hp1R).
+    }
+    claim Hx0R : apply_fun x0 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        x0
+        Hx0Cont
+        p
+        HpT).
+    }
+    claim Hx1R : apply_fun x1 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        x1
+        Hx1Cont
+        p
+        HpT).
+    }
+    claim Hx0Val : apply_fun x0 p = p 0.
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        incT
+        p0
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun q:set => q)
+        p
+        HpT).
+      exact (projection1_apply
+        R
+        R
+        p
+        HpR2).
+    }
+    claim Hx1Val : apply_fun x1 p = p 1.
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        incT
+        p1
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun q:set => q)
+        p
+        HpT).
+      exact (projection2_apply
+        R
+        R
+        p
+        HpR2).
+    }
+    claim HxsumR : apply_fun xsum p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        xsum
+        HxsumCont
+        p
+        HpT).
+    }
+    claim HxsumVal :
+      apply_fun xsum p = add_SNo (p 0) (p 1).
+    {
+      rewrite (add_of_pair_map_apply
+        simplex3_triangle_region
+        x0
+        x1
+        p
+        HpT
+        Hx0R
+        Hx1R).
+      rewrite Hx0Val.
+      rewrite Hx1Val.
+      reflexivity.
+    }
+    claim Hx2R : apply_fun x2 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        x2
+        Hx2Cont
+        p
+        HpT).
+    }
+    claim Hx2S : SNo (apply_fun x2 p).
+    {
+      exact (real_SNo (apply_fun x2 p) Hx2R).
+    }
+    claim Hx2Val :
+      apply_fun x2 p = add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        xsum
+        one_minus_fun
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        R
+        (fun t:set => add_SNo 1 (minus_SNo t))
+        (apply_fun xsum p)
+        HxsumR).
+      rewrite HxsumVal.
+      reflexivity.
+    }
+    claim Ht10Val :
+      apply_fun t10 p = mul_SNo (apply_fun A (1, 0)) (p 0).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        x0
+        (mul_const_fun (apply_fun A (1, 0)))
+        p
+        HpT).
+      rewrite Hx0Val.
+      rewrite (mul_const_fun_apply
+        (apply_fun A (1, 0))
+        (p 0)
+        HA10R
+        Hp0R).
+      exact (mul_SNo_com
+        (p 0)
+        (apply_fun A (1, 0))
+        Hp0S
+        (real_SNo (apply_fun A (1, 0)) HA10R)).
+    }
+    claim Ht11Val :
+      apply_fun t11 p = mul_SNo (apply_fun A (1, 1)) (p 1).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        x1
+        (mul_const_fun (apply_fun A (1, 1)))
+        p
+        HpT).
+      rewrite Hx1Val.
+      rewrite (mul_const_fun_apply
+        (apply_fun A (1, 1))
+        (p 1)
+        HA11R
+        Hp1R).
+      exact (mul_SNo_com
+        (p 1)
+        (apply_fun A (1, 1))
+        Hp1S
+        (real_SNo (apply_fun A (1, 1)) HA11R)).
+    }
+    claim Ht12Val :
+      apply_fun t12 p = mul_SNo (apply_fun A (1, 2)) (apply_fun x2 p).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        x2
+        (mul_const_fun (apply_fun A (1, 2)))
+        p
+        HpT).
+      rewrite (mul_const_fun_apply
+        (apply_fun A (1, 2))
+        (apply_fun x2 p)
+        HA12R
+        Hx2R).
+      exact (mul_SNo_com
+        (apply_fun x2 p)
+        (apply_fun A (1, 2))
+        Hx2S
+        (real_SNo (apply_fun A (1, 2)) HA12R)).
+    }
+    claim Hrow1_01R : apply_fun row1_01 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        row1_01
+        Hrow1_01Cont
+        p
+        HpT).
+    }
+    claim Ht12R : apply_fun t12 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        t12
+        Ht12Cont
+        p
+        HpT).
+    }
+    claim Hrow1_01Val :
+      apply_fun row1_01 p =
+      add_SNo
+        (mul_SNo (apply_fun A (1, 0)) (p 0))
+        (mul_SNo (apply_fun A (1, 1)) (p 1)).
+    {
+      rewrite (add_of_pair_map_apply
+        simplex3_triangle_region
+        t10
+        t11
+        p
+        HpT
+        (continuous_map_function_on
+          simplex3_triangle_region
+          simplex3_triangle_topology
+          R
+          R_standard_topology
+          t10
+          Ht10Cont
+          p
+          HpT)
+        (continuous_map_function_on
+          simplex3_triangle_region
+          simplex3_triangle_topology
+          R
+          R_standard_topology
+          t11
+          Ht11Cont
+          p
+          HpT)).
+      rewrite Ht10Val.
+      rewrite Ht11Val.
+      reflexivity.
+    }
+    claim Hrow1Val :
+      apply_fun row1 p =
+      add_SNo
+        (add_SNo
+          (mul_SNo (apply_fun A (1, 0)) (p 0))
+          (mul_SNo (apply_fun A (1, 1)) (p 1)))
+        (mul_SNo (apply_fun A (1, 2)) (apply_fun x2 p)).
+    {
+      rewrite (add_of_pair_map_apply
+        simplex3_triangle_region
+        row1_01
+        t12
+        p
+        HpT
+        Hrow1_01R
+        Ht12R).
+      rewrite Hrow1_01Val.
+      rewrite Ht12Val.
+      reflexivity.
+    }
+    claim Hv0 :
+      apply_fun v 0 = p 0.
+    {
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun p0:set =>
+          graph 3 (fun i:set =>
+            if i = 0 then p0 0 else
+            if i = 1 then p0 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        3
+        (fun i:set =>
+          if i = 0 then p 0 else
+          if i = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        0
+        H0in3).
+      exact (If_i_1
+        (0 = 0)
+        (p 0)
+        (if 0 = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        (eq_refl 0)).
+    }
+    claim Hv1 :
+      apply_fun v 1 = p 1.
+    {
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun p0:set =>
+          graph 3 (fun i:set =>
+            if i = 0 then p0 0 else
+            if i = 1 then p0 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        3
+        (fun i:set =>
+          if i = 0 then p 0 else
+          if i = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        1
+        H1in3).
+      rewrite (If_i_0
+        (1 = 0)
+        (p 0)
+        (if 1 = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        neq_1_0).
+      exact (If_i_1
+        (1 = 1)
+        (p 1)
+        (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        (eq_refl 1)).
+    }
+    claim Hneq21 : 2 <> 1.
+    {
+      assume H21.
+      claim H1in2 : 1 :e 2.
+      {
+        exact In_1_2.
+      }
+      claim H1in1 : 1 :e 1.
+      {
+        exact (H21 (fun a b => 1 :e a) H1in2).
+      }
+      apply (ordsuccE 0 1 H1in1).
+      - assume H1in0.
+        exact (EmptyE 1 H1in0).
+      - assume H10.
+        exact (neq_1_0 H10).
+    }
+    claim Hv2 :
+      apply_fun v 2 = add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))).
+    {
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun p0:set =>
+          graph 3 (fun i:set =>
+            if i = 0 then p0 0 else
+            if i = 1 then p0 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        3
+        (fun i:set =>
+          if i = 0 then p 0 else
+          if i = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        2
+        H2in3).
+      rewrite (If_i_0
+        (2 = 0)
+        (p 0)
+        (if 2 = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        neq_2_0).
+      exact (If_i_0
+        (2 = 1)
+        (p 1)
+        (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        Hneq21).
+    }
+    claim Hav1Eq :
+      apply_fun Av 1 =
+      finite_real_sum (fun j:set => mul_SNo (apply_fun A (1, j)) (apply_fun v j)) 3.
+    {
+      exact (apply_fun_graph
+        3
+        (fun i:set =>
+          finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+        1
+        H1in3).
+    }
+    rewrite Hrow1Val.
+    rewrite Hx2Val.
+    rewrite Hav1Eq.
+    rewrite (finite_real_sum_S
+      (fun j:set => mul_SNo (apply_fun A (1, j)) (apply_fun v j))
+      2
+      H2nat).
+    rewrite (finite_real_sum_S
+      (fun j:set => mul_SNo (apply_fun A (1, j)) (apply_fun v j))
+      1
+      H1nat).
+    rewrite (finite_real_sum_S
+      (fun j:set => mul_SNo (apply_fun A (1, j)) (apply_fun v j))
+      0
+      nat_0).
+    rewrite (finite_real_sum_0
+      (fun j:set => mul_SNo (apply_fun A (1, j)) (apply_fun v j))).
+    rewrite Hv0.
+    rewrite Hv1.
+    rewrite Hv2.
+    rewrite (add_SNo_0L
+      (mul_SNo (apply_fun A (1, 0)) (p 0))
+      (real_SNo
+        (mul_SNo (apply_fun A (1, 0)) (p 0))
+        (real_mul_SNo
+          (apply_fun A (1, 0))
+          HA10R
+          (p 0)
+          Hp0R))).
+    reflexivity.
+  }
+  claim Hrow2Eq :
+    forall p:set, p :e simplex3_triangle_region ->
+      let v := apply_fun simplex3_triangle_region_to_fs p in
+      let Av := matrix_vector_mult 3 A v in
+      apply_fun row2 p = apply_fun Av 2.
+  {
+    let p.
+    assume HpT.
+    set v := apply_fun simplex3_triangle_region_to_fs p.
+    set Av := matrix_vector_mult 3 A v.
+    claim HpR2 : p :e setprod R R.
+    {
+      exact (HsubT p HpT).
+    }
+    claim Hp0R : p 0 :e R.
+    {
+      exact (ap0_Sigma R (fun _ : set => R) p HpR2).
+    }
+    claim Hp1R : p 1 :e R.
+    {
+      exact (ap1_Sigma R (fun _ : set => R) p HpR2).
+    }
+    claim Hp0S : SNo (p 0).
+    {
+      exact (real_SNo (p 0) Hp0R).
+    }
+    claim Hp1S : SNo (p 1).
+    {
+      exact (real_SNo (p 1) Hp1R).
+    }
+    claim Hx0R : apply_fun x0 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        x0
+        Hx0Cont
+        p
+        HpT).
+    }
+    claim Hx1R : apply_fun x1 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        x1
+        Hx1Cont
+        p
+        HpT).
+    }
+    claim Hx0Val : apply_fun x0 p = p 0.
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        incT
+        p0
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun q:set => q)
+        p
+        HpT).
+      exact (projection1_apply
+        R
+        R
+        p
+        HpR2).
+    }
+    claim Hx1Val : apply_fun x1 p = p 1.
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        incT
+        p1
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun q:set => q)
+        p
+        HpT).
+      exact (projection2_apply
+        R
+        R
+        p
+        HpR2).
+    }
+    claim HxsumR : apply_fun xsum p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        xsum
+        HxsumCont
+        p
+        HpT).
+    }
+    claim HxsumVal :
+      apply_fun xsum p = add_SNo (p 0) (p 1).
+    {
+      rewrite (add_of_pair_map_apply
+        simplex3_triangle_region
+        x0
+        x1
+        p
+        HpT
+        Hx0R
+        Hx1R).
+      rewrite Hx0Val.
+      rewrite Hx1Val.
+      reflexivity.
+    }
+    claim Hx2R : apply_fun x2 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        x2
+        Hx2Cont
+        p
+        HpT).
+    }
+    claim Hx2S : SNo (apply_fun x2 p).
+    {
+      exact (real_SNo (apply_fun x2 p) Hx2R).
+    }
+    claim Hx2Val :
+      apply_fun x2 p = add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        xsum
+        one_minus_fun
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        R
+        (fun t:set => add_SNo 1 (minus_SNo t))
+        (apply_fun xsum p)
+        HxsumR).
+      rewrite HxsumVal.
+      reflexivity.
+    }
+    claim Ht20Val :
+      apply_fun t20 p = mul_SNo (apply_fun A (2, 0)) (p 0).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        x0
+        (mul_const_fun (apply_fun A (2, 0)))
+        p
+        HpT).
+      rewrite Hx0Val.
+      rewrite (mul_const_fun_apply
+        (apply_fun A (2, 0))
+        (p 0)
+        HA20R
+        Hp0R).
+      exact (mul_SNo_com
+        (p 0)
+        (apply_fun A (2, 0))
+        Hp0S
+        (real_SNo (apply_fun A (2, 0)) HA20R)).
+    }
+    claim Ht21Val :
+      apply_fun t21 p = mul_SNo (apply_fun A (2, 1)) (p 1).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        x1
+        (mul_const_fun (apply_fun A (2, 1)))
+        p
+        HpT).
+      rewrite Hx1Val.
+      rewrite (mul_const_fun_apply
+        (apply_fun A (2, 1))
+        (p 1)
+        HA21R
+        Hp1R).
+      exact (mul_SNo_com
+        (p 1)
+        (apply_fun A (2, 1))
+        Hp1S
+        (real_SNo (apply_fun A (2, 1)) HA21R)).
+    }
+    claim Ht22Val :
+      apply_fun t22 p = mul_SNo (apply_fun A (2, 2)) (apply_fun x2 p).
+    {
+      rewrite (compose_fun_apply
+        simplex3_triangle_region
+        x2
+        (mul_const_fun (apply_fun A (2, 2)))
+        p
+        HpT).
+      rewrite (mul_const_fun_apply
+        (apply_fun A (2, 2))
+        (apply_fun x2 p)
+        HA22R
+        Hx2R).
+      exact (mul_SNo_com
+        (apply_fun x2 p)
+        (apply_fun A (2, 2))
+        Hx2S
+        (real_SNo (apply_fun A (2, 2)) HA22R)).
+    }
+    claim Hrow2_01R : apply_fun row2_01 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        row2_01
+        Hrow2_01Cont
+        p
+        HpT).
+    }
+    claim Ht22R : apply_fun t22 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        t22
+        Ht22Cont
+        p
+        HpT).
+    }
+    claim Hrow2_01Val :
+      apply_fun row2_01 p =
+      add_SNo
+        (mul_SNo (apply_fun A (2, 0)) (p 0))
+        (mul_SNo (apply_fun A (2, 1)) (p 1)).
+    {
+      rewrite (add_of_pair_map_apply
+        simplex3_triangle_region
+        t20
+        t21
+        p
+        HpT
+        (continuous_map_function_on
+          simplex3_triangle_region
+          simplex3_triangle_topology
+          R
+          R_standard_topology
+          t20
+          Ht20Cont
+          p
+          HpT)
+        (continuous_map_function_on
+          simplex3_triangle_region
+          simplex3_triangle_topology
+          R
+          R_standard_topology
+          t21
+          Ht21Cont
+          p
+          HpT)).
+      rewrite Ht20Val.
+      rewrite Ht21Val.
+      reflexivity.
+    }
+    claim Hrow2Val :
+      apply_fun row2 p =
+      add_SNo
+        (add_SNo
+          (mul_SNo (apply_fun A (2, 0)) (p 0))
+          (mul_SNo (apply_fun A (2, 1)) (p 1)))
+        (mul_SNo (apply_fun A (2, 2)) (apply_fun x2 p)).
+    {
+      rewrite (add_of_pair_map_apply
+        simplex3_triangle_region
+        row2_01
+        t22
+        p
+        HpT
+        Hrow2_01R
+        Ht22R).
+      rewrite Hrow2_01Val.
+      rewrite Ht22Val.
+      reflexivity.
+    }
+    claim Hv0 :
+      apply_fun v 0 = p 0.
+    {
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun p0:set =>
+          graph 3 (fun i:set =>
+            if i = 0 then p0 0 else
+            if i = 1 then p0 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        3
+        (fun i:set =>
+          if i = 0 then p 0 else
+          if i = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        0
+        H0in3).
+      exact (If_i_1
+        (0 = 0)
+        (p 0)
+        (if 0 = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        (eq_refl 0)).
+    }
+    claim Hv1 :
+      apply_fun v 1 = p 1.
+    {
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun p0:set =>
+          graph 3 (fun i:set =>
+            if i = 0 then p0 0 else
+            if i = 1 then p0 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        3
+        (fun i:set =>
+          if i = 0 then p 0 else
+          if i = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        1
+        H1in3).
+      rewrite (If_i_0
+        (1 = 0)
+        (p 0)
+        (if 1 = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        neq_1_0).
+      exact (If_i_1
+        (1 = 1)
+        (p 1)
+        (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        (eq_refl 1)).
+    }
+    claim Hneq21 : 2 <> 1.
+    {
+      assume H21.
+      claim H1in2 : 1 :e 2.
+      {
+        exact In_1_2.
+      }
+      claim H1in1 : 1 :e 1.
+      {
+        exact (H21 (fun a b => 1 :e a) H1in2).
+      }
+      apply (ordsuccE 0 1 H1in1).
+      - assume H1in0.
+        exact (EmptyE 1 H1in0).
+      - assume H10.
+        exact (neq_1_0 H10).
+    }
+    claim Hv2 :
+      apply_fun v 2 = add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))).
+    {
+      rewrite (apply_fun_graph
+        simplex3_triangle_region
+        (fun p0:set =>
+          graph 3 (fun i:set =>
+            if i = 0 then p0 0 else
+            if i = 1 then p0 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        3
+        (fun i:set =>
+          if i = 0 then p 0 else
+          if i = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        2
+        H2in3).
+      rewrite (If_i_0
+        (2 = 0)
+        (p 0)
+        (if 2 = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        neq_2_0).
+      exact (If_i_0
+        (2 = 1)
+        (p 1)
+        (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        Hneq21).
+    }
+    claim Hav2Eq :
+      apply_fun Av 2 =
+      finite_real_sum (fun j:set => mul_SNo (apply_fun A (2, j)) (apply_fun v j)) 3.
+    {
+      exact (apply_fun_graph
+        3
+        (fun i:set =>
+          finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+        2
+        H2in3).
+    }
+    rewrite Hrow2Val.
+    rewrite Hx2Val.
+    rewrite Hav2Eq.
+    rewrite (finite_real_sum_S
+      (fun j:set => mul_SNo (apply_fun A (2, j)) (apply_fun v j))
+      2
+      H2nat).
+    rewrite (finite_real_sum_S
+      (fun j:set => mul_SNo (apply_fun A (2, j)) (apply_fun v j))
+      1
+      H1nat).
+    rewrite (finite_real_sum_S
+      (fun j:set => mul_SNo (apply_fun A (2, j)) (apply_fun v j))
+      0
+      nat_0).
+    rewrite (finite_real_sum_0
+      (fun j:set => mul_SNo (apply_fun A (2, j)) (apply_fun v j))).
+    rewrite Hv0.
+    rewrite Hv1.
+    rewrite Hv2.
+    rewrite (add_SNo_0L
+      (mul_SNo (apply_fun A (2, 0)) (p 0))
+      (real_SNo
+        (mul_SNo (apply_fun A (2, 0)) (p 0))
+        (real_mul_SNo
+          (apply_fun A (2, 0))
+          HA20R
+          (p 0)
+          Hp0R))).
+    reflexivity.
+  }
+  claim HlamEq :
+    forall p:set, p :e simplex3_triangle_region ->
+      let v := apply_fun simplex3_triangle_region_to_fs p in
+      let Av := matrix_vector_mult 3 A v in
+      apply_fun lamf p = finite_real_sum (fun k:set => apply_fun Av k) 3.
+  {
+    let p.
+    assume HpT.
+    set v := apply_fun simplex3_triangle_region_to_fs p.
+    set Av := matrix_vector_mult 3 A v.
+    claim Hrow0R : apply_fun row0 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        row0
+        Hrow0Cont
+        p
+        HpT).
+    }
+    claim Hrow1R : apply_fun row1 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        row1
+        Hrow1Cont
+        p
+        HpT).
+    }
+    claim Hlamf_01R : apply_fun lamf_01 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        lamf_01
+        Hlamf_01Cont
+        p
+        HpT).
+    }
+    claim Hrow2R : apply_fun row2 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        row2
+        Hrow2Cont
+        p
+        HpT).
+    }
+    claim Hlamf_01Val :
+      apply_fun lamf_01 p = add_SNo (apply_fun row0 p) (apply_fun row1 p).
+    {
+      exact (add_of_pair_map_apply
+        simplex3_triangle_region
+        row0
+        row1
+        p
+        HpT
+        Hrow0R
+        Hrow1R).
+    }
+    claim HlamfVal :
+      apply_fun lamf p = add_SNo (apply_fun lamf_01 p) (apply_fun row2 p).
+    {
+      exact (add_of_pair_map_apply
+        simplex3_triangle_region
+        lamf_01
+        row2
+        p
+        HpT
+        Hlamf_01R
+        Hrow2R).
+    }
+    rewrite HlamfVal.
+    rewrite Hlamf_01Val.
+    rewrite (Hrow0Eq
+      p
+      HpT).
+    rewrite (Hrow1Eq
+      p
+      HpT).
+    rewrite (Hrow2Eq
+      p
+      HpT).
+    rewrite (finite_real_sum_S
+      (fun k:set => apply_fun Av k)
+      2
+      H2nat).
+    rewrite (finite_real_sum_S
+      (fun k:set => apply_fun Av k)
+      1
+      H1nat).
+    rewrite (finite_real_sum_S
+      (fun k:set => apply_fun Av k)
+      0
+      nat_0).
+    rewrite (finite_real_sum_0
+      (fun k:set => apply_fun Av k)).
+    claim HAv0R : apply_fun Av 0 :e R.
+    {
+      rewrite <- (Hrow0Eq
+        p
+        HpT).
+      exact Hrow0R.
+    }
+    rewrite (add_SNo_0L
+      (apply_fun Av 0)
+      (real_SNo
+        (apply_fun Av 0)
+        HAv0R)).
+    reflexivity.
+  }
+  claim HlamPos :
+    forall p:set, p :e simplex3_triangle_region -> Rlt 0 (apply_fun lamf p).
+  {
+    let p.
+    assume HpT.
+    rewrite (HlamEq
+      p
+      HpT).
+    exact (simplex3_nonneg_matrix_denominator_positive
+      A
+      HAfun
+      HAnonneg
+      Hnozero
+      p
+      HpT).
+  }
+  claim HinvlamCont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology invlam.
+  {
+    exact (reciprocal_of_positive_continuous_map
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      lamf
+      HTtop
+      HlamfCont
+      HlamPos).
+  }
+  claim Hq0Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology q0.
+  {
+    exact (mul_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      row0
+      invlam
+      HTtop
+      Hrow0Cont
+      HinvlamCont).
+  }
+  claim Hq1Cont :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology R R_standard_topology q1.
+  {
+    exact (mul_two_continuous_R
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      row1
+      invlam
+      HTtop
+      Hrow1Cont
+      HinvlamCont).
+  }
+  claim HrawContR2 :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology (setprod R R) R2_topology Fraw.
+  {
+    exact (maps_into_products
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      q0
+      q1
+      Hq0Cont
+      Hq1Cont).
+  }
+  claim HinvVal :
+    forall p:set, p :e simplex3_triangle_region ->
+      apply_fun invlam p = recip_SNo_pos (apply_fun lamf p).
+  {
+    let p.
+    assume HpT.
+    claim HlamfR : apply_fun lamf p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        lamf
+        HlamfCont
+        p
+        HpT).
+    }
+    claim HlamInUpper : apply_fun lamf p :e open_ray_upper R 0.
+    {
+      exact (SepI
+        R
+        (fun t:set => order_rel R 0 t)
+        (apply_fun lamf p)
+        HlamfR
+        (Rlt_implies_order_rel_R
+          0
+          (apply_fun lamf p)
+          (HlamPos p HpT))).
+    }
+    rewrite (compose_fun_apply
+      simplex3_triangle_region
+      lamf
+      (compose_fun (open_ray_upper R 0) (compose_fun R bounded_transform_phi one_minus_fun) bounded_transform_psi)
+      p
+      HpT).
+    exact (recip_pos_value_eq_recip_SNo_pos
+      (apply_fun lamf p)
+      HlamInUpper).
+  }
+  claim Hq0Eq :
+    forall p:set, p :e simplex3_triangle_region ->
+      let v := apply_fun simplex3_triangle_region_to_fs p in
+      let Av := matrix_vector_mult 3 A v in
+      let lam := finite_real_sum (fun k:set => apply_fun Av k) 3 in
+      apply_fun q0 p = div_SNo (apply_fun Av 0) lam.
+  {
+    let p.
+    assume HpT.
+    set v := apply_fun simplex3_triangle_region_to_fs p.
+    set Av := matrix_vector_mult 3 A v.
+    set lam := finite_real_sum (fun k:set => apply_fun Av k) 3.
+    claim Hrow0R : apply_fun row0 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        row0
+        Hrow0Cont
+        p
+        HpT).
+    }
+    claim HlamfR : apply_fun lamf p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        lamf
+        HlamfCont
+        p
+        HpT).
+    }
+    claim HinvR : apply_fun invlam p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        invlam
+        HinvlamCont
+        p
+        HpT).
+    }
+    claim Hrow0S : SNo (apply_fun row0 p).
+    {
+      exact (real_SNo (apply_fun row0 p) Hrow0R).
+    }
+    claim HlamfS : SNo (apply_fun lamf p).
+    {
+      exact (real_SNo (apply_fun lamf p) HlamfR).
+    }
+    claim HinvS : SNo (apply_fun invlam p).
+    {
+      exact (real_SNo (apply_fun invlam p) HinvR).
+    }
+    claim HlamNe0 : apply_fun lamf p <> 0.
+    {
+      assume H0.
+      claim H00 : Rlt 0 0.
+      {
+        rewrite <- H0 at 2.
+        exact (HlamPos p HpT).
+      }
+      exact (not_Rlt_refl
+        0
+        real_0
+        H00
+        False).
+    }
+    claim HlamInv1 :
+      mul_SNo (apply_fun lamf p) (apply_fun invlam p) = 1.
+    {
+      rewrite (HinvVal
+        p
+        HpT).
+      exact (recip_SNo_pos_invR
+        (apply_fun lamf p)
+        HlamfS
+        (RltE_lt
+          0
+          (apply_fun lamf p)
+          (HlamPos p HpT))).
+    }
+    claim HdivEq :
+      div_SNo (apply_fun row0 p) (apply_fun lamf p) =
+      mul_SNo (apply_fun row0 p) (apply_fun invlam p).
+    {
+      claim Hlamxr :
+        mul_SNo (apply_fun lamf p) (mul_SNo (apply_fun row0 p) (apply_fun invlam p)) =
+        apply_fun row0 p.
+      {
+        rewrite (mul_SNo_assoc
+          (apply_fun lamf p)
+          (apply_fun row0 p)
+          (apply_fun invlam p)
+          HlamfS
+          Hrow0S
+          HinvS).
+        rewrite (mul_SNo_com
+          (apply_fun lamf p)
+          (apply_fun row0 p)
+          HlamfS
+          Hrow0S).
+        rewrite (eq_symm
+          (mul_SNo (apply_fun row0 p) (mul_SNo (apply_fun lamf p) (apply_fun invlam p)))
+          (mul_SNo (mul_SNo (apply_fun row0 p) (apply_fun lamf p)) (apply_fun invlam p))
+          (mul_SNo_assoc
+            (apply_fun row0 p)
+            (apply_fun lamf p)
+            (apply_fun invlam p)
+            Hrow0S
+            HlamfS
+            HinvS)).
+        rewrite HlamInv1.
+        exact (mul_SNo_oneR
+          (apply_fun row0 p)
+          Hrow0S).
+      }
+      exact (mul_div_SNo_nonzero_eq
+        (apply_fun row0 p)
+        (apply_fun lamf p)
+        (mul_SNo (apply_fun row0 p) (apply_fun invlam p))
+        Hrow0S
+        HlamfS
+        (real_SNo
+          (mul_SNo (apply_fun row0 p) (apply_fun invlam p))
+          (real_mul_SNo
+            (apply_fun row0 p)
+            Hrow0R
+            (apply_fun invlam p)
+            HinvR))
+        HlamNe0
+        (eq_symm
+          (mul_SNo (apply_fun lamf p) (mul_SNo (apply_fun row0 p) (apply_fun invlam p)))
+          (apply_fun row0 p)
+          Hlamxr)).
+    }
+    rewrite (mul_of_pair_map_apply
+      simplex3_triangle_region
+      row0
+      invlam
+      p
+      HpT
+      Hrow0R
+      HinvR).
+    rewrite <- HdivEq.
+    rewrite (Hrow0Eq
+      p
+      HpT).
+    rewrite (HlamEq
+      p
+      HpT).
+    reflexivity.
+  }
+  claim Hq1Eq :
+    forall p:set, p :e simplex3_triangle_region ->
+      let v := apply_fun simplex3_triangle_region_to_fs p in
+      let Av := matrix_vector_mult 3 A v in
+      let lam := finite_real_sum (fun k:set => apply_fun Av k) 3 in
+      apply_fun q1 p = div_SNo (apply_fun Av 1) lam.
+  {
+    let p.
+    assume HpT.
+    set v := apply_fun simplex3_triangle_region_to_fs p.
+    set Av := matrix_vector_mult 3 A v.
+    set lam := finite_real_sum (fun k:set => apply_fun Av k) 3.
+    claim Hrow1R : apply_fun row1 p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        row1
+        Hrow1Cont
+        p
+        HpT).
+    }
+    claim HlamfR : apply_fun lamf p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        lamf
+        HlamfCont
+        p
+        HpT).
+    }
+    claim HinvR : apply_fun invlam p :e R.
+    {
+      exact (continuous_map_function_on
+        simplex3_triangle_region
+        simplex3_triangle_topology
+        R
+        R_standard_topology
+        invlam
+        HinvlamCont
+        p
+        HpT).
+    }
+    claim Hrow1S : SNo (apply_fun row1 p).
+    {
+      exact (real_SNo (apply_fun row1 p) Hrow1R).
+    }
+    claim HlamfS : SNo (apply_fun lamf p).
+    {
+      exact (real_SNo (apply_fun lamf p) HlamfR).
+    }
+    claim HinvS : SNo (apply_fun invlam p).
+    {
+      exact (real_SNo (apply_fun invlam p) HinvR).
+    }
+    claim HlamNe0 : apply_fun lamf p <> 0.
+    {
+      assume H0.
+      claim H00 : Rlt 0 0.
+      {
+        rewrite <- H0 at 2.
+        exact (HlamPos p HpT).
+      }
+      exact (not_Rlt_refl
+        0
+        real_0
+        H00
+        False).
+    }
+    claim HlamInv1 :
+      mul_SNo (apply_fun lamf p) (apply_fun invlam p) = 1.
+    {
+      rewrite (HinvVal
+        p
+        HpT).
+      exact (recip_SNo_pos_invR
+        (apply_fun lamf p)
+        HlamfS
+        (RltE_lt
+          0
+          (apply_fun lamf p)
+          (HlamPos p HpT))).
+    }
+    claim HdivEq :
+      div_SNo (apply_fun row1 p) (apply_fun lamf p) =
+      mul_SNo (apply_fun row1 p) (apply_fun invlam p).
+    {
+      claim Hlamxr :
+        mul_SNo (apply_fun lamf p) (mul_SNo (apply_fun row1 p) (apply_fun invlam p)) =
+        apply_fun row1 p.
+      {
+        rewrite (mul_SNo_assoc
+          (apply_fun lamf p)
+          (apply_fun row1 p)
+          (apply_fun invlam p)
+          HlamfS
+          Hrow1S
+          HinvS).
+        rewrite (mul_SNo_com
+          (apply_fun lamf p)
+          (apply_fun row1 p)
+          HlamfS
+          Hrow1S).
+        rewrite (eq_symm
+          (mul_SNo (apply_fun row1 p) (mul_SNo (apply_fun lamf p) (apply_fun invlam p)))
+          (mul_SNo (mul_SNo (apply_fun row1 p) (apply_fun lamf p)) (apply_fun invlam p))
+          (mul_SNo_assoc
+            (apply_fun row1 p)
+            (apply_fun lamf p)
+            (apply_fun invlam p)
+            Hrow1S
+            HlamfS
+            HinvS)).
+        rewrite HlamInv1.
+        exact (mul_SNo_oneR
+          (apply_fun row1 p)
+          Hrow1S).
+      }
+      exact (mul_div_SNo_nonzero_eq
+        (apply_fun row1 p)
+        (apply_fun lamf p)
+        (mul_SNo (apply_fun row1 p) (apply_fun invlam p))
+        Hrow1S
+        HlamfS
+        (real_SNo
+          (mul_SNo (apply_fun row1 p) (apply_fun invlam p))
+          (real_mul_SNo
+            (apply_fun row1 p)
+            Hrow1R
+            (apply_fun invlam p)
+            HinvR))
+        HlamNe0
+        (eq_symm
+          (mul_SNo (apply_fun lamf p) (mul_SNo (apply_fun row1 p) (apply_fun invlam p)))
+          (apply_fun row1 p)
+          Hlamxr)).
+    }
+    rewrite (mul_of_pair_map_apply
+      simplex3_triangle_region
+      row1
+      invlam
+      p
+      HpT
+      Hrow1R
+      HinvR).
+    rewrite <- HdivEq.
+    rewrite (Hrow1Eq
+      p
+      HpT).
+    rewrite (HlamEq
+      p
+      HpT).
+    reflexivity.
+  }
+  claim HFFunR2 : function_on F simplex3_triangle_region (setprod R R).
+  {
+    let p.
+    assume HpT.
+    exact (SepE1
+      (setprod R R)
+      (fun q:set =>
+        ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+        ~(Rlt 1 (add_SNo (q 0) (q 1))))
+      (apply_fun F p)
+      (HFInto p HpT)).
+  }
+  claim HFEq :
+    forall p:set, p :e simplex3_triangle_region -> apply_fun Fraw p = apply_fun F p.
+  {
+    let p.
+    assume HpT.
+    set v := apply_fun simplex3_triangle_region_to_fs p.
+    set Av := matrix_vector_mult 3 A v.
+    set lam := finite_real_sum (fun k:set => apply_fun Av k) 3.
+    claim HFVal :
+      apply_fun F p =
+      (div_SNo (apply_fun Av 0) lam,
+       div_SNo (apply_fun Av 1) lam).
+    {
+      exact (apply_fun_graph
+        simplex3_triangle_region
+        (fun p0:set =>
+          let v0 := apply_fun simplex3_triangle_region_to_fs p0 in
+          let Av0 := matrix_vector_mult 3 A v0 in
+          let lam0 := finite_real_sum (fun k:set => apply_fun Av0 k) 3 in
+          (div_SNo (apply_fun Av0 0) lam0,
+           div_SNo (apply_fun Av0 1) lam0))
+        p
+        HpT).
+    }
+    claim HFrawVal :
+      apply_fun Fraw p = (apply_fun q0 p, apply_fun q1 p).
+    {
+      exact (pair_map_apply
+        simplex3_triangle_region
+        R
+        R
+        q0
+        q1
+        p
+        HpT).
+    }
+    rewrite HFrawVal.
+    rewrite HFVal.
+    exact (tuple_2_eq
+      (apply_fun q0 p)
+      (apply_fun q1 p)
+      (div_SNo (apply_fun Av 0) lam)
+      (div_SNo (apply_fun Av 1) lam)
+      (Hq0Eq
+        p
+        HpT)
+      (Hq1Eq
+        p
+        HpT)).
+  }
+  claim HFContR2 :
+    continuous_map simplex3_triangle_region simplex3_triangle_topology (setprod R R) R2_topology F.
+  {
+    exact (continuous_map_congr_on
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      (setprod R R)
+      R2_topology
+      Fraw
+      F
+      HrawContR2
+      HFFunR2
+      HFEq).
+  }
+  exact (continuous_map_range_restrict
+    simplex3_triangle_region
+    simplex3_triangle_topology
+    (setprod R R)
+    R2_topology
+    F
+    simplex3_triangle_region
+    HFContR2
+    HsubT
+    HFInto).
 }
 claim HfixP :
   exists p:set, p :e simplex3_triangle_region /\ apply_fun F p = p.
@@ -158054,7 +160491,7 @@ apply andI.
       rewrite Hi2eq.
       exact Hwi2.
   }
-  exact (eq_i_tra
+exact (eq_i_tra
     (apply_fun v i)
     (apply_fun w i)
     (div_SNo
@@ -158062,13 +160499,115 @@ apply andI.
       (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3))
     Hvw_i
     Hwi).
-Admitted. (** reduced to normalized-map-into-simplex and continuity for the nonnegative/nozero case **)
+Qed.
+
+(** Infrastructure: a nonnegative nonsingular 3x3 matrix cannot send a simplex point to the zero vector. **)
+(** Proven Charlie **)
+Lemma simplex3_fs_nonsingular_nonneg_matrix_nozero_image : forall A:set,
+  function_on A (setprod 3 3) R ->
+  (forall i j:set, i :e 3 -> j :e 3 -> ~(Rlt (apply_fun A (i, j)) 0)) ->
+  (forall v:set, function_on v 3 R ->
+    ~(forall i:set, i :e 3 -> apply_fun v i = 0) ->
+    ~(forall i:set, i :e 3 ->
+      finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3 = 0)) ->
+  forall v:set, v :e simplex3_fs ->
+    ~(forall i:set, i :e 3 -> apply_fun (matrix_vector_mult 3 A v) i = 0).
+let A.
+assume HAfun HAnonneg Hnonsing.
+let v.
+assume HvS.
+claim Hvfun : function_on v 3 R.
+{
+  exact (function_on_of_function_space
+    v
+    3
+    R
+    (SepE1
+      (function_space 3 R)
+      (fun w:set =>
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+        finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+      v
+      HvS)).
+}
+claim Hnotzero : ~(forall i:set, i :e 3 -> apply_fun v i = 0).
+{
+  assume Hzero.
+  claim HvSprop :
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+  {
+    exact (SepE2
+      (function_space 3 R)
+      (fun w:set =>
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+        finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+      v
+      HvS).
+  }
+  claim Hsum1 : finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+  {
+    exact (andER
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+      (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+      HvSprop).
+  }
+  claim H3nat : nat_p 3.
+  {
+    exact (nat_ordsucc
+      2
+      (nat_ordsucc
+        1
+        (nat_ordsucc 0 nat_0))).
+  }
+  claim Hsum0 : finite_real_sum (fun i:set => apply_fun v i) 3 = 0.
+  {
+    apply (finite_real_sum_zero_of_all_zero
+      (fun i:set => apply_fun v i)
+      3
+      H3nat).
+    - let i.
+      assume Hi3.
+      exact (Hvfun i Hi3).
+    - exact Hzero.
+  }
+  claim H10 : 1 = 0.
+  {
+    rewrite <- Hsum1.
+    exact Hsum0.
+  }
+  exact (neq_1_0 H10).
+}
+assume HAvZero.
+apply (Hnonsing
+  v
+  Hvfun
+  Hnotzero).
+let i.
+assume Hi3.
+exact (eq_i_tra
+  (finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+  (apply_fun (matrix_vector_mult 3 A v) i)
+  0
+  (eq_symm
+    (apply_fun (matrix_vector_mult 3 A v) i)
+    (finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+    (apply_fun_graph
+      3
+      (fun i0:set =>
+        finite_real_sum (fun j:set => mul_SNo (apply_fun A (i0, j)) (apply_fun v j)) 3)
+      i
+      Hi3))
+  (HAvZero
+    i
+    Hi3)).
+Qed.
 
 (** from S55 Exercise 3 (line 1044 in algtop.tex) **)
 (** LATEX VERSION: If A is a nonsingular 3x3 matrix having nonnegative entries, then A has a positive real eigenvalue. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 61 **)
-(** Lock Charlie 1773579591 **)
+(** Collected Charlie 61 **)
+(** Proven Charlie **)
 Theorem ex55_3_nonneg_nonsingular_matrix_eigenvalue : forall A:set,
   function_on A (setprod 3 3) R ->
   (forall i j:set, i :e 3 -> j :e 3 -> ~(Rlt (apply_fun A (i, j)) 0)) ->
@@ -158083,93 +160622,11 @@ claim HsimplexNoZero :
   forall v:set, v :e simplex3_fs ->
     ~(forall i:set, i :e 3 -> apply_fun (matrix_vector_mult 3 A v) i = 0).
 {
-  let v.
-  assume HvS.
-  claim Hvfun : function_on v 3 R.
-  {
-    exact (function_on_of_function_space
-      v
-      3
-      R
-      (SepE1
-        (function_space 3 R)
-        (fun w:set =>
-          (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
-          finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
-        v
-        HvS)).
-  }
-  claim Hnotzero : ~(forall i:set, i :e 3 -> apply_fun v i = 0).
-  {
-    assume Hzero.
-    claim HvSprop :
-      (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
-      finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
-    {
-      exact (SepE2
-        (function_space 3 R)
-        (fun w:set =>
-          (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
-          finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
-        v
-        HvS).
-    }
-    claim Hsum1 : finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
-    {
-      exact (andER
-        (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
-        (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
-        HvSprop).
-    }
-    claim H3nat : nat_p 3.
-    {
-      exact (nat_ordsucc
-        2
-        (nat_ordsucc
-          1
-          (nat_ordsucc 0 nat_0))).
-    }
-    claim Hsum0 : finite_real_sum (fun i:set => apply_fun v i) 3 = 0.
-    {
-      apply (finite_real_sum_zero_of_all_zero
-        (fun i:set => apply_fun v i)
-        3
-        H3nat).
-      - let i.
-        assume Hi3.
-        exact (Hvfun i Hi3).
-      - exact Hzero.
-    }
-    claim H10 : 1 = 0.
-    {
-      rewrite <- Hsum1.
-      exact Hsum0.
-    }
-    exact (neq_1_0 H10).
-  }
-  assume HAvZero.
-  apply (Hnonsing
-    v
-    Hvfun
-    Hnotzero).
-  let i.
-  assume Hi3.
-  exact (eq_i_tra
-    (finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
-    (apply_fun (matrix_vector_mult 3 A v) i)
-    0
-    (eq_symm
-      (apply_fun (matrix_vector_mult 3 A v) i)
-      (finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
-      (apply_fun_graph
-        3
-        (fun i0:set =>
-          finite_real_sum (fun j:set => mul_SNo (apply_fun A (i0, j)) (apply_fun v j)) 3)
-        i
-        Hi3))
-    (HAvZero
-      i
-      Hi3)).
+  exact (simplex3_fs_nonsingular_nonneg_matrix_nozero_image
+    A
+    HAfun
+    HAnonneg
+    Hnonsing).
 }
 claim Hfix :
   exists v:set, v :e simplex3_fs /\
@@ -158222,7 +160679,7 @@ exact (simplex3_fixedpoint_equation_implies_eigenvalue
   HAnonneg
   HvS
   Hfixed).
-Admitted. (** reduced to admitted simplex3_fixed_point_nonneg_matrix helper **)
+Qed.
 
 (** Infrastructure for Exercise 55.4: norm squared in Euclidean n-space **)
 (** euclidean_norm_sq n v = sum_{i<n} v(i)^2 **)
