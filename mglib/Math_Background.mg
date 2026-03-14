@@ -148949,8 +148949,174 @@ apply andI.
 - exact HvS.
 - let i.
   assume Hi3.
-  rewrite HvEqW.
-  admit.
+  set Av := matrix_vector_mult 3 A v.
+  set lam := finite_real_sum (fun k:set => apply_fun Av k) 3.
+  claim Hvw_i : apply_fun v i = apply_fun w i.
+  {
+    rewrite HvEqW.
+    reflexivity.
+  }
+  claim HwVal :
+    w =
+    graph 3 (fun j:set =>
+      if j = 0 then div_SNo (apply_fun Av 0) lam else
+      if j = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam).
+  {
+    exact (apply_fun_graph
+      simplex3_triangle_region
+      (fun p0:set =>
+        let v0 := apply_fun simplex3_triangle_region_to_fs p0 in
+        let Av0 := matrix_vector_mult 3 A v0 in
+        let lam0 := finite_real_sum (fun k:set => apply_fun Av0 k) 3 in
+        graph 3 (fun j:set =>
+          if j = 0 then div_SNo (apply_fun Av0 0) lam0 else
+          if j = 1 then div_SNo (apply_fun Av0 1) lam0 else
+          div_SNo (apply_fun Av0 2) lam0))
+      p
+      HpT).
+  }
+  claim Hwi :
+    apply_fun w i =
+    div_SNo
+      (apply_fun (matrix_vector_mult 3 A v) i)
+      (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3).
+  {
+    claim Hneq21 : 2 <> 1.
+    {
+      assume H21.
+      claim H1in2 : 1 :e 2. { exact In_1_2. }
+      claim H1in1 : 1 :e 1.
+      { exact (H21 (fun a b => 1 :e a) H1in2). }
+      apply (ordsuccE 0 1 H1in1).
+      - assume H1in0. exact (EmptyE 1 H1in0).
+      - assume H10. exact (neq_1_0 H10).
+    }
+    rewrite HwVal.
+    claim Hwi0 :
+      apply_fun
+        (graph 3 (fun j0:set =>
+          if j0 = 0 then div_SNo (apply_fun Av 0) lam else
+          if j0 = 1 then div_SNo (apply_fun Av 1) lam else
+          div_SNo (apply_fun Av 2) lam))
+        0
+      =
+      div_SNo
+        (apply_fun (matrix_vector_mult 3 A v) 0)
+        (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3).
+    {
+      rewrite (apply_fun_graph
+        3
+        (fun j0:set =>
+          if j0 = 0 then div_SNo (apply_fun Av 0) lam else
+          if j0 = 1 then div_SNo (apply_fun Av 1) lam else
+          div_SNo (apply_fun Av 2) lam)
+        0
+        (ordsuccI1 2 0 In_0_2)).
+      rewrite (If_i_1
+        (0 = 0)
+        (div_SNo (apply_fun Av 0) lam)
+        (if 0 = 1 then div_SNo (apply_fun Av 1) lam else
+          div_SNo (apply_fun Av 2) lam)
+        (eq_refl 0)).
+      reflexivity.
+    }
+    claim Hwi1 :
+      apply_fun
+        (graph 3 (fun j0:set =>
+          if j0 = 0 then div_SNo (apply_fun Av 0) lam else
+          if j0 = 1 then div_SNo (apply_fun Av 1) lam else
+          div_SNo (apply_fun Av 2) lam))
+        1
+      =
+      div_SNo
+        (apply_fun (matrix_vector_mult 3 A v) 1)
+        (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3).
+    {
+      rewrite (apply_fun_graph
+        3
+        (fun j0:set =>
+          if j0 = 0 then div_SNo (apply_fun Av 0) lam else
+          if j0 = 1 then div_SNo (apply_fun Av 1) lam else
+          div_SNo (apply_fun Av 2) lam)
+        1
+        (ordsuccI1 2 1 In_1_2)).
+      rewrite (If_i_0
+        (1 = 0)
+        (div_SNo (apply_fun Av 0) lam)
+        (if 1 = 1 then div_SNo (apply_fun Av 1) lam else
+          div_SNo (apply_fun Av 2) lam)
+        neq_1_0).
+      rewrite (If_i_1
+        (1 = 1)
+        (div_SNo (apply_fun Av 1) lam)
+        (div_SNo (apply_fun Av 2) lam)
+        (eq_refl 1)).
+      reflexivity.
+    }
+    claim Hwi2 :
+      apply_fun
+        (graph 3 (fun j0:set =>
+          if j0 = 0 then div_SNo (apply_fun Av 0) lam else
+          if j0 = 1 then div_SNo (apply_fun Av 1) lam else
+          div_SNo (apply_fun Av 2) lam))
+        2
+      =
+      div_SNo
+        (apply_fun (matrix_vector_mult 3 A v) 2)
+        (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3).
+    {
+      rewrite (apply_fun_graph
+        3
+        (fun j0:set =>
+          if j0 = 0 then div_SNo (apply_fun Av 0) lam else
+          if j0 = 1 then div_SNo (apply_fun Av 1) lam else
+          div_SNo (apply_fun Av 2) lam)
+        2
+        (ordsuccI2 2)).
+      rewrite (If_i_0
+        (2 = 0)
+        (div_SNo (apply_fun Av 0) lam)
+        (if 2 = 1 then div_SNo (apply_fun Av 1) lam else
+          div_SNo (apply_fun Av 2) lam)
+        neq_2_0).
+      rewrite (If_i_0
+        (2 = 1)
+        (div_SNo (apply_fun Av 1) lam)
+        (div_SNo (apply_fun Av 2) lam)
+        Hneq21).
+      reflexivity.
+    }
+    apply (ordsuccE 2 i Hi3).
+    - assume Hi2.
+      exact (cases_2
+        i
+        Hi2
+        (fun j:set =>
+          apply_fun
+            (graph 3 (fun j0:set =>
+              if j0 = 0 then div_SNo (apply_fun Av 0) lam else
+              if j0 = 1 then div_SNo (apply_fun Av 1) lam else
+              div_SNo (apply_fun Av 2) lam))
+            j
+          =
+          div_SNo
+            (apply_fun (matrix_vector_mult 3 A v) j)
+            (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3))
+        Hwi0
+        Hwi1).
+    - assume Hi2eq.
+      rewrite Hi2eq.
+      exact Hwi2.
+  }
+  exact (eq_i_tra
+    (apply_fun v i)
+    (apply_fun w i)
+    (div_SNo
+      (apply_fun (matrix_vector_mult 3 A v) i)
+      (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3))
+    Hvw_i
+    Hwi).
 Admitted. (** TODO: fixed point via Brouwer on triangle/homeomorphism to B2. **)
 
 (** from S55 starred Cor 55.7 (line 994 in algtop.tex) **)
