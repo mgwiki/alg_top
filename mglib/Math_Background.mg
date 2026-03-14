@@ -147700,6 +147700,140 @@ exact (real_minus_SNo
 Qed.
 
 (** Proven Charlie **)
+Lemma Rn_negate_involution : forall n v:set,
+  v :e euclidean_space n ->
+  Rn_negate n (Rn_negate n v) = v.
+let n v.
+assume Hv.
+claim HnegV :
+  Rn_negate n v :e euclidean_space n.
+{
+  exact (Rn_negate_in_euclidean_space
+    n
+    v
+    Hv).
+}
+apply (power_real_ext
+  n
+  (Rn_negate n (Rn_negate n v))
+  v
+  (Rn_negate_in_euclidean_space
+    n
+    (Rn_negate n v)
+    HnegV)
+  Hv).
+let i.
+assume Hi.
+claim HviR :
+  apply_fun v i :e R.
+{
+  exact (euclidean_space_coord_in_R
+    n
+    v
+    i
+    Hv
+    Hi).
+}
+rewrite (Rn_negate_apply
+  n
+  (Rn_negate n v)
+  i
+  Hi).
+rewrite (Rn_negate_apply
+  n
+  v
+  i
+  Hi).
+exact (minus_SNo_invol
+  (apply_fun v i)
+  (real_SNo
+    (apply_fun v i)
+    HviR)).
+Qed.
+
+(** Proven Charlie **)
+Lemma Rn_negate_scalar_mult : forall n a x:set,
+  x :e euclidean_space n ->
+  a :e R ->
+  Rn_negate n (Rn_scalar_mult n a x) =
+  Rn_scalar_mult n (minus_SNo a) x.
+let n a x.
+assume HxEu HaR.
+claim HnegScaledEu :
+  Rn_negate n (Rn_scalar_mult n a x) :e euclidean_space n.
+{
+  exact (Rn_negate_in_euclidean_space
+    n
+    (Rn_scalar_mult n a x)
+    (Rn_scalar_mult_in_euclidean_space
+      n
+      a
+      x
+      HxEu
+      HaR)).
+}
+claim HrhsEu :
+  Rn_scalar_mult n (minus_SNo a) x :e euclidean_space n.
+{
+  exact (Rn_scalar_mult_in_euclidean_space
+    n
+    (minus_SNo a)
+    x
+    HxEu
+    (real_minus_SNo
+      a
+      HaR)).
+}
+apply (power_real_ext
+  n
+  (Rn_negate n (Rn_scalar_mult n a x))
+  (Rn_scalar_mult n (minus_SNo a) x)
+  HnegScaledEu
+  HrhsEu).
+let i.
+assume Hi.
+claim HxiR :
+  apply_fun x i :e R.
+{
+  exact (euclidean_space_coord_in_R
+    n
+    x
+    i
+    HxEu
+    Hi).
+}
+rewrite (Rn_negate_apply
+  n
+  (Rn_scalar_mult n a x)
+  i
+  Hi).
+rewrite (Rn_scalar_mult_apply
+  n
+  a
+  x
+  i
+  Hi).
+rewrite (Rn_scalar_mult_apply
+  n
+  (minus_SNo a)
+  x
+  i
+  Hi).
+exact (eq_symm
+  (mul_SNo (minus_SNo a) (apply_fun x i))
+  (minus_SNo (mul_SNo a (apply_fun x i)))
+  (mul_SNo_minus_distrL
+    a
+    (apply_fun x i)
+    (real_SNo
+      a
+      HaR)
+    (real_SNo
+      (apply_fun x i)
+      HxiR))).
+Qed.
+
+(** Proven Charlie **)
 Lemma Rn_zero_in_euclidean_space : forall n:set,
   nat_p n ->
   Rn_zero n :e euclidean_space n.
@@ -160273,6 +160407,545 @@ exact (continuous_map_congr_on
   HcoordEqOn).
 Qed.
 
+(** Infrastructure: coordinatewise negation is continuous on Euclidean space. **)
+(** Proven Charlie **)
+Lemma Rn_negate_ordsucc_euclidean_continuous : forall n:set,
+  n :e omega ->
+  continuous_map
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (graph (euclidean_space (ordsucc n)) (fun v:set => Rn_negate (ordsucc n) v)).
+let n.
+assume Hn_om.
+set E := euclidean_space (ordsucc n).
+set Etop := euclidean_topology (ordsucc n).
+set F := graph (ordsucc n) (fun j:set =>
+  graph E (fun v:set => minus_SNo (apply_fun v j))).
+claim Hn_nat :
+  nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim HEtop :
+  topology_on E Etop.
+{
+  exact (euclidean_topology_is_topology
+    (ordsucc n)).
+}
+claim HordsuccNe :
+  ordsucc n <> Empty.
+{
+  assume Hempty.
+  claim H0in :
+    0 :e ordsucc n.
+  {
+    exact (nat_0_in_ordsucc
+      n
+      Hn_nat).
+  }
+  exact (EmptyE
+    0
+    (mem_eqR
+      0
+      (ordsucc n)
+      Empty
+      Hempty
+      H0in)).
+}
+claim HF_tfn :
+  total_function_on
+    F
+    (ordsucc n)
+    (function_space E R).
+{
+  apply (total_function_on_graph
+    (ordsucc n)
+    (function_space E R)).
+  let j.
+  assume Hj.
+  exact (graph_in_function_space
+    E
+    R
+    (fun v:set => minus_SNo (apply_fun v j))
+    (fun v Hv =>
+      real_minus_SNo
+        (apply_fun v j)
+        (euclidean_space_coord_in_R
+          (ordsucc n)
+          v
+          j
+          Hv
+          Hj))).
+}
+claim HF_cond :
+  forall j:set, j :e ordsucc n ->
+    continuous_map
+      E
+      Etop
+      R
+      R_standard_topology
+      (apply_fun F j).
+{
+  let j.
+  assume Hj.
+  set coordj := graph E (fun v:set => apply_fun v j).
+  claim HcoordCont :
+    continuous_map
+      E
+      Etop
+      R
+      R_standard_topology
+      coordj.
+  {
+    exact (euclidean_coord_continuous
+      (ordsucc n)
+      j
+      (nat_ordsucc
+        n
+        Hn_nat)
+      Hj).
+  }
+  claim HcoordNegFun :
+    function_on
+      (graph E (fun v:set => minus_SNo (apply_fun v j)))
+      E
+      R.
+  {
+    exact (function_on_of_function_space
+      (graph E (fun v:set => minus_SNo (apply_fun v j)))
+      E
+      R
+      (graph_in_function_space
+        E
+        R
+        (fun v:set => minus_SNo (apply_fun v j))
+        (fun v Hv =>
+          real_minus_SNo
+            (apply_fun v j)
+            (euclidean_space_coord_in_R
+              (ordsucc n)
+              v
+              j
+              Hv
+              Hj)))).
+  }
+  claim HcoordNegEqOn :
+    forall v:set, v :e E ->
+      apply_fun
+        (compose_fun
+          E
+          coordj
+          neg_fun)
+        v
+      =
+      apply_fun
+        (graph E (fun v0:set => minus_SNo (apply_fun v0 j)))
+        v.
+  {
+    let v.
+    assume Hv.
+    rewrite (compose_fun_apply
+      E
+      coordj
+      neg_fun
+      v
+      Hv).
+    rewrite (apply_fun_graph
+      E
+      (fun v0:set => apply_fun v0 j)
+      v
+      Hv).
+    rewrite (neg_fun_apply
+      (apply_fun v j)
+      (euclidean_space_coord_in_R
+        (ordsucc n)
+        v
+        j
+        Hv
+        Hj)).
+    symmetry.
+    exact (apply_fun_graph
+      E
+      (fun v0:set => minus_SNo (apply_fun v0 j))
+      v
+      Hv).
+  }
+  rewrite (apply_fun_graph
+    (ordsucc n)
+    (fun j0:set =>
+      graph E (fun v:set => minus_SNo (apply_fun v j0)))
+    j
+    Hj).
+  exact (continuous_map_congr_on
+    E
+    Etop
+    R
+    R_standard_topology
+    (compose_fun
+      E
+      coordj
+      neg_fun)
+    (graph E (fun v:set => minus_SNo (apply_fun v j)))
+    (composition_continuous
+      E
+      Etop
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      coordj
+      neg_fun
+      HcoordCont
+      neg_fun_continuous)
+    HcoordNegFun
+    HcoordNegEqOn).
+}
+claim HdiagCont :
+  continuous_map
+    E
+    Etop
+    E
+    Etop
+    (diagonal_map E F (ordsucc n)).
+{
+  exact (diagonal_map_continuous_power_real
+    E
+    Etop
+    F
+    (ordsucc n)
+    HEtop
+    HordsuccNe
+    HF_tfn
+    HF_cond).
+}
+claim HnegMapFun :
+  function_on
+    (graph E (fun v:set => Rn_negate (ordsucc n) v))
+    E
+    E.
+{
+  let v.
+  assume Hv.
+  rewrite (apply_fun_graph
+    E
+    (fun v0:set => Rn_negate (ordsucc n) v0)
+    v
+    Hv).
+  exact (Rn_negate_in_euclidean_space
+    (ordsucc n)
+    v
+    Hv).
+}
+claim HdiagFun :
+  function_on
+    (diagonal_map E F (ordsucc n))
+    E
+    E.
+{
+  exact (diagonal_map_function_on_power_real
+    E
+    F
+    (ordsucc n)
+    HF_tfn).
+}
+apply (continuous_map_congr_on
+  E
+  Etop
+  E
+  Etop
+  (diagonal_map E F (ordsucc n))
+  (graph E (fun v:set => Rn_negate (ordsucc n) v))
+  HdiagCont
+  HnegMapFun).
+let v.
+assume Hv.
+rewrite (apply_fun_graph
+  E
+  (fun v0:set => Rn_negate (ordsucc n) v0)
+  v
+  Hv).
+apply (power_real_ext
+  (ordsucc n)
+  (apply_fun (diagonal_map E F (ordsucc n)) v)
+  (Rn_negate (ordsucc n) v)
+  (HdiagFun
+    v
+    Hv)
+  (Rn_negate_in_euclidean_space
+    (ordsucc n)
+    v
+    Hv)).
+let j.
+assume Hj.
+rewrite (diagonal_map_coord_apply
+  E
+  F
+  (ordsucc n)
+  v
+  j
+  Hv
+  Hj).
+rewrite (apply_fun_graph
+  (ordsucc n)
+  (fun j0:set =>
+    graph E (fun v:set => minus_SNo (apply_fun v j0)))
+  j
+  Hj).
+rewrite (Rn_negate_apply
+  (ordsucc n)
+  v
+  j
+  Hj).
+exact (apply_fun_graph
+  E
+  (fun v0:set => minus_SNo (apply_fun v0 j))
+  v
+  Hv).
+Qed.
+
+(** Infrastructure: negation preserves punctured Euclidean space. **)
+(** Proven Charlie **)
+Lemma Rn_negate_in_Rn_minus_origin_ordsucc : forall n y:set,
+  n :e omega ->
+  y :e Rn_minus_origin (ordsucc n) ->
+  Rn_negate (ordsucc n) y :e Rn_minus_origin (ordsucc n).
+let n y.
+assume Hn_om HyNz.
+claim HnegEu :
+  Rn_negate (ordsucc n) y :e euclidean_space (ordsucc n).
+{
+  exact (Rn_negate_in_euclidean_space
+    (ordsucc n)
+    y
+    (SepE1
+      (euclidean_space (ordsucc n))
+      (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+      y
+      HyNz)).
+}
+claim HnegNz :
+  ~(forall i:set, i :e ordsucc n -> apply_fun (Rn_negate (ordsucc n) y) i = 0).
+{
+  assume HnegZero.
+  apply (SepE2
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+    y
+    HyNz).
+  let i.
+  assume Hi.
+  claim HyiR :
+    apply_fun y i :e R.
+  {
+    exact (euclidean_space_coord_in_R
+      (ordsucc n)
+      y
+      i
+      (SepE1
+        (euclidean_space (ordsucc n))
+        (fun v:set => ~(forall j:set, j :e ordsucc n -> apply_fun v j = 0))
+        y
+        HyNz)
+      Hi).
+  }
+  claim HnegCoord :
+    minus_SNo (apply_fun y i) = 0.
+  {
+    rewrite <- (Rn_negate_apply
+      (ordsucc n)
+      y
+      i
+      Hi).
+    exact (HnegZero
+      i
+      Hi).
+  }
+  rewrite <- (minus_SNo_invol
+    (apply_fun y i)
+    (real_SNo
+      (apply_fun y i)
+      HyiR)).
+  rewrite HnegCoord.
+  exact minus_SNo_0.
+}
+exact (SepI
+  (euclidean_space (ordsucc n))
+  (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+  (Rn_negate (ordsucc n) y)
+  HnegEu
+  HnegNz).
+Qed.
+
+(** Infrastructure: negation is continuous on punctured Euclidean space. **)
+(** Proven Charlie **)
+Lemma Rn_negate_Rn_minus_origin_continuous_ordsucc : forall n:set,
+  n :e omega ->
+  continuous_map
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    (graph (Rn_minus_origin (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y)).
+let n.
+assume Hn_om.
+set inclNz := graph (Rn_minus_origin (ordsucc n)) (fun y:set => y).
+claim HnegEuCont :
+  continuous_map
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (graph (Rn_minus_origin (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y)).
+{
+  set negComp := compose_fun
+    (Rn_minus_origin (ordsucc n))
+    inclNz
+    (graph (euclidean_space (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y)).
+  claim HnegCompCont :
+    continuous_map
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      (euclidean_space (ordsucc n))
+      (euclidean_topology (ordsucc n))
+      negComp.
+  {
+    exact (composition_continuous
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      (euclidean_space (ordsucc n))
+      (euclidean_topology (ordsucc n))
+      (euclidean_space (ordsucc n))
+      (euclidean_topology (ordsucc n))
+      inclNz
+      (graph (euclidean_space (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y))
+      (Rn_minus_origin_inclusion_continuous
+        (ordsucc n)
+        (omega_ordsucc
+          n
+          Hn_om))
+      (Rn_negate_ordsucc_euclidean_continuous
+        n
+        Hn_om)).
+  }
+  claim HnegGraphFun :
+    function_on
+      (graph (Rn_minus_origin (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y))
+      (Rn_minus_origin (ordsucc n))
+      (euclidean_space (ordsucc n)).
+  {
+    let y.
+    assume Hy.
+    rewrite (apply_fun_graph
+      (Rn_minus_origin (ordsucc n))
+      (fun y0:set => Rn_negate (ordsucc n) y0)
+      y
+      Hy).
+    exact (Rn_negate_in_euclidean_space
+      (ordsucc n)
+      y
+      (SepE1
+        (euclidean_space (ordsucc n))
+        (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+        y
+        Hy)).
+  }
+  claim HnegCompEqOn :
+    forall y:set, y :e Rn_minus_origin (ordsucc n) ->
+      apply_fun negComp y =
+      apply_fun
+        (graph (Rn_minus_origin (ordsucc n)) (fun y0:set => Rn_negate (ordsucc n) y0))
+        y.
+  {
+    let y.
+    assume Hy.
+    rewrite (compose_fun_apply
+      (Rn_minus_origin (ordsucc n))
+      inclNz
+      (graph (euclidean_space (ordsucc n)) (fun y0:set => Rn_negate (ordsucc n) y0))
+      y
+      Hy).
+    rewrite (apply_fun_graph
+      (Rn_minus_origin (ordsucc n))
+      (fun y0:set => y0)
+      y
+      Hy).
+    exact (eq_i_tra
+      (apply_fun
+        (graph (euclidean_space (ordsucc n)) (fun y0:set => Rn_negate (ordsucc n) y0))
+        y)
+      (Rn_negate (ordsucc n) y)
+      (apply_fun
+        (graph (Rn_minus_origin (ordsucc n)) (fun y0:set => Rn_negate (ordsucc n) y0))
+        y)
+      (apply_fun_graph
+        (euclidean_space (ordsucc n))
+        (fun y0:set => Rn_negate (ordsucc n) y0)
+        y
+        (SepE1
+          (euclidean_space (ordsucc n))
+          (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+          y
+          Hy))
+      (eq_symm
+        (apply_fun
+          (graph (Rn_minus_origin (ordsucc n)) (fun y0:set => Rn_negate (ordsucc n) y0))
+          y)
+        (Rn_negate (ordsucc n) y)
+        (apply_fun_graph
+          (Rn_minus_origin (ordsucc n))
+          (fun y0:set => Rn_negate (ordsucc n) y0)
+          y
+          Hy))).
+  }
+  exact (continuous_map_congr_on
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    negComp
+    (graph (Rn_minus_origin (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y))
+    HnegCompCont
+    HnegGraphFun
+    HnegCompEqOn).
+}
+claim HnegIntoNz :
+  forall y:set, y :e Rn_minus_origin (ordsucc n) ->
+    apply_fun
+      (graph (Rn_minus_origin (ordsucc n)) (fun y0:set => Rn_negate (ordsucc n) y0))
+      y
+    :e Rn_minus_origin (ordsucc n).
+{
+  let y.
+  assume Hy.
+  rewrite (apply_fun_graph
+    (Rn_minus_origin (ordsucc n))
+    (fun y0:set => Rn_negate (ordsucc n) y0)
+    y
+    Hy).
+  exact (Rn_negate_in_Rn_minus_origin_ordsucc
+    n
+    y
+    Hn_om
+    Hy).
+}
+exact (continuous_map_range_restrict
+  (Rn_minus_origin (ordsucc n))
+  (Rn_minus_origin_topology (ordsucc n))
+  (euclidean_space (ordsucc n))
+  (euclidean_topology (ordsucc n))
+  (graph (Rn_minus_origin (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y))
+  (Rn_minus_origin (ordsucc n))
+  HnegEuCont
+  (Sep_Subq
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0)))
+  HnegIntoNz).
+Qed.
+
 (** Infrastructure: a map on S^n that extends over B^{n+1} is nulhomotopic. **)
 (** Proven Charlie **)
 Lemma Sn_extends_to_Bn_closed_implies_nulhomotopic :
@@ -160557,6 +161230,42 @@ claim HvSEq :
     HxSn).
   reflexivity.
 }
+claim HnoInImplInclusionNulAux :
+  forall w wS:set,
+    continuous_map
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      w ->
+    continuous_map
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      wS ->
+    (forall x:set, x :e Sn n -> apply_fun wS x = apply_fun w x) ->
+    ~(exists x:set, x :e Sn n /\ points_directly_inward_Rn n w x) ->
+    nulhomotopic
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      wS ->
+    nulhomotopic
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      (graph (Sn n) (fun x:set => x)).
+{
+  let w wS.
+  assume HwCont HwSCont HwSEq HnoInW HwSNul.
+  (** Remaining geometric step: build the straight-line homotopy
+      in R^{n+1} :\: {0} from wS to the inclusion. A zero of that
+      homotopy would force an inward-pointing boundary value. **)
+  admit.
+}
 claim HnoInImplInclusionNul :
   ~(exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x) ->
   nulhomotopic
@@ -160567,10 +161276,23 @@ claim HnoInImplInclusionNul :
     (graph (Sn n) (fun x:set => x)).
 {
   assume HnoIn.
-  (** Remaining geometric step: build the straight-line homotopy
-      in R^{n+1} :\: {0} from vS to the inclusion. A zero of that
-      homotopy would force an inward-pointing boundary value. **)
-  admit.
+  exact (HnoInImplInclusionNulAux
+    vP
+    vS
+    HvPCont
+    HvSCont
+    HvSEq
+    HnoIn
+    (Sn_extends_to_Bn_closed_implies_nulhomotopic
+      n
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      vS
+      vP
+      Hn_om
+      HvSCont
+      HvPCont
+      HvSEq)).
 }
 claim HnoOutImplInclusionNul :
   ~(exists x:set, x :e Sn n /\ points_directly_outward_Rn n v x) ->
@@ -160582,10 +161304,299 @@ claim HnoOutImplInclusionNul :
     (graph (Sn n) (fun x:set => x)).
 {
   assume HnoOut.
-  (** Remaining symmetry step: apply the inward-pointing argument to
-      the negated field -v, then translate inward points of -v into
-      outward points of v. **)
-  admit.
+  set negP := compose_fun
+    (Bn_closed n)
+    vP
+    (graph (euclidean_space (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y)).
+  claim HnegPIntoNz :
+    forall x:set, x :e Bn_closed n ->
+      apply_fun negP x :e Rn_minus_origin (ordsucc n).
+  {
+    let x.
+    assume HxB.
+    claim HvxEu :
+      apply_fun vP x :e euclidean_space (ordsucc n).
+    {
+      exact (continuous_map_function_on
+        (Bn_closed n)
+        (Bn_closed_topology n)
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        vP
+        HvCont
+        x
+        HxB).
+    }
+    rewrite (compose_fun_apply
+      (Bn_closed n)
+      vP
+      (graph (euclidean_space (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y))
+      x
+      HxB).
+    rewrite (apply_fun_graph
+      (euclidean_space (ordsucc n))
+      (fun y:set => Rn_negate (ordsucc n) y)
+      (apply_fun vP x)
+      HvxEu).
+    exact (Rn_negate_in_Rn_minus_origin_ordsucc
+      n
+      (apply_fun vP x)
+      Hn_om
+      (HvIntoNz
+        x
+        HxB)).
+  }
+  claim HnegPCont :
+    continuous_map
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      negP.
+  {
+    exact (continuous_map_range_restrict
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      (euclidean_space (ordsucc n))
+      (euclidean_topology (ordsucc n))
+      negP
+      (Rn_minus_origin (ordsucc n))
+      (composition_continuous
+        (Bn_closed n)
+        (Bn_closed_topology n)
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        vP
+        (graph (euclidean_space (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y))
+        HvCont
+        (Rn_negate_ordsucc_euclidean_continuous
+          n
+          Hn_om))
+      (Sep_Subq
+        (euclidean_space (ordsucc n))
+        (fun y:set => ~(forall i:set, i :e ordsucc n -> apply_fun y i = 0)))
+      HnegPIntoNz).
+  }
+  set negS := compose_fun (Sn n) incSnB negP.
+  claim HnegSCont :
+    continuous_map
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      negS.
+  {
+    exact (composition_continuous
+      (Sn n)
+      (Sn_topology n)
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      incSnB
+      negP
+      (Sn_inclusion_Bn_closed_continuous
+        n)
+      HnegPCont).
+  }
+  claim HnegSEq :
+    forall x:set, x :e Sn n ->
+      apply_fun negS x = apply_fun negP x.
+  {
+    let x.
+    assume HxSn.
+    rewrite (compose_fun_apply
+      (Sn n)
+      incSnB
+      negP
+      x
+      HxSn).
+    rewrite (apply_fun_graph
+      (Sn n)
+      (fun z:set => z)
+      x
+      HxSn).
+    reflexivity.
+  }
+  claim HnegSNul :
+    nulhomotopic
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      negS.
+  {
+    exact (Sn_extends_to_Bn_closed_implies_nulhomotopic
+      n
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      negS
+      negP
+      Hn_om
+      HnegSCont
+      HnegPCont
+      HnegSEq).
+  }
+  claim HnoInNeg :
+    ~(exists x:set, x :e Sn n /\ points_directly_inward_Rn n negP x).
+  {
+    assume HnegIn.
+    apply HnoOut.
+    apply HnegIn.
+    let x.
+    assume HxPack.
+    claim HxSn :
+      x :e Sn n.
+    {
+      exact (andEL
+        (x :e Sn n)
+        (points_directly_inward_Rn n negP x)
+        HxPack).
+    }
+    claim HxNegIn :
+      points_directly_inward_Rn n negP x.
+    {
+      exact (andER
+        (x :e Sn n)
+        (points_directly_inward_Rn n negP x)
+        HxPack).
+    }
+    claim HnegScale :
+      exists a:set, a :e R /\ Rlt 0 a /\
+        apply_fun negP x = Rn_scalar_mult (ordsucc n) (minus_SNo a) x.
+    {
+      exact (points_directly_inward_Rn_scale
+        n
+        negP
+        x
+        HxNegIn).
+    }
+    apply HnegScale.
+    let a.
+    assume HaPack.
+    claim HaRPos :
+      a :e R /\ Rlt 0 a.
+    {
+      exact (andEL
+        (a :e R /\ Rlt 0 a)
+        (apply_fun negP x = Rn_scalar_mult (ordsucc n) (minus_SNo a) x)
+        HaPack).
+    }
+    claim HaR :
+      a :e R.
+    {
+      exact (andEL
+        (a :e R)
+        (Rlt 0 a)
+        HaRPos).
+    }
+    claim HnegPxEq :
+      apply_fun negP x = Rn_scalar_mult (ordsucc n) (minus_SNo a) x.
+    {
+      exact (andER
+        (a :e R /\ Rlt 0 a)
+        (apply_fun negP x = Rn_scalar_mult (ordsucc n) (minus_SNo a) x)
+        HaPack).
+    }
+    claim HxB :
+      x :e Bn_closed n.
+    {
+      exact (Sn_subset_Bn_closed
+        n
+        x
+        HxSn).
+    }
+    claim HxEu :
+      x :e euclidean_space (ordsucc n).
+    {
+      exact (SepE1
+        (euclidean_space (ordsucc n))
+        (fun v0:set => euclidean_norm_sq (ordsucc n) v0 = 1)
+        x
+        HxSn).
+    }
+    claim HvxEu :
+      apply_fun vP x :e euclidean_space (ordsucc n).
+    {
+      exact (continuous_map_function_on
+        (Bn_closed n)
+        (Bn_closed_topology n)
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        vP
+        HvCont
+        x
+        HxB).
+    }
+    claim HnegPxDef :
+      apply_fun negP x = Rn_negate (ordsucc n) (apply_fun vP x).
+    {
+      rewrite (compose_fun_apply
+        (Bn_closed n)
+        vP
+        (graph (euclidean_space (ordsucc n)) (fun y:set => Rn_negate (ordsucc n) y))
+        x
+        HxB).
+      rewrite (apply_fun_graph
+        (euclidean_space (ordsucc n))
+        (fun y:set => Rn_negate (ordsucc n) y)
+        (apply_fun vP x)
+        HvxEu).
+      reflexivity.
+    }
+    claim HvxEq :
+      apply_fun vP x = Rn_scalar_mult (ordsucc n) a x.
+    {
+      rewrite <- (Rn_negate_involution
+        (ordsucc n)
+        (apply_fun vP x)
+        HvxEu).
+      rewrite <- HnegPxDef.
+      rewrite HnegPxEq.
+      rewrite (Rn_negate_scalar_mult
+        (ordsucc n)
+        (minus_SNo a)
+        x
+        HxEu
+        (real_minus_SNo
+          a
+          HaR)).
+      rewrite (minus_SNo_invol
+        a
+        (real_SNo
+          a
+          HaR)).
+      reflexivity.
+    }
+    witness x.
+    apply andI.
+    - exact HxSn.
+    - claim HoutScale :
+        exists a0:set, a0 :e R /\ Rlt 0 a0 /\
+          apply_fun v x = Rn_scalar_mult (ordsucc n) a0 x.
+      {
+        witness a.
+        apply andI.
+        - exact HaRPos.
+        - exact HvxEq.
+      }
+      exact (andI
+        (x :e Sn n)
+        (exists a0:set, a0 :e R /\ Rlt 0 a0 /\
+          apply_fun v x = Rn_scalar_mult (ordsucc n) a0 x)
+        HxSn
+        HoutScale).
+  }
+  exact (HnoInImplInclusionNulAux
+    negP
+    negS
+    HnegPCont
+    HnegSCont
+    HnegSEq
+    HnoInNeg
+    HnegSNul).
 }
 apply (xm (exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x)).
 - assume Hin.
