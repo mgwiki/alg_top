@@ -436014,6 +436014,250 @@ exact (thm85_3_core_rank_from_rankdata
     HcosetFin)).
 Admitted.
 
+Theorem thm85_3_core_rank_from_components_witness :
+  forall F multF eF invF J gens H JH gensH n k:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  n :e omega ->
+  equip J (ordsucc n) ->
+  k :e omega /\ equip (right_coset_set F multF H) k ->
+  equip JH (ordsucc (mul_SNo k n)).
+let F multF eF invF J gens H JH gensH n k.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HnOmega.
+assume HJeq.
+assume Hk.
+exact (thm85_3_core_rank_from_witness
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  H
+  JH
+  gensH
+  n
+  k
+  HfreeF
+  Hsub
+  HfreeH
+  HnOmega
+  HJeq
+  Hk).
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_from_witness **)
+
+Theorem thm85_3_core_rank_from_npack_witness :
+  forall F multF eF invF J gens H JH gensH n k:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ equip (right_coset_set F multF H) k ->
+  equip JH (ordsucc (mul_SNo k n)).
+let F multF eF invF J gens H JH gensH n k.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HnPack.
+assume Hk.
+exact (thm85_3_core_rank_from_witness
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  H
+  JH
+  gensH
+  n
+  k
+  HfreeF
+  Hsub
+  HfreeH
+  (andEL (n :e omega) (equip J (ordsucc n)) HnPack)
+  (andER (n :e omega) (equip J (ordsucc n)) HnPack)
+  Hk).
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_from_witness **)
+
+Theorem thm85_3_core_rank_from_components_nonzero_pack :
+  forall F multF eF invF J gens H JH gensH n k:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  n :e omega ->
+  equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  equip JH (ordsucc (mul_SNo k n)).
+let F multF eF invF J gens H JH gensH n k.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HnOmega.
+assume HJeq.
+assume HkPack.
+exact (thm85_3_core_rank_from_nonzero_pack
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  H
+  JH
+  gensH
+  n
+  k
+  HfreeF
+  Hsub
+  HfreeH
+  (andI
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnOmega
+    HJeq)
+  HkPack).
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_from_nonzero_pack **)
+
+Theorem thm85_3_core_rank_from_nonzero_pack_to_witness :
+  forall F multF eF invF J gens H JH gensH n k:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  equip JH (ordsucc (mul_SNo k n)).
+let F multF eF invF J gens H JH gensH n k.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HnPack.
+assume HkPack.
+claim HkWitness :
+  k :e omega /\ equip (right_coset_set F multF H) k.
+{
+  apply (and3E
+    (k :e omega)
+    (k <> 0)
+    (equip (right_coset_set F multF H) k)
+    HkPack).
+  assume HkOmega HkNe HkEq.
+  apply andI.
+  - exact HkOmega.
+  - exact HkEq.
+}
+exact (thm85_3_core_rank_from_witness
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  H
+  JH
+  gensH
+  n
+  k
+  HfreeF
+  Hsub
+  HfreeH
+  (andEL (n :e omega) (equip J (ordsucc n)) HnPack)
+  (andER (n :e omega) (equip J (ordsucc n)) HnPack)
+  HkWitness).
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_from_witness **)
+
+Theorem thm85_3_core_rank_at_subgroup_index_from_npack_index_spec :
+  forall F multF eF invF J gens H JH gensH n:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  n :e omega /\ equip J (ordsucc n) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+let F multF eF invF J gens H JH gensH n.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HnPack.
+assume HidxSpec.
+exact (thm85_3_core_rank_at_subgroup_index
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  H
+  JH
+  gensH
+  n
+  HfreeF
+  Hsub
+  HfreeH
+  (andEL (n :e omega) (equip J (ordsucc n)) HnPack)
+  (andER (n :e omega) (equip J (ordsucc n)) HnPack)
+  (thm85_3_rankdata_nonzero_npack_index_spec_coset_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HidxSpec)).
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_at_subgroup_index **)
+
+Theorem thm85_3_core_rank_at_subgroup_index_from_components_exists_witness :
+  forall F multF eF invF J gens H JH gensH n:set,
+  free_group_with_generators F multF eF invF J gens ->
+  subgroup_of H F multF eF invF ->
+  free_group_with_generators H multF eF invF JH gensH ->
+  n :e omega ->
+  equip J (ordsucc n) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k) ->
+  equip JH (ordsucc (mul_SNo (subgroup_index H F multF eF invF) n)).
+let F multF eF invF J gens H JH gensH n.
+assume HfreeF.
+assume Hsub.
+assume HfreeH.
+assume HnOmega.
+assume HJeq.
+assume HkEx.
+exact (thm85_3_core_rank_at_subgroup_index
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  H
+  JH
+  gensH
+  n
+  HfreeF
+  Hsub
+  HfreeH
+  HnOmega
+  HJeq
+  (thm85_3_rankdata_nonzero_components_exists_witness_coset_finite
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnOmega
+    HJeq
+    HkEx)).
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_at_subgroup_index **)
+
 (** Projection form of Nielsen-Schreier existence for convenient reuse. **)
 Lemma subgroup_of_free_has_free_generators : forall F multF eF invF J gens H:set,
   free_group_with_generators F multF eF invF J gens ->
