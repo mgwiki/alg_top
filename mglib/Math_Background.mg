@@ -149627,7 +149627,289 @@ claim HwNonneg :
 }
 claim Hsum1 : finite_real_sum (fun i:set => apply_fun w i) 3 = 1.
 {
-  admit.
+  claim H0in3 : 0 :e 3.
+  {
+    exact (ordsuccI1
+      2
+      0
+      In_0_2).
+  }
+  claim H1in3 : 1 :e 3.
+  {
+    exact (ordsuccI1
+      2
+      1
+      In_1_2).
+  }
+  claim H2in3 : 2 :e 3.
+  {
+    exact (ordsuccI2 2).
+  }
+  claim H1nat : nat_p 1.
+  {
+    exact (nat_ordsucc
+      0
+      nat_0).
+  }
+  claim H2nat : nat_p 2.
+  {
+    exact (nat_ordsucc
+      1
+      H1nat).
+  }
+  claim HlamSNo : SNo lam.
+  {
+    exact (real_SNo
+      lam
+      HlamR).
+  }
+  claim Hlamneq0 : lam <> 0.
+  {
+    assume Hlam0.
+    claim H00 : Rlt 0 0.
+    {
+      rewrite <- Hlam0 at 2.
+      exact Hlampos.
+    }
+    exact (not_Rlt_refl
+      0
+      real_0
+      H00
+      False).
+  }
+  set r := recip_SNo_pos lam.
+  claim HrR : r :e R.
+  {
+    exact (real_recip_SNo_pos
+      lam
+      HlamR
+      (RltE_lt
+        0
+        lam
+        Hlampos)).
+  }
+  claim HrS : SNo r.
+  {
+    exact (real_SNo
+      r
+      HrR).
+  }
+  claim Hlamr1 : mul_SNo lam r = 1.
+  {
+    exact (recip_SNo_pos_invR
+      lam
+      HlamSNo
+      (RltE_lt
+        0
+        lam
+        Hlampos)).
+  }
+  claim HdivRecip :
+    forall x:set, x :e R -> div_SNo x lam = mul_SNo x r.
+  {
+    let x.
+    assume HxR.
+    claim HxS : SNo x.
+    {
+      exact (real_SNo
+        x
+        HxR).
+    }
+    claim HxrR : mul_SNo x r :e R.
+    {
+      exact (real_mul_SNo
+        x
+        HxR
+        r
+        HrR).
+    }
+    claim HxrS : SNo (mul_SNo x r).
+    {
+      exact (real_SNo
+        (mul_SNo x r)
+        HxrR).
+    }
+    claim Hlamxr :
+      mul_SNo lam (mul_SNo x r) = x.
+    {
+      rewrite (mul_SNo_assoc
+        lam
+        x
+        r
+        HlamSNo
+        HxS
+        HrS).
+      rewrite (mul_SNo_com
+        lam
+        x
+        HlamSNo
+        HxS).
+      rewrite <- (mul_SNo_assoc
+        x
+        lam
+        r
+        HxS
+        HlamSNo
+        HrS).
+      rewrite Hlamr1.
+      exact (mul_SNo_oneR
+        x
+        HxS).
+    }
+    exact (mul_div_SNo_nonzero_eq
+      x
+      lam
+      (mul_SNo x r)
+      HxS
+      HlamSNo
+      HxrS
+      Hlamneq0
+      (eq_symm
+        (mul_SNo lam (mul_SNo x r))
+        x
+        Hlamxr)).
+  }
+  claim Hneq21 : 2 <> 1.
+  {
+    assume H21.
+    claim H1in2 : 1 :e 2.
+    {
+      exact In_1_2.
+    }
+    claim H1in1 : 1 :e 1.
+    {
+      exact (H21
+        (fun a b => 1 :e a)
+        H1in2).
+    }
+    apply (ordsuccE
+      0
+      1
+      H1in1).
+    - assume H1in0.
+      exact (EmptyE
+        1
+        H1in0).
+    - assume H10.
+      exact (neq_1_0 H10).
+  }
+  claim Hw0 : apply_fun w 0 = div_SNo (apply_fun Av 0) lam.
+  {
+    rewrite (apply_fun_graph
+      3
+      (fun j:set =>
+        if j = 0 then div_SNo (apply_fun Av 0) lam else
+        if j = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      0
+      H0in3).
+    apply (If_i_1
+      (0 = 0)
+      (div_SNo (apply_fun Av 0) lam)
+      (if 0 = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      (eq_refl 0)).
+  }
+  claim Hw1 : apply_fun w 1 = div_SNo (apply_fun Av 1) lam.
+  {
+    rewrite (apply_fun_graph
+      3
+      (fun j:set =>
+        if j = 0 then div_SNo (apply_fun Av 0) lam else
+        if j = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      1
+      H1in3).
+    rewrite (If_i_0
+      (1 = 0)
+      (div_SNo (apply_fun Av 0) lam)
+      (if 1 = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      neq_1_0).
+    apply (If_i_1
+      (1 = 1)
+      (div_SNo (apply_fun Av 1) lam)
+      (div_SNo (apply_fun Av 2) lam)
+      (eq_refl 1)).
+  }
+  claim Hw2 : apply_fun w 2 = div_SNo (apply_fun Av 2) lam.
+  {
+    rewrite (apply_fun_graph
+      3
+      (fun j:set =>
+        if j = 0 then div_SNo (apply_fun Av 0) lam else
+        if j = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      2
+      H2in3).
+    rewrite (If_i_0
+      (2 = 0)
+      (div_SNo (apply_fun Av 0) lam)
+      (if 2 = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      neq_2_0).
+    exact (If_i_0
+      (2 = 1)
+      (div_SNo (apply_fun Av 1) lam)
+      (div_SNo (apply_fun Av 2) lam)
+      Hneq21).
+  }
+  claim HsumWmul :
+    finite_real_sum (fun i:set => apply_fun w i) 3 =
+    finite_real_sum (fun i:set => mul_SNo (apply_fun Av i) r) 3.
+  {
+    rewrite (finite_real_sum_S
+      (fun i:set => apply_fun w i)
+      2
+      H2nat).
+    rewrite (finite_real_sum_S
+      (fun i:set => apply_fun w i)
+      1
+      H1nat).
+    rewrite (finite_real_sum_S
+      (fun i:set => apply_fun w i)
+      0
+      nat_0).
+    rewrite (finite_real_sum_0
+      (fun i:set => apply_fun w i)).
+    rewrite (finite_real_sum_S
+      (fun i:set => mul_SNo (apply_fun Av i) r)
+      2
+      H2nat).
+    rewrite (finite_real_sum_S
+      (fun i:set => mul_SNo (apply_fun Av i) r)
+      1
+      H1nat).
+    rewrite (finite_real_sum_S
+      (fun i:set => mul_SNo (apply_fun Av i) r)
+      0
+      nat_0).
+    rewrite (finite_real_sum_0
+      (fun i:set => mul_SNo (apply_fun Av i) r)).
+    rewrite Hw0.
+    rewrite Hw1.
+    rewrite Hw2.
+    rewrite (HdivRecip
+      (apply_fun Av 0)
+      (HAvRall 0 H0in3)).
+    rewrite (HdivRecip
+      (apply_fun Av 1)
+      (HAvRall 1 H1in3)).
+    rewrite (HdivRecip
+      (apply_fun Av 2)
+      (HAvRall 2 H2in3)).
+    reflexivity.
+  }
+  rewrite HsumWmul.
+  rewrite (finite_real_sum_mul_const_right
+    (fun i:set => apply_fun Av i)
+    3
+    r
+    H3nat
+    HrR
+    HAvRall).
+  rewrite Hlamr1.
+  reflexivity.
 }
 apply (SepI
   (total_function_space 3 R)
@@ -149639,7 +149921,7 @@ apply (SepI
 - apply andI.
   * exact HwNonneg.
   * exact Hsum1.
-Admitted.
+Qed.
 
 (** Fixed point for the normalized positive-matrix map on the 2-simplex **)
 Lemma simplex3_fixed_point_normalized_map : forall A:set,
