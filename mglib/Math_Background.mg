@@ -468578,8 +468578,60 @@ apply (nat_inv nw Hnw_nat).
       (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z))
       Hfp Hred_nw Hnw_ne_0 Hnw_ne_1 Hwp_eG_nw).
   + assume Hbmw_ne_al : bmw <> al.
-    (** Last entry NOT in Gfam(al). Use the first entry or palindromic argument. **)
-    admit.
+    (** Last entry NOT in Gfam(al). Check first entry. **)
+    claim H0nw : 0 :e nw. { rewrite Hnw_sm. exact (nat_0_in_ordsucc mw Hmw_nat). }
+    apply (Helem 0 H0nw). let b0.
+    assume Hb0p : b0 :e J /\ apply_fun xsw 0 :e apply_fun Gfam b0 /\ apply_fun xsw 0 <> apply_fun efam b0.
+    apply (and3E (b0 :e J) (apply_fun xsw 0 :e apply_fun Gfam b0) (apply_fun xsw 0 <> apply_fun efam b0) Hb0p).
+    assume Hb0J Hxsw0_Gb0 Hxsw0_ne_efb0.
+    apply (xm (b0 = al)).
+    * assume Hb0_al : b0 = al.
+      (** First entry in Gfam(al): symmetric to the bmw=al case **)
+      (** Merge efam(al) into first entry from the left **)
+      (** efam(al) mult xsw(0) in Gfam(al), != eG, != efam(al) **)
+      (** Build reduced word using suffix [xsw(1),...,xsw(mw)] with merged first entry **)
+      admit.
+    * assume Hb0_ne_al : b0 <> al.
+      (** Both first and last NOT in Gfam(al) **)
+      (** Use: if Gfam(al) has a 3rd element z != eG, z != efam(al), append z. **)
+      (** free_product_factor_element_length1 on efam(al) mult z gives n+1 = 1, contradiction **)
+      apply (xm (exists z2:set, z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al)).
+      + assume Hex_z2 : exists z2:set, z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al.
+        apply Hex_z2. let z2. assume Hz2p : z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al.
+        apply (and3E (z2 :e apply_fun Gfam al) (z2 <> eG) (z2 <> apply_fun efam al) Hz2p).
+        assume Hz2_Gal Hz2_ne_eG Hz2_ne_efam.
+        (** Product efam(al) mult z2 in Gfam(al), != eG, != efam(al) **)
+        set w := apply_fun multG (apply_fun efam al, z2).
+        claim Hw_Gal : w :e apply_fun Gfam al. { exact (HGfam_mult al Hal (apply_fun efam al) z2 Hefam_Gal Hz2_Gal). }
+        claim Hz2_G : z2 :e G. { exact (Hsub_in_G al Hal z2 Hz2_Gal). }
+        claim Hw_ne_eG : w <> eG.
+        { assume Hw_e : w = eG.
+          claim Hz2_eq : z2 = apply_fun invG (apply_fun efam al).
+          { exact (group_left_cancel G multG eG invG (apply_fun efam al) z2 (apply_fun invG (apply_fun efam al))
+              Hgrp Hefam_G Hz2_G (HinvF (apply_fun efam al) Hefam_G)
+              (eq_i_tra (apply_fun multG (apply_fun efam al, z2)) eG
+                (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)))
+                Hw_e (eq_symm (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))) eG
+                  (andEL (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
+                    (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
+                    (HinvG (apply_fun efam al) Hefam_G))))). }
+          exact (Hz2_ne_efam (eq_i_tra z2 (apply_fun invG (apply_fun efam al)) (apply_fun efam al) Hz2_eq Hinv_eq)). }
+        claim Hw_ne_efam : w <> apply_fun efam al.
+        { assume Hw_ef : w = apply_fun efam al.
+          exact (Hz2_ne_eG (group_left_cancel G multG eG invG (apply_fun efam al) z2 eG
+            Hgrp Hefam_G Hz2_G HeGG
+            (eq_i_tra (apply_fun multG (apply_fun efam al, z2))
+              (apply_fun efam al) (apply_fun multG (apply_fun efam al, eG))
+              Hw_ef (eq_symm (apply_fun multG (apply_fun efam al, eG)) (apply_fun efam al)
+                (andER (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
+                  (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al) (HidG (apply_fun efam al) Hefam_G)))))). }
+        (** Build word [xsw(0),...,xsw(mw), z2] of length nw+1 for product = efam(al) mult z2 = w **)
+        (** w in Gfam(al), w != eG, w != efam(al). By free_product_factor_element_length1, its reduced word has length 1. **)
+        (** But the appended word has length nw+1 >= 3. By uniqueness, nw+1 = 1. Contradiction. **)
+        admit.
+      + assume Hno_z2 : ~(exists z2:set, z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al).
+        (** Gfam(al) = {eG, efam(al)}. Use palindromic argument. **)
+        admit.
 Admitted.
 
 (** Sandbox End Alice **)
