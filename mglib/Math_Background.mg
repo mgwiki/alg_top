@@ -148447,6 +148447,500 @@ exact (RleE_nlt
   HaaLe1R).
 Qed.
 
+(** Infrastructure: each nonnegative term of a finite real sum is bounded by the total sum. **)
+(** Proven Charlie **)
+Lemma finite_real_sum_term_le_of_all_nonneg : forall f:set->set, forall n k:set, nat_p n ->
+  k :e n ->
+  (forall j:set, j :e n -> f j :e R) ->
+  (forall j:set, j :e n -> Rle 0 (f j)) ->
+  f k <= finite_real_sum f n.
+let f n k.
+assume Hn Hk HfR HfNonneg.
+claim Hnat :
+  forall m:set, nat_p m ->
+    forall i:set, i :e m ->
+      (forall j:set, j :e m -> f j :e R) ->
+      (forall j:set, j :e m -> Rle 0 (f j)) ->
+      f i <= finite_real_sum f m.
+{
+  apply nat_ind.
+  - let i.
+    assume Hi0 H0R H0Nonneg.
+    exact (EmptyE
+      i
+      Hi0
+      (f i <= finite_real_sum f 0)).
+  - let m.
+    assume Hm_nat IH.
+    let i.
+    assume HiSm HmR HmNonneg.
+    apply (ordsuccE
+      m
+      i
+      HiSm).
+    + assume HiM.
+      claim HfiR : f i :e R.
+      {
+        exact (HmR
+          i
+          (ordsuccI1 m i HiM)).
+      }
+      claim HfiS : SNo (f i).
+      {
+        exact (real_SNo
+          (f i)
+          HfiR).
+      }
+      claim HsumR : finite_real_sum f m :e R.
+      {
+        exact (finite_real_sum_in_R
+          f
+          m
+          Hm_nat
+          (fun j Hj => HmR j (ordsuccI1 m j Hj))).
+      }
+      claim HsumS : SNo (finite_real_sum f m).
+      {
+        exact (real_SNo
+          (finite_real_sum f m)
+          HsumR).
+      }
+      claim HfmR : f m :e R.
+      {
+        exact (HmR
+          m
+          (ordsuccI2 m)).
+      }
+      claim HfmS : SNo (f m).
+      {
+        exact (real_SNo
+          (f m)
+          HfmR).
+      }
+      claim HfmNonneg : 0 <= f m.
+      {
+        exact (SNoLe_of_Rle
+          0
+          (f m)
+          (HmNonneg
+            m
+            (ordsuccI2 m))).
+      }
+      claim HlePrev :
+        f i <= finite_real_sum f m.
+      {
+        exact (IH
+          i
+          HiM
+          (fun j Hj => HmR j (ordsuccI1 m j Hj))
+          (fun j Hj => HmNonneg j (ordsuccI1 m j Hj))).
+      }
+      claim HleTotal :
+        finite_real_sum f m <= add_SNo (finite_real_sum f m) (f m).
+      {
+        exact (SNoLe_add_nonneg_right
+          (finite_real_sum f m)
+          (f m)
+          HsumS
+          HfmS
+          HfmNonneg).
+      }
+      rewrite (finite_real_sum_S
+        f
+        m
+        Hm_nat).
+      exact (SNoLe_tra
+        (f i)
+        (finite_real_sum f m)
+        (add_SNo (finite_real_sum f m) (f m))
+        HfiS
+        HsumS
+        (SNo_add_SNo
+          (finite_real_sum f m)
+          (f m)
+          HsumS
+          HfmS)
+        HlePrev
+        HleTotal).
+    + assume HiEq.
+      rewrite HiEq.
+      claim HfmR : f m :e R.
+      {
+        exact (HmR
+          m
+          (ordsuccI2 m)).
+      }
+      claim HfmS : SNo (f m).
+      {
+        exact (real_SNo
+          (f m)
+          HfmR).
+      }
+      claim HsumR : finite_real_sum f m :e R.
+      {
+        exact (finite_real_sum_in_R
+          f
+          m
+          Hm_nat
+          (fun j Hj => HmR j (ordsuccI1 m j Hj))).
+      }
+      claim HsumS : SNo (finite_real_sum f m).
+      {
+        exact (real_SNo
+          (finite_real_sum f m)
+          HsumR).
+      }
+      claim HsumNonnegR : Rle 0 (finite_real_sum f m).
+      {
+        exact (finite_real_sum_nonneg
+          f
+          m
+          Hm_nat
+          (fun j Hj => HmR j (ordsuccI1 m j Hj))
+          (fun j Hj => HmNonneg j (ordsuccI1 m j Hj))).
+      }
+      claim HsumNonneg : 0 <= finite_real_sum f m.
+      {
+        exact (SNoLe_of_Rle
+          0
+          (finite_real_sum f m)
+          HsumNonnegR).
+      }
+      claim HleSwap :
+        f m <= add_SNo (f m) (finite_real_sum f m).
+      {
+        exact (SNoLe_add_nonneg_right
+          (f m)
+          (finite_real_sum f m)
+          HfmS
+          HsumS
+          HsumNonneg).
+      }
+      claim HleTotal :
+        f m <= add_SNo (finite_real_sum f m) (f m).
+      {
+        exact ((eq_symm
+          (add_SNo (finite_real_sum f m) (f m))
+          (add_SNo (f m) (finite_real_sum f m))
+          (add_SNo_com
+            (finite_real_sum f m)
+            (f m)
+            HsumS
+            HfmS))
+          (fun z _ => f m <= z)
+          HleSwap).
+      }
+      rewrite (finite_real_sum_S
+        f
+        m
+        Hm_nat).
+      exact HleTotal.
+}
+exact (Hnat
+  n
+  Hn
+  k
+  Hk
+  HfR
+  HfNonneg).
+Qed.
+
+(** Infrastructure: real x with x^2 <= 1 lies in the closed interval [-1,1]. **)
+(** Proven Charlie **)
+Lemma real_sqr_le_1_in_closed_interval_early : forall x:set,
+  x :e R ->
+  mul_SNo x x <= 1 ->
+  x :e closed_interval (minus_SNo 1) 1.
+let x.
+assume HxR.
+assume Hxsq1.
+claim HxSNo : SNo x.
+{
+  exact (real_SNo
+    x
+    HxR).
+}
+claim H1SNo : SNo 1.
+{
+  exact SNo_1.
+}
+claim Hminus1SNo : SNo (minus_SNo 1).
+{
+  exact (SNo_minus_SNo
+    1
+    SNo_1).
+}
+claim H01 : 0 <= 1.
+{
+  exact (SNoLtLe
+    0
+    1
+    SNoLt_0_1).
+}
+claim Hmul11 : mul_SNo 1 1 = 1.
+{
+  exact (mul_SNo_oneR
+    1
+    SNo_1).
+}
+claim Hm1_le_0 : minus_SNo 1 <= 0.
+{
+  claim Hle_m11_01 :
+    add_SNo (minus_SNo 1) 1 <= add_SNo 0 1.
+  {
+    rewrite (add_SNo_minus_SNo_linv
+      1
+      SNo_1).
+    rewrite (add_SNo_0L
+      1
+      SNo_1).
+    exact H01.
+  }
+  exact (add_SNo_Le1_cancel
+    (minus_SNo 1)
+    1
+    0
+    Hminus1SNo
+    SNo_1
+    SNo_0
+    Hle_m11_01).
+}
+claim Hle_lower : minus_SNo 1 <= x.
+{
+  apply (SNoLtLe_or
+    x
+    0
+    HxSNo
+    SNo_0).
+  - assume Hxlt0.
+    claim HnxSNo : SNo (minus_SNo x).
+    {
+      exact (SNo_minus_SNo
+        x
+        HxSNo).
+    }
+    claim Hnxnn : 0 <= minus_SNo x.
+    {
+      rewrite <- minus_SNo_0.
+      exact (minus_SNo_Le_contra
+        x
+        0
+        HxSNo
+        SNo_0
+        (SNoLtLe
+          x
+          0
+          Hxlt0)).
+    }
+    claim Hnxsq11 :
+      mul_SNo (minus_SNo x) (minus_SNo x) <= mul_SNo 1 1.
+    {
+      rewrite Hmul11.
+      rewrite (mul_SNo_minus_minus
+        x
+        x
+        HxSNo
+        HxSNo).
+      exact Hxsq1.
+    }
+    claim Hnxle1 : minus_SNo x <= 1.
+    {
+      exact (SNo_nonneg_sqr_Le_imp_Le
+        (minus_SNo x)
+        1
+        HnxSNo
+        H1SNo
+        Hnxnn
+        H01
+        Hnxsq11).
+    }
+    claim Hle :
+      minus_SNo 1 <= minus_SNo (minus_SNo x).
+    {
+      exact (minus_SNo_Le_contra
+        (minus_SNo x)
+        1
+        HnxSNo
+        H1SNo
+        Hnxle1).
+    }
+    rewrite <- (minus_SNo_invol
+      x
+      HxSNo).
+    exact Hle.
+  - assume H0lex.
+    exact (SNoLe_tra
+      (minus_SNo 1)
+      0
+      x
+      Hminus1SNo
+      SNo_0
+      HxSNo
+      Hm1_le_0
+      H0lex).
+}
+claim Hle_upper : x <= 1.
+{
+  apply (SNoLtLe_or
+    x
+    0
+    HxSNo
+    SNo_0).
+  - assume Hxlt0.
+    exact (SNoLtLe
+      x
+      1
+      (SNoLt_tra
+        x
+        0
+        1
+        HxSNo
+        SNo_0
+        H1SNo
+        Hxlt0
+        SNoLt_0_1)).
+  - assume H0lex.
+    claim Hxsq11 :
+      mul_SNo x x <= mul_SNo 1 1.
+    {
+      rewrite Hmul11.
+      exact Hxsq1.
+    }
+    exact (SNo_nonneg_sqr_Le_imp_Le
+      x
+      1
+      HxSNo
+      H1SNo
+      H0lex
+      H01
+      Hxsq11).
+}
+exact (closed_intervalI_of_Rle
+  (minus_SNo 1)
+  1
+  x
+  (real_minus_SNo
+    1
+    real_1)
+  real_1
+  HxR
+  (Rle_of_SNoLe
+    (minus_SNo 1)
+    x
+    (real_minus_SNo 1 real_1)
+    HxR
+    Hle_lower)
+  (Rle_of_SNoLe
+    x
+    1
+    HxR
+    real_1
+    Hle_upper)).
+Qed.
+
+(** Infrastructure: a coordinate square is bounded by the Euclidean norm square. **)
+(** Proven Charlie **)
+Lemma euclidean_coord_sq_le_norm_sq : forall n v i:set,
+  nat_p n ->
+  v :e euclidean_space n ->
+  i :e n ->
+  mul_SNo (apply_fun v i) (apply_fun v i) <= euclidean_norm_sq n v.
+let n v i.
+assume Hn Hv Hi.
+exact (finite_real_sum_term_le_of_all_nonneg
+  (fun j:set => mul_SNo (apply_fun v j) (apply_fun v j))
+  n
+  i
+  Hn
+  Hi
+  (fun j Hj =>
+    real_mul_SNo
+      (apply_fun v j)
+      (euclidean_space_coord_in_R n v j Hv Hj)
+      (apply_fun v j)
+      (euclidean_space_coord_in_R n v j Hv Hj))
+  (fun j Hj =>
+    Rle_of_SNoLe
+      0
+      (mul_SNo (apply_fun v j) (apply_fun v j))
+      real_0
+      (real_mul_SNo
+        (apply_fun v j)
+        (euclidean_space_coord_in_R n v j Hv Hj)
+        (apply_fun v j)
+        (euclidean_space_coord_in_R n v j Hv Hj))
+      (SNo_sqr_nonneg
+        (apply_fun v j)
+        (real_SNo
+          (apply_fun v j)
+          (euclidean_space_coord_in_R n v j Hv Hj))))).
+Qed.
+
+(** Infrastructure: each coordinate of a sphere point lies in [-1,1]. **)
+(** Proven Charlie **)
+Lemma Sn_coord_in_closed_interval : forall n v i:set,
+  n :e omega ->
+  v :e Sn n ->
+  i :e ordsucc n ->
+  apply_fun v i :e closed_interval (minus_SNo 1) 1.
+let n v i.
+assume Hn_om HvSn Hi.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HvEu : v :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun u:set => euclidean_norm_sq (ordsucc n) u = 1)
+    v
+    HvSn).
+}
+claim HviR : apply_fun v i :e R.
+{
+  exact (euclidean_space_coord_in_R
+    (ordsucc n)
+    v
+    i
+    HvEu
+    Hi).
+}
+claim HcoordLeNorm :
+  mul_SNo (apply_fun v i) (apply_fun v i) <= euclidean_norm_sq (ordsucc n) v.
+{
+  exact (euclidean_coord_sq_le_norm_sq
+    (ordsucc n)
+    v
+    i
+    Hsn_nat
+    HvEu
+    Hi).
+}
+claim HnormEq : euclidean_norm_sq (ordsucc n) v = 1.
+{
+  exact (SepE2
+    (euclidean_space (ordsucc n))
+    (fun u:set => euclidean_norm_sq (ordsucc n) u = 1)
+    v
+    HvSn).
+}
+apply (real_sqr_le_1_in_closed_interval_early
+  (apply_fun v i)
+  HviR).
+exact (HnormEq
+  (fun z _ => mul_SNo (apply_fun v i) (apply_fun v i) <= z)
+  HcoordLeNorm).
+Qed.
+
 (** Infrastructure: a finite sum of nonnegative real terms is zero only if every term is zero. **)
 (** Proven Charlie **)
 Lemma finite_real_sum_zero_of_all_nonneg : forall f:set->set, forall n:set, nat_p n ->
