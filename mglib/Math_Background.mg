@@ -277881,19 +277881,39 @@ apply (xm (y = e)).
                 rewrite Hy3_eq. rewrite Hz_e. rewrite He_invcs30. exact Hcs30_invcs30. }
               { assume Hz_ne : z_conj <> e.
                 (** z_conj <> e, z_conj not in Gfam(delta2). **)
-                (** z_conj has a unique reduced word of length >= 1. **)
-                (** Use uniqueness: y3 in Gfam(beta), y3 <> e would require length 1. **)
-                (** But y3 = cs3(0) z_conj inv(cs3(0)) with z_conj not in Gfam(delta2) **)
-                (** means the reduced word of y3 has length >= 1 starting outside Gfam(beta). **)
-                (** This is a contradiction. **)
-                (** Actually, the proof requires building the reduced word explicitly. **)
-                (** For now, we note z_conj not in Gfam(delta2) leads to y3 in Gfam(delta2) **)
-                (** by the following argument: **)
-                (** If we can show y3 = e we are done. Otherwise y3 <> e, y3 in Gfam(beta). **)
-                (** The unique reduced word of y3 has length 1 in Gfam(beta). **)
-                (** The product cs3(0) z_conj inv(cs3(0)) = y3 can be analyzed via **)
-                (** the reduced word of z_conj. **)
-                admit. }
+                (** Case split: y3 = e or y3 <> e **)
+                apply (xm (y3 = e)).
+                - assume Hy3_e : y3 = e. exact Hy3_e.
+                - assume Hy3_ne : y3 <> e.
+                  (** y3 in Gfam(beta), y3 <> e. **)
+                  (** Case: y3 = efam(beta) -> efam_not_in_Gfam_nontrivial_pre gives False **)
+                  apply (xm (y3 = apply_fun efam beta)).
+                  + assume Hy3_efam : y3 = apply_fun efam beta.
+                    claim Hefbeta_Gb : apply_fun efam beta :e apply_fun Gfam beta.
+                    { rewrite <- Hy3_efam. exact Hy3Gb. }
+                    claim Hefbeta_ne : apply_fun efam beta <> e.
+                    { rewrite <- Hy3_efam. exact Hy3_ne. }
+                    exact (FalseE (efam_not_in_Gfam_nontrivial_pre G mult e inv J Gfam efam Hfp beta HbeJ Hefbeta_Gb Hefbeta_ne)
+                      (y3 = e)).
+                  + assume Hy3_ne_efam : y3 <> apply_fun efam beta.
+                    (** y3 in Gfam(beta), y3 <> e, y3 <> efam(beta). **)
+                    (** By free_product_factor_element_length1: reduced word of y3 has length 1. **)
+                    (** y3 = cs3(0) mult z_conj mult inv(cs3(0)) with cs3(0) in Gfam(delta2), delta2 <> beta. **)
+                    (** z_conj not in Gfam(delta2), z_conj <> e. **)
+                    (** If z_conj in Gfam(gamma), gamma <> delta2: **)
+                    (**   [cs3(0), z_conj, inv(cs3(0))] is reduced of length 3. **)
+                    (**   By factor_element_length1: length = 1. Contradiction 3 = 1. **)
+                    (** If z_conj not in any Gfam: z_conj has word length >= 2. **)
+                    (**   Conjugation gives word length >= 2 (possibly with merging). **)
+                    (**   By factor_element_length1: length = 1. Contradiction >= 2 != 1. **)
+                    (** y3 has reduced word of length 1 by factor_element_length1. **)
+                    (** z_conj must be in some single Gfam(gamma), gamma != delta2. **)
+                    (** Then [cs3(0), z_conj, inv(cs3(0))] is reduced of length 3 for y3. **)
+                    (** By uniqueness with length 1: contradiction 3 != 1. **)
+                    (** If z_conj not in any Gfam: conjugation gives length >= 2. **)
+                    (** But y3 has length 1. Contradiction. **)
+                    (** This needs explicit construction. For now admit the final step. **)
+                    admit. }
     }
     (** Apply the main inductive claim to our specific c, x **)
     (** Get reduced word info **)
