@@ -152285,6 +152285,741 @@ apply andI.
         (eq_refl x'))).
 Qed.
 
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_function_on_R :
+  function_on
+    positive_ray_sqrt_map
+    (open_ray_upper R 0)
+    R.
+let t.
+assume HtPos.
+exact (SepE1
+  R
+  (fun x:set => order_rel R 0 x)
+  (apply_fun positive_ray_sqrt_map t)
+  (positive_ray_sqrt_map_function_on
+    t
+    HtPos)).
+Qed.
+
+(** Infrastructure: preimage of an upper ray under positive-ray sqrt, positive threshold case. **)
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_preimage_open_ray_upper_pos : forall b:set,
+  b :e R ->
+  Rlt 0 b ->
+  preimage_of
+    (open_ray_upper R 0)
+    positive_ray_sqrt_map
+    (open_ray_upper R b)
+  =
+  (open_ray_upper R 0) :/\: (open_ray_upper R (mul_SNo b b)).
+let b.
+assume HbR HbPos.
+apply set_ext.
+- let x.
+  assume HxPre.
+  claim HxP : x :e open_ray_upper R 0.
+  {
+    exact (SepE1
+      (open_ray_upper R 0)
+      (fun t:set => apply_fun positive_ray_sqrt_map t :e open_ray_upper R b)
+      x
+      HxPre).
+  }
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun t:set => order_rel R 0 t)
+      x
+      HxP).
+  }
+  claim HsqrtGt : Rlt b (sqrt_SNo_nonneg x).
+  {
+    exact (order_rel_R_implies_Rlt
+      b
+      (sqrt_SNo_nonneg x)
+      (SepE2
+        R
+        (fun t:set => order_rel R b t)
+        (sqrt_SNo_nonneg x)
+        ((positive_ray_sqrt_map_apply
+          x
+          HxP)
+          (fun z _ => z :e open_ray_upper R b)
+          (SepE2
+            (open_ray_upper R 0)
+            (fun t:set => apply_fun positive_ray_sqrt_map t :e open_ray_upper R b)
+            x
+            HxPre)))).
+  }
+  claim HxGt :
+    Rlt
+      (mul_SNo b b)
+      x.
+  {
+    exact ((iffEL
+      (Rlt b (sqrt_SNo_nonneg x))
+      (Rlt (mul_SNo b b) x)
+      (sqrt_SNo_nonneg_gt_iff_square_gt_pos
+        x
+        b
+        HxR
+        (order_rel_R_implies_Rlt
+          0
+          x
+          (SepE2
+            R
+            (fun t:set => order_rel R 0 t)
+            x
+            HxP))
+        HbR
+        HbPos))
+      HsqrtGt).
+  }
+  exact (binintersectI
+    (open_ray_upper R 0)
+    (open_ray_upper R (mul_SNo b b))
+    x
+    HxP
+    (SepI
+      R
+      (fun t:set => order_rel R (mul_SNo b b) t)
+      x
+      HxR
+      (Rlt_implies_order_rel_R
+        (mul_SNo b b)
+        x
+        HxGt))).
+- let x.
+  assume HxInt.
+  claim HxP : x :e open_ray_upper R 0.
+  {
+    exact (binintersectE1
+      (open_ray_upper R 0)
+      (open_ray_upper R (mul_SNo b b))
+      x
+      HxInt).
+  }
+  claim HxB : x :e open_ray_upper R (mul_SNo b b).
+  {
+    exact (binintersectE2
+      (open_ray_upper R 0)
+      (open_ray_upper R (mul_SNo b b))
+      x
+      HxInt).
+  }
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun t:set => order_rel R 0 t)
+      x
+      HxP).
+  }
+  claim HxGt :
+    Rlt
+      (mul_SNo b b)
+      x.
+  {
+    exact (order_rel_R_implies_Rlt
+      (mul_SNo b b)
+      x
+      (SepE2
+        R
+        (fun t:set => order_rel R (mul_SNo b b) t)
+        x
+        HxB)).
+  }
+  claim HsqrtR : sqrt_SNo_nonneg x :e R.
+  {
+    exact (sqrt_SNo_nonneg_real
+      x
+      HxR
+      (SNoLe_of_Rle
+        0
+        x
+        (Rlt_implies_Rle
+          0
+          x
+          (order_rel_R_implies_Rlt
+            0
+            x
+            (SepE2
+              R
+              (fun t:set => order_rel R 0 t)
+              x
+              HxP))))).
+  }
+  claim HsqrtGt : Rlt b (sqrt_SNo_nonneg x).
+  {
+    exact ((iffER
+      (Rlt b (sqrt_SNo_nonneg x))
+      (Rlt (mul_SNo b b) x)
+      (sqrt_SNo_nonneg_gt_iff_square_gt_pos
+        x
+        b
+        HxR
+        (order_rel_R_implies_Rlt
+          0
+          x
+          (SepE2
+            R
+            (fun t:set => order_rel R 0 t)
+            x
+            HxP))
+        HbR
+        HbPos))
+      HxGt).
+  }
+  exact (SepI
+    (open_ray_upper R 0)
+    (fun t:set => apply_fun positive_ray_sqrt_map t :e open_ray_upper R b)
+    x
+    HxP
+    ((eq_symm
+      (apply_fun positive_ray_sqrt_map x)
+      (sqrt_SNo_nonneg x)
+      (positive_ray_sqrt_map_apply
+        x
+        HxP))
+      (fun z _ => z :e open_ray_upper R b)
+      (SepI
+        R
+        (fun t:set => order_rel R b t)
+        (sqrt_SNo_nonneg x)
+        HsqrtR
+        (Rlt_implies_order_rel_R
+          b
+          (sqrt_SNo_nonneg x)
+          HsqrtGt)))).
+Qed.
+
+(** Infrastructure: preimage of an upper ray under positive-ray sqrt, nonpositive threshold case. **)
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_preimage_open_ray_upper_nonpos : forall b:set,
+  b :e R ->
+  ~ (Rlt 0 b) ->
+  preimage_of
+    (open_ray_upper R 0)
+    positive_ray_sqrt_map
+    (open_ray_upper R b)
+  =
+  open_ray_upper R 0.
+let b.
+assume HbR HbNotPos.
+apply set_ext.
+- let x.
+  assume HxPre.
+  exact (SepE1
+    (open_ray_upper R 0)
+    (fun t:set => apply_fun positive_ray_sqrt_map t :e open_ray_upper R b)
+    x
+    HxPre).
+- let x.
+  assume HxP.
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun t:set => order_rel R 0 t)
+      x
+      HxP).
+  }
+  claim HsqrtR : sqrt_SNo_nonneg x :e R.
+  {
+    exact (sqrt_SNo_nonneg_real
+      x
+      HxR
+      (SNoLe_of_Rle
+        0
+        x
+        (Rlt_implies_Rle
+          0
+          x
+          (order_rel_R_implies_Rlt
+            0
+            x
+            (SepE2
+              R
+              (fun t:set => order_rel R 0 t)
+              x
+              HxP))))).
+  }
+  claim HbLe0 : Rle b 0.
+  {
+    exact (RleI
+      b
+      0
+      HbR
+      real_0
+      HbNotPos).
+  }
+  claim HbLtSqrt : Rlt b (sqrt_SNo_nonneg x).
+  {
+    exact (Rle_Rlt_tra
+      b
+      0
+      (sqrt_SNo_nonneg x)
+      HbLe0
+      (sqrt_SNo_nonneg_pos_of_pos
+        x
+        HxR
+        (order_rel_R_implies_Rlt
+          0
+          x
+          (SepE2
+            R
+            (fun t:set => order_rel R 0 t)
+            x
+            HxP)))).
+  }
+  exact (SepI
+    (open_ray_upper R 0)
+    (fun t:set => apply_fun positive_ray_sqrt_map t :e open_ray_upper R b)
+    x
+    HxP
+    ((eq_symm
+      (apply_fun positive_ray_sqrt_map x)
+      (sqrt_SNo_nonneg x)
+      (positive_ray_sqrt_map_apply
+        x
+        HxP))
+      (fun z _ => z :e open_ray_upper R b)
+      (SepI
+        R
+        (fun t:set => order_rel R b t)
+        (sqrt_SNo_nonneg x)
+        HsqrtR
+        (Rlt_implies_order_rel_R
+          b
+          (sqrt_SNo_nonneg x)
+          HbLtSqrt)))).
+Qed.
+
+(** Infrastructure: preimage of a lower ray under positive-ray sqrt, positive threshold case. **)
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_preimage_open_ray_lower_pos : forall b:set,
+  b :e R ->
+  Rlt 0 b ->
+  preimage_of
+    (open_ray_upper R 0)
+    positive_ray_sqrt_map
+    (open_ray_lower R b)
+  =
+  (open_ray_upper R 0) :/\: (open_ray_lower R (mul_SNo b b)).
+let b.
+assume HbR HbPos.
+apply set_ext.
+- let x.
+  assume HxPre.
+  claim HxP : x :e open_ray_upper R 0.
+  {
+    exact (SepE1
+      (open_ray_upper R 0)
+      (fun t:set => apply_fun positive_ray_sqrt_map t :e open_ray_lower R b)
+      x
+      HxPre).
+  }
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun t:set => order_rel R 0 t)
+      x
+      HxP).
+  }
+  claim HsqrtLt : Rlt (sqrt_SNo_nonneg x) b.
+  {
+    exact (order_rel_R_implies_Rlt
+      (sqrt_SNo_nonneg x)
+      b
+      (SepE2
+        R
+        (fun t:set => order_rel R t b)
+        (sqrt_SNo_nonneg x)
+        ((positive_ray_sqrt_map_apply
+          x
+          HxP)
+          (fun z _ => z :e open_ray_lower R b)
+          (SepE2
+            (open_ray_upper R 0)
+            (fun t:set => apply_fun positive_ray_sqrt_map t :e open_ray_lower R b)
+            x
+            HxPre)))).
+  }
+  claim HxLt :
+    Rlt
+      x
+      (mul_SNo b b).
+  {
+    exact ((iffEL
+      (Rlt (sqrt_SNo_nonneg x) b)
+      (Rlt x (mul_SNo b b))
+      (sqrt_SNo_nonneg_lt_iff_square_lt_pos
+        x
+        b
+        HxR
+        (order_rel_R_implies_Rlt
+          0
+          x
+          (SepE2
+            R
+            (fun t:set => order_rel R 0 t)
+            x
+            HxP))
+        HbR
+        HbPos))
+      HsqrtLt).
+  }
+  exact (binintersectI
+    (open_ray_upper R 0)
+    (open_ray_lower R (mul_SNo b b))
+    x
+    HxP
+    (SepI
+      R
+      (fun t:set => order_rel R t (mul_SNo b b))
+      x
+      HxR
+      (Rlt_implies_order_rel_R
+        x
+        (mul_SNo b b)
+        HxLt))).
+- let x.
+  assume HxInt.
+  claim HxP : x :e open_ray_upper R 0.
+  {
+    exact (binintersectE1
+      (open_ray_upper R 0)
+      (open_ray_lower R (mul_SNo b b))
+      x
+      HxInt).
+  }
+  claim HxB : x :e open_ray_lower R (mul_SNo b b).
+  {
+    exact (binintersectE2
+      (open_ray_upper R 0)
+      (open_ray_lower R (mul_SNo b b))
+      x
+      HxInt).
+  }
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun t:set => order_rel R 0 t)
+      x
+      HxP).
+  }
+  claim HxLt :
+    Rlt
+      x
+      (mul_SNo b b).
+  {
+    exact (order_rel_R_implies_Rlt
+      x
+      (mul_SNo b b)
+      (SepE2
+        R
+        (fun t:set => order_rel R t (mul_SNo b b))
+        x
+        HxB)).
+  }
+  claim HsqrtR : sqrt_SNo_nonneg x :e R.
+  {
+    exact (sqrt_SNo_nonneg_real
+      x
+      HxR
+      (SNoLe_of_Rle
+        0
+        x
+        (Rlt_implies_Rle
+          0
+          x
+          (order_rel_R_implies_Rlt
+            0
+            x
+            (SepE2
+              R
+              (fun t:set => order_rel R 0 t)
+              x
+              HxP))))).
+  }
+  claim HsqrtLt : Rlt (sqrt_SNo_nonneg x) b.
+  {
+    exact ((iffER
+      (Rlt (sqrt_SNo_nonneg x) b)
+      (Rlt x (mul_SNo b b))
+      (sqrt_SNo_nonneg_lt_iff_square_lt_pos
+        x
+        b
+        HxR
+        (order_rel_R_implies_Rlt
+          0
+          x
+          (SepE2
+            R
+            (fun t:set => order_rel R 0 t)
+            x
+            HxP))
+        HbR
+        HbPos))
+      HxLt).
+  }
+  exact (SepI
+    (open_ray_upper R 0)
+    (fun t:set => apply_fun positive_ray_sqrt_map t :e open_ray_lower R b)
+    x
+    HxP
+    ((eq_symm
+      (apply_fun positive_ray_sqrt_map x)
+      (sqrt_SNo_nonneg x)
+      (positive_ray_sqrt_map_apply
+        x
+        HxP))
+      (fun z _ => z :e open_ray_lower R b)
+      (SepI
+        R
+        (fun t:set => order_rel R t b)
+        (sqrt_SNo_nonneg x)
+        HsqrtR
+        (Rlt_implies_order_rel_R
+          (sqrt_SNo_nonneg x)
+          b
+          HsqrtLt)))).
+Qed.
+
+(** Infrastructure: preimage of a lower ray under positive-ray sqrt, nonpositive threshold case. **)
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_preimage_open_ray_lower_nonpos : forall b:set,
+  b :e R ->
+  ~ (Rlt 0 b) ->
+  preimage_of
+    (open_ray_upper R 0)
+    positive_ray_sqrt_map
+    (open_ray_lower R b)
+  =
+  Empty.
+let b.
+assume HbR HbNotPos.
+apply Empty_Subq_eq.
+let x.
+assume HxPre.
+claim HxP : x :e open_ray_upper R 0.
+{
+  exact (SepE1
+    (open_ray_upper R 0)
+    (fun t:set => apply_fun positive_ray_sqrt_map t :e open_ray_lower R b)
+    x
+    HxPre).
+}
+claim HxR : x :e R.
+{
+  exact (SepE1
+    R
+    (fun t:set => order_rel R 0 t)
+    x
+    HxP).
+}
+claim HsqrtLt : Rlt (sqrt_SNo_nonneg x) b.
+{
+  exact (order_rel_R_implies_Rlt
+    (sqrt_SNo_nonneg x)
+    b
+    (SepE2
+      R
+      (fun t:set => order_rel R t b)
+      (sqrt_SNo_nonneg x)
+      ((positive_ray_sqrt_map_apply
+        x
+        HxP)
+        (fun z _ => z :e open_ray_lower R b)
+        (SepE2
+          (open_ray_upper R 0)
+          (fun t:set => apply_fun positive_ray_sqrt_map t :e open_ray_lower R b)
+          x
+          HxPre)))).
+}
+claim HbLe0 : Rle b 0.
+{
+  exact (RleI
+    b
+    0
+    HbR
+    real_0
+    HbNotPos).
+}
+exact (FalseE
+  (not_Rlt_refl
+    (sqrt_SNo_nonneg x)
+    (sqrt_SNo_nonneg_real
+      x
+      HxR
+      (SNoLe_of_Rle
+        0
+        x
+        (Rlt_implies_Rle
+          0
+          x
+          (order_rel_R_implies_Rlt
+            0
+            x
+            (SepE2
+              R
+              (fun t:set => order_rel R 0 t)
+              x
+              HxP)))))
+    (Rlt_tra
+      (sqrt_SNo_nonneg x)
+      b
+      (sqrt_SNo_nonneg x)
+      HsqrtLt
+      (Rle_Rlt_tra
+        b
+        0
+        (sqrt_SNo_nonneg x)
+        HbLe0
+        (sqrt_SNo_nonneg_pos_of_pos
+          x
+          HxR
+          (order_rel_R_implies_Rlt
+            0
+            x
+            (SepE2
+              R
+              (fun t:set => order_rel R 0 t)
+              x
+              HxP))))))
+  (x :e Empty)).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_preimage_open_ray_upper_open : forall b:set,
+  b :e R ->
+  preimage_of
+    (open_ray_upper R 0)
+    positive_ray_sqrt_map
+    (open_ray_upper R b)
+  :e
+  subspace_topology
+    R
+    R_standard_topology
+    (open_ray_upper R 0).
+let b.
+assume HbR.
+apply (xm (Rlt 0 b)).
+- assume HbPos.
+  rewrite (positive_ray_sqrt_map_preimage_open_ray_upper_pos
+    b
+    HbR
+    HbPos).
+  rewrite (binintersect_com
+    (open_ray_upper R 0)
+    (open_ray_upper R (mul_SNo b b))).
+  exact (subspace_topology_intersection_open
+    R
+    R_standard_topology
+    (open_ray_upper R 0)
+    (open_ray_upper R (mul_SNo b b))
+    (open_ray_upper_in_R_standard_topology
+      (mul_SNo b b)
+      (real_mul_SNo
+        b
+        HbR
+        b
+        HbR))).
+- assume HbNotPos.
+  rewrite (positive_ray_sqrt_map_preimage_open_ray_upper_nonpos
+    b
+    HbR
+    HbNotPos).
+  exact (topology_has_X
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0))
+    (subspace_topology_is_topology
+      R
+      R_standard_topology
+      (open_ray_upper R 0)
+      R_standard_topology_is_topology
+      (Sep_Subq
+        R
+        (fun x:set => order_rel R 0 x)))).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_preimage_open_ray_lower_open : forall b:set,
+  b :e R ->
+  preimage_of
+    (open_ray_upper R 0)
+    positive_ray_sqrt_map
+    (open_ray_lower R b)
+  :e
+  subspace_topology
+    R
+    R_standard_topology
+    (open_ray_upper R 0).
+let b.
+assume HbR.
+apply (xm (Rlt 0 b)).
+- assume HbPos.
+  rewrite (positive_ray_sqrt_map_preimage_open_ray_lower_pos
+    b
+    HbR
+    HbPos).
+  rewrite (binintersect_com
+    (open_ray_upper R 0)
+    (open_ray_lower R (mul_SNo b b))).
+  exact (subspace_topology_intersection_open
+    R
+    R_standard_topology
+    (open_ray_upper R 0)
+    (open_ray_lower R (mul_SNo b b))
+    (open_ray_lower_in_R_standard_topology
+      (mul_SNo b b)
+      (real_mul_SNo
+        b
+        HbR
+        b
+        HbR))).
+- assume HbNotPos.
+  rewrite (positive_ray_sqrt_map_preimage_open_ray_lower_nonpos
+    b
+    HbR
+    HbNotPos).
+  exact (topology_has_empty
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0))
+    (subspace_topology_is_topology
+      R
+      R_standard_topology
+      (open_ray_upper R 0)
+      R_standard_topology_is_topology
+      (Sep_Subq
+        R
+        (fun x:set => order_rel R 0 x)))).
+Qed.
+
+Lemma positive_ray_sqrt_map_continuous_to_R :
+  continuous_map
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0))
+    R
+    R_standard_topology
+    positive_ray_sqrt_map.
+admit.
+Admitted.
+
+Lemma positive_ray_sqrt_map_continuous :
+  continuous_map
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0))
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0))
+    positive_ray_sqrt_map.
+admit.
+Admitted.
+
 (** Infrastructure: points on S^n are nonzero vectors in R^{n+1}. **)
 (** Proven Charlie **)
 Lemma Sn_subset_Rn_minus_origin : forall n x:set,
