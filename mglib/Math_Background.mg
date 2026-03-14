@@ -161125,6 +161125,161 @@ apply andI.
           HxSn)). }
 Qed.
 
+(** Infrastructure: affine boundary homotopy from a sphere map to the inclusion. **)
+Definition Sn_affine_boundary_homotopy_map : set -> set -> set := fun n wS =>
+  graph
+    (setprod (Sn n) unit_interval)
+    (fun p:set =>
+      graph (ordsucc n) (fun i:set =>
+        add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i)))).
+
+(** Proven Charlie **)
+Lemma Sn_affine_boundary_homotopy_map_at_0 :
+  forall n wS x:set,
+    n :e omega ->
+    continuous_map
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      wS ->
+    x :e Sn n ->
+    apply_fun
+      (Sn_affine_boundary_homotopy_map n wS)
+      (x, 0)
+    =
+    apply_fun wS x.
+let n wS x.
+assume Hn_om HwSCont HxSn.
+claim Hn_nat :
+  nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hx0Dom :
+  (x, 0) :e setprod (Sn n) unit_interval.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (Sn n)
+    unit_interval
+    x
+    0
+    HxSn
+    zero_in_unit_interval).
+}
+claim HwSEu :
+  apply_fun wS x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+    (apply_fun wS x)
+    (continuous_map_function_on
+      (Sn n)
+      (Sn_topology n)
+      (Rn_minus_origin (ordsucc n))
+      (Rn_minus_origin_topology (ordsucc n))
+      wS
+      HwSCont
+      x
+      HxSn)).
+}
+claim Hdef :
+  Sn_affine_boundary_homotopy_map n wS =
+  graph
+    (setprod (Sn n) unit_interval)
+    (fun p:set =>
+      graph (ordsucc n) (fun i:set =>
+        add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i)))).
+{
+  reflexivity.
+}
+rewrite Hdef.
+rewrite (apply_fun_graph
+  (setprod (Sn n) unit_interval)
+  (fun p:set =>
+    graph (ordsucc n) (fun i:set =>
+      add_SNo
+        (mul_SNo
+          (apply_fun flip_unit_interval (p 1))
+          (apply_fun (apply_fun wS (p 0)) i))
+        (mul_SNo
+          (p 1)
+          (apply_fun (p 0) i))))
+  (x, 0)
+  Hx0Dom).
+rewrite (euclidean_space_ordsucc_eq_graph_of_apply_fun
+  n
+  (apply_fun wS x)
+  Hn_nat
+  HwSEu).
+apply (graph_extensional
+  (ordsucc n)
+  (fun i:set =>
+    add_SNo
+      (mul_SNo
+        (apply_fun flip_unit_interval ((x, 0) 1))
+        (apply_fun (apply_fun wS ((x, 0) 0)) i))
+      (mul_SNo
+        ((x, 0) 1)
+        (apply_fun ((x, 0) 0) i)))
+  (fun i:set => apply_fun (apply_fun wS x) i)).
+let i.
+assume Hi.
+rewrite tuple_2_1_eq.
+rewrite tuple_2_0_eq.
+rewrite flip_unit_interval_at_0.
+rewrite (mul_SNo_oneL
+  (apply_fun (apply_fun wS x) i)
+  (real_SNo
+    (apply_fun (apply_fun wS x) i)
+    (euclidean_space_coord_in_R
+      (ordsucc n)
+      (apply_fun wS x)
+      i
+      HwSEu
+      Hi))).
+rewrite (mul_SNo_zeroL
+  (apply_fun x i)
+  (real_SNo
+    (apply_fun x i)
+    (euclidean_space_coord_in_R
+      (ordsucc n)
+      x
+      i
+      (SepE1
+        (euclidean_space (ordsucc n))
+        (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+        x
+        HxSn)
+      Hi))).
+rewrite (add_SNo_0R
+  (apply_fun (apply_fun wS x) i)
+  (real_SNo
+    (apply_fun (apply_fun wS x) i)
+    (euclidean_space_coord_in_R
+      (ordsucc n)
+      (apply_fun wS x)
+      i
+      HwSEu
+      Hi))).
+reflexivity.
+Qed.
+
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
@@ -161261,9 +161416,10 @@ claim HnoInImplInclusionNulAux :
 {
   let w wS.
   assume HwCont HwSCont HwSEq HnoInW HwSNul.
-  (** Remaining geometric step: build the straight-line homotopy
-      in R^{n+1} :\: {0} from wS to the inclusion. A zero of that
-      homotopy would force an inward-pointing boundary value. **)
+  (** With Sn_affine_boundary_homotopy_map and its t=0 endpoint now available,
+      the remaining work is to show this affine homotopy is continuous into
+      R^{n+1} :\: {0} and lands at the sphere inclusion when t = 1.
+      Any zero of that homotopy would force an inward-pointing boundary value. **)
   admit.
 }
 claim HnoInImplInclusionNul :
