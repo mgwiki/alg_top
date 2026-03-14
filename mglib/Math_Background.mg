@@ -149531,6 +149531,596 @@ rewrite HlastEq.
 reflexivity.
 Qed.
 
+(** Infrastructure: the zero-dimensional Euclidean norm square is identically zero. **)
+(** Proven Charlie **)
+Lemma euclidean_norm_sq_0_eq_zero : forall v:set,
+  v :e euclidean_space 0 ->
+  euclidean_norm_sq 0 v = 0.
+let v.
+assume Hv.
+claim Hdef :
+  euclidean_norm_sq 0 v =
+  finite_real_sum
+    (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))
+    0.
+{
+  reflexivity.
+}
+rewrite Hdef.
+rewrite (finite_real_sum_0
+  (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))).
+reflexivity.
+Qed.
+
+(** Infrastructure: Euclidean norm square is continuous in all dimensions. **)
+(** Proven Charlie **)
+Lemma euclidean_norm_sq_continuous : forall n:set,
+  nat_p n ->
+  continuous_map
+    (euclidean_space n)
+    (euclidean_topology n)
+    R
+    R_standard_topology
+    (graph (euclidean_space n) (fun v:set => euclidean_norm_sq n v)).
+let n.
+assume Hn.
+claim Hind :
+  forall m:set, nat_p m ->
+    continuous_map
+      (euclidean_space m)
+      (euclidean_topology m)
+      R
+      R_standard_topology
+      (graph (euclidean_space m) (fun v:set => euclidean_norm_sq m v)).
+{
+  apply nat_ind.
+  - claim HtopE0 :
+      topology_on (euclidean_space 0) (euclidean_topology 0).
+    {
+      exact (euclidean_topology_is_topology
+        0).
+    }
+    claim HzeroE0 : 0 :e R.
+    {
+      exact real_0.
+    }
+    claim HconstCont :
+      continuous_map
+        (euclidean_space 0)
+        (euclidean_topology 0)
+        R
+        R_standard_topology
+        (const_fun (euclidean_space 0) 0).
+    {
+      exact (const_fun_continuous
+        (euclidean_space 0)
+        (euclidean_topology 0)
+        R
+        R_standard_topology
+        0
+        HtopE0
+        R_standard_topology_is_topology
+        HzeroE0).
+    }
+    claim HgraphFun :
+      function_on
+        (graph (euclidean_space 0) (fun v:set => euclidean_norm_sq 0 v))
+        (euclidean_space 0)
+        R.
+    {
+      apply (graph_function_on
+        (euclidean_space 0)
+        R
+        (fun v:set => euclidean_norm_sq 0 v)).
+      let v.
+      assume Hv.
+      exact (euclidean_norm_sq_in_R
+        0
+        v
+        nat_0
+        Hv).
+    }
+    exact (continuous_map_congr_on
+      (euclidean_space 0)
+      (euclidean_topology 0)
+      R
+      R_standard_topology
+      (const_fun (euclidean_space 0) 0)
+      (graph (euclidean_space 0) (fun v:set => euclidean_norm_sq 0 v))
+      HconstCont
+      HgraphFun
+      (fun v Hv =>
+        eq_i_tra
+          (apply_fun (const_fun (euclidean_space 0) 0) v)
+          0
+          (apply_fun (graph (euclidean_space 0) (fun u:set => euclidean_norm_sq 0 u)) v)
+          (const_fun_apply
+            (euclidean_space 0)
+            0
+            v
+            Hv)
+          (eq_symm
+            (apply_fun (graph (euclidean_space 0) (fun u:set => euclidean_norm_sq 0 u)) v)
+            0
+            (eq_i_tra
+              (apply_fun (graph (euclidean_space 0) (fun u:set => euclidean_norm_sq 0 u)) v)
+              (euclidean_norm_sq 0 v)
+              0
+              (apply_fun_graph
+                (euclidean_space 0)
+                (fun u:set => euclidean_norm_sq 0 u)
+                v
+                Hv)
+              (euclidean_norm_sq_0_eq_zero
+                v
+                Hv))))).
+  - let m.
+    assume Hm IH.
+    set E := euclidean_space (ordsucc m).
+    set Etop := euclidean_topology (ordsucc m).
+    set first := euclidean_space_succ_first_map m.
+    set last := euclidean_space_succ_last_map m.
+    set norm_first := compose_fun
+      E
+      first
+      (graph (euclidean_space m) (fun v:set => euclidean_norm_sq m v)).
+    set last_sq := compose_fun
+      E
+      (pair_map E last last)
+      mul_fun_R.
+    set norm_sum := compose_fun
+      E
+      (pair_map E norm_first last_sq)
+      add_fun_R.
+    claim HtopE : topology_on E Etop.
+    {
+      exact (euclidean_topology_is_topology
+        (ordsucc m)).
+    }
+    claim HfirstCont :
+      continuous_map
+        E
+        Etop
+        (euclidean_space m)
+        (euclidean_topology m)
+        first.
+    {
+      exact (euclidean_space_succ_first_map_continuous
+        m
+        Hm).
+    }
+    claim HlastCont :
+      continuous_map
+        E
+        Etop
+        R
+        R_standard_topology
+        last.
+    {
+      exact (euclidean_space_succ_last_map_continuous
+        m
+        Hm).
+    }
+    claim HnormFirstCont :
+      continuous_map
+        E
+        Etop
+        R
+        R_standard_topology
+        norm_first.
+    {
+      exact (composition_continuous
+        E
+        Etop
+        (euclidean_space m)
+        (euclidean_topology m)
+        R
+        R_standard_topology
+        first
+        (graph (euclidean_space m) (fun v:set => euclidean_norm_sq m v))
+        HfirstCont
+        IH).
+    }
+    claim HlastSqCont :
+      continuous_map
+        E
+        Etop
+        R
+        R_standard_topology
+        last_sq.
+    {
+      exact (mul_two_continuous_R
+        E
+        Etop
+        last
+        last
+        HtopE
+        HlastCont
+        HlastCont).
+    }
+    claim HnormSumCont :
+      continuous_map
+        E
+        Etop
+        R
+        R_standard_topology
+        norm_sum.
+    {
+      exact (add_two_continuous_R
+        E
+        Etop
+        norm_first
+        last_sq
+        HtopE
+        HnormFirstCont
+        HlastSqCont).
+    }
+    claim HgraphFun :
+      function_on
+        (graph E (fun v:set => euclidean_norm_sq (ordsucc m) v))
+        E
+        R.
+    {
+      apply (graph_function_on
+        E
+        R
+        (fun v:set => euclidean_norm_sq (ordsucc m) v)).
+      let v.
+      assume Hv.
+      exact (euclidean_norm_sq_in_R
+        (ordsucc m)
+        v
+        (nat_ordsucc
+          m
+          Hm)
+        Hv).
+    }
+    claim Hpointwise :
+      forall v:set, v :e E ->
+        apply_fun norm_sum v =
+        apply_fun (graph E (fun u:set => euclidean_norm_sq (ordsucc m) u)) v.
+    {
+      let v.
+      assume Hv.
+      claim Hfirstv :
+        apply_fun first v :e euclidean_space m.
+      {
+        exact (continuous_map_function_on
+          E
+          Etop
+          (euclidean_space m)
+          (euclidean_topology m)
+          first
+          HfirstCont
+          v
+          Hv).
+      }
+      claim Hlastv :
+        apply_fun last v :e R.
+      {
+        exact (continuous_map_function_on
+          E
+          Etop
+          R
+          R_standard_topology
+          last
+          HlastCont
+          v
+          Hv).
+      }
+      claim HnormFirstR :
+        apply_fun norm_first v :e R.
+      {
+        exact (continuous_map_function_on
+          E
+          Etop
+          R
+          R_standard_topology
+          norm_first
+          HnormFirstCont
+          v
+          Hv).
+      }
+      claim HlastSqR :
+        apply_fun last_sq v :e R.
+      {
+        exact (continuous_map_function_on
+          E
+          Etop
+          R
+          R_standard_topology
+          last_sq
+          HlastSqCont
+          v
+          Hv).
+      }
+      claim HsumEq :
+        apply_fun norm_sum v =
+        add_SNo (apply_fun norm_first v) (apply_fun last_sq v).
+      {
+        exact (add_of_pair_map_apply
+          E
+          norm_first
+          last_sq
+          v
+          Hv
+          HnormFirstR
+          HlastSqR).
+      }
+      claim HnormFirstEq :
+        apply_fun norm_first v = euclidean_norm_sq m (apply_fun first v).
+      {
+        exact (eq_i_tra
+          (apply_fun norm_first v)
+          (apply_fun (graph (euclidean_space m) (fun u:set => euclidean_norm_sq m u)) (apply_fun first v))
+          (euclidean_norm_sq m (apply_fun first v))
+          (compose_fun_apply
+            E
+            first
+            (graph (euclidean_space m) (fun u:set => euclidean_norm_sq m u))
+            v
+            Hv)
+          (apply_fun_graph
+            (euclidean_space m)
+            (fun u:set => euclidean_norm_sq m u)
+            (apply_fun first v)
+            Hfirstv)).
+      }
+      claim HlastSqEq :
+        apply_fun last_sq v = mul_SNo (apply_fun last v) (apply_fun last v).
+      {
+        exact (mul_of_pair_map_apply
+          E
+          last
+          last
+          v
+          Hv
+          Hlastv
+          Hlastv).
+      }
+      claim HsumMidEq :
+        add_SNo (apply_fun norm_first v) (apply_fun last_sq v)
+        =
+        add_SNo
+          (euclidean_norm_sq m (apply_fun first v))
+          (mul_SNo (apply_fun last v) (apply_fun last v)).
+      {
+        rewrite HnormFirstEq.
+        rewrite HlastSqEq.
+        reflexivity.
+      }
+      claim HlastTermEq :
+        add_SNo
+          (euclidean_norm_sq m (apply_fun first v))
+          (mul_SNo
+            (apply_fun (euclidean_space_succ_last_map m) v)
+            (apply_fun (euclidean_space_succ_last_map m) v))
+        =
+        add_SNo
+          (euclidean_norm_sq m (apply_fun first v))
+          (mul_SNo (apply_fun last v) (apply_fun last v)).
+      {
+        rewrite (euclidean_space_succ_last_map_apply
+          m
+          v
+          Hv).
+        reflexivity.
+      }
+      exact (eq_i_tra
+        (apply_fun norm_sum v)
+        (add_SNo (apply_fun norm_first v) (apply_fun last_sq v))
+        (apply_fun (graph E (fun u:set => euclidean_norm_sq (ordsucc m) u)) v)
+        HsumEq
+        (eq_i_tra
+          (add_SNo (apply_fun norm_first v) (apply_fun last_sq v))
+          (add_SNo
+            (euclidean_norm_sq m (apply_fun first v))
+            (mul_SNo (apply_fun last v) (apply_fun last v)))
+          (apply_fun (graph E (fun u:set => euclidean_norm_sq (ordsucc m) u)) v)
+          HsumMidEq
+          (eq_i_tra
+            (add_SNo
+              (euclidean_norm_sq m (apply_fun first v))
+              (mul_SNo (apply_fun last v) (apply_fun last v)))
+            (euclidean_norm_sq (ordsucc m) v)
+            (apply_fun (graph E (fun u:set => euclidean_norm_sq (ordsucc m) u)) v)
+            (eq_symm
+              (euclidean_norm_sq (ordsucc m) v)
+              (add_SNo
+                (euclidean_norm_sq m (apply_fun first v))
+                (mul_SNo (apply_fun last v) (apply_fun last v)))
+              (eq_i_tra
+                (euclidean_norm_sq (ordsucc m) v)
+                (add_SNo
+                  (euclidean_norm_sq m (apply_fun first v))
+                  (mul_SNo
+                    (apply_fun (euclidean_space_succ_last_map m) v)
+                    (apply_fun (euclidean_space_succ_last_map m) v)))
+                (add_SNo
+                  (euclidean_norm_sq m (apply_fun first v))
+                  (mul_SNo (apply_fun last v) (apply_fun last v)))
+                (euclidean_norm_sq_ordsucc_expand
+                  m
+                  v
+                  Hm
+                  Hv)
+                HlastTermEq))
+            (eq_symm
+              (apply_fun (graph E (fun u:set => euclidean_norm_sq (ordsucc m) u)) v)
+              (euclidean_norm_sq (ordsucc m) v)
+              (apply_fun_graph
+                E
+                (fun u:set => euclidean_norm_sq (ordsucc m) u)
+                v
+                Hv))))).
+    }
+    exact (continuous_map_congr_on
+      E
+      Etop
+      R
+      R_standard_topology
+      norm_sum
+      (graph E (fun v:set => euclidean_norm_sq (ordsucc m) v))
+      HnormSumCont
+      HgraphFun
+      Hpointwise).
+}
+exact (Hind
+  n
+  Hn).
+Qed.
+
+(** Infrastructure: every sphere is closed in its ambient Euclidean space. **)
+(** Proven Charlie **)
+Lemma Sn_closed_in_euclidean : forall n:set,
+  n :e omega ->
+  closed_in
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (Sn n).
+let n.
+assume Hn_om.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+set norm_sq_fn := graph
+  (euclidean_space (ordsucc n))
+  (fun v:set => euclidean_norm_sq (ordsucc n) v).
+claim Hcont :
+  continuous_map
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    R
+    R_standard_topology
+    norm_sq_fn.
+{
+  exact (euclidean_norm_sq_continuous
+    (ordsucc n)
+    (nat_ordsucc
+      n
+      Hn_nat)).
+}
+claim H1closed : closed_in R R_standard_topology {1}.
+{
+  exact (Hausdorff_singletons_closed
+    R
+    R_standard_topology
+    1
+    R_standard_topology_Hausdorff
+    real_1).
+}
+claim HpreEq :
+  preimage_of (euclidean_space (ordsucc n)) norm_sq_fn {1} = Sn n.
+{
+  apply set_ext.
+  - let v.
+    assume Hv.
+    claim HvEu :
+      v :e euclidean_space (ordsucc n).
+    {
+      exact (SepE1
+        (euclidean_space (ordsucc n))
+        (fun x:set => apply_fun norm_sq_fn x :e {1})
+        v
+        Hv).
+    }
+    claim HvNorm :
+      apply_fun norm_sq_fn v :e {1}.
+    {
+      exact (SepE2
+        (euclidean_space (ordsucc n))
+        (fun x:set => apply_fun norm_sq_fn x :e {1})
+        v
+        Hv).
+    }
+    claim HnormEq :
+      apply_fun norm_sq_fn v = 1.
+    {
+      exact (SingE
+        1
+        (apply_fun norm_sq_fn v)
+        HvNorm).
+    }
+    claim HnormSq1 :
+      euclidean_norm_sq (ordsucc n) v = 1.
+    {
+      claim Happly :
+        apply_fun norm_sq_fn v = euclidean_norm_sq (ordsucc n) v.
+      {
+        exact (apply_fun_graph
+          (euclidean_space (ordsucc n))
+          (fun u:set => euclidean_norm_sq (ordsucc n) u)
+          v
+          HvEu).
+      }
+      rewrite <- Happly.
+      exact HnormEq.
+    }
+    exact (SepI
+      (euclidean_space (ordsucc n))
+      (fun u:set => euclidean_norm_sq (ordsucc n) u = 1)
+      v
+      HvEu
+      HnormSq1).
+  - let v.
+    assume Hv.
+    claim HvEu :
+      v :e euclidean_space (ordsucc n).
+    {
+      exact (SepE1
+        (euclidean_space (ordsucc n))
+        (fun u:set => euclidean_norm_sq (ordsucc n) u = 1)
+        v
+        Hv).
+    }
+    claim HnormSq1 :
+      euclidean_norm_sq (ordsucc n) v = 1.
+    {
+      exact (SepE2
+        (euclidean_space (ordsucc n))
+        (fun u:set => euclidean_norm_sq (ordsucc n) u = 1)
+        v
+        Hv).
+    }
+    claim HapplyEq :
+      apply_fun norm_sq_fn v = euclidean_norm_sq (ordsucc n) v.
+    {
+      exact (apply_fun_graph
+        (euclidean_space (ordsucc n))
+        (fun u:set => euclidean_norm_sq (ordsucc n) u)
+        v
+        HvEu).
+    }
+    claim HmemSep :
+      apply_fun norm_sq_fn v :e {1}.
+    {
+      rewrite HapplyEq.
+      rewrite HnormSq1.
+      exact (SingI
+        1).
+    }
+    exact (SepI
+      (euclidean_space (ordsucc n))
+      (fun x:set => apply_fun norm_sq_fn x :e {1})
+      v
+      HvEu
+      HmemSep).
+}
+rewrite <- HpreEq.
+exact (continuous_map_preimage_closed
+  (euclidean_space (ordsucc n))
+  (euclidean_topology (ordsucc n))
+  R
+  R_standard_topology
+  norm_sq_fn
+  {1}
+  Hcont
+  H1closed).
+Qed.
+
 (** Infrastructure: a point of R^n minus the origin has nonzero norm square. **)
 (** Proven Charlie **)
 Lemma Rn_minus_origin_norm_sq_nonzero : forall n x:set,
