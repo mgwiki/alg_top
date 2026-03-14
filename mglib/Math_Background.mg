@@ -317206,10 +317206,27 @@ apply (reduced_word_concat G mult e inv J Gfam efam (ordsucc m) word1 m xs_shift
 let ys_concat. assume Hconcat_p.
 (** Extract results from concat **)
 claim Hred_c : reduced_word J Gfam efam (add_nat (ordsucc m) m) ys_concat.
-{ admit. }
+{ (** /\ is left-assoc: Hconcat_p : ((A /\ B) /\ C) **)
+  exact (andEL (reduced_word J Gfam efam (add_nat (ordsucc m) m) ys_concat)
+    (word_product mult e ys_concat (add_nat (ordsucc m) m) =
+      apply_fun mult (word_product mult e word1 (ordsucc m), word_product mult e xs_shifted m))
+    (andEL (reduced_word J Gfam efam (add_nat (ordsucc m) m) ys_concat /\
+      word_product mult e ys_concat (add_nat (ordsucc m) m) =
+        apply_fun mult (word_product mult e word1 (ordsucc m), word_product mult e xs_shifted m))
+      (forall t:set, nat_p t -> m = ordsucc t ->
+        apply_fun ys_concat (add_nat (ordsucc m) t) = apply_fun xs_shifted t)
+      Hconcat_p)). }
 claim Hwp_c : word_product mult e ys_concat (add_nat (ordsucc m) m) =
   apply_fun mult (word_product mult e word1 (ordsucc m), word_product mult e xs_shifted m).
-{ admit. }
+{ exact (andER (reduced_word J Gfam efam (add_nat (ordsucc m) m) ys_concat)
+    (word_product mult e ys_concat (add_nat (ordsucc m) m) =
+      apply_fun mult (word_product mult e word1 (ordsucc m), word_product mult e xs_shifted m))
+    (andEL (reduced_word J Gfam efam (add_nat (ordsucc m) m) ys_concat /\
+      word_product mult e ys_concat (add_nat (ordsucc m) m) =
+        apply_fun mult (word_product mult e word1 (ordsucc m), word_product mult e xs_shifted m))
+      (forall t:set, nat_p t -> m = ordsucc t ->
+        apply_fun ys_concat (add_nat (ordsucc m) t) = apply_fun xs_shifted t)
+      Hconcat_p)). }
 (** Relate word_product(word1, ordsucc m) to word_product(xs, n) using nat_primrec_ext **)
 (** and word_product(xs_shifted, m) to the suffix product **)
 (** Then show total = mult(wp(xs,n), wp(xs,n)) **)
