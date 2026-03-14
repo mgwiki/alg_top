@@ -437152,6 +437152,106 @@ exact (thm85_3_free_gen_formula_pack_existing_generators
   Hrank).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_pack_to_split_index :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH /\
+    equip JH (ordsucc (mul_SNo k n))) ->
+  exists JH:set,
+    (exists gensH:set, free_group_with_generators H multH eH invH JH gensH) /\
+    equip JH (ordsucc (mul_SNo k n)).
+let H multH eH invH n k.
+assume HpackEx.
+apply HpackEx.
+let JH.
+assume HJHex.
+apply HJHex.
+let gensH.
+assume Hpack.
+witness JH.
+apply andI.
+- witness gensH.
+  exact (andEL
+    (free_group_with_generators H multH eH invH JH gensH)
+    (equip JH (ordsucc (mul_SNo k n)))
+    Hpack).
+- exact (andER
+    (free_group_with_generators H multH eH invH JH gensH)
+    (equip JH (ordsucc (mul_SNo k n)))
+    Hpack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_split_index_to_pack :
+  forall H multH eH invH n k:set,
+  (exists JH:set,
+    (exists gensH:set, free_group_with_generators H multH eH invH JH gensH) /\
+    equip JH (ordsucc (mul_SNo k n))) ->
+  exists JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH /\
+    equip JH (ordsucc (mul_SNo k n)).
+let H multH eH invH n k.
+assume HsplitEx.
+apply HsplitEx.
+let JH.
+assume HJHpack.
+claim HgensEx : exists gensH:set, free_group_with_generators H multH eH invH JH gensH.
+{
+  exact (andEL
+    (exists gensH:set, free_group_with_generators H multH eH invH JH gensH)
+    (equip JH (ordsucc (mul_SNo k n)))
+    HJHpack).
+}
+claim Hrank : equip JH (ordsucc (mul_SNo k n)).
+{
+  exact (andER
+    (exists gensH:set, free_group_with_generators H multH eH invH JH gensH)
+    (equip JH (ordsucc (mul_SNo k n)))
+    HJHpack).
+}
+apply HgensEx.
+let gensH.
+assume Hfree.
+witness JH.
+witness gensH.
+apply andI.
+- exact Hfree.
+- exact Hrank.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_pack_iff_split_index :
+  forall H multH eH invH n k:set,
+  ((exists JH gensH:set,
+      free_group_with_generators H multH eH invH JH gensH /\
+      equip JH (ordsucc (mul_SNo k n)))
+   <->
+   (exists JH:set,
+      (exists gensH:set, free_group_with_generators H multH eH invH JH gensH) /\
+      equip JH (ordsucc (mul_SNo k n)))).
+let H multH eH invH n k.
+apply iffI.
+- assume HpackEx.
+  exact (thm85_3_free_gen_formula_exists_pack_to_split_index
+    H
+    multH
+    eH
+    invH
+    n
+    k
+    HpackEx).
+- assume HsplitEx.
+  exact (thm85_3_free_gen_formula_exists_split_index_to_pack
+    H
+    multH
+    eH
+    invH
+    n
+    k
+    HsplitEx).
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
