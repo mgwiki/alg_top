@@ -160466,7 +160466,156 @@ Theorem ex55_4c_nonvanishing_vector_field_Rn : forall n:set, n :e omega ->
       ~(forall i:set, i :e ordsucc n -> apply_fun (apply_fun v x) i = 0)) ->
     (exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x) /\
     (exists x:set, x :e Sn n /\ points_directly_outward_Rn n v x).
-admit.
+let n.
+assume Hn_om HnoRetr.
+let v.
+assume HvCont HvNonzero.
+set vP := v.
+claim HvIntoNz :
+  forall x:set, x :e Bn_closed n ->
+    apply_fun vP x :e Rn_minus_origin (ordsucc n).
+{
+  let x.
+  assume HxB.
+  exact (SepI
+    (euclidean_space (ordsucc n))
+    (fun y:set => ~(forall i:set, i :e ordsucc n -> apply_fun y i = 0))
+    (apply_fun vP x)
+    (continuous_map_function_on
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      (euclidean_space (ordsucc n))
+      (euclidean_topology (ordsucc n))
+      vP
+      HvCont
+      x
+      HxB)
+    (HvNonzero
+      x
+      HxB)).
+}
+claim HvPCont :
+  continuous_map
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    vP.
+{
+  exact (continuous_map_range_restrict
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    vP
+    (Rn_minus_origin (ordsucc n))
+    HvCont
+    (Sep_Subq
+      (euclidean_space (ordsucc n))
+      (fun y:set => ~(forall i:set, i :e ordsucc n -> apply_fun y i = 0)))
+    HvIntoNz).
+}
+set incSnB := graph (Sn n) (fun x:set => x).
+set vS := compose_fun (Sn n) incSnB vP.
+claim HvSCont :
+  continuous_map
+    (Sn n)
+    (Sn_topology n)
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    vS.
+{
+  exact (composition_continuous
+    (Sn n)
+    (Sn_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    incSnB
+    vP
+    (Sn_inclusion_Bn_closed_continuous
+      n)
+    HvPCont).
+}
+claim HvSEq :
+  forall x:set, x :e Sn n ->
+    apply_fun vS x = apply_fun v x.
+{
+  let x.
+  assume HxSn.
+  rewrite (compose_fun_apply
+    (Sn n)
+    incSnB
+    vP
+    x
+    HxSn).
+  rewrite (apply_fun_graph
+    (Sn n)
+    (fun z:set => z)
+    x
+    HxSn).
+  reflexivity.
+}
+claim HnoInImplInclusionNul :
+  ~(exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x) ->
+  nulhomotopic
+    (Sn n)
+    (Sn_topology n)
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    (graph (Sn n) (fun x:set => x)).
+{
+  assume HnoIn.
+  (** Remaining geometric step: build the straight-line homotopy
+      in R^{n+1} :\: {0} from vS to the inclusion. A zero of that
+      homotopy would force an inward-pointing boundary value. **)
+  admit.
+}
+claim HnoOutImplInclusionNul :
+  ~(exists x:set, x :e Sn n /\ points_directly_outward_Rn n v x) ->
+  nulhomotopic
+    (Sn n)
+    (Sn_topology n)
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    (graph (Sn n) (fun x:set => x)).
+{
+  assume HnoOut.
+  (** Remaining symmetry step: apply the inward-pointing argument to
+      the negated field -v, then translate inward points of -v into
+      outward points of v. **)
+  admit.
+}
+apply (xm (exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x)).
+- assume Hin.
+  apply (xm (exists x:set, x :e Sn n /\ points_directly_outward_Rn n v x)).
+  * assume Hout.
+    exact (andI
+      (exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x)
+      (exists x:set, x :e Sn n /\ points_directly_outward_Rn n v x)
+      Hin
+      Hout).
+  * assume HnoOut.
+    exact (FalseE
+      ((ex55_4b_inclusion_Sn_not_nulhomotopic
+        n
+        Hn_om
+        HnoRetr)
+        (HnoOutImplInclusionNul
+          HnoOut))
+      ((exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x) /\
+       (exists x:set, x :e Sn n /\ points_directly_outward_Rn n v x))).
+- assume HnoIn.
+  exact (FalseE
+    ((ex55_4b_inclusion_Sn_not_nulhomotopic
+      n
+      Hn_om
+      HnoRetr)
+      (HnoInImplInclusionNul
+        HnoIn))
+    ((exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x) /\
+     (exists x:set, x :e Sn n /\ points_directly_outward_Rn n v x))).
 Admitted.
 
 (** from S55 Exercise 4(d) (line 1049 in algtop.tex) **)
