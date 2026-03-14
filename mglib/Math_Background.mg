@@ -468795,11 +468795,12 @@ apply (nat_inv nw Hnw_nat).
         claim Hxsmw2 : apply_fun xsw (ordsucc k) :e apply_fun Gfam bmw.
         { rewrite Hsk_eq_mw. exact Hxsmw_Gbmw. }
         claim Hxsk_ne_eG2 : apply_fun xsw (ordsucc k) <> eG. { rewrite Hsk_eq_mw. exact Hxsmw_ne_eG. }
+        claim Hxsk_real_Ga2 : apply_fun xsw (ordsucc k) :e apply_fun Gfam a2.
+        { rewrite <- Hxsk_eq. exact Hxsk_Ga2. }
         claim Ha2_eq_bmw : a2 = bmw.
         { exact (eq_symm bmw a2 (disjoint_subgroups_label_unique G multG eG invG J Gfam bmw a2
             (apply_fun xsw (ordsucc k)) Hdisjoint HbmwJ Ha2J Hxsmw2
-            (eq_subst_mem_set (apply_fun xsw_suf k) (apply_fun Gfam a2) (apply_fun Gfam a2) Hxsk_Ga2 (eq_refl (apply_fun Gfam a2)))
-            Hxsk_ne_eG2)). }
+            Hxsk_real_Ga2 Hxsk_ne_eG2)). }
         claim Hb2_eq_al : b2 = al.
         { exact (eq_symm al b2 (disjoint_subgroups_label_unique G multG eG invG J Gfam al b2 z0
             Hdisjoint Hal Hb2J Hz0_Gal Hz0_Gb2 Hz0_ne_eG)). }
