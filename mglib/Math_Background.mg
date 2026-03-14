@@ -282794,7 +282794,10 @@ apply (nat_inv nw Hnw_nat).
             (** which handles the case alpha_last != alpha_first. **)
             (** But here the junction entries ARE in the same factor. **)
             (** I need a DIFFERENT lemma or manual construction. **)
-            (** For now, admit this sub-case (nontrivial junction merge). **)
+            (** Use reduced_word_double_merge_junction **)
+            claim Hmw_ne0z : mw <> 0.
+            { assume Hmw0. apply (Hno_efam_entry nw xsw Hredw 0 H0nw). admit. }
+            (** Nontrivial junction: use reduced_word_double_merge_junction then contradict **)
             admit.
         - assume Hb0_ne_bmw : b0 <> bmw.
           (** First and last in DIFFERENT factors. Use reduced_word_double_cyclic_word_product. **)
