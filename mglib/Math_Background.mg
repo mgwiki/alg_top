@@ -283284,8 +283284,21 @@ apply (nat_inv nw Hnw_nat).
               (** Case Q not in any Gfam: remaining hard sub-case. **)
               admit.
             * assume Hjunc_efam : p_junc = apply_fun efam bmw.
-              (** Junction equals efam(bmw): narrower remaining case **)
-              admit.
+              (** p_junc = efam(bmw) = mult(xsw(mw), xsw(0)) in Gfam(bmw). **)
+              (** Case split: efam(bmw) = eG or efam(bmw) != eG. **)
+              apply (xm (apply_fun efam bmw = eG)).
+              + assume Hefbmw_eG : apply_fun efam bmw = eG.
+                (** p_junc = efam(bmw) = eG: use z=eG argument **)
+                claim Hp_eG : p_junc = eG. { rewrite Hjunc_efam. exact Hefbmw_eG. }
+                (** Same as Hjunc_eG case - duplicate the argument or factor out **)
+                admit.
+              + assume Hefbmw_ne : apply_fun efam bmw <> eG.
+                (** efam(bmw) in Gfam(bmw), efam(bmw) != eG: use efam_not_in_Gfam_nontrivial_pre **)
+                claim Hefbmw_Gbmw : apply_fun efam bmw :e apply_fun Gfam bmw.
+                { rewrite <- Hjunc_efam. exact Hp_junc_Gbmw. }
+                claim Habs : False.
+                { exact (efam_not_in_Gfam_nontrivial_pre G multG eG invG J Gfam efam Hfp bmw HbmwJ Hefbmw_Gbmw Hefbmw_ne). }
+                prove False. exact Habs.
           + assume Hjunc_nontrivial : ~(p_junc = eG \/ p_junc = apply_fun efam bmw).
             claim Hp_ne_eG : p_junc <> eG.
             { assume Heq. apply Hjunc_nontrivial. apply orIL. exact Heq. }
