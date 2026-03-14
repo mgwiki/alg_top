@@ -468577,6 +468577,7 @@ apply (nat_inv nw Hnw_nat).
       (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_pre i else z))
       Hfp Hred_nw Hnw_ne_0 Hnw_ne_1 Hwp_eG_nw).
   + assume Hbmw_ne_al : bmw <> al.
+    (** Last entry NOT in Gfam(al). Use the first entry or palindromic argument. **)
     admit.
 Admitted.
 
