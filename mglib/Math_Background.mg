@@ -438581,6 +438581,150 @@ exact (thm85_3_rankdata_nonzero_via_npack_witness_iff_via_finite
 Qed.
 
 (** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_bundle_iff_via_npack_witness_alias :
+  forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)
+   <->
+   n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+apply iffI.
+- assume Hbundle.
+  exact Hbundle.
+- assume HnpackW.
+  exact HnpackW.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_npack_witness_iff_via_bundle_alias :
+  forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)
+   <->
+   n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+apply iffI.
+- assume HnpackW.
+  exact HnpackW.
+- assume Hbundle.
+  exact Hbundle.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_finite_iff_via_npack_finite_alias :
+  forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)
+   <->
+   n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+apply iffI.
+- assume Hfinite.
+  exact Hfinite.
+- assume HnpackF.
+  exact HnpackF.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_npack_finite_iff_via_finite_alias :
+  forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)
+   <->
+   n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+apply iffI.
+- assume HnpackF.
+  exact HnpackF.
+- assume Hfinite.
+  exact Hfinite.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_finite_iff_via_npack_witness_alias :
+  forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)
+   <->
+   n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+apply iffI.
+- assume Hfinite.
+  exact Hfinite.
+- assume HnpackW.
+  exact HnpackW.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_via_npack_witness_iff_via_npack_finite_alias :
+  forall F multF eF invF J H n k:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  (n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)
+   <->
+   n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n k.
+assume HnPack.
+assume HkPack.
+apply iffI.
+- assume HnpackW.
+  exact HnpackW.
+- assume HnpackF.
+  exact HnpackF.
+Qed.
+
+(** Proven Bob **)
 Lemma thm85_3_rankdata_nonzero_via_bundle_iff_via_npack_witness : forall F multF eF invF J H n k:set,
   n :e omega /\ equip J (ordsucc n) ->
   k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
