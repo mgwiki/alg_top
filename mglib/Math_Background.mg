@@ -150121,6 +150121,387 @@ exact (continuous_map_preimage_closed
   H1closed).
 Qed.
 
+(** Infrastructure: every sphere is compact as a closed subspace of a compact cube. **)
+(** Proven Charlie **)
+Lemma compact_Sn : forall n:set,
+  n :e omega ->
+  compact_space (Sn n) (Sn_topology n).
+let n.
+assume Hn_om.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+set I := ordsucc n.
+set Xi := const_space_family I R R_standard_topology.
+set Xi_cube := const_space_family I (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1).
+set cube := product_space I Xi_cube.
+set cube_top := subspace_topology (euclidean_space I) (euclidean_topology I) cube.
+claim HIne : I <> Empty.
+{
+  assume Habs.
+  exact (EmptyE
+    n
+    (Habs
+      (fun z _ => n :e z)
+      (ordsuccI2 n))
+    False).
+}
+claim HclosedSubR :
+  closed_interval (minus_SNo 1) 1 c= R.
+{
+  exact (closed_interval_sub_R
+    (minus_SNo 1)
+    1).
+}
+claim HXiSet : forall i:set, i :e I -> space_family_set Xi i = R.
+{
+  let i.
+  assume Hi.
+  exact (space_family_set_const_space_family
+    I
+    R
+    R_standard_topology
+    i
+    Hi).
+}
+claim HXicubeSet : forall i:set, i :e I -> space_family_set Xi_cube i = closed_interval (minus_SNo 1) 1.
+{
+  let i.
+  assume Hi.
+  exact (space_family_set_const_space_family
+    I
+    (closed_interval (minus_SNo 1) 1)
+    (closed_interval_topology (minus_SNo 1) 1)
+    i
+    Hi).
+}
+claim HXicubeTop : forall i:set, i :e I -> space_family_topology Xi_cube i = closed_interval_topology (minus_SNo 1) 1.
+{
+  let i.
+  assume Hi.
+  exact (space_family_topology_const_space_family
+    I
+    (closed_interval (minus_SNo 1) 1)
+    (closed_interval_topology (minus_SNo 1) 1)
+    i
+    Hi).
+}
+claim HXiTop : forall i:set, i :e I -> space_family_topology Xi i = R_standard_topology.
+{
+  let i.
+  assume Hi.
+  exact (space_family_topology_const_space_family
+    I
+    R
+    R_standard_topology
+    i
+    Hi).
+}
+claim HXiTopOn : forall i:set, i :e I -> topology_on (space_family_set Xi i) (space_family_topology Xi i).
+{
+  let i.
+  assume Hi.
+  rewrite (HXiSet
+    i
+    Hi).
+  rewrite (HXiTop
+    i
+    Hi).
+  exact R_standard_topology_is_topology.
+}
+claim HXicubeSub : forall i:set, i :e I -> space_family_set Xi_cube i c= space_family_set Xi i.
+{
+  let i.
+  assume Hi.
+  rewrite (HXicubeSet
+    i
+    Hi).
+  rewrite (HXiSet
+    i
+    Hi).
+  exact HclosedSubR.
+}
+claim HXicubeTopEq : forall i:set, i :e I ->
+  space_family_topology Xi_cube i =
+  subspace_topology (space_family_set Xi i) (space_family_topology Xi i) (space_family_set Xi_cube i).
+{
+  let i.
+  assume Hi.
+  rewrite (HXicubeTop
+    i
+    Hi).
+  rewrite (HXiSet
+    i
+    Hi).
+  rewrite (HXiTop
+    i
+    Hi).
+  rewrite (HXicubeSet
+    i
+    Hi).
+  reflexivity.
+}
+claim HcubeSpaceFamily : forall i:set, i :e I ->
+  compact_space (product_component Xi_cube i) (product_component_topology Xi_cube i).
+{
+  let i.
+  assume Hi.
+  rewrite <- (space_family_set_eq_product_component
+    Xi_cube
+    i).
+  rewrite <- (space_family_topology_eq_product_component_topology
+    Xi_cube
+    i).
+  rewrite (HXicubeSet
+    i
+    Hi).
+  rewrite (HXicubeTop
+    i
+    Hi).
+  exact closed_interval_minus1_1_compact.
+}
+claim Hcube_compact_prod :
+  compact_space cube (product_topology_full I Xi_cube).
+{
+  exact (Tychonoff_theorem
+    I
+    Xi_cube
+    HcubeSpaceFamily).
+}
+claim Htop_eq :
+  product_topology_full I Xi_cube = cube_top.
+{
+  exact (eq_symm
+    cube_top
+    (product_topology_full I Xi_cube)
+    (product_topology_full_subspace_topology
+      I
+      Xi
+      Xi_cube
+      HIne
+      HXicubeSub
+      HXicubeTopEq
+      HXiTopOn)).
+}
+claim Hcube_compact :
+  compact_space cube cube_top.
+{
+  rewrite <- Htop_eq.
+  exact Hcube_compact_prod.
+}
+claim HcubeSubE :
+  cube c= euclidean_space I.
+{
+  exact (product_space_component_sub
+    I
+    Xi
+    Xi_cube
+    HXicubeSub).
+}
+claim Hcube_ne : cube <> Empty.
+{
+  claim HiE :
+    closed_interval (minus_SNo 1) 1 <> Empty.
+  {
+    exact (elem_implies_nonempty
+      (closed_interval (minus_SNo 1) 1)
+      0
+      zero_in_closed_interval_minus1_1).
+  }
+  exact (product_space_nonempty_of_factors_nonempty
+    I
+    Xi_cube
+    (fun i Hi => (HXicubeSet i Hi (fun _ z => z <> Empty) HiE))).
+}
+claim HSnSub : Sn n c= cube.
+{
+  let v.
+  assume Hv.
+  claim HvEu : v :e euclidean_space I.
+  {
+    exact (SepE1
+      (euclidean_space I)
+      (fun u:set => euclidean_norm_sq I u = 1)
+      v
+      Hv).
+  }
+  claim HvPow :
+    v :e Power (setprod I (space_family_union I Xi)).
+  {
+    exact (SepE1
+      (Power (setprod I (space_family_union I Xi)))
+      (fun f:set =>
+        total_function_on f I (space_family_union I Xi) /\ functional_graph f /\
+        forall i:set, i :e I -> apply_fun f i :e space_family_set Xi i)
+      v
+      HvEu).
+  }
+  claim HvProp :
+    total_function_on v I (space_family_union I Xi) /\ functional_graph v /\
+    forall i:set, i :e I -> apply_fun v i :e space_family_set Xi i.
+  {
+    exact (SepE2
+      (Power (setprod I (space_family_union I Xi)))
+      (fun f:set =>
+        total_function_on f I (space_family_union I Xi) /\ functional_graph f /\
+        forall i:set, i :e I -> apply_fun f i :e space_family_set Xi i)
+      v
+      HvEu).
+  }
+  claim HvPowR : v :e Power (setprod I R).
+  {
+    claim Heq :
+      space_family_union I Xi = R.
+    {
+      exact (space_family_union_const_space_family
+        I
+        R
+        R_standard_topology
+        HIne).
+    }
+    rewrite <- Heq.
+    exact HvPow.
+  }
+  claim HvSubR : v c= setprod I R.
+  {
+    exact (PowerE
+      (setprod I R)
+      v
+      HvPowR).
+  }
+  claim HvTF :
+    total_function_on v I R.
+  {
+    claim Heq :
+      space_family_union I Xi = R.
+    {
+      exact (space_family_union_const_space_family
+        I
+        R
+        R_standard_topology
+        HIne).
+    }
+    exact (Heq
+      (fun z _ => total_function_on v I z)
+      (andEL
+        (total_function_on v I (space_family_union I Xi))
+        (functional_graph v)
+        (andEL
+          (total_function_on v I (space_family_union I Xi) /\ functional_graph v)
+          (forall i:set, i :e I -> apply_fun v i :e space_family_set Xi i)
+          HvProp))).
+  }
+  claim HvFG : functional_graph v.
+  {
+    exact (andER
+      (total_function_on v I (space_family_union I Xi))
+      (functional_graph v)
+      (andEL
+        (total_function_on v I (space_family_union I Xi) /\ functional_graph v)
+        (forall i:set, i :e I -> apply_fun v i :e space_family_set Xi i)
+        HvProp)).
+  }
+  claim HvGraph :
+    v = graph I (fun i:set => apply_fun v i).
+  {
+    exact (total_functional_graph_eq_graph_of_apply_fun
+      v
+      I
+      R
+      HvTF
+      HvFG
+      HvSubR).
+  }
+  rewrite HvGraph.
+  apply (product_space_graphI
+    I
+    Xi_cube
+    (fun i:set => apply_fun v i)).
+  let i.
+  assume Hi.
+  rewrite (HXicubeSet
+    i
+    Hi).
+  exact (Sn_coord_in_closed_interval
+    n
+    v
+    i
+    Hn_om
+    Hv
+    Hi).
+}
+claim HSn_closed_E :
+  closed_in (euclidean_space I) (euclidean_topology I) (Sn n).
+{
+  exact (Sn_closed_in_euclidean
+    n
+    Hn_om).
+}
+claim HEtop :
+  topology_on (euclidean_space I) (euclidean_topology I).
+{
+  exact (euclidean_topology_is_topology
+    I).
+}
+claim HSn_closed_cube :
+  closed_in cube cube_top (Sn n).
+{
+  claim Hiff :
+    closed_in cube cube_top (Sn n) <->
+    exists C:set, closed_in (euclidean_space I) (euclidean_topology I) C /\ Sn n = C :/\: cube.
+  {
+    exact (closed_in_subspace_iff_intersection
+      (euclidean_space I)
+      (euclidean_topology I)
+      cube
+      (Sn n)
+      HEtop
+      HcubeSubE).
+  }
+  apply (iffER
+    (closed_in cube cube_top (Sn n))
+    (exists C:set, closed_in (euclidean_space I) (euclidean_topology I) C /\ Sn n = C :/\: cube)
+    Hiff).
+  witness (Sn n).
+  apply andI.
+  - exact HSn_closed_E.
+  - exact (eq_symm
+      (Sn n :/\: cube)
+      (Sn n)
+      (binintersect_Subq_eq_1
+        (Sn n)
+        cube
+        HSnSub)).
+}
+claim HSn_compact_cube :
+  compact_space (Sn n) (subspace_topology cube cube_top (Sn n)).
+{
+  exact (closed_subspace_compact
+    cube
+    cube_top
+    (Sn n)
+    Hcube_compact
+    HSn_closed_cube).
+}
+claim HSnTop_eq :
+  subspace_topology cube cube_top (Sn n) = Sn_topology n.
+{
+  exact (ex16_1_subspace_transitive
+    (euclidean_space I)
+    (euclidean_topology I)
+    cube
+    (Sn n)
+    HEtop
+    HcubeSubE
+    HSnSub).
+}
+rewrite <- HSnTop_eq.
+exact HSn_compact_cube.
+Qed.
+
 (** Infrastructure: a point of R^n minus the origin has nonzero norm square. **)
 (** Proven Charlie **)
 Lemma Rn_minus_origin_norm_sq_nonzero : forall n x:set,
