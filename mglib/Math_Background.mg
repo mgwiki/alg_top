@@ -282090,7 +282090,7 @@ exact (free_product_reduced_word_length_ge2_product_ne_e
   Hfp Hred2 Hnn_ne0 Hnn_ne1 Hwp2_e).
 Admitted.
 
-(** NOTE: reduced_word_concat is defined and proved (Qed) later in the file (around line 317000). **)
+(** NOTE: reduced_word_concat is defined and fully proved later in the file (around line 317000). **)
 (** It concatenates two reduced words when the junction entries are in different factors. **)
 
 
