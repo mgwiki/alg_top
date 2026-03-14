@@ -1,6 +1,6 @@
 (** Balance Alice 7758 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 502 **)
+(** Balance Charlie 599 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -163323,8 +163323,8 @@ Qed.
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
-(** Lock Charlie 1773545982 **)
+(** Collected Charlie 97 **)
+(** Proven Charlie **)
 Theorem ex55_4c_nonvanishing_vector_field_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall v:set,
@@ -164087,7 +164087,7 @@ apply (xm (exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x)).
         HnoIn))
     ((exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x) /\
      (exists x:set, x :e Sn n /\ points_directly_outward_Rn n v x))).
-Admitted.
+Qed.
 
 (** from S55 Exercise 4(d) (line 1049 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every continuous map f: B^{n+1} -> B^{n+1} has a fixed point. **)
