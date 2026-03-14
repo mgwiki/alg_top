@@ -317198,7 +317198,42 @@ claim Hm_ne0_2 : m <> 0. { exact Hm_ne0. }
 (** Junction adjacency: last of word1 = z in Gfam(beta), first of suffix = xs(1) in different factor **)
 claim Hboundary : forall alpha2 beta2:set, alpha2 :e J -> beta2 :e J ->
   apply_fun word1 m :e apply_fun Gfam alpha2 -> apply_fun xs_shifted 0 :e apply_fun Gfam beta2 -> alpha2 <> beta2.
-{ admit. }
+{ let alpha2 beta2. assume Ha2J Hb2J Hw1m_Ga2 Hxss0_Gb2.
+  (** Step 1: word1(m) = z, so alpha2 = beta **)
+  claim Hw1m_z : apply_fun word1 m = z.
+  { claim Hgr : apply_fun word1 m = (if m :e m then apply_fun xsw_pre m else z).
+    { exact (apply_fun_graph (ordsucc m) (fun i:set => if i :e m then apply_fun xsw_pre i else z) m (ordsuccI2 m)). }
+    rewrite Hgr. exact (If_i_0 (m :e m) (apply_fun xsw_pre m) z (In_irref m)). }
+  claim Ha2_beta : alpha2 = beta.
+  { exact (eq_symm beta alpha2 (disjoint_subgroups_label_unique G mult e inv J Gfam beta alpha2 z
+      Hdisjoint HbJ Ha2J Hz_Gb (eq_subst_mem_set z (apply_fun Gfam alpha2) (apply_fun Gfam alpha2) (Hw1m_z (fun a b:set => a :e apply_fun Gfam alpha2) Hw1m_Ga2) (eq_refl (apply_fun Gfam alpha2)))
+      Hz_ne)). }
+  (** Step 2: xs_shifted(0) = xs(1), so beta2 is the factor of xs(1) **)
+  (** 0 :e m since m != 0 **)
+  claim H0m : 0 :e m.
+  { apply (nat_inv m Hm_nat).
+    - assume Hm0 : m = 0. exact (FalseE (Hm_ne0 Hm0) (0 :e m)).
+    - assume Hex : exists k:set, nat_p k /\ m = ordsucc k. apply Hex. let k.
+      assume Hkp : nat_p k /\ m = ordsucc k.
+      rewrite (andER (nat_p k) (m = ordsucc k) Hkp). exact (nat_0_in_ordsucc k (andEL (nat_p k) (m = ordsucc k) Hkp)). }
+  claim Hxss0_eq : apply_fun xs_shifted 0 = apply_fun xs (ordsucc 0).
+  { exact (apply_fun_graph m (fun i:set => apply_fun xs (ordsucc i)) 0 H0m). }
+  claim Hxs1_Gb2 : apply_fun xs (ordsucc 0) :e apply_fun Gfam beta2.
+  { rewrite <- Hxss0_eq. exact Hxss0_Gb2. }
+  (** Step 3: xs(0) and xs(1) are adjacent -> their factors differ **)
+  (** xs(0) in Gfam(beta), xs(1) in Gfam(beta2), need beta != beta2 **)
+  claim H0_n : 0 :e n. { rewrite Hn_sm. exact (nat_0_in_ordsucc m Hm_nat). }
+  claim Hs0_n : ordsucc 0 :e n.
+  { rewrite Hn_sm. exact (nat_ordsucc_in_ordsucc m Hm_nat 0 H0m). }
+  apply (and3E (n :e omega)
+    (forall i:set, i :e n -> exists a:set, a :e J /\ apply_fun xs i :e apply_fun Gfam a /\ apply_fun xs i <> apply_fun efam a)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall a b:set, a :e J -> b :e J -> apply_fun xs i :e apply_fun Gfam a -> apply_fun xs (ordsucc i) :e apply_fun Gfam b -> a <> b)
+    Hredw).
+  assume _ _ Hadj.
+  claim Hbeta_ne_b2 : beta <> beta2.
+  { exact (Hadj 0 H0_n Hs0_n beta beta2 HbJ Hb2J Hxs0_Gb Hxs1_Gb2). }
+  rewrite Ha2_beta. exact Hbeta_ne_b2. }
 apply (reduced_word_concat G mult e inv J Gfam efam (ordsucc m) word1 m xs_shifted m
   Hgrp Hsubfam Hred_prez Hxs_shifted_red
   (neq_ordsucc_0 m) Hm_ne0_2
