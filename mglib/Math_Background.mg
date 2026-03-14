@@ -146836,6 +146836,1315 @@ exact (eq_symm
     simplex3_triangle_region_subset_B2)).
 Qed.
 
+(** Infrastructure: the positive reciprocal of 1 is 1. **)
+(** Proven Charlie **)
+Lemma recip_SNo_pos_1_eq_1 :
+  recip_SNo_pos 1 = 1.
+claim Hdiv11 : div_SNo 1 1 = 1.
+{
+  exact (mul_div_SNo_nonzero_eq
+    1
+    1
+    1
+    SNo_1
+    SNo_1
+    SNo_1
+    neq_1_0
+    (eq_symm
+      (mul_SNo 1 1)
+      1
+      (mul_SNo_oneL 1 SNo_1))).
+}
+claim HdivRecip : div_SNo 1 1 = recip_SNo_pos 1.
+{
+  exact (mul_div_SNo_nonzero_eq
+    1
+    1
+    (recip_SNo_pos 1)
+    SNo_1
+    SNo_1
+    (SNo_recip_SNo_pos 1 SNo_1 SNoLt_0_1)
+    neq_1_0
+    (eq_symm
+      (mul_SNo 1 (recip_SNo_pos 1))
+      1
+      (recip_SNo_pos_invR 1 SNo_1 SNoLt_0_1))).
+}
+exact (eq_i_tra
+  (recip_SNo_pos 1)
+  (div_SNo 1 1)
+  1
+  (eq_symm
+    (div_SNo 1 1)
+    (recip_SNo_pos 1)
+    HdivRecip)
+  Hdiv11).
+Qed.
+
+(** Infrastructure: the early simplex triangle is a retract of B^2. **)
+(** Proven Charlie **)
+Lemma simplex3_triangle_region_retraction :
+  retraction_of B2 B2_topology simplex3_triangle_region.
+prove simplex3_triangle_region c= B2 /\
+  exists r : set,
+    function_on r B2 B2 /\
+    continuous_map B2 B2_topology B2 B2_topology r /\
+    (forall x : set, x :e B2 -> apply_fun r x :e simplex3_triangle_region) /\
+    (forall x : set, x :e simplex3_triangle_region -> apply_fun r x = x).
+apply andI.
+- exact simplex3_triangle_region_subset_B2.
+- set incB2 := graph B2 (fun p:set => p).
+  claim HtopB2 : topology_on B2 B2_topology.
+  {
+    exact (subspace_topology_is_topology
+      (setprod R R)
+      R2_topology
+      B2
+      (product_topology_is_topology
+        R
+        R_standard_topology
+        R
+        R_standard_topology
+        R_standard_topology_is_topology
+        R_standard_topology_is_topology)
+      (Sep_Subq
+        (setprod R R)
+        (fun q:set =>
+          ~(Rlt 1
+            (add_SNo (mul_SNo (q 0) (q 0))
+              (mul_SNo (q 1) (q 1))))))).
+  }
+  claim HtopR2 : topology_on (setprod R R) R2_topology.
+  {
+    exact (product_topology_is_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      R_standard_topology_is_topology
+      R_standard_topology_is_topology).
+  }
+  claim HincCont :
+    continuous_map B2 B2_topology (setprod R R) R2_topology incB2.
+  {
+    exact (subspace_inclusion_continuous
+      (setprod R R)
+      R2_topology
+      B2
+      HtopR2
+      (Sep_Subq
+        (setprod R R)
+        (fun q:set =>
+          ~(Rlt 1
+            (add_SNo (mul_SNo (q 0) (q 0))
+              (mul_SNo (q 1) (q 1))))))).
+  }
+  claim HprojPack :
+    continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R) /\
+    continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+  {
+    exact (projection_maps_continuous
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      R_standard_topology_is_topology
+      R_standard_topology_is_topology).
+  }
+  claim Hproj1Cont :
+    continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R).
+  {
+    exact (andEL
+      (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+      (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+      HprojPack).
+  }
+  claim Hproj2Cont :
+    continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+  {
+    exact (andER
+      (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+      (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+      HprojPack).
+  }
+  set x0 := compose_fun B2 incB2 (projection_map1 R R).
+  set x1 := compose_fun B2 incB2 (projection_map2 R R).
+  claim Hx0Cont :
+    continuous_map B2 B2_topology R R_standard_topology x0.
+  {
+    exact (composition_continuous
+      B2
+      B2_topology
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      incB2
+      (projection_map1 R R)
+      HincCont
+      Hproj1Cont).
+  }
+  claim Hx1Cont :
+    continuous_map B2 B2_topology R R_standard_topology x1.
+  {
+    exact (composition_continuous
+      B2
+      B2_topology
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      incB2
+      (projection_map2 R R)
+      HincCont
+      Hproj2Cont).
+  }
+  set pos0 := compose_fun B2 x0 (graph R (fun t:set => Rmax t 0)).
+  set pos1 := compose_fun B2 x1 (graph R (fun t:set => Rmax t 0)).
+  claim Hpos0Cont :
+    continuous_map B2 B2_topology R R_standard_topology pos0.
+  {
+    exact (composition_continuous
+      B2
+      B2_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x0
+      (graph R (fun t:set => Rmax t 0))
+      Hx0Cont
+      Rmax_zero_continuous).
+  }
+  claim Hpos1Cont :
+    continuous_map B2 B2_topology R R_standard_topology pos1.
+  {
+    exact (composition_continuous
+      B2
+      B2_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      x1
+      (graph R (fun t:set => Rmax t 0))
+      Hx1Cont
+      Rmax_zero_continuous).
+  }
+  set sum01 := compose_fun B2 (pair_map B2 pos0 pos1) add_fun_R.
+  claim Hsum01Cont :
+    continuous_map B2 B2_topology R R_standard_topology sum01.
+  {
+    exact (add_two_continuous_R
+      B2
+      B2_topology
+      pos0
+      pos1
+      HtopB2
+      Hpos0Cont
+      Hpos1Cont).
+  }
+  set denom := compose_fun B2 sum01 (graph R (fun t:set => Rmax t 1)).
+  claim HdenomCont :
+    continuous_map B2 B2_topology R R_standard_topology denom.
+  {
+    exact (composition_continuous
+      B2
+      B2_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      sum01
+      (graph R (fun t:set => Rmax t 1))
+      Hsum01Cont
+      (Rmax_const_right_continuous 1 real_1)).
+  }
+  claim HdenomPos :
+    forall p:set, p :e B2 -> Rlt 0 (apply_fun denom p).
+  {
+    let p.
+    assume HpB2.
+    rewrite (compose_fun_apply
+      B2
+      sum01
+      (graph R (fun t:set => Rmax t 1))
+      p
+      HpB2).
+    rewrite (apply_fun_graph
+      R
+      (fun t:set => Rmax t 1)
+      (apply_fun sum01 p)
+      (continuous_map_function_on
+        B2
+        B2_topology
+        R
+        R_standard_topology
+        sum01
+        Hsum01Cont
+        p
+        HpB2)).
+    exact (Rmax_one_positive
+      (apply_fun sum01 p)
+      (continuous_map_function_on
+        B2
+        B2_topology
+        R
+        R_standard_topology
+        sum01
+        Hsum01Cont
+        p
+        HpB2)).
+  }
+  set recipd := compose_fun B2 denom
+    (compose_fun (open_ray_upper R 0) (compose_fun R bounded_transform_phi one_minus_fun) bounded_transform_psi).
+  claim HrecipdCont :
+    continuous_map B2 B2_topology R R_standard_topology recipd.
+  {
+    exact (reciprocal_of_positive_continuous_map
+      B2
+      B2_topology
+      denom
+      HtopB2
+      HdenomCont
+      HdenomPos).
+  }
+  set q0 := compose_fun B2 (pair_map B2 pos0 recipd) mul_fun_R.
+  set q1 := compose_fun B2 (pair_map B2 pos1 recipd) mul_fun_R.
+  claim Hq0Cont :
+    continuous_map B2 B2_topology R R_standard_topology q0.
+  {
+    exact (mul_two_continuous_R
+      B2
+      B2_topology
+      pos0
+      recipd
+      HtopB2
+      Hpos0Cont
+      HrecipdCont).
+  }
+  claim Hq1Cont :
+    continuous_map B2 B2_topology R R_standard_topology q1.
+  {
+    exact (mul_two_continuous_R
+      B2
+      B2_topology
+      pos1
+      recipd
+      HtopB2
+      Hpos1Cont
+      HrecipdCont).
+  }
+  set r := pair_map B2 q0 q1.
+  claim HrContR2 :
+    continuous_map B2 B2_topology (setprod R R) R2_topology r.
+  {
+    exact (maps_into_products
+      B2
+      B2_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      q0
+      q1
+      Hq0Cont
+      Hq1Cont).
+  }
+  claim HrIntoTriangle :
+    forall p:set, p :e B2 -> apply_fun r p :e simplex3_triangle_region.
+  {
+    let p.
+    assume HpB2.
+    claim HpR2 : p :e setprod R R.
+    {
+      exact (SepE1
+        (setprod R R)
+        (fun q:set =>
+          ~(Rlt 1
+            (add_SNo (mul_SNo (q 0) (q 0))
+              (mul_SNo (q 1) (q 1)))))
+        p
+        HpB2).
+    }
+    claim Hp0R : p 0 :e R.
+    { exact (ap0_Sigma R (fun _ : set => R) p HpR2). }
+    claim Hp1R : p 1 :e R.
+    { exact (ap1_Sigma R (fun _ : set => R) p HpR2). }
+    claim Hx0Val : apply_fun x0 p = p 0.
+    {
+      rewrite (compose_fun_apply
+        B2
+        incB2
+        (projection_map1 R R)
+        p
+        HpB2).
+      rewrite (apply_fun_graph
+        B2
+        (fun q:set => q)
+        p
+        HpB2).
+      exact (projection1_apply
+        R
+        R
+        p
+        HpR2).
+    }
+    claim Hx1Val : apply_fun x1 p = p 1.
+    {
+      rewrite (compose_fun_apply
+        B2
+        incB2
+        (projection_map2 R R)
+        p
+        HpB2).
+      rewrite (apply_fun_graph
+        B2
+        (fun q:set => q)
+        p
+        HpB2).
+      exact (projection2_apply
+        R
+        R
+        p
+        HpR2).
+    }
+    claim Hpos0Val : apply_fun pos0 p = Rmax (p 0) 0.
+    {
+      rewrite (compose_fun_apply
+        B2
+        x0
+        (graph R (fun t:set => Rmax t 0))
+        p
+        HpB2).
+      rewrite Hx0Val.
+      exact (apply_fun_graph
+        R
+        (fun t:set => Rmax t 0)
+        (p 0)
+        Hp0R).
+    }
+    claim Hpos1Val : apply_fun pos1 p = Rmax (p 1) 0.
+    {
+      rewrite (compose_fun_apply
+        B2
+        x1
+        (graph R (fun t:set => Rmax t 0))
+        p
+        HpB2).
+      rewrite Hx1Val.
+      exact (apply_fun_graph
+        R
+        (fun t:set => Rmax t 0)
+        (p 1)
+        Hp1R).
+    }
+    claim Hpos0R : apply_fun pos0 p :e R.
+    {
+      exact (continuous_map_function_on
+        B2
+        B2_topology
+        R
+        R_standard_topology
+        pos0
+        Hpos0Cont
+        p
+        HpB2).
+    }
+    claim Hpos1R : apply_fun pos1 p :e R.
+    {
+      exact (continuous_map_function_on
+        B2
+        B2_topology
+        R
+        R_standard_topology
+        pos1
+        Hpos1Cont
+        p
+        HpB2).
+    }
+    claim Hpos0S : SNo (apply_fun pos0 p).
+    { exact (real_SNo (apply_fun pos0 p) Hpos0R). }
+    claim Hpos1S : SNo (apply_fun pos1 p).
+    { exact (real_SNo (apply_fun pos1 p) Hpos1R). }
+    claim HsumVal :
+      apply_fun sum01 p = add_SNo (apply_fun pos0 p) (apply_fun pos1 p).
+    {
+      exact (add_of_pair_map_apply
+        B2
+        pos0
+        pos1
+        p
+        HpB2
+        Hpos0R
+        Hpos1R).
+    }
+    claim HsumR : apply_fun sum01 p :e R.
+    {
+      exact (continuous_map_function_on
+        B2
+        B2_topology
+        R
+        R_standard_topology
+        sum01
+        Hsum01Cont
+        p
+        HpB2).
+    }
+    claim HsumS : SNo (apply_fun sum01 p).
+    { exact (real_SNo (apply_fun sum01 p) HsumR). }
+    claim HdenomVal :
+      apply_fun denom p = Rmax (apply_fun sum01 p) 1.
+    {
+      rewrite (compose_fun_apply
+        B2
+        sum01
+        (graph R (fun t:set => Rmax t 1))
+        p
+        HpB2).
+      exact (apply_fun_graph
+        R
+        (fun t:set => Rmax t 1)
+        (apply_fun sum01 p)
+        HsumR).
+    }
+    claim HdenomR : apply_fun denom p :e R.
+    {
+      exact (continuous_map_function_on
+        B2
+        B2_topology
+        R
+        R_standard_topology
+        denom
+        HdenomCont
+        p
+        HpB2).
+    }
+    claim HdenomS : SNo (apply_fun denom p).
+    { exact (real_SNo (apply_fun denom p) HdenomR). }
+    claim HdenomPos0 : 0 < apply_fun denom p.
+    {
+      exact (andER
+        (0 :e R /\ apply_fun denom p :e R)
+        (0 < apply_fun denom p)
+        (HdenomPos p HpB2)).
+    }
+    claim HrecipVal :
+      apply_fun recipd p = recip_SNo_pos (apply_fun denom p).
+    {
+      claim HdenomInUpper : apply_fun denom p :e open_ray_upper R 0.
+      {
+        exact (SepI
+          R
+          (fun t:set => order_rel R 0 t)
+          (apply_fun denom p)
+          HdenomR
+          (Rlt_implies_order_rel_R
+            0
+            (apply_fun denom p)
+            (RltI
+              0
+              (apply_fun denom p)
+              real_0
+              HdenomR
+              HdenomPos0))).
+      }
+      rewrite (compose_fun_apply
+        B2
+        denom
+        (compose_fun (open_ray_upper R 0) (compose_fun R bounded_transform_phi one_minus_fun) bounded_transform_psi)
+        p
+        HpB2).
+      exact (recip_pos_value_eq_recip_SNo_pos
+        (apply_fun denom p)
+        HdenomInUpper).
+    }
+    claim HrecipR : apply_fun recipd p :e R.
+    {
+      exact (HrecipVal
+        (fun x y => y :e R)
+        (real_recip_SNo_pos
+          (apply_fun denom p)
+          HdenomR
+          HdenomPos0)).
+    }
+    claim HrecipS : SNo (apply_fun recipd p).
+    { exact (real_SNo (apply_fun recipd p) HrecipR). }
+    claim HrecipGe0 : 0 <= apply_fun recipd p.
+    {
+      exact (SNoLe_of_Rle
+        0
+        (apply_fun recipd p)
+        (Rlt_implies_Rle
+          0
+          (apply_fun recipd p)
+          (RltI
+            0
+            (apply_fun recipd p)
+            real_0
+            HrecipR
+            (HrecipVal
+              (fun x y => 0 < y)
+              (recip_SNo_pos_is_pos
+                (apply_fun denom p)
+                HdenomS
+                HdenomPos0))))).
+    }
+    claim Hq0Val :
+      apply_fun q0 p = mul_SNo (apply_fun pos0 p) (apply_fun recipd p).
+    {
+      exact (mul_of_pair_map_apply
+        B2
+        pos0
+        recipd
+        p
+        HpB2
+        Hpos0R
+        HrecipR).
+    }
+    claim Hq1Val :
+      apply_fun q1 p = mul_SNo (apply_fun pos1 p) (apply_fun recipd p).
+    {
+      exact (mul_of_pair_map_apply
+        B2
+        pos1
+        recipd
+        p
+        HpB2
+        Hpos1R
+        HrecipR).
+    }
+    claim Hq0R : apply_fun q0 p :e R.
+    {
+      exact (continuous_map_function_on
+        B2
+        B2_topology
+        R
+        R_standard_topology
+        q0
+        Hq0Cont
+        p
+        HpB2).
+    }
+    claim Hq1R : apply_fun q1 p :e R.
+    {
+      exact (continuous_map_function_on
+        B2
+        B2_topology
+        R
+        R_standard_topology
+        q1
+        Hq1Cont
+        p
+        HpB2).
+    }
+    claim Hq0S : SNo (apply_fun q0 p).
+    { exact (real_SNo (apply_fun q0 p) Hq0R). }
+    claim Hq1S : SNo (apply_fun q1 p).
+    { exact (real_SNo (apply_fun q1 p) Hq1R). }
+    claim Hpos0Ge0 : 0 <= apply_fun pos0 p.
+    {
+      claim HRle0Pos0 : Rle 0 (apply_fun pos0 p).
+      {
+        rewrite Hpos0Val.
+        exact (Rmax_zero_nonneg
+          (p 0)
+          Hp0R).
+      }
+      exact (SNoLe_of_Rle
+        0
+        (apply_fun pos0 p)
+        HRle0Pos0).
+    }
+    claim Hpos1Ge0 : 0 <= apply_fun pos1 p.
+    {
+      claim HRle0Pos1 : Rle 0 (apply_fun pos1 p).
+      {
+        rewrite Hpos1Val.
+        exact (Rmax_zero_nonneg
+          (p 1)
+          Hp1R).
+      }
+      exact (SNoLe_of_Rle
+        0
+        (apply_fun pos1 p)
+        HRle0Pos1).
+    }
+    claim Hq0Ge0 : 0 <= apply_fun q0 p.
+    {
+      exact (Hq0Val
+        (fun x y => 0 <= y)
+        (mul_SNo_nonneg_nonneg
+          (apply_fun pos0 p)
+          (apply_fun recipd p)
+          Hpos0S
+          HrecipS
+          Hpos0Ge0
+          HrecipGe0)).
+    }
+    claim Hq1Ge0 : 0 <= apply_fun q1 p.
+    {
+      exact (Hq1Val
+        (fun x y => 0 <= y)
+        (mul_SNo_nonneg_nonneg
+          (apply_fun pos1 p)
+          (apply_fun recipd p)
+          Hpos1S
+          HrecipS
+          Hpos1Ge0
+          HrecipGe0)).
+    }
+    claim HsumLeDenom :
+      apply_fun sum01 p <= apply_fun denom p.
+    {
+      exact (SNoLe_of_Rle
+        (apply_fun sum01 p)
+        (apply_fun denom p)
+        (HdenomVal
+          (fun x y => Rle (apply_fun sum01 p) y)
+          (Rle_left_Rmax_const_right
+            (apply_fun sum01 p)
+            1
+            HsumR
+            real_1))).
+    }
+    claim HsumQVal :
+      add_SNo (apply_fun q0 p) (apply_fun q1 p) =
+      mul_SNo (apply_fun sum01 p) (apply_fun recipd p).
+    {
+      rewrite Hq0Val.
+      rewrite Hq1Val.
+      rewrite <- (mul_SNo_distrR
+        (apply_fun pos0 p)
+        (apply_fun pos1 p)
+        (apply_fun recipd p)
+        Hpos0S
+        Hpos1S
+        HrecipS).
+      rewrite <- HsumVal.
+      reflexivity.
+    }
+    claim HprodLe1 :
+      mul_SNo (apply_fun sum01 p) (apply_fun recipd p) <= 1.
+    {
+      claim HdenomRecip :
+        mul_SNo (apply_fun denom p) (apply_fun recipd p) = 1.
+      {
+        exact (HrecipVal
+          (fun x y => mul_SNo (apply_fun denom p) y = 1)
+          (recip_SNo_pos_invR
+            (apply_fun denom p)
+            HdenomS
+            HdenomPos0)).
+      }
+      exact (HdenomRecip
+        (fun x y => mul_SNo (apply_fun sum01 p) (apply_fun recipd p) <= x)
+        (nonneg_mul_SNo_Le'
+          (apply_fun sum01 p)
+          (apply_fun denom p)
+          (apply_fun recipd p)
+          HsumS
+          HdenomS
+          HrecipS
+          HrecipGe0
+          HsumLeDenom)).
+    }
+    apply (SepI
+      (setprod R R)
+      (fun q:set =>
+        ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+        ~(Rlt 1 (add_SNo (q 0) (q 1))))
+      (apply_fun r p)).
+    - rewrite (pair_map_apply
+        B2
+        R
+        R
+        q0
+        q1
+        p
+        HpB2).
+      exact (tuple_2_setprod_by_pair_Sigma
+        R
+        R
+        (apply_fun q0 p)
+        (apply_fun q1 p)
+        Hq0R
+        Hq1R).
+    - rewrite (pair_map_apply
+        B2
+        R
+        R
+        q0
+        q1
+        p
+        HpB2).
+      apply andI.
+      * apply andI.
+        { rewrite tuple_2_0_eq. exact (RleE_nlt 0 (apply_fun q0 p) (Rle_of_SNoLe 0 (apply_fun q0 p) real_0 Hq0R Hq0Ge0)). }
+        { rewrite tuple_2_1_eq. exact (RleE_nlt 0 (apply_fun q1 p) (Rle_of_SNoLe 0 (apply_fun q1 p) real_0 Hq1R Hq1Ge0)). }
+      * rewrite tuple_2_0_eq.
+        rewrite tuple_2_1_eq.
+        exact (RleE_nlt
+          (add_SNo (apply_fun q0 p) (apply_fun q1 p))
+          1
+          (Rle_of_SNoLe
+            (add_SNo (apply_fun q0 p) (apply_fun q1 p))
+            1
+            (real_add_SNo (apply_fun q0 p) Hq0R (apply_fun q1 p) Hq1R)
+            real_1
+            (HsumQVal
+              (fun x y => y <= 1)
+              HprodLe1))).
+  }
+  claim HrContTriangle :
+    continuous_map B2 B2_topology
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      r.
+  {
+    exact (continuous_map_range_restrict
+      B2
+      B2_topology
+      (setprod R R)
+      R2_topology
+      r
+      simplex3_triangle_region
+      HrContR2
+      (Sep_Subq
+        (setprod R R)
+        (fun q:set =>
+          ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+          ~(Rlt 1 (add_SNo (q 0) (q 1)))))
+      HrIntoTriangle).
+  }
+  claim HrContB2 :
+    continuous_map B2 B2_topology B2 B2_topology r.
+  {
+    exact (continuous_map_range_expand
+      B2
+      B2_topology
+      simplex3_triangle_region
+      simplex3_triangle_topology
+      B2
+      B2_topology
+      r
+      HrContTriangle
+      simplex3_triangle_region_subset_B2
+      HtopB2
+      simplex3_triangle_topology_eq_subspace_B2).
+  }
+  witness r.
+  apply andI.
+  - apply andI.
+    * apply andI.
+      { exact (continuous_map_function_on
+          B2
+          B2_topology
+          B2
+          B2_topology
+          r
+          HrContB2). }
+      { exact HrContB2. }
+    * exact HrIntoTriangle.
+  - let p.
+    assume HpT.
+        claim HpR2 : p :e setprod R R.
+        {
+          exact (SepE1
+            (setprod R R)
+            (fun q:set =>
+              ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+              ~(Rlt 1 (add_SNo (q 0) (q 1))))
+            p
+            HpT).
+        }
+        claim Hp0R : p 0 :e R.
+        { exact (ap0_Sigma R (fun _ : set => R) p HpR2). }
+        claim Hp1R : p 1 :e R.
+        { exact (ap1_Sigma R (fun _ : set => R) p HpR2). }
+        claim Hp0S : SNo (p 0).
+        { exact (real_SNo (p 0) Hp0R). }
+        claim Hp1S : SNo (p 1).
+        { exact (real_SNo (p 1) Hp1R). }
+        claim HpProp :
+          ~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0) /\
+          ~(Rlt 1 (add_SNo (p 0) (p 1))).
+        {
+          exact (SepE2
+            (setprod R R)
+            (fun q:set =>
+              ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+              ~(Rlt 1 (add_SNo (q 0) (q 1))))
+            p
+            HpT).
+        }
+        claim Hnlt0 : ~(Rlt (p 0) 0).
+        {
+          exact (andEL
+            (~(Rlt (p 0) 0))
+            (~(Rlt (p 1) 0))
+            (andEL
+              (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+              (~(Rlt 1 (add_SNo (p 0) (p 1))))
+              HpProp)).
+        }
+        claim Hnlt1 : ~(Rlt (p 1) 0).
+        {
+          exact (andER
+            (~(Rlt (p 0) 0))
+            (~(Rlt (p 1) 0))
+            (andEL
+              (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+              (~(Rlt 1 (add_SNo (p 0) (p 1))))
+              HpProp)).
+        }
+        claim HnltSum : ~(Rlt 1 (add_SNo (p 0) (p 1))).
+        {
+          exact (andER
+            (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+            (~(Rlt 1 (add_SNo (p 0) (p 1))))
+            HpProp).
+        }
+        claim Hx0Val : apply_fun x0 p = p 0.
+        {
+          rewrite (compose_fun_apply
+            B2
+            incB2
+            (projection_map1 R R)
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)).
+          rewrite (apply_fun_graph
+            B2
+            (fun q:set => q)
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)).
+          exact (projection1_apply
+            R
+            R
+            p
+            HpR2).
+        }
+        claim Hx1Val : apply_fun x1 p = p 1.
+        {
+          rewrite (compose_fun_apply
+            B2
+            incB2
+            (projection_map2 R R)
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)).
+          rewrite (apply_fun_graph
+            B2
+            (fun q:set => q)
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)).
+          exact (projection2_apply
+            R
+            R
+            p
+            HpR2).
+        }
+        claim Hpos0Val : apply_fun pos0 p = p 0.
+        {
+          rewrite (compose_fun_apply
+            B2
+            x0
+            (graph R (fun t:set => Rmax t 0))
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)).
+          rewrite Hx0Val.
+          rewrite (apply_fun_graph
+            R
+            (fun t:set => Rmax t 0)
+            (p 0)
+            Hp0R).
+          exact (Rmax_zero_eq_self_of_nonneg
+            (p 0)
+            Hp0R
+            Hnlt0).
+        }
+        claim Hpos1Val : apply_fun pos1 p = p 1.
+        {
+          rewrite (compose_fun_apply
+            B2
+            x1
+            (graph R (fun t:set => Rmax t 0))
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)).
+          rewrite Hx1Val.
+          rewrite (apply_fun_graph
+            R
+            (fun t:set => Rmax t 0)
+            (p 1)
+            Hp1R).
+          exact (Rmax_zero_eq_self_of_nonneg
+            (p 1)
+            Hp1R
+            Hnlt1).
+        }
+        claim HsumVal :
+          apply_fun sum01 p = add_SNo (p 0) (p 1).
+        {
+          rewrite (add_of_pair_map_apply
+            B2
+            pos0
+            pos1
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)
+            (Hpos0Val
+              (fun x y => y :e R)
+              Hp0R)
+            (Hpos1Val
+              (fun x y => y :e R)
+              Hp1R)).
+          rewrite Hpos0Val.
+          rewrite Hpos1Val.
+          reflexivity.
+        }
+        claim HsumR : apply_fun sum01 p :e R.
+        {
+          rewrite HsumVal.
+          exact (real_add_SNo (p 0) Hp0R (p 1) Hp1R).
+        }
+        claim HdenomVal : apply_fun denom p = 1.
+        {
+          rewrite (compose_fun_apply
+            B2
+            sum01
+            (graph R (fun t:set => Rmax t 1))
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)).
+          rewrite HsumVal.
+          rewrite (apply_fun_graph
+            R
+            (fun t:set => Rmax t 1)
+            (add_SNo (p 0) (p 1))
+            (real_add_SNo (p 0) Hp0R (p 1) Hp1R)).
+          exact (Rmax_const_right_eq_right_of_Rle
+            (add_SNo (p 0) (p 1))
+            1
+            (real_add_SNo (p 0) Hp0R (p 1) Hp1R)
+            real_1
+            (RleI
+              (add_SNo (p 0) (p 1))
+              1
+              (real_add_SNo (p 0) Hp0R (p 1) Hp1R)
+              real_1
+              HnltSum)).
+        }
+        claim HrecipVal : apply_fun recipd p = 1.
+        {
+          claim HdenomR : apply_fun denom p :e R.
+          { rewrite HdenomVal. exact real_1. }
+          claim HdenomInUpper : apply_fun denom p :e open_ray_upper R 0.
+          {
+            exact (SepI
+              R
+              (fun t:set => order_rel R 0 t)
+              (apply_fun denom p)
+              HdenomR
+              (HdenomVal
+                (fun x y => order_rel R 0 y)
+                (Rlt_implies_order_rel_R 0 1 Rlt_0_1))).
+          }
+          rewrite (compose_fun_apply
+            B2
+            denom
+            (compose_fun (open_ray_upper R 0) (compose_fun R bounded_transform_phi one_minus_fun) bounded_transform_psi)
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)).
+          rewrite (recip_pos_value_eq_recip_SNo_pos
+            (apply_fun denom p)
+            HdenomInUpper).
+          rewrite HdenomVal.
+          exact recip_SNo_pos_1_eq_1.
+        }
+        claim Hq0Val : apply_fun q0 p = p 0.
+        {
+          rewrite (mul_of_pair_map_apply
+            B2
+            pos0
+            recipd
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)
+            (Hpos0Val
+              (fun x y => y :e R)
+              Hp0R)
+            (HrecipVal
+              (fun x y => y :e R)
+              real_1)).
+          rewrite Hpos0Val.
+          rewrite HrecipVal.
+          exact (mul_SNo_oneR
+            (p 0)
+            Hp0S).
+        }
+        claim Hq1Val : apply_fun q1 p = p 1.
+        {
+          rewrite (mul_of_pair_map_apply
+            B2
+            pos1
+            recipd
+            p
+            (simplex3_triangle_region_subset_B2 p HpT)
+            (Hpos1Val
+              (fun x y => y :e R)
+              Hp1R)
+            (HrecipVal
+              (fun x y => y :e R)
+              real_1)).
+          rewrite Hpos1Val.
+          rewrite HrecipVal.
+          exact (mul_SNo_oneR
+            (p 1)
+            Hp1S).
+        }
+        rewrite (pair_map_apply
+          B2
+          R
+          R
+          q0
+          q1
+          p
+          (simplex3_triangle_region_subset_B2 p HpT)).
+        rewrite Hq0Val.
+        rewrite Hq1Val.
+        exact (eq_symm
+          p
+          (p 0, p 1)
+          (setprod_eta
+            R
+            R
+            p
+            HpR2)).
+Qed.
+
+(** Infrastructure: fixed points exist on every retract of B^2. **)
+(** Proven Charlie **)
+Theorem s55_retract_B2_fixed_point_early : forall A:set,
+  retraction_of B2 B2_topology A ->
+  forall f:set,
+    continuous_map A (subspace_topology B2 B2_topology A)
+                   A (subspace_topology B2 B2_topology A) f ->
+    exists x:set, x :e A /\ apply_fun f x = x.
+let A.
+assume Hretr.
+let f.
+assume HfCont.
+claim HAsub : A c= B2.
+{
+  exact (andEL
+    (A c= B2)
+    (exists r:set,
+      function_on r B2 B2 /\
+      continuous_map B2 B2_topology B2 B2_topology r /\
+      (forall x:set, x :e B2 -> apply_fun r x :e A) /\
+      (forall x:set, x :e A -> apply_fun r x = x))
+    Hretr).
+}
+claim HfFunA : function_on f A A.
+{
+  exact (continuous_map_function_on
+    A
+    (subspace_topology B2 B2_topology A)
+    A
+    (subspace_topology B2 B2_topology A)
+    f
+    HfCont).
+}
+apply (andER
+  (A c= B2)
+  (exists r:set,
+    function_on r B2 B2 /\
+    continuous_map B2 B2_topology B2 B2_topology r /\
+    (forall x:set, x :e B2 -> apply_fun r x :e A) /\
+    (forall x:set, x :e A -> apply_fun r x = x))
+  Hretr).
+let r.
+assume HrPack.
+claim HrFunB2 : function_on r B2 B2.
+{
+  exact (andEL
+    (function_on r B2 B2)
+    (continuous_map B2 B2_topology B2 B2_topology r)
+    (andEL
+      (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r)
+      (forall x:set, x :e B2 -> apply_fun r x :e A)
+      (andEL
+        ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+          (forall x:set, x :e B2 -> apply_fun r x :e A))
+        (forall x:set, x :e A -> apply_fun r x = x)
+        HrPack))).
+}
+claim HrContB2 : continuous_map B2 B2_topology B2 B2_topology r.
+{
+  exact (andER
+    (function_on r B2 B2)
+    (continuous_map B2 B2_topology B2 B2_topology r)
+    (andEL
+      (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r)
+      (forall x:set, x :e B2 -> apply_fun r x :e A)
+      (andEL
+        ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+          (forall x:set, x :e B2 -> apply_fun r x :e A))
+        (forall x:set, x :e A -> apply_fun r x = x)
+        HrPack))).
+}
+claim HrIntoA : forall x:set, x :e B2 -> apply_fun r x :e A.
+{
+  exact (andER
+    (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r)
+    (forall x:set, x :e B2 -> apply_fun r x :e A)
+    (andEL
+      ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+        (forall x:set, x :e B2 -> apply_fun r x :e A))
+      (forall x:set, x :e A -> apply_fun r x = x)
+      HrPack)).
+}
+claim HrFixA : forall x:set, x :e A -> apply_fun r x = x.
+{
+  exact (andER
+    ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+      (forall x:set, x :e B2 -> apply_fun r x :e A))
+    (forall x:set, x :e A -> apply_fun r x = x)
+    HrPack).
+}
+claim HrContA :
+  continuous_map B2 B2_topology A (subspace_topology B2 B2_topology A) r.
+{
+  exact (continuous_map_range_restrict
+    B2
+    B2_topology
+    B2
+    B2_topology
+    r
+    A
+    HrContB2
+    HAsub
+    HrIntoA).
+}
+claim HgContA :
+  continuous_map B2 B2_topology A (subspace_topology B2 B2_topology A)
+    (compose_fun B2 r f).
+{
+  exact (composition_continuous
+    B2
+    B2_topology
+    A
+    (subspace_topology B2 B2_topology A)
+    A
+    (subspace_topology B2 B2_topology A)
+    r
+    f
+    HrContA
+    HfCont).
+}
+claim HtopB2 : topology_on B2 B2_topology.
+{
+  exact (continuous_map_topology_dom
+    B2
+    B2_topology
+    B2
+    B2_topology
+    r
+    HrContB2).
+}
+claim HgContB2 :
+  continuous_map B2 B2_topology B2 B2_topology
+    (compose_fun B2 r f).
+{
+  claim HTyEq :
+    subspace_topology B2 B2_topology A =
+    subspace_topology B2 B2_topology A.
+  {
+    reflexivity.
+  }
+  exact (continuous_map_range_expand
+    B2
+    B2_topology
+    A
+    (subspace_topology B2 B2_topology A)
+    B2
+    B2_topology
+    (compose_fun B2 r f)
+    HgContA
+    HAsub
+    HtopB2
+    HTyEq).
+}
+claim HfixComp :
+  exists x:set, x :e B2 /\ apply_fun (compose_fun B2 r f) x = x.
+{
+  exact (thm55_6_brouwer_fixed_point_disc
+    (compose_fun B2 r f)
+    HgContB2).
+}
+apply HfixComp.
+let x.
+assume HxPack.
+claim HxB2 : x :e B2.
+{
+  exact (andEL
+    (x :e B2)
+    (apply_fun (compose_fun B2 r f) x = x)
+    HxPack).
+}
+claim HcompEq : apply_fun (compose_fun B2 r f) x = x.
+{
+  exact (andER
+    (x :e B2)
+    (apply_fun (compose_fun B2 r f) x = x)
+    HxPack).
+}
+claim HfRxEqX : apply_fun f (apply_fun r x) = x.
+{
+  rewrite <- (compose_fun_apply
+    B2
+    r
+    f
+    x
+    HxB2).
+  exact HcompEq.
+}
+claim HgxA : apply_fun (compose_fun B2 r f) x :e A.
+{
+  exact (continuous_map_function_on
+    B2
+    B2_topology
+    A
+    (subspace_topology B2 B2_topology A)
+    (compose_fun B2 r f)
+    HgContA
+    x
+    HxB2).
+}
+claim HxA : x :e A.
+{
+  rewrite <- HcompEq.
+  exact HgxA.
+}
+claim HrXEq : apply_fun r x = x.
+{
+  exact (HrFixA
+    x
+    HxA).
+}
+claim HfxEq : apply_fun f x = x.
+{
+  claim HfRxEqRx :
+    apply_fun f (apply_fun r x) = apply_fun r x.
+  {
+    rewrite HrXEq at 2.
+    exact HfRxEqX.
+  }
+  rewrite <- HrXEq at 1 2.
+  exact HfRxEqRx.
+}
+witness x.
+apply andI.
+- exact HxA.
+- exact HfxEq.
+Qed.
+
 (** Fixed point for the normalized positive-matrix map on the 2-simplex **)
 Lemma simplex3_fixed_point_normalized_map : forall A:set,
   function_on A (setprod 3 3) R ->
