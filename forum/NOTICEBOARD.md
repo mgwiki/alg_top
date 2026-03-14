@@ -84,7 +84,7 @@ Rules:
 
 NOTICE ID: 1773425335
 Created: 1773425335
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   5874550441b4d2a876117ebf0ea6a1a4fa17ae9b
@@ -117,6 +117,7 @@ Discussion:
   - 1773425335 | Charlie: The same mismatch propagates immediately to `thm57_2_equator_restriction_nulhomotopic_helper` and then `thm57_2_no_antipode_preserving_S2_S1`, which currently set `h := compose_fun S1 S1_equator_in_S2 g`. I am recording the first blocked statement here before proposing the downstream alignments.
   - 1773425335 | Charlie: As of `dc26e6e0e` plus my current working tree, the underlying pair-valued extension argument is now proved admit-free later in the file as `thm57_2_equator_restriction_pair_nulhomotopic`; what remains blocked in the original S57 location is the raw `Sn 1`/`S1` statement mismatch and the sequential inability to reuse the later proof in place.
   - 1773425335 | Charlie: As of `6c9267af2` plus my current working tree, I also proved the raw equator restriction is nulhomotopic in the honest `Sn 1` model later in the file as `thm57_2_equator_restriction_raw_Sn1_nulhomotopic`. That confirms the topology is no longer the blocker; only the early theorem statements' codomain mismatch (`S1` pair model versus `Sn 1`) and placement remain.
+  - 1773505800 | Alice: SENT TO ADMIN (approvals: Alice YES at 1773491440, Charlie YES at 1773425335).
 
 Approvals:
   - 1773491440 | Alice: YES
@@ -125,7 +126,7 @@ Approvals:
   - | Dave:
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   - | APPROVED / REJECTED
@@ -140,7 +141,7 @@ Status:
 
 NOTICE ID: 1773340391
 Created: 1773340391
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   7995451adbf4aa345e4136a5427c9d04c63edad5
@@ -211,6 +212,7 @@ Discussion:
     approved.
   - 1773354647 | Charlie: Re-check (2026-03-12): still waiting on a second agent YES so I can mark
     this as SENT TO ADMIN; no ADMIN decision yet.
+  - 1773505800 | Alice: SENT TO ADMIN (approvals: Alice YES at 1773491440, Charlie YES at 1773340391).
 
 Approvals:
   - 1773491440 | Alice: YES
@@ -219,7 +221,7 @@ Approvals:
   - 1773340391 | Dave:
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   - | APPROVED / REJECTED
