@@ -151064,6 +151064,574 @@ rewrite (apply_fun_graph
 reflexivity.
 Qed.
 
+(** Infrastructure: square root is strictly positive on the positive ray. **)
+(** Proven Charlie **)
+Lemma sqrt_SNo_nonneg_pos_of_pos : forall t:set,
+  t :e R ->
+  Rlt 0 t ->
+  Rlt 0 (sqrt_SNo_nonneg t).
+let t.
+assume HtR HtPos.
+claim HtS : SNo t.
+{
+  exact (real_SNo
+    t
+    HtR).
+}
+claim HtNonneg : 0 <= t.
+{
+  exact (SNoLe_of_Rle
+    0
+    t
+    (Rlt_implies_Rle
+      0
+      t
+      HtPos)).
+}
+set s := sqrt_SNo_nonneg t.
+claim HsR : s :e R.
+{
+  exact (sqrt_SNo_nonneg_real
+    t
+    HtR
+    HtNonneg).
+}
+claim HsS : SNo s.
+{
+  exact (real_SNo
+    s
+    HsR).
+}
+claim HsNonneg : 0 <= s.
+{
+  exact (sqrt_SNo_nonneg_nonneg
+    t
+    HtS
+    HtNonneg).
+}
+claim HsSq : mul_SNo s s = t.
+{
+  exact (sqrt_SNo_nonneg_sqr
+    t
+    HtS
+    HtNonneg).
+}
+apply (SNoLtLe_or
+  0
+  s
+  SNo_0
+  HsS).
+- assume HsPos.
+  exact (RltI
+    0
+    s
+    real_0
+    HsR
+    HsPos).
+- assume HsLe0.
+  claim Hs0 : s = 0.
+  {
+    exact (SNoLe_antisym
+      s
+      0
+      HsS
+      SNo_0
+      HsLe0
+      HsNonneg).
+  }
+  claim Ht0 : t = 0.
+  {
+    rewrite <- HsSq.
+    rewrite Hs0 at 1.
+    rewrite Hs0 at 1.
+    exact (mul_SNo_zeroL
+      0
+      SNo_0).
+  }
+  exact (FalseE
+    (SNoLt_irref
+      0
+      (Ht0
+        (fun z _ => 0 < z)
+        (RltE_lt
+          0
+          t
+          HtPos)))
+    (Rlt 0 s)).
+Qed.
+
+(** Infrastructure: the square map on the positive ray. **)
+Definition positive_ray_square_map : set :=
+  graph (open_ray_upper R 0)
+    (fun t:set => mul_SNo t t).
+
+(** Proven Charlie **)
+Lemma positive_ray_square_map_apply : forall t:set,
+  t :e open_ray_upper R 0 ->
+  apply_fun positive_ray_square_map t = mul_SNo t t.
+let t.
+assume HtPos.
+exact (apply_fun_graph
+  (open_ray_upper R 0)
+  (fun u:set => mul_SNo u u)
+  t
+  HtPos).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_square_map_function_on :
+  function_on
+    positive_ray_square_map
+    (open_ray_upper R 0)
+    (open_ray_upper R 0).
+apply (graph_function_on
+  (open_ray_upper R 0)
+  (open_ray_upper R 0)
+  (fun t:set => mul_SNo t t)).
+let t.
+assume HtPos.
+claim HtR : t :e R.
+{
+  exact (SepE1
+    R
+    (fun x:set => order_rel R 0 x)
+    t
+    HtPos).
+}
+claim HtS : SNo t.
+{
+  exact (real_SNo
+    t
+    HtR).
+}
+claim HttR : mul_SNo t t :e R.
+{
+  exact (real_mul_SNo
+    t
+    HtR
+    t
+    HtR).
+}
+claim HttPos : Rlt 0 (mul_SNo t t).
+{
+  exact (RltI
+    0
+    (mul_SNo t t)
+    real_0
+    HttR
+    (mul_SNo_pos_pos
+      t
+      t
+      HtS
+      HtS
+      (RltE_lt
+        0
+        t
+        (order_rel_R_implies_Rlt
+          0
+          t
+          (SepE2
+            R
+            (fun x:set => order_rel R 0 x)
+            t
+            HtPos)))
+      (RltE_lt
+        0
+        t
+        (order_rel_R_implies_Rlt
+          0
+          t
+          (SepE2
+            R
+            (fun x:set => order_rel R 0 x)
+            t
+            HtPos))))).
+}
+exact (SepI
+  R
+  (fun x:set => order_rel R 0 x)
+  (mul_SNo t t)
+  HttR
+  (Rlt_implies_order_rel_R
+    0
+    (mul_SNo t t)
+    HttPos)).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_square_map_continuous_to_R :
+  continuous_map
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0))
+    R
+    R_standard_topology
+    positive_ray_square_map.
+set P := open_ray_upper R 0.
+set Ptop := subspace_topology R R_standard_topology P.
+set incP := {(y,y)|y :e P}.
+claim HtopP : topology_on P Ptop.
+{
+  exact (subspace_topology_is_topology
+    R
+    R_standard_topology
+    P
+    R_standard_topology_is_topology
+    (Sep_Subq
+      R
+      (fun x:set => order_rel R 0 x))).
+}
+claim HincCont :
+  continuous_map
+    P
+    Ptop
+    R
+    R_standard_topology
+    incP.
+{
+  exact (subspace_inclusion_continuous
+    R
+    R_standard_topology
+    P
+    R_standard_topology_is_topology
+    (Sep_Subq
+      R
+      (fun x:set => order_rel R 0 x))).
+}
+claim HrawCont :
+  continuous_map
+    P
+    Ptop
+    R
+    R_standard_topology
+    (compose_fun P (pair_map P incP incP) mul_fun_R).
+{
+  exact (mul_two_continuous_R
+    P
+    Ptop
+    incP
+    incP
+    HtopP
+    HincCont
+    HincCont).
+}
+claim HmapFunR :
+  function_on
+    positive_ray_square_map
+    P
+    R.
+{
+  apply (graph_function_on
+    P
+    R
+    (fun t:set => mul_SNo t t)).
+  let t.
+  assume HtP.
+  exact (real_mul_SNo
+    t
+    (SepE1
+      R
+      (fun x:set => order_rel R 0 x)
+      t
+      HtP)
+    t
+    (SepE1
+      R
+      (fun x:set => order_rel R 0 x)
+      t
+      HtP)).
+}
+apply (continuous_map_congr_on
+  P
+  Ptop
+  R
+  R_standard_topology
+  (compose_fun P (pair_map P incP incP) mul_fun_R)
+  positive_ray_square_map
+  HrawCont
+  HmapFunR).
+let t.
+assume HtP.
+claim HincR : apply_fun incP t :e R.
+{
+  rewrite (identity_function_apply
+    P
+    t
+    HtP).
+  exact (SepE1
+    R
+    (fun x:set => order_rel R 0 x)
+    t
+    HtP).
+}
+rewrite (mul_of_pair_map_apply
+  P
+  incP
+  incP
+  t
+  HtP
+  HincR
+  HincR).
+rewrite (identity_function_apply
+  P
+  t
+  HtP).
+exact (eq_symm
+  (apply_fun positive_ray_square_map t)
+  (mul_SNo t t)
+  (positive_ray_square_map_apply
+    t
+    HtP)).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_square_map_continuous :
+  continuous_map
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0))
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0))
+    positive_ray_square_map.
+exact (continuous_map_range_restrict
+  (open_ray_upper R 0)
+  (subspace_topology R R_standard_topology (open_ray_upper R 0))
+  R
+  R_standard_topology
+  positive_ray_square_map
+  (open_ray_upper R 0)
+  positive_ray_square_map_continuous_to_R
+  (Sep_Subq
+    R
+    (fun x:set => order_rel R 0 x))
+  (fun t Ht =>
+    positive_ray_square_map_function_on
+      t
+      Ht)).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_square_map_sqrt_inv : forall t:set,
+  t :e open_ray_upper R 0 ->
+  apply_fun positive_ray_square_map (sqrt_SNo_nonneg t) = t.
+let t.
+assume HtPos.
+claim HsqrtPos :
+  sqrt_SNo_nonneg t :e open_ray_upper R 0.
+{
+  claim HsqrtR : sqrt_SNo_nonneg t :e R.
+  {
+    exact (sqrt_SNo_nonneg_real
+      t
+      (SepE1
+        R
+        (fun x:set => order_rel R 0 x)
+        t
+        HtPos)
+      (SNoLe_of_Rle
+        0
+        t
+        (Rlt_implies_Rle
+          0
+          t
+          (order_rel_R_implies_Rlt
+            0
+            t
+            (SepE2
+              R
+              (fun x:set => order_rel R 0 x)
+              t
+              HtPos))))).
+  }
+  claim HsqrtOrd : order_rel R 0 (sqrt_SNo_nonneg t).
+  {
+    exact (Rlt_implies_order_rel_R
+      0
+      (sqrt_SNo_nonneg t)
+      (sqrt_SNo_nonneg_pos_of_pos
+        t
+        (SepE1
+          R
+          (fun x:set => order_rel R 0 x)
+          t
+          HtPos)
+        (order_rel_R_implies_Rlt
+          0
+          t
+          (SepE2
+            R
+            (fun x:set => order_rel R 0 x)
+            t
+            HtPos)))).
+  }
+  exact (SepI
+    R
+    (fun x:set => order_rel R 0 x)
+    (sqrt_SNo_nonneg t)
+    HsqrtR
+    HsqrtOrd).
+}
+rewrite (positive_ray_square_map_apply
+  (sqrt_SNo_nonneg t)
+  HsqrtPos).
+exact (sqrt_SNo_nonneg_sqr
+  t
+  (real_SNo
+    t
+    (SepE1
+      R
+      (fun x:set => order_rel R 0 x)
+      t
+      HtPos))
+  (SNoLe_of_Rle
+    0
+    t
+    (Rlt_implies_Rle
+      0
+      t
+      (order_rel_R_implies_Rlt
+        0
+        t
+        (SepE2
+          R
+          (fun x:set => order_rel R 0 x)
+          t
+          HtPos))))).
+Qed.
+
+(** Proven Charlie **)
+Lemma sqrt_SNo_nonneg_positive_ray_square_inv : forall t:set,
+  t :e open_ray_upper R 0 ->
+  sqrt_SNo_nonneg (apply_fun positive_ray_square_map t) = t.
+let t.
+assume HtPos.
+rewrite (positive_ray_square_map_apply
+  t
+  HtPos).
+claim HtR : t :e R.
+{
+  exact (SepE1
+    R
+    (fun x:set => order_rel R 0 x)
+    t
+    HtPos).
+}
+claim HtS : SNo t.
+{
+  exact (real_SNo
+    t
+    HtR).
+}
+claim HtNonneg : 0 <= t.
+{
+  exact (SNoLe_of_Rle
+    0
+    t
+    (Rlt_implies_Rle
+      0
+      t
+      (order_rel_R_implies_Rlt
+        0
+        t
+        (SepE2
+          R
+          (fun x:set => order_rel R 0 x)
+          t
+          HtPos)))).
+}
+claim HttR : mul_SNo t t :e R.
+{
+  exact (real_mul_SNo
+    t
+    HtR
+    t
+    HtR).
+}
+claim HttS : SNo (mul_SNo t t).
+{
+  exact (real_SNo
+    (mul_SNo t t)
+    HttR).
+}
+claim HttNonneg : 0 <= mul_SNo t t.
+{
+  exact (SNo_sqr_nonneg
+    t
+    HtS).
+}
+set s := sqrt_SNo_nonneg (mul_SNo t t).
+claim HsR : s :e R.
+{
+  exact (sqrt_SNo_nonneg_real
+    (mul_SNo t t)
+    HttR
+    HttNonneg).
+}
+claim HsS : SNo s.
+{
+  exact (real_SNo
+    s
+    HsR).
+}
+claim HsNonneg : 0 <= s.
+{
+  exact (sqrt_SNo_nonneg_nonneg
+    (mul_SNo t t)
+    HttS
+    HttNonneg).
+}
+claim HsqEq : mul_SNo s s = mul_SNo t t.
+{
+  exact (sqrt_SNo_nonneg_sqr
+    (mul_SNo t t)
+    HttS
+    HttNonneg).
+}
+claim HsqLe :
+  mul_SNo s s <= mul_SNo t t.
+{
+  rewrite HsqEq.
+  exact (SNoLe_ref
+    (mul_SNo t t)).
+}
+claim HtSqLe :
+  mul_SNo t t <= mul_SNo s s.
+{
+  rewrite HsqEq.
+  exact (SNoLe_ref
+    (mul_SNo t t)).
+}
+claim HsLeT :
+  s <= t.
+{
+  exact (SNo_nonneg_sqr_Le_imp_Le
+    s
+    t
+    HsS
+    HtS
+    HsNonneg
+    HtNonneg
+    HsqLe).
+}
+claim HtLeS :
+  t <= s.
+{
+  exact (SNo_nonneg_sqr_Le_imp_Le
+    t
+    s
+    HtS
+    HsS
+    HtNonneg
+    HsNonneg
+    HtSqLe).
+}
+exact (SNoLe_antisym
+  s
+  t
+  HsS
+  HtS
+  HsLeT
+  HtLeS).
+Qed.
+
 (** Infrastructure: points on S^n are nonzero vectors in R^{n+1}. **)
 (** Proven Charlie **)
 Lemma Sn_subset_Rn_minus_origin : forall n x:set,
