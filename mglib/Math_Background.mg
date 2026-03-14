@@ -282800,9 +282800,46 @@ apply (nat_inv nw Hnw_nat).
           (** Case: p_junc != eG and p_junc != efam(bmw) **)
           apply (xm (p_junc = eG \/ p_junc = apply_fun efam bmw)).
           + assume Hjunc_trivial : p_junc = eG \/ p_junc = apply_fun efam bmw.
-            (** Hard: junction cancels or equals efam. Need recursive argument. **)
-            (** For now admit this narrow case. **)
-            admit.
+            apply Hjunc_trivial.
+            * assume Hjunc_eG : p_junc = eG.
+              (** xsw(mw) = inv(xsw(0)). efam(al) = xsw(0) mult Q mult inv(xsw(0)) **)
+              (** where Q = xsw(1) mult ... mult xsw(mw-1). **)
+              (** By conjugate_intersection_trivial: Q must be in Gfam(al). **)
+              (** But Q has reduced word of length nw-2 and Q != efam(al). **)
+              (** By factor_element_length1: Q's word has length 1. Contradiction with nw-2 >= 2. **)
+              claim Hxsmw_inv_xsw0 : apply_fun xsw mw = apply_fun invG (apply_fun xsw 0).
+              { claim Hxsw0_G3 : apply_fun xsw 0 :e G.
+                { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw). }
+                claim Hxsmw_G3 : apply_fun xsw mw :e G.
+                { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw mw Hmw_nw). }
+                claim Hinv_xsw0_G : apply_fun invG (apply_fun xsw 0) :e G. { exact (HinvF (apply_fun xsw 0) Hxsw0_G3). }
+                exact (group_right_cancel G multG eG invG (apply_fun xsw 0) (apply_fun xsw mw) (apply_fun invG (apply_fun xsw 0))
+                  Hgrp (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw)
+                  Hxsmw_G3 Hinv_xsw0_G
+                  (eq_i_tra (apply_fun multG (apply_fun xsw mw, apply_fun xsw 0)) eG
+                    (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0))
+                    Hjunc_eG (eq_symm (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0)) eG
+                      (andER (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG)
+                        (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG)
+                        (HinvG (apply_fun xsw 0) (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw)))))). }
+              (** Now use word_product_left_split: wp(xsw, n) = mult(xsw(0), wp(suffix, mw-1)) **)
+              (** where suffix = [xsw(1),...,xsw(mw-1),xsw(mw)] **)
+              (** Actually: wp(xsw, n) = mult(xsw(0), wp([xsw(1),...,xsw(mw)], m)) **)
+              (** And wp([xsw(1),...,xsw(mw)], m) = xsw(1)mult...mult xsw(mw) **)
+              (** efam(al) = mult(xsw(0), xsw(1)mult...mult xsw(mw)) **)
+              (** = mult(xsw(0), xsw(1)mult...mult xsw(mw-1) mult inv(xsw(0))) **)
+              (** = mult(xsw(0), Q mult inv(xsw(0))) where Q = xsw(1)mult...mult xsw(mw-1) **)
+              (** = xsw(0) mult Q mult inv(xsw(0)) (a conjugation of Q) **)
+              (** efam(al) in Gfam(al), efam(al) != eG **)
+              (** If Q in Gfam(beta) for beta != al: by conj_intersection, efam(al) = eG. Contradiction. **)
+              (** If Q in Gfam(al): Q != efam(al) (by uniqueness of reduced word: nw-2 != nw). **)
+              (**)   By factor_element_length1: reduced word of Q has length 1. But length nw-2. Contradiction. **)
+              (** If Q not in any Gfam: factor_element_length1 gives contradiction with the **)
+              (**   requirement from conj_intersection that Q must be in Gfam(al). **)
+              admit.
+            * assume Hjunc_efam : p_junc = apply_fun efam bmw.
+              (** Junction equals efam(bmw): narrower remaining case **)
+              admit.
           + assume Hjunc_nontrivial : ~(p_junc = eG \/ p_junc = apply_fun efam bmw).
             claim Hp_ne_eG : p_junc <> eG.
             { assume Heq. apply Hjunc_nontrivial. apply orIL. exact Heq. }
