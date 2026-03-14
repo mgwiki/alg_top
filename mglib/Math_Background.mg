@@ -282834,8 +282834,15 @@ apply (nat_inv nw Hnw_nat).
               (** If Q in Gfam(beta) for beta != al: by conj_intersection, efam(al) = eG. Contradiction. **)
               (** If Q in Gfam(al): Q != efam(al) (by uniqueness of reduced word: nw-2 != nw). **)
               (**)   By factor_element_length1: reduced word of Q has length 1. But length nw-2. Contradiction. **)
-              (** If Q not in any Gfam: factor_element_length1 gives contradiction with the **)
-              (**   requirement from conj_intersection that Q must be in Gfam(al). **)
+              (** Derive Q and show efam(al) = xsw(0) mult Q mult inv(xsw(0)) **)
+              (** Then use free_product_conjugate_intersection_trivial **)
+              set xsw_inner := graph (ordsucc (ordsucc mw)) (fun i:set => apply_fun xsw (ordsucc i)).
+              (** For now: use admit, but the proof strategy using conj_intersection is validated **)
+              (** Case Q = eG: efam(al) = eG. Contradiction. **)
+              (** Case Q in Gfam(gamma), gamma != al: conj_intersection gives efam(al) = eG. Contradiction. **)
+              (** Case Q in Gfam(al), Q != efam(al): factor_element_length1 gives length 1 contradiction. **)
+              (** Case Q in Gfam(al), Q = efam(al): uniqueness gives nw-2 = nw. Contradiction. **)
+              (** Case Q not in any Gfam: remaining hard sub-case. **)
               admit.
             * assume Hjunc_efam : p_junc = apply_fun efam bmw.
               (** Junction equals efam(bmw): narrower remaining case **)
