@@ -317191,8 +317191,36 @@ claim Hredw_sm : reduced_word J Gfam efam (ordsucc m) xs.
 { rewrite <- Hn_sm. exact Hredw. }
 claim Hxs_shifted_red : reduced_word J Gfam efam m xs_shifted.
 { exact (reduced_word_suffix J Gfam efam m xs Hredw_sm). }
-(** For now, still admit the iterative construction **)
-admit.
+(** Use reduced_word_concat to concatenate prefix+z with suffix **)
+set word1 := graph (ordsucc m) (fun i:set => if i :e m then apply_fun xsw_pre i else z).
+claim Hm_omega : m :e omega. { exact (nat_p_omega m Hm_nat). }
+claim Hm_ne0_2 : m <> 0. { exact Hm_ne0. }
+(** Junction adjacency: last of word1 = z in Gfam(beta), first of suffix = xs(1) in different factor **)
+claim Hboundary : forall alpha2 beta2:set, alpha2 :e J -> beta2 :e J ->
+  apply_fun word1 m :e apply_fun Gfam alpha2 -> apply_fun xs_shifted 0 :e apply_fun Gfam beta2 -> alpha2 <> beta2.
+{ admit. }
+apply (reduced_word_concat G mult e inv J Gfam efam (ordsucc m) word1 m xs_shifted m
+  Hgrp Hsubfam Hred_prez Hxs_shifted_red
+  (neq_ordsucc_0 m) Hm_ne0_2
+  Hm_nat (eq_refl (ordsucc m)) Hboundary).
+let ys_concat. assume Hconcat_p.
+(** Extract results from concat **)
+claim Hred_c : reduced_word J Gfam efam (add_nat (ordsucc m) m) ys_concat.
+{ admit. }
+claim Hwp_c : word_product mult e ys_concat (add_nat (ordsucc m) m) =
+  apply_fun mult (word_product mult e word1 (ordsucc m), word_product mult e xs_shifted m).
+{ admit. }
+(** Relate word_product(word1, ordsucc m) to word_product(xs, n) using nat_primrec_ext **)
+(** and word_product(xs_shifted, m) to the suffix product **)
+(** Then show total = mult(wp(xs,n), wp(xs,n)) **)
+claim Hadd_eq : add_nat (ordsucc m) m = add_nat n m. { rewrite Hn_sm. reflexivity. }
+witness ys_concat.
+apply andI.
+- rewrite <- Hadd_eq. exact Hred_c.
+- claim Hwp_final : word_product mult e ys_concat (add_nat n m) =
+    apply_fun mult (word_product mult e xs n, word_product mult e xs n).
+  { admit. }
+  exact Hwp_final.
 Admitted.
 
 (** Proven Alice **)
