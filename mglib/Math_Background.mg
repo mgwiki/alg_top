@@ -150625,6 +150625,445 @@ exact ((Rn_minus_origin_norm_sq_nonzero
   Hnorm0).
 Qed.
 
+(** Infrastructure: the punctured-space inclusion into Euclidean space is continuous. **)
+(** Proven Charlie **)
+Lemma Rn_minus_origin_inclusion_continuous : forall n:set,
+  n :e omega ->
+  continuous_map
+    (Rn_minus_origin n)
+    (Rn_minus_origin_topology n)
+    (euclidean_space n)
+    (euclidean_topology n)
+    (graph (Rn_minus_origin n) (fun x:set => x)).
+let n.
+assume Hn_om.
+claim HtopE :
+  topology_on (euclidean_space n) (euclidean_topology n).
+{
+  exact (euclidean_topology_is_topology
+    n).
+}
+claim Hsub :
+  Rn_minus_origin n c= euclidean_space n.
+{
+  exact (Sep_Subq
+    (euclidean_space n)
+    (fun v:set => ~(forall i:set, i :e n -> apply_fun v i = 0))).
+}
+claim HidCont :
+  continuous_map
+    (Rn_minus_origin n)
+    (Rn_minus_origin_topology n)
+    (euclidean_space n)
+    (euclidean_topology n)
+    {(x,x)|x :e euclidean_space n}.
+{
+  exact (continuous_on_subspace
+    (euclidean_space n)
+    (euclidean_topology n)
+    (euclidean_space n)
+    (euclidean_topology n)
+    {(x,x)|x :e euclidean_space n}
+    (Rn_minus_origin n)
+    HtopE
+    Hsub
+    (identity_continuous
+      (euclidean_space n)
+      (euclidean_topology n)
+      HtopE)).
+}
+claim HgraphFun :
+  function_on
+    (graph (Rn_minus_origin n) (fun x:set => x))
+    (Rn_minus_origin n)
+    (euclidean_space n).
+{
+  apply (graph_function_on
+    (Rn_minus_origin n)
+    (euclidean_space n)
+    (fun x:set => x)).
+  let x.
+  assume HxNz.
+  exact (Hsub
+    x
+    HxNz).
+}
+exact (continuous_map_congr_on
+  (Rn_minus_origin n)
+  (Rn_minus_origin_topology n)
+  (euclidean_space n)
+  (euclidean_topology n)
+  {(x,x)|x :e euclidean_space n}
+  (graph (Rn_minus_origin n) (fun x:set => x))
+  HidCont
+  HgraphFun
+  (fun x Hx =>
+    eq_i_tra
+      (apply_fun {(y,y)|y :e euclidean_space n} x)
+      x
+      (apply_fun (graph (Rn_minus_origin n) (fun y:set => y)) x)
+      (identity_function_apply
+        (euclidean_space n)
+        x
+        (Hsub
+          x
+          Hx))
+      (eq_symm
+        (apply_fun (graph (Rn_minus_origin n) (fun y:set => y)) x)
+        x
+        (apply_fun_graph
+          (Rn_minus_origin n)
+          (fun y:set => y)
+          x
+          Hx)))).
+Qed.
+
+(** Infrastructure: norm square is continuous on punctured Euclidean space. **)
+(** Proven Charlie **)
+Lemma Rn_minus_origin_norm_sq_continuous : forall n:set,
+  n :e omega ->
+  continuous_map
+    (Rn_minus_origin n)
+    (Rn_minus_origin_topology n)
+    R
+    R_standard_topology
+    (graph (Rn_minus_origin n) (fun x:set => euclidean_norm_sq n x)).
+let n.
+assume Hn_om.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim HtopE :
+  topology_on (euclidean_space n) (euclidean_topology n).
+{
+  exact (euclidean_topology_is_topology
+    n).
+}
+claim Hsub :
+  Rn_minus_origin n c= euclidean_space n.
+{
+  exact (Sep_Subq
+    (euclidean_space n)
+    (fun v:set => ~(forall i:set, i :e n -> apply_fun v i = 0))).
+}
+claim HrawCont :
+  continuous_map
+    (Rn_minus_origin n)
+    (Rn_minus_origin_topology n)
+    R
+    R_standard_topology
+    (graph (euclidean_space n) (fun x:set => euclidean_norm_sq n x)).
+{
+  exact (continuous_on_subspace
+    (euclidean_space n)
+    (euclidean_topology n)
+    R
+    R_standard_topology
+    (graph (euclidean_space n) (fun x:set => euclidean_norm_sq n x))
+    (Rn_minus_origin n)
+    HtopE
+    Hsub
+    (euclidean_norm_sq_continuous
+      n
+      Hn_nat)).
+}
+claim HgraphFun :
+  function_on
+    (graph (Rn_minus_origin n) (fun x:set => euclidean_norm_sq n x))
+    (Rn_minus_origin n)
+    R.
+{
+  apply (graph_function_on
+    (Rn_minus_origin n)
+    R
+    (fun x:set => euclidean_norm_sq n x)).
+  let x.
+  assume HxNz.
+  exact (euclidean_norm_sq_in_R
+    n
+    x
+    Hn_nat
+    (Hsub
+      x
+      HxNz)).
+}
+exact (continuous_map_congr_on
+  (Rn_minus_origin n)
+  (Rn_minus_origin_topology n)
+  R
+  R_standard_topology
+  (graph (euclidean_space n) (fun x:set => euclidean_norm_sq n x))
+  (graph (Rn_minus_origin n) (fun x:set => euclidean_norm_sq n x))
+  HrawCont
+  HgraphFun
+  (fun x Hx =>
+    eq_i_tra
+      (apply_fun (graph (euclidean_space n) (fun y:set => euclidean_norm_sq n y)) x)
+      (euclidean_norm_sq n x)
+      (apply_fun (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y)) x)
+      (apply_fun_graph
+        (euclidean_space n)
+        (fun y:set => euclidean_norm_sq n y)
+        x
+        (Hsub
+          x
+          Hx))
+      (eq_symm
+        (apply_fun (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y)) x)
+        (euclidean_norm_sq n x)
+        (apply_fun_graph
+          (Rn_minus_origin n)
+          (fun y:set => euclidean_norm_sq n y)
+          x
+          Hx)))).
+Qed.
+
+(** Infrastructure: the norm square is strictly positive on punctured Euclidean space. **)
+(** Proven Charlie **)
+Lemma Rn_minus_origin_norm_sq_positive : forall n x:set,
+  n :e omega ->
+  x :e Rn_minus_origin n ->
+  Rlt 0 (euclidean_norm_sq n x).
+let n x.
+assume Hn_om HxNz.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim HxEu : x :e euclidean_space n.
+{
+  exact (SepE1
+    (euclidean_space n)
+    (fun v:set => ~(forall i:set, i :e n -> apply_fun v i = 0))
+    x
+    HxNz).
+}
+claim HnormR : euclidean_norm_sq n x :e R.
+{
+  exact (euclidean_norm_sq_in_R
+    n
+    x
+    Hn_nat
+    HxEu).
+}
+claim HnormS : SNo (euclidean_norm_sq n x).
+{
+  exact (real_SNo
+    (euclidean_norm_sq n x)
+    HnormR).
+}
+claim HnormNonneg : 0 <= euclidean_norm_sq n x.
+{
+  exact (SNoLe_of_Rle
+    0
+    (euclidean_norm_sq n x)
+    (euclidean_norm_sq_nonneg
+      n
+      x
+      Hn_nat
+      HxEu)).
+}
+apply (SNoLtLe_or
+  0
+  (euclidean_norm_sq n x)
+  SNo_0
+  HnormS).
+- assume Hpos.
+  exact (RltI
+    0
+    (euclidean_norm_sq n x)
+    real_0
+    HnormR
+    Hpos).
+- assume Hle0.
+  claim Hnorm0 :
+    euclidean_norm_sq n x = 0.
+  {
+    exact (SNoLe_antisym
+      (euclidean_norm_sq n x)
+      0
+      HnormS
+      SNo_0
+      Hle0
+      HnormNonneg).
+  }
+  exact (FalseE
+    ((Rn_minus_origin_norm_sq_nonzero
+      n
+      x
+      Hn_om
+      HxNz)
+      Hnorm0)
+    (Rlt 0 (euclidean_norm_sq n x))).
+Qed.
+
+(** Infrastructure: the punctured-space norm-square graph lands in the positive ray. **)
+(** Proven Charlie **)
+Lemma Rn_minus_origin_norm_sq_graph_positive : forall n x:set,
+  n :e omega ->
+  x :e Rn_minus_origin n ->
+  Rlt 0
+    (apply_fun
+      (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y))
+      x).
+let n x.
+assume Hn_om HxNz.
+rewrite (apply_fun_graph
+  (Rn_minus_origin n)
+  (fun y:set => euclidean_norm_sq n y)
+  x
+  HxNz).
+exact (Rn_minus_origin_norm_sq_positive
+  n
+  x
+  Hn_om
+  HxNz).
+Qed.
+
+(** Infrastructure: reciprocal norm square is continuous on punctured Euclidean space. **)
+(** Proven Charlie **)
+Lemma Rn_minus_origin_recip_norm_sq_continuous : forall n:set,
+  n :e omega ->
+  continuous_map
+    (Rn_minus_origin n)
+    (Rn_minus_origin_topology n)
+    R
+    R_standard_topology
+    (compose_fun
+      (Rn_minus_origin n)
+      (graph (Rn_minus_origin n) (fun x:set => euclidean_norm_sq n x))
+      (compose_fun
+        (open_ray_upper R 0)
+        (compose_fun R bounded_transform_phi one_minus_fun)
+        bounded_transform_psi)).
+let n.
+assume Hn_om.
+claim HtopNz :
+  topology_on
+    (Rn_minus_origin n)
+    (Rn_minus_origin_topology n).
+{
+  exact (subspace_topology_is_topology
+    (euclidean_space n)
+    (euclidean_topology n)
+    (Rn_minus_origin n)
+    (euclidean_topology_is_topology
+      n)
+    (Sep_Subq
+      (euclidean_space n)
+      (fun v:set => ~(forall i:set, i :e n -> apply_fun v i = 0)))).
+}
+exact (reciprocal_of_positive_continuous_map
+  (Rn_minus_origin n)
+  (Rn_minus_origin_topology n)
+  (graph (Rn_minus_origin n) (fun x:set => euclidean_norm_sq n x))
+  HtopNz
+  (Rn_minus_origin_norm_sq_continuous
+    n
+    Hn_om)
+  (fun x Hx =>
+    Rn_minus_origin_norm_sq_graph_positive
+      n
+      x
+      Hn_om
+      Hx)).
+Qed.
+
+(** Infrastructure: reciprocal norm square evaluates pointwise as expected. **)
+(** Proven Charlie **)
+Lemma Rn_minus_origin_recip_norm_sq_apply : forall n x:set,
+  n :e omega ->
+  x :e Rn_minus_origin n ->
+  apply_fun
+    (compose_fun
+      (Rn_minus_origin n)
+      (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y))
+      (compose_fun
+        (open_ray_upper R 0)
+        (compose_fun R bounded_transform_phi one_minus_fun)
+        bounded_transform_psi))
+    x
+  =
+  recip_SNo_pos (euclidean_norm_sq n x).
+let n x.
+assume Hn_om HxNz.
+claim HnormCont :
+  continuous_map
+    (Rn_minus_origin n)
+    (Rn_minus_origin_topology n)
+    R
+    R_standard_topology
+    (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y)).
+{
+  exact (Rn_minus_origin_norm_sq_continuous
+    n
+    Hn_om).
+}
+claim HnormR :
+  apply_fun
+    (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y))
+    x :e R.
+{
+  exact (continuous_map_function_on
+    (Rn_minus_origin n)
+    (Rn_minus_origin_topology n)
+    R
+    R_standard_topology
+    (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y))
+    HnormCont
+    x
+    HxNz).
+}
+claim HnormInRay :
+  apply_fun
+    (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y))
+    x :e open_ray_upper R 0.
+{
+  exact (SepI
+    R
+    (fun t:set => order_rel R 0 t)
+    (apply_fun
+      (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y))
+      x)
+    HnormR
+    (Rlt_implies_order_rel_R
+      0
+      (apply_fun
+        (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y))
+        x)
+      (Rn_minus_origin_norm_sq_graph_positive
+        n
+        x
+        Hn_om
+        HxNz))).
+}
+rewrite (compose_fun_apply
+  (Rn_minus_origin n)
+  (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y))
+  (compose_fun
+    (open_ray_upper R 0)
+    (compose_fun R bounded_transform_phi one_minus_fun)
+    bounded_transform_psi)
+  x
+  HxNz).
+rewrite (recip_pos_value_eq_recip_SNo_pos
+  (apply_fun
+    (graph (Rn_minus_origin n) (fun y:set => euclidean_norm_sq n y))
+    x)
+  HnormInRay).
+rewrite (apply_fun_graph
+  (Rn_minus_origin n)
+  (fun y:set => euclidean_norm_sq n y)
+  x
+  HxNz).
+reflexivity.
+Qed.
+
 (** Infrastructure: points on S^n are nonzero vectors in R^{n+1}. **)
 (** Proven Charlie **)
 Lemma Sn_subset_Rn_minus_origin : forall n x:set,
