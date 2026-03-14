@@ -468625,10 +468625,42 @@ apply (nat_inv nw Hnw_nat).
               Hw_ef (eq_symm (apply_fun multG (apply_fun efam al, eG)) (apply_fun efam al)
                 (andER (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
                   (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al) (HidG (apply_fun efam al) Hefam_G)))))). }
-        (** Build word [xsw(0),...,xsw(mw), z2] of length nw+1 for product = efam(al) mult z2 = w **)
-        (** w in Gfam(al), w != eG, w != efam(al). By free_product_factor_element_length1, its reduced word has length 1. **)
-        (** But the appended word has length nw+1 >= 3. By uniqueness, nw+1 = 1. Contradiction. **)
-        admit.
+        (** Append z2 to xsw to get reduced word of length ordsucc(nw) **)
+        claim Hlast_diff2 : forall k a2 b2:set, nw = ordsucc k -> a2 :e J -> b2 :e J ->
+          apply_fun xsw k :e apply_fun Gfam a2 -> z2 :e apply_fun Gfam b2 -> a2 <> b2.
+        { let k a2 b2. assume Hnw_sk Ha2J Hb2J Hxsk_Ga2 Hz2_Gb2.
+          claim Hk_eq_mw : k = mw. { exact (ordsucc_inj k mw (eq_i_tra (ordsucc k) nw (ordsucc mw) (eq_symm nw (ordsucc k) Hnw_sk) Hnw_sm)). }
+          claim Hxsk_Gbmw : apply_fun xsw k :e apply_fun Gfam bmw.
+          { rewrite Hk_eq_mw. exact Hxsmw_Gbmw. }
+          claim Hxsk_ne_eG2 : apply_fun xsw k <> eG. { rewrite Hk_eq_mw. exact Hxsmw_ne_eG. }
+          claim Ha2_eq_bmw : a2 = bmw.
+          { exact (eq_symm bmw a2 (disjoint_subgroups_label_unique G multG eG invG J Gfam bmw a2 (apply_fun xsw k)
+              Hdisjoint HbmwJ Ha2J Hxsk_Gbmw Hxsk_Ga2 Hxsk_ne_eG2)). }
+          claim Hb2_eq_al : b2 = al.
+          { exact (eq_symm al b2 (disjoint_subgroups_label_unique G multG eG invG J Gfam al b2 z2
+              Hdisjoint Hal Hb2J Hz2_Gal Hz2_Gb2 Hz2_ne_eG)). }
+          rewrite Ha2_eq_bmw. rewrite Hb2_eq_al. exact Hbmw_ne_al. }
+        claim Hred_ext : reduced_word J Gfam efam (ordsucc nw)
+          (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2)).
+        { exact (reduced_word_append_one_pre J Gfam efam nw xsw z2 al Hredw Hnw_ne0 Hal Hz2_Gal Hz2_ne_efam Hlast_diff2). }
+        claim Hwp_ext : word_product multG eG
+          (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2))
+          (ordsucc nw) = apply_fun multG (word_product multG eG xsw nw, z2).
+        { exact (word_product_append_one multG eG xsw z2 nw Hnw_omega). }
+        claim Hwp_ext_w : word_product multG eG
+          (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2))
+          (ordsucc nw) = w.
+        { rewrite Hwp_ext. rewrite Hwp_efam. reflexivity. }
+        claim Hsnw_ne0 : ordsucc nw <> 0. { exact (neq_ordsucc_0 nw). }
+        claim Hsnw_eq_1 : ordsucc nw = 1.
+        { exact (free_product_factor_element_length1 G multG eG invG J Gfam efam al w (ordsucc nw)
+            (graph (ordsucc nw) (fun i:set => if i :e nw then apply_fun xsw i else z2))
+            Hfp Hal Hw_Gal Hw_ne_eG Hw_ne_efam Hred_ext Hsnw_ne0 Hwp_ext_w). }
+        claim H1_ne_ordsucc_nw : 1 <> ordsucc nw.
+        { assume H1eq : 1 = ordsucc nw.
+          claim Hnw_0 : nw = 0. { exact (eq_symm 0 nw (ordsucc_inj 0 nw (eq_i_tra (ordsucc 0) 1 (ordsucc nw) ordsucc_0_eq_1_nat H1eq))). }
+          exact (Hnw_ne0 Hnw_0). }
+        exact (H1_ne_ordsucc_nw (eq_symm (ordsucc nw) 1 Hsnw_eq_1)).
       + assume Hno_z2 : ~(exists z2:set, z2 :e apply_fun Gfam al /\ z2 <> eG /\ z2 <> apply_fun efam al).
         (** Gfam(al) = {eG, efam(al)}. Use palindromic argument. **)
         admit.
