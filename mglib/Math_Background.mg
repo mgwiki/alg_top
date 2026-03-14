@@ -149268,6 +149268,269 @@ claim Hsq0 :
        H0le).
 Qed.
 
+(** Infrastructure: every coordinate projection on Euclidean space is continuous. **)
+(** Proven Charlie **)
+Lemma euclidean_coord_continuous : forall n i:set,
+  nat_p n ->
+  i :e n ->
+  continuous_map
+    (euclidean_space n)
+    (euclidean_topology n)
+    R
+    R_standard_topology
+    (graph (euclidean_space n) (fun x:set => apply_fun x i)).
+let n i.
+assume Hn Hi.
+claim HfamTop :
+  forall j:set, j :e n ->
+    topology_on
+      (space_family_set (const_space_family n R R_standard_topology) j)
+      (space_family_topology (const_space_family n R R_standard_topology) j).
+{
+  let j.
+  assume Hj.
+  rewrite (space_family_set_const_space_family
+    n
+    R
+    R_standard_topology
+    j
+    Hj).
+  rewrite (space_family_topology_const_space_family
+    n
+    R
+    R_standard_topology
+    j
+    Hj).
+  exact R_standard_topology_is_topology.
+}
+claim HevalCont :
+  continuous_map
+    (euclidean_space n)
+    (euclidean_topology n)
+    (space_family_set (const_space_family n R R_standard_topology) i)
+    (space_family_topology (const_space_family n R R_standard_topology) i)
+    (product_eval_map n (const_space_family n R R_standard_topology) i).
+{
+  exact (product_eval_map_continuous
+    n
+    (const_space_family n R R_standard_topology)
+    i
+    HfamTop
+    Hi).
+}
+claim HYsub :
+  space_family_set (const_space_family n R R_standard_topology) i c= R.
+{
+  let y.
+  assume Hy.
+  rewrite <- (space_family_set_const_space_family
+    n
+    R
+    R_standard_topology
+    i
+    Hi).
+  exact Hy.
+}
+claim HTyEq :
+  space_family_topology (const_space_family n R R_standard_topology) i =
+  subspace_topology
+    R
+    R_standard_topology
+    (space_family_set (const_space_family n R R_standard_topology) i).
+{
+  rewrite (space_family_set_const_space_family
+    n
+    R
+    R_standard_topology
+    i
+    Hi).
+  rewrite (space_family_topology_const_space_family
+    n
+    R
+    R_standard_topology
+    i
+    Hi).
+  rewrite (subspace_topology_whole
+    R
+    R_standard_topology
+    R_standard_topology_is_topology).
+  reflexivity.
+}
+claim HevalContR :
+  continuous_map
+    (euclidean_space n)
+    (euclidean_topology n)
+    R
+    R_standard_topology
+    (product_eval_map n (const_space_family n R R_standard_topology) i).
+{
+  exact (continuous_map_range_expand
+    (euclidean_space n)
+    (euclidean_topology n)
+    (space_family_set (const_space_family n R R_standard_topology) i)
+    (space_family_topology (const_space_family n R R_standard_topology) i)
+    R
+    R_standard_topology
+    (product_eval_map n (const_space_family n R R_standard_topology) i)
+    HevalCont
+    HYsub
+    R_standard_topology_is_topology
+    HTyEq).
+}
+claim HmapEq :
+  product_eval_map n (const_space_family n R R_standard_topology) i =
+  graph (euclidean_space n) (fun x:set => apply_fun x i).
+{
+  reflexivity.
+}
+rewrite <- HmapEq.
+exact HevalContR.
+Qed.
+
+(** Infrastructure: coordinate squares on Euclidean space are continuous. **)
+(** Proven Charlie **)
+Lemma euclidean_coord_sq_continuous : forall n i:set,
+  nat_p n ->
+  i :e n ->
+  continuous_map
+    (euclidean_space n)
+    (euclidean_topology n)
+    R
+    R_standard_topology
+    (compose_fun
+      (euclidean_space n)
+      (pair_map
+        (euclidean_space n)
+        (graph (euclidean_space n) (fun x:set => apply_fun x i))
+        (graph (euclidean_space n) (fun x:set => apply_fun x i)))
+      mul_fun_R).
+let n i.
+assume Hn Hi.
+claim HtopE :
+  topology_on (euclidean_space n) (euclidean_topology n).
+{
+  exact (euclidean_topology_is_topology
+    n).
+}
+claim HcoordCont :
+  continuous_map
+    (euclidean_space n)
+    (euclidean_topology n)
+    R
+    R_standard_topology
+    (graph (euclidean_space n) (fun x:set => apply_fun x i)).
+{
+  exact (euclidean_coord_continuous
+    n
+    i
+    Hn
+    Hi).
+}
+exact (mul_two_continuous_R
+  (euclidean_space n)
+  (euclidean_topology n)
+  (graph (euclidean_space n) (fun x:set => apply_fun x i))
+  (graph (euclidean_space n) (fun x:set => apply_fun x i))
+  HtopE
+  HcoordCont
+  HcoordCont).
+Qed.
+
+(** Infrastructure: last-coordinate map on Euclidean successor space computes by apply_fun. **)
+(** Proven Charlie **)
+Lemma euclidean_space_succ_last_map_apply : forall n v:set,
+  v :e euclidean_space (ordsucc n) ->
+  apply_fun (euclidean_space_succ_last_map n) v = apply_fun v n.
+let n v.
+assume Hv.
+claim Hdef :
+  euclidean_space_succ_last_map n =
+  product_eval_map (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology) n.
+{
+  reflexivity.
+}
+rewrite Hdef.
+exact (apply_fun_graph
+  (euclidean_space (ordsucc n))
+  (fun f:set => apply_fun f n)
+  v
+  Hv).
+Qed.
+
+(** Infrastructure: Euclidean norm square splits into first coordinates plus the last square. **)
+(** Proven Charlie **)
+Lemma euclidean_norm_sq_ordsucc_expand : forall n v:set,
+  nat_p n ->
+  v :e euclidean_space (ordsucc n) ->
+  euclidean_norm_sq (ordsucc n) v
+  =
+  add_SNo
+    (euclidean_norm_sq n (apply_fun (euclidean_space_succ_first_map n) v))
+    (mul_SNo
+      (apply_fun (euclidean_space_succ_last_map n) v)
+      (apply_fun (euclidean_space_succ_last_map n) v)).
+let n v.
+assume Hn Hv.
+claim HfirstEq :
+  apply_fun (euclidean_space_succ_first_map n) v =
+  graph n (fun i:set => apply_fun v i).
+{
+  exact (euclidean_space_succ_first_map_apply
+    n
+    v
+    Hn
+    Hv).
+}
+claim HlastEq :
+  apply_fun (euclidean_space_succ_last_map n) v = apply_fun v n.
+{
+  exact (euclidean_space_succ_last_map_apply
+    n
+    v
+    Hv).
+}
+claim HfirstNorm :
+  euclidean_norm_sq n (apply_fun (euclidean_space_succ_first_map n) v) =
+  finite_real_sum
+    (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))
+    n.
+{
+  rewrite HfirstEq.
+  apply (finite_real_sum_congr
+    (fun i:set =>
+      mul_SNo
+        (apply_fun (graph n (fun j:set => apply_fun v j)) i)
+        (apply_fun (graph n (fun j:set => apply_fun v j)) i))
+    (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))
+    n
+    Hn).
+  let i.
+  assume Hi.
+  rewrite (apply_fun_graph
+    n
+    (fun j:set => apply_fun v j)
+    i
+    Hi).
+  reflexivity.
+}
+claim HnormDef :
+  euclidean_norm_sq (ordsucc n) v =
+  finite_real_sum
+    (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))
+    (ordsucc n).
+{
+  reflexivity.
+}
+rewrite HnormDef.
+rewrite (finite_real_sum_S
+  (fun i:set => mul_SNo (apply_fun v i) (apply_fun v i))
+  n
+  Hn).
+rewrite <- HfirstNorm.
+rewrite HlastEq.
+reflexivity.
+Qed.
+
 (** Infrastructure: a point of R^n minus the origin has nonzero norm square. **)
 (** Proven Charlie **)
 Lemma Rn_minus_origin_norm_sq_nonzero : forall n x:set,
