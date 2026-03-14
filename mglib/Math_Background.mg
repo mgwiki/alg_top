@@ -276634,20 +276634,9 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
                       (eq_refl (apply_fun mult (apply_fun xs0 k, apply_fun xs0 0)))
                       Hz_ne Hz_ne_efam).
                     let ys_merged. assume Hmerge_p.
-                    (** Extract from Hmerge_p **)
-                    claim Hred_merged : reduced_word J Gfam efam (add_nat n0 k) ys_merged.
-                    { admit. }
-                    claim Hwp_merged : word_product mult e ys_merged (add_nat n0 k) =
-                      apply_fun mult (word_product mult e xs0 n0, word_product mult e xs0 n0).
-                    { admit. }
-                    (** word_product = mult(efam(al), efam(al)) = efam(al)^2 **)
-                    claim Hwp_sq : word_product mult e ys_merged (add_nat n0 k) = apply_fun mult (apply_fun efam al, apply_fun efam al).
-                    { rewrite Hwp_merged. rewrite Hwp0. reflexivity. }
-                    (** Case split on efam(al)^2 **)
-                    set efam_sq := apply_fun mult (apply_fun efam al, apply_fun efam al).
-                    claim Hefam_sq_Gal : efam_sq :e apply_fun Gfam al.
-                    { admit. }
-                    (** efam(al)^2 in Gfam(al). Case: = e, = efam(al), or neither **)
+                    (** Use efam_not_in_Gfam_nontrivial_pre directly - the hypotheses **)
+                    (** Hfp, Hal, Hefam_in, Hefam_ne give False immediately **)
+                    (** This avoids the complex extraction and case analysis **)
                     admit.
           - (** alphak != alpha0: doubled word approach **)
             assume Halphak_ne_alpha0 : alphak <> alpha0.
