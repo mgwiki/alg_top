@@ -162452,6 +162452,874 @@ exact (continuous_map_congr_on
   HdiagEq).
 Qed.
 
+(** Infrastructure: if the affine homotopy hits 0, the boundary value points inward. **)
+(** Proven Charlie **)
+Lemma Sn_affine_boundary_homotopy_map_eq_zero_inward : forall n w wS p:set,
+  n :e omega ->
+  continuous_map
+    (Sn n)
+    (Sn_topology n)
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    wS ->
+  (forall x:set, x :e Sn n -> apply_fun wS x = apply_fun w x) ->
+  p :e setprod (Sn n) unit_interval ->
+  apply_fun (Sn_affine_boundary_homotopy_map n wS) p = Rn_zero (ordsucc n) ->
+  points_directly_inward_Rn n w (p 0).
+let n w wS p.
+assume Hn_om HwSCont HwSEq Hp Hq0.
+claim Hn_nat :
+  nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsn_nat :
+  nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim HpSn :
+  p 0 :e Sn n.
+{
+  exact (ap0_Sigma
+    (Sn n)
+    (fun _ : set => unit_interval)
+    p
+    Hp).
+}
+claim HpI :
+  p 1 :e unit_interval.
+{
+  exact (ap1_Sigma
+    (Sn n)
+    (fun _ : set => unit_interval)
+    p
+    Hp).
+}
+claim Hp0Nz :
+  p 0 :e Rn_minus_origin (ordsucc n).
+{
+  exact (Sn_subset_Rn_minus_origin
+    n
+    (p 0)
+    Hn_om
+    HpSn).
+}
+claim Hp0Eu :
+  p 0 :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    (p 0)
+    HpSn).
+}
+claim HwSpNz :
+  apply_fun wS (p 0) :e Rn_minus_origin (ordsucc n).
+{
+  exact (continuous_map_function_on
+    (Sn n)
+    (Sn_topology n)
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    wS
+    HwSCont
+    (p 0)
+    HpSn).
+}
+claim HwSpEu :
+  apply_fun wS (p 0) :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+    (apply_fun wS (p 0))
+    HwSpNz).
+}
+claim Hp1R :
+  p 1 :e R.
+{
+  exact (SepE1
+    R
+    (fun t:set => ~(Rlt t 0) /\ ~(Rlt 1 t))
+    (p 1)
+    HpI).
+}
+claim Hp1S :
+  SNo (p 1).
+{
+  exact (real_SNo
+    (p 1)
+    Hp1R).
+}
+set s := add_SNo 1 (minus_SNo (p 1)).
+claim HsR :
+  s :e R.
+{
+  exact (real_add_SNo
+    1
+    real_1
+    (minus_SNo (p 1))
+    (real_minus_SNo
+      (p 1)
+      Hp1R)).
+}
+claim HsS :
+  SNo s.
+{
+  exact (real_SNo
+    s
+    HsR).
+}
+claim HsEq :
+  apply_fun flip_unit_interval (p 1) = s.
+{
+  rewrite (flip_unit_interval_apply
+    (p 1)
+    HpI).
+  reflexivity.
+}
+claim HaffDef :
+  Sn_affine_boundary_homotopy_map n wS =
+  graph
+    (setprod (Sn n) unit_interval)
+    (fun p0:set =>
+      graph (ordsucc n) (fun j:set =>
+        add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p0 1))
+            (apply_fun (apply_fun wS (p0 0)) j))
+          (mul_SNo
+            (p0 1)
+            (apply_fun (p0 0) j)))).
+{
+  reflexivity.
+}
+claim HrawCoordZero :
+  forall i:set, i :e ordsucc n ->
+    add_SNo
+      (mul_SNo
+        (apply_fun flip_unit_interval (p 1))
+        (apply_fun (apply_fun wS (p 0)) i))
+      (mul_SNo
+        (p 1)
+        (apply_fun (p 0) i))
+    =
+    0.
+{
+  let i.
+  assume Hi.
+  rewrite <- (apply_fun_graph
+    (ordsucc n)
+    (fun j:set =>
+      add_SNo
+        (mul_SNo
+          (apply_fun flip_unit_interval (p 1))
+          (apply_fun (apply_fun wS (p 0)) j))
+        (mul_SNo
+          (p 1)
+          (apply_fun (p 0) j)))
+    i
+    Hi).
+  rewrite <- (apply_fun_graph
+    (setprod (Sn n) unit_interval)
+    (fun p0:set =>
+      graph (ordsucc n) (fun j:set =>
+        add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p0 1))
+            (apply_fun (apply_fun wS (p0 0)) j))
+          (mul_SNo
+            (p0 1)
+            (apply_fun (p0 0) j))))
+    p
+    Hp).
+  rewrite <- HaffDef.
+  rewrite Hq0.
+  rewrite (Rn_zero_apply
+    (ordsucc n)
+    i
+    Hi).
+  reflexivity.
+}
+apply (xm (p 1 = 0)).
+- assume Hp10.
+  claim HwSpZero :
+    forall i:set, i :e ordsucc n ->
+      apply_fun (apply_fun wS (p 0)) i = 0.
+  {
+    let i.
+    assume Hi.
+    claim HwiR :
+      apply_fun (apply_fun wS (p 0)) i :e R.
+    {
+      exact (euclidean_space_coord_in_R
+        (ordsucc n)
+        (apply_fun wS (p 0))
+        i
+        HwSpEu
+        Hi).
+    }
+    claim HxiR :
+      apply_fun (p 0) i :e R.
+    {
+      exact (euclidean_space_coord_in_R
+        (ordsucc n)
+        (p 0)
+        i
+          Hp0Eu
+          Hi).
+    }
+    claim H0 :
+      add_SNo
+        (mul_SNo
+          (apply_fun flip_unit_interval (p 1))
+          (apply_fun (apply_fun wS (p 0)) i))
+        (mul_SNo
+          (p 1)
+          (apply_fun (p 0) i))
+      =
+      0.
+    {
+      exact (HrawCoordZero
+        i
+        Hi).
+    }
+    claim Hexp :
+      add_SNo
+        (mul_SNo
+          (apply_fun flip_unit_interval (p 1))
+          (apply_fun (apply_fun wS (p 0)) i))
+        (mul_SNo
+          (p 1)
+          (apply_fun (p 0) i))
+      =
+      apply_fun (apply_fun wS (p 0)) i.
+    {
+      rewrite Hp10.
+      rewrite flip_unit_interval_at_0.
+      rewrite (mul_SNo_oneL
+        (apply_fun (apply_fun wS (p 0)) i)
+        (real_SNo
+          (apply_fun (apply_fun wS (p 0)) i)
+          HwiR)).
+      rewrite (mul_SNo_zeroL
+        (apply_fun (p 0) i)
+        (real_SNo
+          (apply_fun (p 0) i)
+          HxiR)).
+      rewrite (add_SNo_0R
+        (apply_fun (apply_fun wS (p 0)) i)
+        (real_SNo
+          (apply_fun (apply_fun wS (p 0)) i)
+          HwiR)).
+      reflexivity.
+    }
+    exact (eq_i_tra
+      (apply_fun (apply_fun wS (p 0)) i)
+      (add_SNo
+        (mul_SNo
+          (apply_fun flip_unit_interval (p 1))
+          (apply_fun (apply_fun wS (p 0)) i))
+        (mul_SNo
+          (p 1)
+          (apply_fun (p 0) i)))
+      0
+      (eq_symm
+        (add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i)))
+        (apply_fun (apply_fun wS (p 0)) i)
+        Hexp)
+      H0).
+  }
+  claim Hcontra : False.
+  {
+    apply (SepE2
+      (euclidean_space (ordsucc n))
+      (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+      (apply_fun wS (p 0))
+      HwSpNz).
+    exact HwSpZero.
+  }
+  exact (FalseE
+    Hcontra
+    (points_directly_inward_Rn n w (p 0))).
+- assume Hp1Ne0.
+  apply (xm (p 1 = 1)).
+  + assume Hp11.
+    claim Hp0Zero :
+      forall i:set, i :e ordsucc n ->
+        apply_fun (p 0) i = 0.
+    {
+      let i.
+      assume Hi.
+      claim HwiR :
+        apply_fun (apply_fun wS (p 0)) i :e R.
+      {
+        exact (euclidean_space_coord_in_R
+          (ordsucc n)
+          (apply_fun wS (p 0))
+          i
+          HwSpEu
+          Hi).
+      }
+      claim HxiR :
+        apply_fun (p 0) i :e R.
+      {
+        exact (euclidean_space_coord_in_R
+          (ordsucc n)
+          (p 0)
+          i
+          Hp0Eu
+          Hi).
+      }
+      claim H0 :
+        add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i))
+        =
+        0.
+      {
+        exact (HrawCoordZero
+          i
+          Hi).
+      }
+      claim Hexp :
+        add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i))
+        =
+        apply_fun (p 0) i.
+      {
+        rewrite Hp11.
+        rewrite flip_unit_interval_at_1.
+        rewrite (mul_SNo_zeroL
+          (apply_fun (apply_fun wS (p 0)) i)
+          (real_SNo
+            (apply_fun (apply_fun wS (p 0)) i)
+            HwiR)).
+        rewrite (mul_SNo_oneL
+          (apply_fun (p 0) i)
+          (real_SNo
+            (apply_fun (p 0) i)
+            HxiR)).
+        rewrite (add_SNo_0L
+          (apply_fun (p 0) i)
+          (real_SNo
+            (apply_fun (p 0) i)
+            HxiR)).
+        reflexivity.
+      }
+      exact (eq_i_tra
+        (apply_fun (p 0) i)
+        (add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i)))
+        0
+        (eq_symm
+          (add_SNo
+            (mul_SNo
+              (apply_fun flip_unit_interval (p 1))
+              (apply_fun (apply_fun wS (p 0)) i))
+            (mul_SNo
+              (p 1)
+              (apply_fun (p 0) i)))
+          (apply_fun (p 0) i)
+          Hexp)
+        H0).
+    }
+    claim Hcontra : False.
+    {
+      apply (SepE2
+        (euclidean_space (ordsucc n))
+        (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+        (p 0)
+        Hp0Nz).
+      exact Hp0Zero.
+    }
+    exact (FalseE
+      Hcontra
+      (points_directly_inward_Rn n w (p 0))).
+  + assume Hp1Ne1.
+    claim H0NeP1 :
+      ~(0 = p 1).
+    {
+      assume H0eq.
+      exact (Hp1Ne0
+        (eq_symm
+          0
+          (p 1)
+          H0eq)).
+    }
+    claim Hp1Pos :
+      Rlt 0 (p 1).
+    {
+      exact (Rle_neq_implies_Rlt
+        0
+        (p 1)
+        (unit_interval_Rle0
+          (p 1)
+          HpI)
+        H0NeP1).
+    }
+    claim Hp1Lt1 :
+      Rlt (p 1) 1.
+    {
+      exact (Rle_neq_implies_Rlt
+        (p 1)
+        1
+        (unit_interval_Rle1
+          (p 1)
+          HpI)
+        Hp1Ne1).
+    }
+    claim HsPos :
+      Rlt 0 s.
+    {
+      exact (Rlt_0_diff_of_lt
+        (p 1)
+        1
+        Hp1Lt1).
+    }
+    claim HsNe0 :
+      ~(s = 0).
+    {
+      assume Hs0.
+      claim Hpos0 :
+        Rlt 0 0.
+      {
+        rewrite <- Hs0 at 2.
+        exact HsPos.
+      }
+      exact (not_Rlt_refl
+        0
+        real_0
+        Hpos0).
+    }
+    set a := div_SNo (p 1) s.
+    claim HaR :
+      a :e R.
+    {
+      exact (real_div_SNo
+        (p 1)
+        Hp1R
+        s
+        HsR).
+    }
+    claim HaS :
+      SNo a.
+    {
+      exact (real_SNo
+        a
+        HaR).
+    }
+    claim Hp1LtS :
+      0 < p 1.
+    {
+      exact (RltE_lt
+        0
+        (p 1)
+        Hp1Pos).
+    }
+    claim HsLtS :
+      0 < s.
+    {
+      exact (RltE_lt
+        0
+        s
+        HsPos).
+    }
+    claim HaPos :
+      Rlt 0 a.
+    {
+      claim HaLtS :
+        0 < a.
+      {
+        exact (div_SNo_pos_pos
+          (p 1)
+          s
+          Hp1S
+          HsS
+          Hp1LtS
+          HsLtS).
+      }
+      exact (RltI
+        0
+        a
+        real_0
+        HaR
+        HaLtS).
+    }
+    claim HcoordEq :
+      forall i:set, i :e ordsucc n ->
+        add_SNo
+          (mul_SNo
+            s
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i))
+        =
+        0.
+    {
+      let i.
+      assume Hi.
+      claim HflipEq :
+        add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i))
+        =
+        add_SNo
+          (mul_SNo
+            s
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i)).
+      {
+        rewrite HsEq.
+        reflexivity.
+      }
+      exact (eq_i_tra
+        (add_SNo
+          (mul_SNo
+            s
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i)))
+        (add_SNo
+          (mul_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i)))
+        0
+        (eq_symm
+          (add_SNo
+            (mul_SNo
+              (apply_fun flip_unit_interval (p 1))
+              (apply_fun (apply_fun wS (p 0)) i))
+            (mul_SNo
+              (p 1)
+              (apply_fun (p 0) i)))
+          (add_SNo
+            (mul_SNo
+              s
+              (apply_fun (apply_fun wS (p 0)) i))
+            (mul_SNo
+              (p 1)
+              (apply_fun (p 0) i)))
+          HflipEq)
+        (HrawCoordZero
+          i
+          Hi)).
+    }
+    claim HcoordInward :
+      forall i:set, i :e ordsucc n ->
+        apply_fun (apply_fun wS (p 0)) i =
+        mul_SNo
+          (minus_SNo a)
+          (apply_fun (p 0) i).
+    {
+      let i.
+      assume Hi.
+      claim HwiR :
+        apply_fun (apply_fun wS (p 0)) i :e R.
+      {
+        exact (euclidean_space_coord_in_R
+          (ordsucc n)
+          (apply_fun wS (p 0))
+          i
+          HwSpEu
+          Hi).
+      }
+      claim HwiS :
+        SNo (apply_fun (apply_fun wS (p 0)) i).
+      {
+        exact (real_SNo
+          (apply_fun (apply_fun wS (p 0)) i)
+          HwiR).
+      }
+      claim HxiR :
+        apply_fun (p 0) i :e R.
+      {
+        exact (euclidean_space_coord_in_R
+          (ordsucc n)
+          (p 0)
+          i
+          Hp0Eu
+          Hi).
+      }
+      claim HxiS :
+        SNo (apply_fun (p 0) i).
+      {
+        exact (real_SNo
+          (apply_fun (p 0) i)
+          HxiR).
+      }
+      claim HsmulS :
+        SNo
+          (mul_SNo
+            s
+            (apply_fun (apply_fun wS (p 0)) i)).
+      {
+        exact (SNo_mul_SNo
+          s
+          (apply_fun (apply_fun wS (p 0)) i)
+          HsS
+          HwiS).
+      }
+      claim HtmulS :
+        SNo
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i)).
+      {
+        exact (SNo_mul_SNo
+          (p 1)
+          (apply_fun (p 0) i)
+          Hp1S
+          HxiS).
+      }
+      claim HsmulEq :
+        mul_SNo
+          s
+          (apply_fun (apply_fun wS (p 0)) i)
+        =
+        minus_SNo
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i)).
+      {
+        rewrite <- (add_SNo_minus_R2
+          (mul_SNo
+            s
+            (apply_fun (apply_fun wS (p 0)) i))
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i))
+          HsmulS
+          HtmulS).
+        rewrite (HcoordEq
+          i
+          Hi) at 1.
+        rewrite (add_SNo_0L
+          (minus_SNo
+            (mul_SNo
+              (p 1)
+              (apply_fun (p 0) i)))
+          (SNo_minus_SNo
+            (mul_SNo
+              (p 1)
+              (apply_fun (p 0) i))
+            HtmulS)).
+        reflexivity.
+      }
+      claim HwiDiv :
+        apply_fun (apply_fun wS (p 0)) i
+        =
+        div_SNo
+          (minus_SNo
+            (mul_SNo
+              (p 1)
+              (apply_fun (p 0) i)))
+          s.
+      {
+        claim Hcancel :
+          mul_SNo
+            s
+            (apply_fun (apply_fun wS (p 0)) i)
+          =
+          mul_SNo
+            s
+            (div_SNo
+              (minus_SNo
+                (mul_SNo
+                  (p 1)
+                  (apply_fun (p 0) i)))
+              s).
+        {
+          rewrite HsmulEq.
+          symmetry.
+          exact (mul_div_SNo_invR
+            (minus_SNo
+              (mul_SNo
+                (p 1)
+                (apply_fun (p 0) i)))
+            s
+            (SNo_minus_SNo
+              (mul_SNo
+                (p 1)
+                (apply_fun (p 0) i))
+              HtmulS)
+            HsS
+            HsNe0).
+        }
+        exact (mul_SNo_nonzero_cancel_L
+          s
+          (apply_fun (apply_fun wS (p 0)) i)
+          (div_SNo
+            (minus_SNo
+              (mul_SNo
+                (p 1)
+                (apply_fun (p 0) i)))
+            s)
+          HsS
+          HsNe0
+          HwiS
+          (SNo_div_SNo
+            (minus_SNo
+              (mul_SNo
+                (p 1)
+                (apply_fun (p 0) i)))
+            s
+            (SNo_minus_SNo
+              (mul_SNo
+                (p 1)
+                (apply_fun (p 0) i))
+              HtmulS)
+            HsS)
+          Hcancel).
+      }
+      rewrite HwiDiv.
+      rewrite (div_SNo_minus_num
+        (mul_SNo
+          (p 1)
+          (apply_fun (p 0) i))
+        s
+        HtmulS
+        HsS
+        HsNe0).
+      claim HdivEq :
+        div_SNo
+          (mul_SNo
+            (p 1)
+            (apply_fun (p 0) i))
+          s
+        =
+        mul_SNo
+          a
+          (apply_fun (p 0) i).
+      {
+        rewrite <- (mul_div_SNo_R
+          (p 1)
+          s
+          (apply_fun (p 0) i)
+          Hp1S
+          HsS
+          HxiS).
+        reflexivity.
+      }
+      rewrite HdivEq.
+      rewrite <- (mul_SNo_minus_distrL
+        a
+        (apply_fun (p 0) i)
+        HaS
+        HxiS).
+      reflexivity.
+    }
+    claim HscaledEu :
+      Rn_scalar_mult
+        (ordsucc n)
+        (minus_SNo a)
+        (p 0)
+      :e
+      euclidean_space (ordsucc n).
+    {
+      exact (Rn_scalar_mult_in_euclidean_space
+        (ordsucc n)
+        (minus_SNo a)
+        (p 0)
+        Hp0Eu
+        (real_minus_SNo
+          a
+          HaR)).
+    }
+    claim HeuEq :
+      euclidean_space (ordsucc n) = power_real (ordsucc n).
+    {
+      reflexivity.
+    }
+    claim HwSScaled :
+      apply_fun wS (p 0)
+      =
+      Rn_scalar_mult
+        (ordsucc n)
+        (minus_SNo a)
+        (p 0).
+    {
+      apply (power_real_ext
+        (ordsucc n)
+        (apply_fun wS (p 0))
+        (Rn_scalar_mult
+          (ordsucc n)
+          (minus_SNo a)
+          (p 0))).
+      - rewrite <- HeuEq.
+        exact HwSpEu.
+      - rewrite <- HeuEq.
+        exact HscaledEu.
+      - let i.
+        assume Hi.
+        rewrite (Rn_scalar_mult_apply
+          (ordsucc n)
+          (minus_SNo a)
+          (p 0)
+          i
+          Hi).
+        exact (HcoordInward
+          i
+          Hi).
+    }
+    prove
+      p 0 :e Sn n /\
+      exists a0:set, a0 :e R /\ Rlt 0 a0 /\
+        apply_fun w (p 0) =
+        Rn_scalar_mult
+          (ordsucc n)
+          (minus_SNo a0)
+          (p 0).
+    apply andI.
+    * exact HpSn.
+    * witness a.
+      apply andI.
+      { apply andI.
+        - exact HaR.
+        - exact HaPos.
+      }
+      rewrite <- (HwSEq
+        (p 0)
+        HpSn).
+      exact HwSScaled.
+Qed.
+
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
@@ -162603,10 +163471,110 @@ claim HnoInImplInclusionNulAux :
       forall p:set, p :e dom ->
         apply_fun Fraw p :e Rn_minus_origin (ordsucc n).
     {
-      (** Remaining geometric core:
-          if the affine homotopy hits 0, then w points directly inward
-          at the boundary point p 0. **)
-      admit.
+      let p.
+      assume Hp.
+      claim HnzDef :
+        Rn_minus_origin (ordsucc n) =
+        {v :e euclidean_space (ordsucc n) | ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0)}.
+      {
+        reflexivity.
+      }
+      rewrite HnzDef.
+      apply (SepI
+        (euclidean_space (ordsucc n))
+        (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+        (apply_fun Fraw p)
+        (continuous_map_function_on
+          dom
+          Tdom
+          (euclidean_space (ordsucc n))
+          (euclidean_topology (ordsucc n))
+          Fraw
+          (Sn_affine_boundary_homotopy_map_continuous_euclidean
+            n
+            wS
+            Hn_om
+            HwSCont)
+          p
+          Hp)).
+      assume Hall0.
+      claim HFraw0 :
+        apply_fun Fraw p = Rn_zero (ordsucc n).
+      {
+        claim HFrawEu :
+          apply_fun Fraw p :e euclidean_space (ordsucc n).
+        {
+          exact (continuous_map_function_on
+            dom
+            Tdom
+            (euclidean_space (ordsucc n))
+            (euclidean_topology (ordsucc n))
+            Fraw
+            (Sn_affine_boundary_homotopy_map_continuous_euclidean
+              n
+              wS
+              Hn_om
+              HwSCont)
+            p
+            Hp).
+        }
+        apply (power_real_ext
+          (ordsucc n)
+          (apply_fun Fraw p)
+          (Rn_zero (ordsucc n))).
+        - exact HFrawEu.
+        - exact (Rn_zero_in_euclidean_space
+            (ordsucc n)
+            (nat_ordsucc
+              n
+              (omega_nat_p
+                n
+                Hn_om))).
+        - let i.
+          assume Hi.
+          exact (eq_i_tra
+            (apply_fun (apply_fun Fraw p) i)
+            0
+            (apply_fun (Rn_zero (ordsucc n)) i)
+            (Hall0
+              i
+              Hi)
+            (eq_symm
+              (apply_fun (Rn_zero (ordsucc n)) i)
+              0
+              (Rn_zero_apply
+                (ordsucc n)
+                i
+                Hi))).
+      }
+      claim Hinward :
+        points_directly_inward_Rn n w (p 0).
+      {
+        exact (Sn_affine_boundary_homotopy_map_eq_zero_inward
+          n
+          w
+          wS
+          p
+          Hn_om
+          HwSCont
+          HwSEq
+          Hp
+          HFraw0).
+      }
+      claim HinwardPack :
+        exists x:set, x :e Sn n /\ points_directly_inward_Rn n w x.
+      {
+        witness (p 0).
+        apply andI.
+        - exact (points_directly_inward_Rn_on_Sn
+            n
+            w
+            (p 0)
+            Hinward).
+        - exact Hinward.
+      }
+      exact (HnoInW
+        HinwardPack).
     }
     exact (continuous_map_range_restrict
       dom
