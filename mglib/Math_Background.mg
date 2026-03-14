@@ -276683,8 +276683,50 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
                   (** If they share a factor AND their product != eG AND != efam: merge helper works. **)
                   (** If their product = eG: further cancellation, eventually reaching length 2 **)
                   (** where adjacency forces different factors. **)
-                  (** For a COMPLETE proof, we need strong induction. For now, admit. **)
-                  admit.
+                  (** KEY ARGUMENT: conjugation by xs0(0) sends efam(al) to **)
+                  (** the sub-word product [xs0(1), ..., xs0(k-1)] **)
+                  (** If alpha0 = al: sub-word product in Gfam(al) by subgroup closure **)
+                  (** Then by uniqueness: k-1 = n0 = k+1, impossible (or k=2 gives xs0(1) = eG) **)
+                  apply (xm (alpha0 = al)).
+                  + (** alpha0 = al: contradiction via conjugation + uniqueness **)
+                    assume Halpha0_al : alpha0 = al.
+                    (** Build middle sub-word [xs0(1), ..., xs0(k-1)] = [xs0(1), ..., xs0(j)] **)
+                    claim Hj_in_k : j :e k.
+                    { rewrite Hk_eq_sj. exact (ordsuccI2 j). }
+                    set xs0_mid := graph j (fun i:set => apply_fun xs0_suf i).
+                    (** xs0_mid is the prefix of xs0_suf of length j = k-1 **)
+                    claim Hred_mid : reduced_word J Gfam efam j xs0_mid.
+                    { exact (reduced_word_prefix J Gfam efam k xs0_suf j Hred_suf Hj_in_k). }
+                    (** Word product of middle = inv(xs0(0)) mult efam(al) mult xs0(0) **)
+                    (** Because: efam(al) = xs0(0) mult wp_mid mult xs0(k) **)
+                    (** and xs0(k) mult xs0(0) = z = e **)
+                    (** so inv(xs0(0)) mult efam(al) mult xs0(0) = wp_mid mult z mult xs0(0) **)
+                    (** = wp_mid mult e mult xs0(0) = wp_mid mult xs0(0) ... no **)
+                    (** Actually: inv(xs0(0)) mult efam(al) = wp_mid mult xs0(k) **)
+                    (** so inv(xs0(0)) mult efam(al) mult xs0(0) = wp_mid mult xs0(k) mult xs0(0) **)
+                    (** = wp_mid mult z = wp_mid mult e = wp_mid **)
+                    (** So the conjugation equals wp_mid. **)
+                    set wp_mid := word_product mult e xs0_mid j.
+                    (** wp_mid in Gfam(al) since alpha0 = al and all conjugation stays in subgroup **)
+                    (** If j = 0: wp_mid = e. efam(al) = xs0(0) mult xs0(k) = xs0(0) mult inv(xs0(0)) ... **)
+                    (** Actually j >= 1 since j != 0 (Hj_ne0) **)
+                    (** If j = 1: wp_mid = xs0(1) in Gfam(a1), a1 != alpha0 = al **)
+                    (**   wp_mid in Gfam(al) (by conjugation) and Gfam(a1), al != a1 -> wp_mid = e **)
+                    (**   But xs0(1) != e (reduced word entry). Contradiction. **)
+                    (** If j >= 2: wp_mid has reduced word of length j >= 2 with product in Gfam(al) **)
+                    (**   By new lemma: wp_mid = efam(al). **)
+                    (**   But efam(al) also has reduced word xs0 of length n0. **)
+                    (**   By uniqueness: j = n0 = ordsucc k = ordsucc (ordsucc j). **)
+                    (**   So j = j + 2, impossible. **)
+                    (** Full formalization requires computing wp_mid = conjugation result. **)
+                    (** For now, admit the alpha0 = al case (proof strategy clear). **)
+                    admit.
+                  + (** alpha0 != al **)
+                    assume Halpha0_ne_al : alpha0 <> al.
+                    (** When first/last entries of reduced word for efam(al) are NOT in Gfam(al), **)
+                    (** the conjugation argument doesn't immediately give Gfam(al) membership. **)
+                    (** Needs conjugate_intersection_trivial or alternative approach. **)
+                    admit.
                 - (** z ≠ e **)
                   assume Hz_ne : z <> e.
                   apply (xm (z = apply_fun efam alpha0)).
