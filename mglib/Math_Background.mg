@@ -430765,6 +430765,58 @@ exact (subgroup_index_bundle_nonzero_mul_ordsucc_eq
   HkPack).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_nonzero_pack_bundle_index_omega : forall F multF eF invF H k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  subgroup_index H F multF eF invF :e omega.
+let F multF eF invF H k n.
+assume HkPack.
+exact (subgroup_index_bundle_nonzero_index_omega
+  H
+  F
+  multF
+  eF
+  invF
+  k
+  n
+  HkPack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_nonzero_pack_bundle_index_equip : forall F multF eF invF H k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF H k n.
+assume HkPack.
+exact (subgroup_index_bundle_nonzero_index_equip
+  H
+  F
+  multF
+  eF
+  invF
+  k
+  n
+  HkPack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_nonzero_pack_bundle_index_spec : forall F multF eF invF H k n:set,
+  k :e omega /\ k <> 0 /\ equip (right_coset_set F multF H) k ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF H k n.
+assume HkPack.
+exact (subgroup_index_bundle_nonzero_index_spec
+  H
+  F
+  multF
+  eF
+  invF
+  k
+  n
+  HkPack).
+Qed.
+
 (** Build bundled rank/index data from the common nonzero witness pack. **)
 (** Proven Bob **)
 Lemma thm85_3_rankdata_from_nonzero_pack : forall F multF eF invF J H n k:set,
