@@ -152101,6 +152101,190 @@ exact (SNoLe_antisym
   HtLeS).
 Qed.
 
+(** Infrastructure: the square-root map on the positive ray. **)
+Definition positive_ray_sqrt_map : set :=
+  graph (open_ray_upper R 0)
+    (fun t:set => sqrt_SNo_nonneg t).
+
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_apply : forall t:set,
+  t :e open_ray_upper R 0 ->
+  apply_fun positive_ray_sqrt_map t = sqrt_SNo_nonneg t.
+let t.
+assume HtPos.
+exact (apply_fun_graph
+  (open_ray_upper R 0)
+  (fun u:set => sqrt_SNo_nonneg u)
+  t
+  HtPos).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_function_on :
+  function_on
+    positive_ray_sqrt_map
+    (open_ray_upper R 0)
+    (open_ray_upper R 0).
+apply (graph_function_on
+  (open_ray_upper R 0)
+  (open_ray_upper R 0)
+  (fun t:set => sqrt_SNo_nonneg t)).
+let t.
+assume HtPos.
+claim HtR : t :e R.
+{
+  exact (SepE1
+    R
+    (fun x:set => order_rel R 0 x)
+    t
+    HtPos).
+}
+claim HsqrtR : sqrt_SNo_nonneg t :e R.
+{
+  exact (sqrt_SNo_nonneg_real
+    t
+    HtR
+    (SNoLe_of_Rle
+      0
+      t
+      (Rlt_implies_Rle
+        0
+        t
+        (order_rel_R_implies_Rlt
+          0
+          t
+          (SepE2
+            R
+            (fun x:set => order_rel R 0 x)
+            t
+            HtPos))))).
+}
+claim HsqrtPos : Rlt 0 (sqrt_SNo_nonneg t).
+{
+  exact (sqrt_SNo_nonneg_pos_of_pos
+    t
+    HtR
+    (order_rel_R_implies_Rlt
+      0
+      t
+      (SepE2
+        R
+        (fun x:set => order_rel R 0 x)
+        t
+        HtPos))).
+}
+exact (SepI
+  R
+  (fun x:set => order_rel R 0 x)
+  (sqrt_SNo_nonneg t)
+  HsqrtR
+  (Rlt_implies_order_rel_R
+    0
+    (sqrt_SNo_nonneg t)
+    HsqrtPos)).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_square_map_left_inverse : forall t:set,
+  t :e open_ray_upper R 0 ->
+  apply_fun positive_ray_sqrt_map (apply_fun positive_ray_square_map t) = t.
+let t.
+assume HtPos.
+rewrite (positive_ray_sqrt_map_apply
+  (apply_fun positive_ray_square_map t)
+  (positive_ray_square_map_function_on
+    t
+    HtPos)).
+exact (sqrt_SNo_nonneg_positive_ray_square_inv
+  t
+  HtPos).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_square_map_right_inverse : forall t:set,
+  t :e open_ray_upper R 0 ->
+  apply_fun positive_ray_square_map (apply_fun positive_ray_sqrt_map t) = t.
+let t.
+assume HtPos.
+rewrite (positive_ray_sqrt_map_apply
+  t
+  HtPos).
+exact (positive_ray_square_map_sqrt_inv
+  t
+  HtPos).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_left_inverse : forall t:set,
+  t :e open_ray_upper R 0 ->
+  apply_fun positive_ray_sqrt_map (apply_fun positive_ray_square_map t) = t.
+let t.
+assume HtPos.
+exact (positive_ray_square_map_left_inverse
+  t
+  HtPos).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_right_inverse : forall t:set,
+  t :e open_ray_upper R 0 ->
+  apply_fun positive_ray_square_map (apply_fun positive_ray_sqrt_map t) = t.
+let t.
+assume HtPos.
+exact (positive_ray_square_map_right_inverse
+  t
+  HtPos).
+Qed.
+
+(** Proven Charlie **)
+Lemma positive_ray_sqrt_map_bijection :
+  bijection
+    (open_ray_upper R 0)
+    (open_ray_upper R 0)
+    positive_ray_sqrt_map.
+prove
+  function_on
+    positive_ray_sqrt_map
+    (open_ray_upper R 0)
+    (open_ray_upper R 0)
+  /\
+  (forall y : set,
+    y :e open_ray_upper R 0 ->
+    exists x : set,
+      x :e open_ray_upper R 0 /\
+      apply_fun positive_ray_sqrt_map x = y /\
+      (forall x' : set,
+        x' :e open_ray_upper R 0 ->
+        apply_fun positive_ray_sqrt_map x' = y ->
+        x' = x)).
+apply andI.
+- exact positive_ray_sqrt_map_function_on.
+- let y.
+  assume HyPos.
+  witness (apply_fun positive_ray_square_map y).
+  apply andI.
+  + apply andI.
+    * exact (positive_ray_square_map_function_on
+        y
+        HyPos).
+    * exact (positive_ray_square_map_left_inverse
+        y
+        HyPos).
+  + let x'.
+    assume Hx'Pos Heq.
+    exact (Heq
+      (fun z _ => x' = apply_fun positive_ray_square_map z)
+      ((eq_symm
+        (apply_fun positive_ray_square_map
+          (apply_fun positive_ray_sqrt_map x'))
+        x'
+        (positive_ray_square_map_right_inverse
+          x'
+          Hx'Pos))
+        (fun z _ => x' = z)
+        (eq_refl x'))).
+Qed.
+
 (** Infrastructure: points on S^n are nonzero vectors in R^{n+1}. **)
 (** Proven Charlie **)
 Lemma Sn_subset_Rn_minus_origin : forall n x:set,
