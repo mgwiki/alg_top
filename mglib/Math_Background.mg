@@ -468888,7 +468888,37 @@ apply (nat_inv nw Hnw_nat).
         claim Hxsw0_q_eq_xsw0_ie :
           apply_fun multG (apply_fun xsw 0, q) =
           apply_fun multG (apply_fun xsw 0, invxsw0_efam).
-        { admit. }
+        { (** LHS = efam(al) by Hxsw0_q_efam **)
+          (** RHS = mult(xsw(0), mult(inv(xsw(0)), efam(al))) **)
+          (** = mult(mult(xsw(0), inv(xsw(0))), efam(al)) by assoc **)
+          (** = mult(eG, efam(al)) by right inv **)
+          (** = efam(al) by left id **)
+          claim Hassoc_rhs : apply_fun multG (apply_fun xsw 0, invxsw0_efam) =
+            apply_fun multG (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)), apply_fun efam al).
+          { exact (eq_symm
+              (apply_fun multG (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)), apply_fun efam al))
+              (apply_fun multG (apply_fun xsw 0, invxsw0_efam))
+              (HassocG (apply_fun xsw 0) (apply_fun invG (apply_fun xsw 0)) (apply_fun efam al) Hxsw0_G Hinvxsw0_G Hefam_G)). }
+          claim Hrinv : apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG.
+          { exact (andEL (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG)
+              (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG)
+              (HinvG (apply_fun xsw 0) Hxsw0_G)). }
+          claim HidL_ef : apply_fun multG (eG, apply_fun efam al) = apply_fun efam al.
+          { exact (andEL (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
+              (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al)
+              (HidG (apply_fun efam al) Hefam_G)). }
+          claim Hrhs_efam : apply_fun multG (apply_fun xsw 0, invxsw0_efam) = apply_fun efam al.
+          { exact (eq_i_tra (apply_fun multG (apply_fun xsw 0, invxsw0_efam))
+              (apply_fun multG (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)), apply_fun efam al))
+              (apply_fun efam al) Hassoc_rhs
+              (eq_i_tra (apply_fun multG (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)), apply_fun efam al))
+                (apply_fun multG (eG, apply_fun efam al)) (apply_fun efam al)
+                (Hrinv (fun z b:set => apply_fun multG (z, apply_fun efam al) = apply_fun multG (eG, apply_fun efam al))
+                  (eq_refl (apply_fun multG (eG, apply_fun efam al))))
+                HidL_ef)). }
+          exact (eq_i_tra (apply_fun multG (apply_fun xsw 0, q)) (apply_fun efam al)
+            (apply_fun multG (apply_fun xsw 0, invxsw0_efam))
+            Hxsw0_q_efam (eq_symm (apply_fun multG (apply_fun xsw 0, invxsw0_efam)) (apply_fun efam al) Hrhs_efam)). }
         claim Hq_eq_ie : q = invxsw0_efam.
         { exact (group_left_cancel G multG eG invG (apply_fun xsw 0) q invxsw0_efam
             Hgrp Hxsw0_G Hq_G Hinvxsw0_efam_G Hxsw0_q_eq_xsw0_ie). }
