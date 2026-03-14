@@ -436766,6 +436766,114 @@ exact (thm85_3_free_gen_formula_at_subgroup_index_from_npack_index_spec
   HidxSpec).
 Admitted. (** blocked: depends on admitted thm85_3_free_gen_formula_at_subgroup_index_from_npack_index_spec **)
 
+(** Split-hypothesis wrapper for the main S85.3 nonzero-index free-generators theorem. **)
+Theorem thm85_3_free_gen_index_formula_from_components_nonzero_pack :
+  forall F multF eF invF J gens:set,
+  free_group_with_generators F multF eF invF J gens ->
+  forall n:set, n :e omega ->
+  forall H:set,
+    subgroup_of H F multF eF invF ->
+    equip J (ordsucc n) ->
+    forall k:set, k :e omega /\ k <> 0 /\
+      equip (right_coset_set F multF H) k ->
+      exists JH gensH:set,
+        free_group_with_generators H multF eF invF JH gensH /\
+        equip JH (ordsucc (mul_SNo k n)).
+let F multF eF invF J gens.
+assume HfreeF.
+let n.
+assume HnOmega.
+let H.
+assume Hsub.
+assume HJeq.
+let k.
+assume HkPack.
+exact (thm85_3_free_gen_index_formula
+  F
+  multF
+  eF
+  invF
+  J
+  gens
+  HfreeF
+  n
+  (andI
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnOmega
+    HJeq)
+  H
+  Hsub
+  k
+  HkPack).
+Admitted. (** blocked: depends on admitted thm85_3_free_gen_index_formula **)
+
+(** Split-hypothesis wrapper for explicit-coset-witness free-generators conclusion. **)
+Theorem thm85_3_free_gen_formula_from_components_witness :
+  forall F multF eF invF J gens:set,
+  free_group_with_generators F multF eF invF J gens ->
+  forall n:set, n :e omega ->
+  forall H:set,
+    subgroup_of H F multF eF invF ->
+    equip J (ordsucc n) ->
+    forall k:set, k :e omega /\ equip (right_coset_set F multF H) k ->
+      exists JH gensH:set,
+        free_group_with_generators H multF eF invF JH gensH /\
+        equip JH (ordsucc (mul_SNo k n)).
+let F multF eF invF J gens.
+assume HfreeF.
+let n.
+assume HnOmega.
+let H.
+assume Hsub.
+assume HJeq.
+let k.
+assume Hk.
+claim HfreeHex :
+  exists JH gensH:set,
+    free_group_with_generators H multF eF invF JH gensH.
+{
+  exact (subgroup_of_free_has_free_generators
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    H
+    HfreeF
+    Hsub).
+}
+apply HfreeHex.
+let JH.
+assume HJHex : exists gensH:set, free_group_with_generators H multF eF invF JH gensH.
+apply HJHex.
+let gensH.
+assume HfreeH.
+witness JH.
+witness gensH.
+apply andI.
+- exact HfreeH.
+- exact (thm85_3_free_gen_formula_from_witness
+    F
+    multF
+    eF
+    invF
+    J
+    gens
+    HfreeF
+    n
+    HnOmega
+    H
+    Hsub
+    JH
+    gensH
+    k
+    HfreeH
+    HJeq
+    Hk).
+Admitted. (** blocked: depends on admitted thm85_3_free_gen_formula_from_witness **)
+
 (** from S85 Exercise 1 (line 5799 in algtop.tex) **)
 (** LATEX VERSION: Show that the Euler number of a finite linear graph X **)
 (** is a topological invariant of X. **)
