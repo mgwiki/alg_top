@@ -282096,20 +282096,44 @@ Admitted.
 (** Expected use: discharge the remaining Z/2Z+b0=bmw case in efam_involutive_contra_direct. **)
 (** Bounty 30 **)
 Lemma reduced_word_double_merge_junction :
-  forall G mult e inv J Gfam efam n xs m z:set,
+  forall G mult e inv J Gfam efam n xs m beta z:set,
   group_structure G mult e inv ->
   (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) ->
+  (forall alpha gamma:set, alpha :e J -> gamma :e J -> alpha <> gamma ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam gamma -> x = e) ->
+  free_product_of_subgroups G mult e inv J Gfam efam ->
   reduced_word J Gfam efam n xs ->
   n = ordsucc m ->
   nat_p m -> m <> 0 ->
-  (exists beta:set, beta :e J /\ apply_fun xs 0 :e apply_fun Gfam beta /\
-    apply_fun xs m :e apply_fun Gfam beta) ->
+  beta :e J ->
+  apply_fun xs 0 :e apply_fun Gfam beta ->
+  apply_fun xs m :e apply_fun Gfam beta ->
   z = apply_fun mult (apply_fun xs m, apply_fun xs 0) ->
-  z <> e -> z <> apply_fun efam (Eps_i (fun beta:set => beta :e J /\ apply_fun xs 0 :e apply_fun Gfam beta)) ->
+  z <> e -> z <> apply_fun efam beta ->
   exists ys:set,
     reduced_word J Gfam efam (add_nat n m) ys /\
     word_product mult e ys (add_nat n m) =
       apply_fun mult (word_product mult e xs n, word_product mult e xs n).
+let G mult e inv J Gfam efam n xs m beta z.
+assume Hgrp Hsubfam Hdisjoint Hfp Hredw Hn_sm Hm_nat Hm_ne0 HbJ Hxs0_Gb Hxsm_Gb Hz_def Hz_ne Hz_ne_efb.
+(** Step 1: Build prefix [xsw(0),...,xsw(m-1)] of length m **)
+claim Hm_nw : m :e n. { rewrite Hn_sm. exact (ordsuccI2 m). }
+set xsw_pre := graph m (fun i:set => apply_fun xs i).
+claim Hred_pre : reduced_word J Gfam efam m xsw_pre.
+{ exact (reduced_word_prefix J Gfam efam n xs m Hredw Hm_nw). }
+(** Step 2: Append z to get word of length ordsucc m = n **)
+(** Adjacency: last entry of prefix is xsw(m-1), NOT in Gfam(beta) **)
+(** (by adjacency with xsw(m) in Gfam(beta)). z in Gfam(beta). **)
+claim Hlast_pre : forall k a2 b2:set, m = ordsucc k -> a2 :e J -> b2 :e J ->
+  apply_fun xsw_pre k :e apply_fun Gfam a2 -> z :e apply_fun Gfam b2 -> a2 <> b2.
+{ admit. }
+claim Hz_Gb : z :e apply_fun Gfam beta.
+{ admit. }
+claim Hred_prez : reduced_word J Gfam efam (ordsucc m)
+  (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xsw_pre i else z)).
+{ exact (reduced_word_append_one_pre J Gfam efam m xsw_pre z beta Hred_pre Hm_ne0 HbJ Hz_Gb Hz_ne_efb Hlast_pre). }
+(** Step 3: append suffix [xsw(1),...,xsw(m)] using induction **)
+(** This part needs nat_ind on the suffix length **)
 admit.
 Admitted.
 
