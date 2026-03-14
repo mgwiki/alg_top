@@ -276620,8 +276620,34 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
                   * (** z = efam(alpha0) **)
                     assume Hz_efam : z = apply_fun efam alpha0.
                     admit.
-                  * (** z ne e and z ne efam(alpha0): merged doubled word **)
+                  * (** z ne e and z ne efam(alpha0): use reduced_word_double_merge_junction **)
                     assume Hz_ne_efam : z <> apply_fun efam alpha0.
+                    (** Build merged word with product efam(al)^2, derive contradiction **)
+                    claim Hk_ne0_2 : k <> 0. { exact Hk_ne0. }
+                    claim Hxs0_0_Ga0 : apply_fun xs0 0 :e apply_fun Gfam alpha0. { exact Hxs0_0_in. }
+                    claim Hxs0_k_Ga0 : apply_fun xs0 k :e apply_fun Gfam alpha0.
+                    { rewrite <- Halphak_eq_alpha0. exact Hxs0_k_in. }
+                    apply (reduced_word_double_merge_junction G mult e inv J Gfam efam n0 xs0 k alpha0
+                      (apply_fun mult (apply_fun xs0 k, apply_fun xs0 0))
+                      Hgrp Hsubfam Hdisjoint Hfp Hred0 Hn0_eq Hk_nat Hk_ne0_2
+                      Halpha0J Hxs0_0_Ga0 Hxs0_k_Ga0
+                      (eq_refl (apply_fun mult (apply_fun xs0 k, apply_fun xs0 0)))
+                      Hz_ne Hz_ne_efam).
+                    let ys_merged. assume Hmerge_p.
+                    (** Extract from Hmerge_p **)
+                    claim Hred_merged : reduced_word J Gfam efam (add_nat n0 k) ys_merged.
+                    { admit. }
+                    claim Hwp_merged : word_product mult e ys_merged (add_nat n0 k) =
+                      apply_fun mult (word_product mult e xs0 n0, word_product mult e xs0 n0).
+                    { admit. }
+                    (** word_product = mult(efam(al), efam(al)) = efam(al)^2 **)
+                    claim Hwp_sq : word_product mult e ys_merged (add_nat n0 k) = apply_fun mult (apply_fun efam al, apply_fun efam al).
+                    { rewrite Hwp_merged. rewrite Hwp0. reflexivity. }
+                    (** Case split on efam(al)^2 **)
+                    set efam_sq := apply_fun mult (apply_fun efam al, apply_fun efam al).
+                    claim Hefam_sq_Gal : efam_sq :e apply_fun Gfam al.
+                    { admit. }
+                    (** efam(al)^2 in Gfam(al). Case: = e, = efam(al), or neither **)
                     admit.
           - (** alphak != alpha0: doubled word approach **)
             assume Halphak_ne_alpha0 : alphak <> alpha0.
