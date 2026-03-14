@@ -282696,10 +282696,7 @@ apply (nat_inv nw Hnw_nat).
         (** Case split: b0 = bmw or b0 != bmw **)
         apply (xm (b0 = bmw)).
         - assume Hb0_eq_bmw : b0 = bmw.
-          (** First and last in same factor F (= b0 = bmw, F != al). **)
-          (** Use doubled word analysis. **)
-          (** First try: xsw(mw) mult xsw(0) might be != eG and != efam(b0). **)
-          (** Then merge gives reduced word of length 2nw-1 >= 3 with product eG. **)
+          (** Z/2Z + same-factor boundary: remaining hard case **)
           admit.
         - assume Hb0_ne_bmw : b0 <> bmw.
           (** First and last in DIFFERENT factors. Use reduced_word_double_cyclic_word_product. **)
