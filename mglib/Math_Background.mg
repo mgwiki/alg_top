@@ -277912,7 +277912,17 @@ apply (xm (y = e)).
                     (** By uniqueness with length 1: contradiction 3 != 1. **)
                     (** If z_conj not in any Gfam: conjugation gives length >= 2. **)
                     (** But y3 has length 1. Contradiction. **)
-                    (** This needs explicit construction. For now admit the final step. **)
+                    (** Use free_product_factor_element_length1 to get y3's word length = 1 **)
+                    (** Then any reduced word for y3 = cs3(0) mult z_conj mult inv(cs3(0)) has length 1. **)
+                    (** z_conj has a reduced word. If z_conj in some Gfam(gamma), gamma != delta2: **)
+                    (**   [cs3(0), z_conj, inv(cs3(0))] is reduced of length 3 for y3. **)
+                    (**   By factor_element_length1: length 1. But 3 != 1. Contradiction. **)
+                    (** If z_conj = efam(gamma) for some gamma: **)
+                    (**   efam_not_in_Gfam_nontrivial_pre gives False. **)
+                    (** If z_conj not in any Gfam: **)
+                    (**   Conjugation word has length >= 2. But y3 has length 1. Contradiction. **)
+                    (** All sub-cases give contradiction. **)
+                    (** For complete formalization, need to build the reduced word explicitly. **)
                     admit. }
     }
     (** Apply the main inductive claim to our specific c, x **)
