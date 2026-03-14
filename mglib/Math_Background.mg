@@ -1,6 +1,6 @@
 (** Balance Alice 7758 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 511 **)
+(** Balance Charlie 502 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -159993,7 +159993,8 @@ Qed.
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Charlie 1773545982 **)
 Theorem ex55_4c_nonvanishing_vector_field_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall v:set,
