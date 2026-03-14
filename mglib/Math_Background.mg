@@ -146118,6 +146118,250 @@ apply (SepI
       SNo_1).
 Qed.
 
+(** Early total-function version of the 2-simplex for Brouwer packaging. **)
+Definition simplex3_total_fs : set :=
+  {v :e total_function_space 3 R |
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun v i) 3 = 1}.
+
+(** Infrastructure: the triangle-to-simplex map lands in total_function_space. **)
+(** Proven Charlie **)
+Lemma simplex3_triangle_region_to_fs_total :
+  forall p:set, p :e simplex3_triangle_region ->
+    apply_fun simplex3_triangle_region_to_fs p :e total_function_space 3 R.
+let p.
+assume HpT.
+set v := apply_fun simplex3_triangle_region_to_fs p.
+claim HvEq :
+  v
+  =
+  graph 3 (fun i:set =>
+    if i = 0 then p 0 else
+    if i = 1 then p 1 else
+    add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1)))).
+{
+  exact (apply_fun_graph
+    simplex3_triangle_region
+    (fun p0:set =>
+      graph 3 (fun i:set =>
+        if i = 0 then p0 0 else
+        if i = 1 then p0 1 else
+        add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+    p
+    HpT).
+}
+claim HpR2 : p :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun q:set =>
+      ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+      ~(Rlt 1 (add_SNo (q 0) (q 1))))
+    p
+    HpT).
+}
+claim Hp0R : p 0 :e R.
+{ exact (ap0_Sigma R (fun _ : set => R) p HpR2). }
+claim Hp1R : p 1 :e R.
+{ exact (ap1_Sigma R (fun _ : set => R) p HpR2). }
+claim HsumR : add_SNo (p 0) (p 1) :e R.
+{ exact (real_add_SNo (p 0) Hp0R (p 1) Hp1R). }
+claim Hx2R : add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))) :e R.
+{
+  exact (real_add_SNo
+    1
+    real_1
+    (minus_SNo (add_SNo (p 0) (p 1)))
+    (real_minus_SNo (add_SNo (p 0) (p 1)) HsumR)).
+}
+rewrite HvEq.
+apply (graph_in_total_function_space
+  3
+  R
+  (fun i:set =>
+    if i = 0 then p 0 else
+    if i = 1 then p 1 else
+    add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))).
+let i.
+assume Hi3.
+claim Hcases :
+  (if i = 0 then p 0 else
+   if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+  = p 0 \/
+  (if i = 0 then p 0 else
+   if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+  =
+  (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1)))).
+{ exact (If_i_or (i = 0) (p 0)
+    (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))). }
+apply Hcases.
+- assume Hcase.
+  exact (Hcase (fun a b:set => b :e R) Hp0R).
+- assume Hcase.
+  claim Hcases2 :
+    (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+    = p 1 \/
+    (if i = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+    = add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))).
+  { exact (If_i_or (i = 1) (p 1)
+      (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))). }
+  apply Hcases2.
+  + assume Hcase2.
+    exact (Hcase (fun a b:set => b :e R)
+      (Hcase2 (fun a b:set => b :e R) Hp1R)).
+  + assume Hcase2.
+    exact (Hcase (fun a b:set => b :e R)
+      (Hcase2 (fun a b:set => b :e R) Hx2R)).
+Qed.
+
+(** Infrastructure: the early triangle-to-simplex map lands in the total simplex. **)
+(** Proven Charlie **)
+Lemma simplex3_triangle_region_to_fs_in_simplex3_total_fs :
+  forall p:set, p :e simplex3_triangle_region ->
+    apply_fun simplex3_triangle_region_to_fs p :e simplex3_total_fs.
+let p.
+assume HpT.
+set v := apply_fun simplex3_triangle_region_to_fs p.
+apply (SepI
+  (total_function_space 3 R)
+  (fun w:set =>
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+  v).
+- exact (simplex3_triangle_region_to_fs_total
+    p
+    HpT).
+- exact (SepE2
+    (function_space 3 R)
+    (fun w:set =>
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+    v
+    (simplex3_triangle_region_to_fs_in_simplex3_fs
+      p
+      HpT)).
+Qed.
+
+(** Infrastructure: the early total simplex sits inside simplex3_fs. **)
+(** Proven Charlie **)
+Lemma simplex3_total_fs_in_simplex3_fs :
+  forall v:set, v :e simplex3_total_fs -> v :e simplex3_fs.
+let v.
+assume HvS.
+apply (SepI
+  (function_space 3 R)
+  (fun w:set =>
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+  v).
+- exact (total_function_space_sub_function_space
+    3
+    R
+    v
+    (SepE1
+      (total_function_space 3 R)
+      (fun w:set =>
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+        finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+      v
+      HvS)).
+- exact (SepE2
+    (total_function_space 3 R)
+    (fun w:set =>
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+    v
+    HvS).
+Qed.
+
+(** Infrastructure: the early total simplex sits inside euclidean_space 3. **)
+(** Proven Charlie **)
+Lemma simplex3_total_fs_sub_euclidean_space_3 :
+  simplex3_total_fs c= euclidean_space 3.
+let v.
+assume HvS.
+claim HvTFG : total_function_on v 3 R /\ functional_graph v.
+{
+  exact (SepE2
+    (Power (setprod 3 R))
+    (fun w:set => total_function_on w 3 R /\ functional_graph w)
+    v
+    (SepE1
+      (total_function_space 3 R)
+      (fun w:set =>
+        (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+        finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+      v
+      HvS)).
+}
+claim HvTF : total_function_on v 3 R.
+{
+  exact (andEL
+    (total_function_on v 3 R)
+    (functional_graph v)
+    HvTFG).
+}
+claim HvFG : functional_graph v.
+{
+  exact (andER
+    (total_function_on v 3 R)
+    (functional_graph v)
+    HvTFG).
+}
+claim Hvfun : function_on v 3 R.
+{
+  exact (total_function_on_function_on
+    v
+    3
+    R
+    HvTF).
+}
+claim HvSub : v c= setprod 3 R.
+{
+  exact (PowerE
+    (setprod 3 R)
+    v
+    (SepE1
+      (Power (setprod 3 R))
+      (fun w:set => total_function_on w 3 R /\ functional_graph w)
+      v
+      (SepE1
+        (total_function_space 3 R)
+        (fun w:set =>
+          (forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0)) /\
+          finite_real_sum (fun i:set => apply_fun w i) 3 = 1)
+        v
+        HvS))).
+}
+claim HvGraph : v = graph 3 (fun i:set => apply_fun v i).
+{
+  exact (total_functional_graph_eq_graph_of_apply_fun
+    v
+    3
+    R
+    HvTF
+    HvFG
+    HvSub).
+}
+rewrite HvGraph.
+claim Hpow : graph 3 (fun i:set => apply_fun v i) :e power_real 3.
+{
+  exact (graph_to_R_in_power_real
+    3
+    (fun i:set => apply_fun v i)
+    (fun i Hi => Hvfun i Hi)).
+}
+claim HeuEq : power_real 3 = euclidean_space 3.
+{
+  reflexivity.
+}
+rewrite <- HeuEq.
+exact Hpow.
+Qed.
+
+Definition simplex3_total_fs_topology : set :=
+  subspace_topology (euclidean_space 3) (euclidean_topology 3) simplex3_total_fs.
+
 (** Fixed point for the normalized positive-matrix map on the 2-simplex **)
 Lemma simplex3_fixed_point_normalized_map : forall A:set,
   function_on A (setprod 3 3) R ->
