@@ -468837,10 +468837,50 @@ apply (nat_inv nw Hnw_nat).
         (graph (ordsucc mw) (fun i:set => if i :e mw then apply_fun xsw_suf i else z0))
         (ordsucc mw) = apply_fun multG (word_product multG eG xsw_suf mw, z0).
       { exact (word_product_append_one multG eG xsw_suf z0 mw Hmw_omega). }
-      (** word_product(xsw_suf, mw) = word_product([xsw(1),...,xsw(mw)], mw) **)
-      (** = inv(xsw(0)) mult efam(al) (from the original word product) **)
-      (** So wp(xsw_suf, mw) mult z0 = inv(xsw(0)) mult efam(al) mult efam(al) mult xsw(0) = inv(xsw(0)) mult xsw(0) = eG **)
-      (** But proving this requires word_product_left_split and group algebra. For now admit. **)
+      (** By word_product_left_split: wp(xsw, nw) = mult(xsw(0), wp(xsw_suf, mw)) **)
+      claim HxsG_snw : forall i:set, i :e ordsucc mw -> apply_fun xsw i :e G.
+      { let i. assume Hi. exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw i
+          (eq_subst_mem_set i (ordsucc mw) nw Hi (eq_symm nw (ordsucc mw) Hnw_sm))). }
+      claim Hwpl : word_product multG eG xsw (ordsucc mw) =
+        apply_fun multG (apply_fun xsw 0, word_product multG eG xsw_suf mw).
+      { exact (word_product_left_split G multG eG invG mw xsw Hgrp Hmw_nat HxsG_snw). }
+      claim Hwpl_nw : word_product multG eG xsw nw =
+        apply_fun multG (apply_fun xsw 0, word_product multG eG xsw_suf mw).
+      { rewrite Hnw_sm. exact Hwpl. }
+      set q := word_product multG eG xsw_suf mw.
+      claim Hxsw0_q_efam : apply_fun multG (apply_fun xsw 0, q) = apply_fun efam al.
+      { exact (eq_i_tra (apply_fun multG (apply_fun xsw 0, q))
+          (word_product multG eG xsw nw) (apply_fun efam al)
+          (eq_symm (word_product multG eG xsw nw) (apply_fun multG (apply_fun xsw 0, q)) Hwpl_nw) Hwp_efam). }
+      (** q = inv(xsw(0)) mult efam(al) **)
+      claim Hinv_xsw0_G : apply_fun invG (apply_fun xsw 0) :e G. { exact (HinvF (apply_fun xsw 0) Hxsw0_G). }
+      claim Hxsw_suf_in_G : forall i:set, i :e mw -> apply_fun xsw_suf i :e G.
+      { let i. assume Hi.
+        claim Hgi : apply_fun xsw_suf i = apply_fun xsw (ordsucc i).
+        { exact (apply_fun_graph mw (fun j:set => apply_fun xsw (ordsucc j)) i Hi). }
+        rewrite Hgi.
+        exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw (ordsucc i)
+          (eq_subst_mem_set (ordsucc i) (ordsucc mw) nw
+            (nat_ordsucc_in_ordsucc mw Hmw_nat i Hi)
+            (eq_symm nw (ordsucc mw) Hnw_sm))). }
+      claim Hq_G : q :e G.
+      { exact (word_product_in_G_group G multG eG invG mw xsw_suf Hgrp Hmw_nat Hxsw_suf_in_G). }
+      (** Product of new word: mult(q, z0) **)
+      claim Hz0_G : z0 :e G. { exact (HmultG (apply_fun efam al) (apply_fun xsw 0) Hefam_G Hxsw0_G). }
+      claim Hq_z0 : apply_fun multG (q, z0) = eG.
+      { (** mult(q, z0) = mult(q, mult(efam(al), xsw(0))) **)
+        (** = mult(mult(q, efam(al)), xsw(0)) by assoc **)
+        claim Hassoc1 : apply_fun multG (q, z0) =
+          apply_fun multG (apply_fun multG (q, apply_fun efam al), apply_fun xsw 0).
+        { exact (eq_symm
+            (apply_fun multG (apply_fun multG (q, apply_fun efam al), apply_fun xsw 0))
+            (apply_fun multG (q, apply_fun multG (apply_fun efam al, apply_fun xsw 0)))
+            (HassocG q (apply_fun efam al) (apply_fun xsw 0) Hq_G Hefam_G Hxsw0_G)). }
+        (** mult(q, efam(al)) = inv(xsw(0)) by: **)
+        (** xsw(0) mult q = efam(al), so q = inv(xsw(0)) mult efam(al) **)
+        (** q mult efam(al) = inv(xsw(0)) mult efam(al) mult efam(al) = inv(xsw(0)) mult eG = inv(xsw(0)) **)
+        (** group algebra to show q mult z0 = eG **)
+        admit. }
       admit.
     * assume Hb0_ne_al : b0 <> al.
       (** Both first and last NOT in Gfam(al) **)
