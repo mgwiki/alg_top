@@ -148155,7 +148155,212 @@ Lemma simplex3_fixed_point_normalized_map : forall A:set,
         div_SNo
           (apply_fun (matrix_vector_mult 3 A v) i)
           (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult 3 A v) k) 3)).
-admit.
+let A.
+assume HAfun HApos.
+set N := graph simplex3_triangle_region (fun p:set =>
+  let v := apply_fun simplex3_triangle_region_to_fs p in
+  let Av := matrix_vector_mult 3 A v in
+  let lam := finite_real_sum (fun k:set => apply_fun Av k) 3 in
+  graph 3 (fun i:set =>
+    if i = 0 then div_SNo (apply_fun Av 0) lam else
+    if i = 1 then div_SNo (apply_fun Av 1) lam else
+    div_SNo (apply_fun Av 2) lam)).
+set F := graph simplex3_triangle_region (fun p:set =>
+  let v := apply_fun simplex3_triangle_region_to_fs p in
+  let Av := matrix_vector_mult 3 A v in
+  let lam := finite_real_sum (fun k:set => apply_fun Av k) 3 in
+  (div_SNo (apply_fun Av 0) lam,
+   div_SNo (apply_fun Av 1) lam)).
+claim HNInto :
+  forall p:set, p :e simplex3_triangle_region -> apply_fun N p :e simplex3_fs.
+{
+  admit.
+}
+claim HprojEq :
+  forall p:set, p :e simplex3_triangle_region ->
+    apply_fun F p = apply_fun simplex3_fs_to_triangle_region (apply_fun N p).
+{
+  let p.
+  assume HpT.
+  set v := apply_fun simplex3_triangle_region_to_fs p.
+  set Av := matrix_vector_mult 3 A v.
+  set lam := finite_real_sum (fun k:set => apply_fun Av k) 3.
+  claim HNVal :
+    apply_fun N p =
+    graph 3 (fun i:set =>
+      if i = 0 then div_SNo (apply_fun Av 0) lam else
+      if i = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam).
+  {
+    exact (apply_fun_graph
+      simplex3_triangle_region
+      (fun p0:set =>
+        let v0 := apply_fun simplex3_triangle_region_to_fs p0 in
+        let Av0 := matrix_vector_mult 3 A v0 in
+        let lam0 := finite_real_sum (fun k:set => apply_fun Av0 k) 3 in
+        graph 3 (fun i:set =>
+          if i = 0 then div_SNo (apply_fun Av0 0) lam0 else
+          if i = 1 then div_SNo (apply_fun Av0 1) lam0 else
+          div_SNo (apply_fun Av0 2) lam0))
+      p
+      HpT).
+  }
+  claim HFVal :
+    apply_fun F p =
+    (div_SNo (apply_fun Av 0) lam,
+     div_SNo (apply_fun Av 1) lam).
+  {
+    exact (apply_fun_graph
+      simplex3_triangle_region
+      (fun p0:set =>
+        let v0 := apply_fun simplex3_triangle_region_to_fs p0 in
+        let Av0 := matrix_vector_mult 3 A v0 in
+        let lam0 := finite_real_sum (fun k:set => apply_fun Av0 k) 3 in
+        (div_SNo (apply_fun Av0 0) lam0,
+         div_SNo (apply_fun Av0 1) lam0))
+      p
+      HpT).
+  }
+  claim HN0 :
+    apply_fun (apply_fun N p) 0 = div_SNo (apply_fun Av 0) lam.
+  {
+    rewrite HNVal.
+    rewrite (apply_fun_graph
+      3
+      (fun i:set =>
+        if i = 0 then div_SNo (apply_fun Av 0) lam else
+        if i = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      0
+      (ordsuccI1 2 0 In_0_2)).
+    apply (If_i_1
+      (0 = 0)
+      (div_SNo (apply_fun Av 0) lam)
+      (if 0 = 1 then div_SNo (apply_fun Av 1) lam else div_SNo (apply_fun Av 2) lam)).
+    reflexivity.
+  }
+  claim HN1 :
+    apply_fun (apply_fun N p) 1 = div_SNo (apply_fun Av 1) lam.
+  {
+    rewrite HNVal.
+    rewrite (apply_fun_graph
+      3
+      (fun i:set =>
+        if i = 0 then div_SNo (apply_fun Av 0) lam else
+        if i = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      1
+      (ordsuccI1 2 1 In_1_2)).
+    rewrite (If_i_0
+      (1 = 0)
+      (div_SNo (apply_fun Av 0) lam)
+      (if 1 = 1 then div_SNo (apply_fun Av 1) lam else div_SNo (apply_fun Av 2) lam)
+      neq_1_0).
+    apply (If_i_1
+      (1 = 1)
+      (div_SNo (apply_fun Av 1) lam)
+      (div_SNo (apply_fun Av 2) lam)).
+    reflexivity.
+  }
+  rewrite HFVal.
+  rewrite (apply_fun_graph
+    simplex3_fs
+    (fun v0:set => (apply_fun v0 0, apply_fun v0 1))
+    (apply_fun N p)
+    (HNInto p HpT)).
+  exact (tuple_2_eq
+    (div_SNo (apply_fun Av 0) lam)
+    (div_SNo (apply_fun Av 1) lam)
+    (apply_fun (apply_fun N p) 0)
+    (apply_fun (apply_fun N p) 1)
+    (eq_symm
+      (apply_fun (apply_fun N p) 0)
+      (div_SNo (apply_fun Av 0) lam)
+      HN0)
+    (eq_symm
+      (apply_fun (apply_fun N p) 1)
+      (div_SNo (apply_fun Av 1) lam)
+      HN1)).
+}
+claim HFInto :
+  forall p:set, p :e simplex3_triangle_region -> apply_fun F p :e simplex3_triangle_region.
+{
+  let p.
+  assume HpT.
+  rewrite (HprojEq
+    p
+    HpT).
+  exact (simplex3_fs_to_triangle_region_in_region
+    (apply_fun N p)
+    (HNInto p HpT)).
+}
+claim HFCont :
+  continuous_map simplex3_triangle_region
+    (subspace_topology B2 B2_topology simplex3_triangle_region)
+    simplex3_triangle_region
+    (subspace_topology B2 B2_topology simplex3_triangle_region)
+    F.
+{
+  admit.
+}
+claim HfixP :
+  exists p:set, p :e simplex3_triangle_region /\ apply_fun F p = p.
+{
+  exact (s55_retract_B2_fixed_point_early
+    simplex3_triangle_region
+    simplex3_triangle_region_retraction
+    F
+    HFCont).
+}
+apply HfixP.
+let p.
+assume HpPack.
+claim HpT : p :e simplex3_triangle_region.
+{
+  exact (andEL
+    (p :e simplex3_triangle_region)
+    (apply_fun F p = p)
+    HpPack).
+}
+claim HfixF : apply_fun F p = p.
+{
+  exact (andER
+    (p :e simplex3_triangle_region)
+    (apply_fun F p = p)
+    HpPack).
+}
+set v := apply_fun simplex3_triangle_region_to_fs p.
+set w := apply_fun N p.
+claim HvS : v :e simplex3_fs.
+{
+  exact (simplex3_triangle_region_to_fs_in_simplex3_fs
+    p
+    HpT).
+}
+claim HwS : w :e simplex3_fs.
+{
+  exact (HNInto
+    p
+    HpT).
+}
+claim HprojW : apply_fun simplex3_fs_to_triangle_region w = p.
+{
+  rewrite <- (HprojEq
+    p
+    HpT).
+  exact HfixF.
+}
+claim HvEqW : v = w.
+{
+  admit.
+}
+witness v.
+apply andI.
+- exact HvS.
+- let i.
+  assume Hi3.
+  rewrite HvEqW.
+  admit.
 Admitted. (** TODO: fixed point via Brouwer on triangle/homeomorphism to B2. **)
 
 (** from S55 starred Cor 55.7 (line 994 in algtop.tex) **)
