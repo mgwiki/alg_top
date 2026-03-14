@@ -433415,6 +433415,77 @@ apply iffI.
   exact HkEx.
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_npack_exists_witness_to_direct : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k) ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnPack.
+assume HkEx.
+exact (thm85_3_rankdata_nonzero_direct_from_npack_exists_witness
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  HnPack
+  HkEx).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_to_npack_exists_witness : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k).
+let F multF eF invF J H n.
+assume HnPack.
+assume Hdirect.
+exact (thm85_3_rankdata_nonzero_direct_exists_witness
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  Hdirect).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_components_exists_witness_to_npack_exists_witness : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HkEx.
+exact HkEx.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_npack_exists_witness_to_components_exists_witness : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+assume HkEx.
+exact HkEx.
+Qed.
+
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
 Theorem thm85_3_core_rank_from_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
