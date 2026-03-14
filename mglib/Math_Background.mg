@@ -1,6 +1,6 @@
 (** Balance Alice 7758 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 599 **)
+(** Balance Charlie 660 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -164092,7 +164092,8 @@ Qed.
 (** from S55 Exercise 4(d) (line 1049 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every continuous map f: B^{n+1} -> B^{n+1} has a fixed point. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 61 **)
+(** Collected Charlie 61 **)
+(** Proven Charlie **)
 Theorem ex55_4d_brouwer_fixed_point_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall f:set,
@@ -165454,7 +165455,7 @@ apply (xm (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
   exact (FalseE
     Hcontra
     (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
-Admitted.
+Qed.
 
 (** from S55 Exercise 4(e) (line 1050 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every (n+1) by (n+1) matrix with positive entries has a positive eigenvalue. **)
