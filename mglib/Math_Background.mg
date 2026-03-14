@@ -317269,11 +317269,115 @@ claim Hadd_eq : add_nat (ordsucc m) m = add_nat n m. { rewrite Hn_sm. reflexivit
 witness ys_concat.
 apply andI.
 - rewrite <- Hadd_eq. exact Hred_c.
-- claim Hwp_final : word_product mult e ys_concat (add_nat n m) =
+- (** Show word product = mult(wp(xs,n), wp(xs,n)) **)
+  (** Step 1: wp(ys_concat, add_nat n m) = mult(wp(word1, n), wp(xs_shifted, m)) **)
+  claim Hwp_nform : word_product mult e ys_concat (add_nat n m) =
+    apply_fun mult (word_product mult e word1 (ordsucc m), word_product mult e xs_shifted m).
+  { rewrite <- Hadd_eq. exact Hwp_c. }
+  (** Step 2: wp(word1, n) = mult(wp(xsw_pre, m), z) **)
+  claim Hwp_word1 : word_product mult e word1 (ordsucc m) =
+    apply_fun mult (word_product mult e xsw_pre m, z).
+  { exact (word_product_append_one mult e xsw_pre z m Hm_omega). }
+  (** Step 3: wp(xsw_pre, m) = wp(xs, m) **)
+  claim Hwp_pre_eq : word_product mult e xsw_pre m = word_product mult e xs m.
+  { apply (nat_primrec_ext e
+      (fun i r => apply_fun mult (r, apply_fun xsw_pre i))
+      (fun i r => apply_fun mult (r, apply_fun xs i))
+      m Hm_omega).
+    let i r. assume Hi.
+    rewrite (apply_fun_graph m (fun j:set => apply_fun xs j) i Hi). reflexivity. }
+  (** Step 4: wp(xs, n) = mult(xs(0), wp(xs_shifted, m)) by word_product_left_split **)
+  claim HxsG : forall i:set, i :e n -> apply_fun xs i :e G.
+  { let i. assume Hi. exact (reduced_word_in_G G mult e inv J Gfam efam n xs Hsubfam Hredw i Hi). }
+  claim HxsG_sm : forall i:set, i :e ordsucc m -> apply_fun xs i :e G.
+  { let i. assume Hi. exact (HxsG i (eq_subst_mem_set i (ordsucc m) n Hi (eq_symm n (ordsucc m) Hn_sm))). }
+  claim Hwpl : word_product mult e xs (ordsucc m) =
+    apply_fun mult (apply_fun xs 0, word_product mult e xs_shifted m).
+  { exact (word_product_left_split G mult e inv m xs Hgrp Hm_nat HxsG_sm). }
+  claim Hwpl_n : word_product mult e xs n =
+    apply_fun mult (apply_fun xs 0, word_product mult e xs_shifted m).
+  { rewrite Hn_sm. exact Hwpl. }
+  (** Step 5: wp(word1, n) = mult(wp(xs,m), z) = mult(wp(xs,m), mult(xs(m), xs(0))) **)
+  (**        = mult(mult(wp(xs,m), xs(m)), xs(0)) = mult(wp(xs,n), xs(0)) **)
+  claim Hwp_xs_n : word_product mult e xs n = word_product mult e xs (ordsucc m).
+  { rewrite Hn_sm. reflexivity. }
+  claim HwpS : word_product mult e xs (ordsucc m) = apply_fun mult (word_product mult e xs m, apply_fun xs m).
+  { exact (word_product_succ mult e xs m Hm_nat). }
+  claim Hwp_xs_m_G : word_product mult e xs m :e G.
+  { exact (word_product_in_G_group G mult e inv m xs Hgrp Hm_nat
+      (fun i Hi => HxsG i (eq_subst_mem_set i (ordsucc m) n (ordsuccI1 m i Hi) (eq_symm n (ordsucc m) Hn_sm)))). }
+  claim Hxs0_G : apply_fun xs 0 :e G. { exact (HxsG 0 (eq_subst_mem_set 0 (ordsucc m) n (nat_0_in_ordsucc m Hm_nat) (eq_symm n (ordsucc m) Hn_sm))). }
+  claim Hxsm_G : apply_fun xs m :e G. { exact (HxsG m (eq_subst_mem_set m (ordsucc m) n (ordsuccI2 m) (eq_symm n (ordsucc m) Hn_sm))). }
+  claim Hz_G : z :e G.
+  { rewrite Hz_def.
+    apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+      (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+      (forall a:set, a :e G -> apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+      Hgrp).
+    assume HmF _ _ _ _ _. exact (HmF (apply_fun xs m, apply_fun xs 0) (tuple_2_setprod_by_pair_Sigma G G (apply_fun xs m) (apply_fun xs 0) Hxsm_G Hxs0_G)). }
+  claim Hxs_shifted_in_G : forall i:set, i :e m -> apply_fun xs_shifted i :e G.
+  { let i. assume Hi.
+    claim Hgi : apply_fun xs_shifted i = apply_fun xs (ordsucc i).
+    { exact (apply_fun_graph m (fun j:set => apply_fun xs (ordsucc j)) i Hi). }
+    rewrite Hgi.
+    exact (HxsG (ordsucc i) (eq_subst_mem_set (ordsucc i) (ordsucc m) n
+      (nat_ordsucc_in_ordsucc m Hm_nat i Hi) (eq_symm n (ordsucc m) Hn_sm))). }
+  claim Hwp_shifted_G : word_product mult e xs_shifted m :e G.
+  { exact (word_product_in_G_group G mult e inv m xs_shifted Hgrp Hm_nat Hxs_shifted_in_G). }
+  claim HassocG_local : forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)).
+  { apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+      (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+      (forall a:set, a :e G -> apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+      Hgrp).
+    assume _ _ _ Ha _ _. exact Ha. }
+  claim Hwp_xs_n_G : word_product mult e xs n :e G.
+  { rewrite Hn_sm. exact (word_product_in_G_group G mult e inv (ordsucc m) xs Hgrp (nat_ordsucc m Hm_nat) HxsG_sm). }
+  (** wp(word1, ordsucc m) = mult(wp(xsw_pre, m), z) **)
+  (** = mult(wp(xs, m), z) = mult(wp(xs, m), mult(xs(m), xs(0))) **)
+  (** = mult(mult(wp(xs, m), xs(m)), xs(0)) = mult(wp(xs, ordsucc m), xs(0)) **)
+  claim Hwp_w1 : word_product mult e word1 (ordsucc m) = apply_fun mult (word_product mult e xs (ordsucc m), apply_fun xs 0).
+  { rewrite Hwp_word1.
+    rewrite Hwp_pre_eq.
+    rewrite Hz_def.
+    (** Now goal: mult(wp(xs,m), mult(xs(m), xs(0))) = mult(wp(xs, ordsucc m), xs(0)) **)
+    (** LHS = mult(mult(wp(xs,m), xs(m)), xs(0)) by assoc **)
+    claim Hassoc1 : apply_fun mult (word_product mult e xs m, apply_fun mult (apply_fun xs m, apply_fun xs 0)) =
+      apply_fun mult (apply_fun mult (word_product mult e xs m, apply_fun xs m), apply_fun xs 0).
+    { exact (eq_symm
+        (apply_fun mult (apply_fun mult (word_product mult e xs m, apply_fun xs m), apply_fun xs 0))
+        (apply_fun mult (word_product mult e xs m, apply_fun mult (apply_fun xs m, apply_fun xs 0)))
+        (HassocG_local (word_product mult e xs m) (apply_fun xs m) (apply_fun xs 0) Hwp_xs_m_G Hxsm_G Hxs0_G)). }
+    (** mult(wp(xs,m), xs(m)) = wp(xs, ordsucc m) **)
+    claim Hwps : apply_fun mult (word_product mult e xs m, apply_fun xs m) = word_product mult e xs (ordsucc m).
+    { symmetry. exact HwpS. }
+    rewrite Hassoc1. rewrite Hwps. reflexivity. }
+  (** Now: mult(wp(word1, ordsucc m), wp(xs_shifted, m)) **)
+  (** = mult(mult(wp(xs, ordsucc m), xs(0)), wp(xs_shifted, m)) **)
+  (** = mult(wp(xs, ordsucc m), mult(xs(0), wp(xs_shifted, m))) by assoc **)
+  (** = mult(wp(xs, ordsucc m), wp(xs, ordsucc m)) by word_product_left_split **)
+  claim Hassoc2 : apply_fun mult (apply_fun mult (word_product mult e xs (ordsucc m), apply_fun xs 0), word_product mult e xs_shifted m) =
+    apply_fun mult (word_product mult e xs (ordsucc m), apply_fun mult (apply_fun xs 0, word_product mult e xs_shifted m)).
+  { exact (HassocG_local (word_product mult e xs (ordsucc m)) (apply_fun xs 0) (word_product mult e xs_shifted m)
+      (Hn_sm (fun z b:set => word_product mult e xs z :e G) Hwp_xs_n_G)
+      Hxs0_G Hwp_shifted_G). }
+  claim Hxs0_shift : apply_fun mult (apply_fun xs 0, word_product mult e xs_shifted m) = word_product mult e xs (ordsucc m).
+  { symmetry. exact Hwpl. }
+  claim Hfinal_eq : apply_fun mult (word_product mult e word1 (ordsucc m), word_product mult e xs_shifted m) =
+    apply_fun mult (word_product mult e xs (ordsucc m), word_product mult e xs (ordsucc m)).
+  { rewrite Hwp_w1. rewrite Hassoc2. rewrite Hxs0_shift. reflexivity. }
+  claim Hfinal_n : apply_fun mult (word_product mult e word1 (ordsucc m), word_product mult e xs_shifted m) =
     apply_fun mult (word_product mult e xs n, word_product mult e xs n).
-  { admit. }
-  exact Hwp_final.
-Admitted.
+  { rewrite Hn_sm. exact Hfinal_eq. }
+  exact (eq_i_tra (word_product mult e ys_concat (add_nat n m))
+    (apply_fun mult (word_product mult e word1 (ordsucc m), word_product mult e xs_shifted m))
+    (apply_fun mult (word_product mult e xs n, word_product mult e xs n))
+    Hwp_nform Hfinal_n).
+Qed.
 
 (** Proven Alice **)
 Lemma reduced_word_concat_agree :
