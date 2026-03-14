@@ -152017,6 +152017,54 @@ exact (continuous_map_range_restrict
       HpT)).
 Qed.
 
+(** Infrastructure: simplex3_set and triangular_region are homeomorphic. **)
+(** Proven Charlie **)
+Lemma simplex3_triangular_region_homeomorphism :
+  homeomorphism
+    simplex3_set
+    simplex3_set_topology
+    triangular_region
+    triangular_region_topology
+    simplex3_to_triangular_region.
+claim HhomeExpanded :
+  continuous_map
+    simplex3_set
+    simplex3_set_topology
+    triangular_region
+    triangular_region_topology
+    simplex3_to_triangular_region /\
+  exists g:set,
+    continuous_map
+      triangular_region
+      triangular_region_topology
+      simplex3_set
+      simplex3_set_topology
+      g /\
+    (forall v:set, v :e simplex3_set ->
+      apply_fun g (apply_fun simplex3_to_triangular_region v) = v) /\
+    (forall p:set, p :e triangular_region ->
+      apply_fun simplex3_to_triangular_region (apply_fun g p) = p).
+{
+  apply andI.
+  - exact simplex3_to_triangular_region_continuous.
+  - witness triangular_region_to_simplex3.
+    apply andI.
+    + apply andI.
+      * exact triangular_region_to_simplex3_continuous.
+      * let v.
+        assume HvS.
+        exact (triangular_region_to_simplex3_roundtrip
+          v
+          HvS).
+    + let p.
+      assume HpT.
+      exact (simplex3_to_triangular_region_roundtrip
+        p
+        HpT).
+}
+exact HhomeExpanded.
+Qed.
+
 (** Infrastructure: the punctured-space inclusion into Euclidean space is continuous. **)
 (** Proven Charlie **)
 Lemma Rn_minus_origin_inclusion_continuous : forall n:set,
