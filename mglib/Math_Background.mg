@@ -146563,6 +146563,279 @@ Qed.
 Definition simplex3_total_fs_topology : set :=
   subspace_topology (euclidean_space 3) (euclidean_topology 3) simplex3_total_fs.
 
+(** Infrastructure: the early triangle region lies in the closed unit disk. **)
+(** Proven Charlie **)
+Lemma simplex3_triangle_region_subset_B2 :
+  simplex3_triangle_region c= B2.
+let p.
+assume HpT.
+claim HpR2 : p :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun q:set =>
+      ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+      ~(Rlt 1 (add_SNo (q 0) (q 1))))
+    p
+    HpT).
+}
+claim HpProp :
+  ~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0) /\
+  ~(Rlt 1 (add_SNo (p 0) (p 1))).
+{
+  exact (SepE2
+    (setprod R R)
+    (fun q:set =>
+      ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+      ~(Rlt 1 (add_SNo (q 0) (q 1))))
+    p
+    HpT).
+}
+claim Hleft :
+  ~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0).
+{
+  exact (andEL
+    (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+    (~(Rlt 1 (add_SNo (p 0) (p 1))))
+    HpProp).
+}
+claim Hnlt0 : ~(Rlt (p 0) 0).
+{ exact (andEL (~(Rlt (p 0) 0)) (~(Rlt (p 1) 0)) Hleft). }
+claim Hnlt1 : ~(Rlt (p 1) 0).
+{ exact (andER (~(Rlt (p 0) 0)) (~(Rlt (p 1) 0)) Hleft). }
+claim HnltSum : ~(Rlt 1 (add_SNo (p 0) (p 1))).
+{
+  exact (andER
+    (~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0))
+    (~(Rlt 1 (add_SNo (p 0) (p 1))))
+    HpProp).
+}
+claim Hp0R : p 0 :e R.
+{ exact (ap0_Sigma R (fun _ : set => R) p HpR2). }
+claim Hp1R : p 1 :e R.
+{ exact (ap1_Sigma R (fun _ : set => R) p HpR2). }
+claim Hp0SNo : SNo (p 0).
+{ exact (real_SNo (p 0) Hp0R). }
+claim Hp1SNo : SNo (p 1).
+{ exact (real_SNo (p 1) Hp1R). }
+claim H0le0 : Rle 0 (p 0).
+{ exact (RleI 0 (p 0) real_0 Hp0R Hnlt0). }
+claim H0le1 : Rle 0 (p 1).
+{ exact (RleI 0 (p 1) real_0 Hp1R Hnlt1). }
+claim H0le0S : 0 <= (p 0).
+{ exact (SNoLe_of_Rle 0 (p 0) H0le0). }
+claim H0le1S : 0 <= (p 1).
+{ exact (SNoLe_of_Rle 0 (p 1) H0le1). }
+claim HsumR : add_SNo (p 0) (p 1) :e R.
+{ exact (real_add_SNo (p 0) Hp0R (p 1) Hp1R). }
+claim HsumLe1 : Rle (add_SNo (p 0) (p 1)) 1.
+{ exact (RleI (add_SNo (p 0) (p 1)) 1 HsumR real_1 HnltSum). }
+claim Hp0LeSum : Rle (p 0) (add_SNo (p 0) (p 1)).
+{
+  rewrite (add_SNo_com (p 0) (p 1) Hp0SNo Hp1SNo).
+  exact (Rle_increase_by_nonneg_left
+    (p 1)
+    (p 0)
+    Hp1R
+    Hp0R
+    H0le1).
+}
+claim Hp1LeSum : Rle (p 1) (add_SNo (p 0) (p 1)).
+{
+  exact (Rle_increase_by_nonneg_left
+    (p 0)
+    (p 1)
+    Hp0R
+    Hp1R
+    H0le0).
+}
+claim Hp0Le1 : Rle (p 0) 1.
+{ exact (Rle_tra (p 0) (add_SNo (p 0) (p 1)) 1 Hp0LeSum HsumLe1). }
+claim Hp1Le1 : Rle (p 1) 1.
+{ exact (Rle_tra (p 1) (add_SNo (p 0) (p 1)) 1 Hp1LeSum HsumLe1). }
+claim Hp0Le1S : (p 0) <= 1.
+{ exact (SNoLe_of_Rle (p 0) 1 Hp0Le1). }
+claim Hp1Le1S : (p 1) <= 1.
+{ exact (SNoLe_of_Rle (p 1) 1 Hp1Le1). }
+claim Hp0sqR : mul_SNo (p 0) (p 0) :e R.
+{ exact (real_mul_SNo (p 0) Hp0R (p 0) Hp0R). }
+claim Hp1sqR : mul_SNo (p 1) (p 1) :e R.
+{ exact (real_mul_SNo (p 1) Hp1R (p 1) Hp1R). }
+claim Hp0sqLe : Rle (mul_SNo (p 0) (p 0)) (p 0).
+{
+  claim H1p0 :
+    mul_SNo 1 (p 0) = p 0.
+  {
+    exact (mul_SNo_oneL
+      (p 0)
+      Hp0SNo).
+  }
+  exact (Rle_of_SNoLe
+    (mul_SNo (p 0) (p 0))
+    (p 0)
+    Hp0sqR
+    Hp0R
+    ((eq_symm
+      (mul_SNo 1 (p 0))
+      (p 0)
+      H1p0)
+      (fun a b => mul_SNo (p 0) (p 0) <= b)
+      (nonneg_mul_SNo_Le'
+        (p 0)
+        1
+        (p 0)
+        Hp0SNo
+        SNo_1
+        Hp0SNo
+        H0le0S
+        Hp0Le1S))).
+}
+claim Hp1sqLe : Rle (mul_SNo (p 1) (p 1)) (p 1).
+{
+  claim H1p1 :
+    mul_SNo 1 (p 1) = p 1.
+  {
+    exact (mul_SNo_oneL
+      (p 1)
+      Hp1SNo).
+  }
+  exact (Rle_of_SNoLe
+    (mul_SNo (p 1) (p 1))
+    (p 1)
+    Hp1sqR
+    Hp1R
+    ((eq_symm
+      (mul_SNo 1 (p 1))
+      (p 1)
+      H1p1)
+      (fun a b => mul_SNo (p 1) (p 1) <= b)
+      (nonneg_mul_SNo_Le'
+        (p 1)
+        1
+        (p 1)
+        Hp1SNo
+        SNo_1
+        Hp1SNo
+        H0le1S
+        Hp1Le1S))).
+}
+apply (SepI
+  (setprod R R)
+  (fun q:set =>
+    ~(Rlt 1
+      (add_SNo (mul_SNo (q 0) (q 0))
+        (mul_SNo (q 1) (q 1)))))
+  p
+  HpR2).
+claim HsumSqLeSum :
+  Rle
+    (add_SNo (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1)))
+    (add_SNo (p 0) (p 1)).
+{
+  claim Hstep1 :
+    Rle
+      (add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)))
+      (add_SNo (mul_SNo (p 0) (p 0))
+        (p 1)).
+  {
+    exact (Rle_add_SNo_2
+      (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1))
+      (p 1)
+      Hp0sqR
+      Hp1sqR
+      Hp1R
+      Hp1sqLe).
+  }
+  claim Hstep2 :
+    Rle
+      (add_SNo (mul_SNo (p 0) (p 0))
+        (p 1))
+      (add_SNo (p 0) (p 1)).
+  {
+    claim Haux :
+      Rle
+        (add_SNo (p 1) (mul_SNo (p 0) (p 0)))
+        (add_SNo (p 1) (p 0)).
+    {
+      exact (Rle_add_SNo_2
+        (p 1)
+        (mul_SNo (p 0) (p 0))
+        (p 0)
+        Hp1R
+        Hp0sqR
+        Hp0R
+        Hp0sqLe).
+    }
+    rewrite (add_SNo_com
+      (mul_SNo (p 0) (p 0))
+      (p 1)
+      (real_SNo (mul_SNo (p 0) (p 0)) Hp0sqR)
+      Hp1SNo).
+    rewrite (add_SNo_com
+      (p 0)
+      (p 1)
+      Hp0SNo
+      Hp1SNo).
+    exact Haux.
+  }
+  exact (Rle_tra
+    (add_SNo (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1)))
+    (add_SNo (mul_SNo (p 0) (p 0))
+      (p 1))
+    (add_SNo (p 0) (p 1))
+    Hstep1
+    Hstep2).
+}
+exact (RleE_nlt
+  (add_SNo (mul_SNo (p 0) (p 0))
+    (mul_SNo (p 1) (p 1)))
+  1
+  (Rle_tra
+    (add_SNo (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1)))
+    (add_SNo (p 0) (p 1))
+    1
+    HsumSqLeSum
+    HsumLe1)).
+Qed.
+
+(** Infrastructure: the early triangle topology is the subspace topology from B2. **)
+(** Proven Charlie **)
+Lemma simplex3_triangle_topology_eq_subspace_B2 :
+  simplex3_triangle_topology =
+  subspace_topology B2 B2_topology simplex3_triangle_region.
+claim HB2subR2 : B2 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun q:set =>
+      ~(Rlt 1
+        (add_SNo (mul_SNo (q 0) (q 0))
+          (mul_SNo (q 1) (q 1)))))).
+}
+exact (eq_symm
+  (subspace_topology B2 B2_topology simplex3_triangle_region)
+  simplex3_triangle_topology
+  (ex16_1_subspace_transitive
+    (setprod R R)
+    R2_topology
+    B2
+    simplex3_triangle_region
+    (product_topology_is_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      R_standard_topology_is_topology
+      R_standard_topology_is_topology)
+    HB2subR2
+    simplex3_triangle_region_subset_B2)).
+Qed.
+
 (** Fixed point for the normalized positive-matrix map on the 2-simplex **)
 Lemma simplex3_fixed_point_normalized_map : forall A:set,
   function_on A (setprod 3 3) R ->
