@@ -282796,9 +282796,64 @@ apply (nat_inv nw Hnw_nat).
             (** I need a DIFFERENT lemma or manual construction. **)
             (** Use reduced_word_double_merge_junction **)
             claim Hmw_ne0z : mw <> 0.
-            { assume Hmw0. apply (Hno_efam_entry nw xsw Hredw 0 H0nw). admit. }
-            (** Nontrivial junction: use reduced_word_double_merge_junction then contradict **)
-            admit.
+            { assume Hmw0 : mw = 0.
+              claim Hnw1z : nw = 1. { rewrite Hnw_sm. rewrite Hmw0. reflexivity. }
+              apply (Hno_efam_entry nw xsw Hredw 0 H0nw).
+              claim Hxsw0_Gz : apply_fun xsw 0 :e G.
+              { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw). }
+              claim HwpS0z : word_product multG eG xsw (ordsucc 0) =
+                apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
+              { exact (word_product_succ multG eG xsw 0 nat_0). }
+              claim Hwp0z : word_product multG eG xsw 0 = eG.
+              { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))). }
+              claim Hwp1z : word_product multG eG xsw (ordsucc 0) = apply_fun multG (eG, apply_fun xsw 0).
+              { rewrite HwpS0z. rewrite Hwp0z. reflexivity. }
+              claim HidLz : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
+              { exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+                  (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxsw0_Gz)). }
+              claim Hwps0z : word_product multG eG xsw (ordsucc 0) = apply_fun xsw 0.
+              { exact (eq_i_tra (word_product multG eG xsw (ordsucc 0))
+                  (apply_fun multG (eG, apply_fun xsw 0)) (apply_fun xsw 0) Hwp1z HidLz). }
+              exact (eq_i_tra (apply_fun xsw 0) (word_product multG eG xsw (ordsucc 0)) (apply_fun efam al)
+                (eq_symm (word_product multG eG xsw (ordsucc 0)) (apply_fun xsw 0) Hwps0z)
+                (eq_i_tra (word_product multG eG xsw (ordsucc 0)) (word_product multG eG xsw nw) (apply_fun efam al)
+                  (eq_symm (word_product multG eG xsw nw) (word_product multG eG xsw (ordsucc 0))
+                    (Hnw1z (fun z b:set => word_product multG eG xsw nw = word_product multG eG xsw z)
+                      (eq_refl (word_product multG eG xsw nw))))
+                  Hwp_efam)). }
+            (** Apply the merge junction helper to build reduced word for efam(al)^2 = eG **)
+            claim Hp_junc_def : apply_fun multG (apply_fun xsw mw, apply_fun xsw 0) =
+              apply_fun multG (apply_fun xsw mw, apply_fun xsw 0).
+            { reflexivity. }
+            claim Hmerge_result : exists ys:set,
+              reduced_word J Gfam efam (add_nat nw mw) ys /\
+              word_product multG eG ys (add_nat nw mw) =
+                apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw).
+            { admit. }
+            apply Hmerge_result.
+            let ys_m. assume Hys_m_p : reduced_word J Gfam efam (add_nat nw mw) ys_m /\
+              word_product multG eG ys_m (add_nat nw mw) =
+                apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw).
+            claim Hred_ym : reduced_word J Gfam efam (add_nat nw mw) ys_m.
+            { exact (andEL (reduced_word J Gfam efam (add_nat nw mw) ys_m)
+                (word_product multG eG ys_m (add_nat nw mw) =
+                  apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw))
+                Hys_m_p). }
+            claim Hwp_ym : word_product multG eG ys_m (add_nat nw mw) =
+              apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw).
+            { exact (andER (reduced_word J Gfam efam (add_nat nw mw) ys_m)
+                (word_product multG eG ys_m (add_nat nw mw) =
+                  apply_fun multG (word_product multG eG xsw nw, word_product multG eG xsw nw))
+                Hys_m_p). }
+            claim Hwpym_eG : word_product multG eG ys_m (add_nat nw mw) = eG.
+            { rewrite Hwp_ym. rewrite Hwp_efam. exact Hefam_sq. }
+            claim Hlen_ne0 : add_nat nw mw <> 0.
+            { admit. }
+            claim Hlen_ne1 : add_nat nw mw <> 1.
+            { admit. }
+            exact (free_product_reduced_word_length_ge2_product_ne_e
+              G multG eG invG J Gfam efam (add_nat nw mw) ys_m
+              Hfp Hred_ym Hlen_ne0 Hlen_ne1 Hwpym_eG).
         - assume Hb0_ne_bmw : b0 <> bmw.
           (** First and last in DIFFERENT factors. Use reduced_word_double_cyclic_word_product. **)
           claim Hnw_ne1d : nw <> 1.
