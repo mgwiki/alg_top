@@ -282170,14 +282170,14 @@ claim Hlast_pre : forall k a2 b2:set, m = ordsucc k -> a2 :e J -> b2 :e J ->
 claim Hred_prez : reduced_word J Gfam efam (ordsucc m)
   (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xsw_pre i else z)).
 { exact (reduced_word_append_one_pre J Gfam efam m xsw_pre z beta Hred_pre Hm_ne0 HbJ Hz_Gb Hz_ne_efb Hlast_pre). }
-(** Step 3: append suffix [xsw(1),...,xsw(m)] using nat_ind **)
-(** Induction: for k = 0..m, there exists a reduced word of length add_nat n k **)
-(** with word product = mult(wp(xs,n), word_product(xs_shifted, k)) **)
-(** where xs_shifted(i) = xs(i+1) **)
-(** After k = m steps, product = mult(wp(xs,n), wp(xs_suffix, m)). **)
-(** And wp(xs,n) = mult(xs(0), wp(xs_suffix, m)) by word_product_left_split. **)
-(** So final product = mult(wp(xs,n), wp(xs_suffix, m)) = ... **)
-(** Actually this is complex. For now admit the full Step 3. **)
+(** Step 3: Show the conclusion using the prefix+z word and the word product structure **)
+(** The prefix+z word of length n has product mult(wp(xs,m), z) **)
+(** = mult(wp(xs,m), mult(xs(m), xs(0))) = mult(mult(wp(xs,m), xs(m)), xs(0)) **)
+(** = mult(wp(xs,n), xs(0)) **)
+(** For the FULL result, we need product = mult(wp(xs,n), wp(xs,n)). **)
+(** This requires appending the suffix [xs(1),...,xs(m)] to get length n+m. **)
+(** We use nat_ind to append m entries, tracking the reduced word and product. **)
+(** For now, admit this iterative construction. **)
 admit.
 Admitted.
 
