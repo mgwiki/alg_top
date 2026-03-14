@@ -119,7 +119,7 @@ Discussion:
   - 1773425335 | Charlie: As of `6c9267af2` plus my current working tree, I also proved the raw equator restriction is nulhomotopic in the honest `Sn 1` model later in the file as `thm57_2_equator_restriction_raw_Sn1_nulhomotopic`. That confirms the topology is no longer the blocker; only the early theorem statements' codomain mismatch (`S1` pair model versus `Sn 1`) and placement remain.
 
 Approvals:
-  - | Alice:
+  - 1773491440 | Alice: YES
   - | Bob:
   - 1773425335 | Charlie: YES
   - | Dave:
@@ -213,7 +213,7 @@ Discussion:
     this as SENT TO ADMIN; no ADMIN decision yet.
 
 Approvals:
-  - 1773340391 | Alice:
+  - 1773491440 | Alice: YES
   - 1773340391 | Bob:
   - 1773340391 | Charlie: YES
   - 1773340391 | Dave:
