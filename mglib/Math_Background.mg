@@ -151088,6 +151088,935 @@ exact (continuous_map_range_restrict
       HvS)).
 Qed.
 
+(** Infrastructure: triangular_region_to_simplex3 is continuous. **)
+(** Proven Charlie **)
+Lemma triangular_region_to_simplex3_continuous :
+  continuous_map
+    triangular_region
+    triangular_region_topology
+    simplex3_set
+    simplex3_set_topology
+    triangular_region_to_simplex3.
+set incT := graph triangular_region (fun p:set => p).
+set p0 := projection_map1 R R.
+set p1 := projection_map2 R R.
+set x0 := compose_fun triangular_region incT p0.
+set x1 := compose_fun triangular_region incT p1.
+set xsum := compose_fun triangular_region (pair_map triangular_region x0 x1) add_fun_R.
+set xsum_neg := compose_fun triangular_region xsum neg_fun.
+set x2 := compose_fun triangular_region (pair_map triangular_region (const_fun triangular_region 1) xsum_neg) add_fun_R.
+set raw := diagonal_map triangular_region
+  (graph 3 (fun i:set => if i = 0 then x0 else if i = 1 then x1 else x2))
+  3.
+claim HsubT : triangular_region c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun q:set =>
+      ~(Rlt (q 0) 0) /\ ~(Rlt (q 1) 0) /\
+      ~(Rlt 1 (add_SNo (q 0) (q 1))))).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HTtop : topology_on triangular_region triangular_region_topology.
+{
+  exact (subspace_topology_is_topology
+    (setprod R R)
+    R2_topology
+    triangular_region
+    HtopR2
+    HsubT).
+}
+claim HincTCont :
+  continuous_map
+    triangular_region
+    triangular_region_topology
+    (setprod R R)
+    R2_topology
+    incT.
+{
+  exact (subspace_inclusion_continuous
+    (setprod R R)
+    R2_topology
+    triangular_region
+    HtopR2
+    HsubT).
+}
+claim HprojPack :
+  continuous_map (setprod R R) R2_topology R R_standard_topology p0 /\
+  continuous_map (setprod R R) R2_topology R R_standard_topology p1.
+{
+  exact (projection_maps_continuous
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim Hp0Cont :
+  continuous_map (setprod R R) R2_topology R R_standard_topology p0.
+{
+  exact (andEL
+    (continuous_map (setprod R R) R2_topology R R_standard_topology p0)
+    (continuous_map (setprod R R) R2_topology R R_standard_topology p1)
+    HprojPack).
+}
+claim Hp1Cont :
+  continuous_map (setprod R R) R2_topology R R_standard_topology p1.
+{
+  exact (andER
+    (continuous_map (setprod R R) R2_topology R R_standard_topology p0)
+    (continuous_map (setprod R R) R2_topology R R_standard_topology p1)
+    HprojPack).
+}
+claim Hx0Cont :
+  continuous_map
+    triangular_region
+    triangular_region_topology
+    R
+    R_standard_topology
+    x0.
+{
+  exact (composition_continuous
+    triangular_region
+    triangular_region_topology
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    incT
+    p0
+    HincTCont
+    Hp0Cont).
+}
+claim Hx1Cont :
+  continuous_map
+    triangular_region
+    triangular_region_topology
+    R
+    R_standard_topology
+    x1.
+{
+  exact (composition_continuous
+    triangular_region
+    triangular_region_topology
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    incT
+    p1
+    HincTCont
+    Hp1Cont).
+}
+claim HxsumCont :
+  continuous_map
+    triangular_region
+    triangular_region_topology
+    R
+    R_standard_topology
+    xsum.
+{
+  exact (add_two_continuous_R
+    triangular_region
+    triangular_region_topology
+    x0
+    x1
+    HTtop
+    Hx0Cont
+    Hx1Cont).
+}
+claim HxsumNegCont :
+  continuous_map
+    triangular_region
+    triangular_region_topology
+    R
+    R_standard_topology
+    xsum_neg.
+{
+  exact (composition_continuous
+    triangular_region
+    triangular_region_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    xsum
+    neg_fun
+    HxsumCont
+    neg_fun_continuous).
+}
+claim Hconst1Cont :
+  continuous_map
+    triangular_region
+    triangular_region_topology
+    R
+    R_standard_topology
+    (const_fun triangular_region 1).
+{
+  exact (const_fun_continuous
+    triangular_region
+    triangular_region_topology
+    R
+    R_standard_topology
+    1
+    HTtop
+    R_standard_topology_is_topology
+    real_1).
+}
+claim Hx2Cont :
+  continuous_map
+    triangular_region
+    triangular_region_topology
+    R
+    R_standard_topology
+    x2.
+{
+  exact (add_two_continuous_R
+    triangular_region
+    triangular_region_topology
+    (const_fun triangular_region 1)
+    xsum_neg
+    HTtop
+    Hconst1Cont
+    HxsumNegCont).
+}
+claim Hx0FS : x0 :e function_space triangular_region R.
+{
+  exact (compose_fun_in_function_space
+    triangular_region
+    (setprod R R)
+    R
+    incT
+    p0
+    (continuous_map_function_on
+      triangular_region
+      triangular_region_topology
+      (setprod R R)
+      R2_topology
+      incT
+      HincTCont)
+    (continuous_map_function_on
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      p0
+      Hp0Cont)).
+}
+claim Hx1FS : x1 :e function_space triangular_region R.
+{
+  exact (compose_fun_in_function_space
+    triangular_region
+    (setprod R R)
+    R
+    incT
+    p1
+    (continuous_map_function_on
+      triangular_region
+      triangular_region_topology
+      (setprod R R)
+      R2_topology
+      incT
+      HincTCont)
+    (continuous_map_function_on
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      p1
+      Hp1Cont)).
+}
+claim Hx2FS : x2 :e function_space triangular_region R.
+{
+  claim Hconst1Fun : function_on (const_fun triangular_region 1) triangular_region R.
+  {
+    exact (continuous_map_function_on
+      triangular_region
+      triangular_region_topology
+      R
+      R_standard_topology
+      (const_fun triangular_region 1)
+      Hconst1Cont).
+  }
+  claim HxsumNegFun : function_on xsum_neg triangular_region R.
+  {
+    exact (continuous_map_function_on
+      triangular_region
+      triangular_region_topology
+      R
+      R_standard_topology
+      xsum_neg
+      HxsumNegCont).
+  }
+  exact (compose_fun_in_function_space
+    triangular_region
+    (setprod R R)
+    R
+    (pair_map triangular_region (const_fun triangular_region 1) xsum_neg)
+    add_fun_R
+    (function_on_of_function_space
+      (pair_map triangular_region (const_fun triangular_region 1) xsum_neg)
+      triangular_region
+      (setprod R R)
+      (pair_map_in_function_space
+        triangular_region
+        R
+        R
+        (const_fun triangular_region 1)
+        xsum_neg
+        Hconst1Fun
+        HxsumNegFun))
+    (function_on_of_function_space
+      add_fun_R
+      (setprod R R)
+      R
+      add_fun_R_in_function_space)).
+}
+claim H0in3 : 0 :e 3.
+{
+  exact (ordsuccI1 2 0 In_0_2).
+}
+claim H1in3 : 1 :e 3.
+{
+  exact (ordsuccI1 2 1 In_1_2).
+}
+claim H2in3 : 2 :e 3.
+{
+  exact In_2_3.
+}
+claim HF_tfn :
+  total_function_on
+    (graph 3 (fun i:set => if i = 0 then x0 else if i = 1 then x1 else x2))
+    3
+    (function_space triangular_region R).
+{
+  apply (total_function_on_graph
+    3
+    (function_space triangular_region R)).
+  let i.
+  assume Hi3.
+  apply (ordsuccE 2 i Hi3).
+  - assume Hi2.
+    apply (ordsuccE 1 i Hi2).
+    + assume Hi1.
+      apply (ordsuccE 0 i Hi1).
+      * assume Hi0.
+        exact (EmptyE
+          i
+          Hi0
+          ((if i = 0 then x0 else if i = 1 then x1 else x2) :e function_space triangular_region R)).
+      * assume Hieq0.
+        rewrite Hieq0.
+        exact (eq_subst_mem
+          (if 0 = 0 then x0 else if 0 = 1 then x1 else x2)
+          x0
+          (function_space triangular_region R)
+          (If_i_1
+            (0 = 0)
+            x0
+            (if 0 = 1 then x1 else x2)
+            (eq_refl 0))
+          Hx0FS).
+    + assume Hieq1.
+      rewrite Hieq1.
+      exact (eq_subst_mem
+        (if 1 = 0 then x0 else if 1 = 1 then x1 else x2)
+        x1
+        (function_space triangular_region R)
+        (eq_i_tra
+          (if 1 = 0 then x0 else if 1 = 1 then x1 else x2)
+          (if 1 = 1 then x1 else x2)
+          x1
+          (If_i_0
+            (1 = 0)
+            x0
+            (if 1 = 1 then x1 else x2)
+            neq_1_0)
+          (If_i_1
+            (1 = 1)
+            x1
+            x2
+            (eq_refl 1)))
+        Hx1FS).
+  - assume Hieq2.
+    rewrite Hieq2.
+    exact (eq_subst_mem
+      (if 2 = 0 then x0 else if 2 = 1 then x1 else x2)
+      x2
+      (function_space triangular_region R)
+      (eq_i_tra
+        (if 2 = 0 then x0 else if 2 = 1 then x1 else x2)
+        (if 2 = 1 then x1 else x2)
+        x2
+        (If_i_0
+          (2 = 0)
+          x0
+          (if 2 = 1 then x1 else x2)
+          neq_2_0)
+        (If_i_0
+          (2 = 1)
+          x1
+          x2
+          (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))))
+      Hx2FS).
+}
+claim HF_cond : forall i:set, i :e 3 ->
+  continuous_map triangular_region triangular_region_topology R R_standard_topology
+    (apply_fun (graph 3 (fun i0:set => if i0 = 0 then x0 else if i0 = 1 then x1 else x2)) i).
+{
+  let i.
+  assume Hi3.
+  apply (ordsuccE 2 i Hi3).
+  - assume Hi2.
+    apply (ordsuccE 1 i Hi2).
+    + assume Hi1.
+      apply (ordsuccE 0 i Hi1).
+      * assume Hi0.
+        exact (EmptyE
+          i
+          Hi0
+          (continuous_map triangular_region triangular_region_topology R R_standard_topology
+            (apply_fun (graph 3 (fun i0:set => if i0 = 0 then x0 else if i0 = 1 then x1 else x2)) i))).
+      * assume Hieq0.
+        rewrite Hieq0.
+        rewrite (apply_fun_graph
+          3
+          (fun j:set => if j = 0 then x0 else if j = 1 then x1 else x2)
+          0
+          H0in3).
+        rewrite (If_i_1
+          (0 = 0)
+          x0
+          (if 0 = 1 then x1 else x2)
+          (eq_refl 0)).
+        exact Hx0Cont.
+    + assume Hieq1.
+      rewrite Hieq1.
+      rewrite (apply_fun_graph
+        3
+        (fun j:set => if j = 0 then x0 else if j = 1 then x1 else x2)
+        1
+        H1in3).
+      rewrite (If_i_0
+        (1 = 0)
+        x0
+        (if 1 = 1 then x1 else x2)
+        neq_1_0).
+      rewrite (If_i_1
+        (1 = 1)
+        x1
+        x2
+        (eq_refl 1)).
+      exact Hx1Cont.
+  - assume Hieq2.
+    rewrite Hieq2.
+    rewrite (apply_fun_graph
+      3
+      (fun j:set => if j = 0 then x0 else if j = 1 then x1 else x2)
+      2
+      H2in3).
+    rewrite (If_i_0
+      (2 = 0)
+      x0
+      (if 2 = 1 then x1 else x2)
+      neq_2_0).
+    rewrite (If_i_0
+      (2 = 1)
+      x1
+      x2
+      (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))).
+    exact Hx2Cont.
+}
+claim H3ne : 3 <> Empty.
+{
+  exact (fun H => EmptyE 0 (H (fun t _ => 0 :e t) H0in3)).
+}
+claim HrawContEu :
+  continuous_map
+    triangular_region
+    triangular_region_topology
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    raw.
+{
+  exact (diagonal_map_continuous_power_real
+    triangular_region
+    triangular_region_topology
+    (graph 3 (fun i:set => if i = 0 then x0 else if i = 1 then x1 else x2))
+    3
+    HTtop
+    H3ne
+    HF_tfn
+    HF_cond).
+}
+claim HrawFunEu :
+  function_on raw triangular_region (euclidean_space 3).
+{
+  exact (diagonal_map_function_on_power_real
+    triangular_region
+    (graph 3 (fun i:set => if i = 0 then x0 else if i = 1 then x1 else x2))
+    3
+    HF_tfn).
+}
+claim HmapFunEu :
+  function_on triangular_region_to_simplex3 triangular_region (euclidean_space 3).
+{
+  let p.
+  assume HpT.
+  exact (simplex3_set_sub_euclidean_space_3
+    (apply_fun triangular_region_to_simplex3 p)
+    (triangular_region_to_simplex3_in_simplex3
+      p
+      HpT)).
+}
+claim HrawEq :
+  forall p:set, p :e triangular_region ->
+    apply_fun raw p = apply_fun triangular_region_to_simplex3 p.
+{
+  let p.
+  assume HpT.
+  claim HrawDef :
+    raw =
+    diagonal_map triangular_region
+      (graph 3 (fun i0:set => if i0 = 0 then x0 else if i0 = 1 then x1 else x2))
+      3.
+  {
+    reflexivity.
+  }
+  claim HpR2 : p :e setprod R R.
+  {
+    exact (HsubT p HpT).
+  }
+  claim HrawpEu : apply_fun raw p :e euclidean_space 3.
+  {
+    exact (HrawFunEu p HpT).
+  }
+  claim HmapEu : apply_fun triangular_region_to_simplex3 p :e euclidean_space 3.
+  {
+    exact (HmapFunEu p HpT).
+  }
+  apply (power_real_ext
+    3
+    (apply_fun raw p)
+    (apply_fun triangular_region_to_simplex3 p)
+    HrawpEu
+    HmapEu).
+  let i.
+  assume Hi3.
+  apply (ordsuccE 2 i Hi3).
+  - assume Hi2.
+    apply (ordsuccE 1 i Hi2).
+    + assume Hi1.
+      apply (ordsuccE 0 i Hi1).
+      * assume Hi0.
+        exact (EmptyE
+          i
+          Hi0
+          (apply_fun (apply_fun raw p) i = apply_fun (apply_fun triangular_region_to_simplex3 p) i)).
+      * assume Hieq0.
+        rewrite Hieq0.
+        claim Hraw0 :
+          apply_fun (apply_fun raw p) 0 = apply_fun x0 p.
+        {
+          rewrite HrawDef.
+          rewrite (diagonal_map_coord_apply
+            triangular_region
+            (graph 3 (fun i0:set => if i0 = 0 then x0 else if i0 = 1 then x1 else x2))
+            3
+            p
+            0
+            HpT
+            H0in3).
+          rewrite (apply_fun_graph
+            3
+            (fun j:set => if j = 0 then x0 else if j = 1 then x1 else x2)
+            0
+            H0in3).
+          rewrite (If_i_1
+            (0 = 0)
+            x0
+            (if 0 = 1 then x1 else x2)
+            (eq_refl 0)).
+          reflexivity.
+        }
+        rewrite Hraw0.
+        rewrite (compose_fun_apply
+          triangular_region
+          incT
+          p0
+          p
+          HpT).
+        rewrite (apply_fun_graph
+          triangular_region
+          (fun q:set => q)
+          p
+          HpT).
+        rewrite (projection1_apply
+          R
+          R
+          p
+          HpR2).
+        rewrite (apply_fun_graph
+          triangular_region
+          (fun p0:set =>
+            graph 3 (fun j:set =>
+              if j = 0 then p0 0 else
+              if j = 1 then p0 1 else
+              add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+          p
+          HpT).
+        rewrite (apply_fun_graph
+          3
+          (fun j:set =>
+            if j = 0 then p 0 else
+            if j = 1 then p 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+          0
+          H0in3).
+        rewrite (If_i_1
+          (0 = 0)
+          (p 0)
+          (if 0 = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+          (eq_refl 0)).
+        reflexivity.
+    + assume Hieq1.
+      rewrite Hieq1.
+      claim Hraw1 :
+        apply_fun (apply_fun raw p) 1 = apply_fun x1 p.
+      {
+        rewrite HrawDef.
+        rewrite (diagonal_map_coord_apply
+          triangular_region
+          (graph 3 (fun i0:set => if i0 = 0 then x0 else if i0 = 1 then x1 else x2))
+          3
+          p
+          1
+          HpT
+          H1in3).
+        rewrite (apply_fun_graph
+          3
+          (fun j:set => if j = 0 then x0 else if j = 1 then x1 else x2)
+          1
+          H1in3).
+        rewrite (If_i_0
+          (1 = 0)
+          x0
+          (if 1 = 1 then x1 else x2)
+          neq_1_0).
+        rewrite (If_i_1
+          (1 = 1)
+          x1
+          x2
+          (eq_refl 1)).
+        reflexivity.
+      }
+      rewrite Hraw1.
+      rewrite (compose_fun_apply
+        triangular_region
+        incT
+        p1
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        triangular_region
+        (fun q:set => q)
+        p
+        HpT).
+      rewrite (projection2_apply
+        R
+        R
+        p
+        HpR2).
+      rewrite (apply_fun_graph
+        triangular_region
+        (fun p0:set =>
+          graph 3 (fun j:set =>
+            if j = 0 then p0 0 else
+            if j = 1 then p0 1 else
+            add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+        p
+        HpT).
+      rewrite (apply_fun_graph
+        3
+        (fun j:set =>
+          if j = 0 then p 0 else
+          if j = 1 then p 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        1
+        H1in3).
+      rewrite (If_i_0
+        (1 = 0)
+        (p 0)
+        (if 1 = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        neq_1_0).
+      rewrite (If_i_1
+        (1 = 1)
+        (p 1)
+        (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+        (eq_refl 1)).
+      reflexivity.
+  - assume Hieq2.
+    rewrite Hieq2.
+    claim Hx2Def :
+      x2 =
+      compose_fun triangular_region
+        (pair_map triangular_region (const_fun triangular_region 1) xsum_neg)
+        add_fun_R.
+    {
+      reflexivity.
+    }
+    claim HxsumNegDef :
+      xsum_neg =
+      compose_fun triangular_region xsum neg_fun.
+    {
+      reflexivity.
+    }
+    claim HxsumDef :
+      xsum =
+      compose_fun triangular_region (pair_map triangular_region x0 x1) add_fun_R.
+    {
+      reflexivity.
+    }
+    claim Hx0Def :
+      x0 =
+      compose_fun triangular_region incT p0.
+    {
+      reflexivity.
+    }
+    claim Hx1Def :
+      x1 =
+      compose_fun triangular_region incT p1.
+    {
+      reflexivity.
+    }
+    claim Hraw2 :
+      apply_fun (apply_fun raw p) 2 = apply_fun x2 p.
+    {
+      rewrite HrawDef.
+      rewrite (diagonal_map_coord_apply
+        triangular_region
+        (graph 3 (fun i0:set => if i0 = 0 then x0 else if i0 = 1 then x1 else x2))
+        3
+        p
+        2
+        HpT
+        H2in3).
+      rewrite (apply_fun_graph
+        3
+        (fun j:set => if j = 0 then x0 else if j = 1 then x1 else x2)
+        2
+        H2in3).
+      rewrite (If_i_0
+        (2 = 0)
+        x0
+        (if 2 = 1 then x1 else x2)
+        neq_2_0).
+      rewrite (If_i_0
+        (2 = 1)
+        x1
+        x2
+        (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))).
+      reflexivity.
+    }
+    rewrite Hraw2.
+    rewrite Hx2Def.
+    claim Hc1R : apply_fun (const_fun triangular_region 1) p :e R.
+    {
+      exact (continuous_map_function_on
+        triangular_region
+        triangular_region_topology
+        R
+        R_standard_topology
+        (const_fun triangular_region 1)
+        Hconst1Cont
+        p
+        HpT).
+    }
+    claim HnR : apply_fun xsum_neg p :e R.
+    {
+      exact (continuous_map_function_on
+        triangular_region
+        triangular_region_topology
+        R
+        R_standard_topology
+        xsum_neg
+        HxsumNegCont
+        p
+        HpT).
+    }
+    rewrite (add_of_pair_map_apply
+      triangular_region
+      (const_fun triangular_region 1)
+      xsum_neg
+      p
+      HpT
+      Hc1R
+      HnR).
+    rewrite (const_fun_apply
+      triangular_region
+      1
+      p
+      HpT).
+    rewrite HxsumNegDef.
+    rewrite (compose_fun_apply
+      triangular_region
+      xsum
+      neg_fun
+      p
+      HpT).
+    rewrite (apply_fun_graph
+      R
+      (fun x:set => minus_SNo x)
+      (apply_fun xsum p)
+      (continuous_map_function_on
+        triangular_region
+        triangular_region_topology
+        R
+        R_standard_topology
+        xsum
+        HxsumCont
+      p
+      HpT)).
+    rewrite HxsumDef.
+    claim Hx0R : apply_fun x0 p :e R.
+    {
+      exact (continuous_map_function_on
+        triangular_region
+        triangular_region_topology
+        R
+        R_standard_topology
+        x0
+        Hx0Cont
+        p
+        HpT).
+    }
+    claim Hx1R : apply_fun x1 p :e R.
+    {
+      exact (continuous_map_function_on
+        triangular_region
+        triangular_region_topology
+        R
+        R_standard_topology
+        x1
+        Hx1Cont
+        p
+        HpT).
+    }
+    rewrite (add_of_pair_map_apply
+      triangular_region
+      x0
+      x1
+      p
+      HpT
+      Hx0R
+      Hx1R).
+    rewrite Hx0Def at 1.
+    rewrite (compose_fun_apply
+      triangular_region
+      incT
+      p0
+      p
+      HpT) at 1.
+    rewrite (apply_fun_graph
+      triangular_region
+      (fun q:set => q)
+      p
+      HpT) at 1.
+    rewrite (projection1_apply
+      R
+      R
+      p
+      HpR2) at 1.
+    rewrite Hx1Def at 1.
+    rewrite (compose_fun_apply
+      triangular_region
+      incT
+      p1
+      p
+      HpT) at 1.
+    rewrite (apply_fun_graph
+      triangular_region
+      (fun q:set => q)
+      p
+      HpT) at 1.
+    rewrite (projection2_apply
+      R
+      R
+      p
+      HpR2) at 1.
+    rewrite (apply_fun_graph
+      triangular_region
+      (fun p0:set =>
+        graph 3 (fun j:set =>
+          if j = 0 then p0 0 else
+          if j = 1 then p0 1 else
+          add_SNo 1 (minus_SNo (add_SNo (p0 0) (p0 1)))))
+      p
+      HpT).
+    rewrite (apply_fun_graph
+      3
+      (fun j:set =>
+        if j = 0 then p 0 else
+        if j = 1 then p 1 else
+        add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      2
+      H2in3).
+    rewrite (If_i_0
+      (2 = 0)
+      (p 0)
+      (if 2 = 1 then p 1 else add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      neq_2_0).
+    rewrite (If_i_0
+      (2 = 1)
+      (p 1)
+      (add_SNo 1 (minus_SNo (add_SNo (p 0) (p 1))))
+      (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))).
+    reflexivity.
+}
+claim HmapEuCont :
+  continuous_map
+    triangular_region
+    triangular_region_topology
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    triangular_region_to_simplex3.
+{
+  exact (continuous_map_congr_on
+    triangular_region
+    triangular_region_topology
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    raw
+    triangular_region_to_simplex3
+    HrawContEu
+    HmapFunEu
+    HrawEq).
+}
+exact (continuous_map_range_restrict
+  triangular_region
+  triangular_region_topology
+  (euclidean_space 3)
+  (euclidean_topology 3)
+  triangular_region_to_simplex3
+  simplex3_set
+  HmapEuCont
+  simplex3_set_sub_euclidean_space_3
+  (fun p HpT =>
+    triangular_region_to_simplex3_in_simplex3
+      p
+      HpT)).
+Qed.
+
 (** Infrastructure: the punctured-space inclusion into Euclidean space is continuous. **)
 (** Proven Charlie **)
 Lemma Rn_minus_origin_inclusion_continuous : forall n:set,
