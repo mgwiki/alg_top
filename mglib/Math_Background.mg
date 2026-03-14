@@ -437252,6 +437252,70 @@ apply iffI.
     HsplitEx).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_split_index_implies_exists_free :
+  forall H multH eH invH n k:set,
+  (exists JH:set,
+    (exists gensH:set, free_group_with_generators H multH eH invH JH gensH) /\
+    equip JH (ordsucc (mul_SNo k n))) ->
+  exists JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH.
+let H multH eH invH n k.
+assume HsplitEx.
+apply HsplitEx.
+let JH.
+assume Hpack.
+claim HgensEx : exists gensH:set, free_group_with_generators H multH eH invH JH gensH.
+{
+  exact (andEL
+    (exists gensH:set, free_group_with_generators H multH eH invH JH gensH)
+    (equip JH (ordsucc (mul_SNo k n)))
+    Hpack).
+}
+apply HgensEx.
+let gensH.
+assume Hfree.
+witness JH.
+witness gensH.
+exact Hfree.
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_split_index_implies_exists_rank :
+  forall H multH eH invH n k:set,
+  (exists JH:set,
+    (exists gensH:set, free_group_with_generators H multH eH invH JH gensH) /\
+    equip JH (ordsucc (mul_SNo k n))) ->
+  exists JH:set, equip JH (ordsucc (mul_SNo k n)).
+let H multH eH invH n k.
+assume HsplitEx.
+apply HsplitEx.
+let JH.
+assume Hpack.
+witness JH.
+exact (andER
+  (exists gensH:set, free_group_with_generators H multH eH invH JH gensH)
+  (equip JH (ordsucc (mul_SNo k n)))
+  Hpack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_split_index_repack :
+  forall H multH eH invH JH n k:set,
+  (exists gensH:set, free_group_with_generators H multH eH invH JH gensH) ->
+  equip JH (ordsucc (mul_SNo k n)) ->
+  exists J0:set,
+    (exists gens0:set, free_group_with_generators H multH eH invH J0 gens0) /\
+    equip J0 (ordsucc (mul_SNo k n)).
+let H multH eH invH JH n k.
+assume HgensEx.
+assume Hrank.
+witness JH.
+apply andI.
+- exact HgensEx.
+- exact Hrank.
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
