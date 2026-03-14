@@ -433719,8 +433719,121 @@ exact (thm85_3_rankdata_nonzero_direct_exists_witness
   invF
   J
   H
+    n
+    Hdirect).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_npack_exists_witness_coset_finite : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k) ->
+  finite (right_coset_set F multF H).
+let F multF eF invF J H n.
+assume HnPack.
+assume HkEx.
+exact (thm85_3_rankdata_nonzero_direct_coset_finite
+  F
+  multF
+  eF
+  invF
+  J
+  H
   n
-  Hdirect).
+  (thm85_3_rankdata_nonzero_npack_exists_witness_to_direct
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HkEx)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_npack_exists_witness_n_omega : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k) ->
+  n :e omega.
+let F multF eF invF J H n.
+assume HnPack.
+assume HkEx.
+exact (thm85_3_rankdata_nonzero_direct_n_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_nonzero_npack_exists_witness_to_direct
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HkEx)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_npack_exists_witness_J_equip : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k) ->
+  equip J (ordsucc n).
+let F multF eF invF J H n.
+assume HnPack.
+assume HkEx.
+exact (thm85_3_rankdata_nonzero_direct_J_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_nonzero_npack_exists_witness_to_direct
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HkEx)).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_npack_exists_witness_index_spec : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) ->
+  (exists k:set, k :e omega /\ equip (right_coset_set F multF H) k) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume HnPack.
+assume HkEx.
+exact (thm85_3_rankdata_nonzero_direct_index_spec
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (thm85_3_rankdata_nonzero_npack_exists_witness_to_direct
+    F
+    multF
+    eF
+    invF
+    J
+    H
+    n
+    HnPack
+    HkEx)).
 Qed.
 
 (** Proven Bob **)
