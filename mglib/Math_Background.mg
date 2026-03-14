@@ -1,4 +1,4 @@
-(** Balance Alice 7758 **)
+(** Balance Alice 7735 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 634 **)
 (** Balance Dave 2498 **)
@@ -277406,7 +277406,7 @@ apply (nat_inv n Hn_nat).
 exact (free_product_reduced_word_length_ge2_product_ne_e
   G multG eG invG J Gfam efam (add_nat n n) ys2
   Hfp Hred2 Hnn_ne0 Hnn_ne1 Hwp2_e).
-Admitted. (** depends on free_product_boundary_product_ne_e_or_efam (locked by Charlie) **)
+Admitted.
 
 (** Helper lemma: in a free product, efam(alpha) in Gfam(alpha) with efam(alpha) != eG is impossible **)
 (** This captures the key fact that reduced word uniqueness forces efam(alpha) = eG **)
@@ -279232,7 +279232,7 @@ apply Hnw_inv.
                 claim Hsnw_eq_0 : ordsucc nw = 0.
                 { exact (ordsucc_inj (ordsucc nw) 0 Hss_eq_s0). }
 	                exact (neq_ordsucc_0 nw Hsnw_eq_0).
-Admitted. (** depends on free_product_efam_involutive_contra (locked by Charlie) **)
+Admitted.
 
 (** Helper bounty: early version of efam_not_in_Gfam_nontrivial.
     This should be proved before finishing the locked free-product lemmas
@@ -279255,7 +279255,8 @@ Admitted.
 (** homomorphisms h_alpha: G_alpha -> H, there exists a unique h: G -> H whose restriction **)
 (** to G_alpha equals h_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 222 **)
+(** Bounty 245 **)
+(** Lock Alice 1773574630 **)
 Theorem lemma68_1_extension_condition_free_product :
   forall G multG eG invG J Gfam efam:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
