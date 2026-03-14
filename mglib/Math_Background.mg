@@ -1,6 +1,6 @@
 (** Balance Alice 7758 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 478 **)
+(** Balance Charlie 474 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -155759,7 +155759,8 @@ Qed.
 (** from S55 Exercise 4(b) (line 1047 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the inclusion j: S^n -> R^{n+1} - 0 is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Bounty 37 **)
+(** Lock Charlie 1773533747 **)
 Theorem ex55_4b_inclusion_Sn_not_nulhomotopic : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   ~(nulhomotopic (Sn n) (Sn_topology n)
