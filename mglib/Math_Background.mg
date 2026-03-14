@@ -1,4 +1,4 @@
-(** Balance Alice 7735 **)
+(** Balance Alice 7705 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 810 **)
 (** Balance Dave 2498 **)
@@ -282088,6 +282088,29 @@ apply (nat_inv n Hn_nat).
 exact (free_product_reduced_word_length_ge2_product_ne_e
   G multG eG invG J Gfam efam (add_nat n n) ys2
   Hfp Hred2 Hnn_ne0 Hnn_ne1 Hwp2_e).
+Admitted.
+
+(** Infrastructure bounty: merge-at-junction reduced word for doubled cyclic words **)
+(** When first and last entries of a reduced word are in the same factor, build the **)
+(** merged doubled word of length 2n-1 with product = mult(word_product, word_product). **)
+(** Expected use: discharge the remaining Z/2Z+b0=bmw case in efam_involutive_contra_direct. **)
+(** Bounty 30 **)
+Lemma reduced_word_double_merge_junction :
+  forall G mult e inv J Gfam efam n xs m z:set,
+  group_structure G mult e inv ->
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) ->
+  reduced_word J Gfam efam n xs ->
+  n = ordsucc m ->
+  nat_p m -> m <> 0 ->
+  (exists beta:set, beta :e J /\ apply_fun xs 0 :e apply_fun Gfam beta /\
+    apply_fun xs m :e apply_fun Gfam beta) ->
+  z = apply_fun mult (apply_fun xs m, apply_fun xs 0) ->
+  z <> e -> z <> apply_fun efam (Eps_i (fun beta:set => beta :e J /\ apply_fun xs 0 :e apply_fun Gfam beta)) ->
+  exists ys:set,
+    reduced_word J Gfam efam (add_nat n m) ys /\
+    word_product mult e ys (add_nat n m) =
+      apply_fun mult (word_product mult e xs n, word_product mult e xs n).
+admit.
 Admitted.
 
 (** Direct proof: involutive efam(al) in Gfam(al) with efam(al) != eG is impossible **)
