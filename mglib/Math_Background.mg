@@ -273231,6 +273231,31 @@ rewrite <- Hn0_eq_n.
 exact Hn0_eq_1.
 Qed.
 
+(** Infrastructure: a reduced word of length >= 2 whose product lies in Gfam(alpha)
+    must have product equal to efam(alpha). Direct corollary of factor_element_length1. **)
+(** Proven Alice **)
+Lemma free_product_reduced_word_length_ge2_in_factor_is_efam :
+  forall G mult e inv J Gfam efam n xs alpha:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  alpha :e J ->
+  reduced_word J Gfam efam n xs ->
+  n <> 0 -> n <> 1 ->
+  word_product mult e xs n :e apply_fun Gfam alpha ->
+  word_product mult e xs n = apply_fun efam alpha.
+let G mult e inv J Gfam efam n xs alpha.
+assume Hfp HalJ Hred Hn0 Hn1 HwpGa.
+set x := word_product mult e xs n.
+claim Hxne : x <> e.
+{ exact (free_product_reduced_word_length_ge2_product_ne_e G mult e inv J Gfam efam n xs Hfp Hred Hn0 Hn1). }
+apply (xm (x = apply_fun efam alpha)).
+- assume Hxe : x = apply_fun efam alpha. exact Hxe.
+- assume Hxne2 : x <> apply_fun efam alpha.
+  claim Hn_eq_1 : n = 1.
+  { exact (free_product_factor_element_length1 G mult e inv J Gfam efam alpha x n xs
+      Hfp HalJ HwpGa Hxne Hxne2 Hred Hn0 (eq_refl x)). }
+  exact (FalseE (Hn1 Hn_eq_1) (x = apply_fun efam alpha)).
+Qed.
+
 (** Infrastructure: the least normal subgroup of G containing a subset S **)
 Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
   fun G mult e inv S =>
@@ -277897,33 +277922,214 @@ apply (xm (y = e)).
                       (y3 = e)).
                   + assume Hy3_ne_efam : y3 <> apply_fun efam beta.
                     (** y3 in Gfam(beta), y3 <> e, y3 <> efam(beta). **)
-                    (** By free_product_factor_element_length1: reduced word of y3 has length 1. **)
-                    (** y3 = cs3(0) mult z_conj mult inv(cs3(0)) with cs3(0) in Gfam(delta2), delta2 <> beta. **)
-                    (** z_conj not in Gfam(delta2), z_conj <> e. **)
-                    (** If z_conj in Gfam(gamma), gamma <> delta2: **)
-                    (**   [cs3(0), z_conj, inv(cs3(0))] is reduced of length 3. **)
-                    (**   By factor_element_length1: length = 1. Contradiction 3 = 1. **)
-                    (** If z_conj not in any Gfam: z_conj has word length >= 2. **)
-                    (**   Conjugation gives word length >= 2 (possibly with merging). **)
-                    (**   By factor_element_length1: length = 1. Contradiction >= 2 != 1. **)
-                    (** y3 has reduced word of length 1 by factor_element_length1. **)
-                    (** z_conj must be in some single Gfam(gamma), gamma != delta2. **)
-                    (** Then [cs3(0), z_conj, inv(cs3(0))] is reduced of length 3 for y3. **)
-                    (** By uniqueness with length 1: contradiction 3 != 1. **)
-                    (** If z_conj not in any Gfam: conjugation gives length >= 2. **)
-                    (** But y3 has length 1. Contradiction. **)
-                    (** Use free_product_factor_element_length1 to get y3's word length = 1 **)
-                    (** Then any reduced word for y3 = cs3(0) mult z_conj mult inv(cs3(0)) has length 1. **)
-                    (** z_conj has a reduced word. If z_conj in some Gfam(gamma), gamma != delta2: **)
-                    (**   [cs3(0), z_conj, inv(cs3(0))] is reduced of length 3 for y3. **)
-                    (**   By factor_element_length1: length 1. But 3 != 1. Contradiction. **)
-                    (** If z_conj = efam(gamma) for some gamma: **)
-                    (**   efam_not_in_Gfam_nontrivial_pre gives False. **)
-                    (** If z_conj not in any Gfam: **)
-                    (**   Conjugation word has length >= 2. But y3 has length 1. Contradiction. **)
-                    (** All sub-cases give contradiction. **)
-                    (** For complete formalization, need to build the reduced word explicitly. **)
-                    admit. }
+                    (** z_conj <> e, z_conj not in Gfam(delta2). **)
+                    (** Get reduced word for z_conj **)
+                    apply (Huniq z_conj Hz_G Hz_ne).
+                    let nz. assume Hexz.
+                    apply Hexz. let xsz.
+                    assume Hzpack : reduced_word J Gfam efam nz xsz /\ nz <> 0 /\
+                      word_product mult e xsz nz = z_conj /\
+                      (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                        word_product mult e xs' n' = z_conj ->
+                        nz = n' /\ (forall i:set, i :e nz -> apply_fun xsz i = apply_fun xs' i)).
+                    apply (and4E
+                      (reduced_word J Gfam efam nz xsz) (nz <> 0)
+                      (word_product mult e xsz nz = z_conj)
+                      (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                        word_product mult e xs' n' = z_conj ->
+                        nz = n' /\ (forall i:set, i :e nz -> apply_fun xsz i = apply_fun xs' i))
+                      Hzpack).
+                    assume Hredz Hnz_ne0 Hwpz Huniqz.
+                    (** Case: nz = 1 (z_conj in a single factor) **)
+                    apply (xm (nz = 1)).
+                    { assume Hnz1 : nz = 1.
+                      (** z_conj has reduced word of length 1: z_conj in some Gfam(gamma) **)
+                      claim H0nz : 0 :e nz. { rewrite Hnz1. exact (ordsuccI2 0). }
+                      apply (reduced_word_elem J Gfam efam nz xsz 0 Hredz H0nz).
+                      let gamma.
+                      assume Hgpack : gamma :e J /\ apply_fun xsz 0 :e apply_fun Gfam gamma /\ apply_fun xsz 0 <> apply_fun efam gamma.
+                      apply (and3E (gamma :e J) (apply_fun xsz 0 :e apply_fun Gfam gamma) (apply_fun xsz 0 <> apply_fun efam gamma) Hgpack).
+                      assume HgJ Hxsz0_Gg Hxsz0_ne_efg.
+                      (** z_conj = word_product(xsz, nz) = word_product(xsz, 1) **)
+                      claim Hwpz_at1 : word_product mult e xsz 1 = z_conj.
+                      { claim Hnz1_wp : word_product mult e xsz nz = word_product mult e xsz 1.
+                        { rewrite Hnz1. reflexivity. }
+                        exact (eq_i_tra (word_product mult e xsz 1) (word_product mult e xsz nz) z_conj
+                          (eq_symm (word_product mult e xsz nz) (word_product mult e xsz 1) Hnz1_wp)
+                          Hwpz). }
+                      (** word_product(xsz, 1) = mult(e, xsz(0)) = xsz(0) **)
+                      claim Hxsz0_G : apply_fun xsz 0 :e G.
+                      { exact (Hsub_in_G gamma HgJ (apply_fun xsz 0) Hxsz0_Gg). }
+                      claim Hwp1_step : word_product mult e xsz 1 = apply_fun mult (e, apply_fun xsz 0).
+                      { prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun xsz i)) 1 =
+                          apply_fun mult (e, apply_fun xsz 0).
+                        rewrite <- ordsucc_0_eq_1_nat.
+                        rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, apply_fun xsz i)) 0 nat_0).
+                        rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun xsz i))).
+                        reflexivity. }
+                      claim Hid_xsz0 : apply_fun mult (e, apply_fun xsz 0) = apply_fun xsz 0.
+                      { exact (andEL (apply_fun mult (e, apply_fun xsz 0) = apply_fun xsz 0)
+                          (apply_fun mult (apply_fun xsz 0, e) = apply_fun xsz 0)
+                          (Hid (apply_fun xsz 0) Hxsz0_G)). }
+                      claim Hzconj_eq : z_conj = apply_fun xsz 0.
+                      { exact (eq_i_tra z_conj (word_product mult e xsz 1) (apply_fun xsz 0)
+                          (eq_symm (word_product mult e xsz 1) z_conj Hwpz_at1)
+                          (eq_i_tra (word_product mult e xsz 1) (apply_fun mult (e, apply_fun xsz 0)) (apply_fun xsz 0)
+                            Hwp1_step Hid_xsz0)). }
+                      claim Hzconj_Gg : z_conj :e apply_fun Gfam gamma.
+                      { rewrite Hzconj_eq. exact Hxsz0_Gg. }
+                      (** gamma <> delta2 since z_conj not in Gfam(delta2) **)
+                      claim Hg_ne_d2 : gamma <> delta2.
+                      { assume Hgeq : gamma = delta2.
+                        apply Hz_not_Gd2. rewrite <- Hgeq. exact Hzconj_Gg. }
+                      (** inv(cs3(0)) properties **)
+                      claim Hinvcs30_Gd2 : apply_fun inv (apply_fun cs3 0) :e apply_fun Gfam delta2.
+                      { exact (HGfam_inv delta2 Hd2J (apply_fun cs3 0) Hcs30_Gd2). }
+                      (** Case split: cs3(0) = e or not **)
+                      (** cs3(0) <> e **)
+                      claim Hcs30_ne_e : apply_fun cs3 0 <> e.
+                      { assume Hcs30_e : apply_fun cs3 0 = e.
+                        claim Hm_ne0 : m <> 0.
+                        { assume Hm0 : m = 0.
+                          prove False.
+                          claim H0in0 : 0 :e 0.
+                          { prove 0 :e 0. rewrite <- Hm0 at 2. exact H0_in_m. }
+                          exact (EmptyE 0 H0in0 False). }
+                        apply (xm (m = 1)).
+                        - assume Hm1 : m = 1.
+                          (** m=1: c3 = wp(cs3, 1) = mult(e, cs3(0)) = cs3(0) = e **)
+                          apply Hc3ne.
+                          claim Hwp_m_eq : word_product mult e cs3 m = word_product mult e cs3 1.
+                          { rewrite Hm1. reflexivity. }
+                          claim Hwp1 : word_product mult e cs3 1 = apply_fun mult (e, apply_fun cs3 0).
+                          { prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun cs3 i)) 1 =
+                              apply_fun mult (e, apply_fun cs3 0).
+                            rewrite <- ordsucc_0_eq_1_nat.
+                            rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, apply_fun cs3 i)) 0 nat_0).
+                            rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun cs3 i))).
+                            reflexivity. }
+                          claim Hid_cs30 : apply_fun mult (e, apply_fun cs3 0) = apply_fun cs3 0.
+                          { exact (andEL (apply_fun mult (e, apply_fun cs3 0) = apply_fun cs3 0)
+                              (apply_fun mult (apply_fun cs3 0, e) = apply_fun cs3 0)
+                              (Hid (apply_fun cs3 0) Hcs30_G)). }
+                          exact (eq_i_tra c3 (word_product mult e cs3 1) e
+                            (eq_i_tra c3 (word_product mult e cs3 m) (word_product mult e cs3 1)
+                              (eq_symm (word_product mult e cs3 m) c3 Hwp3) Hwp_m_eq)
+                            (eq_i_tra (word_product mult e cs3 1)
+                              (apply_fun mult (e, apply_fun cs3 0))
+                              e Hwp1
+                              (eq_i_tra (apply_fun mult (e, apply_fun cs3 0))
+                                (apply_fun cs3 0) e Hid_cs30 Hcs30_e))).
+                        - assume Hm_ne1 : m <> 1.
+                          exact (reduced_word_no_eG_all G mult e inv J Gfam efam m cs3
+                            Hgrp Hsubfam Hred3 Hm_ne0 Hm_ne1 0 H0_in_m Hcs30_e). }
+                      claim Hinvcs30_Gd2 : apply_fun inv (apply_fun cs3 0) :e apply_fun Gfam delta2.
+                      { exact (HGfam_inv delta2 Hd2J (apply_fun cs3 0) Hcs30_Gd2). }
+                      claim Hinvcs30_ne : apply_fun inv (apply_fun cs3 0) <> e.
+                      { assume Hie : apply_fun inv (apply_fun cs3 0) = e.
+                        apply Hcs30_ne_e.
+                        claim Hrinv : apply_fun mult (apply_fun inv (apply_fun cs3 0), apply_fun cs3 0) = e.
+                        { exact (andER (apply_fun mult (apply_fun cs3 0, apply_fun inv (apply_fun cs3 0)) = e)
+                            (apply_fun mult (apply_fun inv (apply_fun cs3 0), apply_fun cs3 0) = e)
+                            (Hinverse (apply_fun cs3 0) Hcs30_G)). }
+                        claim Hid_cs30 : apply_fun mult (e, apply_fun cs3 0) = apply_fun cs3 0.
+                        { exact (andEL (apply_fun mult (e, apply_fun cs3 0) = apply_fun cs3 0)
+                            (apply_fun mult (apply_fun cs3 0, e) = apply_fun cs3 0)
+                            (Hid (apply_fun cs3 0) Hcs30_G)). }
+                        claim Hid_cs30_sym : apply_fun cs3 0 = apply_fun mult (e, apply_fun cs3 0).
+                        { symmetry. exact Hid_cs30. }
+                        rewrite Hid_cs30_sym.
+                        prove apply_fun mult (e, apply_fun cs3 0) = e.
+                        rewrite <- Hie at 1.
+                        exact Hrinv. }
+                      (** Check: inv(cs3(0)) = efam(delta2)? If so, _pre gives False **)
+                      apply (xm (apply_fun inv (apply_fun cs3 0) = apply_fun efam delta2)).
+                      { assume Hinv_efam : apply_fun inv (apply_fun cs3 0) = apply_fun efam delta2.
+                        claim Hefam_Gd2 : apply_fun efam delta2 :e apply_fun Gfam delta2.
+                        { rewrite <- Hinv_efam. exact Hinvcs30_Gd2. }
+                        claim Hefam_ne : apply_fun efam delta2 <> e.
+                        { rewrite <- Hinv_efam. exact Hinvcs30_ne. }
+                        exact (FalseE (efam_not_in_Gfam_nontrivial_pre G mult e inv J Gfam efam Hfp delta2 Hd2J Hefam_Gd2 Hefam_ne) (y3 = e)). }
+                      { assume Hinv_ne_efam : apply_fun inv (apply_fun cs3 0) <> apply_fun efam delta2.
+                        (** Build reduced word [cs3(0), z_conj, inv(cs3(0))] of length 3 for y3 **)
+                        (** Adjacency: delta2 <> gamma, gamma <> delta2 **)
+                        set conj_word := graph 3 (fun i:set =>
+                          if i = 0 then apply_fun cs3 0
+                          else if i = 1 then z_conj
+                          else apply_fun inv (apply_fun cs3 0)).
+                        claim Hcw0 : apply_fun conj_word 0 = apply_fun cs3 0.
+                        { claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 (ordsuccI1 1 0 (ordsuccI2 0))). }
+                          claim Heval : apply_fun conj_word 0 =
+                            (if 0 = 0 then apply_fun cs3 0
+                             else if 0 = 1 then z_conj
+                             else apply_fun inv (apply_fun cs3 0)).
+                          { exact (apply_fun_graph 3 (fun i:set =>
+                              if i = 0 then apply_fun cs3 0
+                              else if i = 1 then z_conj
+                              else apply_fun inv (apply_fun cs3 0)) 0 H0in3). }
+                          rewrite Heval.
+                          exact (If_i_1 (0 = 0) (apply_fun cs3 0)
+                            (if 0 = 1 then z_conj else apply_fun inv (apply_fun cs3 0))
+                            (fun q H => H)). }
+                        claim Hcw1 : apply_fun conj_word 1 = z_conj.
+                        { claim H1in3 : 1 :e 3.
+                          { exact (ordsuccI1 2 1 (ordsuccI2 1)). }
+                          claim Heval : apply_fun conj_word 1 =
+                            (if 1 = 0 then apply_fun cs3 0
+                             else if 1 = 1 then z_conj
+                             else apply_fun inv (apply_fun cs3 0)).
+                          { exact (apply_fun_graph 3 (fun i:set =>
+                              if i = 0 then apply_fun cs3 0
+                              else if i = 1 then z_conj
+                              else apply_fun inv (apply_fun cs3 0)) 1 H1in3). }
+                          rewrite Heval.
+                          claim H10 : 1 <> 0. { exact (neq_ordsucc_0 0). }
+                          rewrite (If_i_0 (1 = 0) (apply_fun cs3 0)
+                            (if 1 = 1 then z_conj else apply_fun inv (apply_fun cs3 0)) H10).
+                          exact (If_i_1 (1 = 1) z_conj (apply_fun inv (apply_fun cs3 0)) (fun q H => H)). }
+                        claim Hcw2 : apply_fun conj_word 2 = apply_fun inv (apply_fun cs3 0).
+                        { claim H2in3 : 2 :e 3. { exact (ordsuccI2 2). }
+                          claim Heval : apply_fun conj_word 2 =
+                            (if 2 = 0 then apply_fun cs3 0
+                             else if 2 = 1 then z_conj
+                             else apply_fun inv (apply_fun cs3 0)).
+                          { exact (apply_fun_graph 3 (fun i:set =>
+                              if i = 0 then apply_fun cs3 0
+                              else if i = 1 then z_conj
+                              else apply_fun inv (apply_fun cs3 0)) 2 H2in3). }
+                          rewrite Heval.
+                          claim H20 : 2 <> 0. { exact (neq_2_0). }
+                          rewrite (If_i_0 (2 = 0) (apply_fun cs3 0)
+                            (if 2 = 1 then z_conj else apply_fun inv (apply_fun cs3 0)) H20).
+                          claim H21 : 2 <> 1.
+                          { assume H : 2 = 1. claim H10 : 1 = 0. { exact (ordsucc_inj 1 0 H). }
+                            exact (neq_ordsucc_0 0 H10). }
+                          exact (If_i_0 (2 = 1) z_conj (apply_fun inv (apply_fun cs3 0)) H21). }
+                        (** Build reduced_word for [cs3(0), z_conj, inv(cs3(0))] of length 3 **)
+                        (** Entries in correct factors, adjacent entries in different factors **)
+                        claim Hred_cw : reduced_word J Gfam efam 3 conj_word.
+                        { admit. (** reduced word verification for length-3 conjugation word **)
+                        }
+                        (** word_product of conj_word = y3 **)
+                        claim Hwp_cw : word_product mult e conj_word 3 = y3.
+                        { admit. (** word product evaluation: mult(mult(cs3(0), z_conj), inv(cs3(0))) = y3 **)
+                        }
+                        (** y3 has reduced word of length 1 **)
+                        claim Hy3_len1 : 3 = 1.
+                        { exact (free_product_factor_element_length1 G mult e inv J Gfam efam beta y3 3 conj_word
+                            Hfp HbeJ Hy3Gb Hy3_ne Hy3_ne_efam Hred_cw (neq_ordsucc_0 2) Hwp_cw). }
+                        (** 3 = 1 is false **)
+                        claim H3ne1 : 3 <> 1.
+                        { assume H31 : 3 = 1. claim H20 : 2 = 0. { exact (ordsucc_inj 2 0 H31). }
+                          exact (neq_2_0 H20). }
+                        exact (FalseE (H3ne1 Hy3_len1) (y3 = e)). } }
+                    (** Case: nz <> 1 (z_conj not in any single factor, reduced word length >= 2) **)
+                    { assume Hnz_ne1 : nz <> 1.
+                      (** z_conj has reduced word length >= 2. **)
+                      (** Conjugation by cs3(0) gives a word of length >= nz >= 2 for y3. **)
+                      (** But y3 has reduced word length 1 by factor_element_length1. Contradiction. **)
+                      (** The boundary merging analysis is complex; admit for now. **)
+                      admit. } }
     }
     (** Apply the main inductive claim to our specific c, x **)
     (** Get reduced word info **)
