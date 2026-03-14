@@ -159990,6 +159990,468 @@ apply andI.
     HmidHom).
 Qed.
 
+(** Infrastructure: inclusion S^n -> R^{n+1} is continuous. **)
+(** Proven Charlie **)
+Lemma Sn_inclusion_euclidean_continuous : forall n:set,
+  continuous_map
+    (Sn n)
+    (Sn_topology n)
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (graph (Sn n) (fun x:set => x)).
+let n.
+claim HSnSub :
+  Sn n c= euclidean_space (ordsucc n).
+{
+  exact (Sep_Subq
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)).
+}
+claim HSnTopEq :
+  Sn_topology n =
+  subspace_topology
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (Sn n).
+{
+  reflexivity.
+}
+exact (continuous_map_range_expand
+  (Sn n)
+  (Sn_topology n)
+  (Sn n)
+  (Sn_topology n)
+  (euclidean_space (ordsucc n))
+  (euclidean_topology (ordsucc n))
+  (graph (Sn n) (fun x:set => x))
+  (identity_continuous
+    (Sn n)
+    (Sn_topology n)
+    (subspace_topology_is_topology
+      (euclidean_space (ordsucc n))
+      (euclidean_topology (ordsucc n))
+      (Sn n)
+      (euclidean_topology_is_topology
+        (ordsucc n))
+      HSnSub))
+  HSnSub
+  (euclidean_topology_is_topology
+    (ordsucc n))
+  HSnTopEq).
+Qed.
+
+(** Infrastructure: inclusion S^n -> R^{n+1} minus origin is continuous. **)
+(** Proven Charlie **)
+Lemma Sn_inclusion_Rn_minus_origin_continuous : forall n:set,
+  n :e omega ->
+  continuous_map
+    (Sn n)
+    (Sn_topology n)
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    (graph (Sn n) (fun x:set => x)).
+let n.
+assume Hn_om.
+claim HSnSubNz :
+  Sn n c= Rn_minus_origin (ordsucc n).
+{
+  let x.
+  assume HxSn.
+  exact (Sn_subset_Rn_minus_origin
+    n
+    x
+    Hn_om
+    HxSn).
+}
+claim HSnTopEqNz :
+  Sn_topology n =
+  subspace_topology
+    (Rn_minus_origin (ordsucc n))
+    (Rn_minus_origin_topology (ordsucc n))
+    (Sn n).
+{
+  symmetry.
+  exact (subspace_topology_transitive_weak
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (Rn_minus_origin (ordsucc n))
+    (Sn n)
+    HSnSubNz).
+}
+exact (continuous_map_range_expand
+  (Sn n)
+  (Sn_topology n)
+  (Sn n)
+  (Sn_topology n)
+  (Rn_minus_origin (ordsucc n))
+  (Rn_minus_origin_topology (ordsucc n))
+  (graph (Sn n) (fun x:set => x))
+  (identity_continuous
+    (Sn n)
+    (Sn_topology n)
+    (subspace_topology_is_topology
+      (euclidean_space (ordsucc n))
+      (euclidean_topology (ordsucc n))
+      (Sn n)
+      (euclidean_topology_is_topology
+        (ordsucc n))
+      (Sep_Subq
+        (euclidean_space (ordsucc n))
+        (fun v:set => euclidean_norm_sq (ordsucc n) v = 1))))
+  HSnSubNz
+  (subspace_topology_is_topology
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (Rn_minus_origin (ordsucc n))
+    (euclidean_topology_is_topology
+      (ordsucc n))
+    (Sep_Subq
+      (euclidean_space (ordsucc n))
+      (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))))
+  HSnTopEqNz).
+Qed.
+
+(** Infrastructure: coordinate functions on S^n are continuous. **)
+(** Proven Charlie **)
+Lemma Sn_coord_continuous : forall n i:set,
+  n :e omega ->
+  i :e ordsucc n ->
+  continuous_map
+    (Sn n)
+    (Sn_topology n)
+    R
+    R_standard_topology
+    (graph (Sn n) (fun x:set => apply_fun x i)).
+let n i.
+assume Hn_om Hi.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim HincCont :
+  continuous_map
+    (Sn n)
+    (Sn_topology n)
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (graph (Sn n) (fun x:set => x)).
+{
+  exact (Sn_inclusion_euclidean_continuous
+    n).
+}
+claim HcoordCont :
+  continuous_map
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    R
+    R_standard_topology
+    (graph (euclidean_space (ordsucc n)) (fun x:set => apply_fun x i)).
+{
+  exact (euclidean_coord_continuous
+    (ordsucc n)
+    i
+    (nat_ordsucc
+      n
+      Hn_nat)
+    Hi).
+}
+claim HcompCont :
+  continuous_map
+    (Sn n)
+    (Sn_topology n)
+    R
+    R_standard_topology
+    (compose_fun
+      (Sn n)
+      (graph (Sn n) (fun x:set => x))
+      (graph (euclidean_space (ordsucc n)) (fun x:set => apply_fun x i))).
+{
+  exact (composition_continuous
+    (Sn n)
+    (Sn_topology n)
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    R
+    R_standard_topology
+    (graph (Sn n) (fun x:set => x))
+    (graph (euclidean_space (ordsucc n)) (fun x:set => apply_fun x i))
+    HincCont
+    HcoordCont).
+}
+claim HcoordFun :
+  function_on
+    (graph (Sn n) (fun x:set => apply_fun x i))
+    (Sn n)
+    R.
+{
+  exact (function_on_of_function_space
+    (graph (Sn n) (fun x:set => apply_fun x i))
+    (Sn n)
+    R
+    (graph_in_function_space
+      (Sn n)
+      R
+      (fun x:set => apply_fun x i)
+      (fun x Hx =>
+        euclidean_space_coord_in_R
+          (ordsucc n)
+          x
+          i
+          (SepE1
+            (euclidean_space (ordsucc n))
+            (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+            x
+            Hx)
+          Hi))).
+}
+claim HcoordEqOn :
+  forall x:set, x :e Sn n ->
+    apply_fun
+      (compose_fun
+        (Sn n)
+        (graph (Sn n) (fun z:set => z))
+        (graph (euclidean_space (ordsucc n)) (fun z:set => apply_fun z i)))
+      x
+    =
+    apply_fun
+      (graph (Sn n) (fun z:set => apply_fun z i))
+      x.
+{
+  let x.
+  assume Hx.
+  rewrite (compose_fun_apply
+    (Sn n)
+    (graph (Sn n) (fun z:set => z))
+    (graph (euclidean_space (ordsucc n)) (fun z:set => apply_fun z i))
+    x
+    Hx).
+  rewrite (apply_fun_graph
+    (Sn n)
+    (fun z:set => z)
+    x
+    Hx).
+  exact (eq_i_tra
+    (apply_fun
+      (graph (euclidean_space (ordsucc n)) (fun z:set => apply_fun z i))
+      x)
+    (apply_fun x i)
+    (apply_fun
+      (graph (Sn n) (fun z:set => apply_fun z i))
+      x)
+    (apply_fun_graph
+      (euclidean_space (ordsucc n))
+      (fun z:set => apply_fun z i)
+      x
+      (SepE1
+        (euclidean_space (ordsucc n))
+        (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+        x
+        Hx))
+    (eq_symm
+      (apply_fun (graph (Sn n) (fun z:set => apply_fun z i)) x)
+      (apply_fun x i)
+      (apply_fun_graph
+        (Sn n)
+        (fun z:set => apply_fun z i)
+        x
+        Hx))).
+}
+exact (continuous_map_congr_on
+  (Sn n)
+  (Sn_topology n)
+  R
+  R_standard_topology
+  (compose_fun
+    (Sn n)
+    (graph (Sn n) (fun x:set => x))
+    (graph (euclidean_space (ordsucc n)) (fun x:set => apply_fun x i)))
+  (graph (Sn n) (fun x:set => apply_fun x i))
+  HcompCont
+  HcoordFun
+  HcoordEqOn).
+Qed.
+
+(** Infrastructure: a map on S^n that extends over B^{n+1} is nulhomotopic. **)
+(** Proven Charlie **)
+Lemma Sn_extends_to_Bn_closed_implies_nulhomotopic :
+  forall n Y Ty h k:set,
+    n :e omega ->
+    continuous_map (Sn n) (Sn_topology n) Y Ty h ->
+    continuous_map (Bn_closed n) (Bn_closed_topology n) Y Ty k ->
+    (forall x:set, x :e Sn n -> apply_fun h x = apply_fun k x) ->
+    nulhomotopic (Sn n) (Sn_topology n) Y Ty h.
+let n Y Ty h k.
+assume Hn_om HhCont HkCont Hext.
+claim HtopSn :
+  topology_on (Sn n) (Sn_topology n).
+{
+  exact (continuous_map_topology_dom
+    (Sn n)
+    (Sn_topology n)
+    Y
+    Ty
+    h
+    HhCont).
+}
+claim HtopY :
+  topology_on Y Ty.
+{
+  exact (continuous_map_topology_cod
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    Y
+    Ty
+    k
+    HkCont).
+}
+set y0 := apply_fun k (Rn_zero (ordsucc n)).
+claim HzeroB :
+  Rn_zero (ordsucc n) :e Bn_closed n.
+{
+  exact (Rn_zero_in_Bn_closed
+    n
+    Hn_om).
+}
+claim Hy0Y : y0 :e Y.
+{
+  exact (continuous_map_function_on
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    Y
+    Ty
+    k
+    HkCont
+    (Rn_zero (ordsucc n))
+    HzeroB).
+}
+claim HnulDef :
+  nulhomotopic (Sn n) (Sn_topology n) Y Ty h
+  =
+  (exists y:set, y :e Y /\
+    homotopic_maps
+      (Sn n)
+      (Sn_topology n)
+      Y
+      Ty
+      h
+      (const_fun (Sn n) y)).
+{
+  reflexivity.
+}
+rewrite HnulDef.
+witness y0.
+apply andI.
+- exact Hy0Y.
+- claim HhomDef :
+    homotopic_maps
+      (Sn n)
+      (Sn_topology n)
+      Y
+      Ty
+      h
+      (const_fun (Sn n) y0)
+    =
+    (continuous_map (Sn n) (Sn_topology n) Y Ty h /\
+     continuous_map (Sn n) (Sn_topology n) Y Ty (const_fun (Sn n) y0) /\
+     exists F:set,
+       continuous_map (setprod (Sn n) unit_interval)
+         (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+         Y Ty F /\
+       (forall x:set, x :e Sn n ->
+         apply_fun F (x, 0) = apply_fun h x) /\
+       (forall x:set, x :e Sn n ->
+         apply_fun F (x, 1) = apply_fun (const_fun (Sn n) y0) x)).
+  {
+    reflexivity.
+  }
+  rewrite HhomDef.
+  apply andI.
+  * apply andI.
+    { exact HhCont. }
+    { exact (const_fun_continuous
+        (Sn n)
+        (Sn_topology n)
+        Y
+        Ty
+        y0
+        HtopSn
+        HtopY
+        Hy0Y). }
+  * witness (compose_fun
+      (setprod (Sn n) unit_interval)
+      (Sn_radial_collapse_map n)
+      k).
+    apply andI.
+    { apply andI.
+      - exact (composition_continuous
+          (setprod (Sn n) unit_interval)
+          (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+          (Bn_closed n)
+          (Bn_closed_topology n)
+          Y
+          Ty
+          (Sn_radial_collapse_map n)
+          k
+          (Sn_radial_collapse_map_continuous
+            n
+            Hn_om)
+          HkCont).
+      - let x.
+        assume HxSn.
+        rewrite (compose_fun_apply
+          (setprod (Sn n) unit_interval)
+          (Sn_radial_collapse_map n)
+          k
+          (x, 0)
+          (tuple_2_setprod_by_pair_Sigma
+            (Sn n)
+            unit_interval
+            x
+            0
+            HxSn
+            zero_in_unit_interval)).
+        rewrite (Sn_radial_collapse_map_bottom_is_inclusion
+          n
+          x
+          Hn_om
+          HxSn).
+        exact (eq_symm
+          (apply_fun h x)
+          (apply_fun k x)
+          (Hext
+            x
+            HxSn)). }
+    { let x.
+      assume HxSn.
+      rewrite (compose_fun_apply
+        (setprod (Sn n) unit_interval)
+        (Sn_radial_collapse_map n)
+        k
+        (x, 1)
+        (tuple_2_setprod_by_pair_Sigma
+          (Sn n)
+          unit_interval
+          x
+          1
+          HxSn
+          one_in_unit_interval)).
+      rewrite (Sn_radial_collapse_map_top_collapses
+        n
+        x
+        Hn_om
+        HxSn).
+      exact (eq_symm
+        (apply_fun (const_fun (Sn n) y0) x)
+        y0
+        (const_fun_apply
+          (Sn n)
+          y0
+          x
+          HxSn)). }
+Qed.
+
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
