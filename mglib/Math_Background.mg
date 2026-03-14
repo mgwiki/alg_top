@@ -437968,6 +437968,98 @@ apply iffI.
     Hsplit).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_pack_swap_conj :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH /\
+    equip JH (ordsucc (mul_SNo k n))) ->
+  exists JH gensH:set,
+    equip JH (ordsucc (mul_SNo k n)) /\
+    free_group_with_generators H multH eH invH JH gensH.
+let H multH eH invH n k.
+assume HpackEx.
+apply HpackEx.
+let JH.
+assume HJHex.
+apply HJHex.
+let gensH.
+assume Hpack.
+witness JH.
+witness gensH.
+apply andI.
+- exact (andER
+    (free_group_with_generators H multH eH invH JH gensH)
+    (equip JH (ordsucc (mul_SNo k n)))
+    Hpack).
+- exact (andEL
+    (free_group_with_generators H multH eH invH JH gensH)
+    (equip JH (ordsucc (mul_SNo k n)))
+    Hpack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_pack_swap_conj_back :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set,
+    equip JH (ordsucc (mul_SNo k n)) /\
+    free_group_with_generators H multH eH invH JH gensH) ->
+  exists JH gensH:set,
+    free_group_with_generators H multH eH invH JH gensH /\
+    equip JH (ordsucc (mul_SNo k n)).
+let H multH eH invH n k.
+assume HpackEx.
+apply HpackEx.
+let JH.
+assume HJHex.
+apply HJHex.
+let gensH.
+assume Hpack.
+witness JH.
+witness gensH.
+apply andI.
+- exact (andER
+    (equip JH (ordsucc (mul_SNo k n)))
+    (free_group_with_generators H multH eH invH JH gensH)
+    Hpack).
+- exact (andEL
+    (equip JH (ordsucc (mul_SNo k n)))
+    (free_group_with_generators H multH eH invH JH gensH)
+    Hpack).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_pack_iff_swap_conj :
+  forall H multH eH invH n k:set,
+  ((exists JH gensH:set,
+      free_group_with_generators H multH eH invH JH gensH /\
+      equip JH (ordsucc (mul_SNo k n)))
+   <->
+   (exists JH gensH:set,
+      equip JH (ordsucc (mul_SNo k n)) /\
+      free_group_with_generators H multH eH invH JH gensH)).
+let H multH eH invH n k.
+apply iffI.
+- assume HpackEx.
+  exact (thm85_3_free_gen_formula_exists_pack_swap_conj
+    H
+    multH
+    eH
+    invH
+    n
+    k
+    HpackEx).
+- assume HpackEx.
+  exact (thm85_3_free_gen_formula_exists_pack_swap_conj_back
+    H
+    multH
+    eH
+    invH
+    n
+    k
+    HpackEx).
+Qed.
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
