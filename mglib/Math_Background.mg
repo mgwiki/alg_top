@@ -153007,8 +153007,143 @@ Lemma positive_ray_sqrt_map_continuous_to_R :
     R
     R_standard_topology
     positive_ray_sqrt_map.
-admit.
-Admitted.
+claim HtopP :
+  topology_on
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0)).
+{
+  exact (subspace_topology_is_topology
+    R
+    R_standard_topology
+    (open_ray_upper R 0)
+    R_standard_topology_is_topology
+    (Sep_Subq
+      R
+      (fun x:set => order_rel R 0 x))).
+}
+claim Hpre :
+  forall s:set,
+    s :e open_rays_subbasis R ->
+    preimage_of
+      (open_ray_upper R 0)
+      positive_ray_sqrt_map
+      s
+    :e
+    subspace_topology
+      R
+      R_standard_topology
+      (open_ray_upper R 0).
+{
+  let s.
+  assume HsSub.
+  apply (binunionE
+    ({I :e Power R|exists a :e R, I = open_ray_upper R a} :\/:
+     {I :e Power R|exists b :e R, I = open_ray_lower R b})
+    {R}
+    s
+    HsSub).
+  - assume HsRay.
+    apply (binunionE
+      {I :e Power R|exists a :e R, I = open_ray_upper R a}
+      {I :e Power R|exists b :e R, I = open_ray_lower R b}
+      s
+      HsRay).
+    + assume HsUpper.
+      claim HsUpperEx : exists a, a :e R /\ s = open_ray_upper R a.
+      {
+        exact (SepE2
+          (Power R)
+          (fun I:set => exists a :e R, I = open_ray_upper R a)
+          s
+          HsUpper).
+      }
+      apply HsUpperEx.
+      let a.
+      assume HaPack.
+      rewrite (andER
+        (a :e R)
+        (s = open_ray_upper R a)
+        HaPack).
+      exact (positive_ray_sqrt_map_preimage_open_ray_upper_open
+        a
+        (andEL
+          (a :e R)
+          (s = open_ray_upper R a)
+          HaPack)).
+    + assume HsLower.
+      claim HsLowerEx : exists b, b :e R /\ s = open_ray_lower R b.
+      {
+        exact (SepE2
+          (Power R)
+          (fun I:set => exists b :e R, I = open_ray_lower R b)
+          s
+          HsLower).
+      }
+      apply HsLowerEx.
+      let b.
+      assume HbPack.
+      rewrite (andER
+        (b :e R)
+        (s = open_ray_lower R b)
+        HbPack).
+      exact (positive_ray_sqrt_map_preimage_open_ray_lower_open
+        b
+        (andEL
+          (b :e R)
+          (s = open_ray_lower R b)
+          HbPack)).
+  - assume HsR.
+    rewrite (SingE
+      R
+      s
+      HsR).
+    rewrite (preimage_of_whole
+      (open_ray_upper R 0)
+      R
+      positive_ray_sqrt_map
+      positive_ray_sqrt_map_function_on_R).
+    exact (topology_has_X
+      (open_ray_upper R 0)
+      (subspace_topology R R_standard_topology (open_ray_upper R 0))
+      HtopP).
+}
+claim HcontGen :
+  continuous_map
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0))
+    R
+    (generated_topology_from_subbasis R (open_rays_subbasis R))
+    positive_ray_sqrt_map.
+{
+  exact (continuous_map_from_subbasis
+    (open_ray_upper R 0)
+    (subspace_topology R R_standard_topology (open_ray_upper R 0))
+    R
+    (open_rays_subbasis R)
+    positive_ray_sqrt_map
+    HtopP
+    positive_ray_sqrt_map_function_on_R
+    (open_rays_subbasis_is_subbasis
+      R)
+    Hpre).
+}
+claim HgenStd :
+  generated_topology_from_subbasis R (open_rays_subbasis R) =
+  R_standard_topology.
+{
+  rewrite open_rays_subbasis_for_order_topology_R.
+  exact standard_topology_is_order_topology.
+}
+exact (HgenStd
+  (fun T _ =>
+    continuous_map
+      (open_ray_upper R 0)
+      (subspace_topology R R_standard_topology (open_ray_upper R 0))
+      R
+      T
+      positive_ray_sqrt_map)
+  HcontGen).
+Qed.
 
 Lemma positive_ray_sqrt_map_continuous :
   continuous_map
@@ -153017,8 +153152,22 @@ Lemma positive_ray_sqrt_map_continuous :
     (open_ray_upper R 0)
     (subspace_topology R R_standard_topology (open_ray_upper R 0))
     positive_ray_sqrt_map.
-admit.
-Admitted.
+exact (continuous_map_range_restrict
+  (open_ray_upper R 0)
+  (subspace_topology R R_standard_topology (open_ray_upper R 0))
+  R
+  R_standard_topology
+  positive_ray_sqrt_map
+  (open_ray_upper R 0)
+  positive_ray_sqrt_map_continuous_to_R
+  (Sep_Subq
+    R
+    (fun x:set => order_rel R 0 x))
+  (fun t Ht =>
+    positive_ray_sqrt_map_function_on
+      t
+      Ht)).
+Qed.
 
 (** Infrastructure: points on S^n are nonzero vectors in R^{n+1}. **)
 (** Proven Charlie **)
