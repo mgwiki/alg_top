@@ -282122,13 +282122,51 @@ set xsw_pre := graph m (fun i:set => apply_fun xs i).
 claim Hred_pre : reduced_word J Gfam efam m xsw_pre.
 { exact (reduced_word_prefix J Gfam efam n xs m Hredw Hm_nw). }
 (** Step 2: Append z to get word of length ordsucc m = n **)
-(** Adjacency: last entry of prefix is xsw(m-1), NOT in Gfam(beta) **)
-(** (by adjacency with xsw(m) in Gfam(beta)). z in Gfam(beta). **)
+claim Hz_Gb : z :e apply_fun Gfam beta.
+{ rewrite Hz_def.
+  apply (and4E (apply_fun Gfam beta c= G) (e :e apply_fun Gfam beta)
+    (forall x y:set, x :e apply_fun Gfam beta -> y :e apply_fun Gfam beta ->
+       apply_fun mult (x, y) :e apply_fun Gfam beta)
+    (forall x:set, x :e apply_fun Gfam beta -> apply_fun inv x :e apply_fun Gfam beta)
+    (Hsubfam beta HbJ)).
+  assume _ _ Hmc _. exact (Hmc (apply_fun xs m) (apply_fun xs 0) Hxsm_Gb Hxs0_Gb). }
 claim Hlast_pre : forall k a2 b2:set, m = ordsucc k -> a2 :e J -> b2 :e J ->
   apply_fun xsw_pre k :e apply_fun Gfam a2 -> z :e apply_fun Gfam b2 -> a2 <> b2.
-{ admit. }
-claim Hz_Gb : z :e apply_fun Gfam beta.
-{ admit. }
+{ let k a2 b2. assume Hm_sk Ha2J Hb2J Hxsk_Ga2 Hz_Gb2.
+  claim Hk_m : k :e m. { rewrite Hm_sk. exact (ordsuccI2 k). }
+  claim Hxsk_eq : apply_fun xsw_pre k = apply_fun xs k.
+  { exact (apply_fun_graph m (fun i:set => apply_fun xs i) k Hk_m). }
+  claim Hk_n : k :e n. { rewrite Hn_sm. exact (ordsuccI1 m k Hk_m). }
+  claim Hsk_n : ordsucc k :e n.
+  { claim Hsk_m : ordsucc k = m. { symmetry. exact Hm_sk. }
+    rewrite Hsk_m. exact Hm_nw. }
+  claim Hxsk_Ga2r : apply_fun xs k :e apply_fun Gfam a2.
+  { rewrite <- Hxsk_eq. exact Hxsk_Ga2. }
+  claim Hxsm_Gb2 : apply_fun xs (ordsucc k) :e apply_fun Gfam beta.
+  { claim Hsk_m : ordsucc k = m. { symmetry. exact Hm_sk. }
+    rewrite Hsk_m. exact Hxsm_Gb. }
+  (** xsw(k) in Gfam(a2), xsw(ordsucc k) = xsw(m) in Gfam(beta). **)
+  (** By reduced word adjacency: a2 != beta for the factor of xsw(ordsucc k). **)
+  claim Hn_ne0 : n <> 0. { rewrite Hn_sm. exact (neq_ordsucc_0 m). }
+  claim Hn_ne1 : n <> 1.
+  { assume Hn1 : n = 1.
+    exact (Hm_ne0 (ordsucc_inj m 0
+      (eq_i_tra (ordsucc m) n 1 (eq_symm n (ordsucc m) Hn_sm) Hn1))). }
+  claim Hxsk_ne_eG : apply_fun xs k <> e.
+  { exact (reduced_word_no_eG_all G mult e inv J Gfam efam n xs Hgrp Hsubfam Hredw Hn_ne0 Hn_ne1 k Hk_n). }
+  (** Extract adjacency from reduced word **)
+  apply (and3E (n :e omega)
+    (forall i:set, i :e n -> exists a:set, a :e J /\ apply_fun xs i :e apply_fun Gfam a /\ apply_fun xs i <> apply_fun efam a)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall a b:set, a :e J -> b :e J -> apply_fun xs i :e apply_fun Gfam a -> apply_fun xs (ordsucc i) :e apply_fun Gfam b -> a <> b)
+    Hredw).
+  assume _ _ Hadj.
+  claim Ha2_ne_beta : a2 <> beta.
+  { exact (Hadj k Hk_n Hsk_n a2 beta Ha2J HbJ Hxsk_Ga2r Hxsm_Gb2). }
+  claim Hb2_beta : b2 = beta.
+  { exact (eq_symm beta b2 (disjoint_subgroups_label_unique G mult e inv J Gfam beta b2 z
+      Hdisjoint HbJ Hb2J Hz_Gb Hz_Gb2 Hz_ne)). }
+  rewrite Hb2_beta. exact Ha2_ne_beta. }
 claim Hred_prez : reduced_word J Gfam efam (ordsucc m)
   (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xsw_pre i else z)).
 { exact (reduced_word_append_one_pre J Gfam efam m xsw_pre z beta Hred_pre Hm_ne0 HbJ Hz_Gb Hz_ne_efb Hlast_pre). }
