@@ -150759,6 +150759,335 @@ exact ((Rn_minus_origin_norm_sq_nonzero
   Hnorm0).
 Qed.
 
+(** Infrastructure: simplex3_set sits inside euclidean_space 3. **)
+(** Proven Charlie **)
+Lemma simplex3_set_sub_euclidean_space_3 :
+  simplex3_set c= euclidean_space 3.
+let v.
+assume HvS.
+claim HvTFG : total_function_on v 3 R /\ functional_graph v.
+{
+  exact (simplex3_set_total_functional
+    v
+    HvS).
+}
+claim HvTF : total_function_on v 3 R.
+{
+  exact (andEL
+    (total_function_on v 3 R)
+    (functional_graph v)
+    HvTFG).
+}
+claim HvFG : functional_graph v.
+{
+  exact (andER
+    (total_function_on v 3 R)
+    (functional_graph v)
+    HvTFG).
+}
+claim Hvfun : function_on v 3 R.
+{
+  exact (total_function_on_function_on
+    v
+    3
+    R
+    HvTF).
+}
+claim HvSub : v c= setprod 3 R.
+{
+  exact (simplex3_set_sub_setprod
+    v
+    HvS).
+}
+claim HvGraph : v = graph 3 (fun i:set => apply_fun v i).
+{
+  exact (total_functional_graph_eq_graph_of_apply_fun
+    v
+    3
+    R
+    HvTF
+    HvFG
+    HvSub).
+}
+rewrite HvGraph.
+claim Hpow : graph 3 (fun i:set => apply_fun v i) :e power_real 3.
+{
+  exact (graph_to_R_in_power_real
+    3
+    (fun i:set => apply_fun v i)
+    (fun i Hi => Hvfun i Hi)).
+}
+claim HeuEq : power_real 3 = euclidean_space 3.
+{
+  reflexivity.
+}
+rewrite <- HeuEq.
+exact Hpow.
+Qed.
+
+Definition simplex3_set_topology : set :=
+  subspace_topology (euclidean_space 3) (euclidean_topology 3) simplex3_set.
+
+(** Infrastructure: simplex3_to_triangular_region is continuous. **)
+(** Proven Charlie **)
+Lemma simplex3_to_triangular_region_continuous :
+  continuous_map
+    simplex3_set
+    simplex3_set_topology
+    triangular_region
+    triangular_region_topology
+    simplex3_to_triangular_region.
+set incS := graph simplex3_set (fun v:set => v).
+set ev0 := graph (euclidean_space 3) (fun x:set => apply_fun x 0).
+set ev1 := graph (euclidean_space 3) (fun x:set => apply_fun x 1).
+set x0 := compose_fun simplex3_set incS ev0.
+set x1 := compose_fun simplex3_set incS ev1.
+set raw := pair_map simplex3_set x0 x1.
+claim HsubS : simplex3_set c= euclidean_space 3.
+{
+  exact simplex3_set_sub_euclidean_space_3.
+}
+claim HE3top : topology_on (euclidean_space 3) (euclidean_topology 3).
+{
+  exact (euclidean_topology_is_topology
+    3).
+}
+claim HS3top : topology_on simplex3_set simplex3_set_topology.
+{
+  exact (subspace_topology_is_topology
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    simplex3_set
+    HE3top
+    HsubS).
+}
+claim HincSCont :
+  continuous_map
+    simplex3_set
+    simplex3_set_topology
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    incS.
+{
+  exact (subspace_inclusion_continuous
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    simplex3_set
+    HE3top
+    HsubS).
+}
+claim H0in3 : 0 :e 3.
+{
+  exact (ordsuccI1 2 0 In_0_2).
+}
+claim H1in3 : 1 :e 3.
+{
+  exact (ordsuccI1 2 1 In_1_2).
+}
+claim H3nat : nat_p 3.
+{
+  exact (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))).
+}
+claim Hev0Cont :
+  continuous_map
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    R
+    R_standard_topology
+    ev0.
+{
+  exact (euclidean_coord_continuous
+    3
+    0
+    H3nat
+    H0in3).
+}
+claim Hev1Cont :
+  continuous_map
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    R
+    R_standard_topology
+    ev1.
+{
+  exact (euclidean_coord_continuous
+    3
+    1
+    H3nat
+    H1in3).
+}
+claim Hx0Cont :
+  continuous_map
+    simplex3_set
+    simplex3_set_topology
+    R
+    R_standard_topology
+    x0.
+{
+  exact (composition_continuous
+    simplex3_set
+    simplex3_set_topology
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    R
+    R_standard_topology
+    incS
+    ev0
+    HincSCont
+    Hev0Cont).
+}
+claim Hx1Cont :
+  continuous_map
+    simplex3_set
+    simplex3_set_topology
+    R
+    R_standard_topology
+    x1.
+{
+  exact (composition_continuous
+    simplex3_set
+    simplex3_set_topology
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    R
+    R_standard_topology
+    incS
+    ev1
+    HincSCont
+    Hev1Cont).
+}
+claim HrawCont :
+  continuous_map
+    simplex3_set
+    simplex3_set_topology
+    (setprod R R)
+    R2_topology
+    raw.
+{
+  exact (maps_into_products
+    simplex3_set
+    simplex3_set_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    x0
+    x1
+    Hx0Cont
+    Hx1Cont).
+}
+claim HmapFun :
+  function_on simplex3_to_triangular_region simplex3_set (setprod R R).
+{
+  let v.
+  assume HvS.
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      ~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0) /\
+      ~(Rlt 1 (add_SNo (p 0) (p 1))))
+    (apply_fun simplex3_to_triangular_region v)
+    (simplex3_to_triangular_region_in_triangular_region
+      v
+      HvS)).
+}
+claim HrawEq :
+  forall v:set, v :e simplex3_set ->
+    apply_fun raw v = apply_fun simplex3_to_triangular_region v.
+{
+  let v.
+  assume HvS.
+  claim HvE3 : v :e euclidean_space 3.
+  {
+    exact (HsubS
+      v
+      HvS).
+  }
+  rewrite (pair_map_apply
+    simplex3_set
+    R
+    R
+    x0
+    x1
+    v
+    HvS).
+  rewrite (compose_fun_apply
+    simplex3_set
+    incS
+    ev0
+    v
+    HvS).
+  rewrite (apply_fun_graph
+    simplex3_set
+    (fun w:set => w)
+    v
+    HvS).
+  rewrite (apply_fun_graph
+    (euclidean_space 3)
+    (fun x:set => apply_fun x 0)
+    v
+    HvE3).
+  rewrite (compose_fun_apply
+    simplex3_set
+    incS
+    ev1
+    v
+    HvS).
+  rewrite (apply_fun_graph
+    simplex3_set
+    (fun w:set => w)
+    v
+    HvS).
+  rewrite (apply_fun_graph
+    (euclidean_space 3)
+    (fun x:set => apply_fun x 1)
+    v
+    HvE3).
+  rewrite (apply_fun_graph
+    simplex3_set
+    (fun v0:set => (apply_fun v0 0, apply_fun v0 1))
+    v
+    HvS).
+  reflexivity.
+}
+claim HmapR2Cont :
+  continuous_map
+    simplex3_set
+    simplex3_set_topology
+    (setprod R R)
+    R2_topology
+    simplex3_to_triangular_region.
+{
+  exact (continuous_map_congr_on
+    simplex3_set
+    simplex3_set_topology
+    (setprod R R)
+    R2_topology
+    raw
+    simplex3_to_triangular_region
+    HrawCont
+    HmapFun
+    HrawEq).
+}
+exact (continuous_map_range_restrict
+  simplex3_set
+  simplex3_set_topology
+  (setprod R R)
+  R2_topology
+  simplex3_to_triangular_region
+  triangular_region
+  HmapR2Cont
+  (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      ~(Rlt (p 0) 0) /\ ~(Rlt (p 1) 0) /\
+      ~(Rlt 1 (add_SNo (p 0) (p 1)))))
+  (fun v HvS =>
+    simplex3_to_triangular_region_in_triangular_region
+      v
+      HvS)).
+Qed.
+
 (** Infrastructure: the punctured-space inclusion into Euclidean space is continuous. **)
 (** Proven Charlie **)
 Lemma Rn_minus_origin_inclusion_continuous : forall n:set,
