@@ -151160,6 +151160,475 @@ apply (SNoLtLe_or
     (Rlt 0 s)).
 Qed.
 
+(** Infrastructure: on the positive ray, sqrt(t) < b iff t < b^2. **)
+(** Proven Charlie **)
+Lemma sqrt_SNo_nonneg_lt_iff_square_lt_pos : forall t b:set,
+  t :e R ->
+  Rlt 0 t ->
+  b :e R ->
+  Rlt 0 b ->
+  (Rlt (sqrt_SNo_nonneg t) b <-> Rlt t (mul_SNo b b)).
+let t b.
+assume HtR HtPos HbR HbPos.
+claim HtS : SNo t.
+{
+  exact (real_SNo
+    t
+    HtR).
+}
+claim HbS : SNo b.
+{
+  exact (real_SNo
+    b
+    HbR).
+}
+set s := sqrt_SNo_nonneg t.
+claim HsR : s :e R.
+{
+  exact (sqrt_SNo_nonneg_real
+    t
+    HtR
+    (SNoLe_of_Rle
+      0
+      t
+      (Rlt_implies_Rle
+        0
+        t
+        HtPos))).
+}
+claim HsS : SNo s.
+{
+  exact (real_SNo
+    s
+    HsR).
+}
+claim HsPos : Rlt 0 s.
+{
+  exact (sqrt_SNo_nonneg_pos_of_pos
+    t
+    HtR
+    HtPos).
+}
+claim HsSq : mul_SNo s s = t.
+{
+  exact (sqrt_SNo_nonneg_sqr
+    t
+    HtS
+    (SNoLe_of_Rle
+      0
+      t
+      (Rlt_implies_Rle
+        0
+        t
+        HtPos))).
+}
+apply (iffI
+  (Rlt (sqrt_SNo_nonneg t) b)
+  (Rlt t (mul_SNo b b))).
+- assume HsqrtLt.
+  claim HsqLt : mul_SNo s s < mul_SNo b b.
+  {
+    exact (pos_mul_SNo_Lt2
+      s
+      s
+      b
+      b
+      HsS
+      HsS
+      HbS
+      HbS
+      (RltE_lt
+        0
+        s
+        HsPos)
+      (RltE_lt
+        0
+        s
+        HsPos)
+      (RltE_lt
+        s
+        b
+        HsqrtLt)
+      (RltE_lt
+        s
+        b
+        HsqrtLt)).
+  }
+  exact (HsSq
+    (fun z _ => Rlt z (mul_SNo b b))
+    (RltI
+      (mul_SNo s s)
+      (mul_SNo b b)
+      (real_mul_SNo
+        s
+        HsR
+        s
+        HsR)
+      (real_mul_SNo
+        b
+        HbR
+        b
+        HbR)
+      HsqLt)).
+- assume HsqLtR.
+  apply (SNoLt_trichotomy_or_impred
+    s
+    b
+    HsS
+    HbS).
+  + assume Hsltb.
+    exact (RltI
+      s
+      b
+      HsR
+      HbR
+      Hsltb).
+  + assume Heq.
+    claim Hneq : ~ (Rlt t (mul_SNo b b)).
+    {
+      claim HtEqbb : t = mul_SNo b b.
+      {
+        exact (eq_symm
+          (mul_SNo b b)
+          t
+          (Heq
+            (fun z _ => mul_SNo z z = t)
+            HsSq)).
+      }
+      exact ((eq_symm
+        t
+        (mul_SNo b b)
+        HtEqbb)
+        (fun z _ => ~ (Rlt z (mul_SNo b b)))
+        (not_Rlt_refl
+          (mul_SNo b b)
+          (real_mul_SNo
+            b
+            HbR
+            b
+            HbR))).
+    }
+    exact (FalseE
+      (Hneq
+        HsqLtR)
+      (Rlt (sqrt_SNo_nonneg t) b)).
+  + assume Hblts.
+    claim HbbLt : mul_SNo b b < mul_SNo s s.
+    {
+      exact (pos_mul_SNo_Lt2
+        b
+        b
+        s
+        s
+        HbS
+        HbS
+        HsS
+        HsS
+        (RltE_lt
+          0
+          b
+          HbPos)
+        (RltE_lt
+          0
+          b
+          HbPos)
+        Hblts
+        Hblts).
+    }
+    claim Hcontra : ~ (Rlt t (mul_SNo b b)).
+    {
+      assume Hbad.
+      exact (not_Rlt_refl
+        t
+        HtR
+        (Rlt_tra
+          t
+          (mul_SNo b b)
+          t
+          Hbad
+          (HsSq
+            (fun z _ => Rlt (mul_SNo b b) z)
+            (RltI
+              (mul_SNo b b)
+              (mul_SNo s s)
+              (real_mul_SNo
+                b
+                HbR
+                b
+                HbR)
+              (real_mul_SNo
+                s
+                HsR
+                s
+                HsR)
+              HbbLt)))).
+    }
+    exact (FalseE
+      (Hcontra
+        HsqLtR)
+      (Rlt (sqrt_SNo_nonneg t) b)).
+Qed.
+
+(** Infrastructure: on the positive ray, a < sqrt(t) iff a^2 < t. **)
+(** Proven Charlie **)
+Lemma sqrt_SNo_nonneg_gt_iff_square_gt_pos : forall t a:set,
+  t :e R ->
+  Rlt 0 t ->
+  a :e R ->
+  Rlt 0 a ->
+  (Rlt a (sqrt_SNo_nonneg t) <-> Rlt (mul_SNo a a) t).
+let t a.
+assume HtR HtPos HaR HaPos.
+claim Hiff :
+  (Rlt (sqrt_SNo_nonneg t) a <-> Rlt t (mul_SNo a a)).
+{
+  exact (sqrt_SNo_nonneg_lt_iff_square_lt_pos
+    t
+    a
+    HtR
+    HtPos
+    HaR
+    HaPos).
+}
+apply (iffI
+  (Rlt a (sqrt_SNo_nonneg t))
+  (Rlt (mul_SNo a a) t)).
+- assume HaLt.
+  claim HaS : SNo a.
+  {
+    exact (real_SNo
+      a
+      HaR).
+  }
+  set s := sqrt_SNo_nonneg t.
+  claim HsR : s :e R.
+  {
+    exact (sqrt_SNo_nonneg_real
+      t
+      HtR
+      (SNoLe_of_Rle
+        0
+        t
+        (Rlt_implies_Rle
+          0
+          t
+          HtPos))).
+  }
+  claim HsS : SNo s.
+  {
+    exact (real_SNo
+      s
+      HsR).
+  }
+  claim HaaLt : mul_SNo a a < mul_SNo s s.
+  {
+    exact (pos_mul_SNo_Lt2
+      a
+      a
+      s
+      s
+      HaS
+      HaS
+      HsS
+      HsS
+      (RltE_lt
+        0
+        a
+        HaPos)
+      (RltE_lt
+        0
+        a
+        HaPos)
+      (RltE_lt
+        a
+        s
+        HaLt)
+      (RltE_lt
+        a
+        s
+        HaLt)).
+  }
+  exact ((sqrt_SNo_nonneg_sqr
+    t
+    (real_SNo
+      t
+      HtR)
+    (SNoLe_of_Rle
+      0
+      t
+      (Rlt_implies_Rle
+        0
+        t
+        HtPos)))
+    (fun z _ => Rlt (mul_SNo a a) z)
+    (RltI
+      (mul_SNo a a)
+      (mul_SNo s s)
+      (real_mul_SNo
+        a
+        HaR
+        a
+        HaR)
+      (real_mul_SNo
+        s
+        HsR
+        s
+        HsR)
+      HaaLt)).
+- assume HsqLt.
+  claim HaS : SNo a.
+  {
+    exact (real_SNo
+      a
+      HaR).
+  }
+  set s := sqrt_SNo_nonneg t.
+  claim HsR : s :e R.
+  {
+    exact (sqrt_SNo_nonneg_real
+      t
+      HtR
+      (SNoLe_of_Rle
+        0
+        t
+        (Rlt_implies_Rle
+          0
+          t
+          HtPos))).
+  }
+  claim HsS : SNo s.
+  {
+    exact (real_SNo
+      s
+      HsR).
+  }
+  apply (SNoLt_trichotomy_or_impred
+    a
+    s
+    HaS
+    HsS).
+  + assume Halt.
+    exact (RltI
+      a
+      s
+      HaR
+      HsR
+      Halt).
+  + assume Heq.
+    claim Hneq : ~ (Rlt (mul_SNo a a) t).
+    {
+      claim HaaEqt : mul_SNo a a = t.
+      {
+        exact ((eq_symm
+          a
+          s
+          Heq)
+          (fun z _ => mul_SNo z z = t)
+          (sqrt_SNo_nonneg_sqr
+            t
+            (real_SNo
+              t
+              HtR)
+            (SNoLe_of_Rle
+              0
+              t
+              (Rlt_implies_Rle
+                0
+                t
+                HtPos)))).
+      }
+      exact ((eq_symm
+        (mul_SNo a a)
+        t
+        HaaEqt)
+        (fun z _ => ~ (Rlt z t))
+        (not_Rlt_refl
+          t
+          HtR)).
+    }
+    exact (FalseE
+      (Hneq
+        HsqLt)
+      (Rlt a (sqrt_SNo_nonneg t))).
+  + assume Hslta.
+    claim Hcontra : ~ (Rlt (mul_SNo a a) t).
+    {
+      claim HssLt :
+        mul_SNo s s < mul_SNo a a.
+      {
+        exact (pos_mul_SNo_Lt2
+          s
+          s
+          a
+          a
+          HsS
+          HsS
+          HaS
+          HaS
+          (RltE_lt
+            0
+            s
+            (sqrt_SNo_nonneg_pos_of_pos
+              t
+              HtR
+              HtPos))
+          (RltE_lt
+            0
+            s
+            (sqrt_SNo_nonneg_pos_of_pos
+              t
+              HtR
+              HtPos))
+          Hslta
+          Hslta).
+      }
+      exact ((sqrt_SNo_nonneg_sqr
+        t
+        (real_SNo
+          t
+          HtR)
+        (SNoLe_of_Rle
+          0
+          t
+          (Rlt_implies_Rle
+            0
+            t
+            HtPos)))
+        (fun z _ => ~ (Rlt (mul_SNo a a) z))
+        (fun Hbad =>
+          not_Rlt_refl
+            (mul_SNo a a)
+            (real_mul_SNo
+              a
+              HaR
+              a
+              HaR)
+            (Rlt_tra
+              (mul_SNo a a)
+              (mul_SNo s s)
+              (mul_SNo a a)
+              Hbad
+              (RltI
+                (mul_SNo s s)
+                (mul_SNo a a)
+                (real_mul_SNo
+                  s
+                  HsR
+                  s
+                  HsR)
+                (real_mul_SNo
+                  a
+                  HaR
+                  a
+                  HaR)
+                HssLt)))).
+    }
+    exact (FalseE
+      (Hcontra
+        HsqLt)
+      (Rlt a (sqrt_SNo_nonneg t))).
+Qed.
+
 (** Infrastructure: the square map on the positive ray. **)
 Definition positive_ray_square_map : set :=
   graph (open_ray_upper R 0)
