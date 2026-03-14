@@ -79662,6 +79662,186 @@ exact (continuous_map_congr_on
   Hheq).
 Qed.
 
+(** Infrastructure: x |-> max(x,c) is continuous on R. **)
+(** Proven Charlie **)
+Theorem Rmax_const_right_continuous : forall c:set,
+  c :e R ->
+  continuous_map
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    (graph R (fun t:set => Rmax t c)).
+let c.
+assume HcR.
+claim HtopR : topology_on R R_standard_topology.
+{
+  exact R_standard_topology_is_topology_local.
+}
+set idR := graph R (fun t:set => t).
+claim HidCont : continuous_map R R_standard_topology R R_standard_topology idR.
+{
+  exact (identity_continuous
+    R
+    R_standard_topology
+    HtopR).
+}
+claim HconstCont :
+  continuous_map R R_standard_topology R R_standard_topology (const_fun R c).
+{
+  exact (const_fun_continuous
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    c
+    HtopR
+    R_standard_topology_is_topology_local
+    HcR).
+}
+set pairR := pair_map R idR (const_fun R c).
+claim HpairCont :
+  continuous_map R R_standard_topology (setprod R R) R2_topology pairR.
+{
+  exact (maps_into_products
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    idR
+    (const_fun R c)
+    HidCont
+    HconstCont).
+}
+set raw := compose_fun R pairR (graph (setprod R R) (fun p:set => Rmax (p 0) (p 1))).
+claim HrawCont :
+  continuous_map R R_standard_topology R R_standard_topology raw.
+{
+  exact (composition_continuous
+    R
+    R_standard_topology
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    pairR
+    (graph (setprod R R) (fun p:set => Rmax (p 0) (p 1)))
+    HpairCont
+    Rmax_pair_continuous).
+}
+claim HmaxVal :
+  forall t:set, t :e R -> Rmax t c :e R.
+{
+  let t.
+  assume HtR.
+  rewrite (Rmax_unfold
+    t
+    c).
+  apply (If_i_or
+    (Rlt t c)
+    c
+    t).
+  - assume Heq.
+    rewrite Heq.
+    exact HcR.
+  - assume Heq.
+    rewrite Heq.
+    exact HtR.
+}
+claim HmaxFun :
+  function_on
+    (graph R (fun t:set => Rmax t c))
+    R
+    R.
+{
+  exact (total_function_on_function_on
+    (graph R (fun t:set => Rmax t c))
+    R
+    R
+    (total_function_on_graph
+      R
+      R
+      (fun t:set => Rmax t c)
+      HmaxVal)).
+}
+claim HrawEq :
+  forall t:set, t :e R ->
+    apply_fun raw t = apply_fun (graph R (fun x:set => Rmax x c)) t.
+{
+  let t.
+  assume HtR.
+  rewrite (compose_fun_apply
+    R
+    pairR
+    (graph (setprod R R) (fun p:set => Rmax (p 0) (p 1)))
+    t
+    HtR).
+  rewrite (pair_map_apply
+    R
+    R
+    R
+    idR
+    (const_fun R c)
+    t
+    HtR).
+  rewrite (apply_fun_graph
+    R
+    (fun x:set => x)
+    t
+    HtR).
+  rewrite (const_fun_apply
+    R
+    c
+    t
+    HtR).
+  rewrite (apply_fun_graph
+    (setprod R R)
+    (fun p:set => Rmax (p 0) (p 1))
+    (t, c)
+    (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      t
+      c
+      HtR
+      HcR)).
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  rewrite (apply_fun_graph
+    R
+    (fun x:set => Rmax x c)
+    t
+    HtR).
+  reflexivity.
+}
+exact (continuous_map_congr_on
+  R
+  R_standard_topology
+  R
+  R_standard_topology
+  raw
+  (graph R (fun t:set => Rmax t c))
+  HrawCont
+  HmaxFun
+  HrawEq).
+Qed.
+
+(** Infrastructure: positive-part map x |-> max(x,0) is continuous. **)
+(** Proven Charlie **)
+Theorem Rmax_zero_continuous :
+  continuous_map
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    (graph R (fun t:set => Rmax t 0)).
+exact (Rmax_const_right_continuous
+  0
+  real_0).
+Qed.
+
 (** Infrastructure: intersection of open intervals is an open interval with If-defined endpoints. **)
 (** Proven Charlie **)
 Theorem open_interval_binintersect_open_interval_eq :
