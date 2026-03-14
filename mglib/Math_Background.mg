@@ -1,6 +1,6 @@
 (** Balance Alice 7758 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 441 **)
+(** Balance Charlie 478 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -155084,14 +155084,677 @@ Qed.
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 37 **)
-(** Lock Charlie 1773519925 **)
+(** Collected Charlie 37 **)
+(** Proven Charlie **)
 Theorem ex55_4a_identity_Sn_not_nulhomotopic : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   ~(nulhomotopic (Sn n) (Sn_topology n) (Sn n) (Sn_topology n)
     (graph (Sn n) (fun x:set => x))).
-admit.
-Admitted.
+let n.
+assume Hn_om HnoRetr.
+assume Hnul.
+claim HtopSn : topology_on (Sn n) (Sn_topology n).
+{
+  exact (continuous_map_topology_dom
+    (Sn n)
+    (Sn_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (graph (Sn n) (fun x:set => x))
+    (Sn_inclusion_Bn_closed_continuous
+      n)).
+}
+apply Hnul.
+let y0.
+assume Hy0Pack.
+claim Hy0Sn : y0 :e Sn n.
+{
+  exact (andEL
+    (y0 :e Sn n)
+    (homotopic_maps
+      (Sn n)
+      (Sn_topology n)
+      (Sn n)
+      (Sn_topology n)
+      (graph (Sn n) (fun x:set => x))
+      (const_fun (Sn n) y0))
+    Hy0Pack).
+}
+claim Hhom :
+  homotopic_maps
+    (Sn n)
+    (Sn_topology n)
+    (Sn n)
+    (Sn_topology n)
+    (graph (Sn n) (fun x:set => x))
+    (const_fun (Sn n) y0).
+{
+  exact (andER
+    (y0 :e Sn n)
+    (homotopic_maps
+      (Sn n)
+      (Sn_topology n)
+      (Sn n)
+      (Sn_topology n)
+      (graph (Sn n) (fun x:set => x))
+      (const_fun (Sn n) y0))
+    Hy0Pack).
+}
+claim HhomPack :
+  exists F:set,
+    continuous_map
+      (setprod (Sn n) unit_interval)
+      (product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology)
+      (Sn n)
+      (Sn_topology n)
+      F /\
+    (forall x:set, x :e Sn n ->
+      apply_fun F (x, 0) = apply_fun (graph (Sn n) (fun z:set => z)) x) /\
+    (forall x:set, x :e Sn n ->
+      apply_fun F (x, 1) = apply_fun (const_fun (Sn n) y0) x).
+{
+  exact (homotopic_maps_has_witness
+    (Sn n)
+    (Sn_topology n)
+    (Sn n)
+    (Sn_topology n)
+    (graph (Sn n) (fun x:set => x))
+    (const_fun (Sn n) y0)
+    Hhom).
+}
+apply HhomPack.
+let F.
+assume HFPack.
+set dom := setprod (Sn n) unit_interval.
+set Tdom := product_topology (Sn n) (Sn_topology n) unit_interval unit_interval_topology.
+set q := Sn_radial_collapse_map n.
+claim HFPair :
+  continuous_map dom Tdom (Sn n) (Sn_topology n) F /\
+  (forall x:set, x :e Sn n ->
+    apply_fun F (x, 0) = apply_fun (graph (Sn n) (fun z:set => z)) x).
+{
+  exact (andEL
+    (continuous_map dom Tdom (Sn n) (Sn_topology n) F /\
+     (forall x:set, x :e Sn n ->
+       apply_fun F (x, 0) = apply_fun (graph (Sn n) (fun z:set => z)) x))
+    (forall x:set, x :e Sn n ->
+      apply_fun F (x, 1) = apply_fun (const_fun (Sn n) y0) x)
+    HFPack).
+}
+claim HFCont :
+  continuous_map dom Tdom (Sn n) (Sn_topology n) F.
+{
+  exact (andEL
+    (continuous_map dom Tdom (Sn n) (Sn_topology n) F)
+    (forall x:set, x :e Sn n ->
+      apply_fun F (x, 0) = apply_fun (graph (Sn n) (fun z:set => z)) x)
+    HFPair).
+}
+claim HFAt0 :
+  forall x:set, x :e Sn n ->
+    apply_fun F (x, 0) = apply_fun (graph (Sn n) (fun z:set => z)) x.
+{
+  exact (andER
+    (continuous_map dom Tdom (Sn n) (Sn_topology n) F)
+    (forall x:set, x :e Sn n ->
+      apply_fun F (x, 0) = apply_fun (graph (Sn n) (fun z:set => z)) x)
+    HFPair).
+}
+claim HFAt1Const :
+  forall x:set, x :e Sn n ->
+    apply_fun F (x, 1) = apply_fun (const_fun (Sn n) y0) x.
+{
+  exact (andER
+    (continuous_map dom Tdom (Sn n) (Sn_topology n) F /\
+     (forall x:set, x :e Sn n ->
+       apply_fun F (x, 0) = apply_fun (graph (Sn n) (fun z:set => z)) x))
+    (forall x:set, x :e Sn n ->
+      apply_fun F (x, 1) = apply_fun (const_fun (Sn n) y0) x)
+    HFPack).
+}
+claim HFAt1 :
+  forall x:set, x :e Sn n -> apply_fun F (x, 1) = y0.
+{
+  let x.
+  assume HxSn.
+  rewrite (HFAt1Const
+    x
+    HxSn).
+  exact (const_fun_apply
+    (Sn n)
+    y0
+    x
+    HxSn).
+}
+claim HqFun :
+  function_on q dom (Bn_closed n).
+{
+  exact (Sn_radial_collapse_map_function_on
+    n
+    Hn_om).
+}
+claim HqCont :
+  continuous_map dom Tdom (Bn_closed n) (Bn_closed_topology n) q.
+{
+  exact (Sn_radial_collapse_map_continuous
+    n
+    Hn_om).
+}
+claim HFfun :
+  function_on F dom (Sn n).
+{
+  exact (continuous_map_function_on
+    dom
+    Tdom
+    (Sn n)
+    (Sn_topology n)
+    F
+    HFCont).
+}
+claim HqFiberConst :
+  forall p1 p2:set,
+    p1 :e dom ->
+    p2 :e dom ->
+    apply_fun q p1 = apply_fun q p2 ->
+    apply_fun F p1 = apply_fun F p2.
+{
+  let p1 p2.
+  assume Hp1Dom Hp2Dom HqEq.
+  claim Hp10Sn : p1 0 :e Sn n.
+  {
+    exact (ap0_Sigma
+      (Sn n)
+      (fun _ : set => unit_interval)
+      p1
+      Hp1Dom).
+  }
+  claim Hp11I : p1 1 :e unit_interval.
+  {
+    exact (ap1_Sigma
+      (Sn n)
+      (fun _ : set => unit_interval)
+      p1
+      Hp1Dom).
+  }
+  claim Hp20Sn : p2 0 :e Sn n.
+  {
+    exact (ap0_Sigma
+      (Sn n)
+      (fun _ : set => unit_interval)
+      p2
+      Hp2Dom).
+  }
+  claim Hp21I : p2 1 :e unit_interval.
+  {
+    exact (ap1_Sigma
+      (Sn n)
+      (fun _ : set => unit_interval)
+      p2
+      Hp2Dom).
+  }
+  claim Hp1Eta : p1 = (p1 0, p1 1).
+  {
+    exact (setprod_eta
+      (Sn n)
+      unit_interval
+      p1
+      Hp1Dom).
+  }
+  claim Hp2Eta : p2 = (p2 0, p2 1).
+  {
+    exact (setprod_eta
+      (Sn n)
+      unit_interval
+      p2
+      Hp2Dom).
+  }
+  set x1 := p1 0.
+  set t1 := p1 1.
+  set x2 := p2 0.
+  set t2 := p2 1.
+  claim Hq1Pair :
+    apply_fun (Sn_radial_collapse_map n) (x1, t1) =
+    apply_fun (Sn_radial_collapse_map n) p1.
+  {
+    claim Hq1PairRaw :
+      apply_fun (Sn_radial_collapse_map n) p1 =
+      apply_fun (Sn_radial_collapse_map n) (x1, t1).
+    {
+      rewrite <- Hp1Eta.
+      reflexivity.
+    }
+    exact (eq_symm
+      (apply_fun (Sn_radial_collapse_map n) p1)
+      (apply_fun (Sn_radial_collapse_map n) (x1, t1))
+      Hq1PairRaw).
+  }
+  claim Hq2Pair :
+    apply_fun (Sn_radial_collapse_map n) p2 =
+    apply_fun (Sn_radial_collapse_map n) (x2, t2).
+  {
+    rewrite <- Hp2Eta.
+    reflexivity.
+  }
+  claim HqEqPair :
+    apply_fun (Sn_radial_collapse_map n) (x1, t1) =
+    apply_fun (Sn_radial_collapse_map n) (x2, t2).
+  {
+    exact (eq_i_tra
+      (apply_fun (Sn_radial_collapse_map n) (x1, t1))
+      (apply_fun (Sn_radial_collapse_map n) p1)
+      (apply_fun (Sn_radial_collapse_map n) (x2, t2))
+      Hq1Pair
+      (eq_i_tra
+        (apply_fun (Sn_radial_collapse_map n) p1)
+        (apply_fun (Sn_radial_collapse_map n) p2)
+        (apply_fun (Sn_radial_collapse_map n) (x2, t2))
+        HqEq
+        Hq2Pair)).
+  }
+  rewrite Hp1Eta.
+  rewrite Hp2Eta.
+  apply (Sn_radial_collapse_map_fiber_constant_for_top_constant
+    n
+    F
+    y0
+    x1
+    t1
+    x2
+    t2).
+  - exact Hn_om.
+  - exact Hp10Sn.
+  - exact Hp11I.
+  - exact Hp20Sn.
+  - exact Hp21I.
+  - exact HFAt1.
+  - exact HqEqPair.
+}
+claim HqSurj :
+  surjective_map dom (Bn_closed n) q.
+{
+  exact (Sn_radial_collapse_map_surjective
+    n
+    Hn_om).
+}
+claim Hfactor :
+  exists k:set,
+    function_on k (Bn_closed n) (Sn n) /\
+    (forall p:set, p :e dom ->
+      apply_fun k (apply_fun q p) = apply_fun F p).
+{
+  exact (s55_surjective_fiber_constant_factorization
+    dom
+    (Bn_closed n)
+    (Sn n)
+    q
+    F
+    HqSurj
+    HFfun
+    HqFiberConst).
+}
+apply Hfactor.
+let k.
+assume HkPack.
+claim HkFun :
+  function_on k (Bn_closed n) (Sn n).
+{
+  exact (andEL
+    (function_on k (Bn_closed n) (Sn n))
+    (forall p:set, p :e dom ->
+      apply_fun k (apply_fun q p) = apply_fun F p)
+    HkPack).
+}
+claim HkEqOnDom :
+  forall p:set, p :e dom ->
+    apply_fun k (apply_fun q p) = apply_fun F p.
+{
+  exact (andER
+    (function_on k (Bn_closed n) (Sn n))
+    (forall p:set, p :e dom ->
+      apply_fun k (apply_fun q p) = apply_fun F p)
+    HkPack).
+}
+claim HcompFun :
+  function_on (compose_fun dom q k) dom (Sn n).
+{
+  exact (function_on_compose_fun
+    dom
+    (Bn_closed n)
+    (Sn n)
+    q
+    k
+    HqFun
+    HkFun).
+}
+claim HcompEq :
+  forall p:set, p :e dom ->
+    apply_fun F p = apply_fun (compose_fun dom q k) p.
+{
+  let p.
+  assume Hp.
+  rewrite (compose_fun_apply
+    dom
+    q
+    k
+    p
+    Hp).
+  symmetry.
+  exact (HkEqOnDom
+    p
+    Hp).
+}
+claim HcompCont :
+  continuous_map dom Tdom (Sn n) (Sn_topology n) (compose_fun dom q k).
+{
+  exact (continuous_map_congr_on
+    dom
+    Tdom
+    (Sn n)
+    (Sn_topology n)
+    F
+    (compose_fun dom q k)
+    HFCont
+    HcompFun
+    HcompEq).
+}
+claim HtopDom :
+  topology_on dom Tdom.
+{
+  exact (product_topology_is_topology
+    (Sn n)
+    (Sn_topology n)
+    unit_interval
+    unit_interval_topology
+    HtopSn
+    unit_interval_topology_on).
+}
+claim HtopB :
+  topology_on (Bn_closed n) (Bn_closed_topology n).
+{
+  exact (Bn_closed_topology_on
+    n).
+}
+claim HcompDom :
+  compact_space dom Tdom.
+{
+  exact (finite_product_compact
+    (Sn n)
+    (Sn_topology n)
+    unit_interval
+    unit_interval_topology
+    (compact_Sn
+      n
+      Hn_om)
+    unit_interval_compact_axiom).
+}
+claim HHausB :
+  Hausdorff_space (Bn_closed n) (Bn_closed_topology n).
+{
+  exact (ex17_12_subspace_Hausdorff
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (Bn_closed n)
+    (euclidean_space_Hausdorff
+      (ordsucc n))
+    (Sep_Subq
+      (euclidean_space (ordsucc n))
+      (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v))))).
+}
+claim HqClosed :
+  closed_map dom Tdom (Bn_closed n) (Bn_closed_topology n) q.
+{
+  exact (s55_continuous_compact_Hausdorff_closed_map
+    dom
+    Tdom
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    q
+    HcompDom
+    HHausB
+    HqCont).
+}
+claim HqSurjWit :
+  forall y:set, y :e Bn_closed n ->
+    exists x:set, x :e dom /\ apply_fun q x = y.
+{
+  exact (andER
+    (function_on q dom (Bn_closed n))
+    (forall y:set, y :e Bn_closed n ->
+      exists x:set, x :e dom /\ apply_fun q x = y)
+    HqSurj).
+}
+claim HqMap :
+  quotient_map dom Tdom (Bn_closed n) q.
+{
+  exact (andI
+    (topology_on dom Tdom /\ function_on q dom (Bn_closed n))
+    (forall y:set, y :e Bn_closed n ->
+      exists x:set, x :e dom /\ apply_fun q x = y)
+    (andI
+      (topology_on dom Tdom)
+      (function_on q dom (Bn_closed n))
+      HtopDom
+      HqFun)
+    HqSurjWit).
+}
+claim HtopQ :
+  topology_on
+    (Bn_closed n)
+    (quotient_topology dom Tdom (Bn_closed n) q).
+{
+  exact (quotient_topology_is_topology
+    dom
+    Tdom
+    (Bn_closed n)
+    q
+    HtopDom
+    HqMap).
+}
+claim HqTopEq :
+  quotient_topology dom Tdom (Bn_closed n) q = Bn_closed_topology n.
+{
+  exact (s55_surjective_closed_continuous_quotient_eq
+    dom
+    Tdom
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    q
+    HtopDom
+    HtopB
+    HqSurj
+    HqClosed
+    HqCont).
+}
+claim HkContQ :
+  continuous_map
+    (Bn_closed n)
+    (quotient_topology dom Tdom (Bn_closed n) q)
+    (Sn n)
+    (Sn_topology n)
+    k.
+{
+  exact (s55_continuous_descends_to_quotient_topology
+    dom
+    Tdom
+    (Bn_closed n)
+    q
+    (Sn n)
+    (Sn_topology n)
+    k
+    HqFun
+    HkFun
+    HcompCont
+    HtopQ).
+}
+claim HkCont :
+  continuous_map (Bn_closed n) (Bn_closed_topology n) (Sn n) (Sn_topology n) k.
+{
+  rewrite <- HqTopEq.
+  exact HkContQ.
+}
+claim HkOnSn :
+  forall x:set, x :e Sn n -> apply_fun k x = x.
+{
+  let x.
+  assume HxSn.
+  claim HxDom : (x, 0) :e dom.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      (Sn n)
+      unit_interval
+      x
+      0
+      HxSn
+      zero_in_unit_interval).
+  }
+  claim HkEq0 :
+    apply_fun k (apply_fun q (x, 0)) = apply_fun F (x, 0).
+  {
+    exact (HkEqOnDom
+      (x, 0)
+      HxDom).
+  }
+  claim HkEq1 :
+    apply_fun k (apply_fun (Sn_radial_collapse_map n) (x, 0)) = apply_fun F (x, 0).
+  {
+    claim HqDef : q = Sn_radial_collapse_map n.
+    {
+      reflexivity.
+    }
+    rewrite <- HqDef.
+    exact HkEq0.
+  }
+  claim HkEq2 :
+    apply_fun k x = apply_fun F (x, 0).
+  {
+    claim HqBottom :
+      apply_fun (Sn_radial_collapse_map n) (x, 0) = x.
+    {
+      exact (Sn_radial_collapse_map_bottom_is_inclusion
+        n
+        x
+        Hn_om
+        HxSn).
+    }
+    claim HkLeft :
+      apply_fun k x =
+      apply_fun k (apply_fun (Sn_radial_collapse_map n) (x, 0)).
+    {
+      claim HkRefl :
+        apply_fun k (apply_fun (Sn_radial_collapse_map n) (x, 0)) =
+        apply_fun k (apply_fun (Sn_radial_collapse_map n) (x, 0)).
+      {
+        reflexivity.
+      }
+      exact (HqBottom
+        (fun z _ =>
+          apply_fun k z =
+          apply_fun k (apply_fun (Sn_radial_collapse_map n) (x, 0)))
+        HkRefl).
+    }
+    exact (eq_i_tra
+      (apply_fun k x)
+      (apply_fun k (apply_fun (Sn_radial_collapse_map n) (x, 0)))
+      (apply_fun F (x, 0))
+      HkLeft
+      HkEq1).
+  }
+  claim HF0x :
+    apply_fun F (x, 0) = x.
+  {
+    exact (eq_i_tra
+      (apply_fun F (x, 0))
+      (apply_fun (graph (Sn n) (fun z:set => z)) x)
+      x
+      (HFAt0
+        x
+        HxSn)
+      (apply_fun_graph
+        (Sn n)
+        (fun z:set => z)
+        x
+        HxSn)).
+  }
+  exact (eq_i_tra
+    (apply_fun k x)
+    (apply_fun F (x, 0))
+    x
+    HkEq2
+    HF0x).
+}
+claim HkContB :
+  continuous_map
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    k.
+{
+  exact (continuous_map_range_expand
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (Sn n)
+    (Sn_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    k
+    HkCont
+    (fun x HxSn =>
+      Sn_subset_Bn_closed
+        n
+        x
+        HxSn)
+    HtopB
+    (eq_symm
+      (subspace_topology (Bn_closed n) (Bn_closed_topology n) (Sn n))
+      (Sn_topology n)
+      (Sn_topology_subspace_of_Bn_closed
+        n))).
+}
+claim Hretr :
+  retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n).
+{
+  prove
+    Sn n c= Bn_closed n /\
+    exists r:set,
+      function_on r (Bn_closed n) (Bn_closed n) /\
+      continuous_map
+        (Bn_closed n)
+        (Bn_closed_topology n)
+        (Bn_closed n)
+        (Bn_closed_topology n)
+        r /\
+      (forall x:set, x :e Bn_closed n -> apply_fun r x :e Sn n) /\
+      (forall x:set, x :e Sn n -> apply_fun r x = x).
+  apply andI.
+  - let x.
+    assume HxSn.
+    exact (Sn_subset_Bn_closed
+      n
+      x
+      HxSn).
+  - witness k.
+    apply andI.
+    * apply andI.
+      + apply andI.
+        { exact (continuous_map_function_on
+            (Bn_closed n)
+            (Bn_closed_topology n)
+            (Bn_closed n)
+            (Bn_closed_topology n)
+            k
+            HkContB). }
+        { exact HkContB. }
+      + let x.
+        assume HxB.
+        exact (HkFun
+          x
+          HxB).
+    * exact HkOnSn.
+}
+exact (HnoRetr
+  Hretr).
+Qed.
 
 (** from S55 Exercise 4(b) (line 1047 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the inclusion j: S^n -> R^{n+1} - 0 is not nulhomotopic. **)
