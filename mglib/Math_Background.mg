@@ -276634,10 +276634,92 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
                       (eq_refl (apply_fun mult (apply_fun xs0 k, apply_fun xs0 0)))
                       Hz_ne Hz_ne_efam).
                     let ys_merged. assume Hmerge_p.
-                    (** Use efam_not_in_Gfam_nontrivial_pre directly - the hypotheses **)
-                    (** Hfp, Hal, Hefam_in, Hefam_ne give False immediately **)
-                    (** This avoids the complex extraction and case analysis **)
-                    admit.
+                    (** Extract from 2-conjunction A /\ B **)
+                    claim Hred_merged : reduced_word J Gfam efam (add_nat n0 k) ys_merged.
+                    { exact (andEL
+                        (reduced_word J Gfam efam (add_nat n0 k) ys_merged)
+                        (word_product mult e ys_merged (add_nat n0 k) =
+                          apply_fun mult (word_product mult e xs0 n0, word_product mult e xs0 n0))
+                        Hmerge_p). }
+                    claim Hwp_merged : word_product mult e ys_merged (add_nat n0 k) =
+                      apply_fun mult (word_product mult e xs0 n0, word_product mult e xs0 n0).
+                    { exact (andER
+                        (reduced_word J Gfam efam (add_nat n0 k) ys_merged)
+                        (word_product mult e ys_merged (add_nat n0 k) =
+                          apply_fun mult (word_product mult e xs0 n0, word_product mult e xs0 n0))
+                        Hmerge_p). }
+                    (** Product = mult(efam(al), efam(al)) = efam(al)^2 **)
+                    claim Hwp_sq : word_product mult e ys_merged (add_nat n0 k) = apply_fun mult (apply_fun efam al, apply_fun efam al).
+                    { rewrite Hwp_merged. rewrite Hwp0. reflexivity. }
+                    (** Length of merged word >= 4 **)
+                    claim Hn0_nat2 : nat_p n0. { exact (omega_nat_p n0 Hn0_omega). }
+                    claim Hlen_ne0 : add_nat n0 k <> 0.
+                    { assume Habs.
+                      claim Hn0_sub : n0 c= add_nat n0 k.
+                      { exact (add_nat_Subq_R' n0 Hn0_nat2 k Hk_nat). }
+                      claim H0n0 : 0 :e n0. { rewrite Hn0_eq. exact (nat_0_in_ordsucc k Hk_nat). }
+                      exact (In_irref 0 (eq_subst_mem_set 0 (add_nat n0 k) 0 (Hn0_sub 0 H0n0) Habs)). }
+                    claim Hlen_ne1 : add_nat n0 k <> 1.
+                    { assume Habs.
+                      claim Hn0_sub : n0 c= add_nat n0 k.
+                      { exact (add_nat_Subq_R' n0 Hn0_nat2 k Hk_nat). }
+                      claim Hn0_sub_1 : n0 c= 1. { let x. assume Hx. exact (eq_subst_mem_set x (add_nat n0 k) 1 (Hn0_sub x Hx) Habs). }
+                      claim Hk_nw : k :e n0. { rewrite Hn0_eq. exact (ordsuccI2 k). }
+                      claim Hk_1 : k :e 1. { exact (Hn0_sub_1 k Hk_nw). }
+                      claim Hk_0 : k = 0. { apply (ordsuccE 0 k Hk_1). - assume Hk0. exact (FalseE (EmptyE k Hk0) (k = 0)). - assume Hk0. exact Hk0. }
+                      exact (Hk_ne0 Hk_0). }
+                    (** Case: efam(al)^2 = e **)
+                    apply (xm (apply_fun mult (apply_fun efam al, apply_fun efam al) = e)).
+                    + assume Hefam_sq_e : apply_fun mult (apply_fun efam al, apply_fun efam al) = e.
+                      claim Hwp_e : word_product mult e ys_merged (add_nat n0 k) = e.
+                      { rewrite Hwp_sq. exact Hefam_sq_e. }
+                      exact (free_product_reduced_word_length_ge2_product_ne_e G mult e inv J Gfam efam
+                        (add_nat n0 k) ys_merged Hfp Hred_merged Hlen_ne0 Hlen_ne1 Hwp_e).
+                    + assume Hefam_sq_ne : apply_fun mult (apply_fun efam al, apply_fun efam al) <> e.
+                      (** Case: efam(al)^2 = efam(al) **)
+                      apply (xm (apply_fun mult (apply_fun efam al, apply_fun efam al) = apply_fun efam al)).
+                      * assume Hefam_sq_efam : apply_fun mult (apply_fun efam al, apply_fun efam al) = apply_fun efam al.
+                        (** efam(al) mult efam(al) = efam(al) -> left cancel -> efam(al) = e **)
+                        claim Hefam_G2 : apply_fun efam al :e G.
+                        { apply (and4E (apply_fun Gfam al c= G) (e :e apply_fun Gfam al)
+                            (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al -> apply_fun mult (x, y) :e apply_fun Gfam al)
+                            (forall x:set, x :e apply_fun Gfam al -> apply_fun inv x :e apply_fun Gfam al) (Hsubfam al Hal)).
+                          assume Hsub _ _ _. exact (Hsub (apply_fun efam al) Hefam_in). }
+                        claim Hid_R : apply_fun mult (apply_fun efam al, e) = apply_fun efam al.
+                        { apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+                            (forall a b c:set, a :e G -> b :e G -> c :e G -> apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+                            (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+                            (forall a:set, a :e G -> apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+                            Hgrp).
+                          assume _ _ _ _ Hid _. exact (andER (apply_fun mult (e, apply_fun efam al) = apply_fun efam al) (apply_fun mult (apply_fun efam al, e) = apply_fun efam al) (Hid (apply_fun efam al) Hefam_G2)). }
+                        claim HeG2 : e :e G.
+                        { apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+                            (forall a b c:set, a :e G -> b :e G -> c :e G -> apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+                            (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+                            (forall a:set, a :e G -> apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+                            Hgrp). assume _ _ He _ _ _. exact He. }
+                        claim Hefam_e : apply_fun efam al = e.
+                        { exact (group_left_cancel G mult e inv (apply_fun efam al) (apply_fun efam al) e
+                            Hgrp Hefam_G2 Hefam_G2 HeG2
+                            (eq_i_tra (apply_fun mult (apply_fun efam al, apply_fun efam al))
+                              (apply_fun efam al) (apply_fun mult (apply_fun efam al, e))
+                              Hefam_sq_efam (eq_symm (apply_fun mult (apply_fun efam al, e)) (apply_fun efam al) Hid_R))). }
+                        exact (Hefam_ne Hefam_e).
+                      * assume Hefam_sq_other : apply_fun mult (apply_fun efam al, apply_fun efam al) <> apply_fun efam al.
+                        (** efam(al)^2 in Gfam(al), != e, != efam(al) **)
+                        (** By free_product_factor_element_length1: length 1. But length >= 4. Contradiction. **)
+                        claim Hefam_sq_Gal : apply_fun mult (apply_fun efam al, apply_fun efam al) :e apply_fun Gfam al.
+                        { apply (and4E (apply_fun Gfam al c= G) (e :e apply_fun Gfam al)
+                            (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al -> apply_fun mult (x, y) :e apply_fun Gfam al)
+                            (forall x:set, x :e apply_fun Gfam al -> apply_fun inv x :e apply_fun Gfam al) (Hsubfam al Hal)).
+                          assume _ _ Hmc _. exact (Hmc (apply_fun efam al) (apply_fun efam al) Hefam_in Hefam_in). }
+                        claim Hlen1 : add_nat n0 k = 1.
+                        { exact (free_product_factor_element_length1 G mult e inv J Gfam efam al
+                            (apply_fun mult (apply_fun efam al, apply_fun efam al))
+                            (add_nat n0 k) ys_merged
+                            Hfp Hal Hefam_sq_Gal Hefam_sq_ne Hefam_sq_other
+                            Hred_merged Hlen_ne0 Hwp_sq). }
+                        exact (Hlen_ne1 Hlen1).
           - (** alphak != alpha0: doubled word approach **)
             assume Halphak_ne_alpha0 : alphak <> alpha0.
             (** The boundary condition for the doubled word: last entry in different factor from first **)
