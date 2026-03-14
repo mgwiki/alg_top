@@ -165460,6 +165460,473 @@ Qed.
 (** from S55 Exercise 4(e) (line 1050 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every (n+1) by (n+1) matrix with positive entries has a positive eigenvalue. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
+Definition simplex_ordsucc_fs : set -> set := fun n =>
+  {v :e function_space (ordsucc n) R |
+    (forall i:set, i :e ordsucc n -> ~(Rlt (apply_fun v i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun v i) (ordsucc n) = 1}.
+
+(** Proven Charlie **)
+Lemma simplex_ordsucc_fixed_point_implies_eigenvalue : forall n A v:set,
+  n :e omega ->
+  function_on A (setprod (ordsucc n) (ordsucc n)) R ->
+  (forall i j:set, i :e ordsucc n -> j :e ordsucc n -> Rlt 0 (apply_fun A (i, j))) ->
+  v :e simplex_ordsucc_fs n ->
+  (forall i:set, i :e ordsucc n ->
+    apply_fun v i =
+      div_SNo
+        (apply_fun (matrix_vector_mult (ordsucc n) A v) i)
+        (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult (ordsucc n) A v) k) (ordsucc n))) ->
+  exists lam:set, Rlt 0 lam /\ eigenvalue_of_matrix (ordsucc n) A lam.
+let n A v.
+assume Hn_om HAfun HApos HvS Hfixed.
+set Av := matrix_vector_mult (ordsucc n) A v.
+set lam := finite_real_sum (fun k:set => apply_fun Av k) (ordsucc n).
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_om).
+}
+claim Hsucc_nat : nat_p (ordsucc n).
+{
+  exact (nat_ordsucc
+    n
+    Hn_nat).
+}
+claim Hvfun : function_on v (ordsucc n) R.
+{
+  exact (function_on_of_function_space
+    v
+    (ordsucc n)
+    R
+    (SepE1
+      (function_space (ordsucc n) R)
+      (fun w:set =>
+        (forall i:set, i :e ordsucc n -> ~(Rlt (apply_fun w i) 0)) /\
+        finite_real_sum (fun i:set => apply_fun w i) (ordsucc n) = 1)
+      v
+      HvS)).
+}
+claim Hnotzero : ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0).
+{
+  assume Hzero.
+  claim HvSprop :
+    (forall i:set, i :e ordsucc n -> ~(Rlt (apply_fun v i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun v i) (ordsucc n) = 1.
+  {
+    exact (SepE2
+      (function_space (ordsucc n) R)
+      (fun w:set =>
+        (forall i:set, i :e ordsucc n -> ~(Rlt (apply_fun w i) 0)) /\
+        finite_real_sum (fun i:set => apply_fun w i) (ordsucc n) = 1)
+      v
+      HvS).
+  }
+  claim Hsum1 : finite_real_sum (fun i:set => apply_fun v i) (ordsucc n) = 1.
+  {
+    exact (andER
+      (forall i:set, i :e ordsucc n -> ~(Rlt (apply_fun v i) 0))
+      (finite_real_sum (fun i:set => apply_fun v i) (ordsucc n) = 1)
+      HvSprop).
+  }
+  claim Hsum0 : finite_real_sum (fun i:set => apply_fun v i) (ordsucc n) = 0.
+  {
+    apply (finite_real_sum_zero_of_all_zero
+      (fun i:set => apply_fun v i)
+      (ordsucc n)
+      Hsucc_nat).
+    - let i.
+      assume HiS.
+      exact (Hvfun
+        i
+        HiS).
+    - exact Hzero.
+  }
+  claim H10 : 1 = 0.
+  {
+    rewrite <- Hsum1.
+    exact Hsum0.
+  }
+  exact (neq_1_0
+    H10).
+}
+claim HvSprop :
+  (forall i:set, i :e ordsucc n -> ~(Rlt (apply_fun v i) 0)) /\
+  finite_real_sum (fun i:set => apply_fun v i) (ordsucc n) = 1.
+{
+  exact (SepE2
+    (function_space (ordsucc n) R)
+    (fun w:set =>
+      (forall i:set, i :e ordsucc n -> ~(Rlt (apply_fun w i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun w i) (ordsucc n) = 1)
+    v
+    HvS).
+}
+claim HvNonneg : forall i:set, i :e ordsucc n -> Rle 0 (apply_fun v i).
+{
+  let i.
+  assume HiS.
+  claim Hnonlt : ~(Rlt (apply_fun v i) 0).
+  {
+    exact (andEL
+      (forall i:set, i :e ordsucc n -> ~(Rlt (apply_fun v i) 0))
+      (finite_real_sum (fun i:set => apply_fun v i) (ordsucc n) = 1)
+      HvSprop
+      i
+      HiS).
+  }
+  exact (RleI
+    0
+    (apply_fun v i)
+    real_0
+    (Hvfun i HiS)
+    Hnonlt).
+}
+claim HAvRall : forall k:set, k :e ordsucc n -> apply_fun Av k :e R.
+{
+  let k.
+  assume HkS.
+  claim HavkEq :
+    apply_fun Av k =
+      finite_real_sum (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) (ordsucc n).
+  {
+    exact (apply_fun_graph
+      (ordsucc n)
+      (fun i:set =>
+        finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) (ordsucc n))
+      k
+      HkS).
+  }
+  rewrite HavkEq.
+  apply (finite_real_sum_in_R
+    (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j))
+    (ordsucc n)
+    Hsucc_nat).
+  let j.
+  assume HjS.
+  claim HakjR : apply_fun A (k, j) :e R.
+  {
+    exact (HAfun
+      (k, j)
+      (tuple_2_setprod_by_pair_Sigma
+        (ordsucc n)
+        (ordsucc n)
+        k
+        j
+        HkS
+        HjS)).
+  }
+  claim HvjR : apply_fun v j :e R.
+  {
+    exact (Hvfun
+      j
+      HjS).
+  }
+  exact (real_mul_SNo
+    (apply_fun A (k, j))
+    HakjR
+    (apply_fun v j)
+    HvjR).
+}
+claim HAvNonneg : forall k:set, k :e ordsucc n -> Rle 0 (apply_fun Av k).
+{
+  let k.
+  assume HkS.
+  claim HavkEq :
+    apply_fun Av k =
+      finite_real_sum (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) (ordsucc n).
+  {
+    exact (apply_fun_graph
+      (ordsucc n)
+      (fun i:set =>
+        finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) (ordsucc n))
+      k
+      HkS).
+  }
+  rewrite HavkEq.
+  apply (finite_real_sum_nonneg
+    (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j))
+    (ordsucc n)
+    Hsucc_nat).
+  - let j.
+    assume HjS.
+    claim HakjR : apply_fun A (k, j) :e R.
+    {
+      exact (HAfun
+        (k, j)
+        (tuple_2_setprod_by_pair_Sigma
+          (ordsucc n)
+          (ordsucc n)
+          k
+          j
+          HkS
+          HjS)).
+    }
+    claim HvjR : apply_fun v j :e R.
+    {
+      exact (Hvfun
+        j
+        HjS).
+    }
+    exact (real_mul_SNo
+      (apply_fun A (k, j))
+      HakjR
+      (apply_fun v j)
+      HvjR).
+  - let j.
+    assume HjS.
+    claim HakjR : apply_fun A (k, j) :e R.
+    {
+      exact (HAfun
+        (k, j)
+        (tuple_2_setprod_by_pair_Sigma
+          (ordsucc n)
+          (ordsucc n)
+          k
+          j
+          HkS
+          HjS)).
+    }
+    claim HvjR : apply_fun v j :e R.
+    {
+      exact (Hvfun
+        j
+        HjS).
+    }
+    claim HakjPos : Rlt 0 (apply_fun A (k, j)).
+    {
+      exact (HApos
+        k
+        j
+        HkS
+        HjS).
+    }
+    claim HakjNonneg : Rle 0 (apply_fun A (k, j)).
+    {
+      exact (Rlt_implies_Rle
+        0
+        (apply_fun A (k, j))
+        HakjPos).
+    }
+    claim HvjNonneg : Rle 0 (apply_fun v j).
+    {
+      exact (HvNonneg
+        j
+        HjS).
+    }
+    claim HakjSNo : SNo (apply_fun A (k, j)).
+    {
+      exact (real_SNo
+        (apply_fun A (k, j))
+        HakjR).
+    }
+    claim HvjSNo : SNo (apply_fun v j).
+    {
+      exact (real_SNo
+        (apply_fun v j)
+        HvjR).
+    }
+    claim Hakj_le : 0 <= apply_fun A (k, j).
+    {
+      exact (SNoLe_of_Rle
+        0
+        (apply_fun A (k, j))
+        HakjNonneg).
+    }
+    claim Hvj_le : 0 <= apply_fun v j.
+    {
+      exact (SNoLe_of_Rle
+        0
+        (apply_fun v j)
+        HvjNonneg).
+    }
+    claim Hprod_le :
+      0 <= mul_SNo (apply_fun A (k, j)) (apply_fun v j).
+    {
+      exact (mul_SNo_nonneg_nonneg
+        (apply_fun A (k, j))
+        (apply_fun v j)
+        HakjSNo
+        HvjSNo
+        Hakj_le
+        Hvj_le).
+    }
+    claim HprodR : mul_SNo (apply_fun A (k, j)) (apply_fun v j) :e R.
+    {
+      exact (real_mul_SNo
+        (apply_fun A (k, j))
+        HakjR
+        (apply_fun v j)
+        HvjR).
+    }
+    exact (Rle_of_SNoLe
+      0
+      (mul_SNo (apply_fun A (k, j)) (apply_fun v j))
+      real_0
+      HprodR
+      Hprod_le).
+}
+claim HlamR : lam :e R.
+{
+  apply (finite_real_sum_in_R
+    (fun k:set => apply_fun Av k)
+    (ordsucc n)
+    Hsucc_nat).
+  let k.
+  assume HkS.
+  exact (HAvRall
+    k
+    HkS).
+}
+claim HlamNonneg : Rle 0 lam.
+{
+  apply (finite_real_sum_nonneg
+    (fun k:set => apply_fun Av k)
+    (ordsucc n)
+    Hsucc_nat).
+  - let k.
+    assume HkS.
+    exact (HAvRall
+      k
+      HkS).
+  - let k.
+    assume HkS.
+    exact (HAvNonneg
+      k
+      HkS).
+}
+claim Hlamneq0 : lam <> 0.
+{
+  assume Hlam0.
+  claim Hvzero : forall i:set, i :e ordsucc n -> apply_fun v i = 0.
+  {
+    let i.
+    assume HiS.
+    claim HAvSNo : SNo (apply_fun Av i).
+    {
+      exact (real_SNo
+        (apply_fun Av i)
+        (HAvRall i HiS)).
+    }
+    rewrite (Hfixed i HiS).
+    rewrite Hlam0.
+    exact (div_SNo_0_denum
+      (apply_fun Av i)
+      HAvSNo).
+  }
+  exact (Hnotzero
+    Hvzero).
+}
+claim Hlampos : Rlt 0 lam.
+{
+  exact (Rle_neq_implies_Rlt
+    0
+    lam
+    HlamNonneg
+    (fun H0 => Hlamneq0 (eq_symm 0 lam H0))).
+}
+witness lam.
+apply andI.
+- exact Hlampos.
+- claim Hvexists :
+    exists w:set,
+      function_on w (ordsucc n) R /\
+      ~(forall i:set, i :e ordsucc n -> apply_fun w i = 0) /\
+      (forall i:set, i :e ordsucc n ->
+        finite_real_sum (fun j:set =>
+          mul_SNo (apply_fun A (i, j)) (apply_fun w j)) (ordsucc n) =
+        mul_SNo lam (apply_fun w i)).
+  {
+    witness v.
+    apply andI.
+    - apply andI.
+      + exact Hvfun.
+      + exact Hnotzero.
+    - let i.
+      assume HiS.
+      claim Hav_i :
+        apply_fun Av i =
+          finite_real_sum (fun j:set =>
+            mul_SNo (apply_fun A (i, j)) (apply_fun v j)) (ordsucc n).
+      {
+        exact (apply_fun_graph
+          (ordsucc n)
+          (fun i0:set =>
+            finite_real_sum (fun j:set =>
+              mul_SNo (apply_fun A (i0, j)) (apply_fun v j)) (ordsucc n))
+          i
+          HiS).
+      }
+      rewrite <- Hav_i.
+      rewrite (Hfixed i HiS).
+      claim HAvR : apply_fun Av i :e R.
+      {
+        rewrite Hav_i.
+        apply (finite_real_sum_in_R
+          (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j))
+          (ordsucc n)
+          Hsucc_nat).
+        let j.
+        assume HjS.
+        claim HakjR : apply_fun A (i, j) :e R.
+        {
+          exact (HAfun
+            (i, j)
+            (tuple_2_setprod_by_pair_Sigma
+              (ordsucc n)
+              (ordsucc n)
+              i
+              j
+              HiS
+              HjS)).
+        }
+        claim HvjR : apply_fun v j :e R.
+        {
+          exact (Hvfun
+            j
+            HjS).
+        }
+        exact (real_mul_SNo
+          (apply_fun A (i, j))
+          HakjR
+          (apply_fun v j)
+          HvjR).
+      }
+      claim HAvSNo : SNo (apply_fun Av i).
+      {
+        exact (real_SNo
+          (apply_fun Av i)
+          HAvR).
+      }
+      claim HlamSNo : SNo lam.
+      {
+        exact (real_SNo
+          lam
+          HlamR).
+      }
+      exact (eq_symm
+        (mul_SNo lam (div_SNo (apply_fun Av i) lam))
+        (apply_fun Av i)
+        (mul_div_SNo_invR
+          (apply_fun Av i)
+          lam
+          HAvSNo
+          HlamSNo
+          Hlamneq0)).
+  }
+  exact (andI
+    (lam :e R)
+    (exists w:set,
+      function_on w (ordsucc n) R /\
+      ~(forall i:set, i :e ordsucc n -> apply_fun w i = 0) /\
+      (forall i:set, i :e ordsucc n ->
+        finite_real_sum (fun j:set =>
+          mul_SNo (apply_fun A (i, j)) (apply_fun w j)) (ordsucc n) =
+        mul_SNo lam (apply_fun w i)))
+    HlamR
+    Hvexists).
+Qed.
+
 (** Bounty 97 **)
 (** Lock Charlie 1773556892 **)
 Theorem ex55_4e_positive_matrix_eigenvalue_Rn : forall n:set, n :e omega ->
@@ -165468,7 +165935,60 @@ Theorem ex55_4e_positive_matrix_eigenvalue_Rn : forall n:set, n :e omega ->
     function_on A (setprod (ordsucc n) (ordsucc n)) R ->
     (forall i j:set, i :e ordsucc n -> j :e ordsucc n -> Rlt 0 (apply_fun A (i, j))) ->
     exists lam:set, Rlt 0 lam /\ eigenvalue_of_matrix (ordsucc n) A lam.
-admit.
+let n.
+assume Hn_om HnoRetr.
+let A.
+assume HAfun HApos.
+set simplexN := simplex_ordsucc_fs n.
+claim Hfix :
+  exists v:set, v :e simplexN /\
+    (forall i:set, i :e ordsucc n ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult (ordsucc n) A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult (ordsucc n) A v) k) (ordsucc n))).
+{
+  admit.
+}
+apply Hfix.
+let v.
+assume HvPack.
+claim HvS : v :e simplexN.
+{
+  exact (andEL
+    (v :e simplexN)
+    (forall i:set, i :e ordsucc n ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult (ordsucc n) A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult (ordsucc n) A v) k) (ordsucc n)))
+    HvPack).
+}
+claim Hfixed :
+  forall i:set, i :e ordsucc n ->
+    apply_fun v i =
+      div_SNo
+        (apply_fun (matrix_vector_mult (ordsucc n) A v) i)
+        (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult (ordsucc n) A v) k) (ordsucc n)).
+{
+  exact (andER
+    (v :e simplexN)
+    (forall i:set, i :e ordsucc n ->
+      apply_fun v i =
+        div_SNo
+          (apply_fun (matrix_vector_mult (ordsucc n) A v) i)
+          (finite_real_sum (fun k:set => apply_fun (matrix_vector_mult (ordsucc n) A v) k) (ordsucc n)))
+    HvPack).
+}
+exact (simplex_ordsucc_fixed_point_implies_eigenvalue
+  n
+  A
+  v
+  Hn_om
+  HAfun
+  HApos
+  HvS
+  Hfixed).
 Admitted.
 
 (** from S55 Exercise 4(f) (line 1051 in algtop.tex) **)
