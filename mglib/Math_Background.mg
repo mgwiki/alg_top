@@ -282090,95 +282090,9 @@ exact (free_product_reduced_word_length_ge2_product_ne_e
   Hfp Hred2 Hnn_ne0 Hnn_ne1 Hwp2_e).
 Admitted.
 
-(** Infrastructure bounty: merge-at-junction reduced word for doubled cyclic words **)
-(** When first and last entries of a reduced word are in the same factor, build the **)
-(** merged doubled word of length 2n-1 with product = mult(word_product, word_product). **)
-(** Expected use: discharge the remaining Z/2Z+b0=bmw case in efam_involutive_contra_direct. **)
-(** Bounty 30 **)
-Lemma reduced_word_double_merge_junction :
-  forall G mult e inv J Gfam efam n xs m beta z:set,
-  group_structure G mult e inv ->
-  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) ->
-  (forall alpha gamma:set, alpha :e J -> gamma :e J -> alpha <> gamma ->
-    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam gamma -> x = e) ->
-  free_product_of_subgroups G mult e inv J Gfam efam ->
-  reduced_word J Gfam efam n xs ->
-  n = ordsucc m ->
-  nat_p m -> m <> 0 ->
-  beta :e J ->
-  apply_fun xs 0 :e apply_fun Gfam beta ->
-  apply_fun xs m :e apply_fun Gfam beta ->
-  z = apply_fun mult (apply_fun xs m, apply_fun xs 0) ->
-  z <> e -> z <> apply_fun efam beta ->
-  exists ys:set,
-    reduced_word J Gfam efam (add_nat n m) ys /\
-    word_product mult e ys (add_nat n m) =
-      apply_fun mult (word_product mult e xs n, word_product mult e xs n).
-let G mult e inv J Gfam efam n xs m beta z.
-assume Hgrp Hsubfam Hdisjoint Hfp Hredw Hn_sm Hm_nat Hm_ne0 HbJ Hxs0_Gb Hxsm_Gb Hz_def Hz_ne Hz_ne_efb.
-(** Step 1: Build prefix [xsw(0),...,xsw(m-1)] of length m **)
-claim Hm_nw : m :e n. { rewrite Hn_sm. exact (ordsuccI2 m). }
-set xsw_pre := graph m (fun i:set => apply_fun xs i).
-claim Hred_pre : reduced_word J Gfam efam m xsw_pre.
-{ exact (reduced_word_prefix J Gfam efam n xs m Hredw Hm_nw). }
-(** Step 2: Append z to get word of length ordsucc m = n **)
-claim Hz_Gb : z :e apply_fun Gfam beta.
-{ rewrite Hz_def.
-  apply (and4E (apply_fun Gfam beta c= G) (e :e apply_fun Gfam beta)
-    (forall x y:set, x :e apply_fun Gfam beta -> y :e apply_fun Gfam beta ->
-       apply_fun mult (x, y) :e apply_fun Gfam beta)
-    (forall x:set, x :e apply_fun Gfam beta -> apply_fun inv x :e apply_fun Gfam beta)
-    (Hsubfam beta HbJ)).
-  assume _ _ Hmc _. exact (Hmc (apply_fun xs m) (apply_fun xs 0) Hxsm_Gb Hxs0_Gb). }
-claim Hlast_pre : forall k a2 b2:set, m = ordsucc k -> a2 :e J -> b2 :e J ->
-  apply_fun xsw_pre k :e apply_fun Gfam a2 -> z :e apply_fun Gfam b2 -> a2 <> b2.
-{ let k a2 b2. assume Hm_sk Ha2J Hb2J Hxsk_Ga2 Hz_Gb2.
-  claim Hk_m : k :e m. { rewrite Hm_sk. exact (ordsuccI2 k). }
-  claim Hxsk_eq : apply_fun xsw_pre k = apply_fun xs k.
-  { exact (apply_fun_graph m (fun i:set => apply_fun xs i) k Hk_m). }
-  claim Hk_n : k :e n. { rewrite Hn_sm. exact (ordsuccI1 m k Hk_m). }
-  claim Hsk_n : ordsucc k :e n.
-  { claim Hsk_m : ordsucc k = m. { symmetry. exact Hm_sk. }
-    rewrite Hsk_m. exact Hm_nw. }
-  claim Hxsk_Ga2r : apply_fun xs k :e apply_fun Gfam a2.
-  { rewrite <- Hxsk_eq. exact Hxsk_Ga2. }
-  claim Hxsm_Gb2 : apply_fun xs (ordsucc k) :e apply_fun Gfam beta.
-  { claim Hsk_m : ordsucc k = m. { symmetry. exact Hm_sk. }
-    rewrite Hsk_m. exact Hxsm_Gb. }
-  (** xsw(k) in Gfam(a2), xsw(ordsucc k) = xsw(m) in Gfam(beta). **)
-  (** By reduced word adjacency: a2 != beta for the factor of xsw(ordsucc k). **)
-  claim Hn_ne0 : n <> 0. { rewrite Hn_sm. exact (neq_ordsucc_0 m). }
-  claim Hn_ne1 : n <> 1.
-  { assume Hn1 : n = 1.
-    exact (Hm_ne0 (ordsucc_inj m 0
-      (eq_i_tra (ordsucc m) n 1 (eq_symm n (ordsucc m) Hn_sm) Hn1))). }
-  claim Hxsk_ne_eG : apply_fun xs k <> e.
-  { exact (reduced_word_no_eG_all G mult e inv J Gfam efam n xs Hgrp Hsubfam Hredw Hn_ne0 Hn_ne1 k Hk_n). }
-  (** Extract adjacency from reduced word **)
-  apply (and3E (n :e omega)
-    (forall i:set, i :e n -> exists a:set, a :e J /\ apply_fun xs i :e apply_fun Gfam a /\ apply_fun xs i <> apply_fun efam a)
-    (forall i:set, i :e n -> ordsucc i :e n ->
-      forall a b:set, a :e J -> b :e J -> apply_fun xs i :e apply_fun Gfam a -> apply_fun xs (ordsucc i) :e apply_fun Gfam b -> a <> b)
-    Hredw).
-  assume _ _ Hadj.
-  claim Ha2_ne_beta : a2 <> beta.
-  { exact (Hadj k Hk_n Hsk_n a2 beta Ha2J HbJ Hxsk_Ga2r Hxsm_Gb2). }
-  claim Hb2_beta : b2 = beta.
-  { exact (eq_symm beta b2 (disjoint_subgroups_label_unique G mult e inv J Gfam beta b2 z
-      Hdisjoint HbJ Hb2J Hz_Gb Hz_Gb2 Hz_ne)). }
-  rewrite Hb2_beta. exact Ha2_ne_beta. }
-claim Hred_prez : reduced_word J Gfam efam (ordsucc m)
-  (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xsw_pre i else z)).
-{ exact (reduced_word_append_one_pre J Gfam efam m xsw_pre z beta Hred_pre Hm_ne0 HbJ Hz_Gb Hz_ne_efb Hlast_pre). }
-(** Step 3: Use nat_ind to iteratively append xs(1), ..., xs(m) **)
-set xs_shifted := graph m (fun i:set => apply_fun xs (ordsucc i)).
-claim Hredw_sm : reduced_word J Gfam efam (ordsucc m) xs.
-{ rewrite <- Hn_sm. exact Hredw. }
-claim Hxs_shifted_red : reduced_word J Gfam efam m xs_shifted.
-{ exact (reduced_word_suffix J Gfam efam m xs Hredw_sm). }
-(** For now, still admit the iterative construction **)
-admit.
-Admitted.
+(** NOTE: reduced_word_concat is defined and proved (Qed) later in the file (around line 317000). **)
+(** It concatenates two reduced words when the junction entries are in different factors. **)
+
 
 (** Direct proof: involutive efam(al) in Gfam(al) with efam(al) != eG is impossible **)
 (** This bypasses the boundary-labels-coincide helpers **)
@@ -317191,6 +317105,95 @@ apply and3I.
 - exact Hwp_final.
 - exact Hlast_final.
 Qed.
+(** Infrastructure bounty: merge-at-junction reduced word for doubled cyclic words **)
+(** When first and last entries of a reduced word are in the same factor, build the **)
+(** merged doubled word of length 2n-1 with product = mult(word_product, word_product). **)
+(** Expected use: discharge the remaining Z/2Z+b0=bmw case in efam_involutive_contra_direct. **)
+(** Bounty 30 **)
+Lemma reduced_word_double_merge_junction :
+  forall G mult e inv J Gfam efam n xs m beta z:set,
+  group_structure G mult e inv ->
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) ->
+  (forall alpha gamma:set, alpha :e J -> gamma :e J -> alpha <> gamma ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam gamma -> x = e) ->
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  reduced_word J Gfam efam n xs ->
+  n = ordsucc m ->
+  nat_p m -> m <> 0 ->
+  beta :e J ->
+  apply_fun xs 0 :e apply_fun Gfam beta ->
+  apply_fun xs m :e apply_fun Gfam beta ->
+  z = apply_fun mult (apply_fun xs m, apply_fun xs 0) ->
+  z <> e -> z <> apply_fun efam beta ->
+  exists ys:set,
+    reduced_word J Gfam efam (add_nat n m) ys /\
+    word_product mult e ys (add_nat n m) =
+      apply_fun mult (word_product mult e xs n, word_product mult e xs n).
+let G mult e inv J Gfam efam n xs m beta z.
+assume Hgrp Hsubfam Hdisjoint Hfp Hredw Hn_sm Hm_nat Hm_ne0 HbJ Hxs0_Gb Hxsm_Gb Hz_def Hz_ne Hz_ne_efb.
+(** Step 1: Build prefix [xsw(0),...,xsw(m-1)] of length m **)
+claim Hm_nw : m :e n. { rewrite Hn_sm. exact (ordsuccI2 m). }
+set xsw_pre := graph m (fun i:set => apply_fun xs i).
+claim Hred_pre : reduced_word J Gfam efam m xsw_pre.
+{ exact (reduced_word_prefix J Gfam efam n xs m Hredw Hm_nw). }
+(** Step 2: Append z to get word of length ordsucc m = n **)
+claim Hz_Gb : z :e apply_fun Gfam beta.
+{ rewrite Hz_def.
+  apply (and4E (apply_fun Gfam beta c= G) (e :e apply_fun Gfam beta)
+    (forall x y:set, x :e apply_fun Gfam beta -> y :e apply_fun Gfam beta ->
+       apply_fun mult (x, y) :e apply_fun Gfam beta)
+    (forall x:set, x :e apply_fun Gfam beta -> apply_fun inv x :e apply_fun Gfam beta)
+    (Hsubfam beta HbJ)).
+  assume _ _ Hmc _. exact (Hmc (apply_fun xs m) (apply_fun xs 0) Hxsm_Gb Hxs0_Gb). }
+claim Hlast_pre : forall k a2 b2:set, m = ordsucc k -> a2 :e J -> b2 :e J ->
+  apply_fun xsw_pre k :e apply_fun Gfam a2 -> z :e apply_fun Gfam b2 -> a2 <> b2.
+{ let k a2 b2. assume Hm_sk Ha2J Hb2J Hxsk_Ga2 Hz_Gb2.
+  claim Hk_m : k :e m. { rewrite Hm_sk. exact (ordsuccI2 k). }
+  claim Hxsk_eq : apply_fun xsw_pre k = apply_fun xs k.
+  { exact (apply_fun_graph m (fun i:set => apply_fun xs i) k Hk_m). }
+  claim Hk_n : k :e n. { rewrite Hn_sm. exact (ordsuccI1 m k Hk_m). }
+  claim Hsk_n : ordsucc k :e n.
+  { claim Hsk_m : ordsucc k = m. { symmetry. exact Hm_sk. }
+    rewrite Hsk_m. exact Hm_nw. }
+  claim Hxsk_Ga2r : apply_fun xs k :e apply_fun Gfam a2.
+  { rewrite <- Hxsk_eq. exact Hxsk_Ga2. }
+  claim Hxsm_Gb2 : apply_fun xs (ordsucc k) :e apply_fun Gfam beta.
+  { claim Hsk_m : ordsucc k = m. { symmetry. exact Hm_sk. }
+    rewrite Hsk_m. exact Hxsm_Gb. }
+  (** xsw(k) in Gfam(a2), xsw(ordsucc k) = xsw(m) in Gfam(beta). **)
+  (** By reduced word adjacency: a2 != beta for the factor of xsw(ordsucc k). **)
+  claim Hn_ne0 : n <> 0. { rewrite Hn_sm. exact (neq_ordsucc_0 m). }
+  claim Hn_ne1 : n <> 1.
+  { assume Hn1 : n = 1.
+    exact (Hm_ne0 (ordsucc_inj m 0
+      (eq_i_tra (ordsucc m) n 1 (eq_symm n (ordsucc m) Hn_sm) Hn1))). }
+  claim Hxsk_ne_eG : apply_fun xs k <> e.
+  { exact (reduced_word_no_eG_all G mult e inv J Gfam efam n xs Hgrp Hsubfam Hredw Hn_ne0 Hn_ne1 k Hk_n). }
+  (** Extract adjacency from reduced word **)
+  apply (and3E (n :e omega)
+    (forall i:set, i :e n -> exists a:set, a :e J /\ apply_fun xs i :e apply_fun Gfam a /\ apply_fun xs i <> apply_fun efam a)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall a b:set, a :e J -> b :e J -> apply_fun xs i :e apply_fun Gfam a -> apply_fun xs (ordsucc i) :e apply_fun Gfam b -> a <> b)
+    Hredw).
+  assume _ _ Hadj.
+  claim Ha2_ne_beta : a2 <> beta.
+  { exact (Hadj k Hk_n Hsk_n a2 beta Ha2J HbJ Hxsk_Ga2r Hxsm_Gb2). }
+  claim Hb2_beta : b2 = beta.
+  { exact (eq_symm beta b2 (disjoint_subgroups_label_unique G mult e inv J Gfam beta b2 z
+      Hdisjoint HbJ Hb2J Hz_Gb Hz_Gb2 Hz_ne)). }
+  rewrite Hb2_beta. exact Ha2_ne_beta. }
+claim Hred_prez : reduced_word J Gfam efam (ordsucc m)
+  (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xsw_pre i else z)).
+{ exact (reduced_word_append_one_pre J Gfam efam m xsw_pre z beta Hred_pre Hm_ne0 HbJ Hz_Gb Hz_ne_efb Hlast_pre). }
+(** Step 3: Use nat_ind to iteratively append xs(1), ..., xs(m) **)
+set xs_shifted := graph m (fun i:set => apply_fun xs (ordsucc i)).
+claim Hredw_sm : reduced_word J Gfam efam (ordsucc m) xs.
+{ rewrite <- Hn_sm. exact Hredw. }
+claim Hxs_shifted_red : reduced_word J Gfam efam m xs_shifted.
+{ exact (reduced_word_suffix J Gfam efam m xs Hredw_sm). }
+(** For now, still admit the iterative construction **)
+admit.
+Admitted.
 
 (** Proven Alice **)
 Lemma reduced_word_concat_agree :
