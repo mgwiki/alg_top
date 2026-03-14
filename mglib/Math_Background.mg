@@ -79919,6 +79919,207 @@ apply (xm (Rlt t 1)).
       Hnlt)).
 Qed.
 
+(** Infrastructure: max with a real constant is real-valued. **)
+(** Proven Charlie **)
+Theorem Rmax_const_right_in_R : forall t c:set,
+  t :e R ->
+  c :e R ->
+  Rmax t c :e R.
+let t c.
+assume HtR HcR.
+rewrite (Rmax_unfold
+  t
+  c).
+apply (If_i_or
+  (Rlt t c)
+  c
+  t).
+- assume Heq.
+  rewrite Heq.
+  exact HcR.
+- assume Heq.
+  rewrite Heq.
+  exact HtR.
+Qed.
+
+(** Infrastructure: if t <= c then max(t,c) = c. **)
+(** Proven Charlie **)
+Theorem Rmax_const_right_eq_right_of_Rle : forall t c:set,
+  t :e R ->
+  c :e R ->
+  Rle t c ->
+  Rmax t c = c.
+let t c.
+assume HtR HcR Hle.
+apply (xm (Rlt t c)).
+- assume Hlt.
+  rewrite (Rmax_unfold
+    t
+    c).
+  rewrite (If_i_1
+    (Rlt t c)
+    c
+    t
+    Hlt).
+  reflexivity.
+- assume Hnlt.
+  claim Heq : t = c.
+  {
+    apply (xm (t = c)).
+    - assume Htc.
+      exact Htc.
+    - assume Hneq.
+      claim Hlt :
+        Rlt t c.
+      {
+        exact (Rle_neq_implies_Rlt
+          t
+          c
+          Hle
+          Hneq).
+      }
+      exact (FalseE
+        (Hnlt Hlt)
+        (t = c)).
+  }
+  rewrite (Rmax_unfold
+    t
+    c).
+  rewrite (If_i_0
+    (Rlt t c)
+    c
+    t
+    Hnlt).
+  rewrite Heq.
+  reflexivity.
+Qed.
+
+(** Infrastructure: if c <= t then max(t,c) = t. **)
+(** Proven Charlie **)
+Theorem Rmax_const_right_eq_left_of_Rle : forall t c:set,
+  t :e R ->
+  c :e R ->
+  Rle c t ->
+  Rmax t c = t.
+let t c.
+assume HtR HcR Hle.
+apply (xm (Rlt t c)).
+- assume Hlt.
+  claim Hneq :
+    ~(t = c).
+  {
+    assume Htc.
+    claim Hltcc :
+      Rlt c c.
+    {
+      rewrite <- Htc at 1.
+      exact Hlt.
+    }
+    exact (not_Rlt_refl
+      c
+      HcR
+      Hltcc).
+  }
+  claim Hcle_not :
+    ~(Rle c t).
+  {
+    assume Habs.
+    claim Hct :
+      Rlt c t.
+    {
+      exact (Rle_neq_implies_Rlt
+        c
+        t
+        Habs
+        (fun Hct => Hneq (eq_symm c t Hct))).
+    }
+    claim Hltcc :
+      Rlt c c.
+    {
+      exact (Rlt_tra
+        c
+        t
+        c
+        Hct
+        Hlt).
+    }
+    exact (not_Rlt_refl
+      c
+      HcR
+      Hltcc).
+  }
+  exact (FalseE
+    (Hcle_not Hle)
+    (Rmax t c = t)).
+- assume Hnlt.
+  rewrite (Rmax_unfold
+    t
+    c).
+  rewrite (If_i_0
+    (Rlt t c)
+    c
+    t
+    Hnlt).
+  reflexivity.
+Qed.
+
+(** Infrastructure: positive-part fixes a nonnegative real. **)
+(** Proven Charlie **)
+Theorem Rmax_zero_eq_self_of_nonneg : forall t:set,
+  t :e R ->
+  ~(Rlt t 0) ->
+  Rmax t 0 = t.
+let t.
+assume HtR Hnlt.
+exact (Rmax_const_right_eq_left_of_Rle
+  t
+  0
+  HtR
+  real_0
+  (RleI
+    0
+    t
+    real_0
+    HtR
+    Hnlt)).
+Qed.
+
+(** Infrastructure: every real lies below max(t,c). **)
+(** Proven Charlie **)
+Theorem Rle_left_Rmax_const_right : forall t c:set,
+  t :e R ->
+  c :e R ->
+  Rle t (Rmax t c).
+let t c.
+assume HtR HcR.
+apply (xm (Rlt t c)).
+- assume Hlt.
+  rewrite (Rmax_unfold
+    t
+    c).
+  rewrite (If_i_1
+    (Rlt t c)
+    c
+    t
+    Hlt).
+  exact (Rlt_implies_Rle
+    t
+    c
+    Hlt).
+- assume Hnlt.
+  rewrite (Rmax_unfold
+    t
+    c).
+  rewrite (If_i_0
+    (Rlt t c)
+    c
+    t
+    Hnlt).
+  exact (Rle_refl
+    t
+    HtR).
+Qed.
+
 (** Infrastructure: intersection of open intervals is an open interval with If-defined endpoints. **)
 (** Proven Charlie **)
 Theorem open_interval_binintersect_open_interval_eq :
