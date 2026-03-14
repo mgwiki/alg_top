@@ -156808,6 +156808,820 @@ exact (Rle_neq_implies_Rlt
   (fun H0 => Hlamneq0 (eq_symm 0 lam H0))).
 Qed.
 
+(** Infrastructure: the normalized nonnegative-matrix simplex map lands in the early total simplex when Av never vanishes on the simplex. **)
+(** Proven Charlie **)
+Lemma simplex3_normalized_nonneg_matrix_map_into_total_fs : forall A:set,
+  function_on A (setprod 3 3) R ->
+  (forall i j:set, i :e 3 -> j :e 3 -> ~(Rlt (apply_fun A (i, j)) 0)) ->
+  (forall v:set, v :e simplex3_fs ->
+    ~(forall i:set, i :e 3 -> apply_fun (matrix_vector_mult 3 A v) i = 0)) ->
+  forall p:set, p :e simplex3_triangle_region ->
+    let v := apply_fun simplex3_triangle_region_to_fs p in
+    let Av := matrix_vector_mult 3 A v in
+    let lam := finite_real_sum (fun k:set => apply_fun Av k) 3 in
+    graph 3 (fun i:set =>
+      if i = 0 then div_SNo (apply_fun Av 0) lam else
+      if i = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam) :e simplex3_total_fs.
+let A.
+assume HAfun HAnonneg Hnozero.
+let p.
+assume HpT.
+set v := apply_fun simplex3_triangle_region_to_fs p.
+set Av := matrix_vector_mult 3 A v.
+set lam := finite_real_sum (fun k:set => apply_fun Av k) 3.
+set w := graph 3 (fun i:set =>
+  if i = 0 then div_SNo (apply_fun Av 0) lam else
+  if i = 1 then div_SNo (apply_fun Av 1) lam else
+  div_SNo (apply_fun Av 2) lam).
+claim HvS : v :e simplex3_total_fs.
+{
+  exact (simplex3_triangle_region_to_fs_in_simplex3_total_fs
+    p
+    HpT).
+}
+claim HvTF : total_function_on v 3 R.
+{
+  exact (andEL
+    (total_function_on v 3 R)
+    (functional_graph v)
+    (SepE2
+      (Power (setprod 3 R))
+      (fun u:set => total_function_on u 3 R /\ functional_graph u)
+      v
+      (SepE1
+        (total_function_space 3 R)
+        (fun u:set =>
+          (forall i:set, i :e 3 -> ~(Rlt (apply_fun u i) 0)) /\
+          finite_real_sum (fun i:set => apply_fun u i) 3 = 1)
+        v
+        HvS))).
+}
+claim Hvfun : function_on v 3 R.
+{
+  exact (total_function_on_function_on
+    v
+    3
+    R
+    HvTF).
+}
+claim HvProp :
+  (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0)) /\
+  finite_real_sum (fun i:set => apply_fun v i) 3 = 1.
+{
+  exact (SepE2
+    (total_function_space 3 R)
+    (fun u:set =>
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun u i) 0)) /\
+      finite_real_sum (fun i:set => apply_fun u i) 3 = 1)
+    v
+    HvS).
+}
+claim HvNonneg : forall i:set, i :e 3 -> Rle 0 (apply_fun v i).
+{
+  let i.
+  assume Hi3.
+  claim Hnlt : ~(Rlt (apply_fun v i) 0).
+  {
+    exact (andEL
+      (forall i:set, i :e 3 -> ~(Rlt (apply_fun v i) 0))
+      (finite_real_sum (fun i:set => apply_fun v i) 3 = 1)
+      HvProp
+      i
+      Hi3).
+  }
+  exact (RleI
+    0
+    (apply_fun v i)
+    real_0
+    (Hvfun i Hi3)
+    Hnlt).
+}
+claim H3nat : nat_p 3.
+{
+  exact (nat_ordsucc
+    2
+    (nat_ordsucc
+      1
+      (nat_ordsucc 0 nat_0))).
+}
+claim HAvRall : forall k:set, k :e 3 -> apply_fun Av k :e R.
+{
+  let k.
+  assume Hk3.
+  claim HavkEq :
+    apply_fun Av k =
+      finite_real_sum (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3.
+  {
+    exact (apply_fun_graph
+      3
+      (fun i:set =>
+        finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+      k
+      Hk3).
+  }
+  rewrite HavkEq.
+  apply (finite_real_sum_in_R
+    (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j))
+    3
+    H3nat).
+  let j.
+  assume Hj3.
+  claim HakjR : apply_fun A (k, j) :e R.
+  {
+    exact (HAfun
+      (k, j)
+      (tuple_2_setprod_by_pair_Sigma 3 3 k j Hk3 Hj3)).
+  }
+  claim HvjR : apply_fun v j :e R.
+  {
+    exact (Hvfun j Hj3).
+  }
+  exact (real_mul_SNo
+    (apply_fun A (k, j))
+    HakjR
+    (apply_fun v j)
+    HvjR).
+}
+claim HAvNonneg : forall k:set, k :e 3 -> Rle 0 (apply_fun Av k).
+{
+  let k.
+  assume Hk3.
+  claim HavkEq :
+    apply_fun Av k =
+      finite_real_sum (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j)) 3.
+  {
+    exact (apply_fun_graph
+      3
+      (fun i:set =>
+        finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3)
+      k
+      Hk3).
+  }
+  rewrite HavkEq.
+  apply (finite_real_sum_nonneg
+    (fun j:set => mul_SNo (apply_fun A (k, j)) (apply_fun v j))
+    3
+    H3nat).
+  - let j.
+    assume Hj3.
+    claim HakjR : apply_fun A (k, j) :e R.
+    {
+      exact (HAfun
+        (k, j)
+        (tuple_2_setprod_by_pair_Sigma 3 3 k j Hk3 Hj3)).
+    }
+    claim HvjR : apply_fun v j :e R.
+    {
+      exact (Hvfun j Hj3).
+    }
+    exact (real_mul_SNo
+      (apply_fun A (k, j))
+      HakjR
+      (apply_fun v j)
+      HvjR).
+  - let j.
+    assume Hj3.
+    claim HakjR : apply_fun A (k, j) :e R.
+    {
+      exact (HAfun
+        (k, j)
+        (tuple_2_setprod_by_pair_Sigma 3 3 k j Hk3 Hj3)).
+    }
+    claim HvjR : apply_fun v j :e R.
+    {
+      exact (Hvfun j Hj3).
+    }
+    claim HakjNonneg : Rle 0 (apply_fun A (k, j)).
+    {
+      exact (RleI
+        0
+        (apply_fun A (k, j))
+        real_0
+        HakjR
+        (HAnonneg
+          k
+          j
+          Hk3
+          Hj3)).
+    }
+    claim HvjNonneg : Rle 0 (apply_fun v j).
+    {
+      exact (HvNonneg
+        j
+        Hj3).
+    }
+    claim HakjSNo : SNo (apply_fun A (k, j)).
+    {
+      exact (real_SNo
+        (apply_fun A (k, j))
+        HakjR).
+    }
+    claim HvjSNo : SNo (apply_fun v j).
+    {
+      exact (real_SNo
+        (apply_fun v j)
+        HvjR).
+    }
+    claim Hakj_le : 0 <= apply_fun A (k, j).
+    {
+      exact (SNoLe_of_Rle
+        0
+        (apply_fun A (k, j))
+        HakjNonneg).
+    }
+    claim Hvj_le : 0 <= apply_fun v j.
+    {
+      exact (SNoLe_of_Rle
+        0
+        (apply_fun v j)
+        HvjNonneg).
+    }
+    claim Hprod_le : 0 <= mul_SNo (apply_fun A (k, j)) (apply_fun v j).
+    {
+      exact (mul_SNo_nonneg_nonneg
+        (apply_fun A (k, j))
+        (apply_fun v j)
+        HakjSNo
+        HvjSNo
+        Hakj_le
+        Hvj_le).
+    }
+    claim HprodR : mul_SNo (apply_fun A (k, j)) (apply_fun v j) :e R.
+    {
+      exact (real_mul_SNo
+        (apply_fun A (k, j))
+        HakjR
+        (apply_fun v j)
+        HvjR).
+    }
+    exact (Rle_of_SNoLe
+      0
+      (mul_SNo (apply_fun A (k, j)) (apply_fun v j))
+      real_0
+      HprodR
+      Hprod_le).
+}
+claim HlamR : lam :e R.
+{
+  apply (finite_real_sum_in_R
+    (fun k:set => apply_fun Av k)
+    3
+    H3nat).
+  let k.
+  assume Hk3.
+  exact (HAvRall
+    k
+    Hk3).
+}
+claim Hlampos : Rlt 0 lam.
+{
+  exact (simplex3_nonneg_matrix_denominator_positive
+    A
+    HAfun
+    HAnonneg
+    Hnozero
+    p
+    HpT).
+}
+claim HwTotal : w :e total_function_space 3 R.
+{
+  apply (graph_in_total_function_space
+    3
+    R
+    (fun i:set =>
+      if i = 0 then div_SNo (apply_fun Av 0) lam else
+      if i = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam)).
+  let i.
+  assume Hi3.
+  claim Hcases :
+    (if i = 0 then div_SNo (apply_fun Av 0) lam else
+      if i = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam)
+    =
+    div_SNo (apply_fun Av 0) lam \/
+    (if i = 0 then div_SNo (apply_fun Av 0) lam else
+      if i = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam)
+    =
+    (if i = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam).
+  {
+    exact (If_i_or
+      (i = 0)
+      (div_SNo (apply_fun Av 0) lam)
+      (if i = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)).
+  }
+  apply Hcases.
+  - assume Hcase.
+    exact (Hcase
+      (fun a b:set => b :e R)
+      (real_div_SNo
+        (apply_fun Av 0)
+        (HAvRall 0 (ordsuccI1 2 0 In_0_2))
+        lam
+        HlamR)).
+  - assume Hcase.
+    claim Hcases2 :
+      (if i = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      =
+      div_SNo (apply_fun Av 1) lam \/
+      (if i = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      =
+      div_SNo (apply_fun Av 2) lam.
+    {
+      exact (If_i_or
+        (i = 1)
+        (div_SNo (apply_fun Av 1) lam)
+        (div_SNo (apply_fun Av 2) lam)).
+    }
+    apply Hcases2.
+    + assume Hcase2.
+      exact (Hcase
+        (fun a b:set => b :e R)
+        (Hcase2
+          (fun a b:set => b :e R)
+          (real_div_SNo
+            (apply_fun Av 1)
+            (HAvRall 1 (ordsuccI1 2 1 In_1_2))
+            lam
+            HlamR))).
+    + assume Hcase2.
+      exact (Hcase
+        (fun a b:set => b :e R)
+        (Hcase2
+          (fun a b:set => b :e R)
+          (real_div_SNo
+            (apply_fun Av 2)
+            (HAvRall 2 (ordsuccI2 2))
+            lam
+            HlamR))).
+}
+claim HwNonneg :
+  forall i:set, i :e 3 -> ~(Rlt (apply_fun w i) 0).
+{
+  let i.
+  assume Hi3.
+  rewrite (apply_fun_graph
+    3
+    (fun j:set =>
+      if j = 0 then div_SNo (apply_fun Av 0) lam else
+      if j = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam)
+    i
+    Hi3).
+  claim HlamSNo : SNo lam.
+  {
+    exact (real_SNo
+      lam
+      HlamR).
+  }
+  claim H0nonneg : Rle 0 (div_SNo (apply_fun Av 0) lam).
+  {
+    exact (Rle_of_SNoLe
+      0
+      (div_SNo (apply_fun Av 0) lam)
+      real_0
+      (real_div_SNo
+        (apply_fun Av 0)
+        (HAvRall 0 (ordsuccI1 2 0 In_0_2))
+        lam
+        HlamR)
+      (div_SNo_nonneg_pos_nonneg
+        (apply_fun Av 0)
+        lam
+        (real_SNo
+          (apply_fun Av 0)
+          (HAvRall 0 (ordsuccI1 2 0 In_0_2)))
+        HlamSNo
+        (SNoLe_of_Rle
+          0
+          (apply_fun Av 0)
+          (HAvNonneg 0 (ordsuccI1 2 0 In_0_2)))
+        (RltE_lt
+          0
+          lam
+          Hlampos))).
+  }
+  claim H1nonneg : Rle 0 (div_SNo (apply_fun Av 1) lam).
+  {
+    exact (Rle_of_SNoLe
+      0
+      (div_SNo (apply_fun Av 1) lam)
+      real_0
+      (real_div_SNo
+        (apply_fun Av 1)
+        (HAvRall 1 (ordsuccI1 2 1 In_1_2))
+        lam
+        HlamR)
+      (div_SNo_nonneg_pos_nonneg
+        (apply_fun Av 1)
+        lam
+        (real_SNo
+          (apply_fun Av 1)
+          (HAvRall 1 (ordsuccI1 2 1 In_1_2)))
+        HlamSNo
+        (SNoLe_of_Rle
+          0
+          (apply_fun Av 1)
+          (HAvNonneg 1 (ordsuccI1 2 1 In_1_2)))
+        (RltE_lt
+          0
+          lam
+          Hlampos))).
+  }
+  claim H2nonneg : Rle 0 (div_SNo (apply_fun Av 2) lam).
+  {
+    exact (Rle_of_SNoLe
+      0
+      (div_SNo (apply_fun Av 2) lam)
+      real_0
+      (real_div_SNo
+        (apply_fun Av 2)
+        (HAvRall 2 (ordsuccI2 2))
+        lam
+        HlamR)
+      (div_SNo_nonneg_pos_nonneg
+        (apply_fun Av 2)
+        lam
+        (real_SNo
+          (apply_fun Av 2)
+          (HAvRall 2 (ordsuccI2 2)))
+        HlamSNo
+        (SNoLe_of_Rle
+          0
+          (apply_fun Av 2)
+          (HAvNonneg 2 (ordsuccI2 2)))
+        (RltE_lt
+          0
+          lam
+          Hlampos))).
+  }
+  claim Hcases :
+    (if i = 0 then div_SNo (apply_fun Av 0) lam else
+      if i = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam)
+    =
+    div_SNo (apply_fun Av 0) lam \/
+    (if i = 0 then div_SNo (apply_fun Av 0) lam else
+      if i = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam)
+    =
+    (if i = 1 then div_SNo (apply_fun Av 1) lam else
+      div_SNo (apply_fun Av 2) lam).
+  {
+    exact (If_i_or
+      (i = 0)
+      (div_SNo (apply_fun Av 0) lam)
+      (if i = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)).
+  }
+  apply Hcases.
+  - assume Hcase.
+    exact (Hcase
+      (fun a b:set => ~(Rlt b 0))
+      (RleE_nlt
+        0
+        (div_SNo (apply_fun Av 0) lam)
+        H0nonneg)).
+  - assume Hcase.
+    claim Hcases2 :
+      (if i = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      =
+      div_SNo (apply_fun Av 1) lam \/
+      (if i = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      =
+      div_SNo (apply_fun Av 2) lam.
+    {
+      exact (If_i_or
+        (i = 1)
+        (div_SNo (apply_fun Av 1) lam)
+        (div_SNo (apply_fun Av 2) lam)).
+    }
+    apply Hcases2.
+    + assume Hcase2.
+      exact (Hcase
+        (fun a b:set => ~(Rlt b 0))
+        (Hcase2
+          (fun a b:set => ~(Rlt b 0))
+          (RleE_nlt
+            0
+            (div_SNo (apply_fun Av 1) lam)
+            H1nonneg))).
+    + assume Hcase2.
+      exact (Hcase
+        (fun a b:set => ~(Rlt b 0))
+        (Hcase2
+          (fun a b:set => ~(Rlt b 0))
+          (RleE_nlt
+            0
+            (div_SNo (apply_fun Av 2) lam)
+            H2nonneg))).
+}
+claim Hsum1 : finite_real_sum (fun i:set => apply_fun w i) 3 = 1.
+{
+  claim H0in3 : 0 :e 3.
+  {
+    exact (ordsuccI1
+      2
+      0
+      In_0_2).
+  }
+  claim H1in3 : 1 :e 3.
+  {
+    exact (ordsuccI1
+      2
+      1
+      In_1_2).
+  }
+  claim H2in3 : 2 :e 3.
+  {
+    exact (ordsuccI2 2).
+  }
+  claim H1nat : nat_p 1.
+  {
+    exact (nat_ordsucc
+      0
+      nat_0).
+  }
+  claim H2nat : nat_p 2.
+  {
+    exact (nat_ordsucc
+      1
+      H1nat).
+  }
+  claim HlamSNo : SNo lam.
+  {
+    exact (real_SNo
+      lam
+      HlamR).
+  }
+  claim Hlamneq0 : lam <> 0.
+  {
+    assume Hlam0.
+    claim H00 : Rlt 0 0.
+    {
+      rewrite <- Hlam0 at 2.
+      exact Hlampos.
+    }
+    exact (not_Rlt_refl
+      0
+      real_0
+      H00
+      False).
+  }
+  set r := recip_SNo_pos lam.
+  claim HrR : r :e R.
+  {
+    exact (real_recip_SNo_pos
+      lam
+      HlamR
+      (RltE_lt
+        0
+        lam
+        Hlampos)).
+  }
+  claim HrS : SNo r.
+  {
+    exact (real_SNo
+      r
+      HrR).
+  }
+  claim Hlamr1 : mul_SNo lam r = 1.
+  {
+    exact (recip_SNo_pos_invR
+      lam
+      HlamSNo
+      (RltE_lt
+        0
+        lam
+        Hlampos)).
+  }
+  claim HdivRecip :
+    forall x:set, x :e R -> div_SNo x lam = mul_SNo x r.
+  {
+    let x.
+    assume HxR.
+    claim HxS : SNo x.
+    {
+      exact (real_SNo
+        x
+        HxR).
+    }
+    claim HxrR : mul_SNo x r :e R.
+    {
+      exact (real_mul_SNo
+        x
+        HxR
+        r
+        HrR).
+    }
+    claim HxrS : SNo (mul_SNo x r).
+    {
+      exact (real_SNo
+        (mul_SNo x r)
+        HxrR).
+    }
+    claim Hlamxr :
+      mul_SNo lam (mul_SNo x r) = x.
+    {
+      rewrite (mul_SNo_assoc
+        lam
+        x
+        r
+        HlamSNo
+        HxS
+        HrS).
+      rewrite (mul_SNo_com
+        lam
+        x
+        HlamSNo
+        HxS).
+      rewrite <- (mul_SNo_assoc
+        x
+        lam
+        r
+        HxS
+        HlamSNo
+        HrS).
+      rewrite Hlamr1.
+      exact (mul_SNo_oneR
+        x
+        HxS).
+    }
+    exact (mul_div_SNo_nonzero_eq
+      x
+      lam
+      (mul_SNo x r)
+      HxS
+      HlamSNo
+      HxrS
+      Hlamneq0
+      (eq_symm
+        (mul_SNo lam (mul_SNo x r))
+        x
+        Hlamxr)).
+  }
+  claim Hneq21 : 2 <> 1.
+  {
+    assume H21.
+    claim H1in2 : 1 :e 2.
+    {
+      exact In_1_2.
+    }
+    claim H1in1 : 1 :e 1.
+    {
+      exact (H21
+        (fun a b => 1 :e a)
+        H1in2).
+    }
+    apply (ordsuccE
+      0
+      1
+      H1in1).
+    - assume H1in0.
+      exact (EmptyE
+        1
+        H1in0).
+    - assume H10.
+      exact (neq_1_0 H10).
+  }
+  claim Hw0 : apply_fun w 0 = div_SNo (apply_fun Av 0) lam.
+  {
+    rewrite (apply_fun_graph
+      3
+      (fun j:set =>
+        if j = 0 then div_SNo (apply_fun Av 0) lam else
+        if j = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      0
+      H0in3).
+    apply (If_i_1
+      (0 = 0)
+      (div_SNo (apply_fun Av 0) lam)
+      (if 0 = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      (eq_refl 0)).
+  }
+  claim Hw1 : apply_fun w 1 = div_SNo (apply_fun Av 1) lam.
+  {
+    rewrite (apply_fun_graph
+      3
+      (fun j:set =>
+        if j = 0 then div_SNo (apply_fun Av 0) lam else
+        if j = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      1
+      H1in3).
+    rewrite (If_i_0
+      (1 = 0)
+      (div_SNo (apply_fun Av 0) lam)
+      (if 1 = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      neq_1_0).
+    apply (If_i_1
+      (1 = 1)
+      (div_SNo (apply_fun Av 1) lam)
+      (div_SNo (apply_fun Av 2) lam)
+      (eq_refl 1)).
+  }
+  claim Hw2 : apply_fun w 2 = div_SNo (apply_fun Av 2) lam.
+  {
+    rewrite (apply_fun_graph
+      3
+      (fun j:set =>
+        if j = 0 then div_SNo (apply_fun Av 0) lam else
+        if j = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      2
+      H2in3).
+    rewrite (If_i_0
+      (2 = 0)
+      (div_SNo (apply_fun Av 0) lam)
+      (if 2 = 1 then div_SNo (apply_fun Av 1) lam else
+        div_SNo (apply_fun Av 2) lam)
+      neq_2_0).
+    exact (If_i_0
+      (2 = 1)
+      (div_SNo (apply_fun Av 1) lam)
+      (div_SNo (apply_fun Av 2) lam)
+      Hneq21).
+  }
+  claim HsumWmul :
+    finite_real_sum (fun i:set => apply_fun w i) 3 =
+    finite_real_sum (fun i:set => mul_SNo (apply_fun Av i) r) 3.
+  {
+    rewrite (finite_real_sum_S
+      (fun i:set => apply_fun w i)
+      2
+      H2nat).
+    rewrite (finite_real_sum_S
+      (fun i:set => apply_fun w i)
+      1
+      H1nat).
+    rewrite (finite_real_sum_S
+      (fun i:set => apply_fun w i)
+      0
+      nat_0).
+    rewrite (finite_real_sum_0
+      (fun i:set => apply_fun w i)).
+    rewrite (finite_real_sum_S
+      (fun i:set => mul_SNo (apply_fun Av i) r)
+      2
+      H2nat).
+    rewrite (finite_real_sum_S
+      (fun i:set => mul_SNo (apply_fun Av i) r)
+      1
+      H1nat).
+    rewrite (finite_real_sum_S
+      (fun i:set => mul_SNo (apply_fun Av i) r)
+      0
+      nat_0).
+    rewrite (finite_real_sum_0
+      (fun i:set => mul_SNo (apply_fun Av i) r)).
+    rewrite Hw0.
+    rewrite Hw1.
+    rewrite Hw2.
+    rewrite (HdivRecip
+      (apply_fun Av 0)
+      (HAvRall 0 H0in3)).
+    rewrite (HdivRecip
+      (apply_fun Av 1)
+      (HAvRall 1 H1in3)).
+    rewrite (HdivRecip
+      (apply_fun Av 2)
+      (HAvRall 2 H2in3)).
+    reflexivity.
+  }
+  rewrite HsumWmul.
+  rewrite (finite_real_sum_mul_const_right
+    (fun i:set => apply_fun Av i)
+    3
+    r
+    H3nat
+    HrR
+    HAvRall).
+  rewrite Hlamr1.
+  reflexivity.
+}
+apply (SepI
+  (total_function_space 3 R)
+  (fun u:set =>
+    (forall i:set, i :e 3 -> ~(Rlt (apply_fun u i) 0)) /\
+    finite_real_sum (fun i:set => apply_fun u i) 3 = 1)
+  w).
+- exact HwTotal.
+- apply andI.
+  * exact HwNonneg.
+  * exact Hsum1.
+Qed.
+
 (** Infrastructure: Brouwer fixed point on the simplex for nonnegative matrices once Av never vanishes on the simplex. **)
 Lemma simplex3_fixed_point_nonneg_matrix : forall A:set,
   function_on A (setprod 3 3) R ->
@@ -156839,7 +157653,27 @@ set F := graph simplex3_triangle_region (fun p:set =>
 claim HNIntoTotal :
   forall p:set, p :e simplex3_triangle_region -> apply_fun N p :e simplex3_total_fs.
 {
-  admit. (** remaining nonnegative-case gap: normalized map lands in simplex3_total_fs once denominator positivity is derived from Hnozero **)
+  let p.
+  assume HpT.
+  rewrite (apply_fun_graph
+    simplex3_triangle_region
+    (fun p0:set =>
+      let v0 := apply_fun simplex3_triangle_region_to_fs p0 in
+      let Av0 := matrix_vector_mult 3 A v0 in
+      let lam0 := finite_real_sum (fun k:set => apply_fun Av0 k) 3 in
+      graph 3 (fun i:set =>
+        if i = 0 then div_SNo (apply_fun Av0 0) lam0 else
+        if i = 1 then div_SNo (apply_fun Av0 1) lam0 else
+        div_SNo (apply_fun Av0 2) lam0))
+    p
+    HpT).
+  exact (simplex3_normalized_nonneg_matrix_map_into_total_fs
+    A
+    HAfun
+    HAnonneg
+    Hnozero
+    p
+    HpT).
 }
 claim HNInto :
   forall p:set, p :e simplex3_triangle_region -> apply_fun N p :e simplex3_fs.
