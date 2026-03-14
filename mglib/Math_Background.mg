@@ -468746,7 +468746,28 @@ apply (nat_inv nw Hnw_nat).
       claim Hnw_ne1c : nw <> 1.
       { assume Hnw1 : nw = 1.
         apply (Hno_efam_entry nw xsw Hredw 0 H0nw).
-        admit. }
+        claim Hxsw0_Gb : apply_fun xsw 0 :e G.
+        { exact (reduced_word_in_G G multG eG invG J Gfam efam nw xsw Hsubfam Hredw 0 H0nw). }
+        claim HwpS0 : word_product multG eG xsw (ordsucc 0) =
+          apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
+        { exact (word_product_succ multG eG xsw 0 nat_0). }
+        claim Hwp0 : word_product multG eG xsw 0 = eG.
+        { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))). }
+        claim HidL : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
+        { exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+            (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxsw0_Gb)). }
+        claim Hwp1_step : word_product multG eG xsw (ordsucc 0) = apply_fun multG (eG, apply_fun xsw 0).
+        { rewrite HwpS0. rewrite Hwp0. reflexivity. }
+        claim Hwp1_val : word_product multG eG xsw (ordsucc 0) = apply_fun xsw 0.
+        { exact (eq_i_tra (word_product multG eG xsw (ordsucc 0))
+            (apply_fun multG (eG, apply_fun xsw 0)) (apply_fun xsw 0) Hwp1_step HidL). }
+        claim Hwp_nw_eq_1 : word_product multG eG xsw nw = word_product multG eG xsw (ordsucc 0).
+        { rewrite Hnw1. rewrite <- ordsucc_0_eq_1_nat. reflexivity. }
+        exact (eq_i_tra (apply_fun xsw 0) (word_product multG eG xsw (ordsucc 0)) (apply_fun efam al)
+          (eq_symm (word_product multG eG xsw (ordsucc 0)) (apply_fun xsw 0) Hwp1_val)
+          (eq_i_tra (word_product multG eG xsw (ordsucc 0)) (word_product multG eG xsw nw) (apply_fun efam al)
+            (eq_symm (word_product multG eG xsw nw) (word_product multG eG xsw (ordsucc 0)) Hwp_nw_eq_1)
+            Hwp_efam)). }
       claim Hxsw0_ne_eG : apply_fun xsw 0 <> eG.
       { exact (reduced_word_no_eG_all G multG eG invG J Gfam efam nw xsw Hgrp Hsubfam Hredw Hnw_ne0
           Hnw_ne1c 0 H0nw). }
