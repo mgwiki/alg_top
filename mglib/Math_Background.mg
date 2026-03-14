@@ -282696,8 +282696,83 @@ apply (nat_inv nw Hnw_nat).
         (** Case split: b0 = bmw or b0 != bmw **)
         apply (xm (b0 = bmw)).
         - assume Hb0_eq_bmw : b0 = bmw.
-          (** Z/2Z + same-factor boundary: remaining hard case **)
-          admit.
+          (** Z/2Z + same-factor boundary: use junction analysis **)
+          (** Junction product z = mult(xsw(mw), xsw(0)) in Gfam(b0) **)
+          set p_junc := apply_fun multG (apply_fun xsw mw, apply_fun xsw 0).
+          claim Hxsw0_Gbmw2 : apply_fun xsw 0 :e apply_fun Gfam bmw.
+          { exact (eq_subst_mem_set (apply_fun xsw 0) (apply_fun Gfam b0) (apply_fun Gfam bmw) Hxsw0_Gb0
+              (Hb0_eq_bmw (fun z b:set => apply_fun Gfam b0 = apply_fun Gfam z)
+                (eq_refl (apply_fun Gfam b0)))). }
+          claim Hp_junc_Gbmw : p_junc :e apply_fun Gfam bmw.
+          { exact (HGfam_mult bmw HbmwJ (apply_fun xsw mw) (apply_fun xsw 0)
+              Hxsmw_Gbmw Hxsw0_Gbmw2). }
+          (** Case: p_junc != eG and p_junc != efam(bmw) **)
+          apply (xm (p_junc = eG \/ p_junc = apply_fun efam bmw)).
+          + assume Hjunc_trivial : p_junc = eG \/ p_junc = apply_fun efam bmw.
+            (** Hard: junction cancels or equals efam. Need recursive argument. **)
+            (** For now admit this narrow case. **)
+            admit.
+          + assume Hjunc_nontrivial : ~(p_junc = eG \/ p_junc = apply_fun efam bmw).
+            claim Hp_ne_eG : p_junc <> eG.
+            { assume Heq. apply Hjunc_nontrivial. apply orIL. exact Heq. }
+            claim Hp_ne_efbmw : p_junc <> apply_fun efam bmw.
+            { assume Heq. apply Hjunc_nontrivial. apply orIR. exact Heq. }
+            (** Build prefix [xsw(0),...,xsw(mw-1)] and append p_junc **)
+            (** Then append suffix [xsw(1),...,xsw(mw)] to get word of length 2nw-1 **)
+            (** Product = eG. Length >= 5. Contradiction. **)
+            (** Simpler approach: just build prefix+merge as a reduced word of length nw **)
+            (** with product mult(word_product(prefix,mw), p_junc) **)
+            (** = mult(P, mult(xsw(mw), xsw(0))) = mult(mult(P, xsw(mw)), xsw(0)) **)
+            (** = mult(efam(al), xsw(0)) **)
+            (** This is NOT eG (since xsw(0) != efam(al) = inv(efam(al))). **)
+            (** And NOT in Gfam(al) (since Gfam(al) = {eG, efam(al)} and neither). **)
+            (** But we need product = eG for the contradiction lemma. **)
+            (** Use FULL doubled word: prefix + merge + suffix of second copy **)
+            (** Simpler: use reduced_word_double_cyclic with merge **)
+            (** The merged word has length 2nw-1. Build it manually. **)
+            (** For now, use a simpler approach: build the word **)
+            (** [xsw(0), ..., xsw(mw-1), p_junc] of length nw as a reduced word **)
+            (** Its product = mult(efam(al), xsw(0)). **)
+            (** mult(efam(al), xsw(0)) is NOT in Gfam(al) (Z/2Z, not eG, not efam(al)). **)
+            (** mult(efam(al), xsw(0)) is NOT in Gfam(b0) either (if efam(al) not in b0). **)
+            (** Actually efam(al) NOT in Gfam(b0): if efam(al) in Gfam(b0), then **)
+            (** efam(al) in Gfam(al) cap Gfam(b0), efam(al) != eG -> al = b0. Contradiction. **)
+            (** So mult(efam(al), xsw(0)) with efam(al) in Gfam(al) and xsw(0) in Gfam(b0) **)
+            (** is a product from different factors -> not in any single factor. **)
+            (** So it has reduced word of length >= 2. And we built one of length nw. **)
+            (** But we need CONTRADICTION, not just consistency. **)
+            (** The product mult(efam(al), xsw(0)) != eG. And the word is reduced. **)
+            (** But free_product_reduced_word_length_ge2_product_ne_e gives product != eG, **)
+            (** which is already known. No contradiction. **)
+            (** DIFFERENT APPROACH: build suffix + merge word and show product = eG **)
+            (** suffix [xsw(1),...,xsw(mw)] appended with p_junc: **)
+            (** product = mult(Q, p_junc) where Q = xsw(1)...xsw(mw) **)
+            (** Q = inv(xsw(0)) mult efam(al) (from word_product_left_split). **)
+            (** mult(Q, p_junc) = inv(xsw(0)) mult efam(al) mult xsw(mw) mult xsw(0) **)
+            (** = inv(xsw(0)) mult efam(al) mult xsw(mw) mult xsw(0) **)
+            (** hmm, this doesn't simplify nicely either. **)
+            (** Actually, the full doubled word product is efam(al)^2 = eG. **)
+            (** The doubled word with the junction merged is: **)
+            (** [xsw(0),...,xsw(mw-1), p_junc, xsw(1),...,xsw(mw)] of length 2nw-1. **)
+            (** If I can show this is reduced, its product is eG, length >= 5 -> contradiction. **)
+            (** Is it reduced? **)
+            (** - Entries 0..mw-1: original prefix, reduced. **)
+            (** - Entry mw-1 and p_junc: xsw(mw-1) in Gfam(alpha_{mw-1}), **)
+            (**   alpha_{mw-1} != bmw (by original adjacency). p_junc in Gfam(bmw). **)
+            (**   So different factors. Check. **)
+            (** - p_junc and xsw(1): p_junc in Gfam(bmw), xsw(1) in Gfam(b1), **)
+            (**   b1 != b0 (by original adjacency). b0 = bmw. So b1 != bmw. **)
+            (**   Different factors. Check. **)
+            (** - Entries 1..mw from second copy: suffix, reduced (same as original). **)
+            (** - p_junc != efam(bmw) and p_junc != eG: from Hp_ne_efbmw and Hp_ne_eG. Check. **)
+            (** So the merged word IS reduced if we can build it. **)
+            (** But building a word of length 2nw-1 in Megalodon requires reduced_word_concat. **)
+            (** Alternatively, use the existing reduced_word_double_cyclic_word_product **)
+            (** which handles the case alpha_last != alpha_first. **)
+            (** But here the junction entries ARE in the same factor. **)
+            (** I need a DIFFERENT lemma or manual construction. **)
+            (** For now, admit this sub-case (nontrivial junction merge). **)
+            admit.
         - assume Hb0_ne_bmw : b0 <> bmw.
           (** First and last in DIFFERENT factors. Use reduced_word_double_cyclic_word_product. **)
           claim Hnw_ne1d : nw <> 1.
