@@ -432788,6 +432788,34 @@ apply iffI.
     Hdirect).
 Qed.
 
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_components_exists_witness_iff_direct : forall F multF eF invF J H n:set,
+  n :e omega ->
+  equip J (ordsucc n) ->
+  ((exists k:set, k :e omega /\ equip (right_coset_set F multF H) k)
+   <->
+   n :e omega /\ equip J (ordsucc n) /\
+   finite (right_coset_set F multF H) /\
+   subgroup_index H F multF eF invF :e omega /\
+   equip (right_coset_set F multF H) (subgroup_index H F multF eF invF)).
+let F multF eF invF J H n.
+assume HnOmega.
+assume HJeq.
+exact (thm85_3_rankdata_nonzero_npack_exists_witness_iff_direct
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  (andI
+    (n :e omega)
+    (equip J (ordsucc n))
+    HnOmega
+    HJeq)).
+Qed.
+
 (** Core Schreier-rank step with an explicit right-coset cardinal witness. **)
 Theorem thm85_3_core_rank_from_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
