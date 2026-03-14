@@ -439262,6 +439262,127 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_n_omega_alias : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  n :e omega.
+let F multF eF invF J H n.
+assume Hdirect.
+exact (thm85_3_rankdata_nonzero_direct_n_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  Hdirect).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_J_equip_alias : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  equip J (ordsucc n).
+let F multF eF invF J H n.
+assume Hdirect.
+exact (thm85_3_rankdata_nonzero_direct_J_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  Hdirect).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_coset_finite_alias : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  finite (right_coset_set F multF H).
+let F multF eF invF J H n.
+assume Hdirect.
+exact (thm85_3_rankdata_nonzero_direct_coset_finite
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  Hdirect).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_index_omega_alias : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  subgroup_index H F multF eF invF :e omega.
+let F multF eF invF J H n.
+assume Hdirect.
+exact (thm85_3_rankdata_nonzero_direct_index_omega
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  Hdirect).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_index_equip_alias : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume Hdirect.
+exact (thm85_3_rankdata_nonzero_direct_index_equip
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  Hdirect).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_rankdata_nonzero_direct_index_spec_alias : forall F multF eF invF J H n:set,
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF) ->
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+let F multF eF invF J H n.
+assume Hdirect.
+exact (thm85_3_rankdata_nonzero_direct_index_spec
+  F
+  multF
+  eF
+  invF
+  J
+  H
+  n
+  Hdirect).
+Qed.
+
+(** Proven Bob **)
 Lemma thm85_3_rankdata_nonzero_direct_from_components_index_spec : forall F multF eF invF J H n:set,
   n :e omega ->
   equip J (ordsucc n) ->
