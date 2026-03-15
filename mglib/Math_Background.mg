@@ -211570,11 +211570,49 @@ claim Hball_UV : forall k:set, k :e ordsucc nch ->
     claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c_k r.
     { exact (eq_subst_mem_set t (apply_fun seq k) (open_ball unit_interval R_bounded_metric c_k r) Ht Hseqk_eq). }
     exact (HballV t Ht_ball). }
-(** Step 3: Find transitions and connect to x0 **)
+(** Step 3: At overlapping U-ball/V-ball transitions, overlap points map to U cap V **)
+claim Htransition_UV : forall k:set, k :e nch ->
+  (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) ->
+  (forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e V) ->
+  exists s:set, s :e apply_fun seq k /\ s :e apply_fun seq (ordsucc k) /\ apply_fun f s :e U :/\: V.
+{ let k. assume Hk HkU HskV.
+  claim Hsk_snch : ordsucc k :e ordsucc nch.
+  { admit. (** k :e nch implies ordsucc k :e ordsucc nch **) }
+  claim Hovlp : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+  { exact (Hoverlap k Hk). }
+  (** Get a witness from the non-empty overlap **)
+  apply (xm (exists s:set, s :e apply_fun seq k /\ s :e apply_fun seq (ordsucc k) /\ apply_fun f s :e U :/\: V)).
+  - assume H. exact H.
+  - assume Hno.
+    (** If no overlap point maps to U cap V, contradiction with Hovlp **)
+    (** Actually, any overlap point s is in both seq(k) and seq(ordsucc k). **)
+    (** By HkU: f(s) :e U. By HskV: f(s) :e V. So f(s) :e U cap V. **)
+    claim Hovlp_has_elem : exists s:set, s :e apply_fun seq k :/\: apply_fun seq (ordsucc k).
+    { admit. (** non-empty set has element **) }
+    apply Hovlp_has_elem. let s. assume Hs.
+    claim HsK : s :e apply_fun seq k. { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) s Hs). }
+    claim HsSK : s :e apply_fun seq (ordsucc k). { exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s Hs). }
+    witness s. apply and3I.
+    + exact HsK.
+    + exact HsSK.
+    + apply binintersectI. { exact (HkU s HsK). } { exact (HskV s HsSK). } }
+(** Symmetric version for V-to-U transitions **)
+claim Htransition_VU : forall k:set, k :e nch ->
+  (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V) ->
+  (forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e U) ->
+  exists s:set, s :e apply_fun seq k /\ s :e apply_fun seq (ordsucc k) /\ apply_fun f s :e U :/\: V.
+{ let k. assume Hk HkV HskU.
+  claim Hovlp_has_elem : exists s:set, s :e apply_fun seq k :/\: apply_fun seq (ordsucc k).
+  { admit. (** non-empty set has element **) }
+  apply Hovlp_has_elem. let s. assume Hs.
+  claim HsK : s :e apply_fun seq k. { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) s Hs). }
+  claim HsSK : s :e apply_fun seq (ordsucc k). { exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s Hs). }
+  witness s. apply and3I.
+  + exact HsK.
+  + exact HsSK.
+  + apply binintersectI. { exact (HskU s HsSK). } { exact (HkV s HsK). } }
 (** Step 4: Build word decomposition by induction on nch **)
-(** The key inductive step: split at each U/V transition, **)
-(** use path_connected U cap V to connect to x0, **)
-(** build sub-loops in U or V, apply word_data_of_loop_in_U/V **)
+(** Uses transitions + path connectivity of U cap V to connect to x0 **)
 admit.
 Admitted.
 
