@@ -307538,7 +307538,17 @@ apply HG1orG2.
   (** G1 cap G2 = {eG} by the binary free product disjointness. **)
   (** But wp != eG. So not all entries are in G2. Hence some entry is in G1. **)
   claim HnotAllG2 : ~(forall j:set, j :e n -> apply_fun ys j :e G2).
-  { admit. (** If all in G2 then wp in G2, wp in G1 cap G2 = {eG}, contradiction with wp != eG **) }
+  { assume HallG2 : forall j:set, j :e n -> apply_fun ys j :e G2.
+    claim HgrpG2 : group_structure G2 multG eG invG.
+    { admit. (** extract from Hsub2 or Hfp2 **) }
+    claim Hn_nat : nat_p n.
+    { admit. (** from reduced_word omega + omega_nat_p **) }
+    claim HwpG2 : word_product multG eG ys n :e G2.
+    { exact (word_product_in_G_group G2 multG eG invG n ys HgrpG2 Hn_nat HallG2). }
+    claim Hdisjoint_binary : forall x:set, x :e G1 -> x :e G2 -> x = eG.
+    { (** from binary free product disjointness: Gfam(0) cap Gfam(1) = {eG} **)
+      admit. }
+    exact (HwpNeG (Hdisjoint_binary (word_product multG eG ys n) HwpG1 HwpG2)). }
   claim HexG1 : exists j:set, j :e n /\ apply_fun ys j :e G1.
   { admit. (** From HnotAllG2 and each entry in G1 or G2 **) }
   claim HexG2 : exists j:set, j :e n /\ apply_fun ys j :e G2.
