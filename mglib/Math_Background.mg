@@ -307540,9 +307540,17 @@ apply HG1orG2.
   claim HnotAllG2 : ~(forall j:set, j :e n -> apply_fun ys j :e G2).
   { assume HallG2 : forall j:set, j :e n -> apply_fun ys j :e G2.
     claim HgrpG2 : group_structure G2 multG eG invG.
-    { admit. (** extract from Hsub2 or Hfp2 **) }
+    { exact (free_product_group_structure G2 multG eG invG K
+        (graph K (fun a:set => apply_fun Hfam a))
+        (graph K (fun a:set => apply_fun efamH a)) Hfp2). }
     claim Hn_nat : nat_p n.
-    { admit. (** from reduced_word omega + omega_nat_p **) }
+    { claim Hn_omega : n :e omega.
+      { apply (and3E (n :e omega)
+          (forall j:set, j :e n -> exists a:set, a :e (J :\/: K) /\ apply_fun ys j :e apply_fun Hfam a /\ apply_fun ys j <> apply_fun efamH a)
+          (forall j:set, j :e n -> ordsucc j :e n -> forall a b:set, a :e (J :\/: K) -> b :e (J :\/: K) -> apply_fun ys j :e apply_fun Hfam a -> apply_fun ys (ordsucc j) :e apply_fun Hfam b -> a <> b)
+          Hred).
+        assume H _ _. exact H. }
+      exact (omega_nat_p n Hn_omega). }
     claim HwpG2 : word_product multG eG ys n :e G2.
     { exact (word_product_in_G_group G2 multG eG invG n ys HgrpG2 Hn_nat HallG2). }
     claim Hdisjoint_binary : forall x:set, x :e G1 -> x :e G2 -> x = eG.
