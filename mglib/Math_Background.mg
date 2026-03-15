@@ -184842,6 +184842,41 @@ claim HgFun : function_on g (Sn 2) (Sn 1).
 claim HgCont :
   continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g.
 admit.
+claim HgpairOdd :
+  forall x:set, x :e Sn 2 ->
+    apply_fun gpair (Rn_negate 3 x) = Rn_negate 2 (apply_fun gpair x).
+{
+  let x.
+  assume HxSn2.
+  claim HnxSn2 : Rn_negate 3 x :e Sn 2.
+  {
+    exact (Rn_negate_in_Sn_ordsucc
+      2
+      x
+      H2om
+      HxSn2).
+  }
+  rewrite (compose_fun_apply
+    (Sn 2)
+    d
+    r
+    (Rn_negate 3 x)
+    HnxSn2).
+  rewrite (HdOdd
+    x
+    HxSn2).
+  rewrite (compose_fun_apply
+    (Sn 2)
+    d
+    r
+    x
+    HxSn2).
+  exact (HrOdd
+    (apply_fun d x)
+    (HdInto
+      x
+      HxSn2)).
+}
 claim HgAnti :
   forall x:set, x :e Sn 2 ->
     apply_fun g (Rn_negate 3 x) = Rn_negate 2 (apply_fun g x).
