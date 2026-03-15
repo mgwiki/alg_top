@@ -290319,9 +290319,36 @@ apply (xm (y = e)).
                         (** Sub-case split: k2 = 0 vs k2 <> 0 **)
                         apply (xm (k2 = 0)).
                         * assume Hk2_eq0 : k2 = 0.
-                          (** k2 = 0: m = 1, c3 = cs3(0), cprime3 = e **)
-                          (** y3 = e mult z_inner mult inv(e) = z_inner in Gfam(alpha) cap Gfam(beta) = {e} **)
-                          admit.
+                          (** k2 = 0: c3 :e Gfam(gamma2) = Gfam(alpha). **)
+                          (** y3 = c3 mult x3 mult inv(c3) with all three in Gfam(alpha). **)
+                          (** So y3 :e Gfam(alpha). Combined with y3 :e Gfam(beta) gives y3 = e. **)
+                          claim Hc3_Galpha : c3 :e apply_fun Gfam alpha.
+                          { (** c3 = mult(cprime3, cs3(k2)). cprime3 = word_product(cs3,k2) = word_product(cs3,0) = e. **)
+                            (** cs3(k2) :e Gfam(gamma2) = Gfam(alpha). c3 = mult(e, cs3(k2)) :e Gfam(alpha). **)
+                            claim Hcprime3_e : cprime3 = e.
+                            { claim Hwp_rewrite : cprime3 = word_product mult e cs3 0.
+                              { rewrite Hk2_eq0. reflexivity. }
+                              claim Hwp0 : word_product mult e cs3 0 = e.
+                              { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun cs3 i))). }
+                              exact (eq_i_tra cprime3 (word_product mult e cs3 0) e Hwp_rewrite Hwp0). }
+                            claim Hc3_mult : c3 = apply_fun mult (e, apply_fun cs3 k2).
+                            { rewrite <- Hcprime3_e. exact Hc3_eq. }
+                            claim Hcs3k2_Galpha : apply_fun cs3 k2 :e apply_fun Gfam alpha.
+                            { rewrite <- Hg2_alpha. exact Hcs3k2_Gg2. }
+                            claim Hcs3k2_G2 : apply_fun cs3 k2 :e G.
+                            { exact (Hsub_in_G alpha HalJ (apply_fun cs3 k2) Hcs3k2_Galpha). }
+                            claim Hid_cs3k2 : apply_fun mult (e, apply_fun cs3 k2) = apply_fun cs3 k2.
+                            { exact (andEL (apply_fun mult (e, apply_fun cs3 k2) = apply_fun cs3 k2) (apply_fun mult (apply_fun cs3 k2, e) = apply_fun cs3 k2) (Hid (apply_fun cs3 k2) Hcs3k2_G2)). }
+                            claim Hc3_is_cs3k2 : c3 = apply_fun cs3 k2.
+                            { exact (eq_i_tra c3 (apply_fun mult (e, apply_fun cs3 k2)) (apply_fun cs3 k2) Hc3_mult Hid_cs3k2). }
+                            exact (eq_subst_mem_rev (apply_fun cs3 k2) c3 (apply_fun Gfam alpha) (eq_symm c3 (apply_fun cs3 k2) Hc3_is_cs3k2) Hcs3k2_Galpha). }
+                          claim Hinvc3_Galpha : apply_fun inv c3 :e apply_fun Gfam alpha.
+                          { exact (HGfam_inv alpha HalJ c3 Hc3_Galpha). }
+                          claim Hc3x3_Galpha : apply_fun mult (c3, x3) :e apply_fun Gfam alpha.
+                          { exact (HGfam_mult alpha HalJ c3 x3 Hc3_Galpha Hx3Ga). }
+                          claim Hy3_Galpha : y3 :e apply_fun Gfam alpha.
+                          { exact (HGfam_mult alpha HalJ (apply_fun mult (c3, x3)) (apply_fun inv c3) Hc3x3_Galpha Hinvc3_Galpha). }
+                          exact (Hdisjoint alpha beta HalJ HbeJ Hab y3 Hy3_Galpha Hy3Gb).
                         * assume Hk2_ne0 : k2 <> 0.
                           (** k2 >= 1. cprime3 <> e and has reduced word. **)
                           claim Hcprime3_ne : cprime3 <> e.
