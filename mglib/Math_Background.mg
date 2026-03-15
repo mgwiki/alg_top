@@ -1,4 +1,4 @@
-(** Balance Alice 8875 **)
+(** Balance Alice 8996 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 959 **)
 (** Balance Dave 2498 **)
@@ -287764,7 +287764,8 @@ Admitted.
 (** Infrastructure bounty: torsion/involution in free products (order 2 case).
     Expected use: discharge the remaining "boundary labels coincide" admit branches by showing
     that an involution is conjugate into some factor subgroup. **)
-(** Bounty 66 **)
+(** Collected Alice 66 **)
+(** Proven Alice **)
 Lemma free_product_involution_conjugate_into_factor :
   forall G mult e inv J Gfam efam u:set,
   free_product_of_subgroups G mult e inv J Gfam efam ->
@@ -289124,7 +289125,8 @@ Qed.
 
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
 (** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
-(** Bounty 55 **)
+(** Collected Alice 55 **)
+(** Proven Alice **)
 Lemma free_product_boundary_product_ne_e_or_efam :
   forall G multG eG invG J Gfam efam al n xs m alpha0:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
