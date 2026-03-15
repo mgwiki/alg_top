@@ -278257,6 +278257,41 @@ exact (subgroup_of_subset (apply_fun Gfam alpha) G mult e inv
   (free_product_subfam G mult e inv J Gfam efam Hfp alpha Hal) x Hx).
 Qed.
 
+(** Infrastructure: factor subgroup is closed under multiplication **)
+(** Proven Alice **)
+Lemma free_product_factor_mult_closed : forall G mult e inv J Gfam efam alpha x y:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  alpha :e J -> x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+  apply_fun mult (x, y) :e apply_fun Gfam alpha.
+let G mult e inv J Gfam efam alpha x y. assume Hfp Hal Hx Hy.
+apply (subgroup_of_mult_closed (apply_fun Gfam alpha) G mult e inv).
+- exact (free_product_subfam G mult e inv J Gfam efam Hfp alpha Hal).
+- exact Hx.
+- exact Hy.
+Qed.
+
+(** Infrastructure: factor subgroup is closed under inverse **)
+(** Proven Alice **)
+Lemma free_product_factor_inv_closed : forall G mult e inv J Gfam efam alpha x:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  alpha :e J -> x :e apply_fun Gfam alpha ->
+  apply_fun inv x :e apply_fun Gfam alpha.
+let G mult e inv J Gfam efam alpha x. assume Hfp Hal Hx.
+apply (subgroup_of_inv_closed (apply_fun Gfam alpha) G mult e inv).
+- exact (free_product_subfam G mult e inv J Gfam efam Hfp alpha Hal).
+- exact Hx.
+Qed.
+
+(** Infrastructure: identity is in each factor subgroup **)
+(** Proven Alice **)
+Lemma free_product_e_in_factor : forall G mult e inv J Gfam efam alpha:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  alpha :e J -> e :e apply_fun Gfam alpha.
+let G mult e inv J Gfam efam alpha. assume Hfp Hal.
+exact (subgroup_of_unit (apply_fun Gfam alpha) G mult e inv
+  (free_product_subfam G mult e inv J Gfam efam Hfp alpha Hal)).
+Qed.
+
 (** Infrastructure: disjointness implies label uniqueness for nontrivial elements **)
 (** Proven Bob **)
 Theorem disjoint_subgroups_label_unique : forall G mult e inv J Gfam alpha beta x:set,
