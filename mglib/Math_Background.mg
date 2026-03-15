@@ -290352,7 +290352,38 @@ apply (xm (y = e)).
                         * assume Hk2_ne0 : k2 <> 0.
                           (** k2 >= 1. cprime3 <> e and has reduced word. **)
                           claim Hcprime3_ne : cprime3 <> e.
-                          { admit. (** word_product of non-empty prefix of reduced word is non-identity **) }
+                          { set cs_pre := graph k2 (fun i:set => apply_fun cs3 i).
+                            claim Hred_pre : reduced_word J Gfam efam k2 cs_pre.
+                            { exact (reduced_word_prefix J Gfam efam m cs3 k2 Hred3 Hk2_in_m). }
+                            claim Hpre_in_G : forall i:set, i :e k2 -> apply_fun cs_pre i :e G.
+                            { let i. assume Hi.
+                              claim Heq : apply_fun cs_pre i = apply_fun cs3 i.
+                              { exact (apply_fun_graph k2 (fun j:set => apply_fun cs3 j) i Hi). }
+                              rewrite Heq. exact (Hcs3_in_G i Hi). }
+                            claim Hpre_ne_e : forall i:set, i :e k2 -> apply_fun cs_pre i <> e.
+                            { let i. assume Hi.
+                              claim Heq : apply_fun cs_pre i = apply_fun cs3 i.
+                              { exact (apply_fun_graph k2 (fun j:set => apply_fun cs3 j) i Hi). }
+                              rewrite Heq.
+                              claim Hi_m : i :e m. { rewrite Hm_eq. exact (ordsuccI1 k2 i Hi). }
+                              apply (Hcs3_mem i Hi_m).
+                              let a. assume Ha_pack : a :e J /\ apply_fun cs3 i :e apply_fun Gfam a /\ apply_fun cs3 i <> apply_fun efam a.
+                              claim Hne_efam : apply_fun cs3 i <> apply_fun efam a.
+                              { exact (andER (a :e J /\ apply_fun cs3 i :e apply_fun Gfam a) (apply_fun cs3 i <> apply_fun efam a) Ha_pack). }
+                              claim HaJ : a :e J.
+                              { exact (andEL (a :e J) (apply_fun cs3 i :e apply_fun Gfam a) (andEL (a :e J /\ apply_fun cs3 i :e apply_fun Gfam a) (apply_fun cs3 i <> apply_fun efam a) Ha_pack)). }
+                              claim Hefam_eq : apply_fun efam a = e.
+                              { exact (free_product_efam_eq_e G mult e inv J Gfam efam Hfp a HaJ). }
+                              assume Habs : apply_fun cs3 i = e.
+                              apply Hne_efam. rewrite Hefam_eq. exact Habs. }
+                            claim Hwp_eq : word_product mult e cs_pre k2 = cprime3.
+                            { admit. (** word_product of graph prefix equals word_product of original **) }
+                            assume Hcp_e : cprime3 = e.
+                            claim Hwp_e : word_product mult e cs_pre k2 = e.
+                            { exact (eq_i_tra (word_product mult e cs_pre k2) cprime3 e Hwp_eq Hcp_e). }
+                            exact (free_product_reduced_word_length_ne0_product_ne_e
+                              G mult e inv J Gfam efam k2 cs_pre
+                              Hfp Hred_pre Hpre_in_G Hpre_ne_e Hk2_ne0 Hwp_e). }
                           claim Hcprime3_word : exists cs_pre:set,
                             reduced_word J Gfam efam k2 cs_pre /\ word_product mult e cs_pre k2 = cprime3 /\
                             (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
