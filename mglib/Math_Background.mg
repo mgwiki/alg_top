@@ -1,4 +1,4 @@
-(** Balance Alice 9143 **)
+(** Balance Alice 9183 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
@@ -307440,38 +307440,6 @@ Theorem lemma68_5_extension_characterizes_free_product :
 admit.
 Admitted.
 
-(** from S68 Cor 68.6 (line 2958 in algtop.tex): associativity of free products **)
-(** LATEX VERSION: If G = G1 free-prod G2, G1 = free product of H_alpha for alpha in J, **)
-(** G2 = free product of H_beta for beta in K, with J,K disjoint, **)
-(** then G = free product of H_gamma for gamma in J union K. **)
-(** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-
-(** Admin-approved-refactored per noticeboard proposal 1772623361 **)
-(** Bounty 40 **)
-Theorem cor68_6_side_from_product_G2_ge3 :
-  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
-  group_structure G multG eG invG ->
-  subgroup_of G1 G multG eG invG ->
-  subgroup_of G2 G multG eG invG ->
-  free_product_of_subgroups G multG eG invG (UPair 0 1)
-    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
-    (graph (UPair 0 1) (fun i:set => eG)) ->
-  J :/\: K = Empty ->
-  free_product_of_subgroups G1 multG eG invG J
-    (graph J (fun alpha:set => apply_fun Hfam alpha))
-    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
-  free_product_of_subgroups G2 multG eG invG K
-    (graph K (fun beta:set => apply_fun Hfam beta))
-    (graph K (fun beta:set => apply_fun efamH beta)) ->
-  reduced_word (J :\/: K) Hfam efamH n ys ->
-  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
-  n <> 0 -> n <> 1 -> n <> 2 ->
-  word_product multG eG ys n :e G2 ->
-  word_product multG eG ys n <> eG ->
-  forall i:set, i :e n -> apply_fun ys i :e G2.
-admit.
-Admitted.
-
 (** Infrastructure: in a binary free product, an element of the left factor has reduced word length 1 **)
 (** Proven Charlie **)
 Theorem free_product_binary_left_factor_length1 : forall G mult e inv G1 G2 x n xs:set,
@@ -316629,6 +316597,42 @@ apply (Hys_side i Hi_in).
   }
   exact (FalseE (Hwp_notG2 HwpG2) (apply_fun ys i :e G2)).
 - assume HiG2. exact HiG2.
+Qed.
+
+(** from S68 Cor 68.6 (line 2958 in algtop.tex): associativity of free products **)
+(** LATEX VERSION: If G = G1 free-prod G2, G1 = free product of H_alpha for alpha in J, **)
+(** G2 = free product of H_beta for beta in K, with J,K disjoint, **)
+(** then G = free product of H_gamma for gamma in J union K. **)
+(** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
+
+(** Admin-approved-refactored per noticeboard proposal 1772623361 **)
+(** Collected Alice 40 **)
+(** Proven Alice **)
+Theorem cor68_6_side_from_product_G2_ge3 :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => eG)) ->
+  J :/\: K = Empty ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  n <> 0 -> n <> 1 -> n <> 2 ->
+  word_product multG eG ys n :e G2 ->
+  word_product multG eG ys n <> eG ->
+  forall i:set, i :e n -> apply_fun ys i :e G2.
+let G multG eG invG G1 G2 J K Hfam efamH n ys.
+assume Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HneG Hne0 Hne1 Hne2 HwpG2 HwpNeG.
+exact (cor68_6_side_from_product_G2_ge3_full G multG eG invG G1 G2 J K Hfam efamH n ys
+  Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HneG Hne0 Hne1 Hne2 HwpG2 HwpNeG).
 Qed.
 
 (** Collected Charlie 68 **)
