@@ -185057,7 +185057,496 @@ claim HdInto :
 }
 claim HdCont :
   continuous_map (Sn 2) (Sn_topology 2) R2_minus_origin R2_minus_origin_topology d.
-admit.
+{
+  claim HSn2subE3 :
+    Sn 2 c= euclidean_space 3.
+  {
+    exact (Sep_Subq
+      (euclidean_space 3)
+      (fun v:set => euclidean_norm_sq 3 v = 1)).
+  }
+  claim HtopSn2 :
+    topology_on (Sn 2) (Sn_topology 2).
+  {
+    exact (subspace_topology_is_topology
+      (euclidean_space 3)
+      (euclidean_topology 3)
+      (Sn 2)
+      (euclidean_topology_is_topology
+        3)
+      HSn2subE3).
+  }
+  set incSn2 := graph (Sn 2) (fun x:set => x).
+  claim HincSn2Cont :
+    continuous_map
+      (Sn 2)
+      (Sn_topology 2)
+      (euclidean_space 3)
+      (euclidean_topology 3)
+      incSn2.
+  {
+    exact (Sn_inclusion_euclidean_continuous
+      2).
+  }
+  set negE3 := graph (euclidean_space 3) (fun v:set => Rn_negate 3 v).
+  claim HnegE3Cont :
+    continuous_map
+      (euclidean_space 3)
+      (euclidean_topology 3)
+      (euclidean_space 3)
+      (euclidean_topology 3)
+      negE3.
+  {
+    exact (Rn_negate_ordsucc_euclidean_continuous
+      2
+      H2om).
+  }
+  set negSn2 := compose_fun (Sn 2) incSn2 negE3.
+  claim HnegSn2Into :
+    forall x:set, x :e Sn 2 -> apply_fun negSn2 x :e Sn 2.
+  {
+    let x.
+    assume HxSn2.
+    claim HxE3 : x :e euclidean_space 3.
+    {
+      exact (SepE1
+        (euclidean_space 3)
+        (fun v:set => euclidean_norm_sq 3 v = 1)
+        x
+        HxSn2).
+    }
+    rewrite (compose_fun_apply
+      (Sn 2)
+      incSn2
+      negE3
+      x
+      HxSn2).
+    rewrite (apply_fun_graph
+      (Sn 2)
+      (fun x0:set => x0)
+      x
+      HxSn2).
+    rewrite (apply_fun_graph
+      (euclidean_space 3)
+      (fun v:set => Rn_negate 3 v)
+      x
+      HxE3).
+    exact (Rn_negate_in_Sn_ordsucc
+      2
+      x
+      H2om
+      HxSn2).
+  }
+  claim HnegSn2Cont :
+    continuous_map
+      (Sn 2)
+      (Sn_topology 2)
+      (Sn 2)
+      (Sn_topology 2)
+      negSn2.
+  {
+    exact (continuous_map_range_restrict
+      (Sn 2)
+      (Sn_topology 2)
+      (euclidean_space 3)
+      (euclidean_topology 3)
+      negSn2
+      (Sn 2)
+      (composition_continuous
+        (Sn 2)
+        (Sn_topology 2)
+        (euclidean_space 3)
+        (euclidean_topology 3)
+        (euclidean_space 3)
+        (euclidean_topology 3)
+        incSn2
+        negE3
+        HincSn2Cont
+        HnegE3Cont)
+      HSn2subE3
+      HnegSn2Into).
+  }
+  set fneg := compose_fun (Sn 2) negSn2 f.
+  claim HfnegCont :
+    continuous_map
+      (Sn 2)
+      (Sn_topology 2)
+      (setprod R R)
+      R2_topology
+      fneg.
+  {
+    exact (composition_continuous
+      (Sn 2)
+      (Sn_topology 2)
+      (Sn 2)
+      (Sn_topology 2)
+      (setprod R R)
+      R2_topology
+      negSn2
+      f
+      HnegSn2Cont
+      Hfcont).
+  }
+  claim HprojPack :
+    continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R) /\
+    continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+  {
+    exact (projection_maps_continuous
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      R_standard_topology_is_topology
+      R_standard_topology_is_topology).
+  }
+  claim Hproj1Cont :
+    continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R).
+  {
+    exact (andEL
+      (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+      (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+      HprojPack).
+  }
+  claim Hproj2Cont :
+    continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+  {
+    exact (andER
+      (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+      (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+      HprojPack).
+  }
+  set f0 := compose_fun (Sn 2) f (projection_map1 R R).
+  set f1 := compose_fun (Sn 2) f (projection_map2 R R).
+  set fneg0 := compose_fun (Sn 2) fneg (projection_map1 R R).
+  set fneg1 := compose_fun (Sn 2) fneg (projection_map2 R R).
+  claim Hf0Cont :
+    continuous_map (Sn 2) (Sn_topology 2) R R_standard_topology f0.
+  {
+    exact (composition_continuous
+      (Sn 2)
+      (Sn_topology 2)
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      f
+      (projection_map1 R R)
+      Hfcont
+      Hproj1Cont).
+  }
+  claim Hf1Cont :
+    continuous_map (Sn 2) (Sn_topology 2) R R_standard_topology f1.
+  {
+    exact (composition_continuous
+      (Sn 2)
+      (Sn_topology 2)
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      f
+      (projection_map2 R R)
+      Hfcont
+      Hproj2Cont).
+  }
+  claim Hfneg0Cont :
+    continuous_map (Sn 2) (Sn_topology 2) R R_standard_topology fneg0.
+  {
+    exact (composition_continuous
+      (Sn 2)
+      (Sn_topology 2)
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      fneg
+      (projection_map1 R R)
+      HfnegCont
+      Hproj1Cont).
+  }
+  claim Hfneg1Cont :
+    continuous_map (Sn 2) (Sn_topology 2) R R_standard_topology fneg1.
+  {
+    exact (composition_continuous
+      (Sn 2)
+      (Sn_topology 2)
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      fneg
+      (projection_map2 R R)
+      HfnegCont
+      Hproj2Cont).
+  }
+  set d0 := compose_fun (Sn 2) (pair_map (Sn 2) f0 (compose_fun (Sn 2) fneg0 neg_fun)) add_fun_R.
+  set d1 := compose_fun (Sn 2) (pair_map (Sn 2) f1 (compose_fun (Sn 2) fneg1 neg_fun)) add_fun_R.
+  claim Hd0Cont :
+    continuous_map (Sn 2) (Sn_topology 2) R R_standard_topology d0.
+  {
+    exact (add_two_continuous_R
+      (Sn 2)
+      (Sn_topology 2)
+      f0
+      (compose_fun (Sn 2) fneg0 neg_fun)
+      HtopSn2
+      Hf0Cont
+      (composition_continuous
+        (Sn 2)
+        (Sn_topology 2)
+        R
+        R_standard_topology
+        R
+        R_standard_topology
+        fneg0
+        neg_fun
+        Hfneg0Cont
+        neg_fun_continuous)).
+  }
+  claim Hd1Cont :
+    continuous_map (Sn 2) (Sn_topology 2) R R_standard_topology d1.
+  {
+    exact (add_two_continuous_R
+      (Sn 2)
+      (Sn_topology 2)
+      f1
+      (compose_fun (Sn 2) fneg1 neg_fun)
+      HtopSn2
+      Hf1Cont
+      (composition_continuous
+        (Sn 2)
+        (Sn_topology 2)
+        R
+        R_standard_topology
+        R
+        R_standard_topology
+        fneg1
+        neg_fun
+        Hfneg1Cont
+        neg_fun_continuous)).
+  }
+  set drawpair := pair_map (Sn 2) d0 d1.
+  claim HdrawpairContR2 :
+    continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology drawpair.
+  {
+    exact (maps_into_products
+      (Sn 2)
+      (Sn_topology 2)
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      d0
+      d1
+      Hd0Cont
+      Hd1Cont).
+  }
+  set draw := graph (Sn 2) (fun x0:set => (apply_fun d0 x0, apply_fun d1 x0)).
+  claim HdrawEqPair :
+    draw = drawpair.
+  {
+    apply set_ext.
+    - let z.
+      assume Hz.
+      exact Hz.
+    - let z.
+      assume Hz.
+      exact Hz.
+  }
+  claim HdrawContR2 :
+    continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology draw.
+  {
+    exact (HdrawEqPair
+      (fun a b =>
+        continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology b)
+      HdrawpairContR2).
+  }
+  claim HdrawEqD :
+    forall x:set, x :e Sn 2 -> apply_fun draw x = apply_fun d x.
+  {
+    let x.
+    assume HxSn2.
+    claim HxE3 : x :e euclidean_space 3.
+    {
+      exact (SepE1
+        (euclidean_space 3)
+        (fun v:set => euclidean_norm_sq 3 v = 1)
+        x
+        HxSn2).
+    }
+    claim HfxR2 : apply_fun f x :e setprod R R.
+    {
+      exact (HfFun
+        x
+        HxSn2).
+    }
+    claim HnxSn2 : apply_fun negSn2 x :e Sn 2.
+    {
+      exact (HnegSn2Into
+        x
+        HxSn2).
+    }
+    claim HfnegxR2 : apply_fun fneg x :e setprod R R.
+    {
+      exact (continuous_map_function_on
+        (Sn 2)
+        (Sn_topology 2)
+        (setprod R R)
+        R2_topology
+        fneg
+        HfnegCont
+        x
+        HxSn2).
+    }
+    rewrite (apply_fun_graph
+      (Sn 2)
+      (fun x0:set => (apply_fun d0 x0, apply_fun d1 x0))
+      x
+      HxSn2).
+    rewrite (add_of_pair_map_neg_apply
+      (Sn 2)
+      f0
+      fneg0
+      x
+      HxSn2
+      (continuous_map_function_on
+        (Sn 2)
+        (Sn_topology 2)
+        R
+        R_standard_topology
+        f0
+        Hf0Cont
+        x
+        HxSn2)
+      (continuous_map_function_on
+        (Sn 2)
+        (Sn_topology 2)
+        R
+        R_standard_topology
+        fneg0
+        Hfneg0Cont
+        x
+        HxSn2)).
+    rewrite (add_of_pair_map_neg_apply
+      (Sn 2)
+      f1
+      fneg1
+      x
+      HxSn2
+      (continuous_map_function_on
+        (Sn 2)
+        (Sn_topology 2)
+        R
+        R_standard_topology
+        f1
+        Hf1Cont
+        x
+        HxSn2)
+      (continuous_map_function_on
+        (Sn 2)
+        (Sn_topology 2)
+        R
+        R_standard_topology
+        fneg1
+        Hfneg1Cont
+        x
+        HxSn2)).
+    rewrite (compose_fun_apply
+      (Sn 2)
+      f
+      (projection_map1 R R)
+      x
+      HxSn2).
+    rewrite (projection1_apply
+      R
+      R
+      (apply_fun f x)
+      HfxR2).
+    rewrite (compose_fun_apply
+      (Sn 2)
+      fneg
+      (projection_map1 R R)
+      x
+      HxSn2).
+    rewrite (projection1_apply
+      R
+      R
+      (apply_fun fneg x)
+      HfnegxR2).
+    rewrite (compose_fun_apply
+      (Sn 2)
+      f
+      (projection_map2 R R)
+      x
+      HxSn2).
+    rewrite (projection2_apply
+      R
+      R
+      (apply_fun f x)
+      HfxR2).
+    rewrite (compose_fun_apply
+      (Sn 2)
+      fneg
+      (projection_map2 R R)
+      x
+      HxSn2).
+    rewrite (projection2_apply
+      R
+      R
+      (apply_fun fneg x)
+      HfnegxR2).
+    rewrite (compose_fun_apply
+      (Sn 2)
+      negSn2
+      f
+      x
+      HxSn2).
+    rewrite (compose_fun_apply
+      (Sn 2)
+      incSn2
+      negE3
+      x
+      HxSn2).
+    rewrite (apply_fun_graph
+      (Sn 2)
+      (fun x0:set => x0)
+      x
+      HxSn2).
+    rewrite (apply_fun_graph
+      (euclidean_space 3)
+      (fun v:set => Rn_negate 3 v)
+      x
+      HxE3).
+    rewrite (apply_fun_graph
+      (Sn 2)
+      (fun x0:set =>
+        (add_SNo (apply_fun f x0 0) (minus_SNo (apply_fun f (Rn_negate 3 x0) 0)),
+         add_SNo (apply_fun f x0 1) (minus_SNo (apply_fun f (Rn_negate 3 x0) 1))))
+      x
+      HxSn2).
+    apply tuple_2_ext_euclid.
+    - reflexivity.
+    - reflexivity.
+  }
+  claim HdrawEqSet :
+    draw = d.
+  admit.
+  exact (continuous_map_range_restrict
+    (Sn 2)
+    (Sn_topology 2)
+    (setprod R R)
+    R2_topology
+    d
+    R2_minus_origin
+    (HdrawEqSet
+      (fun a b =>
+        continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology a)
+      HdrawContR2)
+    (Sep_Subq
+      (setprod R R)
+      (fun p:set => ~(p 0 = 0 /\ p 1 = 0)))
+    HdInto).
+}
 claim HrIntoS1 :
   forall p:set, p :e R2_minus_origin -> apply_fun r p :e S1.
 {
