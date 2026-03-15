@@ -184351,7 +184351,189 @@ Theorem thm57_2_equator_restriction_nulhomotopic_helper : forall g:set,
   antipode_preserving_Sn 2 1 g ->
   nulhomotopic S1 S1_topology S1 S1_topology
     (compose_fun S1 S1_equator_in_S2 g).
-admit.
+let g.
+assume Hg.
+set raw := compose_fun S1 S1_equator_in_S2 g.
+set k := thm57_2_equator_restriction_S1_map g.
+claim HrawAP :
+  antipode_preserving_S1 raw.
+{
+  exact (thm57_2_equator_restriction_antipode_helper
+    g
+    Hg).
+}
+claim HrawCont :
+  continuous_map S1 S1_topology S1 S1_topology raw.
+{
+  exact (andEL
+    (continuous_map S1 S1_topology S1 S1_topology raw)
+    (forall z:set, z :e S1 ->
+      apply_fun raw
+        (minus_SNo (z 0), minus_SNo (z 1)) =
+      (minus_SNo (apply_fun raw z 0),
+       minus_SNo (apply_fun raw z 1)))
+    HrawAP).
+}
+claim HkAP :
+  antipode_preserving_S1 k.
+{
+  exact (thm57_2_equator_restriction_pair_antipode_helper
+    g
+    Hg).
+}
+claim HkCont :
+  continuous_map S1 S1_topology S1 S1_topology k.
+{
+  exact (andEL
+    (continuous_map S1 S1_topology S1 S1_topology k)
+    (forall z:set, z :e S1 ->
+      apply_fun k
+        (minus_SNo (z 0), minus_SNo (z 1)) =
+      (minus_SNo (apply_fun k z 0),
+       minus_SNo (apply_fun k z 1)))
+    HkAP).
+}
+claim HkFun :
+  function_on k S1 S1.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    S1
+    S1_topology
+    k
+    HkCont).
+}
+claim Hcontg :
+  continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g.
+{
+  exact (andEL
+    (continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g)
+    (forall x:set, x :e Sn 2 ->
+      apply_fun g (Rn_negate 3 x) = Rn_negate 2 (apply_fun g x))
+    Hg).
+}
+claim HrawContSn1 :
+  continuous_map S1 S1_topology (Sn 1) (Sn_topology 1) raw.
+{
+  exact (composition_continuous
+    S1
+    S1_topology
+    (Sn 2)
+    (Sn_topology 2)
+    (Sn 1)
+    (Sn_topology 1)
+    S1_equator_in_S2
+    g
+    S1_equator_in_S2_continuous
+    Hcontg).
+}
+claim HrawEqk :
+  forall z:set, z :e S1 ->
+    apply_fun raw z = apply_fun k z.
+{
+  let z.
+  assume HzS1.
+  claim HkDef :
+    k =
+    graph S1 (fun z0:set =>
+      (apply_fun (apply_fun raw z0) 0,
+       apply_fun (apply_fun raw z0) 1)).
+  {
+    reflexivity.
+  }
+  claim HrawSn1 :
+    apply_fun raw z :e Sn 1.
+  {
+    exact (continuous_map_function_on
+      S1
+      S1_topology
+      (Sn 1)
+      (Sn_topology 1)
+      raw
+      HrawContSn1
+      z
+      HzS1).
+  }
+  claim HrawE2 :
+    apply_fun raw z :e euclidean_space 2.
+  {
+    exact (SepE1
+      (euclidean_space 2)
+      (fun v:set => euclidean_norm_sq 2 v = 1)
+      (apply_fun raw z)
+      HrawSn1).
+  }
+  rewrite HkDef.
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set =>
+      (apply_fun (apply_fun raw z0) 0,
+       apply_fun (apply_fun raw z0) 1))
+    z
+    HzS1).
+  exact (euclidean_space_2_eq_coords_pair
+    (apply_fun raw z)
+    HrawE2).
+}
+claim HrawHomK :
+  homotopic_maps S1 S1_topology S1 S1_topology raw k.
+{
+  exact (homotopic_maps_of_pointwise_equal
+    S1
+    S1_topology
+    S1
+    S1_topology
+    raw
+    k
+    HrawCont
+    HkFun
+    HrawEqk).
+}
+claim HkNul :
+  nulhomotopic S1 S1_topology S1 S1_topology k.
+{
+  exact (thm57_2_equator_restriction_pair_nulhomotopic_early
+    g
+    Hg).
+}
+claim HkNulUnfold :
+  exists y0:set, y0 :e S1 /\
+    homotopic_maps S1 S1_topology S1 S1_topology k (const_fun S1 y0).
+{
+  exact (nulhomotopic_unfold
+    S1
+    S1_topology
+    S1
+    S1_topology
+    k
+    HkNul).
+}
+apply HkNulUnfold.
+let y0.
+assume HkConstPack : y0 :e S1 /\
+  homotopic_maps S1 S1_topology S1 S1_topology k (const_fun S1 y0).
+prove exists y0':set, y0' :e S1 /\
+  homotopic_maps S1 S1_topology S1 S1_topology raw (const_fun S1 y0').
+witness y0.
+apply andI.
+- exact (andEL
+    (y0 :e S1)
+    (homotopic_maps S1 S1_topology S1 S1_topology k (const_fun S1 y0))
+    HkConstPack).
+- exact (Lemma_51_1_homotopy_trans
+    S1
+    S1_topology
+    S1
+    S1_topology
+    raw
+    k
+    (const_fun S1 y0)
+    HrawHomK
+    (andER
+      (y0 :e S1)
+      (homotopic_maps S1 S1_topology S1 S1_topology k (const_fun S1 y0))
+      HkConstPack)).
 Admitted.
 
 (** from S57 Thm 57.2 (line 1214 in algtop.tex) **)
