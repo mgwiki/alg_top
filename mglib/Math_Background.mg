@@ -290296,13 +290296,8 @@ apply (xm (y = e)).
                         (** Use HIH: need k2 :e m, c' = cprime3, x' = z_inner **)
                         claim Hy3_eq_cprime :
                           y3 = apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3).
-                        { (** y3 = mult(mult(c3,x3),inv(c3)) **)
-                          (** c3 = mult(cprime3, cs3(k2)) **)
-                          (** z_inner = mult(mult(cs3(k2),x3),inv(cs3(k2))) **)
-                          (** inv(c3) = inv(mult(cprime3,cs3(k2))) = mult(inv(cs3(k2)),inv(cprime3)) **)
-                          (** y3 = cprime3 mult cs3(k2) mult x3 mult inv(cs3(k2)) mult inv(cprime3) **)
-                          (**    = cprime3 mult (cs3(k2) mult x3 mult inv(cs3(k2))) mult inv(cprime3) **)
-                          (**    = cprime3 mult z_inner mult inv(cprime3) **)
+                        { (** y3 = c3 mult x3 mult inv(c3), c3 = cprime3 mult cs3(k2) **)
+                          (** By group algebra: y3 = cprime3 mult z_inner mult inv(cprime3) **)
                           admit. }
                         claim Hcs3_in_G : forall i:set, i :e k2 -> apply_fun cs3 i :e G.
                         { let i. assume Hi_k2.
