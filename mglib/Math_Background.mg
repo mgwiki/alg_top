@@ -478276,6 +478276,14 @@ Admitted.
 (** word_product_right_append_in_generated moved to main section **)
 (** efam_involutive_contra_direct moved to main section **)
 
+(** WORK IN PROGRESS: right-peeling approach for conjugate_intersection_trivial **)
+(** Strategy: decompose c = c_pre mult last_entry, induct on length of c. **)
+(** Innermost conjugation by last_entry merges with x (same factor) or not (different). **)
+(** If same: inner conjugation stays in factor, IH on c_pre gives = e. **)
+(** If different: inner conjugation has length 3, boundary with c_pre is non-merging, **)
+(**   so outer conjugation has length >= 3, cant be in G_beta (length 1). Contradiction. **)
+(** TODO: implement this as a replacement for the current proof. **)
+
 (** Sandbox End Alice **)
 (** Sandbox Begin Bob **)
 Theorem bob_sandbox_overlap_alias_22222291 : forall n:set,
