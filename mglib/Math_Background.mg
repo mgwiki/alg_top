@@ -141323,6 +141323,66 @@ apply iffI.
     HnulIncl).
 Qed.
 
+(** S55 helper: extension of inclusion S1->R2-0 over B2 yields a retraction B2->S1. **)
+(** Proven Bob **)
+Theorem s55_inclusion_extends_B2_implies_retraction_B2_S1 :
+  (exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+  ->
+  retraction_of B2 B2_topology S1.
+assume HextIncl.
+claim HextId :
+  exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x).
+{
+  exact (iffEL
+    (exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+    (exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+    s55_inclusion_extends_B2_iff_identity_extends_B2
+    HextIncl).
+}
+exact (s55_extension_identity_B2_S1_implies_retraction
+  HextId).
+Qed.
+
+(** S55 helper: retraction B2->S1 yields extension of inclusion S1->R2-0 over B2. **)
+(** Proven Bob **)
+Theorem s55_retraction_B2_S1_implies_inclusion_extends_B2 :
+  retraction_of B2 B2_topology S1
+  ->
+  (exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+assume Hretr.
+claim HnulIncl :
+  nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)).
+{
+  exact (s55_retraction_B2_S1_implies_inclusion_R2m0_nulhomotopic
+    Hretr).
+}
+exact (iffEL
+  (nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)))
+  (exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+  s55_inclusion_S1_R2m0_nulhomotopic_iff_extends_B2
+  HnulIncl).
+Qed.
+
+(** S55 helper: retraction B2->S1 is equivalent to extension of inclusion S1->R2-0. **)
+(** Proven Bob **)
+Theorem s55_retraction_B2_S1_iff_inclusion_extends_B2 :
+  retraction_of B2 B2_topology S1
+  <->
+  (exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+apply iffI.
+- exact s55_retraction_B2_S1_implies_inclusion_extends_B2.
+- exact s55_inclusion_extends_B2_implies_retraction_B2_S1.
+Qed.
+
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
