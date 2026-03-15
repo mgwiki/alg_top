@@ -183167,6 +183167,16 @@ exact (product_space_graphI
   HcoordIn).
 Qed.
 
+(** Infrastructure: on setprod R R, apply_fun matches the two coordinate projections. **)
+Theorem setprod_R_R_apply_fun_coords : forall p:set,
+  p :e setprod R R ->
+  apply_fun p 0 = p 0 /\
+  apply_fun p 1 = p 1.
+let p.
+assume HpR2.
+admit.
+Admitted.
+
 (** Infrastructure: the negated graph of a real coordinate pair lies in euclidean_space 2. **)
 (** Proven Charlie **)
 Theorem R2_pair_graph_neg_in_euclidean_space_2 : forall p:set,
@@ -187773,11 +187783,21 @@ claim HrOdd :
     {
       claim HpAp0Eq : apply_fun p 0 = p 0.
       {
-        admit.
+        exact (andEL
+          (apply_fun p 0 = p 0)
+          (apply_fun p 1 = p 1)
+          (setprod_R_R_apply_fun_coords
+            p
+            HpR2)).
       }
       claim HpAp1Eq : apply_fun p 1 = p 1.
       {
-        admit.
+        exact (andER
+          (apply_fun p 0 = p 0)
+          (apply_fun p 1 = p 1)
+          (setprod_R_R_apply_fun_coords
+            p
+            HpR2)).
       }
       claim HnegpE2 : Rn_negate 2 p :e euclidean_space 2.
       {
