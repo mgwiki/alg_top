@@ -277205,6 +277205,37 @@ exact (andEL (apply_fun mult (x, apply_fun inv x) = e) (apply_fun mult (apply_fu
   (Hinverse x HxG)).
 Qed.
 
+(** Infrastructure: identity element is in the group **)
+(** Proven Alice **)
+Lemma group_e_in_G : forall G mult e inv:set,
+  group_structure G mult e inv -> e :e G.
+let G mult e inv. assume Hgrp.
+apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume _ _ HeG _ _ _. exact HeG.
+Qed.
+
+(** Infrastructure: associativity in a group **)
+(** Proven Alice **)
+Lemma group_assoc : forall G mult e inv a b c:set,
+  group_structure G mult e inv -> a :e G -> b :e G -> c :e G ->
+  apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)).
+let G mult e inv a b c. assume Hgrp Ha Hb Hc.
+apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume _ _ _ Hassoc _ _. exact (Hassoc a b c Ha Hb Hc).
+Qed.
+
 (** Infrastructure: inverse of a product in a group **)
 (** Proven Charlie **)
 Lemma group_inv_mult : forall G mult e inv a b:set,
