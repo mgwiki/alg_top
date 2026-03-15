@@ -290453,9 +290453,52 @@ apply (xm (y = e)).
                             claim Huniq_cprime : forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
                               word_product mult e xs' n' = cprime3 ->
                               k2 = n' /\ (forall i:set, i :e k2 -> apply_fun cs_pre2 i = apply_fun xs' i).
-                            { (** Uniqueness: cprime3 has unique reduced word (from Huniq). **)
-                              (** cs_pre2 and any xs' with same product must agree via canonical rep. **)
-                              admit. }
+                            { let n' xs'. assume Hred' Hn'ne0 Hwp'.
+                              (** Extract canonical reduced word for cprime3 from Huniq **)
+                              claim Hcanon :
+                                exists n_c xs_c:set,
+                                  reduced_word J Gfam efam n_c xs_c /\ n_c <> 0 /\
+                                  word_product mult e xs_c n_c = cprime3 /\
+                                  (forall n'' xs'':set, reduced_word J Gfam efam n'' xs'' -> n'' <> 0 ->
+                                    word_product mult e xs'' n'' = cprime3 ->
+                                    n_c = n'' /\ (forall i:set, i :e n_c -> apply_fun xs_c i = apply_fun xs'' i)).
+                              { exact (Huniq cprime3 Hcprime3_G Hcprime3_ne). }
+                              apply Hcanon. let n_c. assume Hxs_c_ex.
+                              apply Hxs_c_ex. let xs_c. assume Hc_pack.
+                              apply (and4E
+                                (reduced_word J Gfam efam n_c xs_c) (n_c <> 0)
+                                (word_product mult e xs_c n_c = cprime3)
+                                (forall n'' xs'':set, reduced_word J Gfam efam n'' xs'' -> n'' <> 0 ->
+                                  word_product mult e xs'' n'' = cprime3 ->
+                                  n_c = n'' /\ (forall i:set, i :e n_c -> apply_fun xs_c i = apply_fun xs'' i))
+                                Hc_pack).
+                              assume _ _ _ Huniq_c.
+                              (** cs_pre2 matches canonical: k2 = n_c **)
+                              claim Hk2_nc : n_c = k2.
+                              { exact (andEL (n_c = k2) (forall i:set, i :e n_c -> apply_fun xs_c i = apply_fun cs_pre2 i)
+                                  (Huniq_c k2 cs_pre2 Hred_pre2 Hk2_ne0 Hwp_pre2)). }
+                              (** xs' matches canonical: n_c = n' **)
+                              claim Hnc_n' : n_c = n'.
+                              { exact (andEL (n_c = n') (forall i:set, i :e n_c -> apply_fun xs_c i = apply_fun xs' i)
+                                  (Huniq_c n' xs' Hred' Hn'ne0 Hwp')). }
+                              (** k2 = n' **)
+                              claim Hk2_n' : k2 = n'.
+                              { claim Hk2_sym : k2 = n_c. { symmetry. exact Hk2_nc. }
+                                exact (eq_i_tra k2 n_c n' Hk2_sym Hnc_n'). }
+                              (** entries agree: cs_pre2(i) = xs_c(i) = xs'(i) **)
+                              claim Hentries : forall i:set, i :e k2 -> apply_fun cs_pre2 i = apply_fun xs' i.
+                              { let i. assume Hi.
+                                claim Hi_nc : i :e n_c. { rewrite Hk2_nc. exact Hi. }
+                                claim Hc_pre2 : apply_fun xs_c i = apply_fun cs_pre2 i.
+                                { exact (andER (n_c = k2) (forall j:set, j :e n_c -> apply_fun xs_c j = apply_fun cs_pre2 j)
+                                    (Huniq_c k2 cs_pre2 Hred_pre2 Hk2_ne0 Hwp_pre2) i Hi_nc). }
+                                claim Hc_xs' : apply_fun xs_c i = apply_fun xs' i.
+                                { exact (andER (n_c = n') (forall j:set, j :e n_c -> apply_fun xs_c j = apply_fun xs' j)
+                                    (Huniq_c n' xs' Hred' Hn'ne0 Hwp') i Hi_nc). }
+                                claim Hpre2_c : apply_fun cs_pre2 i = apply_fun xs_c i.
+                                { symmetry. exact Hc_pre2. }
+                                exact (eq_i_tra (apply_fun cs_pre2 i) (apply_fun xs_c i) (apply_fun xs' i) Hpre2_c Hc_xs'). }
+                              exact (andI (k2 = n') (forall i:set, i :e k2 -> apply_fun cs_pre2 i = apply_fun xs' i) Hk2_n' Hentries). }
                             witness cs_pre2. apply and3I.
                             - exact Hred_pre2.
                             - exact Hwp_pre2.
