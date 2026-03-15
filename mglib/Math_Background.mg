@@ -384370,9 +384370,55 @@ exact (graph_in_total_function_space
   (fun x Hx => Hfun x Hx)).
 Qed.
 
+(** Admin-approved-refactored per noticeboard proposal 1773037094 **)
+(** Proven Alice **)
 Theorem continuous_map_in_total_function_space : forall X Tx Y Ty f:set,
+  continuous_map X Tx Y Ty f -> graphify_on X f :e total_function_space X Y.
+let X Tx Y Ty f.
+assume Hcont : continuous_map X Tx Y Ty f.
+claim Hfun : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f Hcont). }
+set gf := graphify_on X f.
+claim Hgf_sub : gf c= setprod X Y.
+{ exact (graph_subset_setprod X Y (fun x:set => apply_fun f x) Hfun). }
+claim Hgf_total : total_function_on gf X Y.
+{ prove function_on gf X Y /\ (forall x:set, x :e X -> exists y:set, y :e Y /\ (x, y) :e gf).
+  apply andI.
+  - let x. assume Hx : x :e X.
+    claim Heq : apply_fun gf x = apply_fun f x.
+    { exact (graphify_on_apply X f x Hx). }
+    rewrite Heq. exact (Hfun x Hx).
+  - let x. assume Hx : x :e X.
+    witness (apply_fun f x). apply andI.
+    + exact (Hfun x Hx).
+    + exact (ReplI X (fun x0:set => (x0, apply_fun f x0)) x Hx). }
+claim Hgf_func : functional_graph gf.
+{ let x y1 y2.
+  assume Hxy1 : (x, y1) :e gf.
+  assume Hxy2 : (x, y2) :e gf.
+  apply (ReplE_impred X (fun x0:set => (x0, apply_fun f x0)) (x, y1) Hxy1).
+  let a1. assume Ha1X : a1 :e X. assume Ha1eq : (x, y1) = (a1, apply_fun f a1).
+  apply (ReplE_impred X (fun x0:set => (x0, apply_fun f x0)) (x, y2) Hxy2).
+  let a2. assume Ha2X : a2 :e X. assume Ha2eq : (x, y2) = (a2, apply_fun f a2).
+  claim Hy1eq : y1 = apply_fun f a1.
+  { exact (pair_eq_snd x y1 a1 (apply_fun f a1) Ha1eq). }
+  claim Hy2eq : y2 = apply_fun f a2.
+  { exact (pair_eq_snd x y2 a2 (apply_fun f a2) Ha2eq). }
+  claim Ha1x : x = a1. { exact (pair_eq_fst x y1 a1 (apply_fun f a1) Ha1eq). }
+  claim Ha2x : x = a2. { exact (pair_eq_fst x y2 a2 (apply_fun f a2) Ha2eq). }
+  claim Ha1a2 : a1 = a2. { exact (eq_i_tra a1 x a2 (eq_symm x a1 Ha1x) Ha2x). }
+  rewrite Hy1eq. rewrite Hy2eq. rewrite Ha1a2. reflexivity. }
+exact (SepI (Power (setprod X Y))
+  (fun g:set => total_function_on g X Y /\ functional_graph g)
+  gf
+  (PowerI (setprod X Y) gf Hgf_sub)
+  (andI (total_function_on gf X Y) (functional_graph gf)
+    Hgf_total Hgf_func)).
+Qed.
+
+(** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
+Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
-admit.
 Admitted.
 
 (** Infrastructure: covering transformation transport property **)
@@ -384939,9 +384985,9 @@ claim Hct_unique : forall h1 h2:set, h1 :e CTG -> h2 :e CTG ->
   { exact (covering_map_lifts_agree_on_connected_domain E Te B Tb p E Te p h1 h2 e0 Hcov HconnE Hh1_lift Hh2_lift He0E Heq_e0). }
   (** Function extensionality **)
   claim Hh1_total : h1 :e total_function_space E E.
-  { exact (continuous_map_in_total_function_space E Te E Te h1 Hh1_cont). }
+  { exact (continuous_map_in_total_function_space_plain E Te E Te h1 Hh1_cont). }
   claim Hh2_total : h2 :e total_function_space E E.
-  { exact (continuous_map_in_total_function_space E Te E Te h2 Hh2_cont). }
+  { exact (continuous_map_in_total_function_space_plain E Te E Te h2 Hh2_cont). }
   exact (total_function_space_extensional E E h1 h2 Hh1_total Hh2_total Hpointwise). }
 (** Same lc value implies same left coset in N **)
 claim Hsame_lc_same_coset : forall c1 c2:set, c1 :e N -> c2 :e N ->
@@ -385088,7 +385134,7 @@ claim Hsame_lc_same_coset : forall c1 c2:set, c1 :e N -> c2 :e N ->
       claim Hgamma_ls : gamma :e loop_space E Te e0.
       { claim Hgamma_fs : gamma :e function_space unit_interval E.
         { exact (total_function_space_sub_function_space unit_interval E gamma
-            (continuous_map_in_total_function_space unit_interval unit_interval_topology E Te gamma Hgamma_cont)). }
+            (continuous_map_in_total_function_space_plain unit_interval unit_interval_topology E Te gamma Hgamma_cont)). }
         exact (SepI (function_space unit_interval E) (fun f:set => loop_at E Te e0 f) gamma Hgamma_fs Hgamma_la). }
       claim Hgamma_FG : path_homotopy_class_loop E Te e0 gamma :e fundamental_group E Te e0.
       { exact (path_homotopy_class_in_fundamental_group E Te e0 gamma Hgamma_ls). }
@@ -385725,7 +385771,7 @@ apply (group_isomorphism_intro CTG multCTG QGset QGmult phi).
         claim Hgamma2_ls : gamma2 :e loop_space E Te e0.
         { claim Hgamma2_fs : gamma2 :e function_space unit_interval E.
           { exact (total_function_space_sub_function_space unit_interval E gamma2
-              (continuous_map_in_total_function_space unit_interval unit_interval_topology E Te gamma2 Hgamma2_cont)). }
+              (continuous_map_in_total_function_space_plain unit_interval unit_interval_topology E Te gamma2 Hgamma2_cont)). }
           exact (SepI (function_space unit_interval E) (fun f:set => loop_at E Te e0 f) gamma2 Hgamma2_fs Hgamma2_la). }
         claim Hgamma2_FG : path_homotopy_class_loop E Te e0 gamma2 :e fundamental_group E Te e0.
         { exact (path_homotopy_class_in_fundamental_group E Te e0 gamma2 Hgamma2_ls). }
@@ -385886,7 +385932,7 @@ apply (group_isomorphism_intro CTG multCTG QGset QGmult phi).
     claim HhCTG : h :e CTG.
     { claim Hh_fs : h :e function_space E E.
       { exact (total_function_space_sub_function_space E E h
-          (continuous_map_in_total_function_space E Te E Te h Hh_cont)). }
+          (continuous_map_in_total_function_space_plain E Te E Te h Hh_cont)). }
       exact (SepI (function_space E E) (fun h0:set => covering_transformation E Te B Tb p h0) h Hh_fs Hh_ct). }
     (** phi(h) = left_coset cls_h H0 where lc(cls_h) = h(e0) = lc(g) **)
     claim Hphi_h_eq : apply_fun phi h = phiFun h.
@@ -387339,9 +387385,9 @@ apply iffI.
             X Tx B Tb pi X Tx pi g idG y
             Hcov Hconn Hg_lift HidG_lift HyX HeqAtY). }
         claim Hg_total : g :e total_function_space X X.
-        { exact (continuous_map_in_total_function_space X Tx X Tx g Hg_cont). }
+        { exact (continuous_map_in_total_function_space_plain X Tx X Tx g Hg_cont). }
         claim HidG_total : idG :e total_function_space X X.
-        { exact (continuous_map_in_total_function_space X Tx X Tx idG HidG_cont). }
+        { exact (continuous_map_in_total_function_space_plain X Tx X Tx idG HidG_cont). }
         exact (total_function_space_extensional X X g idG Hg_total HidG_total Hpointwise).
       }
       assume HgyV'. exact (HgNeq HgIsIdG).
