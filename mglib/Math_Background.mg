@@ -291752,13 +291752,20 @@ apply (xm (y = e)).
                           rewrite Hy3_eq_cprime.
                           exact HIH_result.
                       + assume Hg2_ne_alpha : gamma2 <> alpha.
-                        (** Case B: gamma2 != alpha **)
-                        (** Build 3-element reduced word [cs3(k2), x3, inv(cs3(k2))] for z_inner. **)
-                        (** Build reduced word for the conjugation and derive contradiction **)
-                        (** When k2 = 0: word = [cs3(0), x3, inv(cs3(0))] of length 3, product = y3 **)
-                        (** When k2 > 0: word = [cs3(0),...,cs3(k2), x3, inv(cs3(k2)),...,inv(cs3(0))] **)
-                        (** In all cases, factor_element_length1 gives length = 1 but length >= 3. **)
-                        admit. } }
+                        (** Case B: gamma2 != alpha. Split on k2 = 0. **)
+                        apply (xm (k2 = 0)).
+                        * assume Hk2_eq0B : k2 = 0.
+                          (** k2 = 0, m = 1, c3 = cs3(0) in Gfam(gamma2) != Gfam(alpha) **)
+                          (** Build word [cs3(0), x3, inv(cs3(0))] of length 3 **)
+                          (** This IS the nz=1 argument but applied to y3 directly **)
+                          (** y3 = c3 mult x3 mult inv(c3) = cs3(0) mult x3 mult inv(cs3(0)) **)
+                          (** which has the 3-element reduced word **)
+                          (** factor_element_length1 gives 3 = 1, contradiction **)
+                          admit.
+                        * assume Hk2_ne0B : k2 <> 0.
+                          (** k2 >= 1. Full word of length 2k2+3 >= 5 **)
+                          (** Needs full word construction **)
+                          admit. } }
     }
     (** Apply the main inductive claim to our specific c, x **)
     (** Get reduced word info **)
