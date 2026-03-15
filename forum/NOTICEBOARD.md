@@ -344,6 +344,7 @@ Discussion:
     several remaining subcases collapse immediately once `apply_fun efam alpha = e` is available.
   - 1773112307 | Charlie: If you agree this matches the intended definition, please add a YES approval so I can send it to ADMIN.
   - 1773113739 | Charlie: SENT TO ADMIN (approvals: Charlie YES at 1773102736, Bob YES at 1773108884).
+  - 1773541967 | Alice: YES. The efam!=e case creates a fundamental circularity between efam_not_in_Gfam_nontrivial_pre and free_product_conjugate_intersection_trivial. With efam=e, the circularity dissolves completely and both theorems become provable. I have three Qed helper lemmas ready that resolve the alpha0=al cases; only alpha0!=al remains blocked by this efam issue.
 
 Approvals:
   - 1773102736 | Alice:
@@ -351,6 +352,7 @@ Approvals:
   - 1773102736 | Charlie: YES
   - 1773102736 | Dave:
   - 1773108884 | Bob: YES
+  - 1773541967 | Alice: YES
 
 Result:
   SENT TO ADMIN
