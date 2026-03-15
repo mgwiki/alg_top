@@ -275797,10 +275797,68 @@ claim Hxs_mid_G : forall i:set, i :e j -> apply_fun xs0_mid i :e G.
   rewrite Hgi. exact (Hxs_suf_G i Hi_k). }
 claim Hwp_mid_G : wp_mid :e G.
 { exact (word_product_in_G_group G mult e inv j xs0_mid Hgrp Hj_nat Hxs_mid_G). }
-(** STRATEGY: wp_mid in Gfam(al) via: **)
-(**   wp_suf(k) = inv(xs0(0)) mult efam(al) in Gfam(al) (by left cancel from Hefal_split) **)
-(**   wp_mid = mult(wp_suf(k), xs0(0)) in Gfam(al) (by right cancel from Hwp_suf_eq) **)
-(** Then case j=1: disjointness contradiction. j>=2: uniqueness j = n0 = j+2 contradiction. **)
+(** Step A: wp_suf(k) in Gfam(al) **)
+claim Hefal_G : apply_fun efam al :e G. { exact (Hsub_in_G al Hal (apply_fun efam al) Hefam_Gal). }
+claim Hwp_suf_G : word_product mult e xs0_suf k :e G.
+{ exact (word_product_in_G_group G mult e inv k xs0_suf Hgrp Hk_nat Hxs_suf_G). }
+claim Hxs0inv : apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0)) = e.
+{ exact (andEL
+    (apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0)) = e)
+    (apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun xs0 0) = e)
+    (Hinverse (apply_fun xs0 0) Hxs0_0_G)). }
+claim Hinvxs0 : apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun xs0 0) = e.
+{ exact (andER
+    (apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0)) = e)
+    (apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun xs0 0) = e)
+    (Hinverse (apply_fun xs0 0) Hxs0_0_G)). }
+(** efam(al) = mult(xs0(0), wp_suf(k)). Left multiply by inv(xs0(0)): **)
+(** inv(xs0(0)) mult efam(al) = inv(xs0(0)) mult xs0(0) mult wp_suf(k) = wp_suf(k) **)
+claim Hwp_suf_lc : word_product mult e xs0_suf k =
+  apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al).
+{ (** By left cancel: mult(xs0(0), wp_suf(k)) = mult(xs0(0), inv(xs0(0)) mult efam(al)) **)
+  (** Need: mult(xs0(0), wp_suf(k)) = efam(al) = mult(xs0(0), inv(xs0(0)) mult efam(al)) **)
+  claim Hrhs : apply_fun efam al =
+    apply_fun mult (apply_fun xs0 0, apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al)).
+  { (** efam(al) = mult(e, efam(al)) = mult(xs0(0) mult inv(xs0(0)), efam(al)) **)
+    (**         = mult(xs0(0), mult(inv(xs0(0)), efam(al))) **)
+    claim Hid_efal : apply_fun mult (e, apply_fun efam al) = apply_fun efam al.
+    { exact (andEL
+        (apply_fun mult (e, apply_fun efam al) = apply_fun efam al)
+        (apply_fun mult (apply_fun efam al, e) = apply_fun efam al)
+        (Hid (apply_fun efam al) Hefal_G)). }
+    claim Hxsinv_e : apply_fun mult (apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0)), apply_fun efam al) =
+      apply_fun mult (e, apply_fun efam al).
+    { rewrite Hxs0inv. reflexivity. }
+    claim Hassoc_val : apply_fun mult (apply_fun xs0 0, apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al)) =
+      apply_fun mult (apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0)), apply_fun efam al).
+    { symmetry. exact (Hassoc (apply_fun xs0 0) (apply_fun inv (apply_fun xs0 0)) (apply_fun efam al)
+        Hxs0_0_G Hinv0_G Hefal_G). }
+    exact (eq_i_tra (apply_fun efam al)
+      (apply_fun mult (e, apply_fun efam al))
+      (apply_fun mult (apply_fun xs0 0, apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al)))
+      (eq_symm (apply_fun mult (e, apply_fun efam al)) (apply_fun efam al) Hid_efal)
+      (eq_i_tra (apply_fun mult (e, apply_fun efam al))
+        (apply_fun mult (apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0)), apply_fun efam al))
+        (apply_fun mult (apply_fun xs0 0, apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al)))
+        (eq_symm
+          (apply_fun mult (apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0)), apply_fun efam al))
+          (apply_fun mult (e, apply_fun efam al))
+          Hxsinv_e)
+        (eq_symm
+          (apply_fun mult (apply_fun xs0 0, apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al)))
+          (apply_fun mult (apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0)), apply_fun efam al))
+          Hassoc_val))). }
+  exact (group_left_cancel G mult e inv (apply_fun xs0 0)
+    (word_product mult e xs0_suf k)
+    (apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al))
+    Hgrp Hxs0_0_G Hwp_suf_G
+    (HmultG (apply_fun inv (apply_fun xs0 0)) (apply_fun efam al) Hinv0_G Hefal_G)
+    (eq_i_tra
+      (apply_fun mult (apply_fun xs0 0, word_product mult e xs0_suf k))
+      (apply_fun efam al)
+      (apply_fun mult (apply_fun xs0 0, apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al)))
+      (eq_symm (apply_fun efam al) (apply_fun mult (apply_fun xs0 0, word_product mult e xs0_suf k)) Hefal_split)
+      Hrhs)). }
 admit.
 Admitted.
 
