@@ -290403,7 +290403,10 @@ apply (xm (y = e)).
                             claim Huniq_cprime : forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
                               word_product mult e xs' n' = cprime3 ->
                               k2 = n' /\ (forall i:set, i :e k2 -> apply_fun cs_pre2 i = apply_fun xs' i).
-                            { admit. (** uniqueness of reduced word representation for cprime3 **) }
+                            { (** Uniqueness via free product structure: **)
+                              (** cprime3 has a unique reduced word representation (from Huniq in Hfp). **)
+                              (** Both cs_pre2 and any other xs' with the same product must agree. **)
+                              admit. }
                             witness cs_pre2. apply and3I.
                             - exact Hred_pre2.
                             - exact Hwp_pre2.
