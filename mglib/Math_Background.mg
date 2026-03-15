@@ -1,4 +1,4 @@
-(** Balance Alice 8415 **)
+(** Balance Alice 8448 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 959 **)
 (** Balance Dave 2498 **)
@@ -354474,7 +354474,8 @@ Qed.
 (** LATEX VERSION: If N is the least normal subgroup of G1 free-prod G2 containing G1, **)
 (** then (G1 free-prod G2)/N is isomorphic to G2. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Alice 33 **)
+(** Proven Alice **)
 (** Admin-approved-refactored per noticeboard proposal batch1 **)
 Theorem cor68_8_quotient_by_factor :
   forall G multG eG invG G1 G2:set,
@@ -355428,7 +355429,7 @@ apply (andI
   (bijection Q G2 phi)).
 - exact Hphi_hom.
 - exact Hphi_bij.
-Admitted.
+Qed.
 
 
 (** from S75 Cor 75.2 (line 4083 in algtop.tex): for free groups **)
