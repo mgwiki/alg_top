@@ -1,6 +1,6 @@
 (** Balance Alice 8996 **)
 (** Balance Bob 5857 **)
-(** Balance Charlie 959 **)
+(** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -184898,10 +184898,1202 @@ apply andI.
     reflexivity.
 Qed.
 
+(** S57 helper: half a turn in the cover corresponds to adding pi in the angle. **)
+Theorem two_pi_mul_eps_1_eq_pi : mul_SNo two_pi (eps_ 1) = pi_real.
+claim HpiR : pi_real :e R.
+{ exact pi_real_in_R. }
+claim HpiSNo : SNo pi_real.
+{ exact (real_SNo pi_real HpiR). }
+claim HtwoPiSNo : SNo two_pi.
+{ exact (real_SNo two_pi two_pi_in_R). }
+claim HepsSNo : SNo (eps_ 1).
+{ exact SNo_eps_1. }
+claim Hstep1 : mul_SNo two_pi (eps_ 1) = mul_SNo (add_SNo pi_real pi_real) (eps_ 1).
+{ reflexivity. }
+claim Hstep2 :
+  mul_SNo (add_SNo pi_real pi_real) (eps_ 1) =
+  add_SNo (mul_SNo pi_real (eps_ 1)) (mul_SNo pi_real (eps_ 1)).
+{
+  exact (mul_SNo_distrR
+    pi_real
+    pi_real
+    (eps_ 1)
+    HpiSNo
+    HpiSNo
+    HepsSNo).
+}
+claim Hstep3 :
+  add_SNo (mul_SNo pi_real (eps_ 1)) (mul_SNo pi_real (eps_ 1)) =
+  add_SNo (mul_SNo (eps_ 1) pi_real) (mul_SNo (eps_ 1) pi_real).
+{
+  rewrite (mul_SNo_com
+    pi_real
+    (eps_ 1)
+    HpiSNo
+    HepsSNo).
+  reflexivity.
+}
+claim Hstep4 :
+  add_SNo (mul_SNo (eps_ 1) pi_real) (mul_SNo (eps_ 1) pi_real) =
+  mul_SNo (add_SNo (eps_ 1) (eps_ 1)) pi_real.
+{
+  symmetry.
+  exact (mul_SNo_distrR
+    (eps_ 1)
+    (eps_ 1)
+    pi_real
+    HepsSNo
+    HepsSNo
+    HpiSNo).
+}
+claim Hstep5 :
+  mul_SNo (add_SNo (eps_ 1) (eps_ 1)) pi_real =
+  mul_SNo 1 pi_real.
+{
+  rewrite eps_1_half_eq1.
+  reflexivity.
+}
+rewrite Hstep1.
+rewrite Hstep2.
+rewrite Hstep3.
+rewrite Hstep4.
+rewrite Hstep5.
+exact (mul_SNo_oneL pi_real HpiSNo).
+Admitted.
+
+(** S57 helper: shifting the real parameter by 1/2 moves to the antipode on S^1. **)
+Theorem covering_map_R_S1_half_shift_antipode : forall x:set, x :e R ->
+  apply_fun covering_map_R_S1 (add_SNo x (eps_ 1)) =
+  (minus_SNo (apply_fun covering_map_R_S1 x 0),
+   minus_SNo (apply_fun covering_map_R_S1 x 1)).
+let x.
+assume HxR.
+claim HepsR : (eps_ 1) :e R.
+{ exact eps_1_in_R. }
+claim HxhalfR : add_SNo x (eps_ 1) :e R.
+{ exact (real_add_SNo x HxR (eps_ 1) HepsR). }
+claim HargR : mul_SNo two_pi x :e R.
+{ exact (real_mul_SNo two_pi two_pi_in_R x HxR). }
+claim HargShiftR : add_SNo (mul_SNo two_pi x) pi_real :e R.
+{ exact (real_add_SNo (mul_SNo two_pi x) HargR pi_real pi_real_in_R). }
+claim HmulShift :
+  mul_SNo two_pi (add_SNo x (eps_ 1)) =
+  add_SNo (mul_SNo two_pi x) pi_real.
+{
+  rewrite (mul_SNo_distrL
+    two_pi
+    x
+    (eps_ 1)
+    (real_SNo two_pi two_pi_in_R)
+    (real_SNo x HxR)
+    SNo_eps_1).
+  rewrite two_pi_mul_eps_1_eq_pi.
+  reflexivity.
+}
+claim HgraphShift :
+  apply_fun covering_map_R_S1 (add_SNo x (eps_ 1)) =
+  (apply_fun cos_real (mul_SNo two_pi (add_SNo x (eps_ 1))),
+   apply_fun sin_real (mul_SNo two_pi (add_SNo x (eps_ 1)))).
+{
+  exact (apply_fun_graph
+    R
+    (fun t:set =>
+      (apply_fun cos_real (mul_SNo two_pi t),
+       apply_fun sin_real (mul_SNo two_pi t)))
+    (add_SNo x (eps_ 1))
+    HxhalfR).
+}
+claim HgraphX :
+  apply_fun covering_map_R_S1 x =
+  (apply_fun cos_real (mul_SNo two_pi x),
+   apply_fun sin_real (mul_SNo two_pi x)).
+{
+  exact (apply_fun_graph
+    R
+    (fun t:set =>
+      (apply_fun cos_real (mul_SNo two_pi t),
+       apply_fun sin_real (mul_SNo two_pi t)))
+    x
+    HxR).
+}
+rewrite HgraphShift.
+rewrite HmulShift.
+rewrite (cos_addition
+  (mul_SNo two_pi x)
+  pi_real
+  HargR
+  pi_real_in_R).
+rewrite (sin_addition
+  (mul_SNo two_pi x)
+  pi_real
+  HargR
+  pi_real_in_R).
+rewrite cos_pi.
+rewrite sin_pi.
+rewrite (mul_SNo_zeroR
+  (apply_fun sin_real (mul_SNo two_pi x))
+  (real_SNo
+    (apply_fun sin_real (mul_SNo two_pi x))
+    (sin_real_function_on (mul_SNo two_pi x) HargR))).
+rewrite (mul_SNo_zeroR
+  (apply_fun cos_real (mul_SNo two_pi x))
+  (real_SNo
+    (apply_fun cos_real (mul_SNo two_pi x))
+    (cos_real_function_on (mul_SNo two_pi x) HargR))).
+rewrite minus_SNo_0.
+rewrite (mul_SNo_minus_distrR
+  (apply_fun cos_real (mul_SNo two_pi x))
+  1
+  (real_SNo
+    (apply_fun cos_real (mul_SNo two_pi x))
+    (cos_real_function_on (mul_SNo two_pi x) HargR))
+  SNo_1).
+rewrite (mul_SNo_minus_distrR
+  (apply_fun sin_real (mul_SNo two_pi x))
+  1
+  (real_SNo
+    (apply_fun sin_real (mul_SNo two_pi x))
+    (sin_real_function_on (mul_SNo two_pi x) HargR))
+  SNo_1).
+rewrite (mul_SNo_oneR
+  (apply_fun cos_real (mul_SNo two_pi x))
+  (real_SNo
+    (apply_fun cos_real (mul_SNo two_pi x))
+    (cos_real_function_on (mul_SNo two_pi x) HargR))).
+rewrite (mul_SNo_oneR
+  (apply_fun sin_real (mul_SNo two_pi x))
+  (real_SNo
+    (apply_fun sin_real (mul_SNo two_pi x))
+    (sin_real_function_on (mul_SNo two_pi x) HargR))).
+rewrite (add_SNo_0R
+  (minus_SNo (apply_fun cos_real (mul_SNo two_pi x)))
+  (SNo_minus_SNo
+    (apply_fun cos_real (mul_SNo two_pi x))
+    (real_SNo
+      (apply_fun cos_real (mul_SNo two_pi x))
+      (cos_real_function_on (mul_SNo two_pi x) HargR)))).
+rewrite (add_SNo_0R
+  (minus_SNo (apply_fun sin_real (mul_SNo two_pi x)))
+  (SNo_minus_SNo
+    (apply_fun sin_real (mul_SNo two_pi x))
+    (real_SNo
+      (apply_fun sin_real (mul_SNo two_pi x))
+      (sin_real_function_on (mul_SNo two_pi x) HargR)))).
+rewrite HgraphX.
+rewrite tuple_2_0_eq.
+rewrite tuple_2_1_eq.
+reflexivity.
+Admitted.
+
+(** S57 helper: shifting the real parameter by -1/2 also moves to the antipode on S^1. **)
+Theorem covering_map_R_S1_minus_half_shift_antipode : forall x:set, x :e R ->
+  apply_fun covering_map_R_S1 (add_SNo x (minus_SNo (eps_ 1))) =
+  (minus_SNo (apply_fun covering_map_R_S1 x 0),
+   minus_SNo (apply_fun covering_map_R_S1 x 1)).
+let x.
+assume HxR.
+claim HxmhalfR : add_SNo x (minus_SNo (eps_ 1)) :e R.
+{
+  exact (real_add_SNo
+    x
+    HxR
+    (minus_SNo (eps_ 1))
+    (real_minus_SNo
+      (eps_ 1)
+      eps_1_in_R)).
+}
+claim Hshift :
+  add_SNo (add_SNo x (minus_SNo (eps_ 1))) 1 =
+  add_SNo x (eps_ 1).
+{
+  rewrite <- (add_SNo_assoc
+    x
+    (minus_SNo (eps_ 1))
+    1
+    (real_SNo x HxR)
+    (SNo_minus_SNo
+      (eps_ 1)
+      SNo_eps_1)
+    SNo_1).
+  rewrite (add_SNo_com
+    (minus_SNo (eps_ 1))
+    1
+    (SNo_minus_SNo
+      (eps_ 1)
+      SNo_eps_1)
+    SNo_1).
+  rewrite one_minus_eps1_eq_eps1.
+  reflexivity.
+}
+claim Hperiod :
+  apply_fun covering_map_R_S1 (add_SNo (add_SNo x (minus_SNo (eps_ 1))) 1) =
+  apply_fun covering_map_R_S1 (add_SNo x (minus_SNo (eps_ 1))).
+{
+  exact (covering_map_R_S1_period_one
+    (add_SNo x (minus_SNo (eps_ 1)))
+    HxmhalfR).
+}
+claim Hhalf :
+  apply_fun covering_map_R_S1 (add_SNo x (eps_ 1)) =
+  (minus_SNo (apply_fun covering_map_R_S1 x 0),
+   minus_SNo (apply_fun covering_map_R_S1 x 1)).
+{
+  exact (covering_map_R_S1_half_shift_antipode
+    x
+    HxR).
+}
+claim HshiftedHalf :
+  apply_fun covering_map_R_S1 (add_SNo (add_SNo x (minus_SNo (eps_ 1))) 1) =
+  (minus_SNo (apply_fun covering_map_R_S1 x 0),
+   minus_SNo (apply_fun covering_map_R_S1 x 1)).
+{
+  rewrite Hshift.
+  exact Hhalf.
+}
+exact (eq_i_tra
+  (apply_fun covering_map_R_S1 (add_SNo x (minus_SNo (eps_ 1))))
+  (apply_fun covering_map_R_S1 (add_SNo (add_SNo x (minus_SNo (eps_ 1))) 1))
+  (minus_SNo (apply_fun covering_map_R_S1 x 0),
+   minus_SNo (apply_fun covering_map_R_S1 x 1))
+  (eq_symm
+    (apply_fun covering_map_R_S1 (add_SNo (add_SNo x (minus_SNo (eps_ 1))) 1))
+    (apply_fun covering_map_R_S1 (add_SNo x (minus_SNo (eps_ 1))))
+    Hperiod)
+  (eq_i_tra
+    (apply_fun covering_map_R_S1 (add_SNo (add_SNo x (minus_SNo (eps_ 1))) 1))
+    (minus_SNo (apply_fun covering_map_R_S1 x 0),
+     minus_SNo (apply_fun covering_map_R_S1 x 1))
+    (minus_SNo (apply_fun covering_map_R_S1 x 0),
+     minus_SNo (apply_fun covering_map_R_S1 x 1))
+    HshiftedHalf
+    (eq_refl
+      (minus_SNo (apply_fun covering_map_R_S1 x 0),
+       minus_SNo (apply_fun covering_map_R_S1 x 1))))).
+Admitted.
+
+(** S57 helper: the standard covering path restricts to the usual based loop on S^1. **)
+Theorem covering_map_R_S1_continuous_on_unit_interval :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology covering_map_R_S1.
+claim Hcont :
+  continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1.
+{
+  exact (andEL
+    (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1)
+    (surjective_map R S1 covering_map_R_S1)
+    (andEL
+      (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1 /\
+       surjective_map R S1 covering_map_R_S1)
+      (forall b:set, b :e S1 ->
+        exists U:set, U :e S1_topology /\ b :e U /\
+          evenly_covered R R_standard_topology S1 S1_topology covering_map_R_S1 U)
+      thm53_1_R_covers_S1)).
+}
+exact (continuous_on_subspace
+  R
+  R_standard_topology
+  S1
+  S1_topology
+  covering_map_R_S1
+  unit_interval
+  R_standard_topology_is_topology_local
+  unit_interval_sub_R
+  Hcont).
+Admitted.
+
+(** S57 helper: the standard covering path from 0 to 1 is a loop at the circle basepoint. **)
+Theorem covering_map_R_S1_loop_at_basepoint :
+  loop_at S1 S1_topology S1_basepoint covering_map_R_S1.
+claim Hcover0 :
+  apply_fun covering_map_R_S1 0 = S1_basepoint.
+{
+  rewrite (apply_fun_graph
+    R
+    (fun t:set =>
+      (apply_fun cos_real (mul_SNo two_pi t),
+       apply_fun sin_real (mul_SNo two_pi t)))
+    0
+    real_0).
+  rewrite (mul_SNo_zeroR two_pi (real_SNo two_pi two_pi_in_R)).
+  rewrite cos_zero.
+  rewrite sin_zero.
+  reflexivity.
+}
+claim Hcover1 :
+  apply_fun covering_map_R_S1 1 = S1_basepoint.
+{
+  rewrite (apply_fun_graph
+    R
+    (fun t:set =>
+      (apply_fun cos_real (mul_SNo two_pi t),
+       apply_fun sin_real (mul_SNo two_pi t)))
+    1
+    real_1).
+  rewrite (mul_SNo_oneR two_pi (real_SNo two_pi two_pi_in_R)).
+  rewrite cos_two_pi.
+  rewrite sin_two_pi.
+  reflexivity.
+}
+apply (loop_at_fold
+  S1
+  S1_topology
+  S1_basepoint
+  covering_map_R_S1).
+apply andI.
+- apply andI.
+  + exact covering_map_R_S1_continuous_on_unit_interval.
+  + exact Hcover0.
+- exact Hcover1.
+Admitted.
+
+(** Early arithmetic helper: x + x = 0 forces x = 0. **)
+Lemma SNo_double_zero_early : forall x:set, x :e R ->
+  add_SNo x x = 0 ->
+  x = 0.
+let x.
+assume HxR.
+assume Hxx0.
+claim HxS : SNo x.
+{
+  exact (real_SNo
+    x
+    HxR).
+}
+claim H2x0 :
+  mul_SNo 2 x = mul_SNo 2 0.
+{
+  rewrite (mul_SNo_2_eq_add
+    x
+    HxS).
+  rewrite Hxx0.
+  symmetry.
+  exact (mul_SNo_zeroR
+    2
+    SNo_2).
+}
+exact (mul_SNo_nonzero_cancel
+  2
+  x
+  0
+  SNo_2
+  neq_2_0
+  HxS
+  SNo_0
+  H2x0).
+Qed.
+
+(** A point of S1 is never equal to its antipode. **)
+Lemma S1_point_neq_antipode_early : forall z:set, z :e S1 ->
+  z <> (minus_SNo (z 0), minus_SNo (z 1)).
+let z.
+assume HzS1.
+assume HzAnti.
+claim HzR2 : z :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+claim HzNorm :
+  add_SNo (mul_SNo (z 0) (z 0))
+    (mul_SNo (z 1) (z 1)) = 1.
+{
+  exact (SepE2
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+claim HzEta :
+  z = (z 0, z 1).
+{
+  exact (setprod_eta
+    R
+    R
+    z
+    HzR2).
+}
+claim HzPairEq :
+  (z 0, z 1) =
+  (minus_SNo (z 0), minus_SNo (z 1)).
+{
+  rewrite <- HzEta.
+  exact HzAnti.
+}
+claim Hz0R : z 0 :e R.
+{
+  exact (ap0_Sigma
+    R
+    (fun _ : set => R)
+    z
+    HzR2).
+}
+claim Hz1R : z 1 :e R.
+{
+  exact (ap1_Sigma
+    R
+    (fun _ : set => R)
+    z
+    HzR2).
+}
+claim Hz0S : SNo (z 0).
+{
+  exact (real_SNo
+    (z 0)
+    Hz0R).
+}
+claim Hz1S : SNo (z 1).
+{
+  exact (real_SNo
+    (z 1)
+    Hz1R).
+}
+claim Hz0EqNeg :
+  z 0 = minus_SNo (z 0).
+{
+  exact (pair_eq_fst
+    (z 0)
+    (z 1)
+    (minus_SNo (z 0))
+    (minus_SNo (z 1))
+    HzPairEq).
+}
+claim Hz1EqNeg :
+  z 1 = minus_SNo (z 1).
+{
+  exact (pair_eq_snd
+    (z 0)
+    (z 1)
+    (minus_SNo (z 0))
+    (minus_SNo (z 1))
+    HzPairEq).
+}
+claim Hz0Double0 :
+  add_SNo (z 0) (z 0) = 0.
+{
+  rewrite Hz0EqNeg at 1.
+  exact (add_SNo_minus_SNo_linv
+    (z 0)
+    Hz0S).
+}
+claim Hz1Double0 :
+  add_SNo (z 1) (z 1) = 0.
+{
+  rewrite Hz1EqNeg at 1.
+  exact (add_SNo_minus_SNo_linv
+    (z 1)
+    Hz1S).
+}
+claim Hz0Eq0 :
+  z 0 = 0.
+{
+  exact (SNo_double_zero_early
+    (z 0)
+    Hz0R
+    Hz0Double0).
+}
+claim Hz1Eq0 :
+  z 1 = 0.
+{
+  exact (SNo_double_zero_early
+    (z 1)
+    Hz1R
+    Hz1Double0).
+}
+claim Hsum0 :
+  add_SNo (mul_SNo (z 0) (z 0))
+    (mul_SNo (z 1) (z 1)) = 0.
+{
+  claim Hz0Sq0 :
+    mul_SNo (z 0) (z 0) = 0.
+  {
+    rewrite Hz0Eq0 at 1.
+    rewrite Hz0Eq0 at 1.
+    exact (mul_SNo_zeroR
+      0
+      SNo_0).
+  }
+  claim Hz1Sq0 :
+    mul_SNo (z 1) (z 1) = 0.
+  {
+    rewrite Hz1Eq0 at 1.
+    rewrite Hz1Eq0 at 1.
+    exact (mul_SNo_zeroR
+      0
+      SNo_0).
+  }
+  rewrite Hz0Sq0.
+  rewrite Hz1Sq0.
+  exact (add_SNo_0R
+    0
+    SNo_0).
+}
+claim H0eq1 : 0 = 1.
+{
+  exact (eq_i_tra
+    0
+    (add_SNo (mul_SNo (z 0) (z 0))
+      (mul_SNo (z 1) (z 1)))
+    1
+    (eq_symm
+      (add_SNo (mul_SNo (z 0) (z 0))
+        (mul_SNo (z 1) (z 1)))
+      0
+      Hsum0)
+    HzNorm).
+}
+exact (neq_0_1
+  H0eq1).
+Qed.
+
+(** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
+Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
+  add_SNo x (eps_ 1) <> add_SNo x (minus_SNo (eps_ 1)).
+let x.
+assume HxR.
+assume Heq.
+claim HxS : SNo x.
+{
+  exact (real_SNo
+    x
+    HxR).
+}
+claim HepsEqNeg :
+  eps_ 1 = minus_SNo (eps_ 1).
+{
+  exact (add_SNo_cancel_L
+    x
+    (eps_ 1)
+    (minus_SNo (eps_ 1))
+    HxS
+    SNo_eps_1
+    (SNo_minus_SNo
+      (eps_ 1)
+      SNo_eps_1)
+    Heq).
+}
+claim Hdouble0 :
+  add_SNo (eps_ 1) (eps_ 1) = 0.
+{
+  rewrite HepsEqNeg at 1.
+  exact (add_SNo_minus_SNo_linv
+    (eps_ 1)
+    SNo_eps_1).
+}
+claim H1eq0 : 1 = 0.
+{
+  exact (eq_i_tra
+    1
+    (add_SNo (eps_ 1) (eps_ 1))
+    0
+    (eq_symm
+      (add_SNo (eps_ 1) (eps_ 1))
+      1
+      eps_1_half_eq1)
+    Hdouble0).
+}
+exact (neq_0_1
+  (eq_symm
+    1
+    0
+    H1eq0)).
+Qed.
+
+(** Any antipode-preserving h : S1 -> S1 turns the standard covering path
+    into a half-shift-antipode path. **)
+Theorem antipode_preserving_S1_cover_half_shift : forall h t:set,
+  antipode_preserving_S1 h ->
+  t :e unit_interval ->
+  add_SNo t (eps_ 1) :e unit_interval ->
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (add_SNo t (eps_ 1)) =
+  (minus_SNo (apply_fun (compose_fun unit_interval covering_map_R_S1 h) t 0),
+   minus_SNo (apply_fun (compose_fun unit_interval covering_map_R_S1 h) t 1)).
+let h t.
+assume HhAnti.
+assume HtI.
+assume HtHalfI.
+claim HhAntiEq :
+  forall z:set, z :e S1 ->
+    apply_fun h (minus_SNo (z 0), minus_SNo (z 1)) =
+    (minus_SNo (apply_fun h z 0), minus_SNo (apply_fun h z 1)).
+{
+  exact (andER
+    (continuous_map S1 S1_topology S1 S1_topology h)
+    (forall z:set, z :e S1 ->
+      apply_fun h (minus_SNo (z 0), minus_SNo (z 1)) =
+      (minus_SNo (apply_fun h z 0), minus_SNo (apply_fun h z 1)))
+    HhAnti).
+}
+claim HtR : t :e R.
+{
+  exact (unit_interval_sub_R
+    t
+    HtI).
+}
+rewrite (compose_fun_apply
+  unit_interval
+  covering_map_R_S1
+  h
+  (add_SNo t (eps_ 1))
+  HtHalfI).
+rewrite (covering_map_R_S1_half_shift_antipode
+  t
+  HtR).
+rewrite (compose_fun_apply
+  unit_interval
+  covering_map_R_S1
+  h
+  t
+  HtI).
+exact (HhAntiEq
+  (apply_fun covering_map_R_S1 t)
+  (covering_map_R_S1_on_S1
+    t
+    HtR)).
+Admitted.
+
+(** The same half-shift-antipode relation, written with a backward half-shift. **)
+Theorem antipode_preserving_S1_cover_minus_half_shift : forall h t:set,
+  antipode_preserving_S1 h ->
+  t :e unit_interval ->
+  add_SNo t (minus_SNo (eps_ 1)) :e unit_interval ->
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h)
+    (add_SNo t (minus_SNo (eps_ 1))) =
+  (minus_SNo (apply_fun (compose_fun unit_interval covering_map_R_S1 h) t 0),
+   minus_SNo (apply_fun (compose_fun unit_interval covering_map_R_S1 h) t 1)).
+let h t.
+assume HhAnti.
+assume HtI.
+assume HtHalfI.
+claim HhAntiEq :
+  forall z:set, z :e S1 ->
+    apply_fun h (minus_SNo (z 0), minus_SNo (z 1)) =
+    (minus_SNo (apply_fun h z 0), minus_SNo (apply_fun h z 1)).
+{
+  exact (andER
+    (continuous_map S1 S1_topology S1 S1_topology h)
+    (forall z:set, z :e S1 ->
+      apply_fun h (minus_SNo (z 0), minus_SNo (z 1)) =
+      (minus_SNo (apply_fun h z 0), minus_SNo (apply_fun h z 1)))
+    HhAnti).
+}
+claim HtR : t :e R.
+{
+  exact (unit_interval_sub_R
+    t
+    HtI).
+}
+rewrite (compose_fun_apply
+  unit_interval
+  covering_map_R_S1
+  h
+  (add_SNo t (minus_SNo (eps_ 1)))
+  HtHalfI).
+rewrite (covering_map_R_S1_minus_half_shift_antipode
+  t
+  HtR).
+rewrite (compose_fun_apply
+  unit_interval
+  covering_map_R_S1
+  h
+  t
+  HtI).
+exact (HhAntiEq
+  (apply_fun covering_map_R_S1 t)
+  (covering_map_R_S1_on_S1
+    t
+    HtR)).
+Admitted.
+
+(** Midpoint fiber witnesses for h compose covering_map_R_S1. **)
+Theorem antipode_preserving_S1_midpoint_fiber_witnesses : forall h e0:set,
+  antipode_preserving_S1 h ->
+  e0 :e R ->
+  apply_fun covering_map_R_S1 e0 = apply_fun h S1_basepoint ->
+  apply_fun covering_map_R_S1 (add_SNo e0 (eps_ 1)) =
+    apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1) /\
+  apply_fun covering_map_R_S1 (add_SNo e0 (minus_SNo (eps_ 1))) =
+    apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1) /\
+  add_SNo e0 (eps_ 1) <> add_SNo e0 (minus_SNo (eps_ 1)).
+let h e0.
+assume HhAnti.
+assume He0R.
+assume He0Start.
+claim HgammaHalf :
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1) =
+  (minus_SNo (apply_fun h S1_basepoint 0),
+   minus_SNo (apply_fun h S1_basepoint 1)).
+{
+  claim H0epsI : add_SNo 0 (eps_ 1) :e unit_interval.
+  {
+    rewrite (add_SNo_0L
+      (eps_ 1)
+      SNo_eps_1).
+    exact eps_1_in_unit_interval.
+  }
+  claim Hhalf0 :
+    apply_fun (compose_fun unit_interval covering_map_R_S1 h) (add_SNo 0 (eps_ 1)) =
+    (minus_SNo (apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0 0),
+     minus_SNo (apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0 1)).
+  {
+    exact (antipode_preserving_S1_cover_half_shift
+      h
+      0
+      HhAnti
+      zero_in_unit_interval
+      H0epsI).
+  }
+  rewrite <- (add_SNo_0L
+    (eps_ 1)
+    SNo_eps_1).
+  rewrite Hhalf0.
+  rewrite (compose_fun_apply
+    unit_interval
+    covering_map_R_S1
+    h
+    0
+    zero_in_unit_interval).
+  rewrite (loop_at_at_zero
+    S1
+    S1_topology
+    S1_basepoint
+    covering_map_R_S1
+    covering_map_R_S1_loop_at_basepoint).
+  reflexivity.
+}
+claim HfiberPlus :
+  apply_fun covering_map_R_S1 (add_SNo e0 (eps_ 1)) =
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1).
+{
+  claim HantiBase :
+    (minus_SNo (apply_fun h S1_basepoint 0),
+     minus_SNo (apply_fun h S1_basepoint 1))
+    =
+    (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+     minus_SNo (apply_fun covering_map_R_S1 e0 1)).
+  {
+    rewrite <- He0Start.
+    reflexivity.
+  }
+  exact (eq_i_tra
+    (apply_fun covering_map_R_S1 (add_SNo e0 (eps_ 1)))
+    (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+     minus_SNo (apply_fun covering_map_R_S1 e0 1))
+    (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
+    (covering_map_R_S1_half_shift_antipode
+      e0
+      He0R)
+    (eq_symm
+      (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
+      (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+       minus_SNo (apply_fun covering_map_R_S1 e0 1))
+      (eq_i_tra
+        (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
+        (minus_SNo (apply_fun h S1_basepoint 0),
+         minus_SNo (apply_fun h S1_basepoint 1))
+        (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+         minus_SNo (apply_fun covering_map_R_S1 e0 1))
+        HgammaHalf
+        HantiBase))).
+}
+claim HfiberMinus :
+  apply_fun covering_map_R_S1 (add_SNo e0 (minus_SNo (eps_ 1))) =
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1).
+{
+  claim HantiBase :
+    (minus_SNo (apply_fun h S1_basepoint 0),
+     minus_SNo (apply_fun h S1_basepoint 1))
+    =
+    (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+     minus_SNo (apply_fun covering_map_R_S1 e0 1)).
+  {
+    rewrite <- He0Start.
+    reflexivity.
+  }
+  exact (eq_i_tra
+    (apply_fun covering_map_R_S1 (add_SNo e0 (minus_SNo (eps_ 1))))
+    (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+     minus_SNo (apply_fun covering_map_R_S1 e0 1))
+    (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
+    (covering_map_R_S1_minus_half_shift_antipode
+      e0
+      He0R)
+    (eq_symm
+      (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
+      (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+       minus_SNo (apply_fun covering_map_R_S1 e0 1))
+      (eq_i_tra
+        (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
+        (minus_SNo (apply_fun h S1_basepoint 0),
+         minus_SNo (apply_fun h S1_basepoint 1))
+        (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+         minus_SNo (apply_fun covering_map_R_S1 e0 1))
+        HgammaHalf
+        HantiBase))).
+}
+exact (andI
+  ((apply_fun covering_map_R_S1 (add_SNo e0 (eps_ 1)) =
+      apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1)) /\
+    (apply_fun covering_map_R_S1 (add_SNo e0 (minus_SNo (eps_ 1))) =
+      apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1)))
+  (add_SNo e0 (eps_ 1) <> add_SNo e0 (minus_SNo (eps_ 1)))
+  (andI
+    (apply_fun covering_map_R_S1 (add_SNo e0 (eps_ 1)) =
+      apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
+    (apply_fun covering_map_R_S1 (add_SNo e0 (minus_SNo (eps_ 1))) =
+      apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
+    HfiberPlus
+    HfiberMinus)
+  (real_half_shift_points_distinct_early
+    e0
+    He0R)).
+Admitted.
+
+(** For an antipode-preserving h, the midpoint of the lifted standard loop
+    cannot return to the chosen starting lift e0. **)
+Theorem antipode_preserving_S1_lift_midpoint_not_start : forall h e0:set,
+  antipode_preserving_S1 h ->
+  e0 :e R ->
+  apply_fun covering_map_R_S1 e0 = apply_fun h S1_basepoint ->
+  apply_fun
+    (path_lift
+      R
+      R_standard_topology
+      S1
+      S1_topology
+      covering_map_R_S1
+      e0
+      (compose_fun unit_interval covering_map_R_S1 h))
+    (eps_ 1)
+  <> e0.
+let h e0.
+assume HhAnti.
+assume He0R.
+assume He0Start.
+claim HhCont :
+  continuous_map S1 S1_topology S1 S1_topology h.
+{
+  exact (andEL
+    (continuous_map S1 S1_topology S1 S1_topology h)
+    (forall z:set, z :e S1 ->
+      apply_fun h (minus_SNo (z 0), minus_SNo (z 1)) =
+      (minus_SNo (apply_fun h z 0), minus_SNo (apply_fun h z 1)))
+    HhAnti).
+}
+claim Hb0S1 : S1_basepoint :e S1.
+{
+  apply (SepI
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    (1, 0)).
+  - exact (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      1
+      0
+      real_1
+      real_0).
+  - rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite (mul_SNo_oneR 1 SNo_1) at 1.
+    rewrite (mul_SNo_zeroR 0 SNo_0) at 1.
+    exact (add_SNo_0R 1 SNo_1).
+}
+claim Hy0S1 : apply_fun h S1_basepoint :e S1.
+{
+  exact (continuous_map_value_in_space
+    S1
+    S1_topology
+    S1
+    S1_topology
+    h
+    S1_basepoint
+    HhCont
+    Hb0S1).
+}
+set gamma := compose_fun unit_interval covering_map_R_S1 h.
+claim Hcover0 :
+  apply_fun covering_map_R_S1 0 = S1_basepoint.
+{
+  exact (loop_at_at_zero
+    S1
+    S1_topology
+    S1_basepoint
+    covering_map_R_S1
+    covering_map_R_S1_loop_at_basepoint).
+}
+claim HgammaCont :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology gamma.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    S1
+    S1_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    h
+    covering_map_R_S1_continuous_on_unit_interval
+    HhCont).
+}
+claim Hgamma0 :
+  apply_fun gamma 0 = apply_fun h S1_basepoint.
+{
+  rewrite (compose_fun_apply
+    unit_interval
+    covering_map_R_S1
+    h
+    0
+    zero_in_unit_interval).
+  rewrite Hcover0.
+  reflexivity.
+}
+claim HgammaHalf :
+  apply_fun gamma (eps_ 1) =
+  (minus_SNo (apply_fun h S1_basepoint 0),
+   minus_SNo (apply_fun h S1_basepoint 1)).
+{
+  claim H0epsI : add_SNo 0 (eps_ 1) :e unit_interval.
+  {
+    rewrite (add_SNo_0L
+      (eps_ 1)
+      SNo_eps_1).
+    exact eps_1_in_unit_interval.
+  }
+  claim Hhalf0 :
+    apply_fun gamma (add_SNo 0 (eps_ 1)) =
+    (minus_SNo (apply_fun gamma 0 0),
+     minus_SNo (apply_fun gamma 0 1)).
+  {
+    exact (antipode_preserving_S1_cover_half_shift
+      h
+      0
+      HhAnti
+      zero_in_unit_interval
+      H0epsI).
+  }
+  rewrite <- (add_SNo_0L
+    (eps_ 1)
+    SNo_eps_1).
+  rewrite Hhalf0.
+  rewrite Hgamma0.
+  reflexivity.
+}
+claim HgammaHalfNeStart :
+  apply_fun gamma (eps_ 1) <> apply_fun gamma 0.
+{
+  rewrite HgammaHalf.
+  rewrite Hgamma0.
+  assume HantiEq.
+  exact ((S1_point_neq_antipode_early
+    (apply_fun h S1_basepoint)
+    Hy0S1)
+    (eq_symm
+      (minus_SNo (apply_fun h S1_basepoint 0),
+       minus_SNo (apply_fun h S1_basepoint 1))
+      (apply_fun h S1_basepoint)
+      HantiEq)).
+}
+claim HstartGamma :
+  apply_fun covering_map_R_S1 e0 = apply_fun gamma 0.
+{
+  rewrite Hgamma0.
+  exact He0Start.
+}
+claim HliftGammaPack :
+  (continuous_map unit_interval unit_interval_topology
+    R R_standard_topology
+    (path_lift
+      R
+      R_standard_topology
+      S1
+      S1_topology
+      covering_map_R_S1
+      e0
+      gamma) /\
+   apply_fun
+      (path_lift
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        e0
+        gamma)
+      0
+    = e0) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun covering_map_R_S1
+      (apply_fun
+        (path_lift
+          R
+          R_standard_topology
+          S1
+          S1_topology
+          covering_map_R_S1
+          e0
+          gamma)
+        t)
+    = apply_fun gamma t).
+{
+  exact (lemma54_1_path_lifting
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    e0
+    gamma
+    thm53_1_R_covers_S1
+    He0R
+    HstartGamma
+    HgammaCont).
+}
+claim HliftGammaComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun covering_map_R_S1
+      (apply_fun
+        (path_lift
+          R
+          R_standard_topology
+          S1
+          S1_topology
+          covering_map_R_S1
+          e0
+          gamma)
+        t)
+    = apply_fun gamma t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology
+      R R_standard_topology
+      (path_lift
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        e0
+        gamma) /\
+     apply_fun
+        (path_lift
+          R
+          R_standard_topology
+          S1
+          S1_topology
+          covering_map_R_S1
+          e0
+          gamma)
+        0
+      = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun covering_map_R_S1
+        (apply_fun
+          (path_lift
+            R
+            R_standard_topology
+            S1
+            S1_topology
+            covering_map_R_S1
+            e0
+            gamma)
+          t)
+      = apply_fun gamma t)
+    HliftGammaPack).
+}
+assume HmidEq.
+claim HcoverMid :
+  apply_fun covering_map_R_S1
+    (apply_fun
+      (path_lift
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        e0
+        gamma)
+      (eps_ 1))
+  = apply_fun gamma (eps_ 1).
+{
+  exact (HliftGammaComm
+    (eps_ 1)
+    eps_1_in_unit_interval).
+}
+claim HcoverLiftMidEq :
+  apply_fun covering_map_R_S1
+    (apply_fun
+      (path_lift
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        e0
+        gamma)
+      (eps_ 1))
+  = apply_fun covering_map_R_S1 e0.
+{
+  rewrite HmidEq.
+  reflexivity.
+}
+claim HgammaHalfEqCovere0 :
+  apply_fun gamma (eps_ 1) = apply_fun covering_map_R_S1 e0.
+{
+  exact (eq_i_tra
+    (apply_fun gamma (eps_ 1))
+    (apply_fun covering_map_R_S1
+      (apply_fun
+        (path_lift
+          R
+          R_standard_topology
+          S1
+          S1_topology
+          covering_map_R_S1
+          e0
+          gamma)
+        (eps_ 1)))
+    (apply_fun covering_map_R_S1 e0)
+    (eq_symm
+      (apply_fun covering_map_R_S1
+        (apply_fun
+          (path_lift
+            R
+            R_standard_topology
+            S1
+            S1_topology
+            covering_map_R_S1
+            e0
+            gamma)
+          (eps_ 1)))
+      (apply_fun gamma (eps_ 1))
+      HcoverMid)
+    HcoverLiftMidEq).
+}
+exact (HgammaHalfNeStart
+  (eq_i_tra
+    (apply_fun gamma (eps_ 1))
+    (apply_fun covering_map_R_S1 e0)
+    (apply_fun gamma 0)
+    HgammaHalfEqCovere0
+    HstartGamma)).
+Admitted.
+
 (** from S57 Thm 57.1 (line 1186 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is continuous and antipode-preserving, then h is not nulhomotopic. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 385 **)
+(** Bounty 424 **)
+(** Lock Charlie 1773666371 **)
 Theorem thm57_1_antipode_preserving_not_nulhomotopic : forall h:set,
   antipode_preserving_S1 h ->
   ~(nulhomotopic S1 S1_topology S1 S1_topology h).
