@@ -187353,7 +187353,83 @@ claim HdOdd :
   }
   claim HnegdxEu : Rn_negate 2 (apply_fun d x) :e euclidean_space 2.
   {
-    admit.
+    claim HdxAp0Eq : apply_fun (apply_fun d x) 0 = apply_fun d x 0.
+    {
+      exact (andEL
+        (apply_fun (apply_fun d x) 0 = apply_fun d x 0)
+        (apply_fun (apply_fun d x) 1 = apply_fun d x 1)
+        (setprod_R_R_apply_fun_coords
+          (apply_fun d x)
+          HdxR2)).
+    }
+    claim HdxAp1Eq : apply_fun (apply_fun d x) 1 = apply_fun d x 1.
+    {
+      exact (andER
+        (apply_fun (apply_fun d x) 0 = apply_fun d x 0)
+        (apply_fun (apply_fun d x) 1 = apply_fun d x 1)
+        (setprod_R_R_apply_fun_coords
+          (apply_fun d x)
+          HdxR2)).
+    }
+    claim HnegdxDef :
+      Rn_negate 2 (apply_fun d x)
+      = graph 2 (fun i:set => minus_SNo (apply_fun (apply_fun d x) i)).
+    {
+      reflexivity.
+    }
+    claim HnegdxGraphEq :
+      graph 2 (fun i:set => minus_SNo (apply_fun (apply_fun d x) i))
+      =
+      graph 2 (fun i:set => if i = 0 then minus_SNo (apply_fun d x 0) else minus_SNo (apply_fun d x 1)).
+    {
+      apply (graph_extensional
+        2
+        (fun i:set => minus_SNo (apply_fun (apply_fun d x) i))
+        (fun i:set => if i = 0 then minus_SNo (apply_fun d x 0) else minus_SNo (apply_fun d x 1))).
+      let i.
+      assume Hi2.
+      apply (ordsuccE 1 i Hi2).
+      - assume Hi1.
+        apply (ordsuccE 0 i Hi1).
+        + assume Hi0.
+          exact (EmptyE
+            i
+            Hi0
+            (minus_SNo (apply_fun (apply_fun d x) i)
+             =
+             (if i = 0 then minus_SNo (apply_fun d x 0) else minus_SNo (apply_fun d x 1)))).
+        + assume Hieq0.
+          rewrite Hieq0.
+          rewrite HdxAp0Eq.
+          exact (eq_symm
+            (if 0 = 0 then minus_SNo (apply_fun d x 0) else minus_SNo (apply_fun d x 1))
+            (minus_SNo (apply_fun d x 0))
+            (If_i_1
+              (0 = 0)
+              (minus_SNo (apply_fun d x 0))
+              (minus_SNo (apply_fun d x 1))
+              (eq_refl 0))).
+      - assume Hieq1.
+        rewrite Hieq1.
+        rewrite HdxAp1Eq.
+        exact (eq_symm
+          (if 1 = 0 then minus_SNo (apply_fun d x 0) else minus_SNo (apply_fun d x 1))
+          (minus_SNo (apply_fun d x 1))
+          (If_i_0
+            (1 = 0)
+            (minus_SNo (apply_fun d x 0))
+            (minus_SNo (apply_fun d x 1))
+            (neq_ordsucc_0 0))).
+    }
+    rewrite HnegdxDef.
+    exact ((eq_symm
+      (graph 2 (fun i:set => minus_SNo (apply_fun (apply_fun d x) i)))
+      (graph 2 (fun i:set => if i = 0 then minus_SNo (apply_fun d x 0) else minus_SNo (apply_fun d x 1)))
+      HnegdxGraphEq)
+      (fun z Hz => z :e euclidean_space 2)
+      (R2_pair_graph_neg_in_euclidean_space_2
+        (apply_fun d x)
+        HdxR2)).
   }
   claim HnegdxEqPair :
     Rn_negate 2 (apply_fun d x) =
