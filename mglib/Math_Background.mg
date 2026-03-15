@@ -140777,6 +140777,34 @@ apply iffI.
       Hretr)).
 Qed.
 
+(** S55 helper: recover Cor 55.4(b) non-extendability from Thm 55.2 no-retraction. **)
+(** Proven Bob **)
+Theorem cor55_4b_identity_S1_no_extension_B2_from_thm55_2 :
+  ~(exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+exact (iffEL
+  (~(retraction_of B2 B2_topology S1))
+  (~(exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)))
+  s55_no_retraction_B2_S1_iff_id_no_extension
+  thm55_2_no_retraction_B2_S1).
+Qed.
+
+(** S55 helper: non-extendability of id_{S1} implies no retraction B2->S1. **)
+(** Proven Bob **)
+Theorem thm55_2_no_retraction_B2_S1_from_id_no_extension :
+  ~(exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)) ->
+  ~(retraction_of B2 B2_topology S1).
+assume Hnoext.
+exact (iffER
+  (~(retraction_of B2 B2_topology S1))
+  (~(exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)))
+  s55_no_retraction_B2_S1_iff_id_no_extension
+  Hnoext).
+Qed.
+
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
