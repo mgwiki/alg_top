@@ -183101,6 +183101,73 @@ apply (SepI
 Qed.
 
 (** Infrastructure: an explicit S1 pair, viewed as a graph on 2, is a point of Sn 1. **)
+(** Infrastructure: a real coordinate pair, viewed as a graph on 2, is a point of euclidean_space 2. **)
+(** Proven Charlie **)
+Theorem R2_pair_graph_in_euclidean_space_2 : forall p:set,
+  p :e setprod R R ->
+  graph 2 (fun i:set => if i = 0 then p 0 else p 1) :e euclidean_space 2.
+let p.
+assume HpR2.
+claim Hp0R : p 0 :e R.
+{
+  exact (ap0_Sigma
+    R
+    (fun _ : set => R)
+    p
+    HpR2).
+}
+claim Hp1R : p 1 :e R.
+{
+  exact (ap1_Sigma
+    R
+    (fun _ : set => R)
+    p
+    HpR2).
+}
+claim HcoordIn : forall j:set, j :e 2 ->
+  (if j = 0 then p 0 else p 1) :e
+    space_family_set (const_space_family 2 R R_standard_topology) j.
+{
+  let j.
+  assume Hj2.
+  rewrite (space_family_set_const_space_family
+    2
+    R
+    R_standard_topology
+    j
+    Hj2).
+  apply (ordsuccE 1 j Hj2).
+  - assume Hj1.
+    apply (ordsuccE 0 j Hj1).
+    + assume Hj0.
+      exact (FalseE
+        (EmptyE j Hj0)
+        ((if j = 0 then p 0 else p 1) :e R)).
+    + assume Hjeq0.
+      rewrite Hjeq0.
+      rewrite (If_i_1
+        (0 = 0)
+        (p 0)
+        (p 1)
+        (eq_refl 0)).
+      exact Hp0R.
+  - assume Hjeq1.
+    rewrite Hjeq1.
+    rewrite (If_i_0
+      (1 = 0)
+      (p 0)
+      (p 1)
+      (neq_ordsucc_0 0)).
+    exact Hp1R.
+}
+exact (product_space_graphI
+  2
+  (const_space_family 2 R R_standard_topology)
+  (fun i:set => if i = 0 then p 0 else p 1)
+  HcoordIn).
+Qed.
+
+(** Infrastructure: an explicit S1 pair, viewed as a graph on 2, is a point of Sn 1. **)
 (** Proven Charlie **)
 Theorem S1_pair_graph_in_Sn_1 : forall p:set,
   p :e S1 ->
