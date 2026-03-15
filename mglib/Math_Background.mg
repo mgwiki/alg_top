@@ -278247,6 +278247,16 @@ apply (and5E
 assume _ _ _ _ H. exact H.
 Qed.
 
+(** Infrastructure: factor element is in G **)
+(** Proven Alice **)
+Lemma free_product_factor_in_G : forall G mult e inv J Gfam efam alpha x:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  alpha :e J -> x :e apply_fun Gfam alpha -> x :e G.
+let G mult e inv J Gfam efam alpha x. assume Hfp Hal Hx.
+exact (subgroup_of_subset (apply_fun Gfam alpha) G mult e inv
+  (free_product_subfam G mult e inv J Gfam efam Hfp alpha Hal) x Hx).
+Qed.
+
 (** Infrastructure: disjointness implies label uniqueness for nontrivial elements **)
 (** Proven Bob **)
 Theorem disjoint_subgroups_label_unique : forall G mult e inv J Gfam alpha beta x:set,
