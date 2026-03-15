@@ -275778,11 +275778,29 @@ claim Hwp_suf_eq : word_product mult e xs0_suf k =
       (apply_fun mult (wp_mid, apply_fun xs0 k))
       (apply_fun mult (wp_mid, apply_fun inv (apply_fun xs0 0)))
       H2 H3)). }
-(** KEY CHAIN PROVED: **)
 (** efam(al) = mult(xs0(0), mult(wp_mid, inv(xs0(0)))) **)
-(** REMAINING: derive wp_mid in Gfam(al) via group algebra (left cancel + right cancel), **)
-(** then case j=1 (disjointness) or j>=2 (uniqueness k-1 = n0 = k+1, impossible). **)
-(** All intermediate equalities proved above. ~30 lines of group algebra remaining. **)
+claim Hefam_eq2 : apply_fun efam al =
+  apply_fun mult (apply_fun xs0 0, apply_fun mult (wp_mid, apply_fun inv (apply_fun xs0 0))).
+{ rewrite <- Hwp_suf_eq. exact Hefal_split. }
+(** wp_mid in G **)
+claim Hxs_suf_G : forall i:set, i :e k -> apply_fun xs0_suf i :e G.
+{ let i. assume Hi.
+  claim Hgi : apply_fun xs0_suf i = apply_fun xs0 (ordsucc i).
+  { exact (apply_fun_graph k (fun i0:set => apply_fun xs0 (ordsucc i0)) i Hi). }
+  rewrite Hgi.
+  exact (HxsG (ordsucc i) (nat_ordsucc_in_ordsucc k Hk_nat i Hi)). }
+claim Hxs_mid_G : forall i:set, i :e j -> apply_fun xs0_mid i :e G.
+{ let i. assume Hi.
+  claim Hgi : apply_fun xs0_mid i = apply_fun xs0_suf i.
+  { exact (apply_fun_graph j (fun i0:set => apply_fun xs0_suf i0) i Hi). }
+  claim Hi_k : i :e k. { exact (nat_trans k Hk_nat j Hj_in_k i Hi). }
+  rewrite Hgi. exact (Hxs_suf_G i Hi_k). }
+claim Hwp_mid_G : wp_mid :e G.
+{ exact (word_product_in_G_group G mult e inv j xs0_mid Hgrp Hj_nat Hxs_mid_G). }
+(** STRATEGY: wp_mid in Gfam(al) via: **)
+(**   wp_suf(k) = inv(xs0(0)) mult efam(al) in Gfam(al) (by left cancel from Hefal_split) **)
+(**   wp_mid = mult(wp_suf(k), xs0(0)) in Gfam(al) (by right cancel from Hwp_suf_eq) **)
+(** Then case j=1: disjointness contradiction. j>=2: uniqueness j = n0 = j+2 contradiction. **)
 admit.
 Admitted.
 
