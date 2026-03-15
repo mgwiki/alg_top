@@ -188024,7 +188024,46 @@ claim HgAnti :
     =
     Rn_negate 2 (apply_fun g x).
   {
-    admit.
+    claim Hmid :
+      (minus_SNo (apply_fun gpair x 0),
+       minus_SNo (apply_fun gpair x 1))
+      =
+      (minus_SNo (apply_fun (apply_fun g x) 0),
+       minus_SNo (apply_fun (apply_fun g x) 1)).
+    {
+      apply tuple_2_ext_euclid.
+      - rewrite <- HgxCoord0.
+        reflexivity.
+      - rewrite <- HgxCoord1.
+        reflexivity.
+    }
+    exact (eq_i_tra
+      (minus_SNo (apply_fun gpair x 0),
+       minus_SNo (apply_fun gpair x 1))
+      (minus_SNo (apply_fun (apply_fun g x) 0),
+       minus_SNo (apply_fun (apply_fun g x) 1))
+      (Rn_negate 2 (apply_fun g x))
+      Hmid
+      (eq_i_tra
+        (minus_SNo (apply_fun (apply_fun g x) 0),
+         minus_SNo (apply_fun (apply_fun g x) 1))
+        (apply_fun (Rn_negate 2 (apply_fun g x)) 0,
+         apply_fun (Rn_negate 2 (apply_fun g x)) 1)
+        (Rn_negate 2 (apply_fun g x))
+        (eq_symm
+          (apply_fun (Rn_negate 2 (apply_fun g x)) 0,
+           apply_fun (Rn_negate 2 (apply_fun g x)) 1)
+          (minus_SNo (apply_fun (apply_fun g x) 0),
+           minus_SNo (apply_fun (apply_fun g x) 1))
+          (Rn_negate_2_coords_pair
+            (apply_fun g x)))
+        (eq_symm
+          (Rn_negate 2 (apply_fun g x))
+          (apply_fun (Rn_negate 2 (apply_fun g x)) 0,
+           apply_fun (Rn_negate 2 (apply_fun g x)) 1)
+          (euclidean_space_2_eq_coords_pair
+            (Rn_negate 2 (apply_fun g x))
+            HneggxE2)))).
   }
   claim HgnxAnti0 :
     apply_fun (apply_fun g (Rn_negate 3 x)) 0 =
