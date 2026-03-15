@@ -187227,6 +187227,26 @@ claim HliftLoop :
     HgammaLoop0
     HgammaClassInImage).
 }
+claim HliftMidNeStart :
+  apply_fun
+    (path_lift
+      R
+      R_standard_topology
+      S1
+      S1_topology
+      covering_map_R_S1
+      e0
+      gamma)
+    (eps_ 1)
+  <> e0.
+{
+  exact (antipode_preserving_S1_lift_midpoint_not_start
+    h
+    e0
+    HhAnti
+    He0R
+    He0Start).
+}
 claim HliftNotLoop :
   apply_fun (path_lift
     R
