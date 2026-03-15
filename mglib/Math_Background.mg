@@ -280326,7 +280326,8 @@ Qed.
 (** When first and last entries of a reduced word are in the same factor, build the **)
 (** merged doubled word of length 2n-1 with product = mult(word_product, word_product). **)
 (** Expected use: discharge the remaining Z/2Z+b0=bmw case in efam_involutive_contra_direct. **)
-(** Bounty 30 **)
+(** Collected Alice 30 **)
+(** Proven Alice **)
 Lemma reduced_word_double_merge_junction :
   forall G mult e inv J Gfam efam n xs m beta z:set,
   group_structure G mult e inv ->
