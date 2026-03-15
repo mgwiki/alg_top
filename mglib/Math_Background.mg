@@ -290393,7 +290393,24 @@ apply (xm (y = e)).
                             (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
                               word_product mult e xs' n' = cprime3 ->
                               k2 = n' /\ (forall i:set, i :e k2 -> apply_fun cs_pre i = apply_fun xs' i)).
-                          { admit. (** prefix reduced word data **) }
+                          { (** cprime3 <> e, so Huniq gives its unique reduced word. **)
+                            (** Use the prefix cs3[0..k2-1] as witness. **)
+                            set cs_pre2 := graph k2 (fun i:set => apply_fun cs3 i).
+                            claim Hred_pre2 : reduced_word J Gfam efam k2 cs_pre2.
+                            { exact (reduced_word_prefix J Gfam efam m cs3 k2 Hred3 Hk2_in_m). }
+                            claim Hwp_pre2 : word_product mult e cs_pre2 k2 = cprime3.
+                            { exact (word_product_congr_on mult e cs_pre2 cs3 k2
+                                (nat_p_omega k2 Hk2_nat)
+                                (fun i Hi => apply_fun_graph k2 (fun j:set => apply_fun cs3 j) i Hi)). }
+                            (** For uniqueness: use Huniq on cprime3 *)
+                            claim Huniq_cprime : forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                              word_product mult e xs' n' = cprime3 ->
+                              k2 = n' /\ (forall i:set, i :e k2 -> apply_fun cs_pre2 i = apply_fun xs' i).
+                            { admit. (** uniqueness of reduced word representation for cprime3 **) }
+                            witness cs_pre2. apply and3I.
+                            - exact Hred_pre2.
+                            - exact Hwp_pre2.
+                            - exact Huniq_cprime. }
                           claim Hy3Gb_cprime :
                             apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3) :e apply_fun Gfam beta.
                           { rewrite <- Hy3_eq_cprime. exact Hy3Gb. }
