@@ -277135,6 +277135,76 @@ rewrite <- Hinve at 1.
 exact Hrinv.
 Qed.
 
+(** Infrastructure: left identity in a group **)
+(** Proven Alice **)
+Lemma group_left_id : forall G mult e inv x:set,
+  group_structure G mult e inv -> x :e G ->
+  apply_fun mult (e, x) = x.
+let G mult e inv x. assume Hgrp HxG.
+apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume _ _ _ _ Hid _.
+exact (andEL (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x HxG)).
+Qed.
+
+(** Infrastructure: right identity in a group **)
+(** Proven Alice **)
+Lemma group_right_id : forall G mult e inv x:set,
+  group_structure G mult e inv -> x :e G ->
+  apply_fun mult (x, e) = x.
+let G mult e inv x. assume Hgrp HxG.
+apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume _ _ _ _ Hid _.
+exact (andER (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x HxG)).
+Qed.
+
+(** Infrastructure: left inverse in a group **)
+(** Proven Alice **)
+Lemma group_left_inv : forall G mult e inv x:set,
+  group_structure G mult e inv -> x :e G ->
+  apply_fun mult (apply_fun inv x, x) = e.
+let G mult e inv x. assume Hgrp HxG.
+apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume _ _ _ _ _ Hinverse.
+exact (andER (apply_fun mult (x, apply_fun inv x) = e) (apply_fun mult (apply_fun inv x, x) = e)
+  (Hinverse x HxG)).
+Qed.
+
+(** Infrastructure: right inverse in a group **)
+(** Proven Alice **)
+Lemma group_right_inv : forall G mult e inv x:set,
+  group_structure G mult e inv -> x :e G ->
+  apply_fun mult (x, apply_fun inv x) = e.
+let G mult e inv x. assume Hgrp HxG.
+apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume _ _ _ _ _ Hinverse.
+exact (andEL (apply_fun mult (x, apply_fun inv x) = e) (apply_fun mult (apply_fun inv x, x) = e)
+  (Hinverse x HxG)).
+Qed.
+
 (** Infrastructure: inverse of a product in a group **)
 (** Proven Charlie **)
 Lemma group_inv_mult : forall G mult e inv a b:set,
