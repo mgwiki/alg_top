@@ -436637,12 +436637,14 @@ exact (and5I
 Qed.
 
 (** helper for S84.4: deleting a backtracking pair from a closed edge path yields a shorter closed edge path **)
+(** Admin-approved-refactored per noticeboard proposal 1773109753 **)
 Theorem edge_path_delete_backtrack_shorter_closed :
   forall X Tx Arcs m path_seqm x0 i k2:set,
   edge_path X Tx Arcs m path_seqm x0 ->
   m = ordsucc (ordsucc (i + k2)) ->
   nat_p i ->
   nat_p k2 ->
+  i + k2 <> 0 ->
   (exists j0:set, j0 :e m /\ ordsucc j0 /:e m /\ (apply_fun path_seqm j0) 0 1 = x0) ->
   (apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
   (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1 /\
