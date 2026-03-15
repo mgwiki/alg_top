@@ -187492,6 +187492,13 @@ claim HrOdd :
       HsS
       HsNonneg).
   }
+  claim HdnormR : dnorm :e R.
+  {
+    exact (sqrt_SNo_nonneg_real
+      s
+      HsR
+      HsNonneg).
+  }
   claim HqR2m0 :
     (minus_SNo (p 0), minus_SNo (p 1)) :e R2_minus_origin.
   {
@@ -187746,7 +187753,52 @@ claim HrOdd :
       (minus_SNo (apply_fun r p 0),
        minus_SNo (apply_fun r p 1)).
     {
-      admit.
+      claim Hrp0R :
+        apply_fun r p 0 :e R.
+      {
+        rewrite HrpEq.
+        rewrite tuple_2_0_eq.
+        exact (real_div_SNo
+          (p 0)
+          Hp0R
+          dnorm
+          HdnormR).
+      }
+      claim Hrp1R :
+        apply_fun r p 1 :e R.
+      {
+        rewrite HrpEq.
+        rewrite tuple_2_1_eq.
+        exact (real_div_SNo
+          (p 1)
+          Hp1R
+          dnorm
+          HdnormR).
+      }
+      claim HnegrpE2 :
+        Rn_negate 2 (apply_fun r p) :e euclidean_space 2.
+      {
+        admit.
+      }
+      claim HnegrpPair :
+        (apply_fun (Rn_negate 2 (apply_fun r p)) 0,
+         apply_fun (Rn_negate 2 (apply_fun r p)) 1)
+        =
+        (minus_SNo (apply_fun r p 0),
+         minus_SNo (apply_fun r p 1)).
+      {
+        admit.
+      }
+      exact (eq_i_tra
+        (Rn_negate 2 (apply_fun r p))
+        (apply_fun (Rn_negate 2 (apply_fun r p)) 0,
+         apply_fun (Rn_negate 2 (apply_fun r p)) 1)
+        (minus_SNo (apply_fun r p 0),
+         minus_SNo (apply_fun r p 1))
+        (euclidean_space_2_eq_coords_pair
+          (Rn_negate 2 (apply_fun r p))
+          HnegrpE2)
+        HnegrpPair).
     }
     rewrite HrhsModel.
     rewrite HrpEq.
