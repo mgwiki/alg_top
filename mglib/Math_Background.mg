@@ -212369,11 +212369,21 @@ claim Htransition_VU : forall k:set, k :e nch ->
   + exact HsK.
   + exact HsSK.
   + apply binintersectI. { exact (HskU s HsSK). } { exact (HkV s HsK). } }
-(** The word data is built by induction on the chain length, splitting **)
-(** the loop at each transition and using word_data_of_loop_in_U/V for **)
-(** segments entirely in U or V, combined via word_data_of_loop_concat. **)
-(** This requires careful handling of path reparametrization and **)
-(** sub-loop construction at each transition point. **)
+(** Case analysis: is f entirely in U or V (despite ball chain)? **)
+(** If all balls are U-type: f maps into U everywhere, contradicting HnotAllU. **)
+(** If all balls are V-type: same with HnotAllV. **)
+(** So there must be at least one transition in the chain. **)
+(** **)
+(** Once we have a transition, the word data is built by: **)
+(** 1. Splitting f at the transition point **)
+(** 2. Building sub-loops via connecting paths in U cap V **)
+(** 3. Getting word data for each sub-loop (word_data_of_loop_in_U/V) **)
+(** 4. Combining via word_data_of_loop_concat **)
+(** 5. Recursing for the remaining segment **)
+(** **)
+(** The full formal construction requires path reparametrization **)
+(** and careful handling of sub-loop construction (~250 lines). **)
+(** This is the key remaining gap for the S59 chain. **)
 admit.
 Admitted.
 
