@@ -187876,7 +187876,191 @@ claim HgpairOdd :
 claim HgAnti :
   forall x:set, x :e Sn 2 ->
     apply_fun g (Rn_negate 3 x) = Rn_negate 2 (apply_fun g x).
-admit.
+{
+  let x.
+  assume HxSn2.
+  claim HnxSn2 : Rn_negate 3 x :e Sn 2.
+  {
+    exact (Rn_negate_in_Sn_ordsucc
+      2
+      x
+      H2om
+      HxSn2).
+  }
+  claim HgxSn1 : apply_fun g x :e Sn 1.
+  {
+    exact (HgInto
+      x
+      HxSn2).
+  }
+  claim HgnxSn1 : apply_fun g (Rn_negate 3 x) :e Sn 1.
+  {
+    exact (HgInto
+      (Rn_negate 3 x)
+      HnxSn2).
+  }
+  claim HgxE2 : apply_fun g x :e euclidean_space 2.
+  {
+    exact (SepE1
+      (euclidean_space 2)
+      (fun v:set => euclidean_norm_sq 2 v = 1)
+      (apply_fun g x)
+      HgxSn1).
+  }
+  claim HgnxE2 : apply_fun g (Rn_negate 3 x) :e euclidean_space 2.
+  {
+    exact (SepE1
+      (euclidean_space 2)
+      (fun v:set => euclidean_norm_sq 2 v = 1)
+      (apply_fun g (Rn_negate 3 x))
+      HgnxSn1).
+  }
+  claim HneggxE2 : Rn_negate 2 (apply_fun g x) :e euclidean_space 2.
+  {
+    exact (Rn_negate_in_euclidean_space
+      2
+      (apply_fun g x)
+      HgxE2).
+  }
+  claim HgnxCoord0 :
+    apply_fun (apply_fun g (Rn_negate 3 x)) 0 =
+    apply_fun gpair (Rn_negate 3 x) 0.
+  {
+    rewrite (apply_fun_graph
+      (Sn 2)
+      (fun x0:set =>
+        graph 2 (fun i:set =>
+          if i = 0 then apply_fun gpair x0 0 else apply_fun gpair x0 1))
+      (Rn_negate 3 x)
+      HnxSn2).
+    rewrite (apply_fun_graph
+      2
+      (fun i:set =>
+        if i = 0 then apply_fun gpair (Rn_negate 3 x) 0 else apply_fun gpair (Rn_negate 3 x) 1)
+      0
+      In_0_2).
+    rewrite (If_i_1
+      (0 = 0)
+      (apply_fun gpair (Rn_negate 3 x) 0)
+      (apply_fun gpair (Rn_negate 3 x) 1)
+      (eq_refl 0)).
+    reflexivity.
+  }
+  claim HgnxCoord1 :
+    apply_fun (apply_fun g (Rn_negate 3 x)) 1 =
+    apply_fun gpair (Rn_negate 3 x) 1.
+  {
+    rewrite (apply_fun_graph
+      (Sn 2)
+      (fun x0:set =>
+        graph 2 (fun i:set =>
+          if i = 0 then apply_fun gpair x0 0 else apply_fun gpair x0 1))
+      (Rn_negate 3 x)
+      HnxSn2).
+    rewrite (apply_fun_graph
+      2
+      (fun i:set =>
+        if i = 0 then apply_fun gpair (Rn_negate 3 x) 0 else apply_fun gpair (Rn_negate 3 x) 1)
+      1
+      In_1_2).
+    rewrite (If_i_0
+      (1 = 0)
+      (apply_fun gpair (Rn_negate 3 x) 0)
+      (apply_fun gpair (Rn_negate 3 x) 1)
+      (neq_ordsucc_0 0)).
+    reflexivity.
+  }
+  claim HgxCoord0 :
+    apply_fun (apply_fun g x) 0 =
+    apply_fun gpair x 0.
+  {
+    rewrite (apply_fun_graph
+      (Sn 2)
+      (fun x0:set =>
+        graph 2 (fun i:set =>
+          if i = 0 then apply_fun gpair x0 0 else apply_fun gpair x0 1))
+      x
+      HxSn2).
+    rewrite (apply_fun_graph
+      2
+      (fun i:set =>
+        if i = 0 then apply_fun gpair x 0 else apply_fun gpair x 1)
+      0
+      In_0_2).
+    rewrite (If_i_1
+      (0 = 0)
+      (apply_fun gpair x 0)
+      (apply_fun gpair x 1)
+      (eq_refl 0)).
+    reflexivity.
+  }
+  claim HgxCoord1 :
+    apply_fun (apply_fun g x) 1 =
+    apply_fun gpair x 1.
+  {
+    rewrite (apply_fun_graph
+      (Sn 2)
+      (fun x0:set =>
+        graph 2 (fun i:set =>
+          if i = 0 then apply_fun gpair x0 0 else apply_fun gpair x0 1))
+      x
+      HxSn2).
+    rewrite (apply_fun_graph
+      2
+      (fun i:set =>
+        if i = 0 then apply_fun gpair x 0 else apply_fun gpair x 1)
+      1
+      In_1_2).
+    rewrite (If_i_0
+      (1 = 0)
+      (apply_fun gpair x 0)
+      (apply_fun gpair x 1)
+      (neq_ordsucc_0 0)).
+    reflexivity.
+  }
+  claim HneggxPair :
+    (minus_SNo (apply_fun gpair x 0),
+     minus_SNo (apply_fun gpair x 1))
+    =
+    Rn_negate 2 (apply_fun g x).
+  {
+    admit.
+  }
+  claim HgnxAnti0 :
+    apply_fun (apply_fun g (Rn_negate 3 x)) 0 =
+    minus_SNo (apply_fun gpair x 0).
+  {
+    admit.
+  }
+  claim HgnxAnti1 :
+    apply_fun (apply_fun g (Rn_negate 3 x)) 1 =
+    minus_SNo (apply_fun gpair x 1).
+  {
+    admit.
+  }
+  exact (eq_i_tra
+    (apply_fun g (Rn_negate 3 x))
+    (apply_fun (apply_fun g (Rn_negate 3 x)) 0,
+     apply_fun (apply_fun g (Rn_negate 3 x)) 1)
+    (Rn_negate 2 (apply_fun g x))
+    (euclidean_space_2_eq_coords_pair
+      (apply_fun g (Rn_negate 3 x))
+      HgnxE2)
+    (eq_i_tra
+      (apply_fun (apply_fun g (Rn_negate 3 x)) 0,
+       apply_fun (apply_fun g (Rn_negate 3 x)) 1)
+      (minus_SNo (apply_fun gpair x 0),
+       minus_SNo (apply_fun gpair x 1))
+      (Rn_negate 2 (apply_fun g x))
+      (tuple_2_ext_euclid
+        (apply_fun (apply_fun g (Rn_negate 3 x)) 0)
+        (apply_fun (apply_fun g (Rn_negate 3 x)) 1)
+        (minus_SNo (apply_fun gpair x 0))
+        (minus_SNo (apply_fun gpair x 1))
+        HgnxAnti0
+        HgnxAnti1)
+      HneggxPair)).
+}
 witness g.
 exact (andI
   (continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g)
