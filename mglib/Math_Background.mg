@@ -137295,6 +137295,81 @@ apply iffI.
     Hnoext).
 Qed.
 
+(** S55 helper: classical elimination of double negation for B2 extension existence. **)
+(** Proven Bob **)
+Theorem s55_not_no_extension_implies_extension : forall X Tx h:set,
+  continuous_map S1 S1_topology X Tx h ->
+  ~~(exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x)) ->
+  exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
+let X Tx h.
+assume Hh Hnnext.
+claim Hxm :
+  (exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x))
+  \/
+  ~(exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x)).
+{
+  exact (xm
+    (exists k:set, continuous_map B2 B2_topology X Tx k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x))).
+}
+apply Hxm.
+- assume Hext.
+  exact Hext.
+- assume Hnoext.
+  claim Hfalse : False.
+  {
+    exact (Hnnext
+      Hnoext).
+  }
+  exact (FalseE
+    Hfalse
+    (exists k:set, continuous_map B2 B2_topology X Tx k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x))).
+Qed.
+
+(** S55 helper: nulhomotopy is equivalent to not-not extension over B2. **)
+(** Proven Bob **)
+Theorem s55_nulhomotopic_iff_not_no_extension : forall X Tx h:set,
+  continuous_map S1 S1_topology X Tx h ->
+  (nulhomotopic S1 S1_topology X Tx h <->
+    ~~(exists k:set, continuous_map B2 B2_topology X Tx k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x))).
+let X Tx h.
+assume Hh.
+apply iffI.
+- assume Hnul.
+  assume Hnoext.
+  exact (Hnoext
+    (lemma55_3_nulhomotopic_extends_to_B2
+      X
+      Tx
+      h
+      Hh
+      Hnul)).
+- assume Hnnext.
+  claim Hext :
+    exists k:set, continuous_map B2 B2_topology X Tx k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
+  {
+    exact (s55_not_no_extension_implies_extension
+      X
+      Tx
+      h
+      Hh
+      Hnnext).
+  }
+  exact (s55_extends_to_B2_implies_nulhomotopic
+    X
+    Tx
+    h
+    Hh
+    Hext).
+Qed.
+
 (** from S55 Lem 55.3 direction (3) implies (1) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h-star is the trivial homomorphism, then h is nulhomotopic. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 180 **)
