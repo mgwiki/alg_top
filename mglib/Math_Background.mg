@@ -288933,9 +288933,66 @@ apply (xm (y = e)).
                       (** cs3(m-2) and cs3(m-1) are ADJACENT in reduced word -> DIFFERENT factors. **)
                       (** So NO boundary merging. Length increases by 2 at each outer layer. **)
                       (** Result has length >= 3, but y3 in Gfam(beta) has length 1. Contradiction. **)
-                      (** Current proof peels from LEFT (cs3(0)), which causes boundary merging. **)
-                      (** FIX: restructure to peel from RIGHT using word_product_right_split. **)
-                      admit. } }
+                      (** Right-peeling approach: use cs3(k2) = last letter of c3's reduced word. **)
+                      (** Case split on whether gamma2 (factor of cs3(k2)) equals alpha (factor of x3). **)
+                      apply (xm (gamma2 = alpha)).
+                      + assume Hg2_alpha : gamma2 = alpha.
+                        (** cs3(k2) in Gfam(alpha). Form z_inner := cs3(k2) mult x3 mult inv(cs3(k2)). **)
+                        set z_inner := apply_fun mult (apply_fun mult (apply_fun cs3 k2, x3), apply_fun inv (apply_fun cs3 k2)).
+                        (** z_inner in Gfam(alpha) by subgroup closure **)
+                        claim Hx3_Gg2 : x3 :e apply_fun Gfam gamma2.
+                        { rewrite Hg2_alpha. exact Hx3Ga. }
+                        claim Hinvk2_Gg2 : apply_fun inv (apply_fun cs3 k2) :e apply_fun Gfam gamma2.
+                        { exact (HGfam_inv gamma2 Hg2J (apply_fun cs3 k2) Hcs3k2_Gg2). }
+                        claim Hx3k2_Gg2 : apply_fun mult (apply_fun cs3 k2, x3) :e apply_fun Gfam gamma2.
+                        { exact (HGfam_mult gamma2 Hg2J (apply_fun cs3 k2) x3 Hcs3k2_Gg2 Hx3_Gg2). }
+                        claim Hz_inner_Gg2 : z_inner :e apply_fun Gfam gamma2.
+                        { exact (HGfam_mult gamma2 Hg2J (apply_fun mult (apply_fun cs3 k2, x3)) (apply_fun inv (apply_fun cs3 k2)) Hx3k2_Gg2 Hinvk2_Gg2). }
+                        claim Hz_inner_Galpha : z_inner :e apply_fun Gfam alpha.
+                        { rewrite <- Hg2_alpha. exact Hz_inner_Gg2. }
+                        (** z_inner != e: conjugation preserves non-identity **)
+                        claim Hz_inner_ne : z_inner <> e.
+                        { assume Hz_e : z_inner = e.
+                          (** z_inner = cs3(k2) mult x3 mult inv(cs3(k2)) = e **)
+                          (** Use group_conjugate_ne_e: inv(cs3k2) mult (x3 mult cs3k2) != e **)
+                          (** But z_inner = cs3k2 mult x3 mult inv(cs3k2), different order. **)
+                          (** Direct: z_inner = e -> x3 = e (group algebra) **)
+                          claim Hx3_G : x3 :e G. { exact (Hsub_in_G alpha HalJ x3 Hx3Ga). }
+                          claim Hcs3k2_invG : apply_fun inv (apply_fun cs3 k2) :e G.
+                          { exact (HinvG (apply_fun cs3 k2) Hcs3k2_G). }
+                          (** From z_inner = e, derive x3 = e **)
+                          admit. }
+                        (** y3 = cprime3 mult z_inner mult inv(cprime3) **)
+                        (** cprime3 has reduced word of length k2 < m **)
+                        (** IH gives y3 = e **)
+                        (** Use HIH: need k2 :e m, c' = cprime3, x' = z_inner **)
+                        claim Hy3_eq_cprime :
+                          y3 = apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3).
+                        { admit. }
+                        claim Hcprime3_G : cprime3 :e G. { admit. }
+                        claim Hcprime3_ne : cprime3 <> e. { admit. }
+                        claim Hcprime3_word : exists cs_pre:set,
+                          reduced_word J Gfam efam k2 cs_pre /\ word_product mult e cs_pre k2 = cprime3 /\
+                          (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                            word_product mult e xs' n' = cprime3 ->
+                            k2 = n' /\ (forall i:set, i :e k2 -> apply_fun cs_pre i = apply_fun xs' i)).
+                        { admit. }
+                        claim Hy3Gb_cprime :
+                          apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3) :e apply_fun Gfam beta.
+                        { rewrite <- Hy3_eq_cprime. exact Hy3Gb. }
+                        claim HIH_result :
+                          apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3) = e.
+                        { exact (HIH k2 Hk2_in_m cprime3 z_inner
+                            Hcprime3_G Hz_inner_Galpha Hz_inner_ne Hcprime3_ne
+                            Hcprime3_word Hy3Gb_cprime). }
+                        rewrite Hy3_eq_cprime.
+                        exact HIH_result.
+                      + assume Hg2_ne_alpha : gamma2 <> alpha.
+                        (** cs3(k2) in Gfam(gamma2), x3 in Gfam(alpha), gamma2 != alpha **)
+                        (** Build full word of length 2m+1 and show reduced. **)
+                        (** product = y3 in Gfam(beta). factor_element_length1: 2m+1 = 1. **)
+                        (** 2m+1 >= 3 since m >= 1. Contradiction. **)
+                        admit. } }
     }
     (** Apply the main inductive claim to our specific c, x **)
     (** Get reduced word info **)
