@@ -184569,7 +184569,7 @@ exact (HhNotNul
   HhNul).
 Admitted.
 
-(** Infrastructure helper for S57 Thm 57.3. **)
+(** S57 helper. **)
 Theorem thm57_3_antipode_free_implies_antipode_preserving_map : forall f:set,
   continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
   (forall x:set, x :e Sn 2 ->
@@ -184578,9 +184578,9 @@ Theorem thm57_3_antipode_free_implies_antipode_preserving_map : forall f:set,
 admit.
 Admitted.
 
-(** from S57 Thm 57.3 (line 1217 in algtop.tex): Borsuk-Ulam theorem for S^2 **)
-(** LATEX VERSION: Given a continuous map f: S^2 -> R^2, there is a point x of S^2 such that f(x) = f(-x). **)
-(** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
+(** from S57 Thm 57.3. **)
+(** Borsuk Ulam theorem for S2. **)
+(** Effort 4 lines textbook. **)
 (** Bounty 33 **)
 Theorem thm57_3_borsuk_ulam_S2 : forall f:set,
   continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
