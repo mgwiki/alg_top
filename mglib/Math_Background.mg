@@ -204274,7 +204274,28 @@ Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
             (graph V (fun x:set => x))) vcls)) /\
     path_homotopy_class_loop X Tx x0 f = nat_primrec (fundamental_group_id X Tx x0)
       (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
-(** TODO: requires explicit transition enumeration and concatenation homotopy over the chain. **)
+(** Proof strategy: use unit_interval_ball_chain to get overlapping ball chain,
+    classify each ball as U-type or V-type, identify transition points in overlaps,
+    connect transitions to x0 via U cap V path connectivity, split f into
+    concatenation of U-loops and V-loops, apply word_data_of_loop_in_U/V and
+    word_data_of_loop_concat. **)
+let X Tx U V x0 f r.
+assume Htop HU HV Hcover Hx0UV HpcUV HfLoop HrR Hrpos Hball_image HnotAllU HnotAllV.
+claim Hx0U : x0 :e U. { exact (binintersectE1 U V x0 Hx0UV). }
+claim Hx0V : x0 :e V. { exact (binintersectE2 U V x0 Hx0UV). }
+claim HUsub : U c= X. { exact (topology_elem_subset X Tx U Htop HU). }
+claim HVsub : V c= X. { exact (topology_elem_subset X Tx V Htop HV). }
+claim Hx0X : x0 :e X. { exact (HUsub x0 Hx0U). }
+claim HfLoopAt : loop_at X Tx x0 f. { exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f HfLoopAt). }
+claim Hf0 : apply_fun f 0 = x0. { exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
+claim Hf1 : apply_fun f 1 = x0. { exact (loop_at_at_one X Tx x0 f HfLoopAt). }
+(** Use the ball chain and ball cover to decompose f into U/V pieces.
+    The detailed construction uses induction on the chain length.
+    For now, delegate to an admitted helper that builds the word data
+    from the chain structure. **)
+admit.
 Admitted.
 
 Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
@@ -484913,6 +484934,41 @@ Admitted.
 (**    since inv entries != efam becomes inv entries != e (trivially verified) **)
 (** TOTAL UNBLOCKED: 545+ in bounties **)
 (** Additional short proof sketch for _pre after efam=e approval is prepared. **)
+
+(** Helper for ball_cover_word_construction_mixed_finish:
+    Given a loop f in X = U cup V with ball cover of radius r,
+    and the ball chain from unit_interval_ball_chain,
+    each ball maps entirely into U or entirely into V.
+    At overlap points between consecutive U-ball and V-ball (transition),
+    f maps into U cap V. Use path connectivity of U cap V to connect to x0. **)
+(** Proven Alice **)
+Lemma bcw_transition_point_in_UV : forall X Tx U V f r c1 c2:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  f :e loop_space X Tx (Eps_i (fun _ => True)) ->
+  r :e R -> Rlt 0 r ->
+  (forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V)) ->
+  c1 :e unit_interval ->
+  c2 :e unit_interval ->
+  (forall t:set, t :e open_ball unit_interval R_bounded_metric c1 r -> apply_fun f t :e U) ->
+  (forall t:set, t :e open_ball unit_interval R_bounded_metric c2 r -> apply_fun f t :e V) ->
+  open_ball unit_interval R_bounded_metric c1 r :/\:
+    open_ball unit_interval R_bounded_metric c2 r <> Empty ->
+  forall s:set,
+    s :e open_ball unit_interval R_bounded_metric c1 r ->
+    s :e open_ball unit_interval R_bounded_metric c2 r ->
+    apply_fun f s :e U :/\: V.
+let X Tx U V f r c1 c2.
+assume Htop HU HV Hcover HfLoop HrR Hrpos Hball_image.
+assume Hc1 Hc2 Hball1U Hball2V Hoverlap.
+let s. assume Hs1 Hs2.
+apply binintersectI.
+- exact (Hball1U s Hs1).
+- exact (Hball2V s Hs2).
+Qed.
 
 (** Sandbox End Alice **)
 (** Sandbox Begin Bob **)
