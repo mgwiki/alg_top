@@ -184546,10 +184546,10 @@ assume Hexg.
 apply Hexg.
 let g.
 assume Hg.
-set h := thm57_2_equator_restriction_S1_map g.
+set h := compose_fun S1 S1_equator_in_S2 g.
 claim HapS1 : antipode_preserving_S1 h.
 {
-  exact (thm57_2_equator_restriction_pair_antipode_helper
+  exact (thm57_2_equator_restriction_antipode_helper
     g
     Hg).
 }
@@ -184561,12 +184561,23 @@ claim HhNotNul : ~(nulhomotopic S1 S1_topology S1 S1_topology h).
 }
 claim HhNul : nulhomotopic S1 S1_topology S1 S1_topology h.
 {
-  exact (thm57_2_equator_restriction_pair_nulhomotopic_early
+  exact (thm57_2_equator_restriction_nulhomotopic_helper
     g
     Hg).
 }
 exact (HhNotNul
   HhNul).
+Admitted.
+
+(** Infrastructure helper for S57 Thm 57.3:
+    if a map f:S^2 -> R^2 separates every antipodal pair, then normalizing
+    x |-> f(x)-f(-x) yields an antipode-preserving map S^2 -> S^1. **)
+Theorem thm57_3_antipode_free_implies_antipode_preserving_map : forall f:set,
+  continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
+  (forall x:set, x :e Sn 2 ->
+    apply_fun f x <> apply_fun f (Rn_negate 3 x)) ->
+  exists g:set, antipode_preserving_Sn 2 1 g.
+admit.
 Admitted.
 
 (** from S57 Thm 57.3 (line 1217 in algtop.tex): Borsuk-Ulam theorem for S^2 **)
@@ -184577,7 +184588,35 @@ Theorem thm57_3_borsuk_ulam_S2 : forall f:set,
   continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
   exists x:set, x :e Sn 2 /\
     apply_fun f x = apply_fun f (Rn_negate 3 x).
-admit.
+let f.
+assume Hf.
+apply (xm
+  (exists x:set, x :e Sn 2 /\
+    apply_fun f x = apply_fun f (Rn_negate 3 x))).
+- assume Hex.
+  exact Hex.
+- assume Hnone.
+  claim Hneq :
+    forall x:set, x :e Sn 2 ->
+      apply_fun f x <> apply_fun f (Rn_negate 3 x).
+  {
+    let x.
+    assume HxSn2.
+    assume Heq.
+    apply Hnone.
+    witness x.
+    apply andI.
+    - exact HxSn2.
+    - exact Heq.
+  }
+  exact (FalseE
+    (thm57_2_no_antipode_preserving_S2_S1
+      (thm57_3_antipode_free_implies_antipode_preserving_map
+        f
+        Hf
+        Hneq))
+    (exists x:set, x :e Sn 2 /\
+      apply_fun f x = apply_fun f (Rn_negate 3 x))).
 Admitted.
 
 (** Infrastructure: bounded polygonal region in R^2 (abstract -- a bounded Jordan-measurable set) **)
