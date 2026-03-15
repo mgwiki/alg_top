@@ -211611,18 +211611,133 @@ claim Htransition_VU : forall k:set, k :e nch ->
   + exact HsK.
   + exact HsSK.
   + apply binintersectI. { exact (HskU s HsSK). } { exact (HkV s HsK). } }
-(** Step 4: Build word decomposition by induction on nch **)
-(** Key insight: use the transition structure to split f into sub-loops, **)
-(** each lying entirely in U or V, connected via paths in U cap V. **)
-(** Then apply word_data_of_loop_in_U/V and word_data_of_loop_concat. **)
-(** **)
-(** For now: use the fact that the ball chain gives a finite cover **)
-(** with each ball mapping to U or V. The word data can be constructed **)
-(** by grouping consecutive same-type balls and splitting at transitions. **)
-(** **)
-(** The detailed inductive construction is complex (~200 lines). **)
-(** Delegating the full formal induction to a subagent or future session. **)
-admit.
+(** Step 4: Reduce word decomposition to existence of U-loop and V-loop **)
+(** Strategy: assert existence of sub-loops in U and V whose inclusions **)
+(** concatenate to give the same homotopy class as f, then apply **)
+(** word_data_of_loop_in_U/V, word_data_of_loop_concat, and **)
+(** word_data_of_loop_eq_class. **)
+set incU := graph U (fun x:set => x).
+set incV := graph V (fun x:set => x).
+claim HincUCont : continuous_map U (subspace_topology X Tx U) X Tx incU.
+{ exact (subspace_inclusion_continuous X Tx U Htop HUsub). }
+claim HincVCont : continuous_map V (subspace_topology X Tx V) X Tx incV.
+{ exact (subspace_inclusion_continuous X Tx V Htop HVsub). }
+claim HincU_x0 : apply_fun incU x0 = x0.
+{ exact (apply_fun_graph U (fun x:set => x) x0 Hx0U). }
+claim HincV_x0 : apply_fun incV x0 = x0.
+{ exact (apply_fun_graph V (fun x:set => x) x0 Hx0V). }
+(** Core decomposition claim: there exist loops in U and V **)
+(** whose inclusions concatenate to give [f]. **)
+(** This follows from the ball chain transition structure **)
+(** established above (Hball_UV, Htransition_UV, Htransition_VU) **)
+(** and the path connectivity of U cap V (HpcUV). **)
+claim Hdecomp : exists loopU loopV:set,
+  loopU :e loop_space U (subspace_topology X Tx U) x0 /\
+  loopV :e loop_space V (subspace_topology X Tx V) x0 /\
+  path_homotopy_class_loop X Tx x0 f =
+    path_homotopy_class_loop X Tx x0
+      (path_concat
+        (compose_fun unit_interval loopU incU)
+        (compose_fun unit_interval loopV incV)).
+{ admit. }
+apply Hdecomp. let loopU. assume HloopU_ex.
+apply HloopU_ex. let loopV. assume Hdecomp_pack.
+(** Hdecomp_pack : (A /\ B) /\ C where /\ is left-associative **)
+claim Hloops_pair :
+  loopU :e loop_space U (subspace_topology X Tx U) x0 /\
+  loopV :e loop_space V (subspace_topology X Tx V) x0.
+{ exact (andEL
+    (loopU :e loop_space U (subspace_topology X Tx U) x0 /\
+     loopV :e loop_space V (subspace_topology X Tx V) x0)
+    (path_homotopy_class_loop X Tx x0 f =
+       path_homotopy_class_loop X Tx x0
+         (path_concat (compose_fun unit_interval loopU incU)
+                      (compose_fun unit_interval loopV incV)))
+    Hdecomp_pack). }
+claim HloopU_loop : loopU :e loop_space U (subspace_topology X Tx U) x0.
+{ exact (andEL
+    (loopU :e loop_space U (subspace_topology X Tx U) x0)
+    (loopV :e loop_space V (subspace_topology X Tx V) x0)
+    Hloops_pair). }
+claim HloopV_loop : loopV :e loop_space V (subspace_topology X Tx V) x0.
+{ exact (andER
+    (loopU :e loop_space U (subspace_topology X Tx U) x0)
+    (loopV :e loop_space V (subspace_topology X Tx V) x0)
+    Hloops_pair). }
+claim Hclass_eq :
+  path_homotopy_class_loop X Tx x0 f =
+    path_homotopy_class_loop X Tx x0
+      (path_concat (compose_fun unit_interval loopU incU)
+                   (compose_fun unit_interval loopV incV)).
+{ exact (andER
+    (loopU :e loop_space U (subspace_topology X Tx U) x0 /\
+     loopV :e loop_space V (subspace_topology X Tx V) x0)
+    (path_homotopy_class_loop X Tx x0 f =
+       path_homotopy_class_loop X Tx x0
+         (path_concat (compose_fun unit_interval loopU incU)
+                      (compose_fun unit_interval loopV incV)))
+    Hdecomp_pack). }
+(** The included loops are in loop_space X Tx x0 **)
+set fU := compose_fun unit_interval loopU incU.
+set fV := compose_fun unit_interval loopV incV.
+claim HfU_loop : fU :e loop_space X Tx x0.
+{ exact (loop_space_postcompose U (subspace_topology X Tx U) x0 X Tx x0
+    loopU incU HloopU_loop HincUCont HincU_x0). }
+claim HfV_loop : fV :e loop_space X Tx x0.
+{ exact (loop_space_postcompose V (subspace_topology X Tx V) x0 X Tx x0
+    loopV incV HloopV_loop HincVCont HincV_x0). }
+set g := path_concat fU fV.
+claim Hg_loop : g :e loop_space X Tx x0.
+{ exact (path_concat_preserves_loop_space_early X Tx x0 fU fV HfU_loop HfV_loop). }
+(** Get word data for fU from word_data_of_loop_in_U **)
+claim HfU_word :
+  exists n1:set, n1 :e omega /\
+  exists gs1:set, function_on gs1 n1 (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n1 ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs1 i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs1 i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV) vcls)) /\
+    path_homotopy_class_loop X Tx x0 fU =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs1 k)) n1.
+{ exact (word_data_of_loop_in_U X Tx U V x0 loopU Htop HU HV Hx0UV HloopU_loop). }
+(** Get word data for fV from word_data_of_loop_in_V **)
+claim HfV_word :
+  exists n2:set, n2 :e omega /\
+  exists gs2:set, function_on gs2 n2 (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n2 ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs2 i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs2 i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV) vcls)) /\
+    path_homotopy_class_loop X Tx x0 fV =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs2 k)) n2.
+{ exact (word_data_of_loop_in_V X Tx U V x0 loopV Htop HU HV Hx0UV HloopV_loop). }
+(** Combine word data for g = path_concat fU fV **)
+claim Hg_word :
+  exists n0:set, n0 :e omega /\
+  exists gs0:set, function_on gs0 n0 (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n0 ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs0 i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs0 i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV) vcls)) /\
+    path_homotopy_class_loop X Tx x0 g =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs0 k)) n0.
+{ exact (word_data_of_loop_concat X Tx U V x0 fU fV
+    Htop HU HV Hx0UV HfU_loop HfV_loop HfU_word HfV_word). }
+(** Transfer word data from g to f via [f] = [g] **)
+exact (word_data_of_loop_eq_class X Tx U V x0 f g
+  Htop HU HV Hx0UV HfLoop Hg_loop Hclass_eq Hg_word).
 Admitted.
 
 Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
