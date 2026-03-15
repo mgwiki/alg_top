@@ -486794,20 +486794,11 @@ Admitted.
 
 (** Sandbox Begin Alice **)
 
-(** word_product_right_append_in_generated moved to main section **)
-(** efam_involutive_contra_direct moved to main section **)
-
-(** PREPARED: When NOTICE 1773102736 (efam=e) is approved and implemented: **)
-(** 1. _pre becomes trivially provable: efam(al)=e and efam(al)!=e gives False **)
-(** 2. Change _pre proof to direct extraction from the 6th component **)
-(** 3. Then efam_involutive_contra_direct, efam_not_in_Gfam_nontrivial, **)
-(**    efam_not_in_Gfam_nontrivial_early (Bounty 300), and **)
-(**    lemma68_1 (Bounty 245) all become directly provable (0 internal admits each) **)
-(** 4. conjugate_intersection_trivial (Bounty 107) y3=efam case becomes trivial **)
-(**    (efam(beta)=e contradicts y3!=e), nz>=2 case resolves via right-peeling **)
-(**    since inv entries != efam becomes inv entries != e (trivially verified) **)
-(** TOTAL UNBLOCKED: 545+ in bounties **)
-(** Additional short proof sketch for _pre after efam=e approval is prepared. **)
+(** NOTICE 1773102736 (efam=e) IMPLEMENTED. $1301 collected. **)
+(** Remaining: conjugate_intersection_trivial has 1 admit (right-peeling argument). **)
+(** The admit is at the nz>=2 case where z_conj is not in any single factor. **)
+(** Approach: show that conjugation by reduced word c3 of x3 in Gfam(alpha) **)
+(** produces element of reduced word length >= 2m+1 >= 3, contradicting y3 in Gfam(beta). **)
 
 (** Helper for ball_cover_word_construction_mixed_finish:
     Given a loop f in X = U cup V with ball cover of radius r,
