@@ -183167,6 +183167,126 @@ exact (product_space_graphI
   HcoordIn).
 Qed.
 
+(** Infrastructure: the negated graph of a real coordinate pair lies in euclidean_space 2. **)
+(** Proven Charlie **)
+Theorem R2_pair_graph_neg_in_euclidean_space_2 : forall p:set,
+  p :e setprod R R ->
+  graph 2 (fun i:set => if i = 0 then minus_SNo (p 0) else minus_SNo (p 1))
+    :e euclidean_space 2.
+let p.
+assume HpR2.
+claim Hp0R : p 0 :e R.
+{
+  exact (ap0_Sigma
+    R
+    (fun _ : set => R)
+    p
+    HpR2).
+}
+claim Hp1R : p 1 :e R.
+{
+  exact (ap1_Sigma
+    R
+    (fun _ : set => R)
+    p
+    HpR2).
+}
+claim HgraphEq :
+  graph 2 (fun i:set => if i = 0 then (minus_SNo (p 0), minus_SNo (p 1)) 0
+    else (minus_SNo (p 0), minus_SNo (p 1)) 1)
+  =
+  graph 2 (fun i:set => if i = 0 then minus_SNo (p 0) else minus_SNo (p 1)).
+{
+  apply (graph_extensional
+    2
+    (fun i:set => if i = 0 then (minus_SNo (p 0), minus_SNo (p 1)) 0
+      else (minus_SNo (p 0), minus_SNo (p 1)) 1)
+    (fun i:set => if i = 0 then minus_SNo (p 0) else minus_SNo (p 1))).
+  let i.
+  assume Hi2.
+  apply (ordsuccE 1 i Hi2).
+  - assume Hi1.
+    apply (ordsuccE 0 i Hi1).
+    + assume Hi0.
+      exact (EmptyE
+        i
+        Hi0
+        ((if i = 0 then (minus_SNo (p 0), minus_SNo (p 1)) 0
+          else (minus_SNo (p 0), minus_SNo (p 1)) 1)
+         =
+         (if i = 0 then minus_SNo (p 0) else minus_SNo (p 1)))).
+    + assume Hieq0.
+      rewrite Hieq0.
+      exact (eq_i_tra
+        (if 0 = 0 then (minus_SNo (p 0), minus_SNo (p 1)) 0
+         else (minus_SNo (p 0), minus_SNo (p 1)) 1)
+        ((minus_SNo (p 0), minus_SNo (p 1)) 0)
+        (if 0 = 0 then minus_SNo (p 0) else minus_SNo (p 1))
+        (If_i_1
+          (0 = 0)
+          ((minus_SNo (p 0), minus_SNo (p 1)) 0)
+          ((minus_SNo (p 0), minus_SNo (p 1)) 1)
+          (eq_refl 0))
+        (eq_i_tra
+          ((minus_SNo (p 0), minus_SNo (p 1)) 0)
+          (minus_SNo (p 0))
+          (if 0 = 0 then minus_SNo (p 0) else minus_SNo (p 1))
+          (tuple_2_0_eq
+            (minus_SNo (p 0))
+            (minus_SNo (p 1)))
+          (eq_symm
+            (if 0 = 0 then minus_SNo (p 0) else minus_SNo (p 1))
+            (minus_SNo (p 0))
+            (If_i_1
+              (0 = 0)
+              (minus_SNo (p 0))
+              (minus_SNo (p 1))
+              (eq_refl 0))))).
+  - assume Hieq1.
+    rewrite Hieq1.
+    exact (eq_i_tra
+      (if 1 = 0 then (minus_SNo (p 0), minus_SNo (p 1)) 0
+       else (minus_SNo (p 0), minus_SNo (p 1)) 1)
+      ((minus_SNo (p 0), minus_SNo (p 1)) 1)
+      (if 1 = 0 then minus_SNo (p 0) else minus_SNo (p 1))
+      (If_i_0
+        (1 = 0)
+        ((minus_SNo (p 0), minus_SNo (p 1)) 0)
+        ((minus_SNo (p 0), minus_SNo (p 1)) 1)
+        (neq_ordsucc_0 0))
+      (eq_i_tra
+        ((minus_SNo (p 0), minus_SNo (p 1)) 1)
+        (minus_SNo (p 1))
+        (if 1 = 0 then minus_SNo (p 0) else minus_SNo (p 1))
+        (tuple_2_1_eq
+          (minus_SNo (p 0))
+          (minus_SNo (p 1)))
+        (eq_symm
+          (if 1 = 0 then minus_SNo (p 0) else minus_SNo (p 1))
+          (minus_SNo (p 1))
+          (If_i_0
+            (1 = 0)
+            (minus_SNo (p 0))
+            (minus_SNo (p 1))
+            (neq_ordsucc_0 0))))).
+}
+exact (HgraphEq
+  (fun z Hz => z :e euclidean_space 2)
+  (R2_pair_graph_in_euclidean_space_2
+    (minus_SNo (p 0), minus_SNo (p 1))
+    (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      (minus_SNo (p 0))
+      (minus_SNo (p 1))
+      (real_minus_SNo
+        (p 0)
+        Hp0R)
+      (real_minus_SNo
+        (p 1)
+        Hp1R)))).
+Qed.
+
 (** Infrastructure: an explicit S1 pair, viewed as a graph on 2, is a point of Sn 1. **)
 (** Proven Charlie **)
 Theorem S1_pair_graph_in_Sn_1 : forall p:set,
