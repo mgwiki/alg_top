@@ -289191,7 +289191,14 @@ apply (xm (y = e)).
                         (** Use HIH: need k2 :e m, c' = cprime3, x' = z_inner **)
                         claim Hy3_eq_cprime :
                           y3 = apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3).
-                        { admit. }
+                        { (** y3 = mult(mult(c3,x3),inv(c3)) **)
+                          (** c3 = mult(cprime3, cs3(k2)) **)
+                          (** z_inner = mult(mult(cs3(k2),x3),inv(cs3(k2))) **)
+                          (** inv(c3) = inv(mult(cprime3,cs3(k2))) = mult(inv(cs3(k2)),inv(cprime3)) **)
+                          (** y3 = cprime3 mult cs3(k2) mult x3 mult inv(cs3(k2)) mult inv(cprime3) **)
+                          (**    = cprime3 mult (cs3(k2) mult x3 mult inv(cs3(k2))) mult inv(cprime3) **)
+                          (**    = cprime3 mult z_inner mult inv(cprime3) **)
+                          admit. }
                         claim Hcs3_in_G : forall i:set, i :e k2 -> apply_fun cs3 i :e G.
                         { let i. assume Hi_k2.
                           claim Hi_sk2 : i :e ordsucc k2. { exact (ordsuccI1 k2 i Hi_k2). }
@@ -289204,13 +289211,18 @@ apply (xm (y = e)).
                             (andER (a :e J) (apply_fun cs3 i :e apply_fun Gfam a) (andEL (a :e J /\ apply_fun cs3 i :e apply_fun Gfam a) (apply_fun cs3 i <> apply_fun efam a) Ha_pack))). }
                         claim Hcprime3_G : cprime3 :e G.
                         { exact (word_product_in_G_group G mult e inv k2 cs3 Hgrp Hk2_nat Hcs3_in_G). }
-                        claim Hcprime3_ne : cprime3 <> e. { admit. }
+                        claim Hcprime3_ne : cprime3 <> e.
+                        { (** k2 >= 1 since m >= 2 (from nz >= 2 in the left-peeling). **)
+                          (** word_product of non-empty prefix of reduced word is non-identity. **)
+                          admit. }
                         claim Hcprime3_word : exists cs_pre:set,
                           reduced_word J Gfam efam k2 cs_pre /\ word_product mult e cs_pre k2 = cprime3 /\
                           (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
                             word_product mult e xs' n' = cprime3 ->
                             k2 = n' /\ (forall i:set, i :e k2 -> apply_fun cs_pre i = apply_fun xs' i)).
-                        { admit. }
+                        { (** cs3 restricted to [0..k2-1] is a reduced word with product cprime3. **)
+                          (** Uniqueness follows from the uniqueness of reduced words in free products. **)
+                          admit. }
                         claim Hy3Gb_cprime :
                           apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3) :e apply_fun Gfam beta.
                         { rewrite <- Hy3_eq_cprime. exact Hy3Gb. }
