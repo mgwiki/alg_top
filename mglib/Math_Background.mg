@@ -184744,7 +184744,317 @@ claim HfFun : function_on f (Sn 2) (setprod R R).
 }
 claim HdInto :
   forall x:set, x :e Sn 2 -> apply_fun d x :e R2_minus_origin.
-admit.
+{
+  let x.
+  assume HxSn2.
+  claim HnxSn2 : Rn_negate 3 x :e Sn 2.
+  {
+    exact (Rn_negate_in_Sn_ordsucc
+      2
+      x
+      H2om
+      HxSn2).
+  }
+  claim HfxR2 : apply_fun f x :e setprod R R.
+  {
+    exact (HfFun
+      x
+      HxSn2).
+  }
+  claim HfnxR2 : apply_fun f (Rn_negate 3 x) :e setprod R R.
+  {
+    exact (HfFun
+      (Rn_negate 3 x)
+      HnxSn2).
+  }
+  claim Hfx0R : apply_fun f x 0 :e R.
+  {
+    exact (ap0_Sigma
+      R
+      (fun _ : set => R)
+      (apply_fun f x)
+      HfxR2).
+  }
+  claim Hfx1R : apply_fun f x 1 :e R.
+  {
+    exact (ap1_Sigma
+      R
+      (fun _ : set => R)
+      (apply_fun f x)
+      HfxR2).
+  }
+  claim Hfnx0R : apply_fun f (Rn_negate 3 x) 0 :e R.
+  {
+    exact (ap0_Sigma
+      R
+      (fun _ : set => R)
+      (apply_fun f (Rn_negate 3 x))
+      HfnxR2).
+  }
+  claim Hfnx1R : apply_fun f (Rn_negate 3 x) 1 :e R.
+  {
+    exact (ap1_Sigma
+      R
+      (fun _ : set => R)
+      (apply_fun f (Rn_negate 3 x))
+      HfnxR2).
+  }
+  set dx0 := add_SNo (apply_fun f x 0) (minus_SNo (apply_fun f (Rn_negate 3 x) 0)).
+  set dx1 := add_SNo (apply_fun f x 1) (minus_SNo (apply_fun f (Rn_negate 3 x) 1)).
+  claim HdxEq :
+    apply_fun d x =
+    (dx0, dx1).
+  {
+    exact (apply_fun_graph
+      (Sn 2)
+      (fun x0:set =>
+        (add_SNo (apply_fun f x0 0) (minus_SNo (apply_fun f (Rn_negate 3 x0) 0)),
+         add_SNo (apply_fun f x0 1) (minus_SNo (apply_fun f (Rn_negate 3 x0) 1))))
+      x
+      HxSn2).
+  }
+  claim HdxR2 : apply_fun d x :e setprod R R.
+  {
+    rewrite HdxEq.
+    exact (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      dx0
+      dx1
+      (real_add_SNo
+        (apply_fun f x 0)
+        Hfx0R
+        (minus_SNo (apply_fun f (Rn_negate 3 x) 0))
+        (real_minus_SNo
+          (apply_fun f (Rn_negate 3 x) 0)
+          Hfnx0R))
+      (real_add_SNo
+        (apply_fun f x 1)
+        Hfx1R
+        (minus_SNo (apply_fun f (Rn_negate 3 x) 1))
+        (real_minus_SNo
+          (apply_fun f (Rn_negate 3 x) 1)
+          Hfnx1R))).
+  }
+  apply (SepI
+    (setprod R R)
+    (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+    (apply_fun d x)).
+  - exact HdxR2.
+  - assume Hzero.
+    claim Hzero0 : apply_fun d x 0 = 0.
+    {
+      exact (andEL
+        (apply_fun d x 0 = 0)
+        (apply_fun d x 1 = 0)
+        Hzero).
+    }
+    claim Hzero1 : apply_fun d x 1 = 0.
+    {
+      exact (andER
+        (apply_fun d x 0 = 0)
+        (apply_fun d x 1 = 0)
+        Hzero).
+    }
+    claim Hcoord0Zero :
+      dx0 = 0.
+    {
+      claim Hstep :
+        ((dx0, dx1) 0) = 0.
+      {
+        exact (HdxEq
+          (fun a b => a 0 = 0)
+          Hzero0).
+      }
+      exact (eq_i_tra
+        dx0
+        ((dx0, dx1) 0)
+        0
+        (eq_symm
+          ((dx0, dx1) 0)
+          dx0
+          (tuple_2_0_eq dx0 dx1))
+        Hstep).
+    }
+    claim Hcoord1Zero :
+      dx1 = 0.
+    {
+      claim Hstep :
+        ((dx0, dx1) 1) = 0.
+      {
+        exact (HdxEq
+          (fun a b => a 1 = 0)
+          Hzero1).
+      }
+      exact (eq_i_tra
+        dx1
+        ((dx0, dx1) 1)
+        0
+        (eq_symm
+          ((dx0, dx1) 1)
+          dx1
+          (tuple_2_1_eq dx0 dx1))
+        Hstep).
+    }
+    claim Hcoord0Eq :
+      apply_fun f x 0 = apply_fun f (Rn_negate 3 x) 0.
+    {
+      claim Hneg0sum :
+        add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 0)) (apply_fun f x 0) = 0.
+      {
+        exact (eq_i_tra
+          (add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 0)) (apply_fun f x 0))
+          (add_SNo (apply_fun f x 0) (minus_SNo (apply_fun f (Rn_negate 3 x) 0)))
+          0
+          (eq_symm
+            (add_SNo (apply_fun f x 0) (minus_SNo (apply_fun f (Rn_negate 3 x) 0)))
+            (add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 0)) (apply_fun f x 0))
+            (add_SNo_com
+              (apply_fun f x 0)
+              (minus_SNo (apply_fun f (Rn_negate 3 x) 0))
+              (real_SNo
+                (apply_fun f x 0)
+                Hfx0R)
+              (SNo_minus_SNo
+                (apply_fun f (Rn_negate 3 x) 0)
+                (real_SNo
+                  (apply_fun f (Rn_negate 3 x) 0)
+                  Hfnx0R))))
+          Hcoord0Zero).
+      }
+      claim Hneg0cancel :
+        add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 0)) (apply_fun f (Rn_negate 3 x) 0) = 0.
+      {
+        exact (add_SNo_minus_SNo_linv
+          (apply_fun f (Rn_negate 3 x) 0)
+          (real_SNo
+            (apply_fun f (Rn_negate 3 x) 0)
+            Hfnx0R)).
+      }
+      claim Hcoord0EqSum :
+        add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 0)) (apply_fun f x 0) =
+        add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 0)) (apply_fun f (Rn_negate 3 x) 0).
+      {
+        exact (Hneg0cancel
+          (fun a b =>
+            add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 0)) (apply_fun f x 0) = b)
+          Hneg0sum).
+      }
+      exact (add_SNo_cancel_L
+        (minus_SNo (apply_fun f (Rn_negate 3 x) 0))
+        (apply_fun f x 0)
+        (apply_fun f (Rn_negate 3 x) 0)
+        (SNo_minus_SNo
+          (apply_fun f (Rn_negate 3 x) 0)
+          (real_SNo
+            (apply_fun f (Rn_negate 3 x) 0)
+            Hfnx0R))
+        (real_SNo
+          (apply_fun f x 0)
+          Hfx0R)
+        (real_SNo
+          (apply_fun f (Rn_negate 3 x) 0)
+          Hfnx0R)
+        Hcoord0EqSum).
+    }
+    claim Hcoord1Eq :
+      apply_fun f x 1 = apply_fun f (Rn_negate 3 x) 1.
+    {
+      claim Hneg1sum :
+        add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 1)) (apply_fun f x 1) = 0.
+      {
+        exact (eq_i_tra
+          (add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 1)) (apply_fun f x 1))
+          (add_SNo (apply_fun f x 1) (minus_SNo (apply_fun f (Rn_negate 3 x) 1)))
+          0
+          (eq_symm
+            (add_SNo (apply_fun f x 1) (minus_SNo (apply_fun f (Rn_negate 3 x) 1)))
+            (add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 1)) (apply_fun f x 1))
+            (add_SNo_com
+              (apply_fun f x 1)
+              (minus_SNo (apply_fun f (Rn_negate 3 x) 1))
+              (real_SNo
+                (apply_fun f x 1)
+                Hfx1R)
+              (SNo_minus_SNo
+                (apply_fun f (Rn_negate 3 x) 1)
+                (real_SNo
+                  (apply_fun f (Rn_negate 3 x) 1)
+                  Hfnx1R))))
+          Hcoord1Zero).
+      }
+      claim Hneg1cancel :
+        add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 1)) (apply_fun f (Rn_negate 3 x) 1) = 0.
+      {
+        exact (add_SNo_minus_SNo_linv
+          (apply_fun f (Rn_negate 3 x) 1)
+          (real_SNo
+            (apply_fun f (Rn_negate 3 x) 1)
+            Hfnx1R)).
+      }
+      claim Hcoord1EqSum :
+        add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 1)) (apply_fun f x 1) =
+        add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 1)) (apply_fun f (Rn_negate 3 x) 1).
+      {
+        exact (Hneg1cancel
+          (fun a b =>
+            add_SNo (minus_SNo (apply_fun f (Rn_negate 3 x) 1)) (apply_fun f x 1) = b)
+          Hneg1sum).
+      }
+      exact (add_SNo_cancel_L
+        (minus_SNo (apply_fun f (Rn_negate 3 x) 1))
+        (apply_fun f x 1)
+        (apply_fun f (Rn_negate 3 x) 1)
+        (SNo_minus_SNo
+          (apply_fun f (Rn_negate 3 x) 1)
+          (real_SNo
+            (apply_fun f (Rn_negate 3 x) 1)
+            Hfnx1R))
+        (real_SNo
+          (apply_fun f x 1)
+          Hfx1R)
+        (real_SNo
+          (apply_fun f (Rn_negate 3 x) 1)
+          Hfnx1R)
+        Hcoord1EqSum).
+    }
+    claim HfxEta :
+      apply_fun f x = (apply_fun f x 0, apply_fun f x 1).
+    {
+      exact (setprod_eta
+        R
+        R
+        (apply_fun f x)
+        HfxR2).
+    }
+    claim HfnxEta :
+      apply_fun f (Rn_negate 3 x) =
+      (apply_fun f (Rn_negate 3 x) 0, apply_fun f (Rn_negate 3 x) 1).
+    {
+      exact (setprod_eta
+        R
+        R
+        (apply_fun f (Rn_negate 3 x))
+        HfnxR2).
+    }
+    claim HfxEqHfnx :
+      apply_fun f x = apply_fun f (Rn_negate 3 x).
+    {
+      rewrite HfxEta.
+      rewrite HfnxEta.
+      exact (tuple_2_ext_euclid
+        (apply_fun f x 0)
+        (apply_fun f x 1)
+        (apply_fun f (Rn_negate 3 x) 0)
+        (apply_fun f (Rn_negate 3 x) 1)
+        Hcoord0Eq
+        Hcoord1Eq).
+    }
+    exact ((Hneq
+      x
+      HxSn2)
+      HfxEqHfnx).
+}
 claim HdCont :
   continuous_map (Sn 2) (Sn_topology 2) R2_minus_origin R2_minus_origin_topology d.
 admit.
