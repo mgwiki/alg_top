@@ -1,4 +1,4 @@
-(** Balance Alice 9099 **)
+(** Balance Alice 9143 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
@@ -307445,222 +307445,6 @@ Admitted.
 (** G2 = free product of H_beta for beta in K, with J,K disjoint, **)
 (** then G = free product of H_gamma for gamma in J union K. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Helper: mixed (J cup K)-word product not in G1.
-    Forward-declared here to avoid forward reference in cor68_6_side_from_product_G1_ge3.
-    Proof delegates to cor68_6_binary_collapse_mixed_not_in_G1 (defined later). **)
-Lemma mixed_union_word_not_in_G1_early :
-  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
-  group_structure G multG eG invG ->
-  subgroup_of G1 G multG eG invG ->
-  subgroup_of G2 G multG eG invG ->
-  free_product_of_subgroups G multG eG invG (UPair 0 1)
-    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
-    (graph (UPair 0 1) (fun i:set => eG)) ->
-  J :/\: K = Empty ->
-  free_product_of_subgroups G1 multG eG invG J
-    (graph J (fun alpha:set => apply_fun Hfam alpha))
-    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
-  free_product_of_subgroups G2 multG eG invG K
-    (graph K (fun beta:set => apply_fun Hfam beta))
-    (graph K (fun beta:set => apply_fun efamH beta)) ->
-  reduced_word (J :\/: K) Hfam efamH n ys ->
-  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
-  word_product multG eG ys n <> eG ->
-  (exists i:set, i :e n /\ apply_fun ys i :e G1) ->
-  (exists i:set, i :e n /\ apply_fun ys i :e G2) ->
-  word_product multG eG ys n /:e G1.
-admit.
-Admitted.
-
-(** Helper bounties (for the remaining n >= 3 side-from-product branches inside cor68_6) **)
-(** Bounty 44 **)
-(** Lock Alice 1773683565 **)
-(** Admin-approved-refactored per noticeboard proposal 1772623360 **)
-Theorem cor68_6_side_from_product_G1_ge3 :
-  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
-  group_structure G multG eG invG ->
-  subgroup_of G1 G multG eG invG ->
-  subgroup_of G2 G multG eG invG ->
-  free_product_of_subgroups G multG eG invG (UPair 0 1)
-    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
-    (graph (UPair 0 1) (fun i:set => eG)) ->
-  J :/\: K = Empty ->
-  free_product_of_subgroups G1 multG eG invG J
-    (graph J (fun alpha:set => apply_fun Hfam alpha))
-    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
-  free_product_of_subgroups G2 multG eG invG K
-    (graph K (fun beta:set => apply_fun Hfam beta))
-    (graph K (fun beta:set => apply_fun efamH beta)) ->
-  reduced_word (J :\/: K) Hfam efamH n ys ->
-  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
-  n <> 0 -> n <> 1 -> n <> 2 ->
-  word_product multG eG ys n :e G1 ->
-  word_product multG eG ys n <> eG ->
-  forall i:set, i :e n -> apply_fun ys i :e G1.
-let G multG eG invG G1 G2 J K Hfam efamH n ys.
-assume Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HneG.
-assume Hne0 Hne1 Hne2 HwpG1 HwpNeG.
-let i. assume Hi.
-(** Each entry is in G1 or G2 **)
-claim HG1orG2 : apply_fun ys i :e G1 \/ apply_fun ys i :e G2.
-{ (** From reduced_word: ys(i) :e Hfam(alpha) for some alpha :e J cup K **)
-  apply (reduced_word_elem (J :\/: K) Hfam efamH n ys i Hred Hi).
-  let alpha. assume Halpha_pack.
-  claim HaJK : alpha :e J :\/: K.
-  { exact (andEL (alpha :e J :\/: K) (apply_fun ys i :e apply_fun Hfam alpha)
-      (andEL (alpha :e J :\/: K /\ apply_fun ys i :e apply_fun Hfam alpha)
-        (apply_fun ys i <> apply_fun efamH alpha) Halpha_pack)). }
-  claim HyiHa : apply_fun ys i :e apply_fun Hfam alpha.
-  { exact (andER (alpha :e J :\/: K) (apply_fun ys i :e apply_fun Hfam alpha)
-      (andEL (alpha :e J :\/: K /\ apply_fun ys i :e apply_fun Hfam alpha)
-        (apply_fun ys i <> apply_fun efamH alpha) Halpha_pack)). }
-  (** alpha :e J cup K -> alpha :e J or alpha :e K **)
-  apply (binunionE J K alpha HaJK).
-  + assume HaJ : alpha :e J.
-    apply orIL.
-    (** ys(i) :e Hfam(alpha). Hfam(alpha) c= G1 from the J-free-product structure **)
-    claim HHa_G1 : apply_fun Hfam alpha c= G1.
-    { claim Heq : apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha = apply_fun Hfam alpha.
-      { exact (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha HaJ). }
-      claim Hsub : subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG.
-      { exact (free_product_subfam G1 multG eG invG J
-          (graph J (fun a:set => apply_fun Hfam a))
-          (graph J (fun a:set => apply_fun efamH a)) Hfp1 alpha HaJ). }
-      claim Hsubset : apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha c= G1.
-      { exact (subgroup_of_subset (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG Hsub). }
-      claim HHfamEq : apply_fun Hfam alpha c= G1.
-      { let z. assume Hz.
-        claim Hz2 : z :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha.
-        { exact (eq_subst_mem_set z (apply_fun Hfam alpha) (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) Hz (eq_symm (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) (apply_fun Hfam alpha) Heq)). }
-        exact (Hsubset z Hz2). }
-      exact HHfamEq. }
-    exact (HHa_G1 (apply_fun ys i) HyiHa).
-  + assume HaK : alpha :e K.
-    apply orIR.
-    claim HHa_G2 : apply_fun Hfam alpha c= G2.
-    { claim Heq : apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha = apply_fun Hfam alpha.
-      { exact (apply_fun_graph K (fun a:set => apply_fun Hfam a) alpha HaK). }
-      claim Hsub2K : subgroup_of (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) G2 multG eG invG.
-      { exact (free_product_subfam G2 multG eG invG K
-          (graph K (fun a:set => apply_fun Hfam a))
-          (graph K (fun a:set => apply_fun efamH a)) Hfp2 alpha HaK). }
-      claim Hsubset2 : apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha c= G2.
-      { exact (subgroup_of_subset (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) G2 multG eG invG Hsub2K). }
-      claim HHfamEq2 : apply_fun Hfam alpha c= G2.
-      { let z. assume Hz.
-        claim Hz2 : z :e apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha.
-        { exact (eq_subst_mem_set z (apply_fun Hfam alpha) (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) Hz (eq_symm (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) (apply_fun Hfam alpha) Heq)). }
-        exact (Hsubset2 z Hz2). }
-      exact HHfamEq2. }
-    exact (HHa_G2 (apply_fun ys i) HyiHa). }
-apply HG1orG2.
-- (** In G1: done **)
-  assume HinG1 : apply_fun ys i :e G1. exact HinG1.
-- (** In G2: derive contradiction **)
-  assume HinG2 : apply_fun ys i :e G2.
-  (** There exists an entry in G1 (since n >= 3 and each entry is in G1 or G2, **)
-  (** and the product is in G1 which is nontrivial) **)
-  (** Actually, we need: there exists an entry in G1. **)
-  (** If ALL entries were in G2, word_product would be in G2, hence in G1 cap G2. **)
-  (** G1 cap G2 = {eG} by the binary free product disjointness. **)
-  (** But wp != eG. So not all entries are in G2. Hence some entry is in G1. **)
-  claim HnotAllG2 : ~(forall j:set, j :e n -> apply_fun ys j :e G2).
-  { assume HallG2 : forall j:set, j :e n -> apply_fun ys j :e G2.
-    claim HgrpG2 : group_structure G2 multG eG invG.
-    { exact (free_product_group_structure G2 multG eG invG K
-        (graph K (fun a:set => apply_fun Hfam a))
-        (graph K (fun a:set => apply_fun efamH a)) Hfp2). }
-    claim Hn_nat : nat_p n.
-    { claim Hn_omega : n :e omega.
-      { apply (and3E (n :e omega)
-          (forall j:set, j :e n -> exists a:set, a :e (J :\/: K) /\ apply_fun ys j :e apply_fun Hfam a /\ apply_fun ys j <> apply_fun efamH a)
-          (forall j:set, j :e n -> ordsucc j :e n -> forall a b:set, a :e (J :\/: K) -> b :e (J :\/: K) -> apply_fun ys j :e apply_fun Hfam a -> apply_fun ys (ordsucc j) :e apply_fun Hfam b -> a <> b)
-          Hred).
-        assume H _ _. exact H. }
-      exact (omega_nat_p n Hn_omega). }
-    claim HwpG2 : word_product multG eG ys n :e G2.
-    { exact (word_product_in_G_group G2 multG eG invG n ys HgrpG2 Hn_nat HallG2). }
-    claim Hdisjoint_binary : forall x:set, x :e G1 -> x :e G2 -> x = eG.
-    { let x0. assume Hx0G1 Hx0G2.
-      set Gfam_bin := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
-      set efam_bin := graph (UPair 0 1) (fun i:set => eG).
-      claim HGfam0 : apply_fun Gfam_bin 0 = G1.
-      { claim Heval : apply_fun Gfam_bin 0 = (if 0 = 0 then G1 else G2).
-        { exact (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)). }
-        claim Hif : (if 0 = 0 then G1 else G2) = G1.
-        { exact (If_i_1 (0 = 0) G1 G2 (eq_refl 0)). }
-        exact (eq_i_tra (apply_fun Gfam_bin 0) (if 0 = 0 then G1 else G2) G1 Heval Hif). }
-      claim HGfam1 : apply_fun Gfam_bin 1 = G2.
-      { claim Heval : apply_fun Gfam_bin 1 = (if 1 = 0 then G1 else G2).
-        { exact (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)). }
-        claim Hif : (if 1 = 0 then G1 else G2) = G2.
-        { exact (If_i_0 (1 = 0) G1 G2 (neq_ordsucc_0 0)). }
-        exact (eq_i_tra (apply_fun Gfam_bin 1) (if 1 = 0 then G1 else G2) G2 Heval Hif). }
-      claim Hx0_Gfam0 : x0 :e apply_fun Gfam_bin 0.
-      { exact (eq_subst_mem_set x0 G1 (apply_fun Gfam_bin 0) Hx0G1 (eq_symm (apply_fun Gfam_bin 0) G1 HGfam0)). }
-      claim Hx0_Gfam1 : x0 :e apply_fun Gfam_bin 1.
-      { exact (eq_subst_mem_set x0 G2 (apply_fun Gfam_bin 1) Hx0G2 (eq_symm (apply_fun Gfam_bin 1) G2 HGfam1)). }
-      exact (free_product_disjoint G multG eG invG (UPair 0 1) Gfam_bin efam_bin Hfp 0 1
-        (UPairI1 0 1) (UPairI2 0 1) neq_0_1 x0 Hx0_Gfam0 Hx0_Gfam1). }
-    exact (HwpNeG (Hdisjoint_binary (word_product multG eG ys n) HwpG1 HwpG2)). }
-  claim HexG1 : exists j:set, j :e n /\ apply_fun ys j :e G1.
-  { (** By contradiction from HnotAllG2: not all in G2 -> some in G1 **)
-    (** Use classical logic: assume no entry in G1, then all in G2 **)
-    apply (xm (exists j:set, j :e n /\ apply_fun ys j :e G1)).
-    - assume H. exact H.
-    - assume HnoG1.
-      claim HallG2 : forall j:set, j :e n -> apply_fun ys j :e G2.
-      { let j. assume Hj.
-        claim HG1orG2_j : apply_fun ys j :e G1 \/ apply_fun ys j :e G2.
-        { (** same argument as for i **)
-          apply (reduced_word_elem (J :\/: K) Hfam efamH n ys j Hred Hj).
-          let alpha. assume Halpha_pack.
-          claim HaJK : alpha :e J :\/: K.
-          { exact (andEL (alpha :e J :\/: K) (apply_fun ys j :e apply_fun Hfam alpha)
-              (andEL (alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha)
-                (apply_fun ys j <> apply_fun efamH alpha) Halpha_pack)). }
-          claim HyjHa : apply_fun ys j :e apply_fun Hfam alpha.
-          { exact (andER (alpha :e J :\/: K) (apply_fun ys j :e apply_fun Hfam alpha)
-              (andEL (alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha)
-                (apply_fun ys j <> apply_fun efamH alpha) Halpha_pack)). }
-          apply (binunionE J K alpha HaJK).
-          + assume HaJ.
-            apply orIL.
-            claim Heq : apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha = apply_fun Hfam alpha.
-            { exact (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha HaJ). }
-            claim Hsub : subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG.
-            { exact (free_product_subfam G1 multG eG invG J
-                (graph J (fun a:set => apply_fun Hfam a))
-                (graph J (fun a:set => apply_fun efamH a)) Hfp1 alpha HaJ). }
-            claim Hsubset : apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha c= G1.
-            { exact (subgroup_of_subset (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG Hsub). }
-            exact (Hsubset (apply_fun ys j) (eq_subst_mem_set (apply_fun ys j) (apply_fun Hfam alpha) (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) HyjHa (eq_symm (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) (apply_fun Hfam alpha) Heq))).
-          + assume HaK.
-            apply orIR.
-            claim Heq : apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha = apply_fun Hfam alpha.
-            { exact (apply_fun_graph K (fun a:set => apply_fun Hfam a) alpha HaK). }
-            claim Hsub : subgroup_of (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) G2 multG eG invG.
-            { exact (free_product_subfam G2 multG eG invG K
-                (graph K (fun a:set => apply_fun Hfam a))
-                (graph K (fun a:set => apply_fun efamH a)) Hfp2 alpha HaK). }
-            claim Hsubset : apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha c= G2.
-            { exact (subgroup_of_subset (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) G2 multG eG invG Hsub). }
-            exact (Hsubset (apply_fun ys j) (eq_subst_mem_set (apply_fun ys j) (apply_fun Hfam alpha) (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) HyjHa (eq_symm (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) (apply_fun Hfam alpha) Heq))). }
-        apply HG1orG2_j.
-        * assume HjG1.
-          claim HexJ : exists j0:set, j0 :e n /\ apply_fun ys j0 :e G1.
-          { witness j. exact (andI (j :e n) (apply_fun ys j :e G1) Hj HjG1). }
-          exact (FalseE (HnoG1 HexJ) (apply_fun ys j :e G2)).
-        * assume HjG2. exact HjG2. }
-      exact (FalseE (HnotAllG2 HallG2) (exists j:set, j :e n /\ apply_fun ys j :e G1)). }
-  claim HexG2 : exists j:set, j :e n /\ apply_fun ys j :e G2.
-  { witness i. exact (andI (i :e n) (apply_fun ys i :e G2) Hi HinG2). }
-  (** By cor68_6_binary_collapse_mixed_not_in_G1: wp not in G1. Contradiction. **)
-  claim HwpNotG1 : word_product multG eG ys n /:e G1.
-  { exact (mixed_union_word_not_in_G1_early G multG eG invG G1 G2 J K Hfam efamH n ys
-      Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HneG HwpNeG HexG1 HexG2). }
-  exact (FalseE (HwpNotG1 HwpG1) (apply_fun ys i :e G1)).
-Admitted.
 
 (** Admin-approved-refactored per noticeboard proposal 1772623361 **)
 (** Bounty 40 **)
@@ -316340,6 +316124,226 @@ apply (Hys_side i Hi_in).
       HexG2).
   }
   exact (FalseE (Hwp_notG1 HwpG1) (apply_fun ys i :e G1)).
+Qed.
+
+(** Helper: mixed (J cup K)-word product not in G1.
+    Forward-declared here to avoid forward reference in cor68_6_side_from_product_G1_ge3.
+    Proof delegates to cor68_6_binary_collapse_mixed_not_in_G1 (defined later). **)
+Lemma mixed_union_word_not_in_G1_early :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => eG)) ->
+  J :/\: K = Empty ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  word_product multG eG ys n <> eG ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G1) ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G2) ->
+  word_product multG eG ys n /:e G1.
+let G multG eG invG G1 G2 J K Hfam efamH n ys.
+assume Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HneG HwpNeG HexG1 HexG2.
+exact (cor68_6_binary_collapse_mixed_not_in_G1 G multG eG invG G1 G2 J K Hfam efamH n ys
+  Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HneG HwpNeG HexG1 HexG2).
+Qed.
+
+(** Helper bounties (for the remaining n >= 3 side-from-product branches inside cor68_6) **)
+(** Collected Alice 44 **)
+(** Proven Alice **)
+(** Admin-approved-refactored per noticeboard proposal 1772623360 **)
+Theorem cor68_6_side_from_product_G1_ge3 :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => eG)) ->
+  J :/\: K = Empty ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  n <> 0 -> n <> 1 -> n <> 2 ->
+  word_product multG eG ys n :e G1 ->
+  word_product multG eG ys n <> eG ->
+  forall i:set, i :e n -> apply_fun ys i :e G1.
+let G multG eG invG G1 G2 J K Hfam efamH n ys.
+assume Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HneG.
+assume Hne0 Hne1 Hne2 HwpG1 HwpNeG.
+let i. assume Hi.
+(** Each entry is in G1 or G2 **)
+claim HG1orG2 : apply_fun ys i :e G1 \/ apply_fun ys i :e G2.
+{ (** From reduced_word: ys(i) :e Hfam(alpha) for some alpha :e J cup K **)
+  apply (reduced_word_elem (J :\/: K) Hfam efamH n ys i Hred Hi).
+  let alpha. assume Halpha_pack.
+  claim HaJK : alpha :e J :\/: K.
+  { exact (andEL (alpha :e J :\/: K) (apply_fun ys i :e apply_fun Hfam alpha)
+      (andEL (alpha :e J :\/: K /\ apply_fun ys i :e apply_fun Hfam alpha)
+        (apply_fun ys i <> apply_fun efamH alpha) Halpha_pack)). }
+  claim HyiHa : apply_fun ys i :e apply_fun Hfam alpha.
+  { exact (andER (alpha :e J :\/: K) (apply_fun ys i :e apply_fun Hfam alpha)
+      (andEL (alpha :e J :\/: K /\ apply_fun ys i :e apply_fun Hfam alpha)
+        (apply_fun ys i <> apply_fun efamH alpha) Halpha_pack)). }
+  (** alpha :e J cup K -> alpha :e J or alpha :e K **)
+  apply (binunionE J K alpha HaJK).
+  + assume HaJ : alpha :e J.
+    apply orIL.
+    (** ys(i) :e Hfam(alpha). Hfam(alpha) c= G1 from the J-free-product structure **)
+    claim HHa_G1 : apply_fun Hfam alpha c= G1.
+    { claim Heq : apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha = apply_fun Hfam alpha.
+      { exact (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha HaJ). }
+      claim Hsub : subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG.
+      { exact (free_product_subfam G1 multG eG invG J
+          (graph J (fun a:set => apply_fun Hfam a))
+          (graph J (fun a:set => apply_fun efamH a)) Hfp1 alpha HaJ). }
+      claim Hsubset : apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha c= G1.
+      { exact (subgroup_of_subset (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG Hsub). }
+      claim HHfamEq : apply_fun Hfam alpha c= G1.
+      { let z. assume Hz.
+        claim Hz2 : z :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha.
+        { exact (eq_subst_mem_set z (apply_fun Hfam alpha) (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) Hz (eq_symm (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) (apply_fun Hfam alpha) Heq)). }
+        exact (Hsubset z Hz2). }
+      exact HHfamEq. }
+    exact (HHa_G1 (apply_fun ys i) HyiHa).
+  + assume HaK : alpha :e K.
+    apply orIR.
+    claim HHa_G2 : apply_fun Hfam alpha c= G2.
+    { claim Heq : apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha = apply_fun Hfam alpha.
+      { exact (apply_fun_graph K (fun a:set => apply_fun Hfam a) alpha HaK). }
+      claim Hsub2K : subgroup_of (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) G2 multG eG invG.
+      { exact (free_product_subfam G2 multG eG invG K
+          (graph K (fun a:set => apply_fun Hfam a))
+          (graph K (fun a:set => apply_fun efamH a)) Hfp2 alpha HaK). }
+      claim Hsubset2 : apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha c= G2.
+      { exact (subgroup_of_subset (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) G2 multG eG invG Hsub2K). }
+      claim HHfamEq2 : apply_fun Hfam alpha c= G2.
+      { let z. assume Hz.
+        claim Hz2 : z :e apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha.
+        { exact (eq_subst_mem_set z (apply_fun Hfam alpha) (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) Hz (eq_symm (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) (apply_fun Hfam alpha) Heq)). }
+        exact (Hsubset2 z Hz2). }
+      exact HHfamEq2. }
+    exact (HHa_G2 (apply_fun ys i) HyiHa). }
+apply HG1orG2.
+- (** In G1: done **)
+  assume HinG1 : apply_fun ys i :e G1. exact HinG1.
+- (** In G2: derive contradiction **)
+  assume HinG2 : apply_fun ys i :e G2.
+  (** There exists an entry in G1 (since n >= 3 and each entry is in G1 or G2, **)
+  (** and the product is in G1 which is nontrivial) **)
+  (** Actually, we need: there exists an entry in G1. **)
+  (** If ALL entries were in G2, word_product would be in G2, hence in G1 cap G2. **)
+  (** G1 cap G2 = {eG} by the binary free product disjointness. **)
+  (** But wp != eG. So not all entries are in G2. Hence some entry is in G1. **)
+  claim HnotAllG2 : ~(forall j:set, j :e n -> apply_fun ys j :e G2).
+  { assume HallG2 : forall j:set, j :e n -> apply_fun ys j :e G2.
+    claim HgrpG2 : group_structure G2 multG eG invG.
+    { exact (free_product_group_structure G2 multG eG invG K
+        (graph K (fun a:set => apply_fun Hfam a))
+        (graph K (fun a:set => apply_fun efamH a)) Hfp2). }
+    claim Hn_nat : nat_p n.
+    { claim Hn_omega : n :e omega.
+      { apply (and3E (n :e omega)
+          (forall j:set, j :e n -> exists a:set, a :e (J :\/: K) /\ apply_fun ys j :e apply_fun Hfam a /\ apply_fun ys j <> apply_fun efamH a)
+          (forall j:set, j :e n -> ordsucc j :e n -> forall a b:set, a :e (J :\/: K) -> b :e (J :\/: K) -> apply_fun ys j :e apply_fun Hfam a -> apply_fun ys (ordsucc j) :e apply_fun Hfam b -> a <> b)
+          Hred).
+        assume H _ _. exact H. }
+      exact (omega_nat_p n Hn_omega). }
+    claim HwpG2 : word_product multG eG ys n :e G2.
+    { exact (word_product_in_G_group G2 multG eG invG n ys HgrpG2 Hn_nat HallG2). }
+    claim Hdisjoint_binary : forall x:set, x :e G1 -> x :e G2 -> x = eG.
+    { let x0. assume Hx0G1 Hx0G2.
+      set Gfam_bin := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
+      set efam_bin := graph (UPair 0 1) (fun i:set => eG).
+      claim HGfam0 : apply_fun Gfam_bin 0 = G1.
+      { claim Heval : apply_fun Gfam_bin 0 = (if 0 = 0 then G1 else G2).
+        { exact (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)). }
+        claim Hif : (if 0 = 0 then G1 else G2) = G1.
+        { exact (If_i_1 (0 = 0) G1 G2 (eq_refl 0)). }
+        exact (eq_i_tra (apply_fun Gfam_bin 0) (if 0 = 0 then G1 else G2) G1 Heval Hif). }
+      claim HGfam1 : apply_fun Gfam_bin 1 = G2.
+      { claim Heval : apply_fun Gfam_bin 1 = (if 1 = 0 then G1 else G2).
+        { exact (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)). }
+        claim Hif : (if 1 = 0 then G1 else G2) = G2.
+        { exact (If_i_0 (1 = 0) G1 G2 (neq_ordsucc_0 0)). }
+        exact (eq_i_tra (apply_fun Gfam_bin 1) (if 1 = 0 then G1 else G2) G2 Heval Hif). }
+      claim Hx0_Gfam0 : x0 :e apply_fun Gfam_bin 0.
+      { exact (eq_subst_mem_set x0 G1 (apply_fun Gfam_bin 0) Hx0G1 (eq_symm (apply_fun Gfam_bin 0) G1 HGfam0)). }
+      claim Hx0_Gfam1 : x0 :e apply_fun Gfam_bin 1.
+      { exact (eq_subst_mem_set x0 G2 (apply_fun Gfam_bin 1) Hx0G2 (eq_symm (apply_fun Gfam_bin 1) G2 HGfam1)). }
+      exact (free_product_disjoint G multG eG invG (UPair 0 1) Gfam_bin efam_bin Hfp 0 1
+        (UPairI1 0 1) (UPairI2 0 1) neq_0_1 x0 Hx0_Gfam0 Hx0_Gfam1). }
+    exact (HwpNeG (Hdisjoint_binary (word_product multG eG ys n) HwpG1 HwpG2)). }
+  claim HexG1 : exists j:set, j :e n /\ apply_fun ys j :e G1.
+  { (** By contradiction from HnotAllG2: not all in G2 -> some in G1 **)
+    (** Use classical logic: assume no entry in G1, then all in G2 **)
+    apply (xm (exists j:set, j :e n /\ apply_fun ys j :e G1)).
+    - assume H. exact H.
+    - assume HnoG1.
+      claim HallG2 : forall j:set, j :e n -> apply_fun ys j :e G2.
+      { let j. assume Hj.
+        claim HG1orG2_j : apply_fun ys j :e G1 \/ apply_fun ys j :e G2.
+        { (** same argument as for i **)
+          apply (reduced_word_elem (J :\/: K) Hfam efamH n ys j Hred Hj).
+          let alpha. assume Halpha_pack.
+          claim HaJK : alpha :e J :\/: K.
+          { exact (andEL (alpha :e J :\/: K) (apply_fun ys j :e apply_fun Hfam alpha)
+              (andEL (alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha)
+                (apply_fun ys j <> apply_fun efamH alpha) Halpha_pack)). }
+          claim HyjHa : apply_fun ys j :e apply_fun Hfam alpha.
+          { exact (andER (alpha :e J :\/: K) (apply_fun ys j :e apply_fun Hfam alpha)
+              (andEL (alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha)
+                (apply_fun ys j <> apply_fun efamH alpha) Halpha_pack)). }
+          apply (binunionE J K alpha HaJK).
+          + assume HaJ.
+            apply orIL.
+            claim Heq : apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha = apply_fun Hfam alpha.
+            { exact (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha HaJ). }
+            claim Hsub : subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG.
+            { exact (free_product_subfam G1 multG eG invG J
+                (graph J (fun a:set => apply_fun Hfam a))
+                (graph J (fun a:set => apply_fun efamH a)) Hfp1 alpha HaJ). }
+            claim Hsubset : apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha c= G1.
+            { exact (subgroup_of_subset (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG Hsub). }
+            exact (Hsubset (apply_fun ys j) (eq_subst_mem_set (apply_fun ys j) (apply_fun Hfam alpha) (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) HyjHa (eq_symm (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) (apply_fun Hfam alpha) Heq))).
+          + assume HaK.
+            apply orIR.
+            claim Heq : apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha = apply_fun Hfam alpha.
+            { exact (apply_fun_graph K (fun a:set => apply_fun Hfam a) alpha HaK). }
+            claim Hsub : subgroup_of (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) G2 multG eG invG.
+            { exact (free_product_subfam G2 multG eG invG K
+                (graph K (fun a:set => apply_fun Hfam a))
+                (graph K (fun a:set => apply_fun efamH a)) Hfp2 alpha HaK). }
+            claim Hsubset : apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha c= G2.
+            { exact (subgroup_of_subset (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) G2 multG eG invG Hsub). }
+            exact (Hsubset (apply_fun ys j) (eq_subst_mem_set (apply_fun ys j) (apply_fun Hfam alpha) (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) HyjHa (eq_symm (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) (apply_fun Hfam alpha) Heq))). }
+        apply HG1orG2_j.
+        * assume HjG1.
+          claim HexJ : exists j0:set, j0 :e n /\ apply_fun ys j0 :e G1.
+          { witness j. exact (andI (j :e n) (apply_fun ys j :e G1) Hj HjG1). }
+          exact (FalseE (HnoG1 HexJ) (apply_fun ys j :e G2)).
+        * assume HjG2. exact HjG2. }
+      exact (FalseE (HnotAllG2 HallG2) (exists j:set, j :e n /\ apply_fun ys j :e G1)). }
+  claim HexG2 : exists j:set, j :e n /\ apply_fun ys j :e G2.
+  { witness i. exact (andI (i :e n) (apply_fun ys i :e G2) Hi HinG2). }
+  (** By cor68_6_binary_collapse_mixed_not_in_G1: wp not in G1. Contradiction. **)
+  claim HwpNotG1 : word_product multG eG ys n /:e G1.
+  { exact (mixed_union_word_not_in_G1_early G multG eG invG G1 G2 J K Hfam efamH n ys
+      Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HneG HwpNeG HexG1 HexG2). }
+  exact (FalseE (HwpNotG1 HwpG1) (apply_fun ys i :e G1)).
 Qed.
 
 (** Collected Charlie 55 **)
