@@ -185246,6 +185246,7 @@ apply andI.
 Admitted.
 
 (** Early arithmetic helper: x + x = 0 forces x = 0. **)
+(** Proven Charlie **)
 Lemma SNo_double_zero_early : forall x:set, x :e R ->
   add_SNo x x = 0 ->
   x = 0.
@@ -185282,6 +185283,7 @@ exact (mul_SNo_nonzero_cancel
 Qed.
 
 (** A point of S1 is never equal to its antipode. **)
+(** Proven Charlie **)
 Lemma S1_point_neq_antipode_early : forall z:set, z :e S1 ->
   z <> (minus_SNo (z 0), minus_SNo (z 1)).
 let z.
@@ -185452,6 +185454,7 @@ exact (neq_0_1
 Qed.
 
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
+(** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
   add_SNo x (eps_ 1) <> add_SNo x (minus_SNo (eps_ 1)).
 let x.
