@@ -141383,6 +141383,32 @@ apply iffI.
 - exact s55_inclusion_extends_B2_implies_retraction_B2_S1.
 Qed.
 
+(** S55 helper: retraction B2->S1 is equivalent to inclusion nulhomotopy in R2-0. **)
+(** Proven Bob **)
+Theorem s55_retraction_B2_S1_iff_inclusion_nulhomotopic :
+  retraction_of B2 B2_topology S1
+  <->
+  nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)).
+apply iffI.
+- exact s55_retraction_B2_S1_implies_inclusion_R2m0_nulhomotopic.
+- assume HnulIncl.
+  claim HextIncl :
+    exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x).
+  {
+    exact (iffEL
+      (nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+        (graph S1 (fun x:set => x)))
+      (exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+        (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+      s55_inclusion_S1_R2m0_nulhomotopic_iff_extends_B2
+      HnulIncl).
+  }
+  exact (s55_inclusion_extends_B2_implies_retraction_B2_S1
+    HextIncl).
+Qed.
+
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
