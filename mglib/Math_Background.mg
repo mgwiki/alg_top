@@ -283679,10 +283679,20 @@ apply (xm (y = e)).
                         exact (FalseE (H3ne1 Hy3_len1) (y3 = e)). } }
                     (** Case: nz <> 1 (z_conj not in any single factor, reduced word length >= 2) **)
                     { assume Hnz_ne1 : nz <> 1.
-                      (** z_conj has reduced word length >= 2. **)
-                      (** Conjugation by cs3(0) gives a word of length >= nz >= 2 for y3. **)
-                      (** But y3 has reduced word length 1 by factor_element_length1. Contradiction. **)
-                      (** The boundary merging analysis is complex; admit for now. **)
+                      (** ANALYSIS: nz must be 3, since conjugation word [inv(cs3(0)),y3,cs3(0)] **)
+                      (** gives reduced word of length 3 for z_conj. By uniqueness nz = 3. **)
+                      (** z_conj not in any factor (IH: if in any, z_conj = e). **)
+                      (** z_conj = c_suf mult x3 mult inv(c_suf), c_suf of length k2. **)
+                      (** For k2 = 0: z_conj = x3 in factor, IH gives x3 = e, contradiction. **)
+                      (** For k2 = 1: z_conj = cs3(1) mult x3 mult inv(cs3(1)). **)
+                      (**   Reduced word = [cs3(1), x3, inv(cs3(1))] of length 3. **)
+                      (**   Matching with [inv(cs3(0)), y3, cs3(0)]: x3 = y3. **)
+                      (**   x3 in Gfam(alpha) cap Gfam(beta) -> x3 = e. Contradiction. **)
+                      (** For k2 >= 2: inner conjugation z_conj2 = c_suf2 mult x3 mult inv(c_suf2) **)
+                      (**   with c_suf2 of length k2-1 < m, same analysis recursively. **)
+                      (** Current proof structure only peels one layer. Need restructured IH **)
+                      (** that tracks the inner element (x3) through the decomposition, **)
+                      (** or a direct normal form argument. **)
                       admit. } }
     }
     (** Apply the main inductive claim to our specific c, x **)
