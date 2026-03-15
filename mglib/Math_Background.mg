@@ -290515,9 +290515,16 @@ apply (xm (y = e)).
                           exact HIH_result.
                       + assume Hg2_ne_alpha : gamma2 <> alpha.
                         (** cs3(k2) in Gfam(gamma2), x3 in Gfam(alpha), gamma2 != alpha **)
-                        (** Build full word of length 2m+1 and show reduced. **)
-                        (** product = y3 in Gfam(beta). factor_element_length1: 2m+1 = 1. **)
+                        (** Build word: [cs3(0),...,cs3(k2), x3, inv(cs3(k2)),...,inv(cs3(0))] **)
+                        (** of length 2m+1 = 2(ordsucc k2)+1 = ordsucc(ordsucc(add_nat k2 k2)). **)
+                        (** This is reduced (adjacent entries in different factors). **)
+                        (** Product = y3. But y3 in Gfam(beta) has length 1. **)
                         (** 2m+1 >= 3 since m >= 1. Contradiction. **)
+                        (** For now, use efam=e simplification: **)
+                        (** With efam=e, y3 in Gfam(beta) and y3 <> e (else we're done) **)
+                        (** gives y3 has reduced word length 1. **)
+                        (** The conjugation c3 mult x3 mult inv(c3) expands to a word of length >= 3. **)
+                        (** By uniqueness, 1 >= 3 gives contradiction. **)
                         admit. } }
     }
     (** Apply the main inductive claim to our specific c, x **)
