@@ -187182,7 +187182,522 @@ claim HdOdd :
 claim HrOdd :
   forall p:set, p :e R2_minus_origin ->
     apply_fun r (Rn_negate 2 p) = Rn_negate 2 (apply_fun r p).
-admit.
+{
+  let p.
+  assume HpR2m0.
+  claim HpR2 : p :e setprod R R.
+  {
+    exact (SepE1
+      (setprod R R)
+      (fun q:set => ~(q 0 = 0 /\ q 1 = 0))
+      p
+      HpR2m0).
+  }
+  claim HpNot00 : ~(p 0 = 0 /\ p 1 = 0).
+  {
+    exact (SepE2
+      (setprod R R)
+      (fun q:set => ~(q 0 = 0 /\ q 1 = 0))
+      p
+      HpR2m0).
+  }
+  claim Hp0R : p 0 :e R.
+  {
+    exact (ap0_Sigma
+      R
+      (fun _ : set => R)
+      p
+      HpR2).
+  }
+  claim Hp1R : p 1 :e R.
+  {
+    exact (ap1_Sigma
+      R
+      (fun _ : set => R)
+      p
+      HpR2).
+  }
+  claim Hp0S : SNo (p 0).
+  {
+    exact (real_SNo
+      (p 0)
+      Hp0R).
+  }
+  claim Hp1S : SNo (p 1).
+  {
+    exact (real_SNo
+      (p 1)
+      Hp1R).
+  }
+  set s := add_SNo
+    (mul_SNo (p 0) (p 0))
+    (mul_SNo (p 1) (p 1)).
+  claim HsS : SNo s.
+  {
+    exact (SNo_add_SNo
+      (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1))
+      (SNo_mul_SNo
+        (p 0)
+        (p 0)
+        Hp0S
+        Hp0S)
+      (SNo_mul_SNo
+        (p 1)
+        (p 1)
+        Hp1S
+        Hp1S)).
+  }
+  claim HsR : s :e R.
+  {
+    exact (real_add_SNo
+      (mul_SNo (p 0) (p 0))
+      (real_mul_SNo
+        (p 0)
+        Hp0R
+        (p 0)
+        Hp0R)
+      (mul_SNo (p 1) (p 1))
+      (real_mul_SNo
+        (p 1)
+        Hp1R
+        (p 1)
+        Hp1R)).
+  }
+  claim HsNonneg : 0 <= s.
+  {
+    claim Hp0sqLeS :
+      mul_SNo (p 0) (p 0) <= s.
+    {
+      exact (SNoLe_add_nonneg_right
+        (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1))
+        (SNo_mul_SNo
+          (p 0)
+          (p 0)
+          Hp0S
+          Hp0S)
+        (SNo_mul_SNo
+          (p 1)
+          (p 1)
+          Hp1S
+          Hp1S)
+        (SNo_sqr_nonneg
+          (p 1)
+          Hp1S)).
+    }
+    exact (SNoLe_tra
+      0
+      (mul_SNo (p 0) (p 0))
+      s
+      SNo_0
+      (SNo_mul_SNo
+        (p 0)
+        (p 0)
+        Hp0S
+        Hp0S)
+      HsS
+      (SNo_sqr_nonneg
+        (p 0)
+        Hp0S)
+      Hp0sqLeS).
+  }
+  claim HsNe0 : s <> 0.
+  {
+    assume Hs0.
+    claim Hx0sqLeS :
+      mul_SNo (p 0) (p 0) <= s.
+    {
+      exact (SNoLe_add_nonneg_right
+        (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1))
+        (SNo_mul_SNo
+          (p 0)
+          (p 0)
+          Hp0S
+          Hp0S)
+        (SNo_mul_SNo
+          (p 1)
+          (p 1)
+          Hp1S
+          Hp1S)
+        (SNo_sqr_nonneg
+          (p 1)
+          Hp1S)).
+    }
+    claim Hx1sqLeS :
+      mul_SNo (p 1) (p 1) <= s.
+    {
+      rewrite (add_SNo_com
+        (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1))
+        (SNo_mul_SNo
+          (p 0)
+          (p 0)
+          Hp0S
+          Hp0S)
+        (SNo_mul_SNo
+          (p 1)
+          (p 1)
+          Hp1S
+          Hp1S)).
+      exact (SNoLe_add_nonneg_right
+        (mul_SNo (p 1) (p 1))
+        (mul_SNo (p 0) (p 0))
+        (SNo_mul_SNo
+          (p 1)
+          (p 1)
+          Hp1S
+          Hp1S)
+        (SNo_mul_SNo
+          (p 0)
+          (p 0)
+          Hp0S
+          Hp0S)
+        (SNo_sqr_nonneg
+          (p 0)
+          Hp0S)).
+    }
+    claim HsLe0 : s <= 0.
+    {
+      rewrite Hs0.
+      exact (SNoLe_ref 0).
+    }
+    claim Hp0sqLe0 :
+      mul_SNo (p 0) (p 0) <= 0.
+    {
+      exact (SNoLe_tra
+        (mul_SNo (p 0) (p 0))
+        s
+        0
+        (SNo_mul_SNo
+          (p 0)
+          (p 0)
+          Hp0S
+          Hp0S)
+        HsS
+        SNo_0
+        Hx0sqLeS
+        HsLe0).
+    }
+    claim Hp1sqLe0 :
+      mul_SNo (p 1) (p 1) <= 0.
+    {
+      exact (SNoLe_tra
+        (mul_SNo (p 1) (p 1))
+        s
+        0
+        (SNo_mul_SNo
+          (p 1)
+          (p 1)
+          Hp1S
+          Hp1S)
+        HsS
+        SNo_0
+        Hx1sqLeS
+        HsLe0).
+    }
+    claim Hp0Eq0 : p 0 = 0.
+    {
+      claim Hp0Cases : p 0 = 0 \/ 0 < mul_SNo (p 0) (p 0).
+      {
+        exact (SNo_zero_or_sqr_pos
+          (p 0)
+          Hp0S).
+      }
+      apply Hp0Cases.
+      - assume H.
+        exact H.
+      - assume Hp0sqPos.
+        claim H00lt : 0 < 0.
+        {
+          exact (SNoLtLe_tra
+            0
+            (mul_SNo (p 0) (p 0))
+            0
+            SNo_0
+            (SNo_mul_SNo
+              (p 0)
+              (p 0)
+              Hp0S
+              Hp0S)
+            SNo_0
+            Hp0sqPos
+            Hp0sqLe0).
+        }
+        exact (FalseE
+          (not_Rlt_refl
+            0
+            real_0
+            (RltI
+              0
+              0
+              real_0
+              real_0
+              H00lt))
+          (p 0 = 0)).
+    }
+    claim Hp1Eq0 : p 1 = 0.
+    {
+      claim Hp1Cases : p 1 = 0 \/ 0 < mul_SNo (p 1) (p 1).
+      {
+        exact (SNo_zero_or_sqr_pos
+          (p 1)
+          Hp1S).
+      }
+      apply Hp1Cases.
+      - assume H.
+        exact H.
+      - assume Hp1sqPos.
+        claim H00lt : 0 < 0.
+        {
+          exact (SNoLtLe_tra
+            0
+            (mul_SNo (p 1) (p 1))
+            0
+            SNo_0
+            (SNo_mul_SNo
+              (p 1)
+              (p 1)
+              Hp1S
+              Hp1S)
+            SNo_0
+            Hp1sqPos
+            Hp1sqLe0).
+        }
+        exact (FalseE
+          (not_Rlt_refl
+            0
+            real_0
+            (RltI
+              0
+              0
+              real_0
+              real_0
+              H00lt))
+          (p 1 = 0)).
+    }
+    exact (HpNot00
+      (andI
+        (p 0 = 0)
+        (p 1 = 0)
+        Hp0Eq0
+        Hp1Eq0)).
+  }
+  set dnorm := sqrt_SNo_nonneg s.
+  claim HdnormS : SNo dnorm.
+  {
+    exact (SNo_sqrt_SNo_nonneg
+      s
+      HsS
+      HsNonneg).
+  }
+  claim HqR2m0 :
+    (minus_SNo (p 0), minus_SNo (p 1)) :e R2_minus_origin.
+  {
+    apply (SepI
+      (setprod R R)
+      (fun q:set => ~(q 0 = 0 /\ q 1 = 0))
+      (minus_SNo (p 0), minus_SNo (p 1))).
+    - exact (tuple_2_setprod_by_pair_Sigma
+        R
+        R
+        (minus_SNo (p 0))
+        (minus_SNo (p 1))
+        (real_minus_SNo
+          (p 0)
+          Hp0R)
+        (real_minus_SNo
+          (p 1)
+          Hp1R)).
+    - assume Hneg00.
+      claim Hm0 : minus_SNo (p 0) = 0.
+      {
+        exact (eq_i_tra
+          (minus_SNo (p 0))
+          ((minus_SNo (p 0), minus_SNo (p 1)) 0)
+          0
+          (eq_symm
+            ((minus_SNo (p 0), minus_SNo (p 1)) 0)
+            (minus_SNo (p 0))
+            (tuple_2_0_eq
+              (minus_SNo (p 0))
+              (minus_SNo (p 1))))
+          (andEL
+            ((minus_SNo (p 0), minus_SNo (p 1)) 0 = 0)
+            ((minus_SNo (p 0), minus_SNo (p 1)) 1 = 0)
+            Hneg00)).
+      }
+      claim Hm1 : minus_SNo (p 1) = 0.
+      {
+        exact (eq_i_tra
+          (minus_SNo (p 1))
+          ((minus_SNo (p 0), minus_SNo (p 1)) 1)
+          0
+          (eq_symm
+            ((minus_SNo (p 0), minus_SNo (p 1)) 1)
+            (minus_SNo (p 1))
+            (tuple_2_1_eq
+              (minus_SNo (p 0))
+              (minus_SNo (p 1))))
+          (andER
+            ((minus_SNo (p 0), minus_SNo (p 1)) 0 = 0)
+            ((minus_SNo (p 0), minus_SNo (p 1)) 1 = 0)
+            Hneg00)).
+      }
+      claim Hp0Eq0 : p 0 = 0.
+      {
+        rewrite <- (minus_SNo_minus_SNo_real
+          (p 0)
+          Hp0R).
+        rewrite Hm0.
+        exact minus_SNo_0.
+      }
+      claim Hp1Eq0 : p 1 = 0.
+      {
+        rewrite <- (minus_SNo_minus_SNo_real
+          (p 1)
+          Hp1R).
+        rewrite Hm1.
+        exact minus_SNo_0.
+      }
+      exact (HpNot00
+        (andI
+          (p 0 = 0)
+          (p 1 = 0)
+          Hp0Eq0
+          Hp1Eq0)).
+  }
+  claim HlhsPair :
+    apply_fun r (Rn_negate 2 p)
+    =
+    (minus_SNo (div_SNo (p 0) dnorm),
+     minus_SNo (div_SNo (p 1) dnorm)).
+  {
+    claim HargEq :
+      Rn_negate 2 p = (minus_SNo (p 0), minus_SNo (p 1)).
+    {
+      admit.
+    }
+    claim HdnormNe0 : dnorm <> 0.
+    {
+      assume Hd0.
+      claim Hs0 : s = 0.
+      {
+        claim Hd20 : mul_SNo dnorm dnorm = 0.
+        {
+          rewrite Hd0 at 2.
+          exact (mul_SNo_zeroR
+            dnorm
+            HdnormS).
+        }
+        exact (eq_i_tra
+          s
+          (mul_SNo dnorm dnorm)
+          0
+          (eq_symm
+            (mul_SNo dnorm dnorm)
+            s
+            (sqrt_SNo_nonneg_sqr
+              s
+              HsS
+              HsNonneg))
+          Hd20).
+      }
+      exact (HsNe0
+        Hs0).
+    }
+    claim HnormNegEq :
+      sqrt_SNo_nonneg
+        (add_SNo (mul_SNo ((minus_SNo (p 0), minus_SNo (p 1)) 0) ((minus_SNo (p 0), minus_SNo (p 1)) 0))
+          (mul_SNo ((minus_SNo (p 0), minus_SNo (p 1)) 1) ((minus_SNo (p 0), minus_SNo (p 1)) 1)))
+      = dnorm.
+    {
+      admit.
+    }
+    rewrite HargEq.
+    rewrite (apply_fun_graph
+      R2_minus_origin
+      (fun q:set =>
+        (div_SNo (q 0)
+          (sqrt_SNo_nonneg
+            (add_SNo (mul_SNo (q 0) (q 0))
+              (mul_SNo (q 1) (q 1)))),
+         div_SNo (q 1)
+          (sqrt_SNo_nonneg
+            (add_SNo (mul_SNo (q 0) (q 0))
+              (mul_SNo (q 1) (q 1))))))
+      (minus_SNo (p 0), minus_SNo (p 1))
+      HqR2m0).
+    rewrite HnormNegEq.
+    rewrite tuple_2_0_eq.
+    rewrite tuple_2_1_eq.
+    apply tuple_2_ext_euclid.
+    - exact (div_SNo_minus_num
+        (p 0)
+        dnorm
+        Hp0S
+        HdnormS
+        HdnormNe0).
+    - exact (div_SNo_minus_num
+        (p 1)
+        dnorm
+        Hp1S
+        HdnormS
+        HdnormNe0).
+  }
+  claim HrhsPair :
+    Rn_negate 2 (apply_fun r p)
+    =
+    (minus_SNo (div_SNo (p 0) dnorm),
+     minus_SNo (div_SNo (p 1) dnorm)).
+  {
+    claim HrpEq :
+      apply_fun r p =
+      (div_SNo (p 0) dnorm,
+       div_SNo (p 1) dnorm).
+    {
+      exact (apply_fun_graph
+        R2_minus_origin
+        (fun q:set =>
+          (div_SNo (q 0)
+            (sqrt_SNo_nonneg
+              (add_SNo (mul_SNo (q 0) (q 0))
+                (mul_SNo (q 1) (q 1)))),
+           div_SNo (q 1)
+            (sqrt_SNo_nonneg
+              (add_SNo (mul_SNo (q 0) (q 0))
+                (mul_SNo (q 1) (q 1))))))
+        p
+        HpR2m0).
+    }
+    claim HrhsModel :
+      Rn_negate 2 (apply_fun r p) =
+      (minus_SNo (apply_fun r p 0),
+       minus_SNo (apply_fun r p 1)).
+    {
+      admit.
+    }
+    rewrite HrhsModel.
+    rewrite HrpEq.
+    apply tuple_2_ext_euclid.
+    - rewrite tuple_2_0_eq.
+      reflexivity.
+    - rewrite tuple_2_1_eq.
+      reflexivity.
+  }
+  exact (eq_i_tra
+    (apply_fun r (Rn_negate 2 p))
+    (minus_SNo (div_SNo (p 0) dnorm),
+     minus_SNo (div_SNo (p 1) dnorm))
+    (Rn_negate 2 (apply_fun r p))
+    HlhsPair
+    (eq_symm
+      (Rn_negate 2 (apply_fun r p))
+      (minus_SNo (div_SNo (p 0) dnorm),
+       minus_SNo (div_SNo (p 1) dnorm))
+      HrhsPair)).
+}
 claim HgInto :
   forall x:set, x :e Sn 2 -> apply_fun g x :e Sn 1.
 {
