@@ -187771,6 +187771,14 @@ claim HrOdd :
     claim HargEq :
       Rn_negate 2 p = (minus_SNo (p 0), minus_SNo (p 1)).
     {
+      claim HpAp0Eq : apply_fun p 0 = p 0.
+      {
+        admit.
+      }
+      claim HpAp1Eq : apply_fun p 1 = p 1.
+      {
+        admit.
+      }
       claim HnegpE2 : Rn_negate 2 p :e euclidean_space 2.
       {
         claim HnegpDef :
@@ -187778,52 +187786,59 @@ claim HrOdd :
         {
           reflexivity.
         }
-        claim Heu2 :
-          euclidean_space 2 =
-          product_space 2 (const_space_family 2 R R_standard_topology).
+        claim HnegpGraphEq :
+          graph 2 (fun i:set => minus_SNo (apply_fun p i))
+          =
+          graph 2 (fun i:set => if i = 0 then minus_SNo (p 0) else minus_SNo (p 1)).
         {
-          reflexivity.
+          apply (graph_extensional
+            2
+            (fun i:set => minus_SNo (apply_fun p i))
+            (fun i:set => if i = 0 then minus_SNo (p 0) else minus_SNo (p 1))).
+          let i.
+          assume Hi2.
+          apply (ordsuccE 1 i Hi2).
+          - assume Hi1.
+            apply (ordsuccE 0 i Hi1).
+            + assume Hi0.
+              exact (EmptyE
+                i
+                Hi0
+                (minus_SNo (apply_fun p i)
+                 =
+                 (if i = 0 then minus_SNo (p 0) else minus_SNo (p 1)))).
+            + assume Hieq0.
+              rewrite Hieq0.
+              rewrite HpAp0Eq.
+              exact (eq_symm
+                (if 0 = 0 then minus_SNo (p 0) else minus_SNo (p 1))
+                (minus_SNo (p 0))
+                (If_i_1
+                  (0 = 0)
+                  (minus_SNo (p 0))
+                  (minus_SNo (p 1))
+                  (eq_refl 0))).
+          - assume Hieq1.
+            rewrite Hieq1.
+            rewrite HpAp1Eq.
+            exact (eq_symm
+              (if 1 = 0 then minus_SNo (p 0) else minus_SNo (p 1))
+              (minus_SNo (p 1))
+              (If_i_0
+                (1 = 0)
+                (minus_SNo (p 0))
+                (minus_SNo (p 1))
+                (neq_ordsucc_0 0))).
         }
         rewrite HnegpDef.
-        rewrite Heu2.
-        apply (product_space_graphI
-          2
-          (const_space_family 2 R R_standard_topology)
-          (fun i:set => minus_SNo (apply_fun p i))).
-        claim HpApply0R : apply_fun p 0 :e R.
-        {
-          admit.
-        }
-        claim HpApply1R : apply_fun p 1 :e R.
-        {
-          admit.
-        }
-        let i.
-        assume Hi2.
-        rewrite (space_family_set_const_space_family
-          2
-          R
-          R_standard_topology
-          i
-          Hi2).
-        apply (ordsuccE 1 i Hi2).
-        - assume Hi1.
-          apply (ordsuccE 0 i Hi1).
-          + assume Hi0.
-            exact (EmptyE
-              i
-              Hi0
-              ((minus_SNo (apply_fun p i)) :e R)).
-          + assume Hieq0.
-            rewrite Hieq0.
-            exact (real_minus_SNo
-              (apply_fun p 0)
-              HpApply0R).
-        - assume Hieq1.
-          rewrite Hieq1.
-          exact (real_minus_SNo
-            (apply_fun p 1)
-            HpApply1R).
+        exact ((eq_symm
+          (graph 2 (fun i:set => minus_SNo (apply_fun p i)))
+          (graph 2 (fun i:set => if i = 0 then minus_SNo (p 0) else minus_SNo (p 1)))
+          HnegpGraphEq)
+          (fun z Hz => z :e euclidean_space 2)
+          (R2_pair_graph_neg_in_euclidean_space_2
+            p
+            HpR2)).
       }
       claim HnegpPair :
         (apply_fun (Rn_negate 2 p) 0,
@@ -187831,7 +187846,36 @@ claim HrOdd :
         =
         (minus_SNo (p 0), minus_SNo (p 1)).
       {
-        admit.
+        exact (eq_i_tra
+          (apply_fun (Rn_negate 2 p) 0,
+           apply_fun (Rn_negate 2 p) 1)
+          (minus_SNo (apply_fun p 0),
+           minus_SNo (apply_fun p 1))
+          (minus_SNo (p 0),
+           minus_SNo (p 1))
+          (Rn_negate_2_coords_pair
+            p)
+          (tuple_2_ext_euclid
+            (minus_SNo (apply_fun p 0))
+            (minus_SNo (apply_fun p 1))
+            (minus_SNo (p 0))
+            (minus_SNo (p 1))
+            (eq_i_tra
+              (minus_SNo (apply_fun p 0))
+              (minus_SNo (p 0))
+              (minus_SNo (p 0))
+              (HpAp0Eq
+                (fun z Hz => minus_SNo (apply_fun p 0) = minus_SNo z)
+                (eq_refl (minus_SNo (apply_fun p 0))))
+              (eq_refl (minus_SNo (p 0))))
+            (eq_i_tra
+              (minus_SNo (apply_fun p 1))
+              (minus_SNo (p 1))
+              (minus_SNo (p 1))
+              (HpAp1Eq
+                (fun z Hz => minus_SNo (apply_fun p 1) = minus_SNo z)
+                (eq_refl (minus_SNo (apply_fun p 1))))
+              (eq_refl (minus_SNo (p 1)))))).
       }
       exact (eq_i_tra
         (Rn_negate 2 p)
