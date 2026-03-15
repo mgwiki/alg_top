@@ -193786,6 +193786,7 @@ Qed.
 
 (** Early helper: continuity of the explicit inverse stereographic map into euclidean_space 3.
     This isolates the real remaining continuity shell before the later packaged theorem. **)
+(** Proven Charlie **)
 Theorem stereo_S_inv_map_early_explicit_continuous_E3 :
   continuous_map
     (euclidean_space 2)
@@ -193793,12 +193794,608 @@ Theorem stereo_S_inv_map_early_explicit_continuous_E3 :
     (euclidean_space 3)
     (euclidean_topology 3)
     stereo_S_inv_map_early_explicit.
-admit.
-Admitted.
+set E2 := euclidean_space 2.
+set E2top := euclidean_topology 2.
+set E3 := euclidean_space 3.
+set E3top := euclidean_topology 3.
+set csf2 := const_space_family 2 R R_standard_topology.
+claim HE2top : topology_on E2 E2top.
+{ exact (euclidean_topology_is_topology 2). }
+claim HE3top : topology_on E3 E3top.
+{ exact (euclidean_topology_is_topology 3). }
+claim H0in2 : 0 :e 2. { exact In_0_2. }
+claim H1in2 : 1 :e 2. { exact In_1_2. }
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3l : 2 :e 3. { exact In_2_3. }
+claim Hneq_2_1 : 2 <> 1.
+{
+  assume H21.
+  claim H1in1 : 1 :e 1.
+  { exact (H21 (fun a b => 1 :e a) In_1_2). }
+  apply (ordsuccE 0 1 H1in1).
+  - assume H1in0. exact (EmptyE 1 H1in0).
+  - assume H10. exact (neq_1_0 H10).
+}
+set ev2 := fun j:set => product_eval_map 2 csf2 j.
+claim Hev2D : forall j:set, j :e 2 ->
+  continuous_map E2 E2top R R_standard_topology (ev2 j).
+{
+  let j. assume Hj.
+  claim HfamTop :
+    forall k:set, k :e 2 ->
+      topology_on
+        (space_family_set csf2 k)
+        (space_family_topology csf2 k).
+  {
+    let k. assume Hk.
+    rewrite (space_family_set_const_space_family 2 R R_standard_topology k Hk).
+    rewrite (space_family_topology_const_space_family 2 R R_standard_topology k Hk).
+    exact R_standard_topology_is_topology.
+  }
+  claim HevalCont :
+    continuous_map
+      E2 E2top
+      (space_family_set csf2 j)
+      (space_family_topology csf2 j)
+      (ev2 j).
+  {
+    exact (product_eval_map_continuous 2 csf2 j HfamTop Hj).
+  }
+  claim HYsub : space_family_set csf2 j c= R.
+  {
+    let y. assume Hy.
+    rewrite <- (space_family_set_const_space_family 2 R R_standard_topology j Hj).
+    exact Hy.
+  }
+  claim HTyEq :
+    space_family_topology csf2 j =
+    subspace_topology R R_standard_topology (space_family_set csf2 j).
+  {
+    rewrite (space_family_set_const_space_family 2 R R_standard_topology j Hj).
+    rewrite (space_family_topology_const_space_family 2 R R_standard_topology j Hj).
+    rewrite (subspace_topology_whole R R_standard_topology R_standard_topology_is_topology).
+    reflexivity.
+  }
+  exact (continuous_map_range_expand
+    E2 E2top
+    (space_family_set csf2 j)
+    (space_family_topology csf2 j)
+    R R_standard_topology
+    (ev2 j)
+    HevalCont
+    HYsub
+    R_standard_topology_is_topology
+    HTyEq).
+}
+claim Hev2apply : forall u:set, forall j:set, u :e E2 -> j :e 2 ->
+  apply_fun (ev2 j) u = apply_fun u j.
+{
+  let u j. assume Hu Hj.
+  exact (apply_fun_graph E2 (fun f:set => apply_fun f j) u Hu).
+}
+set ev2_0sq := compose_fun E2 (pair_map E2 (ev2 0) (ev2 0)) mul_fun_R.
+set ev2_1sq := compose_fun E2 (pair_map E2 (ev2 1) (ev2 1)) mul_fun_R.
+claim Hev2_0sq_cont : continuous_map E2 E2top R R_standard_topology ev2_0sq.
+{
+  exact (mul_two_continuous_R E2 E2top (ev2 0) (ev2 0) HE2top (Hev2D 0 H0in2) (Hev2D 0 H0in2)).
+}
+claim Hev2_1sq_cont : continuous_map E2 E2top R R_standard_topology ev2_1sq.
+{
+  exact (mul_two_continuous_R E2 E2top (ev2 1) (ev2 1) HE2top (Hev2D 1 H1in2) (Hev2D 1 H1in2)).
+}
+claim Hev2_0sq_apply : forall u:set, u :e E2 ->
+  apply_fun ev2_0sq u = mul_SNo (apply_fun u 0) (apply_fun u 0).
+{
+  let u. assume Hu.
+  claim Hu0R : apply_fun u 0 :e R. { exact (euclidean_space_coord_in_R 2 u 0 Hu H0in2). }
+  claim Hstep1 : apply_fun ev2_0sq u =
+    apply_fun mul_fun_R (apply_fun (pair_map E2 (ev2 0) (ev2 0)) u).
+  { exact (compose_fun_apply E2 (pair_map E2 (ev2 0) (ev2 0)) mul_fun_R u Hu). }
+  claim Hstep2 : apply_fun (pair_map E2 (ev2 0) (ev2 0)) u =
+    (apply_fun (ev2 0) u, apply_fun (ev2 0) u).
+  { exact (pair_map_apply E2 R R (ev2 0) (ev2 0) u Hu). }
+  claim Hstep3 : apply_fun (ev2 0) u = apply_fun u 0.
+  { exact (Hev2apply u 0 Hu H0in2). }
+  claim Hstep4 : apply_fun mul_fun_R (apply_fun u 0, apply_fun u 0) =
+    mul_SNo (apply_fun u 0) (apply_fun u 0).
+  {
+    claim Hpr : (apply_fun u 0, apply_fun u 0) :e setprod R R.
+    { exact (tuple_2_setprod_by_pair_Sigma R R (apply_fun u 0) (apply_fun u 0) Hu0R Hu0R). }
+    rewrite (mul_fun_R_apply (apply_fun u 0, apply_fun u 0) Hpr).
+    rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. reflexivity.
+  }
+  rewrite Hstep1. rewrite Hstep2. rewrite Hstep3. exact Hstep4.
+}
+claim Hev2_1sq_apply : forall u:set, u :e E2 ->
+  apply_fun ev2_1sq u = mul_SNo (apply_fun u 1) (apply_fun u 1).
+{
+  let u. assume Hu.
+  claim Hu1R : apply_fun u 1 :e R. { exact (euclidean_space_coord_in_R 2 u 1 Hu H1in2). }
+  claim Hstep1 : apply_fun ev2_1sq u =
+    apply_fun mul_fun_R (apply_fun (pair_map E2 (ev2 1) (ev2 1)) u).
+  { exact (compose_fun_apply E2 (pair_map E2 (ev2 1) (ev2 1)) mul_fun_R u Hu). }
+  claim Hstep2 : apply_fun (pair_map E2 (ev2 1) (ev2 1)) u =
+    (apply_fun (ev2 1) u, apply_fun (ev2 1) u).
+  { exact (pair_map_apply E2 R R (ev2 1) (ev2 1) u Hu). }
+  claim Hstep3 : apply_fun (ev2 1) u = apply_fun u 1.
+  { exact (Hev2apply u 1 Hu H1in2). }
+  claim Hstep4 : apply_fun mul_fun_R (apply_fun u 1, apply_fun u 1) =
+    mul_SNo (apply_fun u 1) (apply_fun u 1).
+  {
+    claim Hpr : (apply_fun u 1, apply_fun u 1) :e setprod R R.
+    { exact (tuple_2_setprod_by_pair_Sigma R R (apply_fun u 1) (apply_fun u 1) Hu1R Hu1R). }
+    rewrite (mul_fun_R_apply (apply_fun u 1, apply_fun u 1) Hpr).
+    rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. reflexivity.
+  }
+  rewrite Hstep1. rewrite Hstep2. rewrite Hstep3. exact Hstep4.
+}
+set ev2_sumSq := compose_fun E2 (pair_map E2 ev2_0sq ev2_1sq) add_fun_R.
+claim Hev2_sumSq_cont : continuous_map E2 E2top R R_standard_topology ev2_sumSq.
+{ exact (add_two_continuous_R E2 E2top ev2_0sq ev2_1sq HE2top Hev2_0sq_cont Hev2_1sq_cont). }
+claim Hev2_sumSq_apply : forall u:set, u :e E2 ->
+  apply_fun ev2_sumSq u =
+    add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0)) (mul_SNo (apply_fun u 1) (apply_fun u 1)).
+{
+  let u. assume Hu.
+  claim Hstep1 : apply_fun ev2_sumSq u = apply_fun add_fun_R (apply_fun (pair_map E2 ev2_0sq ev2_1sq) u).
+  { exact (compose_fun_apply E2 (pair_map E2 ev2_0sq ev2_1sq) add_fun_R u Hu). }
+  claim Hstep2 : apply_fun (pair_map E2 ev2_0sq ev2_1sq) u = (apply_fun ev2_0sq u, apply_fun ev2_1sq u).
+  { exact (pair_map_apply E2 R R ev2_0sq ev2_1sq u Hu). }
+  claim Hstep3 : apply_fun ev2_0sq u = mul_SNo (apply_fun u 0) (apply_fun u 0).
+  { exact (Hev2_0sq_apply u Hu). }
+  claim Hstep4 : apply_fun ev2_1sq u = mul_SNo (apply_fun u 1) (apply_fun u 1).
+  { exact (Hev2_1sq_apply u Hu). }
+  claim Hu0sqR : mul_SNo (apply_fun u 0) (apply_fun u 0) :e R.
+  { exact (real_mul_SNo (apply_fun u 0) (euclidean_space_coord_in_R 2 u 0 Hu H0in2) (apply_fun u 0) (euclidean_space_coord_in_R 2 u 0 Hu H0in2)). }
+  claim Hu1sqR : mul_SNo (apply_fun u 1) (apply_fun u 1) :e R.
+  { exact (real_mul_SNo (apply_fun u 1) (euclidean_space_coord_in_R 2 u 1 Hu H1in2) (apply_fun u 1) (euclidean_space_coord_in_R 2 u 1 Hu H1in2)). }
+  claim Hstep5 : apply_fun add_fun_R (mul_SNo (apply_fun u 0) (apply_fun u 0), mul_SNo (apply_fun u 1) (apply_fun u 1)) =
+    add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0)) (mul_SNo (apply_fun u 1) (apply_fun u 1)).
+  {
+    rewrite (add_fun_R_apply (mul_SNo (apply_fun u 0) (apply_fun u 0), mul_SNo (apply_fun u 1) (apply_fun u 1))
+      (tuple_2_setprod_by_pair_Sigma R R (mul_SNo (apply_fun u 0) (apply_fun u 0)) (mul_SNo (apply_fun u 1) (apply_fun u 1)) Hu0sqR Hu1sqR)).
+    rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. reflexivity.
+  }
+  rewrite Hstep1. rewrite Hstep2. rewrite Hstep3. rewrite Hstep4. exact Hstep5.
+}
+set denom_fn := compose_fun E2 (pair_map E2 (const_fun E2 1) ev2_sumSq) add_fun_R.
+claim H1R : 1 :e R. { exact real_1. }
+claim Hconst1_cont : continuous_map E2 E2top R R_standard_topology (const_fun E2 1).
+{
+  exact (const_fun_continuous E2 E2top R R_standard_topology 1 HE2top R_standard_topology_is_topology H1R).
+}
+claim Hdenom_cont : continuous_map E2 E2top R R_standard_topology denom_fn.
+{ exact (add_two_continuous_R E2 E2top (const_fun E2 1) ev2_sumSq HE2top Hconst1_cont Hev2_sumSq_cont). }
+claim Hdenom_apply : forall u:set, u :e E2 ->
+  apply_fun denom_fn u =
+    add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                       (mul_SNo (apply_fun u 1) (apply_fun u 1))).
+{
+  let u. assume Hu.
+  claim Hstep1 : apply_fun denom_fn u = apply_fun add_fun_R (apply_fun (pair_map E2 (const_fun E2 1) ev2_sumSq) u).
+  { exact (compose_fun_apply E2 (pair_map E2 (const_fun E2 1) ev2_sumSq) add_fun_R u Hu). }
+  claim Hstep2 : apply_fun (pair_map E2 (const_fun E2 1) ev2_sumSq) u =
+    (apply_fun (const_fun E2 1) u, apply_fun ev2_sumSq u).
+  { exact (pair_map_apply E2 R R (const_fun E2 1) ev2_sumSq u Hu). }
+  claim Hstep3 : apply_fun (const_fun E2 1) u = 1.
+  { exact (const_fun_apply E2 1 u Hu). }
+  claim Hstep4 : apply_fun ev2_sumSq u =
+    add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0)) (mul_SNo (apply_fun u 1) (apply_fun u 1)).
+  { exact (Hev2_sumSq_apply u Hu). }
+  claim HsumSqR : add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0)) (mul_SNo (apply_fun u 1) (apply_fun u 1)) :e R.
+  {
+    exact (real_add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+      (real_mul_SNo (apply_fun u 0) (euclidean_space_coord_in_R 2 u 0 Hu H0in2) (apply_fun u 0) (euclidean_space_coord_in_R 2 u 0 Hu H0in2))
+      (mul_SNo (apply_fun u 1) (apply_fun u 1))
+      (real_mul_SNo (apply_fun u 1) (euclidean_space_coord_in_R 2 u 1 Hu H1in2) (apply_fun u 1) (euclidean_space_coord_in_R 2 u 1 Hu H1in2))).
+  }
+  claim Hstep5 : apply_fun add_fun_R (1, add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0)) (mul_SNo (apply_fun u 1) (apply_fun u 1))) =
+    add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0)) (mul_SNo (apply_fun u 1) (apply_fun u 1))).
+  {
+    rewrite (add_fun_R_apply (1, add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0)) (mul_SNo (apply_fun u 1) (apply_fun u 1)))
+      (tuple_2_setprod_by_pair_Sigma R R 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0)) (mul_SNo (apply_fun u 1) (apply_fun u 1))) H1R HsumSqR)).
+    rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. reflexivity.
+  }
+  rewrite Hstep1. rewrite Hstep2. rewrite Hstep3. rewrite Hstep4. exact Hstep5.
+}
+claim Hdenom_pos : forall u:set, u :e E2 -> Rlt 0 (apply_fun denom_fn u).
+{
+  let u. assume Hu.
+  rewrite (Hdenom_apply u Hu).
+  exact (stereo_S_inv_denom_pos_early_explicit u Hu).
+}
+set rd_fn := compose_fun E2 denom_fn
+  (compose_fun (open_ray_upper R 0) (compose_fun R bounded_transform_phi one_minus_fun) bounded_transform_psi).
+claim Hrd_cont : continuous_map E2 E2top R R_standard_topology rd_fn.
+{
+  exact (reciprocal_of_positive_continuous_map E2 E2top denom_fn HE2top Hdenom_cont Hdenom_pos).
+}
+claim Hdenom_in_upper : forall u:set, u :e E2 ->
+  apply_fun denom_fn u :e open_ray_upper R 0.
+{
+  let u. assume Hu.
+  claim HdenR : apply_fun denom_fn u :e R.
+  {
+    exact (andER (0 :e R) (apply_fun denom_fn u :e R)
+      (andEL (0 :e R /\ apply_fun denom_fn u :e R) (SNoLt 0 (apply_fun denom_fn u))
+        (Hdenom_pos u Hu))).
+  }
+  exact (SepI R (fun x:set => order_rel R 0 x) (apply_fun denom_fn u)
+    HdenR
+    (Rlt_implies_order_rel_R 0 (apply_fun denom_fn u) (Hdenom_pos u Hu))).
+}
+claim Hrd_apply : forall u:set, u :e E2 ->
+  apply_fun rd_fn u = recip_SNo_pos (apply_fun denom_fn u).
+{
+  let u. assume Hu.
+  rewrite (compose_fun_apply E2 denom_fn (compose_fun (open_ray_upper R 0)
+    (compose_fun R bounded_transform_phi one_minus_fun) bounded_transform_psi) u Hu).
+  exact (recip_pos_value_eq_recip_SNo_pos (apply_fun denom_fn u) (Hdenom_in_upper u Hu)).
+}
+claim Hu0R : forall u:set, u :e E2 -> apply_fun u 0 :e R.
+{ let u. assume Hu. exact (euclidean_space_coord_in_R 2 u 0 Hu H0in2). }
+claim Hu1R : forall u:set, u :e E2 -> apply_fun u 1 :e R.
+{ let u. assume Hu. exact (euclidean_space_coord_in_R 2 u 1 Hu H1in2). }
+claim HrdR : forall u:set, u :e E2 -> apply_fun rd_fn u :e R.
+{
+  let u. assume Hu.
+  rewrite (Hrd_apply u Hu).
+  claim HdenomR : apply_fun denom_fn u :e R.
+  { exact (andER (0 :e R) (apply_fun denom_fn u :e R)
+      (andEL (0 :e R /\ apply_fun denom_fn u :e R) (SNoLt 0 (apply_fun denom_fn u))
+        (Hdenom_pos u Hu))). }
+  claim Hdenompos : SNoLt 0 (apply_fun denom_fn u).
+  { exact (andER (0 :e R /\ apply_fun denom_fn u :e R) (SNoLt 0 (apply_fun denom_fn u))
+      (Hdenom_pos u Hu)). }
+  exact (real_recip_SNo_pos (apply_fun denom_fn u) HdenomR Hdenompos).
+}
+claim H2R : 2 :e R. { exact real_2. }
+claim Hconst2_cont : continuous_map E2 E2top R R_standard_topology (const_fun E2 2).
+{
+  exact (const_fun_continuous E2 E2top R R_standard_topology 2 HE2top R_standard_topology_is_topology H2R).
+}
+set c0_inv := compose_fun E2 (pair_map E2
+  (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R) rd_fn) mul_fun_R.
+claim Hc0_inv_cont : continuous_map E2 E2top R R_standard_topology c0_inv.
+{
+  claim H2u0_cont : continuous_map E2 E2top R R_standard_topology
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R).
+  { exact (mul_two_continuous_R E2 E2top (const_fun E2 2) (ev2 0) HE2top Hconst2_cont (Hev2D 0 H0in2)). }
+  exact (mul_two_continuous_R E2 E2top
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R) rd_fn
+    HE2top H2u0_cont Hrd_cont).
+}
+set c1_inv := compose_fun E2 (pair_map E2
+  (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R) rd_fn) mul_fun_R.
+claim Hc1_inv_cont : continuous_map E2 E2top R R_standard_topology c1_inv.
+{
+  claim H2u1_cont : continuous_map E2 E2top R R_standard_topology
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R).
+  { exact (mul_two_continuous_R E2 E2top (const_fun E2 2) (ev2 1) HE2top Hconst2_cont (Hev2D 1 H1in2)). }
+  exact (mul_two_continuous_R E2 E2top
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R) rd_fn
+    HE2top H2u1_cont Hrd_cont).
+}
+claim HmI : minus_SNo 1 :e R. { exact (real_minus_SNo 1 real_1). }
+claim HconstmI_cont : continuous_map E2 E2top R R_standard_topology (const_fun E2 (minus_SNo 1)).
+{
+  exact (const_fun_continuous E2 E2top R R_standard_topology (minus_SNo 1)
+    HE2top R_standard_topology_is_topology HmI).
+}
+set c2_inv := compose_fun E2 (pair_map E2
+  (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R) (const_fun E2 (minus_SNo 1))) add_fun_R.
+claim Hc2_inv_cont : continuous_map E2 E2top R R_standard_topology c2_inv.
+{
+  claim H2d_cont : continuous_map E2 E2top R R_standard_topology
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R).
+  { exact (mul_two_continuous_R E2 E2top (const_fun E2 2) rd_fn HE2top Hconst2_cont Hrd_cont). }
+  exact (add_two_continuous_R E2 E2top
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R) (const_fun E2 (minus_SNo 1))
+    HE2top H2d_cont HconstmI_cont).
+}
+claim Hc0_inv_apply : forall u:set, u :e E2 ->
+  apply_fun c0_inv u = mul_SNo (mul_SNo 2 (apply_fun u 0)) (apply_fun rd_fn u).
+{
+  let u. assume Hu.
+  rewrite (compose_fun_apply E2 (pair_map E2
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R) rd_fn) mul_fun_R u Hu).
+  claim Hpair_main : apply_fun (pair_map E2
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R) rd_fn) u =
+    (apply_fun (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R) u, apply_fun rd_fn u).
+  { exact (pair_map_apply E2 R R
+      (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R) rd_fn u Hu). }
+  rewrite Hpair_main.
+  claim H2u0_apply : apply_fun (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R) u =
+    mul_SNo 2 (apply_fun u 0).
+  {
+    rewrite (compose_fun_apply E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R u Hu).
+    claim Hpair0 : apply_fun (pair_map E2 (const_fun E2 2) (ev2 0)) u =
+      (apply_fun (const_fun E2 2) u, apply_fun (ev2 0) u).
+    { exact (pair_map_apply E2 R R (const_fun E2 2) (ev2 0) u Hu). }
+    rewrite Hpair0.
+    rewrite (const_fun_apply E2 2 u Hu).
+    rewrite (Hev2apply u 0 Hu H0in2).
+    claim Hu0Ri : apply_fun u 0 :e R. { exact (Hu0R u Hu). }
+    rewrite (mul_fun_R_apply (2, apply_fun u 0)
+      (tuple_2_setprod_by_pair_Sigma R R 2 (apply_fun u 0) H2R Hu0Ri)).
+    rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. reflexivity.
+  }
+  rewrite H2u0_apply.
+  claim H2u0Ri : mul_SNo 2 (apply_fun u 0) :e R.
+  { exact (real_mul_SNo 2 H2R (apply_fun u 0) (Hu0R u Hu)). }
+  claim HrdRi : apply_fun rd_fn u :e R. { exact (HrdR u Hu). }
+  rewrite (mul_fun_R_apply (mul_SNo 2 (apply_fun u 0), apply_fun rd_fn u)
+    (tuple_2_setprod_by_pair_Sigma R R (mul_SNo 2 (apply_fun u 0)) (apply_fun rd_fn u) H2u0Ri HrdRi)).
+  rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. reflexivity.
+}
+claim Hc1_inv_apply : forall u:set, u :e E2 ->
+  apply_fun c1_inv u = mul_SNo (mul_SNo 2 (apply_fun u 1)) (apply_fun rd_fn u).
+{
+  let u. assume Hu.
+  rewrite (compose_fun_apply E2 (pair_map E2
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R) rd_fn) mul_fun_R u Hu).
+  claim Hpair_main : apply_fun (pair_map E2
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R) rd_fn) u =
+    (apply_fun (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R) u, apply_fun rd_fn u).
+  { exact (pair_map_apply E2 R R
+      (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R) rd_fn u Hu). }
+  rewrite Hpair_main.
+  claim H2u1_apply : apply_fun (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R) u =
+    mul_SNo 2 (apply_fun u 1).
+  {
+    rewrite (compose_fun_apply E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R u Hu).
+    claim Hpair1 : apply_fun (pair_map E2 (const_fun E2 2) (ev2 1)) u =
+      (apply_fun (const_fun E2 2) u, apply_fun (ev2 1) u).
+    { exact (pair_map_apply E2 R R (const_fun E2 2) (ev2 1) u Hu). }
+    rewrite Hpair1.
+    rewrite (const_fun_apply E2 2 u Hu).
+    rewrite (Hev2apply u 1 Hu H1in2).
+    claim Hu1Ri : apply_fun u 1 :e R. { exact (Hu1R u Hu). }
+    rewrite (mul_fun_R_apply (2, apply_fun u 1)
+      (tuple_2_setprod_by_pair_Sigma R R 2 (apply_fun u 1) H2R Hu1Ri)).
+    rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. reflexivity.
+  }
+  rewrite H2u1_apply.
+  claim H2u1Ri : mul_SNo 2 (apply_fun u 1) :e R.
+  { exact (real_mul_SNo 2 H2R (apply_fun u 1) (Hu1R u Hu)). }
+  claim HrdRi : apply_fun rd_fn u :e R. { exact (HrdR u Hu). }
+  rewrite (mul_fun_R_apply (mul_SNo 2 (apply_fun u 1), apply_fun rd_fn u)
+    (tuple_2_setprod_by_pair_Sigma R R (mul_SNo 2 (apply_fun u 1)) (apply_fun rd_fn u) H2u1Ri HrdRi)).
+  rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. reflexivity.
+}
+claim Hc2_inv_apply : forall u:set, u :e E2 ->
+  apply_fun c2_inv u = add_SNo (mul_SNo 2 (apply_fun rd_fn u)) (minus_SNo 1).
+{
+  let u. assume Hu.
+  rewrite (compose_fun_apply E2 (pair_map E2
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R) (const_fun E2 (minus_SNo 1))) add_fun_R u Hu).
+  claim Hpair_main : apply_fun (pair_map E2
+    (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R) (const_fun E2 (minus_SNo 1))) u =
+    (apply_fun (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R) u,
+     apply_fun (const_fun E2 (minus_SNo 1)) u).
+  { exact (pair_map_apply E2 R R
+      (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R) (const_fun E2 (minus_SNo 1)) u Hu). }
+  rewrite Hpair_main.
+  claim H2d_apply : apply_fun (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R) u =
+    mul_SNo 2 (apply_fun rd_fn u).
+  {
+    rewrite (compose_fun_apply E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R u Hu).
+    claim Hpaird : apply_fun (pair_map E2 (const_fun E2 2) rd_fn) u =
+      (apply_fun (const_fun E2 2) u, apply_fun rd_fn u).
+    { exact (pair_map_apply E2 R R (const_fun E2 2) rd_fn u Hu). }
+    rewrite Hpaird.
+    rewrite (const_fun_apply E2 2 u Hu).
+    claim HrdRi : apply_fun rd_fn u :e R. { exact (HrdR u Hu). }
+    rewrite (mul_fun_R_apply (2, apply_fun rd_fn u)
+      (tuple_2_setprod_by_pair_Sigma R R 2 (apply_fun rd_fn u) H2R HrdRi)).
+    rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. reflexivity.
+  }
+  rewrite H2d_apply.
+  rewrite (const_fun_apply E2 (minus_SNo 1) u Hu).
+  claim H2dRi : mul_SNo 2 (apply_fun rd_fn u) :e R.
+  { exact (real_mul_SNo 2 H2R (apply_fun rd_fn u) (HrdR u Hu)). }
+  rewrite (add_fun_R_apply (mul_SNo 2 (apply_fun rd_fn u), minus_SNo 1)
+    (tuple_2_setprod_by_pair_Sigma R R (mul_SNo 2 (apply_fun rd_fn u)) (minus_SNo 1) H2dRi HmI)).
+  rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. reflexivity.
+}
+claim Hmulfon : function_on mul_fun_R (setprod R R) R.
+{ exact (function_on_of_function_space mul_fun_R (setprod R R) R mul_fun_R_in_function_space). }
+claim Haddfon : function_on add_fun_R (setprod R R) R.
+{ exact (function_on_of_function_space add_fun_R (setprod R R) R add_fun_R_in_function_space). }
+claim Hc0_in_FS : c0_inv :e function_space E2 R.
+{
+  exact (compose_fun_in_function_space E2 (setprod R R) R
+    (pair_map E2 (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R) rd_fn)
+    mul_fun_R
+    (function_on_of_function_space
+      (pair_map E2 (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R) rd_fn)
+      E2 (setprod R R)
+      (pair_map_in_function_space E2 R R
+        (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R) rd_fn
+        (continuous_map_function_on E2 E2top R R_standard_topology
+          (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 0)) mul_fun_R)
+          (mul_two_continuous_R E2 E2top (const_fun E2 2) (ev2 0) HE2top Hconst2_cont (Hev2D 0 H0in2)))
+        (continuous_map_function_on E2 E2top R R_standard_topology rd_fn Hrd_cont)))
+    Hmulfon).
+}
+claim Hc1_in_FS : c1_inv :e function_space E2 R.
+{
+  exact (compose_fun_in_function_space E2 (setprod R R) R
+    (pair_map E2 (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R) rd_fn)
+    mul_fun_R
+    (function_on_of_function_space
+      (pair_map E2 (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R) rd_fn)
+      E2 (setprod R R)
+      (pair_map_in_function_space E2 R R
+        (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R) rd_fn
+        (continuous_map_function_on E2 E2top R R_standard_topology
+          (compose_fun E2 (pair_map E2 (const_fun E2 2) (ev2 1)) mul_fun_R)
+          (mul_two_continuous_R E2 E2top (const_fun E2 2) (ev2 1) HE2top Hconst2_cont (Hev2D 1 H1in2)))
+        (continuous_map_function_on E2 E2top R R_standard_topology rd_fn Hrd_cont)))
+    Hmulfon).
+}
+claim Hc2_in_FS : c2_inv :e function_space E2 R.
+{
+  exact (compose_fun_in_function_space E2 (setprod R R) R
+    (pair_map E2 (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R) (const_fun E2 (minus_SNo 1)))
+    add_fun_R
+    (function_on_of_function_space
+      (pair_map E2 (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R) (const_fun E2 (minus_SNo 1)))
+      E2 (setprod R R)
+      (pair_map_in_function_space E2 R R
+        (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R) (const_fun E2 (minus_SNo 1))
+        (continuous_map_function_on E2 E2top R R_standard_topology
+          (compose_fun E2 (pair_map E2 (const_fun E2 2) rd_fn) mul_fun_R)
+          (mul_two_continuous_R E2 E2top (const_fun E2 2) rd_fn HE2top Hconst2_cont Hrd_cont))
+        (continuous_map_function_on E2 E2top R R_standard_topology (const_fun E2 (minus_SNo 1)) HconstmI_cont)))
+    Haddfon).
+}
+set F3 := graph 3 (fun i:set => if i = 0 then c0_inv else if i = 1 then c1_inv else c2_inv).
+claim HF3_0 : apply_fun F3 0 :e function_space E2 R.
+{
+  rewrite (apply_fun_graph 3 (fun i:set => if i = 0 then c0_inv else if i = 1 then c1_inv else c2_inv) 0 H0in3).
+  rewrite (If_i_1 (0 = 0) c0_inv (if 0 = 1 then c1_inv else c2_inv) (eq_refl 0)).
+  exact Hc0_in_FS.
+}
+claim HF3_1 : apply_fun F3 1 :e function_space E2 R.
+{
+  rewrite (apply_fun_graph 3 (fun i:set => if i = 0 then c0_inv else if i = 1 then c1_inv else c2_inv) 1 H1in3).
+  rewrite (If_i_0 (1 = 0) c0_inv (if 1 = 1 then c1_inv else c2_inv) neq_1_0).
+  rewrite (If_i_1 (1 = 1) c1_inv c2_inv (eq_refl 1)).
+  exact Hc1_in_FS.
+}
+claim HF3_2 : apply_fun F3 2 :e function_space E2 R.
+{
+  rewrite (apply_fun_graph 3 (fun i:set => if i = 0 then c0_inv else if i = 1 then c1_inv else c2_inv) 2 H2in3l).
+  rewrite (If_i_0 (2 = 0) c0_inv (if 2 = 1 then c1_inv else c2_inv) (neq_ordsucc_0 1)).
+  rewrite (If_i_0 (2 = 1) c1_inv c2_inv Hneq_2_1).
+  exact Hc2_in_FS.
+}
+claim HF3_tfn : total_function_on F3 3 (function_space E2 R).
+{
+  apply (total_function_on_graph 3 (function_space E2 R)).
+  let i. assume Hi3.
+  apply (ordsuccE 2 i Hi3).
+  - assume Hi2.
+    apply (ordsuccE 1 i Hi2).
+    + assume Hi1.
+      apply (ordsuccE 0 i Hi1).
+      * assume Hi0. exact (EmptyE i Hi0 ((if i = 0 then c0_inv else if i = 1 then c1_inv else c2_inv) :e function_space E2 R)).
+      * assume Hieq0.
+        rewrite Hieq0.
+        prove (if 0 = 0 then c0_inv else if 0 = 1 then c1_inv else c2_inv) :e function_space E2 R.
+        rewrite (If_i_1 (0 = 0) c0_inv (if 0 = 1 then c1_inv else c2_inv) (eq_refl 0)).
+        exact Hc0_in_FS.
+    + assume Hieq1.
+      rewrite Hieq1.
+      prove (if 1 = 0 then c0_inv else if 1 = 1 then c1_inv else c2_inv) :e function_space E2 R.
+      rewrite (If_i_0 (1 = 0) c0_inv (if 1 = 1 then c1_inv else c2_inv) neq_1_0).
+      rewrite (If_i_1 (1 = 1) c1_inv c2_inv (eq_refl 1)).
+      exact Hc1_in_FS.
+  - assume Hieq2.
+    rewrite Hieq2.
+    prove (if 2 = 0 then c0_inv else if 2 = 1 then c1_inv else c2_inv) :e function_space E2 R.
+    rewrite (If_i_0 (2 = 0) c0_inv (if 2 = 1 then c1_inv else c2_inv) (neq_ordsucc_0 1)).
+    rewrite (If_i_0 (2 = 1) c1_inv c2_inv Hneq_2_1).
+    exact Hc2_in_FS.
+}
+claim HF3_cond : forall i:set, i :e 3 ->
+  continuous_map E2 E2top R R_standard_topology (apply_fun F3 i).
+{
+  let i. assume Hi3.
+  apply (ordsuccE 2 i Hi3).
+  - assume Hi2.
+    apply (ordsuccE 1 i Hi2).
+    + assume Hi1.
+      apply (ordsuccE 0 i Hi1).
+      * assume Hi0. exact (EmptyE i Hi0 (continuous_map E2 E2top R R_standard_topology (apply_fun F3 i))).
+      * assume Hieq0.
+        rewrite Hieq0.
+        rewrite (apply_fun_graph 3 (fun j:set => if j = 0 then c0_inv else if j = 1 then c1_inv else c2_inv) 0 H0in3).
+        rewrite (If_i_1 (0 = 0) c0_inv (if 0 = 1 then c1_inv else c2_inv) (eq_refl 0)).
+        exact Hc0_inv_cont.
+    + assume Hieq1.
+      rewrite Hieq1.
+      rewrite (apply_fun_graph 3 (fun j:set => if j = 0 then c0_inv else if j = 1 then c1_inv else c2_inv) 1 H1in3).
+      rewrite (If_i_0 (1 = 0) c0_inv (if 1 = 1 then c1_inv else c2_inv) neq_1_0).
+      rewrite (If_i_1 (1 = 1) c1_inv c2_inv (eq_refl 1)).
+      exact Hc1_inv_cont.
+  - assume Hieq2.
+    rewrite Hieq2.
+    rewrite (apply_fun_graph 3 (fun j:set => if j = 0 then c0_inv else if j = 1 then c1_inv else c2_inv) 2 H2in3l).
+    rewrite (If_i_0 (2 = 0) c0_inv (if 2 = 1 then c1_inv else c2_inv) (neq_ordsucc_0 1)).
+    rewrite (If_i_0 (2 = 1) c1_inv c2_inv Hneq_2_1).
+    exact Hc2_inv_cont.
+}
+claim H3ne : 3 <> Empty.
+{ exact (fun H => EmptyE 0 (H (fun t _ => 0 :e t) H0in3)). }
+claim HdiagCont :
+  continuous_map E2 E2top E3 E3top (diagonal_map E2 F3 3).
+{
+  exact (diagonal_map_continuous_power_real E2 E2top F3 3
+    HE2top H3ne HF3_tfn HF3_cond).
+}
+claim HdiagFon : function_on (diagonal_map E2 F3 3) E2 E3.
+{ exact (diagonal_map_function_on_power_real E2 F3 3 HF3_tfn). }
+claim Hpointwise_eq : forall u:set, u :e E2 ->
+  apply_fun (diagonal_map E2 F3 3) u = apply_fun stereo_S_inv_map_early_explicit u.
+{
+  let u. assume Hu.
+  apply (power_real_ext 3
+    (apply_fun (diagonal_map E2 F3 3) u)
+    (apply_fun stereo_S_inv_map_early_explicit u)
+    (HdiagFon u Hu)
+    (stereo_S_inv_map_early_explicit_function_on_E3 u Hu)).
+  let j. assume Hj3.
+  rewrite (diagonal_map_coord_apply E2 F3 3 u j Hu Hj3).
+  claim Hd : apply_fun rd_fn u = recip_SNo_pos (apply_fun denom_fn u).
+  { exact (Hrd_apply u Hu). }
+  claim Hdenom_u : apply_fun denom_fn u =
+    add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0)) (mul_SNo (apply_fun u 1) (apply_fun u 1))).
+  { exact (Hdenom_apply u Hu). }
+  apply (ordsuccE 2 j Hj3).
+  - assume Hj2.
+    apply (ordsuccE 1 j Hj2).
+    + assume Hj1.
+      apply (ordsuccE 0 j Hj1).
+      * assume Hj0. exact (EmptyE j Hj0 (apply_fun (apply_fun F3 j) u = apply_fun (apply_fun stereo_S_inv_map_early_explicit u) j)).
+      * assume Hjeq0.
+        rewrite Hjeq0.
+        rewrite (apply_fun_graph 3 (fun k:set => if k = 0 then c0_inv else if k = 1 then c1_inv else c2_inv) 0 H0in3).
+        rewrite (If_i_1 (0 = 0) c0_inv (if 0 = 1 then c1_inv else c2_inv) (eq_refl 0)).
+        rewrite (Hc0_inv_apply u Hu).
+        rewrite Hd. rewrite Hdenom_u.
+        rewrite (stereo_S_inv_map_early_explicit_coord0 u Hu). reflexivity.
+    + assume Hjeq1.
+      rewrite Hjeq1.
+      rewrite (apply_fun_graph 3 (fun k:set => if k = 0 then c0_inv else if k = 1 then c1_inv else c2_inv) 1 H1in3).
+      rewrite (If_i_0 (1 = 0) c0_inv (if 1 = 1 then c1_inv else c2_inv) neq_1_0).
+      rewrite (If_i_1 (1 = 1) c1_inv c2_inv (eq_refl 1)).
+      rewrite (Hc1_inv_apply u Hu).
+      rewrite Hd. rewrite Hdenom_u.
+      rewrite (stereo_S_inv_map_early_explicit_coord1 u Hu). reflexivity.
+  - assume Hjeq2.
+    rewrite Hjeq2.
+    rewrite (apply_fun_graph 3 (fun k:set => if k = 0 then c0_inv else if k = 1 then c1_inv else c2_inv) 2 H2in3l).
+    rewrite (If_i_0 (2 = 0) c0_inv (if 2 = 1 then c1_inv else c2_inv) (neq_ordsucc_0 1)).
+    rewrite (If_i_0 (2 = 1) c1_inv c2_inv Hneq_2_1).
+    rewrite (Hc2_inv_apply u Hu).
+    rewrite Hd. rewrite Hdenom_u.
+    rewrite (stereo_S_inv_map_early_explicit_coord2 u Hu). reflexivity.
+}
+apply (continuous_map_congr_on E2 E2top E3 E3top
+  (diagonal_map E2 F3 3) stereo_S_inv_map_early_explicit
+  HdiagCont
+  stereo_S_inv_map_early_explicit_function_on_E3).
+let u. assume Hu.
+exact (Hpointwise_eq u Hu).
+Qed.
 
 (** Infrastructure helper for early S57.2:
     explicit inverse stereographic projection from R^2 to the upper hemisphere.
     This isolates the sequential blocker before the later reusable stereo_S_inv_fn theorems. **)
+(** Proven Charlie **)
 Theorem stereo_S_inv_fn_continuous_early_explicit :
   continuous_map
     (euclidean_space 2)
@@ -193898,7 +194495,7 @@ claim HcontD_E3 :
 }
 rewrite HDTopEq.
 exact HcontD_E3.
-Admitted.
+Qed.
 
 Theorem thm57_2_equator_restriction_pair_extension_over_B2_early : forall g:set,
   antipode_preserving_Sn 2 1 g ->
