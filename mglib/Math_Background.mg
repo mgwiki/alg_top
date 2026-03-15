@@ -145151,6 +145151,54 @@ claim HioCore :
 exact HioCore.
 Qed.
 
+(** S55 helper: nonvanishing vector field on B2 has a boundary inward-pointing point. **)
+(** Proven Bob **)
+Theorem s55_nonvanishing_vector_field_has_inward_point : forall v:set,
+  continuous_map B2 B2_topology (setprod R R) R2_topology v ->
+  (forall x:set, x :e B2 -> ~(apply_fun v x 0 = 0 /\ apply_fun v x 1 = 0)) ->
+  exists x:set, x :e S1 /\ points_directly_inward v x.
+let v.
+assume HvCont HvNonzero.
+claim Hio :
+  (exists x:set, x :e S1 /\ points_directly_inward v x)
+  /\
+  (exists x:set, x :e S1 /\ points_directly_outward v x).
+{
+  exact (thm55_5_nonvanishing_vector_field
+    v
+    HvCont
+    HvNonzero).
+}
+exact (andEL
+  (exists x:set, x :e S1 /\ points_directly_inward v x)
+  (exists x:set, x :e S1 /\ points_directly_outward v x)
+  Hio).
+Qed.
+
+(** S55 helper: nonvanishing vector field on B2 has a boundary outward-pointing point. **)
+(** Proven Bob **)
+Theorem s55_nonvanishing_vector_field_has_outward_point : forall v:set,
+  continuous_map B2 B2_topology (setprod R R) R2_topology v ->
+  (forall x:set, x :e B2 -> ~(apply_fun v x 0 = 0 /\ apply_fun v x 1 = 0)) ->
+  exists x:set, x :e S1 /\ points_directly_outward v x.
+let v.
+assume HvCont HvNonzero.
+claim Hio :
+  (exists x:set, x :e S1 /\ points_directly_inward v x)
+  /\
+  (exists x:set, x :e S1 /\ points_directly_outward v x).
+{
+  exact (thm55_5_nonvanishing_vector_field
+    v
+    HvCont
+    HvNonzero).
+}
+exact (andER
+  (exists x:set, x :e S1 /\ points_directly_inward v x)
+  (exists x:set, x :e S1 /\ points_directly_outward v x)
+  Hio).
+Qed.
+
 (** from S55 Thm 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
 (** LATEX VERSION: If f: B^2 -> B^2 is continuous, then there exists a point x in B^2 such that f(x) = x. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 60 **)
