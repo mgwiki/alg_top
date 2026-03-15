@@ -140288,6 +140288,43 @@ apply iffI.
 - exact thm55_2_no_retraction_B2_S1_from_inclusion_no_extension_B2.
 Qed.
 
+(** S55 helper: inclusion non-nulhomotopy implies no retraction B2->S1. **)
+(** Proven Bob **)
+Theorem thm55_2_no_retraction_B2_S1_from_inclusion_not_nulhomotopic :
+  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)))
+  ->
+  ~(retraction_of B2 B2_topology S1).
+assume Hnotnul.
+assume Hretr.
+exact (Hnotnul
+  (s55_retraction_B2_S1_implies_inclusion_R2m0_nulhomotopic
+    Hretr)).
+Qed.
+
+(** S55 helper: no retraction B2->S1 implies inclusion S1->R2-0 is not nulhomotopic. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_implies_inclusion_not_nulhomotopic :
+  ~(retraction_of B2 B2_topology S1)
+  ->
+  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))).
+assume Hnoret.
+exact cor55_4a_inclusion_S1_R2_not_nulhomotopic.
+Qed.
+
+(** S55 helper: no-retraction of B2->S1 is equivalent to inclusion non-nulhomotopy. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_iff_inclusion_not_nulhomotopic :
+  ~(retraction_of B2 B2_topology S1)
+  <->
+  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))).
+apply iffI.
+- exact s55_no_retraction_B2_S1_implies_inclusion_not_nulhomotopic.
+- exact thm55_2_no_retraction_B2_S1_from_inclusion_not_nulhomotopic.
+Qed.
+
 (** from S55 Thm 55.2 (line 904 in algtop.tex): No-retraction theorem **)
 (** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
