@@ -140153,6 +140153,59 @@ exact (s55_not_nulhomotopic_implies_no_extension
   cor55_4a_inclusion_S1_R2_not_nulhomotopic).
 Qed.
 
+(** S55 helper: for inclusion S1->R2-0, no extension over B2 is equivalent to non-nulhomotopy. **)
+(** Proven Bob **)
+Theorem s55_inclusion_S1_R2m0_no_extension_iff_not_nulhomotopic :
+  ~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+  <->
+  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))).
+apply iffI.
+- assume Hnoext.
+  exact (iffER
+    (~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+      (graph S1 (fun x:set => x))))
+    (~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)))
+    (s55_not_nulhomotopic_iff_no_extension
+      R2_minus_origin
+      R2_minus_origin_topology
+      (graph S1 (fun x:set => x))
+      s55_inclusion_S1_R2_minus_origin_continuous)
+    Hnoext).
+- assume Hnotnul.
+  exact (iffEL
+    (~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+      (graph S1 (fun x:set => x))))
+    (~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)))
+    (s55_not_nulhomotopic_iff_no_extension
+      R2_minus_origin
+      R2_minus_origin_topology
+      (graph S1 (fun x:set => x))
+      s55_inclusion_S1_R2_minus_origin_continuous)
+    Hnotnul).
+Qed.
+
+(** S55 helper: derive inclusion non-nulhomotopy from non-extendability over B2. **)
+(** Proven Bob **)
+Theorem cor55_4a_inclusion_S1_R2_not_nulhomotopic_from_no_extension_B2 :
+  ~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+  ->
+  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))).
+assume Hnoext.
+exact (iffEL
+  (~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)))
+  (~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))))
+  s55_inclusion_S1_R2m0_no_extension_iff_not_nulhomotopic
+  Hnoext).
+Qed.
+
 (** from S55 Thm 55.2 (line 904 in algtop.tex): No-retraction theorem **)
 (** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
