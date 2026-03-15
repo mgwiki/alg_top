@@ -141191,6 +141191,138 @@ apply iffI.
       HnotnulId)).
 Qed.
 
+(** S55 helper: inclusion and identity nulhomotopy are equivalent. **)
+(** Proven Bob **)
+Theorem s55_inclusion_nulhomotopic_iff_identity_nulhomotopic :
+  nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))
+  <->
+  nulhomotopic S1 S1_topology S1 S1_topology
+    (graph S1 (fun x:set => x)).
+apply iffI.
+- assume HnulIncl.
+  apply (xm
+    (nulhomotopic S1 S1_topology S1 S1_topology
+      (graph S1 (fun x:set => x)))).
+  + assume HnulId.
+    exact HnulId.
+  + assume HnotnulId.
+    claim HnotnulIncl :
+      ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+        (graph S1 (fun x:set => x))).
+    {
+      exact (iffER
+        (~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+          (graph S1 (fun x:set => x))))
+        (~(nulhomotopic S1 S1_topology S1 S1_topology
+          (graph S1 (fun x:set => x))))
+        s55_inclusion_not_nulhomotopic_iff_identity_not_nulhomotopic
+        HnotnulId).
+    }
+    exact (FalseE
+      (HnotnulIncl HnulIncl)
+      (nulhomotopic S1 S1_topology S1 S1_topology
+        (graph S1 (fun x:set => x)))).
+- assume HnulId.
+  apply (xm
+    (nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+      (graph S1 (fun x:set => x)))).
+  + assume HnulIncl.
+    exact HnulIncl.
+  + assume HnotnulIncl.
+    claim HnotnulId :
+      ~(nulhomotopic S1 S1_topology S1 S1_topology
+        (graph S1 (fun x:set => x))).
+    {
+      exact (iffEL
+        (~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+          (graph S1 (fun x:set => x))))
+        (~(nulhomotopic S1 S1_topology S1 S1_topology
+          (graph S1 (fun x:set => x))))
+        s55_inclusion_not_nulhomotopic_iff_identity_not_nulhomotopic
+        HnotnulIncl).
+    }
+    exact (FalseE
+      (HnotnulId HnulId)
+      (nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+        (graph S1 (fun x:set => x)))).
+Qed.
+
+(** S55 helper: inclusion and identity extension-over-B2 are equivalent. **)
+(** Proven Bob **)
+Theorem s55_inclusion_extends_B2_iff_identity_extends_B2 :
+  (exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+  <->
+  (exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+apply iffI.
+- assume HextIncl.
+  claim HnulIncl :
+    nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+      (graph S1 (fun x:set => x)).
+  {
+    exact (iffER
+      (nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+        (graph S1 (fun x:set => x)))
+      (exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+        (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+      s55_inclusion_S1_R2m0_nulhomotopic_iff_extends_B2
+      HextIncl).
+  }
+  claim HnulId :
+    nulhomotopic S1 S1_topology S1 S1_topology
+      (graph S1 (fun x:set => x)).
+  {
+    exact (iffEL
+      (nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+        (graph S1 (fun x:set => x)))
+      (nulhomotopic S1 S1_topology S1 S1_topology
+        (graph S1 (fun x:set => x)))
+      s55_inclusion_nulhomotopic_iff_identity_nulhomotopic
+      HnulIncl).
+  }
+  exact (iffER
+    (exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+    (nulhomotopic S1 S1_topology S1 S1_topology
+      (graph S1 (fun x:set => x)))
+    s55_extension_identity_B2_S1_iff_identity_nulhomotopic
+    HnulId).
+- assume HextId.
+  claim HnulId :
+    nulhomotopic S1 S1_topology S1 S1_topology
+      (graph S1 (fun x:set => x)).
+  {
+    exact (iffEL
+      (exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+        (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+      (nulhomotopic S1 S1_topology S1 S1_topology
+        (graph S1 (fun x:set => x)))
+      s55_extension_identity_B2_S1_iff_identity_nulhomotopic
+      HextId).
+  }
+  claim HnulIncl :
+    nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+      (graph S1 (fun x:set => x)).
+  {
+    exact (iffER
+      (nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+        (graph S1 (fun x:set => x)))
+      (nulhomotopic S1 S1_topology S1 S1_topology
+        (graph S1 (fun x:set => x)))
+      s55_inclusion_nulhomotopic_iff_identity_nulhomotopic
+      HnulId).
+  }
+  exact (iffEL
+    (nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+      (graph S1 (fun x:set => x)))
+    (exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+    s55_inclusion_S1_R2m0_nulhomotopic_iff_extends_B2
+    HnulIncl).
+Qed.
+
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
