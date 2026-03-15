@@ -335733,7 +335733,8 @@ apply andI.
   + (** Component 5: unique reduced word representation **)
     admit.
 - (** Component 6: efam maps to identity **)
-  admit.
+  let alpha. assume Halpha : alpha :e J.
+  exact (apply_fun_graph J (fun a:set => e) alpha Halpha).
 Admitted.
 
 
