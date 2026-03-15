@@ -188172,14 +188172,26 @@ claim HrOdd :
       exact (HsNe0
         Hs0).
     }
-    claim HnormNegEq :
-      sqrt_SNo_nonneg
-        (add_SNo (mul_SNo ((minus_SNo (p 0), minus_SNo (p 1)) 0) ((minus_SNo (p 0), minus_SNo (p 1)) 0))
-          (mul_SNo ((minus_SNo (p 0), minus_SNo (p 1)) 1) ((minus_SNo (p 0), minus_SNo (p 1)) 1)))
-      = dnorm.
-    {
-      admit.
-    }
+	    claim HnormNegEq :
+	      sqrt_SNo_nonneg
+	        (add_SNo (mul_SNo ((minus_SNo (p 0), minus_SNo (p 1)) 0) ((minus_SNo (p 0), minus_SNo (p 1)) 0))
+	          (mul_SNo ((minus_SNo (p 0), minus_SNo (p 1)) 1) ((minus_SNo (p 0), minus_SNo (p 1)) 1)))
+	      = dnorm.
+	    {
+	      rewrite tuple_2_0_eq.
+	      rewrite tuple_2_1_eq.
+	      rewrite (mul_SNo_minus_minus
+	        (p 0)
+	        (p 0)
+	        Hp0S
+	        Hp0S).
+	      rewrite (mul_SNo_minus_minus
+	        (p 1)
+	        (p 1)
+	        Hp1S
+	        Hp1S).
+	      reflexivity.
+	    }
     rewrite HargEq.
     rewrite (apply_fun_graph
       R2_minus_origin
@@ -188796,13 +188808,227 @@ claim HgAnti :
     apply_fun (apply_fun g (Rn_negate 3 x)) 0 =
     minus_SNo (apply_fun gpair x 0).
   {
-    admit.
+    claim HgpairxS1 : apply_fun gpair x :e S1.
+    {
+      rewrite (compose_fun_apply
+        (Sn 2)
+        d
+        r
+        x
+        HxSn2).
+      exact (HrIntoS1
+        (apply_fun d x)
+        (HdInto
+          x
+          HxSn2)).
+    }
+    claim HgpairxR2 : apply_fun gpair x :e setprod R R.
+    {
+      exact (SepE1
+        (setprod R R)
+        (fun p:set =>
+          add_SNo (mul_SNo (p 0) (p 0))
+            (mul_SNo (p 1) (p 1)) = 1)
+        (apply_fun gpair x)
+        HgpairxS1).
+    }
+    claim HgnxpairS1 : apply_fun gpair (Rn_negate 3 x) :e S1.
+    {
+      rewrite (compose_fun_apply
+        (Sn 2)
+        d
+        r
+        (Rn_negate 3 x)
+        HnxSn2).
+      exact (HrIntoS1
+        (apply_fun d (Rn_negate 3 x))
+        (HdInto
+          (Rn_negate 3 x)
+          HnxSn2)).
+    }
+    claim HgnxpairR2 : apply_fun gpair (Rn_negate 3 x) :e setprod R R.
+    {
+      exact (SepE1
+        (setprod R R)
+        (fun p:set =>
+          add_SNo (mul_SNo (p 0) (p 0))
+            (mul_SNo (p 1) (p 1)) = 1)
+        (apply_fun gpair (Rn_negate 3 x))
+        HgnxpairS1).
+    }
+    claim HgnxpairAp0Eq :
+      apply_fun (apply_fun gpair (Rn_negate 3 x)) 0 =
+      apply_fun gpair (Rn_negate 3 x) 0.
+    {
+      exact (andEL
+        (apply_fun (apply_fun gpair (Rn_negate 3 x)) 0 =
+         apply_fun gpair (Rn_negate 3 x) 0)
+        (apply_fun (apply_fun gpair (Rn_negate 3 x)) 1 =
+         apply_fun gpair (Rn_negate 3 x) 1)
+        (setprod_R_R_apply_fun_coords
+          (apply_fun gpair (Rn_negate 3 x))
+          HgnxpairR2)).
+    }
+    claim HgpairxAp0Eq :
+      apply_fun (apply_fun gpair x) 0 =
+      apply_fun gpair x 0.
+    {
+      exact (andEL
+        (apply_fun (apply_fun gpair x) 0 = apply_fun gpair x 0)
+        (apply_fun (apply_fun gpair x) 1 = apply_fun gpair x 1)
+        (setprod_R_R_apply_fun_coords
+          (apply_fun gpair x)
+          HgpairxR2)).
+    }
+    exact (eq_i_tra
+      (apply_fun (apply_fun g (Rn_negate 3 x)) 0)
+      (apply_fun gpair (Rn_negate 3 x) 0)
+      (minus_SNo (apply_fun gpair x 0))
+      HgnxCoord0
+      (eq_i_tra
+        (apply_fun gpair (Rn_negate 3 x) 0)
+        (apply_fun (apply_fun gpair (Rn_negate 3 x)) 0)
+        (minus_SNo (apply_fun gpair x 0))
+        (eq_symm
+          (apply_fun (apply_fun gpair (Rn_negate 3 x)) 0)
+          (apply_fun gpair (Rn_negate 3 x) 0)
+          HgnxpairAp0Eq)
+        (eq_i_tra
+          (apply_fun (apply_fun gpair (Rn_negate 3 x)) 0)
+          (apply_fun (Rn_negate 2 (apply_fun gpair x)) 0)
+          (minus_SNo (apply_fun gpair x 0))
+          (apply_fun_congr_early
+            (apply_fun gpair (Rn_negate 3 x))
+            (Rn_negate 2 (apply_fun gpair x))
+            0
+            (HgpairOdd
+              x
+              HxSn2))
+          (eq_i_tra
+            (apply_fun (Rn_negate 2 (apply_fun gpair x)) 0)
+            (minus_SNo (apply_fun (apply_fun gpair x) 0))
+            (minus_SNo (apply_fun gpair x 0))
+            (Rn_negate_apply
+              2
+              (apply_fun gpair x)
+              0
+              In_0_2)
+            (HgpairxAp0Eq
+              (fun z Hz => minus_SNo (apply_fun (apply_fun gpair x) 0) = minus_SNo z)
+              (eq_refl (minus_SNo (apply_fun (apply_fun gpair x) 0)))))))).
   }
   claim HgnxAnti1 :
     apply_fun (apply_fun g (Rn_negate 3 x)) 1 =
     minus_SNo (apply_fun gpair x 1).
   {
-    admit.
+    claim HgpairxS1 : apply_fun gpair x :e S1.
+    {
+      rewrite (compose_fun_apply
+        (Sn 2)
+        d
+        r
+        x
+        HxSn2).
+      exact (HrIntoS1
+        (apply_fun d x)
+        (HdInto
+          x
+          HxSn2)).
+    }
+    claim HgpairxR2 : apply_fun gpair x :e setprod R R.
+    {
+      exact (SepE1
+        (setprod R R)
+        (fun p:set =>
+          add_SNo (mul_SNo (p 0) (p 0))
+            (mul_SNo (p 1) (p 1)) = 1)
+        (apply_fun gpair x)
+        HgpairxS1).
+    }
+    claim HgnxpairS1 : apply_fun gpair (Rn_negate 3 x) :e S1.
+    {
+      rewrite (compose_fun_apply
+        (Sn 2)
+        d
+        r
+        (Rn_negate 3 x)
+        HnxSn2).
+      exact (HrIntoS1
+        (apply_fun d (Rn_negate 3 x))
+        (HdInto
+          (Rn_negate 3 x)
+          HnxSn2)).
+    }
+    claim HgnxpairR2 : apply_fun gpair (Rn_negate 3 x) :e setprod R R.
+    {
+      exact (SepE1
+        (setprod R R)
+        (fun p:set =>
+          add_SNo (mul_SNo (p 0) (p 0))
+            (mul_SNo (p 1) (p 1)) = 1)
+        (apply_fun gpair (Rn_negate 3 x))
+        HgnxpairS1).
+    }
+    claim HgnxpairAp1Eq :
+      apply_fun (apply_fun gpair (Rn_negate 3 x)) 1 =
+      apply_fun gpair (Rn_negate 3 x) 1.
+    {
+      exact (andER
+        (apply_fun (apply_fun gpair (Rn_negate 3 x)) 0 =
+         apply_fun gpair (Rn_negate 3 x) 0)
+        (apply_fun (apply_fun gpair (Rn_negate 3 x)) 1 =
+         apply_fun gpair (Rn_negate 3 x) 1)
+        (setprod_R_R_apply_fun_coords
+          (apply_fun gpair (Rn_negate 3 x))
+          HgnxpairR2)).
+    }
+    claim HgpairxAp1Eq :
+      apply_fun (apply_fun gpair x) 1 =
+      apply_fun gpair x 1.
+    {
+      exact (andER
+        (apply_fun (apply_fun gpair x) 0 = apply_fun gpair x 0)
+        (apply_fun (apply_fun gpair x) 1 = apply_fun gpair x 1)
+        (setprod_R_R_apply_fun_coords
+          (apply_fun gpair x)
+          HgpairxR2)).
+    }
+    exact (eq_i_tra
+      (apply_fun (apply_fun g (Rn_negate 3 x)) 1)
+      (apply_fun gpair (Rn_negate 3 x) 1)
+      (minus_SNo (apply_fun gpair x 1))
+      HgnxCoord1
+      (eq_i_tra
+        (apply_fun gpair (Rn_negate 3 x) 1)
+        (apply_fun (apply_fun gpair (Rn_negate 3 x)) 1)
+        (minus_SNo (apply_fun gpair x 1))
+        (eq_symm
+          (apply_fun (apply_fun gpair (Rn_negate 3 x)) 1)
+          (apply_fun gpair (Rn_negate 3 x) 1)
+          HgnxpairAp1Eq)
+        (eq_i_tra
+          (apply_fun (apply_fun gpair (Rn_negate 3 x)) 1)
+          (apply_fun (Rn_negate 2 (apply_fun gpair x)) 1)
+          (minus_SNo (apply_fun gpair x 1))
+          (apply_fun_congr_early
+            (apply_fun gpair (Rn_negate 3 x))
+            (Rn_negate 2 (apply_fun gpair x))
+            1
+            (HgpairOdd
+              x
+              HxSn2))
+          (eq_i_tra
+            (apply_fun (Rn_negate 2 (apply_fun gpair x)) 1)
+            (minus_SNo (apply_fun (apply_fun gpair x) 1))
+            (minus_SNo (apply_fun gpair x 1))
+            (Rn_negate_apply
+              2
+              (apply_fun gpair x)
+              1
+              In_1_2)
+            (HgpairxAp1Eq
+              (fun z Hz => minus_SNo (apply_fun (apply_fun gpair x) 1) = minus_SNo z)
+              (eq_refl (minus_SNo (apply_fun (apply_fun gpair x) 1)))))))).
   }
   exact (eq_i_tra
     (apply_fun g (Rn_negate 3 x))
