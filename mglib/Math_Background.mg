@@ -186281,9 +186281,561 @@ claim HgammaClassInImage :
       (apply_fun covering_map_R_S1 e0)
       covering_map_R_S1).
 {
-  (** Remaining real content:
-      nullhomotopy of h implies the loop class of gamma is trivial, hence in the image. **)
-  admit.
+  claim HgammaClassId :
+    path_homotopy_class_loop S1 S1_topology (apply_fun covering_map_R_S1 e0) gamma =
+    fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0).
+  {
+    set pI := graphify_on unit_interval covering_map_R_S1.
+    claim HpIfs : pI :e function_space unit_interval S1.
+    {
+      exact (graph_in_function_space
+        unit_interval
+        S1
+        (fun t:set => apply_fun covering_map_R_S1 t)
+        (fun t Ht => covering_map_R_S1_function_on t (unit_interval_sub_R t Ht))).
+    }
+    claim HpIfun : function_on pI unit_interval S1.
+    {
+      exact (function_on_of_function_space
+        pI
+        unit_interval
+        S1
+        HpIfs).
+    }
+    claim HpIcont :
+      continuous_map unit_interval unit_interval_topology S1 S1_topology pI.
+    {
+      exact (continuous_map_congr_on
+        unit_interval
+        unit_interval_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        pI
+        covering_map_R_S1_continuous_on_unit_interval
+        HpIfun
+        (fun t Ht =>
+          eq_symm
+            (apply_fun pI t)
+            (apply_fun covering_map_R_S1 t)
+            (graphify_on_apply unit_interval covering_map_R_S1 t Ht))).
+    }
+    claim HpI0 : apply_fun pI 0 = S1_basepoint.
+    {
+      rewrite (graphify_on_apply
+        unit_interval
+        covering_map_R_S1
+        0
+        zero_in_unit_interval).
+      exact Hcover0.
+    }
+    claim HpI1 : apply_fun pI 1 = S1_basepoint.
+    {
+      rewrite (graphify_on_apply
+        unit_interval
+        covering_map_R_S1
+        1
+        one_in_unit_interval).
+      exact Hcover1.
+    }
+    claim HpIloopAt : loop_at S1 S1_topology S1_basepoint pI.
+    {
+      apply (loop_at_fold
+        S1
+        S1_topology
+        S1_basepoint
+        pI).
+      apply andI.
+      - apply andI.
+        + exact HpIcont.
+        + exact HpI0.
+      - exact HpI1.
+    }
+    claim HpIloop : pI :e loop_space S1 S1_topology S1_basepoint.
+    {
+      exact (SepI
+        (function_space unit_interval S1)
+        (fun g:set => loop_at S1 S1_topology S1_basepoint g)
+        pI
+        HpIfs
+        HpIloopAt).
+    }
+    set cls0 := path_homotopy_class_loop S1 S1_topology S1_basepoint pI.
+    claim Hcls0Mem : cls0 :e fundamental_group S1 S1_topology S1_basepoint.
+    {
+      exact (path_homotopy_class_in_fundamental_group
+        S1
+        S1_topology
+        S1_basepoint
+        pI
+        HpIloop).
+    }
+    claim HhTriv :
+      apply_fun
+        (induced_homomorphism
+          S1
+          S1_topology
+          S1_basepoint
+          S1
+          S1_topology
+          (apply_fun h S1_basepoint)
+          h)
+        cls0
+      =
+      fundamental_group_id S1 S1_topology (apply_fun h S1_basepoint).
+    {
+      exact ((s55_cor58_6_nulhomotopic_trivial
+        S1
+        S1_topology
+        S1
+        S1_topology
+        h
+        S1_basepoint
+        HhCont
+        Hb0S1
+        Hnul)
+        cls0
+        Hcls0Mem).
+    }
+    set eps0 := Eps_i (fun f:set => f :e cls0).
+    claim Heps0InCls : eps0 :e cls0.
+    {
+      exact (Eps_i_ax
+        (fun f:set => f :e cls0)
+        pI
+        (loop_in_own_path_homotopy_class
+          S1
+          S1_topology
+          S1_basepoint
+          pI
+          HpIloop)).
+    }
+    claim Heps0Hom :
+      path_homotopic
+        S1
+        S1_topology
+        S1_basepoint
+        S1_basepoint
+        pI
+        eps0.
+    {
+      exact (path_homotopy_class_loop_has_homotopy
+        S1
+        S1_topology
+        S1_basepoint
+        pI
+        eps0
+        Heps0InCls).
+    }
+    claim Heps0Loop : eps0 :e loop_space S1 S1_topology S1_basepoint.
+    {
+      exact (path_homotopy_class_loop_in_loop_space
+        S1
+        S1_topology
+        S1_basepoint
+        pI
+        eps0
+        Heps0InCls).
+    }
+    claim Heps0Cont :
+      continuous_map unit_interval unit_interval_topology S1 S1_topology eps0.
+    {
+      exact (loop_space_continuous
+        S1
+        S1_topology
+        S1_basepoint
+        eps0
+        Heps0Loop).
+    }
+    claim Heps0_0 : apply_fun eps0 0 = S1_basepoint.
+    {
+      exact (loop_at_at_zero
+        S1
+        S1_topology
+        S1_basepoint
+        eps0
+        (loop_space_has_loop_at
+          S1
+          S1_topology
+          S1_basepoint
+          eps0
+          Heps0Loop)).
+    }
+    claim Heps0_1 : apply_fun eps0 1 = S1_basepoint.
+    {
+      exact (loop_at_at_one
+        S1
+        S1_topology
+        S1_basepoint
+        eps0
+        (loop_space_has_loop_at
+          S1
+          S1_topology
+          S1_basepoint
+          eps0
+          Heps0Loop)).
+    }
+    claim HcompEpsClass :
+      path_homotopy_class_loop
+        S1
+        S1_topology
+        (apply_fun h S1_basepoint)
+        (compose_fun unit_interval eps0 h)
+      =
+      path_homotopy_class_loop
+        S1
+        S1_topology
+        (apply_fun h S1_basepoint)
+        (compose_fun unit_interval pI h).
+    {
+      claim HpostHom :
+        path_homotopic
+          S1
+          S1_topology
+          (apply_fun h S1_basepoint)
+          (apply_fun h S1_basepoint)
+          (compose_fun unit_interval pI h)
+          (compose_fun unit_interval eps0 h).
+      {
+        exact (path_homotopic_postcompose
+          S1
+          S1_topology
+          S1
+          S1_topology
+          S1_basepoint
+          S1_basepoint
+          (apply_fun h S1_basepoint)
+          (apply_fun h S1_basepoint)
+          pI
+          eps0
+          h
+          Heps0Hom
+          HhCont
+          (eq_refl (apply_fun h S1_basepoint))
+          (eq_refl (apply_fun h S1_basepoint))).
+      }
+      symmetry.
+      exact (path_homotopy_class_loop_eq_of_path_homotopic
+        S1
+        S1_topology
+        (apply_fun h S1_basepoint)
+        (compose_fun unit_interval pI h)
+        (compose_fun unit_interval eps0 h)
+        HpostHom).
+    }
+    claim HcompPIcont :
+      continuous_map unit_interval unit_interval_topology S1 S1_topology
+        (compose_fun unit_interval pI h).
+    {
+      exact (composition_continuous
+        unit_interval
+        unit_interval_topology
+        S1
+        S1_topology
+        S1
+        S1_topology
+        pI
+        h
+        HpIcont
+        HhCont).
+    }
+    claim HcompPI0 :
+      apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint.
+    {
+      rewrite (compose_fun_apply
+        unit_interval
+        pI
+        h
+        0
+        zero_in_unit_interval).
+      rewrite HpI0.
+      reflexivity.
+    }
+    claim HcompPI1 :
+      apply_fun (compose_fun unit_interval pI h) 1 = apply_fun h S1_basepoint.
+    {
+      rewrite (compose_fun_apply
+        unit_interval
+        pI
+        h
+        1
+        one_in_unit_interval).
+      rewrite HpI1.
+      reflexivity.
+    }
+    claim HcompGammaClass :
+      path_homotopy_class_loop
+        S1
+        S1_topology
+        (apply_fun h S1_basepoint)
+        (compose_fun unit_interval pI h)
+      =
+      path_homotopy_class_loop
+        S1
+        S1_topology
+        (apply_fun h S1_basepoint)
+        gamma.
+    {
+      claim HpwCompGamma :
+        forall s:set, s :e unit_interval ->
+          apply_fun (compose_fun unit_interval pI h) s = apply_fun gamma s.
+      {
+        let s.
+        assume Hs.
+        rewrite (compose_fun_apply
+          unit_interval
+          pI
+          h
+          s
+          Hs).
+        rewrite (compose_fun_apply
+          unit_interval
+          covering_map_R_S1
+          h
+          s
+          Hs).
+        rewrite (graphify_on_apply
+          unit_interval
+          covering_map_R_S1
+          s
+          Hs).
+        reflexivity.
+      }
+      claim HcompGammaHom :
+        path_homotopic
+          S1
+          S1_topology
+          (apply_fun h S1_basepoint)
+          (apply_fun h S1_basepoint)
+          (compose_fun unit_interval pI h)
+          gamma.
+      {
+        exact (path_homotopic_of_pointwise_equal
+          S1
+          S1_topology
+          (apply_fun h S1_basepoint)
+          (apply_fun h S1_basepoint)
+          (compose_fun unit_interval pI h)
+          gamma
+          HcompPIcont
+          HgammaCont
+          HcompPI0
+          HcompPI1
+          Hgamma0
+          Hgamma1
+          HpwCompGamma).
+      }
+      exact (path_homotopy_class_loop_eq_of_path_homotopic
+        S1
+        S1_topology
+        (apply_fun h S1_basepoint)
+        (compose_fun unit_interval pI h)
+        gamma
+        HcompGammaHom).
+    }
+    rewrite He0Start.
+    rewrite <- HhTriv.
+    rewrite (induced_homomorphism_apply
+      S1
+      S1_topology
+      S1_basepoint
+      S1
+      S1_topology
+      (apply_fun h S1_basepoint)
+      h
+      cls0
+      Hcls0Mem).
+    rewrite HcompEpsClass.
+    rewrite HcompGammaClass.
+    reflexivity.
+  }
+  claim HtopR : topology_on R R_standard_topology.
+  { exact R_standard_topology_is_topology_local. }
+  claim HtopS1 : topology_on S1 S1_topology.
+  {
+    exact (continuous_map_topology_cod
+      S1
+      S1_topology
+      S1
+      S1_topology
+      h
+      HhCont).
+  }
+  claim HgrpR :
+    group_structure
+      (fundamental_group R R_standard_topology e0)
+      (fundamental_group_mult R R_standard_topology e0)
+      (fundamental_group_id R R_standard_topology e0)
+      (fundamental_group_inv R R_standard_topology e0).
+  {
+    exact (fundamental_group_is_group
+      R
+      R_standard_topology
+      e0
+      HtopR
+      He0R).
+  }
+  claim HgrpS1 :
+    group_structure
+      (fundamental_group S1 S1_topology (apply_fun covering_map_R_S1 e0))
+      (fundamental_group_mult S1 S1_topology (apply_fun covering_map_R_S1 e0))
+      (fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0))
+      (fundamental_group_inv S1 S1_topology (apply_fun covering_map_R_S1 e0)).
+  {
+    exact (fundamental_group_is_group
+      S1
+      S1_topology
+      (apply_fun covering_map_R_S1 e0)
+      HtopS1
+      (covering_map_R_S1_on_S1 e0 He0R)).
+  }
+  claim HpCont :
+    continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1.
+  {
+    exact (andEL
+      (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1)
+      (surjective_map R S1 covering_map_R_S1)
+      (andEL
+        (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1 /\
+         surjective_map R S1 covering_map_R_S1)
+        (forall b:set, b :e S1 ->
+          exists U:set, U :e S1_topology /\ b :e U /\
+            evenly_covered R R_standard_topology S1 S1_topology covering_map_R_S1 U)
+        thm53_1_R_covers_S1)).
+  }
+  claim HpstarHom :
+    group_homomorphism
+      (fundamental_group R R_standard_topology e0)
+      (fundamental_group_mult R R_standard_topology e0)
+      (fundamental_group S1 S1_topology (apply_fun covering_map_R_S1 e0))
+      (fundamental_group_mult S1 S1_topology (apply_fun covering_map_R_S1 e0))
+      (induced_homomorphism
+        R
+        R_standard_topology
+        e0
+        S1
+        S1_topology
+        (apply_fun covering_map_R_S1 e0)
+        covering_map_R_S1).
+  {
+    exact (induced_homomorphism_is_homomorphism
+      R
+      R_standard_topology
+      e0
+      S1
+      S1_topology
+      (apply_fun covering_map_R_S1 e0)
+      covering_map_R_S1
+      HpCont
+      (eq_refl (apply_fun covering_map_R_S1 e0))
+      He0R).
+  }
+  claim HidrMem :
+    fundamental_group_id R R_standard_topology e0 :e
+    fundamental_group R R_standard_topology e0.
+  {
+    claim HconstLoopAt : loop_at R R_standard_topology e0 (constant_path e0).
+    {
+      exact (loop_at_constant_path
+        R
+        R_standard_topology
+        e0
+        HtopR
+        He0R).
+    }
+    claim HconstFS :
+      (constant_path e0) :e function_space unit_interval R.
+    {
+      exact (graph_in_function_space
+        unit_interval
+        R
+        (fun _:set => e0)
+        (fun _ _ => He0R)).
+    }
+    claim HconstLoop :
+      (constant_path e0) :e loop_space R R_standard_topology e0.
+    {
+      exact (SepI
+        (function_space unit_interval R)
+        (fun g:set => loop_at R R_standard_topology e0 g)
+        (constant_path e0)
+        HconstFS
+        HconstLoopAt).
+    }
+    exact (path_homotopy_class_in_fundamental_group
+      R
+      R_standard_topology
+      e0
+      (constant_path e0)
+      HconstLoop).
+  }
+  claim HidImg :
+    fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0) :e
+    homomorphism_image
+      (fundamental_group R R_standard_topology e0)
+      (induced_homomorphism
+        R
+        R_standard_topology
+        e0
+        S1
+        S1_topology
+        (apply_fun covering_map_R_S1 e0)
+        covering_map_R_S1).
+  {
+    claim HpresId :
+      apply_fun
+        (induced_homomorphism
+          R
+          R_standard_topology
+          e0
+          S1
+          S1_topology
+          (apply_fun covering_map_R_S1 e0)
+          covering_map_R_S1)
+        (fundamental_group_id R R_standard_topology e0)
+      =
+      fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0).
+    {
+      exact (group_hom_sends_identity_cyclic_helper
+        (fundamental_group R R_standard_topology e0)
+        (fundamental_group_mult R R_standard_topology e0)
+        (fundamental_group_id R R_standard_topology e0)
+        (fundamental_group_inv R R_standard_topology e0)
+        (fundamental_group S1 S1_topology (apply_fun covering_map_R_S1 e0))
+        (fundamental_group_mult S1 S1_topology (apply_fun covering_map_R_S1 e0))
+        (fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0))
+        (fundamental_group_inv S1 S1_topology (apply_fun covering_map_R_S1 e0))
+        (induced_homomorphism
+          R
+          R_standard_topology
+          e0
+          S1
+          S1_topology
+          (apply_fun covering_map_R_S1 e0)
+          covering_map_R_S1)
+        HgrpR
+        HgrpS1
+        HpstarHom).
+    }
+    rewrite <- HpresId.
+    exact (ReplI
+      (fundamental_group R R_standard_topology e0)
+      (fun cls:set =>
+        apply_fun
+          (induced_homomorphism
+            R
+            R_standard_topology
+            e0
+            S1
+            S1_topology
+            (apply_fun covering_map_R_S1 e0)
+            covering_map_R_S1)
+          cls)
+      (fundamental_group_id R R_standard_topology e0)
+      HidrMem).
+  }
+  rewrite HgammaClassId.
+  exact HidImg.
 }
 claim HliftLoop :
   apply_fun (path_lift
