@@ -188236,16 +188236,46 @@ claim HrOdd :
         p
         HpR2m0).
     }
-    claim HrhsModel :
-      Rn_negate 2 (apply_fun r p) =
-      (minus_SNo (apply_fun r p 0),
-       minus_SNo (apply_fun r p 1)).
-    {
-      claim Hrp0R :
-        apply_fun r p 0 :e R.
-      {
-        rewrite HrpEq.
-        rewrite tuple_2_0_eq.
+	    claim HrhsModel :
+	      Rn_negate 2 (apply_fun r p) =
+	      (minus_SNo (apply_fun r p 0),
+	       minus_SNo (apply_fun r p 1)).
+	    {
+	      claim HrpR2 : apply_fun r p :e setprod R R.
+	      {
+	        exact (SepE1
+	          (setprod R R)
+	          (fun q:set =>
+	            add_SNo (mul_SNo (q 0) (q 0))
+	              (mul_SNo (q 1) (q 1)) = 1)
+	          (apply_fun r p)
+	          (HrIntoS1
+	            p
+	            HpR2m0)).
+	      }
+	      claim HrpAp0Eq : apply_fun (apply_fun r p) 0 = apply_fun r p 0.
+	      {
+	        exact (andEL
+	          (apply_fun (apply_fun r p) 0 = apply_fun r p 0)
+	          (apply_fun (apply_fun r p) 1 = apply_fun r p 1)
+	          (setprod_R_R_apply_fun_coords
+	            (apply_fun r p)
+	            HrpR2)).
+	      }
+	      claim HrpAp1Eq : apply_fun (apply_fun r p) 1 = apply_fun r p 1.
+	      {
+	        exact (andER
+	          (apply_fun (apply_fun r p) 0 = apply_fun r p 0)
+	          (apply_fun (apply_fun r p) 1 = apply_fun r p 1)
+	          (setprod_R_R_apply_fun_coords
+	            (apply_fun r p)
+	            HrpR2)).
+	      }
+	      claim Hrp0R :
+	        apply_fun r p 0 :e R.
+	      {
+	        rewrite HrpEq.
+	        rewrite tuple_2_0_eq.
         exact (real_div_SNo
           (p 0)
           Hp0R
@@ -188263,20 +188293,107 @@ claim HrOdd :
           dnorm
           HdnormR).
       }
-      claim HnegrpE2 :
-        Rn_negate 2 (apply_fun r p) :e euclidean_space 2.
-      {
-        admit.
-      }
-      claim HnegrpPair :
-        (apply_fun (Rn_negate 2 (apply_fun r p)) 0,
-         apply_fun (Rn_negate 2 (apply_fun r p)) 1)
-        =
-        (minus_SNo (apply_fun r p 0),
-         minus_SNo (apply_fun r p 1)).
-      {
-        admit.
-      }
+	      claim HnegrpE2 :
+	        Rn_negate 2 (apply_fun r p) :e euclidean_space 2.
+	      {
+	        claim HnegrpDef :
+	          Rn_negate 2 (apply_fun r p)
+	          = graph 2 (fun i:set => minus_SNo (apply_fun (apply_fun r p) i)).
+	        {
+	          reflexivity.
+	        }
+	        claim HnegrpGraphEq :
+	          graph 2 (fun i:set => minus_SNo (apply_fun (apply_fun r p) i))
+	          =
+	          graph 2 (fun i:set => if i = 0 then minus_SNo (apply_fun r p 0) else minus_SNo (apply_fun r p 1)).
+	        {
+	          apply (graph_extensional
+	            2
+	            (fun i:set => minus_SNo (apply_fun (apply_fun r p) i))
+	            (fun i:set => if i = 0 then minus_SNo (apply_fun r p 0) else minus_SNo (apply_fun r p 1))).
+	          let i.
+	          assume Hi2.
+	          apply (ordsuccE 1 i Hi2).
+	          - assume Hi1.
+	            apply (ordsuccE 0 i Hi1).
+	            + assume Hi0.
+	              exact (EmptyE
+	                i
+	                Hi0
+	                (minus_SNo (apply_fun (apply_fun r p) i)
+	                 =
+	                 (if i = 0 then minus_SNo (apply_fun r p 0) else minus_SNo (apply_fun r p 1)))).
+	            + assume Hieq0.
+	              rewrite Hieq0.
+	              rewrite HrpAp0Eq.
+	              exact (eq_symm
+	                (if 0 = 0 then minus_SNo (apply_fun r p 0) else minus_SNo (apply_fun r p 1))
+	                (minus_SNo (apply_fun r p 0))
+	                (If_i_1
+	                  (0 = 0)
+	                  (minus_SNo (apply_fun r p 0))
+	                  (minus_SNo (apply_fun r p 1))
+	                  (eq_refl 0))).
+	          - assume Hieq1.
+	            rewrite Hieq1.
+	            rewrite HrpAp1Eq.
+	            exact (eq_symm
+	              (if 1 = 0 then minus_SNo (apply_fun r p 0) else minus_SNo (apply_fun r p 1))
+	              (minus_SNo (apply_fun r p 1))
+	              (If_i_0
+	                (1 = 0)
+	                (minus_SNo (apply_fun r p 0))
+	                (minus_SNo (apply_fun r p 1))
+	                (neq_ordsucc_0 0))).
+	        }
+	        rewrite HnegrpDef.
+	        exact ((eq_symm
+	          (graph 2 (fun i:set => minus_SNo (apply_fun (apply_fun r p) i)))
+	          (graph 2 (fun i:set => if i = 0 then minus_SNo (apply_fun r p 0) else minus_SNo (apply_fun r p 1)))
+	          HnegrpGraphEq)
+	          (fun z Hz => z :e euclidean_space 2)
+	          (R2_pair_graph_neg_in_euclidean_space_2
+	            (apply_fun r p)
+	            HrpR2)).
+	      }
+	      claim HnegrpPair :
+	        (apply_fun (Rn_negate 2 (apply_fun r p)) 0,
+	         apply_fun (Rn_negate 2 (apply_fun r p)) 1)
+	        =
+	        (minus_SNo (apply_fun r p 0),
+	         minus_SNo (apply_fun r p 1)).
+	      {
+	        exact (eq_i_tra
+	          (apply_fun (Rn_negate 2 (apply_fun r p)) 0,
+	           apply_fun (Rn_negate 2 (apply_fun r p)) 1)
+	          (minus_SNo (apply_fun (apply_fun r p) 0),
+	           minus_SNo (apply_fun (apply_fun r p) 1))
+	          (minus_SNo (apply_fun r p 0),
+	           minus_SNo (apply_fun r p 1))
+	          (Rn_negate_2_coords_pair
+	            (apply_fun r p))
+	          (tuple_2_ext_euclid
+	            (minus_SNo (apply_fun (apply_fun r p) 0))
+	            (minus_SNo (apply_fun (apply_fun r p) 1))
+	            (minus_SNo (apply_fun r p 0))
+	            (minus_SNo (apply_fun r p 1))
+	            (eq_i_tra
+	              (minus_SNo (apply_fun (apply_fun r p) 0))
+	              (minus_SNo (apply_fun r p 0))
+	              (minus_SNo (apply_fun r p 0))
+	              (HrpAp0Eq
+	                (fun z Hz => minus_SNo (apply_fun (apply_fun r p) 0) = minus_SNo z)
+	                (eq_refl (minus_SNo (apply_fun (apply_fun r p) 0))))
+	              (eq_refl (minus_SNo (apply_fun r p 0))))
+	            (eq_i_tra
+	              (minus_SNo (apply_fun (apply_fun r p) 1))
+	              (minus_SNo (apply_fun r p 1))
+	              (minus_SNo (apply_fun r p 1))
+	              (HrpAp1Eq
+	                (fun z Hz => minus_SNo (apply_fun (apply_fun r p) 1) = minus_SNo z)
+	                (eq_refl (minus_SNo (apply_fun (apply_fun r p) 1))))
+	              (eq_refl (minus_SNo (apply_fun r p 1)))))).
+	      }
       exact (eq_i_tra
         (Rn_negate 2 (apply_fun r p))
         (apply_fun (Rn_negate 2 (apply_fun r p)) 0,
