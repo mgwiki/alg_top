@@ -140239,6 +140239,55 @@ exact (iffER
   Hnotnul).
 Qed.
 
+(** S55 helper: non-extendability of inclusion S1->R2-0 implies no retraction B2->S1. **)
+(** Proven Bob **)
+Theorem thm55_2_no_retraction_B2_S1_from_inclusion_no_extension_B2 :
+  ~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+  ->
+  ~(retraction_of B2 B2_topology S1).
+assume Hnoext.
+assume Hretr.
+claim Hnotnul :
+  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))).
+{
+  exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic_from_no_extension_B2
+    Hnoext).
+}
+claim Hnul :
+  nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)).
+{
+  exact (s55_retraction_B2_S1_implies_inclusion_R2m0_nulhomotopic
+    Hretr).
+}
+exact (Hnotnul Hnul).
+Qed.
+
+(** S55 helper: no retraction B2->S1 implies inclusion S1->R2-0 has no extension over B2. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_implies_inclusion_no_extension_B2 :
+  ~(retraction_of B2 B2_topology S1)
+  ->
+  ~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+assume Hnoret.
+exact cor55_4a_inclusion_S1_R2_no_extension_B2.
+Qed.
+
+(** S55 helper: no-retraction of B2->S1 is equivalent to no extension of inclusion S1->R2-0. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_iff_inclusion_no_extension_B2 :
+  ~(retraction_of B2 B2_topology S1)
+  <->
+  ~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+apply iffI.
+- exact s55_no_retraction_B2_S1_implies_inclusion_no_extension_B2.
+- exact thm55_2_no_retraction_B2_S1_from_inclusion_no_extension_B2.
+Qed.
+
 (** from S55 Thm 55.2 (line 904 in algtop.tex): No-retraction theorem **)
 (** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
