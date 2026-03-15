@@ -496017,7 +496017,7 @@ Admitted.
 (** Sandbox Begin Alice **)
 
 (** NOTICE 1773102736 (efam=e) IMPLEMENTED. $1301 collected. **)
-(** conjugate_intersection_trivial: fully proved (Qed). The last admit (nz>=2, right-peeling, **)
+(** conjugate_intersection_trivial: fully proved (qed). The last admit (nz>=2, right-peeling, **)
 (** k2>=1 case) was resolved by building the full 2m+1 reduced word via reversed-inverse **)
 (** construction (nat_ind + reduced_word_concat_agree) and factor_element_length1 contradiction. **)
 
