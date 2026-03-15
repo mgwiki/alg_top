@@ -184575,7 +184575,94 @@ Theorem thm57_3_antipode_free_implies_antipode_preserving_map : forall f:set,
   (forall x:set, x :e Sn 2 ->
     apply_fun f x <> apply_fun f (Rn_negate 3 x)) ->
   exists g:set, antipode_preserving_Sn 2 1 g.
+let f.
+assume Hfcont.
+assume Hneq.
+set d := graph (Sn 2) (fun x:set =>
+  (add_SNo (apply_fun f x 0) (minus_SNo (apply_fun f (Rn_negate 3 x) 0)),
+   add_SNo (apply_fun f x 1) (minus_SNo (apply_fun f (Rn_negate 3 x) 1)))).
+set r := graph R2_minus_origin (fun p:set =>
+  (div_SNo (p 0)
+    (sqrt_SNo_nonneg
+      (add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)))),
+   div_SNo (p 1)
+    (sqrt_SNo_nonneg
+      (add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)))))).
+set gpair := compose_fun (Sn 2) d r.
+set g := graph (Sn 2) (fun x:set =>
+  graph 2 (fun i:set =>
+    if i = 0 then apply_fun gpair x 0 else apply_fun gpair x 1)).
+claim H2om : 2 :e omega.
+{
+  exact (nat_p_omega
+    2
+    nat_2).
+}
+claim HfFun : function_on f (Sn 2) (setprod R R).
+{
+  exact (continuous_map_function_on
+    (Sn 2)
+    (Sn_topology 2)
+    (setprod R R)
+    R2_topology
+    f
+    Hfcont).
+}
+claim HdInto :
+  forall x:set, x :e Sn 2 -> apply_fun d x :e R2_minus_origin.
 admit.
+claim HdCont :
+  continuous_map (Sn 2) (Sn_topology 2) R2_minus_origin R2_minus_origin_topology d.
+admit.
+claim HrIntoS1 :
+  forall p:set, p :e R2_minus_origin -> apply_fun r p :e S1.
+{
+  let p.
+  assume Hp.
+  rewrite (apply_fun_graph
+    R2_minus_origin
+    (fun q:set =>
+      (div_SNo (q 0)
+        (sqrt_SNo_nonneg
+          (add_SNo (mul_SNo (q 0) (q 0))
+            (mul_SNo (q 1) (q 1)))),
+       div_SNo (q 1)
+        (sqrt_SNo_nonneg
+          (add_SNo (mul_SNo (q 0) (q 0))
+            (mul_SNo (q 1) (q 1))))))
+    p
+    Hp).
+  exact (s55_R2_minus_origin_normalized_in_S1
+    p
+    Hp).
+}
+claim HrCont :
+  continuous_map R2_minus_origin R2_minus_origin_topology S1 S1_topology r.
+admit.
+claim HdOdd :
+  forall x:set, x :e Sn 2 ->
+    apply_fun d (Rn_negate 3 x) = Rn_negate 2 (apply_fun d x).
+admit.
+claim HrOdd :
+  forall p:set, p :e R2_minus_origin ->
+    apply_fun r (Rn_negate 2 p) = Rn_negate 2 (apply_fun r p).
+admit.
+claim HgCont :
+  continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g.
+admit.
+claim HgAnti :
+  forall x:set, x :e Sn 2 ->
+    apply_fun g (Rn_negate 3 x) = Rn_negate 2 (apply_fun g x).
+admit.
+witness g.
+exact (andI
+  (continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g)
+  (forall x:set, x :e Sn 2 ->
+    apply_fun g (Rn_negate 3 x) = Rn_negate 2 (apply_fun g x))
+  HgCont
+  HgAnti).
 Admitted.
 
 (** from S57 Thm 57.3. **)
