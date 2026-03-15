@@ -275747,6 +275747,8 @@ claim Hxs_suf_j : apply_fun xs0_suf j = apply_fun xs0 k.
   rewrite H. rewrite <- Hk_eq_sj. reflexivity. }
 (** wp(xs0_suf, j) = wp_mid by pointwise equality **)
 set xs0_mid := graph j (fun i:set => apply_fun xs0_suf i).
+claim Hred_mid : reduced_word J Gfam efam j xs0_mid.
+{ exact (reduced_word_prefix J Gfam efam k xs0_suf j Hred_suf Hj_in_k). }
 set wp_mid := word_product mult e xs0_mid j.
 claim Hwp_suf_j_eq : word_product mult e xs0_suf j = wp_mid.
 { apply (nat_primrec_ext e
@@ -275859,8 +275861,176 @@ claim Hwp_suf_lc : word_product mult e xs0_suf k =
       (apply_fun mult (apply_fun xs0 0, apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al)))
       (eq_symm (apply_fun efam al) (apply_fun mult (apply_fun xs0 0, word_product mult e xs0_suf k)) Hefal_split)
       Hrhs)). }
-admit.
-Admitted.
+(** Step B: wp_suf(k) in Gfam(al) **)
+claim Hwp_suf_Gal : word_product mult e xs0_suf k :e apply_fun Gfam al.
+{ claim Hinv_efal_Gal : apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al) :e apply_fun Gfam al.
+  { exact (HGfam_mult al Hal (apply_fun inv (apply_fun xs0 0)) (apply_fun efam al) Hinv0_Gal Hefam_Gal). }
+  exact (eq_subst_mem_rev
+    (apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al))
+    (word_product mult e xs0_suf k)
+    (apply_fun Gfam al)
+    (eq_symm (word_product mult e xs0_suf k)
+      (apply_fun mult (apply_fun inv (apply_fun xs0 0), apply_fun efam al))
+      Hwp_suf_lc)
+    Hinv_efal_Gal). }
+(** Step C: wp_mid in Gfam(al) via right cancel **)
+(** wp_suf(k) = mult(wp_mid, inv(xs0(0))). So wp_mid = mult(wp_suf(k), xs0(0)). **)
+claim Hwp_mid_eq : wp_mid = apply_fun mult (word_product mult e xs0_suf k, apply_fun xs0 0).
+{ (** Need: mult(wp_mid, inv(xs0(0))) = mult(mult(wp_suf(k), xs0(0)), inv(xs0(0))) **)
+  (** RHS = mult(wp_suf(k), mult(xs0(0), inv(xs0(0)))) = mult(wp_suf(k), e) = wp_suf(k) **)
+  claim Hid_suf : apply_fun mult (word_product mult e xs0_suf k, e) = word_product mult e xs0_suf k.
+  { exact (andER
+      (apply_fun mult (e, word_product mult e xs0_suf k) = word_product mult e xs0_suf k)
+      (apply_fun mult (word_product mult e xs0_suf k, e) = word_product mult e xs0_suf k)
+      (Hid (word_product mult e xs0_suf k) Hwp_suf_G)). }
+  claim Hassoc_suf : apply_fun mult (apply_fun mult (word_product mult e xs0_suf k, apply_fun xs0 0), apply_fun inv (apply_fun xs0 0)) =
+    apply_fun mult (word_product mult e xs0_suf k, apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0))).
+  { exact (Hassoc (word_product mult e xs0_suf k) (apply_fun xs0 0) (apply_fun inv (apply_fun xs0 0))
+      Hwp_suf_G Hxs0_0_G Hinv0_G). }
+  claim Hxsinv_eq : apply_fun mult (word_product mult e xs0_suf k, apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0))) =
+    apply_fun mult (word_product mult e xs0_suf k, e).
+  { rewrite Hxs0inv. reflexivity. }
+  claim Hrhs_eq : apply_fun mult (apply_fun mult (word_product mult e xs0_suf k, apply_fun xs0 0), apply_fun inv (apply_fun xs0 0)) =
+    word_product mult e xs0_suf k.
+  { exact (eq_i_tra
+      (apply_fun mult (apply_fun mult (word_product mult e xs0_suf k, apply_fun xs0 0), apply_fun inv (apply_fun xs0 0)))
+      (apply_fun mult (word_product mult e xs0_suf k, apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0))))
+      (word_product mult e xs0_suf k)
+      Hassoc_suf
+      (eq_i_tra
+        (apply_fun mult (word_product mult e xs0_suf k, apply_fun mult (apply_fun xs0 0, apply_fun inv (apply_fun xs0 0))))
+        (apply_fun mult (word_product mult e xs0_suf k, e))
+        (word_product mult e xs0_suf k)
+        Hxsinv_eq Hid_suf)). }
+  exact (group_right_cancel G mult e inv (apply_fun inv (apply_fun xs0 0))
+    wp_mid (apply_fun mult (word_product mult e xs0_suf k, apply_fun xs0 0))
+    Hgrp Hinv0_G Hwp_mid_G
+    (HmultG (word_product mult e xs0_suf k) (apply_fun xs0 0) Hwp_suf_G Hxs0_0_G)
+    (eq_i_tra
+      (apply_fun mult (wp_mid, apply_fun inv (apply_fun xs0 0)))
+      (word_product mult e xs0_suf k)
+      (apply_fun mult (apply_fun mult (word_product mult e xs0_suf k, apply_fun xs0 0), apply_fun inv (apply_fun xs0 0)))
+      (eq_symm (word_product mult e xs0_suf k)
+        (apply_fun mult (wp_mid, apply_fun inv (apply_fun xs0 0)))
+        Hwp_suf_eq)
+      (eq_symm
+        (apply_fun mult (apply_fun mult (word_product mult e xs0_suf k, apply_fun xs0 0), apply_fun inv (apply_fun xs0 0)))
+        (word_product mult e xs0_suf k)
+        Hrhs_eq))). }
+claim Hwp_mid_Gal : wp_mid :e apply_fun Gfam al.
+{ claim Hprod_Gal : apply_fun mult (word_product mult e xs0_suf k, apply_fun xs0 0) :e apply_fun Gfam al.
+  { exact (HGfam_mult al Hal (word_product mult e xs0_suf k) (apply_fun xs0 0) Hwp_suf_Gal Hxs0_0_Gal). }
+  exact (eq_subst_mem_rev
+    (apply_fun mult (word_product mult e xs0_suf k, apply_fun xs0 0))
+    wp_mid (apply_fun Gfam al)
+    (eq_symm wp_mid (apply_fun mult (word_product mult e xs0_suf k, apply_fun xs0 0)) Hwp_mid_eq)
+    Hprod_Gal). }
+(** Step D: case split on j **)
+apply (xm (j = 1)).
+- (** j = 1: wp_mid = xs0(1) in Gfam(al) cap Gfam(a1), al != a1 -> contradiction **)
+  assume Hj1 : j = 1.
+  claim H0j : 0 :e j. { rewrite Hj1. exact (ordsuccI2 0). }
+  claim Hxs_mid_0 : apply_fun xs0_mid 0 = apply_fun xs0_suf 0.
+  { exact (apply_fun_graph j (fun i:set => apply_fun xs0_suf i) 0 H0j). }
+  claim H0k : 0 :e k. { exact (nat_trans k Hk_nat j Hj_in_k 0 H0j). }
+  claim Hxs_suf_0 : apply_fun xs0_suf 0 = apply_fun xs0 1.
+  { exact (apply_fun_graph k (fun i:set => apply_fun xs0 (ordsucc i)) 0 H0k). }
+  (** wp_mid = word_product(xs0_mid, 1) = mult(e, xs0_mid(0)) = xs0_mid(0) **)
+  claim Hwp1_step : word_product mult e xs0_mid 1 =
+    apply_fun mult (e, apply_fun xs0_mid 0).
+  { prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs0_mid i)) 1 =
+      apply_fun mult (e, apply_fun xs0_mid 0).
+    rewrite <- ordsucc_0_eq_1_nat.
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, apply_fun xs0_mid i)) 0 nat_0).
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun xs0_mid i))).
+    reflexivity. }
+  claim Hwp_j_eq_1 : word_product mult e xs0_mid j = word_product mult e xs0_mid 1.
+  { rewrite Hj1. reflexivity. }
+  claim Hid_mid0 : apply_fun mult (e, apply_fun xs0_mid 0) = apply_fun xs0_mid 0.
+  { exact (andEL
+      (apply_fun mult (e, apply_fun xs0_mid 0) = apply_fun xs0_mid 0)
+      (apply_fun mult (apply_fun xs0_mid 0, e) = apply_fun xs0_mid 0)
+      (Hid (apply_fun xs0_mid 0) (Hxs_mid_G 0 H0j))). }
+  claim Hwp_eq_xs1 : wp_mid = apply_fun xs0 1.
+  { exact (eq_i_tra wp_mid (word_product mult e xs0_mid 1) (apply_fun xs0 1)
+      Hwp_j_eq_1
+      (eq_i_tra (word_product mult e xs0_mid 1) (apply_fun mult (e, apply_fun xs0_mid 0)) (apply_fun xs0 1)
+        Hwp1_step
+        (eq_i_tra (apply_fun mult (e, apply_fun xs0_mid 0)) (apply_fun xs0_mid 0) (apply_fun xs0 1)
+          Hid_mid0
+          (eq_i_tra (apply_fun xs0_mid 0) (apply_fun xs0_suf 0) (apply_fun xs0 1)
+            Hxs_mid_0 Hxs_suf_0)))). }
+  claim Hxs1_Gal : apply_fun xs0 1 :e apply_fun Gfam al.
+  { exact (eq_subst_mem_rev wp_mid (apply_fun xs0 1) (apply_fun Gfam al) Hwp_eq_xs1 Hwp_mid_Gal). }
+  (** xs0(0) and xs0(1) adjacent in reduced word -> different factors **)
+  claim H0_in_n0 : 0 :e n0. { rewrite Hn0_eq. exact (nat_0_in_ordsucc k Hk_nat). }
+  claim H0_in_k : 0 :e k. { exact (nat_trans k Hk_nat j Hj_in_k 0 H0j). }
+  claim H1_in_n0 : ordsucc 0 :e n0.
+  { rewrite Hn0_eq. exact (nat_ordsucc_in_ordsucc k Hk_nat 0 H0_in_k). }
+  apply (and3E (n0 :e omega)
+    (forall i:set, i :e n0 -> exists alpha:set, alpha :e J /\
+      apply_fun xs0 i :e apply_fun Gfam alpha /\ apply_fun xs0 i <> apply_fun efam alpha)
+    (forall i:set, i :e n0 -> ordsucc i :e n0 ->
+      forall a b:set, a :e J -> b :e J ->
+      apply_fun xs0 i :e apply_fun Gfam a -> apply_fun xs0 (ordsucc i) :e apply_fun Gfam b -> a <> b)
+    Hred0).
+  assume _ _ Hadj_raw.
+  exact (Hadj_raw 0 H0_in_n0 H1_in_n0 al al Hal Hal Hxs0_0_Gal Hxs1_Gal (eq_refl al)).
+- (** j >= 2: uniqueness contradiction **)
+  assume Hj_ne1 : j <> 1.
+  claim Hwp_mid_efam : wp_mid = apply_fun efam al.
+  { exact (free_product_reduced_word_length_ge2_in_factor_is_efam G mult e inv J Gfam efam j xs0_mid al
+      Hfp Hal Hred_mid Hj_ne0 Hj_ne1 Hwp_mid_Gal). }
+  claim Hwp_mid_val : word_product mult e xs0_mid j = apply_fun efam al.
+  { exact (eq_i_tra (word_product mult e xs0_mid j) wp_mid (apply_fun efam al)
+      (eq_refl wp_mid) Hwp_mid_efam). }
+  (** Get uniqueness for efam(al) from Huniq **)
+  claim Huniq_efam : exists n_c xs_c:set,
+    reduced_word J Gfam efam n_c xs_c /\ n_c <> 0 /\
+    word_product mult e xs_c n_c = apply_fun efam al /\
+    (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+      word_product mult e xs' n' = apply_fun efam al ->
+      n_c = n' /\ (forall i:set, i :e n_c -> apply_fun xs_c i = apply_fun xs' i)).
+  { exact (Huniq (apply_fun efam al) Hefal_G Hefam_ne). }
+  apply Huniq_efam. let n_c. assume Hex_c. apply Hex_c. let xs_c.
+  assume Hcpack : reduced_word J Gfam efam n_c xs_c /\ n_c <> 0 /\
+    word_product mult e xs_c n_c = apply_fun efam al /\
+    (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+      word_product mult e xs' n' = apply_fun efam al ->
+      n_c = n' /\ (forall i:set, i :e n_c -> apply_fun xs_c i = apply_fun xs' i)).
+  apply (and4E (reduced_word J Gfam efam n_c xs_c) (n_c <> 0)
+    (word_product mult e xs_c n_c = apply_fun efam al)
+    (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+      word_product mult e xs' n' = apply_fun efam al ->
+      n_c = n' /\ (forall i:set, i :e n_c -> apply_fun xs_c i = apply_fun xs' i))
+    Hcpack).
+  assume Hred_c Hnc_ne0 Hwp_c Huniq_c.
+  (** n_c = n0 (from xs0) and n_c = j (from xs0_mid) **)
+  claim Hn0_ne0 : n0 <> 0. { rewrite Hn0_eq. exact (neq_ordsucc_0 k). }
+  claim Hnc_n0 : n_c = n0.
+  { exact (andEL (n_c = n0) (forall i:set, i :e n_c -> apply_fun xs_c i = apply_fun xs0 i)
+      (Huniq_c n0 xs0 Hred0 Hn0_ne0 Hwp0)). }
+  claim Hnc_j : n_c = j.
+  { exact (andEL (n_c = j) (forall i:set, i :e n_c -> apply_fun xs_c i = apply_fun xs0_mid i)
+      (Huniq_c j xs0_mid Hred_mid Hj_ne0 Hwp_mid_val)). }
+  claim Huniq_j : n0 = j.
+  { exact (eq_i_tra n0 n_c j (eq_symm n_c n0 Hnc_n0) Hnc_j). }
+  (** n0 = ordsucc k = ordsucc(ordsucc j), so j = ordsucc(ordsucc j) **)
+  claim Hn0_ssj : n0 = ordsucc (ordsucc j).
+  { claim Hsk_ssj : ordsucc k = ordsucc (ordsucc j).
+    { rewrite Hk_eq_sj. reflexivity. }
+    exact (eq_i_tra n0 (ordsucc k) (ordsucc (ordsucc j)) Hn0_eq Hsk_ssj). }
+  claim Hj_eq_ssj : j = ordsucc (ordsucc j).
+  { exact (eq_i_tra j n0 (ordsucc (ordsucc j)) (eq_symm n0 j Huniq_j) Hn0_ssj). }
+  (** j in ordsucc j in ordsucc(ordsucc j) = j -> j in j. Contradiction. **)
+  claim Hsj_in_j : ordsucc j :e j.
+  { exact (eq_subst_mem_set (ordsucc j) (ordsucc (ordsucc j)) j
+      (ordsuccI2 (ordsucc j))
+      (eq_symm j (ordsucc (ordsucc j)) Hj_eq_ssj)). }
+  claim Hj_in_j : j :e j.
+  { exact (nat_trans j Hj_nat (ordsucc j) Hsj_in_j j (ordsuccI2 j)). }
+  exact (In_irref j Hj_in_j).
+Qed.
 
 (** Infrastructure: efam(alpha) cannot be a nontrivial element of its factor in a free product.
     This is used to close the p = efam(alphaL) subcase in the involution torsion proof. **)
@@ -276937,46 +277107,15 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
                   apply (xm (alpha0 = al)).
                   + (** alpha0 = al: contradiction via conjugation + uniqueness **)
                     assume Halpha0_al : alpha0 = al.
-                    (** Build middle sub-word [xs0(1), ..., xs0(k-1)] = [xs0(1), ..., xs0(j)] **)
-                    claim Hj_in_k : j :e k.
-                    { rewrite Hk_eq_sj. exact (ordsuccI2 j). }
-                    set xs0_mid := graph j (fun i:set => apply_fun xs0_suf i).
-                    (** xs0_mid is the prefix of xs0_suf of length j = k-1 **)
-                    claim Hred_mid : reduced_word J Gfam efam j xs0_mid.
-                    { exact (reduced_word_prefix J Gfam efam k xs0_suf j Hred_suf Hj_in_k). }
-                    (** Word product of middle = inv(xs0(0)) mult efam(al) mult xs0(0) **)
-                    (** Because: efam(al) = xs0(0) mult wp_mid mult xs0(k) **)
-                    (** and xs0(k) mult xs0(0) = z = e **)
-                    (** so inv(xs0(0)) mult efam(al) mult xs0(0) = wp_mid mult z mult xs0(0) **)
-                    (** = wp_mid mult e mult xs0(0) = wp_mid mult xs0(0) ... no **)
-                    (** Actually: inv(xs0(0)) mult efam(al) = wp_mid mult xs0(k) **)
-                    (** so inv(xs0(0)) mult efam(al) mult xs0(0) = wp_mid mult xs0(k) mult xs0(0) **)
-                    (** = wp_mid mult z = wp_mid mult e = wp_mid **)
-                    (** So the conjugation equals wp_mid. **)
-                    set wp_mid := word_product mult e xs0_mid j.
-                    (** wp_mid in Gfam(al) since alpha0 = al and all conjugation stays in subgroup **)
-                    (** If j = 0: wp_mid = e. efam(al) = xs0(0) mult xs0(k) = xs0(0) mult inv(xs0(0)) ... **)
-                    (** Actually j >= 1 since j != 0 (Hj_ne0) **)
-                    (** If j = 1: wp_mid = xs0(1) in Gfam(a1), a1 != alpha0 = al **)
-                    (**   wp_mid in Gfam(al) (by conjugation) and Gfam(a1), al != a1 -> wp_mid = e **)
-                    (**   But xs0(1) != e (reduced word entry). Contradiction. **)
-                    (** If j >= 2: wp_mid has reduced word of length j >= 2 with product in Gfam(al) **)
-                    (**   By new lemma: wp_mid = efam(al). **)
-                    (**   But efam(al) also has reduced word xs0 of length n0. **)
-                    (**   By uniqueness: j = n0 = ordsucc k = ordsucc (ordsucc j). **)
-                    (**   So j = j + 2, impossible. **)
-                    (** PROOF STRATEGY for alpha0 = al case: **)
-                    (** 1. xs0(k) = inv(xs0(0)) from z = mult(xs0(k), xs0(0)) = eG **)
-                    (** 2. efam(al) = mult(xs0(0), mult(wp_mid, xs0(k))) by left split + suffix decomposition **)
-                    (** 3. So efam(al) = mult(xs0(0), mult(wp_mid, inv(xs0(0)))) **)
-                    (** 4. inv(xs0(0)) mult efam(al) mult xs0(0) = wp_mid (by group algebra) **)
-                    (** 5. Since alpha0 = al, xs0(0) in Gfam(al), so conjugation in Gfam(al) **)
-                    (** 6. wp_mid in Gfam(al). **)
-                    (** 7a. If j = 1: wp_mid = xs0(1) in Gfam(a1), a1 != al. Disjointness -> xs0(1) = eG. But ne. **)
-                    (** 7b. If j >= 2: by length_ge2_in_factor_is_efam, wp_mid = efam(al). **)
-                    (**     Uniqueness: j = n0 = ordsucc k = ordsucc(ordsucc j) -> j = j+2. Impossible. **)
-                    (** All algebraic steps verified individually. Formalization needs ~80 lines of Megalodon. **)
-                    admit.
+                    (** Use helper lemma **)
+                    claim Hxs0_0_Gal_loc : apply_fun xs0 0 :e apply_fun Gfam al.
+                    { rewrite <- Halpha0_al. exact Hxs0_0_in. }
+                    claim Hxsk_Gal_loc : apply_fun xs0 k :e apply_fun Gfam al.
+                    { rewrite <- Halpha0_al. rewrite <- Halphak_eq_alpha0. exact Hxs0_k_in. }
+                    exact (efam_not_in_Gfam_pre_zeG_same_factor G mult e inv J Gfam efam
+                      Hfp al Hal Hefam_in Hefam_ne
+                      n0 xs0 k j Hred0 Hwp0 Hn0_eq Hk_nat Hj_nat Hk_eq_sj Hj_ne0
+                      Hxs0_0_Gal_loc Hxsk_Gal_loc Hz_e).
                   + (** alpha0 != al **)
                     assume Halpha0_ne_al : alpha0 <> al.
                     (** When first/last entries of reduced word for efam(al) are NOT in Gfam(al), **)
