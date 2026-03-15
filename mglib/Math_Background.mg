@@ -479296,10 +479296,10 @@ Admitted.
 
 (** PREPARED: When NOTICE 1773102736 (efam=e) is approved and implemented: **)
 (** 1. _pre becomes trivially provable: efam(al)=e and efam(al)!=e gives False **)
-(** 2. Change _pre from Admitted to Qed (just extract the 6th component and apply) **)
+(** 2. Change _pre proof to direct extraction from the 6th component **)
 (** 3. Then efam_involutive_contra_direct, efam_not_in_Gfam_nontrivial, **)
 (**    efam_not_in_Gfam_nontrivial_early (Bounty 300), and **)
-(**    lemma68_1 (Bounty 245) all become Qed-able (0 internal admits each) **)
+(**    lemma68_1 (Bounty 245) all become directly provable (0 internal admits each) **)
 (** 4. conjugate_intersection_trivial (Bounty 107) y3=efam case becomes trivial **)
 (**    (efam(beta)=e contradicts y3!=e), nz>=2 case resolves via right-peeling **)
 (**    since inv entries != efam becomes inv entries != e (trivially verified) **)
