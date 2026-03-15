@@ -307470,7 +307470,36 @@ Theorem cor68_6_side_from_product_G1_ge3 :
   word_product multG eG ys n :e G1 ->
   word_product multG eG ys n <> eG ->
   forall i:set, i :e n -> apply_fun ys i :e G1.
-admit.
+let G multG eG invG G1 G2 J K Hfam efamH n ys.
+assume Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HneG.
+assume Hne0 Hne1 Hne2 HwpG1 HwpNeG.
+let i. assume Hi.
+(** Each entry is in G1 or G2 **)
+claim HG1orG2 : apply_fun ys i :e G1 \/ apply_fun ys i :e G2.
+{ (** Each entry of (J cup K)-reduced word is in some Gfam(alpha), which is in G1 (if alpha in J) or G2 (if alpha in K). **)
+  admit. }
+apply HG1orG2.
+- (** In G1: done **)
+  assume HinG1 : apply_fun ys i :e G1. exact HinG1.
+- (** In G2: derive contradiction **)
+  assume HinG2 : apply_fun ys i :e G2.
+  (** There exists an entry in G1 (since n >= 3 and each entry is in G1 or G2, **)
+  (** and the product is in G1 which is nontrivial) **)
+  (** Actually, we need: there exists an entry in G1. **)
+  (** If ALL entries were in G2, word_product would be in G2, hence in G1 cap G2. **)
+  (** G1 cap G2 = {eG} by the binary free product disjointness. **)
+  (** But wp != eG. So not all entries are in G2. Hence some entry is in G1. **)
+  claim HnotAllG2 : ~(forall j:set, j :e n -> apply_fun ys j :e G2).
+  { admit. (** If all in G2 then wp in G2, wp in G1 cap G2 = {eG}, contradiction with wp != eG **) }
+  claim HexG1 : exists j:set, j :e n /\ apply_fun ys j :e G1.
+  { admit. (** From HnotAllG2 and each entry in G1 or G2 **) }
+  claim HexG2 : exists j:set, j :e n /\ apply_fun ys j :e G2.
+  { witness i. exact (andI (i :e n) (apply_fun ys i :e G2) Hi HinG2). }
+  (** By cor68_6_binary_collapse_mixed_not_in_G1: wp not in G1. Contradiction. **)
+  claim HwpNotG1 : word_product multG eG ys n /:e G1.
+  { (** By binary collapse: mixed (G1 and G2 entries) reduced word product is not in G1. **)
+    admit. }
+  exact (FalseE (HwpNotG1 HwpG1) (apply_fun ys i :e G1)).
 Admitted.
 
 (** Admin-approved-refactored per noticeboard proposal 1772623361 **)
