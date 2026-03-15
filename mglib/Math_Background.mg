@@ -289783,28 +289783,32 @@ apply (xm (y = e)).
                             (andER (a :e J) (apply_fun cs3 i :e apply_fun Gfam a) (andEL (a :e J /\ apply_fun cs3 i :e apply_fun Gfam a) (apply_fun cs3 i <> apply_fun efam a) Ha_pack))). }
                         claim Hcprime3_G : cprime3 :e G.
                         { exact (word_product_in_G_group G mult e inv k2 cs3 Hgrp Hk2_nat Hcs3_in_G). }
-                        claim Hcprime3_ne : cprime3 <> e.
-                        { (** k2 >= 1 since m >= 2 (from nz >= 2 in the left-peeling). **)
-                          (** word_product of non-empty prefix of reduced word is non-identity. **)
-                          admit. }
-                        claim Hcprime3_word : exists cs_pre:set,
-                          reduced_word J Gfam efam k2 cs_pre /\ word_product mult e cs_pre k2 = cprime3 /\
-                          (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
-                            word_product mult e xs' n' = cprime3 ->
-                            k2 = n' /\ (forall i:set, i :e k2 -> apply_fun cs_pre i = apply_fun xs' i)).
-                        { (** cs3 restricted to [0..k2-1] is a reduced word with product cprime3. **)
-                          (** Uniqueness follows from the uniqueness of reduced words in free products. **)
-                          admit. }
-                        claim Hy3Gb_cprime :
-                          apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3) :e apply_fun Gfam beta.
-                        { rewrite <- Hy3_eq_cprime. exact Hy3Gb. }
-                        claim HIH_result :
-                          apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3) = e.
-                        { exact (HIH k2 Hk2_in_m cprime3 z_inner
-                            Hcprime3_G Hz_inner_Galpha Hz_inner_ne Hcprime3_ne
-                            Hcprime3_word Hy3Gb_cprime). }
-                        rewrite Hy3_eq_cprime.
-                        exact HIH_result.
+                        (** Sub-case split: k2 = 0 vs k2 <> 0 **)
+                        apply (xm (k2 = 0)).
+                        * assume Hk2_eq0 : k2 = 0.
+                          (** k2 = 0: m = 1, c3 = cs3(0), cprime3 = e **)
+                          (** y3 = e mult z_inner mult inv(e) = z_inner in Gfam(alpha) cap Gfam(beta) = {e} **)
+                          admit.
+                        * assume Hk2_ne0 : k2 <> 0.
+                          (** k2 >= 1. cprime3 <> e and has reduced word. **)
+                          claim Hcprime3_ne : cprime3 <> e.
+                          { admit. (** word_product of non-empty prefix of reduced word is non-identity **) }
+                          claim Hcprime3_word : exists cs_pre:set,
+                            reduced_word J Gfam efam k2 cs_pre /\ word_product mult e cs_pre k2 = cprime3 /\
+                            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                              word_product mult e xs' n' = cprime3 ->
+                              k2 = n' /\ (forall i:set, i :e k2 -> apply_fun cs_pre i = apply_fun xs' i)).
+                          { admit. (** prefix reduced word data **) }
+                          claim Hy3Gb_cprime :
+                            apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3) :e apply_fun Gfam beta.
+                          { rewrite <- Hy3_eq_cprime. exact Hy3Gb. }
+                          claim HIH_result :
+                            apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3) = e.
+                          { exact (HIH k2 Hk2_in_m cprime3 z_inner
+                              Hcprime3_G Hz_inner_Galpha Hz_inner_ne Hcprime3_ne
+                              Hcprime3_word Hy3Gb_cprime). }
+                          rewrite Hy3_eq_cprime.
+                          exact HIH_result.
                       + assume Hg2_ne_alpha : gamma2 <> alpha.
                         (** cs3(k2) in Gfam(gamma2), x3 in Gfam(alpha), gamma2 != alpha **)
                         (** Build full word of length 2m+1 and show reduced. **)
