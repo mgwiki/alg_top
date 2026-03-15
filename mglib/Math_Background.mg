@@ -211527,10 +211527,38 @@ claim Hchain : exists U0 U1 nch seq:set,
   apply_fun seq 0 = U0 /\ apply_fun seq nch = U1 /\
   (forall k:set, k :e nch -> apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
 { exact (unit_interval_ball_chain r HrR Hrpos). }
-(** Step 2: classify each ball as U-type or V-type **)
-(** Step 3: find transition points and connect to x0 **)
-(** Step 4: build word decomposition by induction on chain length **)
-(** Full construction delegated to future work **)
+(** Step 2: Extract chain and classify each ball **)
+apply Hchain. let U0. assume HU1_ex.
+apply HU1_ex. let U1. assume Hnch_ex.
+apply Hnch_ex. let nch. assume Hseq_ex.
+apply Hseq_ex. let seq. assume Hpack.
+apply (and9E
+  (U0 :e {open_ball unit_interval R_bounded_metric x r | x :e unit_interval})
+  (0 :e U0)
+  (U1 :e {open_ball unit_interval R_bounded_metric x r | x :e unit_interval})
+  (1 :e U1)
+  (nch :e omega)
+  (function_on seq (ordsucc nch) {open_ball unit_interval R_bounded_metric x r | x :e unit_interval})
+  (apply_fun seq 0 = U0)
+  (apply_fun seq nch = U1)
+  (forall k:set, k :e nch -> apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty)
+  Hpack).
+assume HU0ball H0inU0 HU1ball H1inU1 HnchOmega HseqFn Hseq0 HseqN Hoverlap.
+(** Each ball in the chain is an open ball centered at some point in unit_interval **)
+(** Each such ball maps entirely into U or V (from Hball_image) **)
+(** The classification function: for each k :e ordsucc nch, ball k maps to U or V **)
+claim Hball_UV : forall k:set, k :e ordsucc nch ->
+  (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) \/
+  (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V).
+{ (** Each seq(k) is an open ball centered at some c_k :e unit_interval. **)
+  (** By Hball_image, ball(c_k, r) maps to U or V. **)
+  (** Since seq(k) is that ball, the result follows. **)
+  admit. }
+(** Step 3: Find transitions and connect to x0 **)
+(** Step 4: Build word decomposition by induction on nch **)
+(** The key inductive step: split at each U/V transition, **)
+(** use path_connected U cap V to connect to x0, **)
+(** build sub-loops in U or V, apply word_data_of_loop_in_U/V **)
 admit.
 Admitted.
 
