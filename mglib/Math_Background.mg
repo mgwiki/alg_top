@@ -277102,6 +277102,39 @@ exact (eq_i_tra
     HidR_z)).
 Qed.
 
+(** Infrastructure: inverse of non-identity is non-identity **)
+(** Proven Alice **)
+Lemma group_inv_ne_e : forall G mult e inv x:set,
+  group_structure G mult e inv ->
+  x :e G -> x <> e -> apply_fun inv x <> e.
+let G mult e inv x.
+assume Hgrp HxG Hxne.
+assume Hinve : apply_fun inv x = e.
+apply Hxne.
+apply (and6E (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume _ HinvF _ _ Hid Hinverse.
+claim HinvG : apply_fun inv x :e G. { exact (HinvF x HxG). }
+claim Hrinv : apply_fun mult (apply_fun inv x, x) = e.
+{ exact (andER (apply_fun mult (x, apply_fun inv x) = e)
+    (apply_fun mult (apply_fun inv x, x) = e)
+    (Hinverse x HxG)). }
+claim Hid_x : apply_fun mult (e, x) = x.
+{ exact (andEL (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x)
+    (Hid x HxG)). }
+claim Hx_eq : x = apply_fun mult (e, x).
+{ symmetry. exact Hid_x. }
+rewrite Hx_eq.
+prove apply_fun mult (e, x) = e.
+rewrite <- Hinve at 1.
+exact Hrinv.
+Qed.
+
 (** Infrastructure: inverse of a product in a group **)
 (** Proven Charlie **)
 Lemma group_inv_mult : forall G mult e inv a b:set,
