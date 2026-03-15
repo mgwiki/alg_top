@@ -292098,12 +292098,265 @@ apply (xm (y = e)).
                         apply (xm (k2 = 0)).
                         * assume Hk2_eq0B : k2 = 0.
                           (** k2 = 0, m = 1, c3 = cs3(0) in Gfam(gamma2) != Gfam(alpha) **)
-                          (** Build word [cs3(0), x3, inv(cs3(0))] of length 3 **)
-                          (** This IS the nz=1 argument but applied to y3 directly **)
-                          (** y3 = c3 mult x3 mult inv(c3) = cs3(0) mult x3 mult inv(cs3(0)) **)
-                          (** which has the 3-element reduced word **)
-                          (** factor_element_length1 gives 3 = 1, contradiction **)
-                          admit.
+                          (** Build word [cs3(k2), x3, inv(cs3(k2))] of length 3 **)
+                          (** cprime3 = word_product(cs3, 0) = e **)
+                          claim Hcprime3_eB : cprime3 = e.
+                          { claim Hwp_rewriteB : cprime3 = word_product mult e cs3 0.
+                            { rewrite Hk2_eq0B. reflexivity. }
+                            claim Hwp0B : word_product mult e cs3 0 = e.
+                            { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun cs3 i))). }
+                            exact (eq_i_tra cprime3 (word_product mult e cs3 0) e Hwp_rewriteB Hwp0B). }
+                          (** c3 = mult(e, cs3(k2)) = cs3(k2) **)
+                          claim Hc3_multB : c3 = apply_fun mult (e, apply_fun cs3 k2).
+                          { rewrite <- Hcprime3_eB. exact Hc3_eq. }
+                          claim Hid_cs3k2B : apply_fun mult (e, apply_fun cs3 k2) = apply_fun cs3 k2.
+                          { exact (andEL (apply_fun mult (e, apply_fun cs3 k2) = apply_fun cs3 k2)
+                              (apply_fun mult (apply_fun cs3 k2, e) = apply_fun cs3 k2)
+                              (Hid (apply_fun cs3 k2) Hcs3k2_G)). }
+                          claim Hc3_is_cs3k2B : c3 = apply_fun cs3 k2.
+                          { exact (eq_i_tra c3 (apply_fun mult (e, apply_fun cs3 k2)) (apply_fun cs3 k2) Hc3_multB Hid_cs3k2B). }
+                          (** cs3(k2) != e **)
+                          claim Hefam_g2_eB : apply_fun efam gamma2 = e.
+                          { exact (free_product_efam_eq_e G mult e inv J Gfam efam Hfp gamma2 Hg2J). }
+                          claim Hcs3k2_neB : apply_fun cs3 k2 <> e.
+                          { assume Habs : apply_fun cs3 k2 = e. apply Hcs3k2_ne. rewrite Hefam_g2_eB. exact Habs. }
+                          (** inv(cs3(k2)) properties **)
+                          claim Hinvcs3k2_Gg2B : apply_fun inv (apply_fun cs3 k2) :e apply_fun Gfam gamma2.
+                          { exact (HGfam_inv gamma2 Hg2J (apply_fun cs3 k2) Hcs3k2_Gg2). }
+                          claim Hinvcs3k2_GB : apply_fun inv (apply_fun cs3 k2) :e G.
+                          { exact (HinvG (apply_fun cs3 k2) Hcs3k2_G). }
+                          claim Hinvcs3k2_neB : apply_fun inv (apply_fun cs3 k2) <> e.
+                          { assume HieB : apply_fun inv (apply_fun cs3 k2) = e.
+                            apply Hcs3k2_neB.
+                            claim HrinvB : apply_fun mult (apply_fun inv (apply_fun cs3 k2), apply_fun cs3 k2) = e.
+                            { exact (andER (apply_fun mult (apply_fun cs3 k2, apply_fun inv (apply_fun cs3 k2)) = e)
+                                (apply_fun mult (apply_fun inv (apply_fun cs3 k2), apply_fun cs3 k2) = e)
+                                (Hinverse (apply_fun cs3 k2) Hcs3k2_G)). }
+                            claim Hid_cs3k2B2 : apply_fun mult (e, apply_fun cs3 k2) = apply_fun cs3 k2.
+                            { exact (andEL (apply_fun mult (e, apply_fun cs3 k2) = apply_fun cs3 k2)
+                                (apply_fun mult (apply_fun cs3 k2, e) = apply_fun cs3 k2)
+                                (Hid (apply_fun cs3 k2) Hcs3k2_G)). }
+                            claim Hid_symB : apply_fun cs3 k2 = apply_fun mult (e, apply_fun cs3 k2).
+                            { symmetry. exact Hid_cs3k2B2. }
+                            rewrite Hid_symB.
+                            prove apply_fun mult (e, apply_fun cs3 k2) = e.
+                            rewrite <- HieB at 1.
+                            exact HrinvB. }
+                          (** inv(cs3(k2)) != efam(gamma2) **)
+                          claim Hinvcs3k2_ne_efamB : apply_fun inv (apply_fun cs3 k2) <> apply_fun efam gamma2.
+                          { assume HabsB : apply_fun inv (apply_fun cs3 k2) = apply_fun efam gamma2.
+                            apply Hinvcs3k2_neB. rewrite HabsB. exact Hefam_g2_eB. }
+                          (** x3 != efam(alpha) **)
+                          claim Hefam_alpha_eB : apply_fun efam alpha = e.
+                          { exact (free_product_efam_eq_e G mult e inv J Gfam efam Hfp alpha HalJ). }
+                          claim Hx3_ne_efamB : x3 <> apply_fun efam alpha.
+                          { assume HabsB : x3 = apply_fun efam alpha. apply Hx3ne. rewrite HabsB. exact Hefam_alpha_eB. }
+                          (** x3 :e G **)
+                          claim Hx3_GB : x3 :e G. { exact (Hsub_in_G alpha HalJ x3 Hx3Ga). }
+                          (** Build conj_word_B **)
+                          set conj_word_B := graph 3 (fun i:set =>
+                            if i = 0 then apply_fun cs3 k2
+                            else if i = 1 then x3
+                            else apply_fun inv (apply_fun cs3 k2)).
+                          (** Evaluate entries **)
+                          claim HcwB0 : apply_fun conj_word_B 0 = apply_fun cs3 k2.
+                          { claim H0in3B : 0 :e 3. { exact (ordsuccI1 2 0 (ordsuccI1 1 0 (ordsuccI2 0))). }
+                            claim HevalB : apply_fun conj_word_B 0 =
+                              (if 0 = 0 then apply_fun cs3 k2
+                               else if 0 = 1 then x3
+                               else apply_fun inv (apply_fun cs3 k2)).
+                            { exact (apply_fun_graph 3 (fun i:set =>
+                                if i = 0 then apply_fun cs3 k2
+                                else if i = 1 then x3
+                                else apply_fun inv (apply_fun cs3 k2)) 0 H0in3B). }
+                            rewrite HevalB.
+                            exact (If_i_1 (0 = 0) (apply_fun cs3 k2)
+                              (if 0 = 1 then x3 else apply_fun inv (apply_fun cs3 k2))
+                              (fun q H => H)). }
+                          claim HcwB1 : apply_fun conj_word_B 1 = x3.
+                          { claim H1in3B : 1 :e 3. { exact (ordsuccI1 2 1 (ordsuccI2 1)). }
+                            claim HevalB : apply_fun conj_word_B 1 =
+                              (if 1 = 0 then apply_fun cs3 k2
+                               else if 1 = 1 then x3
+                               else apply_fun inv (apply_fun cs3 k2)).
+                            { exact (apply_fun_graph 3 (fun i:set =>
+                                if i = 0 then apply_fun cs3 k2
+                                else if i = 1 then x3
+                                else apply_fun inv (apply_fun cs3 k2)) 1 H1in3B). }
+                            rewrite HevalB.
+                            claim H10B : 1 <> 0. { exact (neq_ordsucc_0 0). }
+                            rewrite (If_i_0 (1 = 0) (apply_fun cs3 k2)
+                              (if 1 = 1 then x3 else apply_fun inv (apply_fun cs3 k2)) H10B).
+                            exact (If_i_1 (1 = 1) x3 (apply_fun inv (apply_fun cs3 k2)) (fun q H => H)). }
+                          claim HcwB2 : apply_fun conj_word_B 2 = apply_fun inv (apply_fun cs3 k2).
+                          { claim H2in3B : 2 :e 3. { exact (ordsuccI2 2). }
+                            claim HevalB : apply_fun conj_word_B 2 =
+                              (if 2 = 0 then apply_fun cs3 k2
+                               else if 2 = 1 then x3
+                               else apply_fun inv (apply_fun cs3 k2)).
+                            { exact (apply_fun_graph 3 (fun i:set =>
+                                if i = 0 then apply_fun cs3 k2
+                                else if i = 1 then x3
+                                else apply_fun inv (apply_fun cs3 k2)) 2 H2in3B). }
+                            rewrite HevalB.
+                            claim H20B : 2 <> 0. { exact (neq_2_0). }
+                            rewrite (If_i_0 (2 = 0) (apply_fun cs3 k2)
+                              (if 2 = 1 then x3 else apply_fun inv (apply_fun cs3 k2)) H20B).
+                            claim H21B : 2 <> 1.
+                            { assume HB : 2 = 1. claim H10B : 1 = 0. { exact (ordsucc_inj 1 0 HB). }
+                              exact (neq_ordsucc_0 0 H10B). }
+                            exact (If_i_0 (2 = 1) x3 (apply_fun inv (apply_fun cs3 k2)) H21B). }
+                          (** Build reduced_word **)
+                          claim Hred_cwB : reduced_word J Gfam efam 3 conj_word_B.
+                          { prove 3 :e omega /\
+                              (forall i:set, i :e 3 ->
+                                exists a:set, a :e J /\ apply_fun conj_word_B i :e apply_fun Gfam a /\ apply_fun conj_word_B i <> apply_fun efam a) /\
+                              (forall i:set, i :e 3 -> ordsucc i :e 3 ->
+                                forall a b:set, a :e J -> b :e J ->
+                                apply_fun conj_word_B i :e apply_fun Gfam a ->
+                                apply_fun conj_word_B (ordsucc i) :e apply_fun Gfam b -> a <> b).
+                            apply and3I.
+                            - exact (nat_p_omega 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)))).
+                            - (** Each entry in a factor and not efam **)
+                              let i. assume Hi3.
+                              apply (ordsuccE 2 i Hi3).
+                              + assume Hi2.
+                                apply (ordsuccE 1 i Hi2).
+                                * assume Hi1.
+                                  apply (ordsuccE 0 i Hi1).
+                                  { assume Hi0. exact (FalseE (EmptyE i Hi0)
+                                      (exists a:set, a :e J /\ apply_fun conj_word_B i :e apply_fun Gfam a /\ apply_fun conj_word_B i <> apply_fun efam a)). }
+                                  { assume Hi_eq0B : i = 0. rewrite Hi_eq0B. rewrite HcwB0.
+                                    witness gamma2. apply and3I. exact Hg2J. exact Hcs3k2_Gg2. exact Hcs3k2_ne. }
+                                * assume Hi_eq1B : i = 1. rewrite Hi_eq1B. rewrite HcwB1.
+                                  witness alpha. apply and3I. exact HalJ. exact Hx3Ga. exact Hx3_ne_efamB.
+                              + assume Hi_eq2B : i = 2. rewrite Hi_eq2B. rewrite HcwB2.
+                                witness gamma2. apply and3I. exact Hg2J. exact Hinvcs3k2_Gg2B. exact Hinvcs3k2_ne_efamB.
+                            - (** Adjacency: adjacent entries in different factors **)
+                              let i. assume Hi3 Hsi3.
+                              let a b. assume HaJ HbJ Hia Hsib.
+                              apply (ordsuccE 2 i Hi3).
+                              + assume Hi2.
+                                apply (ordsuccE 1 i Hi2).
+                                * assume Hi1.
+                                  apply (ordsuccE 0 i Hi1).
+                                  { assume Hi0. exact (FalseE (EmptyE i Hi0) (a <> b)). }
+                                  { assume Hi_eq0B : i = 0.
+                                    (** cw(0)=cs3(k2) in Gfam(a), cw(1)=x3 in Gfam(b), need a <> b **)
+                                    claim HcwB0_Ga : apply_fun cs3 k2 :e apply_fun Gfam a.
+                                    { claim HeqiB : apply_fun conj_word_B i = apply_fun conj_word_B 0.
+                                      { rewrite Hi_eq0B. reflexivity. }
+                                      claim HcwB0i : apply_fun conj_word_B 0 :e apply_fun Gfam a.
+                                      { exact (eq_subst_mem_rev (apply_fun conj_word_B i) (apply_fun conj_word_B 0)
+                                          (apply_fun Gfam a) HeqiB Hia). }
+                                      exact (eq_subst_mem_rev (apply_fun conj_word_B 0) (apply_fun cs3 k2)
+                                        (apply_fun Gfam a) HcwB0 HcwB0i). }
+                                    claim HcwB1_Gb : x3 :e apply_fun Gfam b.
+                                    { claim HsiB : ordsucc i = 1. { rewrite Hi_eq0B. reflexivity. }
+                                      claim HeqsiB : apply_fun conj_word_B (ordsucc i) = apply_fun conj_word_B 1.
+                                      { rewrite HsiB. reflexivity. }
+                                      claim HcwB1i : apply_fun conj_word_B 1 :e apply_fun Gfam b.
+                                      { exact (eq_subst_mem_rev (apply_fun conj_word_B (ordsucc i)) (apply_fun conj_word_B 1)
+                                          (apply_fun Gfam b) HeqsiB Hsib). }
+                                      exact (eq_subst_mem_rev (apply_fun conj_word_B 1) x3
+                                        (apply_fun Gfam b) HcwB1 HcwB1i). }
+                                    assume HabB : a = b.
+                                    (** cs3(k2) in Gfam(a) and Gfam(gamma2). x3 in Gfam(a) and Gfam(alpha). a = b. **)
+                                    apply (xm (a = alpha)).
+                                    + assume Ha_alphaB : a = alpha.
+                                      (** cs3(k2) in Gfam(alpha) and Gfam(gamma2), gamma2 <> alpha -> cs3(k2) = e **)
+                                      claim Hcs3k2_GaB : apply_fun cs3 k2 :e apply_fun Gfam alpha.
+                                      { rewrite <- Ha_alphaB. exact HcwB0_Ga. }
+                                      claim Hcs3k2_eB : apply_fun cs3 k2 = e.
+                                      { exact (Hdisjoint alpha gamma2 HalJ Hg2J
+                                          (fun Heq : alpha = gamma2 => Hg2_ne_alpha (eq_symm alpha gamma2 Heq))
+                                          (apply_fun cs3 k2) Hcs3k2_GaB Hcs3k2_Gg2). }
+                                      exact (Hcs3k2_neB Hcs3k2_eB).
+                                    + assume Ha_ne_alphaB : a <> alpha.
+                                      (** x3 in Gfam(b) = Gfam(a) and Gfam(alpha), a <> alpha -> x3 = e **)
+                                      claim Hx3_GaB : x3 :e apply_fun Gfam a.
+                                      { rewrite HabB. exact HcwB1_Gb. }
+                                      claim Hx3_eB : x3 = e.
+                                      { exact (Hdisjoint a alpha HaJ HalJ Ha_ne_alphaB x3 Hx3_GaB Hx3Ga). }
+                                      exact (Hx3ne Hx3_eB). }
+                                * assume Hi_eq1B : i = 1.
+                                  (** cw(1)=x3 in Gfam(a), cw(2)=inv(cs3(k2)) in Gfam(b), need a <> b **)
+                                  claim HcwB1_Ga : x3 :e apply_fun Gfam a.
+                                  { claim HeqiB : apply_fun conj_word_B i = apply_fun conj_word_B 1.
+                                    { rewrite Hi_eq1B. reflexivity. }
+                                    claim HcwB1i : apply_fun conj_word_B 1 :e apply_fun Gfam a.
+                                    { exact (eq_subst_mem_rev (apply_fun conj_word_B i) (apply_fun conj_word_B 1)
+                                        (apply_fun Gfam a) HeqiB Hia). }
+                                    exact (eq_subst_mem_rev (apply_fun conj_word_B 1) x3
+                                      (apply_fun Gfam a) HcwB1 HcwB1i). }
+                                  claim HcwB2_Gb : apply_fun inv (apply_fun cs3 k2) :e apply_fun Gfam b.
+                                  { claim HsiB : ordsucc i = 2. { rewrite Hi_eq1B. reflexivity. }
+                                    claim HeqsiB : apply_fun conj_word_B (ordsucc i) = apply_fun conj_word_B 2.
+                                    { rewrite HsiB. reflexivity. }
+                                    claim HcwB2i : apply_fun conj_word_B 2 :e apply_fun Gfam b.
+                                    { exact (eq_subst_mem_rev (apply_fun conj_word_B (ordsucc i)) (apply_fun conj_word_B 2)
+                                        (apply_fun Gfam b) HeqsiB Hsib). }
+                                    exact (eq_subst_mem_rev (apply_fun conj_word_B 2) (apply_fun inv (apply_fun cs3 k2))
+                                      (apply_fun Gfam b) HcwB2 HcwB2i). }
+                                  assume HabB : a = b.
+                                  apply (xm (a = gamma2)).
+                                  + assume Ha_g2B : a = gamma2.
+                                    (** x3 in Gfam(gamma2) and Gfam(alpha), gamma2 <> alpha -> x3 = e **)
+                                    claim Hx3_Gg2B : x3 :e apply_fun Gfam gamma2.
+                                    { rewrite <- Ha_g2B. exact HcwB1_Ga. }
+                                    claim Hx3_eB : x3 = e.
+                                    { exact (Hdisjoint gamma2 alpha Hg2J HalJ Hg2_ne_alpha x3 Hx3_Gg2B Hx3Ga). }
+                                    exact (Hx3ne Hx3_eB).
+                                  + assume Ha_ne_g2B : a <> gamma2.
+                                    (** inv(cs3(k2)) in Gfam(b)=Gfam(a) and Gfam(gamma2), a <> gamma2 -> inv(cs3(k2)) = e **)
+                                    claim Hinv_GaB : apply_fun inv (apply_fun cs3 k2) :e apply_fun Gfam a.
+                                    { rewrite HabB. exact HcwB2_Gb. }
+                                    claim Hinvcs3k2_eB : apply_fun inv (apply_fun cs3 k2) = e.
+                                    { exact (Hdisjoint a gamma2 HaJ Hg2J Ha_ne_g2B (apply_fun inv (apply_fun cs3 k2))
+                                        Hinv_GaB Hinvcs3k2_Gg2B). }
+                                    exact (Hinvcs3k2_neB Hinvcs3k2_eB).
+                              + assume Hi_eq2B : i = 2.
+                                (** ordsucc 2 = 3 :e 3 is false **)
+                                claim Hsi_eqB : ordsucc i = 3. { rewrite Hi_eq2B. reflexivity. }
+                                claim Hsi3_falseB : 3 :e 3.
+                                { exact (eq_subst_mem_rev (ordsucc i) 3 3 Hsi_eqB Hsi3). }
+                                exact (FalseE (In_irref 3 Hsi3_falseB) (a <> b)). }
+                          (** word_product of conj_word_B = y3 **)
+                          claim Hwp_cwB : word_product mult e conj_word_B 3 = y3.
+                          { prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun conj_word_B i)) 3 = y3.
+                            set fwpB := fun i:set => fun r:set => apply_fun mult (r, apply_fun conj_word_B i).
+                            claim Hstep2B : nat_primrec e fwpB 3 = fwpB 2 (nat_primrec e fwpB 2).
+                            { exact (nat_primrec_S e fwpB 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))). }
+                            claim Hstep1B : nat_primrec e fwpB 2 = fwpB 1 (nat_primrec e fwpB 1).
+                            { exact (nat_primrec_S e fwpB 1 (nat_ordsucc 0 nat_0)). }
+                            claim Hstep0B : nat_primrec e fwpB 1 = fwpB 0 (nat_primrec e fwpB 0).
+                            { exact (nat_primrec_S e fwpB 0 nat_0). }
+                            claim HbaseB : nat_primrec e fwpB 0 = e.
+                            { exact (nat_primrec_0 e fwpB). }
+                            rewrite Hstep2B. rewrite Hstep1B. rewrite Hstep0B. rewrite HbaseB.
+                            prove fwpB 2 (fwpB 1 (fwpB 0 e)) = y3.
+                            prove apply_fun mult (apply_fun mult (apply_fun mult (e, apply_fun conj_word_B 0), apply_fun conj_word_B 1), apply_fun conj_word_B 2) = y3.
+                            rewrite HcwB0. rewrite HcwB1. rewrite HcwB2.
+                            claim Hecs_B : apply_fun mult (e, apply_fun cs3 k2) = apply_fun cs3 k2.
+                            { exact (andEL (apply_fun mult (e, apply_fun cs3 k2) = apply_fun cs3 k2)
+                                (apply_fun mult (apply_fun cs3 k2, e) = apply_fun cs3 k2)
+                                (Hid (apply_fun cs3 k2) Hcs3k2_G)). }
+                            rewrite Hecs_B.
+                            (** mult(mult(cs3(k2), x3), inv(cs3(k2))) = y3 **)
+                            (** y3 = mult(mult(c3, x3), inv(c3)) and c3 = cs3(k2) **)
+                            prove apply_fun mult (apply_fun mult (apply_fun cs3 k2, x3), apply_fun inv (apply_fun cs3 k2)) = y3.
+                            prove apply_fun mult (apply_fun mult (apply_fun cs3 k2, x3), apply_fun inv (apply_fun cs3 k2)) =
+                              apply_fun mult (apply_fun mult (c3, x3), apply_fun inv c3).
+                            rewrite Hc3_is_cs3k2B. reflexivity. }
+                          (** y3 has reduced word of length 1 **)
+                          claim Hy3_len1B : 3 = 1.
+                          { exact (free_product_factor_element_length1 G mult e inv J Gfam efam beta y3 3 conj_word_B
+                              Hfp HbeJ Hy3Gb Hy3_ne Hy3_ne_efam Hred_cwB (neq_ordsucc_0 2) Hwp_cwB). }
+                          (** 3 = 1 is false **)
+                          claim H3ne1B : 3 <> 1.
+                          { assume H31B : 3 = 1. claim H20B : 2 = 0. { exact (ordsucc_inj 2 0 H31B). }
+                            exact (neq_2_0 H20B). }
+                          exact (FalseE (H3ne1B Hy3_len1B) (y3 = e)).
                         * assume Hk2_ne0B : k2 <> 0.
                           (** k2 >= 1. Full word of length 2k2+3 >= 5 **)
                           (** Needs full word construction **)
