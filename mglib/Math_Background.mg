@@ -187577,7 +187577,77 @@ claim HrOdd :
     claim HargEq :
       Rn_negate 2 p = (minus_SNo (p 0), minus_SNo (p 1)).
     {
-      admit.
+      claim HnegpE2 : Rn_negate 2 p :e euclidean_space 2.
+      {
+        claim HnegpDef :
+          Rn_negate 2 p = graph 2 (fun i:set => minus_SNo (apply_fun p i)).
+        {
+          reflexivity.
+        }
+        claim Heu2 :
+          euclidean_space 2 =
+          product_space 2 (const_space_family 2 R R_standard_topology).
+        {
+          reflexivity.
+        }
+        rewrite HnegpDef.
+        rewrite Heu2.
+        apply (product_space_graphI
+          2
+          (const_space_family 2 R R_standard_topology)
+          (fun i:set => minus_SNo (apply_fun p i))).
+        claim HpApply0R : apply_fun p 0 :e R.
+        {
+          admit.
+        }
+        claim HpApply1R : apply_fun p 1 :e R.
+        {
+          admit.
+        }
+        let i.
+        assume Hi2.
+        rewrite (space_family_set_const_space_family
+          2
+          R
+          R_standard_topology
+          i
+          Hi2).
+        apply (ordsuccE 1 i Hi2).
+        - assume Hi1.
+          apply (ordsuccE 0 i Hi1).
+          + assume Hi0.
+            exact (EmptyE
+              i
+              Hi0
+              ((minus_SNo (apply_fun p i)) :e R)).
+          + assume Hieq0.
+            rewrite Hieq0.
+            exact (real_minus_SNo
+              (apply_fun p 0)
+              HpApply0R).
+        - assume Hieq1.
+          rewrite Hieq1.
+          exact (real_minus_SNo
+            (apply_fun p 1)
+            HpApply1R).
+      }
+      claim HnegpPair :
+        (apply_fun (Rn_negate 2 p) 0,
+         apply_fun (Rn_negate 2 p) 1)
+        =
+        (minus_SNo (p 0), minus_SNo (p 1)).
+      {
+        admit.
+      }
+      exact (eq_i_tra
+        (Rn_negate 2 p)
+        (apply_fun (Rn_negate 2 p) 0,
+         apply_fun (Rn_negate 2 p) 1)
+        (minus_SNo (p 0), minus_SNo (p 1))
+        (euclidean_space_2_eq_coords_pair
+          (Rn_negate 2 p)
+          HnegpE2)
+        HnegpPair).
     }
     claim HdnormNe0 : dnorm <> 0.
     {
