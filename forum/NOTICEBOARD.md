@@ -239,7 +239,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1773109753
 Created: 1773109753
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   bf155b900209be45cfcc75141b64b029a13047c5
@@ -303,7 +303,7 @@ Admin Decision:
 --------------------------------------------------------
 NOTICE ID: 1773102736
 Created: 1773102736
-Status: APPROVED
+Status: IMPLEMENTED
 
 Refers to Commit:
   1c99c564259c4f5ef07f0d9c6aff2a370f7e15cd
