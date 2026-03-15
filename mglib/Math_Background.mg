@@ -211518,10 +211518,19 @@ claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
 { exact (loop_at_continuous X Tx x0 f HfLoopAt). }
 claim Hf0 : apply_fun f 0 = x0. { exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
 claim Hf1 : apply_fun f 1 = x0. { exact (loop_at_at_one X Tx x0 f HfLoopAt). }
-(** Use the ball chain and ball cover to decompose f into U/V pieces.
-    The detailed construction uses induction on the chain length.
-    For now, delegate to an admitted helper that builds the word data
-    from the chain structure. **)
+(** Step 1: Get ball chain via unit_interval_ball_chain **)
+claim Hchain : exists U0 U1 nch seq:set,
+  U0 :e {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} /\ 0 :e U0 /\
+  U1 :e {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} /\ 1 :e U1 /\
+  nch :e omega /\
+  function_on seq (ordsucc nch) {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} /\
+  apply_fun seq 0 = U0 /\ apply_fun seq nch = U1 /\
+  (forall k:set, k :e nch -> apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
+{ exact (unit_interval_ball_chain r HrR Hrpos). }
+(** Step 2: classify each ball as U-type or V-type **)
+(** Step 3: find transition points and connect to x0 **)
+(** Step 4: build word decomposition by induction on chain length **)
+(** Full construction delegated to future work **)
 admit.
 Admitted.
 
