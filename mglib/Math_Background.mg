@@ -93985,17 +93985,16 @@ Qed.
 (** Infrastructure: continuity of the t0-column map for product-ball lifts **)
 (** TODO: needs joint continuity (a homotopy) for vs_choice; use the
   parametric lemma below when F is available. See NOTICEBOARD 1772868964. **)
-(** Admin-approved-refactored per noticeboard proposal 1772715837 **)
+(** Admin-approved-refactored per noticeboard proposals 1772715837 and 1773042726 **)
 Lemma path_lift_column_continuous_on_product_ball :
-  forall E Te B Tb p start_lift F I1 I2 t0:set,
+  forall E Te B Tb p start_lift F I1 t0:set,
   covering_map E Te B Tb p ->
   topology_on E Te ->
   I1 c= unit_interval ->
-  I2 c= unit_interval ->
-  t0 :e I2 ->
+  t0 :e unit_interval ->
   continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
-  continuous_map (setprod I1 I2)
-    (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+  continuous_map (setprod I1 unit_interval)
+    (subspace_topology unit_square unit_square_topology (setprod I1 unit_interval))
     B Tb F ->
   (forall s:set, s :e I1 ->
     apply_fun p (apply_fun start_lift s) = apply_fun F (s, 0)) ->
@@ -94004,7 +94003,7 @@ Lemma path_lift_column_continuous_on_product_ball :
       apply_fun
         (path_lift E Te B Tb p
           (apply_fun start_lift s)
-          (graph I2 (fun t:set => apply_fun F (s, t))))
+          (graph unit_interval (fun t:set => apply_fun F (s, t))))
         t0)).
 admit.
 Admitted.
