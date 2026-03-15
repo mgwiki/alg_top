@@ -211639,7 +211639,21 @@ claim Hdecomp : exists loopU loopV:set,
       (path_concat
         (compose_fun unit_interval loopU incU)
         (compose_fun unit_interval loopV incV)).
-{ admit. }
+{ (** Geometric decomposition: split f at a transition point. **)
+  (** Since f is not all in U and not all in V, there exists a transition **)
+  (** in the ball chain. Pick a point s in the transition overlap. **)
+  (** f(s) :e U cap V. Connect f(s) to x0 via a path gamma in U cap V. **)
+  (** Split f at s: f1 = f|[0,s] (first part), f2 = f|[s,1] (second part). **)
+  (** If first part is in U-type balls: loopU = f1 dot gamma-inv, loopV = gamma dot f2. **)
+  (** Then [f] = [f1 dot f2] = [f1 dot gamma-inv dot gamma dot f2] = [incU o loopU dot incV o loopV]. **)
+  (** The detailed construction requires: **)
+  (** 1. Finding the transition point s in [0,1] **)
+  (** 2. Building the connecting path gamma in U cap V **)
+  (** 3. Constructing the sub-loops via path reparametrization **)
+  (** 4. Proving the path class equality **)
+  (** Each step needs careful formal work with path concatenation **)
+  (** and subspace topology. **)
+  admit. }
 apply Hdecomp. let loopU. assume HloopU_ex.
 apply HloopU_ex. let loopV. assume Hdecomp_pack.
 (** Hdecomp_pack : (A /\ B) /\ C where /\ is left-associative **)
