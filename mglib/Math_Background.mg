@@ -188871,6 +188871,446 @@ claim HliftNotLoop :
       beta_lift
       HbetaLiftCont).
   }
+  set const_plus_half := const_fun unit_interval (eps_ 1).
+  set const_minus_half := const_fun unit_interval (minus_SNo (eps_ 1)).
+  set beta_lift_plus := compose_fun
+    unit_interval
+    (pair_map unit_interval beta_lift const_plus_half)
+    add_fun_R.
+  set beta_lift_minus := compose_fun
+    unit_interval
+    (pair_map unit_interval beta_lift const_minus_half)
+    add_fun_R.
+  claim HconstPlusCont :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology const_plus_half.
+  {
+    exact (const_fun_continuous
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      (eps_ 1)
+      unit_interval_topology_on
+      R_standard_topology_is_topology_local
+      eps_1_in_R).
+  }
+  claim HconstMinusCont :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology const_minus_half.
+  {
+    exact (const_fun_continuous
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      (minus_SNo (eps_ 1))
+      unit_interval_topology_on
+      R_standard_topology_is_topology_local
+      (real_minus_SNo
+        (eps_ 1)
+        eps_1_in_R)).
+  }
+  claim HconstPlusFun :
+    function_on const_plus_half unit_interval R.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      const_plus_half
+      HconstPlusCont).
+  }
+  claim HconstMinusFun :
+    function_on const_minus_half unit_interval R.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      const_minus_half
+      HconstMinusCont).
+  }
+  claim HbetaLiftPlusCont :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology beta_lift_plus.
+  {
+    exact (add_two_continuous_R
+      unit_interval
+      unit_interval_topology
+      beta_lift
+      const_plus_half
+      unit_interval_topology_on
+      HbetaLiftCont
+      HconstPlusCont).
+  }
+  claim HbetaLiftMinusCont :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology beta_lift_minus.
+  {
+    exact (add_two_continuous_R
+      unit_interval
+      unit_interval_topology
+      beta_lift
+      const_minus_half
+      unit_interval_topology_on
+      HbetaLiftCont
+      HconstMinusCont).
+  }
+  claim HbetaLiftMinusLiftsAlpha :
+    lifting_of
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      S1
+      S1_topology
+      covering_map_R_S1
+      alpha_half
+      beta_lift_minus.
+  {
+    prove continuous_map unit_interval unit_interval_topology R R_standard_topology beta_lift_minus /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun covering_map_R_S1 (apply_fun beta_lift_minus t) = apply_fun alpha_half t).
+    apply andI.
+    - exact HbetaLiftMinusCont.
+    - let t.
+      assume HtI.
+      claim HbetaLiftValR :
+        apply_fun beta_lift t :e R.
+      {
+        exact (HbetaLiftFun
+          t
+          HtI).
+      }
+      claim HbetaLiftMinusVal :
+        apply_fun beta_lift_minus t =
+        add_SNo (apply_fun beta_lift t) (apply_fun const_minus_half t).
+      {
+        exact (add_of_pair_map_apply
+          unit_interval
+          beta_lift
+          const_minus_half
+          t
+          HtI
+          HbetaLiftValR
+          (HconstMinusFun
+            t
+            HtI)).
+      }
+      rewrite HbetaLiftMinusVal.
+      rewrite (const_fun_apply
+        unit_interval
+        (minus_SNo (eps_ 1))
+        t
+        HtI).
+      rewrite (covering_map_R_S1_minus_half_shift_antipode
+        (apply_fun beta_lift t)
+        HbetaLiftValR).
+      rewrite (HbetaLiftComm
+        t
+        HtI).
+      claim HbetaHalfInS1 :
+        apply_fun beta_half t :e S1.
+      {
+        exact (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          S1
+          S1_topology
+          beta_half
+          HbetaHalfCont
+          t
+          HtI).
+      }
+      claim HbetaHalfInRR :
+        apply_fun beta_half t :e setprod R R.
+      {
+        exact (SepE1
+          (setprod R R)
+          (fun p:set =>
+            add_SNo (mul_SNo (p 0) (p 0))
+              (mul_SNo (p 1) (p 1)) = 1)
+          (apply_fun beta_half t)
+          HbetaHalfInS1).
+      }
+      claim HbetaHalfEta :
+        apply_fun beta_half t =
+        (apply_fun beta_half t 0, apply_fun beta_half t 1).
+      {
+        exact (setprod_eta
+          R
+          R
+          (apply_fun beta_half t)
+          HbetaHalfInRR).
+      }
+      claim HbetaPairEq :
+        (apply_fun beta_half t 0, apply_fun beta_half t 1) =
+        (minus_SNo (apply_fun alpha_half t 0),
+         minus_SNo (apply_fun alpha_half t 1)).
+      {
+        rewrite <- HbetaHalfEta.
+        exact (HbetaAntiAlpha
+          t
+          HtI).
+      }
+      claim HbetaCoord0 :
+        apply_fun beta_half t 0 =
+        minus_SNo (apply_fun alpha_half t 0).
+      {
+        exact (pair_eq_fst
+          (apply_fun beta_half t 0)
+          (apply_fun beta_half t 1)
+          (minus_SNo (apply_fun alpha_half t 0))
+          (minus_SNo (apply_fun alpha_half t 1))
+          HbetaPairEq).
+      }
+      claim HbetaCoord1 :
+        apply_fun beta_half t 1 =
+        minus_SNo (apply_fun alpha_half t 1).
+      {
+        exact (pair_eq_snd
+          (apply_fun beta_half t 0)
+          (apply_fun beta_half t 1)
+          (minus_SNo (apply_fun alpha_half t 0))
+          (minus_SNo (apply_fun alpha_half t 1))
+          HbetaPairEq).
+      }
+      rewrite HbetaCoord0.
+      rewrite HbetaCoord1.
+      claim HalphaHalfInS1 :
+        apply_fun alpha_half t :e S1.
+      {
+        exact (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          S1
+          S1_topology
+          alpha_half
+          HalphaHalfCont
+          t
+          HtI).
+      }
+      claim HalphaHalfInRR :
+        apply_fun alpha_half t :e setprod R R.
+      {
+        exact (SepE1
+          (setprod R R)
+          (fun p:set =>
+            add_SNo (mul_SNo (p 0) (p 0))
+              (mul_SNo (p 1) (p 1)) = 1)
+          (apply_fun alpha_half t)
+          HalphaHalfInS1).
+      }
+      claim Hcoord0R :
+        apply_fun alpha_half t 0 :e R.
+      {
+        exact (ap0_Sigma
+          R
+          (fun _ : set => R)
+          (apply_fun alpha_half t)
+          HalphaHalfInRR).
+      }
+      claim Hcoord1R :
+        apply_fun alpha_half t 1 :e R.
+      {
+        exact (ap1_Sigma
+          R
+          (fun _ : set => R)
+          (apply_fun alpha_half t)
+          HalphaHalfInRR).
+      }
+      rewrite (minus_SNo_minus_SNo_R
+        (apply_fun alpha_half t 0)
+        Hcoord0R).
+      rewrite (minus_SNo_minus_SNo_R
+        (apply_fun alpha_half t 1)
+        Hcoord1R).
+      exact (eq_symm
+        (apply_fun alpha_half t)
+        (apply_fun alpha_half t 0, apply_fun alpha_half t 1)
+        (setprod_eta
+          R
+          R
+          (apply_fun alpha_half t)
+          HalphaHalfInRR)).
+  }
+  claim HbetaLiftPlusLiftsAlpha :
+    lifting_of
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      S1
+      S1_topology
+      covering_map_R_S1
+      alpha_half
+      beta_lift_plus.
+  {
+    prove continuous_map unit_interval unit_interval_topology R R_standard_topology beta_lift_plus /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun covering_map_R_S1 (apply_fun beta_lift_plus t) = apply_fun alpha_half t).
+    apply andI.
+    - exact HbetaLiftPlusCont.
+    - let t.
+      assume HtI.
+      claim HbetaLiftValR :
+        apply_fun beta_lift t :e R.
+      {
+        exact (HbetaLiftFun
+          t
+          HtI).
+      }
+      claim HbetaLiftPlusVal :
+        apply_fun beta_lift_plus t =
+        add_SNo (apply_fun beta_lift t) (apply_fun const_plus_half t).
+      {
+        exact (add_of_pair_map_apply
+          unit_interval
+          beta_lift
+          const_plus_half
+          t
+          HtI
+          HbetaLiftValR
+          (HconstPlusFun
+            t
+            HtI)).
+      }
+      rewrite HbetaLiftPlusVal.
+      rewrite (const_fun_apply
+        unit_interval
+        (eps_ 1)
+        t
+        HtI).
+      rewrite (covering_map_R_S1_half_shift_antipode
+        (apply_fun beta_lift t)
+        HbetaLiftValR).
+      rewrite (HbetaLiftComm
+        t
+        HtI).
+      claim HbetaHalfInS1 :
+        apply_fun beta_half t :e S1.
+      {
+        exact (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          S1
+          S1_topology
+          beta_half
+          HbetaHalfCont
+          t
+          HtI).
+      }
+      claim HbetaHalfInRR :
+        apply_fun beta_half t :e setprod R R.
+      {
+        exact (SepE1
+          (setprod R R)
+          (fun p:set =>
+            add_SNo (mul_SNo (p 0) (p 0))
+              (mul_SNo (p 1) (p 1)) = 1)
+          (apply_fun beta_half t)
+          HbetaHalfInS1).
+      }
+      claim HbetaHalfEta :
+        apply_fun beta_half t =
+        (apply_fun beta_half t 0, apply_fun beta_half t 1).
+      {
+        exact (setprod_eta
+          R
+          R
+          (apply_fun beta_half t)
+          HbetaHalfInRR).
+      }
+      claim HbetaPairEq :
+        (apply_fun beta_half t 0, apply_fun beta_half t 1) =
+        (minus_SNo (apply_fun alpha_half t 0),
+         minus_SNo (apply_fun alpha_half t 1)).
+      {
+        rewrite <- HbetaHalfEta.
+        exact (HbetaAntiAlpha
+          t
+          HtI).
+      }
+      claim HbetaCoord0 :
+        apply_fun beta_half t 0 =
+        minus_SNo (apply_fun alpha_half t 0).
+      {
+        exact (pair_eq_fst
+          (apply_fun beta_half t 0)
+          (apply_fun beta_half t 1)
+          (minus_SNo (apply_fun alpha_half t 0))
+          (minus_SNo (apply_fun alpha_half t 1))
+          HbetaPairEq).
+      }
+      claim HbetaCoord1 :
+        apply_fun beta_half t 1 =
+        minus_SNo (apply_fun alpha_half t 1).
+      {
+        exact (pair_eq_snd
+          (apply_fun beta_half t 0)
+          (apply_fun beta_half t 1)
+          (minus_SNo (apply_fun alpha_half t 0))
+          (minus_SNo (apply_fun alpha_half t 1))
+          HbetaPairEq).
+      }
+      rewrite HbetaCoord0.
+      rewrite HbetaCoord1.
+      claim HalphaHalfInS1 :
+        apply_fun alpha_half t :e S1.
+      {
+        exact (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          S1
+          S1_topology
+          alpha_half
+          HalphaHalfCont
+          t
+          HtI).
+      }
+      claim HalphaHalfInRR :
+        apply_fun alpha_half t :e setprod R R.
+      {
+        exact (SepE1
+          (setprod R R)
+          (fun p:set =>
+            add_SNo (mul_SNo (p 0) (p 0))
+              (mul_SNo (p 1) (p 1)) = 1)
+          (apply_fun alpha_half t)
+          HalphaHalfInS1).
+      }
+      claim Hcoord0R :
+        apply_fun alpha_half t 0 :e R.
+      {
+        exact (ap0_Sigma
+          R
+          (fun _ : set => R)
+          (apply_fun alpha_half t)
+          HalphaHalfInRR).
+      }
+      claim Hcoord1R :
+        apply_fun alpha_half t 1 :e R.
+      {
+        exact (ap1_Sigma
+          R
+          (fun _ : set => R)
+          (apply_fun alpha_half t)
+          HalphaHalfInRR).
+      }
+      rewrite (minus_SNo_minus_SNo_R
+        (apply_fun alpha_half t 0)
+        Hcoord0R).
+      rewrite (minus_SNo_minus_SNo_R
+        (apply_fun alpha_half t 1)
+        Hcoord1R).
+      exact (eq_symm
+        (apply_fun alpha_half t)
+        (apply_fun alpha_half t 0, apply_fun alpha_half t 1)
+        (setprod_eta
+          R
+          R
+          (apply_fun alpha_half t)
+          HalphaHalfInRR)).
+  }
   assume HbetaEnd0.
   claim HbetaLiftEnd0 :
     apply_fun beta_lift 1 = e0.
@@ -188981,10 +189421,305 @@ claim HliftNotLoop :
           HliftGammaDecomp)
         HbetaEnd0)).
   }
+  claim HmidPlusForcesNoReturn :
+    mid_lift = add_SNo e0 (eps_ 1) ->
+    apply_fun beta_lift 1 <> e0.
+  {
+    assume HmidPlus.
+    assume HbetaEnd0'.
+    claim HminusStart :
+      apply_fun beta_lift_minus 0 = e0.
+    {
+      claim HminusVal0 :
+        apply_fun beta_lift_minus 0 =
+        add_SNo (apply_fun beta_lift 0) (apply_fun const_minus_half 0).
+      {
+        exact (add_of_pair_map_apply
+          unit_interval
+          beta_lift
+          const_minus_half
+          0
+          zero_in_unit_interval
+          (HbetaLiftFun
+            0
+            zero_in_unit_interval)
+          (HconstMinusFun
+            0
+            zero_in_unit_interval)).
+      }
+      rewrite HminusVal0.
+      rewrite (const_fun_apply
+        unit_interval
+        (minus_SNo (eps_ 1))
+        0
+        zero_in_unit_interval).
+      rewrite HbetaLift0.
+      rewrite HmidPlus.
+      rewrite <- (add_SNo_assoc
+        e0
+        (eps_ 1)
+        (minus_SNo (eps_ 1))
+        (real_SNo e0 He0R)
+        SNo_eps_1
+        (SNo_minus_SNo
+          (eps_ 1)
+          SNo_eps_1)).
+      rewrite (add_SNo_minus_SNo_rinv
+        (eps_ 1)
+        SNo_eps_1).
+      rewrite (add_SNo_0R
+        e0
+        (real_SNo e0 He0R)).
+      reflexivity.
+    }
+    claim HalphaLiftLifting :
+      lifting_of
+        unit_interval
+        unit_interval_topology
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        alpha_half
+        alpha_lift.
+    {
+      exact (path_lift_is_lifting_of
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        e0
+        alpha_half
+        thm53_1_R_covers_S1
+        He0R
+        (eq_symm
+          (apply_fun alpha_half 0)
+          (apply_fun covering_map_R_S1 e0)
+          (eq_i_tra
+            (apply_fun alpha_half 0)
+            (apply_fun gamma 0)
+            (apply_fun covering_map_R_S1 e0)
+            Halpha0
+            (eq_symm
+              (apply_fun covering_map_R_S1 e0)
+              (apply_fun gamma 0)
+              HstartGamma)))
+        HalphaHalfCont).
+    }
+    claim HminusEqAt1 :
+      apply_fun beta_lift_minus 1 = apply_fun alpha_lift 1.
+    {
+      exact (lemma54_1_path_lifting_unique
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        e0
+        alpha_half
+        beta_lift_minus
+        alpha_lift
+        thm53_1_R_covers_S1
+        He0R
+        HalphaHalfCont
+        HbetaLiftMinusLiftsAlpha
+        HminusStart
+        HalphaLiftLifting
+        HalphaLift0
+        1
+        one_in_unit_interval).
+    }
+    claim HminusVal1 :
+      apply_fun beta_lift_minus 1 =
+      add_SNo (apply_fun beta_lift 1) (apply_fun const_minus_half 1).
+    {
+      exact (add_of_pair_map_apply
+        unit_interval
+        beta_lift
+        const_minus_half
+        1
+        one_in_unit_interval
+        (HbetaLiftFun
+          1
+          one_in_unit_interval)
+        (HconstMinusFun
+          1
+          one_in_unit_interval)).
+    }
+    claim HmidEqMinus :
+      add_SNo e0 (eps_ 1) = add_SNo e0 (minus_SNo (eps_ 1)).
+    {
+      rewrite <- HmidPlus.
+      rewrite <- HminusEqAt1.
+      rewrite HminusVal1.
+      rewrite (const_fun_apply
+        unit_interval
+        (minus_SNo (eps_ 1))
+        1
+        one_in_unit_interval).
+      rewrite HbetaEnd0'.
+      reflexivity.
+    }
+    exact ((real_half_shift_points_distinct_early
+      e0
+      He0R)
+      HmidEqMinus).
+  }
+  claim HmidMinusForcesNoReturn :
+    mid_lift = add_SNo e0 (minus_SNo (eps_ 1)) ->
+    apply_fun beta_lift 1 <> e0.
+  {
+    assume HmidMinus.
+    assume HbetaEnd0'.
+    claim HplusStart :
+      apply_fun beta_lift_plus 0 = e0.
+    {
+      claim HplusVal0 :
+        apply_fun beta_lift_plus 0 =
+        add_SNo (apply_fun beta_lift 0) (apply_fun const_plus_half 0).
+      {
+        exact (add_of_pair_map_apply
+          unit_interval
+          beta_lift
+          const_plus_half
+          0
+          zero_in_unit_interval
+          (HbetaLiftFun
+            0
+            zero_in_unit_interval)
+          (HconstPlusFun
+            0
+            zero_in_unit_interval)).
+      }
+      rewrite HplusVal0.
+      rewrite (const_fun_apply
+        unit_interval
+        (eps_ 1)
+        0
+        zero_in_unit_interval).
+      rewrite HbetaLift0.
+      rewrite HmidMinus.
+      rewrite <- (add_SNo_assoc
+        e0
+        (minus_SNo (eps_ 1))
+        (eps_ 1)
+        (real_SNo e0 He0R)
+        (SNo_minus_SNo
+          (eps_ 1)
+          SNo_eps_1)
+        SNo_eps_1).
+      rewrite (add_SNo_minus_SNo_linv
+        (eps_ 1)
+        SNo_eps_1).
+      rewrite (add_SNo_0R
+        e0
+        (real_SNo e0 He0R)).
+      reflexivity.
+    }
+    claim HalphaLiftLifting :
+      lifting_of
+        unit_interval
+        unit_interval_topology
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        alpha_half
+        alpha_lift.
+    {
+      exact (path_lift_is_lifting_of
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        e0
+        alpha_half
+        thm53_1_R_covers_S1
+        He0R
+        (eq_symm
+          (apply_fun alpha_half 0)
+          (apply_fun covering_map_R_S1 e0)
+          (eq_i_tra
+            (apply_fun alpha_half 0)
+            (apply_fun gamma 0)
+            (apply_fun covering_map_R_S1 e0)
+            Halpha0
+            (eq_symm
+              (apply_fun covering_map_R_S1 e0)
+              (apply_fun gamma 0)
+              HstartGamma)))
+        HalphaHalfCont).
+    }
+    claim HplusEqAt1 :
+      apply_fun beta_lift_plus 1 = apply_fun alpha_lift 1.
+    {
+      exact (lemma54_1_path_lifting_unique
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        e0
+        alpha_half
+        beta_lift_plus
+        alpha_lift
+        thm53_1_R_covers_S1
+        He0R
+        HalphaHalfCont
+        HbetaLiftPlusLiftsAlpha
+        HplusStart
+        HalphaLiftLifting
+        HalphaLift0
+        1
+        one_in_unit_interval).
+    }
+    claim HplusVal1 :
+      apply_fun beta_lift_plus 1 =
+      add_SNo (apply_fun beta_lift 1) (apply_fun const_plus_half 1).
+    {
+      exact (add_of_pair_map_apply
+        unit_interval
+        beta_lift
+        const_plus_half
+        1
+        one_in_unit_interval
+        (HbetaLiftFun
+          1
+          one_in_unit_interval)
+        (HconstPlusFun
+          1
+          one_in_unit_interval)).
+    }
+    claim HmidEqPlus :
+      add_SNo e0 (minus_SNo (eps_ 1)) = add_SNo e0 (eps_ 1).
+    {
+      rewrite <- HmidMinus.
+      rewrite <- HplusEqAt1.
+      rewrite HplusVal1.
+      rewrite (const_fun_apply
+        unit_interval
+        (eps_ 1)
+        1
+        one_in_unit_interval).
+      rewrite HbetaEnd0'.
+      reflexivity.
+    }
+    exact ((real_half_shift_points_distinct_early
+      e0
+      He0R)
+      (eq_symm
+        (add_SNo e0 (minus_SNo (eps_ 1)))
+        (add_SNo e0 (eps_ 1))
+        HmidEqPlus)).
+  }
   (** Remaining geometric content:
-      show the second-half lift `beta_lift`, which starts at the midpoint lift
-      `mid_lift`, cannot end back at e0.
-      The full loop contradiction is now reduced to this explicit endpoint claim. **)
+      classify the midpoint lift `mid_lift` among the two half-shift
+      fiber witnesses `e0 +/- 1/2`; the two cases above already force
+      non-return of the second-half lift. **)
   admit.
 }
 exact (HliftNotLoop
