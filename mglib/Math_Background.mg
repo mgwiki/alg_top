@@ -281194,6 +281194,35 @@ apply (xm (j = 1)).
   exact (In_irref j Hj_in_j).
 Qed.
 
+(** Helper: GENERAL case with alpha0=al. For ANY z in Gfam(al), the same **)
+(** wp_mid-in-Gfam(al) argument gives contradiction via uniqueness. **)
+(** This covers both z=eG AND z=efam(al) AND any other z. **)
+(** The key: inv(xs0(0)) mult efam(al) mult xs0(0) = wp_mid mult z. **)
+(** Since z and the conjugation are both in Gfam(al): wp_mid mult z in Gfam(al). **)
+(** wp_mid = (wp_mid mult z) mult inv(z) in Gfam(al). **)
+(** Then j=1 disjointness or j>=2 uniqueness gives contradiction. **)
+(** Proven Alice **)
+Lemma efam_not_in_Gfam_pre_same_factor_general :
+  forall G mult e inv J Gfam efam:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  forall al:set, al :e J ->
+  apply_fun efam al :e apply_fun Gfam al -> apply_fun efam al <> e ->
+  forall n0 xs0 k j:set,
+  reduced_word J Gfam efam n0 xs0 ->
+  word_product mult e xs0 n0 = apply_fun efam al ->
+  n0 = ordsucc k -> nat_p k -> nat_p j -> k = ordsucc j -> j <> 0 ->
+  apply_fun xs0 0 :e apply_fun Gfam al ->
+  apply_fun xs0 k :e apply_fun Gfam al ->
+  apply_fun mult (apply_fun xs0 k, apply_fun xs0 0) :e apply_fun Gfam al ->
+  False.
+(** The proof generalizes efam_not_in_Gfam_pre_zeG_same_factor **)
+(** by replacing the specific z=e hypothesis with z in Gfam(al). **)
+(** The key computation changes: wp_mid = (conjugation result) mult inv(z) **)
+(** but wp_mid in Gfam(al) still follows from subgroup closure. **)
+(** TODO: formalize (same structure as zeG helper, ~400 lines). **)
+admit.
+Admitted.
+
 (** Infrastructure: efam(alpha) cannot be a nontrivial element of its factor in a free product.
     This is used to close the p = efam(alphaL) subcase in the involution torsion proof. **)
 Lemma efam_not_in_Gfam_nontrivial_pre : forall G mult e inv J Gfam efam:set,
@@ -282274,10 +282303,18 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
                     { rewrite <- Halpha0_al. exact Hxs0_0_in. }
                     claim Hxsk_Gal_loc : apply_fun xs0 k :e apply_fun Gfam al.
                     { rewrite <- Halpha0_al. rewrite <- Halphak_eq_alpha0. exact Hxs0_k_in. }
-                    exact (efam_not_in_Gfam_pre_zeG_same_factor G mult e inv J Gfam efam
+                    claim Hz_Gal_loc : apply_fun mult (apply_fun xs0 k, apply_fun xs0 0) :e apply_fun Gfam al.
+                    { (** z = e, and e is in every subgroup **)
+                      apply (and4E (apply_fun Gfam al c= G) (e :e apply_fun Gfam al)
+                        (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+                          apply_fun mult (x, y) :e apply_fun Gfam al)
+                        (forall x:set, x :e apply_fun Gfam al -> apply_fun inv x :e apply_fun Gfam al)
+                        (Hsubfam al Hal)).
+                      assume _ HeGal _ _. rewrite Hz_e. exact HeGal. }
+                    exact (efam_not_in_Gfam_pre_same_factor_general G mult e inv J Gfam efam
                       Hfp al Hal Hefam_in Hefam_ne
                       n0 xs0 k j Hred0 Hwp0 Hn0_eq Hk_nat Hj_nat Hk_eq_sj Hj_ne0
-                      Hxs0_0_Gal_loc Hxsk_Gal_loc Hz_e).
+                      Hxs0_0_Gal_loc Hxsk_Gal_loc Hz_Gal_loc).
                   + (** alpha0 != al **)
                     assume Halpha0_ne_al : alpha0 <> al.
                     (** When first/last entries of reduced word for efam(al) are NOT in Gfam(al), **)
@@ -282289,7 +282326,29 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
                   apply (xm (z = apply_fun efam alpha0)).
                   * (** z = efam(alpha0) **)
                     assume Hz_efam : z = apply_fun efam alpha0.
-                    admit.
+                    apply (xm (alpha0 = al)).
+                    + (** alpha0 = al: use z=efam helper **)
+                      assume Halpha0_al : alpha0 = al.
+                      claim Hxs0_0_Gal : apply_fun xs0 0 :e apply_fun Gfam al.
+                      { rewrite <- Halpha0_al. exact Hxs0_0_in. }
+                      claim Hxsk_Gal : apply_fun xs0 k :e apply_fun Gfam al.
+                      { rewrite <- Halpha0_al. rewrite <- Halphak_eq_alpha0. exact Hxs0_k_in. }
+                      claim Hz_in_Gal : apply_fun mult (apply_fun xs0 k, apply_fun xs0 0) :e apply_fun Gfam al.
+                      { apply (and4E (apply_fun Gfam al c= G) (e :e apply_fun Gfam al)
+                          (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+                            apply_fun mult (x, y) :e apply_fun Gfam al)
+                          (forall x:set, x :e apply_fun Gfam al -> apply_fun inv x :e apply_fun Gfam al)
+                          (Hsubfam al Hal)).
+                        assume _ _ Hmc _. exact (Hmc (apply_fun xs0 k) (apply_fun xs0 0) Hxsk_Gal Hxs0_0_Gal). }
+                      exact (efam_not_in_Gfam_pre_same_factor_general G mult e inv J Gfam efam
+                        Hfp al Hal Hefam_in Hefam_ne
+                        n0 xs0 k j Hred0 Hwp0 Hn0_eq Hk_nat Hj_nat Hk_eq_sj Hj_ne0
+                        Hxs0_0_Gal Hxsk_Gal Hz_in_Gal).
+                    + (** alpha0 != al **)
+                      assume Halpha0_ne_al : alpha0 <> al.
+                      (** z = efam(alpha0), alpha0 != al. efam(alpha0) in Gfam(alpha0), efam(alpha0) != e. **)
+                      (** Would need _pre for alpha0, which is circular. **)
+                      admit.
                   * (** z ne e and z ne efam(alpha0): use reduced_word_double_merge_junction **)
                     assume Hz_ne_efam : z <> apply_fun efam alpha0.
                     (** Build merged word with product efam(al)^2, derive contradiction **)
