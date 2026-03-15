@@ -290343,11 +290343,61 @@ apply (xm (y = e)).
                           (** k2 >= 1. cprime3 <> e and has reduced word. **)
                           claim Hy3_eq_cprime :
                             y3 = apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3).
-                          { (** Group algebra: c3 = cprime3 mult cs3(k2), so **)
-                            (** y3 = c3 mult x3 mult inv(c3) = cprime3 mult z_inner mult inv(cprime3) **)
-                            (** where z_inner = cs3(k2) mult x3 mult inv(cs3(k2)) **)
-                            (** Uses: Hc3_eq, group_inv_mult, 5x associativity **)
-                            admit. }
+                          { (** Proof: expand c3, use group_inv_mult, regroup by associativity **)
+                            claim Hx3_G2 : x3 :e G. { exact (Hsub_in_G alpha HalJ x3 Hx3Ga). }
+                            claim Hk2_invG : apply_fun inv (apply_fun cs3 k2) :e G.
+                            { exact (HinvG (apply_fun cs3 k2) Hcs3k2_G). }
+                            claim Hcp_invG : apply_fun inv cprime3 :e G.
+                            { exact (HinvG cprime3 Hcprime3_G). }
+                            (** The key equation chain. Since c3, y3, z_inner are set defs, **)
+                            (** we build the equality via explicit claim chains. **)
+                            (** Step 1: inv(c3) = inv(cs3k2) mult inv(cprime3) **)
+                            claim Hinvc3_eq : apply_fun inv c3 = apply_fun mult (apply_fun inv (apply_fun cs3 k2), apply_fun inv cprime3).
+                            { claim Hc3_expanded : c3 = apply_fun mult (cprime3, apply_fun cs3 k2). { exact Hc3_eq. }
+                              rewrite Hc3_expanded.
+                              exact (group_inv_mult G mult e inv cprime3 (apply_fun cs3 k2) Hgrp Hcprime3_G Hcs3k2_G). }
+                            (** Step 2: mult(c3, x3) = mult(cprime3, mult(cs3k2, x3)) **)
+                            claim Hc3x3_eq : apply_fun mult (c3, x3) = apply_fun mult (cprime3, apply_fun mult (apply_fun cs3 k2, x3)).
+                            { rewrite Hc3_eq.
+                              exact (Hassoc cprime3 (apply_fun cs3 k2) x3 Hcprime3_G Hcs3k2_G Hx3_G2). }
+                            (** Step 3: chain the full product **)
+                            (** y3 = mult(mult(c3,x3), inv(c3)) **)
+                            (**    = mult(mult(cprime3, mult(cs3k2,x3)), mult(inv(cs3k2), inv(cprime3))) **)
+                            (**    = mult(cprime3, mult(mult(cs3k2,x3), mult(inv(cs3k2), inv(cprime3)))) **)
+                            (**    = mult(cprime3, mult(mult(mult(cs3k2,x3), inv(cs3k2)), inv(cprime3))) **)
+                            (**    = mult(cprime3, mult(z_inner, inv(cprime3))) **)
+                            (**    = mult(mult(cprime3, z_inner), inv(cprime3)) **)
+                            prove y3 = apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3).
+                            prove apply_fun mult (apply_fun mult (c3, x3), apply_fun inv c3) =
+                              apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3).
+                            rewrite Hc3x3_eq.
+                            rewrite Hinvc3_eq.
+                            (** Goal: mult(mult(cprime3, cs3k2 mult x3), inv(cs3k2) mult inv(cprime3)) =
+                                      mult(mult(cprime3, z_inner), inv(cprime3)) **)
+                            claim Hk2x_G : apply_fun mult (apply_fun cs3 k2, x3) :e G.
+                            { exact (HmultG (apply_fun cs3 k2) x3 Hcs3k2_G Hx3_G2). }
+                            claim Hik2icp_G : apply_fun mult (apply_fun inv (apply_fun cs3 k2), apply_fun inv cprime3) :e G.
+                            { exact (HmultG (apply_fun inv (apply_fun cs3 k2)) (apply_fun inv cprime3) Hk2_invG Hcp_invG). }
+                            (** Assoc on LHS: mult(mult(A,B),C) = mult(A, mult(B,C)) **)
+                            rewrite (Hassoc cprime3 (apply_fun mult (apply_fun cs3 k2, x3))
+                              (apply_fun mult (apply_fun inv (apply_fun cs3 k2), apply_fun inv cprime3))
+                              Hcprime3_G Hk2x_G Hik2icp_G).
+                            (** LHS = mult(cprime3, mult(cs3k2 mult x3, inv(cs3k2) mult inv(cprime3))) **)
+                            (** Inner: mult(cs3k2 mult x3, inv(cs3k2) mult inv(cprime3)) **)
+                            (**      = mult(mult(cs3k2 mult x3, inv(cs3k2)), inv(cprime3)) by assoc **)
+                            rewrite <- (Hassoc (apply_fun mult (apply_fun cs3 k2, x3))
+                              (apply_fun inv (apply_fun cs3 k2)) (apply_fun inv cprime3)
+                              Hk2x_G Hk2_invG Hcp_invG).
+                            (** LHS = mult(cprime3, mult(mult(cs3k2 mult x3, inv(cs3k2)), inv(cprime3))) **)
+                            (** z_inner = mult(mult(cs3k2, x3), inv(cs3k2)) = mult(cs3k2 mult x3, inv(cs3k2)) **)
+                            (** LHS = mult(cprime3, mult(z_inner, inv(cprime3))) **)
+                            (** RHS = mult(mult(cprime3, z_inner), inv(cprime3)) **)
+                            claim Hz_inner_G : z_inner :e G.
+                            { exact (HmultG (apply_fun mult (apply_fun cs3 k2, x3)) (apply_fun inv (apply_fun cs3 k2)) Hk2x_G Hk2_invG). }
+                            exact (eq_symm
+                              (apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3))
+                              (apply_fun mult (cprime3, apply_fun mult (z_inner, apply_fun inv cprime3)))
+                              (Hassoc cprime3 z_inner (apply_fun inv cprime3) Hcprime3_G Hz_inner_G Hcp_invG)). }
                           claim Hcprime3_ne : cprime3 <> e.
                           { set cs_pre := graph k2 (fun i:set => apply_fun cs3 i).
                             claim Hred_pre : reduced_word J Gfam efam k2 cs_pre.
