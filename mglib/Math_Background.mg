@@ -186100,7 +186100,230 @@ Admitted.
 Theorem thm57_1_antipode_preserving_not_nulhomotopic : forall h:set,
   antipode_preserving_S1 h ->
   ~(nulhomotopic S1 S1_topology S1 S1_topology h).
-admit.
+let h.
+assume HhAnti.
+assume Hnul.
+claim HhCont :
+  continuous_map S1 S1_topology S1 S1_topology h.
+{
+  exact (andEL
+    (continuous_map S1 S1_topology S1 S1_topology h)
+    (forall z:set, z :e S1 ->
+      apply_fun h (minus_SNo (z 0), minus_SNo (z 1)) =
+      (minus_SNo (apply_fun h z 0), minus_SNo (apply_fun h z 1)))
+    HhAnti).
+}
+claim Hb0raw : (1, 0) :e S1.
+{
+  apply (SepI
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    (1, 0)).
+  - exact (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      1
+      0
+      real_1
+      real_0).
+  - rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite (mul_SNo_oneR 1 SNo_1) at 1.
+    rewrite (mul_SNo_zeroR 0 SNo_0) at 1.
+    exact (add_SNo_0R 1 SNo_1).
+}
+claim Hb0S1 : S1_basepoint :e S1.
+{
+  exact Hb0raw.
+}
+claim Hy0S1 : apply_fun h S1_basepoint :e S1.
+{
+  exact (continuous_map_value_in_space
+    S1
+    S1_topology
+    S1
+    S1_topology
+    h
+    S1_basepoint
+    HhCont
+    Hb0S1).
+}
+claim Hexe0 :
+  exists e0:set, e0 :e R /\
+    apply_fun covering_map_R_S1 e0 = apply_fun h S1_basepoint.
+{
+  exact (andER
+    (function_on covering_map_R_S1 R S1)
+    (forall y:set, y :e S1 ->
+      exists x:set, x :e R /\ apply_fun covering_map_R_S1 x = y)
+    covering_map_R_S1_surjective
+    (apply_fun h S1_basepoint)
+    Hy0S1).
+}
+apply Hexe0.
+let e0.
+assume He0Pack.
+claim He0R : e0 :e R.
+{
+  exact (andEL
+    (e0 :e R)
+    (apply_fun covering_map_R_S1 e0 = apply_fun h S1_basepoint)
+    He0Pack).
+}
+claim He0Start :
+  apply_fun covering_map_R_S1 e0 = apply_fun h S1_basepoint.
+{
+  exact (andER
+    (e0 :e R)
+    (apply_fun covering_map_R_S1 e0 = apply_fun h S1_basepoint)
+    He0Pack).
+}
+set gamma := compose_fun unit_interval covering_map_R_S1 h.
+claim Hcover0 :
+  apply_fun covering_map_R_S1 0 = S1_basepoint.
+{
+  exact (loop_at_at_zero
+    S1
+    S1_topology
+    S1_basepoint
+    covering_map_R_S1
+    covering_map_R_S1_loop_at_basepoint).
+}
+claim Hcover1 :
+  apply_fun covering_map_R_S1 1 = S1_basepoint.
+{
+  exact (loop_at_at_one
+    S1
+    S1_topology
+    S1_basepoint
+    covering_map_R_S1
+    covering_map_R_S1_loop_at_basepoint).
+}
+claim HgammaCont :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology gamma.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    S1
+    S1_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    h
+    covering_map_R_S1_continuous_on_unit_interval
+    HhCont).
+}
+claim Hgamma0 :
+  apply_fun gamma 0 = apply_fun h S1_basepoint.
+{
+  rewrite (compose_fun_apply
+    unit_interval
+    covering_map_R_S1
+    h
+    0
+    zero_in_unit_interval).
+  rewrite Hcover0.
+  reflexivity.
+}
+claim Hgamma1 :
+  apply_fun gamma 1 = apply_fun h S1_basepoint.
+{
+  rewrite (compose_fun_apply
+    unit_interval
+    covering_map_R_S1
+    h
+    1
+    one_in_unit_interval).
+  rewrite Hcover1.
+  reflexivity.
+}
+claim HgammaLoop :
+  loop_at S1 S1_topology (apply_fun h S1_basepoint) gamma.
+{
+  apply (loop_at_fold
+    S1
+    S1_topology
+    (apply_fun h S1_basepoint)
+    gamma).
+  apply andI.
+  - apply andI.
+    + exact HgammaCont.
+    + exact Hgamma0.
+  - exact Hgamma1.
+}
+claim HgammaLoop0 :
+  loop_at S1 S1_topology (apply_fun covering_map_R_S1 e0) gamma.
+{
+  rewrite He0Start.
+  exact HgammaLoop.
+}
+claim HstartGamma :
+  apply_fun covering_map_R_S1 e0 = apply_fun gamma 0.
+{
+  rewrite Hgamma0.
+  exact He0Start.
+}
+claim HgammaClassInImage :
+  path_homotopy_class_loop S1 S1_topology (apply_fun covering_map_R_S1 e0) gamma :e
+  homomorphism_image
+    (fundamental_group R R_standard_topology e0)
+    (induced_homomorphism
+      R
+      R_standard_topology
+      e0
+      S1
+      S1_topology
+      (apply_fun covering_map_R_S1 e0)
+      covering_map_R_S1).
+{
+  (** Remaining real content:
+      nullhomotopy of h implies the loop class of gamma is trivial, hence in the image. **)
+  admit.
+}
+claim HliftLoop :
+  apply_fun (path_lift
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    e0
+    gamma) 1 = e0.
+{
+  exact (thm54_6c_loop_characterization_forward
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    e0
+    gamma
+    thm53_1_R_covers_S1
+    He0R
+    HgammaLoop0
+    HgammaClassInImage).
+}
+claim HliftNotLoop :
+  apply_fun (path_lift
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    e0
+    gamma) 1 <> e0.
+{
+  (** Remaining geometric content:
+      antipode preservation forces the full lifted loop not to return to its start. **)
+  admit.
+}
+exact (HliftNotLoop
+  HliftLoop).
 Admitted.
 
 (** Infrastructure helper for S57 Thm 57.2:
