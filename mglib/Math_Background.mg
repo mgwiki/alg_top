@@ -289176,15 +289176,35 @@ apply (xm (y = e)).
                         (** z_inner != e: conjugation preserves non-identity **)
                         claim Hz_inner_ne : z_inner <> e.
                         { assume Hz_e : z_inner = e.
-                          (** z_inner = cs3(k2) mult x3 mult inv(cs3(k2)) = e **)
-                          (** Use group_conjugate_ne_e: inv(cs3k2) mult (x3 mult cs3k2) != e **)
-                          (** But z_inner = cs3k2 mult x3 mult inv(cs3k2), different order. **)
-                          (** Direct: z_inner = e -> x3 = e (group algebra) **)
                           claim Hx3_G : x3 :e G. { exact (Hsub_in_G alpha HalJ x3 Hx3Ga). }
                           claim Hcs3k2_invG : apply_fun inv (apply_fun cs3 k2) :e G.
                           { exact (HinvG (apply_fun cs3 k2) Hcs3k2_G). }
-                          (** From z_inner = e, derive x3 = e **)
-                          admit. }
+                          (** z_inner = mult(cs3k2, mult(x3, inv(cs3k2))) by associativity **)
+                          claim Hassoc_zi :
+                            z_inner =
+                            apply_fun mult (apply_fun cs3 k2, apply_fun mult (x3, apply_fun inv (apply_fun cs3 k2))).
+                          { exact (Hassoc (apply_fun cs3 k2) x3 (apply_fun inv (apply_fun cs3 k2))
+                              Hcs3k2_G Hx3_G Hcs3k2_invG). }
+                          (** inv(inv(cs3k2)) = cs3k2 **)
+                          claim Hdinv : apply_fun inv (apply_fun inv (apply_fun cs3 k2)) = apply_fun cs3 k2.
+                          { exact (group_inv_inv G mult inv e (apply_fun cs3 k2)
+                              HmultF HinvF HeG Hassoc Hid Hinverse
+                              Hcs3k2_G). }
+                          (** Rewrite z_inner using double inverse **)
+                          claim Hzi_form :
+                            z_inner =
+                            apply_fun mult (apply_fun inv (apply_fun inv (apply_fun cs3 k2)),
+                              apply_fun mult (x3, apply_fun inv (apply_fun cs3 k2))).
+                          { rewrite Hdinv. exact Hassoc_zi. }
+                          (** group_conjugate_ne_e gives this form <> e **)
+                          claim Hne :
+                            apply_fun mult (apply_fun inv (apply_fun inv (apply_fun cs3 k2)),
+                              apply_fun mult (x3, apply_fun inv (apply_fun cs3 k2))) <> e.
+                          { exact (group_conjugate_ne_e G mult e inv
+                              (apply_fun inv (apply_fun cs3 k2)) x3
+                              Hgrp Hcs3k2_invG Hx3_G Hx3ne). }
+                          (** z_inner = that form, but z_inner = e, contradiction **)
+                          apply Hne. rewrite <- Hzi_form. exact Hz_e. }
                         (** y3 = cprime3 mult z_inner mult inv(cprime3) **)
                         (** cprime3 has reduced word of length k2 < m **)
                         (** IH gives y3 = e **)
