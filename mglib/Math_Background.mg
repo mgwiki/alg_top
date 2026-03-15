@@ -212265,6 +212265,39 @@ apply Hj_cases.
     (eq_symm (add_nat k j) (ordsucc (add_nat k j0)) Hadd)).
 Qed.
 
+(** Infrastructure: loop homotopy class splits at a concatenation of two sub-loops **)
+(** Given a loop f at x0, a midpoint y = f(s) in U cap V, and a connecting **)
+(** path gamma from x0 to y in U cap V, we have **)
+(** [f] = [f1 dot gamma-inv dot gamma dot f2] = [(f1 dot gamma-inv) dot (gamma dot f2)] **)
+(** where f1 = f restricted to [0,s] and f2 = f restricted to [s,1]. **)
+(** The sub-loops (f1 dot gamma-inv) and (gamma dot f2) live in the **)
+(** subspaces where f1 and f2 map, respectively (assuming gamma is in both). **)
+Lemma loop_class_split_at_transition : forall X Tx U V x0 f:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  x0 :e U :/\: V ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  f :e loop_space X Tx x0 ->
+  forall s:set, s :e unit_interval -> s <> 0 -> s <> 1 ->
+  apply_fun f s :e U :/\: V ->
+  (forall t:set, t :e unit_interval -> Rle t s -> apply_fun f t :e U) ->
+  (forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V) ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 f = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+admit.
+Admitted.
+
 (** Infrastructure: mixed case for ball_cover_word_construction (to be completed). **)
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
