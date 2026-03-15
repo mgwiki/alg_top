@@ -184569,9 +184569,7 @@ exact (HhNotNul
   HhNul).
 Admitted.
 
-(** Infrastructure helper for S57 Thm 57.3:
-    if a map f:S^2 -> R^2 separates every antipodal pair, then normalizing
-    the antipodal difference yields an antipode-preserving map S^2 -> S^1. **)
+(** Infrastructure helper for S57 Thm 57.3. **)
 Theorem thm57_3_antipode_free_implies_antipode_preserving_map : forall f:set,
   continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
   (forall x:set, x :e Sn 2 ->
