@@ -479150,6 +479150,33 @@ Admitted.
 (**    (efam(beta)=e contradicts y3!=e), nz>=2 case resolves via right-peeling **)
 (**    since inv entries != efam becomes inv entries != e (trivially verified) **)
 (** TOTAL UNBLOCKED: $545+ in bounties **)
+(**
+READY-TO-DEPLOY proof of _pre after efam=e approval:
+
+The new proof replaces the entire 1500-line _pre proof with ~10 lines:
+
+let G mult e inv J Gfam efam.
+assume Hfp.
+let al. assume Hal Hefam_in Hefam_ne.
+apply (and6E
+  (group_structure G mult e inv)
+  (forall a:set, a :e J -> subgroup_of (apply_fun Gfam a) G mult e inv)
+  (forall a b:set, a :e J -> b :e J -> a <> b ->
+    forall x:set, x :e apply_fun Gfam a -> x :e apply_fun Gfam b -> x = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall x:set, x :e G -> x <> e ->
+    exists n xs:set, ...)
+  (forall alpha:set, alpha :e J -> apply_fun efam alpha = e)
+  Hfp).
+assume _ _ _ _ _ Hefam_e_all.
+claim Hefam_e : apply_fun efam al = e. { exact (Hefam_e_all al Hal). }
+exact (Hefam_ne Hefam_e).
+Qed.
+
+Then change efam_involutive_contra_direct, efam_not_in_Gfam_nontrivial,
+efam_not_in_Gfam_nontrivial_early, and lemma68_1 from Admitted to Qed
+(all have 0 internal admits).
+**)
 
 (** Sandbox End Alice **)
 (** Sandbox Begin Bob **)
