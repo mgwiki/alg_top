@@ -307554,8 +307554,27 @@ apply HG1orG2.
     claim HwpG2 : word_product multG eG ys n :e G2.
     { exact (word_product_in_G_group G2 multG eG invG n ys HgrpG2 Hn_nat HallG2). }
     claim Hdisjoint_binary : forall x:set, x :e G1 -> x :e G2 -> x = eG.
-    { (** from binary free product disjointness: Gfam(0) cap Gfam(1) = {eG} **)
-      admit. }
+    { let x0. assume Hx0G1 Hx0G2.
+      set Gfam_bin := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
+      set efam_bin := graph (UPair 0 1) (fun i:set => eG).
+      claim HGfam0 : apply_fun Gfam_bin 0 = G1.
+      { claim Heval : apply_fun Gfam_bin 0 = (if 0 = 0 then G1 else G2).
+        { exact (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)). }
+        claim Hif : (if 0 = 0 then G1 else G2) = G1.
+        { exact (If_i_1 (0 = 0) G1 G2 (eq_refl 0)). }
+        exact (eq_i_tra (apply_fun Gfam_bin 0) (if 0 = 0 then G1 else G2) G1 Heval Hif). }
+      claim HGfam1 : apply_fun Gfam_bin 1 = G2.
+      { claim Heval : apply_fun Gfam_bin 1 = (if 1 = 0 then G1 else G2).
+        { exact (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)). }
+        claim Hif : (if 1 = 0 then G1 else G2) = G2.
+        { exact (If_i_0 (1 = 0) G1 G2 (neq_ordsucc_0 0)). }
+        exact (eq_i_tra (apply_fun Gfam_bin 1) (if 1 = 0 then G1 else G2) G2 Heval Hif). }
+      claim Hx0_Gfam0 : x0 :e apply_fun Gfam_bin 0.
+      { exact (eq_subst_mem_set x0 G1 (apply_fun Gfam_bin 0) Hx0G1 (eq_symm (apply_fun Gfam_bin 0) G1 HGfam0)). }
+      claim Hx0_Gfam1 : x0 :e apply_fun Gfam_bin 1.
+      { exact (eq_subst_mem_set x0 G2 (apply_fun Gfam_bin 1) Hx0G2 (eq_symm (apply_fun Gfam_bin 1) G2 HGfam1)). }
+      exact (free_product_disjoint G multG eG invG (UPair 0 1) Gfam_bin efam_bin Hfp 0 1
+        (UPairI1 0 1) (UPairI2 0 1) neq_0_1 x0 Hx0_Gfam0 Hx0_Gfam1). }
     exact (HwpNeG (Hdisjoint_binary (word_product multG eG ys n) HwpG1 HwpG2)). }
   claim HexG1 : exists j:set, j :e n /\ apply_fun ys j :e G1.
   { admit. (** From HnotAllG2 and each entry in G1 or G2 **) }
