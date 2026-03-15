@@ -211577,7 +211577,7 @@ claim Htransition_UV : forall k:set, k :e nch ->
   exists s:set, s :e apply_fun seq k /\ s :e apply_fun seq (ordsucc k) /\ apply_fun f s :e U :/\: V.
 { let k. assume Hk HkU HskV.
   claim Hsk_snch : ordsucc k :e ordsucc nch.
-  { admit. (** k :e nch implies ordsucc k :e ordsucc nch **) }
+  { exact (nat_ordsucc_in_ordsucc nch (omega_nat_p nch HnchOmega) k Hk). }
   claim Hovlp : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
   { exact (Hoverlap k Hk). }
   (** Get a witness from the non-empty overlap **)
@@ -211588,7 +211588,7 @@ claim Htransition_UV : forall k:set, k :e nch ->
     (** Actually, any overlap point s is in both seq(k) and seq(ordsucc k). **)
     (** By HkU: f(s) :e U. By HskV: f(s) :e V. So f(s) :e U cap V. **)
     claim Hovlp_has_elem : exists s:set, s :e apply_fun seq k :/\: apply_fun seq (ordsucc k).
-    { admit. (** non-empty set has element **) }
+    { exact (nonempty_has_element (apply_fun seq k :/\: apply_fun seq (ordsucc k)) Hovlp). }
     apply Hovlp_has_elem. let s. assume Hs.
     claim HsK : s :e apply_fun seq k. { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) s Hs). }
     claim HsSK : s :e apply_fun seq (ordsucc k). { exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s Hs). }
@@ -211603,7 +211603,7 @@ claim Htransition_VU : forall k:set, k :e nch ->
   exists s:set, s :e apply_fun seq k /\ s :e apply_fun seq (ordsucc k) /\ apply_fun f s :e U :/\: V.
 { let k. assume Hk HkV HskU.
   claim Hovlp_has_elem : exists s:set, s :e apply_fun seq k :/\: apply_fun seq (ordsucc k).
-  { admit. (** non-empty set has element **) }
+  { exact (nonempty_has_element (apply_fun seq k :/\: apply_fun seq (ordsucc k)) (Hoverlap k Hk)). }
   apply Hovlp_has_elem. let s. assume Hs.
   claim HsK : s :e apply_fun seq k. { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) s Hs). }
   claim HsSK : s :e apply_fun seq (ordsucc k). { exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s Hs). }
