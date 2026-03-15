@@ -191358,12 +191358,48 @@ apply andI.
 Admitted.
 
 (** Infrastructure helper for S57 Thm 57.2:
+    the pair-valued equator restriction extends over B^2 via the upper hemisphere.
+    This is the exact geometric step needed for the early nulhomotopy reduction. **)
+Theorem thm57_2_equator_restriction_pair_extension_over_B2_early : forall g:set,
+  antipode_preserving_Sn 2 1 g ->
+  exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall z:set, z :e S1 ->
+      apply_fun k z = apply_fun (thm57_2_equator_restriction_S1_map g) z).
+admit. (** remaining: early stereographic or upper-hemisphere extension over B2 **)
+Admitted.
+
+(** Infrastructure helper for S57 Thm 57.2:
     the pair-valued equator restriction extends over a hemisphere, hence is nulhomotopic. **)
 Theorem thm57_2_equator_restriction_pair_nulhomotopic_early : forall g:set,
   antipode_preserving_Sn 2 1 g ->
   nulhomotopic S1 S1_topology S1 S1_topology
     (thm57_2_equator_restriction_S1_map g).
-admit.
+let g.
+assume Hg.
+claim HkCont :
+  continuous_map S1 S1_topology S1 S1_topology
+    (thm57_2_equator_restriction_S1_map g).
+{
+  exact (andEL
+    (continuous_map S1 S1_topology S1 S1_topology
+      (thm57_2_equator_restriction_S1_map g))
+    (forall z:set, z :e S1 ->
+      apply_fun (thm57_2_equator_restriction_S1_map g)
+        (minus_SNo (z 0), minus_SNo (z 1)) =
+      (minus_SNo (apply_fun (thm57_2_equator_restriction_S1_map g) z 0),
+       minus_SNo (apply_fun (thm57_2_equator_restriction_S1_map g) z 1)))
+    (thm57_2_equator_restriction_pair_antipode_helper
+      g
+      Hg)).
+}
+exact (s55_extends_to_B2_implies_nulhomotopic
+  S1
+  S1_topology
+  (thm57_2_equator_restriction_S1_map g)
+  HkCont
+  (thm57_2_equator_restriction_pair_extension_over_B2_early
+    g
+    Hg)).
 Admitted.
 
 (** Infrastructure helper for S57 Thm 57.2:
