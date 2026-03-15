@@ -290377,7 +290377,11 @@ apply (xm (y = e)).
                               assume Habs : apply_fun cs3 i = e.
                               apply Hne_efam. rewrite Hefam_eq. exact Habs. }
                             claim Hwp_eq : word_product mult e cs_pre k2 = cprime3.
-                            { admit. (** word_product of graph prefix equals word_product of original **) }
+                            { claim Hk2_omega : k2 :e omega.
+                              { exact (nat_p_omega k2 Hk2_nat). }
+                              claim Hpointwise : forall i:set, i :e k2 -> apply_fun cs_pre i = apply_fun cs3 i.
+                              { let i. assume Hi. exact (apply_fun_graph k2 (fun j:set => apply_fun cs3 j) i Hi). }
+                              exact (word_product_congr_on mult e cs_pre cs3 k2 Hk2_omega Hpointwise). }
                             assume Hcp_e : cprime3 = e.
                             claim Hwp_e : word_product mult e cs_pre k2 = e.
                             { exact (eq_i_tra (word_product mult e cs_pre k2) cprime3 e Hwp_eq Hcp_e). }
