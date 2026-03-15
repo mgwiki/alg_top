@@ -185613,6 +185613,373 @@ exact (HhAntiEq
     HtR)).
 Admitted.
 
+(** Affine left-half self-map of unit_interval. **)
+(** Proven Charlie **)
+Theorem affine_fun_I_0_eps1_in_unit_interval : forall t:set,
+  t :e unit_interval ->
+  apply_fun (affine_fun_I 0 (eps_ 1)) t :e unit_interval.
+let t.
+assume HtI.
+claim HtR : t :e R.
+{
+  exact (unit_interval_sub_R
+    t
+    HtI).
+}
+claim HmulR :
+  mul_SNo t (eps_ 1) :e R.
+{
+  exact (real_mul_SNo
+    t
+    HtR
+    (eps_ 1)
+    eps_1_in_R).
+}
+claim HmulBounds :
+  Rle 0 (mul_SNo t (eps_ 1)) /\
+  Rle (mul_SNo t (eps_ 1)) (eps_ 1).
+{
+  exact (unit_interval_mul_const_bounds
+    t
+    (eps_ 1)
+    HtI
+    eps_1_in_R
+    (Rlt_implies_Rle
+      0
+      (eps_ 1)
+      eps_1_pos_R)).
+}
+claim HvalEq :
+  apply_fun (affine_fun_I 0 (eps_ 1)) t =
+  add_SNo (mul_SNo t (eps_ 1)) 0.
+{
+  exact (affine_fun_I_apply
+    0
+    (eps_ 1)
+    t
+    real_0
+    eps_1_in_R
+    (RltE_lt 0 (eps_ 1) eps_1_pos_R)
+    HtI).
+}
+rewrite HvalEq.
+rewrite (add_SNo_0R
+  (mul_SNo t (eps_ 1))
+  (SNo_mul_SNo
+    t
+    (eps_ 1)
+    (real_SNo t HtR)
+    SNo_eps_1)).
+apply (SepI
+  R
+  (fun x:set => ~ (Rlt x 0) /\ ~ (Rlt 1 x))
+  (mul_SNo t (eps_ 1))
+  HmulR).
+apply andI.
+- exact (RleE_nlt
+    0
+    (mul_SNo t (eps_ 1))
+    (andEL
+      (Rle 0 (mul_SNo t (eps_ 1)))
+      (Rle (mul_SNo t (eps_ 1)) (eps_ 1))
+      HmulBounds)).
+- exact (RleE_nlt
+    (mul_SNo t (eps_ 1))
+    1
+    (Rle_tra
+      (mul_SNo t (eps_ 1))
+      (eps_ 1)
+      1
+      (andER
+        (Rle 0 (mul_SNo t (eps_ 1)))
+        (Rle (mul_SNo t (eps_ 1)) (eps_ 1))
+        HmulBounds)
+      (Rlt_implies_Rle
+        (eps_ 1)
+        1
+        eps_1_lt1_R))).
+Qed.
+
+(** Affine right-half self-map of unit_interval. **)
+(** Proven Charlie **)
+Theorem affine_fun_I_eps1_eps1_in_unit_interval : forall t:set,
+  t :e unit_interval ->
+  apply_fun (affine_fun_I (eps_ 1) (eps_ 1)) t :e unit_interval.
+let t.
+assume HtI.
+claim HtR : t :e R.
+{
+  exact (unit_interval_sub_R
+    t
+    HtI).
+}
+claim HmulR :
+  mul_SNo t (eps_ 1) :e R.
+{
+  exact (real_mul_SNo
+    t
+    HtR
+    (eps_ 1)
+    eps_1_in_R).
+}
+claim HmulBounds :
+  Rle 0 (mul_SNo t (eps_ 1)) /\
+  Rle (mul_SNo t (eps_ 1)) (eps_ 1).
+{
+  exact (unit_interval_mul_const_bounds
+    t
+    (eps_ 1)
+    HtI
+    eps_1_in_R
+    (Rlt_implies_Rle
+      0
+      (eps_ 1)
+      eps_1_pos_R)).
+}
+claim HvalEq :
+  apply_fun (affine_fun_I (eps_ 1) (eps_ 1)) t =
+  add_SNo (mul_SNo t (eps_ 1)) (eps_ 1).
+{
+  exact (affine_fun_I_apply
+    (eps_ 1)
+    (eps_ 1)
+    t
+    eps_1_in_R
+    eps_1_in_R
+    (RltE_lt 0 (eps_ 1) eps_1_pos_R)
+    HtI).
+}
+rewrite HvalEq.
+apply (SepI
+  R
+  (fun x:set => ~ (Rlt x 0) /\ ~ (Rlt 1 x))
+  (add_SNo (mul_SNo t (eps_ 1)) (eps_ 1))
+  (real_add_SNo
+    (mul_SNo t (eps_ 1))
+    HmulR
+    (eps_ 1)
+    eps_1_in_R)).
+apply andI.
+- exact (RleE_nlt
+    0
+    (add_SNo (mul_SNo t (eps_ 1)) (eps_ 1))
+    (Rle_tra
+      0
+      (eps_ 1)
+      (add_SNo (mul_SNo t (eps_ 1)) (eps_ 1))
+      (Rlt_implies_Rle
+        0
+        (eps_ 1)
+        eps_1_pos_R)
+      (Rle_increase_by_nonneg_left
+        (mul_SNo t (eps_ 1))
+        (eps_ 1)
+        HmulR
+        eps_1_in_R
+        (andEL
+          (Rle 0 (mul_SNo t (eps_ 1)))
+          (Rle (mul_SNo t (eps_ 1)) (eps_ 1))
+          HmulBounds)))).
+- claim HsumLe1 :
+    Rle (add_SNo (mul_SNo t (eps_ 1)) (eps_ 1)) 1.
+  {
+    claim Hstep :
+      Rle
+        (add_SNo (mul_SNo t (eps_ 1)) (eps_ 1))
+        (add_SNo (eps_ 1) (eps_ 1)).
+    {
+      exact (Rle_add_SNo_1
+        (mul_SNo t (eps_ 1))
+        (eps_ 1)
+        (eps_ 1)
+        HmulR
+        eps_1_in_R
+        eps_1_in_R
+        (andER
+          (Rle 0 (mul_SNo t (eps_ 1)))
+          (Rle (mul_SNo t (eps_ 1)) (eps_ 1))
+          HmulBounds)).
+    }
+    claim HepsSumLe1 :
+      Rle (add_SNo (eps_ 1) (eps_ 1)) 1.
+    {
+      rewrite eps_1_half_eq1.
+      exact (Rle_refl 1 real_1).
+    }
+    exact (Rle_tra
+      (add_SNo (mul_SNo t (eps_ 1)) (eps_ 1))
+      (add_SNo (eps_ 1) (eps_ 1))
+      1
+      Hstep
+      HepsSumLe1).
+  }
+  exact (RleE_nlt
+    (add_SNo (mul_SNo t (eps_ 1)) (eps_ 1))
+    1
+    HsumLe1).
+Qed.
+
+(** Continuous left-half affine self-map of unit_interval. **)
+(** Proven Charlie **)
+Theorem affine_fun_I_0_eps1_continuous_unit_interval :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    (affine_fun_I 0 (eps_ 1)).
+claim HaffInC :
+  affine_fun_I 0 (eps_ 1) :e C_I_R.
+{
+  exact (affine_fun_I_in_C_I_R_pos
+    0
+    (eps_ 1)
+    real_0
+    eps_1_in_R
+    (RltE_lt 0 (eps_ 1) eps_1_pos_R)).
+}
+claim HaffContR :
+  continuous_map unit_interval unit_interval_topology R R_standard_topology
+    (affine_fun_I 0 (eps_ 1)).
+{
+  exact (C_I_R_continuous_real_on_I
+    (affine_fun_I 0 (eps_ 1))
+    HaffInC).
+}
+exact (continuous_map_range_restrict
+  unit_interval
+  unit_interval_topology
+  R
+  R_standard_topology
+  (affine_fun_I 0 (eps_ 1))
+  unit_interval
+  HaffContR
+  unit_interval_sub_R
+  (fun t Ht => affine_fun_I_0_eps1_in_unit_interval t Ht)).
+Qed.
+
+(** Continuous right-half affine self-map of unit_interval. **)
+(** Proven Charlie **)
+Theorem affine_fun_I_eps1_eps1_continuous_unit_interval :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    (affine_fun_I (eps_ 1) (eps_ 1)).
+claim HaffInC :
+  affine_fun_I (eps_ 1) (eps_ 1) :e C_I_R.
+{
+  exact (affine_fun_I_in_C_I_R_pos
+    (eps_ 1)
+    (eps_ 1)
+    eps_1_in_R
+    eps_1_in_R
+    (RltE_lt 0 (eps_ 1) eps_1_pos_R)).
+}
+claim HaffContR :
+  continuous_map unit_interval unit_interval_topology R R_standard_topology
+    (affine_fun_I (eps_ 1) (eps_ 1)).
+{
+  exact (C_I_R_continuous_real_on_I
+    (affine_fun_I (eps_ 1) (eps_ 1))
+    HaffInC).
+}
+exact (continuous_map_range_restrict
+  unit_interval
+  unit_interval_topology
+  R
+  R_standard_topology
+  (affine_fun_I (eps_ 1) (eps_ 1))
+  unit_interval
+  HaffContR
+  unit_interval_sub_R
+  (fun t Ht => affine_fun_I_eps1_eps1_in_unit_interval t Ht)).
+Qed.
+
+(** Rescaled half-interval relation for antipode-preserving h compose covering_map_R_S1. **)
+Theorem antipode_preserving_S1_cover_rescaled_half_shift : forall h t:set,
+  antipode_preserving_S1 h ->
+  t :e unit_interval ->
+  apply_fun
+    (compose_fun unit_interval covering_map_R_S1 h)
+    (apply_fun (affine_fun_I (eps_ 1) (eps_ 1)) t)
+  =
+  (minus_SNo
+     (apply_fun
+       (compose_fun unit_interval covering_map_R_S1 h)
+       (apply_fun (affine_fun_I 0 (eps_ 1)) t) 0),
+   minus_SNo
+     (apply_fun
+       (compose_fun unit_interval covering_map_R_S1 h)
+       (apply_fun (affine_fun_I 0 (eps_ 1)) t) 1)).
+let h t.
+assume HhAnti.
+assume HtI.
+claim Hhalf0I :
+  apply_fun (affine_fun_I 0 (eps_ 1)) t :e unit_interval.
+{
+  exact (affine_fun_I_0_eps1_in_unit_interval
+    t
+    HtI).
+}
+claim Hhalf1I :
+  apply_fun (affine_fun_I (eps_ 1) (eps_ 1)) t :e unit_interval.
+{
+  exact (affine_fun_I_eps1_eps1_in_unit_interval
+    t
+    HtI).
+}
+claim HhalfSum :
+  add_SNo
+    (apply_fun (affine_fun_I 0 (eps_ 1)) t)
+    (eps_ 1)
+  =
+  apply_fun (affine_fun_I (eps_ 1) (eps_ 1)) t.
+{
+  rewrite (affine_fun_I_apply
+    0
+    (eps_ 1)
+    t
+    real_0
+    eps_1_in_R
+    (RltE_lt 0 (eps_ 1) eps_1_pos_R)
+    HtI).
+  rewrite (affine_fun_I_apply
+    (eps_ 1)
+    (eps_ 1)
+    t
+    eps_1_in_R
+    eps_1_in_R
+    (RltE_lt 0 (eps_ 1) eps_1_pos_R)
+    HtI).
+  rewrite (add_SNo_0R
+    (mul_SNo t (eps_ 1))
+    (SNo_mul_SNo
+      t
+      (eps_ 1)
+      (real_SNo t (unit_interval_sub_R t HtI))
+      SNo_eps_1)).
+  reflexivity.
+}
+claim Hhalf0ShiftI :
+  add_SNo
+    (apply_fun (affine_fun_I 0 (eps_ 1)) t)
+    (eps_ 1)
+  :e unit_interval.
+{
+  rewrite HhalfSum.
+  exact Hhalf1I.
+}
+rewrite <- HhalfSum.
+exact (antipode_preserving_S1_cover_half_shift
+  h
+  (apply_fun (affine_fun_I 0 (eps_ 1)) t)
+  HhAnti
+  Hhalf0I
+  Hhalf0ShiftI).
+Admitted.
+
 (** Midpoint fiber witnesses for h compose covering_map_R_S1. **)
 Theorem antipode_preserving_S1_midpoint_fiber_witnesses : forall h e0:set,
   antipode_preserving_S1 h ->
@@ -186870,8 +187237,174 @@ claim HliftNotLoop :
     e0
     gamma) 1 <> e0.
 {
+  set alpha_half := compose_fun unit_interval (affine_fun_I 0 (eps_ 1)) gamma.
+  set beta_half := compose_fun unit_interval (affine_fun_I (eps_ 1) (eps_ 1)) gamma.
+  claim HbetaAntiAlpha :
+    forall t:set, t :e unit_interval ->
+      apply_fun beta_half t =
+      (minus_SNo (apply_fun alpha_half t 0),
+       minus_SNo (apply_fun alpha_half t 1)).
+  {
+    let t.
+    assume HtI.
+    rewrite (compose_fun_apply
+      unit_interval
+      (affine_fun_I (eps_ 1) (eps_ 1))
+      gamma
+      t
+      HtI).
+    rewrite (compose_fun_apply
+      unit_interval
+      (affine_fun_I 0 (eps_ 1))
+      gamma
+      t
+      HtI).
+    exact (antipode_preserving_S1_cover_rescaled_half_shift
+      h
+      t
+      HhAnti
+      HtI).
+  }
+  claim HalphaHalfCont :
+    continuous_map unit_interval unit_interval_topology S1 S1_topology alpha_half.
+  {
+    exact (composition_continuous
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      S1
+      S1_topology
+      (affine_fun_I 0 (eps_ 1))
+      gamma
+      affine_fun_I_0_eps1_continuous_unit_interval
+      HgammaCont).
+  }
+  claim HbetaHalfCont :
+    continuous_map unit_interval unit_interval_topology S1 S1_topology beta_half.
+  {
+    exact (composition_continuous
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      S1
+      S1_topology
+      (affine_fun_I (eps_ 1) (eps_ 1))
+      gamma
+      affine_fun_I_eps1_eps1_continuous_unit_interval
+      HgammaCont).
+  }
+  claim Halpha0 :
+    apply_fun alpha_half 0 = apply_fun gamma 0.
+  {
+    rewrite (compose_fun_apply
+      unit_interval
+      (affine_fun_I 0 (eps_ 1))
+      gamma
+      0
+      zero_in_unit_interval).
+    rewrite (affine_fun_I_apply
+      0
+      (eps_ 1)
+      0
+      real_0
+      eps_1_in_R
+      (RltE_lt 0 (eps_ 1) eps_1_pos_R)
+      zero_in_unit_interval).
+    rewrite (mul_SNo_zeroL
+      (eps_ 1)
+      SNo_eps_1).
+    rewrite (add_SNo_0L
+      0
+      SNo_0).
+    reflexivity.
+  }
+  claim Halpha1 :
+    apply_fun alpha_half 1 = apply_fun gamma (eps_ 1).
+  {
+    rewrite (compose_fun_apply
+      unit_interval
+      (affine_fun_I 0 (eps_ 1))
+      gamma
+      1
+      one_in_unit_interval).
+    rewrite (affine_fun_I_apply
+      0
+      (eps_ 1)
+      1
+      real_0
+      eps_1_in_R
+      (RltE_lt 0 (eps_ 1) eps_1_pos_R)
+      one_in_unit_interval).
+    rewrite (mul_SNo_oneL
+      (eps_ 1)
+      SNo_eps_1).
+    rewrite (add_SNo_0R
+      (eps_ 1)
+      SNo_eps_1).
+    reflexivity.
+  }
+  claim Hbeta0 :
+    apply_fun beta_half 0 = apply_fun gamma (eps_ 1).
+  {
+    rewrite (compose_fun_apply
+      unit_interval
+      (affine_fun_I (eps_ 1) (eps_ 1))
+      gamma
+      0
+      zero_in_unit_interval).
+    rewrite (affine_fun_I_apply
+      (eps_ 1)
+      (eps_ 1)
+      0
+      eps_1_in_R
+      eps_1_in_R
+      (RltE_lt 0 (eps_ 1) eps_1_pos_R)
+      zero_in_unit_interval).
+    rewrite (mul_SNo_zeroL
+      (eps_ 1)
+      SNo_eps_1).
+    rewrite (add_SNo_0L
+      (eps_ 1)
+      SNo_eps_1).
+    reflexivity.
+  }
+  claim Hbeta1 :
+    apply_fun beta_half 1 = apply_fun gamma 1.
+  {
+    rewrite (compose_fun_apply
+      unit_interval
+      (affine_fun_I (eps_ 1) (eps_ 1))
+      gamma
+      1
+      one_in_unit_interval).
+    rewrite (affine_fun_I_apply
+      (eps_ 1)
+      (eps_ 1)
+      1
+      eps_1_in_R
+      eps_1_in_R
+      (RltE_lt 0 (eps_ 1) eps_1_pos_R)
+      one_in_unit_interval).
+    rewrite (mul_SNo_oneL
+      (eps_ 1)
+      SNo_eps_1).
+    rewrite eps_1_half_eq1.
+    reflexivity.
+  }
+  claim HalphaBetaJoin :
+    apply_fun alpha_half 1 = apply_fun beta_half 0.
+  {
+    rewrite Halpha1.
+    exact (eq_symm
+      (apply_fun beta_half 0)
+      (apply_fun gamma (eps_ 1))
+      Hbeta0).
+  }
   (** Remaining geometric content:
-      antipode preservation forces the full lifted loop not to return to its start. **)
+      compare the two lifted half-paths and show the second half cannot bring
+      the full lift back to e0. The circle-side rescaled decomposition is now explicit. **)
   admit.
 }
 exact (HliftNotLoop
