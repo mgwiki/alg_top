@@ -140895,6 +140895,54 @@ exact (iffER
   Hnotnul).
 Qed.
 
+(** S55 helper: for id_{S1}, extension over B2 is equivalent to nulhomotopy. **)
+(** Proven Bob **)
+Theorem s55_extension_identity_B2_S1_iff_identity_nulhomotopic :
+  (exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+  <->
+  nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)).
+apply iffI.
+- assume Hext.
+  exact (s55_extends_to_B2_implies_nulhomotopic
+    S1
+    S1_topology
+    (graph S1 (fun x:set => x))
+    s55_identity_S1_continuous
+    Hext).
+- assume Hnul.
+  exact (lemma55_3_nulhomotopic_extends_to_B2
+    S1
+    S1_topology
+    (graph S1 (fun x:set => x))
+    s55_identity_S1_continuous
+    Hnul).
+Qed.
+
+(** S55 helper: for id_{S1}, no extension over B2 is equivalent to non-nulhomotopy. **)
+(** Proven Bob **)
+Theorem s55_id_no_extension_B2_iff_identity_not_nulhomotopic :
+  ~(exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+  <->
+  ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
+apply iffI.
+- assume Hnoext.
+  exact (s55_no_extension_implies_not_nulhomotopic
+    S1
+    S1_topology
+    (graph S1 (fun x:set => x))
+    s55_identity_S1_continuous
+    Hnoext).
+- assume Hnotnul.
+  exact (s55_not_nulhomotopic_implies_no_extension
+    S1
+    S1_topology
+    (graph S1 (fun x:set => x))
+    s55_identity_S1_continuous
+    Hnotnul).
+Qed.
+
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
