@@ -1,4 +1,4 @@
-(** Balance Alice 8240 **)
+(** Balance Alice 8415 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 959 **)
 (** Balance Dave 2498 **)
@@ -288354,7 +288354,7 @@ claim HPn : P n.
 }
 
 exact (HPn u xs Hu_G Hu_ne_e Hu_invol Hred Hn_ne0 Hwp).
-Admitted.
+Qed.
 
 (** Infrastructure: boundary-cancellation "order 2" subcase (TODO) **)
 (** This isolates the remaining difficult branches in free_product_efam_involutive_contra. **)
@@ -297624,7 +297624,8 @@ Admitted.
 (** i_alpha(G_alpha), then given any group H and homomorphisms h_alpha: G_alpha -> H, **)
 (** there exists a unique h: G -> H with h o i_alpha = h_alpha. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 68 **)
+(** Collected Alice 68 **)
+(** Proven Alice **)
 (** Admin-approved-refactored per noticeboard proposal 1772569544 **)
 Theorem lemma68_3_extension_external_free_product :
   forall G multG eG invG J Gfam multfam ifam:set,
@@ -298099,14 +298100,15 @@ witness h. apply and3I.
         (apply_fun (apply_fun kfam alpha) (apply_fun (apply_fun ifam alpha) z))
         Hstep1 Hstep2_sym). }
   exact (Hh_unique h' Hh'_hom Hh'_kfam x HxG).
-Admitted.
+Qed.
 
 (** from S68 Thm 68.4 (line 2946 in algtop.tex): uniqueness of free products **)
 (** LATEX VERSION: If G and G' are both external free products of {G_alpha} via **)
 (** i_alpha and i'_alpha, then there is a unique isomorphism phi: G -> G' **)
 (** with phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 107 **)
+(** Collected Alice 107 **)
+(** Proven Alice **)
 Theorem thm68_4_uniqueness_free_product :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
@@ -298691,7 +298693,7 @@ witness phi. apply and3I.
   claim Hphi'_hom : group_homomorphism G multG G' multG' phi'.
   { exact (group_isomorphism_homomorphism G multG G' multG' phi' Hphi'_iso). }
   exact (Hphi_uniq phi' Hphi'_hom Hphi'_ext).
-Admitted.
+Qed.
 
 (** Helper: extension property forces each i_alpha to be injective. **)
 (** Proven Bob **)
