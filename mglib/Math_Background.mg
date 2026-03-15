@@ -211550,10 +211550,26 @@ assume HU0ball H0inU0 HU1ball H1inU1 HnchOmega HseqFn Hseq0 HseqN Hoverlap.
 claim Hball_UV : forall k:set, k :e ordsucc nch ->
   (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) \/
   (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V).
-{ (** Each seq(k) is an open ball centered at some c_k :e unit_interval. **)
-  (** By Hball_image, ball(c_k, r) maps to U or V. **)
-  (** Since seq(k) is that ball, the result follows. **)
-  admit. }
+{ let k. assume Hk.
+  claim Hseqk_ball : apply_fun seq k :e {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+  { exact (HseqFn k Hk). }
+  (** Extract center c_k and the equality seq(k) = open_ball ... c_k r **)
+  apply (ReplE_impred unit_interval (fun c:set => open_ball unit_interval R_bounded_metric c r)
+    (apply_fun seq k) Hseqk_ball).
+  let c_k. assume Hc_k_ui : c_k :e unit_interval.
+  assume Hseqk_eq : apply_fun seq k = open_ball unit_interval R_bounded_metric c_k r.
+  (** By Hball_image, ball(c_k, r) maps entirely to U or V **)
+  apply (Hball_image c_k Hc_k_ui).
+  - assume HballU : forall t:set, t :e open_ball unit_interval R_bounded_metric c_k r -> apply_fun f t :e U.
+    apply orIL. let t. assume Ht.
+    claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c_k r.
+    { exact (eq_subst_mem_set t (apply_fun seq k) (open_ball unit_interval R_bounded_metric c_k r) Ht Hseqk_eq). }
+    exact (HballU t Ht_ball).
+  - assume HballV : forall t:set, t :e open_ball unit_interval R_bounded_metric c_k r -> apply_fun f t :e V.
+    apply orIR. let t. assume Ht.
+    claim Ht_ball : t :e open_ball unit_interval R_bounded_metric c_k r.
+    { exact (eq_subst_mem_set t (apply_fun seq k) (open_ball unit_interval R_bounded_metric c_k r) Ht Hseqk_eq). }
+    exact (HballV t Ht_ball). }
 (** Step 3: Find transitions and connect to x0 **)
 (** Step 4: Build word decomposition by induction on nch **)
 (** The key inductive step: split at each U/V transition, **)
