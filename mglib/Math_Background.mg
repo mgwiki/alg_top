@@ -140337,6 +140337,32 @@ exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic
     Hretr)).
 Qed.
 
+(** S55 helper: recover Cor 55.4(a) non-nulhomotopy from Thm 55.2 via the retraction/inclusion equivalence. **)
+(** Proven Bob **)
+Theorem cor55_4a_inclusion_S1_R2_not_nulhomotopic_from_thm55_2 :
+  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))).
+exact (iffEL
+  (~(retraction_of B2 B2_topology S1))
+  (~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))))
+  s55_no_retraction_B2_S1_iff_inclusion_not_nulhomotopic
+  thm55_2_no_retraction_B2_S1).
+Qed.
+
+(** S55 helper: recover Cor 55.4(a) no-extension from Thm 55.2 via the retraction/inclusion-extension equivalence. **)
+(** Proven Bob **)
+Theorem cor55_4a_inclusion_S1_R2_no_extension_B2_from_thm55_2 :
+  ~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+exact (iffEL
+  (~(retraction_of B2 B2_topology S1))
+  (~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)))
+  s55_no_retraction_B2_S1_iff_inclusion_no_extension_B2
+  thm55_2_no_retraction_B2_S1).
+Qed.
+
 (** S55 helper: S1 lies in R2 minus origin. **)
 (** Proven Charlie **)
 Theorem S1_subset_R2_minus_origin :
