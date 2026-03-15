@@ -278170,6 +278170,83 @@ apply (and5E
 assume H _ _ _ _. exact H.
 Qed.
 
+(** Proven Alice **)
+Lemma free_product_subfam : forall G mult e inv J Gfam efam:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv.
+let G mult e inv J Gfam efam. assume Hfp.
+apply (and5E
+  (group_structure G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall x:set, x :e G -> x <> e ->
+    exists n xs:set,
+      reduced_word J Gfam efam n xs /\ n <> 0 /\
+      word_product mult e xs n = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+  Hfp).
+assume _ H _ _ _. exact H.
+Qed.
+
+(** Proven Alice **)
+Lemma free_product_disjoint : forall G mult e inv J Gfam efam:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+  forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e.
+let G mult e inv J Gfam efam. assume Hfp.
+apply (and5E
+  (group_structure G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall x:set, x :e G -> x <> e ->
+    exists n xs:set,
+      reduced_word J Gfam efam n xs /\ n <> 0 /\
+      word_product mult e xs n = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+  Hfp).
+assume _ _ H _ _. exact H.
+Qed.
+
+(** Proven Alice **)
+Lemma free_product_uniqueness : forall G mult e inv J Gfam efam:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  forall x:set, x :e G -> x <> e ->
+  exists n xs:set,
+    reduced_word J Gfam efam n xs /\ n <> 0 /\
+    word_product mult e xs n = x /\
+    (forall n' xs':set,
+      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+      word_product mult e xs' n' = x ->
+      n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+let G mult e inv J Gfam efam. assume Hfp.
+apply (and5E
+  (group_structure G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall x:set, x :e G -> x <> e ->
+    exists n xs:set,
+      reduced_word J Gfam efam n xs /\ n <> 0 /\
+      word_product mult e xs n = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+  Hfp).
+assume _ _ _ _ H. exact H.
+Qed.
+
 (** Infrastructure: disjointness implies label uniqueness for nontrivial elements **)
 (** Proven Bob **)
 Theorem disjoint_subgroups_label_unique : forall G mult e inv J Gfam alpha beta x:set,
