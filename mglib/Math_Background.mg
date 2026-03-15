@@ -192767,12 +192767,1147 @@ Admitted.
 (** Infrastructure helper for S57 Thm 57.2:
     the pair-valued equator restriction extends over B^2 via the upper hemisphere.
     This is the exact geometric step needed for the early nulhomotopy reduction. **)
+Definition south_pole_3_early_explicit : set :=
+  graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0).
+
+Definition stereo_S_inv_map_early_explicit : set :=
+  graph
+    (euclidean_space 2)
+    (fun u:set =>
+      graph 3 (fun i:set =>
+        if i = 0 then
+          mul_SNo
+            (mul_SNo 2 (apply_fun u 0))
+            (recip_SNo_pos
+              (add_SNo 1
+                (add_SNo
+                  (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                  (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+        else if i = 1 then
+          mul_SNo
+            (mul_SNo 2 (apply_fun u 1))
+            (recip_SNo_pos
+              (add_SNo 1
+                (add_SNo
+                  (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                  (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+        else
+          add_SNo
+            (mul_SNo 2
+              (recip_SNo_pos
+                (add_SNo 1
+                  (add_SNo
+                    (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                    (mul_SNo (apply_fun u 1) (apply_fun u 1))))))
+            (minus_SNo 1))).
+
+(** Early helper: the explicit south pole lies in euclidean_space 3. **)
+(** Proven Charlie **)
+Lemma south_pole_3_early_explicit_in_E3 :
+  south_pole_3_early_explicit :e euclidean_space 3.
+apply (graph3_in_euclidean_space3
+  (fun i:set => if i = 2 then minus_SNo 1 else 0)).
+let i.
+prove (if i = 2 then minus_SNo 1 else 0) :e R.
+apply (xm (i = 2)).
+- assume Hi2.
+  rewrite (If_i_1 (i = 2) (minus_SNo 1) 0 Hi2).
+  exact (real_minus_SNo 1 real_1).
+- assume Hni2.
+  rewrite (If_i_0 (i = 2) (minus_SNo 1) 0 Hni2).
+  exact real_0.
+Qed.
+
+(** Early helper: the explicit south pole lies in Sn 2. **)
+(** Proven Charlie **)
+Lemma south_pole_3_early_explicit_in_Sn2 :
+  south_pole_3_early_explicit :e Sn 2.
+claim H2in3 : 2 :e 3. { exact In_2_3. }
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim Hsp0 : apply_fun south_pole_3_early_explicit 0 = 0.
+{
+  rewrite (apply_fun_graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0) 0 H0in3).
+  exact (If_i_0 (0 = 2) (minus_SNo 1) 0
+    (fun H:0=2 => In_irref 0 ((eq_symm 0 2 H) (fun z _ => 0 :e z) In_0_2))).
+}
+claim Hsp1 : apply_fun south_pole_3_early_explicit 1 = 0.
+{
+  rewrite (apply_fun_graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0) 1 H1in3).
+  exact (If_i_0 (1 = 2) (minus_SNo 1) 0
+    (fun H:1=2 => In_irref 2 (H (fun z _ => z :e 2) In_1_2))).
+}
+claim Hsp2 : apply_fun south_pole_3_early_explicit 2 = minus_SNo 1.
+{
+  rewrite (apply_fun_graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0) 2 H2in3).
+  exact (If_i_1 (2 = 2) (minus_SNo 1) 0 (eq_refl 2)).
+}
+claim Hnorm1 : euclidean_norm_sq 3 south_pole_3_early_explicit = 1.
+{
+  set f := fun i:set =>
+    mul_SNo
+      (apply_fun south_pole_3_early_explicit i)
+      (apply_fun south_pole_3_early_explicit i).
+  claim Hfrs_eq :
+    euclidean_norm_sq 3 south_pole_3_early_explicit =
+    finite_real_sum f 3.
+  { reflexivity. }
+  rewrite Hfrs_eq.
+  rewrite (finite_real_sum_S f 2 nat_2).
+  rewrite (finite_real_sum_S f 1 nat_1).
+  rewrite (finite_real_sum_S f 0 nat_0).
+  rewrite (finite_real_sum_0 f).
+  rewrite Hsp0.
+  rewrite Hsp1.
+  rewrite Hsp2.
+  rewrite (mul_SNo_zeroL 0 SNo_0).
+  rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
+  rewrite (add_SNo_0L 0 SNo_0).
+  rewrite (add_SNo_0L 0 SNo_0).
+  rewrite (add_SNo_0L (mul_SNo 1 1) (SNo_mul_SNo 1 1 SNo_1 SNo_1)).
+  exact (mul_SNo_oneR 1 SNo_1).
+}
+exact (SepI
+  (euclidean_space 3)
+  (fun v:set => euclidean_norm_sq 3 v = 1)
+  south_pole_3_early_explicit
+  south_pole_3_early_explicit_in_E3
+  Hnorm1).
+Qed.
+
+(** Early helper: positivity of the inverse-stereographic denominator. **)
+(** Proven Charlie **)
+Lemma stereo_S_inv_denom_pos_early_explicit : forall u:set,
+  u :e euclidean_space 2 ->
+  Rlt 0 (add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                             (mul_SNo (apply_fun u 1) (apply_fun u 1)))).
+let u. assume Hu.
+claim H0in2 : 0 :e 2. { exact In_0_2. }
+claim H1in2 : 1 :e 2. { exact In_1_2. }
+claim Hu0R : apply_fun u 0 :e R.
+{ exact (euclidean_space_coord_in_R 2 u 0 Hu H0in2). }
+claim Hu1R : apply_fun u 1 :e R.
+{ exact (euclidean_space_coord_in_R 2 u 1 Hu H1in2). }
+claim Hu0SNo : SNo (apply_fun u 0). { exact (real_SNo (apply_fun u 0) Hu0R). }
+claim Hu1SNo : SNo (apply_fun u 1). { exact (real_SNo (apply_fun u 1) Hu1R). }
+claim Hu0sq_nn : 0 <= mul_SNo (apply_fun u 0) (apply_fun u 0).
+{ exact (SNo_sqr_nonneg (apply_fun u 0) Hu0SNo). }
+claim Hu1sq_nn : 0 <= mul_SNo (apply_fun u 1) (apply_fun u 1).
+{ exact (SNo_sqr_nonneg (apply_fun u 1) Hu1SNo). }
+claim HsR : add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                    (mul_SNo (apply_fun u 1) (apply_fun u 1)) :e R.
+{
+  exact (real_add_SNo
+    (mul_SNo (apply_fun u 0) (apply_fun u 0))
+    (real_mul_SNo (apply_fun u 0) Hu0R (apply_fun u 0) Hu0R)
+    (mul_SNo (apply_fun u 1) (apply_fun u 1))
+    (real_mul_SNo (apply_fun u 1) Hu1R (apply_fun u 1) Hu1R)).
+}
+claim Hsum_nn : 0 <= add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                              (mul_SNo (apply_fun u 1) (apply_fun u 1)).
+{
+  exact (SNoLe_tra 0
+    (mul_SNo (apply_fun u 0) (apply_fun u 0))
+    (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+             (mul_SNo (apply_fun u 1) (apply_fun u 1)))
+    SNo_0
+    (SNo_mul_SNo (apply_fun u 0) (apply_fun u 0) Hu0SNo Hu0SNo)
+    (SNo_add_SNo
+      (mul_SNo (apply_fun u 0) (apply_fun u 0))
+      (mul_SNo (apply_fun u 1) (apply_fun u 1))
+      (SNo_mul_SNo (apply_fun u 0) (apply_fun u 0) Hu0SNo Hu0SNo)
+      (SNo_mul_SNo (apply_fun u 1) (apply_fun u 1) Hu1SNo Hu1SNo))
+    Hu0sq_nn
+    (SNoLe_add_nonneg_right
+      (mul_SNo (apply_fun u 0) (apply_fun u 0))
+      (mul_SNo (apply_fun u 1) (apply_fun u 1))
+      (SNo_mul_SNo (apply_fun u 0) (apply_fun u 0) Hu0SNo Hu0SNo)
+      (SNo_mul_SNo (apply_fun u 1) (apply_fun u 1) Hu1SNo Hu1SNo)
+      Hu1sq_nn)).
+}
+claim H1psR : add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                                  (mul_SNo (apply_fun u 1) (apply_fun u 1))) :e R.
+{
+  exact (real_add_SNo 1 real_1
+    (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+             (mul_SNo (apply_fun u 1) (apply_fun u 1)))
+    HsR).
+}
+claim H1le1ps : 1 <= add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                                         (mul_SNo (apply_fun u 1) (apply_fun u 1))).
+{
+  exact ((add_SNo_0R 1 SNo_1)
+    (fun x _ => x <= add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                                         (mul_SNo (apply_fun u 1) (apply_fun u 1))))
+    (add_SNo_Le2 1 0
+      (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+               (mul_SNo (apply_fun u 1) (apply_fun u 1)))
+      SNo_1 SNo_0
+      (real_SNo (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                         (mul_SNo (apply_fun u 1) (apply_fun u 1))) HsR)
+      Hsum_nn)).
+}
+exact (Rlt_Rle_tra 0 1
+  (add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                       (mul_SNo (apply_fun u 1) (apply_fun u 1))))
+  Rlt_0_1
+  (Rle_of_SNoLe 1
+    (add_SNo 1 (add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                         (mul_SNo (apply_fun u 1) (apply_fun u 1))))
+    real_1 H1psR H1le1ps)).
+Qed.
+
+(** Early helper: the explicit inverse stereographic map avoids the south pole. **)
+(** Proven Charlie **)
+Lemma stereo_S_inv_map_early_explicit_not_south : forall u:set,
+  u :e euclidean_space 2 ->
+  ~ (apply_fun stereo_S_inv_map_early_explicit u :e {south_pole_3_early_explicit}).
+let u. assume Hu.
+set u0 := apply_fun u 0.
+set u1 := apply_fun u 1.
+set s := add_SNo (mul_SNo u0 u0) (mul_SNo u1 u1).
+set denom := add_SNo 1 s.
+set d := recip_SNo_pos denom.
+claim Hdenom_pos : Rlt 0 denom.
+{ exact (stereo_S_inv_denom_pos_early_explicit u Hu). }
+claim HdenomR : denom :e R.
+{
+  claim H0in2 : 0 :e 2. { exact In_0_2. }
+  claim H1in2 : 1 :e 2. { exact In_1_2. }
+  claim Hu0R : u0 :e R. { exact (euclidean_space_coord_in_R 2 u 0 Hu H0in2). }
+  claim Hu1R : u1 :e R. { exact (euclidean_space_coord_in_R 2 u 1 Hu H1in2). }
+  exact (real_add_SNo 1 real_1
+    (add_SNo (mul_SNo u0 u0) (mul_SNo u1 u1))
+    (real_add_SNo (mul_SNo u0 u0) (real_mul_SNo u0 Hu0R u0 Hu0R)
+      (mul_SNo u1 u1) (real_mul_SNo u1 Hu1R u1 Hu1R))).
+}
+claim HdenomSNo : SNo denom. { exact (real_SNo denom HdenomR). }
+claim HdenomSNoLt : 0 < denom. { exact (RltE_lt 0 denom Hdenom_pos). }
+claim HdSNo : SNo d. { exact (SNo_recip_SNo_pos denom HdenomSNo HdenomSNoLt). }
+claim HdR : d :e R. { exact (real_recip_SNo_pos denom HdenomR HdenomSNoLt). }
+claim Hfinv2 :
+  apply_fun (apply_fun stereo_S_inv_map_early_explicit u) 2 =
+  add_SNo (mul_SNo 2 d) (minus_SNo 1).
+{
+  rewrite (apply_fun_graph
+    (euclidean_space 2)
+    (fun v:set =>
+      graph 3 (fun i:set =>
+        if i = 0 then
+          mul_SNo
+            (mul_SNo 2 (apply_fun v 0))
+            (recip_SNo_pos
+              (add_SNo 1
+                (add_SNo
+                  (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                  (mul_SNo (apply_fun v 1) (apply_fun v 1)))))
+        else if i = 1 then
+          mul_SNo
+            (mul_SNo 2 (apply_fun v 1))
+            (recip_SNo_pos
+              (add_SNo 1
+                (add_SNo
+                  (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                  (mul_SNo (apply_fun v 1) (apply_fun v 1)))))
+        else
+          add_SNo
+            (mul_SNo 2
+              (recip_SNo_pos
+                (add_SNo 1
+                  (add_SNo
+                    (mul_SNo (apply_fun v 0) (apply_fun v 0))
+                    (mul_SNo (apply_fun v 1) (apply_fun v 1))))))
+            (minus_SNo 1)))
+    u
+    Hu).
+  rewrite (apply_fun_graph
+    3
+    (fun i:set =>
+      if i = 0 then
+        mul_SNo (mul_SNo 2 u0) d
+      else if i = 1 then
+        mul_SNo (mul_SNo 2 u1) d
+      else
+        add_SNo (mul_SNo 2 d) (minus_SNo 1))
+    2
+    In_2_3).
+  rewrite (If_i_0
+    (2 = 0)
+    (mul_SNo (mul_SNo 2 u0) d)
+    (if 2 = 1 then
+      mul_SNo (mul_SNo 2 u1) d
+    else
+      add_SNo (mul_SNo 2 d) (minus_SNo 1))
+    (neq_ordsucc_0 1)).
+  exact (If_i_0
+    (2 = 1)
+    (mul_SNo (mul_SNo 2 u1) d)
+    (add_SNo (mul_SNo 2 d) (minus_SNo 1))
+    (fun H:2=1 => In_irref 1 (H (fun z _ => 1 :e z) In_1_2))).
+}
+claim Hfinv2_ne_m1 :
+  apply_fun (apply_fun stereo_S_inv_map_early_explicit u) 2 <> minus_SNo 1.
+{
+  rewrite Hfinv2.
+  assume Heq : add_SNo (mul_SNo 2 d) (minus_SNo 1) = minus_SNo 1.
+  claim H2dSNo : SNo (mul_SNo 2 d). { exact (SNo_mul_SNo 2 d SNo_2 HdSNo). }
+  claim H2dR : mul_SNo 2 d :e R.
+  { exact (real_mul_SNo 2 real_2 d HdR). }
+  claim Hm1SNo : SNo (minus_SNo 1). { exact (SNo_minus_SNo 1 SNo_1). }
+  claim H2d0 : mul_SNo 2 d = 0.
+  {
+    exact (add_SNo_cancel_R (mul_SNo 2 d) (minus_SNo 1) 0
+      H2dSNo Hm1SNo SNo_0
+      (Heq (fun _ b => b = add_SNo 0 (minus_SNo 1))
+        (eq_symm (add_SNo 0 (minus_SNo 1)) (minus_SNo 1)
+          (add_SNo_0L (minus_SNo 1) Hm1SNo)))).
+  }
+  claim Hdpos : 0 < d.
+  { exact (recip_SNo_pos_pos denom HdenomSNo HdenomSNoLt). }
+  exact (SNoLt_irref 0
+    (H2d0 (fun x _ => 0 < x)
+      (mul_SNo_pos_pos 2 d SNo_2 HdSNo
+        (SNoLt_tra 0 1 2 SNo_0 SNo_1 SNo_2 SNoLt_0_1 SNoLt_1_2)
+        Hdpos))).
+}
+assume HinSouth : apply_fun stereo_S_inv_map_early_explicit u :e {south_pole_3_early_explicit}.
+claim Heq :
+  apply_fun stereo_S_inv_map_early_explicit u = south_pole_3_early_explicit.
+{
+  exact (SingE
+    south_pole_3_early_explicit
+    (apply_fun stereo_S_inv_map_early_explicit u)
+    HinSouth).
+}
+claim Hcoord2 :
+  apply_fun (apply_fun stereo_S_inv_map_early_explicit u) 2 =
+  apply_fun south_pole_3_early_explicit 2.
+{
+  exact (Heq
+    (fun z _ => apply_fun (apply_fun stereo_S_inv_map_early_explicit u) 2 =
+      apply_fun z 2)
+    (eq_refl (apply_fun (apply_fun stereo_S_inv_map_early_explicit u) 2))).
+}
+claim Hsp2 : apply_fun south_pole_3_early_explicit 2 = minus_SNo 1.
+{
+  rewrite (apply_fun_graph
+    3
+    (fun i:set => if i = 2 then minus_SNo 1 else 0)
+    2
+    In_2_3).
+  exact (If_i_1 (2 = 2) (minus_SNo 1) 0 (eq_refl 2)).
+}
+exact (Hfinv2_ne_m1
+  (Hcoord2 (fun _ b => b = minus_SNo 1) Hsp2)).
+Qed.
+
+(** Early helper: the explicit inverse stereographic map lands in Sn 2. **)
+(** Proven Charlie **)
+Lemma stereo_S_inv_map_early_explicit_in_Sn2 : forall u:set,
+  u :e euclidean_space 2 ->
+  apply_fun stereo_S_inv_map_early_explicit u :e Sn 2.
+let u. assume Hu.
+set u0 := apply_fun u 0.
+set u1 := apply_fun u 1.
+set s := add_SNo (mul_SNo u0 u0) (mul_SNo u1 u1).
+set denom := add_SNo 1 s.
+set d := recip_SNo_pos denom.
+claim H0in2 : 0 :e 2. { exact In_0_2. }
+claim H1in2 : 1 :e 2. { exact In_1_2. }
+claim Hu0R : u0 :e R.
+{ exact (euclidean_space_coord_in_R 2 u 0 Hu H0in2). }
+claim Hu1R : u1 :e R.
+{ exact (euclidean_space_coord_in_R 2 u 1 Hu H1in2). }
+claim Hu0SNo : SNo u0. { exact (real_SNo u0 Hu0R). }
+claim Hu1SNo : SNo u1. { exact (real_SNo u1 Hu1R). }
+claim HsR : s :e R.
+{
+  exact (real_add_SNo (mul_SNo u0 u0) (real_mul_SNo u0 Hu0R u0 Hu0R)
+    (mul_SNo u1 u1) (real_mul_SNo u1 Hu1R u1 Hu1R)).
+}
+claim HsSNo : SNo s. { exact (real_SNo s HsR). }
+claim Hdenom_pos : Rlt 0 denom.
+{ exact (stereo_S_inv_denom_pos_early_explicit u Hu). }
+claim HdenomR : denom :e R. { exact (real_add_SNo 1 real_1 s HsR). }
+claim HdenomSNo : SNo denom. { exact (real_SNo denom HdenomR). }
+claim HdenomSNoLt : 0 < denom. { exact (RltE_lt 0 denom Hdenom_pos). }
+claim HdSNo : SNo d. { exact (SNo_recip_SNo_pos denom HdenomSNo HdenomSNoLt). }
+claim HdR : d :e R. { exact (real_recip_SNo_pos denom HdenomR HdenomSNoLt). }
+claim Hdenom_d : mul_SNo denom d = 1. { exact (recip_SNo_pos_invR denom HdenomSNo HdenomSNoLt). }
+claim HinvFnE3 : apply_fun stereo_S_inv_map_early_explicit u :e euclidean_space 3.
+{
+  claim H2R : 2 :e R. { exact real_2. }
+  rewrite (apply_fun_graph
+    (euclidean_space 2)
+    (fun u:set =>
+      graph 3 (fun i:set =>
+        if i = 0 then
+          mul_SNo
+            (mul_SNo 2 (apply_fun u 0))
+            (recip_SNo_pos
+              (add_SNo 1
+                (add_SNo
+                  (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                  (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+        else if i = 1 then
+          mul_SNo
+            (mul_SNo 2 (apply_fun u 1))
+            (recip_SNo_pos
+              (add_SNo 1
+                (add_SNo
+                  (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                  (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+        else
+          add_SNo
+            (mul_SNo 2
+              (recip_SNo_pos
+                (add_SNo 1
+                  (add_SNo
+                    (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                    (mul_SNo (apply_fun u 1) (apply_fun u 1))))))
+            (minus_SNo 1)))
+    u
+    Hu).
+  prove graph 3 (fun i:set =>
+      if i = 0 then mul_SNo (mul_SNo 2 u0) d
+      else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+      else add_SNo (mul_SNo 2 d) (minus_SNo 1))
+    :e product_space 3 (const_space_family 3 R R_standard_topology).
+  apply (product_space_graphI 3 (const_space_family 3 R R_standard_topology)
+    (fun i:set =>
+      if i = 0 then mul_SNo (mul_SNo 2 u0) d
+      else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+      else add_SNo (mul_SNo 2 d) (minus_SNo 1))).
+  let j. assume Hj.
+  rewrite (space_family_set_const_space_family 3 R R_standard_topology j Hj).
+  apply (ordsuccE 2 j Hj).
+  - assume Hj2 : j :e 2.
+    apply (ordsuccE 1 j Hj2).
+    + assume Hj1 : j :e 1.
+      apply (ordsuccE 0 j Hj1).
+      * assume Hj0 : j :e 0.
+        exact (EmptyE j Hj0 ((if j = 0 then mul_SNo (mul_SNo 2 u0) d else if j = 1 then mul_SNo (mul_SNo 2 u1) d else add_SNo (mul_SNo 2 d) (minus_SNo 1)) :e R)).
+      * assume Hjeq : j = 0.
+        rewrite Hjeq.
+        prove (if 0 = 0 then mul_SNo (mul_SNo 2 u0) d
+          else if 0 = 1 then mul_SNo (mul_SNo 2 u1) d
+          else add_SNo (mul_SNo 2 d) (minus_SNo 1)) :e R.
+        rewrite (If_i_1 (0 = 0) (mul_SNo (mul_SNo 2 u0) d)
+          (if 0 = 1 then mul_SNo (mul_SNo 2 u1) d else add_SNo (mul_SNo 2 d) (minus_SNo 1))
+          (eq_refl 0)).
+        exact (real_mul_SNo (mul_SNo 2 u0) (real_mul_SNo 2 H2R u0 Hu0R) d HdR).
+    + assume Hjeq : j = 1.
+      rewrite Hjeq.
+      prove (if 1 = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if 1 = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1)) :e R.
+      rewrite (If_i_0 (1 = 0) (mul_SNo (mul_SNo 2 u0) d)
+        (if 1 = 1 then mul_SNo (mul_SNo 2 u1) d else add_SNo (mul_SNo 2 d) (minus_SNo 1))
+        (neq_ordsucc_0 0)).
+      rewrite (If_i_1 (1 = 1) (mul_SNo (mul_SNo 2 u1) d)
+        (add_SNo (mul_SNo 2 d) (minus_SNo 1)) (eq_refl 1)).
+      exact (real_mul_SNo (mul_SNo 2 u1) (real_mul_SNo 2 H2R u1 Hu1R) d HdR).
+  - assume Hjeq : j = 2.
+    rewrite Hjeq.
+    prove (if 2 = 0 then mul_SNo (mul_SNo 2 u0) d
+      else if 2 = 1 then mul_SNo (mul_SNo 2 u1) d
+      else add_SNo (mul_SNo 2 d) (minus_SNo 1)) :e R.
+    rewrite (If_i_0 (2 = 0) (mul_SNo (mul_SNo 2 u0) d)
+      (if 2 = 1 then mul_SNo (mul_SNo 2 u1) d else add_SNo (mul_SNo 2 d) (minus_SNo 1))
+      (neq_ordsucc_0 1)).
+    rewrite (If_i_0 (2 = 1) (mul_SNo (mul_SNo 2 u1) d)
+      (add_SNo (mul_SNo 2 d) (minus_SNo 1))
+      (fun H:2=1 => In_irref 1 (H (fun z _ => 1 :e z) In_1_2))).
+    exact (real_add_SNo (mul_SNo 2 d) (real_mul_SNo 2 H2R d HdR)
+      (minus_SNo 1) (real_minus_SNo 1 real_1)).
+}
+claim HnormSq1 : euclidean_norm_sq 3 (apply_fun stereo_S_inv_map_early_explicit u) = 1.
+{
+  claim H2R : 2 :e R. { exact real_2. }
+  claim H2SNo : SNo 2. { exact SNo_2. }
+  set f := apply_fun stereo_S_inv_map_early_explicit u.
+  set f0 := mul_SNo (mul_SNo 2 u0) d.
+  set f1 := mul_SNo (mul_SNo 2 u1) d.
+  set f2 := add_SNo (mul_SNo 2 d) (minus_SNo 1).
+  claim HfEq :
+    f =
+    graph 3 (fun i:set =>
+      if i = 0 then mul_SNo (mul_SNo 2 u0) d
+      else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+      else add_SNo (mul_SNo 2 d) (minus_SNo 1)).
+  {
+    prove apply_fun stereo_S_inv_map_early_explicit u =
+      graph 3 (fun i:set =>
+        if i = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1)).
+    exact (apply_fun_graph
+      (euclidean_space 2)
+      (fun u:set =>
+        graph 3 (fun i:set =>
+          if i = 0 then
+            mul_SNo
+              (mul_SNo 2 (apply_fun u 0))
+              (recip_SNo_pos
+                (add_SNo 1
+                  (add_SNo
+                    (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                    (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+          else if i = 1 then
+            mul_SNo
+              (mul_SNo 2 (apply_fun u 1))
+              (recip_SNo_pos
+                (add_SNo 1
+                  (add_SNo
+                    (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                    (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+          else
+            add_SNo
+              (mul_SNo 2
+                (recip_SNo_pos
+                  (add_SNo 1
+                    (add_SNo
+                      (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                      (mul_SNo (apply_fun u 1) (apply_fun u 1))))))
+              (minus_SNo 1)))
+      u
+      Hu).
+  }
+  claim Hf0SNo : SNo f0. { exact (SNo_mul_SNo (mul_SNo 2 u0) d (SNo_mul_SNo 2 u0 H2SNo Hu0SNo) HdSNo). }
+  claim Hf1SNo : SNo f1. { exact (SNo_mul_SNo (mul_SNo 2 u1) d (SNo_mul_SNo 2 u1 H2SNo Hu1SNo) HdSNo). }
+  claim Hf2SNo : SNo f2. { exact (SNo_add_SNo (mul_SNo 2 d) (minus_SNo 1) (SNo_mul_SNo 2 d H2SNo HdSNo) (SNo_minus_SNo 1 SNo_1)). }
+  claim Hf0R : f0 :e R. { exact (real_mul_SNo (mul_SNo 2 u0) (real_mul_SNo 2 H2R u0 Hu0R) d HdR). }
+  claim Hf1R : f1 :e R. { exact (real_mul_SNo (mul_SNo 2 u1) (real_mul_SNo 2 H2R u1 Hu1R) d HdR). }
+  claim Hf2R : f2 :e R. { exact (real_add_SNo (mul_SNo 2 d) (real_mul_SNo 2 H2R d HdR) (minus_SNo 1) (real_minus_SNo 1 real_1)). }
+  claim Hf0eq : apply_fun f 0 = f0.
+  {
+    rewrite HfEq.
+    rewrite (apply_fun_graph 3 (fun i:set =>
+        if i = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1)) 0 (ordsuccI1 2 0 In_0_2)).
+    prove (if 0 = 0 then mul_SNo (mul_SNo 2 u0) d
+      else if 0 = 1 then mul_SNo (mul_SNo 2 u1) d
+      else add_SNo (mul_SNo 2 d) (minus_SNo 1)) = f0.
+    rewrite (If_i_1 (0 = 0) (mul_SNo (mul_SNo 2 u0) d)
+      (if 0 = 1 then mul_SNo (mul_SNo 2 u1) d else add_SNo (mul_SNo 2 d) (minus_SNo 1))
+      (eq_refl 0)).
+    reflexivity.
+  }
+  claim Hf1eq : apply_fun f 1 = f1.
+  {
+    rewrite HfEq.
+    rewrite (apply_fun_graph 3 (fun i:set =>
+        if i = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1)) 1 (ordsuccI1 2 1 In_1_2)).
+    prove (if 1 = 0 then mul_SNo (mul_SNo 2 u0) d
+      else if 1 = 1 then mul_SNo (mul_SNo 2 u1) d
+      else add_SNo (mul_SNo 2 d) (minus_SNo 1)) = f1.
+    rewrite (If_i_0 (1 = 0) (mul_SNo (mul_SNo 2 u0) d)
+      (if 1 = 1 then mul_SNo (mul_SNo 2 u1) d else add_SNo (mul_SNo 2 d) (minus_SNo 1))
+      (neq_ordsucc_0 0)).
+    rewrite (If_i_1 (1 = 1) (mul_SNo (mul_SNo 2 u1) d)
+      (add_SNo (mul_SNo 2 d) (minus_SNo 1)) (eq_refl 1)).
+    reflexivity.
+  }
+  claim Hf2eq : apply_fun f 2 = f2.
+  {
+    rewrite HfEq.
+    rewrite (apply_fun_graph 3 (fun i:set =>
+        if i = 0 then mul_SNo (mul_SNo 2 u0) d
+        else if i = 1 then mul_SNo (mul_SNo 2 u1) d
+        else add_SNo (mul_SNo 2 d) (minus_SNo 1)) 2 In_2_3).
+    prove (if 2 = 0 then mul_SNo (mul_SNo 2 u0) d
+      else if 2 = 1 then mul_SNo (mul_SNo 2 u1) d
+      else add_SNo (mul_SNo 2 d) (minus_SNo 1)) = f2.
+    rewrite (If_i_0 (2 = 0) (mul_SNo (mul_SNo 2 u0) d)
+      (if 2 = 1 then mul_SNo (mul_SNo 2 u1) d else add_SNo (mul_SNo 2 d) (minus_SNo 1))
+      (neq_ordsucc_0 1)).
+    exact (If_i_0 (2 = 1) (mul_SNo (mul_SNo 2 u1) d) (add_SNo (mul_SNo 2 d) (minus_SNo 1))
+      (fun H:2=1 => In_irref 1 (H (fun z _ => 1 :e z) In_1_2))).
+  }
+  claim Hd_denom : mul_SNo d denom = 1.
+  { exact ((eq_symm (mul_SNo denom d) (mul_SNo d denom) (mul_SNo_com denom d HdenomSNo HdSNo)) (fun _ b => b = 1) Hdenom_d). }
+  claim H4R : 4 :e R.
+  { exact (SNoS_omega_real 4 (omega_SNoS_omega 4 (nat_p_omega 4
+      (nat_ordsucc 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))))))). }
+  claim H4SNo : SNo 4. { exact (real_SNo 4 H4R). }
+  claim H4dR : mul_SNo 4 d :e R.
+  { exact (real_mul_SNo 4 H4R d HdR). }
+  claim H4dSNo : SNo (mul_SNo 4 d). { exact (real_SNo (mul_SNo 4 d) H4dR). }
+  claim HnormExpand :
+    euclidean_norm_sq 3 (apply_fun stereo_S_inv_map_early_explicit u) =
+    add_SNo (add_SNo (add_SNo 0
+      (mul_SNo (apply_fun f 0) (apply_fun f 0)))
+      (mul_SNo (apply_fun f 1) (apply_fun f 1)))
+      (mul_SNo (apply_fun f 2) (apply_fun f 2)).
+  {
+    prove finite_real_sum (fun i:set =>
+        mul_SNo (apply_fun (apply_fun stereo_S_inv_map_early_explicit u) i) (apply_fun (apply_fun stereo_S_inv_map_early_explicit u) i)) 3 =
+      add_SNo (add_SNo (add_SNo 0
+        (mul_SNo (apply_fun f 0) (apply_fun f 0)))
+        (mul_SNo (apply_fun f 1) (apply_fun f 1)))
+        (mul_SNo (apply_fun f 2) (apply_fun f 2)).
+    rewrite (finite_real_sum_S (fun i:set =>
+        mul_SNo (apply_fun f i) (apply_fun f i)) 2 nat_2).
+    rewrite (finite_real_sum_S (fun i:set =>
+        mul_SNo (apply_fun f i) (apply_fun f i)) 1 nat_1).
+    rewrite (finite_real_sum_S (fun i:set =>
+        mul_SNo (apply_fun f i) (apply_fun f i)) 0 nat_0).
+    rewrite (finite_real_sum_0 (fun i:set =>
+        mul_SNo (apply_fun f i) (apply_fun f i))).
+    reflexivity.
+  }
+  claim Hddenom1 : mul_SNo d denom = 1. { exact Hd_denom. }
+  claim Hu0sqSNo : SNo (mul_SNo u0 u0). { exact (SNo_mul_SNo u0 u0 Hu0SNo Hu0SNo). }
+  claim Hu1sqSNo : SNo (mul_SNo u1 u1). { exact (SNo_mul_SNo u1 u1 Hu1SNo Hu1SNo). }
+  claim H2u0SNo : SNo (mul_SNo 2 u0). { exact (SNo_mul_SNo 2 u0 H2SNo Hu0SNo). }
+  claim H2u1SNo : SNo (mul_SNo 2 u1). { exact (SNo_mul_SNo 2 u1 H2SNo Hu1SNo). }
+  claim H22eq4 : mul_SNo 2 2 = 4. { exact mul_SNo_2_2_eq_4. }
+  claim HddSNo : SNo (mul_SNo d d). { exact (SNo_mul_SNo d d HdSNo HdSNo). }
+  claim Hsq2xd : forall x:set, SNo x -> SNo (mul_SNo x x) ->
+      mul_SNo (mul_SNo (mul_SNo 2 x) d) (mul_SNo (mul_SNo 2 x) d) =
+      mul_SNo (mul_SNo 4 (mul_SNo x x)) (mul_SNo d d).
+  {
+    let x. assume HxSNo HxxSNo.
+    claim H2xSNo : SNo (mul_SNo 2 x). { exact (SNo_mul_SNo 2 x H2SNo HxSNo). }
+    rewrite <- (mul_SNo_assoc (mul_SNo 2 x) d (mul_SNo (mul_SNo 2 x) d)
+        H2xSNo HdSNo (SNo_mul_SNo (mul_SNo 2 x) d H2xSNo HdSNo)).
+    rewrite (mul_SNo_assoc d (mul_SNo 2 x) d HdSNo H2xSNo HdSNo).
+    rewrite (mul_SNo_com d (mul_SNo 2 x) HdSNo H2xSNo).
+    rewrite <- (mul_SNo_assoc (mul_SNo 2 x) d d H2xSNo HdSNo HdSNo).
+    rewrite (mul_SNo_assoc (mul_SNo 2 x) (mul_SNo 2 x) (mul_SNo d d) H2xSNo H2xSNo HddSNo).
+    claim H2xsq : mul_SNo (mul_SNo 2 x) (mul_SNo 2 x) = mul_SNo 4 (mul_SNo x x).
+    {
+      rewrite <- (mul_SNo_assoc 2 x (mul_SNo 2 x) H2SNo HxSNo H2xSNo).
+      rewrite (mul_SNo_assoc x 2 x HxSNo H2SNo HxSNo).
+      rewrite (mul_SNo_com x 2 HxSNo H2SNo).
+      rewrite <- (mul_SNo_assoc 2 x x H2SNo HxSNo HxSNo).
+      rewrite (mul_SNo_assoc 2 2 (mul_SNo x x) H2SNo H2SNo HxxSNo).
+      rewrite H22eq4.
+      reflexivity.
+    }
+    rewrite H2xsq.
+    reflexivity.
+  }
+  claim Hf0sq : mul_SNo f0 f0 = mul_SNo (mul_SNo 4 (mul_SNo u0 u0)) (mul_SNo d d).
+  {
+    prove mul_SNo (mul_SNo (mul_SNo 2 u0) d) (mul_SNo (mul_SNo 2 u0) d) =
+      mul_SNo (mul_SNo 4 (mul_SNo u0 u0)) (mul_SNo d d).
+    exact (Hsq2xd u0 Hu0SNo Hu0sqSNo).
+  }
+  claim Hf1sq : mul_SNo f1 f1 = mul_SNo (mul_SNo 4 (mul_SNo u1 u1)) (mul_SNo d d).
+  {
+    prove mul_SNo (mul_SNo (mul_SNo 2 u1) d) (mul_SNo (mul_SNo 2 u1) d) =
+      mul_SNo (mul_SNo 4 (mul_SNo u1 u1)) (mul_SNo d d).
+    exact (Hsq2xd u1 Hu1SNo Hu1sqSNo).
+  }
+  claim H4sqSNo : SNo (mul_SNo 4 (mul_SNo u0 u0)). { exact (SNo_mul_SNo 4 (mul_SNo u0 u0) H4SNo Hu0sqSNo). }
+  claim H4sq1SNo : SNo (mul_SNo 4 (mul_SNo u1 u1)). { exact (SNo_mul_SNo 4 (mul_SNo u1 u1) H4SNo Hu1sqSNo). }
+  claim H4sSNo : SNo (mul_SNo 4 s). { exact (SNo_mul_SNo 4 s H4SNo HsSNo). }
+  claim H4sddSNo : SNo (mul_SNo (mul_SNo 4 s) (mul_SNo d d)).
+  { exact (SNo_mul_SNo (mul_SNo 4 s) (mul_SNo d d) H4sSNo HddSNo). }
+  claim Hf01sq : add_SNo (mul_SNo f0 f0) (mul_SNo f1 f1) = mul_SNo (mul_SNo 4 s) (mul_SNo d d).
+  {
+    rewrite Hf0sq. rewrite Hf1sq.
+    claim H4s_expand : mul_SNo 4 s = add_SNo (mul_SNo 4 (mul_SNo u0 u0)) (mul_SNo 4 (mul_SNo u1 u1)).
+    { exact (mul_SNo_distrL 4 (mul_SNo u0 u0) (mul_SNo u1 u1) H4SNo Hu0sqSNo Hu1sqSNo). }
+    rewrite H4s_expand.
+    rewrite (mul_SNo_distrR (mul_SNo 4 (mul_SNo u0 u0)) (mul_SNo 4 (mul_SNo u1 u1)) (mul_SNo d d)
+      H4sqSNo H4sq1SNo HddSNo).
+    reflexivity.
+  }
+  claim H2dSNo : SNo (mul_SNo 2 d). { exact (SNo_mul_SNo 2 d H2SNo HdSNo). }
+  claim Hminus1SNo : SNo (minus_SNo 1). { exact (SNo_minus_SNo 1 SNo_1). }
+  claim H4ddSNo : SNo (mul_SNo 4 (mul_SNo d d)). { exact (SNo_mul_SNo 4 (mul_SNo d d) H4SNo HddSNo). }
+  claim Hminus4dSNo : SNo (minus_SNo (mul_SNo 4 d)). { exact (SNo_minus_SNo (mul_SNo 4 d) H4dSNo). }
+  claim Hf2sq : mul_SNo f2 f2 = add_SNo (add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 4 d))) 1.
+  {
+    prove mul_SNo (add_SNo (mul_SNo 2 d) (minus_SNo 1)) (add_SNo (mul_SNo 2 d) (minus_SNo 1)) =
+      add_SNo (add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 4 d))) 1.
+    rewrite (mul_SNo_distrR (mul_SNo 2 d) (minus_SNo 1) (add_SNo (mul_SNo 2 d) (minus_SNo 1))
+        H2dSNo Hminus1SNo (SNo_add_SNo (mul_SNo 2 d) (minus_SNo 1) H2dSNo Hminus1SNo)).
+    rewrite (mul_SNo_distrL (mul_SNo 2 d) (mul_SNo 2 d) (minus_SNo 1) H2dSNo H2dSNo Hminus1SNo).
+    rewrite (mul_SNo_distrL (minus_SNo 1) (mul_SNo 2 d) (minus_SNo 1) Hminus1SNo H2dSNo Hminus1SNo).
+    claim H2d_2d : mul_SNo (mul_SNo 2 d) (mul_SNo 2 d) = mul_SNo 4 (mul_SNo d d).
+    {
+      rewrite <- (mul_SNo_assoc 2 d (mul_SNo 2 d) H2SNo HdSNo H2dSNo).
+      rewrite (mul_SNo_assoc d 2 d HdSNo H2SNo HdSNo).
+      rewrite (mul_SNo_com d 2 HdSNo H2SNo).
+      rewrite <- (mul_SNo_assoc 2 d d H2SNo HdSNo HdSNo).
+      rewrite (mul_SNo_assoc 2 2 (mul_SNo d d) H2SNo H2SNo HddSNo).
+      rewrite H22eq4.
+      reflexivity.
+    }
+    rewrite H2d_2d.
+    rewrite (mul_SNo_minus_distrR (mul_SNo 2 d) 1 H2dSNo SNo_1).
+    rewrite (mul_SNo_oneR (mul_SNo 2 d) H2dSNo).
+    rewrite (mul_SNo_minus_distrL 1 (mul_SNo 2 d) SNo_1 H2dSNo).
+    rewrite (mul_SNo_oneL (mul_SNo 2 d) H2dSNo).
+    rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
+    rewrite (mul_SNo_oneL 1 SNo_1).
+    claim Hminus2dSNo : SNo (minus_SNo (mul_SNo 2 d)). { exact (SNo_minus_SNo (mul_SNo 2 d) H2dSNo). }
+    claim H2times2d : add_SNo (minus_SNo (mul_SNo 2 d)) (minus_SNo (mul_SNo 2 d)) = minus_SNo (mul_SNo 4 d).
+    {
+      rewrite <- (minus_add_SNo_distr (mul_SNo 2 d) (mul_SNo 2 d) H2dSNo H2dSNo).
+      claim H2d_2d_4d : add_SNo (mul_SNo 2 d) (mul_SNo 2 d) = mul_SNo 4 d.
+      {
+        rewrite <- (mul_SNo_distrR 2 2 d H2SNo H2SNo HdSNo).
+        claim H22add4 : add_SNo 2 2 = 4.
+        {
+          claim H3omega' : 3 :e omega. { exact (nat_p_omega 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)))). }
+          claim H3SNo' : SNo 3. { exact (real_SNo 3 (SNoS_omega_real 3 (omega_SNoS_omega 3 (nat_p_omega 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))))))). }
+          claim H2is11 : 2 = add_SNo 1 1. { exact (eq_symm (add_SNo 1 1) 2 add_SNo_1_1_2). }
+          rewrite H2is11.
+          rewrite <- (add_SNo_assoc 1 1 (add_SNo 1 1) SNo_1 SNo_1 (SNo_add_SNo 1 1 SNo_1 SNo_1)).
+          rewrite add_SNo_1_1_2.
+          rewrite (add_SNo_com 1 2 SNo_1 SNo_2).
+          rewrite add_SNo_2_1_eq_3.
+          rewrite (add_SNo_com 1 3 SNo_1 H3SNo').
+          exact (add_SNo_1_ordsucc 3 H3omega').
+        }
+        rewrite H22add4.
+        reflexivity.
+      }
+      rewrite H2d_2d_4d.
+      reflexivity.
+    }
+    rewrite (add_SNo_assoc (add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 2 d)))
+      (minus_SNo (mul_SNo 2 d)) 1
+      (SNo_add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 2 d)) H4ddSNo Hminus2dSNo)
+      Hminus2dSNo SNo_1).
+    rewrite <- (add_SNo_assoc (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 2 d)) (minus_SNo (mul_SNo 2 d))
+      H4ddSNo Hminus2dSNo Hminus2dSNo).
+    rewrite H2times2d.
+    reflexivity.
+  }
+  claim Happly_f0_R : apply_fun f 0 :e R.
+  { rewrite Hf0eq. exact Hf0R. }
+  claim Happly_f0_SNo : SNo (apply_fun f 0).
+  { exact (real_SNo (apply_fun f 0) Happly_f0_R). }
+  rewrite HnormExpand.
+  rewrite (add_SNo_0L (mul_SNo (apply_fun f 0) (apply_fun f 0))
+    (SNo_mul_SNo (apply_fun f 0) (apply_fun f 0) Happly_f0_SNo Happly_f0_SNo)).
+  rewrite Hf0eq. rewrite Hf1eq. rewrite Hf2eq.
+  rewrite Hf01sq. rewrite Hf2sq.
+  claim H4sdd_4dd : add_SNo (mul_SNo (mul_SNo 4 s) (mul_SNo d d)) (mul_SNo 4 (mul_SNo d d)) =
+    mul_SNo (mul_SNo 4 denom) (mul_SNo d d).
+  {
+    rewrite <- (mul_SNo_distrR (mul_SNo 4 s) 4 (mul_SNo d d) H4sSNo H4SNo HddSNo).
+    claim Hsum : add_SNo (mul_SNo 4 s) 4 = mul_SNo 4 denom.
+    {
+      prove add_SNo (mul_SNo 4 s) 4 = mul_SNo 4 (add_SNo 1 s).
+      rewrite (mul_SNo_distrL 4 1 s H4SNo SNo_1 HsSNo).
+      rewrite (mul_SNo_oneR 4 H4SNo).
+      rewrite (add_SNo_com (mul_SNo 4 s) 4 H4sSNo H4SNo).
+      reflexivity.
+    }
+    rewrite Hsum.
+    reflexivity.
+  }
+  claim H4denomdd : mul_SNo (mul_SNo 4 denom) (mul_SNo d d) = mul_SNo 4 d.
+  {
+    rewrite <- (mul_SNo_assoc 4 denom (mul_SNo d d) H4SNo HdenomSNo HddSNo).
+    rewrite (mul_SNo_assoc denom d d HdenomSNo HdSNo HdSNo).
+    rewrite Hdenom_d.
+    rewrite (mul_SNo_oneL d HdSNo).
+    reflexivity.
+  }
+  rewrite (add_SNo_assoc (mul_SNo (mul_SNo 4 s) (mul_SNo d d))
+    (add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 4 d))) 1
+    H4sddSNo (SNo_add_SNo (mul_SNo 4 (mul_SNo d d)) (minus_SNo (mul_SNo 4 d)) H4ddSNo Hminus4dSNo)
+    SNo_1).
+  rewrite (add_SNo_assoc (mul_SNo (mul_SNo 4 s) (mul_SNo d d)) (mul_SNo 4 (mul_SNo d d))
+    (minus_SNo (mul_SNo 4 d))
+    H4sddSNo H4ddSNo Hminus4dSNo).
+  rewrite H4sdd_4dd.
+  rewrite H4denomdd.
+  rewrite (add_SNo_minus_SNo_rinv (mul_SNo 4 d) H4dSNo).
+  rewrite (add_SNo_0L 1 SNo_1).
+  reflexivity.
+}
+exact (SepI (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1)
+  (apply_fun stereo_S_inv_map_early_explicit u) HinvFnE3 HnormSq1).
+Qed.
+
+(** Early helper: explicit inverse stereographic map is a function into E3. **)
+(** Proven Charlie **)
+Lemma stereo_S_inv_map_early_explicit_function_on_E3 :
+  function_on stereo_S_inv_map_early_explicit (euclidean_space 2) (euclidean_space 3).
+let u. assume Hu.
+exact (SepE1
+  (euclidean_space 3)
+  (fun v:set => euclidean_norm_sq 3 v = 1)
+  (apply_fun stereo_S_inv_map_early_explicit u)
+  (stereo_S_inv_map_early_explicit_in_Sn2 u Hu)).
+Qed.
+
+(** Early helper: explicit inverse stereographic map is a function into Sn2 minus south pole. **)
+(** Proven Charlie **)
+Lemma stereo_S_inv_map_early_explicit_function_on_D :
+  function_on
+    stereo_S_inv_map_early_explicit
+    (euclidean_space 2)
+    (Sn 2 :\: {south_pole_3_early_explicit}).
+let u. assume Hu.
+exact (setminusI
+  (Sn 2)
+  {south_pole_3_early_explicit}
+  (apply_fun stereo_S_inv_map_early_explicit u)
+  (stereo_S_inv_map_early_explicit_in_Sn2 u Hu)
+  (stereo_S_inv_map_early_explicit_not_south u Hu)).
+Qed.
+
+(** Early helper: coordinate 0 of the explicit inverse stereographic map. **)
+(** Proven Charlie **)
+Lemma stereo_S_inv_map_early_explicit_coord0 : forall u:set,
+  u :e euclidean_space 2 ->
+  apply_fun (apply_fun stereo_S_inv_map_early_explicit u) 0 =
+  mul_SNo
+    (mul_SNo 2 (apply_fun u 0))
+    (recip_SNo_pos
+      (add_SNo 1
+        (add_SNo
+          (mul_SNo (apply_fun u 0) (apply_fun u 0))
+          (mul_SNo (apply_fun u 1) (apply_fun u 1))))).
+let u. assume Hu.
+set A0 := mul_SNo
+  (mul_SNo 2 (apply_fun u 0))
+  (recip_SNo_pos
+    (add_SNo 1
+      (add_SNo
+        (mul_SNo (apply_fun u 0) (apply_fun u 0))
+        (mul_SNo (apply_fun u 1) (apply_fun u 1))))).
+set A1 := mul_SNo
+  (mul_SNo 2 (apply_fun u 1))
+  (recip_SNo_pos
+    (add_SNo 1
+      (add_SNo
+        (mul_SNo (apply_fun u 0) (apply_fun u 0))
+        (mul_SNo (apply_fun u 1) (apply_fun u 1))))).
+set A2 := add_SNo
+  (mul_SNo 2
+    (recip_SNo_pos
+      (add_SNo 1
+        (add_SNo
+          (mul_SNo (apply_fun u 0) (apply_fun u 0))
+          (mul_SNo (apply_fun u 1) (apply_fun u 1))))))
+  (minus_SNo 1).
+rewrite (apply_fun_graph
+  (euclidean_space 2)
+  (fun u:set =>
+    graph 3 (fun i:set =>
+      if i = 0 then
+        mul_SNo
+          (mul_SNo 2 (apply_fun u 0))
+          (recip_SNo_pos
+            (add_SNo 1
+              (add_SNo
+                (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+      else if i = 1 then
+        mul_SNo
+          (mul_SNo 2 (apply_fun u 1))
+          (recip_SNo_pos
+            (add_SNo 1
+              (add_SNo
+                (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+      else
+        add_SNo
+          (mul_SNo 2
+            (recip_SNo_pos
+              (add_SNo 1
+                (add_SNo
+                  (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                  (mul_SNo (apply_fun u 1) (apply_fun u 1))))))
+          (minus_SNo 1)))
+  u
+  Hu).
+rewrite (apply_fun_graph 3
+  (fun i:set => if i = 0 then A0 else if i = 1 then A1 else A2)
+  0
+  (ordsuccI1 2 0 In_0_2)).
+rewrite (If_i_1 (0 = 0) A0 (if 0 = 1 then A1 else A2) (eq_refl 0)).
+reflexivity.
+Qed.
+
+(** Early helper: coordinate 1 of the explicit inverse stereographic map. **)
+(** Proven Charlie **)
+Lemma stereo_S_inv_map_early_explicit_coord1 : forall u:set,
+  u :e euclidean_space 2 ->
+  apply_fun (apply_fun stereo_S_inv_map_early_explicit u) 1 =
+  mul_SNo
+    (mul_SNo 2 (apply_fun u 1))
+    (recip_SNo_pos
+      (add_SNo 1
+        (add_SNo
+          (mul_SNo (apply_fun u 0) (apply_fun u 0))
+          (mul_SNo (apply_fun u 1) (apply_fun u 1))))).
+let u. assume Hu.
+set A0 := mul_SNo
+  (mul_SNo 2 (apply_fun u 0))
+  (recip_SNo_pos
+    (add_SNo 1
+      (add_SNo
+        (mul_SNo (apply_fun u 0) (apply_fun u 0))
+        (mul_SNo (apply_fun u 1) (apply_fun u 1))))).
+set A1 := mul_SNo
+  (mul_SNo 2 (apply_fun u 1))
+  (recip_SNo_pos
+    (add_SNo 1
+      (add_SNo
+        (mul_SNo (apply_fun u 0) (apply_fun u 0))
+        (mul_SNo (apply_fun u 1) (apply_fun u 1))))).
+set A2 := add_SNo
+  (mul_SNo 2
+    (recip_SNo_pos
+      (add_SNo 1
+        (add_SNo
+          (mul_SNo (apply_fun u 0) (apply_fun u 0))
+          (mul_SNo (apply_fun u 1) (apply_fun u 1))))))
+  (minus_SNo 1).
+rewrite (apply_fun_graph
+  (euclidean_space 2)
+  (fun u:set =>
+    graph 3 (fun i:set =>
+      if i = 0 then
+        mul_SNo
+          (mul_SNo 2 (apply_fun u 0))
+          (recip_SNo_pos
+            (add_SNo 1
+              (add_SNo
+                (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+      else if i = 1 then
+        mul_SNo
+          (mul_SNo 2 (apply_fun u 1))
+          (recip_SNo_pos
+            (add_SNo 1
+              (add_SNo
+                (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+      else
+        add_SNo
+          (mul_SNo 2
+            (recip_SNo_pos
+              (add_SNo 1
+                (add_SNo
+                  (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                  (mul_SNo (apply_fun u 1) (apply_fun u 1))))))
+          (minus_SNo 1)))
+  u
+  Hu).
+rewrite (apply_fun_graph 3
+  (fun i:set => if i = 0 then A0 else if i = 1 then A1 else A2)
+  1
+  (ordsuccI1 2 1 In_1_2)).
+rewrite (If_i_0 (1 = 0) A0 (if 1 = 1 then A1 else A2) neq_1_0).
+rewrite (If_i_1 (1 = 1) A1 A2 (eq_refl 1)).
+reflexivity.
+Qed.
+
+(** Early helper: coordinate 2 of the explicit inverse stereographic map. **)
+(** Proven Charlie **)
+Lemma stereo_S_inv_map_early_explicit_coord2 : forall u:set,
+  u :e euclidean_space 2 ->
+  apply_fun (apply_fun stereo_S_inv_map_early_explicit u) 2 =
+  add_SNo
+    (mul_SNo 2
+      (recip_SNo_pos
+        (add_SNo 1
+          (add_SNo
+            (mul_SNo (apply_fun u 0) (apply_fun u 0))
+            (mul_SNo (apply_fun u 1) (apply_fun u 1))))))
+    (minus_SNo 1).
+let u. assume Hu.
+set A0 := mul_SNo
+  (mul_SNo 2 (apply_fun u 0))
+  (recip_SNo_pos
+    (add_SNo 1
+      (add_SNo
+        (mul_SNo (apply_fun u 0) (apply_fun u 0))
+        (mul_SNo (apply_fun u 1) (apply_fun u 1))))).
+set A1 := mul_SNo
+  (mul_SNo 2 (apply_fun u 1))
+  (recip_SNo_pos
+    (add_SNo 1
+      (add_SNo
+        (mul_SNo (apply_fun u 0) (apply_fun u 0))
+        (mul_SNo (apply_fun u 1) (apply_fun u 1))))).
+set A2 := add_SNo
+  (mul_SNo 2
+    (recip_SNo_pos
+      (add_SNo 1
+        (add_SNo
+          (mul_SNo (apply_fun u 0) (apply_fun u 0))
+          (mul_SNo (apply_fun u 1) (apply_fun u 1))))))
+  (minus_SNo 1).
+rewrite (apply_fun_graph
+  (euclidean_space 2)
+  (fun u:set =>
+    graph 3 (fun i:set =>
+      if i = 0 then
+        mul_SNo
+          (mul_SNo 2 (apply_fun u 0))
+          (recip_SNo_pos
+            (add_SNo 1
+              (add_SNo
+                (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+      else if i = 1 then
+        mul_SNo
+          (mul_SNo 2 (apply_fun u 1))
+          (recip_SNo_pos
+            (add_SNo 1
+              (add_SNo
+                (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                (mul_SNo (apply_fun u 1) (apply_fun u 1)))))
+      else
+        add_SNo
+          (mul_SNo 2
+            (recip_SNo_pos
+              (add_SNo 1
+                (add_SNo
+                  (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                  (mul_SNo (apply_fun u 1) (apply_fun u 1))))))
+          (minus_SNo 1)))
+  u
+  Hu).
+rewrite (apply_fun_graph 3
+  (fun i:set => if i = 0 then A0 else if i = 1 then A1 else A2)
+  2
+  In_2_3).
+rewrite (If_i_0 (2 = 0) A0 (if 2 = 1 then A1 else A2) (neq_ordsucc_0 1)).
+rewrite (If_i_0 (2 = 1) A1 A2 (fun H:2=1 => In_irref 1 (H (fun z _ => 1 :e z) In_1_2))).
+reflexivity.
+Qed.
+
+(** Early helper: continuity of the explicit inverse stereographic map into euclidean_space 3.
+    This isolates the real remaining continuity shell before the later packaged theorem. **)
+Theorem stereo_S_inv_map_early_explicit_continuous_E3 :
+  continuous_map
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    stereo_S_inv_map_early_explicit.
+admit.
+Admitted.
+
+(** Infrastructure helper for early S57.2:
+    explicit inverse stereographic projection from R^2 to the upper hemisphere.
+    This isolates the sequential blocker before the later reusable stereo_S_inv_fn theorems. **)
+Theorem stereo_S_inv_fn_continuous_early_explicit :
+  continuous_map
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    (Sn 2 :\: {south_pole_3_early_explicit})
+    (subspace_topology
+      (Sn 2)
+      (Sn_topology 2)
+      (Sn 2 :\: {south_pole_3_early_explicit}))
+    stereo_S_inv_map_early_explicit.
+set D := Sn 2 :\: {south_pole_3_early_explicit}.
+set DTop := subspace_topology (Sn 2) (Sn_topology 2) D.
+claim HE2top :
+  topology_on (euclidean_space 2) (euclidean_topology 2).
+{
+  exact (euclidean_topology_is_topology 2).
+}
+claim HE3top :
+  topology_on (euclidean_space 3) (euclidean_topology 3).
+{
+  exact (euclidean_topology_is_topology 3).
+}
+claim HDSubSn : D c= Sn 2.
+{
+  let z.
+  assume HzD.
+  exact (setminusE1
+    (Sn 2)
+    {south_pole_3_early_explicit}
+    z
+    HzD).
+}
+claim HDSubE3 : D c= euclidean_space 3.
+{
+  let z.
+  assume HzD.
+  exact (SepE1
+    (euclidean_space 3)
+    (fun v:set => euclidean_norm_sq 3 v = 1)
+    z
+    (HDSubSn z HzD)).
+}
+claim HDTopEq :
+  DTop = subspace_topology (euclidean_space 3) (euclidean_topology 3) D.
+{
+  prove subspace_topology (Sn 2) (subspace_topology (euclidean_space 3) (euclidean_topology 3) (Sn 2)) D =
+    subspace_topology (euclidean_space 3) (euclidean_topology 3) D.
+  exact (ex16_1_subspace_transitive
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    (Sn 2)
+    D
+    HE3top
+    (Sep_Subq
+      (euclidean_space 3)
+      (fun v:set => euclidean_norm_sq 3 v = 1))
+    HDSubSn).
+}
+claim HcontE3 :
+  continuous_map
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    stereo_S_inv_map_early_explicit.
+{
+  exact stereo_S_inv_map_early_explicit_continuous_E3.
+}
+claim HinD :
+  forall u:set, u :e euclidean_space 2 ->
+    apply_fun stereo_S_inv_map_early_explicit u :e D.
+{
+  let u.
+  assume Hu.
+  exact (stereo_S_inv_map_early_explicit_function_on_D
+    u
+    Hu).
+}
+claim HcontD_E3 :
+  continuous_map
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    D
+    (subspace_topology (euclidean_space 3) (euclidean_topology 3) D)
+    stereo_S_inv_map_early_explicit.
+{
+  exact (continuous_map_range_restrict
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    stereo_S_inv_map_early_explicit
+    D
+    HcontE3
+    HDSubE3
+    HinD).
+}
+rewrite HDTopEq.
+exact HcontD_E3.
+Admitted.
+
 Theorem thm57_2_equator_restriction_pair_extension_over_B2_early : forall g:set,
   antipode_preserving_Sn 2 1 g ->
   exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
     (forall z:set, z :e S1 ->
       apply_fun k z = apply_fun (thm57_2_equator_restriction_S1_map g) z).
-admit. (** remaining: early stereographic or upper-hemisphere extension over B2 **)
+let g.
+assume Hg.
+admit.
 Admitted.
 
 (** Infrastructure helper for S57 Thm 57.2:
