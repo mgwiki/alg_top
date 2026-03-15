@@ -290294,11 +290294,6 @@ apply (xm (y = e)).
                         (** cprime3 has reduced word of length k2 < m **)
                         (** IH gives y3 = e **)
                         (** Use HIH: need k2 :e m, c' = cprime3, x' = z_inner **)
-                        claim Hy3_eq_cprime :
-                          y3 = apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3).
-                        { (** y3 = c3 mult x3 mult inv(c3), c3 = cprime3 mult cs3(k2) **)
-                          (** By group algebra: y3 = cprime3 mult z_inner mult inv(cprime3) **)
-                          admit. }
                         claim Hcs3_in_G : forall i:set, i :e k2 -> apply_fun cs3 i :e G.
                         { let i. assume Hi_k2.
                           claim Hi_sk2 : i :e ordsucc k2. { exact (ordsuccI1 k2 i Hi_k2). }
@@ -290346,6 +290341,11 @@ apply (xm (y = e)).
                           exact (Hdisjoint alpha beta HalJ HbeJ Hab y3 Hy3_Galpha Hy3Gb).
                         * assume Hk2_ne0 : k2 <> 0.
                           (** k2 >= 1. cprime3 <> e and has reduced word. **)
+                          claim Hy3_eq_cprime :
+                            y3 = apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3).
+                          { (** Group algebra: (cprime3 mult cs3k2) mult x3 mult inv(cprime3 mult cs3k2) **)
+                            (**   = cprime3 mult (cs3k2 mult x3 mult inv(cs3k2)) mult inv(cprime3) **)
+                            admit. }
                           claim Hcprime3_ne : cprime3 <> e.
                           { set cs_pre := graph k2 (fun i:set => apply_fun cs3 i).
                             claim Hred_pre : reduced_word J Gfam efam k2 cs_pre.
