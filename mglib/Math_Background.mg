@@ -290343,8 +290343,10 @@ apply (xm (y = e)).
                           (** k2 >= 1. cprime3 <> e and has reduced word. **)
                           claim Hy3_eq_cprime :
                             y3 = apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3).
-                          { (** Group algebra: (cprime3 mult cs3k2) mult x3 mult inv(cprime3 mult cs3k2) **)
-                            (**   = cprime3 mult (cs3k2 mult x3 mult inv(cs3k2)) mult inv(cprime3) **)
+                          { (** Group algebra: c3 = cprime3 mult cs3(k2), so **)
+                            (** y3 = c3 mult x3 mult inv(c3) = cprime3 mult z_inner mult inv(cprime3) **)
+                            (** where z_inner = cs3(k2) mult x3 mult inv(cs3(k2)) **)
+                            (** Uses: Hc3_eq, group_inv_mult, 5x associativity **)
                             admit. }
                           claim Hcprime3_ne : cprime3 <> e.
                           { set cs_pre := graph k2 (fun i:set => apply_fun cs3 i).
