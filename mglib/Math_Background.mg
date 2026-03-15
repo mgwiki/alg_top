@@ -183101,6 +183101,138 @@ apply (SepI
     HuNorm).
 Qed.
 
+(** Infrastructure: an explicit S1 pair, viewed as a graph on 2, is a point of Sn 1. **)
+(** Proven Charlie **)
+Theorem S1_pair_graph_in_Sn_1 : forall p:set,
+  p :e S1 ->
+  graph 2 (fun i:set => if i = 0 then p 0 else p 1) :e Sn 1.
+let p.
+assume HpS1.
+claim HpR2 : p :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun q:set =>
+      add_SNo (mul_SNo (q 0) (q 0))
+        (mul_SNo (q 1) (q 1)) = 1)
+    p
+    HpS1).
+}
+claim HpEq1 :
+  add_SNo (mul_SNo (p 0) (p 0))
+    (mul_SNo (p 1) (p 1)) = 1.
+{
+  exact (SepE2
+    (setprod R R)
+    (fun q:set =>
+      add_SNo (mul_SNo (q 0) (q 0))
+        (mul_SNo (q 1) (q 1)) = 1)
+    p
+    HpS1).
+}
+claim Hp0R : p 0 :e R.
+{
+  exact (ap0_Sigma
+    R
+    (fun _ : set => R)
+    p
+    HpR2).
+}
+claim Hp1R : p 1 :e R.
+{
+  exact (ap1_Sigma
+    R
+    (fun _ : set => R)
+    p
+    HpR2).
+}
+claim HgraphE2 :
+  graph 2 (fun i:set => if i = 0 then p 0 else p 1) :e euclidean_space 2.
+{
+  claim HcoordIn : forall j:set, j :e 2 ->
+    (if j = 0 then p 0 else p 1) :e
+      space_family_set (const_space_family 2 R R_standard_topology) j.
+  {
+    let j.
+    assume Hj2.
+    rewrite (space_family_set_const_space_family
+      2
+      R
+      R_standard_topology
+      j
+      Hj2).
+    apply (ordsuccE 1 j Hj2).
+    - assume Hj1.
+      apply (ordsuccE 0 j Hj1).
+      + assume Hj0.
+        exact (FalseE
+          (EmptyE j Hj0)
+          ((if j = 0 then p 0 else p 1) :e R)).
+      + assume Hjeq0.
+        rewrite Hjeq0.
+        rewrite (If_i_1
+          (0 = 0)
+          (p 0)
+          (p 1)
+          (eq_refl 0)).
+        exact Hp0R.
+    - assume Hjeq1.
+      rewrite Hjeq1.
+      rewrite (If_i_0
+        (1 = 0)
+        (p 0)
+        (p 1)
+        (neq_ordsucc_0 0)).
+      exact Hp1R.
+  }
+  exact (product_space_graphI
+    2
+    (const_space_family 2 R R_standard_topology)
+    (fun i:set => if i = 0 then p 0 else p 1)
+    HcoordIn).
+}
+claim HgraphNorm :
+  euclidean_norm_sq 2 (graph 2 (fun i:set => if i = 0 then p 0 else p 1)) = 1.
+{
+  rewrite (euclidean_norm_sq_2_expand
+    (graph 2 (fun i:set => if i = 0 then p 0 else p 1))
+    HgraphE2).
+  rewrite (apply_fun_graph
+    2
+    (fun i:set => if i = 0 then p 0 else p 1)
+    0
+    In_0_2).
+  rewrite (apply_fun_graph
+    2
+    (fun i:set => if i = 0 then p 0 else p 1)
+    1
+    In_1_2).
+  rewrite (If_i_1
+    (0 = 0)
+    (p 0)
+    (p 1)
+    (eq_refl 0)).
+  rewrite (If_i_0
+    (1 = 0)
+    (p 0)
+    (p 1)
+    (neq_ordsucc_0 0)).
+  exact HpEq1.
+}
+claim HSn1Def :
+  Sn 1 = {v :e euclidean_space 2 | euclidean_norm_sq 2 v = 1}.
+{
+  reflexivity.
+}
+rewrite HSn1Def.
+apply (SepI
+  (euclidean_space 2)
+  (fun v:set => euclidean_norm_sq 2 v = 1)
+  (graph 2 (fun i:set => if i = 0 then p 0 else p 1))).
+- exact HgraphE2.
+- exact HgraphNorm.
+Qed.
+
 (** Infrastructure: the equator inclusion is continuous as a map S^1 -> S^2. **)
 (** Proven Charlie **)
 Theorem S1_equator_in_S2_continuous :
@@ -184649,6 +184781,64 @@ claim HrOdd :
   forall p:set, p :e R2_minus_origin ->
     apply_fun r (Rn_negate 2 p) = Rn_negate 2 (apply_fun r p).
 admit.
+claim HgInto :
+  forall x:set, x :e Sn 2 -> apply_fun g x :e Sn 1.
+{
+  let x.
+  assume HxSn2.
+  claim HgpairS1 : apply_fun gpair x :e S1.
+  {
+    rewrite (compose_fun_apply
+      (Sn 2)
+      d
+      r
+      x
+      HxSn2).
+    exact (HrIntoS1
+      (apply_fun d x)
+      (HdInto
+        x
+        HxSn2)).
+  }
+  rewrite (apply_fun_graph
+    (Sn 2)
+    (fun x0:set =>
+      graph 2 (fun i:set =>
+        if i = 0 then apply_fun gpair x0 0 else apply_fun gpair x0 1))
+    x
+    HxSn2).
+  exact (S1_pair_graph_in_Sn_1
+    (apply_fun gpair x)
+    HgpairS1).
+}
+claim HgFun : function_on g (Sn 2) (Sn 1).
+{
+  apply (graph_function_on
+    (Sn 2)
+    (Sn 1)
+    (fun x0:set =>
+      graph 2 (fun i:set =>
+        if i = 0 then apply_fun gpair x0 0 else apply_fun gpair x0 1))).
+  let x0.
+  assume Hx0Sn2.
+  claim HgpairS1 : apply_fun gpair x0 :e S1.
+  {
+    rewrite (compose_fun_apply
+      (Sn 2)
+      d
+      r
+      x0
+      Hx0Sn2).
+    exact (HrIntoS1
+      (apply_fun d x0)
+      (HdInto
+        x0
+        Hx0Sn2)).
+  }
+  exact (S1_pair_graph_in_Sn_1
+    (apply_fun gpair x0)
+    HgpairS1).
+}
 claim HgCont :
   continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g.
 admit.
