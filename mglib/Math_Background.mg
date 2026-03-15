@@ -188640,9 +188640,351 @@ claim HliftNotLoop :
         HliftGammaAsConcat)
       HliftConcatEndpoint).
   }
+  set alpha_lift := path_lift
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    e0
+    alpha_half.
+  set mid_lift := apply_fun alpha_lift 1.
+  set beta_lift := path_lift
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    mid_lift
+    beta_half.
+  claim HalphaLiftCont :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology alpha_lift.
+  {
+    exact (andEL
+      (continuous_map unit_interval unit_interval_topology R R_standard_topology alpha_lift)
+      (apply_fun alpha_lift 0 = e0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology R R_standard_topology alpha_lift /\
+         apply_fun alpha_lift 0 = e0)
+        (forall t:set, t :e unit_interval ->
+          apply_fun covering_map_R_S1 (apply_fun alpha_lift t) = apply_fun alpha_half t)
+        (lemma54_1_path_lifting
+          R
+          R_standard_topology
+          S1
+          S1_topology
+          covering_map_R_S1
+          e0
+          alpha_half
+          thm53_1_R_covers_S1
+          He0R
+          (eq_symm
+            (apply_fun alpha_half 0)
+            (apply_fun covering_map_R_S1 e0)
+            (eq_i_tra
+              (apply_fun alpha_half 0)
+              (apply_fun gamma 0)
+              (apply_fun covering_map_R_S1 e0)
+              Halpha0
+              (eq_symm
+                (apply_fun covering_map_R_S1 e0)
+                (apply_fun gamma 0)
+                HstartGamma)))
+          HalphaHalfCont))).
+  }
+  claim HalphaLift0 :
+    apply_fun alpha_lift 0 = e0.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology R R_standard_topology alpha_lift)
+      (apply_fun alpha_lift 0 = e0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology R R_standard_topology alpha_lift /\
+         apply_fun alpha_lift 0 = e0)
+        (forall t:set, t :e unit_interval ->
+          apply_fun covering_map_R_S1 (apply_fun alpha_lift t) = apply_fun alpha_half t)
+        (lemma54_1_path_lifting
+          R
+          R_standard_topology
+          S1
+          S1_topology
+          covering_map_R_S1
+          e0
+          alpha_half
+          thm53_1_R_covers_S1
+          He0R
+          (eq_symm
+            (apply_fun alpha_half 0)
+            (apply_fun covering_map_R_S1 e0)
+            (eq_i_tra
+              (apply_fun alpha_half 0)
+              (apply_fun gamma 0)
+              (apply_fun covering_map_R_S1 e0)
+              Halpha0
+              (eq_symm
+                (apply_fun covering_map_R_S1 e0)
+                (apply_fun gamma 0)
+                HstartGamma)))
+          HalphaHalfCont))).
+  }
+  claim HalphaLiftComm :
+    forall t:set, t :e unit_interval ->
+      apply_fun covering_map_R_S1 (apply_fun alpha_lift t) = apply_fun alpha_half t.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology R R_standard_topology alpha_lift /\
+       apply_fun alpha_lift 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun covering_map_R_S1 (apply_fun alpha_lift t) = apply_fun alpha_half t)
+      (lemma54_1_path_lifting
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        e0
+        alpha_half
+        thm53_1_R_covers_S1
+        He0R
+        (eq_symm
+          (apply_fun alpha_half 0)
+          (apply_fun covering_map_R_S1 e0)
+          (eq_i_tra
+            (apply_fun alpha_half 0)
+            (apply_fun gamma 0)
+            (apply_fun covering_map_R_S1 e0)
+            Halpha0
+            (eq_symm
+              (apply_fun covering_map_R_S1 e0)
+              (apply_fun gamma 0)
+              HstartGamma)))
+        HalphaHalfCont)).
+  }
+  claim HalphaLiftFun :
+    function_on alpha_lift unit_interval R.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      alpha_lift
+      HalphaLiftCont).
+  }
+  claim HmidLiftR :
+    mid_lift :e R.
+  {
+    exact (HalphaLiftFun
+      1
+      one_in_unit_interval).
+  }
+  claim HmidStartBeta :
+    apply_fun covering_map_R_S1 mid_lift = apply_fun beta_half 0.
+  {
+    exact (eq_i_tra
+      (apply_fun covering_map_R_S1 mid_lift)
+      (apply_fun alpha_half 1)
+      (apply_fun beta_half 0)
+      (HalphaLiftComm
+        1
+        one_in_unit_interval)
+      HalphaBetaJoin).
+  }
+  claim HbetaLiftCont :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology beta_lift.
+  {
+    exact (andEL
+      (continuous_map unit_interval unit_interval_topology R R_standard_topology beta_lift)
+      (apply_fun beta_lift 0 = mid_lift)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology R R_standard_topology beta_lift /\
+         apply_fun beta_lift 0 = mid_lift)
+        (forall t:set, t :e unit_interval ->
+          apply_fun covering_map_R_S1 (apply_fun beta_lift t) = apply_fun beta_half t)
+        (lemma54_1_path_lifting
+          R
+          R_standard_topology
+          S1
+          S1_topology
+          covering_map_R_S1
+          mid_lift
+          beta_half
+          thm53_1_R_covers_S1
+          HmidLiftR
+          HmidStartBeta
+          HbetaHalfCont))).
+  }
+  claim HbetaLift0 :
+    apply_fun beta_lift 0 = mid_lift.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology R R_standard_topology beta_lift)
+      (apply_fun beta_lift 0 = mid_lift)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology R R_standard_topology beta_lift /\
+         apply_fun beta_lift 0 = mid_lift)
+        (forall t:set, t :e unit_interval ->
+          apply_fun covering_map_R_S1 (apply_fun beta_lift t) = apply_fun beta_half t)
+        (lemma54_1_path_lifting
+          R
+          R_standard_topology
+          S1
+          S1_topology
+          covering_map_R_S1
+          mid_lift
+          beta_half
+          thm53_1_R_covers_S1
+          HmidLiftR
+          HmidStartBeta
+          HbetaHalfCont))).
+  }
+  claim HbetaLiftComm :
+    forall t:set, t :e unit_interval ->
+      apply_fun covering_map_R_S1 (apply_fun beta_lift t) = apply_fun beta_half t.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology R R_standard_topology beta_lift /\
+       apply_fun beta_lift 0 = mid_lift)
+      (forall t:set, t :e unit_interval ->
+        apply_fun covering_map_R_S1 (apply_fun beta_lift t) = apply_fun beta_half t)
+      (lemma54_1_path_lifting
+        R
+        R_standard_topology
+        S1
+        S1_topology
+        covering_map_R_S1
+        mid_lift
+        beta_half
+        thm53_1_R_covers_S1
+        HmidLiftR
+        HmidStartBeta
+        HbetaHalfCont)).
+  }
+  claim HbetaLiftFun :
+    function_on beta_lift unit_interval R.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      beta_lift
+      HbetaLiftCont).
+  }
+  assume HbetaEnd0.
+  claim HbetaLiftEnd0 :
+    apply_fun beta_lift 1 = e0.
+  {
+    exact (eq_i_tra
+      (apply_fun beta_lift 1)
+      (apply_fun
+        (path_lift
+          R
+          R_standard_topology
+          S1
+          S1_topology
+          covering_map_R_S1
+          (apply_fun
+            (path_lift
+              R
+              R_standard_topology
+              S1
+              S1_topology
+              covering_map_R_S1
+              e0
+              alpha_half)
+            1)
+          beta_half)
+        1)
+      e0
+      (eq_refl
+        (apply_fun
+          (path_lift
+            R
+            R_standard_topology
+            S1
+            S1_topology
+            covering_map_R_S1
+            (apply_fun
+              (path_lift
+                R
+                R_standard_topology
+                S1
+                S1_topology
+                covering_map_R_S1
+                e0
+                alpha_half)
+              1)
+            beta_half)
+          1))
+      (eq_i_tra
+        (apply_fun
+          (path_lift
+            R
+            R_standard_topology
+            S1
+            S1_topology
+            covering_map_R_S1
+            (apply_fun
+              (path_lift
+                R
+                R_standard_topology
+                S1
+                S1_topology
+                covering_map_R_S1
+                e0
+                alpha_half)
+              1)
+            beta_half)
+          1)
+        (apply_fun
+          (path_lift
+            R
+            R_standard_topology
+            S1
+            S1_topology
+            covering_map_R_S1
+            e0
+            gamma)
+          1)
+        e0
+        (eq_symm
+          (apply_fun
+            (path_lift
+              R
+              R_standard_topology
+              S1
+              S1_topology
+              covering_map_R_S1
+              e0
+              gamma)
+            1)
+          (apply_fun
+            (path_lift
+              R
+              R_standard_topology
+              S1
+              S1_topology
+              covering_map_R_S1
+              (apply_fun
+                (path_lift
+                  R
+                  R_standard_topology
+                  S1
+                  S1_topology
+                  covering_map_R_S1
+                  e0
+                  alpha_half)
+                1)
+              beta_half)
+            1)
+          HliftGammaDecomp)
+        HbetaEnd0)).
+  }
   (** Remaining geometric content:
-      show the second-half lift from the midpoint cannot end back at e0.
-      The full loop endpoint has now been reduced to that explicit beta_half lift. **)
+      show the second-half lift `beta_lift`, which starts at the midpoint lift
+      `mid_lift`, cannot end back at e0.
+      The full loop contradiction is now reduced to this explicit endpoint claim. **)
   admit.
 }
 exact (HliftNotLoop
