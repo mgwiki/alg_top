@@ -184773,6 +184773,113 @@ claim HrIntoS1 :
 claim HrCont :
   continuous_map R2_minus_origin R2_minus_origin_topology S1 S1_topology r.
 admit.
+claim HdPairOdd :
+  forall x:set, x :e Sn 2 ->
+    apply_fun d (Rn_negate 3 x) =
+    (add_SNo (minus_SNo (apply_fun f x 0)) (apply_fun f (Rn_negate 3 x) 0),
+     add_SNo (minus_SNo (apply_fun f x 1)) (apply_fun f (Rn_negate 3 x) 1)).
+{
+  let x.
+  assume HxSn2.
+  claim HxE3 : x :e euclidean_space 3.
+  {
+    exact (SepE1
+      (euclidean_space 3)
+      (fun v:set => euclidean_norm_sq 3 v = 1)
+      x
+      HxSn2).
+  }
+  claim HnxSn2 : Rn_negate 3 x :e Sn 2.
+  {
+    exact (Rn_negate_in_Sn_ordsucc
+      2
+      x
+      H2om
+      HxSn2).
+  }
+  claim HfxR2 : apply_fun f x :e setprod R R.
+  {
+    exact (HfFun
+      x
+      HxSn2).
+  }
+  claim HfnxR2 : apply_fun f (Rn_negate 3 x) :e setprod R R.
+  {
+    exact (HfFun
+      (Rn_negate 3 x)
+      HnxSn2).
+  }
+  claim Hfx0R : apply_fun f x 0 :e R.
+  {
+    exact (ap0_Sigma
+      R
+      (fun _ : set => R)
+      (apply_fun f x)
+      HfxR2).
+  }
+  claim Hfx1R : apply_fun f x 1 :e R.
+  {
+    exact (ap1_Sigma
+      R
+      (fun _ : set => R)
+      (apply_fun f x)
+      HfxR2).
+  }
+  claim Hfnx0R : apply_fun f (Rn_negate 3 x) 0 :e R.
+  {
+    exact (ap0_Sigma
+      R
+      (fun _ : set => R)
+      (apply_fun f (Rn_negate 3 x))
+      HfnxR2).
+  }
+  claim Hfnx1R : apply_fun f (Rn_negate 3 x) 1 :e R.
+  {
+    exact (ap1_Sigma
+      R
+      (fun _ : set => R)
+      (apply_fun f (Rn_negate 3 x))
+      HfnxR2).
+  }
+  rewrite (apply_fun_graph
+    (Sn 2)
+    (fun x0:set =>
+      (add_SNo (apply_fun f x0 0) (minus_SNo (apply_fun f (Rn_negate 3 x0) 0)),
+       add_SNo (apply_fun f x0 1) (minus_SNo (apply_fun f (Rn_negate 3 x0) 1))))
+    (Rn_negate 3 x)
+    HnxSn2).
+  apply tuple_2_ext_euclid.
+  - rewrite (Rn_negate_involution
+    3
+    x
+    HxE3).
+    exact (add_SNo_com
+    (apply_fun f (Rn_negate 3 x) 0)
+    (minus_SNo (apply_fun f x 0))
+    (real_SNo
+      (apply_fun f (Rn_negate 3 x) 0)
+      Hfnx0R)
+    (SNo_minus_SNo
+      (apply_fun f x 0)
+      (real_SNo
+        (apply_fun f x 0)
+        Hfx0R))).
+  - rewrite (Rn_negate_involution
+    3
+    x
+    HxE3).
+    exact (add_SNo_com
+    (apply_fun f (Rn_negate 3 x) 1)
+    (minus_SNo (apply_fun f x 1))
+    (real_SNo
+      (apply_fun f (Rn_negate 3 x) 1)
+      Hfnx1R)
+    (SNo_minus_SNo
+      (apply_fun f x 1)
+      (real_SNo
+        (apply_fun f x 1)
+        Hfx1R))).
+}
 claim HdOdd :
   forall x:set, x :e Sn 2 ->
     apply_fun d (Rn_negate 3 x) = Rn_negate 2 (apply_fun d x).
