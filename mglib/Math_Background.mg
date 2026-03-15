@@ -288969,7 +288969,18 @@ apply (xm (y = e)).
                         claim Hy3_eq_cprime :
                           y3 = apply_fun mult (apply_fun mult (cprime3, z_inner), apply_fun inv cprime3).
                         { admit. }
-                        claim Hcprime3_G : cprime3 :e G. { admit. }
+                        claim Hcs3_in_G : forall i:set, i :e k2 -> apply_fun cs3 i :e G.
+                        { let i. assume Hi_k2.
+                          claim Hi_sk2 : i :e ordsucc k2. { exact (ordsuccI1 k2 i Hi_k2). }
+                          claim Hi_m : i :e m. { rewrite Hm_eq. exact Hi_sk2. }
+                          apply (Hcs3_mem i Hi_m).
+                          let a. assume Ha_pack : a :e J /\ apply_fun cs3 i :e apply_fun Gfam a /\ apply_fun cs3 i <> apply_fun efam a.
+                          exact (Hsub_in_G a
+                            (andEL (a :e J) (apply_fun cs3 i :e apply_fun Gfam a) (andEL (a :e J /\ apply_fun cs3 i :e apply_fun Gfam a) (apply_fun cs3 i <> apply_fun efam a) Ha_pack))
+                            (apply_fun cs3 i)
+                            (andER (a :e J) (apply_fun cs3 i :e apply_fun Gfam a) (andEL (a :e J /\ apply_fun cs3 i :e apply_fun Gfam a) (apply_fun cs3 i <> apply_fun efam a) Ha_pack))). }
+                        claim Hcprime3_G : cprime3 :e G.
+                        { exact (word_product_in_G_group G mult e inv k2 cs3 Hgrp Hk2_nat Hcs3_in_G). }
                         claim Hcprime3_ne : cprime3 <> e. { admit. }
                         claim Hcprime3_word : exists cs_pre:set,
                           reduced_word J Gfam efam k2 cs_pre /\ word_product mult e cs_pre k2 = cprime3 /\
