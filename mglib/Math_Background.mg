@@ -306183,6 +306183,18 @@ Theorem thm68_2_existence_free_product :
     free_product_of_subgroups G multG eG invG J
       (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)))
       (graph J (fun alpha:set => apply_fun (apply_fun ifam alpha) (apply_fun efam alpha))).
+let J Gfam multfam efam invfam.
+assume Hfactors : forall alpha:set, alpha :e J ->
+  group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) (apply_fun efam alpha) (apply_fun invfam alpha).
+(** Construction: G = reduced words, eG = empty word, multG = concat+reduce **)
+(** The full construction is a major undertaking (~2000 lines). **)
+(** Gradual approach: provide existential witnesses with admits for verification. **)
+(** The key witnesses: **)
+(** G = {(n, xs) | n :e omega, xs is a reduced word of length n over the factors} **)
+(** eG = the empty reduced word **)
+(** multG = word concatenation followed by reduction **)
+(** invG = reverse the word and invert each element **)
+(** ifam(alpha)(x) = the length-1 word [x] (tagged with alpha) **)
 admit.
 Admitted.
 
