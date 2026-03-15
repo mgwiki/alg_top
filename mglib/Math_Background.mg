@@ -487934,6 +487934,176 @@ Qed.
 
 
 
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_normalized_pack_iff_split_direct_to_split_alias101 :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set,
+      free_group_with_generators H multH eH invH JH gensH /\
+      equip JH (ordsucc (mul_SNo k n))) ->
+  (exists JH:set,
+      (exists gensH:set, free_group_with_generators H multH eH invH JH gensH) /\
+      equip JH (ordsucc (mul_SNo k n))).
+let H multH eH invH n k.
+exact (thm85_3_free_gen_formula_exists_normalized_pack_iff_split_direct_to_split_alias100
+  H
+  multH
+  eH
+  invH
+  n
+  k).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_normalized_pack_iff_split_direct_from_split_alias101 :
+  forall H multH eH invH n k:set,
+  (exists JH:set,
+      (exists gensH:set, free_group_with_generators H multH eH invH JH gensH) /\
+      equip JH (ordsucc (mul_SNo k n))) ->
+  (exists JH gensH:set,
+      free_group_with_generators H multH eH invH JH gensH /\
+      equip JH (ordsucc (mul_SNo k n))).
+let H multH eH invH n k.
+exact (thm85_3_free_gen_formula_exists_normalized_pack_iff_split_direct_from_split_alias100
+  H
+  multH
+  eH
+  invH
+  n
+  k).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_normalized_pack_swap_iff_split_swap_direct_to_split_swap_alias101 :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set,
+      equip JH (ordsucc (mul_SNo k n)) /\
+      free_group_with_generators H multH eH invH JH gensH) ->
+  (exists JH:set,
+      equip JH (ordsucc (mul_SNo k n)) /\
+      (exists gensH:set, free_group_with_generators H multH eH invH JH gensH)).
+let H multH eH invH n k.
+exact (thm85_3_free_gen_formula_exists_normalized_pack_swap_iff_split_swap_direct_to_split_swap_alias100
+  H
+  multH
+  eH
+  invH
+  n
+  k).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_normalized_pack_swap_iff_split_swap_direct_from_split_swap_alias101 :
+  forall H multH eH invH n k:set,
+  (exists JH:set,
+      equip JH (ordsucc (mul_SNo k n)) /\
+      (exists gensH:set, free_group_with_generators H multH eH invH JH gensH)) ->
+  (exists JH gensH:set,
+      equip JH (ordsucc (mul_SNo k n)) /\
+      free_group_with_generators H multH eH invH JH gensH).
+let H multH eH invH n k.
+exact (thm85_3_free_gen_formula_exists_normalized_pack_swap_iff_split_swap_direct_from_split_swap_alias100
+  H
+  multH
+  eH
+  invH
+  n
+  k).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_normalized_split_iff_pack_direct_to_pack_alias101 :
+  forall H multH eH invH n k:set,
+  (exists JH:set,
+      (exists gensH:set, free_group_with_generators H multH eH invH JH gensH) /\
+      equip JH (ordsucc (mul_SNo k n))) ->
+  (exists JH gensH:set,
+      free_group_with_generators H multH eH invH JH gensH /\
+      equip JH (ordsucc (mul_SNo k n))).
+let H multH eH invH n k.
+exact (thm85_3_free_gen_formula_exists_normalized_split_iff_pack_direct_to_pack_alias100
+  H
+  multH
+  eH
+  invH
+  n
+  k).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_normalized_split_iff_pack_direct_from_pack_alias101 :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set,
+      free_group_with_generators H multH eH invH JH gensH /\
+      equip JH (ordsucc (mul_SNo k n))) ->
+  (exists JH:set,
+      (exists gensH:set, free_group_with_generators H multH eH invH JH gensH) /\
+      equip JH (ordsucc (mul_SNo k n))).
+let H multH eH invH n k.
+exact (thm85_3_free_gen_formula_exists_normalized_split_iff_pack_direct_from_pack_alias100
+  H
+  multH
+  eH
+  invH
+  n
+  k).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_normalized_split_swap_iff_pack_swap_direct_to_pack_swap_alias101 :
+  forall H multH eH invH n k:set,
+  (exists JH:set,
+      equip JH (ordsucc (mul_SNo k n)) /\
+      (exists gensH:set, free_group_with_generators H multH eH invH JH gensH)) ->
+  (exists JH gensH:set,
+      equip JH (ordsucc (mul_SNo k n)) /\
+      free_group_with_generators H multH eH invH JH gensH).
+let H multH eH invH n k.
+exact (thm85_3_free_gen_formula_exists_normalized_split_swap_iff_pack_swap_direct_to_pack_swap_alias100
+  H
+  multH
+  eH
+  invH
+  n
+  k).
+Qed.
+
+(** Proven Bob **)
+Lemma thm85_3_free_gen_formula_exists_normalized_split_swap_iff_pack_swap_direct_from_pack_swap_alias101 :
+  forall H multH eH invH n k:set,
+  (exists JH gensH:set,
+      equip JH (ordsucc (mul_SNo k n)) /\
+      free_group_with_generators H multH eH invH JH gensH) ->
+  (exists JH:set,
+      equip JH (ordsucc (mul_SNo k n)) /\
+      (exists gensH:set, free_group_with_generators H multH eH invH JH gensH)).
+let H multH eH invH n k.
+exact (thm85_3_free_gen_formula_exists_normalized_split_swap_iff_pack_swap_direct_from_pack_swap_alias100
+  H
+  multH
+  eH
+  invH
+  n
+  k).
+Qed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 (** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
