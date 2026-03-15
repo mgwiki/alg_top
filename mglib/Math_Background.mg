@@ -307445,6 +307445,33 @@ Admitted.
 (** G2 = free product of H_beta for beta in K, with J,K disjoint, **)
 (** then G = free product of H_gamma for gamma in J union K. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
+(** Helper: mixed (J cup K)-word product not in G1.
+    Forward-declared here to avoid forward reference in cor68_6_side_from_product_G1_ge3.
+    Proof delegates to cor68_6_binary_collapse_mixed_not_in_G1 (defined later). **)
+Lemma mixed_union_word_not_in_G1_early :
+  forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
+  group_structure G multG eG invG ->
+  subgroup_of G1 G multG eG invG ->
+  subgroup_of G2 G multG eG invG ->
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => eG)) ->
+  J :/\: K = Empty ->
+  free_product_of_subgroups G1 multG eG invG J
+    (graph J (fun alpha:set => apply_fun Hfam alpha))
+    (graph J (fun alpha:set => apply_fun efamH alpha)) ->
+  free_product_of_subgroups G2 multG eG invG K
+    (graph K (fun beta:set => apply_fun Hfam beta))
+    (graph K (fun beta:set => apply_fun efamH beta)) ->
+  reduced_word (J :\/: K) Hfam efamH n ys ->
+  (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+  word_product multG eG ys n <> eG ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G1) ->
+  (exists i:set, i :e n /\ apply_fun ys i :e G2) ->
+  word_product multG eG ys n /:e G1.
+admit.
+Admitted.
+
 (** Helper bounties (for the remaining n >= 3 side-from-product branches inside cor68_6) **)
 (** Bounty 44 **)
 (** Lock Alice 1773683565 **)
@@ -307630,8 +307657,8 @@ apply HG1orG2.
   { witness i. exact (andI (i :e n) (apply_fun ys i :e G2) Hi HinG2). }
   (** By cor68_6_binary_collapse_mixed_not_in_G1: wp not in G1. Contradiction. **)
   claim HwpNotG1 : word_product multG eG ys n /:e G1.
-  { (** By binary collapse: mixed (G1 and G2 entries) reduced word product is not in G1. **)
-    admit. }
+  { exact (mixed_union_word_not_in_G1_early G multG eG invG G1 G2 J K Hfam efamH n ys
+      Hgrp Hsub1 Hsub2 Hfp HJKdisj Hfp1 Hfp2 Hred HneG HwpNeG HexG1 HexG2). }
   exact (FalseE (HwpNotG1 HwpG1) (apply_fun ys i :e G1)).
 Admitted.
 
