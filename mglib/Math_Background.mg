@@ -137154,6 +137154,147 @@ apply andI.
     + exact HFs1.
 Qed.
 
+(** S55 helper: extension over B2 is equivalent to nulhomotopy on S1. **)
+(** Proven Bob **)
+Theorem s55_nulhomotopic_iff_extends_to_B2 : forall X Tx h:set,
+  continuous_map S1 S1_topology X Tx h ->
+  (nulhomotopic S1 S1_topology X Tx h <->
+    (exists k:set, continuous_map B2 B2_topology X Tx k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x))).
+let X Tx h.
+assume Hh.
+apply iffI.
+- assume Hnul.
+  exact (lemma55_3_nulhomotopic_extends_to_B2
+    X
+    Tx
+    h
+    Hh
+    Hnul).
+- assume Hext.
+  exact (s55_extends_to_B2_implies_nulhomotopic
+    X
+    Tx
+    h
+    Hh
+    Hext).
+Qed.
+
+(** S55 helper: any S1-map extending over B2 induces the trivial pi1 map. **)
+(** Proven Bob **)
+Theorem s55_extends_to_B2_implies_trivial_induced : forall X Tx h b0:set,
+  continuous_map S1 S1_topology X Tx h ->
+  b0 :e S1 ->
+  (exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x)) ->
+  (forall cls:set, cls :e fundamental_group S1 S1_topology b0 ->
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        b0
+        X
+        Tx
+        (apply_fun h b0)
+        h)
+      cls
+    =
+    fundamental_group_id X Tx (apply_fun h b0)).
+let X Tx h b0.
+assume Hh Hb0 Hext.
+claim Hnul : nulhomotopic S1 S1_topology X Tx h.
+{
+  exact (s55_extends_to_B2_implies_nulhomotopic
+    X
+    Tx
+    h
+    Hh
+    Hext).
+}
+exact (s55_cor58_6_nulhomotopic_trivial
+  S1
+  S1_topology
+  X
+  Tx
+  h
+  b0
+  Hh
+  Hb0
+  Hnul).
+Qed.
+
+(** S55 helper: if no extension over B2 exists, then the map is not nulhomotopic. **)
+(** Proven Bob **)
+Theorem s55_no_extension_implies_not_nulhomotopic : forall X Tx h:set,
+  continuous_map S1 S1_topology X Tx h ->
+  ~(exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x)) ->
+  ~(nulhomotopic S1 S1_topology X Tx h).
+let X Tx h.
+assume Hh Hnoext.
+assume Hnul.
+claim Hext :
+  exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
+{
+  exact (lemma55_3_nulhomotopic_extends_to_B2
+    X
+    Tx
+    h
+    Hh
+    Hnul).
+}
+exact (Hnoext Hext).
+Qed.
+
+(** S55 helper: non-nulhomotopic maps S1->X admit no extension over B2. **)
+(** Proven Bob **)
+Theorem s55_not_nulhomotopic_implies_no_extension : forall X Tx h:set,
+  continuous_map S1 S1_topology X Tx h ->
+  ~(nulhomotopic S1 S1_topology X Tx h) ->
+  ~(exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x)).
+let X Tx h.
+assume Hh Hnotnul.
+assume Hext.
+claim Hnul : nulhomotopic S1 S1_topology X Tx h.
+{
+  exact (s55_extends_to_B2_implies_nulhomotopic
+    X
+    Tx
+    h
+    Hh
+    Hext).
+}
+exact (Hnotnul Hnul).
+Qed.
+
+(** S55 helper: non-nulhomotopy is equivalent to non-extendability over B2. **)
+(** Proven Bob **)
+Theorem s55_not_nulhomotopic_iff_no_extension : forall X Tx h:set,
+  continuous_map S1 S1_topology X Tx h ->
+  (~(nulhomotopic S1 S1_topology X Tx h) <->
+    ~(exists k:set, continuous_map B2 B2_topology X Tx k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x))).
+let X Tx h.
+assume Hh.
+apply iffI.
+- assume Hnotnul.
+  exact (s55_not_nulhomotopic_implies_no_extension
+    X
+    Tx
+    h
+    Hh
+    Hnotnul).
+- assume Hnoext.
+  exact (s55_no_extension_implies_not_nulhomotopic
+    X
+    Tx
+    h
+    Hh
+    Hnoext).
+Qed.
+
 (** from S55 Lem 55.3 direction (3) implies (1) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h-star is the trivial homomorphism, then h is nulhomotopic. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 180 **)
@@ -139925,6 +140066,19 @@ exact (neq_0_1
   H0eq1).
 Qed.
 
+(** S55 corollary: inclusion S1 -> R2-0 has no extension over B2. **)
+(** Proven Bob **)
+Theorem cor55_4a_inclusion_S1_R2_no_extension_B2 :
+  ~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+exact (s55_not_nulhomotopic_implies_no_extension
+  R2_minus_origin
+  R2_minus_origin_topology
+  (graph S1 (fun x:set => x))
+  s55_inclusion_S1_R2_minus_origin_continuous
+  cor55_4a_inclusion_S1_R2_not_nulhomotopic).
+Qed.
+
 (** from S55 Thm 55.2 (line 904 in algtop.tex): No-retraction theorem **)
 (** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
@@ -140236,6 +140390,37 @@ claim HnulIncl :
 }
 exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic
   HnulIncl).
+Qed.
+
+(** S55 corollary: identity S1 -> S1 has no extension over B2. **)
+(** Proven Bob **)
+Theorem cor55_4b_identity_S1_no_extension_B2 :
+  ~(exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+claim HidCont :
+  continuous_map S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)).
+{
+  claim HtopS1 : topology_on S1 S1_topology.
+  {
+    exact (continuous_map_topology_dom
+      S1
+      S1_topology
+      B2
+      B2_topology
+      (graph S1 (fun x:set => x))
+      inclusion_S1_B2_continuous).
+  }
+  exact (identity_continuous
+    S1
+    S1_topology
+    HtopS1).
+}
+exact (s55_not_nulhomotopic_implies_no_extension
+  S1
+  S1_topology
+  (graph S1 (fun x:set => x))
+  HidCont
+  cor55_4b_identity_S1_not_nulhomotopic).
 Qed.
 
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
