@@ -211611,13 +211611,17 @@ claim Htransition_VU : forall k:set, k :e nch ->
   + exact HsK.
   + exact HsSK.
   + apply binintersectI. { exact (HskU s HsSK). } { exact (HkV s HsK). } }
-(** Step 4: Build word decomposition **)
-(** The full inductive construction on the chain length nch. **)
-(** For each transition point between U-type and V-type balls, **)
-(** connect to x0 via path in U cap V, and split the loop accordingly. **)
-(** Each sub-loop lies entirely in U or V, giving word data via **)
-(** word_data_of_loop_in_U/V. Combine using word_data_of_loop_concat. **)
-(** Full construction delegated to future work (estimated 200+ lines). **)
+(** Step 4: Build word decomposition by induction on nch **)
+(** Key insight: use the transition structure to split f into sub-loops, **)
+(** each lying entirely in U or V, connected via paths in U cap V. **)
+(** Then apply word_data_of_loop_in_U/V and word_data_of_loop_concat. **)
+(** **)
+(** For now: use the fact that the ball chain gives a finite cover **)
+(** with each ball mapping to U or V. The word data can be constructed **)
+(** by grouping consecutive same-type balls and splitting at transitions. **)
+(** **)
+(** The detailed inductive construction is complex (~200 lines). **)
+(** Delegating the full formal induction to a subagent or future session. **)
 admit.
 Admitted.
 
