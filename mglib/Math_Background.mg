@@ -140423,6 +140423,285 @@ exact (s55_not_nulhomotopic_implies_no_extension
   cor55_4b_identity_S1_not_nulhomotopic).
 Qed.
 
+(** S55 helper: extending id_{S1} over B2 yields a retraction B2 -> S1. **)
+(** Proven Bob **)
+Theorem s55_extension_identity_B2_S1_implies_retraction :
+  (exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)) ->
+  retraction_of B2 B2_topology S1.
+assume Hext.
+claim HS1subB2 : S1 c= B2.
+{
+  exact S1_subset_B2.
+}
+apply Hext.
+let k.
+assume HkPack.
+claim HkCont :
+  continuous_map B2 B2_topology S1 S1_topology k.
+{
+  exact (andEL
+    (continuous_map B2 B2_topology S1 S1_topology k)
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)
+    HkPack).
+}
+claim HkExt :
+  forall x:set, x :e S1 ->
+    apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x.
+{
+  exact (andER
+    (continuous_map B2 B2_topology S1 S1_topology k)
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)
+    HkPack).
+}
+claim HkFunS1 : function_on k B2 S1.
+{
+  exact (continuous_map_function_on
+    B2
+    B2_topology
+    S1
+    S1_topology
+    k
+    HkCont).
+}
+claim HkFunB2 : function_on k B2 B2.
+{
+  exact (function_on_codomain
+    k
+    B2
+    S1
+    B2
+    HkFunS1
+    HS1subB2).
+}
+claim HtopB2 : topology_on B2 B2_topology.
+{
+  exact (andEL
+    (topology_on B2 B2_topology)
+    (nulhomotopic B2 B2_topology B2 B2_topology (graph B2 (fun x:set => x)))
+    B2_contractible).
+}
+claim HtopEq :
+  subspace_topology B2 B2_topology S1 = S1_topology.
+{
+  exact (subspace_topology_transitive_weak
+    (setprod R R)
+    R2_topology
+    B2
+    S1
+    S1_subset_B2).
+}
+claim HtopEqSym :
+  S1_topology = subspace_topology B2 B2_topology S1.
+{
+  symmetry.
+  exact HtopEq.
+}
+claim HkContBB2 :
+  continuous_map B2 B2_topology B2 B2_topology k.
+{
+  exact (continuous_map_range_expand
+    B2
+    B2_topology
+    S1
+    S1_topology
+    B2
+    B2_topology
+    k
+    HkCont
+    HS1subB2
+    HtopB2
+    HtopEqSym).
+}
+claim HkIntoS1 :
+  forall x:set, x :e B2 -> apply_fun k x :e S1.
+{
+  let x.
+  assume HxB2.
+  exact (HkFunS1 x HxB2).
+}
+claim HkFixS1 :
+  forall x:set, x :e S1 -> apply_fun k x = x.
+{
+  let x.
+  assume HxS1.
+  rewrite (HkExt x HxS1).
+  exact (apply_fun_graph
+    S1
+    (fun z:set => z)
+    x
+    HxS1).
+}
+prove S1 c= B2 /\
+  exists r:set,
+    function_on r B2 B2 /\
+    continuous_map B2 B2_topology B2 B2_topology r /\
+    (forall x:set, x :e B2 -> apply_fun r x :e S1) /\
+    (forall x:set, x :e S1 -> apply_fun r x = x).
+apply andI.
+- exact HS1subB2.
+- witness k.
+  apply andI.
+  + apply andI.
+    * apply andI.
+      { exact HkFunB2. }
+      { exact HkContBB2. }
+    * exact HkIntoS1.
+  + exact HkFixS1.
+Qed.
+
+(** S55 helper: a retraction B2 -> S1 provides an extension of id_{S1} over B2. **)
+(** Proven Bob **)
+Theorem s55_retraction_B2_S1_implies_extension_identity :
+  retraction_of B2 B2_topology S1 ->
+  exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x).
+assume Hretr.
+claim HS1subB2 : S1 c= B2.
+{
+  exact (andEL
+    (S1 c= B2)
+    (exists r:set,
+      function_on r B2 B2 /\
+      continuous_map B2 B2_topology B2 B2_topology r /\
+      (forall x:set, x :e B2 -> apply_fun r x :e S1) /\
+      (forall x:set, x :e S1 -> apply_fun r x = x))
+    Hretr).
+}
+claim HrWit :
+  exists r:set,
+    function_on r B2 B2 /\
+    continuous_map B2 B2_topology B2 B2_topology r /\
+    (forall x:set, x :e B2 -> apply_fun r x :e S1) /\
+    (forall x:set, x :e S1 -> apply_fun r x = x).
+{
+  exact (andER
+    (S1 c= B2)
+    (exists r:set,
+      function_on r B2 B2 /\
+      continuous_map B2 B2_topology B2 B2_topology r /\
+      (forall x:set, x :e B2 -> apply_fun r x :e S1) /\
+      (forall x:set, x :e S1 -> apply_fun r x = x))
+    Hretr).
+}
+apply HrWit.
+let r.
+assume HrPack.
+claim HrAB :
+  function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r.
+{
+  exact (andEL
+    (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r)
+    (forall x:set, x :e B2 -> apply_fun r x :e S1)
+    (andEL
+      ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+       (forall x:set, x :e B2 -> apply_fun r x :e S1))
+      (forall x:set, x :e S1 -> apply_fun r x = x)
+      HrPack)).
+}
+claim HrIntoS1 : forall x:set, x :e B2 -> apply_fun r x :e S1.
+{
+  exact (andER
+    (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r)
+    (forall x:set, x :e B2 -> apply_fun r x :e S1)
+    (andEL
+      ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+       (forall x:set, x :e B2 -> apply_fun r x :e S1))
+      (forall x:set, x :e S1 -> apply_fun r x = x)
+      HrPack)).
+}
+claim HrFixS1 : forall x:set, x :e S1 -> apply_fun r x = x.
+{
+  exact (andER
+    ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+     (forall x:set, x :e B2 -> apply_fun r x :e S1))
+    (forall x:set, x :e S1 -> apply_fun r x = x)
+    HrPack).
+}
+claim HrContBB2 : continuous_map B2 B2_topology B2 B2_topology r.
+{
+  exact (andER
+    (function_on r B2 B2)
+    (continuous_map B2 B2_topology B2 B2_topology r)
+    HrAB).
+}
+claim HrContSub :
+  continuous_map B2 B2_topology S1 (subspace_topology B2 B2_topology S1) r.
+{
+  exact (continuous_map_range_restrict
+    B2
+    B2_topology
+    B2
+    B2_topology
+    r
+    S1
+    HrContBB2
+    HS1subB2
+    HrIntoS1).
+}
+claim HtopEq :
+  subspace_topology B2 B2_topology S1 = S1_topology.
+{
+  exact (subspace_topology_transitive_weak
+    (setprod R R)
+    R2_topology
+    B2
+    S1
+    S1_subset_B2).
+}
+claim HrContBS1 :
+  continuous_map B2 B2_topology S1 S1_topology r.
+{
+  rewrite <- HtopEq.
+  exact HrContSub.
+}
+prove exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+  (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x).
+witness r.
+apply andI.
+- exact HrContBS1.
+- let x.
+  assume HxS1.
+  rewrite (apply_fun_graph
+    S1
+    (fun z:set => z)
+    x
+    HxS1).
+  exact (HrFixS1
+    x
+    HxS1).
+Qed.
+
+(** S55 helper: extending id_{S1} over B2 is equivalent to retraction of B2 onto S1. **)
+(** Proven Bob **)
+Theorem s55_retraction_B2_S1_iff_extension_identity :
+  retraction_of B2 B2_topology S1 <->
+  (exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+apply iffI.
+- exact s55_retraction_B2_S1_implies_extension_identity.
+- exact s55_extension_identity_B2_S1_implies_retraction.
+Qed.
+
+(** S55 helper: no retraction B2->S1 is equivalent to non-extendability of id_{S1}. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_iff_id_no_extension :
+  ~(retraction_of B2 B2_topology S1) <->
+  ~(exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+apply iffI.
+- assume Hnretr.
+  assume Hext.
+  exact (Hnretr
+    (s55_extension_identity_B2_S1_implies_retraction
+      Hext)).
+- assume Hnoext.
+  assume Hretr.
+  exact (Hnoext
+    (s55_retraction_B2_S1_implies_extension_identity
+      Hretr)).
+Qed.
+
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
