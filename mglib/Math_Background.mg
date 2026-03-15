@@ -1,4 +1,4 @@
-(** Balance Alice 9103 **)
+(** Balance Alice 9099 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
@@ -307446,7 +307446,8 @@ Admitted.
 (** then G = free product of H_gamma for gamma in J union K. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Helper bounties (for the remaining n >= 3 side-from-product branches inside cor68_6) **)
-(** Bounty 40 **)
+(** Bounty 44 **)
+(** Lock Alice 1773683565 **)
 (** Admin-approved-refactored per noticeboard proposal 1772623360 **)
 Theorem cor68_6_side_from_product_G1_ge3 :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
