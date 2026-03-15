@@ -140804,6 +140804,97 @@ exact (iffER
   Hnoext).
 Qed.
 
+(** S55 helper: continuity of identity map on S1. **)
+(** Proven Bob **)
+Theorem s55_identity_S1_continuous :
+  continuous_map S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)).
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_dom
+    S1
+    S1_topology
+    B2
+    B2_topology
+    (graph S1 (fun x:set => x))
+    inclusion_S1_B2_continuous).
+}
+exact (identity_continuous
+  S1
+  S1_topology
+  HtopS1).
+Qed.
+
+(** S55 helper: retraction B2->S1 is equivalent to nulhomotopy of id_{S1}. **)
+(** Proven Bob **)
+Theorem s55_retraction_B2_S1_iff_identity_nulhomotopic :
+  retraction_of B2 B2_topology S1 <->
+  nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)).
+apply iffI.
+- exact s55_retraction_B2_S1_implies_identity_nulhomotopic.
+- assume Hnul.
+  claim Hext :
+    exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+      (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x).
+  {
+    exact (lemma55_3_nulhomotopic_extends_to_B2
+      S1
+      S1_topology
+      (graph S1 (fun x:set => x))
+      s55_identity_S1_continuous
+      Hnul).
+  }
+  exact (s55_extension_identity_B2_S1_implies_retraction
+    Hext).
+Qed.
+
+(** S55 helper: no retraction B2->S1 iff identity on S1 is not nulhomotopic. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_iff_identity_not_nulhomotopic :
+  ~(retraction_of B2 B2_topology S1) <->
+  ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
+apply iffI.
+- assume Hnretr.
+  assume Hnul.
+  exact (Hnretr
+    (iffER
+      (retraction_of B2 B2_topology S1)
+      (nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)))
+      s55_retraction_B2_S1_iff_identity_nulhomotopic
+      Hnul)).
+- assume Hnotnul.
+  assume Hretr.
+  exact (Hnotnul
+    (iffEL
+      (retraction_of B2 B2_topology S1)
+      (nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)))
+      s55_retraction_B2_S1_iff_identity_nulhomotopic
+      Hretr)).
+Qed.
+
+(** S55 helper: recover Cor 55.4(b) from Thm 55.2 via the retraction/nulhomotopy equivalence. **)
+(** Proven Bob **)
+Theorem cor55_4b_identity_S1_not_nulhomotopic_from_thm55_2 :
+  ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
+exact (iffEL
+  (~(retraction_of B2 B2_topology S1))
+  (~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))))
+  s55_no_retraction_B2_S1_iff_identity_not_nulhomotopic
+  thm55_2_no_retraction_B2_S1).
+Qed.
+
+(** S55 helper: recover Thm 55.2 from Cor 55.4(b) via the retraction/nulhomotopy equivalence. **)
+(** Proven Bob **)
+Theorem thm55_2_no_retraction_B2_S1_from_cor55_4b :
+  ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))) ->
+  ~(retraction_of B2 B2_topology S1).
+assume Hnotnul.
+exact (iffER
+  (~(retraction_of B2 B2_topology S1))
+  (~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))))
+  s55_no_retraction_B2_S1_iff_identity_not_nulhomotopic
+  Hnotnul).
+Qed.
+
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
