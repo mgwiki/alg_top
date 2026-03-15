@@ -307577,7 +307577,55 @@ apply HG1orG2.
         (UPairI1 0 1) (UPairI2 0 1) neq_0_1 x0 Hx0_Gfam0 Hx0_Gfam1). }
     exact (HwpNeG (Hdisjoint_binary (word_product multG eG ys n) HwpG1 HwpG2)). }
   claim HexG1 : exists j:set, j :e n /\ apply_fun ys j :e G1.
-  { admit. (** From HnotAllG2 and each entry in G1 or G2 **) }
+  { (** By contradiction from HnotAllG2: not all in G2 -> some in G1 **)
+    (** Use classical logic: assume no entry in G1, then all in G2 **)
+    apply (xm (exists j:set, j :e n /\ apply_fun ys j :e G1)).
+    - assume H. exact H.
+    - assume HnoG1.
+      claim HallG2 : forall j:set, j :e n -> apply_fun ys j :e G2.
+      { let j. assume Hj.
+        claim HG1orG2_j : apply_fun ys j :e G1 \/ apply_fun ys j :e G2.
+        { (** same argument as for i **)
+          apply (reduced_word_elem (J :\/: K) Hfam efamH n ys j Hred Hj).
+          let alpha. assume Halpha_pack.
+          claim HaJK : alpha :e J :\/: K.
+          { exact (andEL (alpha :e J :\/: K) (apply_fun ys j :e apply_fun Hfam alpha)
+              (andEL (alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha)
+                (apply_fun ys j <> apply_fun efamH alpha) Halpha_pack)). }
+          claim HyjHa : apply_fun ys j :e apply_fun Hfam alpha.
+          { exact (andER (alpha :e J :\/: K) (apply_fun ys j :e apply_fun Hfam alpha)
+              (andEL (alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha)
+                (apply_fun ys j <> apply_fun efamH alpha) Halpha_pack)). }
+          apply (binunionE J K alpha HaJK).
+          + assume HaJ.
+            apply orIL.
+            claim Heq : apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha = apply_fun Hfam alpha.
+            { exact (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha HaJ). }
+            claim Hsub : subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG.
+            { exact (free_product_subfam G1 multG eG invG J
+                (graph J (fun a:set => apply_fun Hfam a))
+                (graph J (fun a:set => apply_fun efamH a)) Hfp1 alpha HaJ). }
+            claim Hsubset : apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha c= G1.
+            { exact (subgroup_of_subset (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG Hsub). }
+            exact (Hsubset (apply_fun ys j) (eq_subst_mem_set (apply_fun ys j) (apply_fun Hfam alpha) (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) HyjHa (eq_symm (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) (apply_fun Hfam alpha) Heq))).
+          + assume HaK.
+            apply orIR.
+            claim Heq : apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha = apply_fun Hfam alpha.
+            { exact (apply_fun_graph K (fun a:set => apply_fun Hfam a) alpha HaK). }
+            claim Hsub : subgroup_of (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) G2 multG eG invG.
+            { exact (free_product_subfam G2 multG eG invG K
+                (graph K (fun a:set => apply_fun Hfam a))
+                (graph K (fun a:set => apply_fun efamH a)) Hfp2 alpha HaK). }
+            claim Hsubset : apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha c= G2.
+            { exact (subgroup_of_subset (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) G2 multG eG invG Hsub). }
+            exact (Hsubset (apply_fun ys j) (eq_subst_mem_set (apply_fun ys j) (apply_fun Hfam alpha) (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) HyjHa (eq_symm (apply_fun (graph K (fun a:set => apply_fun Hfam a)) alpha) (apply_fun Hfam alpha) Heq))). }
+        apply HG1orG2_j.
+        * assume HjG1.
+          claim HexJ : exists j0:set, j0 :e n /\ apply_fun ys j0 :e G1.
+          { witness j. exact (andI (j :e n) (apply_fun ys j :e G1) Hj HjG1). }
+          exact (FalseE (HnoG1 HexJ) (apply_fun ys j :e G2)).
+        * assume HjG2. exact HjG2. }
+      exact (FalseE (HnotAllG2 HallG2) (exists j:set, j :e n /\ apply_fun ys j :e G1)). }
   claim HexG2 : exists j:set, j :e n /\ apply_fun ys j :e G2.
   { witness i. exact (andI (i :e n) (apply_fun ys i :e G2) Hi HinG2). }
   (** By cor68_6_binary_collapse_mixed_not_in_G1: wp not in G1. Contradiction. **)
