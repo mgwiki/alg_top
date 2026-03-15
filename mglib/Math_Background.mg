@@ -282666,9 +282666,12 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
                       Hxs0_0_Gal_loc Hxsk_Gal_loc).
                   + (** alpha0 != al **)
                     assume Halpha0_ne_al : alpha0 <> al.
-                    (** When first/last entries of reduced word for efam(al) are NOT in Gfam(al), **)
-                    (** the conjugation argument doesn't immediately give Gfam(al) membership. **)
-                    (** Needs conjugate_intersection_trivial or alternative approach. **)
+                    (** LIKELY UNPROVABLE under current definition: efam is unconstrained, **)
+                    (** so efam(al) can be a non-trivial element of Gfam(al) with endpoints **)
+                    (** in Gfam(alpha0) != Gfam(al). No contradiction arises. **)
+                    (** BLOCKED ON: NOTICE 1773102736 (efam=e proposal, SENT TO ADMIN). **)
+                    (** With efam=e: this case dissolves (z=eG handled by general helper, **)
+                    (** z=efam becomes z=e). **)
                     admit.
                 - (** z ≠ e **)
                   assume Hz_ne : z <> e.
@@ -282688,8 +282691,10 @@ apply (nat_inv n0 (omega_nat_p n0 Hn0_omega)).
                         Hxs0_0_Gal Hxsk_Gal).
                     + (** alpha0 != al **)
                       assume Halpha0_ne_al : alpha0 <> al.
-                      (** z = efam(alpha0), alpha0 != al. efam(alpha0) in Gfam(alpha0), efam(alpha0) != e. **)
-                      (** Would need _pre for alpha0, which is circular. **)
+                      (** LIKELY UNPROVABLE: same issue as z=eG alpha0!=al case. **)
+                      (** efam(alpha0) = z in Gfam(alpha0), but _pre for alpha0 is circular. **)
+                      (** With efam=e: z = efam(alpha0) = e contradicts Hz_ne. Trivial. **)
+                      (** BLOCKED ON: NOTICE 1773102736. **)
                       admit.
                   * (** z ne e and z ne efam(alpha0): use reduced_word_double_merge_junction **)
                     assume Hz_ne_efam : z <> apply_fun efam alpha0.
