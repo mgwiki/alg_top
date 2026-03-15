@@ -281200,7 +281200,6 @@ Qed.
 (** Then j=1 disjointness or j>=2 uniqueness gives contradiction. **)
 (** NOTE: dropped the z-hypothesis entirely compared to zeG_same_factor. **)
 (** This subsumes zeG_same_factor as a special case. **)
-(** Proven Alice **)
 Lemma efam_not_in_Gfam_pre_same_factor_general :
   forall G mult e inv J Gfam efam:set,
   free_product_of_subgroups G mult e inv J Gfam efam ->
