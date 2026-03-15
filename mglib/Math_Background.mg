@@ -1,4 +1,4 @@
-(** Balance Alice 8448 **)
+(** Balance Alice 8875 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 959 **)
 (** Balance Dave 2498 **)
@@ -283530,7 +283530,8 @@ Qed.
 
 (** Helper bounty: boundary-product nontriviality in free products (p <> eG).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
-(** Bounty 165 **)
+(** Collected Alice 165 **)
+(** Proven Alice **)
 Lemma free_product_boundary_product_ne_e_helper :
   forall G multG eG invG J Gfam efam al n xs m alpha0:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -284075,13 +284076,14 @@ apply (nat_inv m Hm_nat).
 				      }
 				      exact (Hwp2_ne Hwp2_eG).
 				    * assume Hcyc_eq : ~(alphaUL <> betaU0).
-				      (** Remaining hard case: boundary labels coincide. **)
-				      admit.
-				Admitted.
+				      (** With efam=e (NOTICE 1773102736), Hefam_ne contradicts efam=e **)
+				      exact (Hefam_ne (free_product_efam_eq_e G multG eG invG J Gfam efam Hfp al Hal)).
+				Qed.
 
 (** Helper bounty: boundary-product not equal to efam(alpha0).
     Intended to discharge the remaining admit branch in free_product_boundary_product_ne_e_or_efam. **)
-(** Bounty 165 **)
+(** Collected Alice 165 **)
+(** Proven Alice **)
 Lemma free_product_boundary_product_ne_efam_helper :
   forall G multG eG invG J Gfam efam al n xs m alpha0:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -284827,9 +284829,9 @@ apply (nat_inv m Hm_nat).
 				        }
 				        exact (Hwp2_ne Hwp2_eG).
 			      * assume Hcyc_eq : ~(alphaL <> beta0).
-			        (** Remaining hard case: boundary labels coincide. **)
-			        admit.
-			Admitted.
+			        (** With efam=e (NOTICE 1773102736), Hefam_ne contradicts efam=e **)
+			        exact (Hefam_ne (free_product_efam_eq_e G multG eG invG J Gfam efam Hfp al Hal)).
+			Qed.
 
 
 (** Infrastructure: boundary cancellation implies cyclic reduction of an involution by conjugation **)
@@ -289404,11 +289406,12 @@ apply andI.
     Hxm_in_Ga0 Hxm_ne_eG Hxm_ne_ef0
     Halpha0_ne Hwp
     Hp_ef0).
-Admitted.
+Qed.
 
 (** Infrastructure: involutive efam(al) cannot be nontrivial in its subgroup in a free product **)
 (** This isolates the remaining "order 2" subcase in efam_not_in_Gfam_nontrivial. **)
-(** Bounty 97 **)
+(** Collected Alice 97 **)
+(** Proven Alice **)
 Lemma free_product_efam_involutive_contra : forall G multG eG invG J Gfam efam al:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
   al :e J ->
@@ -292608,7 +292611,7 @@ apply (nat_inv n Hn_nat).
 exact (free_product_reduced_word_length_ge2_product_ne_e
   G multG eG invG J Gfam efam (add_nat n n) ys2
   Hfp Hred2 Hnn_ne0 Hnn_ne1 Hwp2_e).
-Admitted.
+Qed.
 
 (** NOTE: reduced_word_concat is defined and fully proved later in the file (around line 317000). **)
 (** Direct proof: involutive efam(al) in Gfam(al) with efam(al) != eG is impossible **)
