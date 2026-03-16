@@ -188489,6 +188489,25 @@ apply andI.
       HantiEq).
 Qed.
 
+(** S55 helper: the S1 antipode map is surjective as a map S1 -> S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_surjective_map :
+  surjective_map S1 S1 s55_S1_antipode_map.
+prove
+  function_on s55_S1_antipode_map S1 S1 /\
+  (forall y:set, y :e S1 ->
+    exists x:set, x :e S1 /\ apply_fun s55_S1_antipode_map x = y).
+apply andI.
+- exact (continuous_map_function_on
+    S1
+    S1_topology
+    S1
+    S1_topology
+    s55_S1_antipode_map
+    s55_S1_antipode_map_continuous).
+- exact s55_S1_antipode_map_surjective_witness.
+Qed.
+
 (** S55 helper: explicit fixed-point-free endomap witness on S1 with S1 topology. **)
 (** Proven Bob **)
 Theorem s55_exists_fixed_point_free_endomap_S1 :
