@@ -6241,3 +6241,70 @@ Admin Decision:
 Implemented by:
 
 Implementation Commit:
+
+Status:
+
+========================================================
+--------------------------------------------------------
+NOTICE ID: 1773657116
+Created: 1773657116
+Status: PROPOSED
+
+Refers to Commit:
+  a0644a9d2
+
+Target:
+  Line: 406207
+  Name: ex81_6_properly_discontinuous_criterion (Theorem)
+
+Problem:
+  Same class of bug as NOTICE 1773656677. The LaTeX (line 5216 in algtop.tex)
+  says "Let G be a GROUP of homeomorphisms of X" but the formal statement only
+  requires individual elements to be homeomorphisms plus identity membership.
+  Missing: composition closure and inverse closure of G.
+  The conclusion uses orbit_space and orbit_topology which require orbit_equiv
+  to be an equivalence relation, which in turn needs G to be closed under
+  composition (transitivity) and inverses (symmetry).
+
+Proposed Replacement:
+  Theorem ex81_6_properly_discontinuous_criterion :
+    forall X Tx G idG:set,
+    locally_compact X Tx -> Hausdorff_space X Tx ->
+    (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
+    idG :e G -> (forall x:set, x :e X -> apply_fun idG x = x) ->
+    (forall g1 g2:set, g1 :e G -> g2 :e G ->
+      exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+        apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+    (forall g0:set, g0 :e G ->
+      exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+        apply_fun ginv (apply_fun g0 z) = z) ->
+    fixed_point_free_action X G idG ->
+    (forall C:set, C c= X -> compact_space C (subspace_topology X Tx C) ->
+      finite {g :e G | image_of g C :/\: C <> Empty}) ->
+    properly_discontinuous X Tx G idG /\
+    locally_compact (orbit_space X G) (orbit_topology X Tx G) /\
+    Hausdorff_space (orbit_space X G) (orbit_topology X Tx G).
+  (Only change: add two hypotheses for composition closure and inverse closure,
+   matching the "G is a group" requirement from the textbook.)
+
+Proposed by:
+  Alice
+
+Discussion:
+  - 1773657116 | Alice: Same pattern as NOTICE 1773656677 (thm81_5). The LaTeX
+    explicitly says "G is a group of homeomorphisms." The orbit_equiv relation
+    needs composition closure for transitivity and inverse closure for symmetry.
+
+Approvals:
+  - 1773657116 | Alice: YES
+  - | Bob:
+  - | Charlie:
+  - | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
