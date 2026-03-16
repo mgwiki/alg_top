@@ -188726,6 +188726,26 @@ apply andI.
 - exact s55_S1_antipode_map_moves_basepoint.
 Qed.
 
+(** S55 helper: antipode map is not the identity graph on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_ne_id_graph :
+  s55_S1_antipode_map <> graph S1 (fun x:set => x).
+assume HfEq.
+claim HbaseEq :
+  apply_fun s55_S1_antipode_map S1_basepoint = S1_basepoint.
+{
+  rewrite HfEq.
+  rewrite (apply_fun_graph
+    S1
+    (fun x:set => x)
+    S1_basepoint
+    S1_basepoint_in_S1_early).
+  reflexivity.
+}
+exact (s55_S1_antipode_map_moves_basepoint
+  HbaseEq).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
