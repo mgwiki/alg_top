@@ -219849,14 +219849,20 @@ Lemma overlapping_chain_union_connected : forall X Tx n seq:set,
     (subspace_topology X Tx (Union {apply_fun seq k | k :e ordsucc n})).
 let X Tx n seq.
 assume Htop Hn Hconn Hovlp.
-(** By induction on n. **)
-(** Base n=0: single connected set. **)
-(** Step: union of seq[0..n] is connected (IH). **)
-(** seq[n+1] overlaps seq[n] (hence overlaps the union). **)
-(** union_connected_common_point applied to {union_0_to_n, seq[n+1]} **)
-(** with common point from the overlap seq[n] cap seq[n+1]. **)
-admit.
-Admitted.
+claim HseqFun : function_on seq (ordsucc n) (Power X).
+{
+  let k. assume Hk : k :e ordsucc n.
+  prove apply_fun seq k :e Power X.
+  exact (PowerI X (apply_fun seq k) (andEL (apply_fun seq k c= X) (connected_space (apply_fun seq k) (subspace_topology X Tx (apply_fun seq k))) (Hconn k Hk))).
+}
+claim HconnK : forall k:set, k :e ordsucc n ->
+  connected_space (apply_fun seq k) (subspace_topology X Tx (apply_fun seq k)).
+{
+  let k. assume Hk : k :e ordsucc n.
+  exact (andER (apply_fun seq k c= X) (connected_space (apply_fun seq k) (subspace_topology X Tx (apply_fun seq k))) (Hconn k Hk)).
+}
+exact (connected_union_chain X Tx n seq Htop Hn HseqFun HconnK Hovlp).
+Qed.
 
 (** Infrastructure: chain of U-type open balls in unit_interval covers a subinterval. **)
 (** Given overlapping balls 0..k all mapping f to U, their union is connected **)
