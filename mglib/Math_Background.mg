@@ -409721,6 +409721,53 @@ exact (orbit_map_eq_implies_orbit_equiv_both X G x y idG
   HidG HidAct HxX HyX HmapEq).
 Qed.
 
+(** Helper: orbit-class equality is equivalent to orbit_map equality **)
+(** Proven Bob **)
+Theorem orbit_class_eq_iff_orbit_map_eq : forall X G x y:set,
+  x :e X -> y :e X ->
+  ({z :e X | orbit_equiv X G x z} = {z :e X | orbit_equiv X G y z}
+   <->
+   apply_fun (orbit_map X G) x = apply_fun (orbit_map X G) y).
+let X G x y.
+assume HxX HyX.
+apply iffI.
+- assume HclassEq.
+  rewrite (orbit_map_apply X G x HxX).
+  rewrite (orbit_map_apply X G y HyX).
+  exact HclassEq.
+- assume HmapEq.
+  rewrite <- (orbit_map_apply X G x HxX).
+  rewrite <- (orbit_map_apply X G y HyX).
+  exact HmapEq.
+Qed.
+
+(** Helper: orbit-class equality iff mutual orbit equivalence **)
+(** Proven Bob **)
+Theorem orbit_class_eq_iff_orbit_equiv_both : forall X G idG x y:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  x :e X -> y :e X ->
+  ({z :e X | orbit_equiv X G x z} = {z :e X | orbit_equiv X G y z}
+   <->
+   orbit_equiv X G x y /\ orbit_equiv X G y x).
+let X G idG x y.
+assume HidG HidAct Hcomp Hinv HxX HyX.
+apply iffI.
+- assume HclassEq.
+  exact (orbit_class_eq_implies_orbit_equiv_both
+    X G x y idG HidG HidAct HxX HyX HclassEq).
+- assume Hboth.
+  claim Hxy : orbit_equiv X G x y.
+  { exact (andEL (orbit_equiv X G x y) (orbit_equiv X G y x) Hboth). }
+  exact (orbit_class_eq_of_orbit_equiv X G x y Hxy Hcomp Hinv).
+Qed.
+
 (** Helper: x is in its own orbit **)
 Theorem orbit_self_mem : forall X G idG x:set,
   idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
