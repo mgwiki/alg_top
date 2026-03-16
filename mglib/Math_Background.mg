@@ -188935,6 +188935,47 @@ exact (loop_at_pack_left
     HhCont)).
 Admitted.
 
+(** Basepoint image of a continuous self-map of S1 lies in S1. **)
+(** Proven Charlie **)
+Theorem continuous_S1_self_map_basepoint_in_S1 : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  apply_fun h S1_basepoint :e S1.
+let h.
+assume HhCont.
+claim Hb0S1 : S1_basepoint :e S1.
+{
+  apply (SepI
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    (1, 0)).
+  - exact (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      1
+      0
+      real_1
+      real_0).
+  - rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite (mul_SNo_oneR 1 SNo_1) at 1.
+    rewrite (mul_SNo_zeroR 0 SNo_0) at 1.
+    exact (add_SNo_0R 1 SNo_1).
+}
+exact (continuous_map_value_in_space
+  S1
+  S1_topology
+  S1
+  S1_topology
+  h
+  S1_basepoint
+  HhCont
+  Hb0S1).
+Qed.
+
 (** Early arithmetic helper: x + x = 0 forces x = 0. **)
 (** Proven Charlie **)
 Lemma SNo_double_zero_early : forall x:set, x :e R ->
@@ -197896,21 +197937,11 @@ claim HhCont :
       (minus_SNo (apply_fun h z 0), minus_SNo (apply_fun h z 1)))
     HhAnti).
 }
-claim Hb0S1 : S1_basepoint :e S1.
-{
-  exact S1_basepoint_in_S1_early.
-}
 claim Hy0S1 : apply_fun h S1_basepoint :e S1.
 {
-  exact (continuous_map_value_in_space
-    S1
-    S1_topology
-    S1
-    S1_topology
+  exact (continuous_S1_self_map_basepoint_in_S1
     h
-    S1_basepoint
-    HhCont
-    Hb0S1).
+    HhCont).
 }
 claim Hgamma0 :
   apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0 =
@@ -198347,21 +198378,11 @@ assume HhCont.
 assume Hnul.
 assume He0R.
 assume He0Start.
-claim Hb0S1 : S1_basepoint :e S1.
-{
-  exact S1_basepoint_in_S1_early.
-}
 claim Hy0S1 : apply_fun h S1_basepoint :e S1.
 {
-  exact (continuous_map_value_in_space
-    S1
-    S1_topology
-    S1
-    S1_topology
+  exact (continuous_S1_self_map_basepoint_in_S1
     h
-    S1_basepoint
-    HhCont
-    Hb0S1).
+    HhCont).
 }
 set gamma := compose_fun unit_interval covering_map_R_S1 h.
 claim HgammaLiftPack :
@@ -198503,7 +198524,7 @@ claim HhTriv :
     h
     S1_basepoint
     HhCont
-    Hb0S1
+    S1_basepoint_in_S1_early
     Hnul)
     cls0
     Hcls0Mem).
@@ -198826,15 +198847,9 @@ claim Hb0S1 : S1_basepoint :e S1.
 }
 claim Hy0S1 : apply_fun h S1_basepoint :e S1.
 {
-  exact (continuous_map_value_in_space
-    S1
-    S1_topology
-    S1
-    S1_topology
+  exact (continuous_S1_self_map_basepoint_in_S1
     h
-    S1_basepoint
-    HhCont
-    Hb0S1).
+    HhCont).
 }
 claim Hexe0 :
   exists e0:set, e0 :e R /\
