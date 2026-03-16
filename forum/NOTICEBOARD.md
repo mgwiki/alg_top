@@ -82,6 +82,61 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773628075
+Created: 1773628075
+Status: PROPOSED
+
+Refers to Commit:
+  7db9845edb0d2512af77efddc293cfbef3bf9cd7
+
+Target:
+  Line: 184558
+  Name: graph_2_if_coords_pair
+
+Problem:
+  The theorem asserts literal set equality between the graph-model object
+  `graph 2 (fun i => if i = 0 then x else y)` and the tuple-model object `(x,y)`.
+  On current `main`, `mgdeps6.pl` shows this is now the sole local root blocker under
+  `euclidean_space_2_eq_coords_pair`, and all downstream S57 representation failures reduce to it.
+  The proved facts available here are only the coordinate evaluations
+  `apply_fun (graph 2 ...) 0 = x` and `apply_fun (graph 2 ...) 1 = y`; the stronger
+  graph-equals-tuple statement is the model-identification step that is not justified by the
+  current development.
+
+Proposed Replacement:
+  Replace the theorem statement with the coordinate form already used downstream:
+  Theorem graph_2_if_coords_pair : forall x y:set,
+    apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 0 = x /\
+    apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 1 = y.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1773628075 | Charlie: PROPOSED. On commit `7db9845ed`, `mgdeps6.pl` shows `graph_2_if_coords_pair` is the sole local admitted root for `euclidean_space_2_eq_coords_pair`, and therefore for the remaining S57.2/S57.3 representation blockers. The issue is not topology; it is the unjustified graph-model versus tuple-model equality.
+
+Approvals:
+  - | Alice:
+  - | Bob:
+  - 1773628075 | Charlie: YES
+  - | Dave:
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - | APPROVED / REJECTED
+
+Implemented by:
+  Charlie
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+--------------------------------------------------------
+
 NOTICE ID: 1773621713
 Created: 1773621713
 Status: PROPOSED
