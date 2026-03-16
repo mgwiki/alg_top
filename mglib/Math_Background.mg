@@ -188421,6 +188421,74 @@ apply andI.
     HyS1).
 Qed.
 
+(** S55 helper: the S1 antipode map is a bijection of S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_bijection :
+  bijection S1 S1 s55_S1_antipode_map.
+prove
+  function_on s55_S1_antipode_map S1 S1 /\
+  (forall y:set, y :e S1 ->
+    exists x:set, x :e S1 /\
+      apply_fun s55_S1_antipode_map x = y /\
+      (forall x':set, x' :e S1 ->
+        apply_fun s55_S1_antipode_map x' = y -> x' = x)).
+apply andI.
+- exact (continuous_map_function_on
+    S1
+    S1_topology
+    S1
+    S1_topology
+    s55_S1_antipode_map
+    s55_S1_antipode_map_continuous).
+- let y.
+  assume HyS1.
+  witness (apply_fun s55_S1_antipode_map y).
+  apply andI.
+  + apply andI.
+    * rewrite (apply_fun_graph
+        S1
+        (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+        y
+        HyS1).
+      exact (s55_S1_antipode_in_S1
+        y
+        HyS1).
+    * exact (s55_S1_antipode_map_involution
+        y
+        HyS1).
+  + let x'.
+    assume Hx'S1 Hx'Eq.
+    claim HantiYinS1 :
+      apply_fun s55_S1_antipode_map y :e S1.
+    {
+      rewrite (apply_fun_graph
+        S1
+        (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+        y
+        HyS1).
+      exact (s55_S1_antipode_in_S1
+        y
+        HyS1).
+    }
+    claim HantiEq :
+      apply_fun s55_S1_antipode_map x' =
+      apply_fun s55_S1_antipode_map
+        (apply_fun s55_S1_antipode_map y).
+    {
+      rewrite Hx'Eq.
+      symmetry.
+      exact (s55_S1_antipode_map_involution
+        y
+        HyS1).
+    }
+    exact (s55_S1_antipode_map_injective
+      x'
+      (apply_fun s55_S1_antipode_map y)
+      Hx'S1
+      HantiYinS1
+      HantiEq).
+Qed.
+
 (** S55 helper: explicit fixed-point-free endomap witness on S1 with S1 topology. **)
 (** Proven Bob **)
 Theorem s55_exists_fixed_point_free_endomap_S1 :
