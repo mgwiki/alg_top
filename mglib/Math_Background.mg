@@ -141435,6 +141435,54 @@ apply iffI.
     HextIncl).
 Qed.
 
+(** S55 helper: recover Cor 55.4(a) non-nulhomotopy from Cor 55.4(b). **)
+(** Proven Bob **)
+Theorem cor55_4a_inclusion_S1_R2_not_nulhomotopic_from_cor55_4b :
+  ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)))
+  ->
+  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))).
+assume HnotnulId.
+exact (iffER
+  (~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))))
+  (~(nulhomotopic S1 S1_topology S1 S1_topology
+    (graph S1 (fun x:set => x))))
+  s55_inclusion_not_nulhomotopic_iff_identity_not_nulhomotopic
+  HnotnulId).
+Qed.
+
+(** S55 helper: recover Cor 55.4(a) no-extension from Cor 55.4(b) non-nulhomotopy. **)
+(** Proven Bob **)
+Theorem cor55_4a_inclusion_S1_R2_no_extension_B2_from_cor55_4b_not_nulhomotopic :
+  ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)))
+  ->
+  ~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+assume HnotnulId.
+exact (cor55_4a_inclusion_S1_R2_no_extension_B2_from_not_nulhomotopic
+  (cor55_4a_inclusion_S1_R2_not_nulhomotopic_from_cor55_4b
+    HnotnulId)).
+Qed.
+
+(** S55 helper: recover Cor 55.4(a) no-extension directly from Cor 55.4(b) no-extension. **)
+(** Proven Bob **)
+Theorem cor55_4a_inclusion_S1_R2_no_extension_B2_from_cor55_4b_no_extension :
+  ~(exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x))
+  ->
+  ~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)).
+assume HnoextId.
+exact (iffER
+  (~(exists k:set, continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)))
+  (~(exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun (graph S1 (fun x:set => x)) x)))
+  s55_inclusion_no_extension_B2_iff_id_no_extension_B2
+  HnoextId).
+Qed.
+
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
