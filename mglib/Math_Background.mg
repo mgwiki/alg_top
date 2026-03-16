@@ -414319,7 +414319,14 @@ witness k. apply andI.
           (** Similarly with g^{-1}: pi(S2) c= pi(S1) **)
           (** Hence W1 = W2, contradiction **)
           claim HW1eqW2 : image_of pi S1 = image_of pi S2.
-          { admit. (** requires ~80 lines of connected component + orbit argument **) }
+          {
+            (** From Hne, get common cls, then x1 :e S1, x2 :e S2 with orbit_equiv **)
+            (** Extract g :e CTG with g(x1) = x2 **)
+            (** By anchor_slice_image_eq: image_of g S1 = S2 **)
+            (** By orbit_map_image_of_action_eq: image_of pi (image_of g S1) = image_of pi S1 **)
+            (** Hence image_of pi S2 = image_of pi S1 **)
+            admit. (** TODO: extract orbit data from Hne, apply anchor_slice_image_eq + orbit_map_image_of_action_eq **)
+          }
           (** W1 = image_of pi S1 = image_of pi S2 = W2, so W1 = W2 **)
           claim Hcontra : W1 = W2.
           { exact (eq_i_tra W1 (image_of pi S1) W2
@@ -414394,8 +414401,13 @@ witness k. apply andI.
         (** 2. p|_S is a homeomorphism to V **)
         (** 3. k(pi(x)) = p(x) for x :e S **)
         (** 4. The map cls -> k(cls) on image_of pi S equals p o pi_inv on S **)
-        (** Full homeomorphism construction is ~100 lines; admitting for now **)
-        admit.
+        (** Use covering_transformation_slice_image_homeomorphism_via_factor **)
+        claim HSopen : S :e Tx. { exact (Hslices_sub_Tx S HSslice). }
+        claim Hhomeo_S : homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+          (graph S (fun x:set => apply_fun p x)).
+        { exact (Hhomeo_slices S HSslice). }
+        exact (covering_transformation_slice_image_homeomorphism_via_factor
+          X Tx B Tb p S V k Hcov HSopen Hhomeo_S Hk_fn Hk_factors).
 - exact Hk_factors.
 Admitted.
 
