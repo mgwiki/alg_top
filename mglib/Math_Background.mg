@@ -412031,6 +412031,59 @@ apply set_ext.
   + rewrite Hyx. exact HxS.
 Qed.
 
+(** Helper: orbit_map restricted to a covering slice is a bijection onto its image **)
+(** Proven Bob **)
+Theorem covering_transformation_orbit_map_slice_bijection :
+  forall X Tx B Tb p S V:set,
+  covering_map X Tx B Tb p ->
+  homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+    (graph S (fun t:set => apply_fun p t)) ->
+  S c= X ->
+  bijection
+    S
+    (image_of (orbit_map X (covering_transformation_group X Tx B Tb p)) S)
+    (graph S (fun x:set =>
+      apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x)).
+let X Tx B Tb p S V.
+assume Hcov HSHome HSsubX.
+set G := covering_transformation_group X Tx B Tb p.
+set pi := orbit_map X G.
+set fS := graph S (fun x:set => apply_fun pi x).
+prove function_on fS S (image_of pi S) /\
+  forall cls:set, cls :e image_of pi S ->
+    exists x:set, x :e S /\ apply_fun fS x = cls /\
+      (forall x':set, x' :e S -> apply_fun fS x' = cls -> x' = x).
+apply andI.
+- let x. assume HxS.
+  rewrite (apply_fun_graph S (fun x0:set => apply_fun pi x0) x HxS).
+  exact (ReplI S (fun z:set => apply_fun pi z) x HxS).
+- let cls. assume HclsIm.
+  apply (ReplE_impred S (fun z:set => apply_fun pi z) cls HclsIm).
+  let x. assume HxS HclsEq.
+  witness x.
+  apply and3I.
+  + exact HxS.
+  + rewrite (apply_fun_graph S (fun x0:set => apply_fun pi x0) x HxS).
+    exact (eq_symm cls (apply_fun pi x) HclsEq).
+  + let x'. assume Hx'S Hfx'cls.
+    claim HpiEq : apply_fun pi x' = apply_fun pi x.
+    {
+      claim HpiEq1 : apply_fun pi x' = cls.
+      {
+        exact (eq_i_tra
+          (apply_fun pi x')
+          (apply_fun fS x')
+          cls
+          (eq_symm (apply_fun fS x') (apply_fun pi x')
+            (apply_fun_graph S (fun x0:set => apply_fun pi x0) x' Hx'S))
+          Hfx'cls).
+      }
+      exact (eq_i_tra (apply_fun pi x') cls (apply_fun pi x) HpiEq1 HclsEq).
+    }
+    exact (covering_transformation_orbit_map_eq_eq_on_slice_subset
+      X Tx B Tb p S V x' x Hcov HSHome HSsubX Hx'S HxS HpiEq).
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
