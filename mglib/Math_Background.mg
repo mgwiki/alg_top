@@ -52107,29 +52107,75 @@ exact (eq_symm
 Admitted.
 
 (** Covering map helper: p(x) is on S1 **)
+Theorem covering_map_R_S1_pair_on_S1_core : forall t:set, t :e R ->
+  (apply_fun cos_real t, apply_fun sin_real t) :e S1.
+let t.
+assume HtR.
+claim HcR : apply_fun cos_real t :e R.
+{
+  exact (cos_real_function_on
+    t
+    HtR).
+}
+claim HsR : apply_fun sin_real t :e R.
+{
+  exact (sin_real_function_on
+    t
+    HtR).
+}
+claim HpairRR :
+  (apply_fun cos_real t, apply_fun sin_real t) :e setprod R R.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    (apply_fun cos_real t)
+    (apply_fun sin_real t)
+    HcR
+    HsR).
+}
+claim Hpyth :
+  add_SNo
+    (mul_SNo
+      ((apply_fun cos_real t, apply_fun sin_real t) 0)
+      ((apply_fun cos_real t, apply_fun sin_real t) 0))
+    (mul_SNo
+      ((apply_fun cos_real t, apply_fun sin_real t) 1)
+      ((apply_fun cos_real t, apply_fun sin_real t) 1))
+  = 1.
+{
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  exact (cos_sin_pythagorean
+    t
+    HtR).
+}
+exact (SepI
+  (setprod R R)
+  (fun p:set =>
+    add_SNo (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1)) = 1)
+  (apply_fun cos_real t, apply_fun sin_real t)
+  HpairRR
+  Hpyth).
+Admitted.
+
 Theorem covering_map_R_S1_on_S1 : forall x:set, x :e R ->
   apply_fun covering_map_R_S1 x :e S1.
 let x. assume HxR : x :e R.
-set cx := apply_fun cos_real (mul_SNo two_pi x).
-set sx := apply_fun sin_real (mul_SNo two_pi x).
 claim HtpxR : mul_SNo two_pi x :e R.
 { exact (real_mul_SNo two_pi two_pi_in_R x HxR). }
-claim HcxR : cx :e R. { exact (cos_real_function_on (mul_SNo two_pi x) HtpxR). }
-claim HsxR : sx :e R. { exact (sin_real_function_on (mul_SNo two_pi x) HtpxR). }
-claim Hgraph : apply_fun covering_map_R_S1 x = (cx, sx).
+claim Hgraph :
+  apply_fun covering_map_R_S1 x =
+  (apply_fun cos_real (mul_SNo two_pi x),
+   apply_fun sin_real (mul_SNo two_pi x)).
 { exact (apply_fun_graph R
     (fun t:set => (apply_fun cos_real (mul_SNo two_pi t), apply_fun sin_real (mul_SNo two_pi t)))
     x HxR). }
 rewrite Hgraph.
-claim HpairRR : (cx, sx) :e setprod R R.
-{ exact (tuple_2_setprod_by_pair_Sigma R R cx sx HcxR HsxR). }
-claim Hpyth : add_SNo (mul_SNo ((cx, sx) 0) ((cx, sx) 0))
-                       (mul_SNo ((cx, sx) 1) ((cx, sx) 1)) = 1.
-{ rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
-  exact (cos_sin_pythagorean (mul_SNo two_pi x) HtpxR). }
-exact (SepI (setprod R R)
-  (fun p:set => add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1)
-  (cx, sx) HpairRR Hpyth).
+exact (covering_map_R_S1_pair_on_S1_core
+  (mul_SNo two_pi x)
+  HtpxR).
 Admitted.
 
 (** Covering map helper: p is a function from R to S1 **)
