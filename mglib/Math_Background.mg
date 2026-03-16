@@ -409139,6 +409139,97 @@ let X G x. assume HxX.
 exact (apply_fun_graph X (fun z:set => {y :e X | orbit_equiv X G z y}) x HxX).
 Qed.
 
+(** Helper: each orbit_map value is in orbit_space (no action-closure assumptions needed) **)
+(** Proven Bob **)
+Theorem orbit_map_value_in_orbit_space : forall X G x:set,
+  x :e X ->
+  apply_fun (orbit_map X G) x :e orbit_space X G.
+let X G x.
+assume HxX.
+rewrite (orbit_map_apply X G x HxX).
+prove {y :e X | orbit_equiv X G x y} :e orbit_space X G.
+prove {y :e X | orbit_equiv X G x y} :e
+  {cls :e Power X | exists z:set, z :e X /\ cls = {y :e X | orbit_equiv X G z y}}.
+apply SepI.
+- prove {y :e X | orbit_equiv X G x y} :e Power X.
+  apply PowerI.
+  let y. assume Hy.
+  exact (SepE1 X (fun z:set => orbit_equiv X G x z) y Hy).
+- prove exists z:set, z :e X /\ {y :e X | orbit_equiv X G x y} = {y :e X | orbit_equiv X G z y}.
+  witness x.
+  apply andI.
+  + exact HxX.
+  + reflexivity.
+Qed.
+
+(** Helper: orbit_space membership is equivalent to having an orbit_map representative **)
+(** Proven Bob **)
+Theorem orbit_space_member_iff_orbit_map_value : forall X G cls:set,
+  (cls :e orbit_space X G <->
+   exists x:set, x :e X /\ apply_fun (orbit_map X G) x = cls).
+let X G cls.
+apply iffI.
+- assume HclsOS.
+  claim Hpack : exists z:set, z :e X /\ cls = {y :e X | orbit_equiv X G z y}.
+  {
+    exact (SepE2
+      (Power X)
+      (fun c:set => exists z:set, z :e X /\ c = {y :e X | orbit_equiv X G z y})
+      cls
+      HclsOS).
+  }
+  apply Hpack.
+  let z. assume HzPack.
+  claim HzX : z :e X.
+  { exact (andEL (z :e X) (cls = {y :e X | orbit_equiv X G z y}) HzPack). }
+  claim HclsEq : cls = {y :e X | orbit_equiv X G z y}.
+  { exact (andER (z :e X) (cls = {y :e X | orbit_equiv X G z y}) HzPack). }
+  witness z.
+  apply andI.
+  * exact HzX.
+  * transitivity ({y :e X | orbit_equiv X G z y}).
+    { exact (orbit_map_apply X G z HzX). }
+    { exact (eq_symm cls {y :e X | orbit_equiv X G z y} HclsEq). }
+- assume Hrep.
+  apply Hrep.
+  let x. assume HxPack.
+  claim HxX : x :e X.
+  { exact (andEL (x :e X) (apply_fun (orbit_map X G) x = cls) HxPack). }
+  claim HmapEq : apply_fun (orbit_map X G) x = cls.
+  { exact (andER (x :e X) (apply_fun (orbit_map X G) x = cls) HxPack). }
+  rewrite <- HmapEq.
+  exact (orbit_map_value_in_orbit_space X G x HxX).
+Qed.
+
+(** Helper: orbit_map is function_on without extra assumptions on G **)
+(** Proven Bob **)
+Theorem orbit_map_function_on_plain : forall X G:set,
+  function_on (orbit_map X G) X (orbit_space X G).
+let X G.
+apply (graph_function_on X (orbit_space X G) (fun x:set => {y :e X | orbit_equiv X G x y})).
+let x. assume HxX.
+exact ((orbit_map_apply X G x HxX)
+  (fun v _ => v :e orbit_space X G)
+  (orbit_map_value_in_orbit_space X G x HxX)).
+Qed.
+
+(** Helper: orbit_map is surjective onto orbit_space without extra assumptions on G **)
+(** Proven Bob **)
+Theorem orbit_map_surjective_plain : forall X G:set,
+  surjective_map X (orbit_space X G) (orbit_map X G).
+let X G.
+prove function_on (orbit_map X G) X (orbit_space X G) /\
+  (forall cls:set, cls :e orbit_space X G -> exists x:set, x :e X /\ apply_fun (orbit_map X G) x = cls).
+apply andI.
+- exact (orbit_map_function_on_plain X G).
+- let cls. assume HclsOS.
+  exact ((iffEL
+    (cls :e orbit_space X G)
+    (exists x:set, x :e X /\ apply_fun (orbit_map X G) x = cls)
+    (orbit_space_member_iff_orbit_map_value X G cls))
+    HclsOS).
+Qed.
+
 (** Helper: orbit map is function_on **)
 Theorem orbit_map_function_on : forall X G:set,
   (forall g:set, g :e G -> function_on g X X) ->
