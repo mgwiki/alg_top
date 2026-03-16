@@ -189988,6 +189988,99 @@ apply andI.
       HimgEq).
 Qed.
 
+(** S55 helper: inverse-graph map of antipode is involutive on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_involution : forall x:set,
+  x :e S1 ->
+  apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1)
+    (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x)
+  =
+  x.
+let x.
+assume HxS1.
+claim HinvxS1 :
+  apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x :e S1.
+{
+  exact (continuous_map_value_in_space
+    S1
+    S1_topology
+    S1
+    S1_topology
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    x
+    s55_S1_inv_fun_graph_continuous
+    HxS1).
+}
+rewrite (s55_S1_antipode_map_inv_fun_graph_apply_eq
+  (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x)
+  HinvxS1).
+rewrite (s55_S1_antipode_map_inv_fun_graph_apply_eq
+  x
+  HxS1).
+exact (s55_S1_antipode_map_involution
+  x
+  HxS1).
+Qed.
+
+(** S55 helper: inverse-graph map composed with itself is identity graph on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_compose_self_eq_id_graph :
+  compose_fun
+    S1
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+  =
+  graph S1 (fun x:set => x).
+claim HinvFun :
+  function_on (inv_fun_graph S1 s55_S1_antipode_map S1) S1 S1.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    S1
+    S1_topology
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    s55_S1_inv_fun_graph_continuous).
+}
+apply (total_function_space_extensional
+  S1
+  S1
+  (compose_fun
+    S1
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    (inv_fun_graph S1 s55_S1_antipode_map S1))
+  (graph S1 (fun x:set => x))).
+- exact (compose_fun_in_total_function_space
+    S1
+    S1
+    S1
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    HinvFun
+    HinvFun).
+- exact (graph_in_total_function_space
+    S1
+    S1
+    (fun x:set => x)
+    (fun x Hx => Hx)).
+- let x.
+  assume HxS1.
+  rewrite (compose_fun_apply
+    S1
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    x
+    HxS1).
+  rewrite (apply_fun_graph
+    S1
+    (fun z:set => z)
+    x
+    HxS1).
+  exact (s55_S1_inv_fun_graph_involution
+    x
+    HxS1).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
