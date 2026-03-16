@@ -412187,6 +412187,97 @@ rewrite HimgEq.
 exact HimgInt_open.
 Qed.
 
+(** Helper: restricted orbit_map graph on a covering slice is an open_map to its image **)
+(** Proven Bob **)
+Theorem covering_transformation_orbit_map_slice_open_map :
+  forall X Tx B Tb p S:set,
+  covering_map X Tx B Tb p ->
+  S :e Tx ->
+  open_map
+    S
+    (subspace_topology X Tx S)
+    (image_of (orbit_map X (covering_transformation_group X Tx B Tb p)) S)
+    (subspace_topology
+      (orbit_space X (covering_transformation_group X Tx B Tb p))
+      (orbit_topology X Tx (covering_transformation_group X Tx B Tb p))
+      (image_of (orbit_map X (covering_transformation_group X Tx B Tb p)) S))
+    (graph S (fun x:set =>
+      apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x)).
+let X Tx B Tb p S.
+assume Hcov HSopen.
+set G := covering_transformation_group X Tx B Tb p.
+set pi := orbit_map X G.
+set OS := orbit_space X G.
+set OT := orbit_topology X Tx G.
+set fS := graph S (fun x:set => apply_fun pi x).
+claim HtopX : topology_on X Tx.
+{ exact (covering_map_topology_on_domain X Tx B Tb p Hcov). }
+claim HSsubX : S c= X.
+{ exact (topology_elem_subset X Tx S HtopX HSopen). }
+claim Hfn : forall h:set, h :e G -> function_on h X X.
+{
+  let h. assume HhG.
+  exact (covering_transformation_group_function_on X Tx B Tb p h HhG).
+}
+claim HtopOS : topology_on OS OT.
+{ exact (orbit_topology_is_topology X Tx G HtopX Hfn). }
+claim Hpi_fn : function_on pi X OS.
+{ exact (orbit_map_function_on X G Hfn). }
+claim HimgS_sub_OS : image_of pi S c= OS.
+{ exact (image_of_sub_codomain pi X OS S Hpi_fn HSsubX). }
+claim HtopDom : topology_on S (subspace_topology X Tx S).
+{ exact (subspace_topology_is_topology X Tx S HtopX HSsubX). }
+claim HtopCod : topology_on (image_of pi S) (subspace_topology OS OT (image_of pi S)).
+{ exact (subspace_topology_is_topology OS OT (image_of pi S) HtopOS HimgS_sub_OS). }
+prove
+  topology_on S (subspace_topology X Tx S) /\
+  topology_on (image_of pi S) (subspace_topology OS OT (image_of pi S)) /\
+  function_on fS S (image_of pi S) /\
+  (forall U0:set, U0 :e subspace_topology X Tx S ->
+    image_of fS U0 :e subspace_topology OS OT (image_of pi S)).
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact HtopDom.
+    * exact HtopCod.
+  + let x. assume HxS.
+    rewrite (apply_fun_graph S (fun x0:set => apply_fun pi x0) x HxS).
+    exact (ReplI S (fun z:set => apply_fun pi z) x HxS).
+- let U0. assume HU0sub.
+  claim HU0pow : U0 :e Power S.
+  {
+    exact (SepE1 (Power S)
+      (fun U1:set => exists V0:set, V0 :e Tx /\ U1 = V0 :/\: S)
+      U0
+      HU0sub).
+  }
+  claim HU0subS : U0 c= S.
+  { exact (PowerE S U0 HU0pow). }
+  claim HimEq : image_of fS U0 = image_of pi U0.
+  {
+    apply set_ext.
+    - let y. assume Hy.
+      apply (ReplE_impred U0 (fun x0:set => apply_fun fS x0) y Hy).
+      let x0. assume Hx0U0 Hyeq.
+      claim Hx0S : x0 :e S.
+      { exact (HU0subS x0 Hx0U0). }
+      rewrite Hyeq.
+      rewrite (apply_fun_graph S (fun x1:set => apply_fun pi x1) x0 Hx0S).
+      exact (ReplI U0 (fun x1:set => apply_fun pi x1) x0 Hx0U0).
+    - let y. assume Hy.
+      apply (ReplE_impred U0 (fun x0:set => apply_fun pi x0) y Hy).
+      let x0. assume Hx0U0 Hyeq.
+      claim Hx0S : x0 :e S.
+      { exact (HU0subS x0 Hx0U0). }
+      rewrite Hyeq.
+      rewrite <- (apply_fun_graph S (fun x1:set => apply_fun pi x1) x0 Hx0S).
+      exact (ReplI U0 (fun x1:set => apply_fun fS x1) x0 Hx0U0).
+  }
+  rewrite HimEq.
+  exact (covering_transformation_orbit_map_slice_image_open_in_subspace
+    X Tx B Tb p S U0 Hcov HSopen HU0sub).
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
