@@ -219741,6 +219741,50 @@ claim Hg_wd :
 exact (word_data_of_loop_eq_class X Tx U V x0 f g Htop HU HV Hx0UV HfLoop HgLoop Hclass_eq Hg_wd).
 Qed.
 
+(** Infrastructure: overlapping chain of connected sets has connected union. **)
+(** Used to bridge ball chain data to interval coverage for S59. **)
+Lemma overlapping_chain_union_connected : forall X Tx n seq:set,
+  topology_on X Tx ->
+  n :e omega ->
+  (forall k:set, k :e ordsucc n ->
+    apply_fun seq k c= X /\
+    connected_space (apply_fun seq k) (subspace_topology X Tx (apply_fun seq k))) ->
+  (forall k:set, k :e n ->
+    apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty) ->
+  connected_space
+    (Union {apply_fun seq k | k :e ordsucc n})
+    (subspace_topology X Tx (Union {apply_fun seq k | k :e ordsucc n})).
+let X Tx n seq.
+assume Htop Hn Hconn Hovlp.
+(** By induction on n. **)
+(** Base n=0: single connected set. **)
+(** Step: union of seq[0..n] is connected (IH). **)
+(** seq[n+1] overlaps seq[n] (hence overlaps the union). **)
+(** union_connected_common_point applied to {union_0_to_n, seq[n+1]} **)
+(** with common point from the overlap seq[n] cap seq[n+1]. **)
+admit.
+Admitted.
+
+(** Infrastructure: chain of U-type open balls in unit_interval covers a subinterval. **)
+(** Given overlapping balls 0..k all mapping f to U, their union is connected **)
+(** and contains 0 (from ball 0). By connected_subsets_real_are_intervals, **)
+(** the union contains [0, s] for any s in the union. **)
+(** Combined with a transition point s in ball k cap ball k+1, **)
+(** all of [0, s] is in the U-type union, so f maps [0, s] to U. **)
+Lemma ball_chain_prefix_covers_interval : forall r n seq k s:set,
+  r :e R -> Rlt 0 r ->
+  n :e omega ->
+  function_on seq (ordsucc n) {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} ->
+  (forall j:set, j :e n -> apply_fun seq j :/\: apply_fun seq (ordsucc j) <> Empty) ->
+  0 :e apply_fun seq 0 ->
+  k :e n ->
+  s :e apply_fun seq k ->
+  s :e apply_fun seq (ordsucc k) ->
+  forall t:set, t :e unit_interval -> Rle t s ->
+    exists j:set, j :e ordsucc k /\ t :e apply_fun seq j.
+admit.
+Admitted.
+
 (** Infrastructure: mixed case for ball_cover_word_construction (to be completed). **)
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
@@ -219914,12 +219958,14 @@ claim Htransition_exists :
   (** A point s in their overlap satisfies f(s) :e U cap V (from **)
   (** Htransition_UV or Htransition_VU above). **)
   (** **)
-  (** However, the monotone Rle hypotheses required by **)
-  (** loop_class_split_at_transition (which is already Qed) are **)
-  (** incompatible with the ball chain structure. The ball chain gives **)
-  (** pointwise coverage, not the interval-monotone coverage that **)
-  (** loop_class_split_at_transition demands. A different helper lemma **)
-  (** that works directly with ball chain data is needed. **)
+  (** Use ball_chain_prefix_covers_interval to bridge ball chain **)
+  (** to interval coverage: each t <= s is in some U-type ball, **)
+  (** and each t >= s is in some V-type ball. **)
+  (** The first transition k gives the transition point s. **)
+  (** Balls 0..k are U-type, ball k+1 is V-type. **)
+  (** s :e ball k cap ball k+1 gives f(s) :e U cap V. **)
+  (** ball_chain_prefix_covers_interval gives [0,s] in U-type balls. **)
+  (** Symmetric argument gives [s,1] in V-type balls. **)
   admit. }
 apply Htransition_exists. let s_trans. assume Hs_pack.
 apply (and6E
