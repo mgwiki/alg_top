@@ -188114,6 +188114,59 @@ rewrite covering_map_R_S1_at_1_basepoint.
 reflexivity.
 Admitted.
 
+Theorem covering_map_R_S1_compose_loop_data : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  continuous_map unit_interval unit_interval_topology S1 S1_topology
+    (compose_fun unit_interval covering_map_R_S1 h) /\
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0 =
+    apply_fun h S1_basepoint /\
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) 1 =
+    apply_fun h S1_basepoint.
+let h.
+assume HhCont.
+set gamma := compose_fun unit_interval covering_map_R_S1 h.
+claim HgammaCont :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology gamma.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    S1
+    S1_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    h
+    covering_map_R_S1_continuous_on_unit_interval
+    HhCont).
+}
+claim Hgamma0 :
+  apply_fun gamma 0 = apply_fun h S1_basepoint.
+{
+  exact (covering_map_R_S1_compose_at_0_basepoint
+    h
+    HhCont).
+}
+claim Hgamma1 :
+  apply_fun gamma 1 = apply_fun h S1_basepoint.
+{
+  exact (covering_map_R_S1_compose_at_1_basepoint
+    h
+    HhCont).
+}
+exact (andI
+  (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+   apply_fun gamma 0 = apply_fun h S1_basepoint)
+  (apply_fun gamma 1 = apply_fun h S1_basepoint)
+  (andI
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
+    (apply_fun gamma 0 = apply_fun h S1_basepoint)
+    HgammaCont
+    Hgamma0
+    )
+  Hgamma1).
+Admitted.
+
 Theorem covering_map_R_S1_loop_at_basepoint :
   loop_at S1 S1_topology S1_basepoint covering_map_R_S1.
 apply (loop_at_fold
@@ -192381,37 +192434,38 @@ claim Hy0S1 : apply_fun h S1_basepoint :e S1.
     Hb0S1).
 }
 set gamma := compose_fun unit_interval covering_map_R_S1 h.
-claim Hcover0 :
-  apply_fun covering_map_R_S1 0 = S1_basepoint.
+claim HgammaPack :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+  apply_fun gamma 0 = apply_fun h S1_basepoint /\
+  apply_fun gamma 1 = apply_fun h S1_basepoint.
 {
-  exact covering_map_R_S1_at_0_basepoint.
+  exact (covering_map_R_S1_compose_loop_data
+    h
+    HhCont).
 }
 claim HgammaCont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology gamma.
 {
-  exact (composition_continuous
-    unit_interval
-    unit_interval_topology
-    S1
-    S1_topology
-    S1
-    S1_topology
-    covering_map_R_S1
-    h
-    covering_map_R_S1_continuous_on_unit_interval
-    HhCont).
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
+    (apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+       apply_fun gamma 0 = apply_fun h S1_basepoint)
+      (apply_fun gamma 1 = apply_fun h S1_basepoint)
+      HgammaPack)).
 }
 claim Hgamma0 :
   apply_fun gamma 0 = apply_fun h S1_basepoint.
 {
-  rewrite (compose_fun_apply
-    unit_interval
-    covering_map_R_S1
-    h
-    0
-    zero_in_unit_interval).
-  rewrite Hcover0.
-  reflexivity.
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
+    (apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+       apply_fun gamma 0 = apply_fun h S1_basepoint)
+      (apply_fun gamma 1 = apply_fun h S1_basepoint)
+      HgammaPack)).
 }
 claim HgammaHalf :
   apply_fun gamma (eps_ 1) =
@@ -192671,34 +192725,47 @@ claim Hcover1 :
 {
   exact covering_map_R_S1_at_1_basepoint.
 }
+claim HgammaPack :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+  apply_fun gamma 0 = apply_fun h S1_basepoint /\
+  apply_fun gamma 1 = apply_fun h S1_basepoint.
+{
+  exact (covering_map_R_S1_compose_loop_data
+    h
+    HhCont).
+}
 claim HgammaCont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology gamma.
 {
-  exact (composition_continuous
-    unit_interval
-    unit_interval_topology
-    S1
-    S1_topology
-    S1
-    S1_topology
-    covering_map_R_S1
-    h
-    covering_map_R_S1_continuous_on_unit_interval
-    HhCont).
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
+    (apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+       apply_fun gamma 0 = apply_fun h S1_basepoint)
+      (apply_fun gamma 1 = apply_fun h S1_basepoint)
+      HgammaPack)).
 }
 claim Hgamma0 :
   apply_fun gamma 0 = apply_fun h S1_basepoint.
 {
-  exact (covering_map_R_S1_compose_at_0_basepoint
-    h
-    HhCont).
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
+    (apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+       apply_fun gamma 0 = apply_fun h S1_basepoint)
+      (apply_fun gamma 1 = apply_fun h S1_basepoint)
+      HgammaPack)).
 }
 claim Hgamma1 :
   apply_fun gamma 1 = apply_fun h S1_basepoint.
 {
-  exact (covering_map_R_S1_compose_at_1_basepoint
-    h
-    HhCont).
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+     apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (apply_fun gamma 1 = apply_fun h S1_basepoint)
+    HgammaPack).
 }
 set pI := graphify_on unit_interval covering_map_R_S1.
 claim HpIfs : pI :e function_space unit_interval S1.
@@ -193156,44 +193223,47 @@ claim He0Start :
     He0Pack).
 }
 set gamma := compose_fun unit_interval covering_map_R_S1 h.
-claim Hcover0 :
-  apply_fun covering_map_R_S1 0 = S1_basepoint.
+claim HgammaPack :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+  apply_fun gamma 0 = apply_fun h S1_basepoint /\
+  apply_fun gamma 1 = apply_fun h S1_basepoint.
 {
-  exact covering_map_R_S1_at_0_basepoint.
-}
-claim Hcover1 :
-  apply_fun covering_map_R_S1 1 = S1_basepoint.
-{
-  exact covering_map_R_S1_at_1_basepoint.
+  exact (covering_map_R_S1_compose_loop_data
+    h
+    HhCont).
 }
 claim HgammaCont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology gamma.
 {
-  exact (composition_continuous
-    unit_interval
-    unit_interval_topology
-    S1
-    S1_topology
-    S1
-    S1_topology
-    covering_map_R_S1
-    h
-    covering_map_R_S1_continuous_on_unit_interval
-    HhCont).
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
+    (apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+       apply_fun gamma 0 = apply_fun h S1_basepoint)
+      (apply_fun gamma 1 = apply_fun h S1_basepoint)
+      HgammaPack)).
 }
 claim Hgamma0 :
   apply_fun gamma 0 = apply_fun h S1_basepoint.
 {
-  exact (covering_map_R_S1_compose_at_0_basepoint
-    h
-    HhCont).
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
+    (apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+       apply_fun gamma 0 = apply_fun h S1_basepoint)
+      (apply_fun gamma 1 = apply_fun h S1_basepoint)
+      HgammaPack)).
 }
 claim Hgamma1 :
   apply_fun gamma 1 = apply_fun h S1_basepoint.
 {
-  exact (covering_map_R_S1_compose_at_1_basepoint
-    h
-    HhCont).
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+     apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (apply_fun gamma 1 = apply_fun h S1_basepoint)
+    HgammaPack).
 }
 claim HgammaLoop :
   loop_at S1 S1_topology (apply_fun h S1_basepoint) gamma.
