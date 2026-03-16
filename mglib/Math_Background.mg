@@ -186913,6 +186913,43 @@ Admitted.
 (** S57 helper: if one real shift sends one point of the cover to its antipode,
     then the same shift sends every point to its antipode.
     This remains admitted because it depends on the incomplete trig layer. **)
+Theorem covering_map_R_S1_antipode_shift_phase_core :
+  forall a d:set,
+    a :e R ->
+    d :e R ->
+    ~(apply_fun cos_real (mul_SNo two_pi a) = 0) ->
+    ~(apply_fun sin_real (mul_SNo two_pi a) = 0) ->
+    add_SNo
+      (mul_SNo
+        (apply_fun cos_real (mul_SNo two_pi a))
+        (apply_fun cos_real (mul_SNo two_pi d)))
+      (minus_SNo
+        (mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (apply_fun sin_real (mul_SNo two_pi d))))
+    =
+    minus_SNo (apply_fun cos_real (mul_SNo two_pi a)) ->
+    add_SNo
+      (mul_SNo
+        (apply_fun sin_real (mul_SNo two_pi a))
+        (apply_fun cos_real (mul_SNo two_pi d)))
+      (mul_SNo
+        (apply_fun cos_real (mul_SNo two_pi a))
+        (apply_fun sin_real (mul_SNo two_pi d)))
+    =
+    minus_SNo (apply_fun sin_real (mul_SNo two_pi a)) ->
+    apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1 /\
+    apply_fun sin_real (mul_SNo two_pi d) = 0.
+let a d.
+assume HaR.
+assume HdR.
+assume HcaNe0.
+assume HsaNe0.
+assume HantiExpand0.
+assume HantiExpand1.
+admit.
+Admitted.
+
 Theorem covering_map_R_S1_antipode_shift_from_one_point :
   forall x a d:set,
     x :e R ->
@@ -187292,7 +187329,17 @@ claim HbothNonzeroPhase :
   apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1 /\
   apply_fun sin_real (mul_SNo two_pi d) = 0.
 {
-  admit.
+  assume HcaNe0.
+  assume HsaNe0.
+  exact (covering_map_R_S1_antipode_shift_phase_core
+    a
+    d
+    HaR
+    HdR
+    HcaNe0
+    HsaNe0
+    HantiExpand0
+    HantiExpand1).
 }
 claim HcosD :
   apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1.
