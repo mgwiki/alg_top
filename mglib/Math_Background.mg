@@ -188670,6 +188670,29 @@ apply andI.
     HMidRHS).
 Qed.
 
+(** S55 helper: applying the antipode map to the antipode of a circle point returns the point. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_of_antipode_eq_self : forall z:set,
+  z :e S1 ->
+  apply_fun s55_S1_antipode_map (minus_SNo (z 0), minus_SNo (z 1)) = z.
+let z.
+assume HzS1.
+claim HzAntiEq :
+  apply_fun s55_S1_antipode_map z =
+  (minus_SNo (z 0), minus_SNo (z 1)).
+{
+  exact (apply_fun_graph
+    S1
+    (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+    z
+    HzS1).
+}
+rewrite <- HzAntiEq.
+exact (s55_S1_antipode_map_involution
+  z
+  HzS1).
+Qed.
+
 (** S55 helper: explicit fixed-point-free endomap witness on S1 with S1 topology. **)
 (** Proven Bob **)
 Theorem s55_exists_fixed_point_free_endomap_S1 :
