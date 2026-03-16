@@ -190081,6 +190081,127 @@ apply (total_function_space_extensional
     HxS1).
 Qed.
 
+(** S55 helper: inverse-graph map of antipode is antipode-preserving in the S57 sense. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_antipode_preserving :
+  antipode_preserving_S1 (inv_fun_graph S1 s55_S1_antipode_map S1).
+prove
+  continuous_map S1 S1_topology S1 S1_topology
+    (inv_fun_graph S1 s55_S1_antipode_map S1) /\
+  (forall z:set, z :e S1 ->
+    apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1)
+      (minus_SNo (z 0), minus_SNo (z 1))
+    =
+    (minus_SNo (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) z 0),
+     minus_SNo (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) z 1))).
+apply andI.
+- exact s55_S1_inv_fun_graph_continuous.
+- claim HantiPres :
+    forall z:set, z :e S1 ->
+      apply_fun s55_S1_antipode_map (minus_SNo (z 0), minus_SNo (z 1))
+      =
+      (minus_SNo (apply_fun s55_S1_antipode_map z 0),
+       minus_SNo (apply_fun s55_S1_antipode_map z 1)).
+  {
+    exact (andER
+      (continuous_map S1 S1_topology S1 S1_topology s55_S1_antipode_map)
+      (forall z:set, z :e S1 ->
+        apply_fun s55_S1_antipode_map (minus_SNo (z 0), minus_SNo (z 1))
+        =
+        (minus_SNo (apply_fun s55_S1_antipode_map z 0),
+         minus_SNo (apply_fun s55_S1_antipode_map z 1)))
+      s55_S1_antipode_map_antipode_preserving).
+  }
+  let z.
+  assume HzS1.
+  claim HminusS1 : (minus_SNo (z 0), minus_SNo (z 1)) :e S1.
+  {
+    exact (s55_S1_antipode_in_S1
+      z
+      HzS1).
+  }
+  claim HinvAtMinus :
+    apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1)
+      (minus_SNo (z 0), minus_SNo (z 1))
+    =
+    apply_fun s55_S1_antipode_map
+      (minus_SNo (z 0), minus_SNo (z 1)).
+  {
+    exact (s55_S1_antipode_map_inv_fun_graph_apply_eq
+      (minus_SNo (z 0), minus_SNo (z 1))
+      HminusS1).
+  }
+  claim HinvAtZ :
+    apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) z
+    =
+    apply_fun s55_S1_antipode_map z.
+  {
+    exact (s55_S1_antipode_map_inv_fun_graph_apply_eq
+      z
+      HzS1).
+  }
+  claim HrhsEq :
+    (minus_SNo (apply_fun s55_S1_antipode_map z 0),
+     minus_SNo (apply_fun s55_S1_antipode_map z 1))
+    =
+    (minus_SNo (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) z 0),
+     minus_SNo (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) z 1)).
+  {
+    rewrite HinvAtZ.
+    reflexivity.
+  }
+  exact (eq_i_tra
+    (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1)
+      (minus_SNo (z 0), minus_SNo (z 1)))
+    (apply_fun s55_S1_antipode_map
+      (minus_SNo (z 0), minus_SNo (z 1)))
+    (minus_SNo (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) z 0),
+     minus_SNo (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) z 1))
+    HinvAtMinus
+    (eq_i_tra
+      (apply_fun s55_S1_antipode_map
+        (minus_SNo (z 0), minus_SNo (z 1)))
+      (minus_SNo (apply_fun s55_S1_antipode_map z 0),
+       minus_SNo (apply_fun s55_S1_antipode_map z 1))
+      (minus_SNo (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) z 0),
+       minus_SNo (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) z 1))
+      (HantiPres
+        z
+        HzS1)
+      HrhsEq)).
+Qed.
+
+(** S55 helper: inverse-graph map sends antipode of a circle point back to the point. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_of_antipode_eq_self : forall z:set,
+  z :e S1 ->
+  apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1)
+    (minus_SNo (z 0), minus_SNo (z 1))
+  =
+  z.
+let z.
+assume HzS1.
+claim HminusS1 :
+  (minus_SNo (z 0), minus_SNo (z 1)) :e S1.
+{
+  exact (s55_S1_antipode_in_S1
+    z
+    HzS1).
+}
+exact (eq_i_tra
+  (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1)
+    (minus_SNo (z 0), minus_SNo (z 1)))
+  (apply_fun s55_S1_antipode_map
+    (minus_SNo (z 0), minus_SNo (z 1)))
+  z
+  (s55_S1_antipode_map_inv_fun_graph_apply_eq
+    (minus_SNo (z 0), minus_SNo (z 1))
+    HminusS1)
+  (s55_S1_antipode_map_of_antipode_eq_self
+    z
+    HzS1)).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
