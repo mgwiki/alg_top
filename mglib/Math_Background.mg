@@ -192174,6 +192174,29 @@ apply andI.
       Hpack)).
 Qed.
 
+(** S55 helper: there exists a fixed-point-free antipode-preserving self-homeomorphism of S1 with an explicit moved point witness. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_moved_point_antipode_preserving_homeomorphism_S1 :
+  exists f:set,
+    (((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x).
+apply s55_exists_fixed_point_free_antipode_preserving_homeomorphism_S1.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- exact Hpack.
+- exact (s55_fixed_point_free_on_S1_implies_exists_moved_point
+    f
+    (andER
+      (antipode_preserving_S1 f /\
+        homeomorphism S1 S1_topology S1 S1_topology f)
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+      Hpack)).
+Qed.
+
 (** S55 helper: there exists a fixed-point-free nonconstant self-homeomorphism of S1 with an explicit moved point witness. **)
 (** Proven Bob **)
 Theorem s55_exists_fixed_point_free_nonconstant_moved_point_homeomorphism_S1 :
@@ -192374,6 +192397,104 @@ apply andI.
         (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
       (exists x:set, x :e S1 /\ apply_fun f x <> x)
       Hpack)).
+Qed.
+
+(** S55 helper: fixed-point-free moved-point antipode-preserving S1-homeomorphism existence implies non-identity fixed-point-free antipode-preserving S1-homeomorphism existence. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_moved_point_antipode_preserving_homeomorphism_S1_implies_exists_nonidentity_fixed_point_free_antipode_preserving_homeomorphism_S1 :
+  (exists f:set,
+    (((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x))
+  ->
+  exists f:set,
+    (((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    f <> graph S1 (fun x:set => x)).
+assume Hexists.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- exact (andEL
+    ((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+    (exists x:set, x :e S1 /\ apply_fun f x <> x)
+    Hpack).
+- exact (s55_moved_point_witness_implies_nonidentity_graph_S1
+    f
+    (andER
+      ((antipode_preserving_S1 f /\
+        homeomorphism S1 S1_topology S1 S1_topology f) /\
+        (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+      (exists x:set, x :e S1 /\ apply_fun f x <> x)
+      Hpack)).
+Qed.
+
+(** S55 helper: fixed-point-free moved-point S1-homeomorphism existence implies no retraction B2 -> S1. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_moved_point_homeomorphism_S1_implies_no_retraction_B2_S1 :
+  (exists f:set,
+    (homeomorphism S1 S1_topology S1 S1_topology f /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x)
+  ->
+  ~(retraction_of B2 B2_topology S1).
+assume Hexists.
+apply s55_exists_fixed_point_free_homeomorphism_S1_implies_no_retraction_B2_S1.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+exact (andEL
+  (homeomorphism S1 S1_topology S1 S1_topology f /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+  (exists x:set, x :e S1 /\ apply_fun f x <> x)
+  Hpack).
+Qed.
+
+(** S55 helper: the explicit fixed-point-free moved-point S1-homeomorphism witness yields no retraction B2 -> S1. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_from_fixed_point_free_moved_point_homeomorphism :
+  ~(retraction_of B2 B2_topology S1).
+exact (s55_exists_fixed_point_free_moved_point_homeomorphism_S1_implies_no_retraction_B2_S1
+  s55_exists_fixed_point_free_moved_point_homeomorphism_S1).
+Qed.
+
+(** S55 helper: fixed-point-free moved-point antipode-preserving S1-homeomorphism existence implies no retraction B2 -> S1. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_moved_point_antipode_preserving_homeomorphism_S1_implies_no_retraction_B2_S1 :
+  (exists f:set,
+    (((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x))
+  ->
+  ~(retraction_of B2 B2_topology S1).
+assume Hexists.
+apply s55_exists_fixed_point_free_antipode_preserving_homeomorphism_S1_implies_no_retraction_B2_S1.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+exact (andEL
+  ((antipode_preserving_S1 f /\
+    homeomorphism S1 S1_topology S1 S1_topology f) /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+  (exists x:set, x :e S1 /\ apply_fun f x <> x)
+  Hpack).
+Qed.
+
+(** S55 helper: the explicit fixed-point-free moved-point antipode-preserving S1-homeomorphism witness yields no retraction B2 -> S1. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_from_fixed_point_free_moved_point_antipode_preserving_homeomorphism :
+  ~(retraction_of B2 B2_topology S1).
+exact (s55_exists_fixed_point_free_moved_point_antipode_preserving_homeomorphism_S1_implies_no_retraction_B2_S1
+  s55_exists_fixed_point_free_moved_point_antipode_preserving_homeomorphism_S1).
 Qed.
 
 (** S55 helper: fixed-point-free nonconstant moved-point S1-homeomorphism existence implies no retraction B2 -> S1. **)
