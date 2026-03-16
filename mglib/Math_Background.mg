@@ -217442,8 +217442,180 @@ claim Hdecomp : exists loopU:set, exists loopV:set,
     claim Hconcat_1 : apply_fun (path_concat f1X f2X) 1 = x0.
     { rewrite (path_concat_at_one f1X f2X). exact Hf2X_1. }
     (** f is homotopic to path_concat f1X f2X via domain reparametrization **)
-    (** The homotopy F(s,t) = f(phi(s,t)) where phi interpolates id and path_concat(phi1,phi2) **)
-    admit. }
+    (** Strategy: phi := path_concat(affine_fun_I 0 s, affine_fun_I s (1-s)) is a **)
+    (** reparametrization [0,1]->[0,1] with phi(0)=0, phi(1)=1. By convexity of [0,1], **)
+    (** phi ~ id. Then f = compose(id,f) ~ compose(phi,f) = path_concat(f1X,f2X) pointwise. **)
+    set phi1 := affine_fun_I 0 s.
+    set phi2 := affine_fun_I s (add_SNo 1 (minus_SNo s)).
+    set phi := path_concat phi1 phi2.
+    (** Prove phi1(0) = 0 **)
+    claim Hphi1_0 : apply_fun phi1 0 = 0.
+    { rewrite (affine_fun_I_apply 0 s 0 real_0 HsR (RltE_lt 0 s Hlt_0_s) zero_in_unit_interval).
+      rewrite (mul_SNo_zeroL s HsSNo).
+      rewrite (add_SNo_0R 0 SNo_0).
+      reflexivity. }
+    (** Prove phi1(1) = s **)
+    claim Hphi1_1 : apply_fun phi1 1 = s.
+    { rewrite (affine_fun_I_apply 0 s 1 real_0 HsR (RltE_lt 0 s Hlt_0_s) one_in_unit_interval).
+      rewrite (mul_SNo_oneL s HsSNo).
+      rewrite (add_SNo_0R s HsSNo).
+      reflexivity. }
+    (** Prove phi2(0) = s **)
+    claim Hphi2_0 : apply_fun phi2 0 = s.
+    { rewrite (affine_fun_I_apply s (add_SNo 1 (minus_SNo s)) 0 HsR HcR HcPos zero_in_unit_interval).
+      rewrite (mul_SNo_zeroL (add_SNo 1 (minus_SNo s)) HcSNo).
+      rewrite (add_SNo_0L s HsSNo).
+      reflexivity. }
+    (** Prove phi2(1) = 1 **)
+    claim Hphi2_1 : apply_fun phi2 1 = 1.
+    { rewrite (affine_fun_I_apply s (add_SNo 1 (minus_SNo s)) 1 HsR HcR HcPos one_in_unit_interval).
+      rewrite (mul_SNo_oneL (add_SNo 1 (minus_SNo s)) HcSNo).
+      rewrite <- (add_SNo_assoc 1 (minus_SNo s) s SNo_1 HmsSNo HsSNo).
+      rewrite (add_SNo_minus_SNo_linv s HsSNo).
+      rewrite (add_SNo_0R 1 SNo_1).
+      reflexivity. }
+    (** phi1(1) = phi2(0) **)
+    claim Hphi_join : apply_fun phi1 1 = apply_fun phi2 0.
+    { rewrite Hphi1_1. rewrite Hphi2_0. reflexivity. }
+    (** phi is continuous [0,1] -> [0,1] **)
+    claim HphiCont :
+      continuous_map unit_interval unit_interval_topology
+        unit_interval unit_interval_topology phi.
+    { exact (path_concat_continuous
+        unit_interval unit_interval_topology 0 s 1
+        phi1 phi2
+        Haffine1_contI Haffine2_contI
+        Hphi1_0 Hphi1_1 Hphi2_0 Hphi2_1). }
+    (** phi(0) = 0 **)
+    claim Hphi_0 : apply_fun phi 0 = 0.
+    { rewrite (path_concat_at_zero phi1 phi2). exact Hphi1_0. }
+    (** phi(1) = 1 **)
+    claim Hphi_1 : apply_fun phi 1 = 1.
+    { rewrite (path_concat_at_one phi1 phi2). exact Hphi2_1. }
+    (** phi is homotopic to the identity (convexity of [0,1]) **)
+    set idI := graph unit_interval (fun t:set => t).
+    claim Hphi_hom_id :
+      path_homotopic unit_interval unit_interval_topology 0 1 phi idI.
+    { exact (unit_interval_path_homotopic_to_id phi HphiCont Hphi_0 Hphi_1). }
+    (** id is homotopic to phi (symmetry) **)
+    claim Hid_hom_phi :
+      path_homotopic unit_interval unit_interval_topology 0 1 idI phi.
+    { exact (Lemma_51_1_path_homotopy_sym
+        unit_interval unit_interval_topology 0 1 phi idI Hphi_hom_id). }
+    (** compose(idI, f) is homotopic to compose(phi, f) **)
+    set fid := compose_fun unit_interval idI f.
+    set fphi := compose_fun unit_interval phi f.
+    claim Hfid_hom_fphi :
+      path_homotopic X Tx x0 x0 fid fphi.
+    { exact (path_homotopic_precompose
+        X Tx x0 x0 f idI phi HfCont Hf0 Hf1 Hid_hom_phi). }
+    (** f is pointwise equal to compose(idI, f) **)
+    claim HidICont :
+      continuous_map unit_interval unit_interval_topology
+        unit_interval unit_interval_topology idI.
+    { exact (identity_continuous
+        unit_interval unit_interval_topology unit_interval_topology_on). }
+    claim Hfid_cont :
+      continuous_map unit_interval unit_interval_topology X Tx fid.
+    { exact (composition_continuous
+        unit_interval unit_interval_topology
+        unit_interval unit_interval_topology
+        X Tx idI f HidICont HfCont). }
+    claim Hfid_0 : apply_fun fid 0 = x0.
+    { rewrite (compose_fun_apply unit_interval idI f 0 zero_in_unit_interval).
+      rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval).
+      exact Hf0. }
+    claim Hfid_1 : apply_fun fid 1 = x0.
+    { rewrite (compose_fun_apply unit_interval idI f 1 one_in_unit_interval).
+      rewrite (apply_fun_graph unit_interval (fun t:set => t) 1 one_in_unit_interval).
+      exact Hf1. }
+    claim Hf_pw_fid :
+      forall t:set, t :e unit_interval -> apply_fun f t = apply_fun fid t.
+    { let t. assume Ht.
+      rewrite (compose_fun_apply unit_interval idI f t Ht).
+      rewrite (apply_fun_graph unit_interval (fun u:set => u) t Ht).
+      reflexivity. }
+    claim Hf_hom_fid :
+      path_homotopic X Tx x0 x0 f fid.
+    { exact (path_homotopic_of_pointwise_equal
+        X Tx x0 x0 f fid
+        HfCont Hfid_cont Hf0 Hf1 Hfid_0 Hfid_1 Hf_pw_fid). }
+    (** compose(phi, f) is pointwise equal to path_concat(f1X, f2X) **)
+    claim Hfphi_cont :
+      continuous_map unit_interval unit_interval_topology X Tx fphi.
+    { exact (composition_continuous
+        unit_interval unit_interval_topology
+        unit_interval unit_interval_topology
+        X Tx phi f HphiCont HfCont). }
+    claim Hfphi_0 : apply_fun fphi 0 = x0.
+    { rewrite (compose_fun_apply unit_interval phi f 0 zero_in_unit_interval).
+      rewrite Hphi_0.
+      exact Hf0. }
+    claim Hfphi_1 : apply_fun fphi 1 = x0.
+    { rewrite (compose_fun_apply unit_interval phi f 1 one_in_unit_interval).
+      rewrite Hphi_1.
+      exact Hf1. }
+    claim Hf1X_join_f2X : apply_fun f1X 1 = apply_fun f2X 0.
+    { rewrite Hf1X_1. rewrite Hf2X_0. reflexivity. }
+    claim Hfphi_pw_concat :
+      forall t:set, t :e unit_interval ->
+        apply_fun fphi t = apply_fun (path_concat f1X f2X) t.
+    { let t. assume HtUI.
+      (** Case split: t in left half or right half **)
+      claim HtLHRH : t :e unit_interval_left_half :\/: unit_interval_right_half.
+      { exact (unit_interval_halves_cover (fun a b:set => t :e a -> t :e b)
+          (binunion_Subq_min unit_interval_left_half unit_interval_right_half unit_interval
+            unit_interval_left_half_sub unit_interval_right_half_sub t) HtUI). }
+      apply (binunionE unit_interval_left_half unit_interval_right_half t HtLHRH).
+      - assume HtL : t :e unit_interval_left_half.
+        claim HtUI2 : t :e unit_interval.
+        { exact (SepE1 unit_interval (fun x:set => ~ (Rlt (eps_ 1) x)) t HtL). }
+        (** apply_fun fphi t = f(phi(t)) = f(phi1(2t)) since t in left half **)
+        rewrite (compose_fun_apply unit_interval phi f t HtUI2).
+        rewrite (path_concat_apply_left phi1 phi2 t Hphi_join HtL).
+        (** apply_fun (path_concat f1X f2X) t = f1X(2t) since t in left half **)
+        rewrite (path_concat_apply_left f1X f2X t Hf1X_join_f2X HtL).
+        (** f1X(2t) = compose_fun(phi1, f)(2t) = f(phi1(2t)) **)
+        (** Need: mul_SNo 2 t :e unit_interval **)
+        claim H2t_UI : mul_SNo 2 t :e unit_interval.
+        { claim Hdm : apply_fun double_map_left_half t = mul_SNo 2 t.
+          { exact (double_map_apply t HtL). }
+          rewrite <- Hdm.
+          exact (double_map_function_on t HtL). }
+        rewrite (compose_fun_apply unit_interval phi1 f (mul_SNo 2 t) H2t_UI).
+        reflexivity.
+      - assume HtR : t :e unit_interval_right_half.
+        claim HtUI2 : t :e unit_interval.
+        { exact (SepE1 unit_interval (fun x:set => ~ (Rlt x (eps_ 1))) t HtR). }
+        (** apply_fun fphi t = f(phi(t)) = f(phi2(2t-1)) since t in right half **)
+        rewrite (compose_fun_apply unit_interval phi f t HtUI2).
+        rewrite (path_concat_apply_right phi1 phi2 t Hphi_join HtR).
+        (** apply_fun (path_concat f1X f2X) t = f2X(2t-1) since t in right half **)
+        rewrite (path_concat_apply_right f1X f2X t Hf1X_join_f2X HtR).
+        (** f2X(2t-1) = compose_fun(phi2, f)(2t-1) = f(phi2(2t-1)) **)
+        (** Need: add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval **)
+        claim H2tm1_UI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+        { claim Hdm : apply_fun double_minus_one_map_right_half t =
+            add_SNo (mul_SNo 2 t) (minus_SNo 1).
+          { exact (double_minus_one_map_apply t HtR). }
+          rewrite <- Hdm.
+          exact (double_minus_one_map_function_on t HtR). }
+        rewrite (compose_fun_apply unit_interval phi2 f
+          (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2tm1_UI).
+        reflexivity. }
+    claim Hfphi_hom_concat :
+      path_homotopic X Tx x0 x0 fphi (path_concat f1X f2X).
+    { exact (path_homotopic_of_pointwise_equal
+        X Tx x0 x0 fphi (path_concat f1X f2X)
+        Hfphi_cont Hconcat_cont Hfphi_0 Hfphi_1 Hconcat_0 Hconcat_1
+        Hfphi_pw_concat). }
+    (** Chain: f ~ fid ~ fphi ~ path_concat(f1X, f2X) **)
+    claim Hf_hom_fphi :
+      path_homotopic X Tx x0 x0 f fphi.
+    { exact (Lemma_51_1_path_homotopy_trans
+        X Tx x0 x0 f fid fphi Hf_hom_fid Hfid_hom_fphi). }
+    exact (Lemma_51_1_path_homotopy_trans
+      X Tx x0 x0 f fphi (path_concat f1X f2X) Hf_hom_fphi Hfphi_hom_concat). }
   (** f1X maps into U: for all t in [0,1], f1X(t) = f(s times t) where s times t in [0,s], so f(s times t) in U **)
   claim Hf1X_image_U : forall t:set, t :e unit_interval -> apply_fun f1X t :e U.
   { let t. assume HtUI.
