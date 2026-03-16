@@ -411341,13 +411341,62 @@ witness k. apply andI.
         (** Hence pi(S1) = pi(S2), so non-equal slices are disjoint. **)
         admit.
       - (** 3. Union slices_k = preimage_of OS k V **)
-        (** cls :e preimage_of OS k V iff apply_fun k cls :e V **)
-        (** iff exists x :e X, pi(x) = cls and p(x) :e V **)
-        (** iff exists x :e preimage_of X p V, pi(x) = cls **)
-        (** iff exists S :e slices_p, exists x :e S, pi(x) = cls **)
-        (** iff cls :e pi(S) for some S :e slices_p **)
-        (** iff cls :e Union slices_k **)
-        admit.
+        apply set_ext.
+        + (** Forward: cls :e Union slices_k -> cls :e preimage_of OS k V **)
+          let cls. assume Hcls.
+          apply (UnionE_impred slices_k cls Hcls).
+          let W. assume HclsW : cls :e W. assume HWsk : W :e slices_k.
+          (** W = image_of pi S for some S :e slices_p **)
+          apply (ReplE_impred slices_p (fun S:set => image_of pi S) W HWsk).
+          let S. assume HSslice : S :e slices_p. assume HWeq : W = image_of pi S.
+          (** cls :e image_of pi S means cls = pi(x) for some x :e S **)
+          claim HclsImS : cls :e image_of pi S. { rewrite <- HWeq. exact HclsW. }
+          apply (ReplE_impred S (fun x:set => apply_fun pi x) cls HclsImS).
+          let x. assume HxS : x :e S. assume Hclseq : cls = apply_fun pi x.
+          (** x :e S c= X **)
+          claim HSopen : S :e Tx. { exact (Hslices_sub_Tx S HSslice). }
+          claim HSsubX : S c= X. { exact (topology_elem_subset X Tx S HtopX HSopen). }
+          claim HxX : x :e X. { exact (HSsubX x HxS). }
+          (** cls :e OS **)
+          claim HclsOS : cls :e OS. { rewrite Hclseq. exact (Hpi_fn x HxX). }
+          (** apply_fun k cls = apply_fun p x :e V **)
+          claim Hkv : apply_fun k cls :e V.
+          { rewrite Hclseq. rewrite (Hk_factors x HxX).
+            (** x :e S c= preimage_of X p V = Union slices_p, so x :e preimage_of X p V **)
+            claim HxPre : x :e preimage_of X p V.
+            { rewrite <- Hunion_slices. exact (UnionI slices_p x S HxS HSslice). }
+            exact (SepE2 X (fun z:set => apply_fun p z :e V) x HxPre). }
+          prove cls :e {c :e OS | apply_fun k c :e V}.
+          apply (SepI OS (fun c:set => apply_fun k c :e V) cls HclsOS Hkv).
+        + (** Backward: cls :e preimage_of OS k V -> cls :e Union slices_k **)
+          let cls. assume Hcls.
+          claim HclsOS : cls :e OS. { exact (SepE1 OS (fun c:set => apply_fun k c :e V) cls Hcls). }
+          claim Hkv : apply_fun k cls :e V. { exact (SepE2 OS (fun c:set => apply_fun k c :e V) cls Hcls). }
+          (** cls :e OS means cls is an orbit class with representative **)
+          (** Need: exists x :e X with pi(x) = cls **)
+          claim Hpi_surj : surjective_map X OS pi.
+          { exact (orbit_map_surjective X G
+              (fun g HgG => continuous_map_function_on X Tx X Tx g
+                (covering_transformation_group_continuous X Tx B Tb p g HgG))). }
+          claim Hpi_surj_cls : exists x:set, x :e X /\ apply_fun pi x = cls.
+          { exact (andER (function_on pi X OS)
+              (forall y:set, y :e OS -> exists x:set, x :e X /\ apply_fun pi x = y)
+              Hpi_surj cls HclsOS). }
+          apply Hpi_surj_cls. let x. assume Hxpack.
+          claim HxX : x :e X. { exact (andEL (x :e X) (apply_fun pi x = cls) Hxpack). }
+          claim Hpix : apply_fun pi x = cls. { exact (andER (x :e X) (apply_fun pi x = cls) Hxpack). }
+          (** p(x) = k(pi(x)) = k(cls) :e V **)
+          claim Hpxv : apply_fun p x :e V.
+          { rewrite <- (Hk_factors x HxX). rewrite Hpix. exact Hkv. }
+          (** x :e preimage_of X p V = Union slices_p **)
+          claim HxPre : x :e preimage_of X p V.
+          { prove x :e {z :e X | apply_fun p z :e V}.
+            exact (SepI X (fun z:set => apply_fun p z :e V) x HxX Hpxv). }
+          claim HxUS : x :e Union slices_p. { rewrite Hunion_slices. exact HxPre. }
+          apply (UnionE_impred slices_p x HxUS). let S. assume HxS HSslice.
+          apply (UnionI slices_k cls (image_of pi S)).
+          * rewrite <- Hpix. exact (ReplI S (fun z:set => apply_fun pi z) x HxS).
+          * exact (ReplI slices_p (fun S0:set => image_of pi S0) S HSslice).
       - (** 4. each W :e slices_k homeomorphic to V via k **)
         (** W = pi(S) for some S :e slices_p **)
         (** p|S : S -> V is a homeomorphism **)
