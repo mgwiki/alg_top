@@ -412575,16 +412575,7 @@ witness k. apply andI.
         (** S :e slices_p c= Tx, so S is open **)
         claim HSopen : S :e Tx. { exact (Hslices_sub_Tx S HSslice). }
         (** orbit_map is open: image_of pi S :e OT **)
-        exact (orbit_map_open_group X Tx G
-          (covering_transformation_id X Tx B Tb p)
-          HtopX
-          (fun g HgG => covering_transformation_group_homeomorphism X Tx B Tb p g HgG)
-          (fun g HgG => continuous_map_function_on X Tx X Tx g
-            (covering_transformation_group_continuous X Tx B Tb p g HgG))
-          (covering_transformation_id_in_group X Tx B Tb p Hcov)
-          (fun x HxX => covering_transformation_id_apply X Tx B Tb p x HxX)
-          (covering_transformation_group_comp_closure X Tx B Tb p Hcov)
-          S HSopen).
+        exact (covering_transformation_group_orbit_map_open X Tx B Tb p S Hcov HSopen).
       - (** 2. pairwise_disjoint slices_k **)
         (** If pi(S1) and pi(S2) have a common point, then S1 and S2 **)
         (** contain orbit-equivalent points, meaning some g in G maps **)
