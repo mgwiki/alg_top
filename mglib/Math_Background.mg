@@ -188978,6 +188978,137 @@ exact (s55_S1_antipode_map_moves_basepoint
   HbaseEq).
 Qed.
 
+(** S55 helper: antipode map is not constant on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_not_constant :
+  ~(exists c:set, forall x:set, x :e S1 ->
+    apply_fun s55_S1_antipode_map x = c).
+assume Hconst.
+apply s55_S1_antipode_map_two_cycle_witness.
+let x.
+assume HyExists.
+apply HyExists.
+let y.
+assume Hpack.
+apply Hconst.
+let c.
+assume HcAll.
+claim Hleft :
+  (((x :e S1 /\ y :e S1) /\ x <> y) /\
+    apply_fun s55_S1_antipode_map x = y).
+{
+  exact (andEL
+    (((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun s55_S1_antipode_map x = y)
+    (apply_fun s55_S1_antipode_map y = x)
+    Hpack).
+}
+claim HpairNe :
+  ((x :e S1 /\ y :e S1) /\ x <> y).
+{
+  exact (andEL
+    ((x :e S1 /\ y :e S1) /\ x <> y)
+    (apply_fun s55_S1_antipode_map x = y)
+    Hleft).
+}
+claim HxS1 : x :e S1.
+{
+  exact (andEL
+    (x :e S1)
+    (y :e S1)
+    (andEL
+      (x :e S1 /\ y :e S1)
+      (x <> y)
+      HpairNe)).
+}
+claim HyS1 : y :e S1.
+{
+  exact (andER
+    (x :e S1)
+    (y :e S1)
+    (andEL
+      (x :e S1 /\ y :e S1)
+      (x <> y)
+      HpairNe)).
+}
+claim HxyNe : x <> y.
+{
+  exact (andER
+    (x :e S1 /\ y :e S1)
+    (x <> y)
+    HpairNe).
+}
+claim HfxEqY :
+  apply_fun s55_S1_antipode_map x = y.
+{
+  exact (andER
+    ((x :e S1 /\ y :e S1) /\ x <> y)
+    (apply_fun s55_S1_antipode_map x = y)
+    Hleft).
+}
+claim HfyEqX :
+  apply_fun s55_S1_antipode_map y = x.
+{
+  exact (andER
+    (((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun s55_S1_antipode_map x = y)
+    (apply_fun s55_S1_antipode_map y = x)
+    Hpack).
+}
+claim HfxEqC :
+  apply_fun s55_S1_antipode_map x = c.
+{
+  exact (HcAll
+    x
+    HxS1).
+}
+claim HfyEqC :
+  apply_fun s55_S1_antipode_map y = c.
+{
+  exact (HcAll
+    y
+    HyS1).
+}
+claim HyEqC : y = c.
+{
+  exact (eq_i_tra
+    y
+    (apply_fun s55_S1_antipode_map x)
+    c
+    (eq_symm
+      (apply_fun s55_S1_antipode_map x)
+      y
+      HfxEqY)
+    HfxEqC).
+}
+claim HxEqC : x = c.
+{
+  exact (eq_i_tra
+    x
+    (apply_fun s55_S1_antipode_map y)
+    c
+    (eq_symm
+      (apply_fun s55_S1_antipode_map y)
+      x
+      HfyEqX)
+    HfyEqC).
+}
+claim HxEqY : x = y.
+{
+  exact (eq_i_tra
+    x
+    c
+    y
+    HxEqC
+    (eq_symm
+      y
+      c
+      HyEqC)).
+}
+exact (HxyNe
+  HxEqY).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
