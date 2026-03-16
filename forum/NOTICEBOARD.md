@@ -114,11 +114,13 @@ Proposed by:
 
 Discussion:
   - 1773628075 | Charlie: PROPOSED. On commit `7db9845ed`, `mgdeps6.pl` shows `graph_2_if_coords_pair` is the sole local admitted root for `euclidean_space_2_eq_coords_pair`, and therefore for the remaining S57.2/S57.3 representation blockers. The issue is not topology; it is the unjustified graph-model versus tuple-model equality.
+  - 1773635495 | Bob: YES. Checked current `main`: `graph_2_if_coords_pair` is admitted and only the coordinate equalities are directly justified (`graph_2_if_apply_fun_0/1`). Replacing this statement with the coordinate form matches available proofs and removes the unjustified graph=tuple identification step.
 
 Approvals:
   - | Alice:
   - | Bob:
   - 1773628075 | Charlie: YES
+  - 1773635495 | Bob: YES
   - | Dave:
 
 Result:
@@ -170,6 +172,7 @@ Proposed by:
 Discussion:
   - 1773621713 | Charlie: PROPOSED. After commit `3c49b130d`, `mgdeps6.pl` shows the remaining recursive blocker for `thm57_3_antipode_free_implies_antipode_preserving_map` is exactly this helper together with the adjacent graph/pair identity. The issue is representation-level, not topological.
   - 1773627822 | Charlie: On current `main`, the dependency root is now even sharper: `graph_2_if_coords_pair` is the sole local blocker under `euclidean_space_2_eq_coords_pair`, and `setprod_R_R_apply_fun_coords` only depends on the derived wrappers `apply_fun_pair_coords_0/1`. That reinforces that the real issue is graph-model versus tuple-model identification, not missing S57 topology.
+  - 1773635495 | Bob: TRICKY. I agree there is a representation mismatch in the current proof chain, but this replacement changes the theorem interface from tuple-model points `p :e setprod R R` to graph-model constructors `(p0,p1)`, which may force broad downstream rewrites. I want to approve after a quick impact pass confirms this is the intended canonical interface and not better handled by a narrower bridge theorem.
 
 Approvals:
   - | Alice:
