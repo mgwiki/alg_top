@@ -411232,14 +411232,39 @@ witness k. apply andI.
       { exact (orbit_topology_is_topology X Tx G HtopX
           (fun g HgG => continuous_map_function_on X Tx X Tx g
             (covering_transformation_group_continuous X Tx B Tb p g HgG))). }
-      apply andI. { apply andI. exact HtopOT2. exact HVTb. } (** Construct the evenly covered structure using slices_k **)
-           (** This requires: **)
-           (** 1. slices_k c= OT (each pi(S) is open in orbit topology) **)
-           (** 2. pairwise_disjoint slices_k **)
-           (** 3. Union slices_k = preimage_of OS k V **)
-           (** 4. each pi(S) homeomorphic to V via k **)
-           (** Each step requires the orbit space structure + CT group properties **)
-           admit.
+      apply andI. { apply andI. exact HtopOT2. exact HVTb. }
+      witness slices_k.
+      apply and4I.
+      - (** 1. slices_k c= OT: each pi(S) is open in orbit topology **)
+        (** pi is an open map (orbit_map is open), so pi(S) is open when S is open **)
+        (** Each S :e slices_p is open (slices_p c= Tx) **)
+        (** And orbit_map is open (covering_map_is_open gives p is open; orbit_map is open **)
+        (** by the quotient map property when G acts properly discontinuously). **)
+        admit.
+      - (** 2. pairwise_disjoint slices_k **)
+        (** If pi(S1) and pi(S2) have a common point, then S1 and S2 **)
+        (** contain orbit-equivalent points, meaning some g in G maps **)
+        (** S1 into S2. But p-slices over V are pairwise disjoint fibers. **)
+        (** If g maps a point of S1 to S2, then g maps ALL of S1 to S2 **)
+        (** (since g is continuous and slices are connected components). **)
+        (** Hence pi(S1) = pi(S2), so non-equal slices are disjoint. **)
+        admit.
+      - (** 3. Union slices_k = preimage_of OS k V **)
+        (** cls :e preimage_of OS k V iff apply_fun k cls :e V **)
+        (** iff exists x :e X, pi(x) = cls and p(x) :e V **)
+        (** iff exists x :e preimage_of X p V, pi(x) = cls **)
+        (** iff exists S :e slices_p, exists x :e S, pi(x) = cls **)
+        (** iff cls :e pi(S) for some S :e slices_p **)
+        (** iff cls :e Union slices_k **)
+        admit.
+      - (** 4. each W :e slices_k homeomorphic to V via k **)
+        (** W = pi(S) for some S :e slices_p **)
+        (** p|S : S -> V is a homeomorphism **)
+        (** pi|S : S -> pi(S) is a bijection (since different points in S **)
+        (** are in different orbits - the slices are precisely one point per orbit) **)
+        (** k|pi(S) : pi(S) -> V satisfies k(pi(x)) = p(x), so k|pi(S) = p|S o (pi|S)^{-1} **)
+        (** This is a composition of homeomorphisms, hence a homeomorphism **)
+        admit.
 - exact Hk_factors.
 Admitted.
 
