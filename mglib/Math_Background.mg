@@ -188541,6 +188541,25 @@ exact (covering_map_R_S1_compose_loop_at_value
   HhCont).
 Admitted.
 
+Theorem loop_space_has_loop_data : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  continuous_map unit_interval unit_interval_topology X Tx f /\
+  (apply_fun f 0 = x0 /\ apply_fun f 1 = x0).
+let X Tx x0 f.
+assume HfLoop.
+exact (loop_at_unpack_right
+  X
+  Tx
+  x0
+  f
+  (loop_space_has_loop_at
+    X
+    Tx
+    x0
+    f
+    HfLoop)).
+Admitted.
+
 Theorem covering_map_R_S1_compose_loop_data_at_lift_start : forall h e0:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   e0 :e R ->
@@ -188693,48 +188712,44 @@ claim HpIloop : pI :e loop_space S1 S1_topology S1_basepoint.
 {
   exact graphify_covering_map_R_S1_in_loop_space.
 }
+claim HpIData :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology pI /\
+  (apply_fun pI 0 = S1_basepoint /\ apply_fun pI 1 = S1_basepoint).
+{
+  exact (loop_space_has_loop_data
+    S1
+    S1_topology
+    S1_basepoint
+    pI
+    HpIloop).
+}
 claim HpIcont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology pI.
 {
-  exact (loop_at_continuous
-    S1
-    S1_topology
-    S1_basepoint
-    pI
-    (loop_space_has_loop_at
-      S1
-      S1_topology
-      S1_basepoint
-      pI
-      HpIloop)).
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology pI)
+    (apply_fun pI 0 = S1_basepoint /\ apply_fun pI 1 = S1_basepoint)
+    HpIData).
 }
 claim HpI0 : apply_fun pI 0 = S1_basepoint.
 {
-  exact (loop_at_at_zero
-    S1
-    S1_topology
-    S1_basepoint
-    pI
-    (loop_space_has_loop_at
-      S1
-      S1_topology
-      S1_basepoint
-      pI
-      HpIloop)).
+  exact (andEL
+    (apply_fun pI 0 = S1_basepoint)
+    (apply_fun pI 1 = S1_basepoint)
+    (andER
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology pI)
+      (apply_fun pI 0 = S1_basepoint /\ apply_fun pI 1 = S1_basepoint)
+      HpIData)).
 }
 claim HpI1 : apply_fun pI 1 = S1_basepoint.
 {
-  exact (loop_at_at_one
-    S1
-    S1_topology
-    S1_basepoint
-    pI
-    (loop_space_has_loop_at
-      S1
-      S1_topology
-      S1_basepoint
-      pI
-      HpIloop)).
+  exact (andER
+    (apply_fun pI 0 = S1_basepoint)
+    (apply_fun pI 1 = S1_basepoint)
+    (andER
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology pI)
+      (apply_fun pI 0 = S1_basepoint /\ apply_fun pI 1 = S1_basepoint)
+      HpIData)).
 }
 set gp := compose_fun unit_interval pI h.
 claim HgpCont :
@@ -196959,43 +196974,44 @@ claim Heps0Loop : eps0 :e loop_space S1 S1_topology S1_basepoint.
     eps0
     Heps0InCls).
 }
-claim Heps0Cont :
-  continuous_map unit_interval unit_interval_topology S1 S1_topology eps0.
+claim Heps0Data :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology eps0 /\
+  (apply_fun eps0 0 = S1_basepoint /\ apply_fun eps0 1 = S1_basepoint).
 {
-  exact (loop_space_continuous
+  exact (loop_space_has_loop_data
     S1
     S1_topology
     S1_basepoint
     eps0
     Heps0Loop).
 }
+claim Heps0Cont :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology eps0.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology eps0)
+    (apply_fun eps0 0 = S1_basepoint /\ apply_fun eps0 1 = S1_basepoint)
+    Heps0Data).
+}
 claim Heps0_0 : apply_fun eps0 0 = S1_basepoint.
 {
-  exact (loop_at_at_zero
-    S1
-    S1_topology
-    S1_basepoint
-    eps0
-    (loop_space_has_loop_at
-      S1
-      S1_topology
-      S1_basepoint
-      eps0
-      Heps0Loop)).
+  exact (andEL
+    (apply_fun eps0 0 = S1_basepoint)
+    (apply_fun eps0 1 = S1_basepoint)
+    (andER
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology eps0)
+      (apply_fun eps0 0 = S1_basepoint /\ apply_fun eps0 1 = S1_basepoint)
+      Heps0Data)).
 }
 claim Heps0_1 : apply_fun eps0 1 = S1_basepoint.
 {
-  exact (loop_at_at_one
-    S1
-    S1_topology
-    S1_basepoint
-    eps0
-    (loop_space_has_loop_at
-      S1
-      S1_topology
-      S1_basepoint
-      eps0
-      Heps0Loop)).
+  exact (andER
+    (apply_fun eps0 0 = S1_basepoint)
+    (apply_fun eps0 1 = S1_basepoint)
+    (andER
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology eps0)
+      (apply_fun eps0 0 = S1_basepoint /\ apply_fun eps0 1 = S1_basepoint)
+      Heps0Data)).
 }
 claim HcompEpsClass :
   path_homotopy_class_loop
