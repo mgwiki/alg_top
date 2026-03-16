@@ -123047,6 +123047,60 @@ apply andI.
       HxInt).
 Qed.
 
+(** Helper: covering map transfers local path connectivity from domain to codomain **)
+Theorem covering_map_locally_path_connected_codomain :
+  forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  locally_path_connected E Te ->
+  locally_path_connected B Tb.
+let E Te B Tb p. assume Hcov Hlpc.
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim Hopen_p : open_map E Te B Tb p. { exact (covering_map_is_open E Te B Tb p Hcov). }
+claim Hcont_p : continuous_map E Te B Tb p. { exact (covering_map_continuous E Te B Tb p Hcov). }
+claim Hsurj_p : surjective_map E B p. { exact (covering_map_surjective E Te B Tb p Hcov). }
+prove topology_on B Tb /\ forall b:set, b :e B -> forall W:set, W :e Tb -> b :e W ->
+  exists V0:set, V0 :e Tb /\ b :e V0 /\ V0 c= W /\ path_connected_space V0 (subspace_topology B Tb V0).
+apply andI. exact HtopB.
+let b. assume HbB. let W. assume HWTb HbW.
+claim Hsurj_data : exists x:set, x :e E /\ apply_fun p x = b.
+{ exact (andER (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y) Hsurj_p b HbB). }
+apply Hsurj_data. let x. assume Hxpack.
+claim HxE : x :e E. { exact (andEL (x :e E) (apply_fun p x = b) Hxpack). }
+claim Hpx : apply_fun p x = b. { exact (andER (x :e E) (apply_fun p x = b) Hxpack). }
+claim HpreW : preimage_of E p W :e Te.
+{ exact (andER
+    (topology_on E Te /\ topology_on B Tb /\ function_on p E B)
+    (forall V0:set, V0 :e Tb -> preimage_of E p V0 :e Te)
+    Hcont_p W HWTb). }
+claim HxPreW : x :e preimage_of E p W.
+{ prove x :e {z :e E | apply_fun p z :e W}.
+  apply (SepI E (fun z:set => apply_fun p z :e W) x HxE).
+  rewrite Hpx. exact HbW. }
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HlpcData : exists U0:set, U0 :e Te /\ x :e U0 /\ U0 c= preimage_of E p W /\
+  path_connected_space U0 (subspace_topology E Te U0).
+{ exact (andER (topology_on E Te) (forall z:set, z :e E -> forall U0:set, U0 :e Te -> z :e U0 ->
+    exists V0:set, V0 :e Te /\ z :e V0 /\ V0 c= U0 /\ path_connected_space V0 (subspace_topology E Te V0))
+    Hlpc x HxE (preimage_of E p W) HpreW HxPreW). }
+apply HlpcData. let U0. assume HU0pack.
+apply (and4E (U0 :e Te) (x :e U0) (U0 c= preimage_of E p W)
+  (path_connected_space U0 (subspace_topology E Te U0)) HU0pack).
+assume HU0Te HxU0 HU0sub HpcU0.
+set V0 := image_of p U0.
+witness V0. apply and4I.
+- exact (open_map_image_open E Te B Tb p U0 Hopen_p HU0Te).
+- rewrite <- Hpx. exact (ReplI U0 (fun z:set => apply_fun p z) x HxU0).
+- let v. assume Hv.
+  apply (ReplE_impred U0 (fun z:set => apply_fun p z) v Hv).
+  let u. assume HuU0 Hveq.
+  claim HuPre : u :e preimage_of E p W. { exact (HU0sub u HuU0). }
+  rewrite Hveq.
+  exact (SepE2 E (fun z:set => apply_fun p z :e W) u HuPre).
+- (** p(U0) is path-connected: continuous surjective image of path-connected U0 **)
+  admit.
+Admitted.
+
 (** Infrastructure: intersections with open sets are open in subspace **)
 (** Proven Bob **)
 Lemma subspace_topology_intersection_open : forall X Tx Y V:set,
