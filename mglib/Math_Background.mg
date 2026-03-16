@@ -404580,6 +404580,17 @@ exact (homeomorphism_injective E Te E Te h
   x1 x2 Hx1 Hx2 Heq).
 Qed.
 
+(** Helper: CTG member is function_on **)
+(** Proven Alice **)
+Theorem covering_transformation_group_function_on :
+  forall E Te B Tb p h:set,
+  h :e covering_transformation_group E Te B Tb p ->
+  function_on h E E.
+let E Te B Tb p h. assume HhG.
+exact (continuous_map_function_on E Te E Te h
+  (covering_transformation_group_continuous E Te B Tb p h HhG)).
+Qed.
+
 (** Helper: CTG members are injective **)
 (** Proven Alice **)
 Theorem covering_transformation_group_injective :
