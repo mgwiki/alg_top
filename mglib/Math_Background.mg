@@ -411166,6 +411166,97 @@ exact (orbit_map_open_map_with_group_data E Te G idG
   HtopE HhomeoAct HidG HidAct Hcomp Hinv).
 Qed.
 
+(** Helper: orbit_map image of U0 is contained in orbit_map image of g(U0) **)
+(** Proven Bob **)
+Theorem orbit_map_image_of_action_superset :
+  forall X G U0 g:set,
+  g :e G ->
+  U0 c= X ->
+  (forall h x:set, h :e G -> x :e X ->
+    apply_fun (orbit_map X G) (apply_fun h x) = apply_fun (orbit_map X G) x) ->
+  image_of (orbit_map X G) U0 c=
+  image_of (orbit_map X G) (image_of g U0).
+let X G U0 g.
+assume HgG HU0sub HpiInv.
+let cls. assume Hcls.
+apply (ReplE_impred U0 (fun u:set => apply_fun (orbit_map X G) u) cls Hcls).
+let u. assume HuU Hclseq.
+claim HuX : u :e X.
+{ exact (HU0sub u HuU). }
+claim HguIn : apply_fun g u :e image_of g U0.
+{ exact (ReplI U0 (fun y:set => apply_fun g y) u HuU). }
+prove cls :e image_of (orbit_map X G) (image_of g U0).
+rewrite Hclseq.
+rewrite <- (HpiInv g u HgG HuX).
+exact (ReplI (image_of g U0) (fun z:set => apply_fun (orbit_map X G) z) (apply_fun g u) HguIn).
+Qed.
+
+(** Helper: orbit_map image is unchanged after acting by g on U0 **)
+(** Proven Bob **)
+Theorem orbit_map_image_of_action_eq :
+  forall X G U0 g:set,
+  g :e G ->
+  U0 c= X ->
+  (forall h x:set, h :e G -> x :e X ->
+    apply_fun (orbit_map X G) (apply_fun h x) = apply_fun (orbit_map X G) x) ->
+  image_of (orbit_map X G) (image_of g U0) =
+  image_of (orbit_map X G) U0.
+let X G U0 g.
+assume HgG HU0sub HpiInv.
+apply set_ext.
+- exact (orbit_map_image_of_action_subset X G U0 g HgG HU0sub HpiInv).
+- exact (orbit_map_image_of_action_superset X G U0 g HgG HU0sub HpiInv).
+Qed.
+
+(** Helper: covering-transformation action preserves orbit_map image of subsets **)
+(** Proven Bob **)
+Theorem covering_transformation_group_orbit_map_image_of_action_eq :
+  forall E Te B Tb p g U:set,
+  covering_map E Te B Tb p ->
+  g :e covering_transformation_group E Te B Tb p ->
+  U c= E ->
+  image_of (orbit_map E (covering_transformation_group E Te B Tb p)) (image_of g U) =
+  image_of (orbit_map E (covering_transformation_group E Te B Tb p)) U.
+let E Te B Tb p g U.
+assume Hcov HgG HUE.
+set G := covering_transformation_group E Te B Tb p.
+claim Hfn : forall h:set, h :e G -> function_on h E E.
+{ exact (covering_transformation_group_function_on E Te B Tb p). }
+claim Hcomp : forall g1 g2:set, g1 :e G -> g2 :e G ->
+  exists g3:set, g3 :e G /\ forall z:set, z :e E ->
+    apply_fun g3 z = apply_fun g2 (apply_fun g1 z).
+{ exact (covering_transformation_group_comp_closure E Te B Tb p Hcov). }
+claim Hinv : forall g0:set, g0 :e G ->
+  exists ginv:set, ginv :e G /\ forall z:set, z :e E ->
+    apply_fun ginv (apply_fun g0 z) = z.
+{ exact (covering_transformation_group_inv_closure E Te B Tb p Hcov). }
+claim HpiInv : forall h x:set, h :e G -> x :e E ->
+  apply_fun (orbit_map E G) (apply_fun h x) = apply_fun (orbit_map E G) x.
+{
+  let h x. assume HhG HxE.
+  exact (orbit_map_invariant E G h x HhG Hfn Hcomp Hinv HxE).
+}
+exact (orbit_map_image_of_action_eq E G U g HgG HUE HpiInv).
+Qed.
+
+(** Helper: covering-transformation action preserves orbit_map image of open sets **)
+(** Proven Bob **)
+Theorem covering_transformation_group_orbit_map_image_of_action_eq_open :
+  forall E Te B Tb p g U:set,
+  covering_map E Te B Tb p ->
+  g :e covering_transformation_group E Te B Tb p ->
+  U :e Te ->
+  image_of (orbit_map E (covering_transformation_group E Te B Tb p)) (image_of g U) =
+  image_of (orbit_map E (covering_transformation_group E Te B Tb p)) U.
+let E Te B Tb p g U.
+assume Hcov HgG HU.
+claim HtopE : topology_on E Te.
+{ exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HUE : U c= E.
+{ exact (topology_elem_subset E Te U HtopE HU). }
+exact (covering_transformation_group_orbit_map_image_of_action_eq E Te B Tb p g U Hcov HgG HUE).
+Qed.
+
 (** Helper: orbit_map is invariant under covering-transformation action **)
 (** Proven Bob **)
 Theorem covering_transformation_group_orbit_map_invariant :
