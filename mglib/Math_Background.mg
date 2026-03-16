@@ -194497,6 +194497,7 @@ rewrite HDTopEq.
 exact HcontD_E3.
 Qed.
 
+ (** Proven Charlie **)
 Theorem thm57_2_equator_restriction_pair_extension_over_B2_early : forall g:set,
   antipode_preserving_Sn 2 1 g ->
   exists k:set, continuous_map B2 B2_topology S1 S1_topology k /\
@@ -194504,11 +194505,1178 @@ Theorem thm57_2_equator_restriction_pair_extension_over_B2_early : forall g:set,
       apply_fun k z = apply_fun (thm57_2_equator_restriction_S1_map g) z).
 let g.
 assume Hg.
-admit.
-Admitted.
+claim Hcontg :
+  continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g.
+{
+  exact (andEL
+    (continuous_map (Sn 2) (Sn_topology 2) (Sn 1) (Sn_topology 1) g)
+    (forall x:set, x :e Sn 2 ->
+      apply_fun g (Rn_negate 3 x) = Rn_negate 2 (apply_fun g x))
+    Hg).
+}
+claim HB2subR2 : B2 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      ~(Rlt 1
+        (add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)))))).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HtopB2 : topology_on B2 B2_topology.
+{
+  exact (subspace_topology_is_topology
+    (setprod R R)
+    R2_topology
+    B2
+    HtopR2
+    HB2subR2).
+}
+set incB2 := graph B2 (fun z:set => z).
+claim HincB2Cont :
+  continuous_map B2 B2_topology (setprod R R) R2_topology incB2.
+{
+  exact (subspace_inclusion_continuous
+    (setprod R R)
+    R2_topology
+    B2
+    HtopR2
+    HB2subR2).
+}
+claim HprojPack :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R) /\
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+{
+  exact (projection_maps_continuous
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim Hproj1Cont :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R).
+{
+  exact (andEL
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+    HprojPack).
+}
+claim Hproj2Cont :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+{
+  exact (andER
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+    HprojPack).
+}
+set x0 := compose_fun B2 incB2 (projection_map1 R R).
+set x1 := compose_fun B2 incB2 (projection_map2 R R).
+claim Hx0Cont :
+  continuous_map B2 B2_topology R R_standard_topology x0.
+{
+  exact (composition_continuous
+    B2
+    B2_topology
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    incB2
+    (projection_map1 R R)
+    HincB2Cont
+    Hproj1Cont).
+}
+claim Hx1Cont :
+  continuous_map B2 B2_topology R R_standard_topology x1.
+{
+  exact (composition_continuous
+    B2
+    B2_topology
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    incB2
+    (projection_map2 R R)
+    HincB2Cont
+    Hproj2Cont).
+}
+claim Hx0FS : x0 :e function_space B2 R.
+{
+  exact (compose_fun_in_function_space
+    B2
+    (setprod R R)
+    R
+    incB2
+    (projection_map1 R R)
+    (continuous_map_function_on
+      B2
+      B2_topology
+      (setprod R R)
+      R2_topology
+      incB2
+      HincB2Cont)
+    (continuous_map_function_on
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      (projection_map1 R R)
+      Hproj1Cont)).
+}
+claim Hx1FS : x1 :e function_space B2 R.
+{
+  exact (compose_fun_in_function_space
+    B2
+    (setprod R R)
+    R
+    incB2
+    (projection_map2 R R)
+    (continuous_map_function_on
+      B2
+      B2_topology
+      (setprod R R)
+      R2_topology
+      incB2
+      HincB2Cont)
+    (continuous_map_function_on
+      (setprod R R)
+      R2_topology
+      R
+      R_standard_topology
+      (projection_map2 R R)
+      Hproj2Cont)).
+}
+set F2 := graph 2 (fun i:set => if i = 0 then x0 else x1).
+claim HF2_tfn : total_function_on F2 2 (function_space B2 R).
+{
+  apply (total_function_on_graph
+    2
+    (function_space B2 R)).
+  let i.
+  assume Hi2.
+  apply (ordsuccE 1 i Hi2).
+  - assume Hi1.
+    apply (ordsuccE 0 i Hi1).
+    + assume Hi0.
+      exact (EmptyE i Hi0
+        ((if i = 0 then x0 else x1) :e function_space B2 R)).
+    + assume Hieq0.
+      rewrite Hieq0.
+      exact (eq_subst_mem
+        (if 0 = 0 then x0 else x1)
+        x0
+        (function_space B2 R)
+        (If_i_1
+          (0 = 0)
+          x0
+          x1
+          (eq_refl 0))
+        Hx0FS).
+  - assume Hieq1.
+    rewrite Hieq1.
+    exact (eq_subst_mem
+      (if 1 = 0 then x0 else x1)
+      x1
+      (function_space B2 R)
+      (If_i_0
+        (1 = 0)
+        x0
+        x1
+        neq_1_0)
+      Hx1FS).
+}
+claim HF2_cond : forall i:set, i :e 2 ->
+  continuous_map B2 B2_topology R R_standard_topology (apply_fun F2 i).
+{
+  let i.
+  assume Hi2.
+  apply (ordsuccE 1 i Hi2).
+  - assume Hi1.
+    apply (ordsuccE 0 i Hi1).
+    + assume Hi0.
+      exact (EmptyE i Hi0
+        (continuous_map B2 B2_topology R R_standard_topology (apply_fun F2 i))).
+    + assume Hieq0.
+      rewrite Hieq0.
+      rewrite (apply_fun_graph
+        2
+        (fun j:set => if j = 0 then x0 else x1)
+        0
+        In_0_2).
+      rewrite (If_i_1
+        (0 = 0)
+        x0
+        x1
+        (eq_refl 0)).
+      exact Hx0Cont.
+  - assume Hieq1.
+    rewrite Hieq1.
+    rewrite (apply_fun_graph
+      2
+      (fun j:set => if j = 0 then x0 else x1)
+      1
+      In_1_2).
+    rewrite (If_i_0
+      (1 = 0)
+      x0
+      x1
+      neq_1_0).
+    exact Hx1Cont.
+}
+claim H2ne : 2 <> Empty.
+{
+  exact (fun H => EmptyE 0 (H (fun t _ => 0 :e t) In_0_2)).
+}
+set diagB2E2 := diagonal_map B2 F2 2.
+claim HdiagB2E2Cont :
+  continuous_map B2 B2_topology (euclidean_space 2) (euclidean_topology 2) diagB2E2.
+{
+  exact (diagonal_map_continuous_power_real
+    B2
+    B2_topology
+    F2
+    2
+    HtopB2
+    H2ne
+    HF2_tfn
+    HF2_cond).
+}
+claim HdiagB2E2Fun :
+  function_on diagB2E2 B2 (euclidean_space 2).
+{
+  exact (diagonal_map_function_on_power_real
+    B2
+    F2
+    2
+    HF2_tfn).
+}
+set south3 := graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0).
+set stereoInvFn := fun u:set =>
+  let s := add_SNo (mul_SNo (apply_fun u 0) (apply_fun u 0))
+                   (mul_SNo (apply_fun u 1) (apply_fun u 1)) in
+  let d := recip_SNo_pos (add_SNo 1 s) in
+  graph 3 (fun i:set =>
+    if i = 0 then mul_SNo (mul_SNo 2 (apply_fun u 0)) d
+    else if i = 1 then mul_SNo (mul_SNo 2 (apply_fun u 1)) d
+    else add_SNo (mul_SNo 2 d) (minus_SNo 1)).
+set hemD := compose_fun B2 diagB2E2 (graph (euclidean_space 2) stereoInvFn).
+claim HhemDCont :
+  continuous_map B2 B2_topology
+    (Sn 2 :\: {south3})
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: {south3}))
+    hemD.
+{
+  exact (composition_continuous
+    B2
+    B2_topology
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    (Sn 2 :\: {south3})
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: {south3}))
+    diagB2E2
+    (graph (euclidean_space 2) stereoInvFn)
+    HdiagB2E2Cont
+    stereo_S_inv_fn_continuous_early_explicit).
+}
+claim HtopSn2 : topology_on (Sn 2) (Sn_topology 2).
+{
+  exact (subspace_topology_is_topology
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    (Sn 2)
+    (euclidean_topology_is_topology 3)
+    (Sep_Subq
+      (euclidean_space 3)
+      (fun v:set => euclidean_norm_sq 3 v = 1))).
+}
+claim HhemSn2Cont :
+  continuous_map B2 B2_topology (Sn 2) (Sn_topology 2) hemD.
+{
+  exact (continuous_map_range_expand
+    B2
+    B2_topology
+    (Sn 2 :\: {south3})
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: {south3}))
+    (Sn 2)
+    (Sn_topology 2)
+    hemD
+    HhemDCont
+    (fun x Hx => setminusE1 (Sn 2) {south3} x Hx)
+    HtopSn2
+    (fun P H => H)).
+}
+set raw := compose_fun B2 hemD g.
+claim HrawCont :
+  continuous_map B2 B2_topology (Sn 1) (Sn_topology 1) raw.
+{
+  exact (composition_continuous
+    B2
+    B2_topology
+    (Sn 2)
+    (Sn_topology 2)
+    (Sn 1)
+    (Sn_topology 1)
+    hemD
+    g
+    HhemSn2Cont
+    Hcontg).
+}
+claim HSn1subE2 : Sn 1 c= euclidean_space 2.
+{
+  exact (Sep_Subq
+    (euclidean_space 2)
+    (fun v:set => euclidean_norm_sq 2 v = 1)).
+}
+claim HE2top : topology_on (euclidean_space 2) (euclidean_topology 2).
+{
+  exact (euclidean_topology_is_topology 2).
+}
+set incSn1E2 := graph (Sn 1) (fun u:set => u).
+claim HincSn1E2Cont :
+  continuous_map (Sn 1) (Sn_topology 1) (euclidean_space 2) (euclidean_topology 2) incSn1E2.
+{
+  exact (subspace_inclusion_continuous
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    (Sn 1)
+    HE2top
+    HSn1subE2).
+}
+set rawE2 := compose_fun B2 raw incSn1E2.
+claim HrawE2Cont :
+  continuous_map B2 B2_topology (euclidean_space 2) (euclidean_topology 2) rawE2.
+{
+  exact (composition_continuous
+    B2
+    B2_topology
+    (Sn 1)
+    (Sn_topology 1)
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    raw
+    incSn1E2
+    HrawCont
+    HincSn1E2Cont).
+}
+claim Hev2Cont : forall i:set, i :e 2 ->
+  continuous_map (euclidean_space 2) (euclidean_topology 2) R R_standard_topology
+    (product_eval_map 2 (const_space_family 2 R R_standard_topology) i).
+{
+  let i.
+  assume Hi.
+  claim HfamTop :
+    forall j:set, j :e 2 ->
+      topology_on
+        (space_family_set (const_space_family 2 R R_standard_topology) j)
+        (space_family_topology (const_space_family 2 R R_standard_topology) j).
+  {
+    let j.
+    assume Hj.
+    rewrite (space_family_set_const_space_family 2 R R_standard_topology j Hj).
+    rewrite (space_family_topology_const_space_family 2 R R_standard_topology j Hj).
+    exact R_standard_topology_is_topology.
+  }
+  claim HevalCont :
+    continuous_map
+      (euclidean_space 2)
+      (euclidean_topology 2)
+      (space_family_set (const_space_family 2 R R_standard_topology) i)
+      (space_family_topology (const_space_family 2 R R_standard_topology) i)
+      (product_eval_map 2 (const_space_family 2 R R_standard_topology) i).
+  {
+    exact (product_eval_map_continuous
+      2
+      (const_space_family 2 R R_standard_topology)
+      i
+      HfamTop
+      Hi).
+  }
+  claim HYsub :
+    space_family_set (const_space_family 2 R R_standard_topology) i c= R.
+  {
+    let y.
+    assume Hy.
+    rewrite <- (space_family_set_const_space_family 2 R R_standard_topology i Hi).
+    exact Hy.
+  }
+  claim HTyEq :
+    space_family_topology (const_space_family 2 R R_standard_topology) i =
+    subspace_topology
+      R
+      R_standard_topology
+      (space_family_set (const_space_family 2 R R_standard_topology) i).
+  {
+    rewrite (space_family_set_const_space_family 2 R R_standard_topology i Hi).
+    rewrite (space_family_topology_const_space_family 2 R R_standard_topology i Hi).
+    rewrite (subspace_topology_whole
+      R
+      R_standard_topology
+      R_standard_topology_is_topology).
+    reflexivity.
+  }
+  exact (continuous_map_range_expand
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    (space_family_set (const_space_family 2 R R_standard_topology) i)
+    (space_family_topology (const_space_family 2 R R_standard_topology) i)
+    R
+    R_standard_topology
+    (product_eval_map 2 (const_space_family 2 R R_standard_topology) i)
+    HevalCont
+    HYsub
+    R_standard_topology_is_topology
+    HTyEq).
+}
+claim Hev2Apply : forall u i:set,
+  u :e euclidean_space 2 -> i :e 2 ->
+  apply_fun (product_eval_map 2 (const_space_family 2 R R_standard_topology) i) u =
+  apply_fun u i.
+{
+  let u i.
+  assume Hu Hi.
+  exact (apply_fun_graph
+    (euclidean_space 2)
+    (fun f:set => apply_fun f i)
+    u
+    Hu).
+}
+set ev0 := product_eval_map 2 (const_space_family 2 R R_standard_topology) 0.
+set ev1 := product_eval_map 2 (const_space_family 2 R R_standard_topology) 1.
+set y0 := compose_fun B2 rawE2 ev0.
+set y1 := compose_fun B2 rawE2 ev1.
+claim Hy0Cont :
+  continuous_map B2 B2_topology R R_standard_topology y0.
+{
+  exact (composition_continuous
+    B2
+    B2_topology
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    R
+    R_standard_topology
+    rawE2
+    ev0
+    HrawE2Cont
+    (Hev2Cont 0 In_0_2)).
+}
+claim Hy1Cont :
+  continuous_map B2 B2_topology R R_standard_topology y1.
+{
+  exact (composition_continuous
+    B2
+    B2_topology
+    (euclidean_space 2)
+    (euclidean_topology 2)
+    R
+    R_standard_topology
+    rawE2
+    ev1
+    HrawE2Cont
+    (Hev2Cont 1 In_1_2)).
+}
+set k := pair_map B2 y0 y1.
+claim HkContR2 :
+  continuous_map B2 B2_topology (setprod R R) R2_topology k.
+{
+  exact (maps_into_products
+    B2
+    B2_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    y0
+    y1
+    Hy0Cont
+    Hy1Cont).
+}
+claim HkIntoS1 :
+  forall x:set, x :e B2 -> apply_fun k x :e S1.
+{
+  let x.
+  assume HxB2.
+  claim HrawxSn1 : apply_fun raw x :e Sn 1.
+  {
+    exact (continuous_map_function_on
+      B2
+      B2_topology
+      (Sn 1)
+      (Sn_topology 1)
+      raw
+      HrawCont
+      x
+      HxB2).
+  }
+  claim HrawxE2 : apply_fun raw x :e euclidean_space 2.
+  {
+    exact (SepE1
+      (euclidean_space 2)
+      (fun v:set => euclidean_norm_sq 2 v = 1)
+      (apply_fun raw x)
+      HrawxSn1).
+  }
+  rewrite (pair_map_apply
+    B2
+    R
+    R
+    y0
+    y1
+    x
+    HxB2).
+  rewrite (compose_fun_apply B2 rawE2 ev0 x HxB2).
+  rewrite (compose_fun_apply B2 rawE2 ev1 x HxB2).
+  rewrite (compose_fun_apply B2 raw incSn1E2 x HxB2).
+  rewrite (apply_fun_graph
+    (Sn 1)
+    (fun u:set => u)
+    (apply_fun raw x)
+    HrawxSn1).
+  rewrite (Hev2Apply
+    (apply_fun raw x)
+    0
+    HrawxE2
+    In_0_2).
+  rewrite (Hev2Apply
+    (apply_fun raw x)
+    1
+    HrawxE2
+    In_1_2).
+  exact (Sn_1_point_in_S1_pair
+    (apply_fun raw x)
+    HrawxSn1).
+}
+claim HkContS1 :
+  continuous_map B2 B2_topology S1 S1_topology k.
+{
+  exact (continuous_map_range_restrict
+    B2
+    B2_topology
+    (setprod R R)
+    R2_topology
+    k
+    S1
+    HkContR2
+    (Sep_Subq
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)) = 1))
+    HkIntoS1).
+}
+claim HhemBoundary :
+  forall z:set, z :e S1 ->
+    apply_fun hemD z = apply_fun S1_equator_in_S2 z.
+{
+  let z.
+  assume HzS1.
+  claim HzB2 : z :e B2.
+  {
+    exact (S1_subset_B2 z HzS1).
+  }
+  claim HzR2 : z :e setprod R R.
+  {
+    exact (SepE1
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)) = 1)
+      z
+      HzS1).
+  }
+  claim Hz0R : z 0 :e R.
+  {
+    exact (ap0_Sigma
+      R
+      (fun _ : set => R)
+      z
+      HzR2).
+  }
+  claim Hz1R : z 1 :e R.
+  {
+    exact (ap1_Sigma
+      R
+      (fun _ : set => R)
+      z
+      HzR2).
+  }
+  claim Hz0S : SNo (z 0).
+  {
+    exact (real_SNo
+      (z 0)
+      Hz0R).
+  }
+  claim Hz1S : SNo (z 1).
+  {
+    exact (real_SNo
+      (z 1)
+      Hz1R).
+  }
+  claim HzEq1 :
+    add_SNo (mul_SNo (z 0) (z 0))
+      (mul_SNo (z 1) (z 1)) = 1.
+  {
+    exact (SepE2
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)) = 1)
+      z
+      HzS1).
+  }
+  claim HdiagzE2 :
+    apply_fun diagB2E2 z :e euclidean_space 2.
+  {
+    exact (HdiagB2E2Fun
+      z
+      HzB2).
+  }
+  claim HzGraphE2 :
+    graph 2 (fun i:set => if i = 0 then z 0 else z 1) :e euclidean_space 2.
+  {
+    exact (R2_pair_graph_in_euclidean_space_2
+      z
+      HzR2).
+  }
+  claim HdiagAtZ :
+    apply_fun diagB2E2 z = graph 2 (fun i:set => if i = 0 then z 0 else z 1).
+  {
+    apply (power_real_ext
+      2
+      (apply_fun diagB2E2 z)
+      (graph 2 (fun i:set => if i = 0 then z 0 else z 1))
+      HdiagzE2
+      HzGraphE2).
+    let i.
+    assume Hi2.
+    apply (ordsuccE 1 i Hi2).
+    - assume Hi1.
+      apply (ordsuccE 0 i Hi1).
+      + assume Hi0.
+        exact (EmptyE
+          i
+          Hi0
+          (apply_fun (apply_fun diagB2E2 z) i =
+            apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) i)).
+      + assume Hieq0.
+        rewrite Hieq0.
+        rewrite (diagonal_map_coord_apply
+          B2
+          F2
+          2
+          z
+          0
+          HzB2
+          In_0_2).
+        rewrite (apply_fun_graph
+          2
+          (fun j:set => if j = 0 then x0 else x1)
+          0
+          In_0_2).
+        rewrite (If_i_1
+          (0 = 0)
+          x0
+          x1
+          (eq_refl 0)).
+        rewrite (compose_fun_apply
+          B2
+          incB2
+          (projection_map1 R R)
+          z
+          HzB2).
+        rewrite (apply_fun_graph
+          B2
+          (fun x:set => x)
+          z
+          HzB2).
+        rewrite (projection1_apply
+          R
+          R
+          z
+          (SepE1
+            (setprod R R)
+            (fun p:set =>
+              ~(Rlt 1
+                (add_SNo (mul_SNo (p 0) (p 0))
+                  (mul_SNo (p 1) (p 1)))))
+            z
+            HzB2)).
+        rewrite (apply_fun_graph
+          2
+          (fun i0:set => if i0 = 0 then z 0 else z 1)
+          0
+          In_0_2).
+        rewrite (If_i_1
+          (0 = 0)
+          (z 0)
+          (z 1)
+          (eq_refl 0)).
+        reflexivity.
+    - assume Hieq1.
+      rewrite Hieq1.
+      rewrite (diagonal_map_coord_apply
+        B2
+        F2
+        2
+        z
+        1
+        HzB2
+        In_1_2).
+      rewrite (apply_fun_graph
+        2
+        (fun j:set => if j = 0 then x0 else x1)
+        1
+        In_1_2).
+      rewrite (If_i_0
+        (1 = 0)
+        x0
+        x1
+        neq_1_0).
+      rewrite (compose_fun_apply
+        B2
+        incB2
+        (projection_map2 R R)
+        z
+        HzB2).
+      rewrite (apply_fun_graph
+        B2
+        (fun x:set => x)
+        z
+        HzB2).
+      rewrite (projection2_apply
+        R
+        R
+        z
+        (SepE1
+          (setprod R R)
+          (fun p:set =>
+            ~(Rlt 1
+              (add_SNo (mul_SNo (p 0) (p 0))
+                (mul_SNo (p 1) (p 1)))))
+          z
+          HzB2)).
+      rewrite (apply_fun_graph
+        2
+        (fun i0:set => if i0 = 0 then z 0 else z 1)
+        1
+        In_1_2).
+      rewrite (If_i_0
+        (1 = 0)
+        (z 0)
+        (z 1)
+        neq_1_0).
+      reflexivity.
+  }
+  claim HdiagHemEq :
+    apply_fun hemD z = stereoInvFn (graph 2 (fun i:set => if i = 0 then z 0 else z 1)).
+  {
+    rewrite (compose_fun_apply
+      B2
+      diagB2E2
+      (graph (euclidean_space 2) stereoInvFn)
+      z
+      HzB2).
+    rewrite HdiagAtZ.
+    rewrite (apply_fun_graph
+      (euclidean_space 2)
+      stereoInvFn
+      (graph 2 (fun i:set => if i = 0 then z 0 else z 1))
+      HzGraphE2).
+    reflexivity.
+  }
+  claim HtwoRecip : mul_SNo 2 (recip_SNo_pos 2) = 1.
+  {
+    exact (recip_SNo_pos_invR
+      2
+      SNo_2
+      SNoLt_0_2).
+  }
+  set A0 := mul_SNo (mul_SNo 2
+    (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 0))
+    (recip_SNo_pos
+      (add_SNo 1
+        (add_SNo
+          (mul_SNo
+            (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 0)
+            (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 0))
+          (mul_SNo
+            (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 1)
+            (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 1))))).
+  set A1 := mul_SNo (mul_SNo 2
+    (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 1))
+    (recip_SNo_pos
+      (add_SNo 1
+        (add_SNo
+          (mul_SNo
+            (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 0)
+            (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 0))
+          (mul_SNo
+            (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 1)
+            (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 1))))).
+  set A2 := add_SNo
+    (mul_SNo 2
+      (recip_SNo_pos
+        (add_SNo 1
+          (add_SNo
+            (mul_SNo
+              (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 0)
+              (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 0))
+            (mul_SNo
+              (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 1)
+              (apply_fun (graph 2 (fun i0:set => if i0 = 0 then z 0 else z 1)) 1))))))
+    (minus_SNo 1).
+  claim HA0Eq : A0 = z 0.
+  {
+    rewrite (apply_fun_graph
+      2
+      (fun i0:set => if i0 = 0 then z 0 else z 1)
+      0
+      In_0_2).
+    rewrite (apply_fun_graph
+      2
+      (fun i0:set => if i0 = 0 then z 0 else z 1)
+      1
+      In_1_2).
+    rewrite (If_i_1
+      (0 = 0)
+      (z 0)
+      (z 1)
+      (eq_refl 0)).
+    rewrite (If_i_0
+      (1 = 0)
+      (z 0)
+      (z 1)
+      neq_1_0).
+    rewrite HzEq1.
+    rewrite add_SNo_1_1_2.
+    rewrite (mul_SNo_com
+      2
+      (z 0)
+      SNo_2
+      Hz0S).
+    rewrite <- (mul_SNo_assoc
+      (z 0)
+      2
+      (recip_SNo_pos 2)
+      Hz0S
+      SNo_2
+      (SNo_recip_SNo_pos
+        2
+        SNo_2
+        SNoLt_0_2)).
+    rewrite HtwoRecip.
+    exact (mul_SNo_oneR
+      (z 0)
+      Hz0S).
+  }
+  claim HA1Eq : A1 = z 1.
+  {
+    rewrite (apply_fun_graph
+      2
+      (fun i0:set => if i0 = 0 then z 0 else z 1)
+      0
+      In_0_2).
+    rewrite (apply_fun_graph
+      2
+      (fun i0:set => if i0 = 0 then z 0 else z 1)
+      1
+      In_1_2).
+    rewrite (If_i_1
+      (0 = 0)
+      (z 0)
+      (z 1)
+      (eq_refl 0)).
+    rewrite (If_i_0
+      (1 = 0)
+      (z 0)
+      (z 1)
+      neq_1_0).
+    rewrite HzEq1.
+    rewrite add_SNo_1_1_2.
+    rewrite (mul_SNo_com
+      2
+      (z 1)
+      SNo_2
+      Hz1S).
+    rewrite <- (mul_SNo_assoc
+      (z 1)
+      2
+      (recip_SNo_pos 2)
+      Hz1S
+      SNo_2
+      (SNo_recip_SNo_pos
+        2
+        SNo_2
+        SNoLt_0_2)).
+    rewrite HtwoRecip.
+    exact (mul_SNo_oneR
+      (z 1)
+      Hz1S).
+  }
+  claim HA2Eq : A2 = 0.
+  {
+    rewrite (apply_fun_graph
+      2
+      (fun i0:set => if i0 = 0 then z 0 else z 1)
+      0
+      In_0_2).
+    rewrite (apply_fun_graph
+      2
+      (fun i0:set => if i0 = 0 then z 0 else z 1)
+      1
+      In_1_2).
+    rewrite (If_i_1
+      (0 = 0)
+      (z 0)
+      (z 1)
+      (eq_refl 0)).
+    rewrite (If_i_0
+      (1 = 0)
+      (z 0)
+      (z 1)
+      neq_1_0).
+    rewrite HzEq1.
+    rewrite add_SNo_1_1_2.
+    rewrite HtwoRecip.
+    exact (add_SNo_minus_SNo_rinv
+      1
+      SNo_1).
+  }
+  rewrite HdiagHemEq.
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set =>
+      graph 3 (fun i:set =>
+        if i = 0 then z0 0 else if i = 1 then z0 1 else 0))
+    z
+    HzS1).
+  apply (graph_extensional
+    3
+    (fun i:set => if i = 0 then A0 else if i = 1 then A1 else A2)
+    (fun i:set =>
+      if i = 0 then z 0 else if i = 1 then z 1 else 0)).
+  let i.
+  assume Hi3.
+  apply (ordsuccE 2 i Hi3).
+  - assume Hi2.
+    apply (ordsuccE 1 i Hi2).
+    + assume Hi1.
+      apply (ordsuccE 0 i Hi1).
+      * assume Hi0.
+        exact (EmptyE
+          i
+          Hi0
+          ((if i = 0 then A0 else if i = 1 then A1 else A2) =
+           (if i = 0 then z 0 else if i = 1 then z 1 else 0))).
+      * assume Hieq0.
+        rewrite Hieq0.
+        rewrite (If_i_1
+          (0 = 0)
+          A0
+          (if 0 = 1 then A1 else A2)
+          (eq_refl 0)).
+        rewrite HA0Eq.
+        exact (eq_symm
+          (if 0 = 0 then z 0 else if 0 = 1 then z 1 else 0)
+          (z 0)
+          (If_i_1
+            (0 = 0)
+            (z 0)
+            (if 0 = 1 then z 1 else 0)
+            (eq_refl 0))).
+    + assume Hieq1.
+      rewrite Hieq1.
+      rewrite (If_i_0
+        (1 = 0)
+        A0
+        (if 1 = 1 then A1 else A2)
+        neq_1_0).
+      rewrite (If_i_1
+        (1 = 1)
+        A1
+        A2
+        (eq_refl 1)).
+      rewrite HA1Eq.
+      exact (eq_symm
+        (if 1 = 0 then z 0 else if 1 = 1 then z 1 else 0)
+        (z 1)
+        (eq_i_tra
+          (if 1 = 0 then z 0 else if 1 = 1 then z 1 else 0)
+          (if 1 = 1 then z 1 else 0)
+          (z 1)
+          (If_i_0
+            (1 = 0)
+            (z 0)
+            (if 1 = 1 then z 1 else 0)
+            neq_1_0)
+          (If_i_1
+            (1 = 1)
+            (z 1)
+            0
+            (eq_refl 1)))).
+  - assume Hieq2.
+    rewrite Hieq2.
+    rewrite (If_i_0
+      (2 = 0)
+      A0
+      (if 2 = 1 then A1 else A2)
+      neq_2_0).
+    rewrite (If_i_0
+      (2 = 1)
+      A1
+      A2
+      (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))).
+    rewrite HA2Eq.
+    exact (eq_symm
+      (if 2 = 0 then z 0 else if 2 = 1 then z 1 else 0)
+      0
+      (eq_i_tra
+        (if 2 = 0 then z 0 else if 2 = 1 then z 1 else 0)
+        (if 2 = 1 then z 1 else 0)
+        0
+        (If_i_0
+          (2 = 0)
+          (z 0)
+          (if 2 = 1 then z 1 else 0)
+          neq_2_0)
+        (If_i_0
+          (2 = 1)
+          (z 1)
+          0
+          (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))))).
+}
+claim HkBoundary :
+  forall z:set, z :e S1 ->
+    apply_fun k z = apply_fun (thm57_2_equator_restriction_S1_map g) z.
+{
+  let z.
+  assume HzS1.
+  claim HzB2 : z :e B2.
+  {
+    exact (S1_subset_B2 z HzS1).
+  }
+  claim HrawBoundary :
+    apply_fun raw z = apply_fun (compose_fun S1 S1_equator_in_S2 g) z.
+  {
+    rewrite (compose_fun_apply
+      B2
+      hemD
+      g
+      z
+      HzB2).
+    rewrite (HhemBoundary
+      z
+      HzS1).
+    symmetry.
+    exact (compose_fun_apply
+      S1
+      S1_equator_in_S2
+      g
+      z
+      HzS1).
+  }
+  claim HrawzSn1 :
+    apply_fun raw z :e Sn 1.
+  {
+    rewrite HrawBoundary.
+    exact (continuous_map_function_on
+      S1
+      S1_topology
+      (Sn 1)
+      (Sn_topology 1)
+      (compose_fun S1 S1_equator_in_S2 g)
+      (composition_continuous
+        S1
+        S1_topology
+        (Sn 2)
+        (Sn_topology 2)
+        (Sn 1)
+        (Sn_topology 1)
+        S1_equator_in_S2
+        g
+        S1_equator_in_S2_continuous
+        Hcontg)
+      z
+      HzS1).
+  }
+  claim HrawzE2 :
+    apply_fun raw z :e euclidean_space 2.
+  {
+    exact (SepE1
+      (euclidean_space 2)
+      (fun v:set => euclidean_norm_sq 2 v = 1)
+      (apply_fun raw z)
+      HrawzSn1).
+  }
+  rewrite (pair_map_apply
+    B2
+    R
+    R
+    y0
+    y1
+    z
+    HzB2).
+  rewrite (compose_fun_apply B2 rawE2 ev0 z HzB2).
+  rewrite (compose_fun_apply B2 rawE2 ev1 z HzB2).
+  rewrite (compose_fun_apply B2 raw incSn1E2 z HzB2).
+  rewrite (apply_fun_graph
+    (Sn 1)
+    (fun u:set => u)
+    (apply_fun raw z)
+    HrawzSn1).
+  rewrite (Hev2Apply
+    (apply_fun raw z)
+    0
+    HrawzE2
+    In_0_2).
+  rewrite (Hev2Apply
+    (apply_fun raw z)
+    1
+    HrawzE2
+    In_1_2).
+  rewrite HrawBoundary.
+  claim HmapDef :
+    thm57_2_equator_restriction_S1_map g =
+    graph S1 (fun z0:set =>
+      (apply_fun (apply_fun (compose_fun S1 S1_equator_in_S2 g) z0) 0,
+       apply_fun (apply_fun (compose_fun S1 S1_equator_in_S2 g) z0) 1)).
+  {
+    reflexivity.
+  }
+  rewrite HmapDef.
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set =>
+      (apply_fun (apply_fun (compose_fun S1 S1_equator_in_S2 g) z0) 0,
+       apply_fun (apply_fun (compose_fun S1 S1_equator_in_S2 g) z0) 1))
+    z
+    HzS1).
+  reflexivity.
+}
+witness k.
+exact (andI
+  (continuous_map B2 B2_topology S1 S1_topology k)
+  (forall z:set, z :e S1 ->
+    apply_fun k z = apply_fun (thm57_2_equator_restriction_S1_map g) z)
+  HkContS1
+  HkBoundary).
+Qed.
 
 (** Infrastructure helper for S57 Thm 57.2:
     the pair-valued equator restriction extends over a hemisphere, hence is nulhomotopic. **)
+ (** Proven Charlie **)
 Theorem thm57_2_equator_restriction_pair_nulhomotopic_early : forall g:set,
   antipode_preserving_Sn 2 1 g ->
   nulhomotopic S1 S1_topology S1 S1_topology
@@ -194539,7 +195707,7 @@ exact (s55_extends_to_B2_implies_nulhomotopic
   (thm57_2_equator_restriction_pair_extension_over_B2_early
     g
     Hg)).
-Admitted.
+Qed.
 
 (** Infrastructure helper for S57 Thm 57.2:
     the equator restriction extends over a hemisphere, hence is nulhomotopic. **)
