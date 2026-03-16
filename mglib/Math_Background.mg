@@ -188938,6 +188938,68 @@ exact (andER
     graphify_covering_map_R_S1_loop_data)).
 Admitted.
 
+Theorem path_homotopy_class_loop_chosen_witness_in_class : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f)
+    :e path_homotopy_class_loop X Tx x0 f.
+let X Tx x0 f.
+assume HfLoop.
+exact (Eps_i_ax
+  (fun g:set => g :e path_homotopy_class_loop X Tx x0 f)
+  f
+  (loop_in_own_path_homotopy_class
+    X
+    Tx
+    x0
+    f
+    HfLoop)).
+Qed.
+
+Theorem path_homotopy_class_loop_chosen_witness_homotopy : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    f
+    (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f)).
+let X Tx x0 f.
+assume HfLoop.
+exact (path_homotopy_class_loop_has_homotopy
+  X
+  Tx
+  x0
+  f
+  (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f))
+  (path_homotopy_class_loop_chosen_witness_in_class
+    X
+    Tx
+    x0
+    f
+    HfLoop)).
+Qed.
+
+Theorem path_homotopy_class_loop_chosen_witness_loop : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f)
+    :e loop_space X Tx x0.
+let X Tx x0 f.
+assume HfLoop.
+exact (path_homotopy_class_loop_in_loop_space
+  X
+  Tx
+  x0
+  f
+  (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f))
+  (path_homotopy_class_loop_chosen_witness_in_class
+    X
+    Tx
+    x0
+    f
+    HfLoop)).
+Qed.
+
 Theorem graphify_covering_map_R_S1_postcompose_loop_data : forall h:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   continuous_map unit_interval unit_interval_topology S1 S1_topology
@@ -200803,15 +200865,12 @@ claim HhTriv :
 set eps0 := Eps_i (fun f:set => f :e cls0).
 claim Heps0InCls : eps0 :e cls0.
 {
-  exact (Eps_i_ax
-    (fun f:set => f :e cls0)
+  exact (path_homotopy_class_loop_chosen_witness_in_class
+    S1
+    S1_topology
+    S1_basepoint
     pI
-    (loop_in_own_path_homotopy_class
-      S1
-      S1_topology
-      S1_basepoint
-      pI
-      graphify_covering_map_R_S1_in_loop_space)).
+    graphify_covering_map_R_S1_in_loop_space).
 }
 claim Heps0Hom :
   path_homotopic
@@ -200822,23 +200881,21 @@ claim Heps0Hom :
     pI
     eps0.
 {
-  exact (path_homotopy_class_loop_has_homotopy
+  exact (path_homotopy_class_loop_chosen_witness_homotopy
     S1
     S1_topology
     S1_basepoint
     pI
-    eps0
-    Heps0InCls).
+    graphify_covering_map_R_S1_in_loop_space).
 }
 claim Heps0Loop : eps0 :e loop_space S1 S1_topology S1_basepoint.
 {
-  exact (path_homotopy_class_loop_in_loop_space
+  exact (path_homotopy_class_loop_chosen_witness_loop
     S1
     S1_topology
     S1_basepoint
     pI
-    eps0
-    Heps0InCls).
+    graphify_covering_map_R_S1_in_loop_space).
 }
 claim Heps0Cont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology eps0.
