@@ -409644,6 +409644,106 @@ exact (quotient_universal_property
   (Subq_ref (orbit_topology X Tx G))).
 Qed.
 
+(** Helper: preimage of orbit_map-image is union of action-images under invariance data **)
+(** Proven Bob **)
+Theorem orbit_map_preimage_image_eq_action_union :
+  forall X G idG U0:set,
+  idG :e G ->
+  (forall x:set, x :e X -> apply_fun idG x = x) ->
+  U0 c= X ->
+  (forall g:set, g :e G -> function_on g X X) ->
+  (forall g x:set, g :e G -> x :e X ->
+    apply_fun (orbit_map X G) (apply_fun g x) = apply_fun (orbit_map X G) x) ->
+  preimage_of X (orbit_map X G) (image_of (orbit_map X G) U0) =
+  Union (Repl G (fun g:set => image_of g U0)).
+let X G idG U0.
+assume HidG HidAct HU0sub Hfn HpiInv.
+set slices := Repl G (fun g:set => image_of g U0).
+claim Hpre_sub_union :
+  preimage_of X (orbit_map X G) (image_of (orbit_map X G) U0) c= Union slices.
+{
+  let z. assume Hz.
+  claim HzX : z :e X.
+  { exact (SepE1 X (fun x:set => apply_fun (orbit_map X G) x :e image_of (orbit_map X G) U0) z Hz). }
+  claim HpiImg : apply_fun (orbit_map X G) z :e image_of (orbit_map X G) U0.
+  { exact (SepE2 X (fun x:set => apply_fun (orbit_map X G) x :e image_of (orbit_map X G) U0) z Hz). }
+  apply (ReplE_impred U0 (fun u:set => apply_fun (orbit_map X G) u) (apply_fun (orbit_map X G) z) HpiImg).
+  let u. assume HuU HpiEq.
+  claim HuX : u :e X.
+  { exact (HU0sub u HuU). }
+  claim HzInPiu : z :e apply_fun (orbit_map X G) u.
+  {
+    rewrite <- HpiEq.
+    rewrite (orbit_map_apply X G z HzX).
+    apply SepI.
+    - exact HzX.
+    - prove orbit_equiv X G z z.
+      prove z :e X /\ z :e X /\ exists g:set, g :e G /\ apply_fun g z = z.
+      apply and3I.
+      + exact HzX.
+      + exact HzX.
+      + witness idG.
+        apply andI.
+        * exact HidG.
+        * exact (HidAct z HzX).
+  }
+  claim HzInSep : z :e {y :e X | orbit_equiv X G u y}.
+  {
+    exact (mem_eqR
+      z
+      (apply_fun (orbit_map X G) u)
+      {y :e X | orbit_equiv X G u y}
+      (orbit_map_apply X G u HuX)
+      HzInPiu).
+  }
+  claim Horb_uz : orbit_equiv X G u z.
+  { exact (SepE2 X (fun y:set => orbit_equiv X G u y) z HzInSep). }
+  claim Hgex : exists g:set, g :e G /\ apply_fun g u = z.
+  { exact (andER (u :e X /\ z :e X) (exists g:set, g :e G /\ apply_fun g u = z) Horb_uz). }
+  apply Hgex.
+  let g. assume Hgpack.
+  claim HgG : g :e G.
+  { exact (andEL (g :e G) (apply_fun g u = z) Hgpack). }
+  claim Hgu : apply_fun g u = z.
+  { exact (andER (g :e G) (apply_fun g u = z) Hgpack). }
+  apply (UnionI slices z (image_of g U0)).
+  - rewrite <- Hgu.
+    exact (ReplI U0 (fun y:set => apply_fun g y) u HuU).
+  - exact (ReplI G (fun h:set => image_of h U0) g HgG).
+}
+claim Hunion_sub_pre :
+  Union slices c= preimage_of X (orbit_map X G) (image_of (orbit_map X G) U0).
+{
+  let z. assume Hz.
+  apply (UnionE slices z Hz).
+  let V. assume HVpack.
+  claim HzV : z :e V.
+  { exact (andEL (z :e V) (V :e slices) HVpack). }
+  claim HVslices : V :e slices.
+  { exact (andER (z :e V) (V :e slices) HVpack). }
+  apply (ReplE_impred G (fun g:set => image_of g U0) V HVslices).
+  let g. assume HgG HVeq.
+  claim HzGU : z :e image_of g U0.
+  { rewrite <- HVeq. exact HzV. }
+  apply (ReplE_impred U0 (fun y:set => apply_fun g y) z HzGU).
+  let y. assume HyU Hzeq.
+  claim HyX : y :e X.
+  { exact (HU0sub y HyU). }
+  claim HzX : z :e X.
+  { rewrite Hzeq. exact (Hfn g HgG y HyX). }
+  prove z :e {x :e X | apply_fun (orbit_map X G) x :e image_of (orbit_map X G) U0}.
+  apply SepI.
+  - exact HzX.
+  - prove apply_fun (orbit_map X G) z :e image_of (orbit_map X G) U0.
+    rewrite Hzeq.
+    rewrite (HpiInv g y HgG HyX).
+    exact (ReplI U0 (fun u:set => apply_fun (orbit_map X G) u) y HyU).
+}
+apply set_ext.
+- exact Hpre_sub_union.
+- exact Hunion_sub_pre.
+Qed.
+
 (** Helper: orbit_map image of an open set is open under open action + orbit invariance **)
 (** Proven Bob **)
 Theorem orbit_map_open_of_invariant_open_action :
