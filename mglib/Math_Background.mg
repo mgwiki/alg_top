@@ -413565,12 +413565,13 @@ witness k. apply andI.
       - rewrite (Hk_factors x HxX). exact Hpx.
   + (** evenly covered: for each b :e B, find U :e Tb with b :e U and evenly_covered **)
     let b. assume HbB.
-    (** Step 1: get evenly covered V for p around b **)
-    apply (covering_map_evenly_covered_slices X Tx B Tb p b Hcov HbB).
+    (** Step 1: get PATH-CONNECTED evenly covered V with slices **)
+    apply (covering_map_path_connected_evenly_covered_slices X Tx B Tb p b Hcov Hlpc HbB).
     let V. assume Hev_inner. apply Hev_inner. let slices_p. assume Hslices_p.
-    (** Extract slices data **)
-    apply (and6E
+    (** Extract slices data (7-tuple: Tb, bV, pc, open, pd, union, homeo) **)
+    apply (and7E
       (V :e Tb) (b :e V)
+      (path_connected_space V (subspace_topology B Tb V))
       (slices_p c= Tx)
       (pairwise_disjoint slices_p)
       (Union slices_p = preimage_of X p V)
@@ -413578,7 +413579,7 @@ witness k. apply andI.
         homeomorphism S0 (subspace_topology X Tx S0) V (subspace_topology B Tb V)
           (graph S0 (fun x0:set => apply_fun p x0)))
       Hslices_p).
-    assume HVTb HbV Hslices_sub_Tx Hpd_slices Hunion_slices Hhomeo_slices.
+    assume HVTb HbV HpcV Hslices_sub_Tx Hpd_slices Hunion_slices Hhomeo_slices.
     (** Construct slices for k: slices_k = {image_of pi S | S :e slices_p} **)
     set slices_k := {image_of pi S | S :e slices_p}.
     (** The witness V for evenly covered by k, with slices slices_k **)
