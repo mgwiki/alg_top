@@ -188209,6 +188209,171 @@ apply andI.
 - exact s55_S1_antipode_map_fixed_point_free_early.
 Qed.
 
+(** S55 helper: the S1 antipode map is an involution. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_involution : forall z:set,
+  z :e S1 ->
+  apply_fun s55_S1_antipode_map
+    (apply_fun s55_S1_antipode_map z)
+  = z.
+let z.
+assume HzS1.
+claim HzR2 : z :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+claim Hz0R : z 0 :e R.
+{
+  exact (ap0_Sigma
+    R
+    (fun _ : set => R)
+    z
+    HzR2).
+}
+claim Hz1R : z 1 :e R.
+{
+  exact (ap1_Sigma
+    R
+    (fun _ : set => R)
+    z
+    HzR2).
+}
+claim HantiInS1 :
+  apply_fun s55_S1_antipode_map z :e S1.
+{
+  rewrite (apply_fun_graph
+    S1
+    (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+    z
+    HzS1).
+  exact (s55_S1_antipode_in_S1
+    z
+    HzS1).
+}
+claim HzEta : z = (z 0, z 1).
+{
+  exact (setprod_eta
+    R
+    R
+    z
+    HzR2).
+}
+claim HantiApply :
+  apply_fun s55_S1_antipode_map z =
+  (minus_SNo (z 0), minus_SNo (z 1)).
+{
+  exact (apply_fun_graph
+    S1
+    (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+    z
+    HzS1).
+}
+rewrite (apply_fun_graph
+  S1
+  (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+  (apply_fun s55_S1_antipode_map z)
+  HantiInS1).
+rewrite HantiApply.
+rewrite tuple_2_0_eq at 1.
+rewrite tuple_2_1_eq.
+rewrite (minus_SNo_minus_SNo_real
+  (z 0)
+  Hz0R).
+rewrite (minus_SNo_minus_SNo_real
+  (z 1)
+  Hz1R).
+rewrite <- HzEta.
+reflexivity.
+Qed.
+
+(** S55 helper: the S1 antipode map is injective. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_injective : forall x y:set,
+  x :e S1 ->
+  y :e S1 ->
+  apply_fun s55_S1_antipode_map x =
+  apply_fun s55_S1_antipode_map y ->
+  x = y.
+let x y.
+assume HxS1.
+assume HyS1.
+assume HxyAnti.
+claim Hanti2Eq :
+  apply_fun s55_S1_antipode_map
+    (apply_fun s55_S1_antipode_map x)
+  =
+  apply_fun s55_S1_antipode_map
+    (apply_fun s55_S1_antipode_map y).
+{
+  rewrite HxyAnti.
+  reflexivity.
+}
+claim HxEq :
+  x =
+  apply_fun s55_S1_antipode_map
+    (apply_fun s55_S1_antipode_map x).
+{
+  exact (eq_symm
+    (apply_fun s55_S1_antipode_map
+      (apply_fun s55_S1_antipode_map x))
+    x
+    (s55_S1_antipode_map_involution
+      x
+      HxS1)).
+}
+claim Hmid :
+  apply_fun s55_S1_antipode_map
+    (apply_fun s55_S1_antipode_map x)
+  = y.
+{
+  exact (eq_i_tra
+    (apply_fun s55_S1_antipode_map
+      (apply_fun s55_S1_antipode_map x))
+    (apply_fun s55_S1_antipode_map
+      (apply_fun s55_S1_antipode_map y))
+    y
+    Hanti2Eq
+    (s55_S1_antipode_map_involution
+      y
+      HyS1)).
+}
+exact (eq_i_tra
+  x
+  (apply_fun s55_S1_antipode_map
+    (apply_fun s55_S1_antipode_map x))
+  y
+  HxEq
+  Hmid).
+Qed.
+
+(** S55 helper: the S1 antipode map has an explicit preimage witness for every circle point. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_surjective_witness : forall y:set,
+  y :e S1 ->
+  exists x:set, x :e S1 /\ apply_fun s55_S1_antipode_map x = y.
+let y.
+assume HyS1.
+witness (apply_fun s55_S1_antipode_map y).
+apply andI.
+- rewrite (apply_fun_graph
+    S1
+    (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+    y
+    HyS1).
+  exact (s55_S1_antipode_in_S1
+    y
+    HyS1).
+- exact (s55_S1_antipode_map_involution
+    y
+    HyS1).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
