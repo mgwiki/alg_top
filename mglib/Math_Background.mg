@@ -409393,6 +409393,53 @@ let x. assume Hxcls.
 exact (elem_implies_nonempty cls x Hxcls).
 Qed.
 
+(** Helper: every orbit-space class is a subset of X **)
+(** Proven Bob **)
+Theorem orbit_space_member_subset_X : forall X G cls:set,
+  cls :e orbit_space X G ->
+  cls c= X.
+let X G cls.
+assume HclsOS.
+claim HclsPow : cls :e Power X.
+{
+  exact (SepE1
+    (Power X)
+    (fun c:set => exists z:set, z :e X /\ c = {y :e X | orbit_equiv X G z y})
+    cls
+    HclsOS).
+}
+exact (PowerE X cls HclsPow).
+Qed.
+
+(** Helper: orbit_space has a class exactly when X is nonempty **)
+(** Proven Bob **)
+Theorem orbit_space_exists_class_iff_X_nonempty : forall X G:set,
+  (exists cls:set, cls :e orbit_space X G) <-> X <> Empty.
+let X G.
+apply iffI.
+- assume HexCls.
+  apply HexCls.
+  let cls. assume HclsOS.
+  claim Hrep : exists x:set, x :e X /\ apply_fun (orbit_map X G) x = cls.
+  {
+    exact ((iffEL
+      (cls :e orbit_space X G)
+      (exists x:set, x :e X /\ apply_fun (orbit_map X G) x = cls)
+      (orbit_space_member_iff_orbit_map_value X G cls))
+      HclsOS).
+  }
+  apply Hrep.
+  let x. assume HxPack.
+  claim HxX : x :e X.
+  { exact (andEL (x :e X) (apply_fun (orbit_map X G) x = cls) HxPack). }
+  exact (elem_implies_nonempty X x HxX).
+- assume HXne.
+  apply (nonempty_has_element X HXne).
+  let x. assume HxX.
+  witness apply_fun (orbit_map X G) x.
+  exact (orbit_map_value_in_orbit_space X G x HxX).
+Qed.
+
 (** Helper: orbit_map is function_on without extra assumptions on G **)
 (** Proven Bob **)
 Theorem orbit_map_function_on_plain : forall X G:set,
