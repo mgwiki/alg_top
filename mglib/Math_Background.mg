@@ -149603,6 +149603,60 @@ apply andI.
             HpR2)).
 Qed.
 
+(** S55 helper: Brouwer disc theorem rules out everywhere-no-fixed-point condition. **)
+(** Proven Bob **)
+Theorem s55_brouwer_disc_no_fixed_point_contradiction : forall f:set,
+  continuous_map B2 B2_topology B2 B2_topology f ->
+  (forall x:set, x :e B2 -> ~(apply_fun f x = x)) ->
+  False.
+let f.
+assume HfCont HnoFixAll.
+claim HnoFixExists :
+  ~(exists x:set, x :e B2 /\ apply_fun f x = x).
+{
+  assume Hfix.
+  apply Hfix.
+  let x.
+  assume HxPack.
+  claim HxB2 : x :e B2.
+  {
+    exact (andEL
+      (x :e B2)
+      (apply_fun f x = x)
+      HxPack).
+  }
+  claim HfxEq : apply_fun f x = x.
+  {
+    exact (andER
+      (x :e B2)
+      (apply_fun f x = x)
+      HxPack).
+  }
+  exact (HnoFixAll
+    x
+    HxB2
+    HfxEq).
+}
+exact (HnoFixExists
+  (thm55_6_brouwer_fixed_point_disc
+    f
+    HfCont)).
+Qed.
+
+(** S55 helper: equivalent negated form of Brouwer disc fixed-point theorem. **)
+(** Proven Bob **)
+Theorem s55_brouwer_disc_not_forall_no_fixed_point : forall f:set,
+  continuous_map B2 B2_topology B2 B2_topology f ->
+  ~(forall x:set, x :e B2 -> ~(apply_fun f x = x)).
+let f.
+assume HfCont.
+assume HnoFixAll.
+exact (s55_brouwer_disc_no_fixed_point_contradiction
+  f
+  HfCont
+  HnoFixAll).
+Qed.
+
 (** Infrastructure: fixed points exist on every retract of B^2. **)
 (** Proven Charlie **)
 Theorem s55_retract_B2_fixed_point_early : forall A:set,
