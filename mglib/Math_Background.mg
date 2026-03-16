@@ -408002,9 +408002,15 @@ claim Hp_orbit_const : forall g x:set, g :e G -> x :e X ->
     Hct x HxX). }
 (** Construct k as the induced map from orbit_space to B **)
 (** k(orbit_class) = p(representative) **)
-(** The full construction and verification that k is a covering map **)
-(** requires showing orbit_space/orbit_topology has the right structure **)
-(** when G acts properly discontinuously. **)
+(** Construct k as: k(cls) = p(representative of cls) **)
+(** k is well-defined because p is constant on orbits (Hp_orbit_const) **)
+(** k is continuous by quotient universal property (s55_continuous_descends_to_quotient_topology) **)
+(** k is a covering map because: **)
+(**   1. p: X -> B is a covering map, so has evenly covered neighborhoods **)
+(**   2. G permutes slices of p (covering transformations permute fibers) **)
+(**   3. orbit_map sends each slice to a quotient-slice in orbit_space **)
+(**   4. The evenly covered structure for k comes from grouping slices by G-orbits **)
+(** Full formal construction is complex; leaving as admit for now. **)
 admit.
 Admitted.
 
