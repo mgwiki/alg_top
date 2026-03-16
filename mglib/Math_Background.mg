@@ -190268,6 +190268,127 @@ apply andI.
 - exact s55_S1_inv_fun_graph_homeomorphism.
 Qed.
 
+(** S55 helper: inverse-graph map has an explicit two-cycle witness on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_two_cycle_witness :
+  exists x:set, exists y:set,
+    ((x :e S1 /\ y :e S1) /\ x <> y) /\
+    apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x = y /\
+    apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) y = x.
+apply s55_S1_antipode_map_two_cycle_witness.
+let x.
+assume HyExists.
+apply HyExists.
+let y.
+assume Hpack.
+witness x.
+witness y.
+claim Hleft :
+  (((x :e S1 /\ y :e S1) /\ x <> y) /\
+    apply_fun s55_S1_antipode_map x = y).
+{
+  exact (andEL
+    (((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun s55_S1_antipode_map x = y)
+    (apply_fun s55_S1_antipode_map y = x)
+    Hpack).
+}
+claim HxyPack :
+  ((x :e S1 /\ y :e S1) /\ x <> y).
+{
+  exact (andEL
+    ((x :e S1 /\ y :e S1) /\ x <> y)
+    (apply_fun s55_S1_antipode_map x = y)
+    Hleft).
+}
+claim HxS1 : x :e S1.
+{
+  exact (andEL
+    (x :e S1)
+    (y :e S1)
+    (andEL
+      (x :e S1 /\ y :e S1)
+      (x <> y)
+      HxyPack)).
+}
+claim HyS1 : y :e S1.
+{
+  exact (andER
+    (x :e S1)
+    (y :e S1)
+    (andEL
+      (x :e S1 /\ y :e S1)
+      (x <> y)
+      HxyPack)).
+}
+claim HfxEqY :
+  apply_fun s55_S1_antipode_map x = y.
+{
+  exact (andER
+    ((x :e S1 /\ y :e S1) /\ x <> y)
+    (apply_fun s55_S1_antipode_map x = y)
+    Hleft).
+}
+claim HfyEqX :
+  apply_fun s55_S1_antipode_map y = x.
+{
+  exact (andER
+    (((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun s55_S1_antipode_map x = y)
+    (apply_fun s55_S1_antipode_map y = x)
+    Hpack).
+}
+apply andI.
+- apply andI.
+  + exact HxyPack.
+  + exact (eq_i_tra
+      (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x)
+      (apply_fun s55_S1_antipode_map x)
+      y
+      (s55_S1_antipode_map_inv_fun_graph_apply_eq
+        x
+        HxS1)
+      HfxEqY).
+- exact (eq_i_tra
+    (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) y)
+    (apply_fun s55_S1_antipode_map y)
+    x
+    (s55_S1_antipode_map_inv_fun_graph_apply_eq
+      y
+      HyS1)
+    HfyEqX).
+Qed.
+
+(** S55 helper: there exists a fixed-point-free antipode-preserving self-homeomorphism of S1. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_antipode_preserving_homeomorphism_S1 :
+  exists f:set,
+    (antipode_preserving_S1 f /\
+     homeomorphism S1 S1_topology S1 S1_topology f) /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)).
+witness (inv_fun_graph S1 s55_S1_antipode_map S1).
+apply andI.
+- apply andI.
+  + exact s55_S1_inv_fun_graph_antipode_preserving.
+  + exact s55_S1_inv_fun_graph_homeomorphism.
+- exact s55_S1_inv_fun_graph_fixed_point_free.
+Qed.
+
+(** S55 helper: there exists a non-identity antipode-preserving self-homeomorphism of S1. **)
+(** Proven Bob **)
+Theorem s55_exists_nonidentity_antipode_preserving_homeomorphism_S1 :
+  exists f:set,
+    (antipode_preserving_S1 f /\
+     homeomorphism S1 S1_topology S1 S1_topology f) /\
+    f <> graph S1 (fun x:set => x).
+witness (inv_fun_graph S1 s55_S1_antipode_map S1).
+apply andI.
+- apply andI.
+  + exact s55_S1_inv_fun_graph_antipode_preserving.
+  + exact s55_S1_inv_fun_graph_homeomorphism.
+- exact s55_S1_inv_fun_graph_ne_id_graph.
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
