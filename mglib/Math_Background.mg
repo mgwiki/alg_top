@@ -404121,6 +404121,16 @@ apply andI.
   reflexivity.
 Qed.
 
+(** Helper: applying the identity CT gives back the same point **)
+(** Proven Alice **)
+Theorem covering_transformation_id_apply :
+  forall E Te B Tb p x:set,
+  x :e E ->
+  apply_fun (covering_transformation_id E Te B Tb p) x = x.
+let E Te B Tb p x. assume HxE.
+exact (apply_fun_graph E (fun x0:set => x0) x HxE).
+Qed.
+
 (** Helper: the identity is in the covering transformation group **)
 (** Proven Alice **)
 Theorem covering_transformation_id_in_group :
