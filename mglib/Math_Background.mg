@@ -409371,6 +409371,52 @@ apply and3I.
   exact (orbit_equiv_transitive X G x y z Hxy Hyz Hcomp).
 Qed.
 
+(** Helper: orbit-equivalent points have the same orbit_map value **)
+(** Proven Bob **)
+Theorem orbit_map_eq_of_orbit_equiv : forall X G x y:set,
+  orbit_equiv X G x y ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  apply_fun (orbit_map X G) x = apply_fun (orbit_map X G) y.
+let X G x y.
+assume Hxy Hcomp Hinv.
+apply (and3E
+  (x :e X)
+  (y :e X)
+  (exists g:set, g :e G /\ apply_fun g x = y)
+  Hxy).
+assume HxX HyX Hex.
+rewrite (orbit_map_apply X G x HxX).
+rewrite (orbit_map_apply X G y HyX).
+apply set_ext.
+- let z. assume Hz.
+  claim HzX : z :e X.
+  { exact (SepE1 X (fun w:set => orbit_equiv X G x w) z Hz). }
+  claim Hxz : orbit_equiv X G x z.
+  { exact (SepE2 X (fun w:set => orbit_equiv X G x w) z Hz). }
+  claim Hyx : orbit_equiv X G y x.
+  { exact (orbit_equiv_symmetric X G x y Hxy Hinv). }
+  claim Hyz : orbit_equiv X G y z.
+  { exact (orbit_equiv_transitive X G y x z Hyx Hxz Hcomp). }
+  apply SepI.
+  + exact HzX.
+  + exact Hyz.
+- let z. assume Hz.
+  claim HzX : z :e X.
+  { exact (SepE1 X (fun w:set => orbit_equiv X G y w) z Hz). }
+  claim Hyz : orbit_equiv X G y z.
+  { exact (SepE2 X (fun w:set => orbit_equiv X G y w) z Hz). }
+  claim Hxz : orbit_equiv X G x z.
+  { exact (orbit_equiv_transitive X G x y z Hxy Hyz Hcomp). }
+  apply SepI.
+  + exact HzX.
+  + exact Hxz.
+Qed.
+
 (** Helper: x is in its own orbit **)
 Theorem orbit_self_mem : forall X G idG x:set,
   idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
