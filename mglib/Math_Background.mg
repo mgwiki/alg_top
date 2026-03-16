@@ -409465,8 +409465,20 @@ apply andI.
   exact ((iffEL
     (cls :e orbit_space X G)
     (exists x:set, x :e X /\ apply_fun (orbit_map X G) x = cls)
-    (orbit_space_member_iff_orbit_map_value X G cls))
+      (orbit_space_member_iff_orbit_map_value X G cls))
     HclsOS).
+Qed.
+
+(** Helper: orbit_map image on X is exactly orbit_space **)
+(** Proven Bob **)
+Theorem orbit_map_image_of_whole : forall X G:set,
+  image_of (orbit_map X G) X = orbit_space X G.
+let X G.
+exact (surjective_map_image_of_whole
+  X
+  (orbit_space X G)
+  (orbit_map X G)
+  (orbit_map_surjective_plain X G)).
 Qed.
 
 (** Helper: orbit map is function_on **)
