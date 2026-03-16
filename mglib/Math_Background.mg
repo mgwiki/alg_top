@@ -213169,10 +213169,17 @@ claim Hdecomp : exists loopU:set, exists loopV:set,
       Hrep2). }
   (** f1X maps into U: for all t in [0,1], f1X(t) = f(st) where st in [0,s], so f(st) in U **)
   claim Hf1X_image_U : forall t:set, t :e unit_interval -> apply_fun f1X t :e U.
-  { admit. }
+  { (** f1X = compose_fun of f with affine_fun_I(0,s). **)
+    (** f1X(t) = f(s times t) where s times t :e [0,s]. **)
+    (** By HfU: f maps [0,s] to U. **)
+    (** Needs: affine_fun_I_apply + HfU + arithmetic to show s times t in [0,s] **)
+    admit. }
   (** f2X maps into V: for all t in [0,1], f2X(t) = f(s+(1-s)t) where s+(1-s)t in [s,1], so f(...) in V **)
   claim Hf2X_image_V : forall t:set, t :e unit_interval -> apply_fun f2X t :e V.
-  { admit. }
+  { (** f2X = compose_fun of f with affine_fun_I(s, 1-s). **)
+    (** f2X(t) = f(s + (1-s) times t) where s+(1-s)t :e [s,1]. **)
+    (** By HfV: f maps [s,1] to V. **)
+    admit. }
   (** Range restrict f1X to U and f2X to V **)
   claim Hf1U_cont : continuous_map unit_interval unit_interval_topology
     U (subspace_topology X Tx U) f1X.
