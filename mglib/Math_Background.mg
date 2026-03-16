@@ -413222,12 +413222,17 @@ witness k. apply andI.
           * rewrite <- Hpix. exact (ReplI S (fun z:set => apply_fun pi z) x HxS).
           * exact (ReplI slices_p (fun S0:set => image_of pi S0) S HSslice).
       - (** 4. each W :e slices_k homeomorphic to V via k **)
-        (** W = pi(S) for some S :e slices_p **)
-        (** p|S : S -> V is a homeomorphism **)
-        (** pi|S : S -> pi(S) is a bijection (since different points in S **)
-        (** are in different orbits - the slices are precisely one point per orbit) **)
-        (** k|pi(S) : pi(S) -> V satisfies k(pi(x)) = p(x), so k|pi(S) = p|S o (pi|S)^{-1} **)
-        (** This is a composition of homeomorphisms, hence a homeomorphism **)
+        let W. assume HWsk : W :e slices_k.
+        apply (ReplE_impred slices_p (fun S:set => image_of pi S) W HWsk).
+        let S. assume HSslice : S :e slices_p. assume HWeq : W = image_of pi S.
+        rewrite HWeq.
+        (** Need: homeomorphism (image_of pi S) (subspace ...) V (subspace ...) (graph ... (fun cls => apply_fun k cls)) **)
+        (** Key facts: **)
+        (** 1. pi|_S is injective (orbit_map_injective_on_covering_slice) **)
+        (** 2. p|_S is a homeomorphism to V **)
+        (** 3. k(pi(x)) = p(x) for x :e S **)
+        (** 4. The map cls -> k(cls) on image_of pi S equals p o pi_inv on S **)
+        (** Full homeomorphism construction is ~100 lines; admitting for now **)
         admit.
 - exact Hk_factors.
 Admitted.
