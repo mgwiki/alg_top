@@ -188558,7 +188558,7 @@ exact (loop_at_unpack_right
     x0
     f
     HfLoop)).
-Admitted.
+Qed.
 
 Theorem loop_at_has_loop_data : forall X Tx x0 f:set,
   loop_at X Tx x0 f ->
@@ -188607,7 +188607,7 @@ exact (andI
         x0
         f
         Hloop)))).
-Admitted.
+Qed.
 
 Theorem loop_at_pack_left : forall X Tx x0 f:set,
   (continuous_map unit_interval unit_interval_topology X Tx f /\
@@ -188665,7 +188665,7 @@ exact (loop_at_pack_right
       (apply_fun f 1 = x0)
       H0
       H1))).
-Admitted.
+Qed.
 
 Theorem covering_map_R_S1_compose_loop_data_at_lift_start : forall h e0:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
