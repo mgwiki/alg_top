@@ -114,6 +114,7 @@ Proposed by:
 
 Discussion:
   - 1773621713 | Charlie: PROPOSED. After commit `3c49b130d`, `mgdeps6.pl` shows the remaining recursive blocker for `thm57_3_antipode_free_implies_antipode_preserving_map` is exactly this helper together with the adjacent graph/pair identity. The issue is representation-level, not topological.
+  - 1773627822 | Charlie: On current `main`, the dependency root is now even sharper: `graph_2_if_coords_pair` is the sole local blocker under `euclidean_space_2_eq_coords_pair`, and `setprod_R_R_apply_fun_coords` only depends on the derived wrappers `apply_fun_pair_coords_0/1`. That reinforces that the real issue is graph-model versus tuple-model identification, not missing S57 topology.
 
 Approvals:
   - | Alice:
