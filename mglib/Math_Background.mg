@@ -188257,6 +188257,111 @@ exact (SepI
   HpIloopAt).
 Admitted.
 
+Theorem graphify_covering_map_R_S1_postcompose_loop_data : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  continuous_map unit_interval unit_interval_topology S1 S1_topology
+    (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) /\
+  apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 0 =
+    apply_fun h S1_basepoint /\
+  apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 1 =
+    apply_fun h S1_basepoint.
+let h.
+assume HhCont.
+set pI := graphify_on unit_interval covering_map_R_S1.
+claim HpIloop : pI :e loop_space S1 S1_topology S1_basepoint.
+{
+  exact graphify_covering_map_R_S1_in_loop_space.
+}
+claim HpIcont :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology pI.
+{
+  exact (loop_space_continuous
+    S1
+    S1_topology
+    S1_basepoint
+    pI
+    HpIloop).
+}
+claim HpI0 : apply_fun pI 0 = S1_basepoint.
+{
+  exact (loop_at_at_zero
+    S1
+    S1_topology
+    S1_basepoint
+    pI
+    (loop_space_has_loop_at
+      S1
+      S1_topology
+      S1_basepoint
+      pI
+      HpIloop)).
+}
+claim HpI1 : apply_fun pI 1 = S1_basepoint.
+{
+  exact (loop_at_at_one
+    S1
+    S1_topology
+    S1_basepoint
+    pI
+    (loop_space_has_loop_at
+      S1
+      S1_topology
+      S1_basepoint
+      pI
+      HpIloop)).
+}
+set gp := compose_fun unit_interval pI h.
+claim HgpCont :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology gp.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    S1
+    S1_topology
+    S1
+    S1_topology
+    pI
+    h
+    HpIcont
+    HhCont).
+}
+claim Hgp0 :
+  apply_fun gp 0 = apply_fun h S1_basepoint.
+{
+  rewrite (compose_fun_apply
+    unit_interval
+    pI
+    h
+    0
+    zero_in_unit_interval).
+  rewrite HpI0.
+  reflexivity.
+}
+claim Hgp1 :
+  apply_fun gp 1 = apply_fun h S1_basepoint.
+{
+  rewrite (compose_fun_apply
+    unit_interval
+    pI
+    h
+    1
+    one_in_unit_interval).
+  rewrite HpI1.
+  reflexivity.
+}
+exact (andI
+  (continuous_map unit_interval unit_interval_topology S1 S1_topology gp /\
+   apply_fun gp 0 = apply_fun h S1_basepoint)
+  (apply_fun gp 1 = apply_fun h S1_basepoint)
+  (andI
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gp)
+    (apply_fun gp 0 = apply_fun h S1_basepoint)
+    HgpCont
+    Hgp0)
+  Hgp1).
+Admitted.
+
 (** Early arithmetic helper: x + x = 0 forces x = 0. **)
 (** Proven Charlie **)
 Lemma SNo_double_zero_early : forall x:set, x :e R ->
@@ -193640,41 +193745,46 @@ claim HcompPIcont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology
     (compose_fun unit_interval pI h).
 {
-  exact (composition_continuous
-    unit_interval
-    unit_interval_topology
-    S1
-    S1_topology
-    S1
-    S1_topology
-    pI
-    h
-    HpIcont
-    HhCont).
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology
+       (compose_fun unit_interval pI h))
+    (apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology
+         (compose_fun unit_interval pI h) /\
+       apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint)
+      (apply_fun (compose_fun unit_interval pI h) 1 = apply_fun h S1_basepoint)
+      (graphify_covering_map_R_S1_postcompose_loop_data
+        h
+        HhCont))).
 }
 claim HcompPI0 :
   apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint.
 {
-  rewrite (compose_fun_apply
-    unit_interval
-    pI
-    h
-    0
-    zero_in_unit_interval).
-  rewrite HpI0.
-  reflexivity.
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology
+       (compose_fun unit_interval pI h))
+    (apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology
+         (compose_fun unit_interval pI h) /\
+       apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint)
+      (apply_fun (compose_fun unit_interval pI h) 1 = apply_fun h S1_basepoint)
+      (graphify_covering_map_R_S1_postcompose_loop_data
+        h
+        HhCont))).
 }
 claim HcompPI1 :
   apply_fun (compose_fun unit_interval pI h) 1 = apply_fun h S1_basepoint.
 {
-  rewrite (compose_fun_apply
-    unit_interval
-    pI
-    h
-    1
-    one_in_unit_interval).
-  rewrite HpI1.
-  reflexivity.
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology
+       (compose_fun unit_interval pI h) /\
+     apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint)
+    (apply_fun (compose_fun unit_interval pI h) 1 = apply_fun h S1_basepoint)
+    (graphify_covering_map_R_S1_postcompose_loop_data
+      h
+      HhCont)).
 }
 claim HcompGammaClass :
   path_homotopy_class_loop
