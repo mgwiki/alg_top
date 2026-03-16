@@ -196396,38 +196396,29 @@ claim Hy0S1 : apply_fun h S1_basepoint :e S1.
     Hb0S1).
 }
 set gamma := compose_fun unit_interval covering_map_R_S1 h.
-claim HgammaPack :
+claim HgammaLiftPack :
   continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
-  apply_fun gamma 0 = apply_fun h S1_basepoint /\
-  apply_fun gamma 1 = apply_fun h S1_basepoint.
+  apply_fun gamma 0 = apply_fun covering_map_R_S1 e0 /\
+  apply_fun gamma 1 = apply_fun covering_map_R_S1 e0.
 {
-  exact (covering_map_R_S1_compose_loop_data
+  exact (covering_map_R_S1_compose_loop_data_at_lift_start
     h
-    HhCont).
+    e0
+    HhCont
+    He0R
+    He0Start).
 }
 claim HgammaCont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology gamma.
 {
   exact (andEL
     (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
-    (apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (apply_fun gamma 0 = apply_fun covering_map_R_S1 e0)
     (andEL
       (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
-       apply_fun gamma 0 = apply_fun h S1_basepoint)
-      (apply_fun gamma 1 = apply_fun h S1_basepoint)
-      HgammaPack)).
-}
-claim Hgamma0 :
-  apply_fun gamma 0 = apply_fun h S1_basepoint.
-{
-  exact (andER
-    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
-    (apply_fun gamma 0 = apply_fun h S1_basepoint)
-    (andEL
-      (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
-       apply_fun gamma 0 = apply_fun h S1_basepoint)
-      (apply_fun gamma 1 = apply_fun h S1_basepoint)
-      HgammaPack)).
+       apply_fun gamma 0 = apply_fun covering_map_R_S1 e0)
+      (apply_fun gamma 1 = apply_fun covering_map_R_S1 e0)
+      HgammaLiftPack)).
 }
 claim HgammaHalf :
   apply_fun gamma (eps_ 1) =
@@ -196456,8 +196447,17 @@ claim HgammaHalfNeStart :
 claim HstartGamma :
   apply_fun covering_map_R_S1 e0 = apply_fun gamma 0.
 {
-  rewrite Hgamma0.
-  exact He0Start.
+  exact (eq_symm
+    (apply_fun gamma 0)
+    (apply_fun covering_map_R_S1 e0)
+    (andER
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
+      (apply_fun gamma 0 = apply_fun covering_map_R_S1 e0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+         apply_fun gamma 0 = apply_fun covering_map_R_S1 e0)
+        (apply_fun gamma 1 = apply_fun covering_map_R_S1 e0)
+        HgammaLiftPack))).
 }
 claim HliftGammaPack :
   (continuous_map unit_interval unit_interval_topology
