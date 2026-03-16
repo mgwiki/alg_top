@@ -188894,6 +188894,24 @@ exact (andEL
     Hpack)).
 Qed.
 
+(** S55 helper: the circle is inhabited. **)
+(** Proven Bob **)
+Theorem s55_S1_nonempty :
+  exists x:set, x :e S1.
+witness S1_basepoint.
+exact S1_basepoint_in_S1_early.
+Qed.
+
+(** S55 helper: the circle is nonempty as a set. **)
+(** Proven Bob **)
+Theorem s55_S1_ne_Empty :
+  S1 <> Empty.
+exact (elem_implies_nonempty
+  S1
+  S1_basepoint
+  S1_basepoint_in_S1_early).
+Qed.
+
 (** S55 helper: antipode map is not the identity graph on S1. **)
 (** Proven Bob **)
 Theorem s55_S1_antipode_map_ne_id_graph :
