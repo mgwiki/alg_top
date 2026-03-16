@@ -412668,12 +412668,16 @@ witness k. apply andI.
         (** orbit_map is open: image_of pi S :e OT **)
         exact (covering_transformation_group_orbit_map_open X Tx B Tb p S Hcov HSopen).
       - (** 2. pairwise_disjoint slices_k **)
-        (** If pi(S1) and pi(S2) have a common point, then S1 and S2 **)
-        (** contain orbit-equivalent points, meaning some g in G maps **)
-        (** S1 into S2. But p-slices over V are pairwise disjoint fibers. **)
-        (** If g maps a point of S1 to S2, then g maps ALL of S1 to S2 **)
-        (** (since g is continuous and slices are connected components). **)
-        (** Hence pi(S1) = pi(S2), so non-equal slices are disjoint. **)
+        let W1 W2. assume HW1sk HW2sk HW1ne.
+        (** W1 = pi(S1), W2 = pi(S2) for S1, S2 :e slices_p **)
+        apply (ReplE_impred slices_p (fun S:set => image_of pi S) W1 HW1sk).
+        let S1. assume HS1slice HW1eq.
+        apply (ReplE_impred slices_p (fun S:set => image_of pi S) W2 HW2sk).
+        let S2. assume HS2slice HW2eq.
+        (** Assume for contradiction: W1 :/\: W2 <> Empty **)
+        (** Then show W1 = W2, contradicting HW1ne **)
+        (** Strategy: use orbit_map_invariant + connected component argument **)
+        (** This is complex; admitting for now **)
         admit.
       - (** 3. Union slices_k = preimage_of OS k V **)
         apply set_ext.
