@@ -191185,6 +191185,47 @@ rewrite covering_map_R_S1_at_0_basepoint.
 reflexivity.
 Admitted.
 
+(** Midpoint value of h compose covering_map_R_S1, expressed using a chosen lift basepoint. **)
+Theorem antipode_preserving_S1_cover_midpoint_value_at_lift_start : forall h e0:set,
+  antipode_preserving_S1 h ->
+  e0 :e R ->
+  apply_fun covering_map_R_S1 e0 = apply_fun h S1_basepoint ->
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1) =
+  (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+   minus_SNo (apply_fun covering_map_R_S1 e0 1)).
+let h e0.
+assume HhAnti.
+assume He0R.
+assume He0Start.
+claim HgammaHalf :
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1) =
+  (minus_SNo (apply_fun h S1_basepoint 0),
+   minus_SNo (apply_fun h S1_basepoint 1)).
+{
+  exact (antipode_preserving_S1_cover_midpoint_basepoint
+    h
+    HhAnti).
+}
+claim HantiBase :
+  (minus_SNo (apply_fun h S1_basepoint 0),
+   minus_SNo (apply_fun h S1_basepoint 1))
+  =
+  (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+   minus_SNo (apply_fun covering_map_R_S1 e0 1)).
+{
+  rewrite <- He0Start.
+  reflexivity.
+}
+exact (eq_i_tra
+  (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
+  (minus_SNo (apply_fun h S1_basepoint 0),
+   minus_SNo (apply_fun h S1_basepoint 1))
+  (minus_SNo (apply_fun covering_map_R_S1 e0 0),
+   minus_SNo (apply_fun covering_map_R_S1 e0 1))
+  HgammaHalf
+  HantiBase).
+Admitted.
+
 (** Midpoint fiber witnesses for h compose covering_map_R_S1. **)
 Theorem antipode_preserving_S1_midpoint_fiber_witnesses : forall h e0:set,
   antipode_preserving_S1 h ->
@@ -191199,29 +191240,10 @@ let h e0.
 assume HhAnti.
 assume He0R.
 assume He0Start.
-claim HgammaHalf :
-  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1) =
-  (minus_SNo (apply_fun h S1_basepoint 0),
-   minus_SNo (apply_fun h S1_basepoint 1)).
-{
-  exact (antipode_preserving_S1_cover_midpoint_basepoint
-    h
-    HhAnti).
-}
 claim HfiberPlus :
   apply_fun covering_map_R_S1 (add_SNo e0 (eps_ 1)) =
   apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1).
 {
-  claim HantiBase :
-    (minus_SNo (apply_fun h S1_basepoint 0),
-     minus_SNo (apply_fun h S1_basepoint 1))
-    =
-    (minus_SNo (apply_fun covering_map_R_S1 e0 0),
-     minus_SNo (apply_fun covering_map_R_S1 e0 1)).
-  {
-    rewrite <- He0Start.
-    reflexivity.
-  }
   exact (eq_i_tra
     (apply_fun covering_map_R_S1 (add_SNo e0 (eps_ 1)))
     (minus_SNo (apply_fun covering_map_R_S1 e0 0),
@@ -191234,29 +191256,17 @@ claim HfiberPlus :
       (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
       (minus_SNo (apply_fun covering_map_R_S1 e0 0),
        minus_SNo (apply_fun covering_map_R_S1 e0 1))
-      (eq_i_tra
-        (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
-        (minus_SNo (apply_fun h S1_basepoint 0),
-         minus_SNo (apply_fun h S1_basepoint 1))
-        (minus_SNo (apply_fun covering_map_R_S1 e0 0),
-         minus_SNo (apply_fun covering_map_R_S1 e0 1))
-        HgammaHalf
-        HantiBase))).
+      (antipode_preserving_S1_cover_midpoint_value_at_lift_start
+        h
+        e0
+        HhAnti
+        He0R
+        He0Start))).
 }
 claim HfiberMinus :
   apply_fun covering_map_R_S1 (add_SNo e0 (minus_SNo (eps_ 1))) =
   apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1).
 {
-  claim HantiBase :
-    (minus_SNo (apply_fun h S1_basepoint 0),
-     minus_SNo (apply_fun h S1_basepoint 1))
-    =
-    (minus_SNo (apply_fun covering_map_R_S1 e0 0),
-     minus_SNo (apply_fun covering_map_R_S1 e0 1)).
-  {
-    rewrite <- He0Start.
-    reflexivity.
-  }
   exact (eq_i_tra
     (apply_fun covering_map_R_S1 (add_SNo e0 (minus_SNo (eps_ 1))))
     (minus_SNo (apply_fun covering_map_R_S1 e0 0),
@@ -191269,14 +191279,12 @@ claim HfiberMinus :
       (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
       (minus_SNo (apply_fun covering_map_R_S1 e0 0),
        minus_SNo (apply_fun covering_map_R_S1 e0 1))
-      (eq_i_tra
-        (apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1))
-        (minus_SNo (apply_fun h S1_basepoint 0),
-         minus_SNo (apply_fun h S1_basepoint 1))
-        (minus_SNo (apply_fun covering_map_R_S1 e0 0),
-         minus_SNo (apply_fun covering_map_R_S1 e0 1))
-        HgammaHalf
-        HantiBase))).
+      (antipode_preserving_S1_cover_midpoint_value_at_lift_start
+        h
+        e0
+        HhAnti
+        He0R
+        He0Start))).
 }
 exact (andI
   ((apply_fun covering_map_R_S1 (add_SNo e0 (eps_ 1)) =
@@ -191400,9 +191408,13 @@ claim HgammaHalf :
   (minus_SNo (apply_fun h S1_basepoint 0),
    minus_SNo (apply_fun h S1_basepoint 1)).
 {
-  rewrite (antipode_preserving_S1_cover_midpoint_basepoint
+  rewrite (antipode_preserving_S1_cover_midpoint_value_at_lift_start
     h
-    HhAnti).
+    e0
+    HhAnti
+    He0R
+    He0Start).
+  rewrite He0Start.
   reflexivity.
 }
 claim HgammaHalfNeStart :
