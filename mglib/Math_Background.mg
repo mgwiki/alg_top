@@ -410678,16 +410678,83 @@ claim Hp_orbit_const : forall g x:set, g :e G -> x :e X ->
   exact (andER (homeomorphism X Tx X Tx g)
     (forall z:set, z :e X -> apply_fun p (apply_fun g z) = apply_fun p z)
     Hct x HxX). }
-(** Construct k: orbit_space -> B via orbit-class representative **)
-(** k(pi(x)) = p(x) is well-defined since p(g(x)) = p(x) for all g in G **)
-(** The full construction (k is a covering map) is complex; **)
-(** it requires the quotient universal property + evenly covered construction. **)
-(** Proof structure: **)
-(** 1. k continuous: by s55_continuous_descends_to_quotient_topology **)
-(**    since p = k o pi is continuous and orbit_topology is quotient topology **)
-(** 2. k surjective: from p surjective **)
-(** 3. k evenly covered: from p's slices grouped by G-orbits **)
-admit.
+(** Construct k using representative selection **)
+set OS := orbit_space X G.
+set OT := orbit_topology X Tx G.
+set pi := orbit_map X G.
+set k := graph OS (fun cls:set =>
+  apply_fun p (Eps_i (fun z:set => z :e cls))).
+(** k factors: k(pi(x)) = p(x) **)
+claim Hpi_fn : function_on pi X OS. { exact (orbit_map_function_on X G (fun g HgG =>
+  continuous_map_function_on X Tx X Tx g
+    (covering_transformation_group_continuous X Tx B Tb p g HgG))). }
+claim Hk_fn : function_on k OS B.
+{ let cls. assume HclsOS.
+  (** cls :e OS means cls is an orbit class, non-empty **)
+  claim Hcls_has_rep : exists z:set, z :e cls.
+  { claim HclsSep : exists z:set, z :e X /\ cls = {y :e X | orbit_equiv X G z y}.
+    { exact (SepE2 (Power X) (fun c:set => exists z:set, z :e X /\ c = {y :e X | orbit_equiv X G z y}) cls HclsOS). }
+    apply HclsSep. let z. assume Hz.
+    claim HzX : z :e X. { exact (andEL (z :e X) (cls = {y :e X | orbit_equiv X G z y}) Hz). }
+    claim HclsEq : cls = {y :e X | orbit_equiv X G z y}.
+    { exact (andER (z :e X) (cls = {y :e X | orbit_equiv X G z y}) Hz). }
+    witness z. rewrite HclsEq.
+    apply SepI. exact HzX.
+    exact (orbit_equiv_refl X G (covering_transformation_id X Tx B Tb p) z
+      (covering_transformation_id_in_group X Tx B Tb p Hcov)
+      (covering_transformation_id_apply X Tx B Tb p) HzX). }
+  set rep := Eps_i (fun z:set => z :e cls).
+  claim Hrep_in_cls : rep :e cls.
+  { exact (Eps_i_ex (fun z:set => z :e cls) Hcls_has_rep). }
+  claim HclsSub : cls c= X.
+  { exact (PowerE X cls (SepE1 (Power X) (fun c:set => exists z:set, z :e X /\ c = {y :e X | orbit_equiv X G z y}) cls HclsOS)). }
+  claim HrepX : rep :e X. { exact (HclsSub rep Hrep_in_cls). }
+  prove apply_fun (graph OS (fun c:set => apply_fun p (Eps_i (fun z:set => z :e c)))) cls :e B.
+  rewrite (apply_fun_graph OS (fun c:set => apply_fun p (Eps_i (fun z:set => z :e c))) cls HclsOS).
+  exact (Hfn_p rep HrepX). }
+claim Hk_factors : forall x:set, x :e X ->
+  apply_fun k (apply_fun pi x) = apply_fun p x.
+{ let x. assume HxX.
+  claim HpixOS : apply_fun pi x :e OS. { exact (Hpi_fn x HxX). }
+  rewrite (apply_fun_graph OS (fun cls:set => apply_fun p (Eps_i (fun z:set => z :e cls)))
+    (apply_fun pi x) HpixOS).
+  (** Now goal: apply_fun p (Eps_i (fun z => z :e apply_fun pi x)) = apply_fun p x **)
+  set cls := apply_fun pi x.
+  set rep := Eps_i (fun z:set => z :e cls).
+  (** rep is in cls = orbit class of x **)
+  claim Hcls_eq : cls = {y :e X | orbit_equiv X G x y}.
+  { exact (orbit_map_apply X G x HxX). }
+  claim Hx_in_cls : x :e cls.
+  { rewrite Hcls_eq. apply SepI. exact HxX.
+    exact (orbit_equiv_refl X G (covering_transformation_id X Tx B Tb p) x
+      (covering_transformation_id_in_group X Tx B Tb p Hcov)
+      (covering_transformation_id_apply X Tx B Tb p) HxX). }
+  claim Hex_cls : exists z:set, z :e cls. { witness x. exact Hx_in_cls. }
+  claim Hrep_in_cls : rep :e cls.
+  { exact (Eps_i_ex (fun z:set => z :e cls) Hex_cls). }
+  claim Hrep_in_orb : rep :e {y :e X | orbit_equiv X G x y}.
+  { rewrite <- Hcls_eq. exact Hrep_in_cls. }
+  claim HrepX : rep :e X.
+  { exact (SepE1 X (fun y:set => orbit_equiv X G x y) rep Hrep_in_orb). }
+  claim Horb : orbit_equiv X G x rep.
+  { exact (SepE2 X (fun y:set => orbit_equiv X G x y) rep Hrep_in_orb). }
+  (** orbit_equiv X G x rep means exists g in G with g(x) = rep **)
+  claim Hgex : exists g:set, g :e G /\ apply_fun g x = rep.
+  { exact (andER (x :e X /\ rep :e X) (exists g:set, g :e G /\ apply_fun g x = rep) Horb). }
+  apply Hgex. let g. assume Hgpack.
+  claim HgG : g :e G. { exact (andEL (g :e G) (apply_fun g x = rep) Hgpack). }
+  claim Hgx : apply_fun g x = rep. { exact (andER (g :e G) (apply_fun g x = rep) Hgpack). }
+  (** p(rep) = p(g(x)) = p(x) **)
+  prove apply_fun p rep = apply_fun p x.
+  rewrite <- Hgx.
+  exact (Hp_orbit_const g x HgG HxX). }
+witness k. apply andI.
+- (** covering_map OS OT B Tb k: the hard part **)
+  (** k is continuous by quotient universal property since p = k o pi **)
+  (** k is surjective from p surjective **)
+  (** Evenly covered: uses p's slices grouped by G-orbits **)
+  admit.
+- exact Hk_factors.
 Admitted.
 
 (** from S81 Exercise 4 (line 5203 in algtop.tex) **)
