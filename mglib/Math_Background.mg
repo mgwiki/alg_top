@@ -404744,6 +404744,19 @@ exact (continuous_map_function_on E Te E Te h
   (covering_transformation_group_continuous E Te B Tb p h HhG)).
 Qed.
 
+(** Helper: CTG member sends e0 to fiber over p(e0) **)
+(** Proven Alice **)
+Theorem covering_transformation_group_e0_in_fiber :
+  forall E Te B Tb p e0 h:set,
+  covering_map E Te B Tb p -> e0 :e E ->
+  h :e covering_transformation_group E Te B Tb p ->
+  apply_fun h e0 :e {x :e E | apply_fun p x = apply_fun p e0}.
+let E Te B Tb p e0 h. assume Hcov He0E HhG.
+apply SepI.
+- exact (covering_transformation_group_value_in_E E Te B Tb p h e0 HhG He0E).
+- exact (covering_transformation_group_fiber E Te B Tb p h e0 HhG He0E).
+Qed.
+
 (** Helper: CTG members are injective **)
 (** Proven Alice **)
 Theorem covering_transformation_group_injective :
