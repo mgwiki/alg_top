@@ -402975,6 +402975,73 @@ apply andI.
   exact (Hfiber2 x HxE).
 Qed.
 
+(** Helper: the inverse of a covering transformation is a covering transformation **)
+(** Proven Alice **)
+Theorem covering_transformation_inverse_exists :
+  forall E Te B Tb p h:set,
+  covering_transformation E Te B Tb p h ->
+  exists g:set, covering_transformation E Te B Tb p g /\
+    (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x) /\
+    (forall y:set, y :e E -> apply_fun h (apply_fun g y) = y).
+let E Te B Tb p h.
+assume Hct.
+claim Hhomeo : homeomorphism E Te E Te h.
+{ exact (andEL (homeomorphism E Te E Te h)
+    (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) Hct). }
+claim Hfiber : forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x.
+{ exact (andER (homeomorphism E Te E Te h)
+    (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) Hct). }
+claim Hcont : continuous_map E Te E Te h. { exact (homeomorphism_continuous E Te E Te h Hhomeo). }
+(** Extract the inverse from homeomorphism **)
+apply (andER
+  (continuous_map E Te E Te h)
+  (exists g:set, continuous_map E Te E Te g /\
+    (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x) /\
+    (forall y:set, y :e E -> apply_fun h (apply_fun g y) = y))
+  Hhomeo).
+let g. assume Hgpack.
+(** Hgpack : (continuous_map ... /\ (forall x, left_inv)) /\ (forall y, right_inv) **)
+claim HgContLeft : continuous_map E Te E Te g /\ (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x).
+{ exact (andEL
+    (continuous_map E Te E Te g /\ (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x))
+    (forall y:set, y :e E -> apply_fun h (apply_fun g y) = y)
+    Hgpack). }
+claim HgCont : continuous_map E Te E Te g.
+{ exact (andEL (continuous_map E Te E Te g)
+    (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x)
+    HgContLeft). }
+claim HgLeft : forall x:set, x :e E -> apply_fun g (apply_fun h x) = x.
+{ exact (andER (continuous_map E Te E Te g)
+    (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x)
+    HgContLeft). }
+claim HgRight : forall y:set, y :e E -> apply_fun h (apply_fun g y) = y.
+{ exact (andER
+    (continuous_map E Te E Te g /\ (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x))
+    (forall y:set, y :e E -> apply_fun h (apply_fun g y) = y)
+    Hgpack). }
+claim Hfn_g : function_on g E E. { exact (continuous_map_function_on E Te E Te g HgCont). }
+(** g is a covering transformation **)
+witness g.
+apply and3I.
+- (** covering_transformation g **)
+  prove homeomorphism E Te E Te g /\
+    (forall y:set, y :e E -> apply_fun p (apply_fun g y) = apply_fun p y).
+  apply andI.
+  + exact (homeomorphism_inverse_is_homeomorphism E Te E Te h g Hhomeo HgCont HgLeft HgRight).
+  + (** p(g(y)) = p(y): from p(h(g(y))) = p(g(y)) and h(g(y)) = y **)
+    let y. assume HyE.
+    claim HgyE : apply_fun g y :e E. { exact (Hfn_g y HyE). }
+    claim Hhgy : apply_fun h (apply_fun g y) = y. { exact (HgRight y HyE). }
+    claim Hstep1 : apply_fun p (apply_fun h (apply_fun g y)) = apply_fun p (apply_fun g y).
+    { exact (Hfiber (apply_fun g y) HgyE). }
+    claim Hstep2 : apply_fun p y = apply_fun p (apply_fun h (apply_fun g y)).
+    { rewrite Hhgy. reflexivity. }
+    prove apply_fun p (apply_fun g y) = apply_fun p y.
+    rewrite Hstep2. symmetry. exact Hstep1.
+- exact HgLeft.
+- exact HgRight.
+Qed.
+
 (** from S81 Definition (line 5025 in algtop.tex): normalizer **)
 (** LATEX VERSION: If H is a subgroup of the group G, then the normalizer of H in G **)
 (** is N(H) = {g in G | gHg^{-1} = H}. **)
