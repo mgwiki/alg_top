@@ -188560,6 +188560,55 @@ exact (loop_at_unpack_right
     HfLoop)).
 Admitted.
 
+Theorem loop_at_has_loop_data : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  continuous_map unit_interval unit_interval_topology X Tx f /\
+  apply_fun f 0 = x0 /\
+  apply_fun f 1 = x0.
+let X Tx x0 f.
+assume Hloop.
+exact (andI
+  (continuous_map unit_interval unit_interval_topology X Tx f /\
+    apply_fun f 0 = x0)
+  (apply_fun f 1 = x0)
+  (andI
+    (continuous_map unit_interval unit_interval_topology X Tx f)
+    (apply_fun f 0 = x0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology X Tx f)
+      (apply_fun f 0 = x0 /\ apply_fun f 1 = x0)
+      (loop_at_unpack_right
+        X
+        Tx
+        x0
+        f
+        Hloop))
+    (andEL
+      (apply_fun f 0 = x0)
+      (apply_fun f 1 = x0)
+      (andER
+        (continuous_map unit_interval unit_interval_topology X Tx f)
+        (apply_fun f 0 = x0 /\ apply_fun f 1 = x0)
+        (loop_at_unpack_right
+          X
+          Tx
+          x0
+          f
+          Hloop))))
+  (andER
+    (apply_fun f 0 = x0)
+    (apply_fun f 1 = x0)
+    (andER
+      (continuous_map unit_interval unit_interval_topology X Tx f)
+      (apply_fun f 0 = x0 /\ apply_fun f 1 = x0)
+      (loop_at_unpack_right
+        X
+        Tx
+        x0
+        f
+        Hloop)))).
+Admitted.
+
 Theorem covering_map_R_S1_compose_loop_data_at_lift_start : forall h e0:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   e0 :e R ->
@@ -188575,36 +188624,17 @@ assume HhCont.
 assume He0R.
 assume He0Start.
 set gamma := compose_fun unit_interval covering_map_R_S1 h.
-claim HgammaLoop0 :
-  loop_at S1 S1_topology (apply_fun covering_map_R_S1 e0) gamma.
-{
-  exact (covering_map_R_S1_compose_loop_at_lift_start
+exact (loop_at_has_loop_data
+  S1
+  S1_topology
+  (apply_fun covering_map_R_S1 e0)
+  gamma
+  (covering_map_R_S1_compose_loop_at_lift_start
     h
     e0
     HhCont
     He0R
-    He0Start).
-}
-apply andI.
-- apply andI.
-  + exact (loop_at_continuous
-      S1
-      S1_topology
-      (apply_fun covering_map_R_S1 e0)
-      gamma
-      HgammaLoop0).
-  + exact (loop_at_at_zero
-      S1
-      S1_topology
-      (apply_fun covering_map_R_S1 e0)
-      gamma
-      HgammaLoop0).
-- exact (loop_at_at_one
-    S1
-    S1_topology
-    (apply_fun covering_map_R_S1 e0)
-    gamma
-    HgammaLoop0).
+    He0Start)).
 Admitted.
 
 Theorem covering_map_R_S1_loop_at_basepoint :
