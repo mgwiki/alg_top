@@ -188649,12 +188649,17 @@ claim HpIloop : pI :e loop_space S1 S1_topology S1_basepoint.
 claim HpIcont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology pI.
 {
-  exact (loop_space_continuous
+  exact (loop_at_continuous
     S1
     S1_topology
     S1_basepoint
     pI
-    HpIloop).
+    (loop_space_has_loop_at
+      S1
+      S1_topology
+      S1_basepoint
+      pI
+      HpIloop)).
 }
 claim HpI0 : apply_fun pI 0 = S1_basepoint.
 {
