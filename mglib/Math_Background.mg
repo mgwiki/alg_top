@@ -404688,6 +404688,66 @@ apply andI.
   exact (compose_fun_apply E g1 g2 z HzE).
 Qed.
 
+(** Helper: CTG has inverse closure (left inverse form for orbit arguments) **)
+(** Proven Bob **)
+Theorem covering_transformation_group_inv_closure :
+  forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  forall h:set, h :e covering_transformation_group E Te B Tb p ->
+    exists ginv:set, ginv :e covering_transformation_group E Te B Tb p /\
+      forall z:set, z :e E -> apply_fun ginv (apply_fun h z) = z.
+let E Te B Tb p.
+assume Hcov.
+let h. assume HhG.
+claim Hct_h : covering_transformation E Te B Tb p h.
+{ exact (covering_transformation_group_mem_ct E Te B Tb p h HhG). }
+apply (covering_transformation_inverse_exists E Te B Tb p h Hct_h).
+let g. assume HgPack.
+apply (and3E
+  (covering_transformation E Te B Tb p g)
+  (forall x:set, x :e E -> apply_fun g (apply_fun h x) = x)
+  (forall y:set, y :e E -> apply_fun h (apply_fun g y) = y)
+  HgPack).
+assume HgCT HgLeft _.
+claim HgCont : continuous_map E Te E Te g.
+{ exact (covering_transformation_continuous E Te B Tb p g HgCT). }
+claim HgFun : function_on g E E.
+{ exact (continuous_map_function_on E Te E Te g HgCont). }
+set gg := graphify_on E g.
+claim HggFS : gg :e function_space E E.
+{
+  exact (graph_in_function_space E E
+    (fun x:set => apply_fun g x)
+    (fun x Hx => HgFun x Hx)).
+}
+claim HggFun : function_on gg E E.
+{ exact (function_on_of_function_space gg E E HggFS). }
+witness gg.
+apply andI.
+- prove gg :e covering_transformation_group E Te B Tb p.
+  prove gg :e {k :e function_space E E | covering_transformation E Te B Tb p k}.
+  apply SepI.
+  + exact HggFS.
+  + prove covering_transformation E Te B Tb p gg.
+    prove homeomorphism E Te E Te gg /\
+      (forall x:set, x :e E -> apply_fun p (apply_fun gg x) = apply_fun p x).
+    apply andI.
+    * claim Hhome_g : homeomorphism E Te E Te g.
+      { exact (covering_transformation_homeomorphism E Te B Tb p g HgCT). }
+      exact (homeomorphism_congr_on E Te E Te g gg Hhome_g HggFun
+        (fun x Hx => eq_symm (apply_fun gg x) (apply_fun g x) (graphify_on_apply E g x Hx))).
+    * let x. assume HxE.
+      rewrite (graphify_on_apply E g x HxE).
+      exact (covering_transformation_fiber E Te B Tb p g x HgCT HxE).
+- let z. assume HzE.
+  claim HhFun : function_on h E E.
+  { exact (covering_transformation_group_function_on E Te B Tb p h HhG). }
+  claim HhzE : apply_fun h z :e E.
+  { exact (HhFun z HzE). }
+  rewrite (graphify_on_apply E g (apply_fun h z) HhzE).
+  exact (HgLeft z HzE).
+Qed.
+
 (** from S81 Definition (line 5025 in algtop.tex): normalizer **)
 (** LATEX VERSION: If H is a subgroup of the group G, then the normalizer of H in G **)
 (** is N(H) = {g in G | gHg^{-1} = H}. **)
@@ -411019,6 +411079,91 @@ apply andI.
 - let U0. assume HU0.
   exact (orbit_map_open_with_group_data
     X Tx G idG HtopX Hhomeo HidG HidAct Hcomp Hinv U0 HU0).
+Qed.
+
+(** Helper: orbit_map is open for the covering-transformation action **)
+(** Proven Bob **)
+Theorem covering_transformation_group_orbit_map_open :
+  forall E Te B Tb p U:set,
+  covering_map E Te B Tb p ->
+  U :e Te ->
+  image_of (orbit_map E (covering_transformation_group E Te B Tb p)) U :e
+    orbit_topology E Te (covering_transformation_group E Te B Tb p).
+let E Te B Tb p U.
+assume Hcov HU.
+set G := covering_transformation_group E Te B Tb p.
+set idG := covering_transformation_id E Te B Tb p.
+claim HtopE : topology_on E Te.
+{ exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HhomeoAct : forall g:set, g :e G -> homeomorphism E Te E Te g.
+{
+  let g. assume HgG.
+  exact (covering_transformation_group_homeomorphism E Te B Tb p g HgG).
+}
+claim HidG : idG :e G.
+{ exact (covering_transformation_id_in_group E Te B Tb p Hcov). }
+claim HidAct : forall x:set, x :e E -> apply_fun idG x = x.
+{
+  let x. assume HxE.
+  exact (covering_transformation_id_apply E Te B Tb p x HxE).
+}
+claim Hcomp : forall g1 g2:set, g1 :e G -> g2 :e G ->
+  exists g3:set, g3 :e G /\ forall z:set, z :e E ->
+    apply_fun g3 z = apply_fun g2 (apply_fun g1 z).
+{
+  exact (covering_transformation_group_comp_closure E Te B Tb p Hcov).
+}
+claim Hinv : forall g0:set, g0 :e G ->
+  exists ginv:set, ginv :e G /\ forall z:set, z :e E ->
+    apply_fun ginv (apply_fun g0 z) = z.
+{
+  exact (covering_transformation_group_inv_closure E Te B Tb p Hcov).
+}
+exact (orbit_map_open_with_group_data E Te G idG
+  HtopE HhomeoAct HidG HidAct Hcomp Hinv U HU).
+Qed.
+
+(** Helper: orbit_map is an open_map for the covering-transformation action **)
+(** Proven Bob **)
+Theorem covering_transformation_group_orbit_map_open_map :
+  forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  open_map E Te
+    (orbit_space E (covering_transformation_group E Te B Tb p))
+    (orbit_topology E Te (covering_transformation_group E Te B Tb p))
+    (orbit_map E (covering_transformation_group E Te B Tb p)).
+let E Te B Tb p.
+assume Hcov.
+set G := covering_transformation_group E Te B Tb p.
+set idG := covering_transformation_id E Te B Tb p.
+claim HtopE : topology_on E Te.
+{ exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HhomeoAct : forall g:set, g :e G -> homeomorphism E Te E Te g.
+{
+  let g. assume HgG.
+  exact (covering_transformation_group_homeomorphism E Te B Tb p g HgG).
+}
+claim HidG : idG :e G.
+{ exact (covering_transformation_id_in_group E Te B Tb p Hcov). }
+claim HidAct : forall x:set, x :e E -> apply_fun idG x = x.
+{
+  let x. assume HxE.
+  exact (covering_transformation_id_apply E Te B Tb p x HxE).
+}
+claim Hcomp : forall g1 g2:set, g1 :e G -> g2 :e G ->
+  exists g3:set, g3 :e G /\ forall z:set, z :e E ->
+    apply_fun g3 z = apply_fun g2 (apply_fun g1 z).
+{
+  exact (covering_transformation_group_comp_closure E Te B Tb p Hcov).
+}
+claim Hinv : forall g0:set, g0 :e G ->
+  exists ginv:set, ginv :e G /\ forall z:set, z :e E ->
+    apply_fun ginv (apply_fun g0 z) = z.
+{
+  exact (covering_transformation_group_inv_closure E Te B Tb p Hcov).
+}
+exact (orbit_map_open_map_with_group_data E Te G idG
+  HtopE HhomeoAct HidG HidAct Hcomp Hinv).
 Qed.
 
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
