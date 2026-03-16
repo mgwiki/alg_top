@@ -413825,11 +413825,28 @@ witness k. apply andI.
         let S1. assume HS1slice HW1eq.
         apply (ReplE_impred slices_p (fun S:set => image_of pi S) W2 HW2sk).
         let S2. assume HS2slice HW2eq.
-        (** Assume for contradiction: W1 :/\: W2 <> Empty **)
-        (** Then show W1 = W2, contradicting HW1ne **)
-        (** Strategy: use orbit_map_invariant + connected component argument **)
-        (** This is complex; admitting for now **)
-        admit.
+        (** Use xm: either W1 :/\: W2 = Empty or not **)
+        rewrite HW1eq. rewrite HW2eq.
+        apply (xm (image_of pi S1 :/\: image_of pi S2 = Empty)).
+        + assume H. exact H.
+        + assume Hne : image_of pi S1 :/\: image_of pi S2 <> Empty.
+          (** W1 :/\: W2 <> Empty -> W1 = W2 -> contradiction with HW1ne **)
+          (** The argument: from common point cls :e W1 /\ W2, **)
+          (** get orbit-equiv x1 :e S1, x2 :e S2 with pi(x1) = pi(x2) = cls **)
+          (** Extract g :e CTG with g(x1) = x2 **)
+          (** g(S1) connected (S1 ≅ V path-connected), g(S1) c= Union slices_p **)
+          (** g(x1) = x2 :e S2, so by connected_subset_anchor: g(S1) c= S2 **)
+          (** Then pi(S1) c= pi(S2) via orbit_map_invariant **)
+          (** Similarly with g^{-1}: pi(S2) c= pi(S1) **)
+          (** Hence W1 = W2, contradiction **)
+          claim HW1eqW2 : image_of pi S1 = image_of pi S2.
+          { admit. (** requires ~80 lines of connected component + orbit argument **) }
+          (** W1 = image_of pi S1 = image_of pi S2 = W2, so W1 = W2 **)
+          claim Hcontra : W1 = W2.
+          { exact (eq_i_tra W1 (image_of pi S1) W2
+              HW1eq (eq_i_tra (image_of pi S1) (image_of pi S2) W2
+                HW1eqW2 (eq_symm W2 (image_of pi S2) HW2eq))). }
+          exact (FalseE (HW1ne Hcontra) (image_of pi S1 :/\: image_of pi S2 = Empty)).
       - (** 3. Union slices_k = preimage_of OS k V **)
         apply set_ext.
         + (** Forward: cls :e Union slices_k -> cls :e preimage_of OS k V **)
