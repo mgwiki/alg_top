@@ -411166,6 +411166,73 @@ exact (orbit_map_open_map_with_group_data E Te G idG
   HtopE HhomeoAct HidG HidAct Hcomp Hinv).
 Qed.
 
+(** Helper: orbit_map is invariant under covering-transformation action **)
+(** Proven Bob **)
+Theorem covering_transformation_group_orbit_map_invariant :
+  forall E Te B Tb p g x:set,
+  covering_map E Te B Tb p ->
+  g :e covering_transformation_group E Te B Tb p ->
+  x :e E ->
+  apply_fun (orbit_map E (covering_transformation_group E Te B Tb p)) (apply_fun g x) =
+  apply_fun (orbit_map E (covering_transformation_group E Te B Tb p)) x.
+let E Te B Tb p g x.
+assume Hcov HgG HxE.
+set G := covering_transformation_group E Te B Tb p.
+claim Hfn : forall h:set, h :e G -> function_on h E E.
+{ exact (covering_transformation_group_function_on E Te B Tb p). }
+claim Hcomp : forall g1 g2:set, g1 :e G -> g2 :e G ->
+  exists g3:set, g3 :e G /\ forall z:set, z :e E ->
+    apply_fun g3 z = apply_fun g2 (apply_fun g1 z).
+{ exact (covering_transformation_group_comp_closure E Te B Tb p Hcov). }
+claim Hinv : forall g0:set, g0 :e G ->
+  exists ginv:set, ginv :e G /\ forall z:set, z :e E ->
+    apply_fun ginv (apply_fun g0 z) = z.
+{ exact (covering_transformation_group_inv_closure E Te B Tb p Hcov). }
+exact (orbit_map_invariant E G g x HgG Hfn Hcomp Hinv HxE).
+Qed.
+
+(** Helper: preimage of orbit_map-image is open for covering-transformation action **)
+(** Proven Bob **)
+Theorem covering_transformation_group_orbit_map_preimage_image_open :
+  forall E Te B Tb p U:set,
+  covering_map E Te B Tb p ->
+  U :e Te ->
+  preimage_of E (orbit_map E (covering_transformation_group E Te B Tb p))
+    (image_of (orbit_map E (covering_transformation_group E Te B Tb p)) U) :e Te.
+let E Te B Tb p U.
+assume Hcov HU.
+set G := covering_transformation_group E Te B Tb p.
+set idG := covering_transformation_id E Te B Tb p.
+claim HtopE : topology_on E Te.
+{ exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HhomeoAct : forall g:set, g :e G -> homeomorphism E Te E Te g.
+{
+  let g. assume HgG.
+  exact (covering_transformation_group_homeomorphism E Te B Tb p g HgG).
+}
+claim HidG : idG :e G.
+{ exact (covering_transformation_id_in_group E Te B Tb p Hcov). }
+claim HidAct : forall x:set, x :e E -> apply_fun idG x = x.
+{
+  let x. assume HxE.
+  exact (covering_transformation_id_apply E Te B Tb p x HxE).
+}
+claim Hcomp : forall g1 g2:set, g1 :e G -> g2 :e G ->
+  exists g3:set, g3 :e G /\ forall z:set, z :e E ->
+    apply_fun g3 z = apply_fun g2 (apply_fun g1 z).
+{
+  exact (covering_transformation_group_comp_closure E Te B Tb p Hcov).
+}
+claim Hinv : forall g0:set, g0 :e G ->
+  exists ginv:set, ginv :e G /\ forall z:set, z :e E ->
+    apply_fun ginv (apply_fun g0 z) = z.
+{
+  exact (covering_transformation_group_inv_closure E Te B Tb p Hcov).
+}
+exact (orbit_map_preimage_image_open_with_group_data
+  E Te G idG U HtopE HhomeoAct HidG HidAct Hcomp Hinv HU).
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
