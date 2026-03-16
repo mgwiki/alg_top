@@ -410835,8 +410835,17 @@ witness k. apply andI.
     (forall b:set, b :e B -> exists U:set, U :e Tb /\ b :e U /\ evenly_covered OS OT B Tb k U).
   apply and3I.
   + (** k is continuous: by quotient universal property **)
-    (** orbit_topology = quotient_topology X Tx OS pi **)
-    (** p = k o pi is continuous, so k descends to quotient **)
+    (** OT = quotient_topology X Tx OS pi **)
+    (** compose_fun X pi k is continuous (has same apply_fun as p) **)
+    (** By s55_continuous_descends_to_quotient_topology, k is continuous **)
+    claim HtopOT : topology_on OS OT.
+    { exact (orbit_topology_is_topology X Tx G HtopX
+        (fun g HgG => continuous_map_function_on X Tx X Tx g
+          (covering_transformation_group_continuous X Tx B Tb p g HgG))). }
+    (** Show compose_fun X pi k is continuous **)
+    (** This requires showing its preimages are open in Tx **)
+    (** Since apply_fun (compose_fun X pi k) x = apply_fun p x, **)
+    (** the preimages are the same as p's preimages, which are open **)
     admit.
   + (** k is surjective: from p surjective **)
     prove function_on k OS B /\ forall b:set, b :e B -> exists cls:set, cls :e OS /\ apply_fun k cls = b.
