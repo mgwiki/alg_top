@@ -184495,11 +184495,161 @@ apply tuple_2_ext_euclid.
   reflexivity.
 Qed.
 
+(** Infrastructure: the graph-model point with coordinates x,y evaluates to x at 0. **)
+(** Proven Charlie **)
+Theorem graph_2_if_apply_fun_0 : forall x y:set,
+  apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 0 = x.
+let x y.
+exact (eq_i_tra
+  (apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 0)
+  (if 0 = 0 then x else y)
+  x
+  (apply_fun_graph
+    2
+    (fun i:set => if i = 0 then x else y)
+    0
+    In_0_2)
+  (If_i_1
+    (0 = 0)
+    x
+    y
+    (eq_refl 0))).
+Qed.
+
+(** Infrastructure: the graph-model point with coordinates x,y evaluates to y at 1. **)
+(** Proven Charlie **)
+Theorem graph_2_if_apply_fun_1 : forall x y:set,
+  apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 1 = y.
+let x y.
+exact (eq_i_tra
+  (apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 1)
+  (if 1 = 0 then x else y)
+  y
+  (apply_fun_graph
+    2
+    (fun i:set => if i = 0 then x else y)
+    1
+    In_1_2)
+  (If_i_0
+    (1 = 0)
+    x
+    y
+    (neq_ordsucc_0 0))).
+Qed.
+
+(** Infrastructure: the 2-coordinate graph model equals the tuple pair model. **)
+Theorem graph_2_if_coords_pair : forall x y:set,
+  graph 2 (fun i:set => if i = 0 then x else y) = (x,y).
+let x y.
+claim Hcoord0 :
+  apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 0 = x.
+{
+  exact (graph_2_if_apply_fun_0
+    x
+    y).
+}
+claim Hcoord1 :
+  apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 1 = y.
+{
+  exact (graph_2_if_apply_fun_1
+    x
+    y).
+}
+admit.
+Admitted.
+
 (** Infrastructure: a point of euclidean_space 2 is equal to its coordinate pair. **)
 Theorem euclidean_space_2_eq_coords_pair : forall u:set,
   u :e euclidean_space 2 ->
   u = (apply_fun u 0, apply_fun u 1).
-admit.
+let u.
+assume Hu.
+claim HuGraph :
+  u = graph 2 (fun i:set => apply_fun u i).
+{
+  exact (euclidean_space_2_eq_graph_of_apply_fun
+    u
+    Hu).
+}
+claim HgraphPair :
+  graph 2 (fun i:set => apply_fun u i) =
+  (apply_fun u 0, apply_fun u 1).
+{
+  claim HgraphIf :
+    graph 2 (fun i:set => apply_fun u i) =
+    graph 2 (fun i:set => if i = 0 then apply_fun u 0
+      else apply_fun u 1).
+  {
+    apply (graph_extensional
+      2
+      (fun i:set => apply_fun u i)
+      (fun i:set => if i = 0 then apply_fun u 0
+        else apply_fun u 1)).
+    let i.
+    assume Hi2.
+    apply (ordsuccE 1 i Hi2).
+    - assume Hi1.
+      apply (ordsuccE 0 i Hi1).
+      + assume Hi0.
+        exact (EmptyE
+          i
+          Hi0
+          (apply_fun u i =
+           (if i = 0 then apply_fun u 0
+            else apply_fun u 1))).
+      + assume Hieq0.
+        rewrite Hieq0.
+        exact (eq_i_tra
+          (apply_fun u 0)
+          (apply_fun u 0)
+          (if 0 = 0 then apply_fun u 0
+           else apply_fun u 1)
+          (eq_refl
+            (apply_fun u 0))
+          (eq_symm
+            (if 0 = 0 then apply_fun u 0
+             else apply_fun u 1)
+            (apply_fun u 0)
+            (If_i_1
+              (0 = 0)
+              (apply_fun u 0)
+              (apply_fun u 1)
+              (eq_refl 0)))).
+    - assume Hieq1.
+      rewrite Hieq1.
+      exact (eq_i_tra
+        (apply_fun u 1)
+        (apply_fun u 1)
+        (if 1 = 0 then apply_fun u 0
+         else apply_fun u 1)
+        (eq_refl
+          (apply_fun u 1))
+        (eq_symm
+          (if 1 = 0 then apply_fun u 0
+           else apply_fun u 1)
+          (apply_fun u 1)
+          (If_i_0
+            (1 = 0)
+            (apply_fun u 0)
+            (apply_fun u 1)
+            (neq_ordsucc_0 0)))).
+  }
+  exact (eq_i_tra
+    (graph 2 (fun i:set => apply_fun u i))
+    (graph 2 (fun i:set => if i = 0 then apply_fun u 0
+      else apply_fun u 1))
+    (apply_fun u 0, apply_fun u 1)
+    HgraphIf
+    (graph_2_if_coords_pair
+      (apply_fun u 0)
+      (apply_fun u 1))).
+}
+exact (eq_i_tra
+  u
+  (graph 2 (fun i:set => apply_fun u i))
+  (apply_fun u 0, apply_fun u 1)
+  HuGraph
+  HgraphPair).
 Admitted.
 
 (** Infrastructure: a point of Sn 1 yields the corresponding point of S1 by its two coordinates. **)
@@ -184634,13 +184784,119 @@ exact (product_space_graphI
 Qed.
 
 (** Infrastructure: on setprod R R, apply_fun matches the two coordinate projections. **)
+Theorem apply_fun_pair_coords_0 : forall p0 p1:set,
+  apply_fun (p0,p1) 0 = p0.
+let p0 p1.
+claim HpairGraph :
+  (p0,p1) = graph 2 (fun i:set => if i = 0 then p0 else p1).
+{
+  exact (eq_symm
+    (graph 2 (fun i:set => if i = 0 then p0 else p1))
+    (p0,p1)
+    (graph_2_if_coords_pair p0 p1)).
+}
+exact (eq_i_tra
+  (apply_fun (p0,p1) 0)
+  (apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 0)
+  p0
+  (apply_fun_congr
+    (p0,p1)
+    (graph 2 (fun i:set => if i = 0 then p0 else p1))
+    0
+    HpairGraph)
+  (eq_i_tra
+    (apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 0)
+    (if 0 = 0 then p0 else p1)
+    p0
+    (apply_fun_graph
+      2
+      (fun i:set => if i = 0 then p0 else p1)
+      0
+      In_0_2)
+    (If_i_1
+      (0 = 0)
+      p0
+      p1
+      (eq_refl 0)))).
+Admitted.
+
+Theorem apply_fun_pair_coords_1 : forall p0 p1:set,
+  apply_fun (p0,p1) 1 = p1.
+let p0 p1.
+claim HpairGraph :
+  (p0,p1) = graph 2 (fun i:set => if i = 0 then p0 else p1).
+{
+  exact (eq_symm
+    (graph 2 (fun i:set => if i = 0 then p0 else p1))
+    (p0,p1)
+    (graph_2_if_coords_pair p0 p1)).
+}
+exact (eq_i_tra
+  (apply_fun (p0,p1) 1)
+  (apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 1)
+  p1
+  (apply_fun_congr
+    (p0,p1)
+    (graph 2 (fun i:set => if i = 0 then p0 else p1))
+    1
+    HpairGraph)
+  (eq_i_tra
+    (apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 1)
+    (if 1 = 0 then p0 else p1)
+    p1
+    (apply_fun_graph
+      2
+      (fun i:set => if i = 0 then p0 else p1)
+      1
+      In_1_2)
+    (If_i_0
+      (1 = 0)
+      p0
+      p1
+      (neq_ordsucc_0 0)))).
+Admitted.
+
 Theorem setprod_R_R_apply_fun_coords : forall p:set,
   p :e setprod R R ->
   apply_fun p 0 = p 0 /\
   apply_fun p 1 = p 1.
 let p.
 assume HpR2.
-admit.
+claim HpEta : p = (p 0,p 1).
+{
+  exact (setprod_eta
+    R
+    R
+    p
+    HpR2).
+}
+apply (andI
+  (apply_fun p 0 = p 0)
+  (apply_fun p 1 = p 1)).
+- exact (eq_i_tra
+    (apply_fun p 0)
+    (apply_fun (p 0,p 1) 0)
+    (p 0)
+    (apply_fun_congr
+      p
+      (p 0,p 1)
+      0
+      HpEta)
+    (apply_fun_pair_coords_0
+      (p 0)
+      (p 1))).
+- exact (eq_i_tra
+    (apply_fun p 1)
+    (apply_fun (p 0,p 1) 1)
+    (p 1)
+    (apply_fun_congr
+      p
+      (p 0,p 1)
+      1
+      HpEta)
+    (apply_fun_pair_coords_1
+      (p 0)
+      (p 1))).
 Admitted.
 
 (** Infrastructure: the negated graph of a real coordinate pair lies in euclidean_space 2. **)
