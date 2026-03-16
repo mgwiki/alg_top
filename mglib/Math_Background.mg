@@ -411365,6 +411365,103 @@ exact (orbit_map_preimage_image_open_with_group_data
   E Te G idG U HtopE HhomeoAct HidG HidAct Hcomp Hinv HU).
 Qed.
 
+(** Helper: orbit_map image of g(U0) is open under homeomorphism-action group data **)
+(** Proven Bob **)
+Theorem orbit_map_image_of_action_open_with_group_data :
+  forall X Tx G idG g U0:set,
+  topology_on X Tx ->
+  (forall h:set, h :e G -> homeomorphism X Tx X Tx h) ->
+  idG :e G ->
+  (forall x:set, x :e X -> apply_fun idG x = x) ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  g :e G ->
+  U0 :e Tx ->
+  image_of (orbit_map X G) (image_of g U0) :e orbit_topology X Tx G.
+let X Tx G idG g U0.
+assume HtopX Hhomeo HidG HidAct Hcomp Hinv HgG HU0.
+claim HgU0open : image_of g U0 :e Tx.
+{
+  exact (homeomorphism_image_open X Tx X Tx g U0 (Hhomeo g HgG) HU0).
+}
+exact (orbit_map_open_with_group_data X Tx G idG
+  HtopX Hhomeo HidG HidAct Hcomp Hinv (image_of g U0) HgU0open).
+Qed.
+
+(** Helper: preimage(image(pi,g(U0))) is open under homeomorphism-action group data **)
+(** Proven Bob **)
+Theorem orbit_map_preimage_image_of_action_open_with_group_data :
+  forall X Tx G idG g U0:set,
+  topology_on X Tx ->
+  (forall h:set, h :e G -> homeomorphism X Tx X Tx h) ->
+  idG :e G ->
+  (forall x:set, x :e X -> apply_fun idG x = x) ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  g :e G ->
+  U0 :e Tx ->
+  preimage_of X (orbit_map X G) (image_of (orbit_map X G) (image_of g U0)) :e Tx.
+let X Tx G idG g U0.
+assume HtopX Hhomeo HidG HidAct Hcomp Hinv HgG HU0.
+claim HgU0open : image_of g U0 :e Tx.
+{
+  exact (homeomorphism_image_open X Tx X Tx g U0 (Hhomeo g HgG) HU0).
+}
+exact (orbit_map_preimage_image_open_with_group_data
+  X Tx G idG (image_of g U0) HtopX Hhomeo HidG HidAct Hcomp Hinv HgU0open).
+Qed.
+
+(** Helper: covering-transformation action sends open sets to orbit-open images **)
+(** Proven Bob **)
+Theorem covering_transformation_group_orbit_map_image_of_action_open :
+  forall E Te B Tb p g U:set,
+  covering_map E Te B Tb p ->
+  g :e covering_transformation_group E Te B Tb p ->
+  U :e Te ->
+  image_of (orbit_map E (covering_transformation_group E Te B Tb p)) (image_of g U) :e
+    orbit_topology E Te (covering_transformation_group E Te B Tb p).
+let E Te B Tb p g U.
+assume Hcov HgG HU.
+set G := covering_transformation_group E Te B Tb p.
+set idG := covering_transformation_id E Te B Tb p.
+claim HtopE : topology_on E Te.
+{ exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HhomeoAct : forall h:set, h :e G -> homeomorphism E Te E Te h.
+{
+  let h. assume HhG.
+  exact (covering_transformation_group_homeomorphism E Te B Tb p h HhG).
+}
+claim HidG : idG :e G.
+{ exact (covering_transformation_id_in_group E Te B Tb p Hcov). }
+claim HidAct : forall x:set, x :e E -> apply_fun idG x = x.
+{
+  let x. assume HxE.
+  exact (covering_transformation_id_apply E Te B Tb p x HxE).
+}
+claim Hcomp : forall g1 g2:set, g1 :e G -> g2 :e G ->
+  exists g3:set, g3 :e G /\ forall z:set, z :e E ->
+    apply_fun g3 z = apply_fun g2 (apply_fun g1 z).
+{
+  exact (covering_transformation_group_comp_closure E Te B Tb p Hcov).
+}
+claim Hinv : forall g0:set, g0 :e G ->
+  exists ginv:set, ginv :e G /\ forall z:set, z :e E ->
+    apply_fun ginv (apply_fun g0 z) = z.
+{
+  exact (covering_transformation_group_inv_closure E Te B Tb p Hcov).
+}
+exact (orbit_map_image_of_action_open_with_group_data
+  E Te G idG g U HtopE HhomeoAct HidG HidAct Hcomp Hinv HgG HU).
+Qed.
+
 (** Helper: orbit_map is invariant under covering-transformation action **)
 (** Proven Bob **)
 Theorem covering_transformation_group_orbit_map_invariant :
