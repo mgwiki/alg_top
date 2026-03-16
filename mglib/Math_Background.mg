@@ -409499,6 +409499,46 @@ apply iffI.
   exact (orbit_equiv_implies_orbit_map_mem X G x y Horb).
 Qed.
 
+(** Helper: equal orbit_map values imply mutual fiber membership **)
+(** Proven Bob **)
+Theorem orbit_map_eq_implies_mutual_membership : forall X G x y:set,
+  forall idG:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  x :e X -> y :e X ->
+  apply_fun (orbit_map X G) x = apply_fun (orbit_map X G) y ->
+  y :e apply_fun (orbit_map X G) x /\ x :e apply_fun (orbit_map X G) y.
+let X G x y idG.
+assume HidG HidAct HxX HyX Heq.
+claim HyInY : y :e apply_fun (orbit_map X G) y.
+{
+  rewrite (orbit_map_apply X G y HyX).
+  apply SepI.
+  - exact HyX.
+  - exact (orbit_equiv_refl X G idG y HidG HidAct HyX).
+}
+claim HxInX : x :e apply_fun (orbit_map X G) x.
+{
+  rewrite (orbit_map_apply X G x HxX).
+  apply SepI.
+  - exact HxX.
+  - exact (orbit_equiv_refl X G idG x HidG HidAct HxX).
+}
+apply andI.
+- exact (mem_eqL
+    y
+    (apply_fun (orbit_map X G) x)
+    (apply_fun (orbit_map X G) y)
+    Heq
+    HyInY).
+- exact (mem_eqR
+    x
+    (apply_fun (orbit_map X G) x)
+    (apply_fun (orbit_map X G) y)
+    Heq
+    HxInX).
+Qed.
+
 (** Helper: equality of orbit_map values implies orbit equivalence **)
 (** Proven Bob **)
 Theorem orbit_map_eq_implies_orbit_equiv : forall X G idG x y:set,
