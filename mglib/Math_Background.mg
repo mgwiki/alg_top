@@ -188464,6 +188464,83 @@ exact (andI
   Hgamma1).
 Admitted.
 
+Theorem covering_map_R_S1_compose_loop_at_value : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  loop_at S1 S1_topology (apply_fun h S1_basepoint)
+    (compose_fun unit_interval covering_map_R_S1 h).
+let h.
+assume HhCont.
+set gamma := compose_fun unit_interval covering_map_R_S1 h.
+claim HgammaPack :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+  apply_fun gamma 0 = apply_fun h S1_basepoint /\
+  apply_fun gamma 1 = apply_fun h S1_basepoint.
+{
+  exact (covering_map_R_S1_compose_loop_data
+    h
+    HhCont).
+}
+claim HgammaCont :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology gamma.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
+    (apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+       apply_fun gamma 0 = apply_fun h S1_basepoint)
+      (apply_fun gamma 1 = apply_fun h S1_basepoint)
+      HgammaPack)).
+}
+claim Hgamma0 :
+  apply_fun gamma 0 = apply_fun h S1_basepoint.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma)
+    (apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+       apply_fun gamma 0 = apply_fun h S1_basepoint)
+      (apply_fun gamma 1 = apply_fun h S1_basepoint)
+      HgammaPack)).
+}
+claim Hgamma1 :
+  apply_fun gamma 1 = apply_fun h S1_basepoint.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology gamma /\
+     apply_fun gamma 0 = apply_fun h S1_basepoint)
+    (apply_fun gamma 1 = apply_fun h S1_basepoint)
+    HgammaPack).
+}
+apply (loop_at_fold
+  S1
+  S1_topology
+  (apply_fun h S1_basepoint)
+  gamma).
+apply andI.
+- apply andI.
+  + exact HgammaCont.
+  + exact Hgamma0.
+- exact Hgamma1.
+Admitted.
+
+Theorem covering_map_R_S1_compose_loop_at_lift_start : forall h e0:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  e0 :e R ->
+  apply_fun covering_map_R_S1 e0 = apply_fun h S1_basepoint ->
+  loop_at S1 S1_topology (apply_fun covering_map_R_S1 e0)
+    (compose_fun unit_interval covering_map_R_S1 h).
+let h e0.
+assume HhCont.
+assume He0R.
+assume He0Start.
+rewrite He0Start.
+exact (covering_map_R_S1_compose_loop_at_value
+  h
+  HhCont).
+Admitted.
+
 Theorem covering_map_R_S1_loop_at_basepoint :
   loop_at S1 S1_topology S1_basepoint covering_map_R_S1.
 apply (loop_at_fold
@@ -195604,25 +195681,15 @@ claim Hgamma1 :
     (apply_fun gamma 1 = apply_fun h S1_basepoint)
     HgammaPack).
 }
-claim HgammaLoop :
-  loop_at S1 S1_topology (apply_fun h S1_basepoint) gamma.
-{
-  apply (loop_at_fold
-    S1
-    S1_topology
-    (apply_fun h S1_basepoint)
-    gamma).
-  apply andI.
-  - apply andI.
-    + exact HgammaCont.
-    + exact Hgamma0.
-  - exact Hgamma1.
-}
 claim HgammaLoop0 :
   loop_at S1 S1_topology (apply_fun covering_map_R_S1 e0) gamma.
 {
-  rewrite He0Start.
-  exact HgammaLoop.
+  exact (covering_map_R_S1_compose_loop_at_lift_start
+    h
+    e0
+    HhCont
+    He0R
+    He0Start).
 }
 claim HstartGamma :
   apply_fun covering_map_R_S1 e0 = apply_fun gamma 0.
