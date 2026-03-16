@@ -411729,6 +411729,101 @@ exact (orbit_map_preimage_image_open_with_group_data
   E Te G idG U HtopE HhomeoAct HidG HidAct Hcomp Hinv HU).
 Qed.
 
+(** Helper: on any subset where p is injective, orbit-equivalent points must coincide **)
+(** Proven Bob **)
+Theorem covering_transformation_orbit_equiv_eq_on_p_injective_subset :
+  forall X Tx B Tb p S x1 x2:set,
+  covering_map X Tx B Tb p ->
+  (forall a b:set, a :e S -> b :e S -> apply_fun p a = apply_fun p b -> a = b) ->
+  x1 :e S ->
+  x2 :e S ->
+  orbit_equiv X (covering_transformation_group X Tx B Tb p) x1 x2 ->
+  x1 = x2.
+let X Tx B Tb p S x1 x2.
+assume Hcov Hpinj Hx1S Hx2S Horb.
+set G := covering_transformation_group X Tx B Tb p.
+claim Hgex : exists g:set, g :e G /\ apply_fun g x1 = x2.
+{ exact (andER (x1 :e X /\ x2 :e X) (exists g:set, g :e G /\ apply_fun g x1 = x2) Horb). }
+apply Hgex.
+let g. assume Hgpack.
+claim HgG : g :e G.
+{ exact (andEL (g :e G) (apply_fun g x1 = x2) Hgpack). }
+claim Hgx : apply_fun g x1 = x2.
+{ exact (andER (g :e G) (apply_fun g x1 = x2) Hgpack). }
+claim Hx1X : x1 :e X.
+{ exact (andEL (x1 :e X) (x2 :e X) (andEL (x1 :e X /\ x2 :e X) (exists g:set, g :e G /\ apply_fun g x1 = x2) Horb)). }
+claim HpFiber : apply_fun p (apply_fun g x1) = apply_fun p x1.
+{ exact (covering_transformation_group_fiber X Tx B Tb p g x1 HgG Hx1X). }
+claim Hpx2x1 : apply_fun p x2 = apply_fun p x1.
+{ rewrite <- Hgx. exact HpFiber. }
+claim Hx2x1 : x2 = x1.
+{ exact (Hpinj x2 x1 Hx2S Hx1S Hpx2x1). }
+symmetry.
+exact Hx2x1.
+Qed.
+
+(** Helper: orbit-equivalent points in a covering slice coincide **)
+(** Proven Bob **)
+Theorem covering_transformation_orbit_equiv_eq_on_slice :
+  forall X Tx B Tb p S V x1 x2:set,
+  covering_map X Tx B Tb p ->
+  homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+    (graph S (fun x:set => apply_fun p x)) ->
+  x1 :e S ->
+  x2 :e S ->
+  orbit_equiv X (covering_transformation_group X Tx B Tb p) x1 x2 ->
+  x1 = x2.
+let X Tx B Tb p S V x1 x2.
+assume Hcov HSHome Hx1S Hx2S Horb.
+claim Hpinj : forall a b:set, a :e S -> b :e S -> apply_fun p a = apply_fun p b -> a = b.
+{
+  let a b. assume HaS HbS Hpab.
+  claim Hga : apply_fun (graph S (fun x:set => apply_fun p x)) a = apply_fun p a.
+  { exact (apply_fun_graph S (fun x:set => apply_fun p x) a HaS). }
+  claim Hgb : apply_fun (graph S (fun x:set => apply_fun p x)) b = apply_fun p b.
+  { exact (apply_fun_graph S (fun x:set => apply_fun p x) b HbS). }
+  claim Hgab : apply_fun (graph S (fun x:set => apply_fun p x)) a =
+    apply_fun (graph S (fun x:set => apply_fun p x)) b.
+  { rewrite Hga. rewrite Hgb. exact Hpab. }
+  exact (homeomorphism_injective
+    S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+    (graph S (fun x:set => apply_fun p x))
+    HSHome a b HaS HbS Hgab).
+}
+exact (covering_transformation_orbit_equiv_eq_on_p_injective_subset
+  X Tx B Tb p S x1 x2 Hcov Hpinj Hx1S Hx2S Horb).
+Qed.
+
+(** Helper: on a covering slice, equality of orbit_map values implies equality of points **)
+(** Proven Bob **)
+Theorem covering_transformation_orbit_map_eq_eq_on_slice :
+  forall X Tx B Tb p S V x1 x2:set,
+  covering_map X Tx B Tb p ->
+  homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+    (graph S (fun x:set => apply_fun p x)) ->
+  x1 :e X ->
+  x2 :e X ->
+  x1 :e S ->
+  x2 :e S ->
+  apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x1 =
+  apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x2 ->
+  x1 = x2.
+let X Tx B Tb p S V x1 x2.
+assume Hcov HSHome Hx1X Hx2X Hx1S Hx2S Heq.
+set G := covering_transformation_group X Tx B Tb p.
+set idG := covering_transformation_id X Tx B Tb p.
+claim Horb : orbit_equiv X G x1 x2.
+{
+  exact (orbit_map_eq_implies_orbit_equiv
+    X G idG x1 x2
+    (covering_transformation_id_in_group X Tx B Tb p Hcov)
+    (covering_transformation_id_apply X Tx B Tb p)
+    Hx1X Hx2X Heq).
+}
+exact (covering_transformation_orbit_equiv_eq_on_slice
+  X Tx B Tb p S V x1 x2 Hcov HSHome Hx1S Hx2S Horb).
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
