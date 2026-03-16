@@ -220141,8 +220141,262 @@ Lemma ball_chain_prefix_covers_interval : forall r n seq k s:set,
   s :e apply_fun seq (ordsucc k) ->
   forall t:set, t :e unit_interval -> Rle t s ->
     exists j:set, j :e ordsucc k /\ t :e apply_fun seq j.
-admit.
-Admitted.
+let r n seq k s.
+assume HrR : r :e R.
+assume Hrpos : Rlt 0 r.
+assume HnOmega : n :e omega.
+assume HseqFn : function_on seq (ordsucc n) {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+assume Hovlp : forall j:set, j :e n -> apply_fun seq j :/\: apply_fun seq (ordsucc j) <> Empty.
+assume H0inSeq0 : 0 :e apply_fun seq 0.
+assume HkN : k :e n.
+assume HsK : s :e apply_fun seq k.
+assume HsSK : s :e apply_fun seq (ordsucc k).
+set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+claim HnNat : nat_p n. { exact (omega_nat_p n HnOmega). }
+claim HkNat : nat_p k. { exact (nat_p_trans n HnNat k HkN). }
+claim Hn_ord : ordinal n. { exact (nat_p_ordinal n HnNat). }
+claim Hk_ord : ordinal k. { exact (nat_p_ordinal k HkNat). }
+claim HkOmega : k :e omega. { exact (ordinal_TransSet omega omega_ordinal n HnOmega k HkN). }
+claim Hsk_sub_sn : ordsucc k c= ordsucc n.
+{
+  claim Hsk_sub_n : ordsucc k c= n.
+  { exact (ordinal_ordsucc_In_Subq n Hn_ord k HkN). }
+  exact (Subq_tra (ordsucc k) n (ordsucc n) Hsk_sub_n (ordsuccI1 n)).
+}
+claim HseqFnK : function_on seq (ordsucc k) BallFam.
+{ exact (function_on_subdomain seq (ordsucc n) BallFam (ordsucc k) HseqFn Hsk_sub_sn). }
+claim H0_in_sk : 0 :e ordsucc k. { exact (nat_0_in_ordsucc k HkNat). }
+claim Hk_in_sk : k :e ordsucc k. { exact (ordsuccI2 k). }
+(** Each ball in the prefix chain is a subset of unit_interval and connected **)
+claim HBallSubUI : forall j:set, j :e ordsucc k -> apply_fun seq j c= unit_interval.
+{
+  let j. assume Hj : j :e ordsucc k.
+  claim Hj_sn : j :e ordsucc n. { exact (Hsk_sub_sn j Hj). }
+  claim Hseqj_ball : apply_fun seq j :e BallFam. { exact (HseqFn j Hj_sn). }
+  apply (ReplE_impred unit_interval (fun x:set => open_ball unit_interval R_bounded_metric x r)
+    (apply_fun seq j) Hseqj_ball).
+  let c. assume HcI : c :e unit_interval. assume Heq : apply_fun seq j = open_ball unit_interval R_bounded_metric c r.
+  rewrite Heq.
+  exact (open_ball_subset_X unit_interval R_bounded_metric c r).
+}
+(** Show the union of the prefix chain is connected **)
+(** We need each ball connected in subspace topology of unit_interval **)
+claim HBallConn : forall j:set, j :e ordsucc k ->
+  connected_space (apply_fun seq j) (subspace_topology unit_interval unit_interval_topology (apply_fun seq j)).
+{
+  let j. assume Hj : j :e ordsucc k.
+  claim Hj_sn : j :e ordsucc n. { exact (Hsk_sub_sn j Hj). }
+  claim Hseqj_ball : apply_fun seq j :e BallFam. { exact (HseqFn j Hj_sn). }
+  apply (ReplE_impred unit_interval (fun x:set => open_ball unit_interval R_bounded_metric x r)
+    (apply_fun seq j) Hseqj_ball).
+  let c. assume HcI : c :e unit_interval. assume Heq : apply_fun seq j = open_ball unit_interval R_bounded_metric c r.
+  rewrite Heq.
+  apply (xm (Rlt r 1)).
+  - assume Hrlt1 : Rlt r 1.
+    exact (open_ball_unit_interval_connected_lt1 c r HcI HrR Hrpos Hrlt1).
+  - assume Hrnlt1 : ~(Rlt r 1).
+    (** When r >= 1, use xm on Rlt 1 r **)
+    apply (xm (Rlt 1 r)).
+    + assume Hr1lt : Rlt 1 r.
+      claim HcR : c :e R. { exact (unit_interval_sub_R c HcI). }
+      claim Hball_R_eq : open_ball R R_bounded_metric c r = R.
+      { exact (open_ball_R_bounded_metric_eq_R_if_1_lt_early c r HcR HrR Hr1lt). }
+      claim Hball_eq : open_ball unit_interval R_bounded_metric c r = unit_interval.
+      {
+        rewrite (open_ball_unit_interval_eq_binintersect_R c r HcI HrR).
+        rewrite Hball_R_eq.
+        (** unit_interval :/\: R = unit_interval since unit_interval c= R **)
+        exact (binintersect_Subq_eq_1 unit_interval R unit_interval_sub_R).
+      }
+      rewrite Hball_eq.
+      claim Hsubspace_eq : subspace_topology unit_interval unit_interval_topology unit_interval = unit_interval_topology.
+      { exact (subspace_topology_whole unit_interval unit_interval_topology unit_interval_topology_on). }
+      rewrite Hsubspace_eq.
+      exact unit_interval_connected.
+    + assume Hnr1lt : ~(Rlt 1 r).
+      (** r = 1 case: show ball is connected via convexity **)
+      claim HcR : c :e R. { exact (unit_interval_sub_R c HcI). }
+      claim Hle1r : Rle 1 r. { exact (RleI 1 r real_1 HrR Hrnlt1). }
+      claim Hler1 : Rle r 1. { exact (RleI r 1 HrR real_1 Hnr1lt). }
+      claim Hreq1 : 1 = r. { exact (Rle_antisym 1 r Hle1r Hler1). }
+      (** rewrite r to 1 **)
+      rewrite <- Hreq1.
+      (** open_ball unit_interval R_bounded_metric c 1 = unit_interval :/\: open_interval (c-1) (c+1) **)
+      claim Hball_eq_int : open_ball unit_interval R_bounded_metric c 1 =
+        unit_interval :/\: open_ball R R_bounded_metric c 1.
+      { exact (open_ball_unit_interval_eq_binintersect_R c 1 HcI real_1). }
+      claim Hball_R_eq : open_ball R R_bounded_metric c 1 = open_interval (add_SNo c (minus_SNo 1)) (add_SNo c 1).
+      { exact (open_ball_R_bounded_metric_r1_eq_open_interval_early c HcR). }
+      set a := add_SNo c (minus_SNo 1).
+      set b := add_SNo c 1.
+      claim HaR : a :e R. { exact (real_add_SNo c HcR (minus_SNo 1) (real_minus_SNo 1 real_1)). }
+      claim HbR : b :e R. { exact (real_add_SNo c HcR 1 real_1). }
+      (** a < b: c - 1 < c + 1 **)
+      claim HcSNo : SNo c. { exact (real_SNo c HcR). }
+      claim Hm1SNo : SNo (minus_SNo 1). { exact (SNo_minus_SNo 1 SNo_1). }
+      claim HaSNo : SNo a. { exact (SNo_add_SNo c (minus_SNo 1) HcSNo Hm1SNo). }
+      claim HbSNo : SNo b. { exact (SNo_add_SNo c 1 HcSNo SNo_1). }
+      (** Rlt a c = Rlt (c + (-1)) c **)
+      claim Haltc : Rlt a c.
+      {
+        (** Strategy: Rlt (c-1) c follows from Rlt (minus_SNo 1) 0 and monotonicity **)
+        (** Use Rlt_add_SNo with Rlt (minus_SNo 1) 0 and Rlt c (add_SNo c 1) **)
+        (** Actually, use Rle_Rlt_tra_Euclid: Rle a 0 -> Rlt 0 c -> Rlt a c (when c > 0) **)
+        (** Or more directly, use Rlt_Rle_tra and unit_interval_Rle0 **)
+        (** Simplest: show a < c by using add_SNo_Lt2 and then equality chain **)
+        (** add_SNo_Lt2 c (minus_SNo 1) 0 gives c + (-1) < c + 0 as SNoLt **)
+        claim Hm1lt0_SNo : SNoLt (minus_SNo 1) 0. { exact (RltE_lt (minus_SNo 1) 0 Rlt_minus1_0). }
+        claim Ha_lt_c0 : SNoLt (add_SNo c (minus_SNo 1)) (add_SNo c 0).
+        { exact (add_SNo_Lt2 c (minus_SNo 1) 0 HcSNo Hm1SNo SNo_0 Hm1lt0_SNo). }
+        claim Hc0_eq_c : add_SNo c 0 = c. { exact (add_SNo_0R c HcSNo). }
+        claim Hc0R : add_SNo c 0 :e R. { exact (real_add_SNo c HcR 0 real_0). }
+        claim Ha_lt_c0_Rlt : Rlt a (add_SNo c 0). { exact (RltI a (add_SNo c 0) HaR Hc0R Ha_lt_c0). }
+        claim Hc0_Rle_c : Rle (add_SNo c 0) c.
+        { rewrite Hc0_eq_c. exact (Rle_refl c HcR). }
+        exact (Rlt_Rle_tra a (add_SNo c 0) c Ha_lt_c0_Rlt Hc0_Rle_c).
+      }
+      (** Rlt c b = Rlt c (c + 1) **)
+      claim Hcltb : Rlt c b.
+      { exact (Rlt_add_1_R c HcR). }
+      claim Haltb : Rlt a b.
+      { exact (Rlt_tra a c b Haltc Hcltb). }
+      claim Hab : order_rel R a b. { exact (Rlt_implies_order_rel_R a b Haltb). }
+      (** open_interval (a) (b) is connected **)
+      claim HoiConn : connected_space (open_interval a b) (subspace_topology R R_standard_topology (open_interval a b)).
+      { exact (open_interval_connected a b HaR HbR Hab). }
+      (** open_interval is convex_in R **)
+      claim HoiConvex : convex_in R (open_interval a b).
+      { exact (connected_subset_R_convex_in (open_interval a b) (open_interval_Subq_R a b) HoiConn). }
+      (** unit_interval is convex_in R **)
+      claim HuiConvex : convex_in R unit_interval. { exact unit_interval_convex_in. }
+      (** intersection is convex_in R **)
+      claim HintConvex : convex_in R (unit_interval :/\: open_interval a b).
+      { exact (convex_in_R_binintersect unit_interval (open_interval a b) HuiConvex HoiConvex). }
+      (** c is in the intersection **)
+      claim Hc_in_oi : c :e open_interval a b.
+      {
+        exact (SepI R (fun x:set => Rlt a x /\ Rlt x b) c HcR
+          (andI (Rlt a c) (Rlt c b) Haltc Hcltb)).
+      }
+      claim Hc_in_int : c :e unit_interval :/\: open_interval a b.
+      { exact (binintersectI unit_interval (open_interval a b) c HcI Hc_in_oi). }
+      claim Hint_ne : unit_interval :/\: open_interval a b <> Empty.
+      {
+        assume Hempty : unit_interval :/\: open_interval a b = Empty.
+        exact (EmptyE c (eq_subst_mem_set c (unit_interval :/\: open_interval a b) Empty Hc_in_int Hempty)).
+      }
+      claim Hint_sub_R : unit_interval :/\: open_interval a b c= R.
+      { exact (Subq_tra (unit_interval :/\: open_interval a b) unit_interval R
+          (binintersect_Subq_1 unit_interval (open_interval a b)) unit_interval_sub_R). }
+      claim Hint_sub_UI : unit_interval :/\: open_interval a b c= unit_interval.
+      { exact (binintersect_Subq_1 unit_interval (open_interval a b)). }
+      (** intersection is connected in subspace_topology R **)
+      claim HintConnR : connected_space (unit_interval :/\: open_interval a b)
+        (subspace_topology R R_standard_topology (unit_interval :/\: open_interval a b)).
+      { exact (convex_in_R_connected (unit_interval :/\: open_interval a b) Hint_sub_R HintConvex Hint_ne). }
+      (** Convert from subspace of R to subspace of unit_interval **)
+      claim Htop_eq : subspace_topology unit_interval unit_interval_topology (unit_interval :/\: open_interval a b)
+        = subspace_topology R R_standard_topology (unit_interval :/\: open_interval a b).
+      { exact (subspace_topology_transitive_weak R R_standard_topology unit_interval
+          (unit_interval :/\: open_interval a b) Hint_sub_UI). }
+      claim HintConnUI : connected_space (unit_interval :/\: open_interval a b)
+        (subspace_topology unit_interval unit_interval_topology (unit_interval :/\: open_interval a b)).
+      { rewrite Htop_eq. exact HintConnR. }
+      (** Now rewrite the ball **)
+      rewrite Hball_eq_int. rewrite Hball_R_eq.
+      exact HintConnUI.
+}
+claim HBallConnSub : forall j:set, j :e ordsucc k ->
+  apply_fun seq j c= unit_interval /\
+  connected_space (apply_fun seq j) (subspace_topology unit_interval unit_interval_topology (apply_fun seq j)).
+{
+  let j. assume Hj.
+  apply andI.
+  - exact (HBallSubUI j Hj).
+  - exact (HBallConn j Hj).
+}
+(** Overlap condition restricted to prefix **)
+claim HovlpK : forall j:set, j :e k -> apply_fun seq j :/\: apply_fun seq (ordsucc j) <> Empty.
+{
+  let j. assume Hj : j :e k.
+  claim Hj_n : j :e n. { exact (ordinal_TransSet n Hn_ord k HkN j Hj). }
+  exact (Hovlp j Hj_n).
+}
+(** Apply overlapping_chain_union_connected **)
+set UnionK := Union {apply_fun seq j | j :e ordsucc k}.
+claim HunionConn : connected_space UnionK (subspace_topology unit_interval unit_interval_topology UnionK).
+{
+  exact (overlapping_chain_union_connected unit_interval unit_interval_topology k seq
+    unit_interval_topology_on HkOmega HBallConnSub HovlpK).
+}
+(** 0 is in the union **)
+claim H0_union : 0 :e UnionK.
+{
+  apply (UnionI {apply_fun seq j | j :e ordsucc k} 0 (apply_fun seq 0)).
+  - exact H0inSeq0.
+  - exact (ReplI (ordsucc k) (fun j:set => apply_fun seq j) 0 H0_in_sk).
+}
+(** s is in the union **)
+claim Hs_union : s :e UnionK.
+{
+  apply (UnionI {apply_fun seq j | j :e ordsucc k} s (apply_fun seq k)).
+  - exact HsK.
+  - exact (ReplI (ordsucc k) (fun j:set => apply_fun seq j) k Hk_in_sk).
+}
+(** The union is a subset of unit_interval **)
+claim Hunion_sub : UnionK c= unit_interval.
+{
+  let t. assume HtU : t :e UnionK.
+  apply (UnionE_impred {apply_fun seq j | j :e ordsucc k} t HtU).
+  let B. assume HtB : t :e B. assume HBfam : B :e {apply_fun seq j | j :e ordsucc k}.
+  apply (ReplE_impred (ordsucc k) (fun j:set => apply_fun seq j) B HBfam).
+  let j. assume Hj : j :e ordsucc k. assume Heq : B = apply_fun seq j.
+  claim Ht_seqj : t :e apply_fun seq j. { exact (mem_eqR t B (apply_fun seq j) Heq HtB). }
+  exact (HBallSubUI j Hj t Ht_seqj).
+}
+(** s is in unit_interval **)
+claim HsUI : s :e unit_interval. { exact (Hunion_sub s Hs_union). }
+claim HsR : s :e R. { exact (unit_interval_sub_R s HsUI). }
+(** Use connected_subset_unit_interval_interval_property **)
+let t.
+assume HtUI : t :e unit_interval.
+assume HtLes : Rle t s.
+claim HtR : t :e R. { exact (unit_interval_sub_R t HtUI). }
+claim H0le_t : Rle 0 t. { exact (unit_interval_Rle0 t HtUI). }
+(** Case split: t = s or t < s **)
+apply (xm (t = s)).
+- assume Hteqs : t = s.
+  (** t = s, so t :e apply_fun seq k **)
+  witness k. apply andI.
+  + exact Hk_in_sk.
+  + rewrite Hteqs. exact HsK.
+- assume Htnes : ~(t = s).
+  claim Htlts : Rlt t s. { exact (Rle_neq_implies_Rlt t s HtLes Htnes). }
+  (** Case split: t = 0 or t > 0 **)
+  apply (xm (t = 0)).
+  + assume Hteq0 : t = 0.
+    witness 0. apply andI.
+    * exact H0_in_sk.
+    * rewrite Hteq0. exact H0inSeq0.
+  + assume Htne0 : ~(t = 0).
+    claim H0lt_t : Rlt 0 t. { exact (Rle_neq_implies_Rlt 0 t H0le_t (fun H : 0 = t => Htne0 (eq_symm 0 t H))). }
+    (** 0, s in UnionK, t between them, UnionK connected subset of unit_interval **)
+    claim HtInUnion : t :e UnionK.
+    {
+      exact (connected_subset_unit_interval_interval_property UnionK
+        Hunion_sub HunionConn 0 s t H0_union Hs_union HtUI
+        (orIL (Rlt 0 t /\ Rlt t s) (Rlt s t /\ Rlt t 0)
+          (andI (Rlt 0 t) (Rlt t s) H0lt_t Htlts))).
+    }
+    (** Decompose t from union membership **)
+    apply (UnionE_impred {apply_fun seq j | j :e ordsucc k} t HtInUnion).
+    let B. assume HtB : t :e B. assume HBfam : B :e {apply_fun seq j | j :e ordsucc k}.
+    apply (ReplE_impred (ordsucc k) (fun j:set => apply_fun seq j) B HBfam).
+    let j. assume Hj : j :e ordsucc k. assume Heq : B = apply_fun seq j.
+    witness j. apply andI.
+    * exact Hj.
+    * exact (mem_eqR t B (apply_fun seq j) Heq HtB).
+Qed.
 
 (** Infrastructure: mixed case for ball_cover_word_construction (to be completed). **)
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
