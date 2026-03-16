@@ -6171,3 +6171,73 @@ Admin Decision:
 Implemented by:
 
 Implementation Commit:
+
+Status:
+
+========================================================
+--------------------------------------------------------
+NOTICE ID: 1773656677
+Created: 1773656677
+Status: PROPOSED
+
+Refers to Commit:
+  3c40fa80c
+
+Target:
+  Line: 405276
+  Name: thm81_5_properly_discontinuous_covering (Theorem)
+
+Problem:
+  The theorem statement is missing group axioms for G. The LaTeX source
+  (Munkres, Theorem 81.5, line 5125 in algtop.tex) says:
+    "Let G be a GROUP of homeomorphisms of X."
+  But the formal statement only assumes:
+    (forall g, g :e G -> homeomorphism X Tx X Tx g) /\
+    idG :e G /\ (forall x, x :e X -> apply_fun idG x = x)
+  This does NOT require G to be closed under composition or inverses.
+  The proof requires these group axioms (admits at lines 405289-405296):
+    1. Composition closure: forall g1 g2 :e G, exists g3 :e G, forall z :e X, g3(z) = g2(g1(z))
+    2. Inverse closure: forall g :e G, exists ginv :e G, forall z :e X, ginv(g(z)) = z
+  Without these hypotheses, orbit_map_invariant cannot be proved and the
+  theorem is unprovable as stated.
+
+Proposed Replacement:
+  Theorem thm81_5_properly_discontinuous_covering :
+    forall X Tx G idG:set,
+    path_connected_space X Tx -> locally_path_connected X Tx ->
+    (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
+    idG :e G -> (forall x:set, x :e X -> apply_fun idG x = x) ->
+    (forall g1 g2:set, g1 :e G -> g2 :e G ->
+      exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+        apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+    (forall g0:set, g0 :e G ->
+      exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+        apply_fun ginv (apply_fun g0 z) = z) ->
+    (covering_map X Tx (orbit_space X G) (orbit_topology X Tx G) (orbit_map X G)
+     <->
+     properly_discontinuous X Tx G idG).
+  (Only change: add two hypotheses for composition closure and inverse closure of G,
+   matching the "G is a group" requirement from the textbook.)
+
+Proposed by:
+  Alice
+
+Discussion:
+  - 1773656677 | Alice: The existing proof already has claims for Hcomp and Hinv
+    with admits. Adding them as hypotheses makes the theorem provable. The 854-line
+    proof body is otherwise complete. This matches the textbook which explicitly
+    says "G is a group of homeomorphisms."
+
+Approvals:
+  - 1773656677 | Alice: YES
+  - | Bob:
+  - | Charlie:
+  - | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
