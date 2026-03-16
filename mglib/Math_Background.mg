@@ -515943,6 +515943,26 @@ apply binintersectI.
 - exact (Hball2V s Hs2).
 Qed.
 
+(** STRATEGY NOTE for ball_cover_word_construction_mixed_finish:
+    The 2 remaining admits (m=0 and [s,1]->V) are caused by the monotone partition
+    approach (Htransition_exists claims [0,s]->U and [s,1]->V). This fails because:
+    1. When ball 0 is V-type, [0,epsilon]->V contradicts [0,s]->U
+    2. When balls after the transition alternate U/V, [s,1] doesn't map entirely to V
+
+    CORRECT APPROACH: Replace Htransition_exists with induction on the number
+    of U/V transitions in the ball chain:
+    - Count transitions: k = |{i : ball i is U-type but ball i+1 is V-type or vice versa}|
+    - Base case k=0: all balls same type -> word_data_of_loop_in_U or _V
+    - Inductive step: find first transition at index j, get overlap point s in U cap V.
+      Split f into: prefix f1 (maps entirely to U or V, ONE factor) and suffix path.
+      Connect suffix endpoints to x0 via U cap V path-connectivity.
+      Suffix forms a loop with k-1 transitions -> apply induction hypothesis.
+      Combine factor from f1 with factors from suffix.
+
+    This requires: nat_ind on k, path-splitting at s, subpath-to-loop conversion
+    via U cap V connectivity, and word_data concatenation. Estimated ~300-500 lines.
+**)
+
 (** Sandbox End Alice **)
 (** Sandbox Begin Bob **)
 (** Sandbox End Bob **)
