@@ -191226,6 +191226,78 @@ exact (eq_i_tra
   HantiBase).
 Admitted.
 
+(** Midpoint of h compose covering_map_R_S1 is not its starting value. **)
+Theorem antipode_preserving_S1_cover_midpoint_ne_start : forall h e0:set,
+  antipode_preserving_S1 h ->
+  e0 :e R ->
+  apply_fun covering_map_R_S1 e0 = apply_fun h S1_basepoint ->
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1) <>
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0.
+let h e0.
+assume HhAnti.
+assume He0R.
+assume He0Start.
+claim HhCont :
+  continuous_map S1 S1_topology S1 S1_topology h.
+{
+  exact (andEL
+    (continuous_map S1 S1_topology S1 S1_topology h)
+    (forall z:set, z :e S1 ->
+      apply_fun h (minus_SNo (z 0), minus_SNo (z 1)) =
+      (minus_SNo (apply_fun h z 0), minus_SNo (apply_fun h z 1)))
+    HhAnti).
+}
+claim Hb0S1 : S1_basepoint :e S1.
+{
+  exact S1_basepoint_in_S1_early.
+}
+claim Hy0S1 : apply_fun h S1_basepoint :e S1.
+{
+  exact (continuous_map_value_in_space
+    S1
+    S1_topology
+    S1
+    S1_topology
+    h
+    S1_basepoint
+    HhCont
+    Hb0S1).
+}
+claim Hgamma0 :
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0 =
+  apply_fun h S1_basepoint.
+{
+  exact (covering_map_R_S1_compose_at_0_basepoint
+    h
+    HhCont).
+}
+claim HgammaHalf :
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1) =
+  (minus_SNo (apply_fun h S1_basepoint 0),
+   minus_SNo (apply_fun h S1_basepoint 1)).
+{
+  rewrite (antipode_preserving_S1_cover_midpoint_value_at_lift_start
+    h
+    e0
+    HhAnti
+    He0R
+    He0Start).
+  rewrite He0Start.
+  reflexivity.
+}
+rewrite HgammaHalf.
+rewrite Hgamma0.
+assume HantiEq.
+exact ((S1_point_neq_antipode_early
+  (apply_fun h S1_basepoint)
+  Hy0S1)
+  (eq_symm
+    (minus_SNo (apply_fun h S1_basepoint 0),
+     minus_SNo (apply_fun h S1_basepoint 1))
+    (apply_fun h S1_basepoint)
+    HantiEq)).
+Admitted.
+
 (** Midpoint fiber witnesses for h compose covering_map_R_S1. **)
 Theorem antipode_preserving_S1_midpoint_fiber_witnesses : forall h e0:set,
   antipode_preserving_S1 h ->
@@ -191420,17 +191492,12 @@ claim HgammaHalf :
 claim HgammaHalfNeStart :
   apply_fun gamma (eps_ 1) <> apply_fun gamma 0.
 {
-  rewrite HgammaHalf.
-  rewrite Hgamma0.
-  assume HantiEq.
-  exact ((S1_point_neq_antipode_early
-    (apply_fun h S1_basepoint)
-    Hy0S1)
-    (eq_symm
-      (minus_SNo (apply_fun h S1_basepoint 0),
-       minus_SNo (apply_fun h S1_basepoint 1))
-      (apply_fun h S1_basepoint)
-      HantiEq)).
+  exact (antipode_preserving_S1_cover_midpoint_ne_start
+    h
+    e0
+    HhAnti
+    He0R
+    He0Start).
 }
 claim HstartGamma :
   apply_fun covering_map_R_S1 e0 = apply_fun gamma 0.
