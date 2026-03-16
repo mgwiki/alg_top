@@ -188538,6 +188538,59 @@ apply andI.
       HyS1).
 Qed.
 
+(** S55 helper: composing the S1 antipode map with itself is the identity graph on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_compose_self_eq_id_graph :
+  compose_fun S1 s55_S1_antipode_map s55_S1_antipode_map
+  =
+  graph S1 (fun x:set => x).
+claim HantiFun :
+  function_on s55_S1_antipode_map S1 S1.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    S1
+    S1_topology
+    s55_S1_antipode_map
+    s55_S1_antipode_map_continuous).
+}
+apply (total_function_space_extensional
+  S1
+  S1
+  (compose_fun S1 s55_S1_antipode_map s55_S1_antipode_map)
+  (graph S1 (fun x:set => x))).
+- exact (compose_fun_in_total_function_space
+    S1
+    S1
+    S1
+    s55_S1_antipode_map
+    s55_S1_antipode_map
+    HantiFun
+    HantiFun).
+- exact (graph_in_total_function_space
+    S1
+    S1
+    (fun x:set => x)
+    (fun x Hx => Hx)).
+- let x.
+  assume HxS1.
+  rewrite (compose_fun_apply
+    S1
+    s55_S1_antipode_map
+    s55_S1_antipode_map
+    x
+    HxS1).
+  rewrite (apply_fun_graph
+    S1
+    (fun z:set => z)
+    x
+    HxS1).
+  exact (s55_S1_antipode_map_involution
+    x
+    HxS1).
+Qed.
+
 (** S55 helper: explicit fixed-point-free endomap witness on S1 with S1 topology. **)
 (** Proven Bob **)
 Theorem s55_exists_fixed_point_free_endomap_S1 :
