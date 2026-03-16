@@ -412278,6 +412278,122 @@ apply andI.
     X Tx B Tb p S U0 Hcov HSopen HU0sub).
 Qed.
 
+(** Helper: on a covering slice, the orbit_map graph is a homeomorphism onto its image **)
+(** Proven Bob **)
+Theorem covering_transformation_orbit_map_slice_homeomorphism :
+  forall X Tx B Tb p S V:set,
+  covering_map X Tx B Tb p ->
+  S :e Tx ->
+  homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+    (graph S (fun t:set => apply_fun p t)) ->
+  homeomorphism
+    S
+    (subspace_topology X Tx S)
+    (image_of (orbit_map X (covering_transformation_group X Tx B Tb p)) S)
+    (subspace_topology
+      (orbit_space X (covering_transformation_group X Tx B Tb p))
+      (orbit_topology X Tx (covering_transformation_group X Tx B Tb p))
+      (image_of (orbit_map X (covering_transformation_group X Tx B Tb p)) S))
+    (graph S (fun x:set =>
+      apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x)).
+let X Tx B Tb p S V.
+assume Hcov HSopen HSHome.
+set G := covering_transformation_group X Tx B Tb p.
+set pi := orbit_map X G.
+set OS := orbit_space X G.
+set OT := orbit_topology X Tx G.
+set fS := graph S (fun x:set => apply_fun pi x).
+claim HtopX : topology_on X Tx.
+{ exact (covering_map_topology_on_domain X Tx B Tb p Hcov). }
+claim HSsubX : S c= X.
+{ exact (topology_elem_subset X Tx S HtopX HSopen). }
+claim Hfn : forall h:set, h :e G -> function_on h X X.
+{
+  let h. assume HhG.
+  exact (covering_transformation_group_function_on X Tx B Tb p h HhG).
+}
+claim HtopOS : topology_on OS OT.
+{ exact (orbit_topology_is_topology X Tx G HtopX Hfn). }
+claim HcontPi : continuous_map X Tx OS OT pi.
+{ exact (orbit_map_continuous X Tx G HtopX Hfn). }
+claim HcontPiS_OS : continuous_map S (subspace_topology X Tx S) OS OT pi.
+{
+  exact (continuous_on_subspace_rule
+    X Tx OS OT pi S HtopX HtopOS HSsubX HcontPi).
+}
+claim Hpi_fn_X : function_on pi X OS.
+{ exact (orbit_map_function_on X G Hfn). }
+claim HimgS_sub_OS : image_of pi S c= OS.
+{ exact (image_of_sub_codomain pi X OS S Hpi_fn_X HSsubX). }
+claim Hpi_in_imgS : forall x:set, x :e S -> apply_fun pi x :e image_of pi S.
+{
+  let x. assume HxS.
+  exact (ReplI S (fun z:set => apply_fun pi z) x HxS).
+}
+claim HcontPiS_Img :
+  continuous_map S (subspace_topology X Tx S)
+    (image_of pi S) (subspace_topology OS OT (image_of pi S))
+    pi.
+{
+  exact (continuous_map_range_restrict
+    S (subspace_topology X Tx S) OS OT pi (image_of pi S)
+    HcontPiS_OS HimgS_sub_OS Hpi_in_imgS).
+}
+claim Hbij :
+  bijection S (image_of pi S) fS.
+{
+  exact (covering_transformation_orbit_map_slice_bijection
+    X Tx B Tb p S V Hcov HSHome HSsubX).
+}
+claim HfS_fn : function_on fS S (image_of pi S).
+{
+  exact (andEL
+    (function_on fS S (image_of pi S))
+    (forall cls:set, cls :e image_of pi S ->
+      exists x:set, x :e S /\ apply_fun fS x = cls /\
+        (forall x':set, x' :e S -> apply_fun fS x' = cls -> x' = x))
+    Hbij).
+}
+claim Hagree : forall x:set, x :e S -> apply_fun pi x = apply_fun fS x.
+{
+  let x. assume HxS.
+  exact (eq_symm
+    (apply_fun fS x)
+    (apply_fun pi x)
+    (apply_fun_graph S (fun x0:set => apply_fun pi x0) x HxS)).
+}
+claim HcontfS :
+  continuous_map S (subspace_topology X Tx S)
+    (image_of pi S) (subspace_topology OS OT (image_of pi S))
+    fS.
+{
+  exact (continuous_map_congr_on
+    S (subspace_topology X Tx S)
+    (image_of pi S) (subspace_topology OS OT (image_of pi S))
+    pi fS HcontPiS_Img HfS_fn Hagree).
+}
+claim HopenfS :
+  open_map
+    S
+    (subspace_topology X Tx S)
+    (image_of pi S)
+    (subspace_topology OS OT (image_of pi S))
+    fS.
+{
+  exact (covering_transformation_orbit_map_slice_open_map
+    X Tx B Tb p S Hcov HSopen).
+}
+exact (open_map_bijection_homeomorphism
+  S
+  (subspace_topology X Tx S)
+  (image_of pi S)
+  (subspace_topology OS OT (image_of pi S))
+  fS
+  HcontfS
+  HopenfS
+  Hbij).
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
