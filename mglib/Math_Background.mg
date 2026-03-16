@@ -123098,8 +123098,23 @@ witness V0. apply and4I.
   rewrite Hveq.
   exact (SepE2 E (fun z:set => apply_fun p z :e W) u HuPre).
 - (** p(U0) is path-connected: continuous surjective image of path-connected U0 **)
-  admit.
-Admitted.
+  claim HU0sub : U0 c= E. { exact (topology_elem_subset E Te U0 HtopE HU0Te). }
+  claim HpContU0 : continuous_map U0 (subspace_topology E Te U0) B Tb p.
+  { exact (continuous_on_subspace E Te B Tb p U0 HtopE HU0sub Hcont_p). }
+  claim HV0sub : V0 c= B.
+  { let v. assume Hv. apply (ReplE_impred U0 (fun z:set => apply_fun p z) v Hv).
+    let u. assume HuU0 Hveq. rewrite Hveq.
+    exact (continuous_map_function_on E Te B Tb p Hcont_p u (HU0sub u HuU0)). }
+  claim HpMapsIntoV0 : forall u:set, u :e U0 -> apply_fun p u :e V0.
+  { let u. assume Hu. exact (ReplI U0 (fun z:set => apply_fun p z) u Hu). }
+  claim HpContV0 : continuous_map U0 (subspace_topology E Te U0) V0 (subspace_topology B Tb V0) p.
+  { exact (continuous_map_range_restrict U0 (subspace_topology E Te U0) B Tb p V0 HpContU0 HV0sub HpMapsIntoV0). }
+  claim HpSurjV0 : forall v:set, v :e V0 -> exists u:set, u :e U0 /\ apply_fun p u = v.
+  { let v. assume Hv. apply (ReplE_impred U0 (fun z:set => apply_fun p z) v Hv).
+    let u. assume HuU0 Hveq. witness u. apply andI. exact HuU0. symmetry. exact Hveq. }
+  exact (continuous_image_path_connected U0 (subspace_topology E Te U0) V0 (subspace_topology B Tb V0) p
+    HpcU0 HpContV0 HpSurjV0).
+Qed.
 
 (** Infrastructure: intersections with open sets are open in subspace **)
 (** Proven Bob **)
