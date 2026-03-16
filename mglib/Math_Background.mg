@@ -404472,6 +404472,35 @@ apply andI.
   exact (Hfiber2 x HxE).
 Qed.
 
+(** Helper: composition of CTG members is in CTG **)
+(** Proven Alice **)
+Theorem covering_transformation_compose_in_group :
+  forall E Te B Tb p h1 h2:set,
+  h1 :e covering_transformation_group E Te B Tb p ->
+  h2 :e covering_transformation_group E Te B Tb p ->
+  compose_fun E h2 h1 :e covering_transformation_group E Te B Tb p.
+let E Te B Tb p h1 h2. assume Hh1G Hh2G.
+claim Hct1 : covering_transformation E Te B Tb p h1.
+{ exact (SepE2 (function_space E E) (fun h:set => covering_transformation E Te B Tb p h) h1 Hh1G). }
+claim Hct2 : covering_transformation E Te B Tb p h2.
+{ exact (SepE2 (function_space E E) (fun h:set => covering_transformation E Te B Tb p h) h2 Hh2G). }
+claim Hct_comp : covering_transformation E Te B Tb p (compose_fun E h2 h1).
+{ exact (covering_transformation_compose E Te B Tb p h1 h2 Hct1 Hct2). }
+claim Hfn1 : function_on h1 E E.
+{ exact (continuous_map_function_on E Te E Te h1
+    (covering_transformation_continuous E Te B Tb p h1 Hct1)). }
+claim Hfn2 : function_on h2 E E.
+{ exact (continuous_map_function_on E Te E Te h2
+    (covering_transformation_continuous E Te B Tb p h2 Hct2)). }
+prove compose_fun E h2 h1 :e
+  {h :e function_space E E | covering_transformation E Te B Tb p h}.
+apply (SepI (function_space E E)
+  (fun h:set => covering_transformation E Te B Tb p h)
+  (compose_fun E h2 h1)).
+- exact (compose_fun_in_function_space E E E h2 h1 Hfn2 Hfn1).
+- exact Hct_comp.
+Qed.
+
 (** Helper: the inverse of a covering transformation is a covering transformation **)
 (** Proven Alice **)
 Theorem covering_transformation_inverse_exists :
