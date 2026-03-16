@@ -409175,6 +409175,27 @@ let X G x. assume HxX.
 exact (apply_fun_graph X (fun z:set => {y :e X | orbit_equiv X G z y}) x HxX).
 Qed.
 
+(** Helper: g(y) is in the orbit class of y (one direction of orbit_map_invariant) **)
+(** Proven Alice **)
+Theorem orbit_map_g_image_in_orbit_class :
+  forall X G g y:set,
+  g :e G ->
+  (forall h:set, h :e G -> function_on h X X) ->
+  y :e X ->
+  apply_fun g y :e apply_fun (orbit_map X G) y.
+let X G g y. assume HgG Hfn HyX.
+claim HgyX : apply_fun g y :e X. { exact (Hfn g HgG y HyX). }
+rewrite (orbit_map_apply X G y HyX).
+prove apply_fun g y :e {z :e X | orbit_equiv X G y z}.
+apply (SepI X (fun z:set => orbit_equiv X G y z) (apply_fun g y) HgyX).
+prove orbit_equiv X G y (apply_fun g y).
+prove y :e X /\ apply_fun g y :e X /\ exists h0:set, h0 :e G /\ apply_fun h0 y = apply_fun g y.
+apply and3I.
+- exact HyX.
+- exact HgyX.
+- witness g. apply andI. exact HgG. reflexivity.
+Qed.
+
 (** Helper: each orbit_map value is in orbit_space (no action-closure assumptions needed) **)
 (** Proven Bob **)
 Theorem orbit_map_value_in_orbit_space : forall X G x:set,
