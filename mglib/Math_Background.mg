@@ -187974,38 +187974,38 @@ exact (continuous_on_subspace
 Admitted.
 
 (** S57 helper: the standard covering path from 0 to 1 is a loop at the circle basepoint. **)
+Theorem covering_map_R_S1_at_0_basepoint :
+  apply_fun covering_map_R_S1 0 = S1_basepoint.
+rewrite (apply_fun_graph
+  R
+  (fun t:set =>
+    (apply_fun cos_real (mul_SNo two_pi t),
+     apply_fun sin_real (mul_SNo two_pi t)))
+  0
+  real_0).
+rewrite (mul_SNo_zeroR two_pi (real_SNo two_pi two_pi_in_R)).
+rewrite cos_zero.
+rewrite sin_zero.
+reflexivity.
+Admitted.
+
+Theorem covering_map_R_S1_at_1_basepoint :
+  apply_fun covering_map_R_S1 1 = S1_basepoint.
+rewrite (apply_fun_graph
+  R
+  (fun t:set =>
+    (apply_fun cos_real (mul_SNo two_pi t),
+     apply_fun sin_real (mul_SNo two_pi t)))
+  1
+  real_1).
+rewrite (mul_SNo_oneR two_pi (real_SNo two_pi two_pi_in_R)).
+rewrite cos_two_pi.
+rewrite sin_two_pi.
+reflexivity.
+Admitted.
+
 Theorem covering_map_R_S1_loop_at_basepoint :
   loop_at S1 S1_topology S1_basepoint covering_map_R_S1.
-claim Hcover0 :
-  apply_fun covering_map_R_S1 0 = S1_basepoint.
-{
-  rewrite (apply_fun_graph
-    R
-    (fun t:set =>
-      (apply_fun cos_real (mul_SNo two_pi t),
-       apply_fun sin_real (mul_SNo two_pi t)))
-    0
-    real_0).
-  rewrite (mul_SNo_zeroR two_pi (real_SNo two_pi two_pi_in_R)).
-  rewrite cos_zero.
-  rewrite sin_zero.
-  reflexivity.
-}
-claim Hcover1 :
-  apply_fun covering_map_R_S1 1 = S1_basepoint.
-{
-  rewrite (apply_fun_graph
-    R
-    (fun t:set =>
-      (apply_fun cos_real (mul_SNo two_pi t),
-       apply_fun sin_real (mul_SNo two_pi t)))
-    1
-    real_1).
-  rewrite (mul_SNo_oneR two_pi (real_SNo two_pi two_pi_in_R)).
-  rewrite cos_two_pi.
-  rewrite sin_two_pi.
-  reflexivity.
-}
 apply (loop_at_fold
   S1
   S1_topology
@@ -188014,8 +188014,8 @@ apply (loop_at_fold
 apply andI.
 - apply andI.
   + exact covering_map_R_S1_continuous_on_unit_interval.
-  + exact Hcover0.
-- exact Hcover1.
+  + exact covering_map_R_S1_at_0_basepoint.
+- exact covering_map_R_S1_at_1_basepoint.
 Admitted.
 
 (** Early arithmetic helper: x + x = 0 forces x = 0. **)
