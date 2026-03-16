@@ -405481,7 +405481,169 @@ Theorem ex81_3a_covering_trans_properly_discontinuous :
   let G := covering_transformation_group X Tx B Tb p in
   let idG := graph X (fun x:set => x) in
   properly_discontinuous X Tx G idG.
-admit.
+let X Tx B Tb p.
+assume Hcov : covering_map X Tx B Tb p.
+assume Hpc : path_connected_space X Tx.
+set G := covering_transformation_group X Tx B Tb p.
+set idG := graph X (fun x:set => x).
+claim HtopX : topology_on X Tx.
+{ exact (path_connected_space_topology X Tx Hpc). }
+claim HconnX : connected_space X Tx.
+{ exact (path_connected_implies_connected X Tx Hpc). }
+claim Hcont_p : continuous_map X Tx B Tb p.
+{ exact (covering_map_continuous X Tx B Tb p Hcov). }
+claim HtopB : topology_on B Tb.
+{ exact (covering_map_topology_on_codomain X Tx B Tb p Hcov). }
+claim Hfn_p : function_on p X B.
+{ exact (continuous_map_function_on X Tx B Tb p Hcont_p). }
+(** Key claim: every covering transformation g in G is a covering transformation **)
+claim Hct_of_G : forall g:set, g :e G -> covering_transformation X Tx B Tb p g.
+{ let g. assume HgG.
+  exact (SepE2 (function_space X X) (fun h:set => covering_transformation X Tx B Tb p h) g HgG). }
+(** Extract homeomorphism from covering_transformation **)
+claim Hhomeo_of_G : forall g:set, g :e G -> homeomorphism X Tx X Tx g.
+{ let g. assume HgG.
+  exact (andEL (homeomorphism X Tx X Tx g)
+    (forall x:set, x :e X -> apply_fun p (apply_fun g x) = apply_fun p x)
+    (Hct_of_G g HgG)). }
+(** g preserves fibers **)
+claim Hfiber_of_G : forall g:set, g :e G -> forall x:set, x :e X ->
+  apply_fun p (apply_fun g x) = apply_fun p x.
+{ let g. assume HgG.
+  exact (andER (homeomorphism X Tx X Tx g)
+    (forall x:set, x :e X -> apply_fun p (apply_fun g x) = apply_fun p x)
+    (Hct_of_G g HgG)). }
+(** g maps X to X **)
+claim HgX_of_G : forall g:set, g :e G -> forall x:set, x :e X -> apply_fun g x :e X.
+{ let g. assume HgG. let x. assume HxX.
+  exact (continuous_map_function_on X Tx X Tx g
+    (homeomorphism_continuous X Tx X Tx g (Hhomeo_of_G g HgG)) x HxX). }
+(** Identity is continuous **)
+claim HidG_cont : continuous_map X Tx X Tx idG.
+{ exact (identity_continuous X Tx HtopX). }
+(** Key: no fixed points for non-identity covering transformations **)
+(** If g :e G, g(x0) = x0 for some x0, then g = idG pointwise, **)
+(** using covering_map_lifts_agree_on_connected_domain **)
+claim Hno_fixed : forall g:set, g :e G -> g <> idG ->
+  forall x0:set, x0 :e X -> apply_fun g x0 <> x0.
+{ let g. assume HgG HgNeq.
+  let x0. assume Hx0X.
+  assume Hfixed_eq : apply_fun g x0 = x0.
+  (** g is a lifting of p: continuous X->X and p(g(x)) = p(x) **)
+  claim Hg_cont : continuous_map X Tx X Tx g.
+  { exact (homeomorphism_continuous X Tx X Tx g (Hhomeo_of_G g HgG)). }
+  claim Hg_lift : lifting_of X Tx X Tx B Tb p p g.
+  { prove continuous_map X Tx X Tx g /\
+      (forall x:set, x :e X -> apply_fun p (apply_fun g x) = apply_fun p x).
+    apply andI.
+    - exact Hg_cont.
+    - exact (Hfiber_of_G g HgG). }
+  (** idG is also a lifting of p **)
+  claim HidG_lift : lifting_of X Tx X Tx B Tb p p idG.
+  { prove continuous_map X Tx X Tx idG /\
+      (forall x:set, x :e X -> apply_fun p (apply_fun idG x) = apply_fun p x).
+    apply andI.
+    - exact HidG_cont.
+    - let x. assume HxX.
+      rewrite (apply_fun_graph X (fun x:set => x) x HxX).
+      reflexivity. }
+  (** g and idG agree at x0 **)
+  claim Hagree : apply_fun g x0 = apply_fun idG x0.
+  { rewrite (apply_fun_graph X (fun x:set => x) x0 Hx0X).
+    exact Hfixed_eq. }
+  (** By connected domain uniqueness, g = idG pointwise **)
+  claim Hpointwise : forall x:set, x :e X -> apply_fun g x = apply_fun idG x.
+  { exact (covering_map_lifts_agree_on_connected_domain X Tx B Tb p
+      X Tx p g idG x0 Hcov HconnX Hg_lift HidG_lift Hx0X Hagree). }
+  (** Derive g = idG using total_function_space_extensional **)
+  claim Hg_total : g :e total_function_space X X.
+  { exact (continuous_map_in_total_function_space_plain X Tx X Tx g Hg_cont). }
+  claim HidG_total : idG :e total_function_space X X.
+  { exact (continuous_map_in_total_function_space_plain X Tx X Tx idG HidG_cont). }
+  claim Hgeq : g = idG.
+  { exact (total_function_space_extensional X X g idG Hg_total HidG_total Hpointwise). }
+  exact (HgNeq Hgeq). }
+(** Main proof: properly_discontinuous **)
+prove forall x:set, x :e X ->
+  exists U:set, U :e Tx /\ x :e U /\
+    (forall g:set, g :e G -> g <> idG ->
+      apply_fun g x :e X /\
+      (forall y:set, y :e U -> apply_fun g y /:e U)).
+let x. assume HxX : x :e X.
+set b := apply_fun p x.
+claim HbB : b :e B.
+{ exact (Hfn_p x HxX). }
+(** Get evenly covered neighborhood with slices **)
+apply (covering_map_evenly_covered_slices X Tx B Tb p b Hcov HbB).
+let V. assume Hev_inner. apply Hev_inner. let slices. assume Hpack.
+apply (and6E
+  (V :e Tb) (b :e V)
+  (slices c= Tx)
+  (pairwise_disjoint slices)
+  (Union slices = preimage_of X p V)
+  (forall S0:set, S0 :e slices ->
+    homeomorphism S0 (subspace_topology X Tx S0) V (subspace_topology B Tb V)
+      (graph S0 (fun x0:set => apply_fun p x0)))
+  Hpack).
+assume HVopen HbV Hslices_open Hpd Hunion Hhomeo_slices.
+(** x :e preimage_of X p V **)
+claim Hx_pre : x :e preimage_of X p V.
+{ prove x :e {x0 :e X | apply_fun p x0 :e V}.
+  apply (SepI X (fun x0:set => apply_fun p x0 :e V) x).
+  - exact HxX.
+  - prove apply_fun p x :e V. exact HbV. }
+(** x :e Union slices **)
+claim Hx_union : x :e Union slices.
+{ rewrite Hunion. exact Hx_pre. }
+(** x :e some slice Sx **)
+apply (UnionE_impred slices x Hx_union).
+let Sx. assume HxSx : x :e Sx. assume HSxSlice : Sx :e slices.
+(** Sx is open **)
+claim HSxOpen : Sx :e Tx.
+{ exact (Hslices_open Sx HSxSlice). }
+(** p restricted to Sx is a homeomorphism to V **)
+claim Hhomeo_Sx : homeomorphism Sx (subspace_topology X Tx Sx) V (subspace_topology B Tb V)
+  (graph Sx (fun x0:set => apply_fun p x0)).
+{ exact (Hhomeo_slices Sx HSxSlice). }
+(** p restricted to Sx is injective **)
+claim Hp_inj_Sx : forall x1 x2:set, x1 :e Sx -> x2 :e Sx ->
+  apply_fun p x1 = apply_fun p x2 -> x1 = x2.
+{ let x1 x2. assume Hx1 Hx2 Hpeq.
+  claim Happ1 : apply_fun (graph Sx (fun x0:set => apply_fun p x0)) x1 = apply_fun p x1.
+  { exact (apply_fun_graph Sx (fun x0:set => apply_fun p x0) x1 Hx1). }
+  claim Happ2 : apply_fun (graph Sx (fun x0:set => apply_fun p x0)) x2 = apply_fun p x2.
+  { exact (apply_fun_graph Sx (fun x0:set => apply_fun p x0) x2 Hx2). }
+  claim Happ_eq : apply_fun (graph Sx (fun x0:set => apply_fun p x0)) x1 =
+    apply_fun (graph Sx (fun x0:set => apply_fun p x0)) x2.
+  { rewrite Happ1. rewrite Happ2. exact Hpeq. }
+  exact (homeomorphism_injective Sx (subspace_topology X Tx Sx)
+    V (subspace_topology B Tb V)
+    (graph Sx (fun x0:set => apply_fun p x0))
+    Hhomeo_Sx x1 x2 Hx1 Hx2 Happ_eq). }
+(** Sx c= X **)
+claim HSx_sub_X : Sx c= X.
+{ exact (topology_elem_subset X Tx Sx HtopX HSxOpen). }
+(** Witness the neighborhood U = Sx **)
+witness Sx.
+apply and3I.
+- exact HSxOpen.
+- exact HxSx.
+- let g. assume HgG : g :e G. assume HgNeq : g <> idG.
+  apply andI.
+  + (** g(x) :e X **)
+    exact (HgX_of_G g HgG x HxX).
+  + (** forall y :e Sx, g(y) ∉ Sx **)
+    let y. assume HySx : y :e Sx.
+    assume Hgy_Sx : apply_fun g y :e Sx.
+    (** p(g(y)) = p(y) **)
+    claim HyX : y :e X. { exact (HSx_sub_X y HySx). }
+    claim Hpeq : apply_fun p (apply_fun g y) = apply_fun p y.
+    { exact (Hfiber_of_G g HgG y HyX). }
+    (** Both g(y) and y are in Sx with same p-value, so by injectivity g(y) = y **)
+    claim Hgy_eq_y : apply_fun g y = y.
+    { exact (Hp_inj_Sx (apply_fun g y) y Hgy_Sx HySx Hpeq). }
+    (** But g has no fixed points **)
+    exact (Hno_fixed g HgG HgNeq y HyX Hgy_eq_y).
 Admitted.
 
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
