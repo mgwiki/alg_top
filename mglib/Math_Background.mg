@@ -223251,6 +223251,28 @@ apply (xm (t = s)).
     * exact (mem_eqR t B (apply_fun seq j) Heq HtB).
 Qed.
 
+(** Infrastructure: suffix of overlapping ball chain covers [s,1]. **)
+(** Symmetric version of ball_chain_prefix_covers_interval. **)
+(** Given that balls ordsucc(k)..nch all overlap consecutively **)
+(** and ball nch contains 1, the union covers [s,1] for s in ball ordsucc(k). **)
+Lemma ball_chain_suffix_covers_interval : forall r n seq k s:set,
+  r :e R -> Rlt 0 r ->
+  n :e omega ->
+  function_on seq (ordsucc n) {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} ->
+  (forall j:set, j :e n -> apply_fun seq j :/\: apply_fun seq (ordsucc j) <> Empty) ->
+  1 :e apply_fun seq n ->
+  k :e n ->
+  s :e apply_fun seq k ->
+  s :e apply_fun seq (ordsucc k) ->
+  forall t:set, t :e unit_interval -> Rle s t ->
+    exists j:set, ordsucc k c= j /\ j :e ordsucc n /\ t :e apply_fun seq j.
+(** Proof: same as prefix version but with the chain reversed. **)
+(** The union of balls ordsucc(k)..n is connected (chain overlaps), **)
+(** contains s (from ball ordsucc(k)) and 1 (from ball n), **)
+(** hence covers [s,1] by connected_subsets_real_are_intervals. **)
+admit.
+Admitted.
+
 (** Helper: a nonempty open subset of unit_interval contains a point in (0,1).
     Proof sketch: open sets in unit_interval topology contain open intervals;
     singletons {0} and {1} are not open since unit_interval has the subspace topology of R. **)
