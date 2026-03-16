@@ -410833,6 +410833,66 @@ exact (orbit_map_preimage_image_eq_action_union
   X G idG U0 HidG HidAct HU0sub Hfn HpiInv).
 Qed.
 
+(** Helper: orbit-map image of g(U0) is contained in orbit-map image of U0 **)
+(** Proven Bob **)
+Theorem orbit_map_image_of_action_subset :
+  forall X G U0 g:set,
+  g :e G ->
+  U0 c= X ->
+  (forall h x:set, h :e G -> x :e X ->
+    apply_fun (orbit_map X G) (apply_fun h x) = apply_fun (orbit_map X G) x) ->
+  image_of (orbit_map X G) (image_of g U0) c=
+  image_of (orbit_map X G) U0.
+let X G U0 g.
+assume HgG HU0sub HpiInv.
+let cls. assume Hcls.
+apply (ReplE_impred (image_of g U0) (fun z:set => apply_fun (orbit_map X G) z) cls Hcls).
+let z. assume HzGu Hclseq.
+apply (ReplE_impred U0 (fun y:set => apply_fun g y) z HzGu).
+let u. assume HuU Hzeq.
+claim HuX : u :e X.
+{ exact (HU0sub u HuU). }
+prove cls :e image_of (orbit_map X G) U0.
+rewrite Hclseq.
+rewrite Hzeq.
+rewrite (HpiInv g u HgG HuX).
+exact (ReplI U0 (fun y:set => apply_fun (orbit_map X G) y) u HuU).
+Qed.
+
+(** Helper: orbit-map image is preserved by g on U0 when g is surjective on U0 **)
+(** Proven Bob **)
+Theorem orbit_map_image_of_action_eq_of_surj_on_subset :
+  forall X G U0 g:set,
+  g :e G ->
+  U0 c= X ->
+  (forall h x:set, h :e G -> x :e X ->
+    apply_fun (orbit_map X G) (apply_fun h x) = apply_fun (orbit_map X G) x) ->
+  (forall u:set, u :e U0 -> exists v:set, v :e U0 /\ apply_fun g v = u) ->
+  image_of (orbit_map X G) (image_of g U0) =
+  image_of (orbit_map X G) U0.
+let X G U0 g.
+assume HgG HU0sub HpiInv HsurjU0.
+apply set_ext.
+- exact (orbit_map_image_of_action_subset X G U0 g HgG HU0sub HpiInv).
+- let cls. assume Hcls.
+  apply (ReplE_impred U0 (fun u:set => apply_fun (orbit_map X G) u) cls Hcls).
+  let u. assume HuU Hclseq.
+  claim HvEx : exists v:set, v :e U0 /\ apply_fun g v = u.
+  { exact (HsurjU0 u HuU). }
+  apply HvEx.
+  let v. assume HvPack.
+  claim HvU : v :e U0.
+  { exact (andEL (v :e U0) (apply_fun g v = u) HvPack). }
+  claim HgvEq : apply_fun g v = u.
+  { exact (andER (v :e U0) (apply_fun g v = u) HvPack). }
+  claim HgvIn : apply_fun g v :e image_of g U0.
+  { exact (ReplI U0 (fun y:set => apply_fun g y) v HvU). }
+  prove cls :e image_of (orbit_map X G) (image_of g U0).
+  rewrite Hclseq.
+  rewrite <- HgvEq.
+  exact (ReplI (image_of g U0) (fun z:set => apply_fun (orbit_map X G) z) (apply_fun g v) HgvIn).
+Qed.
+
 (** Helper: preimage of orbit_map-image is open from homeomorphism action + group data **)
 (** Proven Bob **)
 Theorem orbit_map_preimage_image_open_with_group_data :
