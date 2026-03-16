@@ -149884,6 +149884,66 @@ apply andI.
 - exact HfxEq.
 Qed.
 
+(** S55 helper: on retracts of B2, an everywhere-no-fixed-point condition is contradictory. **)
+(** Proven Bob **)
+Theorem s55_retract_B2_no_fixed_point_contradiction : forall A f:set,
+  retraction_of B2 B2_topology A ->
+  continuous_map A (subspace_topology B2 B2_topology A)
+                 A (subspace_topology B2 B2_topology A) f ->
+  (forall x:set, x :e A -> ~(apply_fun f x = x)) ->
+  False.
+let A f.
+assume Hretr HfCont HnoFixAll.
+claim Hfix :
+  exists x:set, x :e A /\ apply_fun f x = x.
+{
+  exact (s55_retract_B2_fixed_point_early
+    A
+    Hretr
+    f
+    HfCont).
+}
+apply Hfix.
+let x.
+assume HxPack.
+claim HxA : x :e A.
+{
+  exact (andEL
+    (x :e A)
+    (apply_fun f x = x)
+    HxPack).
+}
+claim HfxEq : apply_fun f x = x.
+{
+  exact (andER
+    (x :e A)
+    (apply_fun f x = x)
+    HxPack).
+}
+exact (HnoFixAll
+  x
+  HxA
+  HfxEq).
+Qed.
+
+(** S55 helper: equivalent negated fixed-point form on retracts of B2. **)
+(** Proven Bob **)
+Theorem s55_retract_B2_not_forall_no_fixed_point : forall A f:set,
+  retraction_of B2 B2_topology A ->
+  continuous_map A (subspace_topology B2 B2_topology A)
+                 A (subspace_topology B2 B2_topology A) f ->
+  ~(forall x:set, x :e A -> ~(apply_fun f x = x)).
+let A f.
+assume Hretr HfCont.
+assume HnoFixAll.
+exact (s55_retract_B2_no_fixed_point_contradiction
+  A
+  f
+  Hretr
+  HfCont
+  HnoFixAll).
+Qed.
+
 (** Infrastructure: each nonnegative term of a 3-term finite sum is bounded by the total sum. **)
 (** Proven Charlie **)
 Lemma finite_real_sum_term_le_of_all_nonneg_early55 : forall f:set->set, forall n k:set, nat_p n ->
