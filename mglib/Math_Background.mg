@@ -189196,6 +189196,220 @@ apply andI.
       HyEqX)).
 Qed.
 
+(** S55 helper: inverse-graph evaluation of the antipode map equals the map itself on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_inv_fun_graph_apply_eq : forall y:set,
+  y :e S1 ->
+  apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) y
+  =
+  apply_fun s55_S1_antipode_map y.
+let y.
+assume HyS1.
+claim Hbij :
+  bijection S1 S1 s55_S1_antipode_map.
+{
+  exact s55_S1_antipode_map_bijection.
+}
+claim HsurjRaw :
+  forall w :e S1, exists u :e S1,
+    apply_fun s55_S1_antipode_map u = w.
+{
+  let w.
+  assume HwS1.
+  claim HsurjPack :
+    exists x:set, x :e S1 /\
+      apply_fun s55_S1_antipode_map x = w /\
+      (forall x':set, x' :e S1 ->
+        apply_fun s55_S1_antipode_map x' = w -> x' = x).
+  {
+    exact (andER
+      (function_on s55_S1_antipode_map S1 S1)
+      (forall y:set, y :e S1 ->
+        exists x:set, x :e S1 /\
+          apply_fun s55_S1_antipode_map x = y /\
+          (forall x':set, x' :e S1 ->
+            apply_fun s55_S1_antipode_map x' = y -> x' = x))
+      Hbij
+      w
+      HwS1).
+  }
+  apply HsurjPack.
+  let x.
+  assume HxPack.
+  witness x.
+  exact (andEL
+    (x :e S1 /\ apply_fun s55_S1_antipode_map x = w)
+    (forall x':set, x' :e S1 ->
+      apply_fun s55_S1_antipode_map x' = w -> x' = x)
+    HxPack).
+}
+claim HinvIn :
+  inv S1 (fun x:set => apply_fun s55_S1_antipode_map x) y :e S1.
+{
+  exact (andEL
+    (inv S1 (fun x:set => apply_fun s55_S1_antipode_map x) y :e S1)
+    (apply_fun s55_S1_antipode_map
+      (inv S1 (fun x:set => apply_fun s55_S1_antipode_map x) y) = y)
+    (surj_rinv
+      S1
+      S1
+      (fun x:set => apply_fun s55_S1_antipode_map x)
+      HsurjRaw
+      y
+      HyS1)).
+}
+claim HyImageInS1 :
+  apply_fun s55_S1_antipode_map y :e S1.
+{
+  exact (continuous_map_value_in_space
+    S1
+    S1_topology
+    S1
+    S1_topology
+    s55_S1_antipode_map
+    y
+    s55_S1_antipode_map_continuous
+    HyS1).
+}
+claim HrinvY :
+  apply_fun s55_S1_antipode_map
+    (inv S1 (fun x:set => apply_fun s55_S1_antipode_map x) y)
+  =
+  y.
+{
+  exact (andER
+    (inv S1 (fun x:set => apply_fun s55_S1_antipode_map x) y :e S1)
+    (apply_fun s55_S1_antipode_map
+      (inv S1 (fun x:set => apply_fun s55_S1_antipode_map x) y) = y)
+    (surj_rinv
+      S1
+      S1
+      (fun x:set => apply_fun s55_S1_antipode_map x)
+      HsurjRaw
+      y
+      HyS1)).
+}
+claim HinvEqFF :
+  apply_fun s55_S1_antipode_map
+    (inv S1 (fun x:set => apply_fun s55_S1_antipode_map x) y)
+  =
+  apply_fun s55_S1_antipode_map
+    (apply_fun s55_S1_antipode_map y).
+{
+  exact (eq_i_tra
+    (apply_fun s55_S1_antipode_map
+      (inv S1 (fun x:set => apply_fun s55_S1_antipode_map x) y))
+    y
+    (apply_fun s55_S1_antipode_map
+      (apply_fun s55_S1_antipode_map y))
+    HrinvY
+    (eq_symm
+      (apply_fun s55_S1_antipode_map
+        (apply_fun s55_S1_antipode_map y))
+      y
+      (s55_S1_antipode_map_involution
+        y
+        HyS1))).
+}
+claim HinvAtY :
+  inv S1 (fun x:set => apply_fun s55_S1_antipode_map x) y
+  =
+  apply_fun s55_S1_antipode_map y.
+{
+  exact (s55_S1_antipode_map_injective
+    (inv S1 (fun x:set => apply_fun s55_S1_antipode_map x) y)
+    (apply_fun s55_S1_antipode_map y)
+    HinvIn
+    HyImageInS1
+    HinvEqFF).
+}
+rewrite (inv_fun_graph_apply
+  S1
+  S1
+  s55_S1_antipode_map
+  y
+  HyS1).
+exact HinvAtY.
+Qed.
+
+(** S55 helper: antipode map composed with its inverse-graph map is pointwise identity on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_compose_inv_fun_graph_apply_eq : forall y:set,
+  y :e S1 ->
+  apply_fun
+    (compose_fun S1 s55_S1_antipode_map
+      (inv_fun_graph S1 s55_S1_antipode_map S1))
+    y
+  = y.
+let y.
+assume HyS1.
+claim HyImageInS1 :
+  apply_fun s55_S1_antipode_map y :e S1.
+{
+  exact (continuous_map_value_in_space
+    S1
+    S1_topology
+    S1
+    S1_topology
+    s55_S1_antipode_map
+    y
+    s55_S1_antipode_map_continuous
+    HyS1).
+}
+rewrite (compose_fun_apply
+  S1
+  s55_S1_antipode_map
+  (inv_fun_graph S1 s55_S1_antipode_map S1)
+  y
+  HyS1).
+rewrite (s55_S1_antipode_map_inv_fun_graph_apply_eq
+  (apply_fun s55_S1_antipode_map y)
+  HyImageInS1).
+exact (s55_S1_antipode_map_involution
+  y
+  HyS1).
+Qed.
+
+(** S55 helper: inverse-graph map composed with antipode map is pointwise identity on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_compose_antipode_map_apply_eq : forall y:set,
+  y :e S1 ->
+  apply_fun
+    (compose_fun S1 (inv_fun_graph S1 s55_S1_antipode_map S1)
+      s55_S1_antipode_map)
+    y
+  = y.
+let y.
+assume HyS1.
+rewrite (compose_fun_apply
+  S1
+  (inv_fun_graph S1 s55_S1_antipode_map S1)
+  s55_S1_antipode_map
+  y
+  HyS1).
+rewrite (s55_S1_antipode_map_inv_fun_graph_apply_eq
+  y
+  HyS1).
+exact (s55_S1_antipode_map_involution
+  y
+  HyS1).
+Qed.
+
+(** S55 helper: inverse-graph map of antipode map is fixed-point-free on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_fixed_point_free : forall y:set,
+  y :e S1 ->
+  ~(apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) y = y).
+let y.
+assume HyS1.
+rewrite (s55_S1_antipode_map_inv_fun_graph_apply_eq
+  y
+  HyS1).
+exact (s55_S1_antipode_map_fixed_point_free_early
+  y
+  HyS1).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
