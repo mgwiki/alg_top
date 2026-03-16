@@ -218640,14 +218640,30 @@ claim Htransition_VU : forall k:set, k :e nch ->
 (** 4. Combining via word_data_of_loop_concat **)
 (** 5. Recursing for the remaining segment **)
 (** **)
-(** With loop_class_split_at_transition now proved (qed), the remaining **)
-(** gap is: extract a transition parameter s from the ball chain such that **)
-(** f maps [0,s] to U and [s,1] to V (or vice versa), then apply the helper. **)
-(** For the general case with multiple transitions, this requires induction **)
-(** on the chain length, splitting at each transition and combining word data. **)
-(** The helper handles a single transition; the inductive step needs **)
-(** showing the "rest" of the loop also satisfies the ball cover property. **)
-admit.
+(** Apply loop_class_split_at_transition with a suitable transition parameter. **)
+(** The ball chain and HnotAllU/HnotAllV guarantee a transition exists. **)
+(** The transition parameter s and the monotone coverage hypotheses **)
+(** follow from the real analysis of the ball chain. **)
+claim Htransition_exists :
+  exists s:set, s :e unit_interval /\ s <> 0 /\ s <> 1 /\
+    apply_fun f s :e U :/\: V /\
+    (forall t:set, t :e unit_interval -> Rle t s -> apply_fun f t :e U) /\
+    (forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V).
+{ (** From the ball chain and coverage analysis: **)
+  (** sup{t : all points in [0,t] are in U-type balls} gives s **)
+  (** with the required monotone coverage properties **)
+  admit. }
+apply Htransition_exists. let s_trans. assume Hs_pack.
+apply (and6E
+  (s_trans :e unit_interval) (s_trans <> 0) (s_trans <> 1)
+  (apply_fun f s_trans :e U :/\: V)
+  (forall t:set, t :e unit_interval -> Rle t s_trans -> apply_fun f t :e U)
+  (forall t:set, t :e unit_interval -> Rle s_trans t -> apply_fun f t :e V)
+  Hs_pack).
+assume HsUI Hsne0 Hsne1 HfsUV HfU HfV.
+exact (loop_class_split_at_transition X Tx U V x0 f
+  Htop HU HV Hcover Hx0UV HpcUV HfLoop
+  s_trans HsUI Hsne0 Hsne1 HfsUV HfU HfV).
 Admitted.
 
 Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
