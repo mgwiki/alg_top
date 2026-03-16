@@ -219408,7 +219408,7 @@ claim Htransition_exists :
   { apply SepI. exact zero_in_unit_interval.
     let t'. assume Ht'UI Ht'le0.
     claim Ht'0 : t' = 0.
-    { admit. (** from Rle t' 0 and t' :e unit_interval, t' >= 0, so t' = 0 **) }
+    { exact (Rle_antisym t' 0 Ht'le0 (unit_interval_Rle0 t' Ht'UI)). }
     rewrite Ht'0. rewrite Hf0. exact Hx0U. }
   claim HAui : forall a:set, a :e A -> a :e unit_interval.
   { let a. assume HaA. exact (SepE1 unit_interval (fun t:set => forall t':set, t' :e unit_interval -> Rle t' t -> apply_fun f t' :e U) a HaA). }
@@ -219424,16 +219424,265 @@ claim Htransition_exists :
   claim HsR : s :e R. { exact (unit_interval_sub_R s HsUI). }
   (** s > 0: A contains a neighborhood of 0 (by continuity of f and openness of U) **)
   claim Hs_pos : s <> 0.
-  { admit. (** continuity + U open gives neighborhood of 0 in A, so s > 0 **) }
+  { (** Strategy: use continuity to get preimage_of UI f U open in UI topology, **)
+    (** then use metric ball around 0 to find a point > 0 in A. **)
+    (** From R_lub_upper, that point <= s, giving s > 0. **)
+    assume Hs0 : s = 0.
+    (** Hball_image for c = 0 gives ball B(0,r) maps to U or V **)
+    apply (Hball_image 0 zero_in_unit_interval).
+    - assume HballU : forall t:set, t :e open_ball unit_interval R_bounded_metric 0 r -> apply_fun f t :e U.
+      (** All of B_UI(0,r) maps to U. Need a point t > 0 in B_UI(0,r) to put in A. **)
+      (** Then R_lub_upper gives t <= s = 0, but t > 0. Contradiction. **)
+      (** Use exists_eps_lt_pos to find eps_ N < r, then eps_ N is in ball and > 0. **)
+      claim HexN : exists N:set, N :e omega /\ eps_ N < r.
+      { exact (exists_eps_lt_pos r HrR Hrpos). }
+      apply HexN. let N. assume HN_pack.
+      claim HNom : N :e omega.
+      { exact (andEL (N :e omega) (eps_ N < r) HN_pack). }
+      claim HepsNltr_SNo : eps_ N < r.
+      { exact (andER (N :e omega) (eps_ N < r) HN_pack). }
+      claim HepsNR : eps_ N :e R.
+      { exact (eps_in_R_omega N HNom). }
+      claim HepsNpos : Rlt 0 (eps_ N).
+      { exact (RltI 0 (eps_ N) real_0 HepsNR (SNo_eps_pos N HNom)). }
+      claim HepsNne0 : eps_ N <> 0.
+      { assume Heq.
+        claim HepsNle0 : Rle (eps_ N) 0. { rewrite Heq. exact (Rle_refl 0 real_0). }
+        exact (RleE_nlt (eps_ N) 0 HepsNle0 HepsNpos). }
+      (** eps_N :e unit_interval **)
+      claim HepsN_UI : eps_ N :e unit_interval.
+      { apply (SepI R (fun x:set => ~ Rlt x 0 /\ ~ Rlt 1 x) (eps_ N)). exact HepsNR.
+        apply andI.
+        - assume Habs : Rlt (eps_ N) 0.
+          exact (RleE_nlt 0 (eps_ N) (Rlt_implies_Rle 0 (eps_ N) HepsNpos) Habs).
+        - assume Habs : Rlt 1 (eps_ N).
+          claim HNle1 : eps_ N <= 1. { exact (eps_bd_1 N HNom). }
+          claim HRleN1 : Rle (eps_ N) 1. { exact (Rle_of_SNoLe (eps_ N) 1 HepsNR real_1 HNle1). }
+          exact (RleE_nlt 1 1 (Rle_refl 1 real_1) (Rlt_Rle_tra 1 (eps_ N) 1 Habs HRleN1)). }
+      (** eps_N :e open_ball unit_interval R_bounded_metric 0 r **)
+      claim HeSNo : SNo (eps_ N). { exact (SNo_eps_ N HNom). }
+      claim HmeSNo : SNo (minus_SNo (eps_ N)). { exact (SNo_minus_SNo (eps_ N) HeSNo). }
+      claim Habs_eq : abs_SNo (add_SNo 0 (minus_SNo (eps_ N))) = eps_ N.
+      { rewrite (add_SNo_0L (minus_SNo (eps_ N)) HmeSNo).
+        rewrite (abs_SNo_minus (eps_ N) HeSNo).
+        exact (pos_abs_SNo (eps_ N) (SNo_eps_pos N HNom)). }
+      claim Hdist_le_epsN : Rle (R_bounded_distance 0 (eps_ N)) (eps_ N).
+      { claim Hd1 : Rle (R_bounded_distance 0 (eps_ N)) (abs_SNo (add_SNo 0 (minus_SNo (eps_ N)))).
+        { exact (R_bounded_distance_le_abs_diff 0 (eps_ N) real_0 HepsNR). }
+        claim Hd2 : Rle (abs_SNo (add_SNo 0 (minus_SNo (eps_ N)))) (eps_ N).
+        { rewrite Habs_eq. exact (Rle_refl (eps_ N) HepsNR). }
+        exact (Rle_tra (R_bounded_distance 0 (eps_ N)) (abs_SNo (add_SNo 0 (minus_SNo (eps_ N)))) (eps_ N) Hd1 Hd2). }
+      claim HRlt_epsN_r : Rlt (eps_ N) r.
+      { exact (RltI (eps_ N) r HepsNR HrR HepsNltr_SNo). }
+      claim HRlt_dist_r : Rlt (R_bounded_distance 0 (eps_ N)) r.
+      { exact (Rle_Rlt_tra_Euclid (R_bounded_distance 0 (eps_ N)) (eps_ N) r Hdist_le_epsN HRlt_epsN_r). }
+      claim HepsN_in_ball : eps_ N :e open_ball unit_interval R_bounded_metric 0 r.
+      { prove eps_ N :e {y :e unit_interval | Rlt (apply_fun R_bounded_metric (0, y)) r}.
+        apply (SepI unit_interval (fun y:set => Rlt (apply_fun R_bounded_metric (0, y)) r) (eps_ N)).
+        exact HepsN_UI.
+        claim HdistR : apply_fun R_bounded_metric (0, eps_ N) = R_bounded_distance 0 (eps_ N).
+        { exact (R_bounded_metric_apply_early 0 (eps_ N) real_0 HepsNR). }
+        rewrite HdistR.
+        exact HRlt_dist_r. }
+      (** All t' in [0, eps_N] cap UI are in the ball (since d(0,t') <= t' <= eps_N < r) **)
+      claim HepsN_in_A : eps_ N :e A.
+      { apply (SepI unit_interval (fun t:set => forall t':set, t' :e unit_interval -> Rle t' t -> apply_fun f t' :e U) (eps_ N)).
+        exact HepsN_UI.
+        let t'. assume Ht'UI Ht'le.
+        claim Ht'R : t' :e R. { exact (unit_interval_sub_R t' Ht'UI). }
+        claim Ht'SNo : SNo t'. { exact (real_SNo t' Ht'R). }
+        claim Hmt'SNo : SNo (minus_SNo t'). { exact (SNo_minus_SNo t' Ht'SNo). }
+        claim Habs_eq_t' : abs_SNo (add_SNo 0 (minus_SNo t')) = t'.
+        { rewrite (add_SNo_0L (minus_SNo t') Hmt'SNo).
+          rewrite (abs_SNo_minus t' Ht'SNo).
+          claim H0let' : 0 <= t'. { exact (SNoLe_of_Rle 0 t' (unit_interval_Rle0 t' Ht'UI)). }
+          exact (nonneg_abs_SNo t' H0let'). }
+        claim Hdist_le_t' : Rle (R_bounded_distance 0 t') t'.
+        { claim Hdd1 : Rle (R_bounded_distance 0 t') (abs_SNo (add_SNo 0 (minus_SNo t'))).
+          { exact (R_bounded_distance_le_abs_diff 0 t' real_0 Ht'R). }
+          claim Hdd2 : Rle (abs_SNo (add_SNo 0 (minus_SNo t'))) t'.
+          { rewrite Habs_eq_t'. exact (Rle_refl t' Ht'R). }
+          exact (Rle_tra (R_bounded_distance 0 t') (abs_SNo (add_SNo 0 (minus_SNo t'))) t' Hdd1 Hdd2). }
+        claim Hdist_lt_r_t' : Rlt (R_bounded_distance 0 t') r.
+        { exact (Rle_Rlt_tra_Euclid (R_bounded_distance 0 t') (eps_ N) r
+            (Rle_tra (R_bounded_distance 0 t') t' (eps_ N) Hdist_le_t' Ht'le)
+            HRlt_epsN_r). }
+        claim Ht'_in_ball : t' :e open_ball unit_interval R_bounded_metric 0 r.
+        { prove t' :e {y :e unit_interval | Rlt (apply_fun R_bounded_metric (0, y)) r}.
+          apply (SepI unit_interval (fun y:set => Rlt (apply_fun R_bounded_metric (0, y)) r) t').
+          exact Ht'UI.
+          claim HdistR' : apply_fun R_bounded_metric (0, t') = R_bounded_distance 0 t'.
+          { exact (R_bounded_metric_apply_early 0 t' real_0 Ht'R). }
+          rewrite HdistR'.
+          exact Hdist_lt_r_t'. }
+        exact (HballU t' Ht'_in_ball). }
+      (** Now eps_N :e A and eps_N :e R, so Rle eps_N s **)
+      claim HleS : Rle (eps_ N) s.
+      { exact (R_lub_upper A s (eps_ N) Hlub HepsN_in_A HepsNR). }
+      (** But s = 0, so Rle eps_N 0 **)
+      claim H0eqs : 0 = s. { symmetry. exact Hs0. }
+      claim HleZ : Rle (eps_ N) 0.
+      { rewrite H0eqs. exact HleS. }
+      (** But eps_N > 0, contradiction **)
+      exact (RleE_nlt (eps_ N) 0 HleZ (RltI 0 (eps_ N) real_0 HepsNR (SNo_eps_pos N HNom))).
+    - assume HballV : forall t:set, t :e open_ball unit_interval R_bounded_metric 0 r -> apply_fun f t :e V.
+      (** All of B_UI(0,r) maps to V. But f(0) = x0 :e U. **)
+      (** Use continuity: preimage_of UI f U is open, contains 0. **)
+      (** Get eps ball in preimage, find point > 0 in it, same argument. **)
+      (** Actually simpler: use the preimage approach. **)
+      (** f(0) :e U and f(0) :e V, so 0 maps to both. **)
+      (** Since preimage_of UI f U is open and contains 0, **)
+      (** there's an eps ball around 0 in preimage. Any point in that ball maps to U. **)
+      (** If that point is also in B(0,r), it maps to V too. **)
+      (** So that point maps to U cap V, hence is "covered by U" in A. **)
+      (** Key: use preimage + metric ball intersection. **)
+      (** preimage_of UI f U is open in UI_topology and contains 0 **)
+      claim HpreU_open : preimage_of unit_interval f U :e unit_interval_topology.
+      { exact (continuous_map_preimage unit_interval unit_interval_topology X Tx f HfCont U HU). }
+      claim Hf0U : apply_fun f 0 :e U. { rewrite Hf0. exact Hx0U. }
+      claim H0_in_preU : 0 :e preimage_of unit_interval f U.
+      { prove 0 :e {x :e unit_interval | apply_fun f x :e U}.
+        exact (SepI unit_interval (fun x:set => apply_fun f x :e U) 0 zero_in_unit_interval Hf0U). }
+      (** Get metric ball in preimage **)
+      claim Hmetric_ui : metric_on unit_interval R_bounded_metric.
+      { exact R_bounded_metric_is_metric_on_unit_interval. }
+      claim HtopEq : metric_topology unit_interval R_bounded_metric = unit_interval_topology.
+      { exact metric_topology_unit_interval_eq_I_topology. }
+      claim HpreU_open_metric : open_in unit_interval (metric_topology unit_interval R_bounded_metric) (preimage_of unit_interval f U).
+      { rewrite HtopEq. prove topology_on unit_interval unit_interval_topology /\ preimage_of unit_interval f U :e unit_interval_topology.
+        apply andI. exact unit_interval_topology_on. exact HpreU_open. }
+      apply (open_in_metric_topology_has_eps_succsucc_ball_sub unit_interval R_bounded_metric
+        (preimage_of unit_interval f U) 0 Hmetric_ui HpreU_open_metric H0_in_preU).
+      let n. assume Hn_pack.
+      claim HnOm : n :e omega. { exact (andEL (n :e omega) (open_ball unit_interval R_bounded_metric 0 (eps_ (ordsucc (ordsucc n))) c= preimage_of unit_interval f U) Hn_pack). }
+      claim Hball_sub_preU : open_ball unit_interval R_bounded_metric 0 (eps_ (ordsucc (ordsucc n))) c= preimage_of unit_interval f U.
+      { exact (andER (n :e omega) (open_ball unit_interval R_bounded_metric 0 (eps_ (ordsucc (ordsucc n))) c= preimage_of unit_interval f U) Hn_pack). }
+      set delta := eps_ (ordsucc (ordsucc n)).
+      (** Any point in B(0, delta) maps to U (by Hball_sub_preU). **)
+      (** Find eps_ M < delta with M :e omega, then eps_ M :e B(0, delta) and eps_ M > 0 **)
+      claim HdeltaOm : ordsucc (ordsucc n) :e omega.
+      { exact (omega_ordsucc (ordsucc n) (omega_ordsucc n HnOm)). }
+      claim HdeltaR : delta :e R. { exact (eps_in_R_omega (ordsucc (ordsucc n)) HdeltaOm). }
+      claim HdeltaPos : Rlt 0 delta. { exact (RltI 0 delta real_0 HdeltaR (SNo_eps_pos (ordsucc (ordsucc n)) HdeltaOm)). }
+      claim HexM : exists M:set, M :e omega /\ eps_ M < delta.
+      { exact (exists_eps_lt_pos delta HdeltaR HdeltaPos). }
+      apply HexM. let M. assume HM_pack.
+      claim HMom : M :e omega. { exact (andEL (M :e omega) (eps_ M < delta) HM_pack). }
+      claim HepsMltd : eps_ M < delta. { exact (andER (M :e omega) (eps_ M < delta) HM_pack). }
+      claim HepsMR : eps_ M :e R. { exact (eps_in_R_omega M HMom). }
+      claim HepsMpos : Rlt 0 (eps_ M). { exact (RltI 0 (eps_ M) real_0 HepsMR (SNo_eps_pos M HMom)). }
+      claim HepsMSNo : SNo (eps_ M). { exact (SNo_eps_ M HMom). }
+      claim HmMSNo : SNo (minus_SNo (eps_ M)). { exact (SNo_minus_SNo (eps_ M) HepsMSNo). }
+      (** eps_ M :e unit_interval **)
+      claim HepsM_UI : eps_ M :e unit_interval.
+      { apply (SepI R (fun x:set => ~ Rlt x 0 /\ ~ Rlt 1 x) (eps_ M)). exact HepsMR.
+        apply andI.
+        - assume Habs : Rlt (eps_ M) 0.
+          exact (RleE_nlt 0 (eps_ M) (Rlt_implies_Rle 0 (eps_ M) HepsMpos) Habs).
+        - assume Habs : Rlt 1 (eps_ M).
+          claim HMle1 : eps_ M <= 1. { exact (eps_bd_1 M HMom). }
+          claim HRleMl : Rle (eps_ M) 1. { exact (Rle_of_SNoLe (eps_ M) 1 HepsMR real_1 HMle1). }
+          exact (RleE_nlt 1 1 (Rle_refl 1 real_1) (Rlt_Rle_tra 1 (eps_ M) 1 Habs HRleMl)). }
+      (** eps_ M :e open_ball unit_interval R_bounded_metric 0 delta **)
+      claim Habs_eq_M : abs_SNo (add_SNo 0 (minus_SNo (eps_ M))) = eps_ M.
+      { rewrite (add_SNo_0L (minus_SNo (eps_ M)) HmMSNo).
+        rewrite (abs_SNo_minus (eps_ M) HepsMSNo).
+        exact (pos_abs_SNo (eps_ M) (SNo_eps_pos M HMom)). }
+      claim Hdist_le_M : Rle (R_bounded_distance 0 (eps_ M)) (eps_ M).
+      { claim Hdd : Rle (R_bounded_distance 0 (eps_ M)) (abs_SNo (add_SNo 0 (minus_SNo (eps_ M)))).
+        { exact (R_bounded_distance_le_abs_diff 0 (eps_ M) real_0 HepsMR). }
+        claim Hdd2 : Rle (abs_SNo (add_SNo 0 (minus_SNo (eps_ M)))) (eps_ M).
+        { rewrite Habs_eq_M. exact (Rle_refl (eps_ M) HepsMR). }
+        exact (Rle_tra (R_bounded_distance 0 (eps_ M)) (abs_SNo (add_SNo 0 (minus_SNo (eps_ M)))) (eps_ M) Hdd Hdd2). }
+      claim HRlt_M_delta : Rlt (eps_ M) delta. { exact (RltI (eps_ M) delta HepsMR HdeltaR HepsMltd). }
+      claim HepsM_in_ball_delta : eps_ M :e open_ball unit_interval R_bounded_metric 0 delta.
+      { prove eps_ M :e {y :e unit_interval | Rlt (apply_fun R_bounded_metric (0, y)) delta}.
+        apply (SepI unit_interval (fun y:set => Rlt (apply_fun R_bounded_metric (0, y)) delta) (eps_ M)).
+        exact HepsM_UI.
+        rewrite (R_bounded_metric_apply_early 0 (eps_ M) real_0 HepsMR).
+        exact (Rle_Rlt_tra_Euclid (R_bounded_distance 0 (eps_ M)) (eps_ M) delta Hdist_le_M HRlt_M_delta). }
+      (** eps_ M maps to U (from preimage) **)
+      claim HfM_in_U : apply_fun f (eps_ M) :e U.
+      { claim HM_in_preU : eps_ M :e preimage_of unit_interval f U.
+        { exact (Hball_sub_preU (eps_ M) HepsM_in_ball_delta). }
+        exact (SepE2 unit_interval (fun x:set => apply_fun f x :e U) (eps_ M) HM_in_preU). }
+      (** All of [0, eps_M] is in B(0, delta), hence maps to U **)
+      claim HepsM_in_A : eps_ M :e A.
+      { apply (SepI unit_interval (fun t:set => forall t':set, t' :e unit_interval -> Rle t' t -> apply_fun f t' :e U) (eps_ M)).
+        exact HepsM_UI.
+        let t'. assume Ht'UI Ht'le.
+        claim Ht'R : t' :e R. { exact (unit_interval_sub_R t' Ht'UI). }
+        claim Ht'SNo2 : SNo t'. { exact (real_SNo t' Ht'R). }
+        claim Hmt'SNo2 : SNo (minus_SNo t'). { exact (SNo_minus_SNo t' Ht'SNo2). }
+        claim Habs_eq_t'2 : abs_SNo (add_SNo 0 (minus_SNo t')) = t'.
+        { rewrite (add_SNo_0L (minus_SNo t') Hmt'SNo2).
+          rewrite (abs_SNo_minus t' Ht'SNo2).
+          exact (nonneg_abs_SNo t' (SNoLe_of_Rle 0 t' (unit_interval_Rle0 t' Ht'UI))). }
+        claim Hdist_le_t'2 : Rle (R_bounded_distance 0 t') t'.
+        { claim Hdd3 : Rle (R_bounded_distance 0 t') (abs_SNo (add_SNo 0 (minus_SNo t'))).
+          { exact (R_bounded_distance_le_abs_diff 0 t' real_0 Ht'R). }
+          claim Hdd4 : Rle (abs_SNo (add_SNo 0 (minus_SNo t'))) t'.
+          { rewrite Habs_eq_t'2. exact (Rle_refl t' Ht'R). }
+          exact (Rle_tra (R_bounded_distance 0 t') (abs_SNo (add_SNo 0 (minus_SNo t'))) t' Hdd3 Hdd4). }
+        claim Ht'_in_ball_delta : t' :e open_ball unit_interval R_bounded_metric 0 delta.
+        { prove t' :e {y :e unit_interval | Rlt (apply_fun R_bounded_metric (0, y)) delta}.
+          apply (SepI unit_interval (fun y:set => Rlt (apply_fun R_bounded_metric (0, y)) delta) t').
+          exact Ht'UI.
+          rewrite (R_bounded_metric_apply_early 0 t' real_0 Ht'R).
+          exact (Rle_Rlt_tra_Euclid (R_bounded_distance 0 t') (eps_ M) delta
+            (Rle_tra (R_bounded_distance 0 t') t' (eps_ M) Hdist_le_t'2 Ht'le)
+            HRlt_M_delta). }
+        claim Ht'_in_preU : t' :e preimage_of unit_interval f U.
+        { exact (Hball_sub_preU t' Ht'_in_ball_delta). }
+        exact (SepE2 unit_interval (fun x:set => apply_fun f x :e U) t' Ht'_in_preU). }
+      claim HleS2 : Rle (eps_ M) s. { exact (R_lub_upper A s (eps_ M) Hlub HepsM_in_A HepsMR). }
+      claim H0eqs2 : 0 = s. { symmetry. exact Hs0. }
+      claim HleZ2 : Rle (eps_ M) 0. { rewrite H0eqs2. exact HleS2. }
+      exact (RleE_nlt (eps_ M) 0 HleZ2 HepsMpos). }
   (** s < 1: A doesn't contain 1 (since f is not all in U) **)
+  claim HAR_pre : forall x:set, x :e A -> x :e R.
+  { let x. assume HxA. exact (unit_interval_sub_R x (HAui x HxA)). }
   claim Hs_lt1 : s <> 1.
-  { admit. (** if s = 1 then all of UI maps to U, contradicting HnotAllU **) }
+  { assume Hs1 : s = 1.
+    apply HnotAllU. let t. assume HtUI.
+    claim HtR : t :e R. { exact (unit_interval_sub_R t HtUI). }
+    apply (xm (t = 1)).
+    - assume Ht1 : t = 1.
+      rewrite Ht1. rewrite Hf1. exact Hx0U.
+    - assume Htne1 : t <> 1.
+      claim HtLe1 : Rle t 1. { exact (unit_interval_Rle1 t HtUI). }
+      claim HtLt1 : Rlt t 1. { exact (Rle_neq_implies_Rlt t 1 HtLe1 Htne1). }
+      claim HtLts : Rlt t s.
+      { rewrite Hs1. exact HtLt1. }
+      apply (R_lub_strict_witness A s t Hlub HAR_pre HtR HtLts).
+      let x. assume Hx_pack.
+      claim HxA : x :e A. { exact (andEL (x :e A) (Rlt t x) Hx_pack). }
+      claim HtLtx : Rlt t x. { exact (andER (x :e A) (Rlt t x) Hx_pack). }
+      claim Hx_prop : forall t':set, t' :e unit_interval -> Rle t' x -> apply_fun f t' :e U.
+      { exact (SepE2 unit_interval (fun t0:set => forall t':set, t' :e unit_interval -> Rle t' t0 -> apply_fun f t' :e U) x HxA). }
+      exact (Hx_prop t HtUI (Rlt_implies_Rle t x HtLtx)). }
   (** f(s) :e U cap V: boundary argument using openness of U and V **)
   claim HfsUV : apply_fun f s :e U :/\: V.
   { admit. (** f(s) must be in both U and V by the sup characterization **) }
   (** Monotone coverage: [0,s] maps to U **)
+  claim HAR : forall x:set, x :e A -> x :e R.
+  { let x. assume HxA. exact (unit_interval_sub_R x (HAui x HxA)). }
   claim HfU_mono : forall t:set, t :e unit_interval -> Rle t s -> apply_fun f t :e U.
-  { admit. (** from R_lub: t <= s implies exists t' > t in A, so f maps [0,t'] to U **) }
+  { let t. assume HtUI HtLes.
+    claim HtR : t :e R. { exact (unit_interval_sub_R t HtUI). }
+    apply (xm (t = s)).
+    - assume Hts : t = s.
+      rewrite Hts. exact (binintersectE1 U V (apply_fun f s) HfsUV).
+    - assume Htnes : t <> s.
+      claim HtLts : Rlt t s. { exact (Rle_neq_implies_Rlt t s HtLes Htnes). }
+      apply (R_lub_strict_witness A s t Hlub HAR HtR HtLts).
+      let x. assume Hx_pack.
+      claim HxA : x :e A. { exact (andEL (x :e A) (Rlt t x) Hx_pack). }
+      claim HtLtx : Rlt t x. { exact (andER (x :e A) (Rlt t x) Hx_pack). }
+      claim HxUI : x :e unit_interval. { exact (HAui x HxA). }
+      claim Hx_prop : forall t':set, t' :e unit_interval -> Rle t' x -> apply_fun f t' :e U.
+      { exact (SepE2 unit_interval (fun t0:set => forall t':set, t' :e unit_interval -> Rle t' t0 -> apply_fun f t' :e U) x HxA). }
+      exact (Hx_prop t HtUI (Rlt_implies_Rle t x HtLtx)). }
   (** Monotone coverage: [s,1] maps to V **)
   claim HfV_mono : forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V.
   { admit. (** from sup: t > s means t not in A, so some point in [0,t] is not in U, **)
