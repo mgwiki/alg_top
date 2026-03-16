@@ -189109,6 +189109,93 @@ exact (HxyNe
   HxEqY).
 Qed.
 
+(** S55 helper: antipode map has two circle points with distinct images. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_distinct_image_witness :
+  exists x:set, exists y:set,
+    x :e S1 /\ y :e S1 /\
+    apply_fun s55_S1_antipode_map x <>
+    apply_fun s55_S1_antipode_map y.
+apply s55_S1_antipode_map_two_cycle_witness.
+let x.
+assume HyExists.
+apply HyExists.
+let y.
+assume Hpack.
+witness x.
+witness y.
+claim Hleft :
+  (((x :e S1 /\ y :e S1) /\ x <> y) /\
+    apply_fun s55_S1_antipode_map x = y).
+{
+  exact (andEL
+    (((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun s55_S1_antipode_map x = y)
+    (apply_fun s55_S1_antipode_map y = x)
+    Hpack).
+}
+claim HpairNe :
+  ((x :e S1 /\ y :e S1) /\ x <> y).
+{
+  exact (andEL
+    ((x :e S1 /\ y :e S1) /\ x <> y)
+    (apply_fun s55_S1_antipode_map x = y)
+    Hleft).
+}
+claim HxyNe : x <> y.
+{
+  exact (andER
+    (x :e S1 /\ y :e S1)
+    (x <> y)
+    HpairNe).
+}
+claim HfxEqY :
+  apply_fun s55_S1_antipode_map x = y.
+{
+  exact (andER
+    ((x :e S1 /\ y :e S1) /\ x <> y)
+    (apply_fun s55_S1_antipode_map x = y)
+    Hleft).
+}
+claim HfyEqX :
+  apply_fun s55_S1_antipode_map y = x.
+{
+  exact (andER
+    (((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun s55_S1_antipode_map x = y)
+    (apply_fun s55_S1_antipode_map y = x)
+    Hpack).
+}
+apply andI.
+- exact (andEL
+    (x :e S1 /\ y :e S1)
+    (x <> y)
+    HpairNe).
+- assume HimgEq.
+  claim HyEqX : y = x.
+  {
+    exact (eq_i_tra
+      y
+      (apply_fun s55_S1_antipode_map x)
+      x
+      (eq_symm
+        (apply_fun s55_S1_antipode_map x)
+        y
+        HfxEqY)
+      (eq_i_tra
+        (apply_fun s55_S1_antipode_map x)
+        (apply_fun s55_S1_antipode_map y)
+        x
+        HimgEq
+        HfyEqX)).
+  }
+  exact (HxyNe
+    (eq_symm
+      y
+      x
+      HyEqX)).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
