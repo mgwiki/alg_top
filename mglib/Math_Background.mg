@@ -411893,6 +411893,101 @@ exact (covering_transformation_orbit_equiv_eq_on_slice
   X Tx B Tb p S V x1 x2 Hcov HSHome Hx1S Hx2S Horb).
 Qed.
 
+(** Helper: variant with explicit subset hypothesis S c= X (no separate x1/x2-in-X assumptions) **)
+(** Proven Bob **)
+Theorem covering_transformation_orbit_map_eq_eq_on_slice_subset :
+  forall X Tx B Tb p S V x1 x2:set,
+  covering_map X Tx B Tb p ->
+  homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+    (graph S (fun x:set => apply_fun p x)) ->
+  S c= X ->
+  x1 :e S ->
+  x2 :e S ->
+  apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x1 =
+  apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x2 ->
+  x1 = x2.
+let X Tx B Tb p S V x1 x2.
+assume Hcov HSHome HSsubX Hx1S Hx2S Heq.
+exact (covering_transformation_orbit_map_eq_eq_on_slice
+  X Tx B Tb p S V x1 x2 Hcov HSHome
+  (HSsubX x1 Hx1S) (HSsubX x2 Hx2S) Hx1S Hx2S Heq).
+Qed.
+
+(** Helper: distinct points in the same covering slice have distinct orbit_map values **)
+(** Proven Bob **)
+Theorem covering_transformation_orbit_map_ne_on_slice_of_neq :
+  forall X Tx B Tb p S V x1 x2:set,
+  covering_map X Tx B Tb p ->
+  homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+    (graph S (fun x:set => apply_fun p x)) ->
+  S c= X ->
+  x1 :e S ->
+  x2 :e S ->
+  x1 <> x2 ->
+  apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x1 <>
+  apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x2.
+let X Tx B Tb p S V x1 x2.
+assume Hcov HSHome HSsubX Hx1S Hx2S Hx1x2Ne.
+assume Heq.
+claim Hx1x2 : x1 = x2.
+{
+  exact (covering_transformation_orbit_map_eq_eq_on_slice_subset
+    X Tx B Tb p S V x1 x2 Hcov HSHome HSsubX Hx1S Hx2S Heq).
+}
+exact (Hx1x2Ne Hx1x2).
+Qed.
+
+(** Helper: on a covering slice, the orbit fiber through x meets the slice at exactly x **)
+(** Proven Bob **)
+Theorem covering_transformation_orbit_fiber_intersect_slice_sing :
+  forall X Tx B Tb p S V x:set,
+  covering_map X Tx B Tb p ->
+  homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+    (graph S (fun t:set => apply_fun p t)) ->
+  S c= X ->
+  x :e S ->
+  apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x :/\: S = Sing x.
+let X Tx B Tb p S V x.
+assume Hcov HSHome HSsubX HxS.
+set G := covering_transformation_group X Tx B Tb p.
+set idG := covering_transformation_id X Tx B Tb p.
+claim HxX : x :e X.
+{ exact (HSsubX x HxS). }
+apply set_ext.
+- let y. assume HyInt.
+  claim HyOrb : y :e apply_fun (orbit_map X G) x.
+  { exact (binintersectE1 (apply_fun (orbit_map X G) x) S y HyInt). }
+  claim HyS : y :e S.
+  { exact (binintersectE2 (apply_fun (orbit_map X G) x) S y HyInt). }
+  claim HyX : y :e X.
+  { exact (HSsubX y HyS). }
+  claim Horb_xy : orbit_equiv X G x y.
+  { exact (iffEL
+      (y :e apply_fun (orbit_map X G) x)
+      (orbit_equiv X G x y)
+      (orbit_map_mem_iff_orbit_equiv X G x y HxX)
+      HyOrb). }
+  claim Hxy : x = y.
+  { exact (covering_transformation_orbit_equiv_eq_on_slice
+      X Tx B Tb p S V x y Hcov HSHome HxS HyS Horb_xy). }
+  claim Hyx : y = x.
+  { exact (eq_symm x y Hxy). }
+  exact (Hyx (fun t _ => y :e Sing t) (SingI y)).
+- let y. assume HySing.
+  claim Hyx : y = x.
+  { exact (SingE x y HySing). }
+  apply binintersectI.
+  + rewrite Hyx.
+    rewrite (orbit_map_apply X G x HxX).
+    apply SepI.
+    * exact HxX.
+    * exact (orbit_equiv_refl X G idG x
+        (covering_transformation_id_in_group X Tx B Tb p Hcov)
+        (covering_transformation_id_apply X Tx B Tb p)
+        HxX).
+  + rewrite Hyx. exact HxS.
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
@@ -413014,7 +413109,7 @@ apply and3I.
 Admitted.
 
 (** Helper: orbit_map restricted to a p-slice is injective when G = CTG **)
-(** Proven Alice **)
+(** Proven Bob **)
 Theorem orbit_map_injective_on_covering_slice :
   forall E Te B Tb p S:set,
   covering_map E Te B Tb p ->
