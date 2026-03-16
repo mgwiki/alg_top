@@ -188604,6 +188604,72 @@ apply (total_function_space_extensional
     HxS1).
 Qed.
 
+(** S55 helper: the S1 antipode map is antipode-preserving in the S57 sense. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_antipode_preserving :
+  antipode_preserving_S1 s55_S1_antipode_map.
+prove
+  continuous_map S1 S1_topology S1 S1_topology s55_S1_antipode_map /\
+  (forall z:set, z :e S1 ->
+    apply_fun s55_S1_antipode_map (minus_SNo (z 0), minus_SNo (z 1)) =
+    (minus_SNo (apply_fun s55_S1_antipode_map z 0),
+     minus_SNo (apply_fun s55_S1_antipode_map z 1))).
+apply andI.
+- exact s55_S1_antipode_map_continuous.
+- let z.
+  assume HzS1.
+  claim HzAntiEq :
+    apply_fun s55_S1_antipode_map z =
+    (minus_SNo (z 0), minus_SNo (z 1)).
+  {
+    exact (apply_fun_graph
+      S1
+      (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+      z
+      HzS1).
+  }
+  claim HzAntiInS1 :
+    apply_fun s55_S1_antipode_map z :e S1.
+  {
+    rewrite HzAntiEq.
+    exact (s55_S1_antipode_in_S1
+      z
+      HzS1).
+  }
+  claim HLHSMid :
+    apply_fun s55_S1_antipode_map
+      (minus_SNo (z 0), minus_SNo (z 1))
+    =
+    apply_fun s55_S1_antipode_map
+      (apply_fun s55_S1_antipode_map z).
+  {
+    rewrite <- HzAntiEq.
+    reflexivity.
+  }
+  claim HMidRHS :
+    apply_fun s55_S1_antipode_map
+      (apply_fun s55_S1_antipode_map z)
+    =
+    (minus_SNo (apply_fun s55_S1_antipode_map z 0),
+     minus_SNo (apply_fun s55_S1_antipode_map z 1)).
+  {
+    exact (apply_fun_graph
+      S1
+      (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+      (apply_fun s55_S1_antipode_map z)
+      HzAntiInS1).
+  }
+  exact (eq_i_tra
+    (apply_fun s55_S1_antipode_map
+      (minus_SNo (z 0), minus_SNo (z 1)))
+    (apply_fun s55_S1_antipode_map
+      (apply_fun s55_S1_antipode_map z))
+    (minus_SNo (apply_fun s55_S1_antipode_map z 0),
+     minus_SNo (apply_fun s55_S1_antipode_map z 1))
+    HLHSMid
+    HMidRHS).
+Qed.
+
 (** S55 helper: explicit fixed-point-free endomap witness on S1 with S1 topology. **)
 (** Proven Bob **)
 Theorem s55_exists_fixed_point_free_endomap_S1 :
