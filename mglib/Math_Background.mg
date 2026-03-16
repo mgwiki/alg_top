@@ -192265,6 +192265,283 @@ apply andI.
       HantiHomeoNoFix)).
 Qed.
 
+(** S55 helper: antipode-preserving non-identity S1-homeomorphism existence implies non-identity S1-homeomorphism existence. **)
+(** Proven Bob **)
+Theorem s55_exists_nonidentity_antipode_preserving_homeomorphism_S1_implies_exists_nonidentity_homeomorphism_S1 :
+  (exists f:set,
+    (antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+    f <> graph S1 (fun x:set => x))
+  ->
+  exists f:set,
+    homeomorphism S1 S1_topology S1 S1_topology f /\
+    f <> graph S1 (fun x:set => x).
+assume Hexists.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- exact (andER
+    (antipode_preserving_S1 f)
+    (homeomorphism S1 S1_topology S1 S1_topology f)
+    (andEL
+      (antipode_preserving_S1 f /\
+        homeomorphism S1 S1_topology S1 S1_topology f)
+      (f <> graph S1 (fun x:set => x))
+      Hpack)).
+- exact (andER
+    (antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f)
+    (f <> graph S1 (fun x:set => x))
+    Hpack).
+Qed.
+
+(** S55 helper: fixed-point-free antipode-preserving S1-homeomorphism existence implies fixed-point-free S1-homeomorphism existence. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_antipode_preserving_homeomorphism_S1_implies_exists_fixed_point_free_homeomorphism_S1 :
+  (exists f:set,
+    (antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+  ->
+  exists f:set,
+    homeomorphism S1 S1_topology S1 S1_topology f /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)).
+assume Hexists.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- exact (andER
+    (antipode_preserving_S1 f)
+    (homeomorphism S1 S1_topology S1 S1_topology f)
+    (andEL
+      (antipode_preserving_S1 f /\
+        homeomorphism S1 S1_topology S1 S1_topology f)
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+      Hpack)).
+- exact (andER
+    (antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f)
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+    Hpack).
+Qed.
+
+(** S55 helper: fixed-point-free nonconstant antipode-preserving S1-homeomorphism existence implies fixed-point-free nonconstant S1-homeomorphism existence. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_nonconstant_antipode_preserving_homeomorphism_S1_implies_exists_fixed_point_free_nonconstant_homeomorphism_S1 :
+  (exists f:set,
+    ((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    ~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+  ->
+  exists f:set,
+    (homeomorphism S1 S1_topology S1 S1_topology f /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    ~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c).
+assume Hexists.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- apply andI.
+  + exact (andER
+      (antipode_preserving_S1 f)
+      (homeomorphism S1 S1_topology S1 S1_topology f)
+      (andEL
+        (antipode_preserving_S1 f /\
+          homeomorphism S1 S1_topology S1 S1_topology f)
+        (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+        (andEL
+          ((antipode_preserving_S1 f /\
+            homeomorphism S1 S1_topology S1 S1_topology f) /\
+            (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+          (~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+          Hpack))).
+  + exact (andER
+      (antipode_preserving_S1 f /\
+        homeomorphism S1 S1_topology S1 S1_topology f)
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+      (andEL
+        ((antipode_preserving_S1 f /\
+          homeomorphism S1 S1_topology S1 S1_topology f) /\
+          (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+        (~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+        Hpack)).
+- exact (andER
+    ((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+    (~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+    Hpack).
+Qed.
+
+(** S55 helper: moved-point antipode-preserving S1-homeomorphism existence implies moved-point S1-homeomorphism existence. **)
+(** Proven Bob **)
+Theorem s55_exists_moved_point_antipode_preserving_homeomorphism_S1_implies_exists_moved_point_homeomorphism_S1 :
+  (exists f:set,
+    (antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x)
+  ->
+  exists f:set,
+    homeomorphism S1 S1_topology S1 S1_topology f /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x.
+assume Hexists.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- exact (andER
+    (antipode_preserving_S1 f)
+    (homeomorphism S1 S1_topology S1 S1_topology f)
+    (andEL
+      (antipode_preserving_S1 f /\
+        homeomorphism S1 S1_topology S1 S1_topology f)
+      (exists x:set, x :e S1 /\ apply_fun f x <> x)
+      Hpack)).
+- exact (andER
+    (antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f)
+    (exists x:set, x :e S1 /\ apply_fun f x <> x)
+    Hpack).
+Qed.
+
+(** S55 helper: fixed-point-free moved-point antipode-preserving S1-homeomorphism existence implies fixed-point-free moved-point S1-homeomorphism existence. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_moved_point_antipode_preserving_homeomorphism_S1_implies_exists_fixed_point_free_moved_point_homeomorphism_S1 :
+  (exists f:set,
+    (((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x))
+  ->
+  exists f:set,
+    (homeomorphism S1 S1_topology S1 S1_topology f /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x.
+assume Hexists.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- apply andI.
+  + exact (andER
+      (antipode_preserving_S1 f)
+      (homeomorphism S1 S1_topology S1 S1_topology f)
+      (andEL
+        (antipode_preserving_S1 f /\
+          homeomorphism S1 S1_topology S1 S1_topology f)
+        (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+        (andEL
+          ((antipode_preserving_S1 f /\
+            homeomorphism S1 S1_topology S1 S1_topology f) /\
+            (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+          (exists x:set, x :e S1 /\ apply_fun f x <> x)
+          Hpack))).
+  + exact (andER
+      (antipode_preserving_S1 f /\
+        homeomorphism S1 S1_topology S1 S1_topology f)
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+      (andEL
+        ((antipode_preserving_S1 f /\
+          homeomorphism S1 S1_topology S1 S1_topology f) /\
+          (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+        (exists x:set, x :e S1 /\ apply_fun f x <> x)
+        Hpack)).
+- exact (andER
+    ((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+    (exists x:set, x :e S1 /\ apply_fun f x <> x)
+    Hpack).
+Qed.
+
+(** S55 helper: fixed-point-free nonconstant moved-point antipode-preserving S1-homeomorphism existence implies fixed-point-free nonconstant moved-point S1-homeomorphism existence. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_nonconstant_moved_point_antipode_preserving_homeomorphism_S1_implies_exists_fixed_point_free_nonconstant_moved_point_homeomorphism_S1 :
+  (exists f:set,
+    (((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+      ~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c)) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x)
+  ->
+  exists f:set,
+    ((homeomorphism S1 S1_topology S1 S1_topology f /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+      ~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c)) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x.
+assume Hexists.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact (andER
+        (antipode_preserving_S1 f)
+        (homeomorphism S1 S1_topology S1 S1_topology f)
+        (andEL
+          (antipode_preserving_S1 f /\
+            homeomorphism S1 S1_topology S1 S1_topology f)
+          (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+          (andEL
+            ((antipode_preserving_S1 f /\
+              homeomorphism S1 S1_topology S1 S1_topology f) /\
+              (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+            (~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+            (andEL
+              (((antipode_preserving_S1 f /\
+                homeomorphism S1 S1_topology S1 S1_topology f) /\
+                (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+                ~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+              (exists x:set, x :e S1 /\ apply_fun f x <> x)
+              Hpack)))).
+    * exact (andER
+        (antipode_preserving_S1 f /\
+          homeomorphism S1 S1_topology S1 S1_topology f)
+        (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+        (andEL
+          ((antipode_preserving_S1 f /\
+            homeomorphism S1 S1_topology S1 S1_topology f) /\
+            (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+          (~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+          (andEL
+            (((antipode_preserving_S1 f /\
+              homeomorphism S1 S1_topology S1 S1_topology f) /\
+              (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+              ~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+            (exists x:set, x :e S1 /\ apply_fun f x <> x)
+            Hpack))).
+  + exact (andER
+      ((antipode_preserving_S1 f /\
+        homeomorphism S1 S1_topology S1 S1_topology f) /\
+        (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+      (~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+      (andEL
+        (((antipode_preserving_S1 f /\
+          homeomorphism S1 S1_topology S1 S1_topology f) /\
+          (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+          ~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+        (exists x:set, x :e S1 /\ apply_fun f x <> x)
+        Hpack)).
+- exact (andER
+    (((antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+      ~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c))
+    (exists x:set, x :e S1 /\ apply_fun f x <> x)
+    Hpack).
+Qed.
+
 (** S55 helper: a moved-point witness on S1 forces a map to be non-identity. **)
 (** Proven Bob **)
 Theorem s55_moved_point_witness_implies_nonidentity_graph_S1 : forall f:set,
