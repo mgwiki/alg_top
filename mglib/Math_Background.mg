@@ -403897,6 +403897,23 @@ apply andI.
   reflexivity.
 Qed.
 
+(** Helper: the identity is in the covering transformation group **)
+(** Proven Alice **)
+Theorem covering_transformation_id_in_group :
+  forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  covering_transformation_id E Te B Tb p :e
+    covering_transformation_group E Te B Tb p.
+let E Te B Tb p. assume Hcov.
+prove covering_transformation_id E Te B Tb p :e
+  {h :e function_space E E | covering_transformation E Te B Tb p h}.
+apply (SepI (function_space E E)
+  (fun h:set => covering_transformation E Te B Tb p h)
+  (covering_transformation_id E Te B Tb p)).
+- exact (graph_in_function_space E E (fun x:set => x) (fun x Hx => Hx)).
+- exact (covering_transformation_id_is_ct E Te B Tb p Hcov).
+Qed.
+
 (** Infrastructure: inverse covering transformation **)
 Definition covering_transformation_inv : set -> set -> set -> set -> set -> set :=
   fun E Te B Tb p =>
