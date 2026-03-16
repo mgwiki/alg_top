@@ -189730,6 +189730,59 @@ exact (s55_S1_inv_fun_graph_fixed_point_free
   HbaseEq).
 Qed.
 
+(** S55 helper: inverse-graph map of antipode is not constant on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_not_constant :
+  ~(exists c:set, forall x:set, x :e S1 ->
+    apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x = c).
+assume HconstInv.
+apply s55_S1_antipode_map_not_constant.
+apply HconstInv.
+let c.
+assume HcAll.
+witness c.
+let x.
+assume HxS1.
+claim HinvEqC :
+  apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x = c.
+{
+  exact (HcAll
+    x
+    HxS1).
+}
+exact (eq_i_tra
+  (apply_fun s55_S1_antipode_map x)
+  (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x)
+  c
+  (eq_symm
+    (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x)
+    (apply_fun s55_S1_antipode_map x)
+    (s55_S1_antipode_map_inv_fun_graph_apply_eq
+      x
+      HxS1))
+  HinvEqC).
+Qed.
+
+(** S55 helper: inverse-graph map gives an explicit fixed-point-free continuous endomap of S1. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_endomap_S1_from_inv_fun_graph :
+  exists f:set,
+    continuous_map S1 S1_topology S1 S1_topology f /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)).
+witness (inv_fun_graph S1 s55_S1_antipode_map S1).
+apply andI.
+- exact s55_S1_inv_fun_graph_continuous.
+- exact s55_S1_inv_fun_graph_fixed_point_free.
+Qed.
+
+(** S55 helper: inverse-graph fixed-point-free witness implies no retraction B2 -> S1. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_from_inv_fun_graph_fixed_point_free :
+  ~(retraction_of B2 B2_topology S1).
+exact (s55_exists_fixed_point_free_endomap_S1_implies_no_retraction_B2_S1
+  s55_exists_fixed_point_free_endomap_S1_from_inv_fun_graph).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
