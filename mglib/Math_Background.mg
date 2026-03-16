@@ -408975,6 +408975,38 @@ Theorem cor81_4_simply_connected_covering_trans :
       (fundamental_group B Tb (apply_fun p e0))
       (fundamental_group_mult B Tb (apply_fun p e0))
       phi.
+let E Te B Tb p e0.
+assume Hcov : covering_map E Te B Tb p.
+assume He0E : e0 :e E.
+assume Hsc : simply_connected E Te.
+assume Hlpc : locally_path_connected E Te.
+set b0 := apply_fun p e0.
+set CTG := covering_transformation_group E Te B Tb p.
+set CTmult := covering_transformation_mult E Te B Tb p.
+set piB := fundamental_group B Tb b0.
+set multB := fundamental_group_mult B Tb b0.
+claim HtopE : topology_on E Te.
+{ exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopB : topology_on B Tb.
+{ exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim HpcE : path_connected_space E Te.
+{ exact (simply_connected_path_connected E Te Hsc). }
+claim HconnE : connected_space E Te.
+{ exact (path_connected_implies_connected E Te HpcE). }
+claim Hcont_p : continuous_map E Te B Tb p.
+{ exact (covering_map_continuous E Te B Tb p Hcov). }
+claim Hfn_p : function_on p E B.
+{ exact (continuous_map_function_on E Te B Tb p Hcont_p). }
+claim Hb0B : b0 :e B. { exact (Hfn_p e0 He0E). }
+(** The isomorphism phi is constructed via the lifting correspondence: **)
+(** For h in CTG, phi(h) = [class of the path from b0 to b0 that lifts to a **)
+(** path from e0 to h(e0)]. This is the inverse of the lifting correspondence. **)
+(** The lifting correspondence (Thm 54.4) gives a bijection pi1(B,b0) -> fiber(b0). **)
+(** Since E is simply connected, this bijection is 1-1 and onto. **)
+(** Each covering transformation h is determined by h(e0), and h(e0) is in fiber(b0). **)
+(** So the composition: CTG -> fiber(b0) -> pi1(B,b0) is a bijection. **)
+(** Showing it is a group homomorphism uses covering_transformation_path_lift_transport. **)
+(** Full construction requires building the inverse map and showing multiplicativity. **)
 admit.
 Admitted.
 
