@@ -187554,6 +187554,71 @@ exact (neq_0_1
   H0eq1).
 Qed.
 
+(** S55 helper: the circle antipode map has no fixed points. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_fixed_point_free_early : forall z:set,
+  z :e S1 ->
+  ~(apply_fun s55_S1_antipode_map z = z).
+let z.
+assume HzS1.
+assume Hfix.
+claim HantiEq : z = (minus_SNo (z 0), minus_SNo (z 1)).
+{
+  exact (eq_symm
+    (minus_SNo (z 0), minus_SNo (z 1))
+    z
+    (eq_i_tra
+      (minus_SNo (z 0), minus_SNo (z 1))
+      (apply_fun s55_S1_antipode_map z)
+      z
+      (eq_symm
+        (apply_fun s55_S1_antipode_map z)
+        (minus_SNo (z 0), minus_SNo (z 1))
+        (apply_fun_graph
+          S1
+          (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+          z
+          HzS1))
+      Hfix)).
+}
+exact ((S1_point_neq_antipode_early
+  z
+  HzS1)
+  HantiEq).
+Qed.
+
+(** S55 helper: antipode map gives an independent fixed-point obstruction to retracting B2 onto S1. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_from_antipode_fixed_point_free :
+  ~(retraction_of B2 B2_topology S1).
+claim HS1TopEq :
+  subspace_topology B2 B2_topology S1 = S1_topology.
+{
+  exact (subspace_topology_transitive_weak
+    (setprod R R)
+    R2_topology
+    B2
+    S1
+    S1_subset_B2).
+}
+claim HantiContSub :
+  continuous_map
+    S1
+    (subspace_topology B2 B2_topology S1)
+    S1
+    (subspace_topology B2 B2_topology S1)
+    s55_S1_antipode_map.
+{
+  rewrite HS1TopEq.
+  exact s55_S1_antipode_map_continuous.
+}
+exact (s55_fixed_point_free_endomap_implies_no_retraction_B2
+  S1
+  s55_S1_antipode_map
+  HantiContSub
+  s55_S1_antipode_map_fixed_point_free_early).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
