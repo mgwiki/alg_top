@@ -188858,6 +188858,28 @@ apply andI.
     S1_basepoint_in_S1_early).
 Qed.
 
+(** S55 helper: the circle has at least two distinct points. **)
+(** Proven Bob **)
+Theorem s55_S1_has_two_distinct_points :
+  exists x:set, exists y:set, x :e S1 /\ y :e S1 /\ x <> y.
+apply s55_S1_antipode_map_two_cycle_witness.
+let x.
+assume HyExists.
+apply HyExists.
+let y.
+assume Hpack.
+witness x.
+witness y.
+exact (andEL
+  ((x :e S1 /\ y :e S1) /\ x <> y)
+  (apply_fun s55_S1_antipode_map x = y)
+  (andEL
+    (((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun s55_S1_antipode_map x = y)
+    (apply_fun s55_S1_antipode_map y = x)
+    Hpack)).
+Qed.
+
 (** S55 helper: antipode map is not the identity graph on S1. **)
 (** Proven Bob **)
 Theorem s55_S1_antipode_map_ne_id_graph :
