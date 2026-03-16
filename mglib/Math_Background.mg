@@ -188508,6 +188508,36 @@ apply andI.
 - exact s55_S1_antipode_map_surjective_witness.
 Qed.
 
+(** S55 helper: the S1 antipode map is a self-homeomorphism of S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_homeomorphism :
+  homeomorphism S1 S1_topology S1 S1_topology s55_S1_antipode_map.
+prove
+  continuous_map S1 S1_topology S1 S1_topology s55_S1_antipode_map /\
+  exists g:set,
+    continuous_map S1 S1_topology S1 S1_topology g /\
+    (forall x:set, x :e S1 ->
+      apply_fun g (apply_fun s55_S1_antipode_map x) = x) /\
+    (forall y:set, y :e S1 ->
+      apply_fun s55_S1_antipode_map (apply_fun g y) = y).
+apply andI.
+- exact s55_S1_antipode_map_continuous.
+- witness s55_S1_antipode_map.
+  apply andI.
+  + apply andI.
+    * exact s55_S1_antipode_map_continuous.
+    * let x.
+      assume HxS1.
+      exact (s55_S1_antipode_map_involution
+        x
+        HxS1).
+  + let y.
+    assume HyS1.
+    exact (s55_S1_antipode_map_involution
+      y
+      HyS1).
+Qed.
+
 (** S55 helper: explicit fixed-point-free endomap witness on S1 with S1 topology. **)
 (** Proven Bob **)
 Theorem s55_exists_fixed_point_free_endomap_S1 :
