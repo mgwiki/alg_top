@@ -1,4 +1,4 @@
-(** Balance Alice 9183 **)
+(** Balance Alice 9176 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
@@ -404921,7 +404921,8 @@ Admitted.
 (** is properly discontinuous. **)
 (** Admin-approved-refactored per noticeboard proposal 1772589268 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 61 **)
+(** Bounty 68 **)
+(** Lock Alice 1773736809 **)
 Theorem ex81_3a_covering_trans_properly_discontinuous :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
