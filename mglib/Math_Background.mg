@@ -413744,7 +413744,253 @@ Theorem thm81_6_regular_orbit_homeomorphism :
     (forall x:set, x :e X ->
       apply_fun k (apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x) =
       apply_fun p x).
-admit.
+let X Tx B Tb p e0.
+assume Hreg : regular_covering_map X Tx B Tb p e0.
+assume Hpc : path_connected_space X Tx.
+assume Hlpc : locally_path_connected X Tx.
+set G := covering_transformation_group X Tx B Tb p.
+set OS := orbit_space X G.
+set OT := orbit_topology X Tx G.
+set pi := orbit_map X G.
+claim Hreg_left : covering_map X Tx B Tb p /\ e0 :e X.
+{
+  exact (andEL
+    (covering_map X Tx B Tb p /\ e0 :e X)
+    (normal_subgroup
+      (homomorphism_image
+        (fundamental_group X Tx e0)
+        (induced_homomorphism X Tx e0 B Tb (apply_fun p e0) p))
+      (fundamental_group B Tb (apply_fun p e0))
+      (fundamental_group_mult B Tb (apply_fun p e0))
+      (fundamental_group_id B Tb (apply_fun p e0))
+      (fundamental_group_inv B Tb (apply_fun p e0)))
+    Hreg).
+}
+claim Hcov : covering_map X Tx B Tb p.
+{
+  exact (andEL
+    (covering_map X Tx B Tb p)
+    (e0 :e X)
+    Hreg_left).
+}
+claim He0X : e0 :e X.
+{
+  exact (andER
+    (covering_map X Tx B Tb p)
+    (e0 :e X)
+    Hreg_left).
+}
+claim Hk_ex :
+  exists k0:set,
+    covering_map OS OT B Tb k0 /\
+    (forall x:set, x :e X ->
+      apply_fun k0 (apply_fun pi x) = apply_fun p x).
+{
+  (** This is exactly the quotient-covering existence proved later in ex81_3b. **)
+  admit.
+}
+apply Hk_ex.
+let k.
+assume Hk_pack.
+claim Hcov_k : covering_map OS OT B Tb k.
+{
+  exact (andEL
+    (covering_map OS OT B Tb k)
+    (forall x:set, x :e X -> apply_fun k (apply_fun pi x) = apply_fun p x)
+    Hk_pack).
+}
+claim Hk_factor : forall x:set, x :e X ->
+  apply_fun k (apply_fun pi x) = apply_fun p x.
+{
+  exact (andER
+    (covering_map OS OT B Tb k)
+    (forall x:set, x :e X -> apply_fun k (apply_fun pi x) = apply_fun p x)
+    Hk_pack).
+}
+claim Hcont_k : continuous_map OS OT B Tb k.
+{ exact (covering_map_continuous OS OT B Tb k Hcov_k). }
+claim Hopen_k : open_map OS OT B Tb k.
+{ exact (covering_map_is_open OS OT B Tb k Hcov_k). }
+claim Hsurj_k : surjective_map OS B k.
+{ exact (covering_map_surjective OS OT B Tb k Hcov_k). }
+claim Hfn_k : function_on k OS B.
+{ exact (continuous_map_function_on OS OT B Tb k Hcont_k). }
+claim Hreg_trans_iff :
+  regular_covering_map X Tx B Tb p e0 <->
+  (forall e1 e2:set, e1 :e X -> e2 :e X ->
+    apply_fun p e1 = apply_fun p e0 ->
+    apply_fun p e2 = apply_fun p e0 ->
+    exists h:set, covering_transformation X Tx B Tb p h /\ apply_fun h e1 = e2).
+{
+  exact (cor81_3_normal_iff_transitive
+    X
+    Tx
+    B
+    Tb
+    p
+    e0
+    Hcov
+    He0X
+    Hpc
+    Hlpc).
+}
+claim Htrans_base :
+  forall e1 e2:set, e1 :e X -> e2 :e X ->
+    apply_fun p e1 = apply_fun p e0 ->
+    apply_fun p e2 = apply_fun p e0 ->
+    exists h:set, covering_transformation X Tx B Tb p h /\ apply_fun h e1 = e2.
+{
+  exact (iffEL
+    (regular_covering_map X Tx B Tb p e0)
+    (forall e1 e2:set, e1 :e X -> e2 :e X ->
+      apply_fun p e1 = apply_fun p e0 ->
+      apply_fun p e2 = apply_fun p e0 ->
+      exists h:set, covering_transformation X Tx B Tb p h /\ apply_fun h e1 = e2)
+    Hreg_trans_iff
+    Hreg).
+}
+claim Hsame_fiber_same_orbit :
+  forall x1 x2:set, x1 :e X -> x2 :e X ->
+    apply_fun p x1 = apply_fun p x2 ->
+    apply_fun pi x1 = apply_fun pi x2.
+{
+  let x1 x2.
+  assume Hx1X Hx2X Hpx.
+  (** Remaining regular-covering bridge:
+      transitivity on the base fiber (Htrans_base) must be transported to an arbitrary fiber. **)
+  admit.
+}
+claim Hk_inj :
+  forall cls1 cls2:set, cls1 :e OS -> cls2 :e OS ->
+    apply_fun k cls1 = apply_fun k cls2 ->
+    cls1 = cls2.
+{
+  let cls1 cls2.
+  assume Hcls1 Hcls2 HkEq.
+  claim Hpi_surj : surjective_map X OS pi.
+  {
+    exact (orbit_map_surjective
+      X
+      G
+      (fun g HgG => covering_transformation_group_function_on X Tx B Tb p g HgG)).
+  }
+  claim Hrep1 : exists x1:set, x1 :e X /\ apply_fun pi x1 = cls1.
+  {
+    exact (andER
+      (function_on pi X OS)
+      (forall y:set, y :e OS -> exists x:set, x :e X /\ apply_fun pi x = y)
+      Hpi_surj
+      cls1
+      Hcls1).
+  }
+  apply Hrep1.
+  let x1.
+  assume Hx1pack.
+  claim Hx1X : x1 :e X.
+  { exact (andEL (x1 :e X) (apply_fun pi x1 = cls1) Hx1pack). }
+  claim Hpi1 : apply_fun pi x1 = cls1.
+  { exact (andER (x1 :e X) (apply_fun pi x1 = cls1) Hx1pack). }
+  claim Hrep2 : exists x2:set, x2 :e X /\ apply_fun pi x2 = cls2.
+  {
+    exact (andER
+      (function_on pi X OS)
+      (forall y:set, y :e OS -> exists x:set, x :e X /\ apply_fun pi x = y)
+      Hpi_surj
+      cls2
+      Hcls2).
+  }
+  apply Hrep2.
+  let x2.
+  assume Hx2pack.
+  claim Hx2X : x2 :e X.
+  { exact (andEL (x2 :e X) (apply_fun pi x2 = cls2) Hx2pack). }
+  claim Hpi2 : apply_fun pi x2 = cls2.
+  { exact (andER (x2 :e X) (apply_fun pi x2 = cls2) Hx2pack). }
+  claim Hk1 : apply_fun k cls1 = apply_fun p x1.
+  { rewrite <- Hpi1. exact (Hk_factor x1 Hx1X). }
+  claim Hk2 : apply_fun k cls2 = apply_fun p x2.
+  { rewrite <- Hpi2. exact (Hk_factor x2 Hx2X). }
+  claim Hpx : apply_fun p x1 = apply_fun p x2.
+  {
+    exact (eq_i_tra
+      (apply_fun p x1)
+      (apply_fun k cls1)
+      (apply_fun p x2)
+      (eq_symm (apply_fun k cls1) (apply_fun p x1) Hk1)
+      (eq_i_tra
+        (apply_fun k cls1)
+        (apply_fun k cls2)
+        (apply_fun p x2)
+        HkEq
+        Hk2)).
+  }
+  claim HpiEq : apply_fun pi x1 = apply_fun pi x2.
+  { exact (Hsame_fiber_same_orbit x1 x2 Hx1X Hx2X Hpx). }
+  exact (eq_i_tra
+    cls1
+    (apply_fun pi x1)
+    cls2
+    (eq_symm (apply_fun pi x1) cls1 Hpi1)
+    (eq_i_tra
+      (apply_fun pi x1)
+      (apply_fun pi x2)
+      cls2
+      HpiEq
+      Hpi2)).
+}
+claim Hbij_k : bijection OS B k.
+{
+  prove function_on k OS B /\
+    (forall b:set, b :e B ->
+      exists cls:set, cls :e OS /\ apply_fun k cls = b /\
+        (forall cls':set, cls' :e OS -> apply_fun k cls' = b -> cls' = cls)).
+  apply andI.
+  - exact Hfn_k.
+  - let b. assume HbB.
+    claim Hsurj_data :
+      forall y:set, y :e B -> exists x:set, x :e OS /\ apply_fun k x = y.
+    {
+      exact (andER
+        (function_on k OS B)
+        (forall y:set, y :e B -> exists x:set, x :e OS /\ apply_fun k x = y)
+        Hsurj_k).
+    }
+    apply (Hsurj_data b HbB).
+    let cls. assume HclsPack.
+    claim HclsOS : cls :e OS.
+    { exact (andEL (cls :e OS) (apply_fun k cls = b) HclsPack). }
+    claim Hkcls : apply_fun k cls = b.
+    { exact (andER (cls :e OS) (apply_fun k cls = b) HclsPack). }
+    witness cls.
+    apply andI.
+    + apply andI.
+      * exact HclsOS.
+      * exact Hkcls.
+    + let cls'. assume Hcls'OS Hkcls'.
+      exact (Hk_inj
+        cls'
+        cls
+        Hcls'OS
+        HclsOS
+        (eq_i_tra
+          (apply_fun k cls')
+          b
+          (apply_fun k cls)
+          Hkcls'
+          (eq_symm (apply_fun k cls) b Hkcls))).
+}
+witness k.
+apply andI.
+- exact (open_map_bijection_homeomorphism
+    OS
+    OT
+    B
+    Tb
+    k
+    Hcont_k
+    Hopen_k
+    Hbij_k).
+- exact Hk_factor.
 Admitted.
 
 (** Infrastructure: fixed-point free group action **)
