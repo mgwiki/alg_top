@@ -188938,6 +188938,7 @@ exact (andER
     graphify_covering_map_R_S1_loop_data)).
 Admitted.
 
+(** Proven Charlie **)
 Theorem path_homotopy_class_loop_chosen_witness_in_class : forall X Tx x0 f:set,
   f :e loop_space X Tx x0 ->
   Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f)
@@ -188955,6 +188956,7 @@ exact (Eps_i_ax
     HfLoop)).
 Qed.
 
+(** Proven Charlie **)
 Theorem path_homotopy_class_loop_chosen_witness_homotopy : forall X Tx x0 f:set,
   f :e loop_space X Tx x0 ->
   path_homotopic
@@ -188980,6 +188982,7 @@ exact (path_homotopy_class_loop_has_homotopy
     HfLoop)).
 Qed.
 
+(** Proven Charlie **)
 Theorem path_homotopy_class_loop_chosen_witness_loop : forall X Tx x0 f:set,
   f :e loop_space X Tx x0 ->
   Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f)
