@@ -409435,6 +409435,70 @@ apply set_ext.
   + exact Hxz.
 Qed.
 
+(** Helper: membership in an orbit_map fiber implies orbit equivalence **)
+(** Proven Bob **)
+Theorem orbit_map_mem_implies_orbit_equiv : forall X G x y:set,
+  x :e X ->
+  y :e apply_fun (orbit_map X G) x ->
+  orbit_equiv X G x y.
+let X G x y.
+assume HxX Hmem.
+claim Hmem_sep : y :e {w :e X | orbit_equiv X G x w}.
+{
+  exact (mem_eqR
+    y
+    (apply_fun (orbit_map X G) x)
+    {w :e X | orbit_equiv X G x w}
+    (orbit_map_apply X G x HxX)
+    Hmem).
+}
+exact (SepE2 X (fun w:set => orbit_equiv X G x w) y Hmem_sep).
+Qed.
+
+(** Helper: orbit equivalence implies membership in orbit_map fiber **)
+(** Proven Bob **)
+Theorem orbit_equiv_implies_orbit_map_mem : forall X G x y:set,
+  orbit_equiv X G x y ->
+  y :e apply_fun (orbit_map X G) x.
+let X G x y.
+assume Horb.
+apply (and3E
+  (x :e X)
+  (y :e X)
+  (exists g:set, g :e G /\ apply_fun g x = y)
+  Horb).
+assume HxX HyX Hex.
+claim Hy_sep : y :e {w :e X | orbit_equiv X G x w}.
+{
+  apply SepI.
+  - exact HyX.
+  - exact Horb.
+}
+exact (mem_eqR
+  y
+  {w :e X | orbit_equiv X G x w}
+  (apply_fun (orbit_map X G) x)
+  (eq_symm
+    (apply_fun (orbit_map X G) x)
+    {w :e X | orbit_equiv X G x w}
+    (orbit_map_apply X G x HxX))
+  Hy_sep).
+Qed.
+
+(** Helper: orbit_map-fiber membership is equivalent to orbit equivalence **)
+(** Proven Bob **)
+Theorem orbit_map_mem_iff_orbit_equiv : forall X G x y:set,
+  x :e X ->
+  (y :e apply_fun (orbit_map X G) x <-> orbit_equiv X G x y).
+let X G x y.
+assume HxX.
+apply iffI.
+- assume Hmem.
+  exact (orbit_map_mem_implies_orbit_equiv X G x y HxX Hmem).
+- assume Horb.
+  exact (orbit_equiv_implies_orbit_map_mem X G x y Horb).
+Qed.
+
 (** Helper: equality of orbit_map values implies orbit equivalence **)
 (** Proven Bob **)
 Theorem orbit_map_eq_implies_orbit_equiv : forall X G idG x y:set,
