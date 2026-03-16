@@ -190608,6 +190608,52 @@ exact (antipode_preserving_S1_cover_half_shift
   Hhalf0ShiftI).
 Admitted.
 
+(** Midpoint value of h compose covering_map_R_S1 at the circle basepoint. **)
+Theorem antipode_preserving_S1_cover_midpoint_basepoint : forall h:set,
+  antipode_preserving_S1 h ->
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (eps_ 1) =
+  (minus_SNo (apply_fun h S1_basepoint 0),
+   minus_SNo (apply_fun h S1_basepoint 1)).
+let h.
+assume HhAnti.
+claim H0epsI : add_SNo 0 (eps_ 1) :e unit_interval.
+{
+  rewrite (add_SNo_0L
+    (eps_ 1)
+    SNo_eps_1).
+  exact eps_1_in_unit_interval.
+}
+claim Hhalf0 :
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) (add_SNo 0 (eps_ 1)) =
+  (minus_SNo (apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0 0),
+   minus_SNo (apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0 1)).
+{
+  exact (antipode_preserving_S1_cover_half_shift
+    h
+    0
+    HhAnti
+    zero_in_unit_interval
+    H0epsI).
+}
+rewrite <- (add_SNo_0L
+  (eps_ 1)
+  SNo_eps_1).
+rewrite Hhalf0.
+rewrite (compose_fun_apply
+  unit_interval
+  covering_map_R_S1
+  h
+  0
+  zero_in_unit_interval).
+rewrite (loop_at_at_zero
+  S1
+  S1_topology
+  S1_basepoint
+  covering_map_R_S1
+  covering_map_R_S1_loop_at_basepoint).
+reflexivity.
+Admitted.
+
 (** Midpoint fiber witnesses for h compose covering_map_R_S1. **)
 Theorem antipode_preserving_S1_midpoint_fiber_witnesses : forall h e0:set,
   antipode_preserving_S1 h ->
@@ -190627,42 +190673,9 @@ claim HgammaHalf :
   (minus_SNo (apply_fun h S1_basepoint 0),
    minus_SNo (apply_fun h S1_basepoint 1)).
 {
-  claim H0epsI : add_SNo 0 (eps_ 1) :e unit_interval.
-  {
-    rewrite (add_SNo_0L
-      (eps_ 1)
-      SNo_eps_1).
-    exact eps_1_in_unit_interval.
-  }
-  claim Hhalf0 :
-    apply_fun (compose_fun unit_interval covering_map_R_S1 h) (add_SNo 0 (eps_ 1)) =
-    (minus_SNo (apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0 0),
-     minus_SNo (apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0 1)).
-  {
-    exact (antipode_preserving_S1_cover_half_shift
-      h
-      0
-      HhAnti
-      zero_in_unit_interval
-      H0epsI).
-  }
-  rewrite <- (add_SNo_0L
-    (eps_ 1)
-    SNo_eps_1).
-  rewrite Hhalf0.
-  rewrite (compose_fun_apply
-    unit_interval
-    covering_map_R_S1
+  exact (antipode_preserving_S1_cover_midpoint_basepoint
     h
-    0
-    zero_in_unit_interval).
-  rewrite (loop_at_at_zero
-    S1
-    S1_topology
-    S1_basepoint
-    covering_map_R_S1
-    covering_map_R_S1_loop_at_basepoint).
-  reflexivity.
+    HhAnti).
 }
 claim HfiberPlus :
   apply_fun covering_map_R_S1 (add_SNo e0 (eps_ 1)) =
@@ -190861,30 +190874,9 @@ claim HgammaHalf :
   (minus_SNo (apply_fun h S1_basepoint 0),
    minus_SNo (apply_fun h S1_basepoint 1)).
 {
-  claim H0epsI : add_SNo 0 (eps_ 1) :e unit_interval.
-  {
-    rewrite (add_SNo_0L
-      (eps_ 1)
-      SNo_eps_1).
-    exact eps_1_in_unit_interval.
-  }
-  claim Hhalf0 :
-    apply_fun gamma (add_SNo 0 (eps_ 1)) =
-    (minus_SNo (apply_fun gamma 0 0),
-     minus_SNo (apply_fun gamma 0 1)).
-  {
-    exact (antipode_preserving_S1_cover_half_shift
-      h
-      0
-      HhAnti
-      zero_in_unit_interval
-      H0epsI).
-  }
-  rewrite <- (add_SNo_0L
-    (eps_ 1)
-    SNo_eps_1).
-  rewrite Hhalf0.
-  rewrite Hgamma0.
+  rewrite (antipode_preserving_S1_cover_midpoint_basepoint
+    h
+    HhAnti).
   reflexivity.
 }
 claim HgammaHalfNeStart :
