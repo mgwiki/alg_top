@@ -404121,6 +404121,31 @@ apply andI.
   reflexivity.
 Qed.
 
+(** Helper: a covering transformation maps E to E **)
+(** Proven Alice **)
+Theorem covering_transformation_value_in_E :
+  forall E Te B Tb p h x:set,
+  covering_transformation E Te B Tb p h -> x :e E ->
+  apply_fun h x :e E.
+let E Te B Tb p h x. assume Hct HxE.
+claim Hhomeo : homeomorphism E Te E Te h.
+{ exact (andEL (homeomorphism E Te E Te h)
+    (forall z:set, z :e E -> apply_fun p (apply_fun h z) = apply_fun p z) Hct). }
+exact (continuous_map_function_on E Te E Te h
+  (homeomorphism_continuous E Te E Te h Hhomeo) x HxE).
+Qed.
+
+(** Helper: a covering transformation preserves fibers **)
+(** Proven Alice **)
+Theorem covering_transformation_fiber :
+  forall E Te B Tb p h x:set,
+  covering_transformation E Te B Tb p h -> x :e E ->
+  apply_fun p (apply_fun h x) = apply_fun p x.
+let E Te B Tb p h x. assume Hct HxE.
+exact (andER (homeomorphism E Te E Te h)
+  (forall z:set, z :e E -> apply_fun p (apply_fun h z) = apply_fun p z) Hct x HxE).
+Qed.
+
 (** Helper: applying the identity CT gives back the same point **)
 (** Proven Alice **)
 Theorem covering_transformation_id_apply :
