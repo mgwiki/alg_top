@@ -123116,6 +123116,49 @@ witness V0. apply and4I.
     HpcU0 HpContV0 HpSurjV0).
 Qed.
 
+(** Helper: for a covering map with lpc domain, evenly covered neighborhoods **)
+(** can be refined to path-connected evenly covered neighborhoods **)
+(** Proven Alice **)
+Theorem covering_map_path_connected_evenly_covered :
+  forall E Te B Tb p b:set,
+  covering_map E Te B Tb p ->
+  locally_path_connected E Te ->
+  b :e B ->
+  exists V:set, V :e Tb /\ b :e V /\
+    path_connected_space V (subspace_topology B Tb V) /\
+    evenly_covered E Te B Tb p V.
+let E Te B Tb p b. assume Hcov Hlpc HbB.
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim HlpcB : locally_path_connected B Tb.
+{ exact (covering_map_locally_path_connected_codomain E Te B Tb p Hcov Hlpc). }
+(** Get evenly covered V0 **)
+apply (covering_map_evenly_covered E Te B Tb p b Hcov HbB).
+let V0. assume HV0pack.
+(** HV0pack : (V0 :e Tb /\ b :e V0) /\ evenly_covered ... = ((Tb /\ bV0) /\ ev) **)
+claim HV0left : V0 :e Tb /\ b :e V0.
+{ exact (andEL (V0 :e Tb /\ b :e V0) (evenly_covered E Te B Tb p V0) HV0pack). }
+claim HV0Tb : V0 :e Tb. { exact (andEL (V0 :e Tb) (b :e V0) HV0left). }
+claim HbV0 : b :e V0. { exact (andER (V0 :e Tb) (b :e V0) HV0left). }
+claim HevV0 : evenly_covered E Te B Tb p V0.
+{ exact (andER (V0 :e Tb /\ b :e V0) (evenly_covered E Te B Tb p V0) HV0pack). }
+(** Find path-connected V' c= V0 with b :e V' **)
+claim HlpcData : exists V':set, V' :e Tb /\ b :e V' /\ V' c= V0 /\
+  path_connected_space V' (subspace_topology B Tb V').
+{ exact (andER (topology_on B Tb) (forall z:set, z :e B -> forall U:set, U :e Tb -> z :e U ->
+    exists V':set, V' :e Tb /\ z :e V' /\ V' c= U /\ path_connected_space V' (subspace_topology B Tb V'))
+    HlpcB b HbB V0 HV0Tb HbV0). }
+apply HlpcData. let V'. assume HV'pack.
+apply (and4E (V' :e Tb) (b :e V') (V' c= V0)
+  (path_connected_space V' (subspace_topology B Tb V')) HV'pack).
+assume HV'Tb HbV' HV'sub HpcV'.
+(** V' is evenly covered (open subset of evenly covered V0) **)
+claim HV'sub_B : V' c= B. { exact (topology_elem_subset B Tb V' HtopB HV'Tb). }
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HevV' : evenly_covered E Te B Tb p V'.
+{ exact (evenly_covered_open_subset E Te B Tb p V0 V' HevV0 HV'Tb HV'sub). }
+witness V'. apply and4I. exact HV'Tb. exact HbV'. exact HpcV'. exact HevV'.
+Qed.
+
 (** Infrastructure: intersections with open sets are open in subspace **)
 (** Proven Bob **)
 Lemma subspace_topology_intersection_open : forall X Tx Y V:set,
