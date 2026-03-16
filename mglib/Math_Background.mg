@@ -409299,6 +409299,32 @@ apply and3I.
     exact Hg2y.
 Qed.
 
+(** Helper: orbit equivalence carries reflexive/symmetric/transitive data **)
+(** Proven Bob **)
+Theorem orbit_equiv_equivalence_data : forall X G idG:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  (forall x:set, x :e X -> orbit_equiv X G x x) /\
+  (forall x y:set, x :e X -> y :e X -> orbit_equiv X G x y -> orbit_equiv X G y x) /\
+  (forall x y z:set, x :e X -> y :e X -> z :e X ->
+    orbit_equiv X G x y -> orbit_equiv X G y z -> orbit_equiv X G x z).
+let X G idG.
+assume HidG HidAct Hinv Hcomp.
+apply and3I.
+- let x. assume HxX.
+  exact (orbit_equiv_refl X G idG x HidG HidAct HxX).
+- let x y. assume HxX HyX Hxy.
+  exact (orbit_equiv_symmetric X G x y Hxy Hinv).
+- let x y z. assume HxX HyX HzX Hxy Hyz.
+  exact (orbit_equiv_transitive X G x y z Hxy Hyz Hcomp).
+Qed.
+
 (** Helper: x is in its own orbit **)
 Theorem orbit_self_mem : forall X G idG x:set,
   idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
