@@ -409651,11 +409651,52 @@ Theorem orbit_map_open :
   (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
   forall U0:set, U0 :e Tx ->
     image_of (orbit_map X G) U0 :e orbit_topology X Tx G.
-let X Tx G. assume HtopX Hhomeo.
-let U0. assume HU0Tx.
-(** pi(U0) is open in OT iff preimage_of X pi (pi(U0)) :e Tx **)
-(** preimage_of X pi (pi(U0)) = Union {g(U0) | g :e G} is open **)
 admit.
+Admitted.
+
+(** Helper: orbit_map is an open map with group axioms (full version) **)
+Theorem orbit_map_open_group :
+  forall X Tx G idG:set,
+  topology_on X Tx ->
+  (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
+  (forall g:set, g :e G -> function_on g X X) ->
+  idG :e G -> (forall x:set, x :e X -> apply_fun idG x = x) ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  forall U0:set, U0 :e Tx ->
+    image_of (orbit_map X G) U0 :e orbit_topology X Tx G.
+let X Tx G idG. assume HtopX Hhomeo Hfn HidG HidAct Hcomp.
+let U0. assume HU0Tx.
+set pi := orbit_map X G.
+set OS := orbit_space X G.
+set OT := orbit_topology X Tx G.
+claim HU0sub : U0 c= X. { exact (topology_elem_subset X Tx U0 HtopX HU0Tx). }
+(** Show: {x :e X | pi(x) :e image_of pi U0} = Union {image_of g U0 | g :e G} **)
+(** Then Union {image_of g U0 | g :e G} :e Tx since each image_of g U0 :e Tx **)
+set Gimg := {image_of g U0 | g :e G}.
+(** Each element of Gimg is open **)
+claim HGimg_open : Gimg c= Tx.
+{ let W. assume HW. apply (ReplE_impred G (fun g:set => image_of g U0) W HW).
+  let g. assume HgG HWeq. rewrite HWeq.
+  exact (open_map_image_open X Tx X Tx g U0
+    (homeomorphism_open_map X Tx X Tx g (Hhomeo g HgG)) HU0Tx). }
+(** Union of Gimg is open **)
+claim HUnionOpen : Union Gimg :e Tx.
+{ exact (topology_union_closed X Tx Gimg HtopX HGimg_open). }
+(** Show Union Gimg c= {x :e X | pi(x) :e image_of pi U0} **)
+(** and {x :e X | pi(x) :e image_of pi U0} c= Union Gimg **)
+(** Then the preimage = Union Gimg :e Tx **)
+claim Heq : {x :e X | apply_fun pi x :e image_of pi U0} = Union Gimg.
+{ admit. (** set equality proof: orbit structure argument **) }
+prove image_of pi U0 :e {V :e Power OS | {x :e X | apply_fun pi x :e V} :e Tx}.
+apply SepI.
+- apply PowerI. let cls. assume Hcls.
+  apply (ReplE_impred U0 (fun u:set => apply_fun pi u) cls Hcls).
+  let u. assume HuU0 Hclseq. rewrite Hclseq.
+  exact (orbit_map_function_on X G Hfn u (HU0sub u HuU0)).
+- prove {x :e X | apply_fun pi x :e image_of pi U0} :e Tx.
+  rewrite Heq. exact HUnionOpen.
 Admitted.
 
 (** Helper: orbit equivalence is reflexive when idG in G **)
@@ -411653,8 +411694,15 @@ witness k. apply andI.
         (** S :e slices_p c= Tx, so S is open **)
         claim HSopen : S :e Tx. { exact (Hslices_sub_Tx S HSslice). }
         (** orbit_map is open: image_of pi S :e OT **)
-        exact (orbit_map_open X Tx G HtopX
+        exact (orbit_map_open_group X Tx G
+          (covering_transformation_id X Tx B Tb p)
+          HtopX
           (fun g HgG => covering_transformation_group_homeomorphism X Tx B Tb p g HgG)
+          (fun g HgG => continuous_map_function_on X Tx X Tx g
+            (covering_transformation_group_continuous X Tx B Tb p g HgG))
+          (covering_transformation_id_in_group X Tx B Tb p Hcov)
+          (fun x HxX => covering_transformation_id_apply X Tx B Tb p x HxX)
+          (covering_transformation_group_comp_closure X Tx B Tb p Hcov)
           S HSopen).
       - (** 2. pairwise_disjoint slices_k **)
         (** If pi(S1) and pi(S2) have a common point, then S1 and S2 **)
