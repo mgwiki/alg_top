@@ -190389,6 +190389,112 @@ apply andI.
 - exact s55_S1_inv_fun_graph_ne_id_graph.
 Qed.
 
+(** S55 helper: there exists a nonconstant antipode-preserving self-homeomorphism of S1. **)
+(** Proven Bob **)
+Theorem s55_exists_nonconstant_antipode_preserving_homeomorphism_S1 :
+  exists f:set,
+    (antipode_preserving_S1 f /\
+     homeomorphism S1 S1_topology S1 S1_topology f) /\
+    ~(exists c:set, forall x:set, x :e S1 -> apply_fun f x = c).
+witness (inv_fun_graph S1 s55_S1_antipode_map S1).
+apply andI.
+- apply andI.
+  + exact s55_S1_inv_fun_graph_antipode_preserving.
+  + exact s55_S1_inv_fun_graph_homeomorphism.
+- exact s55_S1_inv_fun_graph_not_constant.
+Qed.
+
+(** S55 helper: there exists an antipode-preserving self-homeomorphism of S1 with a two-cycle witness. **)
+(** Proven Bob **)
+Theorem s55_exists_two_cycle_antipode_preserving_homeomorphism_S1 :
+  exists f:set,
+    (antipode_preserving_S1 f /\
+     homeomorphism S1 S1_topology S1 S1_topology f) /\
+    (exists x:set, exists y:set,
+      ((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun f x = y /\
+      apply_fun f y = x).
+witness (inv_fun_graph S1 s55_S1_antipode_map S1).
+apply andI.
+- apply andI.
+  + exact s55_S1_inv_fun_graph_antipode_preserving.
+  + exact s55_S1_inv_fun_graph_homeomorphism.
+- exact s55_S1_inv_fun_graph_two_cycle_witness.
+Qed.
+
+(** S55 helper: there exists a non-identity fixed-point-free self-homeomorphism of S1. **)
+(** Proven Bob **)
+Theorem s55_exists_nonidentity_fixed_point_free_homeomorphism_S1 :
+  exists f:set,
+    (homeomorphism S1 S1_topology S1 S1_topology f /\
+     (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    f <> graph S1 (fun x:set => x).
+witness (inv_fun_graph S1 s55_S1_antipode_map S1).
+apply andI.
+- apply andI.
+  + exact s55_S1_inv_fun_graph_homeomorphism.
+  + exact s55_S1_inv_fun_graph_fixed_point_free.
+- exact s55_S1_inv_fun_graph_ne_id_graph.
+Qed.
+
+(** S55 helper: a fixed-point-free antipode-preserving S1-homeomorphism witness implies no retraction B2 -> S1. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_antipode_preserving_homeomorphism_S1_implies_no_retraction_B2_S1 :
+  (exists f:set,
+    (antipode_preserving_S1 f /\
+     homeomorphism S1 S1_topology S1 S1_topology f) /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+  ->
+  ~(retraction_of B2 B2_topology S1).
+assume Hexists.
+apply s55_exists_fixed_point_free_endomap_S1_implies_no_retraction_B2_S1.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+claim HantiHomeo :
+  antipode_preserving_S1 f /\
+  homeomorphism S1 S1_topology S1 S1_topology f.
+{
+  exact (andEL
+    (antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f)
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+    Hpack).
+}
+claim Hhomeo :
+  homeomorphism S1 S1_topology S1 S1_topology f.
+{
+  exact (andER
+    (antipode_preserving_S1 f)
+    (homeomorphism S1 S1_topology S1 S1_topology f)
+    HantiHomeo).
+}
+claim Hcont :
+  continuous_map S1 S1_topology S1 S1_topology f.
+{
+  exact (homeomorphism_continuous
+    S1
+    S1_topology
+    S1
+    S1_topology
+    f
+    Hhomeo).
+}
+claim HnoFix :
+  forall x:set, x :e S1 -> ~(apply_fun f x = x).
+{
+  exact (andER
+    (antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f)
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+    Hpack).
+}
+apply andI.
+- exact Hcont.
+- exact HnoFix.
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
