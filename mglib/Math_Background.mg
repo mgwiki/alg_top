@@ -217900,38 +217900,20 @@ claim Hdecomp : exists loopU:set, exists loopV:set,
     apply andI.
     - exact (path_betweenI V y x0 f2X Hf2X_image_V Hf2X_0 Hf2X_1).
     - exact Hf2V_cont. }
-  apply Hf_first_half_ex.
-  let f1. assume Hf1Pack.
+  set f1 := f1X.
   claim Hf1_path : path_between U x0 y f1.
-  { exact (andEL
-      (path_between U x0 y f1)
-      (continuous_map unit_interval unit_interval_topology
-        U (subspace_topology X Tx U) f1)
-      Hf1Pack). }
+  { exact (path_betweenI U x0 y f1X Hf1X_image_U Hf1X_0 Hf1X_1). }
   claim Hf1_cont :
     continuous_map unit_interval unit_interval_topology
       U (subspace_topology X Tx U) f1.
-  { exact (andER
-      (path_between U x0 y f1)
-      (continuous_map unit_interval unit_interval_topology
-        U (subspace_topology X Tx U) f1)
-      Hf1Pack). }
-  apply Hf_second_half_ex.
-  let f2. assume Hf2Pack.
+  { exact Hf1U_cont. }
+  set f2 := f2X.
   claim Hf2_path : path_between V y x0 f2.
-  { exact (andEL
-      (path_between V y x0 f2)
-      (continuous_map unit_interval unit_interval_topology
-        V (subspace_topology X Tx V) f2)
-      Hf2Pack). }
+  { exact (path_betweenI V y x0 f2X Hf2X_image_V Hf2X_0 Hf2X_1). }
   claim Hf2_cont :
     continuous_map unit_interval unit_interval_topology
       V (subspace_topology X Tx V) f2.
-  { exact (andER
-      (path_between V y x0 f2)
-      (continuous_map unit_interval unit_interval_topology
-        V (subspace_topology X Tx V) f2)
-      Hf2Pack). }
+  { exact Hf2V_cont. }
   (** Build loopU = path_concat f1 (reverse_path gamma) : loop at x0 in U **)
   set loopU0 := path_concat f1 (reverse_path gamma).
   (** Build loopV = path_concat gamma f2 : loop at x0 in V **)
@@ -218101,16 +218083,210 @@ claim Hdecomp : exists loopU:set, exists loopV:set,
       path_homotopy_class_loop X Tx x0
         (path_concat (compose_fun unit_interval loopU0 incU)
                      (compose_fun unit_interval loopV0 incV)).
-  { (** Chain: [f] = [f1X . f2X] (Hf_homotopic) **)
-    (**        = [f1X . gamma-inv . gamma . f2X] (inverse cancellation) **)
-    (**        = [(f1X . gamma-inv) . (gamma . f2X)] (associativity) **)
-    (**        = [incU o loopU0 . incV o loopV0] (inclusions are identity) **)
-    (** This depends on Hf_homotopic and uses standard path algebra: **)
-    (** - path_homotopic_class preserves homotopy **)
-    (** - inverse cancellation: gamma-inv . gamma homotopic to constant **)
-    (** - associativity: path_concat is associative up to homotopy **)
-    (** - inclusion compose: incU o g = g when g maps into U **)
-    admit. }
+  {
+    (** Step 1: reverse_path gamma is continuous in X **)
+    claim Hrev_gamma_cont_X : continuous_map unit_interval unit_interval_topology X Tx (reverse_path gamma).
+    { exact (reverse_path_continuous X Tx gamma Hgamma_cont_X). }
+    claim Hrev_gamma_0_X : apply_fun (reverse_path gamma) 0 = y.
+    { rewrite (reverse_path_at_zero gamma). exact Hgamma1. }
+    claim Hrev_gamma_1_X : apply_fun (reverse_path gamma) 1 = x0.
+    { rewrite (reverse_path_at_one gamma). exact Hgamma0. }
+    claim HyX : y :e X. { exact (HUsub y HyU). }
+    (** Step 2: path_concat gamma f2 is continuous in X **)
+    claim Hgamma_f2_cont_X : continuous_map unit_interval unit_interval_topology X Tx (path_concat gamma f2X).
+    { exact (path_concat_continuous X Tx x0 y x0 gamma f2X Hgamma_cont_X Hf2X_cont Hgamma0 Hgamma1 Hf2X_0 Hf2X_1). }
+    claim Hgamma_f2_0 : apply_fun (path_concat gamma f2X) 0 = x0.
+    { rewrite (path_concat_at_zero gamma f2X). exact Hgamma0. }
+    claim Hgamma_f2_1 : apply_fun (path_concat gamma f2X) 1 = x0.
+    { rewrite (path_concat_at_one gamma f2X). exact Hf2X_1. }
+    (** Step 3: path_concat (reverse_path gamma) (path_concat gamma f2X) is continuous in X **)
+    claim Hrev_gamma_gamma_f2_cont :
+      continuous_map unit_interval unit_interval_topology X Tx
+        (path_concat (reverse_path gamma) (path_concat gamma f2X)).
+    { exact (path_concat_continuous X Tx y x0 x0
+        (reverse_path gamma) (path_concat gamma f2X)
+        Hrev_gamma_cont_X Hgamma_f2_cont_X
+        Hrev_gamma_0_X Hrev_gamma_1_X Hgamma_f2_0 Hgamma_f2_1). }
+    (** Step 4: Left inverse: gamma-inv . gamma ~ constant_y **)
+    claim Hleft_inv : path_homotopic X Tx y y
+      (path_concat (reverse_path gamma) gamma)
+      (constant_path y).
+    { exact (Theorem_51_2_left_inverse X Tx x0 y gamma Hgamma_cont_X Hgamma0 Hgamma1). }
+    (** Step 5: constant_y ~ gamma-inv . gamma (symmetry) **)
+    claim Hleft_inv_sym : path_homotopic X Tx y y
+      (constant_path y)
+      (path_concat (reverse_path gamma) gamma).
+    { exact (Lemma_51_1_path_homotopy_sym X Tx y y
+        (path_concat (reverse_path gamma) gamma) (constant_path y) Hleft_inv). }
+    (** Step 6: f2 ~ constant_y . f2 (left identity, reversed) **)
+    claim Hf2_left_id : path_homotopic X Tx y x0
+      (path_concat (constant_path y) f2X) f2X.
+    { exact (Theorem_51_2_left_identity X Tx y x0 f2X Hf2X_cont Hf2X_0 Hf2X_1 HyX). }
+    claim Hf2_left_id_sym : path_homotopic X Tx y x0
+      f2X (path_concat (constant_path y) f2X).
+    { exact (Lemma_51_1_path_homotopy_sym X Tx y x0
+        (path_concat (constant_path y) f2X) f2X Hf2_left_id). }
+    (** Step 7: constant_y . f2 ~ (gamma-inv . gamma) . f2 (well-definedness) **)
+    claim Hinsert_inv : path_homotopic X Tx y x0
+      (path_concat (constant_path y) f2X)
+      (path_concat (path_concat (reverse_path gamma) gamma) f2X).
+    { exact (path_concat_well_defined_on_classes X Tx y y x0
+        (constant_path y) (path_concat (reverse_path gamma) gamma)
+        f2X f2X
+        Hleft_inv_sym
+        (Lemma_51_1_path_homotopy_refl X Tx y x0 f2X Hf2X_cont Hf2X_0 Hf2X_1)). }
+    (** Step 8: (gamma-inv . gamma) . f2 ~ gamma-inv . (gamma . f2) (associativity reversed) **)
+    claim Hassoc_rev : path_homotopic X Tx y x0
+      (path_concat (path_concat (reverse_path gamma) gamma) f2X)
+      (path_concat (reverse_path gamma) (path_concat gamma f2X)).
+    { exact (Lemma_51_1_path_homotopy_sym X Tx y x0
+        (path_concat (reverse_path gamma) (path_concat gamma f2X))
+        (path_concat (path_concat (reverse_path gamma) gamma) f2X)
+        (Theorem_51_2_associativity X Tx y x0 y x0
+          (reverse_path gamma) gamma f2X
+          Hrev_gamma_cont_X Hgamma_cont_X Hf2X_cont
+          Hrev_gamma_0_X Hrev_gamma_1_X Hgamma0 Hgamma1 Hf2X_0 Hf2X_1)). }
+    (** Step 9: Chain: f2 ~ const_y . f2 ~ (g-inv . g) . f2 ~ g-inv . (g . f2) **)
+    claim Hf2_chain_step1 : path_homotopic X Tx y x0
+      f2X (path_concat (path_concat (reverse_path gamma) gamma) f2X).
+    { exact (Lemma_51_1_path_homotopy_trans X Tx y x0
+        f2X (path_concat (constant_path y) f2X)
+        (path_concat (path_concat (reverse_path gamma) gamma) f2X)
+        Hf2_left_id_sym Hinsert_inv). }
+    claim Hf2_chain : path_homotopic X Tx y x0
+      f2X (path_concat (reverse_path gamma) (path_concat gamma f2X)).
+    { exact (Lemma_51_1_path_homotopy_trans X Tx y x0
+        f2X (path_concat (path_concat (reverse_path gamma) gamma) f2X)
+        (path_concat (reverse_path gamma) (path_concat gamma f2X))
+        Hf2_chain_step1 Hassoc_rev). }
+    (** Step 10: f1 . f2 ~ f1 . (gamma-inv . (gamma . f2)) (well-definedness on right) **)
+    claim Hf1_f2_to_f1_revg_gf2 : path_homotopic X Tx x0 x0
+      (path_concat f1X f2X)
+      (path_concat f1X (path_concat (reverse_path gamma) (path_concat gamma f2X))).
+    { exact (path_concat_well_defined_on_classes X Tx x0 y x0
+        f1X f1X f2X (path_concat (reverse_path gamma) (path_concat gamma f2X))
+        (Lemma_51_1_path_homotopy_refl X Tx x0 y f1X Hf1X_cont Hf1X_0 Hf1X_1)
+        Hf2_chain). }
+    (** Step 11: f1 . (gamma-inv . (gamma . f2)) ~ (f1 . gamma-inv) . (gamma . f2) (associativity) **)
+    claim Hassoc_main : path_homotopic X Tx x0 x0
+      (path_concat f1X (path_concat (reverse_path gamma) (path_concat gamma f2X)))
+      (path_concat (path_concat f1X (reverse_path gamma)) (path_concat gamma f2X)).
+    { exact (Theorem_51_2_associativity X Tx x0 y x0 x0
+        f1X (reverse_path gamma) (path_concat gamma f2X)
+        Hf1X_cont Hrev_gamma_cont_X Hgamma_f2_cont_X
+        Hf1X_0 Hf1X_1 Hrev_gamma_0_X Hrev_gamma_1_X Hgamma_f2_0 Hgamma_f2_1). }
+    (** Step 12: Chain: f1 . f2 ~ (f1 . gamma-inv) . (gamma . f2) **)
+    claim Hf1f2_to_loopU0V0 : path_homotopic X Tx x0 x0
+      (path_concat f1X f2X)
+      (path_concat (path_concat f1X (reverse_path gamma)) (path_concat gamma f2X)).
+    { exact (Lemma_51_1_path_homotopy_trans X Tx x0 x0
+        (path_concat f1X f2X)
+        (path_concat f1X (path_concat (reverse_path gamma) (path_concat gamma f2X)))
+        (path_concat (path_concat f1X (reverse_path gamma)) (path_concat gamma f2X))
+        Hf1_f2_to_f1_revg_gf2 Hassoc_main). }
+    (** Since f1 = f1X and f2 = f2X, loopU0 = path_concat f1 (reverse_path gamma) **)
+    (** = path_concat f1X (reverse_path gamma), and similarly loopV0 = path_concat gamma f2X **)
+    (** Step 13: Chain: f ~ f1X . f2X ~ loopU0 . loopV0 (in X) **)
+    claim Hf_to_loops : path_homotopic X Tx x0 x0
+      f (path_concat loopU0 loopV0).
+    { exact (Lemma_51_1_path_homotopy_trans X Tx x0 x0
+        f (path_concat f1X f2X) (path_concat loopU0 loopV0)
+        Hf_homotopic Hf1f2_to_loopU0V0). }
+    (** Step 14: loopU0 . loopV0 is continuous in X **)
+    (** loopU0 maps to U c= X, so continuous in U subspace -> continuous in X **)
+    claim HloopU0_cont_X : continuous_map unit_interval unit_interval_topology X Tx loopU0.
+    { exact (continuous_map_range_expand
+        unit_interval unit_interval_topology
+        U (subspace_topology X Tx U) X Tx loopU0
+        HloopU0_cont HUsub Htop
+        (eq_refl (subspace_topology X Tx U))). }
+    claim HloopV0_cont_X : continuous_map unit_interval unit_interval_topology X Tx loopV0.
+    { exact (continuous_map_range_expand
+        unit_interval unit_interval_topology
+        V (subspace_topology X Tx V) X Tx loopV0
+        HloopV0_cont HVsub Htop
+        (eq_refl (subspace_topology X Tx V))). }
+    (** Step 15: compose_fun UI loopU0 incU is continuous in X **)
+    claim HincU_loopU0_cont : continuous_map unit_interval unit_interval_topology X Tx
+      (compose_fun unit_interval loopU0 incU).
+    { exact (composition_continuous
+        unit_interval unit_interval_topology
+        U (subspace_topology X Tx U)
+        X Tx loopU0 incU HloopU0_cont HincUCont). }
+    claim HincV_loopV0_cont : continuous_map unit_interval unit_interval_topology X Tx
+      (compose_fun unit_interval loopV0 incV).
+    { exact (composition_continuous
+        unit_interval unit_interval_topology
+        V (subspace_topology X Tx V)
+        X Tx loopV0 incV HloopV0_cont HincVCont). }
+    (** Step 16: endpoints of compose_fun UI loopU0 incU **)
+    claim HincU_loopU0_0 : apply_fun (compose_fun unit_interval loopU0 incU) 0 = x0.
+    { rewrite (compose_fun_apply unit_interval loopU0 incU 0 zero_in_unit_interval).
+      rewrite HloopU0_0.
+      exact (apply_fun_graph U (fun x:set => x) x0 Hx0U). }
+    claim HincU_loopU0_1 : apply_fun (compose_fun unit_interval loopU0 incU) 1 = x0.
+    { rewrite (compose_fun_apply unit_interval loopU0 incU 1 one_in_unit_interval).
+      rewrite HloopU0_1.
+      exact (apply_fun_graph U (fun x:set => x) x0 Hx0U). }
+    claim HincV_loopV0_0 : apply_fun (compose_fun unit_interval loopV0 incV) 0 = x0.
+    { rewrite (compose_fun_apply unit_interval loopV0 incV 0 zero_in_unit_interval).
+      rewrite HloopV0_0.
+      exact (apply_fun_graph V (fun x:set => x) x0 Hx0V). }
+    claim HincV_loopV0_1 : apply_fun (compose_fun unit_interval loopV0 incV) 1 = x0.
+    { rewrite (compose_fun_apply unit_interval loopV0 incV 1 one_in_unit_interval).
+      rewrite HloopV0_1.
+      exact (apply_fun_graph V (fun x:set => x) x0 Hx0V). }
+    (** Step 17: loopU0 in X is pointwise equal to compose_fun UI loopU0 incU **)
+    claim HloopU0_pw : forall t:set, t :e unit_interval ->
+      apply_fun loopU0 t = apply_fun (compose_fun unit_interval loopU0 incU) t.
+    { let t. assume Ht.
+      rewrite (compose_fun_apply unit_interval loopU0 incU t Ht).
+      claim HloopU0t_U : apply_fun loopU0 t :e U.
+      { exact (HloopU0_fun t Ht). }
+      rewrite (apply_fun_graph U (fun x:set => x) (apply_fun loopU0 t) HloopU0t_U).
+      reflexivity. }
+    claim HloopV0_pw : forall t:set, t :e unit_interval ->
+      apply_fun loopV0 t = apply_fun (compose_fun unit_interval loopV0 incV) t.
+    { let t. assume Ht.
+      rewrite (compose_fun_apply unit_interval loopV0 incV t Ht).
+      claim HloopV0t_V : apply_fun loopV0 t :e V.
+      { exact (HloopV0_fun t Ht). }
+      rewrite (apply_fun_graph V (fun x:set => x) (apply_fun loopV0 t) HloopV0t_V).
+      reflexivity. }
+    (** Step 18: loopU0 (in X) ~ compose_fun UI loopU0 incU **)
+    claim HloopU0_hom_incU : path_homotopic X Tx x0 x0
+      loopU0 (compose_fun unit_interval loopU0 incU).
+    { exact (path_homotopic_of_pointwise_equal X Tx x0 x0
+        loopU0 (compose_fun unit_interval loopU0 incU)
+        HloopU0_cont_X HincU_loopU0_cont
+        HloopU0_0 HloopU0_1 HincU_loopU0_0 HincU_loopU0_1
+        HloopU0_pw). }
+    claim HloopV0_hom_incV : path_homotopic X Tx x0 x0
+      loopV0 (compose_fun unit_interval loopV0 incV).
+    { exact (path_homotopic_of_pointwise_equal X Tx x0 x0
+        loopV0 (compose_fun unit_interval loopV0 incV)
+        HloopV0_cont_X HincV_loopV0_cont
+        HloopV0_0 HloopV0_1 HincV_loopV0_0 HincV_loopV0_1
+        HloopV0_pw). }
+    (** Step 19: loopU0 . loopV0 ~ (incU o loopU0) . (incV o loopV0) **)
+    claim Hloops_to_inc : path_homotopic X Tx x0 x0
+      (path_concat loopU0 loopV0)
+      (path_concat (compose_fun unit_interval loopU0 incU) (compose_fun unit_interval loopV0 incV)).
+    { exact (path_concat_well_defined_on_classes X Tx x0 x0 x0
+        loopU0 (compose_fun unit_interval loopU0 incU)
+        loopV0 (compose_fun unit_interval loopV0 incV)
+        HloopU0_hom_incU HloopV0_hom_incV). }
+    (** Step 20: Full chain: f ~ loopU0 . loopV0 ~ (incU o loopU0) . (incV o loopV0) **)
+    claim Hfull_hom : path_homotopic X Tx x0 x0
+      f (path_concat (compose_fun unit_interval loopU0 incU) (compose_fun unit_interval loopV0 incV)).
+    { exact (Lemma_51_1_path_homotopy_trans X Tx x0 x0
+        f (path_concat loopU0 loopV0)
+        (path_concat (compose_fun unit_interval loopU0 incU) (compose_fun unit_interval loopV0 incV))
+        Hf_to_loops Hloops_to_inc). }
+    (** Step 21: Convert homotopy to class equality **)
+    exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+      f (path_concat (compose_fun unit_interval loopU0 incU) (compose_fun unit_interval loopV0 incV))
+      Hfull_hom). }
   witness loopU0. witness loopV0.
   apply andI.
   - apply andI.
@@ -218224,7 +218400,7 @@ claim Hg_wd :
 { exact (word_data_of_loop_concat X Tx U V x0 fU fV Htop HU HV Hx0UV HfULoop HfVLoop HfU_wd HfV_wd). }
 (** Step 8: Transfer word data from g to f via class equality **)
 exact (word_data_of_loop_eq_class X Tx U V x0 f g Htop HU HV Hx0UV HfLoop HgLoop Hclass_eq Hg_wd).
-Admitted.
+Qed.
 
 (** Infrastructure: mixed case for ball_cover_word_construction (to be completed). **)
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
