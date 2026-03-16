@@ -409201,6 +409201,138 @@ apply iffI.
   exact (orbit_map_value_in_orbit_space X G x HxX).
 Qed.
 
+(** Helper: with identity action, every orbit-space class is nonempty **)
+(** Proven Bob **)
+Theorem orbit_space_class_nonempty_with_identity : forall X G idG cls:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  cls :e orbit_space X G ->
+  exists x:set, x :e cls.
+let X G idG cls.
+assume HidG HidAct HclsOS.
+claim Hrep : exists x:set, x :e X /\ apply_fun (orbit_map X G) x = cls.
+{
+  exact ((iffEL
+    (cls :e orbit_space X G)
+    (exists x:set, x :e X /\ apply_fun (orbit_map X G) x = cls)
+    (orbit_space_member_iff_orbit_map_value X G cls))
+    HclsOS).
+}
+apply Hrep.
+let x. assume HxPack.
+claim HxX : x :e X.
+{ exact (andEL (x :e X) (apply_fun (orbit_map X G) x = cls) HxPack). }
+claim HmapEq : apply_fun (orbit_map X G) x = cls.
+{ exact (andER (x :e X) (apply_fun (orbit_map X G) x = cls) HxPack). }
+claim HxInMap : x :e apply_fun (orbit_map X G) x.
+{
+  rewrite (orbit_map_apply X G x HxX).
+  apply SepI.
+  - exact HxX.
+  - prove orbit_equiv X G x x.
+    prove x :e X /\ x :e X /\ exists g:set, g :e G /\ apply_fun g x = x.
+    apply and3I.
+    + exact HxX.
+    + exact HxX.
+    + witness idG.
+      apply andI.
+      * exact HidG.
+      * exact (HidAct x HxX).
+}
+witness x.
+exact (mem_eqR x (apply_fun (orbit_map X G) x) cls HmapEq HxInMap).
+Qed.
+
+(** Helper: with identity action, orbit_space is nonempty whenever X has a point **)
+(** Proven Bob **)
+Theorem orbit_space_nonempty_from_point_with_identity : forall X G idG x:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  x :e X ->
+  orbit_space X G <> Empty.
+let X G idG x.
+assume HidG HidAct HxX.
+assume Hempty : orbit_space X G = Empty.
+claim HclsOS : apply_fun (orbit_map X G) x :e orbit_space X G.
+{ exact (orbit_map_value_in_orbit_space X G x HxX). }
+claim HclsEmpty : apply_fun (orbit_map X G) x :e Empty.
+{
+  exact (mem_eqR
+    (apply_fun (orbit_map X G) x)
+    (orbit_space X G)
+    Empty
+    Hempty
+    HclsOS).
+}
+exact (EmptyE (apply_fun (orbit_map X G) x) HclsEmpty False).
+Qed.
+
+(** Helper: if X is empty then orbit_space is empty **)
+(** Proven Bob **)
+Theorem orbit_space_empty_of_X_empty : forall X G:set,
+  X = Empty ->
+  orbit_space X G = Empty.
+let X G.
+assume HXEmpty.
+apply set_ext.
+- let cls. assume HclsOS.
+  claim Hpack : exists x:set, x :e X /\ cls = {y :e X | orbit_equiv X G x y}.
+  {
+    exact (SepE2
+      (Power X)
+      (fun c:set => exists x:set, x :e X /\ c = {y :e X | orbit_equiv X G x y})
+      cls
+      HclsOS).
+  }
+  apply Hpack.
+  let x. assume HxPack.
+  claim HxX : x :e X.
+  { exact (andEL (x :e X) (cls = {y :e X | orbit_equiv X G x y}) HxPack). }
+  claim HxE : x :e Empty.
+  { exact (mem_eqR x X Empty HXEmpty HxX). }
+  exact (EmptyE x HxE (cls :e Empty)).
+- let cls. assume HclsE.
+  exact (EmptyE cls HclsE (cls :e orbit_space X G)).
+Qed.
+
+(** Helper: with identity action, empty orbit_space forces empty X **)
+(** Proven Bob **)
+Theorem orbit_space_empty_implies_X_empty_with_identity : forall X G idG:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  orbit_space X G = Empty ->
+  X = Empty.
+let X G idG.
+assume HidG HidAct HOSempty.
+apply set_ext.
+- let x. assume HxX.
+  claim Hcontra : False.
+  {
+    exact ((orbit_space_nonempty_from_point_with_identity
+      X G idG x HidG HidAct HxX)
+      HOSempty).
+  }
+  exact (FalseE Hcontra (x :e Empty)).
+- let x. assume HxE.
+  exact (EmptyE x HxE (x :e X)).
+Qed.
+
+(** Helper: with identity action, orbit_space is empty iff X is empty **)
+(** Proven Bob **)
+Theorem orbit_space_empty_iff_X_empty_with_identity : forall X G idG:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  (orbit_space X G = Empty <-> X = Empty).
+let X G idG.
+assume HidG HidAct.
+apply iffI.
+- assume HOSempty.
+  exact (orbit_space_empty_implies_X_empty_with_identity
+    X G idG HidG HidAct HOSempty).
+- assume HXEmpty.
+  exact (orbit_space_empty_of_X_empty X G HXEmpty).
+Qed.
+
 (** Helper: orbit_map is function_on without extra assumptions on G **)
 (** Proven Bob **)
 Theorem orbit_map_function_on_plain : forall X G:set,
