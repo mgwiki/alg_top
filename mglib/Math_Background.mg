@@ -410749,11 +410749,31 @@ claim Hk_factors : forall x:set, x :e X ->
   rewrite <- Hgx.
   exact (Hp_orbit_const g x HgG HxX). }
 witness k. apply andI.
-- (** covering_map OS OT B Tb k: the hard part **)
-  (** k is continuous by quotient universal property since p = k o pi **)
-  (** k is surjective from p surjective **)
-  (** Evenly covered: uses p's slices grouped by G-orbits **)
-  admit.
+- (** covering_map OS OT B Tb k **)
+  prove continuous_map OS OT B Tb k /\ surjective_map OS B k /\
+    (forall b:set, b :e B -> exists U:set, U :e Tb /\ b :e U /\ evenly_covered OS OT B Tb k U).
+  apply and3I.
+  + (** k is continuous: by quotient universal property **)
+    (** orbit_topology = quotient_topology X Tx OS pi **)
+    (** p = k o pi is continuous, so k descends to quotient **)
+    admit.
+  + (** k is surjective: from p surjective **)
+    prove function_on k OS B /\ forall b:set, b :e B -> exists cls:set, cls :e OS /\ apply_fun k cls = b.
+    apply andI.
+    * exact Hk_fn.
+    * let b. assume HbB.
+      claim Hsurj_p : surjective_map X B p. { exact (covering_map_surjective X Tx B Tb p Hcov). }
+      claim Hp_surj_data : forall b0:set, b0 :e B -> exists x:set, x :e X /\ apply_fun p x = b0.
+      { exact (andER (function_on p X B)
+          (forall b0:set, b0 :e B -> exists x:set, x :e X /\ apply_fun p x = b0) Hsurj_p). }
+      apply (Hp_surj_data b HbB). let x. assume Hxpack.
+      claim HxX : x :e X. { exact (andEL (x :e X) (apply_fun p x = b) Hxpack). }
+      claim Hpx : apply_fun p x = b. { exact (andER (x :e X) (apply_fun p x = b) Hxpack). }
+      witness (apply_fun pi x). apply andI.
+      - exact (Hpi_fn x HxX).
+      - rewrite (Hk_factors x HxX). exact Hpx.
+  + (** evenly covered: hardest part, uses p's slices grouped by G-orbits **)
+    admit.
 - exact Hk_factors.
 Admitted.
 
