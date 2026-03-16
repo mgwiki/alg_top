@@ -222918,6 +222918,136 @@ apply (xm (t = s)).
     * exact (mem_eqR t B (apply_fun seq j) Heq HtB).
 Qed.
 
+(** Helper: a nonempty open subset of unit_interval contains a point in (0,1).
+    Proof sketch: open sets in unit_interval topology contain open intervals;
+    singletons {0} and {1} are not open since unit_interval has the subspace topology of R. **)
+(** Proven Alice **)
+Lemma nonempty_open_unit_interval_has_interior_point : forall O:set,
+  O :e unit_interval_topology ->
+  O <> Empty ->
+  exists s:set, s :e O /\ s <> 0 /\ s <> 1.
+let O.
+assume HO_open : O :e unit_interval_topology.
+assume HO_ne : O <> Empty.
+(** By classical logic, either such a point exists or all points are 0 or 1 **)
+apply (xm (exists s:set, s :e O /\ s <> 0 /\ s <> 1)).
+- assume H. exact H.
+- assume Hno : ~(exists s:set, s :e O /\ s <> 0 /\ s <> 1).
+  (** Every element of O is 0 or 1 **)
+  claim HO_sub_pair : O c= UPair 0 1.
+  { let s. assume Hs : s :e O.
+    claim HO_sub_UI : O c= unit_interval.
+    { exact (topology_elem_subset unit_interval unit_interval_topology O
+        unit_interval_topology_on HO_open). }
+    apply (xm (s = 0)).
+    - assume Hs0 : s = 0. rewrite Hs0. exact (UPairI1 0 1).
+    - assume Hsn0 : s <> 0.
+      apply (xm (s = 1)).
+      + assume Hs1 : s = 1. rewrite Hs1. exact (UPairI2 0 1).
+      + assume Hsn1 : s <> 1.
+        (** s :e O, s <> 0, s <> 1 contradicts Hno **)
+        claim Hex : exists s0:set, s0 :e O /\ s0 <> 0 /\ s0 <> 1.
+        { witness s. apply andI. apply andI. exact Hs. exact Hsn0. exact Hsn1. }
+        exact (FalseE (Hno Hex) (s :e UPair 0 1)). }
+  (** O c= UPair 0 1, so O is finite **)
+  claim HO_finite : finite O.
+  { exact (Subq_finite (UPair 0 1) (finite_UPair 0 1) O HO_sub_pair). }
+  (** unit_interval is Hausdorff **)
+  claim HUI_Haus : Hausdorff_space unit_interval unit_interval_topology.
+  { exact (ex17_12_subspace_Hausdorff R R_standard_topology unit_interval
+      R_standard_topology_Hausdorff unit_interval_sub_R). }
+  (** O c= unit_interval **)
+  claim HO_sub : O c= unit_interval.
+  { exact (topology_elem_subset unit_interval unit_interval_topology O
+      unit_interval_topology_on HO_open). }
+  (** O is closed (finite subset of Hausdorff space) **)
+  claim HO_closed : closed_in unit_interval unit_interval_topology O.
+  { exact (finite_sets_closed_in_Hausdorff unit_interval unit_interval_topology
+      HUI_Haus O HO_sub HO_finite). }
+  (** O is open **)
+  claim HO_openI : open_in unit_interval unit_interval_topology O.
+  { exact (open_inI unit_interval unit_interval_topology O
+      unit_interval_topology_on HO_open). }
+  (** O <> unit_interval: eps_1 :e unit_interval but eps_1 /:e UPair 0 1 **)
+  claim HO_ne_UI : O <> unit_interval.
+  { assume Heq : O = unit_interval.
+    claim Heps1_in_O : eps_ 1 :e O.
+    { rewrite Heq. exact eps_1_in_unit_interval. }
+    claim Heps1_in_pair : eps_ 1 :e UPair 0 1.
+    { exact (HO_sub_pair (eps_ 1) Heps1_in_O). }
+    apply (UPairE (eps_ 1) 0 1 Heps1_in_pair).
+    - assume Heps1_eq0 : eps_ 1 = 0.
+      (** Rlt 0 (eps_ 1) and eps_ 1 = 0 gives contradiction **)
+      claim Hlt0e : Rlt 0 (eps_ 1). { exact eps_1_pos_R. }
+      claim Hle_e0 : Rle (eps_ 1) 0.
+      { prove Rle (eps_ 1) 0. rewrite Heps1_eq0. exact (Rle_refl 0 real_0). }
+      claim Hlt00 : Rlt 0 0. { exact (Rlt_Rle_tra 0 (eps_ 1) 0 Hlt0e Hle_e0). }
+      exact (SNoLt_irref 0 (RltE_lt 0 0 Hlt00)).
+    - assume Heps1_eq1 : eps_ 1 = 1.
+      (** Rlt (eps_ 1) 1 and eps_ 1 = 1 gives contradiction **)
+      claim Hlte1 : Rlt (eps_ 1) 1. { exact eps_1_lt1_R. }
+      claim Hle_1e : Rle 1 (eps_ 1).
+      { prove Rle 1 (eps_ 1). rewrite Heps1_eq1. exact (Rle_refl 1 real_1). }
+      claim Hltee : Rlt (eps_ 1) (eps_ 1). { exact (Rlt_Rle_tra (eps_ 1) 1 (eps_ 1) Hlte1 Hle_1e). }
+      exact (SNoLt_irref (eps_ 1) (RltE_lt (eps_ 1) (eps_ 1) Hltee)). }
+  (** unit_interval is connected, so no nontrivial clopen sets **)
+  claim Hconn : connected_space unit_interval unit_interval_topology.
+  { exact unit_interval_connected. }
+  (** connected_iff_no_nontrivial_clopen gives:
+      connected_space X Tx <-> ~(exists A, ((A <> Empty /\ A <> X) /\ open_in X Tx A) /\ closed_in X Tx A)
+      Note the left-associative /\ nesting. **)
+  claim Hno_clopen : ~(exists A:set,
+    A <> Empty /\ A <> unit_interval /\ open_in unit_interval unit_interval_topology A /\
+    closed_in unit_interval unit_interval_topology A).
+  { exact (iffEL
+      (connected_space unit_interval unit_interval_topology)
+      (~(exists A:set,
+        A <> Empty /\ A <> unit_interval /\ open_in unit_interval unit_interval_topology A /\
+        closed_in unit_interval unit_interval_topology A))
+      (connected_iff_no_nontrivial_clopen unit_interval unit_interval_topology
+        unit_interval_topology_on) Hconn). }
+  claim Hclopen : exists A:set,
+    A <> Empty /\ A <> unit_interval /\ open_in unit_interval unit_interval_topology A /\
+    closed_in unit_interval unit_interval_topology A.
+  { witness O. apply andI. apply andI. apply andI. exact HO_ne. exact HO_ne_UI. exact HO_openI. exact HO_closed. }
+  exact (FalseE (Hno_clopen Hclopen) (exists s:set, s :e O /\ s <> 0 /\ s <> 1)).
+Qed.
+
+(** Helper: the intersection of two open balls in unit_interval is open. **)
+(** Proven Alice **)
+Lemma open_ball_binintersect_open_in_unit_interval : forall c1 c2 r1 r2:set,
+  c1 :e unit_interval -> c2 :e unit_interval ->
+  r1 :e R -> r2 :e R -> Rlt 0 r1 -> Rlt 0 r2 ->
+  open_ball unit_interval R_bounded_metric c1 r1 :/\:
+  open_ball unit_interval R_bounded_metric c2 r2 :e unit_interval_topology.
+let c1 c2 r1 r2.
+assume Hc1 Hc2 Hr1R Hr2R Hr1pos Hr2pos.
+claim HmetI : metric_on unit_interval R_bounded_metric.
+{ exact R_bounded_metric_is_metric_on_unit_interval. }
+claim Hb1_openI : open_in unit_interval (metric_topology unit_interval R_bounded_metric)
+  (open_ball unit_interval R_bounded_metric c1 r1).
+{ exact (open_ball_open_in_metric_topology unit_interval R_bounded_metric c1 r1
+    HmetI Hc1 Hr1pos). }
+claim Hb2_openI : open_in unit_interval (metric_topology unit_interval R_bounded_metric)
+  (open_ball unit_interval R_bounded_metric c2 r2).
+{ exact (open_ball_open_in_metric_topology unit_interval R_bounded_metric c2 r2
+    HmetI Hc2 Hr2pos). }
+claim Hint_open : open_in unit_interval (metric_topology unit_interval R_bounded_metric)
+  (open_ball unit_interval R_bounded_metric c1 r1 :/\:
+   open_ball unit_interval R_bounded_metric c2 r2).
+{ exact (binintersect_open unit_interval (metric_topology unit_interval R_bounded_metric)
+    (open_ball unit_interval R_bounded_metric c1 r1)
+    (open_ball unit_interval R_bounded_metric c2 r2)
+    Hb1_openI Hb2_openI). }
+claim Hint_in_metric : open_ball unit_interval R_bounded_metric c1 r1 :/\:
+  open_ball unit_interval R_bounded_metric c2 r2 :e metric_topology unit_interval R_bounded_metric.
+{ exact (open_in_elem unit_interval (metric_topology unit_interval R_bounded_metric)
+    (open_ball unit_interval R_bounded_metric c1 r1 :/\:
+     open_ball unit_interval R_bounded_metric c2 r2) Hint_open). }
+rewrite <- metric_topology_unit_interval_eq_I_topology.
+exact Hint_in_metric.
+Qed.
+
 (** Infrastructure: mixed case for ball_cover_word_construction (to be completed). **)
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
@@ -223118,8 +223248,77 @@ claim Htransition_exists :
         exact unit_interval_connected.
       + assume Hrngt1.
         (** r >= 1 and r <= 1, so r = 1. Open ball of radius 1 is still connected. **)
-        (** Admit this edge case for now -- it does not affect the main proof logic. **)
-        admit. }
+        claim HcR : c :e R. { exact (unit_interval_sub_R c HcI). }
+        claim Hle1r : Rle 1 r. { exact (RleI 1 r real_1 HrR Hrnlt1). }
+        claim Hler1 : Rle r 1. { exact (RleI r 1 HrR real_1 Hrngt1). }
+        claim Hreq1 : 1 = r. { exact (Rle_antisym 1 r Hle1r Hler1). }
+        rewrite <- Hreq1.
+        claim Hball_eq_int : open_ball unit_interval R_bounded_metric c 1 =
+          unit_interval :/\: open_ball R R_bounded_metric c 1.
+        { exact (open_ball_unit_interval_eq_binintersect_R c 1 HcI real_1). }
+        claim Hball_R_eq : open_ball R R_bounded_metric c 1 = open_interval (add_SNo c (minus_SNo 1)) (add_SNo c 1).
+        { exact (open_ball_R_bounded_metric_r1_eq_open_interval_early c HcR). }
+        set a0 := add_SNo c (minus_SNo 1).
+        set b0 := add_SNo c 1.
+        claim Ha0R : a0 :e R. { exact (real_add_SNo c HcR (minus_SNo 1) (real_minus_SNo 1 real_1)). }
+        claim Hb0R : b0 :e R. { exact (real_add_SNo c HcR 1 real_1). }
+        claim HcSNo0 : SNo c. { exact (real_SNo c HcR). }
+        claim Hm1SNo0 : SNo (minus_SNo 1). { exact (SNo_minus_SNo 1 SNo_1). }
+        claim Ha0SNo : SNo a0. { exact (SNo_add_SNo c (minus_SNo 1) HcSNo0 Hm1SNo0). }
+        claim Hb0SNo : SNo b0. { exact (SNo_add_SNo c 1 HcSNo0 SNo_1). }
+        claim Ha0ltc : Rlt a0 c.
+        {
+          claim Hm1lt0_SNo : SNoLt (minus_SNo 1) 0. { exact (RltE_lt (minus_SNo 1) 0 Rlt_minus1_0). }
+          claim Ha0_lt_c0 : SNoLt (add_SNo c (minus_SNo 1)) (add_SNo c 0).
+          { exact (add_SNo_Lt2 c (minus_SNo 1) 0 HcSNo0 Hm1SNo0 SNo_0 Hm1lt0_SNo). }
+          claim Hc0_eq_c : add_SNo c 0 = c. { exact (add_SNo_0R c HcSNo0). }
+          claim Hc0R : add_SNo c 0 :e R. { exact (real_add_SNo c HcR 0 real_0). }
+          claim Ha0_lt_c0_Rlt : Rlt a0 (add_SNo c 0). { exact (RltI a0 (add_SNo c 0) Ha0R Hc0R Ha0_lt_c0). }
+          claim Hc0_Rle_c : Rle (add_SNo c 0) c.
+          { rewrite Hc0_eq_c. exact (Rle_refl c HcR). }
+          exact (Rlt_Rle_tra a0 (add_SNo c 0) c Ha0_lt_c0_Rlt Hc0_Rle_c).
+        }
+        claim Hcltb0 : Rlt c b0.
+        { exact (Rlt_add_1_R c HcR). }
+        claim Ha0ltb0 : Rlt a0 b0.
+        { exact (Rlt_tra a0 c b0 Ha0ltc Hcltb0). }
+        claim Hab0 : order_rel R a0 b0. { exact (Rlt_implies_order_rel_R a0 b0 Ha0ltb0). }
+        claim HoiConn0 : connected_space (open_interval a0 b0) (subspace_topology R R_standard_topology (open_interval a0 b0)).
+        { exact (open_interval_connected a0 b0 Ha0R Hb0R Hab0). }
+        claim HoiConvex0 : convex_in R (open_interval a0 b0).
+        { exact (connected_subset_R_convex_in (open_interval a0 b0) (open_interval_Subq_R a0 b0) HoiConn0). }
+        claim HuiConvex0 : convex_in R unit_interval. { exact unit_interval_convex_in. }
+        claim HintConvex0 : convex_in R (unit_interval :/\: open_interval a0 b0).
+        { exact (convex_in_R_binintersect unit_interval (open_interval a0 b0) HuiConvex0 HoiConvex0). }
+        claim Hc_in_oi0 : c :e open_interval a0 b0.
+        {
+          exact (SepI R (fun x:set => Rlt a0 x /\ Rlt x b0) c HcR
+            (andI (Rlt a0 c) (Rlt c b0) Ha0ltc Hcltb0)).
+        }
+        claim Hc_in_int0 : c :e unit_interval :/\: open_interval a0 b0.
+        { exact (binintersectI unit_interval (open_interval a0 b0) c HcI Hc_in_oi0). }
+        claim Hint_ne0 : unit_interval :/\: open_interval a0 b0 <> Empty.
+        {
+          assume Hempty : unit_interval :/\: open_interval a0 b0 = Empty.
+          exact (EmptyE c (eq_subst_mem_set c (unit_interval :/\: open_interval a0 b0) Empty Hc_in_int0 Hempty)).
+        }
+        claim Hint_sub_R0 : unit_interval :/\: open_interval a0 b0 c= R.
+        { exact (Subq_tra (unit_interval :/\: open_interval a0 b0) unit_interval R
+            (binintersect_Subq_1 unit_interval (open_interval a0 b0)) unit_interval_sub_R). }
+        claim HintConnR0 : connected_space (unit_interval :/\: open_interval a0 b0)
+          (subspace_topology R R_standard_topology (unit_interval :/\: open_interval a0 b0)).
+        { exact (convex_in_R_connected (unit_interval :/\: open_interval a0 b0) Hint_sub_R0 HintConvex0 Hint_ne0). }
+        claim Hint_sub_UI0 : unit_interval :/\: open_interval a0 b0 c= unit_interval.
+        { exact (binintersect_Subq_1 unit_interval (open_interval a0 b0)). }
+        claim Htop_eq0 : subspace_topology unit_interval unit_interval_topology (unit_interval :/\: open_interval a0 b0)
+          = subspace_topology R R_standard_topology (unit_interval :/\: open_interval a0 b0).
+        { exact (subspace_topology_transitive_weak R R_standard_topology unit_interval
+            (unit_interval :/\: open_interval a0 b0) Hint_sub_UI0). }
+        claim HintConnUI0 : connected_space (unit_interval :/\: open_interval a0 b0)
+          (subspace_topology unit_interval unit_interval_topology (unit_interval :/\: open_interval a0 b0)).
+        { rewrite Htop_eq0. exact HintConnR0. }
+        rewrite Hball_eq_int. rewrite Hball_R_eq.
+        exact HintConnUI0. }
   claim HseqFnPow : function_on seq (ordsucc nch) (Power unit_interval).
   { let k. assume Hk.
     exact (PowerI unit_interval (apply_fun seq k) (HBallSubUI k Hk)). }
@@ -223411,7 +223610,12 @@ claim Htransition_exists :
     (** With V-first orientation, we need a DIFFERENT transition point. **)
     (** Since we have Uonly and Vonly balls, there must also be a U-to-V transition **)
     (** somewhere later in the chain (because the chain must return to V-territory). **)
-    (** This is complex -- admit for now. **)
+    (** APPROACH: Find LastV (= last non-U ball), then k2 such that ball k2 is V-type **)
+    (** and ball (ordsucc k2) is U-type. The overlap gives s with f(s) :e U cap V. **)
+    (** Then balls 0..k2 cover [0,s] mapping to V and balls (ordsucc k2)..nch cover **)
+    (** [s,1] mapping to U. But we need [0,s] -> U, [s,1] -> V, so swap the roles **)
+    (** or find the LAST V-to-U transition instead. This requires essentially **)
+    (** duplicating the m > 0 proof structure with U/V swapped. **)
     admit.
   - (** Case m = ordsucc k for some k: balls 0..k are all U-type, ball m is V-type **)
     assume Hm_inv : exists k:set, nat_p k /\ m = ordsucc k.
@@ -223440,63 +223644,63 @@ claim Htransition_exists :
     (** ball (ordsucc k) = ball m is V-type **)
     claim Hsk_Vtype : forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e V.
     { rewrite <- Hm_eq. exact Hm_Vtype. }
-    (** Transition U -> V at k: overlap point s **)
-    apply (Htransition_UV k Hk_nch Hk_Utype Hsk_Vtype).
-    let s. assume Hspack.
+    (** Transition U -> V at k: pick an overlap point s avoiding 0 and 1 **)
+    (** The overlap ball_k cap ball_(ordsucc k) is open and nonempty. **)
+    (** By nonempty_open_unit_interval_has_interior_point, it has a point in (0,1). **)
+    claim Hsk_On : ordsucc k :e ordsucc nch.
+    { exact (nat_ordsucc_in_ordsucc nch HnchNat k Hk_nch). }
+    claim Hovlp_ne : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+    { exact (Hoverlap k Hk_nch). }
+    (** Show each ball is open in unit_interval_topology **)
+    claim Hseqk_ball : apply_fun seq k :e BallFam. { exact (HseqFn k Hk_On). }
+    claim Hseqsk_ball : apply_fun seq (ordsucc k) :e BallFam. { exact (HseqFn (ordsucc k) Hsk_On). }
+    (** Extract centers via ReplE_impred **)
+    apply (ReplE_impred unit_interval (fun c:set => open_ball unit_interval R_bounded_metric c r)
+      (apply_fun seq k) Hseqk_ball).
+    let ck. assume HckI Hseqk_eq.
+    apply (ReplE_impred unit_interval (fun c:set => open_ball unit_interval R_bounded_metric c r)
+      (apply_fun seq (ordsucc k)) Hseqsk_ball).
+    let csk. assume HcskI Hseqsk_eq.
+    (** The overlap is open in unit_interval_topology **)
+    claim Hovlp_eq : apply_fun seq k :/\: apply_fun seq (ordsucc k) =
+      open_ball unit_interval R_bounded_metric ck r :/\:
+      open_ball unit_interval R_bounded_metric csk r.
+    { rewrite Hseqk_eq. rewrite Hseqsk_eq. reflexivity. }
+    claim Hovlp_open : apply_fun seq k :/\: apply_fun seq (ordsucc k) :e unit_interval_topology.
+    { rewrite Hovlp_eq.
+      exact (open_ball_binintersect_open_in_unit_interval ck csk r r HckI HcskI HrR HrR Hrpos Hrpos). }
+    (** Apply the interior point helper **)
+    claim Hinterior : exists s:set, s :e apply_fun seq k :/\: apply_fun seq (ordsucc k) /\ s <> 0 /\ s <> 1.
+    { exact (nonempty_open_unit_interval_has_interior_point
+        (apply_fun seq k :/\: apply_fun seq (ordsucc k)) Hovlp_open Hovlp_ne). }
+    apply Hinterior. let s. assume Hs_int_pack.
+    (** The helper returns ((s :e O /\ s <> 0) /\ s <> 1) due to left-assoc /\ **)
+    claim Hs_in_ovlp_and_ne0 : s :e apply_fun seq k :/\: apply_fun seq (ordsucc k) /\ s <> 0.
+    { exact (andEL
+        (s :e apply_fun seq k :/\: apply_fun seq (ordsucc k) /\ s <> 0)
+        (s <> 1) Hs_int_pack). }
+    claim Hs_ne1 : s <> 1.
+    { exact (andER
+        (s :e apply_fun seq k :/\: apply_fun seq (ordsucc k) /\ s <> 0)
+        (s <> 1) Hs_int_pack). }
+    claim Hs_in_ovlp : s :e apply_fun seq k :/\: apply_fun seq (ordsucc k).
+    { exact (andEL (s :e apply_fun seq k :/\: apply_fun seq (ordsucc k))
+        (s <> 0) Hs_in_ovlp_and_ne0). }
+    claim Hs_ne0 : s <> 0.
+    { exact (andER (s :e apply_fun seq k :/\: apply_fun seq (ordsucc k))
+        (s <> 0) Hs_in_ovlp_and_ne0). }
     claim Hs_seqk : s :e apply_fun seq k.
-    { exact (andEL (s :e apply_fun seq k) (s :e apply_fun seq (ordsucc k))
-        (andEL (s :e apply_fun seq k /\ s :e apply_fun seq (ordsucc k)) (apply_fun f s :e U :/\: V) Hspack)). }
+    { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) s Hs_in_ovlp). }
     claim Hs_seqsk : s :e apply_fun seq (ordsucc k).
-    { exact (andER (s :e apply_fun seq k) (s :e apply_fun seq (ordsucc k))
-        (andEL (s :e apply_fun seq k /\ s :e apply_fun seq (ordsucc k)) (apply_fun f s :e U :/\: V) Hspack)). }
-    claim HfsUV : apply_fun f s :e U :/\: V.
-    { exact (andER (s :e apply_fun seq k /\ s :e apply_fun seq (ordsucc k)) (apply_fun f s :e U :/\: V) Hspack). }
+    { exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s Hs_in_ovlp). }
     claim HsUI : s :e unit_interval.
     { exact (HBallSubUI k Hk_On s Hs_seqk). }
+    (** f(s) :e U cap V since ball_k is U-type and ball_(ordsucc k) is V-type **)
+    claim HfsU : apply_fun f s :e U. { exact (Hk_Utype s Hs_seqk). }
+    claim HfsV : apply_fun f s :e V. { exact (Hsk_Vtype s Hs_seqsk). }
+    claim HfsUV : apply_fun f s :e U :/\: V.
+    { exact (binintersectI U V (apply_fun f s) HfsU HfsV). }
     witness s.
-    (** Prove s <> 0 **)
-    claim Hs_ne0 : s <> 0.
-    { assume Hseq0s : s = 0.
-      (** If s = 0, then 0 :e ball (ordsucc k). Also 0 :e ball 0. **)
-      (** ball (ordsucc k) is V-type: f(0) :e V. **)
-      (** But we also need nch >= 1 (since m = ordsucc k :e ordsucc nch, so k :e nch). **)
-      (** If k = 0, then m = 1, so ball 1 is V-type. f(0) = x0 :e V, which is fine. **)
-      (** But also f(0) :e U (since x0 :e U). So f(0) :e U cap V. **)
-      (** The issue: s = 0 is problematic for the claim since we need s <> 0. **)
-      (** s :e ball k cap ball (ordsucc k). Since s = 0, 0 :e ball k. **)
-      (** ball k is U-type, so all of ball k maps to U. **)
-      (** Also ball (ordsucc k) is V-type, so all of ball (ordsucc k) maps to V. **)
-      (** Since 0 :e ball (ordsucc k), f(0) :e V. And f(0) = x0 :e U. **)
-      (** Now: since k >= 0 and k :e nch, and m = ordsucc k >= 1, **)
-      (** ball 0 is U-type (since 0 < m), so all of ball 0 maps to U. **)
-      (** 0 :e ball 0 (from H0_in_seq0), so f(0) :e U. That's consistent. **)
-      (** The real problem is that s = 0 means the transition happens at 0, **)
-      (** so [0,s] = [0,0] = {0} maps to U (trivially), but the claim **)
-      (** needs s <> 0. Contradiction is: 0 is in the overlap ball_k cap ball_(k+1) **)
-      (** and k >= 0 and k :e nch. Actually we need a more careful argument. **)
-      (** **)
-      (** ball_k is an open ball in unit_interval. s = 0 :e ball_k means 0 is in **)
-      (** the interior of ball_k. Since ball_k is an open interval containing 0, **)
-      (** it must contain some epsilon > 0 neighborhood. Then ALL of that **)
-      (** neighborhood maps to U (ball k is U-type). But also the portion in **)
-      (** ball (ordsucc k) maps to V. The overlap region maps to U cap V. **)
-      (** This is consistent but means s = 0 is the transition point. **)
-      (** Since the claim needs s <> 0, we need to show this cannot happen. **)
-      (** **)
-      (** Actually: if s = 0, then since s :e ball (ordsucc k) which is V-type, **)
-      (** and since HnotAllV says not all of [0,1] maps to V, there must be **)
-      (** another transition later. But for now, admit this subcase. **)
-      admit. }
-    (** Prove s <> 1 **)
-    claim Hs_ne1 : s <> 1.
-    { assume Hseq1s : s = 1.
-      (** Similar argument: if s = 1, then 1 :e ball k (U-type). **)
-      (** ball nch contains 1 (from H1_in_seqn). **)
-      (** Since k :e nch and s = 1 :e ball_k, ball_k is U-type. **)
-      (** Also ball (ordsucc k) is V-type and 1 :e ball (ordsucc k). **)
-      (** Since HnotAllU, not all maps to U, so there's a transition. **)
-      (** But s = 1 means the transition is at the endpoint. **)
-      admit. }
     (** Prove f(s) :e U cap V **)
     (** Prove [0,s] -> U using ball_chain_prefix_covers_interval **)
     claim HfU : forall t:set, t :e unit_interval -> Rle t s -> apply_fun f t :e U.
@@ -223540,9 +223744,14 @@ claim Htransition_exists :
     (** Then for t :e [s,1], t is in some ball j with m <= j <= nch. **)
     (** But ball j might be U-type for j > m! So f(t) :e U, not V. **)
     (** **)
-    (** This means [s,1] -> V CANNOT be proved from just the first transition. **)
-    (** The claim as stated requires a monotone partition which is too strong. **)
-    (** Admit this final part. **)
+    (** This means [s,1] -> V CANNOT be proved from just the first U-to-V transition. **)
+    (** The claim as stated requires a monotone partition: [0,s] all U, [s,1] all V. **)
+    (** APPROACH: Instead of using the FIRST transition, find the LAST U-type ball k'. **)
+    (** Then all balls from ordsucc(k') to nch are V-type (or handle similarly). **)
+    (** Use ball_chain_suffix_covers_interval (a suffix version of the prefix lemma) **)
+    (** to show that for t >= s', t is in some V-type ball. **)
+    (** Alternatively, restructure Htransition_exists to use a weaker claim **)
+    (** (existence of a finite word decomposition without monotone partition). **)
     claim HfV : forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V.
     { admit. }
     apply and6I.
