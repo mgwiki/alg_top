@@ -404757,6 +404757,36 @@ apply SepI.
 - exact (covering_transformation_group_fiber E Te B Tb p h e0 HhG He0E).
 Qed.
 
+(** Helper: evaluation at e0 distinguishes CTG members on connected spaces **)
+(** If h1(e0) = h2(e0) and E is connected, then h1 = h2 pointwise **)
+(** Proven Alice **)
+Theorem covering_transformation_group_e0_determines :
+  forall E Te B Tb p e0 h1 h2:set,
+  covering_map E Te B Tb p -> e0 :e E ->
+  connected_space E Te ->
+  h1 :e covering_transformation_group E Te B Tb p ->
+  h2 :e covering_transformation_group E Te B Tb p ->
+  apply_fun h1 e0 = apply_fun h2 e0 ->
+  forall x:set, x :e E -> apply_fun h1 x = apply_fun h2 x.
+let E Te B Tb p e0 h1 h2. assume Hcov He0E HconnE Hh1G Hh2G Heq0.
+claim Hh1_cont : continuous_map E Te E Te h1.
+{ exact (covering_transformation_group_continuous E Te B Tb p h1 Hh1G). }
+claim Hh2_cont : continuous_map E Te E Te h2.
+{ exact (covering_transformation_group_continuous E Te B Tb p h2 Hh2G). }
+claim Hh1_lift : lifting_of E Te E Te B Tb p p h1.
+{ prove continuous_map E Te E Te h1 /\
+    (forall x:set, x :e E -> apply_fun p (apply_fun h1 x) = apply_fun p x).
+  apply andI. exact Hh1_cont.
+  exact (fun x HxE => covering_transformation_group_fiber E Te B Tb p h1 x Hh1G HxE). }
+claim Hh2_lift : lifting_of E Te E Te B Tb p p h2.
+{ prove continuous_map E Te E Te h2 /\
+    (forall x:set, x :e E -> apply_fun p (apply_fun h2 x) = apply_fun p x).
+  apply andI. exact Hh2_cont.
+  exact (fun x HxE => covering_transformation_group_fiber E Te B Tb p h2 x Hh2G HxE). }
+exact (covering_map_lifts_agree_on_connected_domain E Te B Tb p
+  E Te p h1 h2 e0 Hcov HconnE Hh1_lift Hh2_lift He0E Heq0).
+Qed.
+
 (** Helper: CTG members are injective **)
 (** Proven Alice **)
 Theorem covering_transformation_group_injective :
