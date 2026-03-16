@@ -409333,6 +409333,66 @@ apply iffI.
   exact (orbit_space_empty_of_X_empty X G HXEmpty).
 Qed.
 
+(** Helper: nonempty X gives nonempty orbit_space (no extra assumptions) **)
+(** Proven Bob **)
+Theorem orbit_space_nonempty_of_X_nonempty : forall X G:set,
+  X <> Empty ->
+  orbit_space X G <> Empty.
+let X G.
+assume HXne.
+apply (nonempty_has_element X HXne).
+let x. assume HxX.
+exact (elem_implies_nonempty
+  (orbit_space X G)
+  (apply_fun (orbit_map X G) x)
+  (orbit_map_value_in_orbit_space X G x HxX)).
+Qed.
+
+(** Helper: with identity action, nonempty orbit_space implies nonempty X **)
+(** Proven Bob **)
+Theorem X_nonempty_of_orbit_space_nonempty_with_identity : forall X G idG:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  orbit_space X G <> Empty ->
+  X <> Empty.
+let X G idG.
+assume HidG HidAct HOSne.
+assume HXempty.
+exact (HOSne (orbit_space_empty_of_X_empty X G HXempty)).
+Qed.
+
+(** Helper: with identity action, orbit_space is nonempty iff X is nonempty **)
+(** Proven Bob **)
+Theorem orbit_space_nonempty_iff_X_nonempty_with_identity : forall X G idG:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  (orbit_space X G <> Empty <-> X <> Empty).
+let X G idG.
+assume HidG HidAct.
+apply iffI.
+- assume HOSne.
+  exact (X_nonempty_of_orbit_space_nonempty_with_identity
+    X G idG HidG HidAct HOSne).
+- assume HXne.
+  exact (orbit_space_nonempty_of_X_nonempty X G HXne).
+Qed.
+
+(** Helper: with identity action, every orbit-space class is nonempty as a set **)
+(** Proven Bob **)
+Theorem orbit_space_class_ne_empty_with_identity : forall X G idG cls:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  cls :e orbit_space X G ->
+  cls <> Empty.
+let X G idG cls.
+assume HidG HidAct HclsOS.
+claim Hex : exists x:set, x :e cls.
+{ exact (orbit_space_class_nonempty_with_identity X G idG cls HidG HidAct HclsOS). }
+apply Hex.
+let x. assume Hxcls.
+exact (elem_implies_nonempty cls x Hxcls).
+Qed.
+
 (** Helper: orbit_map is function_on without extra assumptions on G **)
 (** Proven Bob **)
 Theorem orbit_map_function_on_plain : forall X G:set,
