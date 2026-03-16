@@ -409768,6 +409768,33 @@ apply iffI.
   exact (orbit_class_eq_of_orbit_equiv X G x y Hxy Hcomp Hinv).
 Qed.
 
+(** Helper: orbit_map equality iff mutual orbit equivalence **)
+(** Proven Bob **)
+Theorem orbit_map_eq_iff_orbit_equiv_both : forall X G idG x y:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  x :e X -> y :e X ->
+  (apply_fun (orbit_map X G) x = apply_fun (orbit_map X G) y
+   <->
+   orbit_equiv X G x y /\ orbit_equiv X G y x).
+let X G idG x y.
+assume HidG HidAct Hcomp Hinv HxX HyX.
+apply iffI.
+- assume HmapEq.
+  exact (orbit_map_eq_implies_orbit_equiv_both
+    X G x y idG HidG HidAct HxX HyX HmapEq).
+- assume Hboth.
+  claim Hxy : orbit_equiv X G x y.
+  { exact (andEL (orbit_equiv X G x y) (orbit_equiv X G y x) Hboth). }
+  exact (orbit_map_eq_of_orbit_equiv X G x y Hxy Hcomp Hinv).
+Qed.
+
 (** Helper: x is in its own orbit **)
 Theorem orbit_self_mem : forall X G idG x:set,
   idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
