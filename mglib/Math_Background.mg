@@ -413899,9 +413899,407 @@ claim Hsame_fiber_same_orbit :
 {
   let x1 x2.
   assume Hx1X Hx2X Hpx.
-  (** Remaining regular-covering bridge:
-      transitivity on the base fiber (Htrans_base) must be transported to an arbitrary fiber. **)
-  admit.
+  apply (path_connected_space_paths X Tx x1 e0 Hpc Hx1X He0X).
+  let alpha.
+  assume HalphaPack.
+  claim Halpha_between : path_between X x1 e0 alpha.
+  {
+    exact (andEL
+      (path_between X x1 e0 alpha)
+      (continuous_map unit_interval unit_interval_topology X Tx alpha)
+      HalphaPack).
+  }
+  claim Halpha_cont : continuous_map unit_interval unit_interval_topology X Tx alpha.
+  {
+    exact (andER
+      (path_between X x1 e0 alpha)
+      (continuous_map unit_interval unit_interval_topology X Tx alpha)
+      HalphaPack).
+  }
+  claim Halpha0 : apply_fun alpha 0 = x1.
+  {
+    exact (path_between_at_zero X x1 e0 alpha Halpha_between).
+  }
+  claim Halpha1 : apply_fun alpha 1 = e0.
+  {
+    exact (path_between_at_one X x1 e0 alpha Halpha_between).
+  }
+  claim Hcont_p : continuous_map X Tx B Tb p.
+  { exact (covering_map_continuous X Tx B Tb p Hcov). }
+  set f := compose_fun unit_interval alpha p.
+  claim Hf_cont : continuous_map unit_interval unit_interval_topology B Tb f.
+  {
+    exact (composition_continuous
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      B
+      Tb
+      alpha
+      p
+      Halpha_cont
+      Hcont_p).
+  }
+  claim Hf0 : apply_fun f 0 = apply_fun p x1.
+  {
+    rewrite (compose_fun_apply unit_interval alpha p 0 zero_in_unit_interval).
+    rewrite Halpha0.
+    reflexivity.
+  }
+  claim Hf1 : apply_fun f 1 = apply_fun p e0.
+  {
+    rewrite (compose_fun_apply unit_interval alpha p 1 one_in_unit_interval).
+    rewrite Halpha1.
+    reflexivity.
+  }
+  claim Hf0x2 : apply_fun f 0 = apply_fun p x2.
+  {
+    rewrite Hf0.
+    exact Hpx.
+  }
+  claim Hx2_start_f : apply_fun p x2 = apply_fun f 0.
+  {
+    exact (eq_symm (apply_fun f 0) (apply_fun p x2) Hf0x2).
+  }
+  set g := reverse_path f.
+  claim Hg_cont : continuous_map unit_interval unit_interval_topology B Tb g.
+  {
+    exact (reverse_path_continuous B Tb f Hf_cont).
+  }
+  claim Hg0 : apply_fun g 0 = apply_fun p e0.
+  {
+    rewrite (reverse_path_at_zero f).
+    exact Hf1.
+  }
+  claim He0_start_g : apply_fun p e0 = apply_fun g 0.
+  {
+    exact (eq_symm (apply_fun g 0) (apply_fun p e0) Hg0).
+  }
+  set lf2 := path_lift X Tx B Tb p x2 f.
+  set e2 := apply_fun lf2 1.
+  claim Hlf2_pack :
+    (continuous_map unit_interval unit_interval_topology X Tx lf2 /\ apply_fun lf2 0 = x2) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun lf2 t) = apply_fun f t).
+  {
+    exact (lemma54_1_path_lifting
+      X
+      Tx
+      B
+      Tb
+      p
+      x2
+      f
+      Hcov
+      Hx2X
+      Hx2_start_f
+      Hf_cont).
+  }
+  claim Hlf2_cont : continuous_map unit_interval unit_interval_topology X Tx lf2.
+  {
+    exact (andEL
+      (continuous_map unit_interval unit_interval_topology X Tx lf2)
+      (apply_fun lf2 0 = x2)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology X Tx lf2 /\ apply_fun lf2 0 = x2)
+        (forall t:set, t :e unit_interval ->
+          apply_fun p (apply_fun lf2 t) = apply_fun f t)
+        Hlf2_pack)).
+  }
+  claim Hlf2_fun : function_on lf2 unit_interval X.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      lf2
+      Hlf2_cont).
+  }
+  claim He2X : e2 :e X.
+  {
+    exact (Hlf2_fun 1 one_in_unit_interval).
+  }
+  claim Hlf2_comm : forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun lf2 t) = apply_fun f t.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology X Tx lf2 /\ apply_fun lf2 0 = x2)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun lf2 t) = apply_fun f t)
+      Hlf2_pack).
+  }
+  claim Hpe2 : apply_fun p e2 = apply_fun p e0.
+  {
+    rewrite (Hlf2_comm 1 one_in_unit_interval).
+    exact Hf1.
+  }
+  claim Hlg_e2_end : apply_fun (path_lift X Tx B Tb p e2 g) 1 = x2.
+  {
+    exact (path_lift_reverse_endpoint
+      X
+      Tx
+      B
+      Tb
+      p
+      x2
+      f
+      Hcov
+      Hx2X
+      Hf_cont
+      Hx2_start_f).
+  }
+  set lg0 := path_lift X Tx B Tb p e0 g.
+  claim Hlg0_pack :
+    (continuous_map unit_interval unit_interval_topology X Tx lg0 /\ apply_fun lg0 0 = e0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun lg0 t) = apply_fun g t).
+  {
+    exact (lemma54_1_path_lifting
+      X
+      Tx
+      B
+      Tb
+      p
+      e0
+      g
+      Hcov
+      He0X
+      He0_start_g
+      Hg_cont).
+  }
+  claim Hlg0_cont : continuous_map unit_interval unit_interval_topology X Tx lg0.
+  {
+    exact (andEL
+      (continuous_map unit_interval unit_interval_topology X Tx lg0)
+      (apply_fun lg0 0 = e0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology X Tx lg0 /\ apply_fun lg0 0 = e0)
+        (forall t:set, t :e unit_interval ->
+          apply_fun p (apply_fun lg0 t) = apply_fun g t)
+        Hlg0_pack)).
+  }
+  claim Hlg0_0 : apply_fun lg0 0 = e0.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology X Tx lg0)
+      (apply_fun lg0 0 = e0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology X Tx lg0 /\ apply_fun lg0 0 = e0)
+        (forall t:set, t :e unit_interval ->
+          apply_fun p (apply_fun lg0 t) = apply_fun g t)
+        Hlg0_pack)).
+  }
+  claim Hlg0_comm : forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun lg0 t) = apply_fun g t.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology X Tx lg0 /\ apply_fun lg0 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun lg0 t) = apply_fun g t)
+      Hlg0_pack).
+  }
+  claim Hlg0_lifting :
+    lifting_of unit_interval unit_interval_topology X Tx B Tb p g lg0.
+  {
+    prove continuous_map unit_interval unit_interval_topology X Tx lg0 /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun lg0 t) = apply_fun g t).
+    exact (andI
+      (continuous_map unit_interval unit_interval_topology X Tx lg0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun lg0 t) = apply_fun g t)
+      Hlg0_cont
+      Hlg0_comm).
+  }
+  claim Hrev_alpha_cont :
+    continuous_map unit_interval unit_interval_topology X Tx (reverse_path alpha).
+  {
+    exact (reverse_path_continuous X Tx alpha Halpha_cont).
+  }
+  claim Hrev_alpha0 : apply_fun (reverse_path alpha) 0 = e0.
+  {
+    rewrite (reverse_path_at_zero alpha).
+    exact Halpha1.
+  }
+  claim Hrev_alpha1 : apply_fun (reverse_path alpha) 1 = x1.
+  {
+    rewrite (reverse_path_at_one alpha).
+    exact Halpha0.
+  }
+  claim Hrev_alpha_comm :
+    forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (reverse_path alpha) t) = apply_fun g t.
+  {
+    let t. assume HtI.
+    rewrite (reverse_path_apply alpha t HtI).
+    rewrite (reverse_path_apply f t HtI).
+    claim HflipI : apply_fun flip_unit_interval t :e unit_interval.
+    { exact (flip_unit_interval_function_on t HtI). }
+    rewrite (compose_fun_apply unit_interval alpha p (apply_fun flip_unit_interval t) HflipI).
+    reflexivity.
+  }
+  claim Hrev_alpha_lifting :
+    lifting_of unit_interval unit_interval_topology X Tx B Tb p g (reverse_path alpha).
+  {
+    prove continuous_map unit_interval unit_interval_topology X Tx (reverse_path alpha) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (reverse_path alpha) t) = apply_fun g t).
+    exact (andI
+      (continuous_map unit_interval unit_interval_topology X Tx (reverse_path alpha))
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (reverse_path alpha) t) = apply_fun g t)
+      Hrev_alpha_cont
+      Hrev_alpha_comm).
+  }
+  claim Hlg0_eq_rev_alpha_1 :
+    apply_fun lg0 1 = apply_fun (reverse_path alpha) 1.
+  {
+    exact (lemma54_1_path_lifting_unique
+      X
+      Tx
+      B
+      Tb
+      p
+      e0
+      g
+      lg0
+      (reverse_path alpha)
+      Hcov
+      He0X
+      Hg_cont
+      Hlg0_lifting
+      Hlg0_0
+      Hrev_alpha_lifting
+      Hrev_alpha0
+      1
+      one_in_unit_interval).
+  }
+  claim Hlg0_1_x1 : apply_fun lg0 1 = x1.
+  {
+    rewrite Hlg0_eq_rev_alpha_1.
+    exact Hrev_alpha1.
+  }
+  claim Hh_ex :
+    exists h:set, covering_transformation X Tx B Tb p h /\ apply_fun h e0 = e2.
+  {
+    exact (Htrans_base
+      e0
+      e2
+      He0X
+      He2X
+      (eq_refl (apply_fun p e0))
+      Hpe2).
+  }
+  apply Hh_ex.
+  let h.
+  assume Hh_pack.
+  claim Hh_ct : covering_transformation X Tx B Tb p h.
+  {
+    exact (andEL
+      (covering_transformation X Tx B Tb p h)
+      (apply_fun h e0 = e2)
+      Hh_pack).
+  }
+  claim Hh_e0 : apply_fun h e0 = e2.
+  {
+    exact (andER
+      (covering_transformation X Tx B Tb p h)
+      (apply_fun h e0 = e2)
+      Hh_pack).
+  }
+  claim Hh_homeo : homeomorphism X Tx X Tx h.
+  {
+    exact (andEL
+      (homeomorphism X Tx X Tx h)
+      (forall x:set, x :e X -> apply_fun p (apply_fun h x) = apply_fun p x)
+      Hh_ct).
+  }
+  claim Hh_cont : continuous_map X Tx X Tx h.
+  { exact (homeomorphism_continuous X Tx X Tx h Hh_homeo). }
+  claim Hh_fs : h :e function_space X X.
+  {
+    exact (total_function_space_sub_function_space
+      X
+      X
+      h
+      (continuous_map_in_total_function_space_plain X Tx X Tx h Hh_cont)).
+  }
+  claim HhG : h :e G.
+  {
+    exact (SepI
+      (function_space X X)
+      (fun h0:set => covering_transformation X Tx B Tb p h0)
+      h
+      Hh_fs
+      Hh_ct).
+  }
+  claim Htransport_1 :
+    apply_fun (path_lift X Tx B Tb p (apply_fun h e0) g) 1 =
+    apply_fun h (apply_fun (path_lift X Tx B Tb p e0 g) 1).
+  {
+    exact (covering_transformation_path_lift_transport
+      X
+      Tx
+      B
+      Tb
+      p
+      e0
+      g
+      h
+      Hcov
+      He0X
+      Hg_cont
+      Hh_ct
+      He0_start_g
+      1
+      one_in_unit_interval).
+  }
+  claim Hh_lg0_1 : apply_fun h (apply_fun lg0 1) = x2.
+  {
+    claim Hleft_x2 :
+      apply_fun (path_lift X Tx B Tb p (apply_fun h e0) g) 1 = x2.
+    {
+      rewrite Hh_e0.
+      exact Hlg_e2_end.
+    }
+    exact (eq_i_tra
+      (apply_fun h (apply_fun lg0 1))
+      (apply_fun (path_lift X Tx B Tb p (apply_fun h e0) g) 1)
+      x2
+      (eq_symm
+        (apply_fun (path_lift X Tx B Tb p (apply_fun h e0) g) 1)
+        (apply_fun h (apply_fun lg0 1))
+        Htransport_1)
+      Hleft_x2).
+  }
+  claim Hhx1 : apply_fun h x1 = x2.
+  {
+    rewrite <- Hlg0_1_x1.
+    exact Hh_lg0_1.
+  }
+  claim Hpi_invar :
+    apply_fun pi (apply_fun h x1) = apply_fun pi x1.
+  {
+    exact (covering_transformation_group_orbit_map_invariant
+      X
+      Tx
+      B
+      Tb
+      p
+      h
+      x1
+      Hcov
+      HhG
+      Hx1X).
+  }
+  claim Hpi_x2_x1 : apply_fun pi x2 = apply_fun pi x1.
+  {
+    rewrite <- Hhx1.
+    exact Hpi_invar.
+  }
+  exact (eq_symm (apply_fun pi x2) (apply_fun pi x1) Hpi_x2_x1).
 }
 claim Hk_inj :
   forall cls1 cls2:set, cls1 :e OS -> cls2 :e OS ->
