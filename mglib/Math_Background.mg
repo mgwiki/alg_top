@@ -123159,6 +123159,47 @@ claim HevV' : evenly_covered E Te B Tb p V'.
 witness V'. apply and4I. exact HV'Tb. exact HbV'. exact HpcV'. exact HevV'.
 Qed.
 
+(** Helper: path-connected evenly covered slices in one shot **)
+(** Proven Alice **)
+Theorem covering_map_path_connected_evenly_covered_slices :
+  forall E Te B Tb p b:set,
+  covering_map E Te B Tb p ->
+  locally_path_connected E Te ->
+  b :e B ->
+  exists V slices:set,
+    V :e Tb /\ b :e V /\
+    path_connected_space V (subspace_topology B Tb V) /\
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p V /\
+    (forall S0:set, S0 :e slices ->
+      homeomorphism S0 (subspace_topology E Te S0) V (subspace_topology B Tb V)
+        (graph S0 (fun x:set => apply_fun p x))).
+let E Te B Tb p b. assume Hcov Hlpc HbB.
+apply (covering_map_path_connected_evenly_covered E Te B Tb p b Hcov Hlpc HbB).
+let V. assume HVpack.
+apply (and4E (V :e Tb) (b :e V) (path_connected_space V (subspace_topology B Tb V))
+  (evenly_covered E Te B Tb p V) HVpack).
+assume HVTb HbV HpcV HevV.
+apply (evenly_covered_slices E Te B Tb p V HevV).
+let slices. assume Hslices.
+apply (and4E
+  (slices c= Te) (pairwise_disjoint slices) (Union slices = preimage_of E p V)
+  (forall S0:set, S0 :e slices ->
+    homeomorphism S0 (subspace_topology E Te S0) V (subspace_topology B Tb V)
+      (graph S0 (fun x:set => apply_fun p x)))
+  Hslices).
+assume HsOpen HsPD HsUnion HsHomeo.
+witness V. witness slices.
+apply (and7I
+  (V :e Tb) (b :e V) (path_connected_space V (subspace_topology B Tb V))
+  (slices c= Te) (pairwise_disjoint slices) (Union slices = preimage_of E p V)
+  (forall S0:set, S0 :e slices ->
+    homeomorphism S0 (subspace_topology E Te S0) V (subspace_topology B Tb V)
+      (graph S0 (fun x:set => apply_fun p x)))).
+exact HVTb. exact HbV. exact HpcV. exact HsOpen. exact HsPD. exact HsUnion. exact HsHomeo.
+Qed.
+
 (** Infrastructure: intersections with open sets are open in subspace **)
 (** Proven Bob **)
 Lemma subspace_topology_intersection_open : forall X Tx Y V:set,
