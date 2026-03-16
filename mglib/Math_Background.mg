@@ -411171,7 +411171,19 @@ witness k. apply andI.
       witness (apply_fun pi x). apply andI.
       - exact (Hpi_fn x HxX).
       - rewrite (Hk_factors x HxX). exact Hpx.
-  + (** evenly covered: hardest part, uses p's slices grouped by G-orbits **)
+  + (** evenly covered: for each b :e B, find U :e Tb with b :e U and evenly_covered **)
+    let b. assume HbB.
+    (** Step 1: get evenly covered V for p around b **)
+    apply (covering_map_evenly_covered_slices X Tx B Tb p b Hcov HbB).
+    let V. assume Hev_inner. apply Hev_inner. let slices_p. assume Hslices_p.
+    (** slices_p are the slices of p^{-1}(V) **)
+    (** Step 2: G permutes slices_p (covering transformations map slices to slices) **)
+    (** Step 3: The images pi(S_alpha) for S_alpha :e slices_p give slices for k **)
+    (** Step 4: For different G-orbits of slices, pi(S) are disjoint **)
+    (** Step 5: Each pi(S) maps homeomorphically to V via k **)
+    (** This requires the properly_discontinuous action of G (ex81_3a) **)
+    (** and the orbit space quotient map structure. **)
+    (** Full construction is ~200 lines; admitting for now. **)
     admit.
 - exact Hk_factors.
 Admitted.
