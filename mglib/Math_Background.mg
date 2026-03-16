@@ -190923,6 +190923,94 @@ apply andI.
 - exact s55_S1_inv_fun_graph_two_cycle_witness.
 Qed.
 
+(** S55 helper: there exists a two-cycle fixed-point-free non-identity self-homeomorphism of S1. **)
+(** Proven Bob **)
+Theorem s55_exists_two_cycle_fixed_point_free_nonidentity_homeomorphism_S1 :
+  exists f:set,
+    ((homeomorphism S1 S1_topology S1 S1_topology f /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+      f <> graph S1 (fun x:set => x)) /\
+    (exists x:set, exists y:set,
+      ((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun f x = y /\
+      apply_fun f y = x).
+apply s55_exists_two_cycle_fixed_point_free_homeomorphism_S1.
+let f.
+assume Hpack.
+witness f.
+claim HhomeoNoFix :
+  homeomorphism S1 S1_topology S1 S1_topology f /\
+  (forall x:set, x :e S1 -> ~(apply_fun f x = x)).
+{
+  exact (andEL
+    (homeomorphism S1 S1_topology S1 S1_topology f /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+    (exists x:set, exists y:set,
+      ((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun f x = y /\
+      apply_fun f y = x)
+    Hpack).
+}
+claim Hcycle :
+  exists x:set, exists y:set,
+    ((x :e S1 /\ y :e S1) /\ x <> y) /\
+    apply_fun f x = y /\
+    apply_fun f y = x.
+{
+  exact (andER
+    (homeomorphism S1 S1_topology S1 S1_topology f /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+    (exists x:set, exists y:set,
+      ((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun f x = y /\
+      apply_fun f y = x)
+    Hpack).
+}
+apply andI.
+- apply andI.
+  + exact HhomeoNoFix.
+  + exact (s55_two_cycle_witness_implies_nonidentity_graph_S1
+      f
+      Hcycle).
+- exact Hcycle.
+Qed.
+
+(** S55 helper: a two-cycle fixed-point-free S1-homeomorphism witness implies no retraction B2 -> S1. **)
+(** Proven Bob **)
+Theorem s55_exists_two_cycle_fixed_point_free_homeomorphism_S1_implies_no_retraction_B2_S1 :
+  (exists f:set,
+    (homeomorphism S1 S1_topology S1 S1_topology f /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    (exists x:set, exists y:set,
+      ((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun f x = y /\
+      apply_fun f y = x))
+  ->
+  ~(retraction_of B2 B2_topology S1).
+assume Hexists.
+apply s55_exists_fixed_point_free_homeomorphism_S1_implies_no_retraction_B2_S1.
+apply Hexists.
+let f.
+assume Hpack.
+witness f.
+exact (andEL
+  (homeomorphism S1 S1_topology S1 S1_topology f /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+  (exists x:set, exists y:set,
+    ((x :e S1 /\ y :e S1) /\ x <> y) /\
+    apply_fun f x = y /\
+    apply_fun f y = x)
+  Hpack).
+Qed.
+
+(** S55 helper: the explicit two-cycle fixed-point-free self-homeomorphism witness yields no retraction B2 -> S1. **)
+(** Proven Bob **)
+Theorem s55_no_retraction_B2_S1_from_two_cycle_fixed_point_free_homeomorphism :
+  ~(retraction_of B2 B2_topology S1).
+exact (s55_exists_two_cycle_fixed_point_free_homeomorphism_S1_implies_no_retraction_B2_S1
+  s55_exists_two_cycle_fixed_point_free_homeomorphism_S1).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
