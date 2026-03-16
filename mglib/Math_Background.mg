@@ -411203,15 +411203,43 @@ witness k. apply andI.
     (** Step 1: get evenly covered V for p around b **)
     apply (covering_map_evenly_covered_slices X Tx B Tb p b Hcov HbB).
     let V. assume Hev_inner. apply Hev_inner. let slices_p. assume Hslices_p.
-    (** slices_p are the slices of p^{-1}(V) **)
-    (** Step 2: G permutes slices_p (covering transformations map slices to slices) **)
-    (** Step 3: The images pi(S_alpha) for S_alpha :e slices_p give slices for k **)
-    (** Step 4: For different G-orbits of slices, pi(S) are disjoint **)
-    (** Step 5: Each pi(S) maps homeomorphically to V via k **)
-    (** This requires the properly_discontinuous action of G (ex81_3a) **)
-    (** and the orbit space quotient map structure. **)
-    (** Full construction is ~200 lines; admitting for now. **)
-    admit.
+    (** Extract slices data **)
+    apply (and6E
+      (V :e Tb) (b :e V)
+      (slices_p c= Tx)
+      (pairwise_disjoint slices_p)
+      (Union slices_p = preimage_of X p V)
+      (forall S0:set, S0 :e slices_p ->
+        homeomorphism S0 (subspace_topology X Tx S0) V (subspace_topology B Tb V)
+          (graph S0 (fun x0:set => apply_fun p x0)))
+      Hslices_p).
+    assume HVTb HbV Hslices_sub_Tx Hpd_slices Hunion_slices Hhomeo_slices.
+    (** Construct slices for k: slices_k = {image_of pi S | S :e slices_p} **)
+    set slices_k := {image_of pi S | S :e slices_p}.
+    (** The witness V for evenly covered by k, with slices slices_k **)
+    witness V.
+    apply and3I.
+    + exact HVTb.
+    + exact HbV.
+    + (** evenly_covered OS OT B Tb k V **)
+      prove topology_on OS OT /\ V :e Tb /\
+        exists slices0:set, slices0 c= OT /\ pairwise_disjoint slices0 /\
+          Union slices0 = preimage_of OS k V /\
+          (forall W:set, W :e slices0 ->
+            homeomorphism W (subspace_topology OS OT W) V (subspace_topology B Tb V)
+              (graph W (fun cls:set => apply_fun k cls))).
+      claim HtopOT2 : topology_on OS OT.
+      { exact (orbit_topology_is_topology X Tx G HtopX
+          (fun g HgG => continuous_map_function_on X Tx X Tx g
+            (covering_transformation_group_continuous X Tx B Tb p g HgG))). }
+      apply andI. { apply andI. exact HtopOT2. exact HVTb. } (** Construct the evenly covered structure using slices_k **)
+           (** This requires: **)
+           (** 1. slices_k c= OT (each pi(S) is open in orbit topology) **)
+           (** 2. pairwise_disjoint slices_k **)
+           (** 3. Union slices_k = preimage_of OS k V **)
+           (** 4. each pi(S) homeomorphic to V via k **)
+           (** Each step requires the orbit space structure + CT group properties **)
+           admit.
 - exact Hk_factors.
 Admitted.
 
