@@ -409744,6 +409744,39 @@ apply set_ext.
 - exact Hunion_sub_pre.
 Qed.
 
+(** Helper: the preimage of an orbit_map-image is open under invariant open-action data **)
+(** Proven Bob **)
+Theorem orbit_map_preimage_image_open_of_invariant_open_action :
+  forall X Tx G idG U0:set,
+  topology_on X Tx ->
+  idG :e G ->
+  (forall x:set, x :e X -> apply_fun idG x = x) ->
+  (forall g:set, g :e G -> function_on g X X) ->
+  (forall g U:set, g :e G -> U :e Tx -> image_of g U :e Tx) ->
+  (forall g x:set, g :e G -> x :e X ->
+    apply_fun (orbit_map X G) (apply_fun g x) = apply_fun (orbit_map X G) x) ->
+  U0 :e Tx ->
+  preimage_of X (orbit_map X G) (image_of (orbit_map X G) U0) :e Tx.
+let X Tx G idG U0.
+assume HtopX HidG HidAct Hfn HopenAct HpiInv HU0.
+claim HU0sub : U0 c= X.
+{ exact (topology_elem_subset X Tx U0 HtopX HU0). }
+claim HpreEq :
+  preimage_of X (orbit_map X G) (image_of (orbit_map X G) U0) =
+  Union (Repl G (fun g:set => image_of g U0)).
+{
+  exact (orbit_map_preimage_image_eq_action_union
+    X G idG U0 HidG HidAct HU0sub Hfn HpiInv).
+}
+rewrite HpreEq.
+apply (topology_union_closed X Tx (Repl G (fun g:set => image_of g U0)) HtopX).
+let V. assume HV.
+apply (ReplE_impred G (fun g:set => image_of g U0) V HV).
+let g. assume HgG HVeq.
+rewrite HVeq.
+exact (HopenAct g U0 HgG HU0).
+Qed.
+
 (** Helper: orbit_map image of an open set is open under open action + orbit invariance **)
 (** Proven Bob **)
 Theorem orbit_map_open_of_invariant_open_action :
@@ -410585,6 +410618,44 @@ apply set_ext.
   witness m. apply andI. exact HmG.
   rewrite (Hmact (apply_fun g x) HgxX).
   rewrite (Hginvact x HxX). exact Hkx.
+Qed.
+
+(** Helper: preimage of orbit_map-image is open from homeomorphism action + group data **)
+(** Proven Bob **)
+Theorem orbit_map_preimage_image_open_with_group_data :
+  forall X Tx G idG U0:set,
+  topology_on X Tx ->
+  (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
+  idG :e G ->
+  (forall x:set, x :e X -> apply_fun idG x = x) ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  U0 :e Tx ->
+  preimage_of X (orbit_map X G) (image_of (orbit_map X G) U0) :e Tx.
+let X Tx G idG U0.
+assume HtopX Hhomeo HidG HidAct Hcomp Hinv HU0.
+claim Hfn : forall g:set, g :e G -> function_on g X X.
+{
+  let g. assume HgG.
+  exact (homeomorphism_function_on X Tx X Tx g (Hhomeo g HgG)).
+}
+claim HopenAct : forall g U:set, g :e G -> U :e Tx -> image_of g U :e Tx.
+{
+  let g U. assume HgG HUTx.
+  exact (homeomorphism_image_open X Tx X Tx g U (Hhomeo g HgG) HUTx).
+}
+claim HpiInv : forall g x:set, g :e G -> x :e X ->
+  apply_fun (orbit_map X G) (apply_fun g x) = apply_fun (orbit_map X G) x.
+{
+  let g x. assume HgG HxX.
+  exact (orbit_map_invariant X G g x HgG Hfn Hcomp Hinv HxX).
+}
+exact (orbit_map_preimage_image_open_of_invariant_open_action
+  X Tx G idG U0 HtopX HidG HidAct Hfn HopenAct HpiInv HU0).
 Qed.
 
 (** Helper: orbit_map image open from homeomorphism action + composition/inverse data **)
