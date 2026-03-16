@@ -409393,6 +409393,20 @@ exact (quotient_universal_property
   (Subq_ref (orbit_topology X Tx G))).
 Qed.
 
+(** Helper: orbit_map is an open map when G acts by homeomorphisms **)
+Theorem orbit_map_open :
+  forall X Tx G:set,
+  topology_on X Tx ->
+  (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
+  forall U0:set, U0 :e Tx ->
+    image_of (orbit_map X G) U0 :e orbit_topology X Tx G.
+let X Tx G. assume HtopX Hhomeo.
+let U0. assume HU0Tx.
+(** pi(U0) is open in OT iff preimage_of X pi (pi(U0)) :e Tx **)
+(** preimage_of X pi (pi(U0)) = Union {g(U0) | g :e G} is open **)
+admit.
+Admitted.
+
 (** Helper: orbit equivalence is reflexive when idG in G **)
 Theorem orbit_equiv_refl : forall X G idG x:set,
   idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
