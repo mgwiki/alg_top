@@ -409539,6 +409539,50 @@ apply andI.
     HxInX).
 Qed.
 
+(** Helper: equal orbit_map values imply orbit equivalence both ways **)
+(** Proven Bob **)
+Theorem orbit_map_eq_implies_orbit_equiv_both : forall X G x y idG:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  x :e X -> y :e X ->
+  apply_fun (orbit_map X G) x = apply_fun (orbit_map X G) y ->
+  orbit_equiv X G x y /\ orbit_equiv X G y x.
+let X G x y idG.
+assume HidG HidAct HxX HyX Heq.
+claim HmemBoth :
+  y :e apply_fun (orbit_map X G) x /\ x :e apply_fun (orbit_map X G) y.
+{
+  exact (orbit_map_eq_implies_mutual_membership
+    X
+    G
+    x
+    y
+    idG
+    HidG
+    HidAct
+    HxX
+    HyX
+    Heq).
+}
+apply andI.
+- exact ((iffEL
+    (y :e apply_fun (orbit_map X G) x)
+    (orbit_equiv X G x y)
+    (orbit_map_mem_iff_orbit_equiv X G x y HxX))
+    (andEL
+      (y :e apply_fun (orbit_map X G) x)
+      (x :e apply_fun (orbit_map X G) y)
+      HmemBoth)).
+- exact ((iffEL
+    (x :e apply_fun (orbit_map X G) y)
+    (orbit_equiv X G y x)
+    (orbit_map_mem_iff_orbit_equiv X G y x HyX))
+    (andER
+      (y :e apply_fun (orbit_map X G) x)
+      (x :e apply_fun (orbit_map X G) y)
+      HmemBoth)).
+Qed.
+
 (** Helper: equality of orbit_map values implies orbit equivalence **)
 (** Proven Bob **)
 Theorem orbit_map_eq_implies_orbit_equiv : forall X G idG x y:set,
