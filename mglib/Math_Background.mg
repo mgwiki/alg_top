@@ -189584,6 +189584,152 @@ apply andI.
       HyS1).
 Qed.
 
+(** S55 helper: antipode followed by its inverse-graph is identity graph on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_compose_inv_fun_graph_eq_id_graph :
+  compose_fun S1 s55_S1_antipode_map
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+  =
+  graph S1 (fun x:set => x).
+claim HantiFun :
+  function_on s55_S1_antipode_map S1 S1.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    S1
+    S1_topology
+    s55_S1_antipode_map
+    s55_S1_antipode_map_continuous).
+}
+claim HinvFun :
+  function_on (inv_fun_graph S1 s55_S1_antipode_map S1) S1 S1.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    S1
+    S1_topology
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    s55_S1_inv_fun_graph_continuous).
+}
+apply (total_function_space_extensional
+  S1
+  S1
+  (compose_fun S1 s55_S1_antipode_map
+    (inv_fun_graph S1 s55_S1_antipode_map S1))
+  (graph S1 (fun x:set => x))).
+- exact (compose_fun_in_total_function_space
+    S1
+    S1
+    S1
+    s55_S1_antipode_map
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    HantiFun
+    HinvFun).
+- exact (graph_in_total_function_space
+    S1
+    S1
+    (fun x:set => x)
+    (fun x Hx => Hx)).
+- let x.
+  assume HxS1.
+  rewrite (apply_fun_graph
+    S1
+    (fun z:set => z)
+    x
+    HxS1).
+  exact (s55_S1_antipode_map_compose_inv_fun_graph_apply_eq
+    x
+    HxS1).
+Qed.
+
+(** S55 helper: inverse-graph followed by antipode is identity graph on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_compose_antipode_map_eq_id_graph :
+  compose_fun S1 (inv_fun_graph S1 s55_S1_antipode_map S1)
+    s55_S1_antipode_map
+  =
+  graph S1 (fun x:set => x).
+claim HantiFun :
+  function_on s55_S1_antipode_map S1 S1.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    S1
+    S1_topology
+    s55_S1_antipode_map
+    s55_S1_antipode_map_continuous).
+}
+claim HinvFun :
+  function_on (inv_fun_graph S1 s55_S1_antipode_map S1) S1 S1.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    S1
+    S1_topology
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    s55_S1_inv_fun_graph_continuous).
+}
+apply (total_function_space_extensional
+  S1
+  S1
+  (compose_fun S1 (inv_fun_graph S1 s55_S1_antipode_map S1)
+    s55_S1_antipode_map)
+  (graph S1 (fun x:set => x))).
+- exact (compose_fun_in_total_function_space
+    S1
+    S1
+    S1
+    (inv_fun_graph S1 s55_S1_antipode_map S1)
+    s55_S1_antipode_map
+    HinvFun
+    HantiFun).
+- exact (graph_in_total_function_space
+    S1
+    S1
+    (fun x:set => x)
+    (fun x Hx => Hx)).
+- let x.
+  assume HxS1.
+  rewrite (apply_fun_graph
+    S1
+    (fun z:set => z)
+    x
+    HxS1).
+  exact (s55_S1_inv_fun_graph_compose_antipode_map_apply_eq
+    x
+    HxS1).
+Qed.
+
+(** S55 helper: inverse-graph map is not identity graph on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_ne_id_graph :
+  inv_fun_graph S1 s55_S1_antipode_map S1
+  <>
+  graph S1 (fun x:set => x).
+assume HinvEqId.
+claim HbaseEq :
+  apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) S1_basepoint
+  =
+  S1_basepoint.
+{
+  rewrite HinvEqId.
+  rewrite (apply_fun_graph
+    S1
+    (fun x:set => x)
+    S1_basepoint
+    S1_basepoint_in_S1_early).
+  reflexivity.
+}
+exact (s55_S1_inv_fun_graph_fixed_point_free
+  S1_basepoint
+  S1_basepoint_in_S1_early
+  HbaseEq).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
