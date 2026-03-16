@@ -52023,6 +52023,23 @@ exact (add_SNo_0R (apply_fun sin_real x) HsinxSNo).
 Admitted.
 
 (** Covering map periodicity: shifting the real parameter by 1 leaves p unchanged. **)
+Theorem covering_map_R_S1_periodic_two_pi_core : forall t:set, t :e R ->
+  (apply_fun cos_real (add_SNo t two_pi),
+   apply_fun sin_real (add_SNo t two_pi))
+  =
+  (apply_fun cos_real t,
+   apply_fun sin_real t).
+let t.
+assume HtR.
+rewrite (cos_periodic
+  t
+  HtR).
+rewrite (sin_periodic
+  t
+  HtR).
+reflexivity.
+Admitted.
+
 Theorem covering_map_R_S1_period_one : forall x:set, x :e R ->
   apply_fun covering_map_R_S1 (add_SNo x 1) = apply_fun covering_map_R_S1 x.
 let x.
@@ -52079,10 +52096,7 @@ claim HgraphX :
 }
 rewrite HgraphShift.
 rewrite HmulShift.
-rewrite (cos_periodic
-  (mul_SNo two_pi x)
-  (real_mul_SNo two_pi two_pi_in_R x HxR)).
-rewrite (sin_periodic
+rewrite (covering_map_R_S1_periodic_two_pi_core
   (mul_SNo two_pi x)
   (real_mul_SNo two_pi two_pi_in_R x HxR)).
 exact (eq_symm
