@@ -411065,11 +411065,50 @@ witness k. apply andI.
     { exact (orbit_topology_is_topology X Tx G HtopX
         (fun g HgG => continuous_map_function_on X Tx X Tx g
           (covering_transformation_group_continuous X Tx B Tb p g HgG))). }
-    (** Show compose_fun X pi k is continuous **)
-    (** This requires showing its preimages are open in Tx **)
-    (** Since apply_fun (compose_fun X pi k) x = apply_fun p x, **)
-    (** the preimages are the same as p's preimages, which are open **)
-    admit.
+    (** Use s55_continuous_descends_to_quotient_topology **)
+    (** Need: continuous_map X Tx B Tb (compose_fun X pi k) **)
+    claim Hcomp_cont : continuous_map X Tx B Tb (compose_fun X pi k).
+    { prove topology_on X Tx /\ topology_on B Tb /\
+        function_on (compose_fun X pi k) X B /\
+        forall V0:set, V0 :e Tb -> preimage_of X (compose_fun X pi k) V0 :e Tx.
+      apply and4I.
+      - exact HtopX.
+      - exact HtopB.
+      - let x. assume HxX.
+        rewrite (compose_fun_apply X pi k x HxX).
+        exact (Hk_fn (apply_fun pi x) (Hpi_fn x HxX)).
+      - let V0. assume HV0.
+        claim Heq : preimage_of X (compose_fun X pi k) V0 = preimage_of X p V0.
+        { apply set_ext.
+          - let x. assume Hx.
+            claim HxX : x :e X. { exact (SepE1 X (fun z:set => apply_fun (compose_fun X pi k) z :e V0) x Hx). }
+            claim Hcomp_x : apply_fun (compose_fun X pi k) x :e V0.
+            { exact (SepE2 X (fun z:set => apply_fun (compose_fun X pi k) z :e V0) x Hx). }
+            claim Hcomp_eq : apply_fun (compose_fun X pi k) x = apply_fun p x.
+            { rewrite (compose_fun_apply X pi k x HxX). exact (Hk_factors x HxX). }
+            prove x :e {z :e X | apply_fun p z :e V0}.
+            apply (SepI X (fun z:set => apply_fun p z :e V0) x HxX).
+            prove apply_fun p x :e V0. rewrite <- Hcomp_eq. exact Hcomp_x.
+          - let x. assume Hx.
+            claim HxX : x :e X. { exact (SepE1 X (fun z:set => apply_fun p z :e V0) x Hx). }
+            claim Hp_x : apply_fun p x :e V0.
+            { exact (SepE2 X (fun z:set => apply_fun p z :e V0) x Hx). }
+            claim Hcomp_eq : apply_fun (compose_fun X pi k) x = apply_fun p x.
+            { rewrite (compose_fun_apply X pi k x HxX). exact (Hk_factors x HxX). }
+            prove x :e {z :e X | apply_fun (compose_fun X pi k) z :e V0}.
+            apply (SepI X (fun z:set => apply_fun (compose_fun X pi k) z :e V0) x HxX).
+            prove apply_fun (compose_fun X pi k) x :e V0. rewrite Hcomp_eq. exact Hp_x.
+        }
+        rewrite Heq.
+        claim Hp_preimage_open : forall V1:set, V1 :e Tb -> preimage_of X p V1 :e Tx.
+        { exact (andER
+            (topology_on X Tx /\ topology_on B Tb /\ function_on p X B)
+            (forall V1:set, V1 :e Tb -> preimage_of X p V1 :e Tx)
+            Hcont_p). }
+        exact (Hp_preimage_open V0 HV0). }
+    exact (s55_continuous_descends_to_quotient_topology
+      X Tx OS pi B Tb k
+      Hpi_fn Hk_fn Hcomp_cont HtopOT).
   + (** k is surjective: from p surjective **)
     prove function_on k OS B /\ forall b:set, b :e B -> exists cls:set, cls :e OS /\ apply_fun k cls = b.
     apply andI.
