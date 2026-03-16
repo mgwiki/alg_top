@@ -412849,6 +412849,86 @@ apply and3I.
     exact (Hno_fixed g HgG HgNeq y HyX Hgy_eq_y).
 Admitted.
 
+(** Helper: orbit_map restricted to a p-slice is injective when G = CTG **)
+(** Proven Alice **)
+Theorem orbit_map_injective_on_covering_slice :
+  forall E Te B Tb p S:set,
+  covering_map E Te B Tb p ->
+  forall V slices:set,
+    V :e Tb ->
+    slices c= Te ->
+    pairwise_disjoint slices ->
+    Union slices = preimage_of E p V ->
+    (forall S0:set, S0 :e slices ->
+      homeomorphism S0 (subspace_topology E Te S0) V (subspace_topology B Tb V)
+        (graph S0 (fun x:set => apply_fun p x))) ->
+    S :e slices ->
+    forall x1 x2:set, x1 :e S -> x2 :e S ->
+      apply_fun (orbit_map E (covering_transformation_group E Te B Tb p)) x1 =
+      apply_fun (orbit_map E (covering_transformation_group E Te B Tb p)) x2 ->
+      x1 = x2.
+let E Te B Tb p S. assume Hcov.
+let V slices.
+assume HVTb Hslices_open Hpd_slices Hunion Hhomeo.
+assume HSslice.
+let x1 x2. assume Hx1S Hx2S.
+assume Hpi_eq.
+set G := covering_transformation_group E Te B Tb p.
+set pi := orbit_map E G.
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HSopen : S :e Te. { exact (Hslices_open S HSslice). }
+claim HSsub : S c= E. { exact (topology_elem_subset E Te S HtopE HSopen). }
+claim Hx1E : x1 :e E. { exact (HSsub x1 Hx1S). }
+claim Hx2E : x2 :e E. { exact (HSsub x2 Hx2S). }
+(** pi(x1) = pi(x2) means x1 and x2 are orbit-equivalent **)
+(** So exists g :e G with g(x1) = x2 **)
+(** Then p(x2) = p(g(x1)) = p(x1) **)
+(** Since p|_S is injective (homeomorphism) and x1, x2 :e S: x1 = x2 **)
+claim Hhomeo_S : homeomorphism S (subspace_topology E Te S) V (subspace_topology B Tb V)
+  (graph S (fun x:set => apply_fun p x)).
+{ exact (Hhomeo S HSslice). }
+claim Hp_inj : forall y1 y2:set, y1 :e S -> y2 :e S ->
+  apply_fun p y1 = apply_fun p y2 -> y1 = y2.
+{ let y1 y2. assume Hy1 Hy2 Hpeq.
+  exact (homeomorphism_injective S (subspace_topology E Te S) V (subspace_topology B Tb V)
+    (graph S (fun x:set => apply_fun p x)) Hhomeo_S y1 y2 Hy1 Hy2
+    (eq_i_tra
+      (apply_fun (graph S (fun x:set => apply_fun p x)) y1)
+      (apply_fun p y1)
+      (apply_fun (graph S (fun x:set => apply_fun p x)) y2)
+      (apply_fun_graph S (fun x:set => apply_fun p x) y1 Hy1)
+      (eq_i_tra (apply_fun p y1) (apply_fun p y2)
+        (apply_fun (graph S (fun x:set => apply_fun p x)) y2) Hpeq
+        (eq_symm (apply_fun (graph S (fun x:set => apply_fun p x)) y2) (apply_fun p y2)
+          (apply_fun_graph S (fun x:set => apply_fun p x) y2 Hy2))))). }
+(** From pi(x1) = pi(x2), get orbit_equiv **)
+claim Hmut_pack : x2 :e apply_fun pi x1 /\ x1 :e apply_fun pi x2.
+{ exact (orbit_map_eq_implies_mutual_membership E G x1 x2
+    (covering_transformation_id E Te B Tb p)
+    (covering_transformation_id_in_group E Te B Tb p Hcov)
+    (fun z HzE => covering_transformation_id_apply E Te B Tb p z HzE)
+    Hx1E Hx2E Hpi_eq). }
+claim Hmut : x2 :e apply_fun pi x1.
+{ exact (andEL (x2 :e apply_fun pi x1) (x1 :e apply_fun pi x2) Hmut_pack). }
+(** x2 :e pi(x1) = {z :e E | orbit_equiv E G x1 z} **)
+claim Hmut2 : x2 :e {z :e E | orbit_equiv E G x1 z}.
+{ rewrite <- (orbit_map_apply E G x1 Hx1E). exact Hmut. }
+claim Horb : orbit_equiv E G x1 x2.
+{ exact (SepE2 E (fun z:set => orbit_equiv E G x1 z) x2 Hmut2). }
+(** orbit_equiv E G x1 x2 = x1 :e E /\ x2 :e E /\ exists g, g :e G /\ g(x1) = x2 **)
+claim Hgex : exists g:set, g :e G /\ apply_fun g x1 = x2.
+{ exact (andER (x1 :e E /\ x2 :e E) (exists g:set, g :e G /\ apply_fun g x1 = x2) Horb). }
+apply Hgex. let g. assume Hgpack.
+claim HgG : g :e G. { exact (andEL (g :e G) (apply_fun g x1 = x2) Hgpack). }
+claim Hgx1 : apply_fun g x1 = x2. { exact (andER (g :e G) (apply_fun g x1 = x2) Hgpack). }
+(** p(x2) = p(g(x1)) = p(x1) **)
+claim Hpeq : apply_fun p x1 = apply_fun p x2.
+{ rewrite <- Hgx1.
+  symmetry.
+  exact (covering_transformation_group_fiber E Te B Tb p g x1 HgG Hx1E). }
+exact (Hp_inj x1 x2 Hx1S Hx2S Hpeq).
+Qed.
+
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
 (** LATEX VERSION: Show there exists a covering map k: X/G -> B with k o pi = p. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
