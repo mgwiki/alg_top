@@ -409701,6 +409701,26 @@ apply iffI.
   exact (orbit_class_eq_of_orbit_equiv X G x y Hxy Hcomp Hinv).
 Qed.
 
+(** Helper: orbit-class equality implies orbit equivalence in both directions **)
+(** Proven Bob **)
+Theorem orbit_class_eq_implies_orbit_equiv_both : forall X G x y idG:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  x :e X -> y :e X ->
+  {z :e X | orbit_equiv X G x z} = {z :e X | orbit_equiv X G y z} ->
+  orbit_equiv X G x y /\ orbit_equiv X G y x.
+let X G x y idG.
+assume HidG HidAct HxX HyX HclassEq.
+claim HmapEq : apply_fun (orbit_map X G) x = apply_fun (orbit_map X G) y.
+{
+  rewrite (orbit_map_apply X G x HxX).
+  rewrite (orbit_map_apply X G y HyX).
+  exact HclassEq.
+}
+exact (orbit_map_eq_implies_orbit_equiv_both X G x y idG
+  HidG HidAct HxX HyX HmapEq).
+Qed.
+
 (** Helper: x is in its own orbit **)
 Theorem orbit_self_mem : forall X G idG x:set,
   idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
