@@ -1,4 +1,4 @@
-(** Balance Alice 9160 **)
+(** Balance Alice 9233 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
@@ -414076,8 +414076,8 @@ Qed.
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
 (** LATEX VERSION: Show there exists a covering map k: X/G -> B with k o pi = p. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 73 **)
-(** Lock Alice 1773745402 **)
+(** Collected Alice 73 **)
+(** Proven Bob **)
 Theorem ex81_3b_quotient_covering :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
@@ -414320,12 +414320,65 @@ witness k. apply andI.
           (** Hence W1 = W2, contradiction **)
           claim HW1eqW2 : image_of pi S1 = image_of pi S2.
           {
-            (** From Hne, get common cls, then x1 :e S1, x2 :e S2 with orbit_equiv **)
-            (** Extract g :e CTG with g(x1) = x2 **)
-            (** By anchor_slice_image_eq: image_of g S1 = S2 **)
-            (** By orbit_map_image_of_action_eq: image_of pi (image_of g S1) = image_of pi S1 **)
-            (** Hence image_of pi S2 = image_of pi S1 **)
-            admit. (** TODO: extract orbit data from Hne, apply anchor_slice_image_eq + orbit_map_image_of_action_eq **)
+            claim HclsEx : exists cls:set, cls :e image_of pi S1 :/\: image_of pi S2.
+            { exact (nonempty_has_element (image_of pi S1 :/\: image_of pi S2) Hne). }
+            apply HclsEx.
+            let cls. assume HclsInt.
+            claim HclsS1 : cls :e image_of pi S1.
+            { exact (binintersectE1 (image_of pi S1) (image_of pi S2) cls HclsInt). }
+            claim HclsS2 : cls :e image_of pi S2.
+            { exact (binintersectE2 (image_of pi S1) (image_of pi S2) cls HclsInt). }
+            apply (ReplE_impred S1 (fun z:set => apply_fun pi z) cls HclsS1).
+            let x1. assume Hx1S1 Hx1eq.
+            apply (ReplE_impred S2 (fun z:set => apply_fun pi z) cls HclsS2).
+            let x2. assume Hx2S2 Hx2eq.
+            claim HS1open : S1 :e Tx. { exact (Hslices_sub_Tx S1 HS1slice). }
+            claim HS2open : S2 :e Tx. { exact (Hslices_sub_Tx S2 HS2slice). }
+            claim HS1Home : homeomorphism S1 (subspace_topology X Tx S1) V (subspace_topology B Tb V)
+              (graph S1 (fun z:set => apply_fun p z)).
+            { exact (Hhomeo_slices S1 HS1slice). }
+            claim HS2Home : homeomorphism S2 (subspace_topology X Tx S2) V (subspace_topology B Tb V)
+              (graph S2 (fun z:set => apply_fun p z)).
+            { exact (Hhomeo_slices S2 HS2slice). }
+            claim HS1subX : S1 c= X. { exact (topology_elem_subset X Tx S1 HtopX HS1open). }
+            claim HS2subX : S2 c= X. { exact (topology_elem_subset X Tx S2 HtopX HS2open). }
+            claim Hx1X : x1 :e X. { exact (HS1subX x1 Hx1S1). }
+            claim Hx2X : x2 :e X. { exact (HS2subX x2 Hx2S2). }
+            claim Hpi_eq : apply_fun pi x1 = apply_fun pi x2.
+            { exact (eq_i_tra (apply_fun pi x1) cls (apply_fun pi x2)
+                (eq_symm cls (apply_fun pi x1) Hx1eq)
+                Hx2eq). }
+            claim Hmut_pack : x2 :e apply_fun pi x1 /\ x1 :e apply_fun pi x2.
+            { exact (orbit_map_eq_implies_mutual_membership X G x1 x2
+                (covering_transformation_id X Tx B Tb p)
+                (covering_transformation_id_in_group X Tx B Tb p Hcov)
+                (covering_transformation_id_apply X Tx B Tb p)
+                Hx1X Hx2X Hpi_eq). }
+            claim Hmut : x2 :e apply_fun pi x1.
+            { exact (andEL (x2 :e apply_fun pi x1) (x1 :e apply_fun pi x2) Hmut_pack). }
+            claim Hmut2 : x2 :e {z :e X | orbit_equiv X G x1 z}.
+            { rewrite <- (orbit_map_apply X G x1 Hx1X). exact Hmut. }
+            claim Horb : orbit_equiv X G x1 x2.
+            { exact (SepE2 X (fun z:set => orbit_equiv X G x1 z) x2 Hmut2). }
+            claim Hgex : exists g0:set, g0 :e G /\ apply_fun g0 x1 = x2.
+            { exact (andER (x1 :e X /\ x2 :e X) (exists g0:set, g0 :e G /\ apply_fun g0 x1 = x2) Horb). }
+            apply Hgex.
+            let g0. assume Hg0pack.
+            claim Hg0G : g0 :e G.
+            { exact (andEL (g0 :e G) (apply_fun g0 x1 = x2) Hg0pack). }
+            claim Hg0x : apply_fun g0 x1 = x2.
+            { exact (andER (g0 :e G) (apply_fun g0 x1 = x2) Hg0pack). }
+            claim Himgg_eq : image_of g0 S1 = S2.
+            { exact (covering_transformation_anchor_slice_image_eq
+                X Tx B Tb p V slices_p S1 S2 g0 x1 x2
+                Hcov HpcV Hslices_sub_Tx Hpd_slices Hunion_slices
+                HS1slice HS2slice HS1Home HS2Home Hg0G Hx1S1 Hx2S2 Hg0x). }
+            claim Hpi_gS1_eq : image_of pi (image_of g0 S1) = image_of pi S1.
+            { exact (covering_transformation_group_orbit_map_image_of_action_eq_open
+                X Tx B Tb p g0 S1 Hcov Hg0G HS1open). }
+            claim Htmp : image_of pi S2 = image_of pi S1.
+            { rewrite <- Himgg_eq. exact Hpi_gS1_eq. }
+            exact (eq_symm (image_of pi S2) (image_of pi S1) Htmp).
           }
           (** W1 = image_of pi S1 = image_of pi S2 = W2, so W1 = W2 **)
           claim Hcontra : W1 = W2.
@@ -414395,21 +414448,14 @@ witness k. apply andI.
         apply (ReplE_impred slices_p (fun S:set => image_of pi S) W HWsk).
         let S. assume HSslice : S :e slices_p. assume HWeq : W = image_of pi S.
         rewrite HWeq.
-        (** Need: homeomorphism (image_of pi S) (subspace ...) V (subspace ...) (graph ... (fun cls => apply_fun k cls)) **)
-        (** Key facts: **)
-        (** 1. pi|_S is injective (orbit_map_injective_on_covering_slice) **)
-        (** 2. p|_S is a homeomorphism to V **)
-        (** 3. k(pi(x)) = p(x) for x :e S **)
-        (** 4. The map cls -> k(cls) on image_of pi S equals p o pi_inv on S **)
-        (** Use covering_transformation_slice_image_homeomorphism_via_factor **)
         claim HSopen : S :e Tx. { exact (Hslices_sub_Tx S HSslice). }
-        claim Hhomeo_S : homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
-          (graph S (fun x:set => apply_fun p x)).
+        claim HSHome : homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+          (graph S (fun z:set => apply_fun p z)).
         { exact (Hhomeo_slices S HSslice). }
         exact (covering_transformation_slice_image_homeomorphism_via_factor
-          X Tx B Tb p S V k Hcov HSopen Hhomeo_S Hk_fn Hk_factors).
+          X Tx B Tb p S V k Hcov HSopen HSHome Hk_fn Hk_factors).
 - exact Hk_factors.
-Admitted.
+Qed.
 
 (** from S81 Exercise 4 (line 5203 in algtop.tex) **)
 (** LATEX VERSION: If X is Hausdorff and G is a finite group of homeomorphisms **)
