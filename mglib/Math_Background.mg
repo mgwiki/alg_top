@@ -412641,6 +412641,123 @@ exact (homeomorphism_congr_on
   Hagree).
 Qed.
 
+(** Helper: an anchored covering transformation sends a connected slice into the anchored target slice **)
+(** Proven Bob **)
+Theorem covering_transformation_anchor_slice_image_subset :
+  forall E Te B Tb p V slices S1 S2 g x1 x2:set,
+  covering_map E Te B Tb p ->
+  path_connected_space V (subspace_topology B Tb V) ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p V ->
+  S1 :e slices ->
+  S2 :e slices ->
+  homeomorphism S1 (subspace_topology E Te S1) V (subspace_topology B Tb V)
+    (graph S1 (fun z:set => apply_fun p z)) ->
+  g :e covering_transformation_group E Te B Tb p ->
+  x1 :e S1 ->
+  x2 :e S2 ->
+  apply_fun g x1 = x2 ->
+  image_of g S1 c= S2.
+let E Te B Tb p V slices S1 S2 g x1 x2.
+assume Hcov HpcV HslicesSub HpdSlices Hunion HS1slice HS2slice HS1Home HgG Hx1S1 Hx2S2 Hgx.
+claim HtopE : topology_on E Te.
+{ exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HS1open : S1 :e Te.
+{ exact (HslicesSub S1 HS1slice). }
+claim HS1subE : S1 c= E.
+{ exact (topology_elem_subset E Te S1 HtopE HS1open). }
+claim HconnV : connected_space V (subspace_topology B Tb V).
+{ exact (path_connected_implies_connected V (subspace_topology B Tb V) HpcV). }
+claim HconnS1 : connected_space S1 (subspace_topology E Te S1).
+{
+  exact (homeomorphism_preserves_connected_left
+    S1
+    (subspace_topology E Te S1)
+    V
+    (subspace_topology B Tb V)
+    (graph S1 (fun z:set => apply_fun p z))
+    HS1Home
+    HconnV).
+}
+claim HgCont : continuous_map E Te E Te g.
+{ exact (covering_transformation_group_continuous E Te B Tb p g HgG). }
+claim HgContS1 : continuous_map S1 (subspace_topology E Te S1) E Te g.
+{
+  exact (continuous_on_subspace_rule
+    E
+    Te
+    E
+    Te
+    g
+    S1
+    HtopE
+    HtopE
+    HS1subE
+    HgCont).
+}
+claim HimgSubUnion : image_of g S1 c= Union slices.
+{
+  let z. assume HzImg.
+  apply (ReplE_impred S1 (fun y:set => apply_fun g y) z HzImg).
+  let y. assume HyS1 Hzeq.
+  claim HyE : y :e E.
+  { exact (HS1subE y HyS1). }
+  claim HzE : z :e E.
+  { rewrite Hzeq.
+    exact (continuous_map_value_in_space E Te E Te g y HgCont HyE). }
+  claim HpyV : apply_fun p y :e V.
+  {
+    claim HpS1yV : apply_fun (graph S1 (fun z:set => apply_fun p z)) y :e V.
+    {
+      exact (homeomorphism_function_on
+        S1
+        (subspace_topology E Te S1)
+        V
+        (subspace_topology B Tb V)
+        (graph S1 (fun z:set => apply_fun p z))
+        HS1Home
+        y
+        HyS1).
+    }
+    claim HpyV : apply_fun p y :e V.
+    {
+      rewrite <- (apply_fun_graph S1 (fun z:set => apply_fun p z) y HyS1).
+      exact HpS1yV.
+    }
+    exact HpyV.
+  }
+  claim Hpg_eq : apply_fun p (apply_fun g y) = apply_fun p y.
+  { exact (covering_transformation_group_fiber E Te B Tb p g y HgG HyE). }
+  claim HpzV : apply_fun p z :e V.
+  { rewrite Hzeq.
+    rewrite Hpg_eq.
+    exact HpyV. }
+  rewrite Hunion.
+  exact (SepI E (fun t:set => apply_fun p t :e V) z HzE HpzV).
+}
+claim Hgx1S2 : apply_fun g x1 :e S2.
+{ rewrite Hgx. exact Hx2S2. }
+exact (connected_image_stays_in_anchored_open_union_member
+  S1
+  (subspace_topology E Te S1)
+  E
+  Te
+  slices
+  S2
+  g
+  x1
+  HtopE
+  HslicesSub
+  HpdSlices
+  HconnS1
+  HgContS1
+  HimgSubUnion
+  HS2slice
+  Hx1S1
+  Hgx1S2).
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
