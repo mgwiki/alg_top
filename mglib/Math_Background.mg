@@ -189410,6 +189410,102 @@ exact (s55_S1_antipode_map_fixed_point_free_early
   HyS1).
 Qed.
 
+(** S55 helper: the circle with subspace topology is Hausdorff. **)
+(** Proven Bob **)
+Theorem s55_S1_Hausdorff :
+  Hausdorff_space S1 S1_topology.
+claim HHausR2 :
+  Hausdorff_space (setprod R R) R2_topology.
+{
+  exact (ex17_11_product_Hausdorff
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_Hausdorff
+    R_standard_topology_Hausdorff).
+}
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HS1topEq :
+  S1_topology = subspace_topology (setprod R R) R2_topology S1.
+{
+  reflexivity.
+}
+rewrite HS1topEq.
+exact (ex17_12_subspace_Hausdorff
+  (setprod R R)
+  R2_topology
+  S1
+  HHausR2
+  HS1subR2).
+Qed.
+
+(** S55 helper: inverse-graph of antipode map is continuous on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_continuous :
+  continuous_map S1 S1_topology S1 S1_topology
+    (inv_fun_graph S1 s55_S1_antipode_map S1).
+exact (compact_to_Hausdorff_inverse_continuous
+  S1
+  S1_topology
+  S1
+  S1_topology
+  s55_S1_antipode_map
+  s54_S1_compact
+  s55_S1_Hausdorff
+  s55_S1_antipode_map_continuous
+  s55_S1_antipode_map_bijection).
+Qed.
+
+(** S55 helper: inverse-graph of antipode map is a self-homeomorphism of S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_homeomorphism :
+  homeomorphism S1 S1_topology S1 S1_topology
+    (inv_fun_graph S1 s55_S1_antipode_map S1).
+prove
+  continuous_map S1 S1_topology S1 S1_topology
+    (inv_fun_graph S1 s55_S1_antipode_map S1) /\
+  exists g:set,
+    continuous_map S1 S1_topology S1 S1_topology g /\
+    (forall x:set, x :e S1 ->
+      apply_fun g
+        (apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x) = x) /\
+    (forall y:set, y :e S1 ->
+      apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1)
+        (apply_fun g y) = y).
+apply andI.
+- exact s55_S1_inv_fun_graph_continuous.
+- witness s55_S1_antipode_map.
+  apply andI.
+  + apply andI.
+    * exact s55_S1_antipode_map_continuous.
+    * let x.
+      assume HxS1.
+      exact (inv_fun_graph_right_inverse
+        S1
+        S1
+        s55_S1_antipode_map
+        x
+        s55_S1_antipode_map_bijection
+        HxS1).
+  + let y.
+    assume HyS1.
+    exact (inv_fun_graph_left_inverse
+      S1
+      S1
+      s55_S1_antipode_map
+      y
+      s55_S1_antipode_map_bijection
+      HyS1).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
