@@ -1,4 +1,4 @@
-(** Balance Alice 9167 **)
+(** Balance Alice 9160 **)
 (** Balance Bob 5857 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
@@ -407840,7 +407840,8 @@ Admitted.
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
 (** LATEX VERSION: Show there exists a covering map k: X/G -> B with k o pi = p. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
+(** Bounty 73 **)
+(** Lock Alice 1773745402 **)
 Theorem ex81_3b_quotient_covering :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
