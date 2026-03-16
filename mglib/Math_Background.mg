@@ -404521,6 +404521,30 @@ let E Te B Tb p h. assume HhG.
 exact (SepE1 (function_space E E) (fun g:set => covering_transformation E Te B Tb p g) h HhG).
 Qed.
 
+(** Helper: CTG member preserves fibers **)
+(** Proven Alice **)
+Theorem covering_transformation_group_fiber :
+  forall E Te B Tb p h x:set,
+  h :e covering_transformation_group E Te B Tb p ->
+  x :e E ->
+  apply_fun p (apply_fun h x) = apply_fun p x.
+let E Te B Tb p h x. assume HhG HxE.
+exact (covering_transformation_fiber E Te B Tb p h x
+  (covering_transformation_group_mem_ct E Te B Tb p h HhG) HxE).
+Qed.
+
+(** Helper: CTG member maps E to E **)
+(** Proven Alice **)
+Theorem covering_transformation_group_value_in_E :
+  forall E Te B Tb p h x:set,
+  h :e covering_transformation_group E Te B Tb p ->
+  x :e E ->
+  apply_fun h x :e E.
+let E Te B Tb p h x. assume HhG HxE.
+exact (covering_transformation_value_in_E E Te B Tb p h x
+  (covering_transformation_group_mem_ct E Te B Tb p h HhG) HxE).
+Qed.
+
 (** Helper: the inverse of a covering transformation is a covering transformation **)
 (** Proven Alice **)
 Theorem covering_transformation_inverse_exists :
