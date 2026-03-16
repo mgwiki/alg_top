@@ -402704,6 +402704,44 @@ Definition covering_transformation_inv : set -> set -> set -> set -> set -> set 
         k :e covering_transformation_group E Te B Tb p /\
         (forall x:set, x :e E -> apply_fun k (apply_fun h x) = x))).
 
+(** Helper: composition of two covering transformations is a covering transformation **)
+(** Proven Alice **)
+Theorem covering_transformation_compose :
+  forall E Te B Tb p h1 h2:set,
+  covering_transformation E Te B Tb p h1 ->
+  covering_transformation E Te B Tb p h2 ->
+  covering_transformation E Te B Tb p (compose_fun E h2 h1).
+let E Te B Tb p h1 h2.
+assume Hct1 Hct2.
+claim Hhomeo1 : homeomorphism E Te E Te h1.
+{ exact (andEL (homeomorphism E Te E Te h1)
+    (forall x:set, x :e E -> apply_fun p (apply_fun h1 x) = apply_fun p x) Hct1). }
+claim Hfiber1 : forall x:set, x :e E -> apply_fun p (apply_fun h1 x) = apply_fun p x.
+{ exact (andER (homeomorphism E Te E Te h1)
+    (forall x:set, x :e E -> apply_fun p (apply_fun h1 x) = apply_fun p x) Hct1). }
+claim Hhomeo2 : homeomorphism E Te E Te h2.
+{ exact (andEL (homeomorphism E Te E Te h2)
+    (forall x:set, x :e E -> apply_fun p (apply_fun h2 x) = apply_fun p x) Hct2). }
+claim Hfiber2 : forall x:set, x :e E -> apply_fun p (apply_fun h2 x) = apply_fun p x.
+{ exact (andER (homeomorphism E Te E Te h2)
+    (forall x:set, x :e E -> apply_fun p (apply_fun h2 x) = apply_fun p x) Hct2). }
+claim Hcont1 : continuous_map E Te E Te h1. { exact (homeomorphism_continuous E Te E Te h1 Hhomeo1). }
+claim Hcont2 : continuous_map E Te E Te h2. { exact (homeomorphism_continuous E Te E Te h2 Hhomeo2). }
+claim Hfn1 : function_on h1 E E. { exact (continuous_map_function_on E Te E Te h1 Hcont1). }
+prove homeomorphism E Te E Te (compose_fun E h2 h1) /\
+  (forall x:set, x :e E -> apply_fun p (apply_fun (compose_fun E h2 h1) x) = apply_fun p x).
+apply andI.
+- (** Composition of homeomorphisms is homeomorphism **)
+  exact (homeomorphism_compose E Te E Te E Te h2 h1 Hhomeo2 Hhomeo1).
+- (** Fiber preservation of composition **)
+  let x. assume HxE : x :e E.
+  rewrite (compose_fun_apply E h2 h1 x HxE).
+  claim Hfn2 : function_on h2 E E. { exact (continuous_map_function_on E Te E Te h2 Hcont2). }
+  claim Hh2xE : apply_fun h2 x :e E. { exact (Hfn2 x HxE). }
+  rewrite (Hfiber1 (apply_fun h2 x) Hh2xE).
+  exact (Hfiber2 x HxE).
+Qed.
+
 (** from S81 Definition (line 5025 in algtop.tex): normalizer **)
 (** LATEX VERSION: If H is a subgroup of the group G, then the normalizer of H in G **)
 (** is N(H) = {g in G | gHg^{-1} = H}. **)
