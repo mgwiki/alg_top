@@ -368585,6 +368585,45 @@ Theorem seifert_van_kampen_universal_pushout_helper :
               apply_fun phi2 g) ->
           forall g:set, g :e fundamental_group X Tx x0 ->
             apply_fun Phi' g = apply_fun Phi g).
+let X Tx U V x0.
+assume Htop HUopen HVopen Hcover HpcU HpcV HpcUV Hx0UV.
+let H multH eH invH.
+assume HgrpH : group_structure H multH eH invH.
+let phi1 phi2.
+assume Hphi1 : group_homomorphism
+  (fundamental_group U (subspace_topology X Tx U) x0)
+  (fundamental_group_mult U (subspace_topology X Tx U) x0)
+  H multH phi1.
+assume Hphi2 : group_homomorphism
+  (fundamental_group V (subspace_topology X Tx V) x0)
+  (fundamental_group_mult V (subspace_topology X Tx V) x0)
+  H multH phi2.
+assume Hcompat : forall g:set, g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+  apply_fun phi1
+    (apply_fun (induced_homomorphism
+      (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+      U (subspace_topology X Tx U) x0
+      (graph (U :/\: V) (fun x:set => x))) g) =
+  apply_fun phi2
+    (apply_fun (induced_homomorphism
+      (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+      V (subspace_topology X Tx V) x0
+      (graph (U :/\: V) (fun x:set => x))) g).
+set piX := fundamental_group X Tx x0.
+set multX := fundamental_group_mult X Tx x0.
+set idX := fundamental_group_id X Tx x0.
+set piU := fundamental_group U (subspace_topology X Tx U) x0.
+set piV := fundamental_group V (subspace_topology X Tx V) x0.
+set j1 := induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+  (graph U (fun x:set => x)).
+set j2 := induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+  (graph V (fun x:set => x)).
+(** By generation (Thm 59.1), every element of piX is a product of j1-images and j2-images. **)
+(** Use thm59_1 to decompose any element into such a product. **)
+(** Then define Phi by mapping j1(g) -> phi1(g) and j2(g) -> phi2(g), **)
+(** extending by multiplicativity. Well-definedness from compatibility on UV. **)
+(** The full construction requires building the function Phi from the word decomposition. **)
+(** This is the core of the van Kampen proof and requires careful induction. **)
 admit.
 Admitted.
 
