@@ -218617,9 +218617,13 @@ claim Htransition_VU : forall k:set, k :e nch ->
 (** 4. Combining via word_data_of_loop_concat **)
 (** 5. Recursing for the remaining segment **)
 (** **)
-(** The full formal construction requires path reparametrization **)
-(** and careful handling of sub-loop construction (~250 lines). **)
-(** This is the key remaining gap for the S59 chain. **)
+(** With loop_class_split_at_transition now proved (qed), the remaining **)
+(** gap is: extract a transition parameter s from the ball chain such that **)
+(** f maps [0,s] to U and [s,1] to V (or vice versa), then apply the helper. **)
+(** For the general case with multiple transitions, this requires induction **)
+(** on the chain length, splitting at each transition and combining word data. **)
+(** The helper handles a single transition; the inductive step needs **)
+(** showing the "rest" of the loop also satisfies the ball cover property. **)
 admit.
 Admitted.
 
