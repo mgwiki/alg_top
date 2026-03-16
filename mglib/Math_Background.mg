@@ -400131,7 +400131,70 @@ Theorem ex80_1a_composition_of_coverings :
   (exists U Tu p:set, covering_map U Tu Z Tz p /\ simply_connected U Tu) ->
   covering_map X Tx Z Tz
     (graph X (fun x:set => apply_fun r (apply_fun q x))).
-admit.
+let X Tx Y Ty Z Tz q r.
+assume Hcov_q : covering_map X Tx Y Ty q.
+assume Hcov_r : covering_map Y Ty Z Tz r.
+assume Huniv : exists U Tu p0:set, covering_map U Tu Z Tz p0 /\ simply_connected U Tu.
+set p := graph X (fun x:set => apply_fun r (apply_fun q x)).
+(** Extract topology and continuity **)
+claim Hcont_q : continuous_map X Tx Y Ty q.
+{ exact (covering_map_continuous X Tx Y Ty q Hcov_q). }
+claim Hcont_r : continuous_map Y Ty Z Tz r.
+{ exact (covering_map_continuous Y Ty Z Tz r Hcov_r). }
+claim HtopX : topology_on X Tx. { exact (covering_map_topology_on_domain X Tx Y Ty q Hcov_q). }
+claim HtopY : topology_on Y Ty. { exact (covering_map_topology_on_codomain X Tx Y Ty q Hcov_q). }
+claim HtopZ : topology_on Z Tz. { exact (covering_map_topology_on_codomain Y Ty Z Tz r Hcov_r). }
+claim Hfn_q : function_on q X Y. { exact (continuous_map_function_on X Tx Y Ty q Hcont_q). }
+claim Hfn_r : function_on r Y Z. { exact (continuous_map_function_on Y Ty Z Tz r Hcont_r). }
+claim Hsurj_q : surjective_map X Y q. { exact (covering_map_surjective X Tx Y Ty q Hcov_q). }
+claim Hsurj_r : surjective_map Y Z r. { exact (covering_map_surjective Y Ty Z Tz r Hcov_r). }
+(** p = compose_fun X q r (definitionally) **)
+(** Continuity of p = r circ q **)
+claim Hcont_p : continuous_map X Tx Z Tz p.
+{ exact (composition_continuous X Tx Y Ty Z Tz q r Hcont_q Hcont_r). }
+claim Hfn_p : function_on p X Z.
+{ exact (continuous_map_function_on X Tx Z Tz p Hcont_p). }
+(** Surjectivity of p **)
+claim Hsurj_p : surjective_map X Z p.
+{ prove function_on p X Z /\ forall z:set, z :e Z -> exists x:set, x :e X /\ apply_fun p x = z.
+  apply andI.
+  - exact Hfn_p.
+  - let z. assume HzZ : z :e Z.
+    (** r is surjective: exists y in Y with r(y) = z **)
+    claim Hr_surj_data : forall z0:set, z0 :e Z -> exists y:set, y :e Y /\ apply_fun r y = z0.
+    { exact (andER (function_on r Y Z)
+        (forall z0:set, z0 :e Z -> exists y:set, y :e Y /\ apply_fun r y = z0) Hsurj_r). }
+    apply (Hr_surj_data z HzZ). let y. assume Hypack.
+    claim HyY : y :e Y. { exact (andEL (y :e Y) (apply_fun r y = z) Hypack). }
+    claim Hry : apply_fun r y = z. { exact (andER (y :e Y) (apply_fun r y = z) Hypack). }
+    (** q is surjective: exists x in X with q(x) = y **)
+    claim Hq_surj_data : forall y0:set, y0 :e Y -> exists x:set, x :e X /\ apply_fun q x = y0.
+    { exact (andER (function_on q X Y)
+        (forall y0:set, y0 :e Y -> exists x:set, x :e X /\ apply_fun q x = y0) Hsurj_q). }
+    apply (Hq_surj_data y HyY). let x. assume Hxpack.
+    claim HxX : x :e X. { exact (andEL (x :e X) (apply_fun q x = y) Hxpack). }
+    claim Hqx : apply_fun q x = y. { exact (andER (x :e X) (apply_fun q x = y) Hxpack). }
+    witness x. apply andI.
+    + exact HxX.
+    + prove apply_fun p x = z.
+      prove apply_fun (graph X (fun x0:set => apply_fun r (apply_fun q x0))) x = z.
+      rewrite (apply_fun_graph X (fun x0:set => apply_fun r (apply_fun q x0)) x HxX).
+      prove apply_fun r (apply_fun q x) = z.
+      rewrite Hqx. exact Hry. }
+(** Evenly covered neighborhoods for p **)
+prove continuous_map X Tx Z Tz p /\ surjective_map X Z p /\
+  (forall z:set, z :e Z -> exists U:set, U :e Tz /\ z :e U /\ evenly_covered X Tx Z Tz p U).
+apply and3I.
+- exact Hcont_p.
+- exact Hsurj_p.
+- let z. assume HzZ : z :e Z.
+  (** Get evenly covered neighborhood V for r **)
+  apply (covering_map_evenly_covered_slices Y Ty Z Tz r z Hcov_r HzZ).
+  let V. assume Hev_inner. apply Hev_inner. let slices_r. assume Hpack_r.
+  (** TODO: for each slice S_a of r over V, get evenly covered neighborhoods for q,
+      intersect to get a common U, then show the combined preimage slices give
+      evenly_covered for p over U. This requires careful construction. **)
+  admit.
 Admitted.
 
 (** from S80 Exercise 1(b) (line 5013 in algtop.tex) **)
