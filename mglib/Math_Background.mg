@@ -409340,6 +409340,59 @@ exact (quotient_universal_property
   (Subq_ref (orbit_topology X Tx G))).
 Qed.
 
+(** Helper: orbit map is a quotient map with no extra assumptions on G **)
+(** Proven Bob **)
+Theorem orbit_map_quotient_map_plain : forall X Tx G:set,
+  topology_on X Tx ->
+  quotient_map X Tx (orbit_space X G) (orbit_map X G).
+let X Tx G.
+assume HtopX.
+exact (topology_on_and_surjective_map_implies_quotient_map
+  X
+  Tx
+  (orbit_space X G)
+  (orbit_map X G)
+  (andI
+    (topology_on X Tx)
+    (surjective_map X (orbit_space X G) (orbit_map X G))
+    HtopX
+    (orbit_map_surjective_plain X G))).
+Qed.
+
+(** Helper: orbit topology is a topology with no extra assumptions on G **)
+(** Proven Bob **)
+Theorem orbit_topology_is_topology_plain : forall X Tx G:set,
+  topology_on X Tx ->
+  topology_on (orbit_space X G) (orbit_topology X Tx G).
+let X Tx G.
+assume HtopX.
+exact (quotient_topology_is_topology
+  X
+  Tx
+  (orbit_space X G)
+  (orbit_map X G)
+  HtopX
+  (orbit_map_quotient_map_plain X Tx G HtopX)).
+Qed.
+
+(** Helper: orbit map is continuous into orbit_topology with no extra assumptions on G **)
+(** Proven Bob **)
+Theorem orbit_map_continuous_plain : forall X Tx G:set,
+  topology_on X Tx ->
+  continuous_map X Tx (orbit_space X G) (orbit_topology X Tx G) (orbit_map X G).
+let X Tx G.
+assume HtopX.
+exact (quotient_universal_property
+  X
+  Tx
+  (orbit_space X G)
+  (orbit_topology X Tx G)
+  (orbit_map X G)
+  (orbit_map_quotient_map_plain X Tx G HtopX)
+  (orbit_topology_is_topology_plain X Tx G HtopX)
+  (Subq_ref (orbit_topology X Tx G))).
+Qed.
+
 (** Helper: orbit equivalence is reflexive when idG in G **)
 Theorem orbit_equiv_refl : forall X G idG x:set,
   idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
