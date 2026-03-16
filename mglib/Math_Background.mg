@@ -404501,6 +404501,26 @@ apply (SepI (function_space E E)
 - exact Hct_comp.
 Qed.
 
+(** Helper: extract covering_transformation from CTG membership **)
+(** Proven Alice **)
+Theorem covering_transformation_group_mem_ct :
+  forall E Te B Tb p h:set,
+  h :e covering_transformation_group E Te B Tb p ->
+  covering_transformation E Te B Tb p h.
+let E Te B Tb p h. assume HhG.
+exact (SepE2 (function_space E E) (fun g:set => covering_transformation E Te B Tb p g) h HhG).
+Qed.
+
+(** Helper: CTG member is in function_space **)
+(** Proven Alice **)
+Theorem covering_transformation_group_mem_fs :
+  forall E Te B Tb p h:set,
+  h :e covering_transformation_group E Te B Tb p ->
+  h :e function_space E E.
+let E Te B Tb p h. assume HhG.
+exact (SepE1 (function_space E E) (fun g:set => covering_transformation E Te B Tb p g) h HhG).
+Qed.
+
 (** Helper: the inverse of a covering transformation is a covering transformation **)
 (** Proven Alice **)
 Theorem covering_transformation_inverse_exists :
