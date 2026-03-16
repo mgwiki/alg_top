@@ -187878,6 +187878,167 @@ exact (andI
   HantiExpand1).
 Admitted.
 
+Theorem covering_map_R_S1_shift_from_trig_values :
+  forall x d:set,
+    x :e R ->
+    d :e R ->
+    apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1 ->
+    apply_fun sin_real (mul_SNo two_pi d) = 0 ->
+    apply_fun covering_map_R_S1 (add_SNo x d) =
+      (minus_SNo (apply_fun covering_map_R_S1 x 0),
+       minus_SNo (apply_fun covering_map_R_S1 x 1)).
+let x d.
+assume HxR.
+assume HdR.
+assume HcosD.
+assume HsinD.
+claim HxPlusDR : add_SNo x d :e R.
+{
+  exact (real_add_SNo
+    x
+    HxR
+    d
+    HdR).
+}
+claim HargX : mul_SNo two_pi x :e R.
+{
+  exact (real_mul_SNo
+    two_pi
+    two_pi_in_R
+    x
+    HxR).
+}
+claim HargD : mul_SNo two_pi d :e R.
+{
+  exact (real_mul_SNo
+    two_pi
+    two_pi_in_R
+    d
+    HdR).
+}
+claim HgraphX :
+  apply_fun covering_map_R_S1 x =
+  (apply_fun cos_real (mul_SNo two_pi x),
+   apply_fun sin_real (mul_SNo two_pi x)).
+{
+  exact (apply_fun_graph
+    R
+    (fun t:set =>
+      (apply_fun cos_real (mul_SNo two_pi t),
+       apply_fun sin_real (mul_SNo two_pi t)))
+    x
+    HxR).
+}
+claim HgraphXD :
+  apply_fun covering_map_R_S1 (add_SNo x d) =
+  (apply_fun cos_real (mul_SNo two_pi (add_SNo x d)),
+   apply_fun sin_real (mul_SNo two_pi (add_SNo x d))).
+{
+  exact (apply_fun_graph
+    R
+    (fun t:set =>
+      (apply_fun cos_real (mul_SNo two_pi t),
+       apply_fun sin_real (mul_SNo two_pi t)))
+    (add_SNo x d)
+    HxPlusDR).
+}
+claim HmulXD :
+  mul_SNo two_pi (add_SNo x d) =
+  add_SNo (mul_SNo two_pi x) (mul_SNo two_pi d).
+{
+  exact (mul_SNo_distrL
+    two_pi
+    x
+    d
+    (real_SNo two_pi two_pi_in_R)
+    (real_SNo x HxR)
+    (real_SNo d HdR)).
+}
+claim Hcoord0 :
+  apply_fun cos_real (add_SNo (mul_SNo two_pi x) (mul_SNo two_pi d)) =
+  minus_SNo (apply_fun cos_real (mul_SNo two_pi x)).
+{
+  rewrite (cos_addition
+    (mul_SNo two_pi x)
+    (mul_SNo two_pi d)
+    HargX
+    HargD).
+  rewrite HcosD.
+  rewrite HsinD.
+  rewrite (mul_SNo_zeroR
+    (apply_fun sin_real (mul_SNo two_pi x))
+    (real_SNo
+      (apply_fun sin_real (mul_SNo two_pi x))
+      (sin_real_function_on (mul_SNo two_pi x) HargX))).
+  rewrite minus_SNo_0.
+  rewrite (mul_SNo_minus_distrR
+    (apply_fun cos_real (mul_SNo two_pi x))
+    1
+    (real_SNo
+      (apply_fun cos_real (mul_SNo two_pi x))
+      (cos_real_function_on (mul_SNo two_pi x) HargX))
+    SNo_1).
+  rewrite (mul_SNo_oneR
+    (apply_fun cos_real (mul_SNo two_pi x))
+    (real_SNo
+      (apply_fun cos_real (mul_SNo two_pi x))
+      (cos_real_function_on (mul_SNo two_pi x) HargX))).
+  rewrite (add_SNo_0R
+    (minus_SNo (apply_fun cos_real (mul_SNo two_pi x)))
+    (SNo_minus_SNo
+      (apply_fun cos_real (mul_SNo two_pi x))
+      (real_SNo
+        (apply_fun cos_real (mul_SNo two_pi x))
+        (cos_real_function_on (mul_SNo two_pi x) HargX)))).
+  reflexivity.
+}
+claim Hcoord1 :
+  apply_fun sin_real (add_SNo (mul_SNo two_pi x) (mul_SNo two_pi d)) =
+  minus_SNo (apply_fun sin_real (mul_SNo two_pi x)).
+{
+  rewrite (sin_addition
+    (mul_SNo two_pi x)
+    (mul_SNo two_pi d)
+    HargX
+    HargD).
+  rewrite HcosD.
+  rewrite HsinD.
+  rewrite (mul_SNo_zeroR
+    (apply_fun cos_real (mul_SNo two_pi x))
+    (real_SNo
+      (apply_fun cos_real (mul_SNo two_pi x))
+      (cos_real_function_on (mul_SNo two_pi x) HargX))).
+  rewrite (mul_SNo_minus_distrR
+    (apply_fun sin_real (mul_SNo two_pi x))
+    1
+    (real_SNo
+      (apply_fun sin_real (mul_SNo two_pi x))
+      (sin_real_function_on (mul_SNo two_pi x) HargX))
+    SNo_1).
+  rewrite (mul_SNo_oneR
+    (apply_fun sin_real (mul_SNo two_pi x))
+    (real_SNo
+      (apply_fun sin_real (mul_SNo two_pi x))
+      (sin_real_function_on (mul_SNo two_pi x) HargX))).
+  rewrite (add_SNo_0R
+    (minus_SNo (apply_fun sin_real (mul_SNo two_pi x)))
+    (SNo_minus_SNo
+      (apply_fun sin_real (mul_SNo two_pi x))
+      (real_SNo
+        (apply_fun sin_real (mul_SNo two_pi x))
+        (sin_real_function_on (mul_SNo two_pi x) HargX)))).
+  reflexivity.
+}
+rewrite HgraphXD.
+rewrite HmulXD.
+rewrite Hcoord0.
+rewrite Hcoord1.
+rewrite HgraphX.
+rewrite tuple_2_0_eq.
+rewrite tuple_2_1_eq.
+reflexivity.
+Admitted.
+
 Theorem covering_map_R_S1_antipode_shift_from_one_point :
   forall x a d:set,
     x :e R ->
@@ -188149,89 +188310,13 @@ claim HsinD :
     (apply_fun sin_real (mul_SNo two_pi d) = 0)
     HshiftTrig).
 }
-claim Hcoord0 :
-  apply_fun cos_real (add_SNo (mul_SNo two_pi x) (mul_SNo two_pi d)) =
-  minus_SNo (apply_fun cos_real (mul_SNo two_pi x)).
-{
-  rewrite (cos_addition
-    (mul_SNo two_pi x)
-    (mul_SNo two_pi d)
-    HargX
-    HargD).
-  rewrite HcosD.
-  rewrite HsinD.
-  rewrite (mul_SNo_zeroR
-    (apply_fun sin_real (mul_SNo two_pi x))
-    (real_SNo
-      (apply_fun sin_real (mul_SNo two_pi x))
-      (sin_real_function_on (mul_SNo two_pi x) HargX))).
-  rewrite minus_SNo_0.
-  rewrite (mul_SNo_minus_distrR
-    (apply_fun cos_real (mul_SNo two_pi x))
-    1
-    (real_SNo
-      (apply_fun cos_real (mul_SNo two_pi x))
-      (cos_real_function_on (mul_SNo two_pi x) HargX))
-    SNo_1).
-  rewrite (mul_SNo_oneR
-    (apply_fun cos_real (mul_SNo two_pi x))
-    (real_SNo
-      (apply_fun cos_real (mul_SNo two_pi x))
-      (cos_real_function_on (mul_SNo two_pi x) HargX))).
-  rewrite (add_SNo_0R
-    (minus_SNo (apply_fun cos_real (mul_SNo two_pi x)))
-    (SNo_minus_SNo
-      (apply_fun cos_real (mul_SNo two_pi x))
-      (real_SNo
-        (apply_fun cos_real (mul_SNo two_pi x))
-        (cos_real_function_on (mul_SNo two_pi x) HargX)))).
-  reflexivity.
-}
-claim Hcoord1 :
-  apply_fun sin_real (add_SNo (mul_SNo two_pi x) (mul_SNo two_pi d)) =
-  minus_SNo (apply_fun sin_real (mul_SNo two_pi x)).
-{
-  rewrite (sin_addition
-    (mul_SNo two_pi x)
-    (mul_SNo two_pi d)
-    HargX
-    HargD).
-  rewrite HcosD.
-  rewrite HsinD.
-  rewrite (mul_SNo_zeroR
-    (apply_fun cos_real (mul_SNo two_pi x))
-    (real_SNo
-      (apply_fun cos_real (mul_SNo two_pi x))
-      (cos_real_function_on (mul_SNo two_pi x) HargX))).
-  rewrite (mul_SNo_minus_distrR
-    (apply_fun sin_real (mul_SNo two_pi x))
-    1
-    (real_SNo
-      (apply_fun sin_real (mul_SNo two_pi x))
-      (sin_real_function_on (mul_SNo two_pi x) HargX))
-    SNo_1).
-  rewrite (mul_SNo_oneR
-    (apply_fun sin_real (mul_SNo two_pi x))
-    (real_SNo
-      (apply_fun sin_real (mul_SNo two_pi x))
-      (sin_real_function_on (mul_SNo two_pi x) HargX))).
-  rewrite (add_SNo_0R
-    (minus_SNo (apply_fun sin_real (mul_SNo two_pi x)))
-    (SNo_minus_SNo
-      (apply_fun sin_real (mul_SNo two_pi x))
-      (real_SNo
-        (apply_fun sin_real (mul_SNo two_pi x))
-        (sin_real_function_on (mul_SNo two_pi x) HargX)))).
-  reflexivity.
-}
-rewrite HgraphXD.
-rewrite HmulXD.
-rewrite Hcoord0.
-rewrite Hcoord1.
-rewrite HgraphX.
-rewrite tuple_2_0_eq.
-rewrite tuple_2_1_eq.
-reflexivity.
+exact (covering_map_R_S1_shift_from_trig_values
+  x
+  d
+  HxR
+  HdR
+  HcosD
+  HsinD).
 Admitted.
 
 (** S57 helper: the standard covering path restricts to the usual based loop on S^1. **)
