@@ -410537,6 +410537,46 @@ exact (orbit_map_open_of_invariant_open_action
   HU0).
 Qed.
 
+(** Helper: orbit_map is an open_map under homeomorphism action + group data **)
+(** Proven Bob **)
+Theorem orbit_map_open_map_with_group_data :
+  forall X Tx G idG:set,
+  topology_on X Tx ->
+  (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
+  idG :e G ->
+  (forall x:set, x :e X -> apply_fun idG x = x) ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  open_map X Tx (orbit_space X G) (orbit_topology X Tx G) (orbit_map X G).
+let X Tx G idG.
+assume HtopX Hhomeo HidG HidAct Hcomp Hinv.
+claim Hfn : forall g:set, g :e G -> function_on g X X.
+{
+  let g. assume HgG.
+  exact (homeomorphism_function_on X Tx X Tx g (Hhomeo g HgG)).
+}
+prove (topology_on X Tx /\ topology_on (orbit_space X G) (orbit_topology X Tx G)) /\
+  function_on (orbit_map X G) X (orbit_space X G) /\
+  (forall U0:set, U0 :e Tx ->
+    image_of (orbit_map X G) U0 :e orbit_topology X Tx G).
+apply andI.
+- prove (topology_on X Tx /\ topology_on (orbit_space X G) (orbit_topology X Tx G)) /\
+    function_on (orbit_map X G) X (orbit_space X G).
+  apply andI.
+  + prove topology_on X Tx /\ topology_on (orbit_space X G) (orbit_topology X Tx G).
+    apply andI.
+    * exact HtopX.
+    * exact (orbit_topology_is_topology X Tx G HtopX Hfn).
+  + exact (orbit_map_function_on X G Hfn).
+- let U0. assume HU0.
+  exact (orbit_map_open_with_group_data
+    X Tx G idG HtopX Hhomeo HidG HidAct Hcomp Hinv U0 HU0).
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
