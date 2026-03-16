@@ -412758,6 +412758,121 @@ exact (connected_image_stays_in_anchored_open_union_member
   Hgx1S2).
 Qed.
 
+(** Helper: an anchored covering transformation maps one connected slice exactly onto the anchored target slice **)
+(** Proven Bob **)
+Theorem covering_transformation_anchor_slice_image_eq :
+  forall E Te B Tb p V slices S1 S2 g x1 x2:set,
+  covering_map E Te B Tb p ->
+  path_connected_space V (subspace_topology B Tb V) ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p V ->
+  S1 :e slices ->
+  S2 :e slices ->
+  homeomorphism S1 (subspace_topology E Te S1) V (subspace_topology B Tb V)
+    (graph S1 (fun z:set => apply_fun p z)) ->
+  homeomorphism S2 (subspace_topology E Te S2) V (subspace_topology B Tb V)
+    (graph S2 (fun z:set => apply_fun p z)) ->
+  g :e covering_transformation_group E Te B Tb p ->
+  x1 :e S1 ->
+  x2 :e S2 ->
+  apply_fun g x1 = x2 ->
+  image_of g S1 = S2.
+let E Te B Tb p V slices S1 S2 g x1 x2.
+assume Hcov HpcV HslicesSub HpdSlices Hunion HS1slice HS2slice HS1Home HS2Home HgG Hx1S1 Hx2S2 Hgx.
+claim Hsub12 : image_of g S1 c= S2.
+{
+  exact (covering_transformation_anchor_slice_image_subset
+    E Te B Tb p V slices S1 S2 g x1 x2
+    Hcov HpcV HslicesSub HpdSlices Hunion HS1slice HS2slice HS1Home HgG Hx1S1 Hx2S2 Hgx).
+}
+claim HtopE : topology_on E Te.
+{ exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HS1open : S1 :e Te.
+{ exact (HslicesSub S1 HS1slice). }
+claim HS2open : S2 :e Te.
+{ exact (HslicesSub S2 HS2slice). }
+claim HS1subE : S1 c= E.
+{ exact (topology_elem_subset E Te S1 HtopE HS1open). }
+claim HS2subE : S2 c= E.
+{ exact (topology_elem_subset E Te S2 HtopE HS2open). }
+claim Hx1E : x1 :e E.
+{ exact (HS1subE x1 Hx1S1). }
+claim HinvEx :
+  exists ginv:set, ginv :e covering_transformation_group E Te B Tb p /\
+    forall z:set, z :e E -> apply_fun ginv (apply_fun g z) = z.
+{ exact (covering_transformation_group_inv_closure E Te B Tb p Hcov g HgG). }
+apply HinvEx.
+let ginv.
+assume HginvPack.
+claim HginvG : ginv :e covering_transformation_group E Te B Tb p.
+{ exact (andEL
+    (ginv :e covering_transformation_group E Te B Tb p)
+    (forall z:set, z :e E -> apply_fun ginv (apply_fun g z) = z)
+    HginvPack). }
+claim HginvAct : forall z:set, z :e E -> apply_fun ginv (apply_fun g z) = z.
+{ exact (andER
+    (ginv :e covering_transformation_group E Te B Tb p)
+    (forall z:set, z :e E -> apply_fun ginv (apply_fun g z) = z)
+    HginvPack). }
+claim Hginv_x2 : apply_fun ginv x2 = x1.
+{
+  rewrite <- Hgx.
+  exact (HginvAct x1 Hx1E).
+}
+claim HimgInvSub : image_of ginv S2 c= S1.
+{
+  exact (covering_transformation_anchor_slice_image_subset
+    E Te B Tb p V slices S2 S1 ginv x2 x1
+    Hcov HpcV HslicesSub HpdSlices Hunion HS2slice HS1slice HS2Home HginvG Hx2S2 Hx1S1 Hginv_x2).
+}
+claim HginvFn : function_on ginv E E.
+{ exact (covering_transformation_group_function_on E Te B Tb p ginv HginvG). }
+claim HgFn : function_on g E E.
+{ exact (covering_transformation_group_function_on E Te B Tb p g HgG). }
+claim HginvHomeo : homeomorphism E Te E Te ginv.
+{ exact (covering_transformation_group_homeomorphism E Te B Tb p ginv HginvG). }
+claim Hsub21 : S2 c= image_of g S1.
+{
+  let z. assume HzS2.
+  claim HzE : z :e E.
+  { exact (HS2subE z HzS2). }
+  claim HginvzS1 : apply_fun ginv z :e S1.
+  {
+    claim HginvzImg : apply_fun ginv z :e image_of ginv S2.
+    { exact (ReplI S2 (fun y:set => apply_fun ginv y) z HzS2). }
+    exact (HimgInvSub (apply_fun ginv z) HginvzImg).
+  }
+  claim HginvzE : apply_fun ginv z :e E.
+  { exact (HginvFn z HzE). }
+  claim HgginvzE : apply_fun g (apply_fun ginv z) :e E.
+  { exact (HgFn (apply_fun ginv z) HginvzE). }
+  claim HginvEq :
+    apply_fun ginv (apply_fun g (apply_fun ginv z)) = apply_fun ginv z.
+  { exact (HginvAct (apply_fun ginv z) HginvzE). }
+  claim HgginvEq : apply_fun g (apply_fun ginv z) = z.
+  {
+    exact (homeomorphism_injective
+      E
+      Te
+      E
+      Te
+      ginv
+      HginvHomeo
+      (apply_fun g (apply_fun ginv z))
+      z
+      HgginvzE
+      HzE
+      HginvEq).
+  }
+  rewrite <- HgginvEq.
+  exact (ReplI S1 (fun y:set => apply_fun g y) (apply_fun ginv z) HginvzS1).
+}
+apply set_ext.
+- exact Hsub12.
+- exact Hsub21.
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
