@@ -412125,6 +412125,68 @@ apply andI.
       X Tx B Tb p S V x' x Hcov HSHome HSsubX Hx'S HxS HpiEq).
 Qed.
 
+(** Helper: orbit_map sends subspace-open subsets of a covering slice to opens in the slice image subspace **)
+(** Proven Bob **)
+Theorem covering_transformation_orbit_map_slice_image_open_in_subspace :
+  forall X Tx B Tb p S U:set,
+  covering_map X Tx B Tb p ->
+  S :e Tx ->
+  U :e subspace_topology X Tx S ->
+  image_of (orbit_map X (covering_transformation_group X Tx B Tb p)) U :e
+    subspace_topology
+      (orbit_space X (covering_transformation_group X Tx B Tb p))
+      (orbit_topology X Tx (covering_transformation_group X Tx B Tb p))
+      (image_of (orbit_map X (covering_transformation_group X Tx B Tb p)) S).
+let X Tx B Tb p S U.
+assume Hcov HSopen HUsub.
+set G := covering_transformation_group X Tx B Tb p.
+set pi := orbit_map X G.
+set OS := orbit_space X G.
+set OT := orbit_topology X Tx G.
+claim HtopX : topology_on X Tx.
+{ exact (covering_map_topology_on_domain X Tx B Tb p Hcov). }
+claim HUsubPow : U :e Power S.
+{
+  exact (SepE1 (Power S)
+    (fun U0:set => exists V0:set, V0 :e Tx /\ U0 = V0 :/\: S)
+    U
+    HUsub).
+}
+claim HUsubS : U c= S.
+{ exact (PowerE S U HUsubPow). }
+claim HexU : exists V0:set, V0 :e Tx /\ U = V0 :/\: S.
+{
+  exact (SepE2 (Power S)
+    (fun U0:set => exists V0:set, V0 :e Tx /\ U0 = V0 :/\: S)
+    U
+    HUsub).
+}
+claim HUtx : U :e Tx.
+{
+  apply HexU.
+  let V0. assume HV0.
+  claim HV0Tx : V0 :e Tx.
+  { exact (andEL (V0 :e Tx) (U = V0 :/\: S) HV0). }
+  claim HUeq : U = V0 :/\: S.
+  { exact (andER (V0 :e Tx) (U = V0 :/\: S) HV0). }
+  rewrite HUeq.
+  exact (topology_binintersect_closed X Tx V0 S HtopX HV0Tx HSopen).
+}
+claim HimgU_OT : image_of pi U :e OT.
+{ exact (covering_transformation_group_orbit_map_open X Tx B Tb p U Hcov HUtx). }
+claim HimgU_sub_imgS : image_of pi U c= image_of pi S.
+{ exact (image_of_mono pi U S HUsubS). }
+claim HimgInt_open :
+  image_of pi U :/\: image_of pi S :e subspace_topology OS OT (image_of pi S).
+{ exact (subspace_topology_intersection_open OS OT (image_of pi S) (image_of pi U) HimgU_OT). }
+claim HimgEq :
+  image_of pi U = image_of pi U :/\: image_of pi S.
+{ exact (eq_symm (image_of pi U :/\: image_of pi S) (image_of pi U)
+    (binintersect_sub_eq_right (image_of pi U) (image_of pi S) HimgU_sub_imgS)). }
+rewrite HimgEq.
+exact HimgInt_open.
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
