@@ -187286,7 +187286,542 @@ claim HnotBothZero :
 (** Remaining trig-sensitive work:
     derive cos(2 pi d) = -1 and sin(2 pi d) = 0 from the anchor equations above,
     then finish the x-case by the addition formulas. **)
-admit.
+claim HbothNonzeroPhase :
+  ~(apply_fun cos_real (mul_SNo two_pi a) = 0) ->
+  ~(apply_fun sin_real (mul_SNo two_pi a) = 0) ->
+  apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1 /\
+  apply_fun sin_real (mul_SNo two_pi d) = 0.
+{
+  admit.
+}
+claim HcosD :
+  apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1.
+{
+  apply (xm (apply_fun cos_real (mul_SNo two_pi a) = 0)).
+  - assume Hca0.
+    claim HsaNe0 :
+      ~(apply_fun sin_real (mul_SNo two_pi a) = 0).
+    {
+      assume Hsa0.
+      exact (HnotBothZero
+        (andI
+          (apply_fun cos_real (mul_SNo two_pi a) = 0)
+          (apply_fun sin_real (mul_SNo two_pi a) = 0)
+          Hca0
+          Hsa0)).
+    }
+    claim HsaEq :
+      mul_SNo
+        (apply_fun sin_real (mul_SNo two_pi a))
+        (apply_fun cos_real (mul_SNo two_pi d))
+      =
+      minus_SNo (apply_fun sin_real (mul_SNo two_pi a)).
+    {
+      rewrite <- (add_SNo_0R
+        (mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (apply_fun cos_real (mul_SNo two_pi d)))
+        (SNo_mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (apply_fun cos_real (mul_SNo two_pi d))
+          (real_SNo
+            (apply_fun sin_real (mul_SNo two_pi a))
+            (sin_real_function_on (mul_SNo two_pi a) HargA))
+          (real_SNo
+            (apply_fun cos_real (mul_SNo two_pi d))
+            (cos_real_function_on (mul_SNo two_pi d) HargD)))).
+      rewrite <- (mul_SNo_zeroL
+        (apply_fun sin_real (mul_SNo two_pi d))
+        (real_SNo
+          (apply_fun sin_real (mul_SNo two_pi d))
+          (sin_real_function_on (mul_SNo two_pi d) HargD))).
+      rewrite <- Hca0.
+      exact HantiExpand1.
+    }
+    claim HrhsMul :
+      minus_SNo (apply_fun sin_real (mul_SNo two_pi a))
+      =
+      mul_SNo
+        (apply_fun sin_real (mul_SNo two_pi a))
+        (minus_SNo 1).
+    {
+      rewrite (mul_SNo_minus_distrR
+        (apply_fun sin_real (mul_SNo two_pi a))
+        1
+        (real_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (sin_real_function_on (mul_SNo two_pi a) HargA))
+        SNo_1).
+      rewrite (mul_SNo_oneR
+        (apply_fun sin_real (mul_SNo two_pi a))
+        (real_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (sin_real_function_on (mul_SNo two_pi a) HargA))).
+      reflexivity.
+    }
+    exact (mul_SNo_nonzero_cancel
+      (apply_fun sin_real (mul_SNo two_pi a))
+      (apply_fun cos_real (mul_SNo two_pi d))
+      (minus_SNo 1)
+      (real_SNo
+        (apply_fun sin_real (mul_SNo two_pi a))
+        (sin_real_function_on (mul_SNo two_pi a) HargA))
+      HsaNe0
+      (real_SNo
+        (apply_fun cos_real (mul_SNo two_pi d))
+        (cos_real_function_on (mul_SNo two_pi d) HargD))
+      (SNo_minus_SNo 1 SNo_1)
+      (eq_i_tra
+        (mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (apply_fun cos_real (mul_SNo two_pi d)))
+        (minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
+        (mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (minus_SNo 1))
+        HsaEq
+        HrhsMul)).
+  - assume HcaNe0.
+    apply (xm (apply_fun sin_real (mul_SNo two_pi a) = 0)).
+    + assume Hsa0.
+      claim HcaEq :
+        mul_SNo
+          (apply_fun cos_real (mul_SNo two_pi a))
+          (apply_fun cos_real (mul_SNo two_pi d))
+        =
+        minus_SNo (apply_fun cos_real (mul_SNo two_pi a)).
+      {
+        rewrite <- (add_SNo_0R
+          (mul_SNo
+            (apply_fun cos_real (mul_SNo two_pi a))
+            (apply_fun cos_real (mul_SNo two_pi d)))
+          (SNo_mul_SNo
+            (apply_fun cos_real (mul_SNo two_pi a))
+            (apply_fun cos_real (mul_SNo two_pi d))
+            (real_SNo
+              (apply_fun cos_real (mul_SNo two_pi a))
+              (cos_real_function_on (mul_SNo two_pi a) HargA))
+            (real_SNo
+              (apply_fun cos_real (mul_SNo two_pi d))
+              (cos_real_function_on (mul_SNo two_pi d) HargD)))).
+        rewrite <- minus_SNo_0.
+        rewrite <- (mul_SNo_zeroL
+          (apply_fun sin_real (mul_SNo two_pi d))
+          (real_SNo
+            (apply_fun sin_real (mul_SNo two_pi d))
+            (sin_real_function_on (mul_SNo two_pi d) HargD))).
+        rewrite <- Hsa0.
+        exact HantiExpand0.
+      }
+      claim HrhsMul :
+        minus_SNo (apply_fun cos_real (mul_SNo two_pi a))
+        =
+        mul_SNo
+          (apply_fun cos_real (mul_SNo two_pi a))
+          (minus_SNo 1).
+      {
+        rewrite (mul_SNo_minus_distrR
+          (apply_fun cos_real (mul_SNo two_pi a))
+          1
+          (real_SNo
+            (apply_fun cos_real (mul_SNo two_pi a))
+            (cos_real_function_on (mul_SNo two_pi a) HargA))
+          SNo_1).
+        rewrite (mul_SNo_oneR
+          (apply_fun cos_real (mul_SNo two_pi a))
+          (real_SNo
+            (apply_fun cos_real (mul_SNo two_pi a))
+            (cos_real_function_on (mul_SNo two_pi a) HargA))).
+        reflexivity.
+      }
+      exact (mul_SNo_nonzero_cancel
+        (apply_fun cos_real (mul_SNo two_pi a))
+        (apply_fun cos_real (mul_SNo two_pi d))
+        (minus_SNo 1)
+        (real_SNo
+          (apply_fun cos_real (mul_SNo two_pi a))
+          (cos_real_function_on (mul_SNo two_pi a) HargA))
+        HcaNe0
+        (real_SNo
+          (apply_fun cos_real (mul_SNo two_pi d))
+          (cos_real_function_on (mul_SNo two_pi d) HargD))
+        (SNo_minus_SNo 1 SNo_1)
+        (eq_i_tra
+          (mul_SNo
+            (apply_fun cos_real (mul_SNo two_pi a))
+            (apply_fun cos_real (mul_SNo two_pi d)))
+          (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)))
+          (mul_SNo
+            (apply_fun cos_real (mul_SNo two_pi a))
+            (minus_SNo 1))
+          HcaEq
+          HrhsMul)).
+    + assume HsaNe0.
+      exact (andEL
+        (apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1)
+        (apply_fun sin_real (mul_SNo two_pi d) = 0)
+        (HbothNonzeroPhase HcaNe0 HsaNe0)).
+}
+claim HsinD :
+  apply_fun sin_real (mul_SNo two_pi d) = 0.
+{
+  apply (xm (apply_fun cos_real (mul_SNo two_pi a) = 0)).
+  - assume Hca0.
+    claim HsaNe0 :
+      ~(apply_fun sin_real (mul_SNo two_pi a) = 0).
+    {
+      assume Hsa0.
+      exact (HnotBothZero
+        (andI
+          (apply_fun cos_real (mul_SNo two_pi a) = 0)
+          (apply_fun sin_real (mul_SNo two_pi a) = 0)
+          Hca0
+          Hsa0)).
+    }
+    claim HnegMul0 :
+      minus_SNo
+        (mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (apply_fun sin_real (mul_SNo two_pi d)))
+      = 0.
+    {
+      rewrite <- minus_SNo_0.
+      rewrite <- Hca0.
+      rewrite <- (add_SNo_0L
+        (minus_SNo
+          (mul_SNo
+            (apply_fun sin_real (mul_SNo two_pi a))
+            (apply_fun sin_real (mul_SNo two_pi d))))
+        (SNo_minus_SNo
+          (mul_SNo
+            (apply_fun sin_real (mul_SNo two_pi a))
+            (apply_fun sin_real (mul_SNo two_pi d)))
+          (SNo_mul_SNo
+            (apply_fun sin_real (mul_SNo two_pi a))
+            (apply_fun sin_real (mul_SNo two_pi d))
+            (real_SNo
+              (apply_fun sin_real (mul_SNo two_pi a))
+              (sin_real_function_on (mul_SNo two_pi a) HargA))
+            (real_SNo
+              (apply_fun sin_real (mul_SNo two_pi d))
+              (sin_real_function_on (mul_SNo two_pi d) HargD))))).
+      rewrite <- (mul_SNo_zeroL
+        (apply_fun cos_real (mul_SNo two_pi d))
+        (real_SNo
+          (apply_fun cos_real (mul_SNo two_pi d))
+          (cos_real_function_on (mul_SNo two_pi d) HargD))).
+      rewrite <- Hca0.
+      exact HantiExpand0.
+    }
+    claim Hmul0 :
+      mul_SNo
+        (apply_fun sin_real (mul_SNo two_pi a))
+        (apply_fun sin_real (mul_SNo two_pi d))
+      = 0.
+    {
+      rewrite <- (minus_SNo_minus_SNo_R
+        (mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (apply_fun sin_real (mul_SNo two_pi d)))
+        (real_mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (sin_real_function_on (mul_SNo two_pi a) HargA)
+          (apply_fun sin_real (mul_SNo two_pi d))
+          (sin_real_function_on (mul_SNo two_pi d) HargD))) at 1.
+      rewrite HnegMul0.
+      exact minus_SNo_0.
+    }
+    exact (mul_SNo_nonzero_cancel
+      (apply_fun sin_real (mul_SNo two_pi a))
+      (apply_fun sin_real (mul_SNo two_pi d))
+      0
+      (real_SNo
+        (apply_fun sin_real (mul_SNo two_pi a))
+        (sin_real_function_on (mul_SNo two_pi a) HargA))
+      HsaNe0
+      (real_SNo
+        (apply_fun sin_real (mul_SNo two_pi d))
+        (sin_real_function_on (mul_SNo two_pi d) HargD))
+      SNo_0
+      (eq_i_tra
+        (mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (apply_fun sin_real (mul_SNo two_pi d)))
+        0
+        (mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          0)
+        Hmul0
+        (eq_symm
+          (mul_SNo
+            (apply_fun sin_real (mul_SNo two_pi a))
+            0)
+          0
+          (mul_SNo_zeroR
+            (apply_fun sin_real (mul_SNo two_pi a))
+            (real_SNo
+              (apply_fun sin_real (mul_SNo two_pi a))
+              (sin_real_function_on (mul_SNo two_pi a) HargA)))))).
+  - assume HcaNe0.
+    apply (xm (apply_fun sin_real (mul_SNo two_pi a) = 0)).
+    + assume Hsa0.
+      claim Hmul0 :
+        mul_SNo
+          (apply_fun cos_real (mul_SNo two_pi a))
+          (apply_fun sin_real (mul_SNo two_pi d))
+        = 0.
+      {
+        claim Htmp :
+          add_SNo
+            (mul_SNo
+              0
+              (apply_fun cos_real (mul_SNo two_pi d)))
+            (mul_SNo
+              (apply_fun cos_real (mul_SNo two_pi a))
+              (apply_fun sin_real (mul_SNo two_pi d)))
+          =
+          0.
+        {
+          claim HleftTmp :
+            add_SNo
+              (mul_SNo
+                0
+                (apply_fun cos_real (mul_SNo two_pi d)))
+              (mul_SNo
+                (apply_fun cos_real (mul_SNo two_pi a))
+                (apply_fun sin_real (mul_SNo two_pi d)))
+            =
+            add_SNo
+              (mul_SNo
+                (apply_fun sin_real (mul_SNo two_pi a))
+                (apply_fun cos_real (mul_SNo two_pi d)))
+              (mul_SNo
+                (apply_fun cos_real (mul_SNo two_pi a))
+                (apply_fun sin_real (mul_SNo two_pi d))).
+          {
+            rewrite <- Hsa0 at 1.
+            reflexivity.
+          }
+          claim HrightTmp :
+            minus_SNo (apply_fun sin_real (mul_SNo two_pi a)) =
+            minus_SNo 0.
+          {
+            rewrite Hsa0.
+            reflexivity.
+          }
+          exact (eq_i_tra
+            (add_SNo
+              (mul_SNo
+                0
+                (apply_fun cos_real (mul_SNo two_pi d)))
+              (mul_SNo
+                (apply_fun cos_real (mul_SNo two_pi a))
+                (apply_fun sin_real (mul_SNo two_pi d))))
+            (add_SNo
+              (mul_SNo
+                (apply_fun sin_real (mul_SNo two_pi a))
+                (apply_fun cos_real (mul_SNo two_pi d)))
+              (mul_SNo
+                (apply_fun cos_real (mul_SNo two_pi a))
+                (apply_fun sin_real (mul_SNo two_pi d))))
+            0
+            HleftTmp
+            (eq_i_tra
+              (add_SNo
+                (mul_SNo
+                  (apply_fun sin_real (mul_SNo two_pi a))
+                  (apply_fun cos_real (mul_SNo two_pi d)))
+                (mul_SNo
+                  (apply_fun cos_real (mul_SNo two_pi a))
+                  (apply_fun sin_real (mul_SNo two_pi d))))
+              (minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
+              0
+              HantiExpand1
+              (eq_i_tra
+                (minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
+                (minus_SNo 0)
+                0
+                HrightTmp
+                minus_SNo_0))).
+        }
+        claim HlhsEq :
+          add_SNo
+            (mul_SNo
+              0
+              (apply_fun cos_real (mul_SNo two_pi d)))
+            (mul_SNo
+              (apply_fun cos_real (mul_SNo two_pi a))
+              (apply_fun sin_real (mul_SNo two_pi d)))
+          =
+          mul_SNo
+            (apply_fun cos_real (mul_SNo two_pi a))
+            (apply_fun sin_real (mul_SNo two_pi d)).
+        {
+          rewrite (mul_SNo_zeroL
+            (apply_fun cos_real (mul_SNo two_pi d))
+            (real_SNo
+              (apply_fun cos_real (mul_SNo two_pi d))
+              (cos_real_function_on (mul_SNo two_pi d) HargD))).
+          exact (add_SNo_0L
+            (mul_SNo
+              (apply_fun cos_real (mul_SNo two_pi a))
+              (apply_fun sin_real (mul_SNo two_pi d)))
+            (SNo_mul_SNo
+              (apply_fun cos_real (mul_SNo two_pi a))
+              (apply_fun sin_real (mul_SNo two_pi d))
+              (real_SNo
+                (apply_fun cos_real (mul_SNo two_pi a))
+                (cos_real_function_on (mul_SNo two_pi a) HargA))
+              (real_SNo
+                (apply_fun sin_real (mul_SNo two_pi d))
+                (sin_real_function_on (mul_SNo two_pi d) HargD)))).
+        }
+        exact (eq_i_tra
+          (mul_SNo
+            (apply_fun cos_real (mul_SNo two_pi a))
+            (apply_fun sin_real (mul_SNo two_pi d)))
+          (add_SNo
+            (mul_SNo
+              0
+              (apply_fun cos_real (mul_SNo two_pi d)))
+            (mul_SNo
+              (apply_fun cos_real (mul_SNo two_pi a))
+              (apply_fun sin_real (mul_SNo two_pi d))))
+          0
+          (eq_symm
+            (add_SNo
+              (mul_SNo
+                0
+                (apply_fun cos_real (mul_SNo two_pi d)))
+              (mul_SNo
+                (apply_fun cos_real (mul_SNo two_pi a))
+                (apply_fun sin_real (mul_SNo two_pi d))))
+            (mul_SNo
+              (apply_fun cos_real (mul_SNo two_pi a))
+              (apply_fun sin_real (mul_SNo two_pi d)))
+            HlhsEq)
+          Htmp).
+      }
+      exact (mul_SNo_nonzero_cancel
+        (apply_fun cos_real (mul_SNo two_pi a))
+        (apply_fun sin_real (mul_SNo two_pi d))
+        0
+        (real_SNo
+          (apply_fun cos_real (mul_SNo two_pi a))
+          (cos_real_function_on (mul_SNo two_pi a) HargA))
+        HcaNe0
+        (real_SNo
+          (apply_fun sin_real (mul_SNo two_pi d))
+          (sin_real_function_on (mul_SNo two_pi d) HargD))
+        SNo_0
+        (eq_i_tra
+          (mul_SNo
+            (apply_fun cos_real (mul_SNo two_pi a))
+            (apply_fun sin_real (mul_SNo two_pi d)))
+          0
+          (mul_SNo
+            (apply_fun cos_real (mul_SNo two_pi a))
+            0)
+          Hmul0
+          (eq_symm
+            (mul_SNo
+              (apply_fun cos_real (mul_SNo two_pi a))
+              0)
+            0
+            (mul_SNo_zeroR
+              (apply_fun cos_real (mul_SNo two_pi a))
+              (real_SNo
+                (apply_fun cos_real (mul_SNo two_pi a))
+                (cos_real_function_on (mul_SNo two_pi a) HargA)))))).
+    + assume HsaNe0.
+      exact (andER
+        (apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1)
+        (apply_fun sin_real (mul_SNo two_pi d) = 0)
+        (HbothNonzeroPhase HcaNe0 HsaNe0)).
+}
+claim Hcoord0 :
+  apply_fun cos_real (add_SNo (mul_SNo two_pi x) (mul_SNo two_pi d)) =
+  minus_SNo (apply_fun cos_real (mul_SNo two_pi x)).
+{
+  rewrite (cos_addition
+    (mul_SNo two_pi x)
+    (mul_SNo two_pi d)
+    HargX
+    HargD).
+  rewrite HcosD.
+  rewrite HsinD.
+  rewrite (mul_SNo_zeroR
+    (apply_fun sin_real (mul_SNo two_pi x))
+    (real_SNo
+      (apply_fun sin_real (mul_SNo two_pi x))
+      (sin_real_function_on (mul_SNo two_pi x) HargX))).
+  rewrite minus_SNo_0.
+  rewrite (mul_SNo_minus_distrR
+    (apply_fun cos_real (mul_SNo two_pi x))
+    1
+    (real_SNo
+      (apply_fun cos_real (mul_SNo two_pi x))
+      (cos_real_function_on (mul_SNo two_pi x) HargX))
+    SNo_1).
+  rewrite (mul_SNo_oneR
+    (apply_fun cos_real (mul_SNo two_pi x))
+    (real_SNo
+      (apply_fun cos_real (mul_SNo two_pi x))
+      (cos_real_function_on (mul_SNo two_pi x) HargX))).
+  rewrite (add_SNo_0R
+    (minus_SNo (apply_fun cos_real (mul_SNo two_pi x)))
+    (SNo_minus_SNo
+      (apply_fun cos_real (mul_SNo two_pi x))
+      (real_SNo
+        (apply_fun cos_real (mul_SNo two_pi x))
+        (cos_real_function_on (mul_SNo two_pi x) HargX)))).
+  reflexivity.
+}
+claim Hcoord1 :
+  apply_fun sin_real (add_SNo (mul_SNo two_pi x) (mul_SNo two_pi d)) =
+  minus_SNo (apply_fun sin_real (mul_SNo two_pi x)).
+{
+  rewrite (sin_addition
+    (mul_SNo two_pi x)
+    (mul_SNo two_pi d)
+    HargX
+    HargD).
+  rewrite HcosD.
+  rewrite HsinD.
+  rewrite (mul_SNo_zeroR
+    (apply_fun cos_real (mul_SNo two_pi x))
+    (real_SNo
+      (apply_fun cos_real (mul_SNo two_pi x))
+      (cos_real_function_on (mul_SNo two_pi x) HargX))).
+  rewrite (mul_SNo_minus_distrR
+    (apply_fun sin_real (mul_SNo two_pi x))
+    1
+    (real_SNo
+      (apply_fun sin_real (mul_SNo two_pi x))
+      (sin_real_function_on (mul_SNo two_pi x) HargX))
+    SNo_1).
+  rewrite (mul_SNo_oneR
+    (apply_fun sin_real (mul_SNo two_pi x))
+    (real_SNo
+      (apply_fun sin_real (mul_SNo two_pi x))
+      (sin_real_function_on (mul_SNo two_pi x) HargX))).
+  rewrite (add_SNo_0R
+    (minus_SNo (apply_fun sin_real (mul_SNo two_pi x)))
+    (SNo_minus_SNo
+      (apply_fun sin_real (mul_SNo two_pi x))
+      (real_SNo
+        (apply_fun sin_real (mul_SNo two_pi x))
+        (sin_real_function_on (mul_SNo two_pi x) HargX)))).
+  reflexivity.
+}
+rewrite HgraphXD.
+rewrite HmulXD.
+rewrite Hcoord0.
+rewrite Hcoord1.
+rewrite HgraphX.
+rewrite tuple_2_0_eq.
+rewrite tuple_2_1_eq.
+reflexivity.
 Admitted.
 
 (** S57 helper: the standard covering path restricts to the usual based loop on S^1. **)
