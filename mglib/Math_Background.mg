@@ -150003,6 +150003,23 @@ exact (s55_retract_B2_no_fixed_point_contradiction
   HnoFixAll).
 Qed.
 
+(** S55 helper: every retract of B2 forbids fixed-point-free continuous self-maps. **)
+(** Proven Bob **)
+Theorem s55_retract_B2_implies_not_exists_fixed_point_free_endomap : forall A:set,
+  retraction_of B2 B2_topology A ->
+  ~(exists f:set,
+    continuous_map A (subspace_topology B2 B2_topology A)
+                   A (subspace_topology B2 B2_topology A) f /\
+    (forall x:set, x :e A -> ~(apply_fun f x = x))).
+let A.
+assume Hretr.
+assume Hexists.
+exact ((s55_exists_fixed_point_free_endomap_implies_no_retraction_B2
+  A
+  Hexists)
+  Hretr).
+Qed.
+
 (** Infrastructure: each nonnegative term of a 3-term finite sum is bounded by the total sum. **)
 (** Proven Charlie **)
 Lemma finite_real_sum_term_le_of_all_nonneg_early55 : forall f:set->set, forall n k:set, nat_p n ->
