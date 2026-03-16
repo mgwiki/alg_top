@@ -188815,6 +188815,49 @@ apply andI.
 - exact s55_S1_antipode_map_moves_basepoint.
 Qed.
 
+(** S55 helper: antipode map has an explicit two-cycle witness on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_two_cycle_witness :
+  exists x:set, exists y:set,
+    x :e S1 /\ y :e S1 /\ x <> y /\
+    apply_fun s55_S1_antipode_map x = y /\
+    apply_fun s55_S1_antipode_map y = x.
+witness S1_basepoint.
+witness (apply_fun s55_S1_antipode_map S1_basepoint).
+prove
+  ((((S1_basepoint :e S1 /\
+      apply_fun s55_S1_antipode_map S1_basepoint :e S1) /\
+      S1_basepoint <> apply_fun s55_S1_antipode_map S1_basepoint) /\
+      apply_fun s55_S1_antipode_map S1_basepoint =
+      apply_fun s55_S1_antipode_map S1_basepoint) /\
+    apply_fun s55_S1_antipode_map
+      (apply_fun s55_S1_antipode_map S1_basepoint) =
+      S1_basepoint).
+apply andI.
+- apply andI.
+  + apply andI.
+    * apply andI.
+      { exact S1_basepoint_in_S1_early. }
+      { rewrite (apply_fun_graph
+          S1
+          (fun z0:set => (minus_SNo (z0 0), minus_SNo (z0 1)))
+          S1_basepoint
+          S1_basepoint_in_S1_early).
+        exact (s55_S1_antipode_in_S1
+          S1_basepoint
+          S1_basepoint_in_S1_early). }
+    * assume Hxy.
+      exact (s55_S1_antipode_map_moves_basepoint
+        (eq_symm
+          S1_basepoint
+          (apply_fun s55_S1_antipode_map S1_basepoint)
+          Hxy)).
+  + reflexivity.
+- exact (s55_S1_antipode_map_involution
+    S1_basepoint
+    S1_basepoint_in_S1_early).
+Qed.
+
 (** S55 helper: antipode map is not the identity graph on S1. **)
 (** Proven Bob **)
 Theorem s55_S1_antipode_map_ne_id_graph :
