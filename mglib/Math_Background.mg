@@ -407424,7 +407424,7 @@ claim Hsame_lc_same_coset : forall c1 c2:set, c1 :e N -> c2 :e N ->
             (continuous_map_in_total_function_space_plain unit_interval unit_interval_topology E Te gamma Hgamma_cont)). }
         exact (SepI (function_space unit_interval E) (fun f:set => loop_at E Te e0 f) gamma Hgamma_fs Hgamma_la). }
       claim Hgamma_FG : path_homotopy_class_loop E Te e0 gamma :e fundamental_group E Te e0.
-      { exact (path_homotopy_class_in_fundamental_group E Te e0 gamma Hgamma_ls). }
+      { exact (loop_at_implies_fundamental_group_member E Te e0 gamma HtopE He0E Hgamma_la). }
       set pof := compose_fun unit_interval gamma p.
       claim Hpof_cont : continuous_map unit_interval unit_interval_topology B Tb pof.
       { exact (composition_continuous unit_interval unit_interval_topology E Te B Tb
@@ -408061,7 +408061,7 @@ apply (group_isomorphism_intro CTG multCTG QGset QGmult phi).
               (continuous_map_in_total_function_space_plain unit_interval unit_interval_topology E Te gamma2 Hgamma2_cont)). }
           exact (SepI (function_space unit_interval E) (fun f:set => loop_at E Te e0 f) gamma2 Hgamma2_fs Hgamma2_la). }
         claim Hgamma2_FG : path_homotopy_class_loop E Te e0 gamma2 :e fundamental_group E Te e0.
-        { exact (path_homotopy_class_in_fundamental_group E Te e0 gamma2 Hgamma2_ls). }
+        { exact (loop_at_implies_fundamental_group_member E Te e0 gamma2 HtopE He0E Hgamma2_la). }
         (** [delta2] :e H0 via induced_homomorphism **)
         set pof2 := compose_fun unit_interval gamma2 p.
         claim Hpof2_cont : continuous_map unit_interval unit_interval_topology B Tb pof2.
