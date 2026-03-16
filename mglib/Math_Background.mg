@@ -410540,17 +410540,15 @@ claim Hp_orbit_const : forall g x:set, g :e G -> x :e X ->
   exact (andER (homeomorphism X Tx X Tx g)
     (forall z:set, z :e X -> apply_fun p (apply_fun g z) = apply_fun p z)
     Hct x HxX). }
-(** Construct k as the induced map from orbit_space to B **)
-(** k(orbit_class) = p(representative) **)
-(** Construct k as: k(cls) = p(representative of cls) **)
-(** k is well-defined because p is constant on orbits (Hp_orbit_const) **)
-(** k is continuous by quotient universal property (s55_continuous_descends_to_quotient_topology) **)
-(** k is a covering map because: **)
-(**   1. p: X -> B is a covering map, so has evenly covered neighborhoods **)
-(**   2. G permutes slices of p (covering transformations permute fibers) **)
-(**   3. orbit_map sends each slice to a quotient-slice in orbit_space **)
-(**   4. The evenly covered structure for k comes from grouping slices by G-orbits **)
-(** Full formal construction is complex; leaving as admit for now. **)
+(** Construct k: orbit_space -> B via orbit-class representative **)
+(** k(pi(x)) = p(x) is well-defined since p(g(x)) = p(x) for all g in G **)
+(** The full construction (k is a covering map) is complex; **)
+(** it requires the quotient universal property + evenly covered construction. **)
+(** Proof structure: **)
+(** 1. k continuous: by s55_continuous_descends_to_quotient_topology **)
+(**    since p = k o pi is continuous and orbit_topology is quotient topology **)
+(** 2. k surjective: from p surjective **)
+(** 3. k evenly covered: from p's slices grouped by G-orbits **)
 admit.
 Admitted.
 
