@@ -218649,10 +218649,58 @@ claim Htransition_exists :
     apply_fun f s :e U :/\: V /\
     (forall t:set, t :e unit_interval -> Rle t s -> apply_fun f t :e U) /\
     (forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V).
-{ (** From the ball chain and coverage analysis: **)
-  (** sup{t : all points in [0,t] are in U-type balls} gives s **)
-  (** with the required monotone coverage properties **)
-  admit. }
+{ (** Supremum argument: let A = {t :e UI : forall t' :e UI, Rle t' t -> f(t') :e U}. **)
+  (** A is non-empty (contains 0), subset of UI. **)
+  (** By unit_interval_R_lub_exists, sup A exists in UI. **)
+  (** The sup gives the transition parameter with monotone coverage. **)
+  set A := {t :e unit_interval | forall t':set, t' :e unit_interval -> Rle t' t -> apply_fun f t' :e U}.
+  (** 0 :e A since f(0) = x0 :e U and [0,0] only contains 0 **)
+  claim H0A : 0 :e A.
+  { apply SepI. exact zero_in_unit_interval.
+    let t'. assume Ht'UI Ht'le0.
+    claim Ht'0 : t' = 0.
+    { admit. (** from Rle t' 0 and t' :e unit_interval, t' >= 0, so t' = 0 **) }
+    rewrite Ht'0. rewrite Hf0. exact Hx0U. }
+  claim HAui : forall a:set, a :e A -> a :e unit_interval.
+  { let a. assume HaA. exact (SepE1 unit_interval (fun t:set => forall t':set, t' :e unit_interval -> Rle t' t -> apply_fun f t' :e U) a HaA). }
+  (** Get supremum s :e unit_interval with R_lub A s **)
+  claim Hsup_ex : exists s:set, s :e unit_interval /\ R_lub A s.
+  { claim Hex0 : exists a0:set, a0 :e A. { witness 0. exact H0A. }
+    exact (unit_interval_R_lub_exists A Hex0 HAui). }
+  apply Hsup_ex. let s. assume Hs_pack.
+  claim HsUI : s :e unit_interval.
+  { exact (andEL (s :e unit_interval) (R_lub A s) Hs_pack). }
+  claim Hlub : R_lub A s.
+  { exact (andER (s :e unit_interval) (R_lub A s) Hs_pack). }
+  claim HsR : s :e R. { exact (unit_interval_sub_R s HsUI). }
+  (** s > 0: A contains a neighborhood of 0 (by continuity of f and openness of U) **)
+  claim Hs_pos : s <> 0.
+  { admit. (** continuity + U open gives neighborhood of 0 in A, so s > 0 **) }
+  (** s < 1: A doesn't contain 1 (since f is not all in U) **)
+  claim Hs_lt1 : s <> 1.
+  { admit. (** if s = 1 then all of UI maps to U, contradicting HnotAllU **) }
+  (** f(s) :e U cap V: boundary argument using openness of U and V **)
+  claim HfsUV : apply_fun f s :e U :/\: V.
+  { admit. (** f(s) must be in both U and V by the sup characterization **) }
+  (** Monotone coverage: [0,s] maps to U **)
+  claim HfU_mono : forall t:set, t :e unit_interval -> Rle t s -> apply_fun f t :e U.
+  { admit. (** from R_lub: t <= s implies exists t' > t in A, so f maps [0,t'] to U **) }
+  (** Monotone coverage: [s,1] maps to V **)
+  claim HfV_mono : forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V.
+  { admit. (** from sup: t > s means t not in A, so some point in [0,t] is not in U, **)
+    (** combined with X = U cup V, f(t) :e V by the open cover structure **) }
+  witness s.
+  apply (and6I
+    (s :e unit_interval) (s <> 0) (s <> 1)
+    (apply_fun f s :e U :/\: V)
+    (forall t:set, t :e unit_interval -> Rle t s -> apply_fun f t :e U)
+    (forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V)).
+  - exact HsUI.
+  - exact Hs_pos.
+  - exact Hs_lt1.
+  - exact HfsUV.
+  - exact HfU_mono.
+  - exact HfV_mono. }
 apply Htransition_exists. let s_trans. assume Hs_pack.
 apply (and6E
   (s_trans :e unit_interval) (s_trans <> 0) (s_trans <> 1)
