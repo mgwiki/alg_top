@@ -82,6 +82,61 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773621713
+Created: 1773621713
+Status: PROPOSED
+
+Refers to Commit:
+  3c49b130def6008d2fd60a5fe410369a040cdad7
+
+Target:
+  Line: 184859
+  Name: setprod_R_R_apply_fun_coords
+
+Problem:
+  The current statement treats an arbitrary point `p :e setprod R R` as though `apply_fun p 0`
+  and `apply_fun p 1` read off its two coordinates. But `apply_fun` is defined as
+  `Eps_i (fun y => (x,y) :e f)`, so it is about graph-membership, while `setprod R R` uses the
+  Sigma/pair model. The narrowed proof state on `main` now makes the mismatch explicit:
+  the remaining root blocker is converting between the graph model
+  `graph 2 (fun i => if i = 0 then p0 else p1)` and the tuple model `(p0,p1)`.
+  As stated, `setprod_R_R_apply_fun_coords` is not the right theorem for the graph-based
+  downstream uses in S57.3.
+
+Proposed Replacement:
+  Replace the theorem statement with the explicit graph-model version:
+  Theorem setprod_R_R_apply_fun_coords : forall p0 p1:set,
+    apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 0 = p0 /\
+    apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 1 = p1.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1773621713 | Charlie: PROPOSED. After commit `3c49b130d`, `mgdeps6.pl` shows the remaining recursive blocker for `thm57_3_antipode_free_implies_antipode_preserving_map` is exactly this helper together with the adjacent graph/pair identity. The issue is representation-level, not topological.
+
+Approvals:
+  - | Alice:
+  - | Bob:
+  - 1773621713 | Charlie: YES
+  - | Dave:
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - | APPROVED / REJECTED
+
+Implemented by:
+  Charlie
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+--------------------------------------------------------
+
 NOTICE ID: 1773425335
 Created: 1773425335
 Status: APPROVED
