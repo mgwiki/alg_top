@@ -188994,6 +188994,83 @@ exact (andI
   Hgp1).
 Admitted.
 
+Theorem graphify_covering_map_R_S1_postcompose_loop_continuous : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  continuous_map unit_interval unit_interval_topology S1 S1_topology
+    (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h).
+let h.
+assume HhCont.
+exact (andEL
+  (continuous_map unit_interval unit_interval_topology S1 S1_topology
+    (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h))
+  (apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 0 =
+    apply_fun h S1_basepoint)
+  (andEL
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology
+      (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) /\
+     apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 0 =
+      apply_fun h S1_basepoint)
+    (apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 1 =
+      apply_fun h S1_basepoint)
+    (graphify_covering_map_R_S1_postcompose_loop_data
+      h
+      HhCont))).
+Admitted.
+
+Theorem graphify_covering_map_R_S1_postcompose_loop_start_data : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  continuous_map unit_interval unit_interval_topology S1 S1_topology
+    (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) /\
+  apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 0 =
+    apply_fun h S1_basepoint.
+let h.
+assume HhCont.
+exact (andEL
+  (continuous_map unit_interval unit_interval_topology S1 S1_topology
+    (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) /\
+   apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 0 =
+    apply_fun h S1_basepoint)
+  (apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 1 =
+    apply_fun h S1_basepoint)
+  (graphify_covering_map_R_S1_postcompose_loop_data
+    h
+    HhCont)).
+Admitted.
+
+Theorem graphify_covering_map_R_S1_postcompose_at_0_value : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 0 =
+    apply_fun h S1_basepoint.
+let h.
+assume HhCont.
+exact (andER
+  (continuous_map unit_interval unit_interval_topology S1 S1_topology
+    (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h))
+  (apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 0 =
+    apply_fun h S1_basepoint)
+  (graphify_covering_map_R_S1_postcompose_loop_start_data
+    h
+    HhCont)).
+Admitted.
+
+Theorem graphify_covering_map_R_S1_postcompose_at_1_value : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 1 =
+    apply_fun h S1_basepoint.
+let h.
+assume HhCont.
+exact (andER
+  (continuous_map unit_interval unit_interval_topology S1 S1_topology
+    (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) /\
+   apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 0 =
+    apply_fun h S1_basepoint)
+  (apply_fun (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h) 1 =
+    apply_fun h S1_basepoint)
+  (graphify_covering_map_R_S1_postcompose_loop_data
+    h
+    HhCont)).
+Admitted.
+
 Theorem graphify_covering_map_R_S1_postcompose_loop_at_value : forall h:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   loop_at S1 S1_topology (apply_fun h S1_basepoint)
@@ -199354,59 +199431,27 @@ claim HcompEpsClass :
     (compose_fun unit_interval eps0 h)
     HpostHom).
 }
-claim HcompPIData :
-  (continuous_map unit_interval unit_interval_topology S1 S1_topology
-    (compose_fun unit_interval pI h) /\
-    apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint) /\
-  apply_fun (compose_fun unit_interval pI h) 1 = apply_fun h S1_basepoint.
-{
-  exact (loop_at_has_loop_data
-    S1
-    S1_topology
-    (apply_fun h S1_basepoint)
-    (compose_fun unit_interval pI h)
-    (graphify_covering_map_R_S1_postcompose_loop_at_value
-      h
-      HhCont)).
-}
 claim HcompPIcont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology
     (compose_fun unit_interval pI h).
 {
-  exact (andEL
-    (continuous_map unit_interval unit_interval_topology S1 S1_topology
-      (compose_fun unit_interval pI h))
-    (apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint)
-    (andEL
-      (continuous_map unit_interval unit_interval_topology S1 S1_topology
-        (compose_fun unit_interval pI h) /\
-        apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint)
-      (apply_fun (compose_fun unit_interval pI h) 1 = apply_fun h S1_basepoint)
-      HcompPIData)).
+  exact (graphify_covering_map_R_S1_postcompose_loop_continuous
+    h
+    HhCont).
 }
 claim HcompPI0 :
   apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint.
 {
-  exact (andER
-    (continuous_map unit_interval unit_interval_topology S1 S1_topology
-      (compose_fun unit_interval pI h))
-    (apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint)
-    (andEL
-      (continuous_map unit_interval unit_interval_topology S1 S1_topology
-        (compose_fun unit_interval pI h) /\
-        apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint)
-      (apply_fun (compose_fun unit_interval pI h) 1 = apply_fun h S1_basepoint)
-      HcompPIData)).
+  exact (graphify_covering_map_R_S1_postcompose_at_0_value
+    h
+    HhCont).
 }
 claim HcompPI1 :
   apply_fun (compose_fun unit_interval pI h) 1 = apply_fun h S1_basepoint.
 {
-  exact (andER
-    (continuous_map unit_interval unit_interval_topology S1 S1_topology
-      (compose_fun unit_interval pI h) /\
-      apply_fun (compose_fun unit_interval pI h) 0 = apply_fun h S1_basepoint)
-    (apply_fun (compose_fun unit_interval pI h) 1 = apply_fun h S1_basepoint)
-    HcompPIData).
+  exact (graphify_covering_map_R_S1_postcompose_at_1_value
+    h
+    HhCont).
 }
 claim HcompGammaClass :
   path_homotopy_class_loop
