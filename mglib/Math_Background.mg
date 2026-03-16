@@ -403612,6 +403612,58 @@ Definition covering_transformation_mult : set -> set -> set -> set -> set -> set
 Definition covering_transformation_id : set -> set -> set -> set -> set -> set :=
   fun E Te B Tb p => graph E (fun x:set => x).
 
+(** Helper: the identity is a covering transformation **)
+(** Proven Alice **)
+Theorem covering_transformation_id_is_ct :
+  forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  covering_transformation E Te B Tb p (covering_transformation_id E Te B Tb p).
+let E Te B Tb p.
+assume Hcov : covering_map E Te B Tb p.
+set idE := covering_transformation_id E Te B Tb p.
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+prove homeomorphism E Te E Te idE /\
+  (forall x:set, x :e E -> apply_fun p (apply_fun idE x) = apply_fun p x).
+apply andI.
+- (** Identity is a homeomorphism **)
+  claim HidCont : continuous_map E Te E Te idE.
+  { exact (identity_continuous E Te HtopE). }
+  prove continuous_map E Te E Te idE /\
+    exists g:set, (continuous_map E Te E Te g /\
+      (forall x:set, x :e E -> apply_fun g (apply_fun idE x) = x)) /\
+      (forall y:set, y :e E -> apply_fun idE (apply_fun g y) = y).
+  apply andI. exact HidCont.
+  witness idE. apply andI.
+  + apply andI.
+    * exact HidCont.
+    * let x. assume HxE.
+      prove apply_fun idE (apply_fun idE x) = x.
+      claim Happ : apply_fun idE x = x.
+      { exact (apply_fun_graph E (fun x0:set => x0) x HxE). }
+      claim HidxE : apply_fun idE x :e E. { rewrite Happ. exact HxE. }
+      claim Happ2 : apply_fun idE (apply_fun idE x) = apply_fun idE x.
+      { exact (apply_fun_graph E (fun x0:set => x0) (apply_fun idE x) HidxE). }
+      rewrite Happ2. exact Happ.
+  + let y. assume HyE.
+    prove apply_fun idE (apply_fun idE y) = y.
+    claim Happ1 : apply_fun idE y = y.
+    { exact (apply_fun_graph E (fun x0:set => x0) y HyE). }
+    claim HidyE : apply_fun idE y :e E. { rewrite Happ1. exact HyE. }
+    claim Happ2 : apply_fun idE (apply_fun idE y) = apply_fun idE y.
+    { exact (apply_fun_graph E (fun x0:set => x0) (apply_fun idE y) HidyE). }
+    exact (eq_i_tra
+      (apply_fun idE (apply_fun idE y))
+      (apply_fun idE y)
+      y
+      Happ2
+      Happ1).
+- (** p(id(x)) = p(x) **)
+  let x. assume HxE.
+  prove apply_fun p (apply_fun (graph E (fun x0:set => x0)) x) = apply_fun p x.
+  rewrite (apply_fun_graph E (fun x0:set => x0) x HxE).
+  reflexivity.
+Qed.
+
 (** Infrastructure: inverse covering transformation **)
 Definition covering_transformation_inv : set -> set -> set -> set -> set -> set :=
   fun E Te B Tb p =>
