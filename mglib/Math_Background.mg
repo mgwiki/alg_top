@@ -409013,6 +409013,61 @@ apply SepI.
   + reflexivity.
 Qed.
 
+(** Helper: orbit map is surjective onto orbit_space **)
+(** Proven Bob **)
+Theorem orbit_map_surjective : forall X G:set,
+  (forall g:set, g :e G -> function_on g X X) ->
+  surjective_map X (orbit_space X G) (orbit_map X G).
+let X G. assume Hfn.
+prove function_on (orbit_map X G) X (orbit_space X G) /\
+  (forall b:set, b :e orbit_space X G -> exists x:set, x :e X /\ apply_fun (orbit_map X G) x = b).
+apply andI.
+- exact (orbit_map_function_on X G Hfn).
+- let b. assume HbB.
+  claim HbPack : exists z:set, z :e X /\ b = {y :e X | orbit_equiv X G z y}.
+  {
+    exact (SepE2
+      (Power X)
+      (fun cls:set => exists z:set, z :e X /\ cls = {y :e X | orbit_equiv X G z y})
+      b
+      HbB).
+  }
+  apply HbPack.
+  let z. assume HzPack.
+  claim HzX : z :e X.
+  { exact (andEL (z :e X) (b = {y :e X | orbit_equiv X G z y}) HzPack). }
+  claim Hbeq : b = {y :e X | orbit_equiv X G z y}.
+  { exact (andER (z :e X) (b = {y :e X | orbit_equiv X G z y}) HzPack). }
+  witness z. apply andI.
+  + exact HzX.
+  + transitivity ({y :e X | orbit_equiv X G z y}).
+    * exact (orbit_map_apply X G z HzX).
+    * exact (eq_symm
+        b
+        ({y :e X | orbit_equiv X G z y})
+        Hbeq).
+Qed.
+
+(** Helper: orbit map is a quotient map onto the orbit space **)
+(** Proven Bob **)
+Theorem orbit_map_quotient_map : forall X Tx G:set,
+  topology_on X Tx ->
+  (forall g:set, g :e G -> function_on g X X) ->
+  quotient_map X Tx (orbit_space X G) (orbit_map X G).
+let X Tx G.
+assume HtopX Hfn.
+exact (topology_on_and_surjective_map_implies_quotient_map
+  X
+  Tx
+  (orbit_space X G)
+  (orbit_map X G)
+  (andI
+    (topology_on X Tx)
+    (surjective_map X (orbit_space X G) (orbit_map X G))
+    HtopX
+    (orbit_map_surjective X G Hfn))).
+Qed.
+
 (** Helper: orbit equivalence is reflexive when idG in G **)
 Theorem orbit_equiv_refl : forall X G idG x:set,
   idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
