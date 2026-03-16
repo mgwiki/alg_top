@@ -187636,6 +187636,44 @@ exact (s55_fixed_point_free_endomap_implies_no_retraction_B2
   s55_S1_antipode_map_fixed_point_free_early).
 Qed.
 
+(** S55 helper: explicit fixed-point-free endomap witness on S1 in the B2-subspace topology. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_endomap_S1_subspace_B2 :
+  exists f:set,
+    continuous_map
+      S1
+      (subspace_topology B2 B2_topology S1)
+      S1
+      (subspace_topology B2 B2_topology S1)
+      f /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)).
+claim HS1TopEq :
+  subspace_topology B2 B2_topology S1 = S1_topology.
+{
+  exact (subspace_topology_transitive_weak
+    (setprod R R)
+    R2_topology
+    B2
+    S1
+    S1_subset_B2).
+}
+claim HantiContSub :
+  continuous_map
+    S1
+    (subspace_topology B2 B2_topology S1)
+    S1
+    (subspace_topology B2 B2_topology S1)
+    s55_S1_antipode_map.
+{
+  rewrite HS1TopEq.
+  exact s55_S1_antipode_map_continuous.
+}
+witness s55_S1_antipode_map.
+apply andI.
+- exact HantiContSub.
+- exact s55_S1_antipode_map_fixed_point_free_early.
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
