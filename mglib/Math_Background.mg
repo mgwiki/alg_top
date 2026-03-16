@@ -190202,6 +190202,40 @@ exact (eq_i_tra
     HzS1)).
 Qed.
 
+(** S55 helper: inverse-graph map moves the S1 basepoint. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_moves_basepoint :
+  apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) S1_basepoint
+  <>
+  S1_basepoint.
+exact (s55_S1_inv_fun_graph_fixed_point_free
+  S1_basepoint
+  S1_basepoint_in_S1_early).
+Qed.
+
+(** S55 helper: inverse-graph map has an explicit moved-point witness on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_inv_fun_graph_nontrivial_witness :
+  exists x:set, x :e S1 /\
+    apply_fun (inv_fun_graph S1 s55_S1_antipode_map S1) x <> x.
+witness S1_basepoint.
+apply andI.
+- exact S1_basepoint_in_S1_early.
+- exact s55_S1_inv_fun_graph_moves_basepoint.
+Qed.
+
+(** S55 helper: there exists an antipode-preserving self-homeomorphism of S1 (inverse-graph witness). **)
+(** Proven Bob **)
+Theorem s55_exists_antipode_preserving_homeomorphism_S1 :
+  exists f:set,
+    antipode_preserving_S1 f /\
+    homeomorphism S1 S1_topology S1 S1_topology f.
+witness (inv_fun_graph S1 s55_S1_antipode_map S1).
+apply andI.
+- exact s55_S1_inv_fun_graph_antipode_preserving.
+- exact s55_S1_inv_fun_graph_homeomorphism.
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
