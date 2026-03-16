@@ -411394,11 +411394,17 @@ witness k. apply andI.
       witness slices_k.
       apply and4I.
       - (** 1. slices_k c= OT: each pi(S) is open in orbit topology **)
-        (** pi is an open map (orbit_map is open), so pi(S) is open when S is open **)
-        (** Each S :e slices_p is open (slices_p c= Tx) **)
-        (** And orbit_map is open (covering_map_is_open gives p is open; orbit_map is open **)
-        (** by the quotient map property when G acts properly discontinuously). **)
-        admit.
+        let W. assume HWsk : W :e slices_k.
+        (** W = image_of pi S for some S :e slices_p **)
+        apply (ReplE_impred slices_p (fun S:set => image_of pi S) W HWsk).
+        let S. assume HSslice : S :e slices_p. assume HWeq : W = image_of pi S.
+        rewrite HWeq.
+        (** S :e slices_p c= Tx, so S is open **)
+        claim HSopen : S :e Tx. { exact (Hslices_sub_Tx S HSslice). }
+        (** orbit_map is open: image_of pi S :e OT **)
+        exact (orbit_map_open X Tx G HtopX
+          (fun g HgG => covering_transformation_group_homeomorphism X Tx B Tb p g HgG)
+          S HSopen).
       - (** 2. pairwise_disjoint slices_k **)
         (** If pi(S1) and pi(S2) have a common point, then S1 and S2 **)
         (** contain orbit-equivalent points, meaning some g in G maps **)
