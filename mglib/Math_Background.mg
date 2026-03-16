@@ -191743,6 +191743,177 @@ exact (s55_exists_fixed_point_free_nonconstant_antipode_preserving_homeomorphism
   s55_exists_fixed_point_free_nonconstant_antipode_preserving_homeomorphism_S1).
 Qed.
 
+(** S55 helper: any two-cycle witness on S1 yields an explicit moved point. **)
+(** Proven Bob **)
+Theorem s55_two_cycle_witness_implies_exists_moved_point_S1 : forall f:set,
+  (exists x:set, exists y:set,
+    ((x :e S1 /\ y :e S1) /\ x <> y) /\
+    apply_fun f x = y /\
+    apply_fun f y = x)
+  ->
+  exists x:set, x :e S1 /\ apply_fun f x <> x.
+let f.
+assume Hcycle.
+apply Hcycle.
+let x.
+assume HyExists.
+apply HyExists.
+let y.
+assume Hpack.
+witness x.
+claim Hleft :
+  (((x :e S1 /\ y :e S1) /\ x <> y) /\
+    apply_fun f x = y).
+{
+  exact (andEL
+    (((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun f x = y)
+    (apply_fun f y = x)
+    Hpack).
+}
+claim HxyPack :
+  ((x :e S1 /\ y :e S1) /\ x <> y).
+{
+  exact (andEL
+    ((x :e S1 /\ y :e S1) /\ x <> y)
+    (apply_fun f x = y)
+    Hleft).
+}
+claim HxS1 : x :e S1.
+{
+  exact (andEL
+    (x :e S1)
+    (y :e S1)
+    (andEL
+      (x :e S1 /\ y :e S1)
+      (x <> y)
+      HxyPack)).
+}
+claim HxyNe : x <> y.
+{
+  exact (andER
+    (x :e S1 /\ y :e S1)
+    (x <> y)
+    HxyPack).
+}
+claim HfxEqY :
+  apply_fun f x = y.
+{
+  exact (andER
+    ((x :e S1 /\ y :e S1) /\ x <> y)
+    (apply_fun f x = y)
+    Hleft).
+}
+apply andI.
+- exact HxS1.
+- assume HfxEqX.
+  claim HyEqX : y = x.
+  {
+    exact (eq_i_tra
+      y
+      (apply_fun f x)
+      x
+      (eq_symm
+        (apply_fun f x)
+        y
+        HfxEqY)
+      HfxEqX).
+  }
+  exact (HxyNe
+    (eq_symm
+      y
+      x
+      HyEqX)).
+Qed.
+
+(** S55 helper: there exists a self-homeomorphism of S1 with an explicit moved point witness. **)
+(** Proven Bob **)
+Theorem s55_exists_moved_point_homeomorphism_S1 :
+  exists f:set,
+    homeomorphism S1 S1_topology S1 S1_topology f /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x.
+apply s55_exists_two_cycle_homeomorphism_S1.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- exact (andEL
+    (homeomorphism S1 S1_topology S1 S1_topology f)
+    (exists x:set, exists y:set,
+      ((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun f x = y /\
+      apply_fun f y = x)
+    Hpack).
+- exact (s55_two_cycle_witness_implies_exists_moved_point_S1
+    f
+    (andER
+      (homeomorphism S1 S1_topology S1 S1_topology f)
+      (exists x:set, exists y:set,
+        ((x :e S1 /\ y :e S1) /\ x <> y) /\
+        apply_fun f x = y /\
+        apply_fun f y = x)
+      Hpack)).
+Qed.
+
+(** S55 helper: there exists an antipode-preserving self-homeomorphism of S1 with an explicit moved point witness. **)
+(** Proven Bob **)
+Theorem s55_exists_moved_point_antipode_preserving_homeomorphism_S1 :
+  exists f:set,
+    (antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x.
+apply s55_exists_two_cycle_antipode_preserving_homeomorphism_S1.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- exact (andEL
+    (antipode_preserving_S1 f /\
+      homeomorphism S1 S1_topology S1 S1_topology f)
+    (exists x:set, exists y:set,
+      ((x :e S1 /\ y :e S1) /\ x <> y) /\
+      apply_fun f x = y /\
+      apply_fun f y = x)
+    Hpack).
+- exact (s55_two_cycle_witness_implies_exists_moved_point_S1
+    f
+    (andER
+      (antipode_preserving_S1 f /\
+        homeomorphism S1 S1_topology S1 S1_topology f)
+      (exists x:set, exists y:set,
+        ((x :e S1 /\ y :e S1) /\ x <> y) /\
+        apply_fun f x = y /\
+        apply_fun f y = x)
+      Hpack)).
+Qed.
+
+(** S55 helper: there exists a fixed-point-free self-homeomorphism of S1 with an explicit moved point witness. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_moved_point_homeomorphism_S1 :
+  exists f:set,
+    (homeomorphism S1 S1_topology S1 S1_topology f /\
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))) /\
+    exists x:set, x :e S1 /\ apply_fun f x <> x.
+apply s55_exists_fixed_point_free_homeomorphism_S1.
+let f.
+assume Hpack.
+witness f.
+apply andI.
+- exact Hpack.
+- apply s55_S1_nonempty.
+  let x.
+  assume HxS1.
+  witness x.
+  apply andI.
+  + exact HxS1.
+  + exact (andER
+      (homeomorphism S1 S1_topology S1 S1_topology f)
+      (forall x0:set, x0 :e S1 -> ~(apply_fun f x0 = x0))
+      Hpack
+      x
+      HxS1).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
