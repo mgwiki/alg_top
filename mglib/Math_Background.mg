@@ -404634,6 +404634,24 @@ apply and3I.
 - exact HgRight.
 Qed.
 
+(** Helper: CTG has composition closure (for orbit_equiv arguments) **)
+(** Proven Alice **)
+Theorem covering_transformation_group_comp_closure :
+  forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  forall g1 g2:set, g1 :e covering_transformation_group E Te B Tb p ->
+    g2 :e covering_transformation_group E Te B Tb p ->
+    exists g3:set, g3 :e covering_transformation_group E Te B Tb p /\
+      forall z:set, z :e E ->
+        apply_fun g3 z = apply_fun g2 (apply_fun g1 z).
+let E Te B Tb p. assume Hcov. let g1 g2. assume Hg1 Hg2.
+witness (compose_fun E g1 g2).
+apply andI.
+- exact (covering_transformation_compose_in_group E Te B Tb p g2 g1 Hg2 Hg1).
+- let z. assume HzE.
+  exact (compose_fun_apply E g1 g2 z HzE).
+Qed.
+
 (** from S81 Definition (line 5025 in algtop.tex): normalizer **)
 (** LATEX VERSION: If H is a subgroup of the group G, then the normalizer of H in G **)
 (** is N(H) = {g in G | gHg^{-1} = H}. **)
