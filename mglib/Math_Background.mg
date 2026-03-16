@@ -404545,6 +404545,28 @@ exact (covering_transformation_value_in_E E Te B Tb p h x
   (covering_transformation_group_mem_ct E Te B Tb p h HhG) HxE).
 Qed.
 
+(** Helper: CTG member is a homeomorphism **)
+(** Proven Alice **)
+Theorem covering_transformation_group_homeomorphism :
+  forall E Te B Tb p h:set,
+  h :e covering_transformation_group E Te B Tb p ->
+  homeomorphism E Te E Te h.
+let E Te B Tb p h. assume HhG.
+exact (covering_transformation_homeomorphism E Te B Tb p h
+  (covering_transformation_group_mem_ct E Te B Tb p h HhG)).
+Qed.
+
+(** Helper: CTG member is continuous **)
+(** Proven Alice **)
+Theorem covering_transformation_group_continuous :
+  forall E Te B Tb p h:set,
+  h :e covering_transformation_group E Te B Tb p ->
+  continuous_map E Te E Te h.
+let E Te B Tb p h. assume HhG.
+exact (covering_transformation_continuous E Te B Tb p h
+  (covering_transformation_group_mem_ct E Te B Tb p h HhG)).
+Qed.
+
 (** Helper: the inverse of a covering transformation is a covering transformation **)
 (** Proven Alice **)
 Theorem covering_transformation_inverse_exists :
