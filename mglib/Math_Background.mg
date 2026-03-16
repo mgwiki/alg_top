@@ -188374,6 +188374,77 @@ apply andI.
     HyS1).
 Qed.
 
+(** S55 helper: explicit fixed-point-free endomap witness on S1 with S1 topology. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_endomap_S1 :
+  exists f:set,
+    continuous_map S1 S1_topology S1 S1_topology f /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)).
+witness s55_S1_antipode_map.
+apply andI.
+- exact s55_S1_antipode_map_continuous.
+- exact s55_S1_antipode_map_fixed_point_free_early.
+Qed.
+
+(** S55 helper: an S1-topology fixed-point-free endomap witness implies no retraction B2 -> S1. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_endomap_S1_implies_no_retraction_B2_S1 :
+  (exists f:set,
+    continuous_map S1 S1_topology S1 S1_topology f /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)))
+  ->
+  ~(retraction_of B2 B2_topology S1).
+assume Hexists.
+claim HS1TopEq :
+  subspace_topology B2 B2_topology S1 = S1_topology.
+{
+  exact (subspace_topology_transitive_weak
+    (setprod R R)
+    R2_topology
+    B2
+    S1
+    S1_subset_B2).
+}
+claim HexistsSub :
+  exists f:set,
+    continuous_map
+      S1
+      (subspace_topology B2 B2_topology S1)
+      S1
+      (subspace_topology B2 B2_topology S1)
+      f /\
+    (forall x:set, x :e S1 -> ~(apply_fun f x = x)).
+{
+  apply Hexists.
+  let f.
+  assume HfPack.
+  claim HfCont :
+    continuous_map S1 S1_topology S1 S1_topology f.
+  {
+    exact (andEL
+      (continuous_map S1 S1_topology S1 S1_topology f)
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+      HfPack).
+  }
+  claim HnoFixAll :
+    forall x:set, x :e S1 -> ~(apply_fun f x = x).
+  {
+    exact (andER
+      (continuous_map S1 S1_topology S1 S1_topology f)
+      (forall x:set, x :e S1 -> ~(apply_fun f x = x))
+      HfPack).
+  }
+  witness f.
+  apply andI.
+  - rewrite HS1TopEq.
+    exact HfCont.
+  - exact HnoFixAll.
+}
+exact (s55_exists_fixed_point_free_endomap_implies_no_retraction_B2
+  S1
+  HexistsSub).
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
