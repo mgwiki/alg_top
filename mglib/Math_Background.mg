@@ -188445,6 +188445,57 @@ exact (s55_exists_fixed_point_free_endomap_implies_no_retraction_B2
   HexistsSub).
 Qed.
 
+(** S55 helper: basepoint of S1 lies on S1. **)
+(** Proven Bob **)
+Theorem S1_basepoint_in_S1_early :
+  S1_basepoint :e S1.
+apply (SepI
+  (setprod R R)
+  (fun p:set =>
+    add_SNo (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1)) = 1)
+  (1, 0)).
+- exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    1
+    0
+    real_1
+    real_0).
+- rewrite tuple_2_0_eq at 1.
+  rewrite tuple_2_0_eq at 1.
+  rewrite tuple_2_1_eq at 1.
+  rewrite tuple_2_1_eq at 1.
+  rewrite (mul_SNo_oneR
+    1
+    SNo_1) at 1.
+  rewrite (mul_SNo_zeroR
+    0
+    SNo_0) at 1.
+  exact (add_SNo_0R
+    1
+    SNo_1).
+Qed.
+
+(** S55 helper: antipode map moves the S1 basepoint. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_moves_basepoint :
+  apply_fun s55_S1_antipode_map S1_basepoint <> S1_basepoint.
+exact (s55_S1_antipode_map_fixed_point_free_early
+  S1_basepoint
+  S1_basepoint_in_S1_early).
+Qed.
+
+(** S55 helper: antipode map has an explicit moved-point witness on S1. **)
+(** Proven Bob **)
+Theorem s55_S1_antipode_map_nontrivial_witness :
+  exists x:set, x :e S1 /\ apply_fun s55_S1_antipode_map x <> x.
+witness S1_basepoint.
+apply andI.
+- exact S1_basepoint_in_S1_early.
+- exact s55_S1_antipode_map_moves_basepoint.
+Qed.
+
 (** The two half-shift points x+1/2 and x-1/2 in R are distinct. **)
 (** Proven Charlie **)
 Lemma real_half_shift_points_distinct_early : forall x:set, x :e R ->
