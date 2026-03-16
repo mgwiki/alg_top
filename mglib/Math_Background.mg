@@ -189326,6 +189326,86 @@ exact (loop_at_pack_left
     HhCont)).
 Admitted.
 
+Theorem graphify_covering_map_R_S1_postcompose_chosen_witness_class_eq : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  path_homotopy_class_loop
+    S1
+    S1_topology
+    (apply_fun h S1_basepoint)
+    (compose_fun unit_interval
+      (Eps_i (fun g:set =>
+        g :e path_homotopy_class_loop
+          S1
+          S1_topology
+          S1_basepoint
+          (graphify_on unit_interval covering_map_R_S1))) h)
+  =
+  path_homotopy_class_loop
+    S1
+    S1_topology
+    (apply_fun h S1_basepoint)
+    (compose_fun unit_interval (graphify_on unit_interval covering_map_R_S1) h).
+let h.
+assume HhCont.
+set pI := graphify_on unit_interval covering_map_R_S1.
+set eps0 := Eps_i (fun g:set =>
+  g :e path_homotopy_class_loop
+    S1
+    S1_topology
+    S1_basepoint
+    pI).
+claim Heps0Hom :
+  path_homotopic
+    S1
+    S1_topology
+    S1_basepoint
+    S1_basepoint
+    pI
+    eps0.
+{
+  exact (path_homotopy_class_loop_chosen_witness_homotopy
+    S1
+    S1_topology
+    S1_basepoint
+    pI
+    graphify_covering_map_R_S1_in_loop_space).
+}
+claim HpostHom :
+  path_homotopic
+    S1
+    S1_topology
+    (apply_fun h S1_basepoint)
+    (apply_fun h S1_basepoint)
+    (compose_fun unit_interval pI h)
+    (compose_fun unit_interval eps0 h).
+{
+  exact (path_homotopic_postcompose
+    S1
+    S1_topology
+    S1
+    S1_topology
+    S1_basepoint
+    S1_basepoint
+    (apply_fun h S1_basepoint)
+    (apply_fun h S1_basepoint)
+    pI
+    eps0
+    h
+    Heps0Hom
+    HhCont
+    (eq_refl (apply_fun h S1_basepoint))
+    (eq_refl (apply_fun h S1_basepoint))).
+}
+symmetry.
+exact (path_homotopy_class_loop_eq_of_path_homotopic
+  S1
+  S1_topology
+  (apply_fun h S1_basepoint)
+  (compose_fun unit_interval pI h)
+  (compose_fun unit_interval eps0 h)
+  HpostHom).
+Admitted.
+
 (** Basepoint image of a continuous self-map of S1 lies in S1. **)
 (** Proven Charlie **)
 Theorem continuous_S1_self_map_basepoint_in_S1 : forall h:set,
@@ -203016,81 +203096,18 @@ claim HhTriv :
     cls0
     Hcls0Mem).
 }
-set eps0 := Eps_i (fun f:set => f :e cls0).
-claim Heps0InCls : eps0 :e cls0.
-{
-  exact (path_homotopy_class_loop_chosen_witness_in_class
-    S1
-    S1_topology
-    S1_basepoint
-    pI
-    graphify_covering_map_R_S1_in_loop_space).
-}
-claim Heps0Hom :
-  path_homotopic
-    S1
-    S1_topology
-    S1_basepoint
-    S1_basepoint
-    pI
-    eps0.
-{
-  exact (path_homotopy_class_loop_chosen_witness_homotopy
-    S1
-    S1_topology
-    S1_basepoint
-    pI
-    graphify_covering_map_R_S1_in_loop_space).
-}
-claim Heps0Loop : eps0 :e loop_space S1 S1_topology S1_basepoint.
-{
-  exact (path_homotopy_class_loop_chosen_witness_loop
-    S1
-    S1_topology
-    S1_basepoint
-    pI
-    graphify_covering_map_R_S1_in_loop_space).
-}
-claim Heps0Cont :
-  continuous_map unit_interval unit_interval_topology S1 S1_topology eps0.
-{
-  exact (loop_space_continuous
-    S1
-    S1_topology
-    S1_basepoint
-    eps0
-    Heps0Loop).
-}
-claim Heps0_0 : apply_fun eps0 0 = S1_basepoint.
-{
-  exact (andEL
-    (apply_fun eps0 0 = S1_basepoint)
-    (apply_fun eps0 1 = S1_basepoint)
-    (loop_space_endpoint_data
-      S1
-      S1_topology
-      S1_basepoint
-      eps0
-      Heps0Loop)).
-}
-claim Heps0_1 : apply_fun eps0 1 = S1_basepoint.
-{
-  exact (andER
-    (apply_fun eps0 0 = S1_basepoint)
-    (apply_fun eps0 1 = S1_basepoint)
-    (loop_space_endpoint_data
-      S1
-      S1_topology
-      S1_basepoint
-      eps0
-      Heps0Loop)).
-}
 claim HcompEpsClass :
   path_homotopy_class_loop
     S1
     S1_topology
     (apply_fun h S1_basepoint)
-    (compose_fun unit_interval eps0 h)
+    (compose_fun unit_interval
+      (Eps_i (fun f:set =>
+        f :e path_homotopy_class_loop
+          S1
+          S1_topology
+          S1_basepoint
+          pI)) h)
   =
   path_homotopy_class_loop
     S1
@@ -203098,40 +203115,9 @@ claim HcompEpsClass :
     (apply_fun h S1_basepoint)
     (compose_fun unit_interval pI h).
 {
-  claim HpostHom :
-    path_homotopic
-      S1
-      S1_topology
-      (apply_fun h S1_basepoint)
-      (apply_fun h S1_basepoint)
-      (compose_fun unit_interval pI h)
-      (compose_fun unit_interval eps0 h).
-  {
-    exact (path_homotopic_postcompose
-      S1
-      S1_topology
-      S1
-      S1_topology
-      S1_basepoint
-      S1_basepoint
-      (apply_fun h S1_basepoint)
-      (apply_fun h S1_basepoint)
-      pI
-      eps0
-      h
-      Heps0Hom
-      HhCont
-      (eq_refl (apply_fun h S1_basepoint))
-      (eq_refl (apply_fun h S1_basepoint))).
-  }
-  symmetry.
-  exact (path_homotopy_class_loop_eq_of_path_homotopic
-    S1
-    S1_topology
-    (apply_fun h S1_basepoint)
-    (compose_fun unit_interval pI h)
-    (compose_fun unit_interval eps0 h)
-    HpostHom).
+  exact (graphify_covering_map_R_S1_postcompose_chosen_witness_class_eq
+    h
+    HhCont).
 }
 claim HcompPIcont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology
