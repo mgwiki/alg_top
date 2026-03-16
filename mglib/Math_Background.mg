@@ -188082,6 +188082,38 @@ rewrite sin_two_pi.
 reflexivity.
 Admitted.
 
+Theorem covering_map_R_S1_compose_at_0_basepoint : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) 0 =
+  apply_fun h S1_basepoint.
+let h.
+assume HhCont.
+rewrite (compose_fun_apply
+  unit_interval
+  covering_map_R_S1
+  h
+  0
+  zero_in_unit_interval).
+rewrite covering_map_R_S1_at_0_basepoint.
+reflexivity.
+Admitted.
+
+Theorem covering_map_R_S1_compose_at_1_basepoint : forall h:set,
+  continuous_map S1 S1_topology S1 S1_topology h ->
+  apply_fun (compose_fun unit_interval covering_map_R_S1 h) 1 =
+  apply_fun h S1_basepoint.
+let h.
+assume HhCont.
+rewrite (compose_fun_apply
+  unit_interval
+  covering_map_R_S1
+  h
+  1
+  one_in_unit_interval).
+rewrite covering_map_R_S1_at_1_basepoint.
+reflexivity.
+Admitted.
+
 Theorem covering_map_R_S1_loop_at_basepoint :
   loop_at S1 S1_topology S1_basepoint covering_map_R_S1.
 apply (loop_at_fold
@@ -191291,26 +191323,16 @@ claim HgammaCont :
 claim Hgamma0 :
   apply_fun gamma 0 = apply_fun h S1_basepoint.
 {
-  rewrite (compose_fun_apply
-    unit_interval
-    covering_map_R_S1
+  exact (covering_map_R_S1_compose_at_0_basepoint
     h
-    0
-    zero_in_unit_interval).
-  rewrite Hcover0.
-  reflexivity.
+    HhCont).
 }
 claim Hgamma1 :
   apply_fun gamma 1 = apply_fun h S1_basepoint.
 {
-  rewrite (compose_fun_apply
-    unit_interval
-    covering_map_R_S1
+  exact (covering_map_R_S1_compose_at_1_basepoint
     h
-    1
-    one_in_unit_interval).
-  rewrite Hcover1.
-  reflexivity.
+    HhCont).
 }
 set pI := graphify_on unit_interval covering_map_R_S1.
 claim HpIfs : pI :e function_space unit_interval S1.
@@ -191796,26 +191818,16 @@ claim HgammaCont :
 claim Hgamma0 :
   apply_fun gamma 0 = apply_fun h S1_basepoint.
 {
-  rewrite (compose_fun_apply
-    unit_interval
-    covering_map_R_S1
+  exact (covering_map_R_S1_compose_at_0_basepoint
     h
-    0
-    zero_in_unit_interval).
-  rewrite Hcover0.
-  reflexivity.
+    HhCont).
 }
 claim Hgamma1 :
   apply_fun gamma 1 = apply_fun h S1_basepoint.
 {
-  rewrite (compose_fun_apply
-    unit_interval
-    covering_map_R_S1
+  exact (covering_map_R_S1_compose_at_1_basepoint
     h
-    1
-    one_in_unit_interval).
-  rewrite Hcover1.
-  reflexivity.
+    HhCont).
 }
 claim HgammaLoop :
   loop_at S1 S1_topology (apply_fun h S1_basepoint) gamma.
