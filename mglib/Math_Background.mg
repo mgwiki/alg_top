@@ -149944,6 +149944,65 @@ exact (s55_retract_B2_no_fixed_point_contradiction
   HnoFixAll).
 Qed.
 
+(** S55 helper: a fixed-point-free continuous self-map obstructs retraction from B2. **)
+(** Proven Bob **)
+Theorem s55_fixed_point_free_endomap_implies_no_retraction_B2 : forall A f:set,
+  continuous_map A (subspace_topology B2 B2_topology A)
+                 A (subspace_topology B2 B2_topology A) f ->
+  (forall x:set, x :e A -> ~(apply_fun f x = x)) ->
+  ~(retraction_of B2 B2_topology A).
+let A f.
+assume HfCont HnoFixAll.
+assume Hretr.
+exact (s55_retract_B2_no_fixed_point_contradiction
+  A
+  f
+  Hretr
+  HfCont
+  HnoFixAll).
+Qed.
+
+(** S55 helper: existence of a fixed-point-free continuous self-map obstructs retraction from B2. **)
+(** Proven Bob **)
+Theorem s55_exists_fixed_point_free_endomap_implies_no_retraction_B2 : forall A:set,
+  (exists f:set,
+    continuous_map A (subspace_topology B2 B2_topology A)
+                   A (subspace_topology B2 B2_topology A) f /\
+    (forall x:set, x :e A -> ~(apply_fun f x = x))) ->
+  ~(retraction_of B2 B2_topology A).
+let A.
+assume Hexists.
+assume Hretr.
+apply Hexists.
+let f.
+assume HfPack.
+claim HfCont :
+  continuous_map A (subspace_topology B2 B2_topology A)
+                 A (subspace_topology B2 B2_topology A) f.
+{
+  exact (andEL
+    (continuous_map A (subspace_topology B2 B2_topology A)
+                   A (subspace_topology B2 B2_topology A) f)
+    (forall x:set, x :e A -> ~(apply_fun f x = x))
+    HfPack).
+}
+claim HnoFixAll :
+  forall x:set, x :e A -> ~(apply_fun f x = x).
+{
+  exact (andER
+    (continuous_map A (subspace_topology B2 B2_topology A)
+                   A (subspace_topology B2 B2_topology A) f)
+    (forall x:set, x :e A -> ~(apply_fun f x = x))
+    HfPack).
+}
+exact (s55_retract_B2_no_fixed_point_contradiction
+  A
+  f
+  Hretr
+  HfCont
+  HnoFixAll).
+Qed.
+
 (** Infrastructure: each nonnegative term of a 3-term finite sum is bounded by the total sum. **)
 (** Proven Charlie **)
 Lemma finite_real_sum_term_le_of_all_nonneg_early55 : forall f:set->set, forall n k:set, nat_p n ->
