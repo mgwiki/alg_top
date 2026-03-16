@@ -216819,7 +216819,16 @@ claim Hdecomp : exists loopU:set, exists loopV:set,
       path_homotopy_class_loop X Tx x0
         (path_concat (compose_fun unit_interval loopU0 incU)
                      (compose_fun unit_interval loopV0 incV)).
-  { admit. }
+  { (** Chain: [f] = [f1X . f2X] (Hf_homotopic) **)
+    (**        = [f1X . gamma-inv . gamma . f2X] (inverse cancellation) **)
+    (**        = [(f1X . gamma-inv) . (gamma . f2X)] (associativity) **)
+    (**        = [incU o loopU0 . incV o loopV0] (inclusions are identity) **)
+    (** This depends on Hf_homotopic and uses standard path algebra: **)
+    (** - path_homotopic_class preserves homotopy **)
+    (** - inverse cancellation: gamma-inv . gamma homotopic to constant **)
+    (** - associativity: path_concat is associative up to homotopy **)
+    (** - inclusion compose: incU o g = g when g maps into U **)
+    admit. }
   witness loopU0. witness loopV0.
   apply andI.
   - apply andI.
