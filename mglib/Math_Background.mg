@@ -188181,6 +188181,82 @@ apply andI.
 - exact covering_map_R_S1_at_1_basepoint.
 Admitted.
 
+Theorem graphify_covering_map_R_S1_in_loop_space :
+  graphify_on unit_interval covering_map_R_S1 :e loop_space S1 S1_topology S1_basepoint.
+set pI := graphify_on unit_interval covering_map_R_S1.
+claim HpIfs : pI :e function_space unit_interval S1.
+{
+  exact (graph_in_function_space
+    unit_interval
+    S1
+    (fun t:set => apply_fun covering_map_R_S1 t)
+    (fun t Ht => covering_map_R_S1_function_on t (unit_interval_sub_R t Ht))).
+}
+claim HpIfun : function_on pI unit_interval S1.
+{
+  exact (function_on_of_function_space
+    pI
+    unit_interval
+    S1
+    HpIfs).
+}
+claim HpIcont :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology pI.
+{
+  exact (continuous_map_congr_on
+    unit_interval
+    unit_interval_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    pI
+    covering_map_R_S1_continuous_on_unit_interval
+    HpIfun
+    (fun t Ht =>
+      eq_symm
+        (apply_fun pI t)
+        (apply_fun covering_map_R_S1 t)
+        (graphify_on_apply unit_interval covering_map_R_S1 t Ht))).
+}
+claim HpI0 : apply_fun pI 0 = S1_basepoint.
+{
+  rewrite (graphify_on_apply
+    unit_interval
+    covering_map_R_S1
+    0
+    zero_in_unit_interval).
+  exact covering_map_R_S1_at_0_basepoint.
+}
+claim HpI1 : apply_fun pI 1 = S1_basepoint.
+{
+  rewrite (graphify_on_apply
+    unit_interval
+    covering_map_R_S1
+    1
+    one_in_unit_interval).
+  exact covering_map_R_S1_at_1_basepoint.
+}
+claim HpIloopAt : loop_at S1 S1_topology S1_basepoint pI.
+{
+  apply (loop_at_fold
+    S1
+    S1_topology
+    S1_basepoint
+    pI).
+  apply andI.
+  - apply andI.
+    + exact HpIcont.
+    + exact HpI0.
+  - exact HpI1.
+}
+exact (SepI
+  (function_space unit_interval S1)
+  (fun g:set => loop_at S1 S1_topology S1_basepoint g)
+  pI
+  HpIfs
+  HpIloopAt).
+Admitted.
+
 (** Early arithmetic helper: x + x = 0 forces x = 0. **)
 (** Proven Charlie **)
 Lemma SNo_double_zero_early : forall x:set, x :e R ->
@@ -193074,79 +193150,47 @@ claim Hgamma1 :
     HgammaPack).
 }
 set pI := graphify_on unit_interval covering_map_R_S1.
-claim HpIfs : pI :e function_space unit_interval S1.
+claim HpIloop : pI :e loop_space S1 S1_topology S1_basepoint.
 {
-  exact (graph_in_function_space
-    unit_interval
-    S1
-    (fun t:set => apply_fun covering_map_R_S1 t)
-    (fun t Ht => covering_map_R_S1_function_on t (unit_interval_sub_R t Ht))).
-}
-claim HpIfun : function_on pI unit_interval S1.
-{
-  exact (function_on_of_function_space
-    pI
-    unit_interval
-    S1
-    HpIfs).
+  exact graphify_covering_map_R_S1_in_loop_space.
 }
 claim HpIcont :
   continuous_map unit_interval unit_interval_topology S1 S1_topology pI.
 {
-  exact (continuous_map_congr_on
-    unit_interval
-    unit_interval_topology
-    S1
-    S1_topology
-    covering_map_R_S1
-    pI
-    covering_map_R_S1_continuous_on_unit_interval
-    HpIfun
-    (fun t Ht =>
-      eq_symm
-        (apply_fun pI t)
-        (apply_fun covering_map_R_S1 t)
-        (graphify_on_apply unit_interval covering_map_R_S1 t Ht))).
-}
-claim HpI0 : apply_fun pI 0 = S1_basepoint.
-{
-  rewrite (graphify_on_apply
-    unit_interval
-    covering_map_R_S1
-    0
-    zero_in_unit_interval).
-  exact Hcover0.
-}
-claim HpI1 : apply_fun pI 1 = S1_basepoint.
-{
-  rewrite (graphify_on_apply
-    unit_interval
-    covering_map_R_S1
-    1
-    one_in_unit_interval).
-  exact Hcover1.
-}
-claim HpIloopAt : loop_at S1 S1_topology S1_basepoint pI.
-{
-  apply (loop_at_fold
+  exact (loop_space_continuous
     S1
     S1_topology
     S1_basepoint
-    pI).
-  apply andI.
-  - apply andI.
-    + exact HpIcont.
-    + exact HpI0.
-  - exact HpI1.
-}
-claim HpIloop : pI :e loop_space S1 S1_topology S1_basepoint.
-{
-  exact (SepI
-    (function_space unit_interval S1)
-    (fun g:set => loop_at S1 S1_topology S1_basepoint g)
     pI
-    HpIfs
-    HpIloopAt).
+    HpIloop).
+}
+claim HpI0 : apply_fun pI 0 = S1_basepoint.
+{
+  exact (loop_at_at_zero
+    S1
+    S1_topology
+    S1_basepoint
+    pI
+    (loop_space_has_loop_at
+      S1
+      S1_topology
+      S1_basepoint
+      pI
+      HpIloop)).
+}
+claim HpI1 : apply_fun pI 1 = S1_basepoint.
+{
+  exact (loop_at_at_one
+    S1
+    S1_topology
+    S1_basepoint
+    pI
+    (loop_space_has_loop_at
+      S1
+      S1_topology
+      S1_basepoint
+      pI
+      HpIloop)).
 }
 set cls0 := path_homotopy_class_loop S1 S1_topology S1_basepoint pI.
 claim Hcls0Mem : cls0 :e fundamental_group S1 S1_topology S1_basepoint.
