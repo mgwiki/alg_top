@@ -413829,7 +413829,9 @@ claim Hk_ex :
     (forall x:set, x :e X ->
       apply_fun k0 (apply_fun pi x) = apply_fun p x).
 {
-  (** This is exactly the quotient-covering existence proved later in ex81_3b. **)
+  (** This is exactly ex81_3b_quotient_covering, but defined later in the file. **)
+  (** Can't reference it here due to file ordering. Need to either: **)
+  (** (a) Move ex81_3b before thm81_6, or (b) duplicate the proof **)
   admit.
 }
 apply Hk_ex.
