@@ -409177,6 +409177,108 @@ apply and3I.
 - witness idG. apply andI. exact HidG. exact (HidAct x HxX).
 Qed.
 
+(** Helper: orbit equivalence is symmetric under inverse-closure data **)
+(** Proven Bob **)
+Theorem orbit_equiv_symmetric : forall X G x y:set,
+  orbit_equiv X G x y ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  orbit_equiv X G y x.
+let X G x y.
+assume Horb Hinv.
+apply (and3E
+  (x :e X)
+  (y :e X)
+  (exists g:set, g :e G /\ apply_fun g x = y)
+  Horb).
+assume HxX HyX Hex.
+apply Hex.
+let g. assume HgPack.
+claim HgG : g :e G.
+{ exact (andEL (g :e G) (apply_fun g x = y) HgPack). }
+claim Hgx : apply_fun g x = y.
+{ exact (andER (g :e G) (apply_fun g x = y) HgPack). }
+apply (Hinv g HgG).
+let ginv. assume HginvPack.
+claim HginvG : ginv :e G.
+{ exact (andEL
+    (ginv :e G)
+    (forall z:set, z :e X -> apply_fun ginv (apply_fun g z) = z)
+    HginvPack). }
+claim HginvAct : forall z:set, z :e X -> apply_fun ginv (apply_fun g z) = z.
+{ exact (andER
+    (ginv :e G)
+    (forall z:set, z :e X -> apply_fun ginv (apply_fun g z) = z)
+    HginvPack). }
+prove y :e X /\ x :e X /\ exists h:set, h :e G /\ apply_fun h y = x.
+apply and3I.
+- exact HyX.
+- exact HxX.
+- witness ginv. apply andI.
+  + exact HginvG.
+  + rewrite <- Hgx.
+    exact (HginvAct x HxX).
+Qed.
+
+(** Helper: orbit equivalence is transitive under composition-closure data **)
+(** Proven Bob **)
+Theorem orbit_equiv_transitive : forall X G x y z:set,
+  orbit_equiv X G x y ->
+  orbit_equiv X G y z ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall w:set, w :e X ->
+      apply_fun g3 w = apply_fun g2 (apply_fun g1 w)) ->
+  orbit_equiv X G x z.
+let X G x y z.
+assume Hxy Hyz Hcomp.
+apply (and3E
+  (x :e X)
+  (y :e X)
+  (exists g1:set, g1 :e G /\ apply_fun g1 x = y)
+  Hxy).
+assume HxX HyX Hex.
+apply (and3E
+  (y :e X)
+  (z :e X)
+  (exists g2:set, g2 :e G /\ apply_fun g2 y = z)
+  Hyz).
+assume _ HzX Hey.
+apply Hex.
+let g1. assume Hg1Pack.
+claim Hg1G : g1 :e G.
+{ exact (andEL (g1 :e G) (apply_fun g1 x = y) Hg1Pack). }
+claim Hg1x : apply_fun g1 x = y.
+{ exact (andER (g1 :e G) (apply_fun g1 x = y) Hg1Pack). }
+apply Hey.
+let g2. assume Hg2Pack.
+claim Hg2G : g2 :e G.
+{ exact (andEL (g2 :e G) (apply_fun g2 y = z) Hg2Pack). }
+claim Hg2y : apply_fun g2 y = z.
+{ exact (andER (g2 :e G) (apply_fun g2 y = z) Hg2Pack). }
+apply (Hcomp g1 g2 Hg1G Hg2G).
+let g3. assume Hg3Pack.
+claim Hg3G : g3 :e G.
+{ exact (andEL
+    (g3 :e G)
+    (forall w:set, w :e X -> apply_fun g3 w = apply_fun g2 (apply_fun g1 w))
+    Hg3Pack). }
+claim Hg3Act : forall w:set, w :e X -> apply_fun g3 w = apply_fun g2 (apply_fun g1 w).
+{ exact (andER
+    (g3 :e G)
+    (forall w:set, w :e X -> apply_fun g3 w = apply_fun g2 (apply_fun g1 w))
+    Hg3Pack). }
+prove x :e X /\ z :e X /\ exists h:set, h :e G /\ apply_fun h x = z.
+apply and3I.
+- exact HxX.
+- exact HzX.
+- witness g3. apply andI.
+  + exact Hg3G.
+  + rewrite (Hg3Act x HxX).
+    rewrite Hg1x.
+    exact Hg2y.
+Qed.
+
 (** Helper: x is in its own orbit **)
 Theorem orbit_self_mem : forall X G idG x:set,
   idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
