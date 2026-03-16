@@ -412394,6 +412394,253 @@ exact (open_map_bijection_homeomorphism
   Hbij).
 Qed.
 
+(** Helper: if k factors p through orbit_map, then k restricted to a slice-image is a homeomorphism to the base slice-open **)
+(** Proven Bob **)
+Theorem covering_transformation_slice_image_homeomorphism_via_factor :
+  forall X Tx B Tb p S V k:set,
+  covering_map X Tx B Tb p ->
+  S :e Tx ->
+  homeomorphism S (subspace_topology X Tx S) V (subspace_topology B Tb V)
+    (graph S (fun t:set => apply_fun p t)) ->
+  function_on k
+    (orbit_space X (covering_transformation_group X Tx B Tb p))
+    B ->
+  (forall x:set, x :e X ->
+    apply_fun k
+      (apply_fun (orbit_map X (covering_transformation_group X Tx B Tb p)) x)
+      = apply_fun p x) ->
+  homeomorphism
+    (image_of (orbit_map X (covering_transformation_group X Tx B Tb p)) S)
+    (subspace_topology
+      (orbit_space X (covering_transformation_group X Tx B Tb p))
+      (orbit_topology X Tx (covering_transformation_group X Tx B Tb p))
+      (image_of (orbit_map X (covering_transformation_group X Tx B Tb p)) S))
+    V
+    (subspace_topology B Tb V)
+    (graph
+      (image_of (orbit_map X (covering_transformation_group X Tx B Tb p)) S)
+      (fun cls:set => apply_fun k cls)).
+let X Tx B Tb p S V k.
+assume Hcov HSopen HSHome Hk_fn Hk_fac.
+set G := covering_transformation_group X Tx B Tb p.
+set pi := orbit_map X G.
+set OS := orbit_space X G.
+set OT := orbit_topology X Tx G.
+set fS := graph S (fun x:set => apply_fun pi x).
+set pS := graph S (fun x:set => apply_fun p x).
+set W := image_of pi S.
+set kW := graph W (fun cls:set => apply_fun k cls).
+claim HtopX : topology_on X Tx.
+{ exact (covering_map_topology_on_domain X Tx B Tb p Hcov). }
+claim HSsubX : S c= X.
+{ exact (topology_elem_subset X Tx S HtopX HSopen). }
+claim Hslice_homeo :
+  homeomorphism
+    S
+    (subspace_topology X Tx S)
+    W
+    (subspace_topology OS OT W)
+    fS.
+{
+  exact (covering_transformation_orbit_map_slice_homeomorphism
+    X Tx B Tb p S V Hcov HSopen HSHome).
+}
+claim HinvPack :
+  exists ginv:set,
+    continuous_map W (subspace_topology OS OT W) S (subspace_topology X Tx S) ginv /\
+    (forall x:set, x :e S -> apply_fun ginv (apply_fun fS x) = x) /\
+    (forall y:set, y :e W -> apply_fun fS (apply_fun ginv y) = y).
+{
+  exact (homeomorphism_inverse_package
+    S
+    (subspace_topology X Tx S)
+    W
+    (subspace_topology OS OT W)
+    fS
+    Hslice_homeo).
+}
+apply HinvPack.
+let ginv.
+assume HginvPack.
+claim Hginv_cont :
+  continuous_map W (subspace_topology OS OT W) S (subspace_topology X Tx S) ginv.
+{
+  claim Hginv_leftpack :
+    continuous_map W (subspace_topology OS OT W) S (subspace_topology X Tx S) ginv /\
+    (forall x:set, x :e S -> apply_fun ginv (apply_fun fS x) = x).
+  {
+    exact (andEL
+      (continuous_map W (subspace_topology OS OT W) S (subspace_topology X Tx S) ginv /\
+        (forall x:set, x :e S -> apply_fun ginv (apply_fun fS x) = x))
+      (forall y:set, y :e W -> apply_fun fS (apply_fun ginv y) = y)
+      HginvPack).
+  }
+  exact (andEL
+    (continuous_map W (subspace_topology OS OT W) S (subspace_topology X Tx S) ginv)
+    (forall x:set, x :e S -> apply_fun ginv (apply_fun fS x) = x)
+    Hginv_leftpack).
+}
+claim Hginv_left : forall x:set, x :e S -> apply_fun ginv (apply_fun fS x) = x.
+{
+  claim Hginv_leftpack :
+    continuous_map W (subspace_topology OS OT W) S (subspace_topology X Tx S) ginv /\
+    (forall x:set, x :e S -> apply_fun ginv (apply_fun fS x) = x).
+  {
+    exact (andEL
+      (continuous_map W (subspace_topology OS OT W) S (subspace_topology X Tx S) ginv /\
+        (forall x:set, x :e S -> apply_fun ginv (apply_fun fS x) = x))
+      (forall y:set, y :e W -> apply_fun fS (apply_fun ginv y) = y)
+      HginvPack).
+  }
+  exact (andER
+    (continuous_map W (subspace_topology OS OT W) S (subspace_topology X Tx S) ginv)
+    (forall x:set, x :e S -> apply_fun ginv (apply_fun fS x) = x)
+    Hginv_leftpack).
+}
+claim Hginv_right : forall y:set, y :e W -> apply_fun fS (apply_fun ginv y) = y.
+{
+  exact (andER
+    (continuous_map W (subspace_topology OS OT W) S (subspace_topology X Tx S) ginv /\
+      (forall x:set, x :e S -> apply_fun ginv (apply_fun fS x) = x))
+    (forall y:set, y :e W -> apply_fun fS (apply_fun ginv y) = y)
+    HginvPack).
+}
+claim Hginv_homeo :
+  homeomorphism
+    W
+    (subspace_topology OS OT W)
+    S
+    (subspace_topology X Tx S)
+    ginv.
+{
+  exact (homeomorphism_inverse_is_homeomorphism
+    S
+    (subspace_topology X Tx S)
+    W
+    (subspace_topology OS OT W)
+    fS
+    ginv
+    Hslice_homeo
+    Hginv_cont
+    Hginv_left
+    Hginv_right).
+}
+set comp := compose_fun W ginv pS.
+claim Hcomp_homeo :
+  homeomorphism
+    W
+    (subspace_topology OS OT W)
+    V
+    (subspace_topology B Tb V)
+    comp.
+{
+  exact (homeomorphism_compose
+    W
+    (subspace_topology OS OT W)
+    S
+    (subspace_topology X Tx S)
+    V
+    (subspace_topology B Tb V)
+    ginv
+    pS
+    Hginv_homeo
+    HSHome).
+}
+claim HkW_fn : function_on kW W V.
+{
+  let cls. assume HclsW.
+  rewrite (apply_fun_graph W (fun cls0:set => apply_fun k cls0) cls HclsW).
+  apply (ReplE_impred S (fun x:set => apply_fun pi x) cls HclsW).
+  let x. assume HxS Hclseq.
+  claim HxX : x :e X.
+  { exact (HSsubX x HxS). }
+  rewrite Hclseq.
+  rewrite (Hk_fac x HxX).
+  claim HpSxV : apply_fun pS x :e V.
+  {
+    exact (homeomorphism_function_on
+      S
+      (subspace_topology X Tx S)
+      V
+      (subspace_topology B Tb V)
+      pS
+      HSHome
+      x
+      HxS).
+  }
+  claim HpxV : apply_fun p x :e V.
+  {
+    rewrite <- (apply_fun_graph S (fun x0:set => apply_fun p x0) x HxS).
+    exact HpSxV.
+  }
+  exact HpxV.
+}
+claim Hagree : forall cls:set, cls :e W -> apply_fun comp cls = apply_fun kW cls.
+{
+  let cls. assume HclsW.
+  claim HginvS : apply_fun ginv cls :e S.
+  {
+    exact (continuous_map_value_in_space
+      W
+      (subspace_topology OS OT W)
+      S
+      (subspace_topology X Tx S)
+      ginv
+      cls
+      Hginv_cont
+      HclsW).
+  }
+  claim HginvX : apply_fun ginv cls :e X.
+  { exact (HSsubX (apply_fun ginv cls) HginvS). }
+  claim Hpi_eq : apply_fun pi (apply_fun ginv cls) = cls.
+  {
+    rewrite <- (apply_fun_graph S (fun x:set => apply_fun pi x) (apply_fun ginv cls) HginvS).
+    exact (Hginv_right cls HclsW).
+  }
+  claim Hk_eq : apply_fun k cls = apply_fun p (apply_fun ginv cls).
+  {
+    claim Hk_cls :
+      apply_fun k cls = apply_fun k (apply_fun pi (apply_fun ginv cls)).
+    {
+      rewrite Hpi_eq.
+      reflexivity.
+    }
+    claim Hk_fact_ginv :
+      apply_fun k (apply_fun pi (apply_fun ginv cls)) = apply_fun p (apply_fun ginv cls).
+    {
+      exact (Hk_fac (apply_fun ginv cls) HginvX).
+    }
+    exact (eq_i_tra
+      (apply_fun k cls)
+      (apply_fun k (apply_fun pi (apply_fun ginv cls)))
+      (apply_fun p (apply_fun ginv cls))
+      Hk_cls
+      Hk_fact_ginv).
+  }
+  claim Hcomp_eq : apply_fun comp cls = apply_fun pS (apply_fun ginv cls).
+  { exact (compose_fun_apply W ginv pS cls HclsW). }
+  claim HpS_eq : apply_fun pS (apply_fun ginv cls) = apply_fun p (apply_fun ginv cls).
+  { exact (apply_fun_graph S (fun x:set => apply_fun p x) (apply_fun ginv cls) HginvS). }
+  claim HkW_eq : apply_fun kW cls = apply_fun k cls.
+  { exact (apply_fun_graph W (fun cls0:set => apply_fun k cls0) cls HclsW). }
+  rewrite Hcomp_eq.
+  rewrite HpS_eq.
+  rewrite <- Hk_eq.
+  rewrite <- HkW_eq.
+  reflexivity.
+}
+exact (homeomorphism_congr_on
+  W
+  (subspace_topology OS OT W)
+  V
+  (subspace_topology B Tb V)
+  comp
+  kW
+  Hcomp_homeo
+  HkW_fn
+  Hagree).
+Qed.
+
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
 Theorem thm81_5_properly_discontinuous_covering :
