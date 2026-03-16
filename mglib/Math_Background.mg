@@ -407982,6 +407982,29 @@ Theorem ex81_3b_quotient_covering :
       B Tb k /\
     (forall x:set, x :e X ->
       apply_fun k (apply_fun (orbit_map X G) x) = apply_fun p x).
+let X Tx B Tb p.
+assume Hcov : covering_map X Tx B Tb p.
+assume Hpc : path_connected_space X Tx.
+assume Hlpc : locally_path_connected X Tx.
+set G := covering_transformation_group X Tx B Tb p.
+claim HtopX : topology_on X Tx. { exact (path_connected_space_topology X Tx Hpc). }
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain X Tx B Tb p Hcov). }
+claim Hcont_p : continuous_map X Tx B Tb p. { exact (covering_map_continuous X Tx B Tb p Hcov). }
+claim Hfn_p : function_on p X B. { exact (continuous_map_function_on X Tx B Tb p Hcont_p). }
+(** p is constant on G-orbits: p(g(x)) = p(x) for all g in G **)
+claim Hp_orbit_const : forall g x:set, g :e G -> x :e X ->
+  apply_fun p (apply_fun g x) = apply_fun p x.
+{ let g x. assume HgG HxX.
+  claim Hct : covering_transformation X Tx B Tb p g.
+  { exact (SepE2 (function_space X X) (fun h:set => covering_transformation X Tx B Tb p h) g HgG). }
+  exact (andER (homeomorphism X Tx X Tx g)
+    (forall z:set, z :e X -> apply_fun p (apply_fun g z) = apply_fun p z)
+    Hct x HxX). }
+(** Construct k as the induced map from orbit_space to B **)
+(** k(orbit_class) = p(representative) **)
+(** The full construction and verification that k is a covering map **)
+(** requires showing orbit_space/orbit_topology has the right structure **)
+(** when G acts properly discontinuously. **)
 admit.
 Admitted.
 
