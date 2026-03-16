@@ -409417,6 +409417,69 @@ apply set_ext.
   + exact Hxz.
 Qed.
 
+(** Helper: equality of orbit_map values implies orbit equivalence **)
+(** Proven Bob **)
+Theorem orbit_map_eq_implies_orbit_equiv : forall X G idG x y:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  x :e X -> y :e X ->
+  apply_fun (orbit_map X G) x = apply_fun (orbit_map X G) y ->
+  orbit_equiv X G x y.
+let X G idG x y.
+assume HidG HidAct HxX HyX Heq.
+claim Hy_in_y_orbit : y :e apply_fun (orbit_map X G) y.
+{
+  rewrite (orbit_map_apply X G y HyX).
+  apply SepI.
+  - exact HyX.
+  - exact (orbit_equiv_refl X G idG y HidG HidAct HyX).
+}
+claim Hy_in_x_orbit : y :e apply_fun (orbit_map X G) x.
+{
+  exact (mem_eqL
+    y
+    (apply_fun (orbit_map X G) x)
+    (apply_fun (orbit_map X G) y)
+    Heq
+    Hy_in_y_orbit).
+}
+claim Hy_in_x_sep : y :e {w :e X | orbit_equiv X G x w}.
+{
+  exact (mem_eqR
+    y
+    (apply_fun (orbit_map X G) x)
+    {w :e X | orbit_equiv X G x w}
+    (orbit_map_apply X G x HxX)
+    Hy_in_x_orbit).
+}
+exact (SepE2 X (fun w:set => orbit_equiv X G x w) y Hy_in_x_sep).
+Qed.
+
+(** Helper: orbit_map equality is equivalent to orbit equivalence **)
+(** Proven Bob **)
+Theorem orbit_map_eq_iff_orbit_equiv : forall X G idG x y:set,
+  idG :e G ->
+  (forall z:set, z :e X -> apply_fun idG z = z) ->
+  (forall g1 g2:set, g1 :e G -> g2 :e G ->
+    exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+      apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+  (forall g0:set, g0 :e G ->
+    exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+      apply_fun ginv (apply_fun g0 z) = z) ->
+  x :e X -> y :e X ->
+  (apply_fun (orbit_map X G) x = apply_fun (orbit_map X G) y
+   <->
+   orbit_equiv X G x y).
+let X G idG x y.
+assume HidG HidAct Hcomp Hinv HxX HyX.
+apply iffI.
+- assume Heq.
+  exact (orbit_map_eq_implies_orbit_equiv X G idG x y
+    HidG HidAct HxX HyX Heq).
+- assume Hxy.
+  exact (orbit_map_eq_of_orbit_equiv X G x y Hxy Hcomp Hinv).
+Qed.
+
 (** Helper: x is in its own orbit **)
 Theorem orbit_self_mem : forall X G idG x:set,
   idG :e G -> (forall z:set, z :e X -> apply_fun idG z = z) ->
