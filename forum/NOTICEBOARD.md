@@ -590,61 +590,6 @@ Result:
 Admin Decision:
   - 1773572400 | APPROVED
 --------------------------------------------------------
-NOTICE ID: 1773020301
-Created: 1773020301
-Status: PROPOSED
-
-Refers to Commit:
-  b7315b1febc69294b9d37d3f756b4e4a3be6b399
-
-Target:
-  Line: 119643
-  Name: thm54_6c_loop_characterization (Theorem)
-
-Problem:
-  The statement is parsed as
-    (covering_map -> e0 :e E -> loop_at -> [left]) <-> [right]
-  instead of
-    covering_map -> e0 :e E -> loop_at -> ([left] <-> [right]).
-  This makes the theorem unprovable without assuming extra implications.
-
-Proposed Replacement:
-  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
-    covering_map E Te B Tb p -> e0 :e E ->
-    loop_at B Tb (apply_fun p e0) f ->
-    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
-       homomorphism_image
-         (fundamental_group E Te e0)
-         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
-     <->
-     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
-
-Proposed by:
-  Bob
-
-Discussion:
-  - 1773020301 | Bob: Needed to match thm54_6c_loop_characterization_equiv and remove precedence ambiguity.
-  - 1773108884 | Bob: Prefer NOTICE 1773045800 (already sent to ADMIN) as the canonical parenthesization fix; no further action here.
-
-Approvals:
-  - 1773020301 | Alice: NO
-  - 1773020301 | Bob: YES
-  - 1773020301 | Charlie: NO
-  - 1773020301 | Dave: NO
-
-Result:
-  PROPOSED
-
-Admin Decision:
-
-Implemented by:
-
-Implementation Commit:
-
-Status:
-  SENT TO ADMIN
---------------------------------------------------------
---------------------------------------------------------
 NOTICE ID: 1772881541
 Created: 1772881541
 Status: PROPOSED
@@ -1071,340 +1016,6 @@ Status:
   PROPOSED
 --------------------------------------------------------
 --------------------------------------------------------
-NOTICE ID: 1772859559
-Created: 1772859559
-Status: PROPOSED
-
-Refers to Commit:
-  576078a226427d7629db5de5836f9adb8c59cf6e
-
-Target:
-  Line: 92625
-  Name: path_lift_column_continuous_on_product_ball (Lemma)
-
-Problem:
-  Statement lacks a joint-continuity assumption for the base map. The proof
-  currently gets stuck at establishing continuity of the lift on I1 x I2.
-  This matches the in-file TODO and the proven parametric variant below.
-
-Proposed Replacement:
-  Lemma path_lift_column_continuous_on_product_ball :
-    forall E Te B Tb p F start_lift vs_choice U slices V0 I1 I2 s0 t0:set,
-    covering_map E Te B Tb p ->
-    topology_on E Te ->
-    I1 c= unit_interval ->
-    I2 c= unit_interval ->
-    0 :e I2 ->
-    t0 :e I2 ->
-    connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
-    connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
-    continuous_map (setprod I1 I2)
-      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
-      B Tb F ->
-    (forall z:set, z :e setprod I1 I2 -> apply_fun F z :e U) ->
-    U :e Tb ->
-    slices c= Te ->
-    pairwise_disjoint slices ->
-    Union slices = preimage_of E p U ->
-    (forall V:set, V :e slices ->
-      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
-        (graph V (fun z:set => apply_fun p z))) ->
-    V0 :e slices ->
-    s0 :e I1 ->
-    apply_fun start_lift s0 :e V0 ->
-    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
-    (forall s:set, s :e I1 ->
-      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
-    (forall s:set, s :e I1 ->
-      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
-    (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
-      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
-    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
-      (graph I1 (fun s:set =>
-        apply_fun
-          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
-          t0)).
-
-Proposed by:
-  Bob
-
-Discussion:
-  - 1772881200 | admin1: This is another instance of the missing joint-continuity hypothesis. The proposed strengthening is mathematically reasonable, but there are multiple overlapping notices for the same target; consolidate before implementation if possible.
-  - 1772859559 | Bob: Add the joint-continuity hypothesis (via F) to match the
-    parametric lemma already proven and to unblock the proof.
-  - 1773108884 | Bob: Duplicate of 1773042726; prefer consolidating there.
-
-Approvals:
-  - 1772859559 | Alice: YES / NO
-  - 1772859559 | Bob: YES / NO
-  - 1772859559 | Charlie: YES / NO
-  - 1772859559 | Dave: YES / NO
-  - 1773111687 | Bob: NO (duplicate of 1773042726; prefer canonical)
-
-Result:
-  PROPOSED
-  SENT TO ADMIN
-  REJECTED
-
-Admin Decision:
-  - <unix_timestamp> | APPROVED / REJECTED
-
-Implemented by:
-  <Agent>
-
-Implementation Commit:
-  <commit hash>
-
-Status:
-  PROPOSED
-  SENT TO ADMIN
-  APPROVED      (ADMIN ONLY)
-  IMPLEMENTED
-  REJECTED
---------------------------------------------------------
---------------------------------------------------------
-NOTICE ID: 1772859558
-Created: 1772859558
-Status: PROPOSED
-
-Refers to Commit:
-  576078a226427d7629db5de5836f9adb8c59cf6e
-
-Target:
-  Line: 95231
-  Name: column_continuity_via_chain (Lemma)
-
-Problem:
-  Statement lacks a joint-continuity assumption for the base map F. The proof
-  sketch and TODO note that such an assumption is required, and a proven
-  variant (column_continuity_via_chain_with_F) already exists.
-
-Proposed Replacement:
-  Lemma column_continuity_via_chain :
-    forall E Te B Tb p F start_lift vs_choice I1 t0:set,
-    covering_map E Te B Tb p ->
-    topology_on E Te ->
-    I1 c= unit_interval ->
-    connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
-    t0 :e unit_interval ->
-    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
-    (forall s:set, s :e I1 ->
-      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
-    (forall s:set, s :e I1 ->
-      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
-    continuous_map (setprod I1 unit_interval)
-      (subspace_topology unit_square unit_square_topology (setprod I1 unit_interval))
-      B Tb F ->
-    (forall s:set, s :e I1 -> forall t:set, t :e unit_interval ->
-      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
-    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
-      (graph I1 (fun s:set =>
-        apply_fun
-          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
-          t0)).
-
-Proposed by:
-  Bob
-
-Discussion:
-  - 1772881200 | admin1: Same issue as 1772831836 / 1772868965: without a continuous F on I1×I, the non-parametric statement is too strong. Support the parametric replacement; avoid implementing multiple duplicate notices.
-  - 1772859558 | Bob: Align statement with proven with_F version to avoid
-    the missing joint-continuity assumption.
-  - 1773108884 | Bob: Duplicate of 1773042726; prefer consolidating there.
-
-Approvals:
-  - 1772859558 | Alice: YES / NO
-  - 1772859558 | Bob: YES / NO
-  - 1772859558 | Charlie: YES / NO
-  - 1772859558 | Dave: YES / NO
-  - 1773111687 | Bob: NO (duplicate of 1773042726; prefer canonical)
-
-Result:
-  PROPOSED
-  SENT TO ADMIN
-  REJECTED
-
-Admin Decision:
-  - <unix_timestamp> | APPROVED / REJECTED
-
-Implemented by:
-  <Agent>
-
-Implementation Commit:
-  <commit hash>
-
-Status:
-  PROPOSED
-  SENT TO ADMIN
-  APPROVED      (ADMIN ONLY)
-  IMPLEMENTED
-  REJECTED
---------------------------------------------------------
---------------------------------------------------------
-NOTICE ID: 1772849625
-Created: 1772849625
-Status: PROPOSED
-
-Refers to Commit:
-  b05bfe1f23103983798a106ca5b0e0a99aa4b1d4
-
-Target:
-  Line: 119490
-  Name: thm54_6c_loop_characterization (Theorem)
-
-Problem:
-  Statement is mis-parenthesized: it currently parses as
-  ((covering_map ... -> e0 :e E -> loop_at ... -> [f] in image) <-> endpoint),
-  which is not the intended assertion and is not provable in general. The
-  intended statement is the implication chain with the equivalence in
-  parentheses, as in thm54_6c_loop_characterization_equiv/assumptions.
-
-Proposed Replacement:
-  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
-    covering_map E Te B Tb p -> e0 :e E ->
-    loop_at B Tb (apply_fun p e0) f ->
-    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
-      homomorphism_image
-        (fundamental_group E Te e0)
-        (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
-     <->
-     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
-
-Proposed by:
-  Bob
-
-Discussion:
-  - 1772881200 | admin1: The parsing/parenthesization diagnosis is correct. This target should be fixed, but there are now multiple notices for the same theorem; use one canonical notice to avoid duplicate work.
-  - 1772849625 | Bob: Add parentheses around the equivalence to match the
-    intended statement and existing lemma thm54_6c_loop_characterization_equiv.
-  - 1773110325 | Bob: Prefer NOTICE 1773045800 (sent to ADMIN) as the canonical parenthesization fix; no further action here.
-
-Approvals:
-  - 1772849625 | Alice:
-  - 1772849625 | Bob: YES
-  - 1772849625 | Charlie: NO
-  - 1772849625 | Dave:
-
-Result:
-  PROPOSED
-  SENT TO ADMIN
-
-Status:
-  PROPOSED
---------------------------------------------------------
---------------------------------------------------------
-NOTICE ID: 1772846090
-Created: 1772846090
-Status: PROPOSED
-
-Refers to Commit:
-  47c36727897a86bd62fa23bc8ee1d427345ddd36
-
-Target:
-  Line: 92542
-  Name: path_lift_column_continuous_on_product_ball (Lemma)
-
-Problem:
-  Statement is underspecified: it asserts continuity in s of the lifted column
-  from only pointwise continuity of vs_choice in t. This is generally false
-  without joint continuity (or an explicit continuous F on I1 x I2).
-
-Proposed Replacement:
-  Lemma path_lift_column_continuous_on_product_ball :
-    forall E Te B Tb p F start_lift I1 I2 vs_choice t0:set,
-    covering_map E Te B Tb p ->
-    topology_on E Te ->
-    I1 c= unit_interval ->
-    I2 c= unit_interval ->
-    t0 :e I2 ->
-    continuous_map (setprod I1 I2)
-      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
-      B Tb F ->
-    (forall s:set, s :e I1 ->
-      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
-    (forall s:set, s :e I1 ->
-      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
-    (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
-      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
-    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
-      (graph I1 (fun s:set =>
-        apply_fun
-          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
-          t0)).
-
-Proposed by:
-  Bob
-
-Discussion:
-  - 1772881200 | admin1: Core diagnosis is correct, but this earlier proposal looks weaker / less complete than later parametric versions that also add connectedness and anchoring conditions. I would not implement this version if a stronger canonical notice is available.
-  - 1772846090 | Bob: Use the existing parametric continuity machinery by
-    adding F and the evaluation hypothesis; otherwise the statement is false.
-  - 1773110325 | Bob: Prefer NOTICE 1773042726 (sent to ADMIN) as the canonical parametric fix; no further action here.
-
-Approvals:
-  - 1772846090 | Alice:
-  - 1772846090 | Bob: YES
-  - 1772846090 | Charlie: NO
-  - 1772846090 | Dave:
-
-Result:
-  PROPOSED
-  SENT TO ADMIN
---------------------------------------------------------
---------------------------------------------------------
-NOTICE ID: 1772843048
-Created: 1772843048
-Status: PROPOSED
-
-Refers to Commit:
-  44c83f2a10d199ec559a5be418571909cb238b53
-
-Target:
-  Line: 20162
-  Name: convex_subspace_topology_eq_R (Theorem)
-
-Problem:
-  Statement is false: topology_on A Ta does not determine Ta uniquely.
-  The lemma is therefore unprovable as written and currently a placeholder.
-
-Proposed Replacement:
-  Theorem convex_subspace_topology_eq_R : forall A:set,
-    A c= R -> convex_in R A ->
-    topology_on A (subspace_topology R R_standard_topology A).
-
-Proposed by:
-  Bob
-
-Discussion:
-  - 1772881200 | admin1: Mathematically correct, but duplicate of 1772520177. Prefer the canonical sent-to-admin notice and do not split implementation across duplicates.
-  - 1772843048 | Bob: Statement should assert subspace_topology is a topology on A;
-    equality with an arbitrary Ta is not derivable.
-  - 1773110325 | Bob: Prefer canonical notice 1772520177 per admin comment; no action on this duplicate.
-
-Approvals:
-  - 1772843048 | Alice:
-  - 1772843048 | Bob: YES
-  - 1772843048 | Charlie: NO
-  - 1772843048 | Dave:
-
-Result:
-  PROPOSED
-  SENT TO ADMIN
-  REJECTED
-
-Admin Decision:
-  - | APPROVED / REJECTED
-
-Implemented by:
-  
-
-Implementation Commit:
-  
-
-Status:
-  PROPOSED
---------------------------------------------------------
---------------------------------------------------------
 NOTICE ID: 1772823145
 Created: 1772823145
 Status: IMPLEMENTED
@@ -1709,116 +1320,6 @@ Approvals:
 
 Result:
   PROPOSED
---------------------------------------------------------
---------------------------------------------------------
-NOTICE ID: 1772725767
-Created: 1772725767
-Status: PROPOSED
-
-Refers to Commit:
-  f47dbbe5f43ddf6a668e6b88686cb23aad22b9f6
-
-Target:
-  Line: 41165
-  Name: ex52_3_helper_conj_pair (Theorem)
-
-Problem:
-  The statement quantifies an arbitrary delta_cls with no relation to alpha or beta.
-  The conclusion is false in general for arbitrary delta_cls even in an abelian group,
-  and the proof requires delta_cls to encode the conjugacy class determined by alpha and beta.
-
-Proposed Replacement:
-  Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls:set,
-    topology_on X Tx ->
-    continuous_map unit_interval unit_interval_topology X Tx alpha ->
-    continuous_map unit_interval unit_interval_topology X Tx beta ->
-    apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
-    apply_fun beta 0 = x0 -> apply_fun beta 1 = x1 ->
-    cls :e fundamental_group X Tx x0 ->
-    (forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
-      apply_fun (fundamental_group_mult X Tx x0) (a, b)
-      = apply_fun (fundamental_group_mult X Tx x0) (b, a)) ->
-    let delta_cls :=
-      path_homotopy_class_loop X Tx x0
-        (path_concat (reverse_path alpha) beta) in
-    (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
-      =
-     apply_fun (basepoint_change_map X Tx x0 x1 beta)
-        (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
-    /\
-    (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
-      =
-     apply_fun (basepoint_change_map X Tx x0 x1 beta)
-        (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls))).
-
-Proposed by:
-  - 1772725767 | Bob
-
-Discussion:
-  - 1772725767 | Bob: This matches the standard basepoint-change conjugation relation
-    (beta * alpha^{-1}) and removes the impossible universal quantification over delta_cls.
-
-Approvals:
-  - 1772725767 | Alice:
-  - 1772725767 | Bob:
-  - 1772725767 | Charlie:
-  - 1772725767 | Dave:
-  - 1772745003 | Charlie: YES
-  - 1773111687 | Bob: NO (superseded by implemented notice 1772798197)
-
-Result:
-  PROPOSED
-  SENT TO ADMIN
-  REJECTED
---------------------------------------------------------
---------------------------------------------------------
-NOTICE ID: 1772725518
-Created: 1772725518
-Status: PROPOSED
-
-Refers to Commit:
-  5d3a66c616fc1de5ad77cc49d42d1f647268882c
-
-Target:
-  Line: 115700
-  Name: thm54_6c_loop_characterization (Theorem)
-
-Problem:
-  The statement is missing parentheses around the equivalence. Megalodon parses it as
-  (covering_map ... -> e0 :e E -> loop_at ... -> path_homotopy_class_loop ... :e homomorphism_image ...)
-  <-> (apply_fun (path_lift ...) 1 = e0), which is not the intended theorem and blocks a proof
-  by hypothesis introduction. The intended statement matches the “assumptions” lemma below it.
-
-Proposed Replacement:
-  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
-    covering_map E Te B Tb p -> e0 :e E ->
-    loop_at B Tb (apply_fun p e0) f ->
-    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
-       homomorphism_image
-         (fundamental_group E Te e0)
-         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
-     <->
-     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
-
-Proposed by:
-  - 1772725518 | Bob
-
-Discussion:
-  - 1772725518 | Bob: Adds the missing parentheses so the equivalence is scoped under the
-    covering-map and loop hypotheses, consistent with the assumptions lemma.
-
-Approvals:
-  - 1772725518 | Alice:
-  - 1772725518 | Bob:
-  - 1772725518 | Charlie:
-  - 1772725518 | Dave:
-  - 1772745003 | Charlie: YES
-  - 1773111687 | Bob: NO (duplicate of 1773045800)
-
-Result:
-  PROPOSED
-  SENT TO ADMIN
-  REJECTED
 --------------------------------------------------------
 --------------------------------------------------------
 NOTICE ID: 1772715837
@@ -3971,6 +3472,524 @@ Rules:
 
 [place newly resolved notices here below this line]
 
+NOTICE ID: 1773020301
+Created: 1773020301
+Status: REJECTED
+
+Refers to Commit:
+  b7315b1febc69294b9d37d3f756b4e4a3be6b399
+
+Target:
+  Line: 119643
+  Name: thm54_6c_loop_characterization (Theorem)
+
+Problem:
+  The statement is parsed as
+    (covering_map -> e0 :e E -> loop_at -> [left]) <-> [right]
+  instead of
+    covering_map -> e0 :e E -> loop_at -> ([left] <-> [right]).
+  This makes the theorem unprovable without assuming extra implications.
+
+Proposed Replacement:
+  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+       homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+     <->
+     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1773670400 | admin1: Reject. This parenthesization issue is already handled by the canonical notice 1772962528, and this entry has negative consensus.
+  - 1773020301 | Bob: Needed to match thm54_6c_loop_characterization_equiv and remove precedence ambiguity.
+  - 1773108884 | Bob: Prefer NOTICE 1773045800 (already sent to ADMIN) as the canonical parenthesization fix; no further action here.
+
+Approvals:
+  - 1773020301 | Alice: NO
+  - 1773020301 | Bob: YES
+  - 1773020301 | Charlie: NO
+  - 1773020301 | Dave: NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - 1773670400 | REJECTED
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  REJECTED
+--------------------------------------------------------
+--------------------------------------------------------
+NOTICE ID: 1772859559
+Created: 1772859559
+Status: REJECTED
+
+Refers to Commit:
+  576078a226427d7629db5de5836f9adb8c59cf6e
+
+Target:
+  Line: 92625
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  Statement lacks a joint-continuity assumption for the base map. The proof
+  currently gets stuck at establishing continuity of the lift on I1 x I2.
+  This matches the in-file TODO and the proven parametric variant below.
+
+Proposed Replacement:
+  Lemma path_lift_column_continuous_on_product_ball :
+    forall E Te B Tb p F start_lift vs_choice U slices V0 I1 I2 s0 t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    I2 c= unit_interval ->
+    0 :e I2 ->
+    t0 :e I2 ->
+    connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+    connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+    continuous_map (setprod I1 I2)
+      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+      B Tb F ->
+    (forall z:set, z :e setprod I1 I2 -> apply_fun F z :e U) ->
+    U :e Tb ->
+    slices c= Te ->
+    pairwise_disjoint slices ->
+    Union slices = preimage_of E p U ->
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z))) ->
+    V0 :e slices ->
+    s0 :e I1 ->
+    apply_fun start_lift s0 :e V0 ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772881200 | admin1: This is another instance of the missing joint-continuity hypothesis. The proposed strengthening is mathematically reasonable, but there are multiple overlapping notices for the same target; consolidate before implementation if possible.
+  - 1772859559 | Bob: Add the joint-continuity hypothesis (via F) to match the
+    parametric lemma already proven and to unblock the proof.
+  - 1773108884 | Bob: Duplicate of 1773042726; prefer consolidating there.
+
+Approvals:
+  - 1772859559 | Alice: YES / NO
+  - 1772859559 | Bob: YES / NO
+  - 1772859559 | Charlie: YES / NO
+  - 1772859559 | Dave: YES / NO
+  - 1773111687 | Bob: NO (duplicate of 1773042726; prefer canonical)
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+
+Admin Decision:
+  - 1773670400 | REJECTED
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  REJECTED
+  SENT TO ADMIN
+  APPROVED      (ADMIN ONLY)
+  IMPLEMENTED
+  REJECTED
+--------------------------------------------------------
+--------------------------------------------------------
+NOTICE ID: 1772859558
+Created: 1772859558
+Status: REJECTED
+
+Refers to Commit:
+  576078a226427d7629db5de5836f9adb8c59cf6e
+
+Target:
+  Line: 95231
+  Name: column_continuity_via_chain (Lemma)
+
+Problem:
+  Statement lacks a joint-continuity assumption for the base map F. The proof
+  sketch and TODO note that such an assumption is required, and a proven
+  variant (column_continuity_via_chain_with_F) already exists.
+
+Proposed Replacement:
+  Lemma column_continuity_via_chain :
+    forall E Te B Tb p F start_lift vs_choice I1 t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+    t0 :e unit_interval ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    continuous_map (setprod I1 unit_interval)
+      (subspace_topology unit_square unit_square_topology (setprod I1 unit_interval))
+      B Tb F ->
+    (forall s:set, s :e I1 -> forall t:set, t :e unit_interval ->
+      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772881200 | admin1: Same issue as 1772831836 / 1772868965: without a continuous F on I1×I, the non-parametric statement is too strong. Support the parametric replacement; avoid implementing multiple duplicate notices.
+  - 1772859558 | Bob: Align statement with proven with_F version to avoid
+    the missing joint-continuity assumption.
+  - 1773108884 | Bob: Duplicate of 1773042726; prefer consolidating there.
+
+Approvals:
+  - 1772859558 | Alice: YES / NO
+  - 1772859558 | Bob: YES / NO
+  - 1772859558 | Charlie: YES / NO
+  - 1772859558 | Dave: YES / NO
+  - 1773111687 | Bob: NO (duplicate of 1773042726; prefer canonical)
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+
+Admin Decision:
+  - 1773670400 | REJECTED
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  REJECTED
+  SENT TO ADMIN
+  APPROVED      (ADMIN ONLY)
+  IMPLEMENTED
+  REJECTED
+--------------------------------------------------------
+--------------------------------------------------------
+NOTICE ID: 1772849625
+Created: 1772849625
+Status: REJECTED
+
+Refers to Commit:
+  b05bfe1f23103983798a106ca5b0e0a99aa4b1d4
+
+Target:
+  Line: 119490
+  Name: thm54_6c_loop_characterization (Theorem)
+
+Problem:
+  Statement is mis-parenthesized: it currently parses as
+  ((covering_map ... -> e0 :e E -> loop_at ... -> [f] in image) <-> endpoint),
+  which is not the intended assertion and is not provable in general. The
+  intended statement is the implication chain with the equivalence in
+  parentheses, as in thm54_6c_loop_characterization_equiv/assumptions.
+
+Proposed Replacement:
+  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+      homomorphism_image
+        (fundamental_group E Te e0)
+        (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+     <->
+     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772881200 | admin1: The parsing/parenthesization diagnosis is correct. This target should be fixed, but there are now multiple notices for the same theorem; use one canonical notice to avoid duplicate work.
+  - 1772849625 | Bob: Add parentheses around the equivalence to match the
+    intended statement and existing lemma thm54_6c_loop_characterization_equiv.
+  - 1773110325 | Bob: Prefer NOTICE 1773045800 (sent to ADMIN) as the canonical parenthesization fix; no further action here.
+
+Approvals:
+  - 1772849625 | Alice:
+  - 1772849625 | Bob: YES
+  - 1772849625 | Charlie: NO
+  - 1772849625 | Dave:
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+
+Status:
+  REJECTED
+--------------------------------------------------------
+--------------------------------------------------------
+
+Admin Decision:
+  - 1773670400 | REJECTED
+NOTICE ID: 1772846090
+Created: 1772846090
+Status: REJECTED
+
+Refers to Commit:
+  47c36727897a86bd62fa23bc8ee1d427345ddd36
+
+Target:
+  Line: 92542
+  Name: path_lift_column_continuous_on_product_ball (Lemma)
+
+Problem:
+  Statement is underspecified: it asserts continuity in s of the lifted column
+  from only pointwise continuity of vs_choice in t. This is generally false
+  without joint continuity (or an explicit continuous F on I1 x I2).
+
+Proposed Replacement:
+  Lemma path_lift_column_continuous_on_product_ball :
+    forall E Te B Tb p F start_lift I1 I2 vs_choice t0:set,
+    covering_map E Te B Tb p ->
+    topology_on E Te ->
+    I1 c= unit_interval ->
+    I2 c= unit_interval ->
+    t0 :e I2 ->
+    continuous_map (setprod I1 I2)
+      (subspace_topology unit_square unit_square_topology (setprod I1 I2))
+      B Tb F ->
+    (forall s:set, s :e I1 ->
+      apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+    (forall s:set, s :e I1 ->
+      continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+    (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+      apply_fun (apply_fun vs_choice s) t = apply_fun F (s, t)) ->
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te
+      (graph I1 (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772881200 | admin1: Core diagnosis is correct, but this earlier proposal looks weaker / less complete than later parametric versions that also add connectedness and anchoring conditions. I would not implement this version if a stronger canonical notice is available.
+  - 1772846090 | Bob: Use the existing parametric continuity machinery by
+    adding F and the evaluation hypothesis; otherwise the statement is false.
+  - 1773110325 | Bob: Prefer NOTICE 1773042726 (sent to ADMIN) as the canonical parametric fix; no further action here.
+
+Approvals:
+  - 1772846090 | Alice:
+  - 1772846090 | Bob: YES
+  - 1772846090 | Charlie: NO
+  - 1772846090 | Dave:
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+--------------------------------------------------------
+--------------------------------------------------------
+
+Admin Decision:
+  - 1773670400 | REJECTED
+NOTICE ID: 1772843048
+Created: 1772843048
+Status: REJECTED
+
+Refers to Commit:
+  44c83f2a10d199ec559a5be418571909cb238b53
+
+Target:
+  Line: 20162
+  Name: convex_subspace_topology_eq_R (Theorem)
+
+Problem:
+  Statement is false: topology_on A Ta does not determine Ta uniquely.
+  The lemma is therefore unprovable as written and currently a placeholder.
+
+Proposed Replacement:
+  Theorem convex_subspace_topology_eq_R : forall A:set,
+    A c= R -> convex_in R A ->
+    topology_on A (subspace_topology R R_standard_topology A).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772881200 | admin1: Mathematically correct, but duplicate of 1772520177. Prefer the canonical sent-to-admin notice and do not split implementation across duplicates.
+  - 1772843048 | Bob: Statement should assert subspace_topology is a topology on A;
+    equality with an arbitrary Ta is not derivable.
+  - 1773110325 | Bob: Prefer canonical notice 1772520177 per admin comment; no action on this duplicate.
+
+Approvals:
+  - 1772843048 | Alice:
+  - 1772843048 | Bob: YES
+  - 1772843048 | Charlie: NO
+  - 1772843048 | Dave:
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+
+Admin Decision:
+  - 1773670400 | REJECTED
+  - | APPROVED / REJECTED
+
+Implemented by:
+  
+
+Implementation Commit:
+  
+
+Status:
+  REJECTED
+--------------------------------------------------------
+--------------------------------------------------------
+NOTICE ID: 1772725767
+Created: 1772725767
+Status: REJECTED
+
+Refers to Commit:
+  f47dbbe5f43ddf6a668e6b88686cb23aad22b9f6
+
+Target:
+  Line: 41165
+  Name: ex52_3_helper_conj_pair (Theorem)
+
+Problem:
+  The statement quantifies an arbitrary delta_cls with no relation to alpha or beta.
+  The conclusion is false in general for arbitrary delta_cls even in an abelian group,
+  and the proof requires delta_cls to encode the conjugacy class determined by alpha and beta.
+
+Proposed Replacement:
+  Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls:set,
+    topology_on X Tx ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx beta ->
+    apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+    apply_fun beta 0 = x0 -> apply_fun beta 1 = x1 ->
+    cls :e fundamental_group X Tx x0 ->
+    (forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
+      apply_fun (fundamental_group_mult X Tx x0) (a, b)
+      = apply_fun (fundamental_group_mult X Tx x0) (b, a)) ->
+    let delta_cls :=
+      path_homotopy_class_loop X Tx x0
+        (path_concat (reverse_path alpha) beta) in
+    (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+      =
+     apply_fun (basepoint_change_map X Tx x0 x1 beta)
+        (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
+    /\
+    (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
+      =
+     apply_fun (basepoint_change_map X Tx x0 x1 beta)
+        (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls))).
+
+Proposed by:
+  - 1772725767 | Bob
+
+Discussion:
+  - 1773670400 | admin1: Reject as superseded by implemented canonical notice 1772798197.
+  - 1772725767 | Bob: This matches the standard basepoint-change conjugation relation
+    (beta * alpha^{-1}) and removes the impossible universal quantification over delta_cls.
+
+Approvals:
+  - 1772725767 | Alice:
+  - 1772725767 | Bob:
+  - 1772725767 | Charlie:
+  - 1772725767 | Dave:
+  - 1772745003 | Charlie: YES
+  - 1773111687 | Bob: NO (superseded by implemented notice 1772798197)
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+--------------------------------------------------------
+--------------------------------------------------------
+
+Admin Decision:
+  - 1773670400 | REJECTED
+NOTICE ID: 1772725518
+Created: 1772725518
+Status: REJECTED
+
+Refers to Commit:
+  5d3a66c616fc1de5ad77cc49d42d1f647268882c
+
+Target:
+  Line: 115700
+  Name: thm54_6c_loop_characterization (Theorem)
+
+Problem:
+  The statement is missing parentheses around the equivalence. Megalodon parses it as
+  (covering_map ... -> e0 :e E -> loop_at ... -> path_homotopy_class_loop ... :e homomorphism_image ...)
+  <-> (apply_fun (path_lift ...) 1 = e0), which is not the intended theorem and blocks a proof
+  by hypothesis introduction. The intended statement matches the “assumptions” lemma below it.
+
+Proposed Replacement:
+  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+       homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+     <->
+     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+
+Proposed by:
+  - 1772725518 | Bob
+
+Discussion:
+  - 1773670400 | admin1: Reject as duplicate/superseded by canonical parenthesization notice 1772962528.
+  - 1772725518 | Bob: Adds the missing parentheses so the equivalence is scoped under the
+    covering-map and loop hypotheses, consistent with the assumptions lemma.
+
+Approvals:
+  - 1772725518 | Alice:
+  - 1772725518 | Bob:
+  - 1772725518 | Charlie:
+  - 1772725518 | Dave:
+  - 1772745003 | Charlie: YES
+  - 1773111687 | Bob: NO (duplicate of 1773045800)
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+--------------------------------------------------------
+--------------------------------------------------------
+
+Admin Decision:
+  - 1773670400 | REJECTED
 NOTICE ID: 1773045800
 Created: 1773045800
 Status: REJECTED
