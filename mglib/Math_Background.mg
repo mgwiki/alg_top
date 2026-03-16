@@ -404580,6 +404580,18 @@ exact (homeomorphism_injective E Te E Te h
   x1 x2 Hx1 Hx2 Heq).
 Qed.
 
+(** Helper: CTG members are injective **)
+(** Proven Alice **)
+Theorem covering_transformation_group_injective :
+  forall E Te B Tb p h x1 x2:set,
+  h :e covering_transformation_group E Te B Tb p ->
+  x1 :e E -> x2 :e E ->
+  apply_fun h x1 = apply_fun h x2 -> x1 = x2.
+let E Te B Tb p h x1 x2. assume HhG Hx1 Hx2 Heq.
+exact (covering_transformation_injective E Te B Tb p h x1 x2
+  (covering_transformation_group_mem_ct E Te B Tb p h HhG) Hx1 Hx2 Heq).
+Qed.
+
 (** Helper: the inverse of a covering transformation is a covering transformation **)
 (** Proven Alice **)
 Theorem covering_transformation_inverse_exists :
