@@ -404121,6 +404121,26 @@ apply andI.
   reflexivity.
 Qed.
 
+(** Helper: a covering transformation is a homeomorphism **)
+(** Proven Alice **)
+Theorem covering_transformation_homeomorphism :
+  forall E Te B Tb p h:set,
+  covering_transformation E Te B Tb p h -> homeomorphism E Te E Te h.
+let E Te B Tb p h. assume Hct.
+exact (andEL (homeomorphism E Te E Te h)
+  (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) Hct).
+Qed.
+
+(** Helper: a covering transformation is continuous **)
+(** Proven Alice **)
+Theorem covering_transformation_continuous :
+  forall E Te B Tb p h:set,
+  covering_transformation E Te B Tb p h -> continuous_map E Te E Te h.
+let E Te B Tb p h. assume Hct.
+exact (homeomorphism_continuous E Te E Te h
+  (covering_transformation_homeomorphism E Te B Tb p h Hct)).
+Qed.
+
 (** Helper: a covering transformation maps E to E **)
 (** Proven Alice **)
 Theorem covering_transformation_value_in_E :
