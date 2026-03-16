@@ -187023,38 +187023,36 @@ assume HantiExpand1.
 admit.
 Admitted.
 
-Theorem covering_map_R_S1_antipode_shift_from_one_point :
-  forall x a d:set,
-    x :e R ->
+Theorem covering_map_R_S1_antipode_shift_trig_values :
+  forall a d:set,
     a :e R ->
     d :e R ->
-    apply_fun covering_map_R_S1 (add_SNo a d) =
-      (minus_SNo (apply_fun covering_map_R_S1 a 0),
-       minus_SNo (apply_fun covering_map_R_S1 a 1)) ->
-    apply_fun covering_map_R_S1 (add_SNo x d) =
-      (minus_SNo (apply_fun covering_map_R_S1 x 0),
-       minus_SNo (apply_fun covering_map_R_S1 x 1)).
-let x a d.
-assume HxR.
+    add_SNo
+      (mul_SNo
+        (apply_fun cos_real (mul_SNo two_pi a))
+        (apply_fun cos_real (mul_SNo two_pi d)))
+      (minus_SNo
+        (mul_SNo
+          (apply_fun sin_real (mul_SNo two_pi a))
+          (apply_fun sin_real (mul_SNo two_pi d))))
+    =
+    minus_SNo (apply_fun cos_real (mul_SNo two_pi a)) ->
+    add_SNo
+      (mul_SNo
+        (apply_fun sin_real (mul_SNo two_pi a))
+        (apply_fun cos_real (mul_SNo two_pi d)))
+      (mul_SNo
+        (apply_fun cos_real (mul_SNo two_pi a))
+        (apply_fun sin_real (mul_SNo two_pi d)))
+    =
+    minus_SNo (apply_fun sin_real (mul_SNo two_pi a)) ->
+    apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1 /\
+    apply_fun sin_real (mul_SNo two_pi d) = 0.
+let a d.
 assume HaR.
 assume HdR.
-assume HantiAtA.
-claim HxPlusDR : add_SNo x d :e R.
-{
-  exact (real_add_SNo
-    x
-    HxR
-    d
-    HdR).
-}
-claim HaPlusDR : add_SNo a d :e R.
-{
-  exact (real_add_SNo
-    a
-    HaR
-    d
-    HdR).
-}
+assume HantiExpand0.
+assume HantiExpand1.
 claim HargA : mul_SNo two_pi a :e R.
 {
   exact (real_mul_SNo
@@ -187070,225 +187068,6 @@ claim HargD : mul_SNo two_pi d :e R.
     two_pi_in_R
     d
     HdR).
-}
-claim HargAD : mul_SNo two_pi (add_SNo a d) :e R.
-{
-  exact (real_mul_SNo
-    two_pi
-    two_pi_in_R
-    (add_SNo a d)
-    HaPlusDR).
-}
-claim HargX : mul_SNo two_pi x :e R.
-{
-  exact (real_mul_SNo
-    two_pi
-    two_pi_in_R
-    x
-    HxR).
-}
-claim HargXD : mul_SNo two_pi (add_SNo x d) :e R.
-{
-  exact (real_mul_SNo
-    two_pi
-    two_pi_in_R
-    (add_SNo x d)
-    HxPlusDR).
-}
-claim HgraphA :
-  apply_fun covering_map_R_S1 a =
-  (apply_fun cos_real (mul_SNo two_pi a),
-   apply_fun sin_real (mul_SNo two_pi a)).
-{
-  exact (apply_fun_graph
-    R
-    (fun t:set =>
-      (apply_fun cos_real (mul_SNo two_pi t),
-       apply_fun sin_real (mul_SNo two_pi t)))
-    a
-    HaR).
-}
-claim HgraphAD :
-  apply_fun covering_map_R_S1 (add_SNo a d) =
-  (apply_fun cos_real (mul_SNo two_pi (add_SNo a d)),
-   apply_fun sin_real (mul_SNo two_pi (add_SNo a d))).
-{
-  exact (apply_fun_graph
-    R
-    (fun t:set =>
-      (apply_fun cos_real (mul_SNo two_pi t),
-       apply_fun sin_real (mul_SNo two_pi t)))
-    (add_SNo a d)
-    HaPlusDR).
-}
-claim HgraphX :
-  apply_fun covering_map_R_S1 x =
-  (apply_fun cos_real (mul_SNo two_pi x),
-   apply_fun sin_real (mul_SNo two_pi x)).
-{
-  exact (apply_fun_graph
-    R
-    (fun t:set =>
-      (apply_fun cos_real (mul_SNo two_pi t),
-       apply_fun sin_real (mul_SNo two_pi t)))
-    x
-    HxR).
-}
-claim HgraphXD :
-  apply_fun covering_map_R_S1 (add_SNo x d) =
-  (apply_fun cos_real (mul_SNo two_pi (add_SNo x d)),
-   apply_fun sin_real (mul_SNo two_pi (add_SNo x d))).
-{
-  exact (apply_fun_graph
-    R
-    (fun t:set =>
-      (apply_fun cos_real (mul_SNo two_pi t),
-       apply_fun sin_real (mul_SNo two_pi t)))
-    (add_SNo x d)
-    HxPlusDR).
-}
-claim HmulAD :
-  mul_SNo two_pi (add_SNo a d) =
-  add_SNo (mul_SNo two_pi a) (mul_SNo two_pi d).
-{
-  exact (mul_SNo_distrL
-    two_pi
-    a
-    d
-    (real_SNo two_pi two_pi_in_R)
-    (real_SNo a HaR)
-    (real_SNo d HdR)).
-}
-claim HmulXD :
-  mul_SNo two_pi (add_SNo x d) =
-  add_SNo (mul_SNo two_pi x) (mul_SNo two_pi d).
-{
-  exact (mul_SNo_distrL
-    two_pi
-    x
-    d
-    (real_SNo two_pi two_pi_in_R)
-    (real_SNo x HxR)
-    (real_SNo d HdR)).
-}
-claim HantiCoord0 :
-  apply_fun cos_real (add_SNo (mul_SNo two_pi a) (mul_SNo two_pi d)) =
-  minus_SNo (apply_fun cos_real (mul_SNo two_pi a)).
-{
-  claim HantiAtAGraph :
-    (apply_fun cos_real (mul_SNo two_pi (add_SNo a d)),
-     apply_fun sin_real (mul_SNo two_pi (add_SNo a d)))
-    =
-    (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
-     minus_SNo (apply_fun sin_real (mul_SNo two_pi a))).
-  {
-    claim HanchorCoords :
-      (minus_SNo (apply_fun covering_map_R_S1 a 0),
-       minus_SNo (apply_fun covering_map_R_S1 a 1))
-      =
-      (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
-       minus_SNo (apply_fun sin_real (mul_SNo two_pi a))).
-    {
-      rewrite HgraphA.
-      rewrite tuple_2_0_eq.
-      rewrite tuple_2_1_eq.
-      reflexivity.
-    }
-    rewrite <- HgraphAD.
-    exact (eq_i_tra
-      (apply_fun covering_map_R_S1 (add_SNo a d))
-      (minus_SNo (apply_fun covering_map_R_S1 a 0),
-       minus_SNo (apply_fun covering_map_R_S1 a 1))
-      (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
-       minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
-      HantiAtA
-      HanchorCoords).
-  }
-  rewrite <- HmulAD.
-  exact (pair_eq_fst
-    (apply_fun cos_real (mul_SNo two_pi (add_SNo a d)))
-    (apply_fun sin_real (mul_SNo two_pi (add_SNo a d)))
-    (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)))
-    (minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
-    HantiAtAGraph).
-}
-claim HantiCoord1 :
-  apply_fun sin_real (add_SNo (mul_SNo two_pi a) (mul_SNo two_pi d)) =
-  minus_SNo (apply_fun sin_real (mul_SNo two_pi a)).
-{
-  claim HantiAtAGraph :
-    (apply_fun cos_real (mul_SNo two_pi (add_SNo a d)),
-     apply_fun sin_real (mul_SNo two_pi (add_SNo a d)))
-    =
-    (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
-     minus_SNo (apply_fun sin_real (mul_SNo two_pi a))).
-  {
-    claim HanchorCoords :
-      (minus_SNo (apply_fun covering_map_R_S1 a 0),
-       minus_SNo (apply_fun covering_map_R_S1 a 1))
-      =
-      (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
-       minus_SNo (apply_fun sin_real (mul_SNo two_pi a))).
-    {
-      rewrite HgraphA.
-      rewrite tuple_2_0_eq.
-      rewrite tuple_2_1_eq.
-      reflexivity.
-    }
-    rewrite <- HgraphAD.
-    exact (eq_i_tra
-      (apply_fun covering_map_R_S1 (add_SNo a d))
-      (minus_SNo (apply_fun covering_map_R_S1 a 0),
-       minus_SNo (apply_fun covering_map_R_S1 a 1))
-      (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
-       minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
-      HantiAtA
-      HanchorCoords).
-  }
-  rewrite <- HmulAD.
-  exact (pair_eq_snd
-    (apply_fun cos_real (mul_SNo two_pi (add_SNo a d)))
-    (apply_fun sin_real (mul_SNo two_pi (add_SNo a d)))
-    (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)))
-    (minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
-    HantiAtAGraph).
-}
-claim HantiExpand0 :
-  add_SNo
-    (mul_SNo
-      (apply_fun cos_real (mul_SNo two_pi a))
-      (apply_fun cos_real (mul_SNo two_pi d)))
-    (minus_SNo
-      (mul_SNo
-        (apply_fun sin_real (mul_SNo two_pi a))
-        (apply_fun sin_real (mul_SNo two_pi d))))
-  =
-  minus_SNo (apply_fun cos_real (mul_SNo two_pi a)).
-{
-  rewrite <- (cos_addition
-    (mul_SNo two_pi a)
-    (mul_SNo two_pi d)
-    HargA
-    HargD).
-  exact HantiCoord0.
-}
-claim HantiExpand1 :
-  add_SNo
-    (mul_SNo
-      (apply_fun sin_real (mul_SNo two_pi a))
-      (apply_fun cos_real (mul_SNo two_pi d)))
-    (mul_SNo
-      (apply_fun cos_real (mul_SNo two_pi a))
-      (apply_fun sin_real (mul_SNo two_pi d)))
-  =
-  minus_SNo (apply_fun sin_real (mul_SNo two_pi a)).
-{
-  rewrite <- (sin_addition
-    (mul_SNo two_pi a)
-    (mul_SNo two_pi d)
-    HargA
-    HargD).
-  exact HantiCoord1.
 }
 claim HpythA :
   add_SNo
@@ -187393,9 +187172,6 @@ claim HnotBothZero :
   }
   exact (neq_0_1 H01).
 }
-(** Remaining trig-sensitive work:
-    derive cos(2 pi d) = -1 and sin(2 pi d) = 0 from the anchor equations above,
-    then finish the x-case by the addition formulas. **)
 claim HbothNonzeroPhase :
   ~(apply_fun cos_real (mul_SNo two_pi a) = 0) ->
   ~(apply_fun sin_real (mul_SNo two_pi a) = 0) ->
@@ -187858,6 +187634,308 @@ claim HsinD :
         (apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1)
         (apply_fun sin_real (mul_SNo two_pi d) = 0)
         (HbothNonzeroPhase HcaNe0 HsaNe0)).
+}
+exact (andI
+  (apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1)
+  (apply_fun sin_real (mul_SNo two_pi d) = 0)
+  HcosD
+  HsinD).
+Admitted.
+
+Theorem covering_map_R_S1_antipode_shift_from_one_point :
+  forall x a d:set,
+    x :e R ->
+    a :e R ->
+    d :e R ->
+    apply_fun covering_map_R_S1 (add_SNo a d) =
+      (minus_SNo (apply_fun covering_map_R_S1 a 0),
+       minus_SNo (apply_fun covering_map_R_S1 a 1)) ->
+    apply_fun covering_map_R_S1 (add_SNo x d) =
+      (minus_SNo (apply_fun covering_map_R_S1 x 0),
+       minus_SNo (apply_fun covering_map_R_S1 x 1)).
+let x a d.
+assume HxR.
+assume HaR.
+assume HdR.
+assume HantiAtA.
+claim HxPlusDR : add_SNo x d :e R.
+{
+  exact (real_add_SNo
+    x
+    HxR
+    d
+    HdR).
+}
+claim HaPlusDR : add_SNo a d :e R.
+{
+  exact (real_add_SNo
+    a
+    HaR
+    d
+    HdR).
+}
+claim HargA : mul_SNo two_pi a :e R.
+{
+  exact (real_mul_SNo
+    two_pi
+    two_pi_in_R
+    a
+    HaR).
+}
+claim HargD : mul_SNo two_pi d :e R.
+{
+  exact (real_mul_SNo
+    two_pi
+    two_pi_in_R
+    d
+    HdR).
+}
+claim HargAD : mul_SNo two_pi (add_SNo a d) :e R.
+{
+  exact (real_mul_SNo
+    two_pi
+    two_pi_in_R
+    (add_SNo a d)
+    HaPlusDR).
+}
+claim HargX : mul_SNo two_pi x :e R.
+{
+  exact (real_mul_SNo
+    two_pi
+    two_pi_in_R
+    x
+    HxR).
+}
+claim HargXD : mul_SNo two_pi (add_SNo x d) :e R.
+{
+  exact (real_mul_SNo
+    two_pi
+    two_pi_in_R
+    (add_SNo x d)
+    HxPlusDR).
+}
+claim HgraphA :
+  apply_fun covering_map_R_S1 a =
+  (apply_fun cos_real (mul_SNo two_pi a),
+   apply_fun sin_real (mul_SNo two_pi a)).
+{
+  exact (apply_fun_graph
+    R
+    (fun t:set =>
+      (apply_fun cos_real (mul_SNo two_pi t),
+       apply_fun sin_real (mul_SNo two_pi t)))
+    a
+    HaR).
+}
+claim HgraphAD :
+  apply_fun covering_map_R_S1 (add_SNo a d) =
+  (apply_fun cos_real (mul_SNo two_pi (add_SNo a d)),
+   apply_fun sin_real (mul_SNo two_pi (add_SNo a d))).
+{
+  exact (apply_fun_graph
+    R
+    (fun t:set =>
+      (apply_fun cos_real (mul_SNo two_pi t),
+       apply_fun sin_real (mul_SNo two_pi t)))
+    (add_SNo a d)
+    HaPlusDR).
+}
+claim HgraphX :
+  apply_fun covering_map_R_S1 x =
+  (apply_fun cos_real (mul_SNo two_pi x),
+   apply_fun sin_real (mul_SNo two_pi x)).
+{
+  exact (apply_fun_graph
+    R
+    (fun t:set =>
+      (apply_fun cos_real (mul_SNo two_pi t),
+       apply_fun sin_real (mul_SNo two_pi t)))
+    x
+    HxR).
+}
+claim HgraphXD :
+  apply_fun covering_map_R_S1 (add_SNo x d) =
+  (apply_fun cos_real (mul_SNo two_pi (add_SNo x d)),
+   apply_fun sin_real (mul_SNo two_pi (add_SNo x d))).
+{
+  exact (apply_fun_graph
+    R
+    (fun t:set =>
+      (apply_fun cos_real (mul_SNo two_pi t),
+       apply_fun sin_real (mul_SNo two_pi t)))
+    (add_SNo x d)
+    HxPlusDR).
+}
+claim HmulAD :
+  mul_SNo two_pi (add_SNo a d) =
+  add_SNo (mul_SNo two_pi a) (mul_SNo two_pi d).
+{
+  exact (mul_SNo_distrL
+    two_pi
+    a
+    d
+    (real_SNo two_pi two_pi_in_R)
+    (real_SNo a HaR)
+    (real_SNo d HdR)).
+}
+claim HmulXD :
+  mul_SNo two_pi (add_SNo x d) =
+  add_SNo (mul_SNo two_pi x) (mul_SNo two_pi d).
+{
+  exact (mul_SNo_distrL
+    two_pi
+    x
+    d
+    (real_SNo two_pi two_pi_in_R)
+    (real_SNo x HxR)
+    (real_SNo d HdR)).
+}
+claim HantiCoord0 :
+  apply_fun cos_real (add_SNo (mul_SNo two_pi a) (mul_SNo two_pi d)) =
+  minus_SNo (apply_fun cos_real (mul_SNo two_pi a)).
+{
+  claim HantiAtAGraph :
+    (apply_fun cos_real (mul_SNo two_pi (add_SNo a d)),
+     apply_fun sin_real (mul_SNo two_pi (add_SNo a d)))
+    =
+    (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
+     minus_SNo (apply_fun sin_real (mul_SNo two_pi a))).
+  {
+    claim HanchorCoords :
+      (minus_SNo (apply_fun covering_map_R_S1 a 0),
+       minus_SNo (apply_fun covering_map_R_S1 a 1))
+      =
+      (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
+       minus_SNo (apply_fun sin_real (mul_SNo two_pi a))).
+    {
+      rewrite HgraphA.
+      rewrite tuple_2_0_eq.
+      rewrite tuple_2_1_eq.
+      reflexivity.
+    }
+    rewrite <- HgraphAD.
+    exact (eq_i_tra
+      (apply_fun covering_map_R_S1 (add_SNo a d))
+      (minus_SNo (apply_fun covering_map_R_S1 a 0),
+       minus_SNo (apply_fun covering_map_R_S1 a 1))
+      (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
+       minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
+      HantiAtA
+      HanchorCoords).
+  }
+  rewrite <- HmulAD.
+  exact (pair_eq_fst
+    (apply_fun cos_real (mul_SNo two_pi (add_SNo a d)))
+    (apply_fun sin_real (mul_SNo two_pi (add_SNo a d)))
+    (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)))
+    (minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
+    HantiAtAGraph).
+}
+claim HantiCoord1 :
+  apply_fun sin_real (add_SNo (mul_SNo two_pi a) (mul_SNo two_pi d)) =
+  minus_SNo (apply_fun sin_real (mul_SNo two_pi a)).
+{
+  claim HantiAtAGraph :
+    (apply_fun cos_real (mul_SNo two_pi (add_SNo a d)),
+     apply_fun sin_real (mul_SNo two_pi (add_SNo a d)))
+    =
+    (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
+     minus_SNo (apply_fun sin_real (mul_SNo two_pi a))).
+  {
+    claim HanchorCoords :
+      (minus_SNo (apply_fun covering_map_R_S1 a 0),
+       minus_SNo (apply_fun covering_map_R_S1 a 1))
+      =
+      (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
+       minus_SNo (apply_fun sin_real (mul_SNo two_pi a))).
+    {
+      rewrite HgraphA.
+      rewrite tuple_2_0_eq.
+      rewrite tuple_2_1_eq.
+      reflexivity.
+    }
+    rewrite <- HgraphAD.
+    exact (eq_i_tra
+      (apply_fun covering_map_R_S1 (add_SNo a d))
+      (minus_SNo (apply_fun covering_map_R_S1 a 0),
+       minus_SNo (apply_fun covering_map_R_S1 a 1))
+      (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)),
+       minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
+      HantiAtA
+      HanchorCoords).
+  }
+  rewrite <- HmulAD.
+  exact (pair_eq_snd
+    (apply_fun cos_real (mul_SNo two_pi (add_SNo a d)))
+    (apply_fun sin_real (mul_SNo two_pi (add_SNo a d)))
+    (minus_SNo (apply_fun cos_real (mul_SNo two_pi a)))
+    (minus_SNo (apply_fun sin_real (mul_SNo two_pi a)))
+    HantiAtAGraph).
+}
+claim HantiExpand0 :
+  add_SNo
+    (mul_SNo
+      (apply_fun cos_real (mul_SNo two_pi a))
+      (apply_fun cos_real (mul_SNo two_pi d)))
+    (minus_SNo
+      (mul_SNo
+        (apply_fun sin_real (mul_SNo two_pi a))
+        (apply_fun sin_real (mul_SNo two_pi d))))
+  =
+  minus_SNo (apply_fun cos_real (mul_SNo two_pi a)).
+{
+  rewrite <- (cos_addition
+    (mul_SNo two_pi a)
+    (mul_SNo two_pi d)
+    HargA
+    HargD).
+  exact HantiCoord0.
+}
+claim HantiExpand1 :
+  add_SNo
+    (mul_SNo
+      (apply_fun sin_real (mul_SNo two_pi a))
+      (apply_fun cos_real (mul_SNo two_pi d)))
+    (mul_SNo
+      (apply_fun cos_real (mul_SNo two_pi a))
+      (apply_fun sin_real (mul_SNo two_pi d)))
+  =
+  minus_SNo (apply_fun sin_real (mul_SNo two_pi a)).
+{
+  rewrite <- (sin_addition
+    (mul_SNo two_pi a)
+    (mul_SNo two_pi d)
+    HargA
+    HargD).
+  exact HantiCoord1.
+}
+claim HshiftTrig :
+  apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1 /\
+  apply_fun sin_real (mul_SNo two_pi d) = 0.
+{
+  exact (covering_map_R_S1_antipode_shift_trig_values
+    a
+    d
+    HaR
+    HdR
+    HantiExpand0
+    HantiExpand1).
+}
+claim HcosD :
+  apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1.
+{
+  exact (andEL
+    (apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1)
+    (apply_fun sin_real (mul_SNo two_pi d) = 0)
+    HshiftTrig).
+}
+claim HsinD :
+  apply_fun sin_real (mul_SNo two_pi d) = 0.
+{
+  exact (andER
+    (apply_fun cos_real (mul_SNo two_pi d) = minus_SNo 1)
+    (apply_fun sin_real (mul_SNo two_pi d) = 0)
+    HshiftTrig).
 }
 claim Hcoord0 :
   apply_fun cos_real (add_SNo (mul_SNo two_pi x) (mul_SNo two_pi d)) =
