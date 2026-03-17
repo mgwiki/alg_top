@@ -408079,11 +408079,91 @@ claim Hr_g_id : apply_fun (induced_homomorphism Y Ty y Z Tz z r)
     (compose_fun unit_interval g_incl r) (compose_fun unit_interval eps r).
   { exact (path_homotopic_postcompose Y Ty Z Tz y y z z g_incl eps r
       Heps_hom Hcont_r (eq_refl z) (eq_refl z)). }
-  (** compose_fun I g_incl r agrees pointwise with rg_incl **)
-  (** both compute to apply_fun r (apply_fun g t) at each t **)
-  (** This + HloopsVp applied to rg gives null-homotopy **)
-  (** Full chain: [compose_fun I eps r] = [compose_fun I g_incl r] = [rg_incl] = id **)
-  admit.
+  (** Chain step 1: [compose_fun I eps r] = [compose_fun I g_incl r] **)
+  claim Hclass_eq1 :
+    path_homotopy_class_loop Z Tz z (compose_fun unit_interval eps r)
+    = path_homotopy_class_loop Z Tz z (compose_fun unit_interval g_incl r).
+  { exact (path_homotopy_class_loop_eq_of_path_homotopic Z Tz z
+      (compose_fun unit_interval eps r) (compose_fun unit_interval g_incl r)
+      (Lemma_51_1_path_homotopy_sym Z Tz z z
+        (compose_fun unit_interval g_incl r) (compose_fun unit_interval eps r)
+        Hpost_hom)). }
+  (** Chain step 2: [compose_fun I g_incl r] = [rg_incl] via pointwise equality **)
+  (** compose_fun I g_incl r and rg_incl both evaluate to apply_fun r (apply_fun g t) **)
+  claim Hpw_eq : forall t:set, t :e unit_interval ->
+    apply_fun (compose_fun unit_interval g_incl r) t = apply_fun rg_incl t.
+  { let t. assume Ht.
+    rewrite (compose_fun_apply unit_interval g_incl r t Ht).
+    prove apply_fun r (apply_fun g_incl t) = apply_fun rg_incl t.
+    prove apply_fun r (apply_fun (compose_fun unit_interval g incS) t) = apply_fun (compose_fun unit_interval rg incVp) t.
+    rewrite (compose_fun_apply unit_interval g incS t Ht).
+    rewrite (compose_fun_apply unit_interval rg incVp t Ht).
+    prove apply_fun r (apply_fun incS (apply_fun g t)) = apply_fun incVp (apply_fun rg t).
+    claim HgtS : apply_fun g t :e S.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology S (subspace_topology Y Ty S) g
+        (loop_at_continuous S (subspace_topology Y Ty S) y g
+          (loop_space_has_loop_at S (subspace_topology Y Ty S) y g HgLoop)) t Ht). }
+    rewrite (identity_function_apply S (apply_fun g t) HgtS).
+    prove apply_fun r (apply_fun g t) = apply_fun incVp (apply_fun rg t).
+    prove apply_fun r (apply_fun g t) = apply_fun incVp (apply_fun (compose_fun unit_interval g rS) t).
+    rewrite (compose_fun_apply unit_interval g rS t Ht).
+    rewrite (apply_fun_graph S (fun y0:set => apply_fun r y0) (apply_fun g t) HgtS).
+    claim HrgV : apply_fun r (apply_fun g t) :e V'.
+    { claim Hfn_rS : function_on rS S V'.
+      { exact (continuous_map_function_on S (subspace_topology Y Ty S) V' (subspace_topology Z Tz V') rS HrS_cont). }
+      rewrite <- (apply_fun_graph S (fun y0:set => apply_fun r y0) (apply_fun g t) HgtS).
+      exact (Hfn_rS (apply_fun g t) HgtS). }
+    rewrite (identity_function_apply V' (apply_fun r (apply_fun g t)) HrgV).
+    reflexivity. }
+  (** Step 2b: get homotopy from pointwise eq **)
+  claim Hgincl_r_cont : continuous_map unit_interval unit_interval_topology Z Tz (compose_fun unit_interval g_incl r).
+  { exact (composition_continuous unit_interval unit_interval_topology Y Ty Z Tz g_incl r
+      (loop_at_continuous Y Ty y g_incl (loop_space_has_loop_at Y Ty y g_incl Hg_incl_loop))
+      Hcont_r). }
+  claim Hrg_incl_cont : continuous_map unit_interval unit_interval_topology Z Tz rg_incl.
+  { exact (loop_at_continuous Z Tz z rg_incl (loop_space_has_loop_at Z Tz z rg_incl Hrg_incl_loop)). }
+  claim Hgincl_r_0 : apply_fun (compose_fun unit_interval g_incl r) 0 = z.
+  { rewrite (compose_fun_apply unit_interval g_incl r 0 zero_in_unit_interval).
+    rewrite (compose_fun_apply unit_interval g incS 0 zero_in_unit_interval).
+    rewrite (loop_at_at_zero S (subspace_topology Y Ty S) y g (loop_space_has_loop_at S (subspace_topology Y Ty S) y g HgLoop)).
+    rewrite (identity_function_apply S y HyS).
+    exact (eq_refl z). }
+  claim Hgincl_r_1 : apply_fun (compose_fun unit_interval g_incl r) 1 = z.
+  { rewrite (compose_fun_apply unit_interval g_incl r 1 one_in_unit_interval).
+    rewrite (compose_fun_apply unit_interval g incS 1 one_in_unit_interval).
+    rewrite (loop_at_at_one S (subspace_topology Y Ty S) y g (loop_space_has_loop_at S (subspace_topology Y Ty S) y g HgLoop)).
+    rewrite (identity_function_apply S y HyS).
+    exact (eq_refl z). }
+  claim Hclass_eq2 :
+    path_homotopy_class_loop Z Tz z (compose_fun unit_interval g_incl r)
+    = path_homotopy_class_loop Z Tz z rg_incl.
+  { exact (path_homotopy_class_loop_eq_of_path_homotopic Z Tz z
+      (compose_fun unit_interval g_incl r) rg_incl
+      (path_homotopic_of_pointwise_equal Z Tz z z
+        (compose_fun unit_interval g_incl r) rg_incl
+        Hgincl_r_cont Hrg_incl_cont
+        Hgincl_r_0 Hgincl_r_1
+        (loop_at_at_zero Z Tz z rg_incl (loop_space_has_loop_at Z Tz z rg_incl Hrg_incl_loop))
+        (loop_at_at_one Z Tz z rg_incl (loop_space_has_loop_at Z Tz z rg_incl Hrg_incl_loop))
+        Hpw_eq)). }
+  (** Chain step 3: [rg_incl] = id via HloopsVp **)
+  claim Hrg_null : path_homotopic Z Tz z z rg_incl (constant_path z).
+  { exact (HloopsVp z HzVp rg Hrg_loop). }
+  claim Hclass_eq3 :
+    path_homotopy_class_loop Z Tz z rg_incl
+    = path_homotopy_class_loop Z Tz z (constant_path z).
+  { exact (path_homotopy_class_loop_eq_of_path_homotopic Z Tz z rg_incl (constant_path z) Hrg_null). }
+  (** Chain all together **)
+  exact (eq_i_tra
+    (path_homotopy_class_loop Z Tz z (compose_fun unit_interval eps r))
+    (path_homotopy_class_loop Z Tz z rg_incl)
+    (fundamental_group_id Z Tz z)
+    (eq_i_tra
+      (path_homotopy_class_loop Z Tz z (compose_fun unit_interval eps r))
+      (path_homotopy_class_loop Z Tz z (compose_fun unit_interval g_incl r))
+      (path_homotopy_class_loop Z Tz z rg_incl)
+      Hclass_eq1 Hclass_eq2)
+    Hclass_eq3).
 }
 (** By injectivity: [g_incl] = id-Y **)
 claim Hg_is_id : path_homotopy_class_loop Y Ty y g_incl = fundamental_group_id Y Ty y.
@@ -408103,7 +408183,7 @@ claim Hg_is_id : path_homotopy_class_loop Y Ty y g_incl = fundamental_group_id Y
         Hr_id))). }
 (** g_incl is null-homotopic **)
 exact (loop_class_eq_id_implies_path_homotopic_constant Y Ty y g_incl Hg_incl_loop Hg_is_id).
-Admitted.
+Qed.
 
 (** Key infrastructure: covering map trivializes over path-connected base **)
 (** with trivial inclusion-induced pi1. This is needed for composition of **)
@@ -408526,7 +408606,6 @@ Qed.
 (** if Z has a universal covering space, then p = r o q is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 97 **)
-(** Lock Alice 1773738925 **)
 Theorem ex80_1a_composition_of_coverings :
   forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q ->
