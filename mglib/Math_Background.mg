@@ -415231,7 +415231,7 @@ claim HV0_pc : path_connected_space V0 (subspace_topology E Te V0).
   (** All in one exact call to avoid scoping issues **)
   claim Hhomeo_res : homeomorphism V0 (subspace_topology E Te V0)
     (image_of pS V0) (subspace_topology B Tb (image_of pS V0)) pS.
-  { admit. }
+  { admit. (** needs: homeomorphism_restrict_to_image_of_subset + subspace_transitive; blocked by claim scoping **) }
   claim Himg_pc : path_connected_space (image_of pS V0) (subspace_topology B Tb (image_of pS V0)).
   { admit. }
   exact (homeomorphism_preserves_path_connected_space_left
