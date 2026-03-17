@@ -330364,6 +330364,52 @@ claim Hextfp :
         }
         exact Hsg_img.
       + let x. assume HxG : x :e G. assume Hxne : x <> eG.
+        claim Hsubgen_nonid_raw :
+          subgroups_generate G multG eG invG J ImageFam ->
+          exists n:set, n :e omega /\ n <> 0 /\
+            exists xs:set, function_on xs n G /\
+              (forall i:set, i :e n ->
+                exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+              x = word_product multG eG xs n.
+        {
+          assume HgenImg : subgroups_generate G multG eG invG J ImageFam.
+          claim Hgen_clause :
+            forall z:set, z :e G ->
+              z = eG \/
+              exists n:set, n :e omega /\ n <> 0 /\
+                exists xs:set, function_on xs n G /\
+                  (forall i:set, i :e n ->
+                    exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+                  z = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+          {
+            exact (andER
+              (group_structure G multG eG invG /\
+               (forall alpha:set, alpha :e J -> subgroup_of (apply_fun ImageFam alpha) G multG eG invG))
+              (forall z:set, z :e G ->
+                z = eG \/
+                exists n:set, n :e omega /\ n <> 0 /\
+                  exists xs:set, function_on xs n G /\
+                    (forall i:set, i :e n ->
+                      exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+                    z = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+              HgenImg).
+          }
+          apply (Hgen_clause x HxG).
+          - assume Hxe : x = eG.
+            exact (FalseE (Hxne Hxe)
+              (exists n:set, n :e omega /\ n <> 0 /\
+                exists xs:set, function_on xs n G /\
+                  (forall i:set, i :e n ->
+                    exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+                  x = word_product multG eG xs n)).
+          - assume Hex :
+              exists n:set, n :e omega /\ n <> 0 /\
+                exists xs:set, function_on xs n G /\
+                  (forall i:set, i :e n ->
+                    exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+                  x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+            exact Hex.
+        }
         admit. (** core S68.5 gap C remainder: reduced-word existence+uniqueness for non-identity x. **)
       + let alpha. assume Halpha : alpha :e J.
         rewrite (apply_fun_graph J
