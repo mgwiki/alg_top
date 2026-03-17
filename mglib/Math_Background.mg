@@ -408294,11 +408294,15 @@ claim Hpe0U : apply_fun p e0 :e U.
 { exact (SepE2 E (fun x:set => apply_fun p x :e U) e0 He0). }
 set u0 := apply_fun p e0.
 claim Hu0B : u0 :e B. { exact (Hfn_p e0 He0E). }
-(** W = W0 cap preU for some W0 :e Te **)
+(** W = W0 cap preU for some W0 :e Te (from subspace topology def) **)
 (** Get evenly covered V with u0 :e V **)
-(** Intersect with the W0 to get a smaller neighborhood **)
-(** Use lpc of U to get path-connected sub-neighborhood **)
-(** Lift via the sheet containing e0 **)
+(** Take V0 = V cap p(W0) cap U: open in B, contained in V and U **)
+(** Use lpc of U to get path-connected Vpc with u0 :e Vpc c= V0 **)
+(** Vpc is evenly covered (subset of V, open in B) **)
+(** The sheet of Vpc containing e0 is path-connected (homeo to Vpc) **)
+(** and contained in W cap preU **)
+(** This sheet is the desired neighborhood V0 **)
+(** Full formalization: extract W0, build V0, apply lpc, get sheet **)
 admit.
 Admitted.
 
