@@ -413652,11 +413652,13 @@ claim HSW_open : SW :e Te.
 claim He0SW : e0 :e SW. { exact (binintersectI S_e0 W0 e0 He0Se0 He0W0). }
 (** Step 3: SW is open in subspace of S_e0, hence p(SW) is open in subspace of V **)
 claim HSW_sub_Se0 : SW c= S_e0. { let w. assume Hw. exact (binintersectE1 S_e0 W0 w Hw). }
+claim HSW_eq_comm : SW = W0 :/\: S_e0.
+{ apply set_ext.
+  - let w. assume Hw. exact (binintersectI W0 S_e0 w (binintersectE2 S_e0 W0 w Hw) (binintersectE1 S_e0 W0 w Hw)).
+  - let w. assume Hw. exact (binintersectI S_e0 W0 w (binintersectE2 W0 S_e0 w Hw) (binintersectE1 W0 S_e0 w Hw)). }
 claim HSW_open_sub : SW :e subspace_topology E Te S_e0.
-{ (** SW = S_e0 cap W0 = W0 cap S_e0 as sets, and W0 cap S_e0 :e subspace **)
-  (** subspace_topology_intersection_open gives W0 cap S_e0 :e subspace **)
-  (** Need to show S_e0 cap W0 = W0 cap S_e0 or use binintersect_comm **)
-  admit. }
+{ rewrite HSW_eq_comm.
+  exact (subspace_topology_intersection_open E Te S_e0 W0 HW0open). }
 (** p maps open subsets of S_e0 to open subsets of V (homeomorphism is open map) **)
 set pS := graph S_e0 (fun x:set => apply_fun p x).
 claim HpS_open : open_map S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS.
