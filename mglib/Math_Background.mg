@@ -331599,7 +331599,85 @@ claim Hextfp :
               n1 = n2 /\
               (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i).
             {
-              admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed words rw1/rw2 via extension property using Hrw1Choice/Hrw1ViaIfam and Hrw2Choice/Hrw2ViaIfam. **)
+              claim HliftSync :
+                n1 = n2 /\
+                (forall i:set, i :e n1 ->
+                  apply_fun aof1 i = apply_fun aof2 i /\
+                  apply_fun uof1 i = apply_fun uof2 i).
+              {
+                admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed lift data via extension property using Hrw1Choice/Hrw1ViaIfam and Hrw2Choice/Hrw2ViaIfam. **)
+              }
+              claim HnEqLift : n1 = n2.
+              {
+                exact (andEL
+                  (n1 = n2)
+                  (forall i:set, i :e n1 ->
+                    apply_fun aof1 i = apply_fun aof2 i /\
+                    apply_fun uof1 i = apply_fun uof2 i)
+                  HliftSync).
+              }
+              claim HliftEq :
+                forall i:set, i :e n1 ->
+                  apply_fun aof1 i = apply_fun aof2 i /\
+                  apply_fun uof1 i = apply_fun uof2 i.
+              {
+                exact (andER
+                  (n1 = n2)
+                  (forall i:set, i :e n1 ->
+                    apply_fun aof1 i = apply_fun aof2 i /\
+                    apply_fun uof1 i = apply_fun uof2 i)
+                  HliftSync).
+              }
+              claim HrwEqFromLift :
+                forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i.
+              {
+                let i.
+                assume Hi : i :e n1.
+                claim Hi2 : i :e n2.
+                {
+                  exact (eq_subst_mem_set i n1 n2 Hi HnEqLift).
+                }
+                claim Hsync_i :
+                  apply_fun aof1 i = apply_fun aof2 i /\
+                  apply_fun uof1 i = apply_fun uof2 i.
+                {
+                  exact (HliftEq i Hi).
+                }
+                claim HaEq :
+                  apply_fun aof1 i = apply_fun aof2 i.
+                {
+                  exact (andEL
+                    (apply_fun aof1 i = apply_fun aof2 i)
+                    (apply_fun uof1 i = apply_fun uof2 i)
+                    Hsync_i).
+                }
+                claim HuEq :
+                  apply_fun uof1 i = apply_fun uof2 i.
+                {
+                  exact (andER
+                    (apply_fun aof1 i = apply_fun aof2 i)
+                    (apply_fun uof1 i = apply_fun uof2 i)
+                    Hsync_i).
+                }
+                claim Hrw2Sym :
+                  apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i) =
+                  apply_fun rw2 i.
+                {
+                  exact (eq_symm
+                    (apply_fun rw2 i)
+                    (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
+                    (Hrw2ViaIfam i Hi2)).
+                }
+                rewrite (Hrw1ViaIfam i Hi).
+                rewrite HaEq.
+                rewrite HuEq.
+                exact Hrw2Sym.
+              }
+              exact (andI
+                (n1 = n2)
+                (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i)
+                HnEqLift
+                HrwEqFromLift).
             }
             claim HnEqRw : n1 = n2.
             {
