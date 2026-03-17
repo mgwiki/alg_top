@@ -408037,13 +408037,51 @@ claim HincVp_cont : continuous_map V' (subspace_topology Z Tz V') Z Tz incVp.
 set rg_incl := compose_fun unit_interval rg incVp.
 claim Hrg_incl_loop : rg_incl :e loop_space Z Tz z.
 { exact (loop_space_postcompose V' (subspace_topology Z Tz V') z Z Tz z rg incVp Hrg_loop HincVp_cont (identity_function_apply V' z HzVp)). }
-(** Apply null-homotopy hypothesis: rg with inclusion is null-homotopic in Z **)
-(** HloopsVp uses graph V' (fun x => x) for inclusion, **)
-(** which equals {(w,w)|w :e V'} = incVp definitionally. **)
-(** So compose_fun I rg (graph V' (fun x => x)) = compose_fun I rg incVp = rg_incl **)
-(** Remaining: r_star functoriality + injectivity argument **)
-(** These require induced_homomorphism_apply and thm54_6a_p_star_injective **)
-admit.
+(** g_incl class in pi1(Y,y) **)
+claim Hg_cls : path_homotopy_class_loop Y Ty y g_incl :e fundamental_group Y Ty y.
+{ exact (path_homotopy_class_in_fundamental_group Y Ty y g_incl Hg_incl_loop). }
+(** r-induced is a group homomorphism pi1(Y,y) to pi1(Z,z) **)
+claim Hr_hom : group_homomorphism
+  (fundamental_group Y Ty y) (fundamental_group_mult Y Ty y)
+  (fundamental_group Z Tz z) (fundamental_group_mult Z Tz z)
+  (induced_homomorphism Y Ty y Z Tz z r).
+{ exact (induced_homomorphism_is_homomorphism Y Ty y Z Tz z r Hcont_r (eq_refl z) HyY). }
+(** r-induced maps id-Y to id-Z **)
+claim Hr_id : apply_fun (induced_homomorphism Y Ty y Z Tz z r)
+  (fundamental_group_id Y Ty y) = fundamental_group_id Z Tz z.
+{ exact (group_hom_maps_id_to_id
+    (fundamental_group Y Ty y) (fundamental_group_mult Y Ty y)
+    (fundamental_group_id Y Ty y) (fundamental_group_inv Y Ty y)
+    (fundamental_group Z Tz z) (fundamental_group_mult Z Tz z)
+    (fundamental_group_id Z Tz z) (fundamental_group_inv Z Tz z)
+    (induced_homomorphism Y Ty y Z Tz z r)
+    (fundamental_group_is_group Y Ty y HtopY HyY)
+    (fundamental_group_is_group Z Tz z HtopZ HzZ)
+    Hr_hom). }
+(** r-induced applied to [g_incl] equals id-Z **)
+(** because compose_fun I (rep of [g_incl]) r is homotopic to rg_incl **)
+(** and rg_incl is null-homotopic by HloopsVp **)
+claim Hr_g_id : apply_fun (induced_homomorphism Y Ty y Z Tz z r)
+  (path_homotopy_class_loop Y Ty y g_incl) = fundamental_group_id Z Tz z.
+{ admit. }
+(** By injectivity: [g_incl] = id-Y **)
+claim Hg_is_id : path_homotopy_class_loop Y Ty y g_incl = fundamental_group_id Y Ty y.
+{ exact (thm54_6a_p_star_injective Y Ty Z Tz r y Hcov HyY
+    (path_homotopy_class_loop Y Ty y g_incl)
+    (fundamental_group_id Y Ty y)
+    Hg_cls
+    (group_e_in_G (fundamental_group Y Ty y) (fundamental_group_mult Y Ty y) (fundamental_group_id Y Ty y) (fundamental_group_inv Y Ty y) (fundamental_group_is_group Y Ty y HtopY HyY))
+    (eq_i_tra
+      (apply_fun (induced_homomorphism Y Ty y Z Tz z r) (path_homotopy_class_loop Y Ty y g_incl))
+      (fundamental_group_id Z Tz z)
+      (apply_fun (induced_homomorphism Y Ty y Z Tz z r) (fundamental_group_id Y Ty y))
+      Hr_g_id
+      (eq_symm
+        (apply_fun (induced_homomorphism Y Ty y Z Tz z r) (fundamental_group_id Y Ty y))
+        (fundamental_group_id Z Tz z)
+        Hr_id))). }
+(** g_incl is null-homotopic **)
+exact (loop_class_eq_id_implies_path_homotopic_constant Y Ty y g_incl Hg_incl_loop Hg_is_id).
 Admitted.
 
 (** Key infrastructure: covering map trivializes over path-connected base **)
@@ -418143,7 +418181,6 @@ Admitted.
 (** Admin-approved-refactored per noticeboard proposal 1772589268 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 68 **)
-(** Lock Alice 1773736809 **)
 Theorem ex81_3a_covering_trans_properly_discontinuous :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
