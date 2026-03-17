@@ -407052,7 +407052,8 @@ claim Hglift_loop_at : loop_at E0 Te0 e0 glift.
       * exact (function_on_of_function_space glift unit_interval E0 Hglift_fs).
       * let V1. assume HV1.
         (** preimage_of I glift V1 = preimage_of I liftfB V1 by graphify_on_apply **)
-        (** then use HliftCont to get openness **)
+        (** preimage_of I glift V1 = preimage_of I liftfB V1 by graphify_on_apply, **)
+        (** then openness from continuous_map_preimage applied to HliftCont **)
         admit.
     + prove apply_fun glift 0 = e0.
       rewrite (graphify_on_apply unit_interval liftfB 0 zero_in_unit_interval).
