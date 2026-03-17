@@ -331523,11 +331523,83 @@ claim Hextfp :
               assume _ _ Hrw2EqWs2.
               exact Hrw2EqWs2.
             }
+            claim Hrw1Choice :
+              forall i:set, i :e n1 ->
+                apply_fun aof1 i :e J /\
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i).
+            {
+              apply (and3E
+                (forall i:set, i :e n1 ->
+                  apply_fun aof1 i :e J /\
+                  apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+                (forall i:set, i :e n1 ->
+                  apply_fun rw1 i =
+                    apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+                (forall i:set, i :e n1 ->
+                  apply_fun rw1 i = apply_fun ws1 i)
+                HsideRw1).
+              assume Hrw1Choice _ _.
+              exact Hrw1Choice.
+            }
+            claim Hrw1ViaIfam :
+              forall i:set, i :e n1 ->
+                apply_fun rw1 i =
+                  apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i).
+            {
+              apply (and3E
+                (forall i:set, i :e n1 ->
+                  apply_fun aof1 i :e J /\
+                  apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+                (forall i:set, i :e n1 ->
+                  apply_fun rw1 i =
+                    apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+                (forall i:set, i :e n1 ->
+                  apply_fun rw1 i = apply_fun ws1 i)
+                HsideRw1).
+              assume _ Hrw1ViaIfam _.
+              exact Hrw1ViaIfam.
+            }
+            claim Hrw2Choice :
+              forall j:set, j :e n2 ->
+                apply_fun aof2 j :e J /\
+                apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j).
+            {
+              apply (and3E
+                (forall j:set, j :e n2 ->
+                  apply_fun aof2 j :e J /\
+                  apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j))
+                (forall j:set, j :e n2 ->
+                  apply_fun rw2 j =
+                    apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))
+                (forall j:set, j :e n2 ->
+                  apply_fun rw2 j = apply_fun ws2 j)
+                HsideRw2).
+              assume Hrw2Choice _ _.
+              exact Hrw2Choice.
+            }
+            claim Hrw2ViaIfam :
+              forall j:set, j :e n2 ->
+                apply_fun rw2 j =
+                  apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j).
+            {
+              apply (and3E
+                (forall j:set, j :e n2 ->
+                  apply_fun aof2 j :e J /\
+                  apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j))
+                (forall j:set, j :e n2 ->
+                  apply_fun rw2 j =
+                    apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))
+                (forall j:set, j :e n2 ->
+                  apply_fun rw2 j = apply_fun ws2 j)
+                HsideRw2).
+              assume _ Hrw2ViaIfam _.
+              exact Hrw2ViaIfam.
+            }
             claim HrwCore :
               n1 = n2 /\
               (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i).
             {
-              admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed words rw1/rw2 via extension property. **)
+              admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed words rw1/rw2 via extension property using Hrw1Choice/Hrw1ViaIfam and Hrw2Choice/Hrw2ViaIfam. **)
             }
             claim HnEqRw : n1 = n2.
             {
