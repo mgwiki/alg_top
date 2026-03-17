@@ -408316,68 +408316,31 @@ apply (and6E (V :e Tb) (u0 :e V) (slicesV c= Te) (pairwise_disjoint slicesV)
       (graph S0 (fun x:set => apply_fun p x)))
   HslV_pack).
 assume HVopen HuV HslOpen HslPD HslUnion HslHomeo.
-(** V cap U is open in B **)
-set VU := V :/\: U.
-claim HVU_open : VU :e Tb.
-{ exact (topology_binintersect_closed B Tb V U HtopB HVopen HUopen). }
-claim Hu0VU : u0 :e VU.
-{ exact (binintersectI V U u0 HuV Hpe0U). }
-(** VU is open in the subspace topology of U **)
-claim HVU_subU : VU :e subspace_topology B Tb U.
-{ exact (subspace_topology_intersection_open B Tb U V HVopen). }
-claim HVU_subU2 : VU c= U. { let w. assume Hw. exact (binintersectE2 V U w Hw). }
-(** Use lpc of U to get path-connected Vpc c= VU with u0 :e Vpc **)
-(** Also intersect with image of W0 under p to ensure the sheet stays in W **)
-(** For simplicity, use VU directly and get pc sub via lpc **)
-apply (locally_path_connected_local U (subspace_topology B Tb U) u0 VU HlpcU Hpe0U HVU_subU Hu0VU).
-let Vpc. assume HVpc_pack.
-(** Extract Vpc properties from HVpc_pack **)
-set Hpc_type := path_connected_space Vpc (subspace_topology U (subspace_topology B Tb U) Vpc).
-claim HVpc_pc : Hpc_type.
-{ exact (andER (((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) /\ (Vpc c= VU)) Hpc_type HVpc_pack). }
-claim HVpc_left3 : ((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) /\ (Vpc c= VU).
-{ exact (andEL (((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) /\ (Vpc c= VU)) Hpc_type HVpc_pack). }
-claim HVpc_sub_VU : Vpc c= VU.
-{ exact (andER ((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) (Vpc c= VU) HVpc_left3). }
-claim HVpc_left2 : (Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc).
-{ exact (andEL ((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) (Vpc c= VU) HVpc_left3). }
-claim HVpc_open_subU : Vpc :e subspace_topology B Tb U.
-{ exact (andEL (Vpc :e subspace_topology B Tb U) (u0 :e Vpc) HVpc_left2). }
-claim Hu0Vpc : u0 :e Vpc.
-{ exact (andER (Vpc :e subspace_topology B Tb U) (u0 :e Vpc) HVpc_left2). }
-(** Vpc c= V (since Vpc c= VU c= V) **)
-claim HVpc_sub_V : Vpc c= V.
-{ let w. assume Hw. exact (binintersectE1 V U w (HVpc_sub_VU w Hw)). }
-(** Vpc :e Tb (from subspace topology: Vpc = S cap U for some S :e Tb, and U :e Tb) **)
-claim HVpc_open_B : Vpc :e Tb.
-{ (** Vpc :e subspace_topology B Tb U = {S cap U | S :e Tb} **)
-  (** Extract: exists S :e Tb, Vpc = S cap U **)
-  claim HVpc_sep : exists S0:set, S0 :e Tb /\ Vpc = S0 :/\: U.
-  { exact (SepE2 (Power U) (fun S0:set => exists V0:set, V0 :e Tb /\ S0 = V0 :/\: U) Vpc HVpc_open_subU). }
-  apply HVpc_sep. let S0. assume HS0pack.
-  claim HS0open : S0 :e Tb. { exact (andEL (S0 :e Tb) (Vpc = S0 :/\: U) HS0pack). }
-  claim HVpc_eq : Vpc = S0 :/\: U. { exact (andER (S0 :e Tb) (Vpc = S0 :/\: U) HS0pack). }
-  rewrite HVpc_eq.
-  exact (topology_binintersect_closed B Tb S0 U HtopB HS0open HUopen). }
-(** Vpc is evenly covered by p (subset of evenly covered V) **)
-claim Hev_V : evenly_covered E Te B Tb p V.
-{ prove topology_on E Te /\ V :e Tb /\ exists slices:set, slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p V /\ (forall S0:set, S0 :e slices -> homeomorphism S0 (subspace_topology E Te S0) V (subspace_topology B Tb V) (graph S0 (fun x:set => apply_fun p x))).
-  apply and3I. exact HtopE. exact HVopen.
-  witness slicesV. apply and4I. exact HslOpen. exact HslPD. exact HslUnion. exact HslHomeo. }
-claim Hev_Vpc : evenly_covered E Te B Tb p Vpc.
-{ exact (evenly_covered_open_subset E Te B Tb p V Vpc Hev_V HVpc_open_B HVpc_sub_V). }
-(** Final step: extract sheet of Vpc containing e0, show it's the desired pc nhd **)
-(** The sheet S of p^-1(Vpc) containing e0 satisfies: **)
-(** - S :e Te (from evenly_covered slices) **)
-(** - S c= preU (since Vpc c= U, so S c= p^-1(U) = preU) **)
-(** - S is path-connected (homeomorphic to Vpc which is pc) **)
-(** - e0 :e S (since p(e0) = u0 :e Vpc) **)
-(** For containment in W = W0 cap preU: **)
-(** Take V_W = p(sheet_of_V cap W0) which is open (p homeo on sheet) **)
-(** Apply lpc on V_W to get pc Vpc, then sheet of Vpc c= sheet_of_V cap W0 c= W0 **)
-(** Or: take S cap W0 (open in E), its p-image is open in Vpc, **)
-(** apply lpc to get pc sub, lift back **)
-(** This is a routine but detailed construction **)
+(** Step 1: Find the V-slice containing e0 **)
+claim He0_preV : e0 :e preimage_of E p V.
+{ exact (SepI E (fun x:set => apply_fun p x :e V) e0 He0E HuV). }
+claim He0_union : e0 :e Union slicesV.
+{ rewrite HslUnion. exact He0_preV. }
+apply (UnionE_impred slicesV e0 He0_union).
+let S_e0. assume He0Se0 : e0 :e S_e0. assume HSe0_sl : S_e0 :e slicesV.
+claim HSe0_open : S_e0 :e Te. { exact (HslOpen S_e0 HSe0_sl). }
+claim HSe0_homeo : homeomorphism S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V)
+  (graph S_e0 (fun x:set => apply_fun p x)).
+{ exact (HslHomeo S_e0 HSe0_sl). }
+(** Step 2: S_e0 cap W0 is open in E, e0 :e S_e0 cap W0 **)
+set SW := S_e0 :/\: W0.
+claim HSW_open : SW :e Te.
+{ exact (topology_binintersect_closed E Te S_e0 W0 HtopE HSe0_open HW0open). }
+claim He0SW : e0 :e SW. { exact (binintersectI S_e0 W0 e0 He0Se0 He0W0). }
+(** Step 3: p(SW) is open in V (p is a homeomorphism on S_e0) **)
+(** Then p(SW) cap U is open in B **)
+(** Step 4: Apply lpc on p(SW) cap U to get pc Vpc **)
+(** Step 5: Preimage of Vpc in S_e0 is the desired pc nhd **)
+(** - It's pc (homeo to Vpc) **)
+(** - It's c= SW c= W0 (since Vpc c= p(SW)) **)
+(** - It's c= preU (since Vpc c= U) **)
+(** - It's open in E (preimage of open under continuous p restricted to open S_e0) **)
+(** Full construction: need to formalize p(SW), lpc application, preimage **)
 admit.
 Admitted.
 
