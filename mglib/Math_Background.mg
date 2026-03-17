@@ -413677,12 +413677,31 @@ claim Hu0_in_pSW : u0 :e image_of pS SW.
 { prove u0 :e {apply_fun pS x | x :e SW}.
   rewrite <- HpS_e0.
   exact (ReplI SW (fun x:set => apply_fun pS x) e0 He0SW). }
-(** Full steps 4-5 require: **)
-(** - Convert image_of pS SW to Tb-open **)
-(** - Intersect with U for subspace-of-U membership **)
-(** - Apply lpc_local for pc neighborhood **)
-(** - Map back through homeomorphism inverse for the E-neighborhood **)
-(** These are routine but detailed subspace topology manipulations **)
+(** Step 4: Convert image_of pS SW to Tb-open **)
+claim HpSW_open_B : image_of pS SW :e Tb.
+{ (** image_of pS SW :e subspace_topology B Tb V means it = S cap V for some S :e Tb **)
+  (** Since image_of pS SW c= V, this means image_of pS SW :e Tb **)
+  (** (open subset of an open set is open) **)
+  admit. }
+(** Step 5: Intersect with U, apply lpc **)
+set pSW_U := (image_of pS SW) :/\: U.
+claim HpSW_U_open : pSW_U :e Tb.
+{ exact (topology_binintersect_closed B Tb (image_of pS SW) U HtopB HpSW_open_B HUopen). }
+claim Hu0_pSW_U : u0 :e pSW_U.
+{ exact (binintersectI (image_of pS SW) U u0 Hu0_in_pSW Hpe0U). }
+claim HpSW_U_subU : pSW_U :e subspace_topology B Tb U.
+{ exact (subspace_topology_intersection_open B Tb U (image_of pS SW) HpSW_open_B). }
+(** Apply lpc to get path-connected Vpc c= pSW_U **)
+apply (locally_path_connected_local U (subspace_topology B Tb U) u0 pSW_U HlpcU Hpe0U HpSW_U_subU Hu0_pSW_U).
+let Vpc. assume HVpc_pack.
+(** Extract: Vpc :e subspace B Tb U, u0 :e Vpc, Vpc c= pSW_U, Vpc pc **)
+(** Step 6: Preimage of Vpc under pS restricted to S_e0 **)
+(** This preimage is c= SW c= S_e0 cap W0 c= preU cap W0 **)
+(** It's open in E (from covering structure) **)
+(** It's path-connected (homeomorphic to Vpc via p) **)
+(** It contains e0 (since p(e0) = u0 :e Vpc) **)
+(** It's c= W = W0 cap preU (since preimage c= SW c= W0, and c= preU) **)
+(** This is the desired path-connected neighborhood **)
 admit.
 Admitted.
 
