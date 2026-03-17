@@ -415226,7 +415226,17 @@ claim HV0_open_E : V0 :e Te.
 (** Scoping issue: HSe0_homeo and HVpc_sub_V not accessible after apply/let **)
 (** This requires restructuring the proof to move the pc claim before the branches **)
 claim HV0_pc : path_connected_space V0 (subspace_topology E Te V0).
-{ admit. }
+{ (** V0 homeomorphic to Vpc via pS restricted, Vpc pc => V0 pc **)
+  (** Re-derive homeomorphism from assume vars (HslHomeo, HSe0_sl) **)
+  claim Hhomeo_res : homeomorphism V0 (subspace_topology E Te V0)
+    (image_of pS V0) (subspace_topology B Tb (image_of pS V0)) pS.
+  { admit. }
+  claim Himg_pc : path_connected_space (image_of pS V0) (subspace_topology B Tb (image_of pS V0)).
+  { admit. }
+  exact (homeomorphism_preserves_path_connected_space_left
+    V0 (subspace_topology E Te V0)
+    (image_of pS V0) (subspace_topology B Tb (image_of pS V0))
+    pS Hhomeo_res Himg_pc). }
 witness V0.
 apply and4I.
 - (** V0 :e subspace_topology E Te preU **)
