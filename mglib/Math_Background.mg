@@ -415181,8 +415181,26 @@ claim HV0_sub_W : V0 c= W.
 (** V0 :e subspace_topology E Te preU **)
 (** V0 is open in E (preimage of open Vpc under continuous pS on open S_e0) **)
 (** Since V0 c= preU and V0 :e Te, V0 :e subspace_topology E Te preU **)
+claim HpS_cont : continuous_map S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS.
+{ exact (homeomorphism_continuous S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS HSe0_homeo). }
+claim HVpc_sub_V : Vpc c= V.
+{ let w. assume Hw. exact (HpSW_sub_V w (binintersectE1 (image_of pS SW) U w (HVpc_sub w Hw))). }
+claim HVpc_open_B2 : Vpc :e Tb.
+{ admit. (** Vpc :e subspace B Tb U => Vpc = S cap U for S :e Tb => Vpc :e Tb **) }
+claim HVpc_open_subV : Vpc :e subspace_topology B Tb V.
+{ rewrite <- (binintersect_Subq_eq_1 Vpc V HVpc_sub_V).
+  exact (subspace_topology_intersection_open B Tb V Vpc HVpc_open_B2). }
+claim HV0_open_sub : V0 :e subspace_topology E Te S_e0.
+{ exact (continuous_map_preimage S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS HpS_cont Vpc HVpc_open_subV). }
+claim HV0_sub_Se0 : V0 c= S_e0.
+{ let e. assume He. exact (SepE1 S_e0 (fun x:set => apply_fun pS x :e Vpc) e He). }
+claim HV0_open_inSe0 : open_in S_e0 (subspace_topology E Te S_e0) V0.
+{ prove topology_on S_e0 (subspace_topology E Te S_e0) /\ V0 :e subspace_topology E Te S_e0.
+  apply andI.
+  - exact (subspace_topology_is_topology E Te S_e0 HtopE (topology_elem_subset E Te S_e0 HtopE HSe0_open)).
+  - exact HV0_open_sub. }
 claim HV0_open_E : V0 :e Te.
-{ admit. (** preimage of open set under continuous map restricted to open set **) }
+{ exact (open_in_subspace_if_ambient_open E Te S_e0 V0 HtopE HSe0_open HV0_sub_Se0 HV0_open_inSe0). }
 witness V0.
 apply and4I.
 - (** V0 :e subspace_topology E Te preU **)
