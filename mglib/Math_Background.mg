@@ -408276,11 +408276,29 @@ claim HpreU_open : preU :e Te.
 { exact (continuous_map_preimage E Te B Tb p Hcont_p U HUopen). }
 claim HpreU_sub : preU c= E.
 { exact (topology_elem_subset E Te preU HtopE HpreU_open). }
-(** lpc = topology_on + for each x :e X, U open, x :e U, exists V pc with x :e V c= U **)
-(** For e0 :e preU, W open in subspace, e0 :e W: **)
-(** Get evenly covered V of p(e0), restrict to U, get lpc neighborhood in U, **)
-(** lift to a path-connected sheet neighborhood of e0 **)
-(** This requires evenly_covered structure + lpc of U + sheet homeomorphism **)
+(** Prove: topology_on preU (subspace_topology E Te preU) **)
+claim HtopPreU : topology_on preU (subspace_topology E Te preU).
+{ exact (subspace_topology_is_topology E Te preU HtopE HpreU_sub). }
+(** Main part: for each e0 :e preU, W open with e0 :e W, find pc V c= W **)
+prove topology_on preU (subspace_topology E Te preU) /\
+  (forall e0:set, e0 :e preU -> forall W:set, W :e subspace_topology E Te preU -> e0 :e W ->
+    exists V0:set, V0 :e subspace_topology E Te preU /\ e0 :e V0 /\ V0 c= W /\
+      path_connected_space V0 (subspace_topology preU (subspace_topology E Te preU) V0)).
+apply andI. exact HtopPreU.
+let e0. assume He0 : e0 :e preU.
+let W. assume HW : W :e subspace_topology E Te preU. assume He0W : e0 :e W.
+(** e0 :e E and p(e0) :e U **)
+claim He0E : e0 :e E. { exact (HpreU_sub e0 He0). }
+claim Hfn_p : function_on p E B. { exact (continuous_map_function_on E Te B Tb p Hcont_p). }
+claim Hpe0U : apply_fun p e0 :e U.
+{ exact (SepE2 E (fun x:set => apply_fun p x :e U) e0 He0). }
+set u0 := apply_fun p e0.
+claim Hu0B : u0 :e B. { exact (Hfn_p e0 He0E). }
+(** W = W0 cap preU for some W0 :e Te **)
+(** Get evenly covered V with u0 :e V **)
+(** Intersect with the W0 to get a smaller neighborhood **)
+(** Use lpc of U to get path-connected sub-neighborhood **)
+(** Lift via the sheet containing e0 **)
 admit.
 Admitted.
 
