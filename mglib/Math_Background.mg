@@ -407843,6 +407843,25 @@ Theorem covering_trivializes_over_pi1_trivial_inclusion :
 admit.
 Admitted.
 
+(** Helper: loops in evenly covered neighborhood of universal cover are null-homotopic. **)
+(** If p0: E0 -> B is a covering with E0 simply connected, and V0 is evenly covered **)
+(** by p0, then any loop in V0 is null-homotopic in B. **)
+(** Proof: lift the loop to E0. Since V0 is evenly covered, the lift stays in one slice **)
+(** (connected + disjoint slices). Since p0 is injective on the slice, the lift is a loop **)
+(** in E0. Since E0 is simply connected, the lift is null-homotopic. Project back to B. **)
+Theorem universal_cover_evenly_covered_loops_trivial :
+  forall E0 Te0 B Tb p0 V0:set,
+  covering_map E0 Te0 B Tb p0 ->
+  simply_connected E0 Te0 ->
+  evenly_covered E0 Te0 B Tb p0 V0 ->
+  forall b:set, b :e V0 ->
+  forall f:set, f :e loop_space V0 (subspace_topology B Tb V0) b ->
+  path_homotopic B Tb b b
+    (compose_fun unit_interval f (graph V0 (fun x:set => x)))
+    (constant_path b).
+admit.
+Admitted.
+
 (** from S80 Exercise 1(a) (line 5012 in algtop.tex) **)
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps. Show that **)
 (** if Z has a universal covering space, then p = r o q is a covering map. **)
