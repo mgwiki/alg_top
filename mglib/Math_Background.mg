@@ -480297,25 +480297,142 @@ Qed.
 		}
 
 		(** Useful: work with a graphified loop representative living in the subspace Y. **)
-		claim HfGraphLoopY :
-		  graphify_on unit_interval f :e loop_space Y (subspace_topology T Tx Y) x0.
-		{
-		  exact (loop_space_graphify_on_range_restrict_to_subspace
-		    T
-		    Tx
-		    Y
-		    x0
-		    f
-		    HtopT
-		    HYsubT
-		    Hx0Y
-		    HfLoop
-		    HimgSub).
-		}
+			claim HfGraphLoopY :
+			  graphify_on unit_interval f :e loop_space Y (subspace_topology T Tx Y) x0.
+			{
+			  exact (loop_space_graphify_on_range_restrict_to_subspace
+			    T
+			    Tx
+			    Y
+			    x0
+			    f
+			    HtopT
+			    HYsubT
+			    Hx0Y
+			    HfLoop
+			    HimgSub).
+			}
 
-		(** TODO: main combinatorial bridge for vertex basepoints. **)
-		admit.
-		Admitted.
+			(** Keep a graphified representative and record that nontriviality in T is preserved. **)
+			claim HimgGraphSub :
+			  image_of_fun (graphify_on unit_interval f) unit_interval c= Y.
+			{
+			  rewrite (image_of_fun_graphify_on_eq unit_interval f).
+			  exact HimgSub.
+			}
+			claim HfGraphLoopAtY :
+			  loop_at Y (subspace_topology T Tx Y) x0 (graphify_on unit_interval f).
+			{
+			  exact (loop_space_has_loop_at
+			    Y
+			    (subspace_topology T Tx Y)
+			    x0
+			    (graphify_on unit_interval f)
+			    HfGraphLoopY).
+			}
+			claim HfGraphContY :
+			  continuous_map unit_interval unit_interval_topology Y (subspace_topology T Tx Y)
+			    (graphify_on unit_interval f).
+			{
+			  exact (loop_at_continuous
+			    Y
+			    (subspace_topology T Tx Y)
+			    x0
+			    (graphify_on unit_interval f)
+			    HfGraphLoopAtY).
+			}
+			claim HtyEqY : subspace_topology T Tx Y = subspace_topology T Tx Y.
+			{ reflexivity. }
+			claim HfGraphContT :
+			  continuous_map unit_interval unit_interval_topology T Tx (graphify_on unit_interval f).
+			{
+			  exact (continuous_map_range_expand
+			    unit_interval
+			    unit_interval_topology
+			    Y
+			    (subspace_topology T Tx Y)
+			    T
+			    Tx
+			    (graphify_on unit_interval f)
+			    HfGraphContY
+			    HYsubT
+			    HtopT
+			    HtyEqY).
+			}
+			claim HfCont : continuous_map unit_interval unit_interval_topology T Tx f.
+			{ exact (loop_at_continuous T Tx x0 f HloopAt). }
+			claim Hf0 : apply_fun f 0 = x0.
+			{ exact (loop_at_at_zero T Tx x0 f HloopAt). }
+			claim Hf1 : apply_fun f 1 = x0.
+			{ exact (loop_at_at_one T Tx x0 f HloopAt). }
+			claim HfGraph0 : apply_fun (graphify_on unit_interval f) 0 = x0.
+			{
+			  rewrite (graphify_on_apply unit_interval f 0 zero_in_unit_interval).
+			  exact Hf0.
+			}
+			claim HfGraph1 : apply_fun (graphify_on unit_interval f) 1 = x0.
+			{
+			  rewrite (graphify_on_apply unit_interval f 1 one_in_unit_interval).
+			  exact Hf1.
+			}
+			claim HfHomGraph :
+			  path_homotopic T Tx x0 x0 f (graphify_on unit_interval f).
+			{
+			  exact (path_homotopic_of_pointwise_equal
+			    T
+			    Tx
+			    x0
+			    x0
+			    f
+			    (graphify_on unit_interval f)
+			    HfCont
+			    HfGraphContT
+			    Hf0
+			    Hf1
+			    HfGraph0
+			    HfGraph1
+			    (fun t:set => fun Ht:t :e unit_interval =>
+			      eq_symm
+			        (apply_fun (graphify_on unit_interval f) t)
+			        (apply_fun f t)
+			        (graphify_on_apply unit_interval f t Ht))).
+			}
+			claim HclsGraphEq :
+			  path_homotopy_class_loop T Tx x0 f
+			  = path_homotopy_class_loop T Tx x0 (graphify_on unit_interval f).
+			{
+			  exact (path_homotopy_class_loop_eq_of_path_homotopic
+			    T
+			    Tx
+			    x0
+			    f
+			    (graphify_on unit_interval f)
+			    HfHomGraph).
+			}
+			claim HneClsGraph :
+			  path_homotopy_class_loop T Tx x0 (graphify_on unit_interval f) <>
+			    fundamental_group_id T Tx x0.
+			{
+			  assume Hgid.
+			  apply HneCls.
+			  rewrite HclsGraphEq.
+			  exact Hgid.
+			}
+
+			(** Main bridge skeleton: separate existence from the no-cycle contradiction branch. **)
+			apply (xm (exists n path_seq:set,
+			  n :e omega /\ n <> 0 /\
+			  reduced_edge_path T Tx ArcsT n path_seq x0 /\
+			  (exists j:set, j :e n /\ ordsucc j /:e n /\
+			    (apply_fun path_seq j) 0 1 = x0))).
+			- assume HexPath.
+			  exact HexPath.
+			- assume HnoPath.
+			  (** TODO:
+			      from HnoPath, show path_homotopy_class_loop T Tx x0 (graphify_on unit_interval f)
+			      = fundamental_group_id T Tx x0, contradicting HneClsGraph. **)
+			  admit.
+			Admitted.
 
 	Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs :
 	  forall T Tx ArcsT Arcs' x0 f:set,
@@ -480437,10 +480554,219 @@ claim HexArc : exists A:set, A :e Arcs' /\ x0 :e A.
 	}
 	claim HtopY : topology_on Y (subspace_topology T Tx Y).
 	{ exact (subspace_topology_is_topology T Tx Y HtopT HYsubT). }
-	(** TODO: main combinatorial bridge.
-	    Intended proof: shrink to the finite subgraph Y := Union Arcs' and extract a closed reduced edge path
-	    from the assumption that the loop class is nontrivial. **)
-	admit.
+	(** Reduce immediately to the vertex-basepoint bridge when possible. **)
+	apply (xm (x0 :e graph_vertices T Tx ArcsT)).
+	- assume Hx0V.
+	  exact (loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs_at_vertex
+	    T
+	    Tx
+	    ArcsT
+	    Arcs'
+	    x0
+	    f
+	    Hglg
+	    Hx0V
+	    HfLoop
+	    HsubArcs
+	    HfinArcs
+	    HimgSub
+	    HneCls).
+	- assume Hx0NotV.
+	  claim HglgY : general_linear_graph Y (subspace_topology T Tx Y) Arcs'.
+	  {
+	    exact (general_linear_graph_finite_subfamily_union_is_general_linear_graph
+	      T
+	      Tx
+	      ArcsT
+	      Arcs'
+	      Hglg
+	      HsubArcs
+	      HfinArcs).
+	  }
+	  claim HexVY : exists v:set, v :e graph_vertices Y (subspace_topology T Tx Y) Arcs'.
+	  {
+	    apply (nonempty_has_element Arcs' HArcsNe).
+	    let A0.
+	    assume HA0 : A0 :e Arcs'.
+	    claim HA0dat : A0 c= Y /\ arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0).
+	    {
+	      exact (general_linear_graph_arc_data
+	        Y
+	        (subspace_topology T Tx Y)
+	        Arcs'
+	        A0
+	        HglgY
+	        HA0).
+	    }
+	    claim HarcA0 : arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0).
+	    {
+	      exact (andER
+	        (A0 c= Y)
+	        (arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0))
+	        HA0dat).
+	    }
+	    claim HendEx :
+	      exists p0 q0:set,
+	        end_points_of_arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0) p0 q0.
+	    {
+	      exact (arc_has_end_points_of_arc_pre
+	        A0
+	        (subspace_topology Y (subspace_topology T Tx Y) A0)
+	        HarcA0).
+	    }
+	    apply HendEx.
+	    let p0.
+	    assume Hp0pack.
+	    apply Hp0pack.
+	    let q0.
+	    assume Hend0.
+	    witness p0.
+	    exact (graph_vertices_intro_from_endpoint_left
+	      Y
+	      (subspace_topology T Tx Y)
+	      Arcs'
+	      A0
+	      p0
+	      q0
+	      HglgY
+	      HA0
+	      Hend0).
+	  }
+	  claim HexVT : exists v:set, v :e graph_vertices T Tx ArcsT.
+	  {
+	    apply HexVY.
+	    let v.
+	    assume HvY : v :e graph_vertices Y (subspace_topology T Tx Y) Arcs'.
+	    claim HvYunf :
+	      v :e {x :e Y | exists A0:set, A0 :e Arcs' /\
+	        exists p0 q0:set, end_points_of_arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0) p0 q0 /\
+	          (x = p0 \/ x = q0)}.
+	    {
+	      exact (eq_subst_mem_set
+	        v
+	        (graph_vertices Y (subspace_topology T Tx Y) Arcs')
+	        {x :e Y | exists A0:set, A0 :e Arcs' /\
+	          exists p0 q0:set, end_points_of_arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0) p0 q0 /\
+	            (x = p0 \/ x = q0)}
+	        HvY
+	        (graph_vertices_unfold Y (subspace_topology T Tx Y) Arcs')).
+	    }
+	    claim HvPred :
+	      exists A0:set, A0 :e Arcs' /\
+	        exists p0 q0:set, end_points_of_arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0) p0 q0 /\
+	          (v = p0 \/ v = q0).
+	    {
+	      exact (SepE2
+	        Y
+	        (fun x:set => exists A0:set, A0 :e Arcs' /\
+	          exists p0 q0:set, end_points_of_arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0) p0 q0 /\
+	            (x = p0 \/ x = q0))
+	        v
+	        HvYunf).
+	    }
+	    apply HvPred.
+	    let A0.
+	    assume HA0pack.
+	    claim HA0Arcs' : A0 :e Arcs'.
+	    {
+	      exact (andEL
+	        (A0 :e Arcs')
+	        (exists p0 q0:set, end_points_of_arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0) p0 q0 /\
+	          (v = p0 \/ v = q0))
+	        HA0pack).
+	    }
+	    claim HA0ArcsT : A0 :e ArcsT.
+	    { exact (HsubArcs A0 HA0Arcs'). }
+	    apply (andER
+	      (A0 :e Arcs')
+	      (exists p0 q0:set, end_points_of_arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0) p0 q0 /\
+	        (v = p0 \/ v = q0))
+	      HA0pack).
+	    let p0.
+	    assume Hp0pack.
+	    apply Hp0pack.
+	    let q0.
+	    assume Hpq0.
+	    claim HendY : end_points_of_arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0) p0 q0.
+	    {
+	      exact (andEL
+	        (end_points_of_arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0) p0 q0)
+	        (v = p0 \/ v = q0)
+	        Hpq0).
+	    }
+	    claim HvEq : v = p0 \/ v = q0.
+	    {
+	      exact (andER
+	        (end_points_of_arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0) p0 q0)
+	        (v = p0 \/ v = q0)
+	        Hpq0).
+	    }
+	    claim HA0subY : A0 c= Y.
+	    {
+	      exact (andEL
+	        (A0 c= Y)
+	        (arc A0 (subspace_topology Y (subspace_topology T Tx Y) A0))
+	        (general_linear_graph_arc_data
+	          Y
+	          (subspace_topology T Tx Y)
+	          Arcs'
+	          A0
+	          HglgY
+	          HA0Arcs')).
+	    }
+	    claim HeqTopA0 :
+	      subspace_topology Y (subspace_topology T Tx Y) A0 = subspace_topology T Tx A0.
+	    {
+	      exact (ex16_1_subspace_transitive
+	        T
+	        Tx
+	        Y
+	        A0
+	        HtopT
+	        HYsubT
+	        HA0subY).
+	    }
+	    claim HendT : end_points_of_arc A0 (subspace_topology T Tx A0) p0 q0.
+	    {
+	      exact (end_points_of_arc_topology_eq_i_traport
+	        A0
+	        (subspace_topology Y (subspace_topology T Tx Y) A0)
+	        (subspace_topology T Tx A0)
+	        p0
+	        q0
+	        HeqTopA0
+	        HendY).
+	    }
+		    apply HvEq.
+		    - assume Hvp0.
+		      witness p0.
+		      exact (graph_vertices_intro_from_endpoint_left
+		        T
+		        Tx
+		        ArcsT
+	        A0
+	        p0
+	        q0
+	        Hglg
+	        HA0ArcsT
+		        HendT).
+		    - assume Hvq0.
+		      witness q0.
+		      exact (graph_vertices_intro_from_endpoint_right
+		        T
+		        Tx
+		        ArcsT
+	        A0
+	        p0
+	        q0
+	        Hglg
+	        HA0ArcsT
+	        HendT).
+	  }
+	  (** Remaining non-vertex case:
+	      move the loop class to a graph vertex in the finite subgraph Y and
+	      transfer the resulting closed reduced edge path back to T. **)
+	  admit.
 	Admitted.
 
 (** helper for S84.3: no closed reduced edge path in a tree should force trivial pi1 at some basepoint. **)
