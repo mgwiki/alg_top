@@ -331687,6 +331687,153 @@ claim Hextfp :
                 (apply_fun uof2 j)
                 Huj).
             }
+            claim HimgSub :
+              forall alpha:set, alpha :e J ->
+                subgroup_of (apply_fun ImageFam alpha) G multG eG invG.
+            {
+              let alpha.
+              assume Halpha : alpha :e J.
+              claim HImgEval :
+                apply_fun ImageFam alpha =
+                homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+              {
+                exact (apply_fun_graph
+                  J
+                  (fun a:set => homomorphism_image (apply_fun Gfam a) (apply_fun ifam a))
+                  alpha
+                  Halpha).
+              }
+              rewrite HImgEval.
+              exact (homomorphism_image_subgroup_of
+                (apply_fun Gfam alpha)
+                (apply_fun multfam alpha)
+                (apply_fun efam alpha)
+                (apply_fun invfam alpha)
+                G
+                multG
+                eG
+                invG
+                (apply_fun ifam alpha)
+                (Hfam_grp alpha Halpha)
+                HgrpG
+                (Hifam_hom alpha Halpha)).
+            }
+            claim Hrw1NeE :
+              forall i:set, i :e n1 -> apply_fun rw1 i <> eG.
+            {
+              exact (reduced_word_no_eG_if_product_non_e
+                G
+                multG
+                eG
+                invG
+                J
+                ImageFam
+                efam_int
+                n1
+                rw1
+                x
+                HgrpG
+                HimgSub
+                HredRw1
+                Hn1Ne
+                HwpRw1
+                Hxne).
+            }
+            claim Hrw2NeE :
+              forall j:set, j :e n2 -> apply_fun rw2 j <> eG.
+            {
+              exact (reduced_word_no_eG_if_product_non_e
+                G
+                multG
+                eG
+                invG
+                J
+                ImageFam
+                efam_int
+                n2
+                rw2
+                x
+                HgrpG
+                HimgSub
+                HredRw2
+                Hn2Ne
+                HwpRw2
+                Hxne).
+            }
+            claim HlabelEqFromRwEqDisjoint :
+              (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+                forall z:set,
+                  z :e apply_fun ImageFam alpha ->
+                  z :e apply_fun ImageFam beta ->
+                  z = eG) ->
+              n1 = n2 ->
+              (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i) ->
+              forall i:set, i :e n1 -> apply_fun aof1 i = apply_fun aof2 i.
+            {
+              assume HimgDisjoint.
+              assume HnEqRwCore : n1 = n2.
+              assume HrwEqCore :
+                forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i.
+              let i.
+              assume Hi : i :e n1.
+              claim Hi2 : i :e n2.
+              {
+                exact (eq_subst_mem_set i n1 n2 Hi HnEqRwCore).
+              }
+              claim Hchoice1 :
+                apply_fun aof1 i :e J /\
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i).
+              {
+                exact (Hrw1Choice i Hi).
+              }
+              claim Hchoice2 :
+                apply_fun aof2 i :e J /\
+                apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i).
+              {
+                exact (Hrw2Choice i Hi2).
+              }
+              claim Ha1J : apply_fun aof1 i :e J.
+              {
+                exact (andEL
+                  (apply_fun aof1 i :e J)
+                  (apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+                  Hchoice1).
+              }
+              claim Ha2J : apply_fun aof2 i :e J.
+              {
+                exact (andEL
+                  (apply_fun aof2 i :e J)
+                  (apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i))
+                  Hchoice2).
+              }
+              claim HrwiIn1 :
+                apply_fun rw1 i :e apply_fun ImageFam (apply_fun aof1 i).
+              {
+                exact (Hrw1InImageAtLift i Hi).
+              }
+              claim HrwiIn2 :
+                apply_fun rw1 i :e apply_fun ImageFam (apply_fun aof2 i).
+              {
+                rewrite (HrwEqCore i Hi).
+                exact (Hrw2InImageAtLift i Hi2).
+              }
+              exact (disjoint_subgroups_label_unique
+                G
+                multG
+                eG
+                invG
+                J
+                ImageFam
+                (apply_fun aof1 i)
+                (apply_fun aof2 i)
+                (apply_fun rw1 i)
+                HimgDisjoint
+                Ha1J
+                Ha2J
+                HrwiIn1
+                HrwiIn2
+                (Hrw1NeE i Hi)).
+            }
             claim HrwCore :
               n1 = n2 /\
               (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i).
