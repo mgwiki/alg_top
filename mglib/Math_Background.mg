@@ -415230,14 +415230,11 @@ apply and4I.
 - (** path_connected_space V0 (subspace_topology preU (subspace_topology E Te preU) V0) **)
   (** Simplify nested subspace: = subspace_topology E Te V0 **)
   rewrite (subspace_topology_transitive_weak E Te preU V0 HV0_sub_preU).
-  (** Now need: path_connected_space V0 (subspace_topology E Te V0) **)
-  (** V0 = preimage of Vpc under pS restricted to S_e0 **)
-  (** pS: S_e0 -> V is a homeomorphism. Restricted to V0 -> Vpc is also a homeomorphism. **)
-  (** Vpc is path-connected (from HVpc_pc, after subspace transitivity) **)
+  (** path_connected_space V0 (subspace_topology E Te V0) **)
+  (** V0 is homeomorphic to Vpc via pS restricted (homeomorphism_restrict_to_image_of_subset) **)
+  (** image_of pS V0 = Vpc, and Vpc is path-connected **)
   (** By homeomorphism_preserves_path_connected_space_left: V0 is pc **)
-  (** This requires showing the restriction of pS to V0 is a homeomorphism to Vpc **)
-  (** with the correct topologies (subspace_topology E Te V0 and subspace_topology B Tb Vpc) **)
-  (** This is a detailed but routine construction **)
+  (** Final routine step: restricted homeomorphism + pc transfer **)
   admit.
 Admitted.
 
