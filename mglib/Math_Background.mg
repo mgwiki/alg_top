@@ -407397,16 +407397,85 @@ claim Hpost : path_homotopic B Tb b b
   (compose_fun unit_interval (constant_path e0) p0).
 { exact (path_homotopic_postcompose E0 Te0 B Tb e0 e0 b b glift (constant_path e0) p0
     Hglift_null Hcont_p0 Hpe0 Hpe0). }
-(** Now need: compose_fun I glift p0 = fB pointwise **)
-(** and compose_fun I (constant_path e0) p0 = constant_path b pointwise **)
-(** Then path_homotopic_of_pointwise_equal gives the result **)
-(** compose_fun I glift p0 (t) = apply_fun p0 (apply_fun glift t) **)
-(** = apply_fun p0 (apply_fun liftfB t) (by graphify_on_apply) **)
-(** = apply_fun fB t (by HliftComm) **)
-(** compose_fun I (constant_path e0) p0 (t) = apply_fun p0 (apply_fun (constant_path e0) t) **)
-(** = apply_fun p0 e0 = b = apply_fun (constant_path b) t **)
-admit.
-Admitted.
+(** compose_fun I glift p0 agrees pointwise with fB **)
+claim Hpw_glift_fB : forall t:set, t :e unit_interval ->
+  apply_fun (compose_fun unit_interval glift p0) t = apply_fun fB t.
+{ let t. assume Ht.
+  rewrite (compose_fun_apply unit_interval glift p0 t Ht).
+  rewrite (graphify_on_apply unit_interval liftfB t Ht).
+  exact (HliftComm t Ht). }
+(** compose_fun I (constant_path e0) p0 agrees pointwise with constant_path b **)
+claim Hpw_const : forall t:set, t :e unit_interval ->
+  apply_fun (compose_fun unit_interval (constant_path e0) p0) t = apply_fun (constant_path b) t.
+{ let t. assume Ht.
+  rewrite (compose_fun_apply unit_interval (constant_path e0) p0 t Ht).
+  rewrite (const_fun_apply unit_interval e0 t Ht).
+  rewrite Hpe0.
+  symmetry. exact (const_fun_apply unit_interval b t Ht). }
+(** compose_fun I glift p0 is continuous **)
+claim Hcomp_glift_p0_cont : continuous_map unit_interval unit_interval_topology B Tb
+  (compose_fun unit_interval glift p0).
+{ claim Hglift_cont : continuous_map unit_interval unit_interval_topology E0 Te0 glift.
+  { exact (andEL (continuous_map unit_interval unit_interval_topology E0 Te0 glift)
+      (apply_fun glift 0 = e0)
+      (andEL (continuous_map unit_interval unit_interval_topology E0 Te0 glift /\ apply_fun glift 0 = e0)
+        (apply_fun glift 1 = e0) Hglift_loop_at)). }
+  exact (composition_continuous unit_interval unit_interval_topology E0 Te0 B Tb
+    glift p0 Hglift_cont Hcont_p0). }
+(** compose_fun I (constant_path e0) p0 is continuous **)
+claim Hconst_e0_cont : continuous_map unit_interval unit_interval_topology E0 Te0 (constant_path e0).
+{ exact (const_fun_continuous unit_interval unit_interval_topology E0 Te0 e0
+    unit_interval_topology_on HtopE0 He0E0). }
+claim Hcomp_const_p0_cont : continuous_map unit_interval unit_interval_topology B Tb
+  (compose_fun unit_interval (constant_path e0) p0).
+{ exact (composition_continuous unit_interval unit_interval_topology E0 Te0 B Tb
+    (constant_path e0) p0 Hconst_e0_cont Hcont_p0). }
+(** constant_path b is continuous **)
+claim Hconst_b_cont : continuous_map unit_interval unit_interval_topology B Tb (constant_path b).
+{ exact (const_fun_continuous unit_interval unit_interval_topology B Tb b
+    unit_interval_topology_on HtopB HbB). }
+(** fB ~ compose_fun I glift p0 (by pointwise equality, symmetric) **)
+claim HfB_hom_glift : path_homotopic B Tb b b fB (compose_fun unit_interval glift p0).
+{ exact (path_homotopic_of_pointwise_equal B Tb b b
+    fB (compose_fun unit_interval glift p0)
+    HfBCont Hcomp_glift_p0_cont HfB0 HfB1
+    (eq_i_tra (apply_fun (compose_fun unit_interval glift p0) 0) (apply_fun fB 0) b
+      (Hpw_glift_fB 0 zero_in_unit_interval)
+      HfB0)
+    (eq_i_tra (apply_fun (compose_fun unit_interval glift p0) 1) (apply_fun fB 1) b
+      (Hpw_glift_fB 1 one_in_unit_interval)
+      HfB1)
+    (fun t Ht => eq_symm
+      (apply_fun (compose_fun unit_interval glift p0) t)
+      (apply_fun fB t)
+      (Hpw_glift_fB t Ht))). }
+(** compose_fun I (constant_path e0) p0 ~ constant_path b **)
+claim Hconst_hom : path_homotopic B Tb b b
+  (compose_fun unit_interval (constant_path e0) p0) (constant_path b).
+{ exact (path_homotopic_of_pointwise_equal B Tb b b
+    (compose_fun unit_interval (constant_path e0) p0) (constant_path b)
+    Hcomp_const_p0_cont Hconst_b_cont
+    (eq_i_tra
+      (apply_fun (compose_fun unit_interval (constant_path e0) p0) 0)
+      (apply_fun (constant_path b) 0) b
+      (Hpw_const 0 zero_in_unit_interval)
+      (const_fun_apply unit_interval b 0 zero_in_unit_interval))
+    (eq_i_tra
+      (apply_fun (compose_fun unit_interval (constant_path e0) p0) 1)
+      (apply_fun (constant_path b) 1) b
+      (Hpw_const 1 one_in_unit_interval)
+      (const_fun_apply unit_interval b 1 one_in_unit_interval))
+    (const_fun_apply unit_interval b 0 zero_in_unit_interval)
+    (const_fun_apply unit_interval b 1 one_in_unit_interval)
+    Hpw_const). }
+(** Chain: fB ~ compose I glift p0 ~ compose I (constant e0) p0 ~ constant b **)
+exact (Lemma_51_1_path_homotopy_trans B Tb b b
+  fB (compose_fun unit_interval (constant_path e0) p0) (constant_path b)
+  (Lemma_51_1_path_homotopy_trans B Tb b b
+    fB (compose_fun unit_interval glift p0) (compose_fun unit_interval (constant_path e0) p0)
+    HfB_hom_glift Hpost)
+  Hconst_hom).
+Qed.
 
 (** from S80 Exercise 1(a) (line 5012 in algtop.tex) **)
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps. Show that **)
