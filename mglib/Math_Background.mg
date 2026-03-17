@@ -415185,8 +415185,14 @@ claim HpS_cont : continuous_map S_e0 (subspace_topology E Te S_e0) V (subspace_t
 { exact (homeomorphism_continuous S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS HSe0_homeo). }
 claim HVpc_sub_V : Vpc c= V.
 { let w. assume Hw. exact (HpSW_sub_V w (binintersectE1 (image_of pS SW) U w (HVpc_sub w Hw))). }
+claim HVpc_open_subU2 : Vpc :e subspace_topology B Tb U.
+{ exact (andEL (Vpc :e subspace_topology B Tb U) (u0 :e Vpc) HVpc_left2). }
 claim HVpc_open_B2 : Vpc :e Tb.
-{ admit. (** Vpc :e subspace B Tb U => Vpc = S cap U for S :e Tb => Vpc :e Tb **) }
+{ claim HVpc_sep : exists S0:set, S0 :e Tb /\ Vpc = S0 :/\: U.
+  { exact (SepE2 (Power U) (fun S0:set => exists V0:set, V0 :e Tb /\ S0 = V0 :/\: U) Vpc HVpc_open_subU2). }
+  apply HVpc_sep. let S0. assume HS0pack.
+  rewrite (andER (S0 :e Tb) (Vpc = S0 :/\: U) HS0pack).
+  exact (topology_binintersect_closed B Tb S0 U HtopB (andEL (S0 :e Tb) (Vpc = S0 :/\: U) HS0pack) HUopen). }
 claim HVpc_open_subV : Vpc :e subspace_topology B Tb V.
 { rewrite <- (binintersect_Subq_eq_1 Vpc V HVpc_sub_V).
   exact (subspace_topology_intersection_open B Tb V Vpc HVpc_open_B2). }
