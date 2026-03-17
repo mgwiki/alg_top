@@ -408264,6 +408264,23 @@ Theorem covering_preimage_locally_path_connected :
   U :e Tb ->
   locally_path_connected U (subspace_topology B Tb U) ->
   locally_path_connected (preimage_of E p U) (subspace_topology E Te (preimage_of E p U)).
+let E Te B Tb p U.
+assume Hcov : covering_map E Te B Tb p.
+assume HUopen : U :e Tb.
+assume HlpcU : locally_path_connected U (subspace_topology B Tb U).
+set preU := preimage_of E p U.
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim Hcont_p : continuous_map E Te B Tb p. { exact (covering_map_continuous E Te B Tb p Hcov). }
+claim HpreU_open : preU :e Te.
+{ exact (continuous_map_preimage E Te B Tb p Hcont_p U HUopen). }
+claim HpreU_sub : preU c= E.
+{ exact (topology_elem_subset E Te preU HtopE HpreU_open). }
+(** lpc = topology_on + for each x :e X, U open, x :e U, exists V pc with x :e V c= U **)
+(** For e0 :e preU, W open in subspace, e0 :e W: **)
+(** Get evenly covered V of p(e0), restrict to U, get lpc neighborhood in U, **)
+(** lift to a path-connected sheet neighborhood of e0 **)
+(** This requires evenly_covered structure + lpc of U + sheet homeomorphism **)
 admit.
 Admitted.
 
