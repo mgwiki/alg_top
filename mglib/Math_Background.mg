@@ -407909,13 +407909,60 @@ claim Himg_sub_union : img_lift c= Union slices0.
   apply (ReplE_impred unit_interval (fun t:set => apply_fun liftfB t) w Hw).
   let t. assume Ht Hweq. rewrite Hweq.
   rewrite Hsl0_union. exact (Hlift_in_preimage t Ht). }
-(** img_lift is connected (continuous image of connected [0,1]) **)
-(** e0 :e img_lift (since liftfB(0) = e0) **)
-(** By connected_subset_of_pairwise_disjoint_open_union_anchor: img_lift c= S_e0 **)
-(** Then liftfB(1) :e S_e0, and p0(liftfB(1)) = b = p0(e0), **)
-(** p0 injective on S_e0 (homeomorphism) => liftfB(1) = e0 **)
-(** Then liftfB is a loop at e0, E0 simply connected => null-homotopic **)
-(** Project to B **)
+(** image_of liftfB unit_interval c= Union slices0 **)
+claim Himg_lift_sub : image_of liftfB unit_interval c= Union slices0.
+{ let w. assume Hw.
+  apply (ReplE_impred unit_interval (fun t:set => apply_fun liftfB t) w Hw).
+  let t. assume Ht Hweq. rewrite Hweq.
+  rewrite Hsl0_union. exact (Hlift_in_preimage t Ht). }
+(** unit_interval is connected **)
+claim HconnI : connected_space unit_interval unit_interval_topology.
+{ exact unit_interval_connected. }
+(** liftfB(0) = e0 :e S_e0 **)
+claim Hlift0_Se0 : apply_fun liftfB 0 :e S_e0.
+{ rewrite Hlift0. exact He0Se0. }
+(** By connected_image_stays_in_anchored_open_union_member: image c= S_e0 **)
+claim Himg_in_Se0 : image_of liftfB unit_interval c= S_e0.
+{ exact (connected_image_stays_in_anchored_open_union_member
+    unit_interval unit_interval_topology E0 Te0 slices0 S_e0 liftfB 0
+    HtopE0 Hsl0_open Hsl0_pd HconnI HliftCont Himg_lift_sub HSe0_sl
+    zero_in_unit_interval Hlift0_Se0). }
+(** liftfB(1) :e S_e0 **)
+claim Hlift1_Se0 : apply_fun liftfB 1 :e S_e0.
+{ exact (Himg_in_Se0 (apply_fun liftfB 1)
+    (ReplI unit_interval (fun t:set => apply_fun liftfB t) 1 one_in_unit_interval)). }
+(** p0 is injective on S_e0 (it is a homeomorphism S_e0 -> V0) **)
+claim Hp0_homeo_Se0 : homeomorphism S_e0 (subspace_topology E0 Te0 S_e0) V0 (subspace_topology B Tb V0)
+  (graph S_e0 (fun e:set => apply_fun p0 e)).
+{ exact (Hsl0_homeo S_e0 HSe0_sl). }
+claim Hp0_inj_Se0 : forall e1 e2:set, e1 :e S_e0 -> e2 :e S_e0 ->
+  apply_fun p0 e1 = apply_fun p0 e2 -> e1 = e2.
+{ let e1 e2. assume He1 He2 Hpeq.
+  exact (homeomorphism_injective S_e0 (subspace_topology E0 Te0 S_e0)
+    V0 (subspace_topology B Tb V0)
+    (graph S_e0 (fun e:set => apply_fun p0 e))
+    Hp0_homeo_Se0 e1 e2 He1 He2
+    (eq_i_tra
+      (apply_fun (graph S_e0 (fun e:set => apply_fun p0 e)) e1)
+      (apply_fun p0 e1)
+      (apply_fun (graph S_e0 (fun e:set => apply_fun p0 e)) e2)
+      (apply_fun_graph S_e0 (fun e:set => apply_fun p0 e) e1 He1)
+      (eq_i_tra (apply_fun p0 e1) (apply_fun p0 e2)
+        (apply_fun (graph S_e0 (fun e:set => apply_fun p0 e)) e2)
+        Hpeq
+        (eq_symm (apply_fun (graph S_e0 (fun e:set => apply_fun p0 e)) e2)
+          (apply_fun p0 e2)
+          (apply_fun_graph S_e0 (fun e:set => apply_fun p0 e) e2 He2))))). }
+(** liftfB(1) = e0 (by injectivity: p0(liftfB(1)) = b = p0(e0), both in S_e0) **)
+claim Hlift1_eq_e0 : apply_fun liftfB 1 = e0.
+{ exact (Hp0_inj_Se0 (apply_fun liftfB 1) e0 Hlift1_Se0 He0Se0
+    (eq_i_tra (apply_fun p0 (apply_fun liftfB 1)) b (apply_fun p0 e0)
+      Hp0lift1
+      (eq_symm (apply_fun p0 e0) b Hpe0))). }
+(** liftfB is a loop at e0 in E0 **)
+(** E0 is simply connected, so liftfB is null-homotopic in E0 **)
+(** Project the null-homotopy via p0 to get fB null-homotopic in B **)
+(** Then path_homotopic B Tb b b fB (constant_path b) **)
 admit.
 Admitted.
 
