@@ -332281,18 +332281,21 @@ claim Hextfp :
                 apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j).
           claim Hcore :
             n1 = n2 /\
-            (forall i:set, i :e n1 -> apply_fun aof1 i = apply_fun aof2 i) /\
-            (forall i:set, i :e n1 -> apply_fun uof1 i = apply_fun uof2 i).
+            (forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i) /\
+            (forall i:set, i :e n1 -> apply_fun aof1 i = apply_fun aof2 i).
           {
-            admit. (** core S68.5 gap C uniqueness core: synchronize lengths and preimages from extension property. **)
+            admit. (** core S68.5 gap C uniqueness core: synchronize lengths, labels, and reconstructed words from extension property. **)
           }
           apply (and3E
             (n1 = n2)
+            (forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i)
             (forall i:set, i :e n1 -> apply_fun aof1 i = apply_fun aof2 i)
-            (forall i:set, i :e n1 -> apply_fun uof1 i = apply_fun uof2 i)
             Hcore).
-          assume HnEq HaEq HuEq.
-          claim HwsEq : forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i.
+          assume HnEq HwsEq HaEq.
+          claim Hchoice2n1 :
+            forall i:set, i :e n1 ->
+              apply_fun aof2 i :e J /\
+              apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i).
           {
             let i.
             assume Hi : i :e n1.
@@ -332300,45 +332303,37 @@ claim Hextfp :
             {
               exact (eq_subst_mem_set i n1 n2 Hi HnEq).
             }
-            claim Hws1Eval :
-              apply_fun ws1 i =
-                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i).
+            exact (Hchoice2 i Hi2).
+          }
+          claim Hvia2n1 :
+            forall i:set, i :e n1 ->
+              apply_fun ws2 i =
+                apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i).
+          {
+            let i.
+            assume Hi : i :e n1.
+            claim Hi2 : i :e n2.
             {
-              exact (Hvia1 i Hi).
+              exact (eq_subst_mem_set i n1 n2 Hi HnEq).
             }
-            claim HifamU :
-              apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i) =
-              apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i).
-            {
-              rewrite (HuEq i Hi).
-              reflexivity.
-            }
-            claim HifamA :
-              apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i) =
-              apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i).
-            {
-              rewrite (HaEq i Hi).
-              reflexivity.
-            }
-            exact (eq_i_tra
-              (apply_fun ws1 i)
-              (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
-              (apply_fun ws2 i)
-              Hws1Eval
-              (eq_i_tra
-                (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
-                (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
-                (apply_fun ws2 i)
-                (eq_i_tra
-                  (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
-                  (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i))
-                  (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
-                  HifamU
-                  HifamA)
-                (eq_symm
-                  (apply_fun ws2 i)
-                  (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
-                  (Hvia2 i Hi2)))).
+            exact (Hvia2 i Hi2).
+          }
+          claim HuEq : forall i:set, i :e n1 -> apply_fun uof1 i = apply_fun uof2 i.
+          {
+            exact (Hsubgen_nonid_uof_eq_from_labels_and_ws
+              n1
+              aof1
+              uof1
+              ws1
+              aof2
+              uof2
+              ws2
+              Hchoice1
+              Hvia1
+              Hchoice2n1
+              Hvia2n1
+              HaEq
+              HwsEq).
           }
           exact (andI
             (n1 = n2)
