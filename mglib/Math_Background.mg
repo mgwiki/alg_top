@@ -407860,9 +407860,27 @@ claim HincS_y : apply_fun incS y = y.
 set g_incl := compose_fun unit_interval g incS.
 claim Hg_incl_loop : g_incl :e loop_space Y Ty y.
 { exact (loop_space_postcompose S (subspace_topology Y Ty S) y Y Ty y g incS HgLoop HincS_cont HincS_y). }
-(** compose g with r_restricted to get rg in loop_space V', then apply HloopsVp **)
-(** This + r_star injectivity (thm54_6a_p_star_injective) gives [g_incl] = id **)
-(** Full argument needs induced_homomorphism computation + functoriality **)
+(** Compose g with homeomorphism rS to get loop in V' **)
+set rS := graph S (fun y0:set => apply_fun r y0).
+claim HrS_cont : continuous_map S (subspace_topology Y Ty S) V' (subspace_topology Z Tz V') rS.
+{ exact (homeomorphism_continuous S (subspace_topology Y Ty S) V' (subspace_topology Z Tz V') rS Hhomeo). }
+claim HrS_y : apply_fun rS y = z.
+{ exact (apply_fun_graph S (fun y0:set => apply_fun r y0) y HyS). }
+set rg := compose_fun unit_interval g rS.
+claim Hrg_loop : rg :e loop_space V' (subspace_topology Z Tz V') z.
+{ exact (loop_space_postcompose S (subspace_topology Y Ty S) y V' (subspace_topology Z Tz V') z g rS HgLoop HrS_cont HrS_y). }
+(** Apply HloopsVp: rg included in Z is null-homotopic **)
+set incVp := {(w,w)|w :e V'}.
+claim HincVp_cont : continuous_map V' (subspace_topology Z Tz V') Z Tz incVp.
+{ exact (subspace_inclusion_continuous Z Tz V' HtopZ (topology_elem_subset Z Tz V' HtopZ HVpopen)). }
+set rg_incl := compose_fun unit_interval rg incVp.
+claim Hrg_incl_loop : rg_incl :e loop_space Z Tz z.
+{ exact (loop_space_postcompose V' (subspace_topology Z Tz V') z Z Tz z rg incVp Hrg_loop HincVp_cont (identity_function_apply V' z HzVp)). }
+(** The null-homotopy hypothesis gives: rg included in Z ~ constant_path z **)
+(** But HloopsVp uses graph V' (fun x => x), not incVp = {(w,w)|w :e V'} **)
+(** These should be definitionally equal: graph V' (fun x => x) = {(x,x)|x :e V'} **)
+(** Then: r_star([g_incl]) should equal [rg_incl] by functoriality **)
+(** And by injectivity: [g_incl] = id, hence g_incl ~ constant_path y **)
 admit.
 Admitted.
 
