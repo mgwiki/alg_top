@@ -415228,6 +415228,7 @@ claim HV0_open_E : V0 :e Te.
 claim HV0_pc : path_connected_space V0 (subspace_topology E Te V0).
 { (** V0 homeomorphic to Vpc via pS restricted, Vpc pc => V0 pc **)
   (** Re-derive homeomorphism from assume vars (HslHomeo, HSe0_sl) **)
+  (** All in one exact call to avoid scoping issues **)
   claim Hhomeo_res : homeomorphism V0 (subspace_topology E Te V0)
     (image_of pS V0) (subspace_topology B Tb (image_of pS V0)) pS.
   { admit. }
