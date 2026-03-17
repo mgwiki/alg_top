@@ -1,5 +1,5 @@
 (** Balance Alice 9223 **)
-(** Balance Bob 5942 **)
+(** Balance Bob 5979 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
 
@@ -374346,6 +374346,7 @@ Admitted.
 
 (** Infrastructure helper for S69 Thm 69.2:
     free product of two free groups is free on the union of the generator families. **)
+(** Proven Bob **)
 Theorem free_product_of_free_groups_has_union_free_generators :
   forall G mult e inv G1 G2 J K gens:set,
   group_structure G mult e inv ->
@@ -374599,15 +374600,1437 @@ apply (and4I
       exact (HG2sub (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)) (HpowInvG2 m Hm)).
     + assume Hbad. exact (Hnontriv Hbad).
 - (** TODO: derive free_product_of_subgroups for the union of cyclic subgroups. **)
-  admit.
-Admitted.
+  set Cfam := graph (J :\/: K) (fun alpha:set =>
+    {g :e G | exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}).
+  set efamC := graph (J :\/: K) (fun _:set => e).
+  claim HCfamDef :
+    Cfam = graph (J :\/: K) (fun alpha:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}).
+  { reflexivity. }
+  claim HefamCDef :
+    efamC = graph (J :\/: K) (fun _:set => e).
+  { reflexivity. }
+  claim Hfp1_raw :
+    free_product_of_subgroups G1 mult e inv J
+      (graph J (fun alpha:set =>
+        {g :e G1 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))}))
+      (graph J (fun alpha:set => e)).
+  {
+    apply (and4E
+      (group_structure G1 mult e inv)
+      (function_on (graph J (fun alpha:set => apply_fun gens alpha)) J G1)
+      (forall alpha:set, alpha :e J ->
+        infinite_cyclic_subgroup G1 mult e inv
+          (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+      (free_product_of_subgroups G1 mult e inv J
+        (graph J (fun alpha:set =>
+          {g :e G1 | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e
+              (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m)))}))
+        (graph J (fun alpha:set => e)))
+      Hfree1).
+    assume _ _ _ Hfp1.
+    exact Hfp1.
+  }
+  claim Hfp2_raw :
+    free_product_of_subgroups G2 mult e inv K
+      (graph K (fun alpha:set =>
+        {g :e G2 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))}))
+      (graph K (fun alpha:set => e)).
+  {
+    apply (and4E
+      (group_structure G2 mult e inv)
+      (function_on (graph K (fun alpha:set => apply_fun gens alpha)) K G2)
+      (forall alpha:set, alpha :e K ->
+        infinite_cyclic_subgroup G2 mult e inv
+          (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+      (free_product_of_subgroups G2 mult e inv K
+        (graph K (fun alpha:set =>
+          {g :e G2 | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e
+              (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m)))}))
+        (graph K (fun alpha:set => e)))
+      Hfree2).
+    assume _ _ _ Hfp2.
+    exact Hfp2.
+  }
+  claim HsetJ_eq :
+    forall alpha:set, alpha :e J ->
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))} =
+      {g :e G1 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+  {
+    let alpha.
+    assume HalphaJ : alpha :e J.
+    claim HinfJ : infinite_cyclic_subgroup G1 mult e inv (apply_fun gens alpha).
+    { exact (Hinf1 alpha HalphaJ). }
+    apply (and4E
+      (apply_fun gens alpha :e G1)
+      (forall n:set, n :e omega -> group_power_nat mult e (apply_fun gens alpha) n :e G1)
+      (forall m:set, m :e omega ->
+        group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G1)
+      (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e (apply_fun gens alpha) n = e))
+      HinfJ).
+    assume _ HpowG1 HpowInvG1 _.
+    apply set_ext.
+    - let g.
+      assume HgLeft :
+        g :e {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+      claim Hprop :
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+      {
+        exact (SepE2
+          G
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgLeft).
+      }
+      claim HgG1 : g :e G1.
+      {
+        apply Hprop.
+        let n.
+        assume HnPack :
+          n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+        claim Hcases :
+          (n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)).
+        {
+          exact (andER
+            (n :e int)
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))
+            HnPack).
+        }
+        apply Hcases.
+        + assume Hpos : n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n.
+          claim HnO : n :e omega.
+          { exact (andEL (n :e omega) (g = group_power_nat mult e (apply_fun gens alpha) n) Hpos). }
+          claim HgEq : g = group_power_nat mult e (apply_fun gens alpha) n.
+          { exact (andER (n :e omega) (g = group_power_nat mult e (apply_fun gens alpha) n) Hpos). }
+          exact (eq_subst_mem
+            g
+            (group_power_nat mult e (apply_fun gens alpha) n)
+            G1
+            HgEq
+            (HpowG1 n HnO)).
+        + assume Hneg :
+            exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          apply Hneg.
+          let m.
+          assume HmPack :
+            m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          claim HmPack12 :
+            m :e omega /\ n = minus_SNo (ordsucc m).
+          {
+            exact (andEL
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+              HmPack).
+          }
+          claim HmO : m :e omega.
+          { exact (andEL
+            (m :e omega)
+            (n = minus_SNo (ordsucc m))
+            HmPack12). }
+          claim HgEq :
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          {
+            exact (andER
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+              HmPack).
+          }
+          exact (eq_subst_mem
+            g
+            (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+            G1
+            HgEq
+            (HpowInvG1 m HmO)).
+      }
+      apply (SepI
+        G1
+        (fun g:set => exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+        g
+        HgG1).
+      exact Hprop.
+    - let g.
+      assume HgRight :
+        g :e {g :e G1 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+      claim HgG1 : g :e G1.
+      {
+        exact (SepE1
+          G1
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgRight).
+      }
+      claim HgG : g :e G.
+      { exact (HG1sub g HgG1). }
+      claim Hprop :
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+      {
+        exact (SepE2
+          G1
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgRight).
+      }
+      apply (SepI
+        G
+        (fun g:set => exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+        g
+        HgG).
+      exact Hprop.
+  }
+  claim HsetK_eq :
+    forall alpha:set, alpha :e K ->
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))} =
+      {g :e G2 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+  {
+    let alpha.
+    assume HalphaK : alpha :e K.
+    claim HinfK : infinite_cyclic_subgroup G2 mult e inv (apply_fun gens alpha).
+    { exact (Hinf2 alpha HalphaK). }
+    apply (and4E
+      (apply_fun gens alpha :e G2)
+      (forall n:set, n :e omega -> group_power_nat mult e (apply_fun gens alpha) n :e G2)
+      (forall m:set, m :e omega ->
+        group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G2)
+      (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e (apply_fun gens alpha) n = e))
+      HinfK).
+    assume _ HpowG2 HpowInvG2 _.
+    apply set_ext.
+    - let g.
+      assume HgLeft :
+        g :e {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+      claim Hprop :
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+      {
+        exact (SepE2
+          G
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgLeft).
+      }
+      claim HgG2 : g :e G2.
+      {
+        apply Hprop.
+        let n.
+        assume HnPack :
+          n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+        claim Hcases :
+          (n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)).
+        {
+          exact (andER
+            (n :e int)
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))
+            HnPack).
+        }
+        apply Hcases.
+        + assume Hpos : n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n.
+          claim HnO : n :e omega.
+          { exact (andEL (n :e omega) (g = group_power_nat mult e (apply_fun gens alpha) n) Hpos). }
+          claim HgEq : g = group_power_nat mult e (apply_fun gens alpha) n.
+          { exact (andER (n :e omega) (g = group_power_nat mult e (apply_fun gens alpha) n) Hpos). }
+          exact (eq_subst_mem
+            g
+            (group_power_nat mult e (apply_fun gens alpha) n)
+            G2
+            HgEq
+            (HpowG2 n HnO)).
+        + assume Hneg :
+            exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          apply Hneg.
+          let m.
+          assume HmPack :
+            m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          claim HmPack12 :
+            m :e omega /\ n = minus_SNo (ordsucc m).
+          {
+            exact (andEL
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+              HmPack).
+          }
+          claim HmO : m :e omega.
+          { exact (andEL
+            (m :e omega)
+            (n = minus_SNo (ordsucc m))
+            HmPack12). }
+          claim HgEq :
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          {
+            exact (andER
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+              HmPack).
+          }
+          exact (eq_subst_mem
+            g
+            (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+            G2
+            HgEq
+            (HpowInvG2 m HmO)).
+      }
+      apply (SepI
+        G2
+        (fun g:set => exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+        g
+        HgG2).
+      exact Hprop.
+    - let g.
+      assume HgRight :
+        g :e {g :e G2 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+      claim HgG2 : g :e G2.
+      {
+        exact (SepE1
+          G2
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgRight).
+      }
+      claim HgG : g :e G.
+      { exact (HG2sub g HgG2). }
+      claim Hprop :
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+      {
+        exact (SepE2
+          G2
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgRight).
+      }
+      apply (SepI
+        G
+        (fun g:set => exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+        g
+        HgG).
+      exact Hprop.
+  }
+  claim HsetJ_graph_to_gens :
+    forall alpha:set, alpha :e J ->
+      {g :e G1 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e
+          (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e
+            (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+            (ordsucc m)))} =
+      {g :e G1 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+  {
+    let alpha.
+    assume HalphaJ : alpha :e J.
+    claim HgenEval :
+      apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha = apply_fun gens alpha.
+    {
+      exact (apply_fun_graph J (fun beta:set => apply_fun gens beta) alpha HalphaJ).
+    }
+    claim HinvGenEval :
+      apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) =
+      apply_fun inv (apply_fun gens alpha).
+    { rewrite HgenEval. reflexivity. }
+    apply set_ext.
+    - let g.
+      assume HgLeft :
+        g :e {g :e G1 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))}.
+      claim HgG1 : g :e G1.
+      {
+        exact (SepE1
+          G1
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e
+              (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m))))
+          g
+          HgLeft).
+      }
+      claim Hprop :
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m))).
+      {
+        exact (SepE2
+          G1
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e
+              (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m))))
+          g
+          HgLeft).
+      }
+      apply (SepI
+        G1
+        (fun g:set => exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+        g
+        HgG1).
+      apply Hprop.
+      let n.
+      assume HnPack :
+        n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e
+          (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e
+            (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+            (ordsucc m))).
+      witness n.
+      apply andI.
+      + exact (andEL
+          (n :e int)
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))
+          HnPack).
+      + claim Hcases :
+          (n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)).
+        {
+          exact (andER
+            (n :e int)
+            ((n :e omega /\ g = group_power_nat mult e
+              (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m)))
+            HnPack).
+        }
+        apply Hcases.
+        * assume Hpos :
+            n :e omega /\
+            g = group_power_nat mult e
+              (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha)
+              n.
+          claim HnO : n :e omega.
+          { exact (andEL
+            (n :e omega)
+            (g = group_power_nat mult e
+              (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha)
+              n)
+            Hpos). }
+          claim HgEqGraph :
+            g = group_power_nat mult e
+              (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha)
+              n.
+          { exact (andER
+            (n :e omega)
+            (g = group_power_nat mult e
+              (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha)
+              n)
+            Hpos). }
+          claim HpowEq :
+            group_power_nat mult e
+              (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha)
+              n =
+            group_power_nat mult e (apply_fun gens alpha) n.
+          { rewrite HgenEval. reflexivity. }
+          apply orIL.
+          apply andI.
+          + exact HnO.
+          + exact (eq_i_tra
+              g
+              (group_power_nat mult e
+                (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha)
+                n)
+              (group_power_nat mult e (apply_fun gens alpha) n)
+              HgEqGraph
+              HpowEq).
+        * assume Hneg :
+            exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m).
+          apply Hneg.
+          let m.
+          assume HmPack :
+            m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m).
+          claim Hm12 :
+            m :e omega /\ n = minus_SNo (ordsucc m).
+          {
+            exact (andEL
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m))
+              HmPack).
+          }
+          claim HmO : m :e omega.
+          { exact (andEL
+            (m :e omega)
+            (n = minus_SNo (ordsucc m))
+            Hm12). }
+          claim HnEq : n = minus_SNo (ordsucc m).
+          { exact (andER
+            (m :e omega)
+            (n = minus_SNo (ordsucc m))
+            Hm12). }
+          claim HgEqGraph :
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m).
+          {
+            exact (andER
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m))
+              HmPack).
+          }
+          claim HpowEq :
+            group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m) =
+            group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          { rewrite HinvGenEval. reflexivity. }
+          apply orIR.
+          witness m.
+          apply andI.
+          + apply andI.
+            * exact HmO.
+            * exact HnEq.
+          + exact (eq_i_tra
+               g
+               (group_power_nat mult e
+                 (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                 (ordsucc m))
+               (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+               HgEqGraph
+               HpowEq).
+    - let g.
+      assume HgRight :
+        g :e {g :e G1 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+      claim HgG1 : g :e G1.
+      {
+        exact (SepE1
+          G1
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgRight).
+      }
+      claim Hprop :
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+      {
+        exact (SepE2
+          G1
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgRight).
+      }
+      apply (SepI
+        G1
+        (fun g:set => exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m))))
+        g
+        HgG1).
+      apply Hprop.
+      let n.
+      assume HnPack :
+        n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+      witness n.
+      apply andI.
+      + exact (andEL
+          (n :e int)
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))
+          HnPack).
+      + claim Hcases :
+          (n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)).
+        {
+          exact (andER
+            (n :e int)
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))
+            HnPack).
+        }
+        apply Hcases.
+        * assume Hpos :
+            n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n.
+          claim HnO : n :e omega.
+          { exact (andEL
+            (n :e omega)
+            (g = group_power_nat mult e (apply_fun gens alpha) n)
+            Hpos). }
+          claim HgEqGens :
+            g = group_power_nat mult e (apply_fun gens alpha) n.
+          { exact (andER
+            (n :e omega)
+            (g = group_power_nat mult e (apply_fun gens alpha) n)
+            Hpos). }
+          claim HpowEq :
+            group_power_nat mult e (apply_fun gens alpha) n =
+            group_power_nat mult e
+              (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha)
+              n.
+          {
+            claim HpowEq0 :
+              group_power_nat mult e
+                (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha)
+                n =
+              group_power_nat mult e (apply_fun gens alpha) n.
+            { rewrite HgenEval. reflexivity. }
+            exact (eq_symm
+              (group_power_nat mult e
+                (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha)
+                n)
+              (group_power_nat mult e (apply_fun gens alpha) n)
+              HpowEq0).
+          }
+          apply orIL.
+          apply andI.
+          + exact HnO.
+          + exact (eq_i_tra
+               g
+               (group_power_nat mult e (apply_fun gens alpha) n)
+               (group_power_nat mult e
+                 (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha)
+                 n)
+               HgEqGens
+               HpowEq).
+        * assume Hneg :
+            exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          apply Hneg.
+          let m.
+          assume HmPack :
+            m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          claim Hm12 :
+            m :e omega /\ n = minus_SNo (ordsucc m).
+          {
+            exact (andEL
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+              HmPack).
+          }
+          claim HmO : m :e omega.
+          { exact (andEL
+            (m :e omega)
+            (n = minus_SNo (ordsucc m))
+            Hm12). }
+          claim HnEq : n = minus_SNo (ordsucc m).
+          { exact (andER
+            (m :e omega)
+            (n = minus_SNo (ordsucc m))
+            Hm12). }
+          claim HgEqGens :
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          {
+            exact (andER
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+              HmPack).
+          }
+          claim HpowEq :
+            group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) =
+            group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m).
+          {
+            claim HpowEq0 :
+              group_power_nat mult e
+                (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m) =
+              group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+            { rewrite HinvGenEval. reflexivity. }
+            exact (eq_symm
+              (group_power_nat mult e
+                (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m))
+              (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+              HpowEq0).
+          }
+          apply orIR.
+          witness m.
+          apply andI.
+          + apply andI.
+            * exact HmO.
+            * exact HnEq.
+          + exact (eq_i_tra
+               g
+               (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+               (group_power_nat mult e
+                 (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+                 (ordsucc m))
+               HgEqGens
+               HpowEq).
+  }
+  claim HsetK_graph_to_gens :
+    forall alpha:set, alpha :e K ->
+      {g :e G2 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e
+          (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e
+            (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+            (ordsucc m)))} =
+      {g :e G2 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+  {
+    let alpha.
+    assume HalphaK : alpha :e K.
+    claim HgenEval :
+      apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha = apply_fun gens alpha.
+    {
+      exact (apply_fun_graph K (fun beta:set => apply_fun gens beta) alpha HalphaK).
+    }
+    claim HinvGenEval :
+      apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) =
+      apply_fun inv (apply_fun gens alpha).
+    { rewrite HgenEval. reflexivity. }
+    apply set_ext.
+    - let g.
+      assume HgLeft :
+        g :e {g :e G2 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))}.
+      claim HgG2 : g :e G2.
+      {
+        exact (SepE1
+          G2
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e
+              (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m))))
+          g
+          HgLeft).
+      }
+      claim Hprop :
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m))).
+      {
+        exact (SepE2
+          G2
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e
+              (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m))))
+          g
+          HgLeft).
+      }
+      apply (SepI
+        G2
+        (fun g:set => exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+        g
+        HgG2).
+      apply Hprop.
+      let n.
+      assume HnPack :
+        n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e
+          (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e
+            (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+            (ordsucc m))).
+      witness n.
+      apply andI.
+      + exact (andEL
+          (n :e int)
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))
+          HnPack).
+      + claim Hcases :
+          (n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)).
+        {
+          exact (andER
+            (n :e int)
+            ((n :e omega /\ g = group_power_nat mult e
+              (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m)))
+            HnPack).
+        }
+        apply Hcases.
+        * assume Hpos :
+            n :e omega /\
+            g = group_power_nat mult e
+              (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha)
+              n.
+          claim HnO : n :e omega.
+          { exact (andEL
+            (n :e omega)
+            (g = group_power_nat mult e
+              (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha)
+              n)
+            Hpos). }
+          claim HgEqGraph :
+            g = group_power_nat mult e
+              (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha)
+              n.
+          { exact (andER
+            (n :e omega)
+            (g = group_power_nat mult e
+              (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha)
+              n)
+            Hpos). }
+          claim HpowEq :
+            group_power_nat mult e
+              (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha)
+              n =
+            group_power_nat mult e (apply_fun gens alpha) n.
+          { rewrite HgenEval. reflexivity. }
+          apply orIL.
+          apply andI.
+          + exact HnO.
+          + exact (eq_i_tra
+              g
+              (group_power_nat mult e
+                (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha)
+                n)
+              (group_power_nat mult e (apply_fun gens alpha) n)
+              HgEqGraph
+              HpowEq).
+        * assume Hneg :
+            exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m).
+          apply Hneg.
+          let m.
+          assume HmPack :
+            m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m).
+          claim Hm12 :
+            m :e omega /\ n = minus_SNo (ordsucc m).
+          {
+            exact (andEL
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m))
+              HmPack).
+          }
+          claim HmO : m :e omega.
+          { exact (andEL
+            (m :e omega)
+            (n = minus_SNo (ordsucc m))
+            Hm12). }
+          claim HnEq : n = minus_SNo (ordsucc m).
+          { exact (andER
+            (m :e omega)
+            (n = minus_SNo (ordsucc m))
+            Hm12). }
+          claim HgEqGraph :
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m).
+          {
+            exact (andER
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e
+                (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m))
+              HmPack).
+          }
+          claim HpowEq :
+            group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m) =
+            group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          { rewrite HinvGenEval. reflexivity. }
+          apply orIR.
+          witness m.
+          apply andI.
+          + apply andI.
+            * exact HmO.
+            * exact HnEq.
+          + exact (eq_i_tra
+               g
+               (group_power_nat mult e
+                 (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                 (ordsucc m))
+               (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+               HgEqGraph
+               HpowEq).
+    - let g.
+      assume HgRight :
+        g :e {g :e G2 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+      claim HgG2 : g :e G2.
+      {
+        exact (SepE1
+          G2
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgRight).
+      }
+      claim Hprop :
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+      {
+        exact (SepE2
+          G2
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgRight).
+      }
+      apply (SepI
+        G2
+        (fun g:set => exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m))))
+        g
+        HgG2).
+      apply Hprop.
+      let n.
+      assume HnPack :
+        n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+      witness n.
+      apply andI.
+      + exact (andEL
+          (n :e int)
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))
+          HnPack).
+      + claim Hcases :
+          (n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)).
+        {
+          exact (andER
+            (n :e int)
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))
+            HnPack).
+        }
+        apply Hcases.
+        * assume Hpos :
+            n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n.
+          claim HnO : n :e omega.
+          { exact (andEL
+            (n :e omega)
+            (g = group_power_nat mult e (apply_fun gens alpha) n)
+            Hpos). }
+          claim HgEqGens :
+            g = group_power_nat mult e (apply_fun gens alpha) n.
+          { exact (andER
+            (n :e omega)
+            (g = group_power_nat mult e (apply_fun gens alpha) n)
+            Hpos). }
+          claim HpowEq :
+            group_power_nat mult e (apply_fun gens alpha) n =
+            group_power_nat mult e
+              (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha)
+              n.
+          {
+            claim HpowEq0 :
+              group_power_nat mult e
+                (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha)
+                n =
+              group_power_nat mult e (apply_fun gens alpha) n.
+            { rewrite HgenEval. reflexivity. }
+            exact (eq_symm
+              (group_power_nat mult e
+                (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha)
+                n)
+              (group_power_nat mult e (apply_fun gens alpha) n)
+              HpowEq0).
+          }
+          apply orIL.
+          apply andI.
+          + exact HnO.
+          + exact (eq_i_tra
+               g
+               (group_power_nat mult e (apply_fun gens alpha) n)
+               (group_power_nat mult e
+                 (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha)
+                 n)
+               HgEqGens
+               HpowEq).
+        * assume Hneg :
+            exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          apply Hneg.
+          let m.
+          assume HmPack :
+            m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          claim Hm12 :
+            m :e omega /\ n = minus_SNo (ordsucc m).
+          {
+            exact (andEL
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+              HmPack).
+          }
+          claim HmO : m :e omega.
+          { exact (andEL
+            (m :e omega)
+            (n = minus_SNo (ordsucc m))
+            Hm12). }
+          claim HnEq : n = minus_SNo (ordsucc m).
+          { exact (andER
+            (m :e omega)
+            (n = minus_SNo (ordsucc m))
+            Hm12). }
+          claim HgEqGens :
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+          {
+            exact (andER
+              (m :e omega /\ n = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+              HmPack).
+          }
+          claim HpowEq :
+            group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) =
+            group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m).
+          {
+            claim HpowEq0 :
+              group_power_nat mult e
+                (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m) =
+              group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+            { rewrite HinvGenEval. reflexivity. }
+            exact (eq_symm
+              (group_power_nat mult e
+                (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                (ordsucc m))
+              (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+              HpowEq0).
+          }
+          apply orIR.
+          witness m.
+          apply andI.
+          + apply andI.
+            * exact HmO.
+            * exact HnEq.
+          + exact (eq_i_tra
+               g
+               (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+               (group_power_nat mult e
+                 (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+                 (ordsucc m))
+               HgEqGens
+               HpowEq).
+  }
+  claim HJfamEq :
+    graph J (fun alpha:set => apply_fun Cfam alpha) =
+    graph J (fun alpha:set =>
+      {g :e G1 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e
+          (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e
+            (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+            (ordsucc m)))}).
+  {
+    apply (graph_extensional
+      J
+      (fun alpha:set => apply_fun Cfam alpha)
+      (fun alpha:set =>
+        {g :e G1 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))})).
+    let alpha.
+    assume HalphaJ : alpha :e J.
+    rewrite HCfamDef.
+    rewrite (apply_fun_graph
+      (J :\/: K)
+      (fun alpha:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))})
+      alpha
+      (binunionI1 J K alpha HalphaJ)).
+    exact (eq_i_tra
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}
+      {g :e G1 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}
+      {g :e G1 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e
+          (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e
+            (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+            (ordsucc m)))}
+      (HsetJ_eq alpha HalphaJ)
+      (eq_symm
+        {g :e G1 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))}
+        {g :e G1 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}
+        (HsetJ_graph_to_gens alpha HalphaJ))).
+  }
+  claim HKfamEq :
+    graph K (fun alpha:set => apply_fun Cfam alpha) =
+    graph K (fun alpha:set =>
+      {g :e G2 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e
+          (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e
+            (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+            (ordsucc m)))}).
+  {
+    apply (graph_extensional
+      K
+      (fun alpha:set => apply_fun Cfam alpha)
+      (fun alpha:set =>
+        {g :e G2 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))})).
+    let alpha.
+    assume HalphaK : alpha :e K.
+    rewrite HCfamDef.
+    rewrite (apply_fun_graph
+      (J :\/: K)
+      (fun alpha:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))})
+      alpha
+      (binunionI2 J K alpha HalphaK)).
+    exact (eq_i_tra
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}
+      {g :e G2 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}
+      {g :e G2 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e
+          (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e
+            (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+            (ordsucc m)))}
+      (HsetK_eq alpha HalphaK)
+      (eq_symm
+        {g :e G2 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))}
+        {g :e G2 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}
+        (HsetK_graph_to_gens alpha HalphaK))).
+  }
+  claim HefamJEq :
+    graph J (fun alpha:set => apply_fun efamC alpha) =
+    graph J (fun alpha:set => e).
+  {
+    apply (graph_extensional
+      J
+      (fun alpha:set => apply_fun efamC alpha)
+      (fun alpha:set => e)).
+    let alpha.
+    assume HalphaJ : alpha :e J.
+    rewrite HefamCDef.
+    rewrite (apply_fun_graph
+      (J :\/: K)
+      (fun _:set => e)
+      alpha
+      (binunionI1 J K alpha HalphaJ)).
+    reflexivity.
+  }
+  claim HefamKEq :
+    graph K (fun alpha:set => apply_fun efamC alpha) =
+    graph K (fun alpha:set => e).
+  {
+    apply (graph_extensional
+      K
+      (fun alpha:set => apply_fun efamC alpha)
+      (fun alpha:set => e)).
+    let alpha.
+    assume HalphaK : alpha :e K.
+    rewrite HefamCDef.
+    rewrite (apply_fun_graph
+      (J :\/: K)
+      (fun _:set => e)
+      alpha
+      (binunionI2 J K alpha HalphaK)).
+    reflexivity.
+  }
+  claim Hfp1_for_cor :
+    free_product_of_subgroups G1 mult e inv J
+      (graph J (fun alpha:set => apply_fun Cfam alpha))
+      (graph J (fun alpha:set => apply_fun efamC alpha)).
+  {
+    rewrite HJfamEq.
+    rewrite HefamJEq.
+    exact Hfp1_raw.
+  }
+  claim Hfp2_for_cor :
+    free_product_of_subgroups G2 mult e inv K
+      (graph K (fun alpha:set => apply_fun Cfam alpha))
+      (graph K (fun alpha:set => apply_fun efamC alpha)).
+  {
+    rewrite HKfamEq.
+    rewrite HefamKEq.
+    exact Hfp2_raw.
+  }
+  exact (cor68_6_associativity_free_product
+    G
+    mult
+    e
+    inv
+    G1
+    G2
+    J
+    K
+    Cfam
+    efamC
+    Hgrp
+    Hsub1
+    Hsub2
+    Hfp
+    Hdisj
+    Hfp1_for_cor
+    Hfp2_for_cor).
+Qed.
 
 (** from S69 Thm 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
 (** LATEX VERSION: If G = G1 free-prod G2 where G1, G2 are free with generators a_alpha_J **)
 (** and a_alpha_K respectively, and J,K disjoint, then G is free with generators **)
 (** a_alpha for J union K. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 37 **)
+(** Collected Bob 37 **)
+(** Proven Bob **)
 Theorem thm69_2_free_product_of_free_groups :
   forall G mult e inv G1 G2 J K gens:set,
   group_structure G mult e inv ->
@@ -374690,7 +376113,7 @@ apply (and4E
 		  Hdisj
 		  Hfree1
 		  Hfree2).
-		Admitted.
+		Qed.
 
 (** from S69 Definition (line 3071 in algtop.tex): commutator **)
 (** LATEX VERSION: [x,y] = x y x^{-1} y^{-1} is called the commutator of x and y. **)
