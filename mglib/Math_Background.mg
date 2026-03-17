@@ -406894,13 +406894,45 @@ apply and3I.
   (** Get V0 evenly covered by p0 at z **)
   apply (covering_map_evenly_covered_slices E0 Te0 Z Tz p0 z Hcov_p0 HzZ).
   let V0. assume Hev0_inner. apply Hev0_inner. let slices_p0. assume Hpack_p0.
-  (** Extract the data from slices_r and slices_p0 **)
-  (** Then take V' = V cap V0 and build evenly_covered for p over V' **)
-  (** Each r-slice over V' further decomposes under q because **)
-  (** all loops in V' are null-homotopic in Z (lift to E0, null-homotopic there, project back) **)
-  (** and r_star is injective, so loops in r-slices are null-homotopic in Y **)
-  (** and q trivializes over each r-slice **)
-  admit.
+  (** Extract r-slice data **)
+  apply (and6E (V :e Tz) (z :e V) (slices_r c= Ty) (pairwise_disjoint slices_r)
+    (Union slices_r = preimage_of Y r V)
+    (forall S0:set, S0 :e slices_r ->
+      homeomorphism S0 (subspace_topology Y Ty S0) V (subspace_topology Z Tz V)
+        (graph S0 (fun y:set => apply_fun r y)))
+    Hpack_r).
+  assume HVopen HzV Hsr_open Hsr_pd Hsr_union Hsr_homeo.
+  (** Extract p0-slice data **)
+  apply (and6E (V0 :e Tz) (z :e V0) (slices_p0 c= Te0) (pairwise_disjoint slices_p0)
+    (Union slices_p0 = preimage_of E0 p0 V0)
+    (forall S0:set, S0 :e slices_p0 ->
+      homeomorphism S0 (subspace_topology E0 Te0 S0) V0 (subspace_topology Z Tz V0)
+        (graph S0 (fun e:set => apply_fun p0 e)))
+    Hpack_p0).
+  assume HV0open HzV0 Hsp0_open Hsp0_pd Hsp0_union Hsp0_homeo.
+  (** V' = V cap V0 is open and contains z **)
+  set V' := V :/\: V0.
+  claim HV'open : V' :e Tz.
+  { exact (topology_binintersect_closed Z Tz V V0 HtopZ HVopen HV0open). }
+  claim HzV' : z :e V'.
+  { exact (binintersectI V V0 z HzV HzV0). }
+  (** Witness V' as the evenly covered neighborhood for p **)
+  witness V'.
+  apply and3I.
+  - exact HV'open.
+  - exact HzV'.
+  - (** evenly_covered X Tx Z Tz p V' **)
+    (** Need: slices of p^{-1}(V') that are disjoint, cover p^{-1}(V'), **)
+    (** and each maps homeomorphically to V' via p **)
+    (** Construction: for each r-slice S_a of r^{-1}(V), restrict to S'_a over V'. **)
+    (** Then for each S'_a, q^{-1}(S'_a) decomposes into sheets T_{a,b}. **)
+    (** The T_{a,b} are the p-slices. **)
+    (** Key: q trivializes over S'_a because **)
+    (** - V' c= V0 (evenly covered by universal cover p0) **)
+    (** - loops in V' are null-homotopic in Z **)
+    (** - r_star injective => loops in S'_a null-homotopic in Y **)
+    (** - q trivializes over simply-connected-like S'_a **)
+    admit.
 Admitted.
 
 (** from S80 Exercise 1(b) (line 5013 in algtop.tex) **)
