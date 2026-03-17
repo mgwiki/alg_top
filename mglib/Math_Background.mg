@@ -357456,7 +357456,34 @@ claim HN12subG : N1 :\/: N2 c= G.
 {
   exact (binunion_Subq_min N1 N2 G HN1subG HN2subG).
 }
-admit.
+set Q := quotient_group_set G multG N.
+set multQ := quotient_group_mult G multG N.
+set eQ := quotient_group_id G multG eG N.
+set invQ := quotient_group_inv G multG invG N.
+set Q1 := quotient_group_set G1 multG N1.
+set Q2 := quotient_group_set G2 multG N2.
+set multQ1 := quotient_group_mult G1 multG N1.
+set multQ2 := quotient_group_mult G2 multG N2.
+set ifamQ := graph (UPair 0 1) (fun i:set =>
+  if i = 0 then
+    graph Q1 (fun q:set =>
+      left_coset multG
+        (Eps_i (fun g:set => g :e G1 /\ q = left_coset multG g N1))
+        N)
+  else
+    graph Q2 (fun q:set =>
+      left_coset multG
+        (Eps_i (fun g:set => g :e G2 /\ q = left_coset multG g N2))
+        N)).
+witness Q.
+witness multQ.
+witness eQ.
+witness invQ.
+witness ifamQ.
+apply andI.
+- admit. (** core S68.7: prove external_free_product for quotient factors via ifamQ. **)
+- witness (graph Q (fun q:set => q)).
+  admit. (** core S68.7: identity witness gives group_isomorphism (quotient G/N) -> Q. **)
 Admitted.
 
 (** Helper: least_normal_subgroup has the expected properties (early copy) **)
