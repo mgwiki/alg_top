@@ -408366,16 +408366,18 @@ claim Hev_V : evenly_covered E Te B Tb p V.
   witness slicesV. apply and4I. exact HslOpen. exact HslPD. exact HslUnion. exact HslHomeo. }
 claim Hev_Vpc : evenly_covered E Te B Tb p Vpc.
 { exact (evenly_covered_open_subset E Te B Tb p V Vpc Hev_V HVpc_open_B HVpc_sub_V). }
-(** The sheet of Vpc containing e0 gives the desired pc neighborhood **)
-(** Extract slices of Vpc, find the one containing e0, **)
-(** show it's pc (homeomorphic to pc Vpc) and in the subspace of preU **)
-(** Also need it c= W0 for containment in W = W0 cap preU **)
-(** This last part needs: intersecting with the W0 neighborhood **)
-(** or showing the sheet is in p^-1(Vpc) c= p^-1(VU) c= p^-1(U) = preU **)
-(** For c= W0: need Vpc c= p(W0 cap E), which holds when **)
-(** we also intersect with the p-image of W0 earlier in the construction **)
-(** This requires going back and using lpc on VU cap p(W0) instead of just VU **)
-(** For now, admit this containment step **)
+(** Final step: extract sheet of Vpc containing e0, show it's the desired pc nhd **)
+(** The sheet S of p^-1(Vpc) containing e0 satisfies: **)
+(** - S :e Te (from evenly_covered slices) **)
+(** - S c= preU (since Vpc c= U, so S c= p^-1(U) = preU) **)
+(** - S is path-connected (homeomorphic to Vpc which is pc) **)
+(** - e0 :e S (since p(e0) = u0 :e Vpc) **)
+(** For containment in W = W0 cap preU: **)
+(** Take V_W = p(sheet_of_V cap W0) which is open (p homeo on sheet) **)
+(** Apply lpc on V_W to get pc Vpc, then sheet of Vpc c= sheet_of_V cap W0 c= W0 **)
+(** Or: take S cap W0 (open in E), its p-image is open in Vpc, **)
+(** apply lpc to get pc sub, lift back **)
+(** This is a routine but detailed construction **)
 admit.
 Admitted.
 
