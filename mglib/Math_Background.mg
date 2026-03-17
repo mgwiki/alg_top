@@ -357322,6 +357322,140 @@ Theorem thm68_7_quotient_free_product :
       group_isomorphism
         (quotient_group_set G multG N) (quotient_group_mult G multG N)
         FP multFP phi.
+let G multG eG invG G1 G2 N1 N2.
+assume Hfp :
+  free_product_of_subgroups G multG eG invG (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => eG)).
+assume HN1 : normal_subgroup N1 G1 multG eG invG.
+assume HN2 : normal_subgroup N2 G2 multG eG invG.
+set N := least_normal_subgroup G multG eG invG (N1 :\/: N2).
+claim HgrpG : group_structure G multG eG invG.
+{
+  exact (free_product_group_structure
+    G
+    multG
+    eG
+    invG
+    (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => eG))
+    Hfp).
+}
+claim HG1sub : G1 c= G.
+{
+  claim Hsub0 :
+    subgroup_of
+      (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) 0)
+      G
+      multG
+      eG
+      invG.
+  {
+    exact (free_product_subfam
+      G
+      multG
+      eG
+      invG
+      (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+      (graph (UPair 0 1) (fun i:set => eG))
+      Hfp
+      0
+      (UPairI1 0 1)).
+  }
+  claim Heq0 :
+    apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) 0 = G1.
+  {
+    rewrite (apply_fun_graph
+      (UPair 0 1)
+      (fun i:set => if i = 0 then G1 else G2)
+      0
+      (UPairI1 0 1)).
+    exact (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+  }
+  rewrite <- Heq0.
+  exact (subgroup_of_subset
+    (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) 0)
+    G
+    multG
+    eG
+    invG
+    Hsub0).
+}
+claim HG2sub : G2 c= G.
+{
+  claim Hsub1 :
+    subgroup_of
+      (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) 1)
+      G
+      multG
+      eG
+      invG.
+  {
+    exact (free_product_subfam
+      G
+      multG
+      eG
+      invG
+      (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+      (graph (UPair 0 1) (fun i:set => eG))
+      Hfp
+      1
+      (UPairI2 0 1)).
+  }
+  claim Heq1 :
+    apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) 1 = G2.
+  {
+    rewrite (apply_fun_graph
+      (UPair 0 1)
+      (fun i:set => if i = 0 then G1 else G2)
+      1
+      (UPairI2 0 1)).
+    exact (If_i_0 (1 = 0) G1 G2 neq_1_0).
+  }
+  rewrite <- Heq1.
+  exact (subgroup_of_subset
+    (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)) 1)
+    G
+    multG
+    eG
+    invG
+    Hsub1).
+}
+claim HN1subG1 : N1 c= G1.
+{
+  exact (subgroup_of_subset
+    N1
+    G1
+    multG
+    eG
+    invG
+    (normal_subgroup_subgroup N1 G1 multG eG invG HN1)).
+}
+claim HN2subG2 : N2 c= G2.
+{
+  exact (subgroup_of_subset
+    N2
+    G2
+    multG
+    eG
+    invG
+    (normal_subgroup_subgroup N2 G2 multG eG invG HN2)).
+}
+claim HN1subG : N1 c= G.
+{
+  exact (Subq_tra N1 G1 G HN1subG1 HG1sub).
+}
+claim HN2subG : N2 c= G.
+{
+  exact (Subq_tra N2 G2 G HN2subG2 HG2sub).
+}
+claim HN12subG : N1 :\/: N2 c= G.
+{
+  exact (binunion_Subq_min N1 N2 G HN1subG HN2subG).
+}
 admit.
 Admitted.
 
