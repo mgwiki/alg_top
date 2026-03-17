@@ -407869,13 +407869,53 @@ claim Hlift_in_preimage : forall t:set, t :e unit_interval ->
   claim Hp0lt : apply_fun p0 (apply_fun liftfB t) :e V0.
   { rewrite (HliftComm t Ht). exact (HfB_into_V0 t Ht). }
   exact (SepI E0 (fun e:set => apply_fun p0 e :e V0) (apply_fun liftfB t) HltE0 Hp0lt). }
-(** The image of liftfB is in some slice S0 of p0^{-1}(V0) **)
-(** because unit_interval is connected and the slices are disjoint open cover **)
-(** Full argument: liftfB(0) = e0 :e S0 (some slice), liftfB continuous, **)
-(** [0,1] connected, slices disjoint open => image stays in S0. **)
-(** Then p0 injective on S0 and p0(liftfB(1)) = b = p0(e0) => liftfB(1) = e0 **)
-(** Then liftfB is a loop in simply_connected E0, hence null-homotopic **)
-(** Project null-homotopy to B via p0 **)
+(** Extract evenly_covered slices data for V0 **)
+claim Hev_data : exists slices0:set, slices0 c= Te0 /\ pairwise_disjoint slices0 /\
+  Union slices0 = preimage_of E0 p0 V0 /\
+  (forall S0:set, S0 :e slices0 ->
+    homeomorphism S0 (subspace_topology E0 Te0 S0) V0 (subspace_topology B Tb V0)
+      (graph S0 (fun e:set => apply_fun p0 e))).
+{ exact (andER (topology_on E0 Te0 /\ V0 :e Tb) (exists slices0:set, slices0 c= Te0 /\ pairwise_disjoint slices0 /\ Union slices0 = preimage_of E0 p0 V0 /\ (forall S0:set, S0 :e slices0 -> homeomorphism S0 (subspace_topology E0 Te0 S0) V0 (subspace_topology B Tb V0) (graph S0 (fun e:set => apply_fun p0 e)))) Hev). }
+apply Hev_data. let slices0. assume Hsl0_pack.
+set Hsl0_homeo_type := forall S0:set, S0 :e slices0 ->
+  homeomorphism S0 (subspace_topology E0 Te0 S0) V0 (subspace_topology B Tb V0)
+    (graph S0 (fun e:set => apply_fun p0 e)).
+claim Hsl0_homeo : Hsl0_homeo_type.
+{ exact (andER ((slices0 c= Te0 /\ pairwise_disjoint slices0) /\ Union slices0 = preimage_of E0 p0 V0) Hsl0_homeo_type Hsl0_pack). }
+claim Hsl0_left : (slices0 c= Te0 /\ pairwise_disjoint slices0) /\ Union slices0 = preimage_of E0 p0 V0.
+{ exact (andEL ((slices0 c= Te0 /\ pairwise_disjoint slices0) /\ Union slices0 = preimage_of E0 p0 V0) Hsl0_homeo_type Hsl0_pack). }
+claim Hsl0_union : Union slices0 = preimage_of E0 p0 V0.
+{ exact (andER (slices0 c= Te0 /\ pairwise_disjoint slices0) (Union slices0 = preimage_of E0 p0 V0) Hsl0_left). }
+claim Hsl0_left2 : slices0 c= Te0 /\ pairwise_disjoint slices0.
+{ exact (andEL (slices0 c= Te0 /\ pairwise_disjoint slices0) (Union slices0 = preimage_of E0 p0 V0) Hsl0_left). }
+claim Hsl0_open : slices0 c= Te0.
+{ exact (andEL (slices0 c= Te0) (pairwise_disjoint slices0) Hsl0_left2). }
+claim Hsl0_pd : pairwise_disjoint slices0.
+{ exact (andER (slices0 c= Te0) (pairwise_disjoint slices0) Hsl0_left2). }
+(** e0 is in preimage_of E0 p0 V0 = Union slices0 **)
+claim He0_pre : e0 :e preimage_of E0 p0 V0.
+{ prove e0 :e {e :e E0 | apply_fun p0 e :e V0}.
+  apply SepI. exact He0E0.
+  prove apply_fun p0 e0 :e V0.
+  rewrite Hpe0. exact HbV0. }
+claim He0_union : e0 :e Union slices0. { rewrite Hsl0_union. exact He0_pre. }
+(** e0 is in some slice S_e0 **)
+apply (UnionE_impred slices0 e0 He0_union).
+let S_e0. assume He0Se0 : e0 :e S_e0. assume HSe0_sl : S_e0 :e slices0.
+(** The image of liftfB (as a set) is in Union slices0 **)
+set img_lift := {apply_fun liftfB t | t :e unit_interval}.
+claim Himg_sub_union : img_lift c= Union slices0.
+{ let w. assume Hw.
+  apply (ReplE_impred unit_interval (fun t:set => apply_fun liftfB t) w Hw).
+  let t. assume Ht Hweq. rewrite Hweq.
+  rewrite Hsl0_union. exact (Hlift_in_preimage t Ht). }
+(** img_lift is connected (continuous image of connected [0,1]) **)
+(** e0 :e img_lift (since liftfB(0) = e0) **)
+(** By connected_subset_of_pairwise_disjoint_open_union_anchor: img_lift c= S_e0 **)
+(** Then liftfB(1) :e S_e0, and p0(liftfB(1)) = b = p0(e0), **)
+(** p0 injective on S_e0 (homeomorphism) => liftfB(1) = e0 **)
+(** Then liftfB is a loop at e0, E0 simply connected => null-homotopic **)
+(** Project to B **)
 admit.
 Admitted.
 
