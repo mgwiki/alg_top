@@ -413706,13 +413706,23 @@ claim HpSW_U_subU : pSW_U :e subspace_topology B Tb U.
 apply (locally_path_connected_local U (subspace_topology B Tb U) u0 pSW_U HlpcU Hpe0U HpSW_U_subU Hu0_pSW_U).
 let Vpc. assume HVpc_pack.
 (** Extract Vpc properties **)
-(** HVpc_pack : Vpc :e subspace /\ u0 :e Vpc /\ Vpc c= pSW_U /\ pc Vpc **)
-(** The preimage of Vpc in S_e0 gives the desired neighborhood **)
-(** Since pS: S_e0 -> V is a homeomorphism and Vpc c= image_of pS SW c= V, **)
-(** the preimage is well-defined, open, path-connected, and c= SW c= W **)
-(** Full construction requires: homeomorphism inverse, preimage continuity, **)
-(** path-connected preimage under homeomorphism, containment verification **)
-(** This is the final routine construction step **)
+set Vpc_pc_type := path_connected_space Vpc (subspace_topology U (subspace_topology B Tb U) Vpc).
+claim HVpc_pc : Vpc_pc_type.
+{ exact (andER (((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) /\ (Vpc c= pSW_U)) Vpc_pc_type HVpc_pack). }
+claim HVpc_left3 : ((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) /\ (Vpc c= pSW_U).
+{ exact (andEL (((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) /\ (Vpc c= pSW_U)) Vpc_pc_type HVpc_pack). }
+claim HVpc_sub : Vpc c= pSW_U.
+{ exact (andER ((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) (Vpc c= pSW_U) HVpc_left3). }
+claim HVpc_left2 : (Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc).
+{ exact (andEL ((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) (Vpc c= pSW_U) HVpc_left3). }
+claim Hu0_Vpc : u0 :e Vpc.
+{ exact (andER (Vpc :e subspace_topology B Tb U) (u0 :e Vpc) HVpc_left2). }
+(** Witness: preimage of Vpc in S_e0 under pS **)
+(** = {e :e S_e0 | apply_fun pS e :e Vpc} **)
+(** This is c= SW (since Vpc c= pSW_U c= image_of pS SW, and pS injective) **)
+(** open in E, path-connected, contains e0, c= W = W0 cap preU **)
+(** The full construction needs homeomorphism inverse machinery **)
+(** which is available but detailed to formalize **)
 admit.
 Admitted.
 
