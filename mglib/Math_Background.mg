@@ -331367,6 +331367,312 @@ claim Hextfp :
           assume Hi : i :e n'.
           exact (HuofPack i Hi).
         }
+        claim Hsubgen_nonid_reduced_reconstructed_word :
+          forall n' xs':set,
+            reduced_word J ImageFam efam_int n' xs' -> n' <> 0 ->
+            word_product multG eG xs' n' = x ->
+            exists aof' uof' ws':set,
+              (forall i:set, i :e n' ->
+                apply_fun aof' i :e J /\
+                apply_fun uof' i :e apply_fun Gfam (apply_fun aof' i)) /\
+              (forall i:set, i :e n' ->
+                apply_fun ws' i =
+                  apply_fun (apply_fun ifam (apply_fun aof' i)) (apply_fun uof' i)) /\
+              reduced_word J ImageFam efam_int n' ws' /\
+              word_product multG eG ws' n' = x.
+        {
+          let n' xs'.
+          assume HredImg : reduced_word J ImageFam efam_int n' xs'.
+          assume Hn'Ne : n' <> 0.
+          assume HwpX : word_product multG eG xs' n' = x.
+          apply (Hsubgen_nonid_reduced_lift_with_choice_functions n' xs' HredImg Hn'Ne HwpX).
+          let aof'.
+          assume HaofPack : exists uof':set,
+            forall i:set, i :e n' ->
+              apply_fun aof' i :e J /\
+              apply_fun uof' i :e apply_fun Gfam (apply_fun aof' i) /\
+              apply_fun xs' i =
+                apply_fun (apply_fun ifam (apply_fun aof' i)) (apply_fun uof' i).
+          apply HaofPack.
+          let uof'.
+          assume HuofPack :
+            forall i:set, i :e n' ->
+              apply_fun aof' i :e J /\
+              apply_fun uof' i :e apply_fun Gfam (apply_fun aof' i) /\
+              apply_fun xs' i =
+                apply_fun (apply_fun ifam (apply_fun aof' i)) (apply_fun uof' i).
+          set ws' := graph n' (fun i:set =>
+            apply_fun (apply_fun ifam (apply_fun aof' i)) (apply_fun uof' i)).
+          claim Hn'O : n' :e omega.
+          {
+            apply (and3E
+              (n' :e omega)
+              (forall i:set, i :e n' ->
+                exists alpha:set, alpha :e J /\
+                  apply_fun xs' i :e apply_fun ImageFam alpha /\
+                  apply_fun xs' i <> apply_fun efam_int alpha)
+              (forall i:set, i :e n' -> ordsucc i :e n' ->
+                forall alpha beta:set, alpha :e J -> beta :e J ->
+                  apply_fun xs' i :e apply_fun ImageFam alpha ->
+                  apply_fun xs' (ordsucc i) :e apply_fun ImageFam beta ->
+                  alpha <> beta)
+              HredImg).
+            assume Hn'O _ _. exact Hn'O.
+          }
+          claim HwsEq :
+            forall i:set, i :e n' -> apply_fun ws' i = apply_fun xs' i.
+          {
+            let i.
+            assume Hi : i :e n'.
+            claim HwsEval :
+              apply_fun ws' i =
+                apply_fun (apply_fun ifam (apply_fun aof' i)) (apply_fun uof' i).
+            {
+              exact (apply_fun_graph
+                n'
+                (fun j:set =>
+                  apply_fun (apply_fun ifam (apply_fun aof' j)) (apply_fun uof' j))
+                i
+                Hi).
+            }
+            rewrite HwsEval.
+            apply (and3E
+              (apply_fun aof' i :e J)
+              (apply_fun uof' i :e apply_fun Gfam (apply_fun aof' i))
+              (apply_fun xs' i =
+                apply_fun (apply_fun ifam (apply_fun aof' i)) (apply_fun uof' i))
+              (HuofPack i Hi)).
+            assume _ _ HxsEq.
+            exact (eq_symm
+              (apply_fun xs' i)
+              (apply_fun (apply_fun ifam (apply_fun aof' i)) (apply_fun uof' i))
+              HxsEq).
+          }
+          claim HwsChoice :
+            forall i:set, i :e n' ->
+              apply_fun aof' i :e J /\
+              apply_fun uof' i :e apply_fun Gfam (apply_fun aof' i).
+          {
+            let i.
+            assume Hi : i :e n'.
+            apply (and3E
+              (apply_fun aof' i :e J)
+              (apply_fun uof' i :e apply_fun Gfam (apply_fun aof' i))
+              (apply_fun xs' i =
+                apply_fun (apply_fun ifam (apply_fun aof' i)) (apply_fun uof' i))
+              (HuofPack i Hi)).
+            assume Ha Hu _.
+            exact (andI
+              (apply_fun aof' i :e J)
+              (apply_fun uof' i :e apply_fun Gfam (apply_fun aof' i))
+              Ha
+              Hu).
+          }
+          claim HwsVia :
+            forall i:set, i :e n' ->
+              apply_fun ws' i =
+                apply_fun (apply_fun ifam (apply_fun aof' i)) (apply_fun uof' i).
+          {
+            let i.
+            assume Hi : i :e n'.
+            exact (apply_fun_graph
+              n'
+              (fun j:set =>
+                apply_fun (apply_fun ifam (apply_fun aof' j)) (apply_fun uof' j))
+              i
+              Hi).
+          }
+          claim HredWs : reduced_word J ImageFam efam_int n' ws'.
+          {
+            exact (reduced_word_congr_on
+              J
+              ImageFam
+              efam_int
+              n'
+              xs'
+              ws'
+              HredImg
+              (fun i Hi => eq_symm (apply_fun ws' i) (apply_fun xs' i) (HwsEq i Hi))).
+          }
+          claim HwpWs : word_product multG eG ws' n' = x.
+          {
+            claim HwpEq :
+              word_product multG eG ws' n' = word_product multG eG xs' n'.
+            {
+              exact (word_product_congr_on
+                multG
+                eG
+                ws'
+                xs'
+                n'
+                Hn'O
+                HwsEq).
+            }
+            exact (eq_i_tra
+              (word_product multG eG ws' n')
+              (word_product multG eG xs' n')
+              x
+              HwpEq
+              HwpX).
+          }
+          witness aof'.
+          witness uof'.
+          witness ws'.
+          exact (and4I
+            (forall i:set, i :e n' ->
+              apply_fun aof' i :e J /\
+              apply_fun uof' i :e apply_fun Gfam (apply_fun aof' i))
+            (forall i:set, i :e n' ->
+              apply_fun ws' i =
+                apply_fun (apply_fun ifam (apply_fun aof' i)) (apply_fun uof' i))
+            (reduced_word J ImageFam efam_int n' ws')
+            (word_product multG eG ws' n' = x)
+            HwsChoice
+            HwsVia
+            HredWs
+            HwpWs).
+        }
+        claim Hsubgen_nonid_reduced_pair_reconstructed :
+          forall n1 xs1 n2 xs2:set,
+            reduced_word J ImageFam efam_int n1 xs1 -> n1 <> 0 ->
+            word_product multG eG xs1 n1 = x ->
+            reduced_word J ImageFam efam_int n2 xs2 -> n2 <> 0 ->
+            word_product multG eG xs2 n2 = x ->
+            exists aof1 uof1 ws1 aof2 uof2 ws2:set,
+              reduced_word J ImageFam efam_int n1 ws1 /\
+              reduced_word J ImageFam efam_int n2 ws2 /\
+              word_product multG eG ws1 n1 = x /\
+              word_product multG eG ws2 n2 = x /\
+              (forall i:set, i :e n1 ->
+                apply_fun ws1 i =
+                  apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+              (forall j:set, j :e n2 ->
+                apply_fun ws2 j =
+                  apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)).
+        {
+          let n1 xs1 n2 xs2.
+          assume Hred1 : reduced_word J ImageFam efam_int n1 xs1.
+          assume Hn1Ne : n1 <> 0.
+          assume Hwp1 : word_product multG eG xs1 n1 = x.
+          assume Hred2 : reduced_word J ImageFam efam_int n2 xs2.
+          assume Hn2Ne : n2 <> 0.
+          assume Hwp2 : word_product multG eG xs2 n2 = x.
+          apply (Hsubgen_nonid_reduced_reconstructed_word n1 xs1 Hred1 Hn1Ne Hwp1).
+          let aof1.
+          assume Haof1Pack :
+            exists uof1 ws1:set,
+              (forall i:set, i :e n1 ->
+                apply_fun aof1 i :e J /\
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+              (forall i:set, i :e n1 ->
+                apply_fun ws1 i =
+                  apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+              reduced_word J ImageFam efam_int n1 ws1 /\
+              word_product multG eG ws1 n1 = x.
+          apply Haof1Pack.
+          let uof1.
+          assume Huof1Pack :
+            exists ws1:set,
+              (forall i:set, i :e n1 ->
+                apply_fun aof1 i :e J /\
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+              (forall i:set, i :e n1 ->
+                apply_fun ws1 i =
+                  apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+              reduced_word J ImageFam efam_int n1 ws1 /\
+              word_product multG eG ws1 n1 = x.
+          apply Huof1Pack.
+          let ws1.
+          assume Hws1Pack :
+            (forall i:set, i :e n1 ->
+              apply_fun aof1 i :e J /\
+              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+            (forall i:set, i :e n1 ->
+              apply_fun ws1 i =
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+            reduced_word J ImageFam efam_int n1 ws1 /\
+            word_product multG eG ws1 n1 = x.
+          apply (and4E
+            (forall i:set, i :e n1 ->
+              apply_fun aof1 i :e J /\
+              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+            (forall i:set, i :e n1 ->
+              apply_fun ws1 i =
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+            (reduced_word J ImageFam efam_int n1 ws1)
+            (word_product multG eG ws1 n1 = x)
+            Hws1Pack).
+          assume Hws1Choice Hws1Via HredWs1 HwpWs1.
+          apply (Hsubgen_nonid_reduced_reconstructed_word n2 xs2 Hred2 Hn2Ne Hwp2).
+          let aof2.
+          assume Haof2Pack :
+            exists uof2 ws2:set,
+              (forall j:set, j :e n2 ->
+                apply_fun aof2 j :e J /\
+                apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+              (forall j:set, j :e n2 ->
+                apply_fun ws2 j =
+                  apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+              reduced_word J ImageFam efam_int n2 ws2 /\
+              word_product multG eG ws2 n2 = x.
+          apply Haof2Pack.
+          let uof2.
+          assume Huof2Pack :
+            exists ws2:set,
+              (forall j:set, j :e n2 ->
+                apply_fun aof2 j :e J /\
+                apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+              (forall j:set, j :e n2 ->
+                apply_fun ws2 j =
+                  apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+              reduced_word J ImageFam efam_int n2 ws2 /\
+              word_product multG eG ws2 n2 = x.
+          apply Huof2Pack.
+          let ws2.
+          assume Hws2Pack :
+            (forall j:set, j :e n2 ->
+              apply_fun aof2 j :e J /\
+              apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+            (forall j:set, j :e n2 ->
+              apply_fun ws2 j =
+                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+            reduced_word J ImageFam efam_int n2 ws2 /\
+            word_product multG eG ws2 n2 = x.
+          apply (and4E
+            (forall j:set, j :e n2 ->
+              apply_fun aof2 j :e J /\
+              apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j))
+            (forall j:set, j :e n2 ->
+              apply_fun ws2 j =
+                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))
+            (reduced_word J ImageFam efam_int n2 ws2)
+            (word_product multG eG ws2 n2 = x)
+            Hws2Pack).
+          assume Hws2Choice Hws2Via HredWs2 HwpWs2.
+          witness aof1.
+          witness uof1.
+          witness ws1.
+          witness aof2.
+          witness uof2.
+          witness ws2.
+          exact (and6I
+            (reduced_word J ImageFam efam_int n1 ws1)
+            (reduced_word J ImageFam efam_int n2 ws2)
+            (word_product multG eG ws1 n1 = x)
+            (word_product multG eG ws2 n2 = x)
+            (forall i:set, i :e n1 ->
+              apply_fun ws1 i =
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+            (forall j:set, j :e n2 ->
+              apply_fun ws2 j =
+                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))
+            HredWs1
+            HredWs2
+            HwpWs1
+            HwpWs2
+            Hws1Via
+            Hws2Via).
+        }
         admit. (** core S68.5 gap C remainder: reduced-word existence+uniqueness for non-identity x. **)
       + let alpha. assume Halpha : alpha :e J.
         rewrite (apply_fun_graph J
