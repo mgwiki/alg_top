@@ -408213,21 +408213,31 @@ claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B 
 claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
 claim Hcont_p : continuous_map E Te B Tb p. { exact (covering_map_continuous E Te B Tb p Hcov). }
 claim HUsub : U c= B. { exact (topology_elem_subset B Tb U HtopB HUopen). }
-(** U is non-empty (from path-connected, which needs topology_on) **)
+(** Topology of U **)
 claim HtopU : topology_on U (subspace_topology B Tb U).
 { exact (path_connected_space_topology U (subspace_topology B Tb U) HpcU). }
-(** Get an evenly covered neighborhood V of some point in U **)
-(** Since p is a covering map, every point of B has an evenly covered neighborhood **)
-(** For any u0 :e U, we get V with u0 :e V and evenly_covered E Te B Tb p V **)
-(** Then V' = V cap U is open in B, contained in V and U **)
-(** V' is evenly covered by p (from evenly_covered_open_subset) **)
-(** Since U is path-connected and V' is open in U, we want to extend **)
-(** the sheets of V' to all of U. **)
-(** This requires the section construction: for each starting point in fiber, **)
-(** path lifting gives a well-defined continuous section over all of U **)
-(** (using the null-homotopy hypothesis for well-definedness). **)
-(** The sections for all starting points give the evenly covered structure. **)
-(** Full formalization requires section construction + continuity proof. **)
+(** Build evenly_covered structure **)
+(** Slices = path components of preimage_of E p U **)
+(** Each path component maps homeomorphically to U because: **)
+(** - surjective: path lifting from any starting point reaches any fiber point **)
+(** - injective: loops lift to loops because null-homotopy of inclusion **)
+(** - local homeomorphism: covering map is local homeomorphism **)
+(** - open: union of local sheets, which are open **)
+prove topology_on E Te /\ U :e Tb /\
+  exists slices:set, slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun x:set => apply_fun p x))).
+apply andI. apply andI. exact HtopE. exact HUopen.
+(** The slices construction requires: **)
+(** 1. For each e0 :e p^-1(U), define section_e0: U -> E via path lifting **)
+(** 2. Show section_e0 is well-defined (uses null-homotopy hypothesis) **)
+(** 3. Show image of section_e0 is open (from local sheets of covering) **)
+(** 4. Show image of section_e0 = path component of e0 in p^-1(U) **)
+(** 5. Show sections for different e0 give disjoint sets covering p^-1(U) **)
+(** 6. Show graph p restricted to each section is a homeomorphism to U **)
+(** This is a major formal construction requiring ~200 lines **)
 admit.
 Admitted.
 
