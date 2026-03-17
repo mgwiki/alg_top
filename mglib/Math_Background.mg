@@ -357483,7 +357483,191 @@ witness ifamQ.
 apply andI.
 - admit. (** core S68.7: prove external_free_product for quotient factors via ifamQ. **)
 - witness (graph Q (fun q:set => q)).
-  admit. (** core S68.7: identity witness gives group_isomorphism (quotient G/N) -> Q. **)
+  apply (group_isomorphism_intro
+    Q
+    multQ
+    Q
+    multQ
+    (graph Q (fun q:set => q))).
+  + claim Hhom_id :
+      group_homomorphism
+        Q
+        multQ
+        Q
+        multQ
+        (graph Q (fun q:set => q)).
+    {
+      claim Hmult_pres_id :
+        forall a b:set, a :e Q -> b :e Q ->
+          apply_fun (graph Q (fun q:set => q)) (apply_fun multQ (a, b)) =
+          apply_fun multQ
+            (apply_fun (graph Q (fun q:set => q)) a,
+             apply_fun (graph Q (fun q:set => q)) b).
+      {
+        let a b.
+        assume HaQ : a :e Q.
+        assume HbQ : b :e Q.
+        claim HexA : exists g:set, g :e G /\ a = left_coset multG g N.
+        { exact (ReplE G (fun g:set => left_coset multG g N) a HaQ). }
+        claim HexB : exists g:set, g :e G /\ b = left_coset multG g N.
+        { exact (ReplE G (fun g:set => left_coset multG g N) b HbQ). }
+        claim HEpsA :
+          Eps_i (fun g:set => g :e G /\ a = left_coset multG g N) :e G /\
+          a = left_coset multG (Eps_i (fun g:set => g :e G /\ a = left_coset multG g N)) N.
+        {
+          exact (Eps_i_ex
+            (fun g:set => g :e G /\ a = left_coset multG g N)
+            HexA).
+        }
+        claim HEpsB :
+          Eps_i (fun g:set => g :e G /\ b = left_coset multG g N) :e G /\
+          b = left_coset multG (Eps_i (fun g:set => g :e G /\ b = left_coset multG g N)) N.
+        {
+          exact (Eps_i_ex
+            (fun g:set => g :e G /\ b = left_coset multG g N)
+            HexB).
+        }
+        claim HEpsAG : Eps_i (fun g:set => g :e G /\ a = left_coset multG g N) :e G.
+        {
+          exact (andEL
+            (Eps_i (fun g:set => g :e G /\ a = left_coset multG g N) :e G)
+            (a = left_coset multG (Eps_i (fun g:set => g :e G /\ a = left_coset multG g N)) N)
+            HEpsA).
+        }
+        claim HEpsBG : Eps_i (fun g:set => g :e G /\ b = left_coset multG g N) :e G.
+        {
+          exact (andEL
+            (Eps_i (fun g:set => g :e G /\ b = left_coset multG g N) :e G)
+            (b = left_coset multG (Eps_i (fun g:set => g :e G /\ b = left_coset multG g N)) N)
+            HEpsB).
+        }
+        claim HprodG :
+          apply_fun multG
+            (Eps_i (fun g:set => g :e G /\ a = left_coset multG g N),
+             Eps_i (fun g:set => g :e G /\ b = left_coset multG g N)) :e G.
+        {
+          exact (group_source_mult_closure
+            G
+            multG
+            eG
+            invG
+            HgrpG
+            (Eps_i (fun g:set => g :e G /\ a = left_coset multG g N))
+            (Eps_i (fun g:set => g :e G /\ b = left_coset multG g N))
+            HEpsAG
+            HEpsBG).
+        }
+        claim HmultAB_Q : apply_fun multQ (a, b) :e Q.
+        {
+          claim HabQQ : (a, b) :e setprod Q Q.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma Q Q a b HaQ HbQ).
+          }
+          claim HmultDef :
+            multQ =
+            graph (setprod Q Q)
+              (fun p:set =>
+                left_coset multG
+                  (apply_fun multG
+                    (Eps_i (fun g:set => g :e G /\ p 0 = left_coset multG g N),
+                     Eps_i (fun g:set => g :e G /\ p 1 = left_coset multG g N)))
+                  N).
+          {
+            reflexivity.
+          }
+          rewrite HmultDef.
+          rewrite (apply_fun_graph
+            (setprod Q Q)
+            (fun p:set =>
+              left_coset multG
+                (apply_fun multG
+                  (Eps_i (fun g:set => g :e G /\ p 0 = left_coset multG g N),
+                   Eps_i (fun g:set => g :e G /\ p 1 = left_coset multG g N)))
+                N)
+            (a, b)
+            HabQQ).
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          exact (ReplI
+            G
+            (fun g:set => left_coset multG g N)
+            (apply_fun multG
+              (Eps_i (fun g:set => g :e G /\ a = left_coset multG g N),
+               Eps_i (fun g:set => g :e G /\ b = left_coset multG g N)))
+            HprodG).
+        }
+        claim HidL :
+          apply_fun (graph Q (fun q:set => q)) (apply_fun multQ (a, b)) =
+          apply_fun multQ (a, b).
+        {
+          exact (apply_fun_graph
+            Q
+            (fun q:set => q)
+            (apply_fun multQ (a, b))
+            HmultAB_Q).
+        }
+        claim Hida : apply_fun (graph Q (fun q:set => q)) a = a.
+        {
+          exact (apply_fun_graph Q (fun q:set => q) a HaQ).
+        }
+        claim Hidb : apply_fun (graph Q (fun q:set => q)) b = b.
+        {
+          exact (apply_fun_graph Q (fun q:set => q) b HbQ).
+        }
+        rewrite HidL.
+        rewrite Hida.
+        rewrite Hidb.
+        reflexivity.
+      }
+      exact (andI
+        (function_on (graph Q (fun q:set => q)) Q Q)
+        (forall a b:set, a :e Q -> b :e Q ->
+          apply_fun (graph Q (fun q:set => q)) (apply_fun multQ (a, b)) =
+          apply_fun multQ
+            (apply_fun (graph Q (fun q:set => q)) a,
+             apply_fun (graph Q (fun q:set => q)) b))
+        (identity_graph_function_on_algtop Q)
+        Hmult_pres_id).
+    }
+    exact Hhom_id.
+  + claim Hbij_id : bijection Q Q (graph Q (fun q:set => q)).
+    {
+      claim Hunique :
+        forall y:set, y :e Q ->
+          exists x:set, x :e Q /\
+            apply_fun (graph Q (fun q:set => q)) x = y /\
+            (forall x':set, x' :e Q ->
+              apply_fun (graph Q (fun q:set => q)) x' = y -> x' = x).
+      {
+        let y. assume HyQ : y :e Q.
+        witness y.
+        apply and3I.
+        { exact HyQ. }
+        { exact (apply_fun_graph Q (fun q:set => q) y HyQ). }
+        { let x'. assume Hx'Q : x' :e Q.
+          assume Hx'eq : apply_fun (graph Q (fun q:set => q)) x' = y.
+          claim Hx'val : apply_fun (graph Q (fun q:set => q)) x' = x'.
+          {
+            exact (apply_fun_graph Q (fun q:set => q) x' Hx'Q).
+          }
+          exact (eq_i_tra
+            x'
+            (apply_fun (graph Q (fun q:set => q)) x')
+            y
+            (eq_symm (apply_fun (graph Q (fun q:set => q)) x') x' Hx'val)
+            Hx'eq). }
+      }
+      exact (andI
+        (function_on (graph Q (fun q:set => q)) Q Q)
+        (forall y:set, y :e Q ->
+          exists x:set, x :e Q /\
+            apply_fun (graph Q (fun q:set => q)) x = y /\
+            (forall x':set, x' :e Q ->
+              apply_fun (graph Q (fun q:set => q)) x' = y -> x' = x))
+        (identity_graph_function_on_algtop Q)
+        Hunique).
+    }
+    exact Hbij_id.
 Admitted.
 
 (** Helper: least_normal_subgroup has the expected properties (early copy) **)
