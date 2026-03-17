@@ -408786,15 +408786,48 @@ apply and3I.
     { exact (andEL (slices_r' c= Ty) (pairwise_disjoint slices_r') Hsr'_left2). }
     claim Hsr'_pd : pairwise_disjoint slices_r'.
     { exact (andER (slices_r' c= Ty) (pairwise_disjoint slices_r') Hsr'_left2). }
-    (** Now we have restricted r-slices over V'. **)
-    (** Each S'_a maps homeomorphically to V' via r. **)
-    (** For each S'_a, q locally trivializes (q is a covering map). **)
-    (** Global trivialization over S'_a follows from unique path lifting, **)
-    (** since S'_a homeomorphic to connected V' and pi1(S'_a) -> pi1(Y) trivial **)
-    (** (from V' c= V0, universal cover, r_star injective). **)
-    (** The collection of q-sheets over all r-slices gives the p-slices. **)
-    (** Full formalization requires: covering trivialization over base with **)
-    (** trivial fundamental group image (not yet available as named theorem). **)
+    (** Step 4: For each S'_a, loops are null-homotopic in Y **)
+    (** using universal_cover_evenly_covered_loops_trivial + loops_null_in_covering_slice **)
+    claim Hloops_in_slice : forall S_a:set, S_a :e slices_r' ->
+      forall y0:set, y0 :e S_a ->
+      forall g:set, g :e loop_space S_a (subspace_topology Y Ty S_a) y0 ->
+      path_homotopic Y Ty y0 y0
+        (compose_fun unit_interval g (graph S_a (fun x:set => x)))
+        (constant_path y0).
+    { let S_a. assume HSa. let y0. assume Hy0. let g. assume HgLoop.
+      claim HSa_open : S_a :e Ty. { exact (Hsr'_open S_a HSa). }
+      claim HSa_homeo : homeomorphism S_a (subspace_topology Y Ty S_a) V' (subspace_topology Z Tz V')
+        (graph S_a (fun y1:set => apply_fun r y1)).
+      { exact (Hsr'_homeo S_a HSa). }
+      (** Loops in V' are null-homotopic in Z (from universal cover) **)
+      claim HloopsV : forall z0:set, z0 :e V' ->
+        forall f0:set, f0 :e loop_space V' (subspace_topology Z Tz V') z0 ->
+        path_homotopic Z Tz z0 z0
+          (compose_fun unit_interval f0 (graph V' (fun x:set => x)))
+          (constant_path z0).
+      { claim HtopE0 : topology_on E0 Te0.
+        { exact (covering_map_topology_on_domain E0 Te0 Z Tz p0 Hcov_p0). }
+        claim Hev_p0_V0 : evenly_covered E0 Te0 Z Tz p0 V0.
+        { prove topology_on E0 Te0 /\ V0 :e Tz /\
+            exists slices:set, slices c= Te0 /\ pairwise_disjoint slices /\
+              Union slices = preimage_of E0 p0 V0 /\
+              (forall S0:set, S0 :e slices ->
+                homeomorphism S0 (subspace_topology E0 Te0 S0) V0 (subspace_topology Z Tz V0)
+                  (graph S0 (fun e:set => apply_fun p0 e))).
+          apply and3I. exact HtopE0. exact HV0open.
+          witness slices_p0. apply and4I.
+          - exact Hsp0_open. - exact Hsp0_pd. - exact Hsp0_union. - exact Hsp0_homeo. }
+        claim Hev_p0_V' : evenly_covered E0 Te0 Z Tz p0 V'.
+        { exact (evenly_covered_open_subset E0 Te0 Z Tz p0 V0 V' Hev_p0_V0 HV'open HV'subV0). }
+        exact (universal_cover_evenly_covered_loops_trivial
+          E0 Te0 Z Tz p0 V' Hcov_p0 Hsc_E0 Hev_p0_V'). }
+      (** Transfer: loops in S_a null-homotopic in Y **)
+      exact (loops_null_in_covering_slice Y Ty Z Tz r S_a V'
+        Hcov_r HSa_open HV'open HSa_homeo HloopsV y0 Hy0 g HgLoop). }
+    (** Step 5: Apply covering_trivializes to q over each S'_a **)
+    (** Then combine q-sheets with r-homeomorphisms for p-sheets **)
+    (** This requires covering_trivializes_over_pi1_trivial_inclusion **)
+    (** and composition of homeomorphisms for the final evenly_covered **)
     admit.
 Admitted.
 
