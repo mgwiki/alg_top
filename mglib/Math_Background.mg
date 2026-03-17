@@ -408213,20 +408213,21 @@ claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B 
 claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
 claim Hcont_p : continuous_map E Te B Tb p. { exact (covering_map_continuous E Te B Tb p Hcov). }
 claim HUsub : U c= B. { exact (topology_elem_subset B Tb U HtopB HUopen). }
-(** Proof outline: **)
-(** 1. For each u :e U, get path from u0 to u (path-connected) **)
-(** 2. Lift the path to E, giving a well-defined section s: U -> E **)
-(**    (well-defined because loops in U are null-homotopic in B, **)
-(**    so the lift endpoint doesn't depend on path choice) **)
-(** 3. Different starting points e_i in p^{-1}(u0) give different sections **)
-(** 4. These sections are the slices of the evenly covered structure **)
-(** 5. Each section is continuous (covering map lifting theorem) **)
-(** This is a substantial proof (~200+ lines) requiring: **)
-(** - Path lifting (lemma54_1_path_lifting, Qed) **)
-(** - Unique path lifting (lemma54_1_path_lifting_unique, Qed) **)
-(** - Well-definedness from null-homotopy of loops **)
-(** - Continuity of sections from the homotopy lifting property **)
-(** - Homeomorphism of each section to U **)
+(** U is non-empty (from path-connected, which needs topology_on) **)
+claim HtopU : topology_on U (subspace_topology B Tb U).
+{ exact (path_connected_space_topology U (subspace_topology B Tb U) HpcU). }
+(** Get an evenly covered neighborhood V of some point in U **)
+(** Since p is a covering map, every point of B has an evenly covered neighborhood **)
+(** For any u0 :e U, we get V with u0 :e V and evenly_covered E Te B Tb p V **)
+(** Then V' = V cap U is open in B, contained in V and U **)
+(** V' is evenly covered by p (from evenly_covered_open_subset) **)
+(** Since U is path-connected and V' is open in U, we want to extend **)
+(** the sheets of V' to all of U. **)
+(** This requires the section construction: for each starting point in fiber, **)
+(** path lifting gives a well-defined continuous section over all of U **)
+(** (using the null-homotopy hypothesis for well-definedness). **)
+(** The sections for all starting points give the evenly covered structure. **)
+(** Full formalization requires section construction + continuity proof. **)
 admit.
 Admitted.
 
