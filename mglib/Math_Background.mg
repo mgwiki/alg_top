@@ -408230,14 +408230,27 @@ prove topology_on E Te /\ U :e Tb /\
       homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
         (graph V (fun x:set => apply_fun p x))).
 apply andI. apply andI. exact HtopE. exact HUopen.
-(** The slices construction requires: **)
-(** 1. For each e0 :e p^-1(U), define section_e0: U -> E via path lifting **)
-(** 2. Show section_e0 is well-defined (uses null-homotopy hypothesis) **)
-(** 3. Show image of section_e0 is open (from local sheets of covering) **)
-(** 4. Show image of section_e0 = path component of e0 in p^-1(U) **)
-(** 5. Show sections for different e0 give disjoint sets covering p^-1(U) **)
-(** 6. Show graph p restricted to each section is a homeomorphism to U **)
-(** This is a major formal construction requiring ~200 lines **)
+claim Hfn_p : function_on p E B. { exact (continuous_map_function_on E Te B Tb p Hcont_p). }
+(** Define slices as path components of preimage_of E p U **)
+(** For each e :e preimage_of E p U, define sheet(e) as the path component **)
+set preU := preimage_of E p U.
+claim HpreU_open : preU :e Te.
+{ exact (continuous_map_preimage E Te B Tb p Hcont_p U HUopen). }
+claim HpreU_sub : preU c= E.
+{ exact (topology_elem_subset E Te preU HtopE HpreU_open). }
+(** Use path components within preU with the subspace topology from E **)
+set slices := {path_component_of preU (subspace_topology E Te preU) e | e :e preU}.
+(** Path components partition preU **)
+(** Each path component is open because: **)
+(** - For any e0 in a path component C, get evenly covered V with p(e0) :e V **)
+(** - The slice of V containing e0 is open and contained in C **)
+(** - So C is a union of open sets, hence open **)
+(** Each path component maps homeomorphically to U via p because: **)
+(** - Surjective: path lifting extends paths in U to paths in the component **)
+(** - Injective: null-homotopy hypothesis prevents different lifts of same point **)
+(** - Local homeomorphism: from covering map structure **)
+(** Full construction: requires showing path components are open in E **)
+(** (not just in preU), and that they satisfy the homeomorphism condition **)
 admit.
 Admitted.
 
