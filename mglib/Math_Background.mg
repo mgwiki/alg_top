@@ -408254,6 +408254,19 @@ set slices := {path_component_of preU (subspace_topology E Te preU) e | e :e pre
 admit.
 Admitted.
 
+(** Helper: preimage of an lpc open set under a covering map is lpc **)
+(** Proof: for any e in preimage, get evenly covered V with p(e) :e V. **)
+(** The sheet containing e is homeomorphic to V cap U (open in U, hence lpc). **)
+(** So e has a path-connected neighborhood in the preimage. **)
+Theorem covering_preimage_locally_path_connected :
+  forall E Te B Tb p U:set,
+  covering_map E Te B Tb p ->
+  U :e Tb ->
+  locally_path_connected U (subspace_topology B Tb U) ->
+  locally_path_connected (preimage_of E p U) (subspace_topology E Te (preimage_of E p U)).
+admit.
+Admitted.
+
 (** Improved version with locally_path_connected hypothesis **)
 (** This is needed to ensure path components of p^-1(U) are open **)
 Theorem covering_trivializes_over_pi1_trivial_lpc :
