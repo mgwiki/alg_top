@@ -407847,14 +407847,39 @@ claim HV0open : V0 :e Tb.
       Hev)). }
 claim HV0sub : V0 c= B. { exact (topology_elem_subset B Tb V0 HtopB HV0open). }
 claim HbB : b :e B. { exact (HV0sub b HbV0). }
-(** The loop f in V0 composed with inclusion gives a loop in B **)
-set incV0 := graph V0 (fun x:set => x).
+(** Extract loop_at properties **)
+claim HfLoopAt : loop_at V0 (subspace_topology B Tb V0) b f.
+{ exact (loop_space_has_loop_at V0 (subspace_topology B Tb V0) b f HfLoop). }
+claim HfCont : continuous_map unit_interval unit_interval_topology V0 (subspace_topology B Tb V0) f.
+{ exact (loop_at_continuous V0 (subspace_topology B Tb V0) b f HfLoopAt). }
+claim Hf0 : apply_fun f 0 = b. { exact (loop_at_at_zero V0 (subspace_topology B Tb V0) b f HfLoopAt). }
+claim Hf1 : apply_fun f 1 = b. { exact (loop_at_at_one V0 (subspace_topology B Tb V0) b f HfLoopAt). }
+(** f maps unit_interval into V0 **)
+claim Hf_into_V0 : function_on f unit_interval V0.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology V0 (subspace_topology B Tb V0) f HfCont). }
+(** Compose f with inclusion V0 -> B to get a loop in B **)
+set incV0 := {(y,y)|y :e V0}.
 set fB := compose_fun unit_interval f incV0.
-(** fB is the loop in B: fB(t) = f(t) for t :e unit_interval (since f maps into V0 c= B) **)
-(** Need: fB is continuous from I to B, fB(0) = b, fB(1) = b **)
-(** Then lift fB to E0, show the lift is a loop, null-homotopic in E0, project back. **)
-(** Full proof requires: path lifting, slice containment argument, **)
-(** simply_connected null-homotopy, and projection. **)
+claim HincCont : continuous_map V0 (subspace_topology B Tb V0) B Tb incV0.
+{ exact (subspace_inclusion_continuous B Tb V0 HtopB (topology_elem_subset B Tb V0 HtopB HV0open)). }
+claim HfBCont : continuous_map unit_interval unit_interval_topology B Tb fB.
+{ exact (composition_continuous unit_interval unit_interval_topology V0 (subspace_topology B Tb V0) B Tb f incV0 HfCont HincCont). }
+claim HfB0 : apply_fun fB 0 = b.
+{ prove apply_fun (compose_fun unit_interval f incV0) 0 = b.
+  rewrite (compose_fun_apply unit_interval f incV0 0 zero_in_unit_interval).
+  rewrite Hf0.
+  exact (identity_function_apply V0 b HbV0). }
+claim HfB1 : apply_fun fB 1 = b.
+{ prove apply_fun (compose_fun unit_interval f incV0) 1 = b.
+  rewrite (compose_fun_apply unit_interval f incV0 1 one_in_unit_interval).
+  rewrite Hf1.
+  exact (identity_function_apply V0 b HbV0). }
+(** Now fB is a continuous loop at b in B. **)
+(** Step: Lift fB to E0 starting at some e0 in p0^{-1}(b) **)
+(** Then show lift is a loop (stays in one slice, p0 injective on slice) **)
+(** Then use simply_connected E0 to get null-homotopy, project to B **)
+(** Need: e0 :e E0 with p0(e0) = b, path_lift properties, **)
+(** slice containment from connectedness, simply_connected pi1 triviality **)
 admit.
 Admitted.
 
