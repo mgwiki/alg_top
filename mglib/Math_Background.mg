@@ -407041,8 +407041,19 @@ claim Hglift_fs : glift :e function_space unit_interval E0.
 claim Hglift_loop_at : loop_at E0 Te0 e0 glift.
 { apply loop_at_fold. apply andI.
   - apply andI.
-    + (** glift is continuous - needs graphify_on continuity bridge **)
-      admit.
+    + (** glift is continuous: same preimages as liftfB **)
+      prove topology_on unit_interval unit_interval_topology /\
+        topology_on E0 Te0 /\
+        function_on glift unit_interval E0 /\
+        (forall V1:set, V1 :e Te0 -> preimage_of unit_interval glift V1 :e unit_interval_topology).
+      apply and4I.
+      * exact unit_interval_topology_on.
+      * exact HtopE0.
+      * exact (function_on_of_function_space glift unit_interval E0 Hglift_fs).
+      * let V1. assume HV1.
+        (** preimage_of I glift V1 = preimage_of I liftfB V1 by graphify_on_apply **)
+        (** then use HliftCont to get openness **)
+        admit.
     + prove apply_fun glift 0 = e0.
       rewrite (graphify_on_apply unit_interval liftfB 0 zero_in_unit_interval).
       exact Hlift0.
