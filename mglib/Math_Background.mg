@@ -330410,6 +330410,129 @@ claim Hextfp :
                   x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
             exact Hex.
         }
+        claim Hsubgen_nonid_lift :
+          subgroups_generate G multG eG invG J ImageFam ->
+          exists n:set, n :e omega /\ n <> 0 /\
+            exists xs:set, function_on xs n G /\
+              (forall i:set, i :e n ->
+                exists a:set, exists u:set,
+                  a :e J /\ u :e apply_fun Gfam a /\
+                  apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
+              x = word_product multG eG xs n.
+        {
+          assume HgenImg : subgroups_generate G multG eG invG J ImageFam.
+          apply (Hsubgen_nonid_raw HgenImg).
+          let n.
+          assume HnPack :
+            n :e omega /\ n <> 0 /\
+              exists xs:set, function_on xs n G /\
+                (forall i:set, i :e n ->
+                  exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+                x = word_product multG eG xs n.
+          apply (and3E
+            (n :e omega)
+            (n <> 0)
+            (exists xs:set, function_on xs n G /\
+              (forall i:set, i :e n ->
+                exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+              x = word_product multG eG xs n)
+            HnPack).
+          assume HnO : n :e omega.
+          assume HnNe : n <> 0.
+          assume HxsPack :
+            exists xs:set, function_on xs n G /\
+              (forall i:set, i :e n ->
+                exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+              x = word_product multG eG xs n.
+          apply HxsPack.
+          let xs.
+          assume HxsProps :
+            function_on xs n G /\
+              (forall i:set, i :e n ->
+                exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+              x = word_product multG eG xs n.
+          apply (and3E
+            (function_on xs n G)
+            (forall i:set, i :e n ->
+              exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a)
+            (x = word_product multG eG xs n)
+            HxsProps).
+          assume HxsFn : function_on xs n G.
+          assume HxsInImg :
+            forall i:set, i :e n ->
+              exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a.
+          assume HxEq : x = word_product multG eG xs n.
+          witness n.
+          apply andI.
+          { apply andI.
+            { exact HnO. }
+            { exact HnNe. } }
+          { witness xs.
+            apply andI.
+            { apply andI.
+              { exact HxsFn. }
+              { let i.
+                assume Hi : i :e n.
+                apply (HxsInImg i Hi).
+                let a.
+                assume HaPack : a :e J /\ apply_fun xs i :e apply_fun ImageFam a.
+                claim HaJ : a :e J.
+                { exact (andEL
+                    (a :e J)
+                    (apply_fun xs i :e apply_fun ImageFam a)
+                    HaPack). }
+                claim HxsiImg : apply_fun xs i :e apply_fun ImageFam a.
+                { exact (andER
+                    (a :e J)
+                    (apply_fun xs i :e apply_fun ImageFam a)
+                    HaPack). }
+                claim HimgEval :
+                  apply_fun ImageFam a =
+                    homomorphism_image (apply_fun Gfam a) (apply_fun ifam a).
+                {
+                  exact (apply_fun_graph
+                    J
+                    (fun b:set => homomorphism_image (apply_fun Gfam b) (apply_fun ifam b))
+                    a
+                    HaJ).
+                }
+                claim HxsiImg' :
+                  apply_fun xs i :e homomorphism_image (apply_fun Gfam a) (apply_fun ifam a).
+                {
+                  rewrite <- HimgEval.
+                  exact HxsiImg.
+                }
+                claim HexPre :
+                  exists u:set,
+                    u :e apply_fun Gfam a /\
+                    apply_fun xs i = apply_fun (apply_fun ifam a) u.
+                {
+                  exact (iffEL
+                    (apply_fun xs i :e homomorphism_image (apply_fun Gfam a) (apply_fun ifam a))
+                    (exists u:set, u :e apply_fun Gfam a /\
+                      apply_fun xs i = apply_fun (apply_fun ifam a) u)
+                    (homomorphism_image_mem (apply_fun Gfam a) (apply_fun ifam a) (apply_fun xs i))
+                    HxsiImg').
+                }
+                apply HexPre.
+                let u.
+                assume HuPack :
+                  u :e apply_fun Gfam a /\
+                  apply_fun xs i = apply_fun (apply_fun ifam a) u.
+                witness a.
+                witness u.
+                apply and3I.
+                - exact HaJ.
+                - exact (andEL
+                    (u :e apply_fun Gfam a)
+                    (apply_fun xs i = apply_fun (apply_fun ifam a) u)
+                    HuPack).
+                - exact (andER
+                    (u :e apply_fun Gfam a)
+                    (apply_fun xs i = apply_fun (apply_fun ifam a) u)
+                    HuPack). } }
+            { exact HxEq. } }
+        }
         admit. (** core S68.5 gap C remainder: reduced-word existence+uniqueness for non-identity x. **)
       + let alpha. assume Halpha : alpha :e J.
         rewrite (apply_fun_graph J
