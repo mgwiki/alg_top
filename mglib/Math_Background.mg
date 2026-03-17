@@ -483068,8 +483068,230 @@ Theorem edge_path_delete_backtrack_shorter_closed :
     edge_path X Tx Arcs m' path_seq' x0 /\
     (exists j0:set, j0 :e m' /\ ordsucc j0 /:e m' /\ (apply_fun path_seq' j0) 0 1 = x0) /\
     m' :e m.
-admit.
-Admitted.
+let X Tx Arcs m path_seqm x0 i k2.
+assume Hepm HmEq HiNat Hk2Nat Hik2Ne Hj0pack Hbackpack.
+claim Hback1 : (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1.
+{
+  exact (andER
+    ((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1)
+    ((apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1)
+    (andEL
+      ((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
+       (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1)
+      ((apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0)
+      Hbackpack)).
+}
+claim Hback2 : (apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0.
+{
+  exact (andER
+    ((apply_fun path_seqm i) 1 = (apply_fun path_seqm (ordsucc i)) 1 /\
+     (apply_fun path_seqm i) 0 0 = (apply_fun path_seqm (ordsucc i)) 0 1)
+    ((apply_fun path_seqm i) 0 1 = (apply_fun path_seqm (ordsucc i)) 0 0)
+    Hbackpack).
+}
+claim Hik2Nat : nat_p (i + k2).
+{ exact (add_nat_p i HiNat k2 Hk2Nat). }
+claim Hik2Om : (i + k2) :e omega.
+{ exact (nat_p_omega (i + k2) Hik2Nat). }
+claim HmNat : nat_p m.
+{
+  rewrite HmEq.
+  exact (nat_ordsucc
+    (ordsucc (i + k2))
+    (nat_ordsucc (i + k2) Hik2Nat)).
+}
+claim HmOrd : ordinal m.
+{ exact (nat_p_ordinal m HmNat). }
+claim HiInSik2 : i :e ordsucc (i+k2).
+{
+  exact (nat_p_Subq_imp_in_ordsucc
+    (i+k2)
+    i
+    Hik2Nat
+    HiNat
+    (add_nat_Subq_R' i HiNat k2 Hk2Nat)).
+}
+claim HiInm : i :e m.
+{
+  rewrite HmEq.
+  exact (ordsuccI1 (ordsucc (i+k2)) i HiInSik2).
+}
+set path_concat :=
+  graph (i + k2)
+    (fun j:set =>
+      if (j :e i)
+      then apply_fun path_seqm j
+      else apply_fun path_seqm (ordsucc (ordsucc j))).
+claim Hep_new :
+  edge_path X Tx Arcs (i + k2) path_concat x0.
+{
+  exact (edge_path_delete_backtrack_shorter
+    X
+    Tx
+    Arcs
+    m
+    path_seqm
+    x0
+    i
+    k2
+    Hepm
+    HmEq
+    HiNat
+    Hk2Nat
+    Hback1
+    Hback2).
+}
+claim HoldLastX0 : (apply_fun path_seqm (ordsucc (i+k2))) 0 1 = x0.
+{
+  apply Hj0pack.
+  let j0.
+  assume Hj0data.
+  claim Hj0mem2 : j0 :e m /\ ordsucc j0 /:e m.
+  { exact (andEL (j0 :e m /\ ordsucc j0 /:e m) ((apply_fun path_seqm j0) 0 1 = x0) Hj0data). }
+  claim Hj0InM : j0 :e m.
+  { exact (andEL (j0 :e m) (ordsucc j0 /:e m) Hj0mem2). }
+  claim HsJ0NotM : ordsucc j0 /:e m.
+  { exact (andER (j0 :e m) (ordsucc j0 /:e m) Hj0mem2). }
+  claim Hfinj0 : (apply_fun path_seqm j0) 0 1 = x0.
+  { exact (andER (j0 :e m /\ ordsucc j0 /:e m) ((apply_fun path_seqm j0) 0 1 = x0) Hj0data). }
+  claim Hj0eqsik2 : j0 = ordsucc (i+k2).
+  {
+    apply (ordinal_ordsucc_In_eq m j0 HmOrd Hj0InM).
+    - assume HsjInM.
+      exact (FalseE (HsJ0NotM HsjInM) (j0 = ordsucc (i+k2))).
+    - assume HmEqSj0.
+      claim HssiEqsj02 : ordsucc (ordsucc (i+k2)) = ordsucc j0.
+      { rewrite <- HmEq. exact HmEqSj0. }
+      exact (eq_symm (ordsucc (i+k2)) j0 (ordsucc_inj (ordsucc (i+k2)) j0 HssiEqsj02)).
+  }
+  rewrite <- Hj0eqsik2.
+  exact Hfinj0.
+}
+claim Hexs : exists s:set, nat_p s /\ (i+k2) = ordsucc s.
+{
+  apply (nat_inv (i+k2) Hik2Nat).
+  - assume H.
+    exact (FalseE (Hik2Ne H) (exists s:set, nat_p s /\ (i+k2) = ordsucc s)).
+  - assume H.
+    exact H.
+}
+apply Hexs.
+let s.
+assume Hspack.
+claim HsNat : nat_p s.
+{ exact (andEL (nat_p s) ((i+k2) = ordsucc s) Hspack). }
+claim Hik2eqs : i + k2 = ordsucc s.
+{ exact (andER (nat_p s) ((i+k2) = ordsucc s) Hspack). }
+claim HsInIk2 : s :e (i+k2).
+{ rewrite Hik2eqs. exact (ordsuccI2 s). }
+claim HssNotInIk2 : ordsucc s /:e (i+k2).
+{ rewrite Hik2eqs. exact (In_irref (ordsucc s)). }
+claim HfinalX0 : (apply_fun path_concat s) 0 1 = x0.
+{
+  rewrite (apply_fun_graph (i+k2) (fun j:set => if (j :e i) then apply_fun path_seqm j else apply_fun path_seqm (ordsucc (ordsucc j))) s HsInIk2).
+  apply (xm (s :e i)).
+  - assume HsIni.
+    rewrite (If_i_1 (s :e i) (apply_fun path_seqm s) (apply_fun path_seqm (ordsucc (ordsucc s))) HsIni).
+    claim Hk2zero : k2 = 0.
+    {
+      apply (nat_inv k2 Hk2Nat).
+      - assume H.
+        exact H.
+      - assume Hex.
+        apply Hex.
+        let k2'.
+        assume Hk2'pack.
+        claim Hk2eq : k2 = ordsucc k2'.
+        { exact (andER (nat_p k2') (k2 = ordsucc k2') Hk2'pack). }
+        claim Hk2'Nat : nat_p k2'.
+        { exact (andEL (nat_p k2') (k2 = ordsucc k2') Hk2'pack). }
+        claim HsEq : ordsucc s = i + k2.
+        { exact (eq_symm (i+k2) (ordsucc s) Hik2eqs). }
+        claim HssSubqi : ordsucc s c= i.
+        { exact (ordinal_ordsucc_In_Subq i (nat_p_ordinal i HiNat) s HsIni). }
+        claim Hik2LeI : i + k2 c= i.
+        { rewrite <- HsEq. exact HssSubqi. }
+        claim HiLeIk2 : i c= i + k2.
+        { exact (add_nat_Subq_R' i HiNat k2 Hk2Nat). }
+        claim Hii_eq_ik2 : i = i + k2.
+        {
+          claim HiEqik2ord : i :e ordsucc (i+k2).
+          { exact (nat_p_Subq_imp_in_ordsucc (i+k2) i Hik2Nat HiNat (add_nat_Subq_R' i HiNat k2 Hk2Nat)). }
+          claim Hik2EqiOrd : i + k2 :e ordsucc i.
+          { exact (nat_p_Subq_imp_in_ordsucc i (i+k2) HiNat Hik2Nat Hik2LeI). }
+          apply (ordinal_ordsucc_In_eq (ordsucc i) (i+k2) (nat_p_ordinal (ordsucc i) (nat_ordsucc i HiNat)) Hik2EqiOrd).
+          - assume HssiInsi.
+            claim Hik2Inc : ordsucc (i+k2) c= i.
+            { exact (TransSet_In_ordsucc_Subq (ordsucc (i+k2)) i (ordinal_TransSet i (nat_p_ordinal i HiNat)) HssiInsi). }
+            claim Hik2ini : i+k2 :e i.
+            { exact (Hik2Inc (i+k2) (ordsuccI2 (i+k2))). }
+            exact (FalseE (In_irref (i+k2) (HiLeIk2 (i+k2) Hik2ini)) (i = i+k2)).
+          - assume H.
+            exact (ordsucc_inj i (i+k2) H).
+        }
+        claim Hik2eq2 : i + k2 = ordsucc (i + k2').
+        { rewrite Hk2eq. exact (add_nat_SR i k2' Hk2'Nat). }
+        claim Hieqsi : i = ordsucc (i + k2').
+        {
+          rewrite <- Hik2eq2.
+          exact (eq_symm (i+k2) i (eq_symm i (i+k2) Hii_eq_ik2)).
+        }
+        claim Hik2'_in_i : i+k2' :e i.
+        { exact (mem_eqR (i+k2') (ordsucc (i+k2')) i (eq_symm i (ordsucc (i+k2')) Hieqsi) (ordsuccI2 (i+k2'))). }
+        claim HiSubqik2' : i c= i + k2'.
+        { exact (add_nat_Subq_R' i HiNat k2' Hk2'Nat). }
+        exact (FalseE (In_irref (i+k2') (HiSubqik2' (i+k2') Hik2'_in_i)) (k2 = 0)).
+    }
+    claim Hik2eqi : i + k2 = i.
+    { rewrite Hk2zero. exact (add_nat_0R i). }
+    claim HsiEqsi : ordsucc s = i.
+    { rewrite <- Hik2eqs. rewrite Hik2eqi. reflexivity. }
+    claim Hsik2Eqsi : ordsucc (i+k2) = ordsucc i.
+    {
+      rewrite Hk2zero.
+      rewrite (add_nat_0R i).
+      reflexivity.
+    }
+    claim HfinSI : (apply_fun path_seqm (ordsucc i)) 0 1 = x0.
+    { rewrite <- Hsik2Eqsi. exact HoldLastX0. }
+    claim HsInm : s :e m.
+    {
+      exact (ordinal_TransSet m HmOrd i HiInm s (mem_eqR s (ordsucc s) i HsiEqsi (ordsuccI2 s))).
+    }
+    claim HsiInm2 : ordsucc s :e m.
+    { rewrite HsiEqsi. exact HiInm. }
+    claim Hconss : (apply_fun path_seqm s) 0 1 = (apply_fun path_seqm (ordsucc s)) 0 0.
+    { exact (edge_path_consecutive_match X Tx Arcs m path_seqm x0 s Hepm HsInm HsiInm2). }
+    claim HpmS01_eq : (apply_fun path_seqm s) 0 1 = (apply_fun path_seqm i) 0 0.
+    { rewrite Hconss. rewrite HsiEqsi. reflexivity. }
+    rewrite HpmS01_eq.
+    rewrite Hback1.
+    exact HfinSI.
+  - assume HsNotIni.
+    rewrite (If_i_0 (s :e i) (apply_fun path_seqm s) (apply_fun path_seqm (ordsucc (ordsucc s))) HsNotIni).
+    claim HssSeqSik2 : ordsucc (ordsucc s) = ordsucc (i + k2).
+    { rewrite <- Hik2eqs. reflexivity. }
+    rewrite HssSeqSik2.
+    exact HoldLastX0.
+}
+claim Hm'Inm : (i+k2) :e m.
+{
+  rewrite HmEq.
+  exact (ordsuccI1 (ordsucc (i+k2)) (i+k2) (ordsuccI2 (i+k2))).
+}
+witness (i + k2).
+witness path_concat.
+apply and5I.
+- exact Hik2Om.
+- exact Hik2Ne.
+- exact Hep_new.
+- witness s.
+  apply and3I.
+  * exact HsInIk2.
+  * exact HssNotInIk2.
+  * exact HfinalX0.
+- exact Hm'Inm.
+Qed.
 
 (** helper for S84.4 backward direction:
     a selected arc of T' that has both endpoints in T must be contained in T. **)
