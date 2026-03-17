@@ -331718,6 +331718,311 @@ claim Hextfp :
                 HgrpG
                 (Hifam_hom alpha Halpha)).
             }
+            claim HimgDisjoint :
+              forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+                forall z:set,
+                  z :e apply_fun ImageFam alpha ->
+                  z :e apply_fun ImageFam beta ->
+                  z = eG.
+            {
+              let alpha beta.
+              assume Halpha : alpha :e J.
+              assume Hbeta : beta :e J.
+              assume Hne : alpha <> beta.
+              let z.
+              assume HzA : z :e apply_fun ImageFam alpha.
+              assume HzB : z :e apply_fun ImageFam beta.
+              claim HImgA : apply_fun ImageFam alpha =
+                homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+              {
+                exact (apply_fun_graph J
+                  (fun a:set => homomorphism_image (apply_fun Gfam a) (apply_fun ifam a))
+                  alpha Halpha).
+              }
+              claim HImgB : apply_fun ImageFam beta =
+                homomorphism_image (apply_fun Gfam beta) (apply_fun ifam beta).
+              {
+                exact (apply_fun_graph J
+                  (fun a:set => homomorphism_image (apply_fun Gfam a) (apply_fun ifam a))
+                  beta Hbeta).
+              }
+              claim HzA_img : z :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+              {
+                rewrite <- HImgA.
+                exact HzA.
+              }
+              claim HzB_img : z :e homomorphism_image (apply_fun Gfam beta) (apply_fun ifam beta).
+              {
+                rewrite <- HImgB.
+                exact HzB.
+              }
+              claim HexA : exists xa:set, xa :e apply_fun Gfam alpha /\ z = apply_fun (apply_fun ifam alpha) xa.
+              {
+                exact (iffEL
+                  (z :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+                  (exists xa:set, xa :e apply_fun Gfam alpha /\ z = apply_fun (apply_fun ifam alpha) xa)
+                  (homomorphism_image_mem (apply_fun Gfam alpha) (apply_fun ifam alpha) z)
+                  HzA_img).
+              }
+              claim HexB : exists xb:set, xb :e apply_fun Gfam beta /\ z = apply_fun (apply_fun ifam beta) xb.
+              {
+                exact (iffEL
+                  (z :e homomorphism_image (apply_fun Gfam beta) (apply_fun ifam beta))
+                  (exists xb:set, xb :e apply_fun Gfam beta /\ z = apply_fun (apply_fun ifam beta) xb)
+                  (homomorphism_image_mem (apply_fun Gfam beta) (apply_fun ifam beta) z)
+                  HzB_img).
+              }
+              apply HexA.
+              let xa.
+              assume Hxa_pack : xa :e apply_fun Gfam alpha /\ z = apply_fun (apply_fun ifam alpha) xa.
+              apply HexB.
+              let xb.
+              assume Hxb_pack : xb :e apply_fun Gfam beta /\ z = apply_fun (apply_fun ifam beta) xb.
+              claim Hxa : xa :e apply_fun Gfam alpha.
+              {
+                exact (andEL
+                  (xa :e apply_fun Gfam alpha)
+                  (z = apply_fun (apply_fun ifam alpha) xa)
+                  Hxa_pack).
+              }
+              claim Hz_eq_a : z = apply_fun (apply_fun ifam alpha) xa.
+              {
+                exact (andER
+                  (xa :e apply_fun Gfam alpha)
+                  (z = apply_fun (apply_fun ifam alpha) xa)
+                  Hxa_pack).
+              }
+              claim Hxb : xb :e apply_fun Gfam beta.
+              {
+                exact (andEL
+                  (xb :e apply_fun Gfam beta)
+                  (z = apply_fun (apply_fun ifam beta) xb)
+                  Hxb_pack).
+              }
+              claim Hz_eq_b : z = apply_fun (apply_fun ifam beta) xb.
+              {
+                exact (andER
+                  (xb :e apply_fun Gfam beta)
+                  (z = apply_fun (apply_fun ifam beta) xb)
+                  Hxb_pack).
+              }
+              claim HeG_in_G : eG :e G.
+              {
+                apply (and6E
+                  (function_on multG (setprod G G) G)
+                  (function_on invG G G)
+                  (eG :e G)
+                  (forall u v w:set, u :e G -> v :e G -> w :e G ->
+                    apply_fun multG (apply_fun multG (u, v), w) = apply_fun multG (u, apply_fun multG (v, w)))
+                  (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+                  (forall u:set, u :e G ->
+                    apply_fun multG (u, apply_fun invG u) = eG /\ apply_fun multG (apply_fun invG u, u) = eG)
+                  HgrpG).
+                assume _ _ He _ _ _.
+                exact He.
+              }
+              set hfam0 := graph J (fun gamma:set =>
+                if gamma = alpha
+                then apply_fun ifam alpha
+                else const_fun (apply_fun Gfam gamma) eG).
+              claim Hhfam0_hom :
+                forall gamma:set, gamma :e J ->
+                  group_homomorphism (apply_fun Gfam gamma) (apply_fun multfam gamma) G multG (apply_fun hfam0 gamma).
+              {
+                let gamma.
+                assume Hgamma.
+                apply (xm (gamma = alpha)).
+                - assume Hga.
+                  rewrite Hga.
+                  rewrite (apply_fun_graph
+                    J
+                    (fun b:set =>
+                      if b = alpha
+                      then apply_fun ifam alpha
+                      else const_fun (apply_fun Gfam b) eG)
+                    alpha
+                    Halpha).
+                  rewrite (If_i_1 (alpha = alpha)
+                    (apply_fun ifam alpha)
+                    (const_fun (apply_fun Gfam alpha) eG)
+                    (eq_refl alpha)).
+                  exact (Hifam_hom alpha Halpha).
+                - assume Hgna.
+                  rewrite (apply_fun_graph
+                    J
+                    (fun b:set =>
+                      if b = alpha
+                      then apply_fun ifam alpha
+                      else const_fun (apply_fun Gfam b) eG)
+                    gamma
+                    Hgamma).
+                  rewrite (If_i_0 (gamma = alpha)
+                    (apply_fun ifam alpha)
+                    (const_fun (apply_fun Gfam gamma) eG)
+                    Hgna).
+                  prove function_on (const_fun (apply_fun Gfam gamma) eG) (apply_fun Gfam gamma) G /\
+                    (forall u v:set, u :e apply_fun Gfam gamma -> v :e apply_fun Gfam gamma ->
+                      apply_fun (const_fun (apply_fun Gfam gamma) eG)
+                        (apply_fun (apply_fun multfam gamma) (u, v))
+                      =
+                      apply_fun multG
+                        (apply_fun (const_fun (apply_fun Gfam gamma) eG) u,
+                         apply_fun (const_fun (apply_fun Gfam gamma) eG) v)).
+                  apply andI.
+                  + apply (total_function_on_function_on
+                      (const_fun (apply_fun Gfam gamma) eG)
+                      (apply_fun Gfam gamma)
+                      G).
+                    exact (const_fun_total_function_on (apply_fun Gfam gamma) G eG HeG_in_G).
+                  + let u v.
+                    assume Hu Hv.
+                    claim Huv_in :
+                      apply_fun (apply_fun multfam gamma) (u, v) :e apply_fun Gfam gamma.
+                    {
+                      exact (group_source_mult_closure
+                        (apply_fun Gfam gamma)
+                        (apply_fun multfam gamma)
+                        (apply_fun efam gamma)
+                        (apply_fun invfam gamma)
+                        (Hfam_grp gamma Hgamma)
+                        u
+                        v
+                        Hu
+                        Hv).
+                    }
+                    claim HeGeG : apply_fun multG (eG, eG) = eG.
+                    {
+                      claim HidG :
+                        forall t:set, t :e G -> apply_fun multG (eG, t) = t /\ apply_fun multG (t, eG) = t.
+                      {
+                        apply (and6E
+                          (function_on multG (setprod G G) G)
+                          (function_on invG G G)
+                          (eG :e G)
+                          (forall u0 v0 w0:set, u0 :e G -> v0 :e G -> w0 :e G ->
+                            apply_fun multG (apply_fun multG (u0, v0), w0) =
+                              apply_fun multG (u0, apply_fun multG (v0, w0)))
+                          (forall u0:set, u0 :e G -> apply_fun multG (eG, u0) = u0 /\ apply_fun multG (u0, eG) = u0)
+                          (forall u0:set, u0 :e G ->
+                            apply_fun multG (u0, apply_fun invG u0) = eG /\
+                              apply_fun multG (apply_fun invG u0, u0) = eG)
+                          HgrpG).
+                        assume _ _ _ _ Hid _.
+                        exact Hid.
+                      }
+                      exact (andEL
+                        (apply_fun multG (eG, eG) = eG)
+                        (apply_fun multG (eG, eG) = eG)
+                        (HidG eG HeG_in_G)).
+                    }
+                    rewrite (const_fun_apply
+                      (apply_fun Gfam gamma)
+                      eG
+                      (apply_fun (apply_fun multfam gamma) (u, v))
+                      Huv_in).
+                    rewrite (const_fun_apply (apply_fun Gfam gamma) eG u Hu).
+                    rewrite (const_fun_apply (apply_fun Gfam gamma) eG v Hv).
+                    exact (eq_symm (apply_fun multG (eG, eG)) eG HeGeG).
+              }
+              claim HextG :
+                exists h:set,
+                  group_homomorphism G multG G multG h /\
+                  (forall gamma:set, gamma :e J ->
+                    forall y:set, y :e apply_fun Gfam gamma ->
+                      apply_fun h (apply_fun (apply_fun ifam gamma) y) =
+                        apply_fun (apply_fun hfam0 gamma) y) /\
+                  (forall h':set, group_homomorphism G multG G multG h' ->
+                    (forall gamma:set, gamma :e J ->
+                      forall y:set, y :e apply_fun Gfam gamma ->
+                        apply_fun h' (apply_fun (apply_fun ifam gamma) y) =
+                          apply_fun (apply_fun hfam0 gamma) y) ->
+                    forall z0:set, z0 :e G -> apply_fun h' z0 = apply_fun h z0).
+              {
+                exact (Hext G multG eG invG HgrpG hfam0 Hhfam0_hom).
+              }
+              apply HextG.
+              let h.
+              assume Hh_pack.
+              apply (and3E
+                (group_homomorphism G multG G multG h)
+                (forall gamma:set, gamma :e J ->
+                  forall y:set, y :e apply_fun Gfam gamma ->
+                    apply_fun h (apply_fun (apply_fun ifam gamma) y) =
+                      apply_fun (apply_fun hfam0 gamma) y)
+                (forall h':set, group_homomorphism G multG G multG h' ->
+                  (forall gamma:set, gamma :e J ->
+                    forall y:set, y :e apply_fun Gfam gamma ->
+                      apply_fun h' (apply_fun (apply_fun ifam gamma) y) =
+                        apply_fun (apply_fun hfam0 gamma) y) ->
+                  forall z0:set, z0 :e G -> apply_fun h' z0 = apply_fun h z0)
+                Hh_pack).
+              assume Hh_hom.
+              assume Hh_ext.
+              assume Hh_uniq.
+              claim Hh_z_alpha : apply_fun h z = z.
+              {
+                rewrite Hz_eq_a.
+                claim Hstep :
+                  apply_fun h (apply_fun (apply_fun ifam alpha) xa) =
+                    apply_fun (apply_fun hfam0 alpha) xa.
+                {
+                  exact (Hh_ext alpha Halpha xa Hxa).
+                }
+                rewrite Hstep.
+                rewrite (apply_fun_graph
+                  J
+                  (fun b:set =>
+                    if b = alpha
+                    then apply_fun ifam alpha
+                    else const_fun (apply_fun Gfam b) eG)
+                  alpha
+                  Halpha).
+                rewrite (If_i_1 (alpha = alpha)
+                  (apply_fun ifam alpha)
+                  (const_fun (apply_fun Gfam alpha) eG)
+                  (eq_refl alpha)).
+                reflexivity.
+              }
+              claim Hbeta_ne_alpha : beta <> alpha.
+              {
+                assume Hba : beta = alpha.
+                claim Hab : alpha = beta.
+                {
+                  symmetry.
+                  exact Hba.
+                }
+                exact (Hne Hab).
+              }
+              claim Hh_z_beta : apply_fun h z = eG.
+              {
+                rewrite Hz_eq_b.
+                claim Hstep :
+                  apply_fun h (apply_fun (apply_fun ifam beta) xb) =
+                    apply_fun (apply_fun hfam0 beta) xb.
+                {
+                  exact (Hh_ext beta Hbeta xb Hxb).
+                }
+                rewrite Hstep.
+                rewrite (apply_fun_graph
+                  J
+                  (fun b:set =>
+                    if b = alpha
+                    then apply_fun ifam alpha
+                    else const_fun (apply_fun Gfam b) eG)
+                  beta
+                  Hbeta).
+                rewrite (If_i_0 (beta = alpha)
+                  (apply_fun ifam alpha)
+                  (const_fun (apply_fun Gfam beta) eG)
+                  Hbeta_ne_alpha).
+                exact (const_fun_apply (apply_fun Gfam beta) eG xb Hxb).
+              }
+              claim Hz_h : z = apply_fun h z.
+              {
+                exact (eq_symm (apply_fun h z) z Hh_z_alpha).
+              }
+              exact (eq_i_tra z (apply_fun h z) eG Hz_h Hh_z_beta).
+            }
             claim Hrw1NeE :
               forall i:set, i :e n1 -> apply_fun rw1 i <> eG.
             {
@@ -331844,7 +332149,47 @@ claim Hextfp :
                   apply_fun aof1 i = apply_fun aof2 i /\
                   apply_fun rw1 i = apply_fun rw2 i).
               {
-                admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed labels and reconstructed words via extension property, using Hrw1InImageAtLift/Hrw2InImageAtLift and reduced-word constraints. **)
+                claim HrwWordSync :
+                  n1 = n2 /\
+                  (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i).
+                {
+                  admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed words via extension property; label synchronization is derived below from HimgDisjoint + HlabelEqFromRwEqDisjoint. **)
+                }
+                claim HnEqWord : n1 = n2.
+                {
+                  exact (andEL
+                    (n1 = n2)
+                    (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i)
+                    HrwWordSync).
+                }
+                claim HrwEqWord :
+                  forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i.
+                {
+                  exact (andER
+                    (n1 = n2)
+                    (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i)
+                    HrwWordSync).
+                }
+                claim HlabelEqWord :
+                  forall i:set, i :e n1 -> apply_fun aof1 i = apply_fun aof2 i.
+                {
+                  exact (HlabelEqFromRwEqDisjoint
+                    HimgDisjoint
+                    HnEqWord
+                    HrwEqWord).
+                }
+                exact (andI
+                  (n1 = n2)
+                  (forall i:set, i :e n1 ->
+                    apply_fun aof1 i = apply_fun aof2 i /\
+                    apply_fun rw1 i = apply_fun rw2 i)
+                  HnEqWord
+                  (fun i Hi =>
+                    andI
+                      (apply_fun aof1 i = apply_fun aof2 i)
+                      (apply_fun rw1 i = apply_fun rw2 i)
+                      (HlabelEqWord i Hi)
+                      (HrwEqWord i Hi))).
               }
               claim HnEqLift : n1 = n2.
               {
