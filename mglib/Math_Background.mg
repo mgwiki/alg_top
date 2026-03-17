@@ -331734,6 +331734,226 @@ claim Hextfp :
               Hws2Via
               Hws2Eq)).
         }
+        claim Hsubgen_nonid_ws_eq_transfer_to_xs :
+          forall n1 xs1 n2 xs2 aof1 uof1 ws1 aof2 uof2 ws2:set,
+            ((forall i:set, i :e n1 ->
+              apply_fun aof1 i :e J /\
+              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+             (forall i:set, i :e n1 ->
+              apply_fun ws1 i =
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+             (forall i:set, i :e n1 ->
+              apply_fun ws1 i = apply_fun xs1 i)) ->
+            ((forall j:set, j :e n2 ->
+              apply_fun aof2 j :e J /\
+              apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+             (forall j:set, j :e n2 ->
+              apply_fun ws2 j =
+                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+             (forall j:set, j :e n2 ->
+              apply_fun ws2 j = apply_fun xs2 j)) ->
+            n1 = n2 ->
+            (forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i) ->
+            forall i:set, i :e n1 -> apply_fun xs1 i = apply_fun xs2 i.
+        {
+          let n1 xs1 n2 xs2 aof1 uof1 ws1 aof2 uof2 ws2.
+          assume Hside1 :
+            ((forall i:set, i :e n1 ->
+              apply_fun aof1 i :e J /\
+              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+             (forall i:set, i :e n1 ->
+              apply_fun ws1 i =
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+             (forall i:set, i :e n1 ->
+              apply_fun ws1 i = apply_fun xs1 i)).
+          assume Hside2 :
+            ((forall j:set, j :e n2 ->
+              apply_fun aof2 j :e J /\
+              apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+             (forall j:set, j :e n2 ->
+              apply_fun ws2 j =
+                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+             (forall j:set, j :e n2 ->
+              apply_fun ws2 j = apply_fun xs2 j)).
+          assume HnEq : n1 = n2.
+          assume HwsEq : forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i.
+          let i.
+          assume Hi : i :e n1.
+          apply (and3E
+            (forall i:set, i :e n1 ->
+              apply_fun aof1 i :e J /\
+              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+            (forall i:set, i :e n1 ->
+              apply_fun ws1 i =
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+            (forall i:set, i :e n1 ->
+              apply_fun ws1 i = apply_fun xs1 i)
+            Hside1).
+          assume _ _ Hws1EqXs1.
+          apply (and3E
+            (forall j:set, j :e n2 ->
+              apply_fun aof2 j :e J /\
+              apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j))
+            (forall j:set, j :e n2 ->
+              apply_fun ws2 j =
+                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))
+            (forall j:set, j :e n2 ->
+              apply_fun ws2 j = apply_fun xs2 j)
+            Hside2).
+          assume _ _ Hws2EqXs2.
+          claim Hi2 : i :e n2.
+          {
+            exact (eq_subst_mem_set i n1 n2 Hi HnEq).
+          }
+          claim Hxs1EqWs1 : apply_fun xs1 i = apply_fun ws1 i.
+          {
+            exact (eq_symm
+              (apply_fun ws1 i)
+              (apply_fun xs1 i)
+              (Hws1EqXs1 i Hi)).
+          }
+          claim Hws2EqXs2i : apply_fun ws2 i = apply_fun xs2 i.
+          {
+            exact (Hws2EqXs2 i Hi2).
+          }
+          exact (eq_i_tra
+            (apply_fun xs1 i)
+            (apply_fun ws1 i)
+            (apply_fun xs2 i)
+            Hxs1EqWs1
+            (eq_i_tra
+              (apply_fun ws1 i)
+              (apply_fun ws2 i)
+              (apply_fun xs2 i)
+              (HwsEq i Hi)
+              Hws2EqXs2i)).
+        }
+        claim Hsubgen_nonid_uof_eq_from_labels_and_ws :
+          forall n aof1 uof1 ws1 aof2 uof2 ws2:set,
+            (forall i:set, i :e n ->
+              apply_fun aof1 i :e J /\
+              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) ->
+            (forall i:set, i :e n ->
+              apply_fun ws1 i =
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) ->
+            (forall i:set, i :e n ->
+              apply_fun aof2 i :e J /\
+              apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i)) ->
+            (forall i:set, i :e n ->
+              apply_fun ws2 i =
+                apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i)) ->
+            (forall i:set, i :e n -> apply_fun aof1 i = apply_fun aof2 i) ->
+            (forall i:set, i :e n -> apply_fun ws1 i = apply_fun ws2 i) ->
+            forall i:set, i :e n -> apply_fun uof1 i = apply_fun uof2 i.
+        {
+          let n aof1 uof1 ws1 aof2 uof2 ws2.
+          assume Hchoice1 :
+            forall i:set, i :e n ->
+              apply_fun aof1 i :e J /\
+              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i).
+          assume Hvia1 :
+            forall i:set, i :e n ->
+              apply_fun ws1 i =
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i).
+          assume Hchoice2 :
+            forall i:set, i :e n ->
+              apply_fun aof2 i :e J /\
+              apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i).
+          assume Hvia2 :
+            forall i:set, i :e n ->
+              apply_fun ws2 i =
+                apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i).
+          assume HaEq :
+            forall i:set, i :e n -> apply_fun aof1 i = apply_fun aof2 i.
+          assume HwsEq :
+            forall i:set, i :e n -> apply_fun ws1 i = apply_fun ws2 i.
+          let i.
+          assume Hi : i :e n.
+          claim Ha1J : apply_fun aof1 i :e J.
+          {
+            exact (andEL
+              (apply_fun aof1 i :e J)
+              (apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+              (Hchoice1 i Hi)).
+          }
+          claim Hu1In : apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i).
+          {
+            exact (andER
+              (apply_fun aof1 i :e J)
+              (apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+              (Hchoice1 i Hi)).
+          }
+          claim Hu2In0 : apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i).
+          {
+            exact (andER
+              (apply_fun aof2 i :e J)
+              (apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i))
+              (Hchoice2 i Hi)).
+          }
+          claim Hu2In : apply_fun uof2 i :e apply_fun Gfam (apply_fun aof1 i).
+          {
+            rewrite (HaEq i Hi).
+            exact Hu2In0.
+          }
+          claim HifamEq0 :
+            apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i) =
+            apply_fun ws2 i.
+          {
+            rewrite <- (Hvia1 i Hi).
+            exact (HwsEq i Hi).
+          }
+          claim HifamEq1 :
+            apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i) =
+            apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i).
+          {
+            exact (eq_i_tra
+              (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+              (apply_fun ws2 i)
+              (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
+              HifamEq0
+              (Hvia2 i Hi)).
+          }
+          claim HifamEq :
+            apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i) =
+            apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i).
+          {
+            claim HrhsAlpha :
+              apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i) =
+              apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i).
+            {
+              rewrite <- (HaEq i Hi).
+              reflexivity.
+            }
+            exact (eq_i_tra
+              (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+              (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
+              (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i))
+              HifamEq1
+              HrhsAlpha).
+          }
+          exact (extension_property_implies_ifam_injective
+            G
+            multG
+            eG
+            invG
+            J
+            Gfam
+            multfam
+            efam
+            invfam
+            ifam
+            (apply_fun aof1 i)
+            HgrpG
+            Hfam_grp
+            Hifam_hom
+            Hext
+            Ha1J
+            (apply_fun uof1 i)
+            (apply_fun uof2 i)
+            Hu1In
+            Hu2In
+            HifamEq).
+        }
         admit. (** core S68.5 gap C remainder: reduced-word existence+uniqueness for non-identity x. **)
       + let alpha. assume Halpha : alpha :e J.
         rewrite (apply_fun_graph J
