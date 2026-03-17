@@ -1,4 +1,4 @@
-(** Balance Alice 9233 **)
+(** Balance Alice 9223 **)
 (** Balance Bob 5942 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
@@ -408606,7 +408606,8 @@ Qed.
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps. Show that **)
 (** if Z has a universal covering space, then p = r o q is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
+(** Bounty 107 **)
+(** Lock Alice 1773833087 **)
 Theorem ex80_1a_composition_of_coverings :
   forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q ->
