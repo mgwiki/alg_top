@@ -413650,15 +413650,33 @@ set SW := S_e0 :/\: W0.
 claim HSW_open : SW :e Te.
 { exact (topology_binintersect_closed E Te S_e0 W0 HtopE HSe0_open HW0open). }
 claim He0SW : e0 :e SW. { exact (binintersectI S_e0 W0 e0 He0Se0 He0W0). }
-(** Step 3: p(SW) is open in V (p is a homeomorphism on S_e0) **)
-(** Then p(SW) cap U is open in B **)
-(** Step 4: Apply lpc on p(SW) cap U to get pc Vpc **)
-(** Step 5: Preimage of Vpc in S_e0 is the desired pc nhd **)
-(** - It's pc (homeo to Vpc) **)
-(** - It's c= SW c= W0 (since Vpc c= p(SW)) **)
-(** - It's c= preU (since Vpc c= U) **)
-(** - It's open in E (preimage of open under continuous p restricted to open S_e0) **)
-(** Full construction: need to formalize p(SW), lpc application, preimage **)
+(** Step 3: SW is open in subspace of S_e0, hence p(SW) is open in subspace of V **)
+claim HSW_sub_Se0 : SW c= S_e0. { let w. assume Hw. exact (binintersectE1 S_e0 W0 w Hw). }
+claim HSW_open_sub : SW :e subspace_topology E Te S_e0.
+{ (** SW = S_e0 cap W0 = W0 cap S_e0 as sets, and W0 cap S_e0 :e subspace **)
+  (** subspace_topology_intersection_open gives W0 cap S_e0 :e subspace **)
+  (** Need to show S_e0 cap W0 = W0 cap S_e0 or use binintersect_comm **)
+  admit. }
+(** p maps open subsets of S_e0 to open subsets of V (homeomorphism is open map) **)
+set pS := graph S_e0 (fun x:set => apply_fun p x).
+claim HpS_open : open_map S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS.
+{ exact (homeomorphism_open_map S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS HSe0_homeo). }
+claim HpSW_open_subV : image_of pS SW :e subspace_topology B Tb V.
+{ exact (open_map_image_open S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS SW HpS_open HSW_open_sub). }
+(** image_of pS SW is in subspace_topology B Tb V, hence = S cap V for some S :e Tb **)
+(** Since V :e Tb, the intersection S cap V :e Tb **)
+(** And image_of pS SW c= V (from p maps S_e0 to V) **)
+(** So image_of pS SW :e Tb after converting from subspace **)
+(** Also: image_of pS SW cap U is open in B and open in subspace of U **)
+(** u0 :e image_of pS SW (since e0 :e SW and pS(e0) = u0) **)
+claim Hu0_in_pSW : u0 :e image_of pS SW.
+{ admit. }
+(** Full steps 4-5 require: **)
+(** - Convert image_of pS SW to Tb-open **)
+(** - Intersect with U for subspace-of-U membership **)
+(** - Apply lpc_local for pc neighborhood **)
+(** - Map back through homeomorphism inverse for the E-neighborhood **)
+(** These are routine but detailed subspace topology manipulations **)
 admit.
 Admitted.
 
