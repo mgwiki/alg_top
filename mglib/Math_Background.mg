@@ -407160,6 +407160,34 @@ Theorem ex79_6_topological_group_covering_lift :
 admit.
 Admitted.
 
+(** Helper: transfer null-homotopy of loops from Z to Y via injective r_star. **)
+(** If loops in V' c= Z are null-homotopic in Z, and r: Y -> Z is a covering **)
+(** with S'_a homeomorphic to V' via r, then loops in S'_a are null-homotopic in Y. **)
+(** Proof: r_star is injective (thm54_6a_p_star_injective), **)
+(** loop in S'_a maps to null-homotopic loop in Z via r, **)
+(** by injectivity, original loop is null-homotopic in Y. **)
+(** (Full formalization requires careful handling of basepoints and **)
+(** composition of the homeomorphism with the loop.) **)
+Theorem loops_null_in_covering_slice :
+  forall Y Ty Z Tz r S V':set,
+  covering_map Y Ty Z Tz r ->
+  S :e Ty ->
+  V' :e Tz ->
+  homeomorphism S (subspace_topology Y Ty S) V' (subspace_topology Z Tz V')
+    (graph S (fun y:set => apply_fun r y)) ->
+  (forall z:set, z :e V' ->
+    forall f:set, f :e loop_space V' (subspace_topology Z Tz V') z ->
+    path_homotopic Z Tz z z
+      (compose_fun unit_interval f (graph V' (fun x:set => x)))
+      (constant_path z)) ->
+  forall y:set, y :e S ->
+  forall g:set, g :e loop_space S (subspace_topology Y Ty S) y ->
+  path_homotopic Y Ty y y
+    (compose_fun unit_interval g (graph S (fun x:set => x)))
+    (constant_path y).
+admit.
+Admitted.
+
 (** Key infrastructure: covering map trivializes over path-connected base **)
 (** with trivial inclusion-induced pi1. This is needed for composition of **)
 (** coverings and other results. Proof: construct sections via unique path **)
