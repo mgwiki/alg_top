@@ -407851,11 +407851,18 @@ claim HzVp : z :e V'.
   prove apply_fun r y :e V'.
   rewrite <- (apply_fun_graph S (fun y0:set => apply_fun r y0) y HyS).
   exact (Hhomeo_fn y HyS). }
-(** The proof requires: **)
-(** Proof outline: compose g with homeomorphism rS to get loop in V', **)
-(** apply HloopsVp for null-homotopy in Z, use thm54_6a_p_star_injective **)
-(** for r_star injectivity to conclude null-homotopy in Y. **)
-(** Requires induced_homomorphism machinery + graphify bridge. **)
+(** Compose g with inclusion S -> Y to get g_incl in loop_space Y Ty y **)
+set incS := {(w,w)|w :e S}.
+claim HincS_cont : continuous_map S (subspace_topology Y Ty S) Y Ty incS.
+{ exact (subspace_inclusion_continuous Y Ty S HtopY HSsub). }
+claim HincS_y : apply_fun incS y = y.
+{ exact (identity_function_apply S y HyS). }
+set g_incl := compose_fun unit_interval g incS.
+claim Hg_incl_loop : g_incl :e loop_space Y Ty y.
+{ exact (loop_space_postcompose S (subspace_topology Y Ty S) y Y Ty y g incS HgLoop HincS_cont HincS_y). }
+(** compose g with r_restricted to get rg in loop_space V', then apply HloopsVp **)
+(** This + r_star injectivity (thm54_6a_p_star_injective) gives [g_incl] = id **)
+(** Full argument needs induced_homomorphism computation + functoriality **)
 admit.
 Admitted.
 
