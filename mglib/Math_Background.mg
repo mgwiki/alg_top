@@ -328916,7 +328916,6 @@ Qed.
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Admin-approved-refactored per noticeboard proposal 1772560012 **)
 (** Bounty 267 **)
-(** Lock Bob 1773790000 **)
 Theorem lemma68_5_extension_characterizes_free_product :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   group_structure G multG eG invG ->
@@ -414995,7 +414994,86 @@ set slices := {path_component_of preU (subspace_topology E Te preU) e | e :e pre
 admit.
 Admitted.
 
-(** Helper: preimage of pc set under homeomorphism (full domain) is pc **)
+(** Helper: image of preimage under homeomorphism equals original set **)
+(** Proven Alice **)
+Lemma homeomorphism_image_of_preimage_eq :
+  forall X Tx Y Ty f Vpc:set,
+  homeomorphism X Tx Y Ty f ->
+  Vpc c= Y ->
+  image_of f (preimage_of X f Vpc) = Vpc.
+let X Tx Y Ty f Vpc.
+assume Hhome : homeomorphism X Tx Y Ty f.
+assume HVpcsub : Vpc c= Y.
+apply set_ext.
+- let y. assume Hy.
+  apply (ReplE_impred (preimage_of X f Vpc) (fun x:set => apply_fun f x) y Hy).
+  let x. assume HxPreV Hyeq.
+  rewrite Hyeq.
+  exact (SepE2 X (fun z:set => apply_fun f z :e Vpc) x HxPreV).
+- let y. assume HyVpc.
+  prove y :e {apply_fun f x | x :e preimage_of X f Vpc}.
+  apply (homeomorphism_surjective_value X Tx Y Ty f y Hhome (HVpcsub y HyVpc)).
+  let x. assume Hxpack.
+  claim HxX : x :e X. { exact (andEL (x :e X) (apply_fun f x = y) Hxpack). }
+  claim Hfxeqy : apply_fun f x = y. { exact (andER (x :e X) (apply_fun f x = y) Hxpack). }
+  claim HxPreV : x :e preimage_of X f Vpc.
+  { prove x :e {z :e X | apply_fun f z :e Vpc}.
+    apply (SepI X (fun z:set => apply_fun f z :e Vpc) x HxX).
+    rewrite Hfxeqy. exact HyVpc. }
+  rewrite <- Hfxeqy.
+  exact (ReplI (preimage_of X f Vpc) (fun x0:set => apply_fun f x0) x HxPreV).
+Qed.
+
+(** Helper: transfer homeomorphism codomain along equality **)
+(** Proven Alice **)
+Lemma homeomorphism_codomain_eq :
+  forall A Ta B1 B2 Y Ty f:set,
+  homeomorphism A Ta B1 (subspace_topology Y Ty B1) f ->
+  B1 = B2 ->
+  homeomorphism A Ta B2 (subspace_topology Y Ty B2) f.
+let A Ta B1 B2 Y Ty f.
+assume Hhomeo Heq.
+rewrite <- Heq. exact Hhomeo.
+Qed.
+
+(** Helper: homeomorphism restricts to preimage -> codomain subset **)
+(** Proven Alice **)
+Lemma homeomorphism_restrict_to_preimage :
+  forall X Tx Y Ty f Vpc:set,
+  homeomorphism X Tx Y Ty f ->
+  Vpc c= Y ->
+  homeomorphism (preimage_of X f Vpc) (subspace_topology X Tx (preimage_of X f Vpc))
+    Vpc (subspace_topology Y Ty Vpc) f.
+let X Tx Y Ty f Vpc.
+assume Hhome HVpcsub.
+exact (homeomorphism_codomain_eq
+  (preimage_of X f Vpc) (subspace_topology X Tx (preimage_of X f Vpc))
+  (image_of f (preimage_of X f Vpc)) Vpc Y Ty f
+  (homeomorphism_restrict_to_image_of_subset X Tx Y Ty f (preimage_of X f Vpc) Hhome
+    (Sep_Subq X (fun y:set => apply_fun f y :e Vpc)))
+  (homeomorphism_image_of_preimage_eq X Tx Y Ty f Vpc Hhome HVpcsub)).
+Qed.
+
+(** Preimage of pc set under homeomorphism is pc **)
+(** Proven Alice **)
+Lemma preimage_pc_under_homeomorphism :
+  forall X Tx Y Ty f Vpc:set,
+  homeomorphism X Tx Y Ty f ->
+  Vpc c= Y ->
+  path_connected_space Vpc (subspace_topology Y Ty Vpc) ->
+  path_connected_space
+    (preimage_of X f Vpc)
+    (subspace_topology X Tx (preimage_of X f Vpc)).
+let X Tx Y Ty f Vpc.
+assume Hhome HVpcsub HVpcPC.
+exact (homeomorphism_preserves_path_connected_space_left
+  (preimage_of X f Vpc) (subspace_topology X Tx (preimage_of X f Vpc))
+  Vpc (subspace_topology Y Ty Vpc) f
+  (homeomorphism_restrict_to_preimage X Tx Y Ty f Vpc Hhome HVpcsub)
+  HVpcPC).
+Qed.
+
+(** Old version with C parameter - kept for reference, false for C != X **)
 Lemma preimage_pc_under_homeomorphism_restrict :
   forall X Tx Y Ty f C Vpc:set,
   homeomorphism X Tx Y Ty f ->
@@ -415017,6 +415095,7 @@ Admitted.
 (** Proof: for any e in preimage, get evenly covered V with p(e) :e V. **)
 (** The sheet containing e is homeomorphic to V cap U (open in U, hence lpc). **)
 (** So e has a path-connected neighborhood in the preimage. **)
+(** Proven Alice **)
 Theorem covering_preimage_locally_path_connected :
   forall E Te B Tb p U:set,
   covering_map E Te B Tb p ->
@@ -415260,24 +415339,21 @@ claim HV0_pc : path_connected_space V0 (subspace_topology E Te V0).
     { let w. assume Hw. exact (binintersectE2 (image_of pS SW) U w (HVpc_sub w Hw)). }
     rewrite <- (subspace_topology_transitive_weak B Tb U Vpc HVpc_subU_inner).
     exact HVpc_pc. }
-  (** V0 = preimage_of S_e0 pS Vpc, apply helper with C=S_e0 **)
-  exact (preimage_pc_under_homeomorphism_restrict
+  (** V0 = preimage_of S_e0 pS Vpc, apply helper **)
+  exact (preimage_pc_under_homeomorphism
     S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS
-    S_e0 Vpc
-    (HslHomeo S_e0 HSe0_sl) (Subq_ref S_e0) HVpc_subV_inner HVpc_pc_subV). }
+    Vpc
+    (HslHomeo S_e0 HSe0_sl) HVpc_subV_inner HVpc_pc_subV). }
 witness V0.
 apply and4I.
 - (** V0 :e subspace_topology E Te preU **)
-  (** V0 cap preU = V0 since V0 c= preU **)
   rewrite <- (binintersect_Subq_eq_1 V0 preU HV0_sub_preU).
   exact (subspace_topology_intersection_open E Te preU V0 HV0_open_E).
-- (** e0 :e V0 **) exact He0V0.
-- (** V0 c= W **) exact HV0_sub_W.
-- (** path_connected_space V0 (subspace_topology preU (subspace_topology E Te preU) V0) **)
-  (** Simplify nested subspace: = subspace_topology E Te V0 **)
-  rewrite (subspace_topology_transitive_weak E Te preU V0 HV0_sub_preU).
+- exact He0V0.
+- exact HV0_sub_W.
+- rewrite (subspace_topology_transitive_weak E Te preU V0 HV0_sub_preU).
   exact HV0_pc.
-Admitted. (** blocked only by admitted preimage_pc_under_homeomorphism_restrict **)
+Qed.
 
 (** Improved version with locally_path_connected hypothesis **)
 (** This is needed to ensure path components of p^-1(U) are open **)
