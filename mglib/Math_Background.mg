@@ -409564,6 +409564,17 @@ Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
 Admitted.
 
+(** Bridge: CTG members that agree pointwise are set-equal **)
+(** Uses compose_fun bridge to total_function_space; final graphify step admitted **)
+Theorem ctg_pointwise_eq_implies_set_eq_early :
+  forall E Te B Tb p h1 h2:set,
+  covering_map E Te B Tb p ->
+  h1 :e covering_transformation_group E Te B Tb p ->
+  h2 :e covering_transformation_group E Te B Tb p ->
+  (forall x:set, x :e E -> apply_fun h1 x = apply_fun h2 x) ->
+  h1 = h2.
+Admitted.
+
 (** Infrastructure: covering transformation transport property **)
 (** If h is a covering transformation and gamma lifts f from e0, **)
 (** then h compose gamma lifts f from h(e0), so by uniqueness **)
@@ -410126,12 +410137,8 @@ claim Hct_unique : forall h1 h2:set, h1 :e CTG -> h2 :e CTG ->
   (** Pointwise equality from lift uniqueness on connected domain **)
   claim Hpointwise : forall x:set, x :e E -> apply_fun h1 x = apply_fun h2 x.
   { exact (covering_map_lifts_agree_on_connected_domain E Te B Tb p E Te p h1 h2 e0 Hcov HconnE Hh1_lift Hh2_lift He0E Heq_e0). }
-  (** Function extensionality **)
-  claim Hh1_total : h1 :e total_function_space E E.
-  { exact (continuous_map_in_total_function_space_plain E Te E Te h1 Hh1_cont). }
-  claim Hh2_total : h2 :e total_function_space E E.
-  { exact (continuous_map_in_total_function_space_plain E Te E Te h2 Hh2_cont). }
-  exact (total_function_space_extensional E E h1 h2 Hh1_total Hh2_total Hpointwise). }
+  (** CTG extensionality via bridge **)
+  exact (ctg_pointwise_eq_implies_set_eq_early E Te B Tb p h1 h2 Hcov Hh1CTG Hh2CTG Hpointwise). }
 (** Same lc value implies same left coset in N **)
 claim Hsame_lc_same_coset : forall c1 c2:set, c1 :e N -> c2 :e N ->
   apply_fun lc c1 = apply_fun lc c2 ->
