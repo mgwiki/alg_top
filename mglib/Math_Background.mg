@@ -407175,6 +407175,33 @@ Theorem covering_trivializes_over_pi1_trivial_inclusion :
       (compose_fun unit_interval f (graph U (fun x:set => x)))
       (constant_path y)) ->
   evenly_covered E Te B Tb p U.
+let E Te B Tb p U.
+assume Hcov : covering_map E Te B Tb p.
+assume HUopen : U :e Tb.
+assume HpcU : path_connected_space U (subspace_topology B Tb U).
+assume Hloops : forall y:set, y :e U ->
+  forall f:set, f :e loop_space U (subspace_topology B Tb U) y ->
+  path_homotopic B Tb y y
+    (compose_fun unit_interval f (graph U (fun x:set => x)))
+    (constant_path y).
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim Hcont_p : continuous_map E Te B Tb p. { exact (covering_map_continuous E Te B Tb p Hcov). }
+claim HUsub : U c= B. { exact (topology_elem_subset B Tb U HtopB HUopen). }
+(** Proof outline: **)
+(** 1. For each u :e U, get path from u0 to u (path-connected) **)
+(** 2. Lift the path to E, giving a well-defined section s: U -> E **)
+(**    (well-defined because loops in U are null-homotopic in B, **)
+(**    so the lift endpoint doesn't depend on path choice) **)
+(** 3. Different starting points e_i in p^{-1}(u0) give different sections **)
+(** 4. These sections are the slices of the evenly covered structure **)
+(** 5. Each section is continuous (covering map lifting theorem) **)
+(** This is a substantial proof (~200+ lines) requiring: **)
+(** - Path lifting (lemma54_1_path_lifting, Qed) **)
+(** - Unique path lifting (lemma54_1_path_lifting_unique, Qed) **)
+(** - Well-definedness from null-homotopy of loops **)
+(** - Continuity of sections from the homotopy lifting property **)
+(** - Homeomorphism of each section to U **)
 admit.
 Admitted.
 
