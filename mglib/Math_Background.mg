@@ -406462,14 +406462,23 @@ apply and3I.
   (** Get evenly covered neighborhood V for r **)
   apply (covering_map_evenly_covered_slices Y Ty Z Tz r z Hcov_r HzZ).
   let V. assume Hev_inner. apply Hev_inner. let slices_r. assume Hpack_r.
-  (** Strategy: use Huniv (universal cover existence) to extract **)
-  (** semilocally_simply_connected Z Tz, then find a neighborhood **)
-  (** V' c= V where pi1(V') -> pi1(Z) is trivial. Each r-slice over V' **)
-  (** then trivializes under q because pi1(slice) -> pi1(Y) is trivial **)
-  (** (r_star injective + triviality of pi1(V') -> pi1(Z)). **)
-  (** However, semilocally_simply_connected is defined AFTER this theorem. **)
-  (** The proof needs either: (1) moving the definition earlier, or **)
-  (** (2) inlining the semilocal extraction from Huniv directly. **)
+  (** Use universal cover p0: E0 -> Z directly to get neighborhoods **)
+  (** where loops in Z are null-homotopic **)
+  apply Huniv. let E0. assume HE0pack. apply HE0pack. let Te0. assume HTe0pack.
+  apply HTe0pack. let p0. assume Hp0pack.
+  claim Hcov_p0 : covering_map E0 Te0 Z Tz p0.
+  { exact (andEL (covering_map E0 Te0 Z Tz p0) (simply_connected E0 Te0) Hp0pack). }
+  claim Hsc_E0 : simply_connected E0 Te0.
+  { exact (andER (covering_map E0 Te0 Z Tz p0) (simply_connected E0 Te0) Hp0pack). }
+  (** Get V0 evenly covered by p0 at z **)
+  apply (covering_map_evenly_covered_slices E0 Te0 Z Tz p0 z Hcov_p0 HzZ).
+  let V0. assume Hev0_inner. apply Hev0_inner. let slices_p0. assume Hpack_p0.
+  (** Extract the data from slices_r and slices_p0 **)
+  (** Then take V' = V cap V0 and build evenly_covered for p over V' **)
+  (** Each r-slice over V' further decomposes under q because **)
+  (** all loops in V' are null-homotopic in Z (lift to E0, null-homotopic there, project back) **)
+  (** and r_star is injective, so loops in r-slices are null-homotopic in Y **)
+  (** and q trivializes over each r-slice **)
   admit.
 Admitted.
 
