@@ -413678,11 +413678,22 @@ claim Hu0_in_pSW : u0 :e image_of pS SW.
   rewrite <- HpS_e0.
   exact (ReplI SW (fun x:set => apply_fun pS x) e0 He0SW). }
 (** Step 4: Convert image_of pS SW to Tb-open **)
+claim HpSW_sub_V : image_of pS SW c= V.
+{ let w. assume Hw.
+  apply (ReplE_impred SW (fun x:set => apply_fun pS x) w Hw).
+  let x. assume HxSW Hweq. rewrite Hweq.
+  claim HxSe0 : x :e S_e0. { exact (HSW_sub_Se0 x HxSW). }
+  prove apply_fun pS x :e V.
+  exact (continuous_map_function_on S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS
+    (homeomorphism_continuous S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS HSe0_homeo) x HxSe0). }
+claim HVsub_B : V c= B. { exact (topology_elem_subset B Tb V HtopB HVopen). }
+claim HtopV_sub : topology_on V (subspace_topology B Tb V).
+{ exact (subspace_topology_is_topology B Tb V HtopB HVsub_B). }
+claim HpSW_open_inV : open_in V (subspace_topology B Tb V) (image_of pS SW).
+{ prove topology_on V (subspace_topology B Tb V) /\ image_of pS SW :e subspace_topology B Tb V.
+  apply andI. exact HtopV_sub. exact HpSW_open_subV. }
 claim HpSW_open_B : image_of pS SW :e Tb.
-{ (** image_of pS SW :e subspace_topology B Tb V means it = S cap V for some S :e Tb **)
-  (** Since image_of pS SW c= V, this means image_of pS SW :e Tb **)
-  (** (open subset of an open set is open) **)
-  admit. }
+{ exact (open_in_subspace_if_ambient_open B Tb V (image_of pS SW) HtopB HVopen HpSW_sub_V HpSW_open_inV). }
 (** Step 5: Intersect with U, apply lpc **)
 set pSW_U := (image_of pS SW) :/\: U.
 claim HpSW_U_open : pSW_U :e Tb.
