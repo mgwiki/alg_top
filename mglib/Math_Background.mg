@@ -407051,10 +407051,32 @@ claim Hglift_loop_at : loop_at E0 Te0 e0 glift.
       * exact HtopE0.
       * exact (function_on_of_function_space glift unit_interval E0 Hglift_fs).
       * let V1. assume HV1.
-        (** preimage_of I glift V1 = preimage_of I liftfB V1 by graphify_on_apply **)
-        (** preimage_of I glift V1 = preimage_of I liftfB V1 by graphify_on_apply, **)
-        (** then openness from continuous_map_preimage applied to HliftCont **)
-        admit.
+        claim Hpre_eq : preimage_of unit_interval glift V1 = preimage_of unit_interval liftfB V1.
+        { apply set_ext.
+          - let t. assume Ht.
+            claim HtI : t :e unit_interval.
+            { exact (andEL (t :e unit_interval) (apply_fun glift t :e V1)
+                (SepE unit_interval (fun x:set => apply_fun glift x :e V1) t Ht)). }
+            claim HgtV1 : apply_fun glift t :e V1.
+            { exact (andER (t :e unit_interval) (apply_fun glift t :e V1)
+                (SepE unit_interval (fun x:set => apply_fun glift x :e V1) t Ht)). }
+            prove t :e {x :e unit_interval | apply_fun liftfB x :e V1}.
+            apply (SepI unit_interval (fun x:set => apply_fun liftfB x :e V1) t HtI).
+            prove apply_fun liftfB t :e V1.
+            rewrite <- (graphify_on_apply unit_interval liftfB t HtI). exact HgtV1.
+          - let t. assume Ht.
+            claim HtI : t :e unit_interval.
+            { exact (andEL (t :e unit_interval) (apply_fun liftfB t :e V1)
+                (SepE unit_interval (fun x:set => apply_fun liftfB x :e V1) t Ht)). }
+            claim HltV1 : apply_fun liftfB t :e V1.
+            { exact (andER (t :e unit_interval) (apply_fun liftfB t :e V1)
+                (SepE unit_interval (fun x:set => apply_fun liftfB x :e V1) t Ht)). }
+            prove t :e {x :e unit_interval | apply_fun glift x :e V1}.
+            apply (SepI unit_interval (fun x:set => apply_fun glift x :e V1) t HtI).
+            prove apply_fun glift t :e V1.
+            rewrite (graphify_on_apply unit_interval liftfB t HtI). exact HltV1. }
+        rewrite Hpre_eq.
+        exact (continuous_map_preimage unit_interval unit_interval_topology E0 Te0 liftfB HliftCont V1 HV1).
     + prove apply_fun glift 0 = e0.
       rewrite (graphify_on_apply unit_interval liftfB 0 zero_in_unit_interval).
       exact Hlift0.
