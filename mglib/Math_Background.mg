@@ -408331,13 +408331,38 @@ claim HVU_subU2 : VU c= U. { let w. assume Hw. exact (binintersectE2 V U w Hw). 
 (** For simplicity, use VU directly and get pc sub via lpc **)
 apply (locally_path_connected_local U (subspace_topology B Tb U) u0 VU HlpcU Hpe0U HVU_subU Hu0VU).
 let Vpc. assume HVpc_pack.
-(** Vpc is path-connected, open in U's subspace, u0 :e Vpc c= VU **)
-(** Vpc :e subspace_topology B Tb U means Vpc = S cap U for some S :e Tb **)
-(** Since Vpc c= VU c= V, Vpc is evenly covered (by evenly_covered_open_subset) **)
-(** The sheet of p^-1(Vpc) containing e0 is the desired pc neighborhood **)
-(** But we also need it c= W = W0 cap preU **)
-(** To ensure c= W0: intersect Vpc with p-image(W0 cap E) **)
-(** This is getting complex - use admit for remaining formal steps **)
+(** Extract Vpc properties **)
+claim HVpc_open_subU : Vpc :e subspace_topology B Tb U.
+{ admit. (** from HVpc_pack and4E1 **) }
+claim Hu0Vpc : u0 :e Vpc.
+{ admit. (** from HVpc_pack and4E2 **) }
+claim HVpc_sub_VU : Vpc c= VU.
+{ admit. (** from HVpc_pack and4E3 **) }
+claim HVpc_pc : path_connected_space Vpc (subspace_topology U (subspace_topology B Tb U) Vpc).
+{ admit. (** from HVpc_pack and4E4 **) }
+(** Vpc c= V (since Vpc c= VU c= V) **)
+claim HVpc_sub_V : Vpc c= V.
+{ let w. assume Hw. exact (binintersectE1 V U w (HVpc_sub_VU w Hw)). }
+(** Vpc :e Tb (from subspace topology: Vpc = S cap U for some S :e Tb, and U :e Tb) **)
+claim HVpc_open_B : Vpc :e Tb.
+{ admit. (** Vpc :e subspace_topology B Tb U, so Vpc = S cap U; both open => Vpc open **) }
+(** Vpc is evenly covered by p (subset of evenly covered V) **)
+claim Hev_V : evenly_covered E Te B Tb p V.
+{ prove topology_on E Te /\ V :e Tb /\ exists slices:set, slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p V /\ (forall S0:set, S0 :e slices -> homeomorphism S0 (subspace_topology E Te S0) V (subspace_topology B Tb V) (graph S0 (fun x:set => apply_fun p x))).
+  apply and3I. exact HtopE. exact HVopen.
+  witness slicesV. apply and4I. exact HslOpen. exact HslPD. exact HslUnion. exact HslHomeo. }
+claim Hev_Vpc : evenly_covered E Te B Tb p Vpc.
+{ exact (evenly_covered_open_subset E Te B Tb p V Vpc Hev_V HVpc_open_B HVpc_sub_V). }
+(** The sheet of Vpc containing e0 gives the desired pc neighborhood **)
+(** Extract slices of Vpc, find the one containing e0, **)
+(** show it's pc (homeomorphic to pc Vpc) and in the subspace of preU **)
+(** Also need it c= W0 for containment in W = W0 cap preU **)
+(** This last part needs: intersecting with the W0 neighborhood **)
+(** or showing the sheet is in p^-1(Vpc) c= p^-1(VU) c= p^-1(U) = preU **)
+(** For c= W0: need Vpc c= p(W0 cap E), which holds when **)
+(** we also intersect with the p-image of W0 earlier in the construction **)
+(** This requires going back and using lpc on VU cap p(W0) instead of just VU **)
+(** For now, admit this containment step **)
 admit.
 Admitted.
 
