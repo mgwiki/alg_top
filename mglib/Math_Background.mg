@@ -415387,14 +415387,69 @@ claim Hfn_p : function_on p E B. { exact (continuous_map_function_on E Te B Tb p
 set preU := preimage_of E p U.
 claim HpreU_open : preU :e Te.
 { exact (continuous_map_preimage E Te B Tb p Hcont_p U HUopen). }
-(** preU inherits locally_path_connected from E **)
-(** E is locally path connected because: covering map is local homeo, **)
-(** each evenly covered V gives sheets homeo to V, and U is lpc. **)
-(** The path components of preU are open (using lpc of preU). **)
-(** Each path component maps homeomorphically to U via p **)
-(** (surjective by path lifting, injective by null-homotopy). **)
-(** Full construction requires ~150 lines of formal verification. **)
-admit.
+(** preU is lpc (covering preimage of lpc set is lpc) **)
+claim HpreU_sub : preU c= E. { exact (topology_elem_subset E Te preU HtopE HpreU_open). }
+claim HlpcPreU : locally_path_connected preU (subspace_topology E Te preU).
+{ exact (covering_preimage_locally_path_connected E Te B Tb p U Hcov HUopen HlpcU). }
+(** Path components of preU are open in the subspace topology **)
+(** and hence open in E (since preU is open in E) **)
+claim HpreU_top : topology_on preU (subspace_topology E Te preU).
+{ exact (subspace_topology_is_topology E Te preU HtopE HpreU_sub). }
+(** Goal: evenly_covered E Te B Tb p U **)
+prove topology_on E Te /\ U :e Tb /\
+  exists slices:set, slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preU /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun x:set => apply_fun p x))).
+apply and3I. exact HtopE. exact HUopen.
+(** Define slices: for each e :e preU, path_component_of preU (subspace E Te preU) e **)
+(** But we need a canonical representative. Use Repl to get {path_component_of preU T e | e :e preU} **)
+set T_preU := subspace_topology E Te preU.
+set slices := {path_component_of preU T_preU e | e :e preU}.
+witness slices.
+apply and4I.
+- (** slices c= Te: each path component is open in E **)
+  let V. assume HV.
+  apply (ReplE_impred preU (fun e:set => path_component_of preU T_preU e) V HV).
+  let e. assume HePreU HVeq.
+  rewrite HVeq.
+  (** path_component_of preU T_preU e is open in subspace T_preU (by lpc) **)
+  claim Hpc_open_sub : open_in preU T_preU (path_component_of preU T_preU e).
+  { exact (path_components_open preU T_preU HlpcPreU e HePreU). }
+  (** open in subspace + preU open in E => open in E **)
+  claim Hpc_sub : path_component_of preU T_preU e c= preU.
+  { exact (Sep_Subq preU (fun y:set => exists p0:set,
+      function_on p0 unit_interval preU /\
+      continuous_map unit_interval unit_interval_topology preU T_preU p0 /\
+      apply_fun p0 0 = e /\ apply_fun p0 1 = y)). }
+  exact (open_in_subspace_if_ambient_open E Te preU (path_component_of preU T_preU e)
+    HtopE HpreU_open Hpc_sub Hpc_open_sub).
+- (** pairwise_disjoint slices **)
+  admit.
+- (** Union slices = preU **)
+  apply set_ext.
+  + (** Union slices c= preU: every element of a path component is in preU **)
+    let x. assume Hx.
+    apply (UnionE_impred slices x Hx). let S. assume HxS HSsl.
+    apply (ReplE_impred preU (fun e:set => path_component_of preU T_preU e) S HSsl).
+    let e. assume HePreU HSeq.
+    claim HxPC : x :e path_component_of preU T_preU e.
+    { exact (eq_subst_mem_set x S (path_component_of preU T_preU e) HxS HSeq). }
+    exact (Sep_Subq preU (fun y:set => exists p0:set,
+      function_on p0 unit_interval preU /\
+      continuous_map unit_interval unit_interval_topology preU T_preU p0 /\
+      apply_fun p0 0 = e /\ apply_fun p0 1 = y) x HxPC).
+  + (** preU c= Union slices: x :e preU => x :e path_component_of preU T x :e slices **)
+    let x. assume HxPreU.
+    claim Hpc_x_in_slices : path_component_of preU T_preU x :e slices.
+    { prove path_component_of preU T_preU x :e {path_component_of preU T_preU e | e :e preU}.
+      exact (ReplI preU (fun e:set => path_component_of preU T_preU e) x HxPreU). }
+    claim Hx_in_pc : x :e path_component_of preU T_preU x.
+    { exact (path_component_reflexive preU T_preU x HpreU_top HxPreU). }
+    exact (UnionI slices x (path_component_of preU T_preU x) Hx_in_pc Hpc_x_in_slices).
+- (** each V :e slices -> homeomorphism V ... U ... **)
+  admit.
 Admitted.
 
 (** Helper: loops in evenly covered neighborhood of universal cover are null-homotopic. **)
