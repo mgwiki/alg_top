@@ -415222,7 +415222,7 @@ claim HV0_open_E : V0 :e Te.
 (** Path-connectedness: V0 pc from Vpc pc via homeomorphism **)
 (** Due to Megalodon scoping, use admits for the detailed sub-steps **)
 claim HV0_pc : path_connected_space V0 (subspace_topology E Te V0).
-{ admit. (** homeomorphism_restrict + subspace_transitive + pc transfer **) }
+{ admit. (** blocked by Megalodon scoping; see CHANGES0164 for proof approach **) }
 witness V0.
 apply and4I.
 - (** V0 :e subspace_topology E Te preU **)
