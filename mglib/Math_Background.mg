@@ -407447,9 +407447,15 @@ claim Hlift1_eq_e0 : apply_fun liftfB 1 = e0.
       Hp0lift1
       (eq_symm (apply_fun p0 e0) b Hpe0))). }
 (** liftfB is a loop at e0 in E0 **)
-(** E0 is simply connected, so liftfB is null-homotopic in E0 **)
-(** Project the null-homotopy via p0 to get fB null-homotopic in B **)
-(** Then path_homotopic B Tb b b fB (constant_path b) **)
+(** Need: liftfB :e loop_space E0 Te0 e0, then class = id, then project **)
+(** The full argument requires showing liftfB is in loop_space, **)
+(** using simply_connected_trivial_pi1_witness for class = id, **)
+(** loop_class_eq_id_implies_path_homotopic_constant for path homotopy in E0, **)
+(** and path_homotopic_postcompose with p0 for projection to B. **)
+(** The final step needs: compose_fun I liftfB p0 = fB pointwise (from HliftComm) **)
+(** and compose_fun I (constant_path e0) p0 = constant_path b (from Hpe0). **)
+(** Then path_homotopic_of_pointwise_equal to equate the composed paths with fB **)
+(** and constant_path b. **)
 admit.
 Admitted.
 
