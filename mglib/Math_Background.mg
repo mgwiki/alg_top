@@ -407859,6 +407859,38 @@ Theorem universal_cover_evenly_covered_loops_trivial :
   path_homotopic B Tb b b
     (compose_fun unit_interval f (graph V0 (fun x:set => x)))
     (constant_path b).
+let E0 Te0 B Tb p0 V0.
+assume Hcov : covering_map E0 Te0 B Tb p0.
+assume Hsc : simply_connected E0 Te0.
+assume Hev : evenly_covered E0 Te0 B Tb p0 V0.
+let b. assume HbV0 : b :e V0.
+let f. assume HfLoop : f :e loop_space V0 (subspace_topology B Tb V0) b.
+(** Extract basic properties **)
+claim HtopE0 : topology_on E0 Te0. { exact (covering_map_topology_on_domain E0 Te0 B Tb p0 Hcov). }
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E0 Te0 B Tb p0 Hcov). }
+claim Hcont_p0 : continuous_map E0 Te0 B Tb p0. { exact (covering_map_continuous E0 Te0 B Tb p0 Hcov). }
+claim Hfn_p0 : function_on p0 E0 B. { exact (continuous_map_function_on E0 Te0 B Tb p0 Hcont_p0). }
+claim HpcE0 : path_connected_space E0 Te0. { exact (simply_connected_path_connected E0 Te0 Hsc). }
+(** V0 is open in B (from evenly_covered) **)
+claim HV0open : V0 :e Tb.
+{ exact (andER (topology_on E0 Te0) (V0 :e Tb)
+    (andEL (topology_on E0 Te0 /\ V0 :e Tb)
+      (exists slices:set, slices c= Te0 /\ pairwise_disjoint slices /\
+        Union slices = preimage_of E0 p0 V0 /\
+        (forall S0:set, S0 :e slices ->
+          homeomorphism S0 (subspace_topology E0 Te0 S0) V0 (subspace_topology B Tb V0)
+            (graph S0 (fun e:set => apply_fun p0 e))))
+      Hev)). }
+claim HV0sub : V0 c= B. { exact (topology_elem_subset B Tb V0 HtopB HV0open). }
+claim HbB : b :e B. { exact (HV0sub b HbV0). }
+(** The loop f in V0 composed with inclusion gives a loop in B **)
+set incV0 := graph V0 (fun x:set => x).
+set fB := compose_fun unit_interval f incV0.
+(** fB is the loop in B: fB(t) = f(t) for t :e unit_interval (since f maps into V0 c= B) **)
+(** Need: fB is continuous from I to B, fB(0) = b, fB(1) = b **)
+(** Then lift fB to E0, show the lift is a loop, null-homotopic in E0, project back. **)
+(** Full proof requires: path lifting, slice containment argument, **)
+(** simply_connected null-homotopy, and projection. **)
 admit.
 Admitted.
 
