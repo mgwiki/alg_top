@@ -407185,6 +407185,45 @@ Theorem loops_null_in_covering_slice :
   path_homotopic Y Ty y y
     (compose_fun unit_interval g (graph S (fun x:set => x)))
     (constant_path y).
+let Y Ty Z Tz r S V'.
+assume Hcov : covering_map Y Ty Z Tz r.
+assume HSopen : S :e Ty.
+assume HV'open : V' :e Tz.
+assume Hhomeo : homeomorphism S (subspace_topology Y Ty S) V' (subspace_topology Z Tz V')
+  (graph S (fun y:set => apply_fun r y)).
+assume Hloops_V' : forall z:set, z :e V' ->
+  forall f:set, f :e loop_space V' (subspace_topology Z Tz V') z ->
+  path_homotopic Z Tz z z
+    (compose_fun unit_interval f (graph V' (fun x:set => x)))
+    (constant_path z).
+let y. assume HyS : y :e S.
+let g. assume HgLoop : g :e loop_space S (subspace_topology Y Ty S) y.
+claim HtopY : topology_on Y Ty. { exact (covering_map_topology_on_domain Y Ty Z Tz r Hcov). }
+claim HtopZ : topology_on Z Tz. { exact (covering_map_topology_on_codomain Y Ty Z Tz r Hcov). }
+claim HSsub : S c= Y. { exact (topology_elem_subset Y Ty S HtopY HSopen). }
+claim HyY : y :e Y. { exact (HSsub y HyS). }
+claim Hcont_r : continuous_map Y Ty Z Tz r. { exact (covering_map_continuous Y Ty Z Tz r Hcov). }
+claim Hfn_r : function_on r Y Z. { exact (continuous_map_function_on Y Ty Z Tz r Hcont_r). }
+set z := apply_fun r y.
+claim HzZ : z :e Z. { exact (Hfn_r y HyY). }
+(** r(y) :e V' since y :e S and r: S -> V' is onto **)
+claim HzV' : z :e V'.
+{ claim Hhomeo_cont : continuous_map S (subspace_topology Y Ty S) V' (subspace_topology Z Tz V')
+    (graph S (fun y0:set => apply_fun r y0)).
+  { exact (homeomorphism_continuous S (subspace_topology Y Ty S) V' (subspace_topology Z Tz V')
+      (graph S (fun y0:set => apply_fun r y0)) Hhomeo). }
+  claim Hhomeo_fn : function_on (graph S (fun y0:set => apply_fun r y0)) S V'.
+  { exact (continuous_map_function_on S (subspace_topology Y Ty S) V' (subspace_topology Z Tz V')
+      (graph S (fun y0:set => apply_fun r y0)) Hhomeo_cont). }
+  prove apply_fun r y :e V'.
+  rewrite <- (apply_fun_graph S (fun y0:set => apply_fun r y0) y HyS).
+  exact (Hhomeo_fn y HyS). }
+(** The proof requires: **)
+(** 1. Compose g with r to get a loop in V' **)
+(** 2. Apply Hloops_V' to get null-homotopy in Z **)
+(** 3. Use r_star injectivity (thm54_6a_p_star_injective) to conclude null-homotopy in Y **)
+(** This needs: g_incl :e loop_space Y Ty y (graphify bridge), **)
+(** r_star computation, and injectivity argument. **)
 admit.
 Admitted.
 
