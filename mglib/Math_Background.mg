@@ -415230,11 +415230,12 @@ apply and4I.
 - (** path_connected_space V0 (subspace_topology preU (subspace_topology E Te preU) V0) **)
   (** Simplify nested subspace: = subspace_topology E Te V0 **)
   rewrite (subspace_topology_transitive_weak E Te preU V0 HV0_sub_preU).
-  (** path_connected_space V0 (subspace_topology E Te V0) **)
-  (** V0 is homeomorphic to Vpc via pS restricted (homeomorphism_restrict_to_image_of_subset) **)
-  (** image_of pS V0 = Vpc, and Vpc is path-connected **)
-  (** By homeomorphism_preserves_path_connected_space_left: V0 is pc **)
-  (** Final routine step: restricted homeomorphism + pc transfer **)
+  (** Restrict homeomorphism to V0 -> image_of pS V0 **)
+  (** V0 is homeomorphic to Vpc (via pS restricted), hence path-connected **)
+  (** Uses: homeomorphism_restrict_to_image_of_subset, image_of pS V0 = Vpc, **)
+  (** subspace_topology_transitive_weak, homeomorphism_preserves_pc_left **)
+  (** Scoping limitation: HSe0_homeo not accessible in this branch **)
+  (** TODO: restructure proof to avoid branch scoping issue **)
   admit.
 Admitted.
 
