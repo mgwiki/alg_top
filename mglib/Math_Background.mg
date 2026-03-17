@@ -415219,25 +415219,10 @@ claim HV0_open_inSe0 : open_in S_e0 (subspace_topology E Te S_e0) V0.
   - exact HV0_open_sub. }
 claim HV0_open_E : V0 :e Te.
 { exact (open_in_subspace_if_ambient_open E Te S_e0 V0 HtopE HSe0_open HV0_sub_Se0 HV0_open_inSe0). }
-(** Path-connectedness of V0 **)
-(** V0 = preimage of Vpc under homeomorphism pS (restricted to S_e0) **)
-(** pS: S_e0 -> V is a homeomorphism, V0 c= S_e0, image_of pS V0 = Vpc **)
-(** Vpc is path-connected, homeomorphisms preserve path-connectedness **)
-(** Scoping issue: HSe0_homeo and HVpc_sub_V not accessible after apply/let **)
-(** This requires restructuring the proof to move the pc claim before the branches **)
+(** Path-connectedness: V0 pc from Vpc pc via homeomorphism **)
+(** Due to Megalodon scoping, use admits for the detailed sub-steps **)
 claim HV0_pc : path_connected_space V0 (subspace_topology E Te V0).
-{ (** V0 homeomorphic to Vpc via pS restricted, Vpc pc => V0 pc **)
-  (** Re-derive homeomorphism from assume vars (HslHomeo, HSe0_sl) **)
-  (** All in one exact call to avoid scoping issues **)
-  claim Hhomeo_res : homeomorphism V0 (subspace_topology E Te V0)
-    (image_of pS V0) (subspace_topology B Tb (image_of pS V0)) pS.
-  { admit. (** needs: homeomorphism_restrict_to_image_of_subset + subspace_transitive; blocked by claim scoping **) }
-  claim Himg_pc : path_connected_space (image_of pS V0) (subspace_topology B Tb (image_of pS V0)).
-  { admit. }
-  exact (homeomorphism_preserves_path_connected_space_left
-    V0 (subspace_topology E Te V0)
-    (image_of pS V0) (subspace_topology B Tb (image_of pS V0))
-    pS Hhomeo_res Himg_pc). }
+{ admit. (** homeomorphism_restrict + subspace_transitive + pc transfer **) }
 witness V0.
 apply and4I.
 - (** V0 :e subspace_topology E Te preU **)
