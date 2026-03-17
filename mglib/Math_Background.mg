@@ -331595,6 +331595,98 @@ claim Hextfp :
               assume _ Hrw2ViaIfam _.
               exact Hrw2ViaIfam.
             }
+            claim Hrw1InImageAtLift :
+              forall i:set, i :e n1 ->
+                apply_fun rw1 i :e apply_fun ImageFam (apply_fun aof1 i).
+            {
+              let i.
+              assume Hi : i :e n1.
+              claim Hchoice :
+                apply_fun aof1 i :e J /\
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i).
+              {
+                exact (Hrw1Choice i Hi).
+              }
+              claim HaiJ : apply_fun aof1 i :e J.
+              {
+                exact (andEL
+                  (apply_fun aof1 i :e J)
+                  (apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+                  Hchoice).
+              }
+              claim Hui :
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i).
+              {
+                exact (andER
+                  (apply_fun aof1 i :e J)
+                  (apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+                  Hchoice).
+              }
+              claim HImgEval :
+                apply_fun ImageFam (apply_fun aof1 i) =
+                homomorphism_image (apply_fun Gfam (apply_fun aof1 i)) (apply_fun ifam (apply_fun aof1 i)).
+              {
+                exact (apply_fun_graph
+                  J
+                  (fun a:set =>
+                    homomorphism_image (apply_fun Gfam a) (apply_fun ifam a))
+                  (apply_fun aof1 i)
+                  HaiJ).
+              }
+              rewrite HImgEval.
+              rewrite (Hrw1ViaIfam i Hi).
+              exact (ReplI
+                (apply_fun Gfam (apply_fun aof1 i))
+                (fun z:set => apply_fun (apply_fun ifam (apply_fun aof1 i)) z)
+                (apply_fun uof1 i)
+                Hui).
+            }
+            claim Hrw2InImageAtLift :
+              forall j:set, j :e n2 ->
+                apply_fun rw2 j :e apply_fun ImageFam (apply_fun aof2 j).
+            {
+              let j.
+              assume Hj : j :e n2.
+              claim Hchoice :
+                apply_fun aof2 j :e J /\
+                apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j).
+              {
+                exact (Hrw2Choice j Hj).
+              }
+              claim HajJ : apply_fun aof2 j :e J.
+              {
+                exact (andEL
+                  (apply_fun aof2 j :e J)
+                  (apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j))
+                  Hchoice).
+              }
+              claim Huj :
+                apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j).
+              {
+                exact (andER
+                  (apply_fun aof2 j :e J)
+                  (apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j))
+                  Hchoice).
+              }
+              claim HImgEval :
+                apply_fun ImageFam (apply_fun aof2 j) =
+                homomorphism_image (apply_fun Gfam (apply_fun aof2 j)) (apply_fun ifam (apply_fun aof2 j)).
+              {
+                exact (apply_fun_graph
+                  J
+                  (fun a:set =>
+                    homomorphism_image (apply_fun Gfam a) (apply_fun ifam a))
+                  (apply_fun aof2 j)
+                  HajJ).
+              }
+              rewrite HImgEval.
+              rewrite (Hrw2ViaIfam j Hj).
+              exact (ReplI
+                (apply_fun Gfam (apply_fun aof2 j))
+                (fun z:set => apply_fun (apply_fun ifam (apply_fun aof2 j)) z)
+                (apply_fun uof2 j)
+                Huj).
+            }
             claim HrwCore :
               n1 = n2 /\
               (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i).
