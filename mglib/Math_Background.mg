@@ -332256,7 +332256,95 @@ claim Hextfp :
                 apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) ->
             n1 = n2 /\ (forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i).
         {
-          admit. (** core S68.5 gap C uniqueness: reconstructed-word uniqueness from extension property. **)
+          let n1 ws1 aof1 uof1 n2 ws2 aof2 uof2.
+          assume Hred1 : reduced_word J ImageFam efam_int n1 ws1.
+          assume Hn1Ne : n1 <> 0.
+          assume Hwp1 : word_product multG eG ws1 n1 = x.
+          assume Hchoice1 :
+            forall i:set, i :e n1 ->
+              apply_fun aof1 i :e J /\
+              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i).
+          assume Hvia1 :
+            forall i:set, i :e n1 ->
+              apply_fun ws1 i =
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i).
+          assume Hred2 : reduced_word J ImageFam efam_int n2 ws2.
+          assume Hn2Ne : n2 <> 0.
+          assume Hwp2 : word_product multG eG ws2 n2 = x.
+          assume Hchoice2 :
+            forall j:set, j :e n2 ->
+              apply_fun aof2 j :e J /\
+              apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j).
+          assume Hvia2 :
+            forall j:set, j :e n2 ->
+              apply_fun ws2 j =
+                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j).
+          claim Hcore :
+            n1 = n2 /\
+            (forall i:set, i :e n1 -> apply_fun aof1 i = apply_fun aof2 i) /\
+            (forall i:set, i :e n1 -> apply_fun uof1 i = apply_fun uof2 i).
+          {
+            admit. (** core S68.5 gap C uniqueness core: synchronize lengths and preimages from extension property. **)
+          }
+          apply (and3E
+            (n1 = n2)
+            (forall i:set, i :e n1 -> apply_fun aof1 i = apply_fun aof2 i)
+            (forall i:set, i :e n1 -> apply_fun uof1 i = apply_fun uof2 i)
+            Hcore).
+          assume HnEq HaEq HuEq.
+          claim HwsEq : forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i.
+          {
+            let i.
+            assume Hi : i :e n1.
+            claim Hi2 : i :e n2.
+            {
+              exact (eq_subst_mem_set i n1 n2 Hi HnEq).
+            }
+            claim Hws1Eval :
+              apply_fun ws1 i =
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i).
+            {
+              exact (Hvia1 i Hi).
+            }
+            claim HifamU :
+              apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i) =
+              apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i).
+            {
+              rewrite (HuEq i Hi).
+              reflexivity.
+            }
+            claim HifamA :
+              apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i) =
+              apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i).
+            {
+              rewrite (HaEq i Hi).
+              reflexivity.
+            }
+            exact (eq_i_tra
+              (apply_fun ws1 i)
+              (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+              (apply_fun ws2 i)
+              Hws1Eval
+              (eq_i_tra
+                (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+                (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
+                (apply_fun ws2 i)
+                (eq_i_tra
+                  (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+                  (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i))
+                  (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
+                  HifamU
+                  HifamA)
+                (eq_symm
+                  (apply_fun ws2 i)
+                  (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
+                  (Hvia2 i Hi2)))).
+          }
+          exact (andI
+            (n1 = n2)
+            (forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i)
+            HnEq
+            HwsEq).
         }
         apply Hsubgen_nonid_reduced_exists.
         let n.
