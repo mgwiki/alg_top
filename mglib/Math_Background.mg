@@ -329371,21 +329371,21 @@ claim Hextfp :
                     exists xs:set, function_on xs n G /\
                       (forall i:set, i :e n ->
                         exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
-                      x = word_product multG eG xs n)).
+                      x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)).
                 - assume Hxe : x = eG.
                   exact (FalseE (Hxne Hxe)
                     (exists n:set, n :e omega /\ n <> 0 /\
                       exists xs:set, function_on xs n G /\
                         (forall i:set, i :e n ->
                           exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
-                        x = word_product multG eG xs n)).
+                        x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)).
                 - assume Hex :
                     exists n:set, n :e omega /\ n <> 0 /\
                     exists xs:set, function_on xs n G /\
                       (forall i:set, i :e n ->
                         exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
                       x = word_product multG eG xs n.
-                  admit. (** convert WordProd witness (word_product form) to nat_primrec target form. **)
+                  exact Hex.
               }
               apply orIR.
               exact Hgen_nonid.
