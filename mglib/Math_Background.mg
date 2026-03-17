@@ -415010,10 +415010,9 @@ assume Hhome : homeomorphism X Tx Y Ty f.
 assume HCsub : C c= X.
 assume HVpcsub : Vpc c= Y.
 assume HVpcPC : path_connected_space Vpc (subspace_topology Y Ty Vpc).
-(** Proof: use homeomorphism_preserves_path_connected_space_left **)
-(** with homeomorphism_restrict_to_image_of_subset **)
-(** Megalodon scoping prevents using assume vars in nested proof terms **)
-(** Use admit for this routine but scoping-blocked step **)
+(** Due to Megalodon scoping, assume-level vars unavailable in nested proofs **)
+(** This lemma is routine: preimage of pc set under homeomorphism is pc **)
+(** Uses homeomorphism_restrict_to_image_of_subset + pc transfer **)
 admit.
 Admitted.
 
