@@ -407830,6 +407830,24 @@ Theorem ex79_6_topological_group_covering_lift :
 admit.
 Admitted.
 
+(** Key infrastructure: covering map trivializes over path-connected base **)
+(** with trivial inclusion-induced pi1. This is needed for composition of **)
+(** coverings and other results. Proof: construct sections via unique path **)
+(** lifting; continuity from the lifting theorem. **)
+Theorem covering_trivializes_over_pi1_trivial_inclusion :
+  forall E Te B Tb p U:set,
+  covering_map E Te B Tb p ->
+  U :e Tb ->
+  path_connected_space U (subspace_topology B Tb U) ->
+  (forall y:set, y :e U ->
+    forall f:set, f :e loop_space U (subspace_topology B Tb U) y ->
+    path_homotopic B Tb y y
+      (compose_fun unit_interval f (graph U (fun x:set => x)))
+      (constant_path y)) ->
+  evenly_covered E Te B Tb p U.
+admit.
+Admitted.
+
 (** from S80 Exercise 1(a) (line 5012 in algtop.tex) **)
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps. Show that **)
 (** if Z has a universal covering space, then p = r o q is a covering map. **)
