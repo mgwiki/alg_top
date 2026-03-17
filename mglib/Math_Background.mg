@@ -414995,6 +414995,19 @@ set slices := {path_component_of preU (subspace_topology E Te preU) e | e :e pre
 admit.
 Admitted.
 
+(** Helper: preimage of pc set under homeomorphism (full domain) is pc **)
+Lemma preimage_pc_under_homeomorphism_restrict :
+  forall X Tx Y Ty f C Vpc:set,
+  homeomorphism X Tx Y Ty f ->
+  C c= X ->
+  Vpc c= Y ->
+  path_connected_space Vpc (subspace_topology Y Ty Vpc) ->
+  path_connected_space
+    (preimage_of C f Vpc)
+    (subspace_topology X Tx (preimage_of C f Vpc)).
+admit.
+Admitted.
+
 (** Helper: preimage of an lpc open set under a covering map is lpc **)
 (** Proof: for any e in preimage, get evenly covered V with p(e) :e V. **)
 (** The sheet containing e is homeomorphic to V cap U (open in U, hence lpc). **)
@@ -415222,7 +415235,31 @@ claim HV0_open_E : V0 :e Te.
 (** Path-connectedness: V0 pc from Vpc pc via homeomorphism **)
 (** Due to Megalodon scoping, use admits for the detailed sub-steps **)
 claim HV0_pc : path_connected_space V0 (subspace_topology E Te V0).
-{ admit. (** blocked by Megalodon scoping; see CHANGES0164 for proof approach **) }
+{ (** Use helper lemma preimage_pc_under_homeomorphism_restrict **)
+  (** V0 = preimage_of S_e0 pS Vpc, pS: S_e0 -> V is a homeomorphism **)
+  (** Vpc c= V, Vpc pc => V0 pc **)
+  (** But V0 uses subspace_topology E Te V0, not subspace S_e0 **)
+  (** Need subspace_topology_transitive_weak to convert **)
+  rewrite <- (subspace_topology_transitive_weak E Te S_e0 V0 HV0_sub_Se0).
+  claim HVpc_subV_inner : Vpc c= V.
+  { let w. assume Hw.
+    claim HwPSW : w :e image_of pS SW.
+    { exact (binintersectE1 (image_of pS SW) U w (HVpc_sub w Hw)). }
+    exact (HpSW_sub_V w HwPSW). }
+  claim HVpc_pc_subV : path_connected_space Vpc (subspace_topology V (subspace_topology B Tb V) Vpc).
+  { rewrite (subspace_topology_transitive_weak B Tb V Vpc HVpc_subV_inner).
+    (** Need Vpc pc in subspace B Tb Vpc **)
+    (** Vpc pc in subspace U (subspace B Tb U) Vpc (from HVpc_pc) **)
+    (** Convert: subspace U (subspace B Tb U) Vpc = subspace B Tb Vpc (by transitivity) **)
+    claim HVpc_subU_inner : Vpc c= U.
+    { let w. assume Hw. exact (binintersectE2 (image_of pS SW) U w (HVpc_sub w Hw)). }
+    rewrite <- (subspace_topology_transitive_weak B Tb U Vpc HVpc_subU_inner).
+    exact HVpc_pc. }
+  (** V0 = preimage_of S_e0 pS Vpc, apply helper with C=S_e0 **)
+  exact (preimage_pc_under_homeomorphism_restrict
+    S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V) pS
+    S_e0 Vpc
+    (HslHomeo S_e0 HSe0_sl) (Subq_ref S_e0) HVpc_subV_inner HVpc_pc_subV). }
 witness V0.
 apply and4I.
 - (** V0 :e subspace_topology E Te preU **)
@@ -415235,7 +415272,7 @@ apply and4I.
   (** Simplify nested subspace: = subspace_topology E Te V0 **)
   rewrite (subspace_topology_transitive_weak E Te preU V0 HV0_sub_preU).
   exact HV0_pc.
-Admitted.
+Admitted. (** blocked only by admitted preimage_pc_under_homeomorphism_restrict **)
 
 (** Improved version with locally_path_connected hypothesis **)
 (** This is needed to ensure path components of p^-1(U) are open **)
