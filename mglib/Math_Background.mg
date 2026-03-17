@@ -331290,7 +331290,42 @@ claim Hextfp :
             n1 = n2 /\
             (forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i).
           {
-            admit. (** core S68.5 gap C uniqueness core: synchronize lengths and reconstructed words from extension property. **)
+            claim HreconPair :
+              exists aof1 uof1 rw1 aof2 uof2 rw2:set,
+                reduced_word J ImageFam efam_int n1 rw1 /\
+                reduced_word J ImageFam efam_int n2 rw2 /\
+                word_product multG eG rw1 n1 = x /\
+                word_product multG eG rw2 n2 = x /\
+                ((forall i:set, i :e n1 ->
+                  apply_fun aof1 i :e J /\
+                  apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i =
+                    apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i = apply_fun ws1 i)) /\
+                ((forall j:set, j :e n2 ->
+                  apply_fun aof2 j :e J /\
+                  apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j =
+                    apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j = apply_fun ws2 j)).
+            {
+              exact (Hsubgen_nonid_reduced_pair_reconstructed
+                n1
+                ws1
+                n2
+                ws2
+                Hred1
+                Hn1Ne
+                Hwp1
+                Hred2
+                Hn2Ne
+                Hwp2).
+            }
+            admit. (** core S68.5 gap C uniqueness core: use extension-property synchronization on reconstructed pair HreconPair. **)
           }
           claim HnEq : n1 = n2.
           {
