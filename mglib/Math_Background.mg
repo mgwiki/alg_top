@@ -408059,11 +408059,32 @@ claim Hr_id : apply_fun (induced_homomorphism Y Ty y Z Tz z r)
     (fundamental_group_is_group Z Tz z HtopZ HzZ)
     Hr_hom). }
 (** r-induced applied to [g_incl] equals id-Z **)
-(** because compose_fun I (rep of [g_incl]) r is homotopic to rg_incl **)
-(** and rg_incl is null-homotopic by HloopsVp **)
 claim Hr_g_id : apply_fun (induced_homomorphism Y Ty y Z Tz z r)
   (path_homotopy_class_loop Y Ty y g_incl) = fundamental_group_id Z Tz z.
-{ admit. }
+{
+  (** Step A: compute r-induced([g_incl]) via induced_homomorphism_apply **)
+  rewrite (induced_homomorphism_apply Y Ty y Z Tz z r
+    (path_homotopy_class_loop Y Ty y g_incl) Hg_cls).
+  set eps := Eps_i (fun f0:set => f0 :e path_homotopy_class_loop Y Ty y g_incl).
+  (** eps is a representative: eps :e [g_incl] **)
+  claim Heps_in_cls : eps :e path_homotopy_class_loop Y Ty y g_incl.
+  { claim Hex : exists f0:set, f0 :e path_homotopy_class_loop Y Ty y g_incl.
+    { witness g_incl. exact (loop_in_own_class_early Y Ty y g_incl HtopY Hg_incl_loop). }
+    exact (Eps_i_ex (fun f0:set => f0 :e path_homotopy_class_loop Y Ty y g_incl) Hex). }
+  (** eps is path-homotopic to g_incl **)
+  claim Heps_hom : path_homotopic Y Ty y y g_incl eps.
+  { exact (path_homotopy_class_loop_has_homotopy Y Ty y g_incl eps Heps_in_cls). }
+  (** compose_fun I eps r is path-homotopic to compose_fun I g_incl r in Z **)
+  claim Hpost_hom : path_homotopic Z Tz z z
+    (compose_fun unit_interval g_incl r) (compose_fun unit_interval eps r).
+  { exact (path_homotopic_postcompose Y Ty Z Tz y y z z g_incl eps r
+      Heps_hom Hcont_r (eq_refl z) (eq_refl z)). }
+  (** compose_fun I g_incl r agrees pointwise with rg_incl **)
+  (** both compute to apply_fun r (apply_fun g t) at each t **)
+  (** This + HloopsVp applied to rg gives null-homotopy **)
+  (** Full chain: [compose_fun I eps r] = [compose_fun I g_incl r] = [rg_incl] = id **)
+  admit.
+}
 (** By injectivity: [g_incl] = id-Y **)
 claim Hg_is_id : path_homotopy_class_loop Y Ty y g_incl = fundamental_group_id Y Ty y.
 { exact (thm54_6a_p_star_injective Y Ty Z Tz r y Hcov HyY
