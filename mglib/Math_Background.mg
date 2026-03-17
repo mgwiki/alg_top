@@ -408254,6 +408254,48 @@ set slices := {path_component_of preU (subspace_topology E Te preU) e | e :e pre
 admit.
 Admitted.
 
+(** Improved version with locally_path_connected hypothesis **)
+(** This is needed to ensure path components of p^-1(U) are open **)
+Theorem covering_trivializes_over_pi1_trivial_lpc :
+  forall E Te B Tb p U:set,
+  covering_map E Te B Tb p ->
+  U :e Tb ->
+  path_connected_space U (subspace_topology B Tb U) ->
+  locally_path_connected U (subspace_topology B Tb U) ->
+  (forall y:set, y :e U ->
+    forall f:set, f :e loop_space U (subspace_topology B Tb U) y ->
+    path_homotopic B Tb y y
+      (compose_fun unit_interval f (graph U (fun x:set => x)))
+      (constant_path y)) ->
+  evenly_covered E Te B Tb p U.
+let E Te B Tb p U.
+assume Hcov : covering_map E Te B Tb p.
+assume HUopen : U :e Tb.
+assume HpcU : path_connected_space U (subspace_topology B Tb U).
+assume HlpcU : locally_path_connected U (subspace_topology B Tb U).
+assume Hloops : forall y:set, y :e U ->
+  forall f:set, f :e loop_space U (subspace_topology B Tb U) y ->
+  path_homotopic B Tb y y
+    (compose_fun unit_interval f (graph U (fun x:set => x)))
+    (constant_path y).
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim Hcont_p : continuous_map E Te B Tb p. { exact (covering_map_continuous E Te B Tb p Hcov). }
+claim HUsub : U c= B. { exact (topology_elem_subset B Tb U HtopB HUopen). }
+claim Hfn_p : function_on p E B. { exact (continuous_map_function_on E Te B Tb p Hcont_p). }
+set preU := preimage_of E p U.
+claim HpreU_open : preU :e Te.
+{ exact (continuous_map_preimage E Te B Tb p Hcont_p U HUopen). }
+(** preU inherits locally_path_connected from E **)
+(** E is locally path connected because: covering map is local homeo, **)
+(** each evenly covered V gives sheets homeo to V, and U is lpc. **)
+(** The path components of preU are open (using lpc of preU). **)
+(** Each path component maps homeomorphically to U via p **)
+(** (surjective by path lifting, injective by null-homotopy). **)
+(** Full construction requires ~150 lines of formal verification. **)
+admit.
+Admitted.
+
 (** Helper: loops in evenly covered neighborhood of universal cover are null-homotopic. **)
 (** If p0: E0 -> B is a covering with E0 simply connected, and V0 is evenly covered **)
 (** by p0, then any loop in V0 is null-homotopic in B. **)
