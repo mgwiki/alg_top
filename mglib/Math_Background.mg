@@ -406462,9 +406462,14 @@ apply and3I.
   (** Get evenly covered neighborhood V for r **)
   apply (covering_map_evenly_covered_slices Y Ty Z Tz r z Hcov_r HzZ).
   let V. assume Hev_inner. apply Hev_inner. let slices_r. assume Hpack_r.
-  (** TODO: for each slice S_a of r over V, get evenly covered neighborhoods for q,
-      intersect to get a common U, then show the combined preimage slices give
-      evenly_covered for p over U. This requires careful construction. **)
+  (** Strategy: use Huniv (universal cover existence) to extract **)
+  (** semilocally_simply_connected Z Tz, then find a neighborhood **)
+  (** V' c= V where pi1(V') -> pi1(Z) is trivial. Each r-slice over V' **)
+  (** then trivializes under q because pi1(slice) -> pi1(Y) is trivial **)
+  (** (r_star injective + triviality of pi1(V') -> pi1(Z)). **)
+  (** However, semilocally_simply_connected is defined AFTER this theorem. **)
+  (** The proof needs either: (1) moving the definition earlier, or **)
+  (** (2) inlining the semilocal extraction from Huniv directly. **)
   admit.
 Admitted.
 
