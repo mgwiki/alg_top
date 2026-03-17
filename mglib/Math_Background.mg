@@ -407857,19 +407857,72 @@ apply and3I.
   - (** evenly_covered X Tx Z Tz p V' **)
     claim HV'subV : V' c= V. { let w. assume Hw. exact (binintersectE1 V V0 w Hw). }
     claim HV'subV0 : V' c= V0. { let w. assume Hw. exact (binintersectE2 V V0 w Hw). }
-    (** V' is evenly covered by r (restrict r-slices from V to V') **)
-    (** Proof outline for evenly_covered X Tx Z Tz p V': **)
-    (** 1. Reconstruct evenly_covered Y Ty Z Tz r V from slices_r data **)
-    (** 2. Apply evenly_covered_open_subset to get evenly_covered for r over V' **)
-    (** 3. For each restricted r-slice S'_a over V': **)
-    (**    - S'_a is open in Y and homeomorphic to V' via r **)
-    (**    - Since V' c= V0 (evenly covered by universal cover p0) **)
-    (**      all loops in V' are null-homotopic in Z **)
-    (**    - Since r_star is injective (covering map property), **)
-    (**      loops in S'_a are null-homotopic in Y **)
-    (**    - Therefore q trivializes over S'_a: q^{-1}(S'_a) = union of sheets T_{a,b} **)
-    (** 4. Each T_{a,b} maps homeomorphically to V' via p = r o q **)
-    (** 5. The collection of all T_{a,b} gives evenly_covered X Tx Z Tz p V' **)
+    (** Step 1: Build evenly_covered Y Ty Z Tz r V from slices_r **)
+    claim Hev_r_V : evenly_covered Y Ty Z Tz r V.
+    { prove topology_on Y Ty /\ V :e Tz /\
+        exists slices:set, slices c= Ty /\ pairwise_disjoint slices /\
+          Union slices = preimage_of Y r V /\
+          (forall S0:set, S0 :e slices ->
+            homeomorphism S0 (subspace_topology Y Ty S0) V (subspace_topology Z Tz V)
+              (graph S0 (fun y:set => apply_fun r y))).
+      apply and3I.
+      - exact HtopY.
+      - exact HVopen.
+      - witness slices_r.
+        apply and4I.
+        + exact Hsr_open.
+        + exact Hsr_pd.
+        + exact Hsr_union.
+        + exact Hsr_homeo. }
+    (** Step 2: Restrict to V' using evenly_covered_open_subset **)
+    claim Hev_r_V' : evenly_covered Y Ty Z Tz r V'.
+    { exact (evenly_covered_open_subset Y Ty Z Tz r V V' Hev_r_V HV'open HV'subV). }
+    (** Step 3: Get restricted r-slices over V' **)
+    claim Hev_r_V'_data :
+      exists slices_r':set, slices_r' c= Ty /\ pairwise_disjoint slices_r' /\
+        Union slices_r' = preimage_of Y r V' /\
+        (forall S0:set, S0 :e slices_r' ->
+          homeomorphism S0 (subspace_topology Y Ty S0) V' (subspace_topology Z Tz V')
+            (graph S0 (fun y:set => apply_fun r y))).
+    { exact (andER (topology_on Y Ty /\ V' :e Tz)
+        (exists slices:set, slices c= Ty /\ pairwise_disjoint slices /\
+          Union slices = preimage_of Y r V' /\
+          (forall S0:set, S0 :e slices ->
+            homeomorphism S0 (subspace_topology Y Ty S0) V' (subspace_topology Z Tz V')
+              (graph S0 (fun y:set => apply_fun r y))))
+        Hev_r_V'). }
+    apply Hev_r_V'_data. let slices_r'. assume Hsr'_pack.
+    (** Extract restricted slices data **)
+    set Hhomeo_type := forall S0:set, S0 :e slices_r' ->
+      homeomorphism S0 (subspace_topology Y Ty S0) V' (subspace_topology Z Tz V')
+        (graph S0 (fun y:set => apply_fun r y)).
+    claim Hsr'_homeo : Hhomeo_type.
+    { exact (andER
+        ((slices_r' c= Ty /\ pairwise_disjoint slices_r') /\ Union slices_r' = preimage_of Y r V')
+        Hhomeo_type
+        Hsr'_pack). }
+    claim Hsr'_left : (slices_r' c= Ty /\ pairwise_disjoint slices_r') /\ Union slices_r' = preimage_of Y r V'.
+    { exact (andEL
+        ((slices_r' c= Ty /\ pairwise_disjoint slices_r') /\ Union slices_r' = preimage_of Y r V')
+        Hhomeo_type
+        Hsr'_pack). }
+    claim Hsr'_union : Union slices_r' = preimage_of Y r V'.
+    { exact (andER (slices_r' c= Ty /\ pairwise_disjoint slices_r')
+        (Union slices_r' = preimage_of Y r V') Hsr'_left). }
+    claim Hsr'_left2 : slices_r' c= Ty /\ pairwise_disjoint slices_r'.
+    { exact (andEL (slices_r' c= Ty /\ pairwise_disjoint slices_r')
+        (Union slices_r' = preimage_of Y r V') Hsr'_left). }
+    claim Hsr'_open : slices_r' c= Ty.
+    { exact (andEL (slices_r' c= Ty) (pairwise_disjoint slices_r') Hsr'_left2). }
+    claim Hsr'_pd : pairwise_disjoint slices_r'.
+    { exact (andER (slices_r' c= Ty) (pairwise_disjoint slices_r') Hsr'_left2). }
+    (** Now we have restricted r-slices over V'. **)
+    (** Each S'_a :e slices_r' maps homeomorphically to V' via r. **)
+    (** Step 4-5: For each S'_a, need q to trivialize over it to build p-slices. **)
+    (** This requires: loops in S'_a are null-homotopic in Y **)
+    (** (from V' c= V0 evenly covered by universal cover p0, **)
+    (** r_star injective, and pi1(V') -> pi1(Z) trivial). **)
+    (** Then q^{-1}(S'_a) = union of sheets T_{a,b}, each homeo to V' via p. **)
     admit.
 Admitted.
 
