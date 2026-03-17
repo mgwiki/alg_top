@@ -331325,7 +331325,205 @@ claim Hextfp :
                 Hn2Ne
                 Hwp2).
             }
-            admit. (** core S68.5 gap C uniqueness core: use extension-property synchronization on reconstructed pair HreconPair. **)
+            apply HreconPair.
+            let aof1.
+            assume Haof1Pack :
+              exists uof1 rw1 aof2 uof2 rw2:set,
+                reduced_word J ImageFam efam_int n1 rw1 /\
+                reduced_word J ImageFam efam_int n2 rw2 /\
+                word_product multG eG rw1 n1 = x /\
+                word_product multG eG rw2 n2 = x /\
+                ((forall i:set, i :e n1 ->
+                  apply_fun aof1 i :e J /\
+                  apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i =
+                    apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i = apply_fun ws1 i)) /\
+                ((forall j:set, j :e n2 ->
+                  apply_fun aof2 j :e J /\
+                  apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j =
+                    apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j = apply_fun ws2 j)).
+            apply Haof1Pack.
+            let uof1.
+            assume Huof1Pack :
+              exists rw1 aof2 uof2 rw2:set,
+                reduced_word J ImageFam efam_int n1 rw1 /\
+                reduced_word J ImageFam efam_int n2 rw2 /\
+                word_product multG eG rw1 n1 = x /\
+                word_product multG eG rw2 n2 = x /\
+                ((forall i:set, i :e n1 ->
+                  apply_fun aof1 i :e J /\
+                  apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i =
+                    apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i = apply_fun ws1 i)) /\
+                ((forall j:set, j :e n2 ->
+                  apply_fun aof2 j :e J /\
+                  apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j =
+                    apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j = apply_fun ws2 j)).
+            apply Huof1Pack.
+            let rw1.
+            assume Hrw1Pack :
+              exists aof2 uof2 rw2:set,
+                reduced_word J ImageFam efam_int n1 rw1 /\
+                reduced_word J ImageFam efam_int n2 rw2 /\
+                word_product multG eG rw1 n1 = x /\
+                word_product multG eG rw2 n2 = x /\
+                ((forall i:set, i :e n1 ->
+                  apply_fun aof1 i :e J /\
+                  apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i =
+                    apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i = apply_fun ws1 i)) /\
+                ((forall j:set, j :e n2 ->
+                  apply_fun aof2 j :e J /\
+                  apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j =
+                    apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j = apply_fun ws2 j)).
+            apply Hrw1Pack.
+            let aof2.
+            assume Haof2Pack :
+              exists uof2 rw2:set,
+                reduced_word J ImageFam efam_int n1 rw1 /\
+                reduced_word J ImageFam efam_int n2 rw2 /\
+                word_product multG eG rw1 n1 = x /\
+                word_product multG eG rw2 n2 = x /\
+                ((forall i:set, i :e n1 ->
+                  apply_fun aof1 i :e J /\
+                  apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i =
+                    apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i = apply_fun ws1 i)) /\
+                ((forall j:set, j :e n2 ->
+                  apply_fun aof2 j :e J /\
+                  apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j =
+                    apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j = apply_fun ws2 j)).
+            apply Haof2Pack.
+            let uof2.
+            assume Huof2Pack :
+              exists rw2:set,
+                reduced_word J ImageFam efam_int n1 rw1 /\
+                reduced_word J ImageFam efam_int n2 rw2 /\
+                word_product multG eG rw1 n1 = x /\
+                word_product multG eG rw2 n2 = x /\
+                ((forall i:set, i :e n1 ->
+                  apply_fun aof1 i :e J /\
+                  apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i =
+                    apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+                 (forall i:set, i :e n1 ->
+                  apply_fun rw1 i = apply_fun ws1 i)) /\
+                ((forall j:set, j :e n2 ->
+                  apply_fun aof2 j :e J /\
+                  apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j =
+                    apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+                 (forall j:set, j :e n2 ->
+                  apply_fun rw2 j = apply_fun ws2 j)).
+            apply Huof2Pack.
+            let rw2.
+            assume HpairPack :
+              reduced_word J ImageFam efam_int n1 rw1 /\
+              reduced_word J ImageFam efam_int n2 rw2 /\
+              word_product multG eG rw1 n1 = x /\
+              word_product multG eG rw2 n2 = x /\
+              ((forall i:set, i :e n1 ->
+                apply_fun aof1 i :e J /\
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+               (forall i:set, i :e n1 ->
+                apply_fun rw1 i =
+                  apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+               (forall i:set, i :e n1 ->
+                apply_fun rw1 i = apply_fun ws1 i)) /\
+              ((forall j:set, j :e n2 ->
+                apply_fun aof2 j :e J /\
+                apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+               (forall j:set, j :e n2 ->
+                apply_fun rw2 j =
+                  apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+               (forall j:set, j :e n2 ->
+                apply_fun rw2 j = apply_fun ws2 j)).
+            apply (and6E
+              (reduced_word J ImageFam efam_int n1 rw1)
+              (reduced_word J ImageFam efam_int n2 rw2)
+              (word_product multG eG rw1 n1 = x)
+              (word_product multG eG rw2 n2 = x)
+              ((forall i:set, i :e n1 ->
+                apply_fun aof1 i :e J /\
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+               (forall i:set, i :e n1 ->
+                apply_fun rw1 i =
+                  apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
+               (forall i:set, i :e n1 ->
+                apply_fun rw1 i = apply_fun ws1 i))
+              ((forall j:set, j :e n2 ->
+                apply_fun aof2 j :e J /\
+                apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+               (forall j:set, j :e n2 ->
+                apply_fun rw2 j =
+                  apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
+               (forall j:set, j :e n2 ->
+                apply_fun rw2 j = apply_fun ws2 j))
+              HpairPack).
+            assume HredRw1 HredRw2 HwpRw1 HwpRw2 HsideRw1 HsideRw2.
+            claim Hrw1EqWs1 :
+              forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun ws1 i.
+            {
+              apply (and3E
+                (forall i:set, i :e n1 ->
+                  apply_fun aof1 i :e J /\
+                  apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+                (forall i:set, i :e n1 ->
+                  apply_fun rw1 i =
+                    apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+                (forall i:set, i :e n1 ->
+                  apply_fun rw1 i = apply_fun ws1 i)
+                HsideRw1).
+              assume _ _ Hrw1EqWs1.
+              exact Hrw1EqWs1.
+            }
+            claim Hrw2EqWs2 :
+              forall j:set, j :e n2 -> apply_fun rw2 j = apply_fun ws2 j.
+            {
+              apply (and3E
+                (forall j:set, j :e n2 ->
+                  apply_fun aof2 j :e J /\
+                  apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j))
+                (forall j:set, j :e n2 ->
+                  apply_fun rw2 j =
+                    apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))
+                (forall j:set, j :e n2 ->
+                  apply_fun rw2 j = apply_fun ws2 j)
+                HsideRw2).
+              assume _ _ Hrw2EqWs2.
+              exact Hrw2EqWs2.
+            }
+            admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed words rw1/rw2 via extension property, then transfer equality to ws1/ws2 using Hrw1EqWs1 and Hrw2EqWs2. **)
           }
           claim HnEq : n1 = n2.
           {
