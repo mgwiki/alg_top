@@ -330533,174 +330533,6 @@ claim Hextfp :
                     HuPack). } }
             { exact HxEq. } }
         }
-        claim Hsubgen_nonid_lift_chosen :
-          subgroups_generate G multG eG invG J ImageFam ->
-          let n0 := Eps_i (fun n:set =>
-            exists xs:set, n :e omega /\ n <> 0 /\
-              function_on xs n G /\
-              (forall i:set, i :e n ->
-                exists a:set, exists u:set,
-                  a :e J /\ u :e apply_fun Gfam a /\
-                  apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
-              x = word_product multG eG xs n) in
-          n0 :e omega /\ n0 <> 0 /\
-            exists xs0:set,
-              function_on xs0 n0 G /\
-              (forall i:set, i :e n0 ->
-                exists a:set, exists u:set,
-                  a :e J /\ u :e apply_fun Gfam a /\
-                  apply_fun xs0 i = apply_fun (apply_fun ifam a) u) /\
-              x = word_product multG eG xs0 n0.
-        {
-          assume HgenImg : subgroups_generate G multG eG invG J ImageFam.
-          claim HexN :
-            exists n:set,
-              exists xs:set, n :e omega /\ n <> 0 /\
-                function_on xs n G /\
-                (forall i:set, i :e n ->
-                  exists a:set, exists u:set,
-                    a :e J /\ u :e apply_fun Gfam a /\
-                    apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
-                x = word_product multG eG xs n.
-          {
-            apply (Hsubgen_nonid_lift HgenImg).
-            let n.
-            assume HnPack :
-              n :e omega /\ n <> 0 /\
-                exists xs:set, function_on xs n G /\
-                  (forall i:set, i :e n ->
-                    exists a:set, exists u:set,
-                      a :e J /\ u :e apply_fun Gfam a /\
-                      apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
-                  x = word_product multG eG xs n.
-            apply (and3E
-              (n :e omega)
-              (n <> 0)
-              (exists xs:set, function_on xs n G /\
-                (forall i:set, i :e n ->
-                  exists a:set, exists u:set,
-                    a :e J /\ u :e apply_fun Gfam a /\
-                    apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
-                x = word_product multG eG xs n)
-              HnPack).
-            assume HnO : n :e omega.
-            assume HnNe : n <> 0.
-            assume HxsPack :
-              exists xs:set, function_on xs n G /\
-                (forall i:set, i :e n ->
-                  exists a:set, exists u:set,
-                    a :e J /\ u :e apply_fun Gfam a /\
-                    apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
-                x = word_product multG eG xs n.
-            apply HxsPack.
-            let xs.
-            assume HxsProps :
-              function_on xs n G /\
-                (forall i:set, i :e n ->
-                  exists a:set, exists u:set,
-                    a :e J /\ u :e apply_fun Gfam a /\
-                    apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
-                x = word_product multG eG xs n.
-            apply (and3E
-              (function_on xs n G)
-              (forall i:set, i :e n ->
-                exists a:set, exists u:set,
-                  a :e J /\ u :e apply_fun Gfam a /\
-                  apply_fun xs i = apply_fun (apply_fun ifam a) u)
-              (x = word_product multG eG xs n)
-              HxsProps).
-            assume HxsFn : function_on xs n G.
-            assume HxsLift :
-              forall i:set, i :e n ->
-                exists a:set, exists u:set,
-                  a :e J /\ u :e apply_fun Gfam a /\
-                  apply_fun xs i = apply_fun (apply_fun ifam a) u.
-            assume HxEq : x = word_product multG eG xs n.
-            witness n.
-            witness xs.
-            exact (and5I
-              (n :e omega)
-              (n <> 0)
-              (function_on xs n G)
-              (forall i:set, i :e n ->
-                exists a:set, exists u:set,
-                  a :e J /\ u :e apply_fun Gfam a /\
-                  apply_fun xs i = apply_fun (apply_fun ifam a) u)
-              (x = word_product multG eG xs n)
-              HnO
-              HnNe
-              HxsFn
-              HxsLift
-              HxEq).
-          }
-          set n0 := Eps_i (fun n:set =>
-            exists xs:set, n :e omega /\ n <> 0 /\
-              function_on xs n G /\
-              (forall i:set, i :e n ->
-                exists a:set, exists u:set,
-                  a :e J /\ u :e apply_fun Gfam a /\
-                  apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
-              x = word_product multG eG xs n).
-          claim Hn0Pack :
-            exists xs:set, n0 :e omega /\ n0 <> 0 /\
-              function_on xs n0 G /\
-              (forall i:set, i :e n0 ->
-                exists a:set, exists u:set,
-                  a :e J /\ u :e apply_fun Gfam a /\
-                  apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
-              x = word_product multG eG xs n0.
-          {
-            exact (Eps_i_ex
-              (fun n:set =>
-                exists xs:set, n :e omega /\ n <> 0 /\
-                  function_on xs n G /\
-                  (forall i:set, i :e n ->
-                    exists a:set, exists u:set,
-                      a :e J /\ u :e apply_fun Gfam a /\
-                      apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
-                  x = word_product multG eG xs n)
-              HexN).
-          }
-          apply Hn0Pack.
-          let xs0.
-          assume Hxs0Pack :
-            n0 :e omega /\ n0 <> 0 /\
-              function_on xs0 n0 G /\
-              (forall i:set, i :e n0 ->
-                exists a:set, exists u:set,
-                  a :e J /\ u :e apply_fun Gfam a /\
-                  apply_fun xs0 i = apply_fun (apply_fun ifam a) u) /\
-              x = word_product multG eG xs0 n0.
-          apply (and5E
-            (n0 :e omega)
-            (n0 <> 0)
-            (function_on xs0 n0 G)
-            (forall i:set, i :e n0 ->
-              exists a:set, exists u:set,
-                a :e J /\ u :e apply_fun Gfam a /\
-                apply_fun xs0 i = apply_fun (apply_fun ifam a) u)
-            (x = word_product multG eG xs0 n0)
-            Hxs0Pack).
-          assume Hn0O : n0 :e omega.
-          assume Hn0Ne : n0 <> 0.
-          assume Hxs0Fn : function_on xs0 n0 G.
-          assume Hxs0Lift :
-            forall i:set, i :e n0 ->
-              exists a:set, exists u:set,
-                a :e J /\ u :e apply_fun Gfam a /\
-                apply_fun xs0 i = apply_fun (apply_fun ifam a) u.
-          assume Hx0Eq : x = word_product multG eG xs0 n0.
-          apply andI.
-          { apply andI.
-            { exact Hn0O. }
-            { exact Hn0Ne. } }
-          { witness xs0.
-            apply andI.
-            { apply andI.
-              { exact Hxs0Fn. }
-              { exact Hxs0Lift. } }
-            { exact Hx0Eq. } }
-        }
         claim Hsubgen_nonid_lift_with_choice_functions :
           subgroups_generate G multG eG invG J ImageFam ->
           exists n xs aof uof:set,
@@ -330945,203 +330777,6 @@ claim Hextfp :
               HuofIn
               HxsViaUof)
             HxEq).
-        }
-        claim Hsubgen_nonid_reconstructed_word :
-          subgroups_generate G multG eG invG J ImageFam ->
-          exists n aof uof ws:set,
-            n :e omega /\ n <> 0 /\ function_on ws n G /\
-            ((forall i:set, i :e n ->
-              apply_fun aof i :e J /\
-              apply_fun uof i :e apply_fun Gfam (apply_fun aof i)) /\
-             (forall i:set, i :e n ->
-              apply_fun ws i =
-                apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i))) /\
-            x = word_product multG eG ws n.
-        {
-          assume HgenImg : subgroups_generate G multG eG invG J ImageFam.
-          apply (Hsubgen_nonid_lift_with_choice_functions HgenImg).
-          let n.
-          assume HnPack :
-            exists xs aof uof:set,
-              n :e omega /\ n <> 0 /\ function_on xs n G /\
-              ((forall i:set, i :e n -> apply_fun aof i :e J) /\
-               (forall i:set, i :e n ->
-                 apply_fun uof i :e apply_fun Gfam (apply_fun aof i)) /\
-               (forall i:set, i :e n ->
-                 apply_fun xs i =
-                   apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i))) /\
-              x = word_product multG eG xs n.
-          apply HnPack.
-          let xs.
-          assume HxsPack :
-            exists aof uof:set,
-              n :e omega /\ n <> 0 /\ function_on xs n G /\
-              ((forall i:set, i :e n -> apply_fun aof i :e J) /\
-               (forall i:set, i :e n ->
-                 apply_fun uof i :e apply_fun Gfam (apply_fun aof i)) /\
-               (forall i:set, i :e n ->
-                 apply_fun xs i =
-                   apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i))) /\
-              x = word_product multG eG xs n.
-          apply HxsPack.
-          let aof.
-          assume HaofPack :
-            exists uof:set,
-              n :e omega /\ n <> 0 /\ function_on xs n G /\
-              ((forall i:set, i :e n -> apply_fun aof i :e J) /\
-               (forall i:set, i :e n ->
-                 apply_fun uof i :e apply_fun Gfam (apply_fun aof i)) /\
-               (forall i:set, i :e n ->
-                 apply_fun xs i =
-                   apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i))) /\
-              x = word_product multG eG xs n.
-          apply HaofPack.
-          let uof.
-          assume HuofPack :
-            n :e omega /\ n <> 0 /\ function_on xs n G /\
-            ((forall i:set, i :e n -> apply_fun aof i :e J) /\
-             (forall i:set, i :e n ->
-               apply_fun uof i :e apply_fun Gfam (apply_fun aof i)) /\
-             (forall i:set, i :e n ->
-               apply_fun xs i =
-                 apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i))) /\
-            x = word_product multG eG xs n.
-          apply (and5E
-            (n :e omega)
-            (n <> 0)
-            (function_on xs n G)
-            ((forall i:set, i :e n -> apply_fun aof i :e J) /\
-             (forall i:set, i :e n ->
-               apply_fun uof i :e apply_fun Gfam (apply_fun aof i)) /\
-             (forall i:set, i :e n ->
-               apply_fun xs i =
-                 apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i)))
-            (x = word_product multG eG xs n)
-            HuofPack).
-          assume HnO : n :e omega.
-          assume HnNe : n <> 0.
-          assume HxsFn : function_on xs n G.
-          assume HchoicePack :
-            (forall i:set, i :e n -> apply_fun aof i :e J) /\
-            (forall i:set, i :e n ->
-              apply_fun uof i :e apply_fun Gfam (apply_fun aof i)) /\
-            (forall i:set, i :e n ->
-              apply_fun xs i =
-                apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i)).
-          assume HxEq : x = word_product multG eG xs n.
-          apply (and3E
-            (forall i:set, i :e n -> apply_fun aof i :e J)
-            (forall i:set, i :e n ->
-              apply_fun uof i :e apply_fun Gfam (apply_fun aof i))
-            (forall i:set, i :e n ->
-              apply_fun xs i =
-                apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i))
-            HchoicePack).
-          assume HaofJ :
-            forall i:set, i :e n -> apply_fun aof i :e J.
-          assume HuofIn :
-            forall i:set, i :e n ->
-              apply_fun uof i :e apply_fun Gfam (apply_fun aof i).
-          assume HxsVia :
-            forall i:set, i :e n ->
-              apply_fun xs i =
-                apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i).
-          set ws := graph n (fun i:set =>
-            apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i)).
-          claim HwsFn : function_on ws n G.
-          {
-            let i.
-            assume Hi : i :e n.
-            rewrite (apply_fun_graph
-              n
-              (fun j:set =>
-                apply_fun (apply_fun ifam (apply_fun aof j)) (apply_fun uof j))
-              i
-              Hi).
-            exact (group_homomorphism_function_on
-              (apply_fun Gfam (apply_fun aof i))
-              (apply_fun multfam (apply_fun aof i))
-              G
-              multG
-              (apply_fun ifam (apply_fun aof i))
-              (Hifam_hom (apply_fun aof i) (HaofJ i Hi))
-              (apply_fun uof i)
-              (HuofIn i Hi)).
-          }
-          claim Hxs_ws :
-            forall i:set, i :e n -> apply_fun xs i = apply_fun ws i.
-          {
-            let i.
-            assume Hi : i :e n.
-            claim HwsEval :
-              apply_fun ws i =
-                apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i).
-            {
-              exact (apply_fun_graph
-                n
-                (fun j:set =>
-                  apply_fun (apply_fun ifam (apply_fun aof j)) (apply_fun uof j))
-                i
-                Hi).
-            }
-            rewrite HwsEval.
-            exact (HxsVia i Hi).
-          }
-          claim HwpEq :
-            word_product multG eG xs n = word_product multG eG ws n.
-          {
-            exact (word_product_congr_on
-              multG
-              eG
-              xs
-              ws
-              n
-              HnO
-              Hxs_ws).
-          }
-          witness n.
-          witness aof.
-          witness uof.
-          witness ws.
-          exact (and5I
-            (n :e omega)
-            (n <> 0)
-            (function_on ws n G)
-            ((forall i:set, i :e n ->
-              apply_fun aof i :e J /\
-              apply_fun uof i :e apply_fun Gfam (apply_fun aof i)) /\
-             (forall i:set, i :e n ->
-              apply_fun ws i =
-                apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i)))
-            (x = word_product multG eG ws n)
-            HnO
-            HnNe
-            HwsFn
-            (andI
-              (forall i:set, i :e n ->
-                apply_fun aof i :e J /\
-                apply_fun uof i :e apply_fun Gfam (apply_fun aof i))
-              (forall i:set, i :e n ->
-                apply_fun ws i =
-                  apply_fun (apply_fun ifam (apply_fun aof i)) (apply_fun uof i))
-              (fun i Hi => andI
-                (apply_fun aof i :e J)
-                (apply_fun uof i :e apply_fun Gfam (apply_fun aof i))
-                (HaofJ i Hi)
-                (HuofIn i Hi))
-              (fun i Hi =>
-                apply_fun_graph
-                  n
-                  (fun j:set =>
-                    apply_fun (apply_fun ifam (apply_fun aof j)) (apply_fun uof j))
-                  i
-                  Hi))
-            (eq_i_tra
-              x
-              (word_product multG eG xs n)
-              (word_product multG eG ws n)
-              HxEq
-              HwpEq)).
         }
         claim Hsubgen_nonid_reduced_lift_with_choice_functions :
           forall n' xs':set,
@@ -331735,72 +331370,22 @@ claim Hextfp :
               Hws2Eq)).
         }
         claim Hsubgen_nonid_ws_eq_transfer_to_xs :
-          forall n1 xs1 n2 xs2 aof1 uof1 ws1 aof2 uof2 ws2:set,
-            ((forall i:set, i :e n1 ->
-              apply_fun aof1 i :e J /\
-              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
-             (forall i:set, i :e n1 ->
-              apply_fun ws1 i =
-                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
-             (forall i:set, i :e n1 ->
-              apply_fun ws1 i = apply_fun xs1 i)) ->
-            ((forall j:set, j :e n2 ->
-              apply_fun aof2 j :e J /\
-              apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
-             (forall j:set, j :e n2 ->
-              apply_fun ws2 j =
-                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
-             (forall j:set, j :e n2 ->
-              apply_fun ws2 j = apply_fun xs2 j)) ->
+          forall n1 xs1 n2 xs2 ws1 ws2:set,
+            (forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun xs1 i) ->
+            (forall j:set, j :e n2 -> apply_fun ws2 j = apply_fun xs2 j) ->
             n1 = n2 ->
             (forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i) ->
             forall i:set, i :e n1 -> apply_fun xs1 i = apply_fun xs2 i.
         {
-          let n1 xs1 n2 xs2 aof1 uof1 ws1 aof2 uof2 ws2.
-          assume Hside1 :
-            ((forall i:set, i :e n1 ->
-              apply_fun aof1 i :e J /\
-              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
-             (forall i:set, i :e n1 ->
-              apply_fun ws1 i =
-                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
-             (forall i:set, i :e n1 ->
-              apply_fun ws1 i = apply_fun xs1 i)).
-          assume Hside2 :
-            ((forall j:set, j :e n2 ->
-              apply_fun aof2 j :e J /\
-              apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
-             (forall j:set, j :e n2 ->
-              apply_fun ws2 j =
-                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)) /\
-             (forall j:set, j :e n2 ->
-              apply_fun ws2 j = apply_fun xs2 j)).
+          let n1 xs1 n2 xs2 ws1 ws2.
+          assume Hws1EqXs1 :
+            forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun xs1 i.
+          assume Hws2EqXs2 :
+            forall j:set, j :e n2 -> apply_fun ws2 j = apply_fun xs2 j.
           assume HnEq : n1 = n2.
           assume HwsEq : forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i.
           let i.
           assume Hi : i :e n1.
-          apply (and3E
-            (forall i:set, i :e n1 ->
-              apply_fun aof1 i :e J /\
-              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
-            (forall i:set, i :e n1 ->
-              apply_fun ws1 i =
-                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
-            (forall i:set, i :e n1 ->
-              apply_fun ws1 i = apply_fun xs1 i)
-            Hside1).
-          assume _ _ Hws1EqXs1.
-          apply (and3E
-            (forall j:set, j :e n2 ->
-              apply_fun aof2 j :e J /\
-              apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j))
-            (forall j:set, j :e n2 ->
-              apply_fun ws2 j =
-                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))
-            (forall j:set, j :e n2 ->
-              apply_fun ws2 j = apply_fun xs2 j)
-            Hside2).
-          assume _ _ Hws2EqXs2.
           claim Hi2 : i :e n2.
           {
             exact (eq_subst_mem_set i n1 n2 Hi HnEq).
@@ -331827,132 +331412,6 @@ claim Hextfp :
               (apply_fun xs2 i)
               (HwsEq i Hi)
               Hws2EqXs2i)).
-        }
-        claim Hsubgen_nonid_uof_eq_from_labels_and_ws :
-          forall n aof1 uof1 ws1 aof2 uof2 ws2:set,
-            (forall i:set, i :e n ->
-              apply_fun aof1 i :e J /\
-              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) ->
-            (forall i:set, i :e n ->
-              apply_fun ws1 i =
-                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) ->
-            (forall i:set, i :e n ->
-              apply_fun aof2 i :e J /\
-              apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i)) ->
-            (forall i:set, i :e n ->
-              apply_fun ws2 i =
-                apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i)) ->
-            (forall i:set, i :e n -> apply_fun aof1 i = apply_fun aof2 i) ->
-            (forall i:set, i :e n -> apply_fun ws1 i = apply_fun ws2 i) ->
-            forall i:set, i :e n -> apply_fun uof1 i = apply_fun uof2 i.
-        {
-          let n aof1 uof1 ws1 aof2 uof2 ws2.
-          assume Hchoice1 :
-            forall i:set, i :e n ->
-              apply_fun aof1 i :e J /\
-              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i).
-          assume Hvia1 :
-            forall i:set, i :e n ->
-              apply_fun ws1 i =
-                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i).
-          assume Hchoice2 :
-            forall i:set, i :e n ->
-              apply_fun aof2 i :e J /\
-              apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i).
-          assume Hvia2 :
-            forall i:set, i :e n ->
-              apply_fun ws2 i =
-                apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i).
-          assume HaEq :
-            forall i:set, i :e n -> apply_fun aof1 i = apply_fun aof2 i.
-          assume HwsEq :
-            forall i:set, i :e n -> apply_fun ws1 i = apply_fun ws2 i.
-          let i.
-          assume Hi : i :e n.
-          claim Ha1J : apply_fun aof1 i :e J.
-          {
-            exact (andEL
-              (apply_fun aof1 i :e J)
-              (apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
-              (Hchoice1 i Hi)).
-          }
-          claim Hu1In : apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i).
-          {
-            exact (andER
-              (apply_fun aof1 i :e J)
-              (apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
-              (Hchoice1 i Hi)).
-          }
-          claim Hu2In0 : apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i).
-          {
-            exact (andER
-              (apply_fun aof2 i :e J)
-              (apply_fun uof2 i :e apply_fun Gfam (apply_fun aof2 i))
-              (Hchoice2 i Hi)).
-          }
-          claim Hu2In : apply_fun uof2 i :e apply_fun Gfam (apply_fun aof1 i).
-          {
-            rewrite (HaEq i Hi).
-            exact Hu2In0.
-          }
-          claim HifamEq0 :
-            apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i) =
-            apply_fun ws2 i.
-          {
-            rewrite <- (Hvia1 i Hi).
-            exact (HwsEq i Hi).
-          }
-          claim HifamEq1 :
-            apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i) =
-            apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i).
-          {
-            exact (eq_i_tra
-              (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
-              (apply_fun ws2 i)
-              (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
-              HifamEq0
-              (Hvia2 i Hi)).
-          }
-          claim HifamEq :
-            apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i) =
-            apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i).
-          {
-            claim HrhsAlpha :
-              apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i) =
-              apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i).
-            {
-              rewrite <- (HaEq i Hi).
-              reflexivity.
-            }
-            exact (eq_i_tra
-              (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
-              (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
-              (apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof2 i))
-              HifamEq1
-              HrhsAlpha).
-          }
-          exact (extension_property_implies_ifam_injective
-            G
-            multG
-            eG
-            invG
-            J
-            Gfam
-            multfam
-            efam
-            invfam
-            ifam
-            (apply_fun aof1 i)
-            HgrpG
-            Hfam_grp
-            Hifam_hom
-            Hext
-            Ha1J
-            (apply_fun uof1 i)
-            (apply_fun uof2 i)
-            Hu1In
-            Hu2In
-            HifamEq).
         }
         claim Hsubgen_nonid_uniqueness_from_reconstructed_uniqueness :
           (forall n1 ws1 n2 ws2:set,
@@ -332171,6 +331630,38 @@ claim Hextfp :
               (forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i)
               HwsUniq).
           }
+          claim Hws1EqXs1 :
+            forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun xs1 i.
+          {
+            apply (and3E
+              (forall i:set, i :e n1 ->
+                apply_fun aof1 i :e J /\
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+              (forall i:set, i :e n1 ->
+                apply_fun ws1 i =
+                  apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+              (forall i:set, i :e n1 ->
+                apply_fun ws1 i = apply_fun xs1 i)
+              Hside1).
+            assume _ _ Hws1EqXs1.
+            exact Hws1EqXs1.
+          }
+          claim Hws2EqXs2 :
+            forall j:set, j :e n2 -> apply_fun ws2 j = apply_fun xs2 j.
+          {
+            apply (and3E
+              (forall j:set, j :e n2 ->
+                apply_fun aof2 j :e J /\
+                apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j))
+              (forall j:set, j :e n2 ->
+                apply_fun ws2 j =
+                  apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))
+              (forall j:set, j :e n2 ->
+                apply_fun ws2 j = apply_fun xs2 j)
+              Hside2).
+            assume _ _ Hws2EqXs2.
+            exact Hws2EqXs2.
+          }
           exact (andI
             (n1 = n2)
             (forall i:set, i :e n1 -> apply_fun xs1 i = apply_fun xs2 i)
@@ -332180,14 +331671,10 @@ claim Hextfp :
               xs1
               n2
               xs2
-              aof1
-              uof1
               ws1
-              aof2
-              uof2
               ws2
-              Hside1
-              Hside2
+              Hws1EqXs1
+              Hws2EqXs2
               HnEq
               HwsEq)).
         }
