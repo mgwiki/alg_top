@@ -329343,11 +329343,22 @@ claim Hextfp :
             apply (xm (x = eG)).
             { assume Hxeq. apply orIL. exact Hxeq. }
             { assume Hxne.
-              admit. (** core S68.5 gap B remainder: non-identity case from extension property. **)
+              claim Hgen_nonid :
+                exists n:set, n :e omega /\ n <> 0 /\
+                exists xs:set, function_on xs n G /\
+                  (forall i:set, i :e n ->
+                    exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun ImageFam alpha) /\
+                  x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+              {
+                admit. (** core S68.5 gap B remainder: construct nontrivial ImageFam word for x via extension property. **)
+              }
+              apply orIR.
+              exact Hgen_nonid.
             }
         }
         exact Hsg_img.
-      + admit. (** core S68.5 gap C: uniqueness of reduced words in ImageFam. **)
+      + let x. assume HxG : x :e G. assume Hxne : x <> eG.
+        admit. (** core S68.5 gap C remainder: reduced-word existence+uniqueness for non-identity x. **)
       + let alpha. assume Halpha : alpha :e J.
         rewrite (apply_fun_graph J
           (fun a:set => apply_fun (apply_fun ifam a) (Eps_i (fun ea:set =>
