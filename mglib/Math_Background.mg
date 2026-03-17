@@ -331523,7 +331523,66 @@ claim Hextfp :
               assume _ _ Hrw2EqWs2.
               exact Hrw2EqWs2.
             }
-            admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed words rw1/rw2 via extension property, then transfer equality to ws1/ws2 using Hrw1EqWs1 and Hrw2EqWs2. **)
+            claim HrwCore :
+              n1 = n2 /\
+              (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i).
+            {
+              admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed words rw1/rw2 via extension property. **)
+            }
+            claim HnEqRw : n1 = n2.
+            {
+              exact (andEL
+                (n1 = n2)
+                (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i)
+                HrwCore).
+            }
+            claim HrwEq :
+              forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i.
+            {
+              exact (andER
+                (n1 = n2)
+                (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i)
+                HrwCore).
+            }
+            claim HwsEqFromRw :
+              forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i.
+            {
+              let i.
+              assume Hi : i :e n1.
+              claim Hi2 : i :e n2.
+              {
+                exact (eq_subst_mem_set i n1 n2 Hi HnEqRw).
+              }
+              claim Hws1EqRw1 :
+                apply_fun ws1 i = apply_fun rw1 i.
+              {
+                exact (eq_symm
+                  (apply_fun rw1 i)
+                  (apply_fun ws1 i)
+                  (Hrw1EqWs1 i Hi)).
+              }
+              claim Hrw2EqWs2i :
+                apply_fun rw2 i = apply_fun ws2 i.
+              {
+                exact (Hrw2EqWs2 i Hi2).
+              }
+              exact (eq_i_tra
+                (apply_fun ws1 i)
+                (apply_fun rw1 i)
+                (apply_fun ws2 i)
+                Hws1EqRw1
+                (eq_i_tra
+                  (apply_fun rw1 i)
+                  (apply_fun rw2 i)
+                  (apply_fun ws2 i)
+                  (HrwEq i Hi)
+                  Hrw2EqWs2i)).
+            }
+            exact (andI
+              (n1 = n2)
+              (forall i:set, i :e n1 -> apply_fun ws1 i = apply_fun ws2 i)
+              HnEqRw
+              HwsEqFromRw).
           }
           claim HnEq : n1 = n2.
           {
