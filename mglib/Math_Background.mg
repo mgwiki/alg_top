@@ -329350,7 +329350,42 @@ claim Hextfp :
                     exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun ImageFam alpha) /\
                   x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
               {
-                admit. (** core S68.5 gap B remainder: construct nontrivial ImageFam word for x via extension property. **)
+                set WordProd := fun w:set =>
+                  w = eG \/
+                  exists n:set, n :e omega /\ n <> 0 /\
+                  exists xs:set, function_on xs n G /\
+                    (forall i:set, i :e n ->
+                      exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+                    w = word_product multG eG xs n.
+                set S := Sep G WordProd.
+                claim HSsubG : S c= G.
+                { exact (Sep_Subq G WordProd). }
+                claim HxS : x :e S.
+                {
+                  admit. (** core S68.5 gap B remainder: use extension property to show x lies in WordProd subset S. **)
+                }
+                claim HxWP : WordProd x.
+                { exact (SepE2 G WordProd x HxS). }
+                apply (HxWP
+                  (exists n:set, n :e omega /\ n <> 0 /\
+                    exists xs:set, function_on xs n G /\
+                      (forall i:set, i :e n ->
+                        exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+                      x = word_product multG eG xs n)).
+                - assume Hxe : x = eG.
+                  exact (FalseE (Hxne Hxe)
+                    (exists n:set, n :e omega /\ n <> 0 /\
+                      exists xs:set, function_on xs n G /\
+                        (forall i:set, i :e n ->
+                          exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+                        x = word_product multG eG xs n)).
+                - assume Hex :
+                    exists n:set, n :e omega /\ n <> 0 /\
+                    exists xs:set, function_on xs n G /\
+                      (forall i:set, i :e n ->
+                        exists a:set, a :e J /\ apply_fun xs i :e apply_fun ImageFam a) /\
+                      x = word_product multG eG xs n.
+                  admit. (** convert WordProd witness (word_product form) to nat_primrec target form. **)
               }
               apply orIR.
               exact Hgen_nonid.
