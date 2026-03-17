@@ -413705,14 +413705,14 @@ claim HpSW_U_subU : pSW_U :e subspace_topology B Tb U.
 (** Apply lpc to get path-connected Vpc c= pSW_U **)
 apply (locally_path_connected_local U (subspace_topology B Tb U) u0 pSW_U HlpcU Hpe0U HpSW_U_subU Hu0_pSW_U).
 let Vpc. assume HVpc_pack.
-(** Extract: Vpc :e subspace B Tb U, u0 :e Vpc, Vpc c= pSW_U, Vpc pc **)
-(** Step 6: Preimage of Vpc under pS restricted to S_e0 **)
-(** This preimage is c= SW c= S_e0 cap W0 c= preU cap W0 **)
-(** It's open in E (from covering structure) **)
-(** It's path-connected (homeomorphic to Vpc via p) **)
-(** It contains e0 (since p(e0) = u0 :e Vpc) **)
-(** It's c= W = W0 cap preU (since preimage c= SW c= W0, and c= preU) **)
-(** This is the desired path-connected neighborhood **)
+(** Extract Vpc properties **)
+(** HVpc_pack : Vpc :e subspace /\ u0 :e Vpc /\ Vpc c= pSW_U /\ pc Vpc **)
+(** The preimage of Vpc in S_e0 gives the desired neighborhood **)
+(** Since pS: S_e0 -> V is a homeomorphism and Vpc c= image_of pS SW c= V, **)
+(** the preimage is well-defined, open, path-connected, and c= SW c= W **)
+(** Full construction requires: homeomorphism inverse, preimage continuity, **)
+(** path-connected preimage under homeomorphism, containment verification **)
+(** This is the final routine construction step **)
 admit.
 Admitted.
 
