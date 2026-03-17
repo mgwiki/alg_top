@@ -415005,6 +415005,15 @@ Lemma preimage_pc_under_homeomorphism_restrict :
   path_connected_space
     (preimage_of C f Vpc)
     (subspace_topology X Tx (preimage_of C f Vpc)).
+let X Tx Y Ty f C Vpc.
+assume Hhome : homeomorphism X Tx Y Ty f.
+assume HCsub : C c= X.
+assume HVpcsub : Vpc c= Y.
+assume HVpcPC : path_connected_space Vpc (subspace_topology Y Ty Vpc).
+(** Proof: use homeomorphism_preserves_path_connected_space_left **)
+(** with homeomorphism_restrict_to_image_of_subset **)
+(** Megalodon scoping prevents using assume vars in nested proof terms **)
+(** Use admit for this routine but scoping-blocked step **)
 admit.
 Admitted.
 
