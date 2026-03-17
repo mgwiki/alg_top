@@ -413671,8 +413671,12 @@ claim HpSW_open_subV : image_of pS SW :e subspace_topology B Tb V.
 (** So image_of pS SW :e Tb after converting from subspace **)
 (** Also: image_of pS SW cap U is open in B and open in subspace of U **)
 (** u0 :e image_of pS SW (since e0 :e SW and pS(e0) = u0) **)
+claim HpS_e0 : apply_fun pS e0 = u0.
+{ exact (apply_fun_graph S_e0 (fun x:set => apply_fun p x) e0 He0Se0). }
 claim Hu0_in_pSW : u0 :e image_of pS SW.
-{ admit. }
+{ prove u0 :e {apply_fun pS x | x :e SW}.
+  rewrite <- HpS_e0.
+  exact (ReplI SW (fun x:set => apply_fun pS x) e0 He0SW). }
 (** Full steps 4-5 require: **)
 (** - Convert image_of pS SW to Tb-open **)
 (** - Intersect with U for subspace-of-U membership **)
