@@ -407123,19 +407123,7 @@ claim Hglift_ls : glift :e loop_space E0 Te0 e0.
 { exact (SepI (function_space unit_interval E0) (fun g:set => loop_at E0 Te0 e0 g) glift Hglift_fs Hglift_loop_at). }
 (** E0 simply connected => pi1(E0, e0) = {id}, so class of glift = id **)
 claim Hpi1_trivial : fundamental_group E0 Te0 e0 = {fundamental_group_id E0 Te0 e0}.
-{ apply (simply_connected_trivial_pi1_witness E0 Te0 Hsc).
-  let x0'. assume Hx0'pack.
-  claim Hx0'E0 : x0' :e E0.
-  { exact (andEL (x0' :e E0)
-      (fundamental_group E0 Te0 x0' = {fundamental_group_id E0 Te0 x0'})
-      Hx0'pack). }
-  claim Hpi1_x0' : fundamental_group E0 Te0 x0' = {fundamental_group_id E0 Te0 x0'}.
-  { exact (andER (x0' :e E0)
-      (fundamental_group E0 Te0 x0' = {fundamental_group_id E0 Te0 x0'})
-      Hx0'pack). }
-  (** Need to transfer from x0' to e0. Both are in path-connected E0. **)
-  (** This requires Corollary_52_2_path_connected_pi1_isomorphic or similar **)
-  admit. }
+{ exact (simply_connected_trivial_pi1_at_point E0 Te0 e0 Hsc He0E0). }
 (** Then glift path-homotopic to constant_path e0 in E0 **)
 (** Then postcompose with p0 to get fB ~ constant_path b in B **)
 (** Then use path_homotopic_of_pointwise_equal to equate compose_fun I glift p0 with fB **)
