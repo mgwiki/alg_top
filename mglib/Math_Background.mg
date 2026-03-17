@@ -408309,10 +408309,35 @@ claim He0W0 : e0 :e W0.
 (** Get evenly covered V with u0 :e V **)
 apply (covering_map_evenly_covered_slices E Te B Tb p u0 Hcov Hu0B).
 let V. assume Hev_inner. apply Hev_inner. let slicesV. assume HslV_pack.
-(** Extract V properties **)
-(** Then intersect V cap p-image(W0) cap U to get a neighborhood in U **)
-(** Use lpc to get path-connected sub-neighborhood **)
-(** Lift the sheet to get pc neighborhood in preU **)
+apply (and6E (V :e Tb) (u0 :e V) (slicesV c= Te) (pairwise_disjoint slicesV)
+  (Union slicesV = preimage_of E p V)
+  (forall S0:set, S0 :e slicesV ->
+    homeomorphism S0 (subspace_topology E Te S0) V (subspace_topology B Tb V)
+      (graph S0 (fun x:set => apply_fun p x)))
+  HslV_pack).
+assume HVopen HuV HslOpen HslPD HslUnion HslHomeo.
+(** V cap U is open in B **)
+set VU := V :/\: U.
+claim HVU_open : VU :e Tb.
+{ exact (topology_binintersect_closed B Tb V U HtopB HVopen HUopen). }
+claim Hu0VU : u0 :e VU.
+{ exact (binintersectI V U u0 HuV Hpe0U). }
+(** VU is open in the subspace topology of U **)
+claim HVU_subU : VU :e subspace_topology B Tb U.
+{ exact (subspace_topology_intersection_open B Tb U V HVopen). }
+claim HVU_subU2 : VU c= U. { let w. assume Hw. exact (binintersectE2 V U w Hw). }
+(** Use lpc of U to get path-connected Vpc c= VU with u0 :e Vpc **)
+(** Also intersect with image of W0 under p to ensure the sheet stays in W **)
+(** For simplicity, use VU directly and get pc sub via lpc **)
+apply (locally_path_connected_local U (subspace_topology B Tb U) u0 VU HlpcU Hpe0U HVU_subU Hu0VU).
+let Vpc. assume HVpc_pack.
+(** Vpc is path-connected, open in U's subspace, u0 :e Vpc c= VU **)
+(** Vpc :e subspace_topology B Tb U means Vpc = S cap U for some S :e Tb **)
+(** Since Vpc c= VU c= V, Vpc is evenly covered (by evenly_covered_open_subset) **)
+(** The sheet of p^-1(Vpc) containing e0 is the desired pc neighborhood **)
+(** But we also need it c= W = W0 cap preU **)
+(** To ensure c= W0: intersect Vpc with p-image(W0 cap E) **)
+(** This is getting complex - use admit for remaining formal steps **)
 admit.
 Admitted.
 
