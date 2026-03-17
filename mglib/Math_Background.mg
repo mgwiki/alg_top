@@ -415219,6 +415219,14 @@ claim HV0_open_inSe0 : open_in S_e0 (subspace_topology E Te S_e0) V0.
   - exact HV0_open_sub. }
 claim HV0_open_E : V0 :e Te.
 { exact (open_in_subspace_if_ambient_open E Te S_e0 V0 HtopE HSe0_open HV0_sub_Se0 HV0_open_inSe0). }
+(** Path-connectedness of V0 **)
+(** V0 = preimage of Vpc under homeomorphism pS (restricted to S_e0) **)
+(** pS: S_e0 -> V is a homeomorphism, V0 c= S_e0, image_of pS V0 = Vpc **)
+(** Vpc is path-connected, homeomorphisms preserve path-connectedness **)
+(** Scoping issue: HSe0_homeo and HVpc_sub_V not accessible after apply/let **)
+(** This requires restructuring the proof to move the pc claim before the branches **)
+claim HV0_pc : path_connected_space V0 (subspace_topology E Te V0).
+{ admit. }
 witness V0.
 apply and4I.
 - (** V0 :e subspace_topology E Te preU **)
@@ -415230,13 +415238,7 @@ apply and4I.
 - (** path_connected_space V0 (subspace_topology preU (subspace_topology E Te preU) V0) **)
   (** Simplify nested subspace: = subspace_topology E Te V0 **)
   rewrite (subspace_topology_transitive_weak E Te preU V0 HV0_sub_preU).
-  (** Restrict homeomorphism to V0 -> image_of pS V0 **)
-  (** V0 is homeomorphic to Vpc (via pS restricted), hence path-connected **)
-  (** Uses: homeomorphism_restrict_to_image_of_subset, image_of pS V0 = Vpc, **)
-  (** subspace_topology_transitive_weak, homeomorphism_preserves_pc_left **)
-  (** Scoping limitation: HSe0_homeo not accessible in this branch **)
-  (** TODO: restructure proof to avoid branch scoping issue **)
-  admit.
+  exact HV0_pc.
 Admitted.
 
 (** Improved version with locally_path_connected hypothesis **)
