@@ -1,5 +1,5 @@
 (** Balance Alice 9233 **)
-(** Balance Bob 5967 **)
+(** Balance Bob 5942 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
 
@@ -328915,7 +328915,8 @@ Qed.
 (** is a monomorphism and G is the free product of i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Admin-approved-refactored per noticeboard proposal 1772560012 **)
-(** Bounty 242 **)
+(** Bounty 267 **)
+(** Lock Bob 1773790000 **)
 Theorem lemma68_5_extension_characterizes_free_product :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   group_structure G multG eG invG ->
