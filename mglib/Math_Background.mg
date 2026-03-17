@@ -330533,6 +330533,174 @@ claim Hextfp :
                     HuPack). } }
             { exact HxEq. } }
         }
+        claim Hsubgen_nonid_lift_chosen :
+          subgroups_generate G multG eG invG J ImageFam ->
+          let n0 := Eps_i (fun n:set =>
+            exists xs:set, n :e omega /\ n <> 0 /\
+              function_on xs n G /\
+              (forall i:set, i :e n ->
+                exists a:set, exists u:set,
+                  a :e J /\ u :e apply_fun Gfam a /\
+                  apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
+              x = word_product multG eG xs n) in
+          n0 :e omega /\ n0 <> 0 /\
+            exists xs0:set,
+              function_on xs0 n0 G /\
+              (forall i:set, i :e n0 ->
+                exists a:set, exists u:set,
+                  a :e J /\ u :e apply_fun Gfam a /\
+                  apply_fun xs0 i = apply_fun (apply_fun ifam a) u) /\
+              x = word_product multG eG xs0 n0.
+        {
+          assume HgenImg : subgroups_generate G multG eG invG J ImageFam.
+          claim HexN :
+            exists n:set,
+              exists xs:set, n :e omega /\ n <> 0 /\
+                function_on xs n G /\
+                (forall i:set, i :e n ->
+                  exists a:set, exists u:set,
+                    a :e J /\ u :e apply_fun Gfam a /\
+                    apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
+                x = word_product multG eG xs n.
+          {
+            apply (Hsubgen_nonid_lift HgenImg).
+            let n.
+            assume HnPack :
+              n :e omega /\ n <> 0 /\
+                exists xs:set, function_on xs n G /\
+                  (forall i:set, i :e n ->
+                    exists a:set, exists u:set,
+                      a :e J /\ u :e apply_fun Gfam a /\
+                      apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
+                  x = word_product multG eG xs n.
+            apply (and3E
+              (n :e omega)
+              (n <> 0)
+              (exists xs:set, function_on xs n G /\
+                (forall i:set, i :e n ->
+                  exists a:set, exists u:set,
+                    a :e J /\ u :e apply_fun Gfam a /\
+                    apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
+                x = word_product multG eG xs n)
+              HnPack).
+            assume HnO : n :e omega.
+            assume HnNe : n <> 0.
+            assume HxsPack :
+              exists xs:set, function_on xs n G /\
+                (forall i:set, i :e n ->
+                  exists a:set, exists u:set,
+                    a :e J /\ u :e apply_fun Gfam a /\
+                    apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
+                x = word_product multG eG xs n.
+            apply HxsPack.
+            let xs.
+            assume HxsProps :
+              function_on xs n G /\
+                (forall i:set, i :e n ->
+                  exists a:set, exists u:set,
+                    a :e J /\ u :e apply_fun Gfam a /\
+                    apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
+                x = word_product multG eG xs n.
+            apply (and3E
+              (function_on xs n G)
+              (forall i:set, i :e n ->
+                exists a:set, exists u:set,
+                  a :e J /\ u :e apply_fun Gfam a /\
+                  apply_fun xs i = apply_fun (apply_fun ifam a) u)
+              (x = word_product multG eG xs n)
+              HxsProps).
+            assume HxsFn : function_on xs n G.
+            assume HxsLift :
+              forall i:set, i :e n ->
+                exists a:set, exists u:set,
+                  a :e J /\ u :e apply_fun Gfam a /\
+                  apply_fun xs i = apply_fun (apply_fun ifam a) u.
+            assume HxEq : x = word_product multG eG xs n.
+            witness n.
+            witness xs.
+            exact (and5I
+              (n :e omega)
+              (n <> 0)
+              (function_on xs n G)
+              (forall i:set, i :e n ->
+                exists a:set, exists u:set,
+                  a :e J /\ u :e apply_fun Gfam a /\
+                  apply_fun xs i = apply_fun (apply_fun ifam a) u)
+              (x = word_product multG eG xs n)
+              HnO
+              HnNe
+              HxsFn
+              HxsLift
+              HxEq).
+          }
+          set n0 := Eps_i (fun n:set =>
+            exists xs:set, n :e omega /\ n <> 0 /\
+              function_on xs n G /\
+              (forall i:set, i :e n ->
+                exists a:set, exists u:set,
+                  a :e J /\ u :e apply_fun Gfam a /\
+                  apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
+              x = word_product multG eG xs n).
+          claim Hn0Pack :
+            exists xs:set, n0 :e omega /\ n0 <> 0 /\
+              function_on xs n0 G /\
+              (forall i:set, i :e n0 ->
+                exists a:set, exists u:set,
+                  a :e J /\ u :e apply_fun Gfam a /\
+                  apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
+              x = word_product multG eG xs n0.
+          {
+            exact (Eps_i_ex
+              (fun n:set =>
+                exists xs:set, n :e omega /\ n <> 0 /\
+                  function_on xs n G /\
+                  (forall i:set, i :e n ->
+                    exists a:set, exists u:set,
+                      a :e J /\ u :e apply_fun Gfam a /\
+                      apply_fun xs i = apply_fun (apply_fun ifam a) u) /\
+                  x = word_product multG eG xs n)
+              HexN).
+          }
+          apply Hn0Pack.
+          let xs0.
+          assume Hxs0Pack :
+            n0 :e omega /\ n0 <> 0 /\
+              function_on xs0 n0 G /\
+              (forall i:set, i :e n0 ->
+                exists a:set, exists u:set,
+                  a :e J /\ u :e apply_fun Gfam a /\
+                  apply_fun xs0 i = apply_fun (apply_fun ifam a) u) /\
+              x = word_product multG eG xs0 n0.
+          apply (and5E
+            (n0 :e omega)
+            (n0 <> 0)
+            (function_on xs0 n0 G)
+            (forall i:set, i :e n0 ->
+              exists a:set, exists u:set,
+                a :e J /\ u :e apply_fun Gfam a /\
+                apply_fun xs0 i = apply_fun (apply_fun ifam a) u)
+            (x = word_product multG eG xs0 n0)
+            Hxs0Pack).
+          assume Hn0O : n0 :e omega.
+          assume Hn0Ne : n0 <> 0.
+          assume Hxs0Fn : function_on xs0 n0 G.
+          assume Hxs0Lift :
+            forall i:set, i :e n0 ->
+              exists a:set, exists u:set,
+                a :e J /\ u :e apply_fun Gfam a /\
+                apply_fun xs0 i = apply_fun (apply_fun ifam a) u.
+          assume Hx0Eq : x = word_product multG eG xs0 n0.
+          apply andI.
+          { apply andI.
+            { exact Hn0O. }
+            { exact Hn0Ne. } }
+          { witness xs0.
+            apply andI.
+            { apply andI.
+              { exact Hxs0Fn. }
+              { exact Hxs0Lift. } }
+            { exact Hx0Eq. } }
+        }
         admit. (** core S68.5 gap C remainder: reduced-word existence+uniqueness for non-identity x. **)
       + let alpha. assume Halpha : alpha :e J.
         rewrite (apply_fun_graph J
