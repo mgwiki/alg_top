@@ -415154,9 +415154,21 @@ claim He0V0 : e0 :e V0.
   apply (SepI S_e0 (fun e:set => apply_fun pS e :e Vpc) e0 He0Se0).
   rewrite HpS_e0. exact Hu0_Vpc. }
 claim HV0_sub_SW : V0 c= SW.
-{ (** Vpc c= pSW_U c= image_of pS SW, pS injective on S_e0 **)
-  (** So for e :e V0: pS(e) :e Vpc c= image_of pS SW, hence e :e SW **)
-  admit. }
+{ let e. assume He.
+  claim HeSe0 : e :e S_e0. { exact (SepE1 S_e0 (fun x:set => apply_fun pS x :e Vpc) e He). }
+  claim HpSe_Vpc : apply_fun pS e :e Vpc.
+  { exact (SepE2 S_e0 (fun x:set => apply_fun pS x :e Vpc) e He). }
+  claim HpSe_pSW : apply_fun pS e :e image_of pS SW.
+  { exact (binintersectE1 (image_of pS SW) U (apply_fun pS e) (HVpc_sub (apply_fun pS e) HpSe_Vpc)). }
+  (** pS(e) :e image_of pS SW = {pS(x) | x :e SW}, so exists x :e SW with pS(x) = pS(e) **)
+  (** Since pS is injective on S_e0, and both e, x :e S_e0, we get e = x, hence e :e SW **)
+  apply (ReplE_impred SW (fun x:set => apply_fun pS x) (apply_fun pS e) HpSe_pSW).
+  let x. assume HxSW : x :e SW. assume HpSeq : apply_fun pS e = apply_fun pS x.
+  claim HxSe0 : x :e S_e0. { exact (HSW_sub_Se0 x HxSW). }
+  claim Hex : e = x.
+  { exact (homeomorphism_injective S_e0 (subspace_topology E Te S_e0) V (subspace_topology B Tb V)
+      pS HSe0_homeo e x HeSe0 HxSe0 HpSeq). }
+  rewrite Hex. exact HxSW. }
 claim HV0_sub_preU : V0 c= preU.
 { let e. assume He.
   claim HeSe0 : e :e S_e0. { exact (HSW_sub_Se0 e (HV0_sub_SW e He)). }
