@@ -480437,12 +480437,228 @@ Qed.
 			    (apply_fun path_seq j) 0 1 = x0))).
 			- assume HexPath.
 			  exact HexPath.
-			- assume HnoPath.
-			  (** TODO:
-			      from HnoPath, show path_homotopy_class_loop T Tx x0 (graphify_on unit_interval f)
-			      = fundamental_group_id T Tx x0, contradicting HneClsGraph. **)
-			  admit.
-			Admitted.
+				- assume HnoPath.
+				  set gY := graphify_on unit_interval f.
+				  set incY := graph Y (fun x:set => x).
+				  set clsY := path_homotopy_class_loop Y (subspace_topology T Tx Y) x0 gY.
+				  claim HincCont :
+				    continuous_map Y (subspace_topology T Tx Y) T Tx incY.
+				  {
+				    exact (subspace_inclusion_continuous
+				      T
+				      Tx
+				      Y
+				      HtopT
+				      HYsubT).
+				  }
+				  claim HclsYMem : clsY :e fundamental_group Y (subspace_topology T Tx Y) x0.
+				  {
+				    exact (path_homotopy_class_in_fundamental_group
+				      Y
+				      (subspace_topology T Tx Y)
+				      x0
+				      gY
+				      HfGraphLoopY).
+				  }
+				  claim HiApply :
+				    apply_fun (induced_homomorphism Y (subspace_topology T Tx Y) x0 T Tx x0 incY) clsY
+				    = path_homotopy_class_loop T Tx x0
+				        (compose_fun unit_interval
+				          (Eps_i (fun h:set => h :e clsY))
+				          incY).
+				  {
+				    exact (induced_homomorphism_apply
+				      Y
+				      (subspace_topology T Tx Y)
+				      x0
+				      T
+				      Tx
+				      x0
+				      incY
+				      clsY
+				      HclsYMem).
+				  }
+				  set repY := Eps_i (fun h:set => h :e clsY).
+				  claim HgYInCls : gY :e clsY.
+				  {
+				    exact (loop_in_own_path_homotopy_class
+				      Y
+				      (subspace_topology T Tx Y)
+				      x0
+				      gY
+				      HfGraphLoopY).
+				  }
+				  claim HrepYInCls : repY :e clsY.
+				  {
+				    exact (Eps_i_ax
+				      (fun h:set => h :e clsY)
+				      gY
+				      HgYInCls).
+				  }
+				  claim HgYRepHom :
+				    path_homotopic Y (subspace_topology T Tx Y) x0 x0 gY repY.
+				  {
+				    exact (path_homotopy_class_loop_has_homotopy
+				      Y
+				      (subspace_topology T Tx Y)
+				      x0
+				      gY
+				      repY
+				      HrepYInCls).
+				  }
+				  claim HincX0 : apply_fun incY x0 = x0.
+				  {
+				    exact (apply_fun_graph
+				      Y
+				      (fun x:set => x)
+				      x0
+				      Hx0Y).
+				  }
+				  claim HpostRep :
+				    path_homotopic T Tx x0 x0
+				      (compose_fun unit_interval gY incY)
+				      (compose_fun unit_interval repY incY).
+				  {
+				    exact (path_homotopic_postcompose
+				      Y
+				      (subspace_topology T Tx Y)
+				      T
+				      Tx
+				      x0
+				      x0
+				      x0
+				      x0
+				      gY
+				      repY
+				      incY
+				      HgYRepHom
+				      HincCont
+				      HincX0
+				      HincX0).
+				  }
+				  claim HclassCompRep :
+				    path_homotopy_class_loop T Tx x0 (compose_fun unit_interval gY incY)
+				    = path_homotopy_class_loop T Tx x0 (compose_fun unit_interval repY incY).
+				  {
+				    exact (path_homotopy_class_loop_eq_of_path_homotopic
+				      T
+				      Tx
+				      x0
+				      (compose_fun unit_interval gY incY)
+				      (compose_fun unit_interval repY incY)
+				      HpostRep).
+				  }
+				  claim HgYFs : gY :e function_space unit_interval Y.
+				  {
+				    exact (loop_space_in_function_space
+				      Y
+				      (subspace_topology T Tx Y)
+				      x0
+				      gY
+				      HfGraphLoopY).
+				  }
+				  claim HgYFun : function_on gY unit_interval Y.
+				  {
+				    exact (function_on_of_function_space
+				      gY
+				      unit_interval
+				      Y
+				      HgYFs).
+				  }
+				  claim HcompCont :
+				    continuous_map unit_interval unit_interval_topology T Tx
+				      (compose_fun unit_interval gY incY).
+				  {
+				    exact (composition_continuous
+				      unit_interval
+				      unit_interval_topology
+				      Y
+				      (subspace_topology T Tx Y)
+				      T
+				      Tx
+				      gY
+				      incY
+				      HfGraphContY
+				      HincCont).
+				  }
+				  claim HcompPw :
+				    forall t:set, t :e unit_interval ->
+				      apply_fun (compose_fun unit_interval gY incY) t = apply_fun gY t.
+				  {
+				    let t.
+				    assume HtI.
+				    rewrite (compose_fun_apply unit_interval gY incY t HtI).
+				    rewrite (apply_fun_graph
+				      Y
+				      (fun x:set => x)
+				      (apply_fun gY t)
+				      (HgYFun t HtI)).
+				    reflexivity.
+				  }
+				  claim Hcomp0 : apply_fun (compose_fun unit_interval gY incY) 0 = x0.
+				  {
+				    rewrite (HcompPw 0 zero_in_unit_interval).
+				    exact HfGraph0.
+				  }
+				  claim Hcomp1 : apply_fun (compose_fun unit_interval gY incY) 1 = x0.
+				  {
+				    rewrite (HcompPw 1 one_in_unit_interval).
+				    exact HfGraph1.
+				  }
+				  claim HcompHom :
+				    path_homotopic T Tx x0 x0
+				      (compose_fun unit_interval gY incY)
+				      gY.
+				  {
+				    exact (path_homotopic_of_pointwise_equal
+				      T
+				      Tx
+				      x0
+				      x0
+				      (compose_fun unit_interval gY incY)
+				      gY
+				      HcompCont
+				      HfGraphContT
+				      Hcomp0
+				      Hcomp1
+				      HfGraph0
+				      HfGraph1
+				      HcompPw).
+				  }
+				  claim HclassCompG :
+				    path_homotopy_class_loop T Tx x0 (compose_fun unit_interval gY incY)
+				    = path_homotopy_class_loop T Tx x0 gY.
+				  {
+				    exact (path_homotopy_class_loop_eq_of_path_homotopic
+				      T
+				      Tx
+				      x0
+				      (compose_fun unit_interval gY incY)
+				      gY
+				      HcompHom).
+				  }
+				  claim HincClsYeqGraph :
+				    apply_fun (induced_homomorphism Y (subspace_topology T Tx Y) x0 T Tx x0 incY) clsY
+				    = path_homotopy_class_loop T Tx x0 gY.
+				  {
+				    rewrite HiApply.
+				    rewrite <- HclassCompRep.
+				    exact HclassCompG.
+				  }
+				  claim HincClsYNontrivial :
+				    apply_fun (induced_homomorphism Y (subspace_topology T Tx Y) x0 T Tx x0 incY) clsY
+				    <> fundamental_group_id T Tx x0.
+				  {
+				    assume HincId.
+				    apply HneClsGraph.
+				    rewrite <- HincClsYeqGraph.
+				    exact HincId.
+				  }
+				  (** TODO:
+				      use HnoPath to force the inclusion-image class from Y to be trivial,
+				      contradicting HincClsYNontrivial. **)
+				  admit.
+				Admitted.
 
 	Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs :
 	  forall T Tx ArcsT Arcs' x0 f:set,
