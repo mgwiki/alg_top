@@ -407032,16 +407032,44 @@ claim Hlift1_eq_e0 : apply_fun liftfB 1 = e0.
     (eq_i_tra (apply_fun p0 (apply_fun liftfB 1)) b (apply_fun p0 e0)
       Hp0lift1
       (eq_symm (apply_fun p0 e0) b Hpe0))). }
-(** liftfB is a loop at e0 in E0 **)
-(** Need: liftfB :e loop_space E0 Te0 e0, then class = id, then project **)
-(** The full argument requires showing liftfB is in loop_space, **)
-(** using simply_connected_trivial_pi1_witness for class = id, **)
-(** loop_class_eq_id_implies_path_homotopic_constant for path homotopy in E0, **)
-(** and path_homotopic_postcompose with p0 for projection to B. **)
-(** The final step needs: compose_fun I liftfB p0 = fB pointwise (from HliftComm) **)
-(** and compose_fun I (constant_path e0) p0 = constant_path b (from Hpe0). **)
-(** Then path_homotopic_of_pointwise_equal to equate the composed paths with fB **)
-(** and constant_path b. **)
+(** Use graphify_on to get liftfB into function_space, then loop_space **)
+set glift := graphify_on unit_interval liftfB.
+claim Hglift_fs : glift :e function_space unit_interval E0.
+{ exact (graph_in_function_space unit_interval E0
+    (fun t:set => apply_fun liftfB t)
+    (fun t Ht => continuous_map_function_on unit_interval unit_interval_topology E0 Te0 liftfB HliftCont t Ht)). }
+claim Hglift_loop_at : loop_at E0 Te0 e0 glift.
+{ apply loop_at_fold. apply andI.
+  - apply andI.
+    + (** glift is continuous - needs graphify_on continuity bridge **)
+      admit.
+    + prove apply_fun glift 0 = e0.
+      rewrite (graphify_on_apply unit_interval liftfB 0 zero_in_unit_interval).
+      exact Hlift0.
+  - prove apply_fun glift 1 = e0.
+    rewrite (graphify_on_apply unit_interval liftfB 1 one_in_unit_interval).
+    exact Hlift1_eq_e0. }
+(** glift :e loop_space E0 Te0 e0 **)
+claim Hglift_ls : glift :e loop_space E0 Te0 e0.
+{ exact (SepI (function_space unit_interval E0) (fun g:set => loop_at E0 Te0 e0 g) glift Hglift_fs Hglift_loop_at). }
+(** E0 simply connected => pi1(E0, e0) = {id}, so class of glift = id **)
+claim Hpi1_trivial : fundamental_group E0 Te0 e0 = {fundamental_group_id E0 Te0 e0}.
+{ apply (simply_connected_trivial_pi1_witness E0 Te0 Hsc).
+  let x0'. assume Hx0'pack.
+  claim Hx0'E0 : x0' :e E0.
+  { exact (andEL (x0' :e E0)
+      (fundamental_group E0 Te0 x0' = {fundamental_group_id E0 Te0 x0'})
+      Hx0'pack). }
+  claim Hpi1_x0' : fundamental_group E0 Te0 x0' = {fundamental_group_id E0 Te0 x0'}.
+  { exact (andER (x0' :e E0)
+      (fundamental_group E0 Te0 x0' = {fundamental_group_id E0 Te0 x0'})
+      Hx0'pack). }
+  (** Need to transfer from x0' to e0. Both are in path-connected E0. **)
+  (** This requires Corollary_52_2_path_connected_pi1_isomorphic or similar **)
+  admit. }
+(** Then glift path-homotopic to constant_path e0 in E0 **)
+(** Then postcompose with p0 to get fB ~ constant_path b in B **)
+(** Then use path_homotopic_of_pointwise_equal to equate compose_fun I glift p0 with fB **)
 admit.
 Admitted.
 
