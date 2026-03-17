@@ -331691,13 +331691,13 @@ claim Hextfp :
               n1 = n2 /\
               (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i).
             {
-              claim HliftSync :
+              claim HlabelWordSync :
                 n1 = n2 /\
                 (forall i:set, i :e n1 ->
                   apply_fun aof1 i = apply_fun aof2 i /\
-                  apply_fun uof1 i = apply_fun uof2 i).
+                  apply_fun rw1 i = apply_fun rw2 i).
               {
-                admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed lift data via extension property using Hrw1Choice/Hrw1ViaIfam and Hrw2Choice/Hrw2ViaIfam. **)
+                admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed labels and reconstructed words via extension property, using Hrw1InImageAtLift/Hrw2InImageAtLift and reduced-word constraints. **)
               }
               claim HnEqLift : n1 = n2.
               {
@@ -331705,71 +331705,42 @@ claim Hextfp :
                   (n1 = n2)
                   (forall i:set, i :e n1 ->
                     apply_fun aof1 i = apply_fun aof2 i /\
-                    apply_fun uof1 i = apply_fun uof2 i)
-                  HliftSync).
+                    apply_fun rw1 i = apply_fun rw2 i)
+                  HlabelWordSync).
               }
-              claim HliftEq :
+              claim HlabelRwEq :
                 forall i:set, i :e n1 ->
                   apply_fun aof1 i = apply_fun aof2 i /\
-                  apply_fun uof1 i = apply_fun uof2 i.
+                  apply_fun rw1 i = apply_fun rw2 i.
               {
                 exact (andER
                   (n1 = n2)
                   (forall i:set, i :e n1 ->
                     apply_fun aof1 i = apply_fun aof2 i /\
-                    apply_fun uof1 i = apply_fun uof2 i)
-                  HliftSync).
+                    apply_fun rw1 i = apply_fun rw2 i)
+                  HlabelWordSync).
               }
-              claim HrwEqFromLift :
+              claim HrwEqFromLabelWord :
                 forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i.
               {
                 let i.
                 assume Hi : i :e n1.
-                claim Hi2 : i :e n2.
-                {
-                  exact (eq_subst_mem_set i n1 n2 Hi HnEqLift).
-                }
                 claim Hsync_i :
                   apply_fun aof1 i = apply_fun aof2 i /\
-                  apply_fun uof1 i = apply_fun uof2 i.
+                  apply_fun rw1 i = apply_fun rw2 i.
                 {
-                  exact (HliftEq i Hi).
+                  exact (HlabelRwEq i Hi).
                 }
-                claim HaEq :
-                  apply_fun aof1 i = apply_fun aof2 i.
-                {
-                  exact (andEL
-                    (apply_fun aof1 i = apply_fun aof2 i)
-                    (apply_fun uof1 i = apply_fun uof2 i)
-                    Hsync_i).
-                }
-                claim HuEq :
-                  apply_fun uof1 i = apply_fun uof2 i.
-                {
-                  exact (andER
-                    (apply_fun aof1 i = apply_fun aof2 i)
-                    (apply_fun uof1 i = apply_fun uof2 i)
-                    Hsync_i).
-                }
-                claim Hrw2Sym :
-                  apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i) =
-                  apply_fun rw2 i.
-                {
-                  exact (eq_symm
-                    (apply_fun rw2 i)
-                    (apply_fun (apply_fun ifam (apply_fun aof2 i)) (apply_fun uof2 i))
-                    (Hrw2ViaIfam i Hi2)).
-                }
-                rewrite (Hrw1ViaIfam i Hi).
-                rewrite HaEq.
-                rewrite HuEq.
-                exact Hrw2Sym.
+                exact (andER
+                  (apply_fun aof1 i = apply_fun aof2 i)
+                  (apply_fun rw1 i = apply_fun rw2 i)
+                  Hsync_i).
               }
               exact (andI
                 (n1 = n2)
                 (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i)
                 HnEqLift
-                HrwEqFromLift).
+                HrwEqFromLabelWord).
             }
             claim HnEqRw : n1 = n2.
             {
