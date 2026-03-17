@@ -408331,21 +408331,34 @@ claim HVU_subU2 : VU c= U. { let w. assume Hw. exact (binintersectE2 V U w Hw). 
 (** For simplicity, use VU directly and get pc sub via lpc **)
 apply (locally_path_connected_local U (subspace_topology B Tb U) u0 VU HlpcU Hpe0U HVU_subU Hu0VU).
 let Vpc. assume HVpc_pack.
-(** Extract Vpc properties **)
-claim HVpc_open_subU : Vpc :e subspace_topology B Tb U.
-{ admit. (** from HVpc_pack and4E1 **) }
-claim Hu0Vpc : u0 :e Vpc.
-{ admit. (** from HVpc_pack and4E2 **) }
+(** Extract Vpc properties from HVpc_pack **)
+set Hpc_type := path_connected_space Vpc (subspace_topology U (subspace_topology B Tb U) Vpc).
+claim HVpc_pc : Hpc_type.
+{ exact (andER (((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) /\ (Vpc c= VU)) Hpc_type HVpc_pack). }
+claim HVpc_left3 : ((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) /\ (Vpc c= VU).
+{ exact (andEL (((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) /\ (Vpc c= VU)) Hpc_type HVpc_pack). }
 claim HVpc_sub_VU : Vpc c= VU.
-{ admit. (** from HVpc_pack and4E3 **) }
-claim HVpc_pc : path_connected_space Vpc (subspace_topology U (subspace_topology B Tb U) Vpc).
-{ admit. (** from HVpc_pack and4E4 **) }
+{ exact (andER ((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) (Vpc c= VU) HVpc_left3). }
+claim HVpc_left2 : (Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc).
+{ exact (andEL ((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) (Vpc c= VU) HVpc_left3). }
+claim HVpc_open_subU : Vpc :e subspace_topology B Tb U.
+{ exact (andEL (Vpc :e subspace_topology B Tb U) (u0 :e Vpc) HVpc_left2). }
+claim Hu0Vpc : u0 :e Vpc.
+{ exact (andER (Vpc :e subspace_topology B Tb U) (u0 :e Vpc) HVpc_left2). }
 (** Vpc c= V (since Vpc c= VU c= V) **)
 claim HVpc_sub_V : Vpc c= V.
 { let w. assume Hw. exact (binintersectE1 V U w (HVpc_sub_VU w Hw)). }
 (** Vpc :e Tb (from subspace topology: Vpc = S cap U for some S :e Tb, and U :e Tb) **)
 claim HVpc_open_B : Vpc :e Tb.
-{ admit. (** Vpc :e subspace_topology B Tb U, so Vpc = S cap U; both open => Vpc open **) }
+{ (** Vpc :e subspace_topology B Tb U = {S cap U | S :e Tb} **)
+  (** Extract: exists S :e Tb, Vpc = S cap U **)
+  claim HVpc_sep : exists S0:set, S0 :e Tb /\ Vpc = S0 :/\: U.
+  { exact (SepE2 (Power U) (fun S0:set => exists V0:set, V0 :e Tb /\ S0 = V0 :/\: U) Vpc HVpc_open_subU). }
+  apply HVpc_sep. let S0. assume HS0pack.
+  claim HS0open : S0 :e Tb. { exact (andEL (S0 :e Tb) (Vpc = S0 :/\: U) HS0pack). }
+  claim HVpc_eq : Vpc = S0 :/\: U. { exact (andER (S0 :e Tb) (Vpc = S0 :/\: U) HS0pack). }
+  rewrite HVpc_eq.
+  exact (topology_binintersect_closed B Tb S0 U HtopB HS0open HUopen). }
 (** Vpc is evenly covered by p (subset of evenly covered V) **)
 claim Hev_V : evenly_covered E Te B Tb p V.
 { prove topology_on E Te /\ V :e Tb /\ exists slices:set, slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p V /\ (forall S0:set, S0 :e slices -> homeomorphism S0 (subspace_topology E Te S0) V (subspace_topology B Tb V) (graph S0 (fun x:set => apply_fun p x))).
