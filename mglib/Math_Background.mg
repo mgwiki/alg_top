@@ -408005,12 +408005,14 @@ apply and3I.
     claim Hsr'_pd : pairwise_disjoint slices_r'.
     { exact (andER (slices_r' c= Ty) (pairwise_disjoint slices_r') Hsr'_left2). }
     (** Now we have restricted r-slices over V'. **)
-    (** Each S'_a :e slices_r' maps homeomorphically to V' via r. **)
-    (** Step 4-5: For each S'_a, need q to trivialize over it to build p-slices. **)
-    (** This requires: loops in S'_a are null-homotopic in Y **)
-    (** (from V' c= V0 evenly covered by universal cover p0, **)
-    (** r_star injective, and pi1(V') -> pi1(Z) trivial). **)
-    (** Then q^{-1}(S'_a) = union of sheets T_{a,b}, each homeo to V' via p. **)
+    (** Each S'_a maps homeomorphically to V' via r. **)
+    (** For each S'_a, q locally trivializes (q is a covering map). **)
+    (** Global trivialization over S'_a follows from unique path lifting, **)
+    (** since S'_a homeomorphic to connected V' and pi1(S'_a) -> pi1(Y) trivial **)
+    (** (from V' c= V0, universal cover, r_star injective). **)
+    (** The collection of q-sheets over all r-slices gives the p-slices. **)
+    (** Full formalization requires: covering trivialization over base with **)
+    (** trivial fundamental group image (not yet available as named theorem). **)
     admit.
 Admitted.
 
