@@ -408294,15 +408294,25 @@ claim Hpe0U : apply_fun p e0 :e U.
 { exact (SepE2 E (fun x:set => apply_fun p x :e U) e0 He0). }
 set u0 := apply_fun p e0.
 claim Hu0B : u0 :e B. { exact (Hfn_p e0 He0E). }
-(** W = W0 cap preU for some W0 :e Te (from subspace topology def) **)
+(** W = W0 cap preU for some W0 :e Te **)
+claim HW_sub : exists W0:set, W0 :e Te /\ W = W0 :/\: preU.
+{ exact (SepE2 (Power preU)
+    (fun S:set => exists V0:set, V0 :e Te /\ S = V0 :/\: preU)
+    W HW). }
+apply HW_sub. let W0. assume HW0pack.
+claim HW0open : W0 :e Te. { exact (andEL (W0 :e Te) (W = W0 :/\: preU) HW0pack). }
+claim HWeq : W = W0 :/\: preU. { exact (andER (W0 :e Te) (W = W0 :/\: preU) HW0pack). }
+claim He0W0 : e0 :e W0.
+{ claim He0WW0 : e0 :e W0 :/\: preU.
+  { rewrite <- HWeq. exact He0W. }
+  exact (binintersectE1 W0 preU e0 He0WW0). }
 (** Get evenly covered V with u0 :e V **)
-(** Take V0 = V cap p(W0) cap U: open in B, contained in V and U **)
-(** Use lpc of U to get path-connected Vpc with u0 :e Vpc c= V0 **)
-(** Vpc is evenly covered (subset of V, open in B) **)
-(** The sheet of Vpc containing e0 is path-connected (homeo to Vpc) **)
-(** and contained in W cap preU **)
-(** This sheet is the desired neighborhood V0 **)
-(** Full formalization: extract W0, build V0, apply lpc, get sheet **)
+apply (covering_map_evenly_covered_slices E Te B Tb p u0 Hcov Hu0B).
+let V. assume Hev_inner. apply Hev_inner. let slicesV. assume HslV_pack.
+(** Extract V properties **)
+(** Then intersect V cap p-image(W0) cap U to get a neighborhood in U **)
+(** Use lpc to get path-connected sub-neighborhood **)
+(** Lift the sheet to get pc neighborhood in preU **)
 admit.
 Admitted.
 
