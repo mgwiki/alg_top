@@ -331543,12 +331543,18 @@ claim Hextfp :
               reduced_word J ImageFam efam_int n2 ws2 /\
               word_product multG eG ws1 n1 = x /\
               word_product multG eG ws2 n2 = x /\
-              (forall i:set, i :e n1 ->
+              ((forall i:set, i :e n1 ->
+                apply_fun aof1 i :e J /\
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+               (forall i:set, i :e n1 ->
                 apply_fun ws1 i =
-                  apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)) /\
-              (forall j:set, j :e n2 ->
+                  apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))) /\
+              ((forall j:set, j :e n2 ->
+                apply_fun aof2 j :e J /\
+                apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+               (forall j:set, j :e n2 ->
                 apply_fun ws2 j =
-                  apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)).
+                  apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))).
         {
           let n1 xs1 n2 xs2.
           assume Hred1 : reduced_word J ImageFam efam_int n1 xs1.
@@ -331660,18 +331666,40 @@ claim Hextfp :
             (reduced_word J ImageFam efam_int n2 ws2)
             (word_product multG eG ws1 n1 = x)
             (word_product multG eG ws2 n2 = x)
-            (forall i:set, i :e n1 ->
+            ((forall i:set, i :e n1 ->
+              apply_fun aof1 i :e J /\
+              apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i)) /\
+             (forall i:set, i :e n1 ->
               apply_fun ws1 i =
-                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
-            (forall j:set, j :e n2 ->
+                apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i)))
+            ((forall j:set, j :e n2 ->
+              apply_fun aof2 j :e J /\
+              apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j)) /\
+             (forall j:set, j :e n2 ->
               apply_fun ws2 j =
-                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))
+                apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j)))
             HredWs1
             HredWs2
             HwpWs1
             HwpWs2
-            Hws1Via
-            Hws2Via).
+            (andI
+              (forall i:set, i :e n1 ->
+                apply_fun aof1 i :e J /\
+                apply_fun uof1 i :e apply_fun Gfam (apply_fun aof1 i))
+              (forall i:set, i :e n1 ->
+                apply_fun ws1 i =
+                  apply_fun (apply_fun ifam (apply_fun aof1 i)) (apply_fun uof1 i))
+              Hws1Choice
+              Hws1Via)
+            (andI
+              (forall j:set, j :e n2 ->
+                apply_fun aof2 j :e J /\
+                apply_fun uof2 j :e apply_fun Gfam (apply_fun aof2 j))
+              (forall j:set, j :e n2 ->
+                apply_fun ws2 j =
+                  apply_fun (apply_fun ifam (apply_fun aof2 j)) (apply_fun uof2 j))
+              Hws2Choice
+              Hws2Via)).
         }
         admit. (** core S68.5 gap C remainder: reduced-word existence+uniqueness for non-identity x. **)
       + let alpha. assume Halpha : alpha :e J.
