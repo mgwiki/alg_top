@@ -407848,13 +407848,34 @@ claim Hlift0 : apply_fun liftfB 0 = e0.
     (continuous_map unit_interval unit_interval_topology E0 Te0 liftfB)
     (apply_fun liftfB 0 = e0)
     HliftLeft). }
-(** Key: liftfB(1) = e0 (the lift is a loop) **)
-(** This follows from: p0(liftfB(1)) = fB(1) = b = p0(e0), **)
-(** and liftfB stays in the same evenly-covered slice as e0 **)
-(** (by connectedness of [0,1] and disjointness of slices), **)
-(** and p0 is injective on each slice. **)
-(** Then: liftfB is a loop at e0 in E0, E0 simply connected, **)
-(** so liftfB is null-homotopic, which projects to fB null-homotopic in B. **)
+(** Key claim: p0(liftfB(1)) = b **)
+claim Hp0lift1 : apply_fun p0 (apply_fun liftfB 1) = b.
+{ rewrite (HliftComm 1 one_in_unit_interval). exact HfB1. }
+(** fB maps into V0: for all t, fB(t) :e V0 **)
+claim HfB_into_V0 : forall t:set, t :e unit_interval -> apply_fun fB t :e V0.
+{ let t. assume Ht.
+  prove apply_fun (compose_fun unit_interval f incV0) t :e V0.
+  rewrite (compose_fun_apply unit_interval f incV0 t Ht).
+  claim HftV0 : apply_fun f t :e V0. { exact (Hf_into_V0 t Ht). }
+  rewrite (identity_function_apply V0 (apply_fun f t) HftV0).
+  exact HftV0. }
+(** liftfB maps into p0^{-1}(V0) **)
+claim Hlift_in_preimage : forall t:set, t :e unit_interval ->
+  apply_fun liftfB t :e preimage_of E0 p0 V0.
+{ let t. assume Ht.
+  prove apply_fun liftfB t :e {e :e E0 | apply_fun p0 e :e V0}.
+  claim HltE0 : apply_fun liftfB t :e E0.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology E0 Te0 liftfB HliftCont t Ht). }
+  claim Hp0lt : apply_fun p0 (apply_fun liftfB t) :e V0.
+  { rewrite (HliftComm t Ht). exact (HfB_into_V0 t Ht). }
+  exact (SepI E0 (fun e:set => apply_fun p0 e :e V0) (apply_fun liftfB t) HltE0 Hp0lt). }
+(** The image of liftfB is in some slice S0 of p0^{-1}(V0) **)
+(** because unit_interval is connected and the slices are disjoint open cover **)
+(** Full argument: liftfB(0) = e0 :e S0 (some slice), liftfB continuous, **)
+(** [0,1] connected, slices disjoint open => image stays in S0. **)
+(** Then p0 injective on S0 and p0(liftfB(1)) = b = p0(e0) => liftfB(1) = e0 **)
+(** Then liftfB is a loop in simply_connected E0, hence null-homotopic **)
+(** Project null-homotopy to B via p0 **)
 admit.
 Admitted.
 
