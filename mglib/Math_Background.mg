@@ -407874,12 +407874,53 @@ claim HfB1 : apply_fun fB 1 = b.
   rewrite (compose_fun_apply unit_interval f incV0 1 one_in_unit_interval).
   rewrite Hf1.
   exact (identity_function_apply V0 b HbV0). }
-(** Now fB is a continuous loop at b in B. **)
-(** Step: Lift fB to E0 starting at some e0 in p0^{-1}(b) **)
-(** Then show lift is a loop (stays in one slice, p0 injective on slice) **)
-(** Then use simply_connected E0 to get null-homotopy, project to B **)
-(** Need: e0 :e E0 with p0(e0) = b, path_lift properties, **)
-(** slice containment from connectedness, simply_connected pi1 triviality **)
+(** Get e0 in E0 over b **)
+claim Hsurj_p0 : surjective_map E0 B p0.
+{ exact (covering_map_surjective E0 Te0 B Tb p0 Hcov). }
+claim Hsurj_data : forall b0:set, b0 :e B -> exists e:set, e :e E0 /\ apply_fun p0 e = b0.
+{ exact (andER (function_on p0 E0 B)
+    (forall b0:set, b0 :e B -> exists e:set, e :e E0 /\ apply_fun p0 e = b0)
+    Hsurj_p0). }
+apply (Hsurj_data b HbB). let e0. assume He0pack.
+claim He0E0 : e0 :e E0. { exact (andEL (e0 :e E0) (apply_fun p0 e0 = b) He0pack). }
+claim Hpe0 : apply_fun p0 e0 = b. { exact (andER (e0 :e E0) (apply_fun p0 e0 = b) He0pack). }
+(** Lift fB to E0 starting at e0 **)
+claim HfB0_eq_pe0 : apply_fun p0 e0 = apply_fun fB 0.
+{ rewrite Hpe0. symmetry. exact HfB0. }
+set liftfB := path_lift E0 Te0 B Tb p0 e0 fB.
+claim HliftProps : continuous_map unit_interval unit_interval_topology E0 Te0 liftfB /\
+  apply_fun liftfB 0 = e0 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p0 (apply_fun liftfB t) = apply_fun fB t).
+{ exact (lemma54_1_path_lifting E0 Te0 B Tb p0 e0 fB Hcov He0E0 HfB0_eq_pe0 HfBCont). }
+set Hlift_commtype := forall t:set, t :e unit_interval -> apply_fun p0 (apply_fun liftfB t) = apply_fun fB t.
+claim HliftComm : Hlift_commtype.
+{ exact (andER
+    ((continuous_map unit_interval unit_interval_topology E0 Te0 liftfB) /\ (apply_fun liftfB 0 = e0))
+    Hlift_commtype
+    HliftProps). }
+claim HliftLeft : continuous_map unit_interval unit_interval_topology E0 Te0 liftfB /\ apply_fun liftfB 0 = e0.
+{ exact (andEL
+    ((continuous_map unit_interval unit_interval_topology E0 Te0 liftfB) /\ (apply_fun liftfB 0 = e0))
+    Hlift_commtype
+    HliftProps). }
+claim HliftCont : continuous_map unit_interval unit_interval_topology E0 Te0 liftfB.
+{ exact (andEL
+    (continuous_map unit_interval unit_interval_topology E0 Te0 liftfB)
+    (apply_fun liftfB 0 = e0)
+    HliftLeft). }
+claim Hlift0 : apply_fun liftfB 0 = e0.
+{ exact (andER
+    (continuous_map unit_interval unit_interval_topology E0 Te0 liftfB)
+    (apply_fun liftfB 0 = e0)
+    HliftLeft). }
+(** Key: liftfB(1) = e0 (the lift is a loop) **)
+(** This follows from: p0(liftfB(1)) = fB(1) = b = p0(e0), **)
+(** and liftfB stays in the same evenly-covered slice as e0 **)
+(** (by connectedness of [0,1] and disjointness of slices), **)
+(** and p0 is injective on each slice. **)
+(** Then: liftfB is a loop at e0 in E0, E0 simply connected, **)
+(** so liftfB is null-homotopic, which projects to fB null-homotopic in B. **)
 admit.
 Admitted.
 
