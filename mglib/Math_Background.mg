@@ -407124,9 +407124,30 @@ claim Hglift_ls : glift :e loop_space E0 Te0 e0.
 (** E0 simply connected => pi1(E0, e0) = {id}, so class of glift = id **)
 claim Hpi1_trivial : fundamental_group E0 Te0 e0 = {fundamental_group_id E0 Te0 e0}.
 { exact (simply_connected_trivial_pi1_at_point E0 Te0 e0 Hsc He0E0). }
-(** Then glift path-homotopic to constant_path e0 in E0 **)
-(** Then postcompose with p0 to get fB ~ constant_path b in B **)
-(** Then use path_homotopic_of_pointwise_equal to equate compose_fun I glift p0 with fB **)
+(** glift class is in pi1(E0, e0) = {id} **)
+claim Hglift_class_in_pi1 : path_homotopy_class_loop E0 Te0 e0 glift :e fundamental_group E0 Te0 e0.
+{ exact (path_homotopy_class_in_fundamental_group E0 Te0 e0 glift Hglift_ls). }
+claim Hglift_class_eq_id : path_homotopy_class_loop E0 Te0 e0 glift = fundamental_group_id E0 Te0 e0.
+{ claim Hsingleton : path_homotopy_class_loop E0 Te0 e0 glift :e {fundamental_group_id E0 Te0 e0}.
+  { rewrite <- Hpi1_trivial. exact Hglift_class_in_pi1. }
+  exact (SingE (fundamental_group_id E0 Te0 e0) (path_homotopy_class_loop E0 Te0 e0 glift) Hsingleton). }
+(** glift is path-homotopic to constant_path e0 in E0 **)
+claim Hglift_null : path_homotopic E0 Te0 e0 e0 glift (constant_path e0).
+{ exact (loop_class_eq_id_implies_path_homotopic_constant E0 Te0 e0 glift Hglift_ls Hglift_class_eq_id). }
+(** Postcompose with p0: compose_fun I glift p0 ~ compose_fun I (constant_path e0) p0 in B **)
+claim Hpost : path_homotopic B Tb b b
+  (compose_fun unit_interval glift p0)
+  (compose_fun unit_interval (constant_path e0) p0).
+{ exact (path_homotopic_postcompose E0 Te0 B Tb e0 e0 b b glift (constant_path e0) p0
+    Hglift_null Hcont_p0 Hpe0 Hpe0). }
+(** Now need: compose_fun I glift p0 = fB pointwise **)
+(** and compose_fun I (constant_path e0) p0 = constant_path b pointwise **)
+(** Then path_homotopic_of_pointwise_equal gives the result **)
+(** compose_fun I glift p0 (t) = apply_fun p0 (apply_fun glift t) **)
+(** = apply_fun p0 (apply_fun liftfB t) (by graphify_on_apply) **)
+(** = apply_fun fB t (by HliftComm) **)
+(** compose_fun I (constant_path e0) p0 (t) = apply_fun p0 (apply_fun (constant_path e0) t) **)
+(** = apply_fun p0 e0 = b = apply_fun (constant_path b) t **)
 admit.
 Admitted.
 
