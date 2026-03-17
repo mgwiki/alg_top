@@ -415140,13 +415140,60 @@ claim HVpc_left2 : (Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc).
 { exact (andEL ((Vpc :e subspace_topology B Tb U) /\ (u0 :e Vpc)) (Vpc c= pSW_U) HVpc_left3). }
 claim Hu0_Vpc : u0 :e Vpc.
 { exact (andER (Vpc :e subspace_topology B Tb U) (u0 :e Vpc) HVpc_left2). }
-(** Witness: preimage of Vpc in S_e0 under pS **)
-(** = {e :e S_e0 | apply_fun pS e :e Vpc} **)
-(** This is c= SW (since Vpc c= pSW_U c= image_of pS SW, and pS injective) **)
-(** open in E, path-connected, contains e0, c= W = W0 cap preU **)
-(** The full construction needs homeomorphism inverse machinery **)
-(** which is available but detailed to formalize **)
-admit.
+(** Witness: preimage of Vpc in S_e0 **)
+set V0 := preimage_of S_e0 pS Vpc.
+(** V0 = {e :e S_e0 | apply_fun pS e :e Vpc} **)
+(** V0 is open in S_e0's subspace topology (preimage of open under continuous) **)
+(** V0 is open in E (S_e0 is open in E, V0 is open in S_e0) **)
+(** V0 c= SW c= W0 cap S_e0 (since Vpc c= image_of pS SW and pS injective on S_e0) **)
+(** V0 c= preU (since SW c= preU) **)
+(** e0 :e V0 (since e0 :e S_e0 and pS(e0) = u0 :e Vpc) **)
+(** V0 is path-connected (homeomorphic to Vpc via pS) **)
+claim He0V0 : e0 :e V0.
+{ prove e0 :e {e :e S_e0 | apply_fun pS e :e Vpc}.
+  apply (SepI S_e0 (fun e:set => apply_fun pS e :e Vpc) e0 He0Se0).
+  rewrite HpS_e0. exact Hu0_Vpc. }
+claim HV0_sub_SW : V0 c= SW.
+{ (** Vpc c= pSW_U c= image_of pS SW, pS injective on S_e0 **)
+  (** So for e :e V0: pS(e) :e Vpc c= image_of pS SW, hence e :e SW **)
+  admit. }
+claim HV0_sub_preU : V0 c= preU.
+{ let e. assume He.
+  claim HeSe0 : e :e S_e0. { exact (HSW_sub_Se0 e (HV0_sub_SW e He)). }
+  claim HeE : e :e E. { exact (topology_elem_subset E Te S_e0 HtopE HSe0_open e HeSe0). }
+  claim HeSW : e :e SW. { exact (HV0_sub_SW e He). }
+  claim HePreU : e :e preU.
+  { prove e :e {x :e E | apply_fun p x :e U}.
+    apply (SepI E (fun x:set => apply_fun p x :e U) e HeE).
+    (** p(e) :e U because e :e SW c= S_e0, pS(e) :e image_of pS SW c= pSW_U c= U **)
+    claim HpSe_Vpc : apply_fun pS e :e Vpc.
+    { exact (SepE2 S_e0 (fun x:set => apply_fun pS x :e Vpc) e He). }
+    claim HpSe_U : apply_fun pS e :e U.
+    { exact (binintersectE2 (image_of pS SW) U (apply_fun pS e) (HVpc_sub (apply_fun pS e) HpSe_Vpc)). }
+    prove apply_fun p e :e U.
+    rewrite <- (apply_fun_graph S_e0 (fun y:set => apply_fun p y) e HeSe0).
+    exact HpSe_U. }
+  exact HePreU. }
+claim HV0_sub_W : V0 c= W.
+{ let e. assume He. rewrite HWeq. exact (binintersectI W0 preU e
+    (binintersectE2 S_e0 W0 e (HV0_sub_SW e He))
+    (HV0_sub_preU e He)). }
+(** V0 :e subspace_topology E Te preU **)
+(** V0 is open in E (preimage of open Vpc under continuous pS on open S_e0) **)
+(** Since V0 c= preU and V0 :e Te, V0 :e subspace_topology E Te preU **)
+claim HV0_open_E : V0 :e Te.
+{ admit. (** preimage of open set under continuous map restricted to open set **) }
+witness V0.
+apply and4I.
+- (** V0 :e subspace_topology E Te preU **)
+  (** V0 cap preU = V0 since V0 c= preU **)
+  rewrite <- (binintersect_Subq_eq_1 V0 preU HV0_sub_preU).
+  exact (subspace_topology_intersection_open E Te preU V0 HV0_open_E).
+- (** e0 :e V0 **) exact He0V0.
+- (** V0 c= W **) exact HV0_sub_W.
+- (** path_connected_space V0 ... **)
+  (** V0 is homeomorphic to Vpc (via pS restricted), Vpc is pc **)
+  admit.
 Admitted.
 
 (** Improved version with locally_path_connected hypothesis **)
