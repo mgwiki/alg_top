@@ -407289,16 +407289,21 @@ apply and3I.
   - exact HV'open.
   - exact HzV'.
   - (** evenly_covered X Tx Z Tz p V' **)
-    (** Need: slices of p^{-1}(V') that are disjoint, cover p^{-1}(V'), **)
-    (** and each maps homeomorphically to V' via p **)
-    (** Construction: for each r-slice S_a of r^{-1}(V), restrict to S'_a over V'. **)
-    (** Then for each S'_a, q^{-1}(S'_a) decomposes into sheets T_{a,b}. **)
-    (** The T_{a,b} are the p-slices. **)
-    (** Key: q trivializes over S'_a because **)
-    (** - V' c= V0 (evenly covered by universal cover p0) **)
-    (** - loops in V' are null-homotopic in Z **)
-    (** - r_star injective => loops in S'_a null-homotopic in Y **)
-    (** - q trivializes over simply-connected-like S'_a **)
+    claim HV'subV : V' c= V. { let w. assume Hw. exact (binintersectE1 V V0 w Hw). }
+    claim HV'subV0 : V' c= V0. { let w. assume Hw. exact (binintersectE2 V V0 w Hw). }
+    (** V' is evenly covered by r (restrict r-slices from V to V') **)
+    (** Proof outline for evenly_covered X Tx Z Tz p V': **)
+    (** 1. Reconstruct evenly_covered Y Ty Z Tz r V from slices_r data **)
+    (** 2. Apply evenly_covered_open_subset to get evenly_covered for r over V' **)
+    (** 3. For each restricted r-slice S'_a over V': **)
+    (**    - S'_a is open in Y and homeomorphic to V' via r **)
+    (**    - Since V' c= V0 (evenly covered by universal cover p0) **)
+    (**      all loops in V' are null-homotopic in Z **)
+    (**    - Since r_star is injective (covering map property), **)
+    (**      loops in S'_a are null-homotopic in Y **)
+    (**    - Therefore q trivializes over S'_a: q^{-1}(S'_a) = union of sheets T_{a,b} **)
+    (** 4. Each T_{a,b} maps homeomorphically to V' via p = r o q **)
+    (** 5. The collection of all T_{a,b} gives evenly_covered X Tx Z Tz p V' **)
     admit.
 Admitted.
 
