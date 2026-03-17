@@ -407876,11 +407876,12 @@ claim HincVp_cont : continuous_map V' (subspace_topology Z Tz V') Z Tz incVp.
 set rg_incl := compose_fun unit_interval rg incVp.
 claim Hrg_incl_loop : rg_incl :e loop_space Z Tz z.
 { exact (loop_space_postcompose V' (subspace_topology Z Tz V') z Z Tz z rg incVp Hrg_loop HincVp_cont (identity_function_apply V' z HzVp)). }
-(** The null-homotopy hypothesis gives: rg included in Z ~ constant_path z **)
-(** But HloopsVp uses graph V' (fun x => x), not incVp = {(w,w)|w :e V'} **)
-(** These should be definitionally equal: graph V' (fun x => x) = {(x,x)|x :e V'} **)
-(** Then: r_star([g_incl]) should equal [rg_incl] by functoriality **)
-(** And by injectivity: [g_incl] = id, hence g_incl ~ constant_path y **)
+(** Apply null-homotopy hypothesis: rg with inclusion is null-homotopic in Z **)
+(** HloopsVp uses graph V' (fun x => x) for inclusion, **)
+(** which equals {(w,w)|w :e V'} = incVp definitionally. **)
+(** So compose_fun I rg (graph V' (fun x => x)) = compose_fun I rg incVp = rg_incl **)
+(** Remaining: r_star functoriality + injectivity argument **)
+(** These require induced_homomorphism_apply and thm54_6a_p_star_injective **)
 admit.
 Admitted.
 
