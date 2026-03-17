@@ -415647,6 +415647,63 @@ Theorem ex81_1b_torus_quotient_klein_bottle :
 admit.
 Admitted.
 
+(** Helper: CTG members that agree pointwise are equal (bridge via graphify_on). **)
+(** Uses the fact that compose_fun X h (graph X (fun x => x)) agrees pointwise **)
+(** with h and is in total_function_space, enabling extensionality. **)
+Theorem ctg_pointwise_eq_implies_set_eq :
+  forall E Te B Tb p h1 h2:set,
+  covering_map E Te B Tb p ->
+  h1 :e covering_transformation_group E Te B Tb p ->
+  h2 :e covering_transformation_group E Te B Tb p ->
+  (forall x:set, x :e E -> apply_fun h1 x = apply_fun h2 x) ->
+  h1 = h2.
+let E Te B Tb p h1 h2.
+assume Hcov Hh1G Hh2G Hpw.
+claim Hfn1 : function_on h1 E E.
+{ exact (covering_transformation_group_function_on E Te B Tb p h1 Hh1G). }
+claim Hfn2 : function_on h2 E E.
+{ exact (covering_transformation_group_function_on E Te B Tb p h2 Hh2G). }
+set idE := graph E (fun x:set => x).
+claim HidE_fn : function_on idE E E.
+{ let x. assume Hx.
+  prove apply_fun idE x :e E.
+  rewrite (apply_fun_graph E (fun x0:set => x0) x Hx).
+  exact Hx. }
+(** compose h1 with identity to get into total_function_space **)
+set g1 := compose_fun E h1 idE.
+set g2 := compose_fun E h2 idE.
+claim Hg1_total : g1 :e total_function_space E E.
+{ exact (compose_fun_in_total_function_space E E E h1 idE Hfn1 HidE_fn). }
+claim Hg2_total : g2 :e total_function_space E E.
+{ exact (compose_fun_in_total_function_space E E E h2 idE Hfn2 HidE_fn). }
+(** g1 and g2 agree pointwise with h1 and h2 respectively **)
+claim Hg1_eq : forall x:set, x :e E -> apply_fun g1 x = apply_fun h1 x.
+{ let x. assume Hx.
+  prove apply_fun (compose_fun E h1 idE) x = apply_fun h1 x.
+  rewrite (compose_fun_apply E h1 idE x Hx).
+  rewrite (apply_fun_graph E (fun x0:set => x0) (apply_fun h1 x) (Hfn1 x Hx)).
+  reflexivity. }
+claim Hg2_eq : forall x:set, x :e E -> apply_fun g2 x = apply_fun h2 x.
+{ let x. assume Hx.
+  prove apply_fun (compose_fun E h2 idE) x = apply_fun h2 x.
+  rewrite (compose_fun_apply E h2 idE x Hx).
+  rewrite (apply_fun_graph E (fun x0:set => x0) (apply_fun h2 x) (Hfn2 x Hx)).
+  reflexivity. }
+(** g1 and g2 agree pointwise **)
+claim Hg_pw : forall x:set, x :e E -> apply_fun g1 x = apply_fun g2 x.
+{ let x. assume Hx.
+  rewrite (Hg1_eq x Hx). rewrite (Hg2_eq x Hx). exact (Hpw x Hx). }
+(** By extensionality: g1 = g2 **)
+claim Hg_eq : g1 = g2.
+{ exact (total_function_space_extensional E E g1 g2 Hg1_total Hg2_total Hg_pw). }
+(** g1 = compose_fun E h1 idE = graphify_on E h1 (definitionally) **)
+(** g2 = compose_fun E h2 idE = graphify_on E h2 (definitionally) **)
+(** So graphify_on E h1 = graphify_on E h2, but we need h1 = h2 **)
+(** Bridge: h1 :e function_space E E, and both agree pointwise **)
+(** Use function_space_extensional with additional conditions **)
+admit.
+Admitted.
+
 (** from S81 Exercise 3(a) (line 5199 in algtop.tex) **)
 (** LATEX VERSION: Let p: X -> B be a covering map (not necessarily regular); **)
 (** let G be its group of covering transformations. Show the action of G on X **)
@@ -415736,13 +415793,11 @@ claim Hno_fixed : forall g:set, g :e G -> g <> idG ->
   claim Hpointwise : forall x:set, x :e X -> apply_fun g x = apply_fun idG x.
   { exact (covering_map_lifts_agree_on_connected_domain X Tx B Tb p
       X Tx p g idG x0 Hcov HconnX Hg_lift HidG_lift Hx0X Hagree). }
-  (** Derive g = idG using total_function_space_extensional **)
-  claim Hg_total : g :e total_function_space X X.
-  { exact (continuous_map_in_total_function_space_plain X Tx X Tx g Hg_cont). }
-  claim HidG_total : idG :e total_function_space X X.
-  { exact (continuous_map_in_total_function_space_plain X Tx X Tx idG HidG_cont). }
+  (** Derive g = idG using CTG pointwise extensionality **)
+  claim HidGinCTG : idG :e G.
+  { exact (covering_transformation_id_in_group X Tx B Tb p Hcov). }
   claim Hgeq : g = idG.
-  { exact (total_function_space_extensional X X g idG Hg_total HidG_total Hpointwise). }
+  { exact (ctg_pointwise_eq_implies_set_eq X Tx B Tb p g idG Hcov HgG HidGinCTG Hpointwise). }
   exact (HgNeq Hgeq). }
 (** Main proof: properly_discontinuous **)
 prove forall x:set, x :e X ->
