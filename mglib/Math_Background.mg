@@ -420409,6 +420409,20 @@ exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0 f (graphify_on unit
   (path_homotopic_to_graphify X Tx x0 x0 f Hcont Hf0 Hf1)).
 Qed.
 
+(** Helper: graphify of continuous map is continuous **)
+(** Proven Alice **)
+Lemma graphify_on_continuous : forall X Tx Y Ty f:set,
+  continuous_map X Tx Y Ty f ->
+  continuous_map X Tx Y Ty (graphify_on X f).
+let X Tx Y Ty f. assume Hcont.
+claim Hfn : function_on (graphify_on X f) X Y.
+{ let x. assume Hx. rewrite (graphify_on_apply X f x Hx).
+  exact (continuous_map_function_on X Tx Y Ty f Hcont x Hx). }
+claim Hagree : forall x:set, x :e X -> apply_fun f x = apply_fun (graphify_on X f) x.
+{ let x. assume Hx. symmetry. exact (graphify_on_apply X f x Hx). }
+exact (continuous_map_congr_on X Tx Y Ty f (graphify_on X f) Hcont Hfn Hagree).
+Qed.
+
 (** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
 Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
