@@ -416305,6 +416305,21 @@ exact (locally_path_connected_implies_locally_connected E Te
   (covering_total_space_lpc E Te B Tb p Hcov HlpcB)).
 Qed.
 
+(** Helper: covering map with lpc base has path-connected evenly covered neighborhoods **)
+(** Proven Alice **)
+Lemma covering_map_pc_evenly_covered_from_lpc_base :
+  forall E Te B Tb p b:set,
+  covering_map E Te B Tb p ->
+  locally_path_connected B Tb ->
+  b :e B ->
+  exists V:set, V :e Tb /\ b :e V /\
+    path_connected_space V (subspace_topology B Tb V) /\
+    evenly_covered E Te B Tb p V.
+let E Te B Tb p b. assume Hcov HlpcB HbB.
+exact (covering_map_path_connected_evenly_covered E Te B Tb p b Hcov
+  (covering_total_space_lpc E Te B Tb p Hcov HlpcB) HbB).
+Qed.
+
 (** Old version with C parameter - kept for reference, false for C != X **)
 Lemma preimage_pc_under_homeomorphism_restrict :
   forall X Tx Y Ty f C Vpc:set,
