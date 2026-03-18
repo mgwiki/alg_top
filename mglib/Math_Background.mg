@@ -401599,6 +401599,57 @@ apply set_ext.
   exact (SepI B2 (fun u:set => apply_fun pi u :e Sing cls) x HxB2 Hmem).
 Qed.
 
+(** Preimage of the image is the saturation under polygon_pasting_equiv. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_preimage_image_eq_saturation : forall n w C:set,
+  C c= B2 ->
+  preimage_of B2 (polygon_pasting_map n w) (image_of (polygon_pasting_map n w) C)
+  =
+  {x :e B2 | exists c:set, c :e C /\ polygon_pasting_equiv n w x c}.
+let n w C.
+assume HCsubB2.
+set pi := polygon_pasting_map n w.
+apply set_ext.
+- let x. assume HxPre.
+  claim HxB2 : x :e B2.
+  { exact (SepE1 B2 (fun u:set => apply_fun pi u :e image_of pi C) x HxPre). }
+  claim HxImg : apply_fun pi x :e image_of pi C.
+  { exact (SepE2 B2 (fun u:set => apply_fun pi u :e image_of pi C) x HxPre). }
+  apply (ReplE_impred C (fun c:set => apply_fun pi c) (apply_fun pi x) HxImg).
+  let c. assume HcC HpiEq.
+  claim HcB2 : c :e B2.
+  { exact (HCsubB2 c HcC). }
+  claim Hcx : polygon_pasting_equiv n w c x.
+  { exact (polygon_pasting_map_eq_implies_equiv n w c x HcB2 HxB2 (eq_symm (apply_fun pi x) (apply_fun pi c) HpiEq)). }
+  claim Hex : exists c0:set, c0 :e C /\ polygon_pasting_equiv n w x c0.
+  {
+    witness c.
+    exact (andI (c :e C) (polygon_pasting_equiv n w x c)
+      HcC
+      (polygon_pasting_equiv_symm n w c x Hcx)).
+  }
+  apply (SepI B2 (fun u:set => exists c0:set, c0 :e C /\ polygon_pasting_equiv n w u c0)).
+  * exact HxB2.
+  * exact Hex.
+- let x. assume HxSat.
+  claim HxB2 : x :e B2.
+  { exact (SepE1 B2 (fun u:set => exists c:set, c :e C /\ polygon_pasting_equiv n w u c) x HxSat). }
+  claim Hex : exists c:set, c :e C /\ polygon_pasting_equiv n w x c.
+  { exact (SepE2 B2 (fun u:set => exists c:set, c :e C /\ polygon_pasting_equiv n w u c) x HxSat). }
+  apply Hex. let c. assume Hpack.
+  claim HcC : c :e C.
+  { exact (andEL (c :e C) (polygon_pasting_equiv n w x c) Hpack). }
+  claim Hxc : polygon_pasting_equiv n w x c.
+  { exact (andER (c :e C) (polygon_pasting_equiv n w x c) Hpack). }
+  claim HcB2 : c :e B2.
+  { exact (HCsubB2 c HcC). }
+  claim HpiEq : apply_fun pi x = apply_fun pi c.
+  { exact (polygon_pasting_equiv_implies_map_eq n w x c HxB2 HcB2 Hxc). }
+  claim Hmem : apply_fun pi x :e image_of pi C.
+  { rewrite HpiEq. exact (ReplI C (fun c0:set => apply_fun pi c0) c HcC). }
+  exact (SepI B2 (fun u:set => apply_fun pi u :e image_of pi C) x HxB2 Hmem).
+Qed.
+
 (** polygon_pasting_map is injective on interior points. **)
 (** Proven Charlie **)
 Lemma polygon_pasting_map_inj_nonS1 : forall n w x y:set,
