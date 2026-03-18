@@ -280069,6 +280069,7 @@ admit.
 Admitted.
 
 (** Forward declaration: distinct components are disjoint **)
+(** Proven Alice **)
 Lemma jordan_step1_components_disjoint : forall C x1 x2:set,
   C c= Sn 2 ->
   x1 :e Sn 2 :\: C -> x2 :e Sn 2 :\: C ->
@@ -280076,8 +280077,34 @@ Lemma jordan_step1_components_disjoint : forall C x1 x2:set,
   component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2 ->
   component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 :/\:
   component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2 = Empty.
-admit.
-Admitted.
+let C x1 x2.
+assume HC Hx1 Hx2 Hdiff.
+set SmC := Sn 2 :\: C.
+set TSmC := subspace_topology (Sn 2) (Sn_topology 2) SmC.
+claim HtopSmC : topology_on SmC TSmC.
+{ claim HSmCsub : SmC c= Sn 2.
+  { let x. assume Hx. exact (setminusE1 (Sn 2) C x Hx). }
+  exact (subspace_topology_is_topology (Sn 2) (Sn_topology 2) SmC
+    (lemma59_3_Sn_topology_on 2) HSmCsub). }
+(** Proof by contradiction: if intersection nonempty, components equal **)
+apply set_ext.
+- let z. assume Hz : z :e component_of SmC TSmC x1 :/\: component_of SmC TSmC x2.
+  claim Hz1 : z :e component_of SmC TSmC x1.
+  { exact (binintersectE1 (component_of SmC TSmC x1) (component_of SmC TSmC x2) z Hz). }
+  claim Hz2 : z :e component_of SmC TSmC x2.
+  { exact (binintersectE2 (component_of SmC TSmC x1) (component_of SmC TSmC x2) z Hz). }
+  (** z in comp(x1) -> comp(z) = comp(x1) **)
+  claim Hzx1 : component_of SmC TSmC z = component_of SmC TSmC x1.
+  { exact (component_of_eq_if_in SmC TSmC x1 z HtopSmC Hx1 Hz1). }
+  (** z in comp(x2) -> comp(z) = comp(x2) **)
+  claim Hzx2 : component_of SmC TSmC z = component_of SmC TSmC x2.
+  { exact (component_of_eq_if_in SmC TSmC x2 z HtopSmC Hx2 Hz2). }
+  (** comp(x1) = comp(z) = comp(x2), contradicting Hdiff **)
+  claim Heq : component_of SmC TSmC x1 = component_of SmC TSmC x2.
+  { rewrite <- Hzx1. exact Hzx2. }
+  exact (Hdiff Heq (z :e Empty)).
+- let z. assume Hz : z :e Empty. exact (EmptyE z Hz (z :e component_of SmC TSmC x1 :/\: component_of SmC TSmC x2)).
+Qed.
 
 (** Forward declaration: if every point of S^2-C is in comp(x1) or comp(x2), **)
 (** then S^2-C = comp(x1) union comp(x2) **)
