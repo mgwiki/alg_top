@@ -340925,7 +340925,15 @@ claim Hextfp :
             reduced_word J ImageFam efam_int n xs /\ n <> 0 /\
             word_product multG eG xs n = x.
         {
-          admit. (** core S68.5 gap C existence: obtain a reduced representative for non-identity x in ImageFam. **)
+          apply (xm (exists n xs:set,
+            reduced_word J ImageFam efam_int n xs /\ n <> 0 /\
+            word_product multG eG xs n = x)).
+          - assume Hex.
+            exact Hex.
+          - assume Hnex.
+            admit. (** core S68.5 gap C existence:
+                      from subgroups_generate on ImageFam, derive a nonempty reduced representative
+                      for non-identity x (the missing reduction argument from generated words). **)
         }
         claim Hsubgen_nonid_reconstructed_uniqueness :
           forall n1 ws1 n2 ws2:set,
@@ -341809,7 +341817,15 @@ claim Hextfp :
                   n1 = n2 /\
                   (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i).
                 {
-                  admit. (** core S68.5 gap C uniqueness core: synchronize reconstructed words via extension property; label synchronization is derived below from HimgDisjoint + HlabelEqFromRwEqDisjoint. **)
+                  apply (xm (n1 = n2 /\
+                    (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i))).
+                  - assume Hsync.
+                    exact Hsync.
+                  - assume Hnsync.
+                    admit. (** core S68.5 gap C uniqueness core:
+                              derive contradiction from Hnsync using extension uniqueness;
+                              label synchronization is then obtained via
+                              HimgDisjoint + HlabelEqFromRwEqDisjoint. **)
                 }
                 claim HnEqWord : n1 = n2.
                 {
