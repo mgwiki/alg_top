@@ -415407,24 +415407,25 @@ apply and3I. exact HtopE. exact HUopen.
 (** But we need a canonical representative. Use Repl to get {path_component_of preU T e | e :e preU} **)
 set T_preU := subspace_topology E Te preU.
 set slices := {path_component_of preU T_preU e | e :e preU}.
-witness slices.
-apply and4I.
-- (** slices c= Te: each path component is open in E **)
-  let V. assume HV.
+(** Prove slices c= Te before splitting into subgoals so it's available everywhere **)
+claim Hslices_open : slices c= Te.
+{ let V. assume HV.
   apply (ReplE_impred preU (fun e:set => path_component_of preU T_preU e) V HV).
   let e. assume HePreU HVeq.
   rewrite HVeq.
-  (** path_component_of preU T_preU e is open in subspace T_preU (by lpc) **)
   claim Hpc_open_sub : open_in preU T_preU (path_component_of preU T_preU e).
   { exact (path_components_open preU T_preU HlpcPreU e HePreU). }
-  (** open in subspace + preU open in E => open in E **)
   claim Hpc_sub : path_component_of preU T_preU e c= preU.
   { exact (Sep_Subq preU (fun y:set => exists p0:set,
       function_on p0 unit_interval preU /\
       continuous_map unit_interval unit_interval_topology preU T_preU p0 /\
       apply_fun p0 0 = e /\ apply_fun p0 1 = y)). }
   exact (open_in_subspace_if_ambient_open E Te preU (path_component_of preU T_preU e)
-    HtopE HpreU_open Hpc_sub Hpc_open_sub).
+    HtopE HpreU_open Hpc_sub Hpc_open_sub). }
+witness slices.
+apply and4I.
+- (** slices c= Te **)
+  exact Hslices_open.
 - (** pairwise_disjoint slices **)
   (** slices = {path_component_of preU T e | e :e preU} **)
   (** = {component_of preU T e | e :e preU} (by lpc) **)
@@ -415464,8 +415465,41 @@ apply and4I.
     claim Hx_in_pc : x :e path_component_of preU T_preU x.
     { exact (path_component_reflexive preU T_preU x HpreU_top HxPreU). }
     exact (UnionI slices x (path_component_of preU T_preU x) Hx_in_pc Hpc_x_in_slices).
-- (** each V :e slices -> homeomorphism V ... U ... **)
-  admit.
+- (** each V :e slices -> homeomorphism V ... U ... (graph V p) **)
+  let V. assume HVsl.
+  (** V = path_component_of preU T_preU e0 for some e0 :e preU **)
+  apply (ReplE_impred preU (fun e:set => path_component_of preU T_preU e) V HVsl).
+  let e0. assume He0PreU HVeq.
+  rewrite HVeq.
+  set C := path_component_of preU T_preU e0.
+  set pC := graph C (fun x:set => apply_fun p x).
+  claim HC_sub_preU : C c= preU.
+  { exact (Sep_Subq preU (fun y:set => exists p0:set,
+      function_on p0 unit_interval preU /\
+      continuous_map unit_interval unit_interval_topology preU T_preU p0 /\
+      apply_fun p0 0 = e0 /\ apply_fun p0 1 = y)). }
+  claim HC_sub_E : C c= E. { let e. assume He. exact (HpreU_sub e (HC_sub_preU e He)). }
+  claim He0C : e0 :e C. { exact (path_component_reflexive preU T_preU e0 HpreU_top He0PreU). }
+  claim He0E : e0 :e E. { exact (HpreU_sub e0 He0PreU). }
+  claim Hu0 : apply_fun p e0 :e U.
+  { exact (SepE2 E (fun x:set => apply_fun p x :e U) e0 He0PreU). }
+  (** pC is a homeomorphism C -> U via open_map_bijection_homeomorphism **)
+  (** Need: continuous, open, bijective **)
+  claim HCopen : C :e Te.
+  { exact (Hslices_open C
+      (ReplI preU (fun e:set => path_component_of preU T_preU e) e0 He0PreU)). }
+  (** Continuous: pC = restriction of p to C **)
+  claim HpC_cont : continuous_map C (subspace_topology E Te C) U (subspace_topology B Tb U) pC.
+  { admit. }
+  (** Open map: p is local homeomorphism, C is open **)
+  claim HpC_open : open_map C (subspace_topology E Te C) U (subspace_topology B Tb U) pC.
+  { admit. }
+  (** Bijection: injective (via null-homotopy) + surjective (via path lifting) **)
+  claim HpC_bij : bijection C U pC.
+  { admit. }
+  exact (open_map_bijection_homeomorphism
+    C (subspace_topology E Te C) U (subspace_topology B Tb U) pC
+    HpC_cont HpC_open HpC_bij).
 Admitted.
 
 (** Helper: loops in evenly covered neighborhood of universal cover are null-homotopic. **)
