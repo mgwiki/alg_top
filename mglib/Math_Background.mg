@@ -279585,9 +279585,34 @@ Lemma S2_minus_simple_closed_curve_nonempty : forall C:set,
 admit.
 Admitted.
 
+(** Definition: upper and lower semicircles of S^1 **)
+Definition S1_upper : set := {p :e S1 | ~(SNoLt (p 1) 0)}.
+Definition S1_lower : set := {p :e S1 | ~(SNoLt 0 (p 1))}.
+
+(** The two points where the semicircles meet: (1,0) and (-1,0) **)
+(** These are already available: S1_basepoint = (1,0) **)
+Definition S1_left_point : set := (minus_SNo 1, 0).
+
+(** Helper: S^1 = upper union lower, upper cap lower = {(1,0), (-1,0)} **)
+(** Upper and lower are both arcs (homeomorphic to [-1,1] via x-projection) **)
+(** Upper is connected (it's path-connected via the circle arc) **)
+Lemma S1_semicircle_decomposition :
+  S1 = S1_upper :\/: S1_lower /\
+  S1_upper :/\: S1_lower = UPair S1_basepoint S1_left_point /\
+  S1_basepoint :e S1 /\
+  S1_left_point :e S1 /\
+  S1_basepoint <> S1_left_point /\
+  connected_space S1_upper (subspace_topology S1 S1_topology S1_upper) /\
+  connected_space S1_lower (subspace_topology S1 S1_topology S1_lower) /\
+  (** Upper and lower are closed in S^1, hence S^1-upper and S^1-lower are open **)
+  S1 :\: S1_upper :e S1_topology /\
+  S1 :\: S1_lower :e S1_topology.
+admit.
+Admitted.
+
 (** Helper: A simple closed curve in S^2 can be decomposed into two arcs **)
 (** meeting only at their endpoints. C = C1 union C2, C1 cap C2 = {p,q}. **)
-(** This follows from S^1 = upper_semicircle union lower_semicircle **)
+(** Proof: use S1_semicircle_decomposition + homeomorphism h: S^1 -> C. **)
 (** and the homeomorphism h: S^1 -> C. **)
 Lemma simple_closed_curve_arc_decomposition : forall C:set,
   C c= Sn 2 ->
@@ -279600,6 +279625,15 @@ Lemma simple_closed_curve_arc_decomposition : forall C:set,
     connected_space C2 (subspace_topology (Sn 2) (Sn_topology 2) C2) /\
     Sn 2 :\: C1 :e Sn_topology 2 /\
     Sn 2 :\: C2 :e Sn_topology 2.
+let C. assume HC Hscc.
+(** Get homeomorphism h: C -> S^1 from is_simple_closed_curve **)
+(** The inverse g = h^{-1}: S^1 -> C is also a homeomorphism **)
+(** Use S1_semicircle_decomposition: S^1 = Upper union Lower, meeting at {b0, left} **)
+(** Set C1 = g(Upper), C2 = g(Lower), p = g(b0), q = g(left) **)
+(** Transfer all properties via the homeomorphism g **)
+(** Connected: homeomorphism preserves connected **)
+(** Closed: semicircles closed in S^1, g continuous -> C_i closed in C **)
+(**   C closed in S^2 -> C_i closed in S^2 -> S^2-C_i open **)
 admit.
 Admitted.
 
