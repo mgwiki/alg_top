@@ -416809,6 +416809,18 @@ let E Te B Tb p U. assume Hcov HUopen.
 exact (open_map_image_open E Te B Tb p U (covering_map_is_open E Te B Tb p Hcov) HUopen).
 Qed.
 
+(** Helper: homeomorphism transfers both pc and lpc **)
+(** Proven Alice **)
+Lemma homeomorphism_transfers_pc_and_lpc : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  path_connected_space Y Ty -> locally_path_connected Y Ty ->
+  path_connected_space X Tx /\ locally_path_connected X Tx.
+let X Tx Y Ty f. assume Hhome HpcY HlpcY.
+apply andI.
+- exact (homeomorphism_preserves_path_connected_space_left X Tx Y Ty f Hhome HpcY).
+- exact (homeomorphism_preserves_lpc_left X Tx Y Ty f Hhome HlpcY).
+Qed.
+
 (** Helper: path in subspace composed with inclusion gives path in ambient **)
 (** Common pattern in covering space proofs **)
 (** Proven Alice **)
