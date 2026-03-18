@@ -280179,7 +280179,10 @@ apply andI.
     apply Hresult. let r. assume Hr4.
     (** Hr4 : (r :e R /\ Rlt 0 r) /\ open_ball ... c= U /\ Rlt r 1 **)
     (** Repackage: r :e R /\ Rlt 0 r /\ Rlt r 1 /\ ball c= U **)
-    witness r. admit. }
+    witness r.
+    apply (and4E (r :e R) (Rlt 0 r) (open_ball R R_bounded_metric x r c= U) (Rlt r 1) Hr4).
+    assume HrR2 Hr_pos2 Hball_sub2 Hr_lt12.
+    apply and4I. exact HrR2. exact Hr_pos2. exact Hr_lt12. exact Hball_sub2. }
   apply Hball_small. let r. assume Hr.
   apply (and4E (r :e R) (Rlt 0 r) (Rlt r 1) (open_ball R R_bounded_metric x r c= U) Hr).
   assume HrR : r :e R.
@@ -280239,7 +280242,7 @@ apply andI.
       (subspace_topology R R_standard_topology (open_interval (add_SNo x (minus_SNo r)) (add_SNo x r))).
     { exact (open_interval_path_connected (add_SNo x (minus_SNo r)) (add_SNo x r) HxmrR HxprR Hlt). }
     exact Hpc.
-Admitted.
+Qed.
 
 (** Helper: R is locally connected (from lpc) **)
 Lemma R_standard_locally_connected :
