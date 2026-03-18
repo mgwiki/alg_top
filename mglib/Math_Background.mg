@@ -415357,6 +415357,7 @@ Qed.
 
 (** Improved version with locally_path_connected hypothesis **)
 (** This is needed to ensure path components of p^-1(U) are open **)
+(** Proven Alice **)
 Theorem covering_trivializes_over_pi1_trivial_lpc :
   forall E Te B Tb p U:set,
   covering_map E Te B Tb p ->
@@ -415848,8 +415849,66 @@ apply and4I.
       (** Step 6: lift of f_B at e has endpoint e' **)
       (** f_B = p o alpha (composed with incl), alpha lifts f_B starting at e **)
       (** By unique path lifting: path_lift(e, f_B) = alpha, so endpoint = alpha(1) = e' **)
-      claim Hlift_f_endpoint : apply_fun (path_lift E Te B Tb p e f_B) 1 = e'.
-      { admit. (** unique path lifting: alpha is a lift of f_B starting at e **) }
+      (** f_B continuous in B **)
+      claim Hf_B_cont : continuous_map unit_interval unit_interval_topology B Tb f_B.
+      { exact (composition_continuous unit_interval unit_interval_topology
+          U (subspace_topology B Tb U) B Tb palpha (graph U (fun x:set => x))
+          Hpalpha_cont (subspace_inclusion_continuous B Tb U HtopB HUsub)). }
+      claim Hpe_eq_fB_start : apply_fun p e = apply_fun f_B 0.
+      { rewrite Hpe_eq_u.
+        rewrite (compose_fun_apply unit_interval palpha (graph U (fun x:set => x)) 0 zero_in_unit_interval).
+        rewrite (apply_fun_graph U (fun x:set => x) (apply_fun palpha 0)
+          (Hpalpha_fn_U 0 zero_in_unit_interval)).
+        symmetry. exact Hpalpha0. }
+      (** alpha_E = compose alpha with inclusion preU -> E **)
+      set alpha_E := compose_fun unit_interval alpha (graph preU (fun x:set => x)).
+      claim Halpha_E_cont : continuous_map unit_interval unit_interval_topology E Te alpha_E.
+      { exact (composition_continuous unit_interval unit_interval_topology preU T_preU E Te
+          alpha (graph preU (fun x:set => x)) Halpha_cont_preU
+          (subspace_inclusion_continuous E Te preU HtopE HpreU_sub)). }
+      (** alpha_E is a lifting_of f_B **)
+      claim Halpha_E_lifting : lifting_of unit_interval unit_interval_topology E Te B Tb p f_B alpha_E.
+      { prove continuous_map unit_interval unit_interval_topology E Te alpha_E /\
+          (forall t:set, t :e unit_interval -> apply_fun p (apply_fun alpha_E t) = apply_fun f_B t).
+        apply andI.
+        - exact Halpha_E_cont.
+        - let t. assume Ht.
+          rewrite (compose_fun_apply unit_interval alpha (graph preU (fun x:set => x)) t Ht).
+          rewrite (apply_fun_graph preU (fun x:set => x) (apply_fun alpha t) (Halpha_fn_preU t Ht)).
+          (** Now goal: p(alpha(t)) = f_B(t) **)
+          (** f_B = compose_fun [0,1] palpha (graph U id) **)
+          rewrite (compose_fun_apply unit_interval palpha (graph U (fun x:set => x)) t Ht).
+          rewrite (apply_fun_graph U (fun x:set => x) (apply_fun palpha t) (Hpalpha_fn_U t Ht)).
+          (** Now goal: p(alpha(t)) = palpha(t) **)
+          symmetry.
+          exact (apply_fun_graph unit_interval (fun t0:set => apply_fun p (apply_fun alpha t0)) t Ht). }
+      claim Halpha_E_start : apply_fun alpha_E 0 = e.
+      { rewrite (compose_fun_apply unit_interval alpha (graph preU (fun x:set => x)) 0 zero_in_unit_interval).
+        rewrite (apply_fun_graph preU (fun x:set => x) (apply_fun alpha 0) (Halpha_fn_preU 0 zero_in_unit_interval)).
+        exact Halpha0. }
+      claim Hlift_f_is_lift : lifting_of unit_interval unit_interval_topology E Te B Tb p f_B
+        (path_lift E Te B Tb p e f_B).
+      { exact (path_lift_is_lifting_of E Te B Tb p e f_B Hcov HeE Hpe_eq_fB_start Hf_B_cont). }
+      set lift_f := path_lift E Te B Tb p e f_B.
+      set lift_f_start_type := apply_fun lift_f 0 = e.
+      claim Hlift_f_data : (continuous_map unit_interval unit_interval_topology E Te lift_f /\ lift_f_start_type) /\
+        (forall t:set, t :e unit_interval -> apply_fun p (apply_fun lift_f t) = apply_fun f_B t).
+      { exact (lemma54_1_path_lifting E Te B Tb p e f_B Hcov HeE Hpe_eq_fB_start Hf_B_cont). }
+      claim Hlift_f_start : lift_f_start_type.
+      { exact (andER (continuous_map unit_interval unit_interval_topology E Te lift_f) lift_f_start_type
+          (andEL (continuous_map unit_interval unit_interval_topology E Te lift_f /\ lift_f_start_type)
+            (forall t:set, t :e unit_interval -> apply_fun p (apply_fun lift_f t) = apply_fun f_B t)
+            Hlift_f_data)). }
+      (** By unique lifting: lift_f(t) = alpha_E(t) for all t **)
+      claim Hlift_unique : forall t:set, t :e unit_interval -> apply_fun lift_f t = apply_fun alpha_E t.
+      { exact (lemma54_1_path_lifting_unique E Te B Tb p e f_B
+          lift_f alpha_E Hcov HeE Hf_B_cont
+          Hlift_f_is_lift Hlift_f_start Halpha_E_lifting Halpha_E_start). }
+      claim Hlift_f_endpoint : apply_fun lift_f 1 = e'.
+      { rewrite (Hlift_unique 1 one_in_unit_interval).
+        rewrite (compose_fun_apply unit_interval alpha (graph preU (fun x:set => x)) 1 one_in_unit_interval).
+        rewrite (apply_fun_graph preU (fun x:set => x) (apply_fun alpha 1) (Halpha_fn_preU 1 one_in_unit_interval)).
+        exact Halpha1. }
       (** Step 7: lift of g_B = constant_path u at e has endpoint e **)
       (** The lift of constant path is constant, so endpoint = e **)
       claim Hu_in_B : u :e B. { exact (HUsub u HuU). }
@@ -415882,7 +415941,7 @@ apply and4I.
   exact (open_map_bijection_homeomorphism
     C (subspace_topology E Te C) U (subspace_topology B Tb U) pC
     HpC_cont HpC_open HpC_bij).
-Admitted.
+Qed.
 
 (** Helper: loops in evenly covered neighborhood of universal cover are null-homotopic. **)
 (** If p0: E0 -> B is a covering with E0 simply connected, and V0 is evenly covered **)
