@@ -420398,6 +420398,17 @@ claim Hgf1 : apply_fun gf 1 = x1.
 exact (path_homotopic_of_pointwise_equal X Tx x0 x1 f gf Hcont Hgf_cont Hf0 Hf1 Hgf0 Hgf1 Hagree).
 Qed.
 
+(** Helper: graphify preserves homotopy class of loop **)
+(** Proven Alice **)
+Lemma path_homotopy_class_loop_graphify_eq : forall X Tx x0 f:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  apply_fun f 0 = x0 -> apply_fun f 1 = x0 ->
+  path_homotopy_class_loop X Tx x0 f = path_homotopy_class_loop X Tx x0 (graphify_on unit_interval f).
+let X Tx x0 f. assume Hcont Hf0 Hf1.
+exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0 f (graphify_on unit_interval f)
+  (path_homotopic_to_graphify X Tx x0 x0 f Hcont Hf0 Hf1)).
+Qed.
+
 (** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
 Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
