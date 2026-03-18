@@ -280058,6 +280058,7 @@ admit.
 Admitted.
 
 (** Forward declaration: components of S^2-C are connected in S^2 subspace topology **)
+(** Proven Alice **)
 Lemma jordan_step1_component_connected : forall C x:set,
   C c= Sn 2 ->
   x :e Sn 2 :\: C ->
@@ -280065,8 +280066,24 @@ Lemma jordan_step1_component_connected : forall C x:set,
     (component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x)
     (subspace_topology (Sn 2) (Sn_topology 2)
       (component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x)).
-admit.
-Admitted.
+let C x. assume HC Hx.
+set SmC := Sn 2 :\: C.
+set TSmC := subspace_topology (Sn 2) (Sn_topology 2) SmC.
+claim HtopSmC : topology_on SmC TSmC.
+{ claim HSmCsub : SmC c= Sn 2.
+  { let y. assume Hy. exact (setminusE1 (Sn 2) C y Hy). }
+  exact (subspace_topology_is_topology (Sn 2) (Sn_topology 2) SmC
+    (lemma59_3_Sn_topology_on 2) HSmCsub). }
+(** component_of_connected: comp(x) is connected in (SmC, TSmC) subspace **)
+claim Hconn_sub : connected_space (component_of SmC TSmC x)
+  (subspace_topology SmC TSmC (component_of SmC TSmC x)).
+{ exact (component_of_connected SmC TSmC x HtopSmC Hx). }
+(** Transfer: subspace_topology SmC TSmC V = subspace_topology S2 Sn_top V for V c= SmC **)
+claim Hcomp_sub : component_of SmC TSmC x c= SmC.
+{ exact (component_of_subset_space SmC TSmC x HtopSmC Hx). }
+rewrite <- (subspace_topology_transitive_weak (Sn 2) (Sn_topology 2) SmC (component_of SmC TSmC x) Hcomp_sub).
+exact Hconn_sub.
+Qed.
 
 (** Forward declaration: distinct components are disjoint **)
 (** Proven Alice **)
