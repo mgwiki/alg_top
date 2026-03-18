@@ -415003,34 +415003,6 @@ assume Huniv.
 admit.
 Admitted.
 
-(** Helper: covering map total space inherits lpc from base **)
-Lemma covering_total_space_lpc : forall E Te B Tb p:set,
-  covering_map E Te B Tb p ->
-  locally_path_connected B Tb ->
-  locally_path_connected E Te.
-let E Te B Tb p.
-assume Hcov HlpcB.
-claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
-claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
-prove topology_on E Te /\
-  forall e:set, e :e E -> forall U:set, U :e Te -> e :e U ->
-    exists V:set, V :e Te /\ e :e V /\ V c= U /\ path_connected_space V (subspace_topology E Te V).
-apply andI.
-- exact HtopE.
-- let e. assume HeE.
-  let W. assume HWopen HeW.
-  (** Get evenly covered neighborhood V of p(e) **)
-  apply (covering_map_local_homeomorphism E Te B Tb p e Hcov HeE).
-  let S. assume HS_inner. apply HS_inner.
-  let V. assume Hev_pack.
-  (** S is open in E, e :e S, V open in B, homeo S -> V via p **)
-  (** Intersect S with W: S' = S cap W is open, e :e S', S' c= W **)
-  (** p(S') is open in B (p is open map on S via homeomorphism) **)
-  (** Use lpc of B to get pc neighborhood of p(e) in p(S') **)
-  (** Pull back via homeomorphism to get pc neighborhood of e in S' c= W **)
-  admit.
-Admitted.
-
 (** Helper: open subspace of locally path-connected space is locally path-connected **)
 (** Proven Alice **)
 Lemma open_subspace_locally_path_connected : forall X Tx Y:set,
@@ -415243,6 +415215,90 @@ claim Hinv : exists g:set, homeomorphism Y Ty X Tx g.
 { exact (homeomorphism_inverse_is_homeomorphism_variant X Tx Y Ty f Hhome). }
 apply Hinv. let g. assume Hghome.
 exact (homeomorphism_preserves_lpc_left Y Ty X Tx g Hghome HlpcX).
+Qed.
+
+(** Helper: covering map total space inherits lpc from base **)
+(** Proven Alice **)
+Lemma covering_total_space_lpc : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  locally_path_connected B Tb ->
+  locally_path_connected E Te.
+let E Te B Tb p.
+assume Hcov HlpcB.
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+prove topology_on E Te /\
+  forall e:set, e :e E -> forall U:set, U :e Te -> e :e U ->
+    exists V:set, V :e Te /\ e :e V /\ V c= U /\ path_connected_space V (subspace_topology E Te V).
+apply andI.
+- exact HtopE.
+- let e. assume HeE.
+  let W. assume HWopen HeW.
+  apply (covering_map_local_homeomorphism E Te B Tb p e Hcov HeE).
+  let S. assume HS_inner. apply HS_inner.
+  let V. assume Hev_pack.
+  set pS := graph S (fun x:set => apply_fun p x).
+  set Hhomeo_type := homeomorphism S (subspace_topology E Te S) V (subspace_topology B Tb V) pS.
+  claim Hhomeo : Hhomeo_type.
+  { exact (andER (((S :e Te) /\ (e :e S)) /\ (V :e Tb)) Hhomeo_type Hev_pack). }
+  claim Hleft3 : ((S :e Te) /\ (e :e S)) /\ (V :e Tb).
+  { exact (andEL (((S :e Te) /\ (e :e S)) /\ (V :e Tb)) Hhomeo_type Hev_pack). }
+  claim HVopen : V :e Tb. { exact (andER ((S :e Te) /\ (e :e S)) (V :e Tb) Hleft3). }
+  claim Hleft2 : (S :e Te) /\ (e :e S).
+  { exact (andEL ((S :e Te) /\ (e :e S)) (V :e Tb) Hleft3). }
+  claim HSopen : S :e Te. { exact (andEL (S :e Te) (e :e S) Hleft2). }
+  claim HeS : e :e S. { exact (andER (S :e Te) (e :e S) Hleft2). }
+  claim HlpcV : locally_path_connected V (subspace_topology B Tb V).
+  { exact (open_subspace_locally_path_connected B Tb V HlpcB HVopen). }
+  claim HlpcS : locally_path_connected S (subspace_topology E Te S).
+  { exact (homeomorphism_preserves_lpc_left S (subspace_topology E Te S) V (subspace_topology B Tb V) pS Hhomeo HlpcV). }
+  set SW := S :/\: W.
+  claim HSW_open : SW :e Te.
+  { exact (topology_binintersect_closed E Te S W HtopE HSopen HWopen). }
+  claim HeSW : e :e SW. { exact (binintersectI S W e HeS HeW). }
+  claim HSW_sub_W : SW c= W. { let x. assume Hx. exact (binintersectE2 S W x Hx). }
+  claim HSW_sub_S : SW c= S. { let x. assume Hx. exact (binintersectE1 S W x Hx). }
+  claim HSW_open_sub : SW :e subspace_topology E Te S.
+  { rewrite <- (binintersect_Subq_eq_1 SW S HSW_sub_S).
+    exact (subspace_topology_intersection_open E Te S SW HSW_open). }
+  claim HlpcSW_sub : locally_path_connected SW (subspace_topology S (subspace_topology E Te S) SW).
+  { exact (open_subspace_locally_path_connected S (subspace_topology E Te S) SW HlpcS HSW_open_sub). }
+  claim HlpcSW : locally_path_connected SW (subspace_topology E Te SW).
+  { rewrite <- (subspace_topology_transitive_weak E Te S SW HSW_sub_S). exact HlpcSW_sub. }
+  claim HSW_sub_E : SW c= E. { let x. assume Hx.
+    exact (topology_elem_subset E Te S HtopE HSopen x (HSW_sub_S x Hx)). }
+  claim HtopSW : topology_on SW (subspace_topology E Te SW).
+  { exact (subspace_topology_is_topology E Te SW HtopE HSW_sub_E). }
+  claim HSW_self_open : SW :e subspace_topology E Te SW.
+  { exact (topology_has_X SW (subspace_topology E Te SW) HtopSW). }
+  apply (locally_path_connected_local SW (subspace_topology E Te SW) e SW HlpcSW HeSW HSW_self_open HeSW).
+  let V0. assume HV0pack.
+  set pc_type0 := path_connected_space V0 (subspace_topology SW (subspace_topology E Te SW) V0).
+  claim HV0pc : pc_type0.
+  { exact (andER (((V0 :e subspace_topology E Te SW) /\ (e :e V0)) /\ (V0 c= SW)) pc_type0 HV0pack). }
+  claim HV0left3 : ((V0 :e subspace_topology E Te SW) /\ (e :e V0)) /\ (V0 c= SW).
+  { exact (andEL (((V0 :e subspace_topology E Te SW) /\ (e :e V0)) /\ (V0 c= SW)) pc_type0 HV0pack). }
+  claim HV0subSW : V0 c= SW. { exact (andER ((V0 :e subspace_topology E Te SW) /\ (e :e V0)) (V0 c= SW) HV0left3). }
+  claim HV0left2 : (V0 :e subspace_topology E Te SW) /\ (e :e V0).
+  { exact (andEL ((V0 :e subspace_topology E Te SW) /\ (e :e V0)) (V0 c= SW) HV0left3). }
+  claim HV0open_sub : V0 :e subspace_topology E Te SW.
+  { exact (andEL (V0 :e subspace_topology E Te SW) (e :e V0) HV0left2). }
+  claim HeV0 : e :e V0. { exact (andER (V0 :e subspace_topology E Te SW) (e :e V0) HV0left2). }
+  claim HV0sub_E : V0 c= E. { let x. assume Hx. exact (HSW_sub_E x (HV0subSW x Hx)). }
+  claim HV0open_inSW : open_in SW (subspace_topology E Te SW) V0.
+  { prove topology_on SW (subspace_topology E Te SW) /\ V0 :e subspace_topology E Te SW.
+    apply andI. exact HtopSW. exact HV0open_sub. }
+  claim HV0open_E : V0 :e Te.
+  { exact (open_in_subspace_if_ambient_open E Te SW V0 HtopE HSW_open HV0subSW HV0open_inSW). }
+  claim HV0subW : V0 c= W. { let x. assume Hx. exact (HSW_sub_W x (HV0subSW x Hx)). }
+  claim HV0pc_E : path_connected_space V0 (subspace_topology E Te V0).
+  { rewrite <- (subspace_topology_transitive_weak E Te SW V0 HV0subSW). exact HV0pc. }
+  witness V0.
+  apply and4I.
+  + exact HV0open_E.
+  + exact HeV0.
+  + exact HV0subW.
+  + exact HV0pc_E.
 Qed.
 
 (** Old version with C parameter - kept for reference, false for C != X **)
