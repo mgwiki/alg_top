@@ -280030,6 +280030,35 @@ Lemma C_subset_boundary : forall C W1 W2:set,
   connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) ->
   connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) ->
   C c= closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
+let C W1 W2.
+assume HC : C c= Sn 2.
+assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
+assume HW1open : W1 :e Sn_topology 2.
+assume HW2open : W2 :e Sn_topology 2.
+assume Hdisj : W1 :/\: W2 = Empty.
+assume Hunion : Sn 2 :\: C = W1 :\/: W2.
+assume HW1ne : W1 <> Empty.
+assume HW2ne : W2 <> Empty.
+assume HW1conn : connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1).
+assume HW2conn : connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
+(** Show: every x in C is in closure(W1) \ W1. **)
+(** i.e., x in closure(W1) and x not in W1. **)
+(** x not in W1 is easy: W1 c= S^2-C and x in C, so x not in W1. **)
+(** x in closure(W1) means: every open nbhd of x meets W1. **)
+(** Proof of x in closure(W1): **)
+(** Let U be open with x in U. Need to show U cap W1 <> Empty. **)
+(** Decompose C = C'1 union C'2 with C'1 small (inside U) containing x. **)
+(** Then C'2 is a closed arc not containing x. **)
+(** S^2-C'2 is connected (arc nonseparation). **)
+(** W1, W2 are both in S^2-C c= S^2-C'2, so there is a path **)
+(** from a point a in W1 to a point b in W2, staying in S^2-C'2. **)
+(** Since W1 is open and W2 is open and disjoint from W1, **)
+(** the path must leave W1 at some point y. **)
+(** y is in closure(W1) \ W1 c= C. Since the path avoids C'2, y in C'1 c= U. **)
+(** So y in U cap (closure(W1)\W1), hence U cap W1 <> Empty **)
+(** (since y is a limit point of W1 in U). **)
+(** This argument is formalized in detail as an admitted helper **)
+(** until arc nonseparation and the path-crossing argument are proved. **)
 admit.
 Admitted.
 
