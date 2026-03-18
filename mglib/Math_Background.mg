@@ -279563,11 +279563,27 @@ claim Hcompact : compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C).
   { exact (continuous_image_compact S1 S1_topology C TC g s54_S1_compact Hg_cont). }
   (** image(g, S1) = C (g surjective via left inverse) **)
   claim Himg_eq : image_of_fun g S1 = C.
-  { (** image_of_fun g S1 = {apply_fun g y | y in S1} **)
-    (** Need: C c= image and image c= C **)
-    (** C c= image: for x in C, g(h(x)) = x, and h(x) in S1 **)
-    (** image c= C: g maps S1 to C (continuous_map) **)
-    admit. }
+  { (** image_of_fun g S1 = Repl S1 (fun y => apply_fun g y) **)
+    apply set_ext.
+    - (** image c= C: g maps S1 to C **)
+      let z. assume Hz : z :e image_of_fun g S1.
+      (** z = apply_fun g y for some y in S1 **)
+      apply (ReplE_impred S1 (fun y:set => apply_fun g y) z Hz).
+      let y. assume Hy : y :e S1.
+      assume Hzeq : z = apply_fun g y.
+      rewrite Hzeq.
+      exact (continuous_map_value_in_space S1 S1_topology C TC g y Hg_cont Hy).
+    - (** C c= image: for x in C, x = g(h(x)) in image **)
+      let x. assume HxC : x :e C.
+      claim HhxS1 : apply_fun h x :e S1.
+      { exact (continuous_map_value_in_space C TC S1 S1_topology h x Hh_cont HxC). }
+      claim Hghx : apply_fun g (apply_fun h x) = x.
+      { exact (Hleft_inv x HxC). }
+      claim HgxImg : apply_fun g (apply_fun h x) :e image_of_fun g S1.
+      { exact (ReplI S1 (fun y:set => apply_fun g y) (apply_fun h x) HhxS1). }
+      prove x :e image_of_fun g S1.
+      rewrite <- Hghx.
+      exact HgxImg. }
   (** compact_space (image g S1) (subspace C TC (image g S1)) **)
   (** image g S1 = C, subspace C TC C = TC **)
   (** Together: compact_space C TC **)
