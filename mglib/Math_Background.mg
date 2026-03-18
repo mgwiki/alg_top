@@ -280070,14 +280070,28 @@ apply andI.
   { exact (C_subset_boundary C W1 W2 HC Hscc HW1open HW2open Hdisj Hunion HW1ne HW2ne HW1conn HW2conn). }
   exact (set_ext (closure_of (Sn 2) (Sn_topology 2) W1 :\: W1) C Hsubset Hsupset).
 - (** closure(W2) \ W2 = C - symmetric argument **)
+  (** Establish swapped disjointness and union **)
+  claim Hdisj_sym : W2 :/\: W1 = Empty.
+  { apply set_ext.
+    - let z. assume Hz : z :e W2 :/\: W1.
+      claim Hz12 : z :e W1 :/\: W2.
+      { exact (binintersectI W1 W2 z (binintersectE2 W2 W1 z Hz) (binintersectE1 W2 W1 z Hz)). }
+      rewrite <- Hdisj. exact Hz12.
+    - let z. assume Hz : z :e Empty. exact (EmptyE z Hz (z :e W2 :/\: W1)). }
+  claim Hunion_sym : Sn 2 :\: C = W2 :\/: W1.
+  { rewrite Hunion. apply set_ext.
+    - let z. assume Hz : z :e W1 :\/: W2.
+      apply (binunionE W1 W2 z Hz).
+      + assume Hz1. exact (binunionI2 W2 W1 z Hz1).
+      + assume Hz2. exact (binunionI1 W2 W1 z Hz2).
+    - let z. assume Hz : z :e W2 :\/: W1.
+      apply (binunionE W2 W1 z Hz).
+      + assume Hz2. exact (binunionI2 W1 W2 z Hz2).
+      + assume Hz1. exact (binunionI1 W1 W2 z Hz1). }
   claim Hsubset : closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 c= C.
-  { (** Use boundary_subset_C with W2 as first component, W1 as second **)
-    (** Need: W2 cap W1 = Empty and S^2-C = W2 union W1 **)
-    admit. }
+  { exact (boundary_subset_C C W2 W1 HC HW2open HW1open Hdisj_sym Hunion_sym). }
   claim Hsupset : C c= closure_of (Sn 2) (Sn_topology 2) W2 :\: W2.
-  { (** By symmetry: swap W1 and W2 in the C_subset_boundary argument **)
-    (** Need to show S^2-C = W2 union W1 and W2 cap W1 = Empty **)
-    admit. }
+  { exact (C_subset_boundary C W2 W1 HC Hscc HW2open HW1open Hdisj_sym Hunion_sym HW2ne HW1ne HW2conn HW1conn). }
   exact (set_ext (closure_of (Sn 2) (Sn_topology 2) W2 :\: W2) C Hsubset Hsupset).
 Admitted.
 
