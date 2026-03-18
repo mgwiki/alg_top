@@ -279466,9 +279466,29 @@ let y. assume Hy : y :e component_of X Tx x.
 exact (SepE1 X (fun z:set => exists C:set, connected_space C (subspace_topology X Tx C) /\ x :e C /\ z :e C) y Hy).
 Qed.
 
-(** Helper: S^2 minus a single point is simply connected **)
-(** Proof: S^2-{south} homeo R^2 via stereo_S_map_homeomorphism (proved). **)
-(** R^2 contractible hence simply connected. For general p, use rotation/homogeneity. **)
+(** Helper: R^2 is simply connected (R contractible -> R^2 contractible -> simply connected) **)
+Lemma euclidean_space_2_simply_connected :
+  simply_connected (euclidean_space 2) (euclidean_topology 2).
+admit.
+Admitted.
+
+(** Helper: S^2-{south_pole} is simply connected **)
+(** Uses: stereo_S_map_homeomorphism (proved) + R^2 simply connected **)
+Lemma Sn2_minus_south_pole_simply_connected :
+  simply_connected (Sn 2 :\: {south_pole_3})
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: {south_pole_3})).
+exact (homeomorphism_reflects_simply_connected
+  (Sn 2 :\: {south_pole_3})
+  (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: {south_pole_3}))
+  (euclidean_space 2) (euclidean_topology 2)
+  stereo_S_map
+  stereo_S_map_homeomorphism
+  euclidean_space_2_simply_connected).
+Admitted.
+
+(** Helper: S^2 minus any single point is simply connected **)
+(** For south pole: use Sn2_minus_south_pole_simply_connected. **)
+(** For general p: use rotation/homogeneity of S^2 (SO(3) transitive). **)
 Lemma Sn2_minus_point_simply_connected : forall p:set,
   p :e Sn 2 ->
   simply_connected (Sn 2 :\: Sing p)
