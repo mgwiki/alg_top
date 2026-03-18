@@ -415426,7 +415426,23 @@ apply and4I.
   exact (open_in_subspace_if_ambient_open E Te preU (path_component_of preU T_preU e)
     HtopE HpreU_open Hpc_sub Hpc_open_sub).
 - (** pairwise_disjoint slices **)
-  admit.
+  (** slices = {path_component_of preU T e | e :e preU} **)
+  (** = {component_of preU T e | e :e preU} (by lpc) **)
+  (** components_partition_space gives pairwise_disjoint {component_of ...} **)
+  claim Hpc_eq_comp : forall e:set, e :e preU ->
+    path_component_of preU T_preU e = component_of preU T_preU e.
+  { let e. assume He.
+    exact (components_equal_path_components preU T_preU HlpcPreU e He). }
+  claim Hslices_eq_components : slices = {component_of preU T_preU e | e :e preU}.
+  { exact (ReplEq_ext preU
+      (fun e:set => path_component_of preU T_preU e)
+      (fun e:set => component_of preU T_preU e)
+      Hpc_eq_comp). }
+  rewrite Hslices_eq_components.
+  exact (andER
+    (covers preU {component_of preU T_preU x | x :e preU})
+    (pairwise_disjoint {component_of preU T_preU x | x :e preU})
+    (components_partition_space preU T_preU HpreU_top)).
 - (** Union slices = preU **)
   apply set_ext.
   + (** Union slices c= preU: every element of a path component is in preU **)
