@@ -415535,13 +415535,128 @@ apply and4I.
     apply andI.
     - exact HpC_fn_U.
     - let u. assume HuU.
-      (** Surjectivity: exists e :e C with p(e) = u **)
-      (** Use path-connectedness of U: path from p(e0) to u, lift to E from e0 **)
-      (** Lifted path stays in preU, hence in path component C **)
-      (** Injectivity: if e' :e C with p(e') = u, then e' = e **)
-      (** Path from e to e' in C projects to loop at u in U **)
-      (** By null-homotopy hypothesis, this loop is null-homotopic in B **)
-      (** By unique path lifting, the lifted loop is a loop, so e = e' **)
+      (** Step A: Get path gamma in U from p(e0) to u **)
+      set u0 := apply_fun p e0.
+      claim Hu0U : u0 :e U. { exact Hu0. }
+      claim Hpaths_U :
+        forall x y:set, x :e U -> y :e U ->
+          exists q:set, path_between U x y q /\
+            continuous_map unit_interval unit_interval_topology U (subspace_topology B Tb U) q.
+      { exact (andER (topology_on U (subspace_topology B Tb U))
+          (forall x y:set, x :e U -> y :e U ->
+            exists q:set, path_between U x y q /\
+              continuous_map unit_interval unit_interval_topology U (subspace_topology B Tb U) q)
+          HpcU). }
+      apply (Hpaths_U u0 u Hu0U HuU).
+      let gamma. assume Hgamma_pack.
+      claim Hgamma_path : path_between U u0 u gamma.
+      { exact (andEL
+          (path_between U u0 u gamma)
+          (continuous_map unit_interval unit_interval_topology U (subspace_topology B Tb U) gamma)
+          Hgamma_pack). }
+      claim Hgamma_cont_U : continuous_map unit_interval unit_interval_topology
+        U (subspace_topology B Tb U) gamma.
+      { exact (andER
+          (path_between U u0 u gamma)
+          (continuous_map unit_interval unit_interval_topology U (subspace_topology B Tb U) gamma)
+          Hgamma_pack). }
+      (** Step B: gamma also continuous in B via inclusion **)
+      set incl_U := graph U (fun x:set => x).
+      claim Hincl_U_cont : continuous_map U (subspace_topology B Tb U) B Tb incl_U.
+      { exact (subspace_inclusion_continuous B Tb U HtopB HUsub). }
+      set gamma_B := compose_fun unit_interval gamma incl_U.
+      claim Hgamma_B_cont : continuous_map unit_interval unit_interval_topology B Tb gamma_B.
+      { exact (composition_continuous unit_interval unit_interval_topology
+          U (subspace_topology B Tb U) B Tb gamma incl_U Hgamma_cont_U Hincl_U_cont). }
+      (** Step C: Lift gamma_B from e0 **)
+      (** Need: apply_fun p e0 = apply_fun gamma_B 0 **)
+      (** gamma_B(0) = incl_U(gamma(0)) = gamma(0) = u0 = p(e0) **)
+      claim Hgamma_start : apply_fun p e0 = apply_fun gamma_B 0.
+      { prove u0 = apply_fun gamma_B 0.
+        rewrite (compose_fun_apply unit_interval gamma incl_U 0 zero_in_unit_interval).
+        rewrite (apply_fun_graph U (fun x:set => x) (apply_fun gamma 0)
+          (path_between_function_on U u0 u gamma Hgamma_path 0 zero_in_unit_interval)).
+        symmetry. exact (path_between_at_zero U u0 u gamma Hgamma_path). }
+      set ft := path_lift E Te B Tb p e0 gamma_B.
+      claim Hlift_data :
+        continuous_map unit_interval unit_interval_topology E Te ft /\
+        apply_fun ft 0 = e0 /\
+        (forall t:set, t :e unit_interval -> apply_fun p (apply_fun ft t) = apply_fun gamma_B t).
+      { exact (lemma54_1_path_lifting E Te B Tb p e0 gamma_B Hcov He0E Hgamma_start Hgamma_B_cont). }
+      (** Step D: lift(1) has p(lift(1)) = u **)
+      set e := apply_fun ft 1.
+      set lift_cont_type := continuous_map unit_interval unit_interval_topology E Te ft.
+      set lift_start_type := apply_fun ft 0 = e0.
+      set lift_comm_type := forall t:set, t :e unit_interval -> apply_fun p (apply_fun ft t) = apply_fun gamma_B t.
+      claim Hft_comm : lift_comm_type.
+      { exact (andER (lift_cont_type /\ lift_start_type) lift_comm_type Hlift_data). }
+      claim Hft_left : lift_cont_type /\ lift_start_type.
+      { exact (andEL (lift_cont_type /\ lift_start_type) lift_comm_type Hlift_data). }
+      claim Hft_cont : lift_cont_type.
+      { exact (andEL lift_cont_type lift_start_type Hft_left). }
+      claim Hft_start : lift_start_type.
+      { exact (andER lift_cont_type lift_start_type Hft_left). }
+      claim Hpe_eq_u : apply_fun p e = u.
+      { (** p(e) = p(ft(1)) = gamma_B(1) = incl_U(gamma(1)) = gamma(1) = u **)
+        prove apply_fun p (apply_fun ft 1) = u.
+        rewrite (Hft_comm 1 one_in_unit_interval).
+        rewrite (compose_fun_apply unit_interval gamma incl_U 1 one_in_unit_interval).
+        rewrite (apply_fun_graph U (fun x:set => x) (apply_fun gamma 1)
+          (path_between_function_on U u0 u gamma Hgamma_path 1 one_in_unit_interval)).
+        exact (path_between_at_one U u0 u gamma Hgamma_path). }
+      claim HeE : e :e E.
+      { exact (continuous_map_function_on unit_interval unit_interval_topology E Te ft Hft_cont
+          1 one_in_unit_interval). }
+      claim HePreU : e :e preU.
+      { prove e :e {x :e E | apply_fun p x :e U}.
+        apply (SepI E (fun x:set => apply_fun p x :e U) e HeE).
+        rewrite Hpe_eq_u. exact HuU. }
+      claim HeC : e :e C.
+      { (** e :e path_component_of preU T_preU e0 **)
+        (** Need: path in preU from e0 to e **)
+        (** The lift ft maps [0,1] to E, and for all t, p(ft(t)) :e U, so ft(t) :e preU **)
+        (** So ft restricted to preU is a path from e0 to e in preU **)
+        prove e :e {y :e preU | exists q:set,
+          function_on q unit_interval preU /\
+          continuous_map unit_interval unit_interval_topology preU T_preU q /\
+          apply_fun q 0 = e0 /\ apply_fun q 1 = y}.
+        apply (SepI preU (fun y:set => exists q:set,
+          function_on q unit_interval preU /\
+          continuous_map unit_interval unit_interval_topology preU T_preU q /\
+          apply_fun q 0 = e0 /\ apply_fun q 1 = y) e HePreU).
+        (** Witness: ft restricted to preU **)
+        (** Need ft maps into preU and is continuous in preU subspace **)
+        claim Hft_maps_preU : forall t:set, t :e unit_interval -> apply_fun ft t :e preU.
+        { let t. assume Ht.
+          claim HftE : apply_fun ft t :e E.
+          { exact (continuous_map_function_on unit_interval unit_interval_topology E Te ft Hft_cont t Ht). }
+          prove apply_fun ft t :e {x :e E | apply_fun p x :e U}.
+          apply (SepI E (fun x:set => apply_fun p x :e U) (apply_fun ft t) HftE).
+          rewrite (Hft_comm t Ht).
+          rewrite (compose_fun_apply unit_interval gamma incl_U t Ht).
+          rewrite (apply_fun_graph U (fun x:set => x) (apply_fun gamma t)
+            (path_between_function_on U u0 u gamma Hgamma_path t Ht)).
+          exact (path_between_function_on U u0 u gamma Hgamma_path t Ht). }
+        claim Hft_cont_preU : continuous_map unit_interval unit_interval_topology preU T_preU ft.
+        { exact (continuous_map_range_restrict unit_interval unit_interval_topology E Te ft preU
+            Hft_cont HpreU_sub Hft_maps_preU). }
+        claim Hft_fn_preU : function_on ft unit_interval preU.
+        { exact (continuous_map_function_on unit_interval unit_interval_topology preU T_preU ft
+            Hft_cont_preU). }
+        witness ft.
+        apply and4I.
+        - exact Hft_fn_preU.
+        - exact Hft_cont_preU.
+        - exact Hft_start.
+        - reflexivity. }
+      (** Witness e for surjectivity **)
+      witness e.
+      apply andI. apply andI. exact HeC.
+      rewrite (apply_fun_graph C (fun z:set => apply_fun p z) e HeC).
+      exact Hpe_eq_u.
+      (** Injectivity: any e' with p(e') = u must equal e **)
+      let e'. assume He'C He'eq.
+      (** e' :e C, apply_fun pC e' = u **)
       admit. }
 
   exact (open_map_bijection_homeomorphism
