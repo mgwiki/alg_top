@@ -416740,6 +416740,16 @@ let E Te B Tb p U. assume Hcov HUopen.
 exact (continuous_map_preimage E Te B Tb p (covering_map_continuous E Te B Tb p Hcov) U HUopen).
 Qed.
 
+(** Helper: preimage subset of domain for covering map **)
+(** Proven Alice **)
+Lemma covering_map_preimage_sub : forall E Te B Tb p U:set,
+  covering_map E Te B Tb p -> U :e Tb -> preimage_of E p U c= E.
+let E Te B Tb p U. assume Hcov HUopen.
+exact (topology_elem_subset E Te (preimage_of E p U)
+  (covering_map_topology_on_domain E Te B Tb p Hcov)
+  (covering_map_preimage_open E Te B Tb p U Hcov HUopen)).
+Qed.
+
 (** Helper: path components of covering preimage are open when base is lpc **)
 (** Proven Alice **)
 Lemma covering_preimage_path_component_open : forall E Te B Tb p U e:set,
