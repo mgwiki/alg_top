@@ -1,4 +1,4 @@
-(** Balance Alice 9223 **)
+(** Balance Alice 9168 **)
 (** Balance Bob 6232 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
@@ -279342,7 +279342,8 @@ Admitted.
 (** LATEX VERSION: (Jordan curve theorem) A simple closed curve C in S^2 separates **)
 (** S^2 into precisely two components W1 and W2, and C is the common boundary. **)
 (** EFFORT: 30 lines textbook, difficulty 8/10, USD 500 **)
-(** Bounty 550 **)
+(** Bounty 605 **)
+(** Lock Alice 1773933333 **)
 Theorem thm63_4_jordan_curve_theorem : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
