@@ -279338,6 +279338,65 @@ Theorem thm63_3_general_nonseparation : forall D1 D2:set,
 admit.
 Admitted.
 
+(** Helper: S^2 is locally connected. **)
+(** Proof chain: Sn_2_locally_m_euclidean -> locally path connected -> locally connected **)
+Lemma Sn2_locally_connected :
+  locally_connected (Sn 2) (Sn_topology 2).
+admit.
+Admitted.
+
+(** Helper: open subsets of S^2 inherit local connectivity **)
+Lemma Sn2_open_subset_locally_connected : forall U:set,
+  U :e Sn_topology 2 ->
+  locally_connected U (subspace_topology (Sn 2) (Sn_topology 2) U).
+let U. assume HU : U :e Sn_topology 2.
+exact (open_subspace_locally_connected (Sn 2) (Sn_topology 2) U Sn2_locally_connected HU).
+Admitted.
+
+(** Helper: component_of in a subspace is a subset of the subspace **)
+(** Proven Alice **)
+Lemma component_of_subset_space : forall X Tx x:set,
+  topology_on X Tx -> x :e X -> component_of X Tx x c= X.
+let X Tx x.
+assume Htop : topology_on X Tx.
+assume Hx : x :e X.
+let y. assume Hy : y :e component_of X Tx x.
+exact (SepE1 X (fun z:set => exists C:set, connected_space C (subspace_topology X Tx C) /\ x :e C /\ z :e C) y Hy).
+Qed.
+
+(** JCT Step 1: S^2-C has exactly two open connected components **)
+(** Uses: jordan separation (61.3), arc nonseparation (63.2), **)
+(**        thm 63.1 (infinite cyclic subgroup), general nonseparation (63.3) **)
+Lemma jordan_curve_step1_two_components : forall C:set,
+  C c= Sn 2 ->
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
+  exists W1 W2:set,
+    W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+    W1 :/\: W2 = Empty /\
+    Sn 2 :\: C = W1 :\/: W2 /\
+    W1 <> Empty /\ W2 <> Empty /\
+    connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+    connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
+admit.
+Admitted.
+
+(** JCT Step 2: boundary condition -- each point of C is in the boundary **)
+(** of each component. Uses: arc decomposition of simple closed curve, **)
+(** arc nonseparation (63.2), and the intermediate value theorem argument. **)
+Lemma jordan_curve_step2_boundary : forall C W1 W2:set,
+  C c= Sn 2 ->
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
+  W1 :e Sn_topology 2 -> W2 :e Sn_topology 2 ->
+  W1 :/\: W2 = Empty ->
+  Sn 2 :\: C = W1 :\/: W2 ->
+  W1 <> Empty -> W2 <> Empty ->
+  connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) ->
+  connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) ->
+  closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C /\
+  closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C.
+admit.
+Admitted.
+
 (** from S63 Thm 63.4 (line 2180 in algtop.tex) **)
 (** LATEX VERSION: (Jordan curve theorem) A simple closed curve C in S^2 separates **)
 (** S^2 into precisely two components W1 and W2, and C is the common boundary. **)
@@ -279356,7 +279415,77 @@ Theorem thm63_4_jordan_curve_theorem : forall C:set,
     connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) /\
     closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C /\
     closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C.
-admit.
+let C.
+assume HC : C c= Sn 2.
+assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
+(** Step 1: Get the two components **)
+claim Hstep1 : exists W1 W2:set,
+  W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+  W1 :/\: W2 = Empty /\
+  Sn 2 :\: C = W1 :\/: W2 /\
+  W1 <> Empty /\ W2 <> Empty /\
+  connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+  connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
+{ exact (jordan_curve_step1_two_components C HC Hscc). }
+apply Hstep1. let W1. assume HW1ex : exists W2:set,
+  W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+  W1 :/\: W2 = Empty /\
+  Sn 2 :\: C = W1 :\/: W2 /\
+  W1 <> Empty /\ W2 <> Empty /\
+  connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+  connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
+apply HW1ex. let W2. assume H8 :
+  W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+  W1 :/\: W2 = Empty /\
+  Sn 2 :\: C = W1 :\/: W2 /\
+  W1 <> Empty /\ W2 <> Empty /\
+  connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+  connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
+(** Unpack the 8-fold conjunction and get boundary conditions, then repack as 10-fold **)
+apply (and8E
+  (W1 :e Sn_topology 2) (W2 :e Sn_topology 2)
+  (W1 :/\: W2 = Empty) (Sn 2 :\: C = W1 :\/: W2)
+  (W1 <> Empty) (W2 <> Empty)
+  (connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1))
+  (connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2))
+  H8).
+assume HW1open : W1 :e Sn_topology 2.
+assume HW2open : W2 :e Sn_topology 2.
+assume Hdisj : W1 :/\: W2 = Empty.
+assume Hunion : Sn 2 :\: C = W1 :\/: W2.
+assume HW1ne : W1 <> Empty.
+assume HW2ne : W2 <> Empty.
+assume HW1conn : connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1).
+assume HW2conn : connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
+(** Step 2: Get boundary conditions **)
+claim Hbdry : closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C /\
+              closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C.
+{ exact (jordan_curve_step2_boundary C W1 W2 HC Hscc HW1open HW2open Hdisj Hunion HW1ne HW2ne HW1conn HW2conn). }
+claim Hbdry1 : closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C.
+{ exact (andEL (closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C) (closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C) Hbdry). }
+claim Hbdry2 : closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C.
+{ exact (andER (closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C) (closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C) Hbdry). }
+(** Package all 10 properties using left-associative conjunction **)
+witness W1. witness W2.
+apply andI.
+- apply andI.
+  + apply andI.
+    { apply andI.
+      { apply andI.
+        { apply andI.
+          { apply andI.
+            { apply andI.
+              { apply andI.
+                { exact HW1open. }
+                exact HW2open. }
+              exact Hdisj. }
+            exact Hunion. }
+          exact HW1ne. }
+        exact HW2ne. }
+      exact HW1conn. }
+    exact HW2conn.
+  + exact Hbdry1.
+- exact Hbdry2.
 Admitted.
 
 (** from S63 Thm 63.5 (line 2211 in algtop.tex) **)
