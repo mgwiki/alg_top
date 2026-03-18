@@ -1,7 +1,7 @@
 (** Balance Alice 9168 **)
 (** Balance Bob 6232 **)
 (** Balance Charlie 877 **)
-(** Balance Dave 2477 **)
+(** Balance Dave 2428 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -183969,7 +183969,8 @@ Definition monic_poly_eval : set -> set -> set -> set := fun a n z =>
 (** from S56 Thm 56.1 (line 1066 in algtop.tex): Fundamental theorem of algebra **)
 (** LATEX VERSION: A polynomial equation x^n + a_{n-1} x^{n-1} + ... + a_0 = 0 of degree n > 0 with real or complex coefficients has at least one root. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 400 **)
-(** Bounty 484 **)
+(** Bounty 533 **)
+(** Lock Dave 1773949130 **)
 Theorem thm56_1_fundamental_theorem_of_algebra : forall n a:set,
   n :e omega -> n <> 0 ->
   function_on a n (setprod R R) ->
