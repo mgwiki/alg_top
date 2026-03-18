@@ -215312,7 +215312,53 @@ Theorem ex57_4c_borsuk_ulam_general : forall n:set, n :e omega ->
                    (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)) f ->
     exists x:set, x :e Sn (ordsucc n) /\
       apply_fun f x = apply_fun f (Rn_negate (ordsucc (ordsucc n)) x).
-admit.
+let n.
+assume Hn_om.
+assume HantiNoNul.
+let f.
+assume HfCont.
+apply (xm
+  (exists x:set, x :e Sn (ordsucc n) /\
+    apply_fun f x = apply_fun f (Rn_negate (ordsucc (ordsucc n)) x))).
+- assume Hex.
+  exact Hex.
+- assume Hnone.
+  claim Hsep :
+    forall x:set, x :e Sn (ordsucc n) ->
+      apply_fun f x <> apply_fun f (Rn_negate (ordsucc (ordsucc n)) x).
+  {
+    let x.
+    assume HxSn.
+    assume Heq.
+    apply Hnone.
+    witness x.
+    exact (andI
+      (x :e Sn (ordsucc n))
+      (apply_fun f x = apply_fun f (Rn_negate (ordsucc (ordsucc n)) x))
+      HxSn
+      Heq).
+  }
+  claim HantiMapLower :
+    exists g:set, antipode_preserving_Sn (ordsucc n) n g.
+  {
+    (** Remaining core step for S57.4(c):
+        from f with no antipodal coincidence, build an antipode-preserving
+        map g : S^{n+1} -> S^n (normalized antipodal-difference construction). **)
+    admit.
+  }
+  claim HnoAntiLower :
+    ~(exists g:set, antipode_preserving_Sn (ordsucc n) n g).
+  {
+    exact (ex57_4b_no_antipode_higher
+      n
+      Hn_om
+      HantiNoNul).
+  }
+  exact (FalseE
+    (HnoAntiLower
+      HantiMapLower)
+    (exists x:set, x :e Sn (ordsucc n) /\
+      apply_fun f x = apply_fun f (Rn_negate (ordsucc (ordsucc n)) x))).
 Admitted.
 
 (** ======================= S58 DEFORMATION RETRACTS AND HOMOTOPY TYPE ======================= **)
