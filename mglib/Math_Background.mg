@@ -416671,6 +416671,20 @@ apply andI. apply andI. apply andI. apply andI. apply andI. apply andI.
 - exact Hsright.
 Qed.
 
+(** Proven Alice **)
+Lemma covering_map_local_section_at_point : forall E Te B Tb p e S V s:set,
+  covering_map E Te B Tb p -> e :e E ->
+  S :e Te -> e :e S -> V :e Tb -> apply_fun p e :e V ->
+  continuous_map V (subspace_topology B Tb V) S (subspace_topology E Te S) s ->
+  (forall x:set, x :e S -> apply_fun s (apply_fun (graph S (fun z:set => apply_fun p z)) x) = x) ->
+  apply_fun s (apply_fun p e) = e.
+let E Te B Tb p e S V s.
+assume Hcov HeE HSopen HeS HVopen HpeV Hscont Hsleft.
+prove apply_fun s (apply_fun p e) = e.
+rewrite <- (apply_fun_graph S (fun x:set => apply_fun p x) e HeS).
+exact (Hsleft e HeS).
+Qed.
+
 (** Helper: path components of covering preimage are open when base is lpc **)
 (** Proven Alice **)
 Lemma covering_preimage_path_component_open : forall E Te B Tb p U e:set,
