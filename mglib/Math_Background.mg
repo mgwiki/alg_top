@@ -416123,6 +416123,29 @@ claim Hpc_open_in : open_in X Tx (path_component_of X Tx x).
 exact (andER (topology_on X Tx) (path_component_of X Tx x :e Tx) Hpc_open_in).
 Qed.
 
+(** Helper: path component of open set in lpc space is open in ambient **)
+(** Proven Alice **)
+Lemma path_component_of_open_set_in_lpc_ambient : forall X Tx U x:set,
+  locally_path_connected X Tx -> U :e Tx -> x :e U ->
+  path_component_of U (subspace_topology X Tx U) x :e Tx.
+let X Tx U x. assume HlpcX HUopen HxU.
+claim HlpcU : locally_path_connected U (subspace_topology X Tx U).
+{ exact (open_subspace_locally_path_connected X Tx U HlpcX HUopen). }
+claim Hpc_open_sub : path_component_of U (subspace_topology X Tx U) x :e subspace_topology X Tx U.
+{ exact (path_component_of_open_in_lpc U (subspace_topology X Tx U) x HlpcU HxU). }
+claim Hpc_sub : path_component_of U (subspace_topology X Tx U) x c= U.
+{ exact (path_component_of_sub U (subspace_topology X Tx U) x). }
+claim HtopX : topology_on X Tx. { exact (locally_path_connected_topology X Tx HlpcX). }
+claim Hpc_open_in : open_in U (subspace_topology X Tx U) (path_component_of U (subspace_topology X Tx U) x).
+{ prove topology_on U (subspace_topology X Tx U) /\
+    path_component_of U (subspace_topology X Tx U) x :e subspace_topology X Tx U.
+  apply andI.
+  - exact (subspace_topology_is_topology X Tx U HtopX (topology_elem_subset X Tx U HtopX HUopen)).
+  - exact Hpc_open_sub. }
+exact (open_in_subspace_if_ambient_open X Tx U (path_component_of U (subspace_topology X Tx U) x)
+  HtopX HUopen Hpc_sub Hpc_open_in).
+Qed.
+
 (** Proven Alice **)
 Theorem exists_homeomorphism_preserves_lpc_left :
   forall X Tx Y Ty:set,
