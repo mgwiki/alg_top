@@ -415861,6 +415861,17 @@ apply andI.
   + exact HV0pc_E.
 Qed.
 
+(** Helper: covering map total space inherits locally connected from lpc base **)
+(** Proven Alice **)
+Lemma covering_total_space_lc : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  locally_path_connected B Tb ->
+  locally_connected E Te.
+let E Te B Tb p. assume Hcov HlpcB.
+exact (locally_path_connected_implies_locally_connected E Te
+  (covering_total_space_lpc E Te B Tb p Hcov HlpcB)).
+Qed.
+
 (** Old version with C parameter - kept for reference, false for C != X **)
 Lemma preimage_pc_under_homeomorphism_restrict :
   forall X Tx Y Ty f C Vpc:set,
