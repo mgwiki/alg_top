@@ -416766,6 +416766,41 @@ exact (homeomorphism_inverse_package S (subspace_topology E Te S)
   V (subspace_topology B Tb V) (graph S (fun x:set => apply_fun p x)) Hhomeo).
 Qed.
 
+(** Helper: covering map with lpc base has pc+lpc evenly covered neighborhoods **)
+(** Proven Alice **)
+Lemma covering_map_pc_lpc_evenly_covered_from_lpc_base :
+  forall E Te B Tb p b:set,
+  covering_map E Te B Tb p ->
+  locally_path_connected B Tb ->
+  b :e B ->
+  exists V:set, V :e Tb /\ b :e V /\
+    path_connected_space V (subspace_topology B Tb V) /\
+    locally_path_connected V (subspace_topology B Tb V) /\
+    evenly_covered E Te B Tb p V.
+let E Te B Tb p b. assume Hcov HlpcB HbB.
+apply (covering_map_pc_evenly_covered_from_lpc_base E Te B Tb p b Hcov HlpcB HbB).
+let V. assume HVpack.
+set Hev_type := evenly_covered E Te B Tb p V.
+claim HVev : Hev_type.
+{ exact (andER (((V :e Tb) /\ (b :e V)) /\ path_connected_space V (subspace_topology B Tb V)) Hev_type HVpack). }
+claim HVleft3 : ((V :e Tb) /\ (b :e V)) /\ path_connected_space V (subspace_topology B Tb V).
+{ exact (andEL (((V :e Tb) /\ (b :e V)) /\ path_connected_space V (subspace_topology B Tb V)) Hev_type HVpack). }
+claim HVpc : path_connected_space V (subspace_topology B Tb V).
+{ exact (andER ((V :e Tb) /\ (b :e V)) (path_connected_space V (subspace_topology B Tb V)) HVleft3). }
+claim HVleft2 : (V :e Tb) /\ (b :e V).
+{ exact (andEL ((V :e Tb) /\ (b :e V)) (path_connected_space V (subspace_topology B Tb V)) HVleft3). }
+claim HVopen : V :e Tb. { exact (andEL (V :e Tb) (b :e V) HVleft2). }
+claim HbV : b :e V. { exact (andER (V :e Tb) (b :e V) HVleft2). }
+claim HVlpc : locally_path_connected V (subspace_topology B Tb V).
+{ exact (open_subspace_locally_path_connected B Tb V HlpcB HVopen). }
+witness V. apply and5I.
+- exact HVopen.
+- exact HbV.
+- exact HVpc.
+- exact HVlpc.
+- exact HVev.
+Qed.
+
 (** Helper: path in subspace composed with inclusion gives path in ambient **)
 (** Common pattern in covering space proofs **)
 (** Proven Alice **)
