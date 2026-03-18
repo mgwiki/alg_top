@@ -400403,6 +400403,39 @@ assume Hxy.
 exact (polygon_pasting_equiv_chain_symm n w x y Hxy).
 Qed.
 
+(** Transitivity for polygon_pasting_equiv (inherited from chain closure). **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_trans : forall n w x y z:set,
+  polygon_pasting_equiv n w x y ->
+  polygon_pasting_equiv n w y z ->
+  polygon_pasting_equiv n w x z.
+let n w x y z.
+assume Hxy Hyz.
+exact (polygon_pasting_equiv_chain_trans n w x y z Hxy Hyz).
+Qed.
+
+(** polygon_pasting_equiv is an equivalence relation on B2. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_equivalence_relation : forall n w:set,
+  (forall x:set, x :e B2 -> polygon_pasting_equiv n w x x) /\
+  ((forall x y:set, x :e B2 -> y :e B2 ->
+     polygon_pasting_equiv n w x y ->
+     polygon_pasting_equiv n w y x) /\
+   (forall x y z:set, x :e B2 -> y :e B2 -> z :e B2 ->
+     polygon_pasting_equiv n w x y ->
+     polygon_pasting_equiv n w y z ->
+     polygon_pasting_equiv n w x z)).
+let n w.
+apply andI.
+- let x. assume HxB2.
+  exact (polygon_pasting_equiv_refl n w x HxB2).
+- apply andI.
+  * let x y. assume HxB2 HyB2 Hxy.
+    exact (polygon_pasting_equiv_symm n w x y Hxy).
+  * let x y z. assume HxB2 HyB2 HzB2 Hxy Hyz.
+    exact (polygon_pasting_equiv_trans n w x y z Hxy Hyz).
+Qed.
+
 (** Equivalence classes for polygon_pasting_equiv_chain are invariant under chain equivalence. **)
 (** Proven Charlie **)
 Lemma polygon_pasting_equiv_chain_class_eq : forall n w x y:set,
