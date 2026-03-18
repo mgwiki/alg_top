@@ -280057,9 +280057,10 @@ assume HW1conn : connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1
 assume HW2conn : connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
 (** W1 c= S^2-C and W2 c= S^2-C from the union decomposition **)
 claim HW1sub : W1 c= Sn 2 :\: C.
-{ admit. }
+{ (** W1 c= W1 union W2 = S^2-C **)
+  let x. assume Hx : x :e W1. rewrite Hunion. exact (binunionI1 W1 W2 x Hx). }
 claim HW2sub : W2 c= Sn 2 :\: C.
-{ admit. }
+{ let x. assume Hx : x :e W2. rewrite Hunion. exact (binunionI2 W1 W2 x Hx). }
 apply andI.
 - (** closure(W1) \ W1 = C **)
   (** Both directions: subset C (easy) and C subset boundary (hard) **)
@@ -280067,7 +280068,7 @@ apply andI.
   { exact (boundary_subset_C C W1 W2 HC HW1open HW2open Hdisj Hunion). }
   claim Hsupset : C c= closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
   { exact (C_subset_boundary C W1 W2 HC Hscc HW1open HW2open Hdisj Hunion HW1ne HW2ne HW1conn HW2conn). }
-  admit.
+  exact (set_ext (closure_of (Sn 2) (Sn_topology 2) W1 :\: W1) C Hsubset Hsupset).
 - (** closure(W2) \ W2 = C - symmetric argument **)
   claim Hsubset : closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 c= C.
   { (** Use boundary_subset_C with W2 as first component, W1 as second **)
@@ -280077,7 +280078,7 @@ apply andI.
   { (** By symmetry: swap W1 and W2 in the C_subset_boundary argument **)
     (** Need to show S^2-C = W2 union W1 and W2 cap W1 = Empty **)
     admit. }
-  admit.
+  exact (set_ext (closure_of (Sn 2) (Sn_topology 2) W2 :\: W2) C Hsubset Hsupset).
 Admitted.
 
 (** from S63 Thm 63.4 (line 2180 in algtop.tex) **)
