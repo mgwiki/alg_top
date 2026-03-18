@@ -420562,12 +420562,32 @@ claim Hginv_left : forall x:set, x :e E -> apply_fun ginv (apply_fun h x) = x.
   exact (Hg_left x Hx). }
 claim Hginv_fs : ginv :e function_space E E.
 { exact (continuous_map_graphify_in_function_space E Te E Te g Hg_cont). }
+claim Hginv_right : forall x:set, x :e E -> apply_fun h (apply_fun ginv x) = x.
+{ let x. assume Hx.
+  rewrite (graphify_on_apply E g x Hx). exact (Hg_right x Hx). }
+claim Hh_cont : continuous_map E Te E Te h.
+{ exact (homeomorphism_continuous E Te E Te h Hhomeo). }
+claim Hginv_homeo : homeomorphism E Te E Te ginv.
+{ prove continuous_map E Te E Te ginv /\
+    exists g':set, continuous_map E Te E Te g' /\
+      (forall x:set, x :e E -> apply_fun g' (apply_fun ginv x) = x) /\
+      (forall y:set, y :e E -> apply_fun ginv (apply_fun g' y) = y).
+  apply andI.
+  - exact Hginv_cont.
+  - witness h. apply and3I. exact Hh_cont. exact Hginv_right.
+    let y. assume Hy.
+    rewrite (graphify_on_apply E g (apply_fun h y) (homeomorphism_function_on E Te E Te h Hhomeo y Hy)).
+    exact (Hg_left y Hy). }
+claim Hginv_comm : forall x:set, x :e E -> apply_fun p (apply_fun ginv x) = apply_fun p x.
+{ exact (homeomorphism_inverse_commutes_with_p E Te B Tb p h ginv Hcov Hhomeo Hcomm Hginv_cont Hginv_right). }
 claim Hginv_ct : covering_transformation E Te B Tb p ginv.
-{ admit. (** need homeomorphism E Te E Te ginv: graphify of homeo inverse **) }
+{ prove homeomorphism E Te E Te ginv /\
+    (forall x:set, x :e E -> apply_fun p (apply_fun ginv x) = apply_fun p x).
+  apply andI. exact Hginv_homeo. exact Hginv_comm. }
 claim Hginv_in_G : ginv :e covering_transformation_group E Te B Tb p.
 { exact (SepI (function_space E E) (fun k:set => covering_transformation E Te B Tb p k) ginv Hginv_fs Hginv_ct). }
 witness ginv. apply andI. exact Hginv_in_G. exact Hginv_left.
-Admitted.
+Qed.
 
 (** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
 Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
