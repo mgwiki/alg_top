@@ -286904,11 +286904,24 @@ Definition R2_sub : set -> set -> set := fun z w =>
   (add_SNo (z 0) (minus_SNo (w 0)), add_SNo (z 1) (minus_SNo (w 1))).
 
 (** Helper: R2_sub of two R^2 points is in R^2 **)
+(** Proven Alice **)
 Lemma R2_sub_in_R2 : forall z w:set,
   z :e setprod R R -> w :e setprod R R ->
   R2_sub z w :e setprod R R.
-admit.
-Admitted.
+let z w. assume Hz Hw.
+prove (add_SNo (z 0) (minus_SNo (w 0)), add_SNo (z 1) (minus_SNo (w 1))) :e setprod R R.
+claim Hz0 : z 0 :e R. { exact (ap0_Sigma R (fun _ => R) z Hz). }
+claim Hz1 : z 1 :e R. { exact (ap1_Sigma R (fun _ => R) z Hz). }
+claim Hw0 : w 0 :e R. { exact (ap0_Sigma R (fun _ => R) w Hw). }
+claim Hw1 : w 1 :e R. { exact (ap1_Sigma R (fun _ => R) w Hw). }
+claim Hmw0 : minus_SNo (w 0) :e R. { exact (real_minus_SNo (w 0) Hw0). }
+claim Hmw1 : minus_SNo (w 1) :e R. { exact (real_minus_SNo (w 1) Hw1). }
+claim Hx : add_SNo (z 0) (minus_SNo (w 0)) :e R. { exact (real_add_SNo (z 0) Hz0 (minus_SNo (w 0)) Hmw0). }
+claim Hy : add_SNo (z 1) (minus_SNo (w 1)) :e R. { exact (real_add_SNo (z 1) Hz1 (minus_SNo (w 1)) Hmw1). }
+exact (tuple_2_setprod_by_pair_Sigma R R
+  (add_SNo (z 0) (minus_SNo (w 0))) (add_SNo (z 1) (minus_SNo (w 1)))
+  Hx Hy).
+Qed.
 
 (** Helper: R2_sub is nonzero when z and w are different R^2 points **)
 Lemma R2_sub_nonzero_of_ne : forall z w:set,
