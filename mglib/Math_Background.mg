@@ -416610,11 +416610,22 @@ apply and3I.
       (** Transfer: loops in S_a null-homotopic in Y **)
       exact (loops_null_in_covering_slice Y Ty Z Tz r S_a V'
         Hcov_r HSa_open HV'open HSa_homeo HloopsV y0 Hy0 g HgLoop). }
-    (** Step 5: For covering_trivializes_lpc, we need S_a to be path-connected and lpc **)
-    (** S_a is homeomorphic to V', V' is open in Z. **)
-    (** Z has a universal cover => Z is locally path-connected (standard result). **)
-    (** Then V' inherits lpc, and S_a inherits it via the homeomorphism. **)
-    (** For now, admit the Z-lpc derivation and the composition construction. **)
+    (** Step 5a: Derive Z is lpc from universal cover **)
+    claim HlpcZ : locally_path_connected Z Tz.
+    { exact (universal_cover_implies_lpc Z Tz Huniv). }
+    (** Step 5b: V' is lpc **)
+    claim HlpcV' : locally_path_connected V' (subspace_topology Z Tz V').
+    { exact (open_subspace_locally_path_connected Z Tz V' HlpcZ HV'open). }
+    (** Step 5c: Need path-connected open V'' c= V' containing z **)
+    (** Use lpc of V' to get pc neighborhood **)
+    claim HzZ : z :e Z. { exact HzZ. }
+    (** For each S_a :e slices_r', apply covering_trivializes_lpc to q over S_a **)
+    (** Needs: S_a pc + S_a lpc + loops in S_a null-homotopic **)
+    (** S_a pc: homeomorphic to V', V' contains z, take pc of V' at z **)
+    (** S_a lpc: from V' lpc via homeomorphism **)
+    (** Then compose q-sheets over S_a with r-homeomorphism S_a -> V' **)
+    (** to get p-sheets over V' **)
+    (** Full construction: ~100 lines of formal verification **)
     admit.
 Admitted.
 
