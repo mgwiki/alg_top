@@ -415489,8 +415489,40 @@ apply and4I.
   { exact (Hslices_open C
       (ReplI preU (fun e:set => path_component_of preU T_preU e) e0 He0PreU)). }
   (** Continuous: pC = restriction of p to C **)
+  (** pC continuous: compose inclusion C->E with p:E->B, then range restrict to U **)
+  set incl_C := graph C (fun x:set => x).
+  claim Hincl_cont : continuous_map C (subspace_topology E Te C) E Te incl_C.
+  { exact (subspace_inclusion_continuous E Te C HtopE HC_sub_E). }
+  claim HpC_agree : forall x:set, x :e C -> apply_fun (compose_fun C incl_C p) x = apply_fun pC x.
+  { let x. assume HxC.
+    rewrite (compose_fun_apply C incl_C p x HxC).
+    rewrite (apply_fun_graph C (fun z:set => z) x HxC).
+    rewrite (apply_fun_graph C (fun z:set => apply_fun p z) x HxC).
+    reflexivity. }
+  claim Hcomp_cont : continuous_map C (subspace_topology E Te C) B Tb (compose_fun C incl_C p).
+  { exact (composition_continuous C (subspace_topology E Te C) E Te B Tb incl_C p Hincl_cont Hcont_p). }
+  claim HpC_maps_to_U : forall x:set, x :e C -> apply_fun pC x :e U.
+  { let x. assume HxC.
+    rewrite (apply_fun_graph C (fun z:set => apply_fun p z) x HxC).
+    exact (SepE2 E (fun z:set => apply_fun p z :e U) x (HC_sub_preU x HxC)). }
+  claim Hcomp_maps_to_U : forall x:set, x :e C -> apply_fun (compose_fun C incl_C p) x :e U.
+  { let x. assume HxC.
+    rewrite (compose_fun_apply C incl_C p x HxC).
+    rewrite (apply_fun_graph C (fun z:set => z) x HxC).
+    exact (SepE2 E (fun z:set => apply_fun p z :e U) x (HC_sub_preU x HxC)). }
+  claim Hcomp_B : continuous_map C (subspace_topology E Te C) B Tb (compose_fun C incl_C p).
+  { exact (composition_continuous C (subspace_topology E Te C) E Te B Tb incl_C p Hincl_cont Hcont_p). }
+  claim Hcomp_range : continuous_map C (subspace_topology E Te C) U (subspace_topology B Tb U)
+    (compose_fun C incl_C p).
+  { exact (continuous_map_range_restrict C (subspace_topology E Te C) B Tb
+      (compose_fun C incl_C p) U Hcomp_B HUsub Hcomp_maps_to_U). }
+  claim HpC_fn_U : function_on pC C U.
+  { let x. assume HxC.
+    rewrite (apply_fun_graph C (fun z:set => apply_fun p z) x HxC).
+    exact (SepE2 E (fun z:set => apply_fun p z :e U) x (HC_sub_preU x HxC)). }
   claim HpC_cont : continuous_map C (subspace_topology E Te C) U (subspace_topology B Tb U) pC.
-  { admit. }
+  { exact (continuous_map_congr_on C (subspace_topology E Te C) U (subspace_topology B Tb U)
+      (compose_fun C incl_C p) pC Hcomp_range HpC_fn_U HpC_agree). }
   (** Open map: p is local homeomorphism, C is open **)
   claim HpC_open : open_map C (subspace_topology E Te C) U (subspace_topology B Tb U) pC.
   { admit. }
