@@ -279439,9 +279439,14 @@ assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2)
 (** Then C closed in S^2 (Hausdorff), so S^2-C open **)
 (** Step 1: C is compact as subspace of S^2 **)
 claim Hcompact : compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C).
-{ (** C is homeomorphic to S^1, which is compact. **)
-  (** Homeomorphism transfers compactness. **)
-  (** For now, admit this standard fact. **)
+{ (** C is homeomorphic to S^1 which is compact. **)
+  (** Unfold is_simple_closed_curve: exists h, homeomorphism C TC S1 S1_topology h **)
+  set TC := subspace_topology (Sn 2) (Sn_topology 2) C.
+  apply Hscc. let h. assume Hhomeo : homeomorphism C TC S1 S1_topology h.
+  (** From homeomorphism, get inverse g: S1 -> C continuous **)
+  (** Then image(g) compact in subspace of C, and image(g) = C **)
+  (** S1 compact + g continuous -> image(g) compact **)
+  (** Admitted: extracting this from homeomorphism definition is tedious **)
   admit. }
 (** Step 2: C is closed in S^2 **)
 claim Hclosed : closed_in (Sn 2) (Sn_topology 2) C.
