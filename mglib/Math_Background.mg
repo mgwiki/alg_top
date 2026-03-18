@@ -308008,7 +308008,289 @@ Theorem ex67_4c_rationals_not_free_abelian :
     free_abelian_group_with_basis rational
       (graph (setprod rational rational) (fun p:set => add_SNo (p 0) (p 1)))
       0 (graph rational (fun q:set => minus_SNo q)) J basis).
-admit.
+apply andI.
+- let q.
+  assume HqRat HqNe0.
+  assume Htors.
+  apply Htors.
+  let m.
+  assume HmPack.
+  claim HmPair : m :e omega /\ m <> 0.
+  { exact (andEL (m :e omega /\ m <> 0)
+      (nat_primrec 0 (fun _ r => add_SNo r q) m = 0)
+      HmPack). }
+  claim HmO : m :e omega.
+  { exact (andEL (m :e omega) (m <> 0) HmPair). }
+  claim HmNe0 : m <> 0.
+  { exact (andER (m :e omega) (m <> 0) HmPair). }
+  claim Hsum0 : nat_primrec 0 (fun _ r => add_SNo r q) m = 0.
+  { exact (andER (m :e omega /\ m <> 0)
+      (nat_primrec 0 (fun _ r => add_SNo r q) m = 0)
+      HmPack). }
+  claim HqR : q :e real.
+  { exact (Subq_rational_real q HqRat). }
+  claim HqSNo : SNo q.
+  { exact (real_SNo q HqR). }
+  claim Hsum_mul : nat_primrec 0 (fun _ r => add_SNo r q) m = mul_SNo q m.
+  {
+    claim Hnat : forall k:set, nat_p k ->
+      nat_primrec 0 (fun _ r => add_SNo r q) k = mul_SNo q k.
+    {
+      apply nat_ind.
+      - rewrite (nat_primrec_0 0 (fun _ r => add_SNo r q)).
+        symmetry.
+        exact (mul_SNo_zeroR q HqSNo).
+      - let k.
+        assume Hk.
+        assume IH.
+        claim HkO : k :e omega.
+        { exact (nat_p_omega k Hk). }
+        claim HkS : SNo k.
+        { exact (omega_SNo k HkO). }
+        rewrite (nat_primrec_S 0 (fun _ r => add_SNo r q) k Hk).
+        rewrite IH.
+        claim Hk1 : add_SNo k 1 = ordsucc k.
+        { exact (add_SNo_1_ordsucc k HkO). }
+        claim HmulSucc : mul_SNo q (ordsucc k) = add_SNo (mul_SNo q k) q.
+        {
+          rewrite <- Hk1.
+          rewrite (mul_SNo_distrL q k 1 HqSNo HkS SNo_1).
+          rewrite (mul_SNo_oneR q HqSNo).
+          reflexivity.
+        }
+        rewrite <- HmulSucc.
+        reflexivity.
+    }
+    exact (Hnat m (omega_nat_p m HmO)).
+  }
+  claim Hqm0 : mul_SNo q m = 0.
+  { rewrite <- Hsum_mul.
+    exact Hsum0. }
+  claim Hqmm0 : mul_SNo q m = mul_SNo q 0.
+  { rewrite Hqm0.
+    symmetry.
+    exact (mul_SNo_zeroR q HqSNo). }
+  claim Hm0 : m = 0.
+  { exact (mul_SNo_nonzero_cancel q m 0
+      HqSNo HqNe0 (omega_SNo m HmO) SNo_0 Hqmm0). }
+  exact (HmNe0 Hm0).
+- assume HfreeQ.
+  apply HfreeQ.
+  let J.
+  assume HbasisEx.
+  apply HbasisEx.
+  let basis.
+  assume Hfab.
+  set multQ := graph (setprod rational rational) (fun p:set => add_SNo (p 0) (p 1)).
+  set invQ := graph rational (fun q0:set => minus_SNo q0).
+  set Gfam := graph J (fun beta:set =>
+    {g :e rational | exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat multQ 0 (apply_fun basis beta) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         g = group_power_nat multQ 0 (apply_fun invQ (apply_fun basis beta)) (ordsucc m)))}).
+  claim Hfab_abc : (abelian_group rational multQ 0 invQ /\ function_on basis J rational) /\
+    (forall beta:set, beta :e J -> infinite_cyclic_subgroup rational multQ 0 invQ (apply_fun basis beta)).
+  { exact (andEL
+      ((abelian_group rational multQ 0 invQ /\ function_on basis J rational) /\
+        (forall beta:set, beta :e J ->
+          infinite_cyclic_subgroup rational multQ 0 invQ (apply_fun basis beta)))
+      (direct_sum_of_subgroups rational multQ 0 invQ J Gfam)
+      Hfab). }
+  claim Hbasis_fn : function_on basis J rational.
+  { exact (andER
+      (abelian_group rational multQ 0 invQ)
+      (function_on basis J rational)
+      (andEL
+        (abelian_group rational multQ 0 invQ /\ function_on basis J rational)
+        (forall beta:set, beta :e J ->
+          infinite_cyclic_subgroup rational multQ 0 invQ (apply_fun basis beta))
+        Hfab_abc)). }
+  claim Hds : direct_sum_of_subgroups rational multQ 0 invQ J Gfam.
+  { exact (andER
+      ((abelian_group rational multQ 0 invQ /\ function_on basis J rational) /\
+        (forall beta:set, beta :e J ->
+          infinite_cyclic_subgroup rational multQ 0 invQ (apply_fun basis beta)))
+      (direct_sum_of_subgroups rational multQ 0 invQ J Gfam)
+      Hfab). }
+  claim Hsga : subgroups_generate_abelian rational multQ 0 invQ J Gfam.
+  { exact (andEL
+      (subgroups_generate_abelian rational multQ 0 invQ J Gfam)
+      (forall x:set, x :e rational ->
+        forall n1 n2:set, n1 :e omega -> n2 :e omega ->
+        forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+        forall x1 x2:set, function_on x1 n1 rational -> function_on x2 n2 rational ->
+          (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i)) ->
+          (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i)) ->
+          (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+          (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+          x = nat_primrec 0 (fun i r => apply_fun multQ (r, apply_fun x1 i)) n1 ->
+          x = nat_primrec 0 (fun i r => apply_fun multQ (r, apply_fun x2 i)) n2 ->
+          (forall alpha0:set, alpha0 :e J ->
+            (forall i j:set, i :e n1 -> j :e n2 ->
+              apply_fun a1 i = alpha0 -> apply_fun a2 j = alpha0 ->
+              apply_fun x1 i = apply_fun x2 j) /\
+            ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha0) ->
+             ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha0) ->
+             forall i:set, i :e n1 -> apply_fun a1 i = alpha0 -> apply_fun x1 i = 0) /\
+            (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha0) ->
+             (exists j:set, j :e n2 /\ apply_fun a2 j = alpha0) ->
+             forall j:set, j :e n2 -> apply_fun a2 j = alpha0 -> apply_fun x2 j = 0)))
+      Hds). }
+  claim HJne : J <> Empty.
+  {
+    apply (subgroups_generate_abelian_index_nonempty
+      rational multQ 0 invQ J Gfam Hsga).
+    witness 1.
+    apply andI.
+    - exact (Subq_SNoS_omega_rational 1 (omega_SNoS_omega 1 (nat_p_omega 1 nat_1))).
+    - exact neq_1_0.
+  }
+  apply (nonempty_has_element J HJne).
+  let alpha.
+  assume HalphaJ : alpha :e J.
+  set S := {alpha}.
+  claim HSJ : S c= J.
+  { exact (singleton_subset alpha J HalphaJ). }
+  claim HhSpec : exists h:set,
+    group_homomorphism rational multQ 2 Z2_mult h /\
+    (forall beta:set, beta :e S -> apply_fun h (apply_fun basis beta) = 1) /\
+    (forall beta:set, beta :e J -> ~(beta :e S) -> apply_fun h (apply_fun basis beta) = 0).
+  { exact (free_abelian_hom_from_subset rational multQ 0 invQ J basis S Hfab HSJ). }
+  apply HhSpec.
+  let h.
+  assume Hhpack.
+  claim Hh_hom : group_homomorphism rational multQ 2 Z2_mult h.
+  { exact (andEL
+      (group_homomorphism rational multQ 2 Z2_mult h)
+      (forall beta:set, beta :e S -> apply_fun h (apply_fun basis beta) = 1)
+      (andEL
+        (group_homomorphism rational multQ 2 Z2_mult h /\
+          (forall beta:set, beta :e S -> apply_fun h (apply_fun basis beta) = 1))
+        (forall beta:set, beta :e J -> ~(beta :e S) -> apply_fun h (apply_fun basis beta) = 0)
+        Hhpack)). }
+  claim Hh_in : forall beta:set, beta :e S -> apply_fun h (apply_fun basis beta) = 1.
+  { exact (andER
+      (group_homomorphism rational multQ 2 Z2_mult h)
+      (forall beta:set, beta :e S -> apply_fun h (apply_fun basis beta) = 1)
+      (andEL
+        (group_homomorphism rational multQ 2 Z2_mult h /\
+          (forall beta:set, beta :e S -> apply_fun h (apply_fun basis beta) = 1))
+        (forall beta:set, beta :e J -> ~(beta :e S) -> apply_fun h (apply_fun basis beta) = 0)
+        Hhpack)). }
+  claim Hh_basis_alpha_1 : apply_fun h (apply_fun basis alpha) = 1.
+  { exact (Hh_in alpha (SingI alpha)). }
+  claim Hbasis_alpha_rat : apply_fun basis alpha :e rational.
+  { exact (Hbasis_fn alpha HalphaJ). }
+  claim Hh_fn : function_on h rational 2.
+  { exact (andEL
+      (function_on h rational 2)
+      (forall x y:set, x :e rational -> y :e rational ->
+        apply_fun h (apply_fun multQ (x, y)) = apply_fun Z2_mult (apply_fun h x, apply_fun h y))
+      Hh_hom). }
+  claim Hh_mul : forall x y:set, x :e rational -> y :e rational ->
+    apply_fun h (apply_fun multQ (x, y)) = apply_fun Z2_mult (apply_fun h x, apply_fun h y).
+  { exact (andER
+      (function_on h rational 2)
+      (forall x y:set, x :e rational -> y :e rational ->
+        apply_fun h (apply_fun multQ (x, y)) = apply_fun Z2_mult (apply_fun h x, apply_fun h y))
+      Hh_hom). }
+  claim Hbasis_alpha_repr : exists m:set, m :e int /\
+    exists n:set, n :e omega :\: {0} /\ apply_fun basis alpha = div_SNo m n.
+  { exact (SepE2
+      real
+      (fun x:set => exists m:set, m :e int /\ exists n:set, n :e omega :\: {0} /\ x = div_SNo m n)
+      (apply_fun basis alpha)
+      Hbasis_alpha_rat). }
+  apply Hbasis_alpha_repr.
+  let m.
+  assume HmPack.
+  claim HmInt : m :e int.
+  { exact (andEL
+      (m :e int)
+      (exists n:set, n :e omega :\: {0} /\ apply_fun basis alpha = div_SNo m n)
+      HmPack). }
+  claim HmSNo : SNo m.
+  { exact (int_SNo m HmInt). }
+  claim HnPack : exists n:set, n :e omega :\: {0} /\ apply_fun basis alpha = div_SNo m n.
+  { exact (andER
+      (m :e int)
+      (exists n:set, n :e omega :\: {0} /\ apply_fun basis alpha = div_SNo m n)
+      HmPack). }
+  apply HnPack.
+  let n.
+  assume HnPack2.
+  claim HnNZ : n :e omega :\: {0}.
+  { exact (andEL
+      (n :e omega :\: {0})
+      (apply_fun basis alpha = div_SNo m n)
+      HnPack2). }
+  claim Hbasis_alpha_eq : apply_fun basis alpha = div_SNo m n.
+  { exact (andER
+      (n :e omega :\: {0})
+      (apply_fun basis alpha = div_SNo m n)
+      HnPack2). }
+  claim HnO : n :e omega.
+  { exact (setminusE1 omega {0} n HnNZ). }
+  claim HnNot0Set : n /:e {0}.
+  { exact (setminusE2 omega {0} n HnNZ). }
+  claim HnNe0 : n <> 0.
+  {
+    assume Hn0.
+    apply HnNot0Set.
+    rewrite Hn0.
+    exact (SingI 0).
+  }
+  claim HnNat : nat_p n.
+  { exact (omega_nat_p n HnO). }
+  claim HdNat : nat_p (mul_nat n 2).
+  { exact (mul_nat_p n HnNat 2 nat_2). }
+  claim HdO : mul_nat n 2 :e omega.
+  { exact (nat_p_omega (mul_nat n 2) HdNat). }
+  claim HdNe0 : mul_nat n 2 <> 0.
+  {
+    assume Hd0.
+    apply (mul_nat_0_inv n HnNat 2 nat_2 Hd0).
+    - assume Hn0. exact (HnNe0 Hn0).
+    - assume H20. exact (neq_2_0 H20).
+  }
+  claim HdNZ : mul_nat n 2 :e omega :\: {0}.
+  {
+    apply setminusI.
+    - exact HdO.
+    - assume HdzSing.
+      apply HdNe0.
+      exact (SingE 0 (mul_nat n 2) HdzSing).
+  }
+  claim HmSNoW : m :e SNoS_ omega.
+  { exact (Subq_int_SNoS_omega m HmInt). }
+  claim HmReal : m :e real.
+  { exact (SNoS_omega_real m HmSNoW). }
+  claim HdSNoW : mul_nat n 2 :e SNoS_ omega.
+  { exact (omega_SNoS_omega (mul_nat n 2) HdO). }
+  claim HdReal : mul_nat n 2 :e real.
+  { exact (SNoS_omega_real (mul_nat n 2) HdSNoW). }
+  set r := div_SNo m (mul_nat n 2).
+  claim HrReal : r :e real.
+  { exact (real_div_SNo m HmReal (mul_nat n 2) HdReal). }
+  claim HrRat : r :e rational.
+  {
+    apply (SepI
+      real
+      (fun x:set => exists m0:set, m0 :e int /\ exists n0:set, n0 :e omega :\: {0} /\ x = div_SNo m0 n0)
+      r
+      HrReal).
+    witness m.
+    apply andI.
+    - exact HmInt.
+    - witness (mul_nat n 2).
+      apply andI.
+      + exact HdNZ.
+      + reflexivity.
+  }
+  claim Hh_r_2 : apply_fun h r :e 2.
+  { exact (Hh_fn r HrRat). }
+  (** Remaining work: connect basis(alpha) with r+r and conclude via Z2 parity contradiction. **)
+  admit.
 Admitted.
 
 (** from S67 Exercise 5 (line 2711 in algtop.tex) **)
