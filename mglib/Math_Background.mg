@@ -399723,6 +399723,41 @@ Admitted.
 Definition S1_param : set -> set :=
   fun s => apply_fun covering_map_R_S1 s.
 
+(** Infrastructure: vertices of the regular n-gon subdivision on S^1 **)
+(** The i-th vertex is at parameter i/n. **)
+Definition polygon_vertices_S1 : set -> set :=
+  fun n => Repl n (fun i:set => S1_param (real_div i n)).
+
+(** Infrastructure: unfold finite. **)
+(** Proven Charlie **)
+Lemma finite_unfold : forall X:set,
+  finite X = (exists n :e omega, equip X n).
+let X.
+reflexivity.
+Qed.
+
+(** Infrastructure: every n :e omega is a finite set. **)
+(** Proven Charlie **)
+Lemma omega_element_finite : forall n:set,
+  n :e omega -> finite n.
+let n.
+assume HnOmega.
+rewrite (finite_unfold n).
+witness n.
+exact (andI (n :e omega) (equip n n) HnOmega (equip_ref n)).
+Qed.
+
+(** The vertex set of the n-gon subdivision is finite. **)
+(** Proven Charlie **)
+Lemma polygon_vertices_S1_finite : forall n:set,
+  n :e omega -> finite (polygon_vertices_S1 n).
+let n.
+assume HnOmega.
+claim HfinN : finite n.
+{ exact (omega_element_finite n HnOmega). }
+exact (finite_Repl n HfinN (fun i:set => S1_param (real_div i n))).
+Qed.
+
 (** from S74 Definition (line 3814 in algtop.tex): polygonal region **)
 (** LATEX VERSION: A polygonal region P is the intersection of **)
 (** half-planes determined by n >= 3 points on a circle, forming a **)
