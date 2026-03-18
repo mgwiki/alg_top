@@ -443,6 +443,61 @@ Implementation Commit:
 Status:
   APPROVED
 --------------------------------------------------------
+NOTICE ID: 1773866153
+Created: 1773866153
+Status: PROPOSED
+
+Refers to Commit:
+  b78fe1dffc610a5c807671e344ee6967e40af6b5
+
+Target:
+  Line: 399679
+  Name: polygon_pasting_equiv_to_step (Lemma)
+
+Problem:
+  After implementing NOTICE 1773340391, `polygon_pasting_equiv` is the finite-chain closure
+  of `polygon_pasting_step`. The lemma `polygon_pasting_equiv_to_step` (equiv -> single step)
+  is therefore false in general and is currently left as `Admitted.`.
+
+Proposed Replacement:
+  Replace the lemma statement with a useful chain-witness extraction form:
+
+  Lemma polygon_pasting_equiv_to_step : forall n w x y:set,
+    polygon_pasting_equiv n w x y ->
+    exists m f:set,
+      m :e omega /\
+      function_on f (ordsucc m) B2 /\
+      apply_fun f 0 = x /\
+      apply_fun f m = y /\
+      forall k:set, k :e m ->
+        polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1773866153 | Charlie: PROPOSED. This preserves the lemma name while making it a true,
+    useful statement under the new definition of `polygon_pasting_equiv`.
+
+Approvals:
+  - | Alice:
+  - | Bob:
+  - 1773866153 | Charlie: YES
+  - | Dave:
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - | APPROVED / REJECTED
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+--------------------------------------------------------
 NOTICE ID: 1773109753
 Created: 1773109753
 Status: IMPLEMENTED
