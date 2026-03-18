@@ -415713,11 +415713,18 @@ apply and4I.
         rewrite <- He'eq.
         symmetry.
         exact (apply_fun_graph C (fun z:set => apply_fun p z) e' He'C). }
-      (** e, e' both in C = path_component_of preU T_preU e0 with p(e) = p(e') = u **)
-      (** Path from e to e' in preU, project to loop at u in U **)
-      (** By Hloops: loop null-homotopic in B **)
-      (** By homotopy lifting + unique path lifting: e = e' **)
-      (** This requires lemma54_2_homotopy_lifting + lemma54_1_path_lifting_unique **)
+      (** Strategy: use thm54_3_homotopic_lifts **)
+      (** 1. Get path alpha from e to e' in preU (from path component) **)
+      (** 2. Project: p o alpha is a loop at u in U **)
+      (** 3. By Hloops: p o alpha is null-homotopic in B **)
+      (** 4. By thm54_3_homotopic_lifts: lift of (p o alpha) at e and lift of constant_u at e **)
+      (**    have the same endpoint **)
+      (** 5. Lift of (p o alpha) at e = alpha (by unique lifting), ending at e' **)
+      (** 6. Lift of constant_u at e = constant_e, ending at e **)
+      (** 7. Therefore e' = e **)
+      (** The detailed argument requires ~50 lines of formal proof **)
+      (** connecting path_component extraction, loop_space membership, **)
+      (** Hloops application, and thm54_3_homotopic_lifts **)
       admit. }
 
   exact (open_map_bijection_homeomorphism
