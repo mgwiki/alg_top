@@ -418459,6 +418459,29 @@ rewrite Hhx.
 reflexivity.
 Qed.
 
+(** Helper: CTG composition closure in the form needed by orbit_map proofs **)
+(** Proven Alice **)
+Lemma ctg_composition_closure : forall E Te B Tb p g1 g2:set,
+  covering_map E Te B Tb p ->
+  g1 :e covering_transformation_group E Te B Tb p ->
+  g2 :e covering_transformation_group E Te B Tb p ->
+  exists g3:set, g3 :e covering_transformation_group E Te B Tb p /\
+    forall z:set, z :e E -> apply_fun g3 z = apply_fun g2 (apply_fun g1 z).
+let E Te B Tb p g1 g2. assume Hcov Hg1G Hg2G.
+claim Hct1 : covering_transformation E Te B Tb p g1.
+{ exact (SepE2 (function_space E E) (fun h:set => covering_transformation E Te B Tb p h) g1 Hg1G). }
+claim Hct2 : covering_transformation E Te B Tb p g2.
+{ exact (SepE2 (function_space E E) (fun h:set => covering_transformation E Te B Tb p h) g2 Hg2G). }
+set g3 := compose_fun E g1 g2.
+claim Hg3_in_G : g3 :e covering_transformation_group E Te B Tb p.
+{ exact (covering_transformation_compose_in_group E Te B Tb p g2 g1 Hg2G Hg1G). }
+witness g3.
+apply andI.
+- exact Hg3_in_G.
+- let z. assume HzE.
+  exact (compose_fun_apply E g1 g2 z HzE).
+Qed.
+
 (** Helper: evaluation at e0 distinguishes CTG members on connected spaces **)
 (** If h1(e0) = h2(e0) and E is connected, then h1 = h2 pointwise **)
 (** Proven Alice **)
