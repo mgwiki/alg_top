@@ -314250,10 +314250,88 @@ claim HfreeH :
 		              apply_fun h x = eG ->
 		              x = eG.
 		          {
-		            (** TODO: prove kernel-triviality of h on each component
-		                apply_fun GfamH alpha, using cyclic parametrization
-		                and integer injectivity/no-torsion. **)
-		            admit.
+		            let alpha x.
+		            assume Halpha : alpha :e J.
+		            assume HxFam : x :e apply_fun GfamH alpha.
+		            assume Hhxe : apply_fun h x = eG.
+		            claim HxSep : x :e
+		              {g0 :e H | exists m:set, m :e int /\
+		                ((m :e omega /\ g0 = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                 (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                  g0 = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)))}.
+		            {
+		              exact (eq_subst_mem_set
+		                x
+		                (apply_fun GfamH alpha)
+		                {g0 :e H | exists m:set, m :e int /\
+		                  ((m :e omega /\ g0 = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                   (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                    g0 = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)))}
+		                HxFam
+		                (apply_fun_graph J (fun alpha0:set =>
+		                  {g0 :e H | exists m:set, m :e int /\
+		                    ((m :e omega /\ g0 = group_power_nat multG eG (apply_fun basis2 alpha0) m) \/
+		                     (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                      g0 = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha0)) (ordsucc k)))})
+		                  alpha
+		                  Halpha)).
+		            }
+		            claim HmEx : exists m:set, m :e int /\
+		              ((m :e omega /\ x = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		               (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))).
+		            { exact (SepE2
+		                H
+		                (fun g0:set => exists m:set, m :e int /\
+		                  ((m :e omega /\ g0 = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                   (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                    g0 = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))))
+		                x
+		                HxSep). }
+		            apply HmEx.
+		            let m.
+		            assume HmPack.
+		            claim Hcases :
+		              (m :e omega /\ x = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		              (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)).
+		            { exact (andER
+		                (m :e int)
+		                ((m :e omega /\ x = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                 (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                  x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)))
+		                HmPack). }
+		            apply Hcases.
+		            - assume Hpos.
+		              claim HxPow :
+		                x = group_power_nat multG eG (apply_fun basis2 alpha) m.
+		              { exact (andER
+		                  (m :e omega)
+		                  (x = group_power_nat multG eG (apply_fun basis2 alpha) m)
+		                  Hpos). }
+		              claim Hhpow_e :
+		                apply_fun h (group_power_nat multG eG (apply_fun basis2 alpha) m) = eG.
+		              { rewrite <- HxPow.
+		                exact Hhxe. }
+		              (** TODO: from Hhpow_e, use injectivity/no-torsion on the alpha-component
+		                  to derive m = 0 and hence x = eG. **)
+		              admit.
+		            - assume Hneg.
+		              apply Hneg.
+		              let k.
+		              assume HkPack.
+		              claim HxNeg :
+		                x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k).
+		              { exact (andER
+		                  (k :e omega /\ m = minus_SNo (ordsucc k))
+		                  (x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))
+		                  HkPack). }
+		              claim Hhneg_e :
+		                apply_fun h (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)) = eG.
+		              { rewrite <- HxNeg.
+		                exact Hhxe. }
+		              (** TODO: show the negative-power branch is impossible unless x = eG. **)
+		              admit.
 		          }
 		          let i0.
 		          assume Hi0 : i0 :e n0.
