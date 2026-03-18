@@ -278730,6 +278730,19 @@ Theorem lemma61_2_nulhomotopy : forall a b:set,
     nulhomotopic A TA
       (Sn 2 :\: Sing a :\: Sing b)
       (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing a :\: Sing b)) f.
+(** Proof (Lemma 61.2 from algtop.tex line 1815): **)
+(** 1. Via stereographic projection at b, reduce S^2 to R^2 union {infty}. **)
+(**    Then a -> 0, b -> infty, S^2-{a,b} -> R^2-{0}. **)
+(** 2. f becomes g: A -> R^2-{0}. **)
+(** 3. Condition: 0 in unbounded component of R^2-g(A). **)
+(** 4. Choose ball B containing g(A) (compact -> bounded). **)
+(** 5. Choose p outside B. Then 0 and p are both in unbounded component. **)
+(** 6. Path alpha from 0 to p in R^2-g(A) (locally path connected -> path connected component). **)
+(** 7. G(x,t) = g(x) - alpha(t) avoids 0 (alpha misses g(A)). **)
+(**    Homotopy from g to k(x) = g(x) - p. **)
+(** 8. H(x,t) = t.g(x) - p avoids 0 (t.g(x) in B, p outside B). **)
+(**    Homotopy from k to constant -p. **)
+(** 9. Compose: g nulhomotopic. Transfer back to S^2. **)
 admit.
 Admitted.
 
