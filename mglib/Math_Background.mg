@@ -184694,6 +184694,77 @@ claim HuSubR : u c= setprod 2 R.
 exact (total_functional_graph_eq_graph_of_apply_fun u 2 R HuTF_R HuFG HuSubR).
 Qed.
 
+(** Infrastructure: the coordinate graph on 2 equals its if-0/else-1 specialization. **)
+(** Proven Charlie **)
+Theorem graph_2_apply_fun_eq_if_coords : forall u:set,
+  graph 2 (fun i:set => apply_fun u i)
+  =
+  graph 2 (fun i:set => if i = 0 then apply_fun u 0 else apply_fun u 1).
+let u.
+apply (graph_extensional
+  2
+  (fun i:set => apply_fun u i)
+  (fun i:set => if i = 0 then apply_fun u 0 else apply_fun u 1)).
+let i.
+assume Hi2.
+apply (ordsuccE 1 i Hi2).
+- assume Hi1.
+  apply (ordsuccE 0 i Hi1).
+  + assume Hi0.
+    exact (EmptyE
+      i
+      Hi0
+      (apply_fun u i =
+        (if i = 0 then apply_fun u 0 else apply_fun u 1))).
+  + assume Hieq0.
+    rewrite Hieq0.
+    exact (eq_i_tra
+      (apply_fun u 0)
+      (apply_fun u 0)
+      (if 0 = 0 then apply_fun u 0 else apply_fun u 1)
+      (eq_refl
+        (apply_fun u 0))
+      (eq_symm
+        (if 0 = 0 then apply_fun u 0 else apply_fun u 1)
+        (apply_fun u 0)
+        (If_i_1
+          (0 = 0)
+          (apply_fun u 0)
+          (apply_fun u 1)
+          (eq_refl 0)))).
+- assume Hieq1.
+  rewrite Hieq1.
+  exact (eq_i_tra
+    (apply_fun u 1)
+    (apply_fun u 1)
+    (if 1 = 0 then apply_fun u 0 else apply_fun u 1)
+    (eq_refl
+      (apply_fun u 1))
+    (eq_symm
+      (if 1 = 0 then apply_fun u 0 else apply_fun u 1)
+      (apply_fun u 1)
+      (If_i_0
+        (1 = 0)
+        (apply_fun u 0)
+        (apply_fun u 1)
+        (neq_ordsucc_0 0)))).
+Qed.
+
+(** Infrastructure: a point of euclidean_space 2 is the if-0/else-1 graph of its coordinates. **)
+(** Proven Charlie **)
+Theorem euclidean_space_2_eq_graph_if_coords : forall u:set,
+  u :e euclidean_space 2 ->
+  u = graph 2 (fun i:set => if i = 0 then apply_fun u 0 else apply_fun u 1).
+let u.
+assume Hu.
+exact (eq_i_tra
+  u
+  (graph 2 (fun i:set => apply_fun u i))
+  (graph 2 (fun i:set => if i = 0 then apply_fun u 0 else apply_fun u 1))
+  (euclidean_space_2_eq_graph_of_apply_fun u Hu)
+  (graph_2_apply_fun_eq_if_coords u)).
+Qed.
+
 (** Infrastructure: expand the norm square in euclidean_space 2 into two coordinates. **)
 Theorem euclidean_norm_sq_2_expand : forall u:set,
   u :e euclidean_space 2 ->
