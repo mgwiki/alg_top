@@ -341034,7 +341034,7 @@ claim Hextfp :
           - assume Hnex.
             admit. (** core S68.5 gap C existence:
                       from subgroups_generate on ImageFam, derive a nonempty reduced representative
-                      for non-identity x (the missing reduction argument from generated words). **)
+                      for non-identity x (missing raw-word extraction plus reduction-to-reduced step). **)
         }
         claim Hsubgen_nonid_reconstructed_uniqueness :
           forall n1 ws1 n2 ws2:set,
@@ -341923,10 +341923,31 @@ claim Hextfp :
                   - assume Hsync.
                     exact Hsync.
                   - assume Hnsync.
+                    claim HsyncCases :
+                      (n1 <> n2) \/
+                      (n1 = n2 /\
+                        ~(forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i)).
+                    {
+                      apply (xm (n1 = n2)).
+                      - assume HnEq.
+                        apply orIR.
+                        apply andI.
+                        + exact HnEq.
+                        + assume HallEq.
+                          exact (Hnsync
+                            (andI
+                              (n1 = n2)
+                              (forall i:set, i :e n1 -> apply_fun rw1 i = apply_fun rw2 i)
+                              HnEq
+                              HallEq)).
+                      - assume HnNe.
+                        apply orIL.
+                        exact HnNe.
+                    }
                     admit. (** core S68.5 gap C uniqueness core:
-                              derive contradiction from Hnsync using extension uniqueness;
-                              label synchronization is then obtained via
-                              HimgDisjoint + HlabelEqFromRwEqDisjoint. **)
+                              use HsyncCases to eliminate both branches:
+                              length mismatch (n1 <> n2) and
+                              equal-length pointwise mismatch. **)
                 }
                 claim HnEqWord : n1 = n2.
                 {
