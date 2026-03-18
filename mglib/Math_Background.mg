@@ -415861,6 +415861,15 @@ apply andI.
   + exact HV0pc_E.
 Qed.
 
+(** Helper: open subspace of lpc space is locally connected **)
+(** Proven Alice **)
+Lemma open_subspace_lc_from_lpc : forall X Tx Y:set,
+  locally_path_connected X Tx -> Y :e Tx -> locally_connected Y (subspace_topology X Tx Y).
+let X Tx Y. assume HlpcX HYopen.
+exact (locally_path_connected_implies_locally_connected Y (subspace_topology X Tx Y)
+  (open_subspace_locally_path_connected X Tx Y HlpcX HYopen)).
+Qed.
+
 (** Helper: covering map total space inherits locally connected from lpc base **)
 (** Proven Alice **)
 Lemma covering_total_space_lc : forall E Te B Tb p:set,
