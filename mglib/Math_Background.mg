@@ -234892,8 +234892,10 @@ claim Htransition_exists :
     (** and ball (ordsucc k2) is U-type. The overlap gives s with f(s) :e U cap V. **)
     (** Then balls 0..k2 cover [0,s] mapping to V and balls (ordsucc k2)..nch cover **)
     (** [s,1] mapping to U. But we need [0,s] -> U, [s,1] -> V, so swap the roles **)
-    (** or find the LAST V-to-U transition instead. This requires essentially **)
-    (** duplicating the m > 0 proof structure with U/V swapped. **)
+    (** FIX: swap U and V in the Htransition_exists claim. **)
+    (** With V-first balls, use loop_class_split_at_transition V U x0 f. **)
+    (** This produces the same word decomposition with factors from U and V. **)
+    (** The fix requires V-prefix and U-suffix coverage (symmetric to m>0 case). **)
     admit.
   - (** Case m = ordsucc k for some k: balls 0..k are all U-type, ball m is V-type **)
     assume Hm_inv : exists k:set, nat_p k /\ m = ordsucc k.
