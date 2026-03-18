@@ -426753,6 +426753,17 @@ exact (SepI E (fun y:set => orbit_equiv E G x y) x HxE
   (ctg_orbit_equiv_refl E Te B Tb p x Hcov HxE)).
 Qed.
 
+(** Helper: CTG orbit map is function_on **)
+(** Proven Alice **)
+Lemma ctg_orbit_map_function_on : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  function_on (orbit_map E (covering_transformation_group E Te B Tb p))
+    E (orbit_space E (covering_transformation_group E Te B Tb p)).
+let E Te B Tb p. assume Hcov.
+exact (orbit_map_function_on E (covering_transformation_group E Te B Tb p)
+  (fun h HhG => covering_transformation_group_function_on E Te B Tb p h HhG)).
+Qed.
+
 (** Helper: preimage(image(pi,U0)) equality from homeomorphism action + group data **)
 (** Proven Bob **)
 Theorem orbit_map_preimage_image_eq_action_union_with_group_data :
