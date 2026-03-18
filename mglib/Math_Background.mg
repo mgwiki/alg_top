@@ -415832,16 +415832,16 @@ set slices := {path_component_of preU (subspace_topology E Te preU) e | e :e pre
 (** - The slice of V containing e0 is open and contained in C **)
 (** - So C is a union of open sets, hence open **)
 (** Each path component maps homeomorphically to U via p because: **)
-(** SECTION-BASED PROOF approach: for each e0 in fiber over u0, **)
-(** path lifting defines section s_{e0}: U -> E with p(s(u))=u. **)
-(** Requires ~150 lines of path lifting + unique lifting. **)
-(** Step 1: Get base point u0 :e U from path-connectedness **)
+(** SECTION-BASED PROOF: defines sections via path lifting **)
 claim Hsurj_p : surjective_map E B p. { exact (covering_map_surjective E Te B Tb p Hcov). }
-claim HUnonempty : U <> Empty.
-{ claim HtopUsub : topology_on U (subspace_topology B Tb U). { exact HtopU. }
-  admit. (** U is path-connected hence nonempty **) }
-(** Step 2-7: Define sections, show they form evenly_covered structure **)
-(** This requires ~150 lines of path lifting + unique lifting + local sheet arguments **)
+set preU := preimage_of E p U.
+claim HpreU_open : preU :e Te.
+{ exact (continuous_map_preimage E Te B Tb p Hcont_p U HUopen). }
+claim HpreU_sub : preU c= E.
+{ exact (topology_elem_subset E Te preU HtopE HpreU_open). }
+(** Use classical logic: if U is empty, trivial. If nonempty, section construction. **)
+(** For the nonempty case, the section construction gives evenly_covered. **)
+(** For now, structure with admits for the hard parts. **)
 admit.
 Admitted.
 
