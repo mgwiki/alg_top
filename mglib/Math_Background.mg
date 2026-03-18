@@ -418929,6 +418929,15 @@ let A B x. assume Hx.
 exact (binintersectI B A x (binintersectE2 A B x Hx) (binintersectE1 A B x Hx)).
 Qed.
 
+(** Helper: pc of A∩B implies pc of B∩A via rewrite **)
+(** Proven Alice **)
+Lemma path_connected_space_binintersect_comm : forall X Tx A B:set,
+  path_connected_space (A :/\: B) (subspace_topology X Tx (A :/\: B)) ->
+  path_connected_space (B :/\: A) (subspace_topology X Tx (B :/\: A)).
+let X Tx A B. assume Hpc.
+rewrite (binintersect_comm B A). exact Hpc.
+Qed.
+
 (** Helper: intersection of two evenly covered neighborhoods is evenly covered **)
 (** Proven Alice **)
 Lemma evenly_covered_binintersect : forall E Te B Tb p U V:set,
