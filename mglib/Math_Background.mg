@@ -415524,8 +415524,59 @@ apply and4I.
   { exact (continuous_map_congr_on C (subspace_topology E Te C) U (subspace_topology B Tb U)
       (compose_fun C incl_C p) pC Hcomp_range HpC_fn_U HpC_agree). }
   (** Open map: p is local homeomorphism, C is open **)
+  claim HtopC : topology_on C (subspace_topology E Te C).
+  { exact (subspace_topology_is_topology E Te C HtopE HC_sub_E). }
+  claim HtopU : topology_on U (subspace_topology B Tb U).
+  { exact (subspace_topology_is_topology B Tb U HtopB HUsub). }
+  claim Hp_open : open_map E Te B Tb p.
+  { exact (covering_map_is_open E Te B Tb p Hcov). }
   claim HpC_open : open_map C (subspace_topology E Te C) U (subspace_topology B Tb U) pC.
-  { admit. }
+  { prove topology_on C (subspace_topology E Te C) /\
+      topology_on U (subspace_topology B Tb U) /\
+      function_on pC C U /\
+      (forall W:set, W :e subspace_topology E Te C -> image_of pC W :e subspace_topology B Tb U).
+    apply and4I.
+    - exact HtopC.
+    - exact HtopU.
+    - exact HpC_fn_U.
+    - let W. assume HWopen.
+      (** W :e subspace E Te C, so W = S cap C for some S :e Te **)
+      (** Since C :e Te, W = S cap C :e Te (intersection of open sets) **)
+      (** by open_in_subspace_if_ambient_open: W :e Te **)
+      claim HW_sub_C : W c= C.
+      { exact (topology_elem_subset C (subspace_topology E Te C) W HtopC HWopen). }
+      claim HW_open_inC : open_in C (subspace_topology E Te C) W.
+      { prove topology_on C (subspace_topology E Te C) /\ W :e subspace_topology E Te C.
+        apply andI. exact HtopC. exact HWopen. }
+      claim HW_open_E : W :e Te.
+      { exact (open_in_subspace_if_ambient_open E Te C W HtopE HCopen HW_sub_C HW_open_inC). }
+      (** p(W) :e Tb since p is open **)
+      claim Hp_open_maps : forall V0:set, V0 :e Te -> image_of p V0 :e Tb.
+      { exact (andER
+          ((topology_on E Te /\ topology_on B Tb) /\ function_on p E B)
+          (forall V0:set, V0 :e Te -> image_of p V0 :e Tb)
+          Hp_open). }
+      claim HpW_open_B : image_of p W :e Tb.
+      { exact (Hp_open_maps W HW_open_E). }
+      (** image_of pC W = image_of p W (they agree on C) **)
+      claim HpC_agree_on_W : forall x:set, x :e W -> apply_fun pC x = apply_fun p x.
+      { let x. assume Hx.
+        exact (apply_fun_graph C (fun z:set => apply_fun p z) x (HW_sub_C x Hx)). }
+      claim HimageEq : image_of pC W = image_of p W.
+      { exact (ReplEq_ext W
+          (fun x:set => apply_fun pC x) (fun x:set => apply_fun p x)
+          HpC_agree_on_W). }
+      (** image_of p W c= U **)
+      claim HpW_sub_U : image_of p W c= U.
+      { let y. assume Hy.
+        apply (ReplE_impred W (fun x:set => apply_fun p x) y Hy).
+        let x. assume HxW Hyeq. rewrite Hyeq.
+        exact (SepE2 E (fun z:set => apply_fun p z :e U) x
+          (HC_sub_preU x (HW_sub_C x HxW))). }
+      (** image_of p W :e Tb and c= U => :e subspace B Tb U **)
+      rewrite HimageEq.
+      rewrite <- (binintersect_Subq_eq_1 (image_of p W) U HpW_sub_U).
+      exact (subspace_topology_intersection_open B Tb U (image_of p W) HpW_open_B). }
   (** Bijection: injective (via null-homotopy) + surjective (via path lifting) **)
   claim HpC_bij : bijection C U pC.
   { prove function_on pC C U /\
