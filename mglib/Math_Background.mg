@@ -279584,12 +279584,17 @@ claim Hcompact : compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C).
       prove x :e image_of_fun g S1.
       rewrite <- Hghx.
       exact HgxImg. }
-  (** compact_space (image g S1) (subspace C TC (image g S1)) **)
-  (** image g S1 = C, subspace C TC C = TC **)
-  (** Together: compact_space C TC **)
-  (** The rewriting is tricky because image=C replaces too aggressively **)
-  (** Need targeted substitution; admit this final step **)
-  admit. }
+  (** Step A: from Himg_compact + Himg_eq, derive compact_space C (subspace C TC C) **)
+  (** Use the equality directly: rewrite only where needed **)
+  claim Hcompact2 : compact_space C (subspace_topology C TC C).
+  { (** Instead of rewrite (too aggressive), use eq_ind2 or manual construction **)
+    admit. }
+  (** Step B: subspace C TC C = TC **)
+  claim Hself : subspace_topology C TC C = TC.
+  { exact (subspace_topology_transitive_weak (Sn 2) (Sn_topology 2) C C (Subq_ref C)). }
+  prove compact_space C TC.
+  rewrite <- Hself.
+  exact Hcompact2. }
 (** Step 2: C is closed in S^2 **)
 claim Hclosed : closed_in (Sn 2) (Sn_topology 2) C.
 { exact (compact_subspace_in_Hausdorff_closed (Sn 2) (Sn_topology 2) C Sn_2_Hausdorff HC Hcompact). }
