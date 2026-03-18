@@ -279380,11 +279380,20 @@ assume Hsep : separates (Sn 2) (Sn_topology 2) (D1 :\/: D2).
 admit.
 Admitted.
 
+(** Helper: locally m-euclidean implies locally connected **)
+(** Proof: locally_m_euclidean -> every point has nbhd homeo to open in R^m **)
+(** -> R^m locally path connected (open balls are star-convex hence path-connected) **)
+(** -> homeomorphism preserves lpc -> space is lpc -> lpc implies lc **)
+Lemma locally_m_euclidean_implies_locally_connected : forall X Tx m:set,
+  locally_m_euclidean X Tx m -> locally_connected X Tx.
+admit.
+Admitted.
+
 (** Helper: S^2 is locally connected. **)
-(** Proof chain: Sn_2_locally_m_euclidean -> locally path connected -> locally connected **)
+(** Uses Sn_2_locally_m_euclidean + locally_m_euclidean_implies_locally_connected **)
 Lemma Sn2_locally_connected :
   locally_connected (Sn 2) (Sn_topology 2).
-admit.
+exact (locally_m_euclidean_implies_locally_connected (Sn 2) (Sn_topology 2) 2 Sn_2_locally_m_euclidean).
 Admitted.
 
 (** Helper: open subsets of S^2 inherit local connectivity **)
