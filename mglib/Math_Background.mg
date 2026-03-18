@@ -311498,6 +311498,72 @@ claim HfreeH :
       {
         let alpha.
         assume Halpha : alpha :e J.
+        claim HgrpG : group_structure G multG eG invG.
+        { exact (andEL
+            (group_structure G multG eG invG)
+            (forall u v:set, u :e G -> v :e G ->
+              apply_fun multG (u, v) = apply_fun multG (v, u))
+            HabG). }
+        claim HgrpZ : group_structure int integers_group_mult 0 integers_group_inv.
+        { exact integers_group_is_group_cyclic_helper. }
+        claim Hifam_pack :
+          group_homomorphism (apply_fun Gfam alpha)
+            (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+          (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+            apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y).
+        { exact (Hifam_data alpha Halpha). }
+        claim Hifam_hom_raw :
+          group_homomorphism (apply_fun Gfam alpha)
+            (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+        { exact (andEL
+            (group_homomorphism (apply_fun Gfam alpha)
+              (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+            (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+              apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)
+            Hifam_pack). }
+        claim Hifam_hom :
+          group_homomorphism int integers_group_mult G multG (apply_fun ifam alpha).
+        {
+          rewrite <- (apply_fun_graph J (fun _ : set => int) alpha Halpha).
+          rewrite <- (apply_fun_graph J (fun _ : set => integers_group_mult) alpha Halpha).
+          exact Hifam_hom_raw.
+        }
+        set hifam := compose_fun int (apply_fun ifam alpha) h.
+        claim Hhifam_hom :
+          group_homomorphism int integers_group_mult G multG hifam.
+        {
+          exact (group_homomorphism_compose_cyclic_helper
+            int
+            integers_group_mult
+            0
+            integers_group_inv
+            G
+            multG
+            G
+            multG
+            (apply_fun ifam alpha)
+            h
+            HgrpZ
+            Hifam_hom
+            Hh_hom).
+        }
+        claim Himg_hifam_subG :
+          subgroup_of (homomorphism_image int hifam) G multG eG invG.
+        { exact (homomorphism_image_subgroup_of
+            int
+            integers_group_mult
+            0
+            integers_group_inv
+            G
+            multG
+            eG
+            invG
+            hifam
+            HgrpZ
+            HgrpG
+            Hhifam_hom). }
+        (** Remaining gap: identify apply_fun GfamH alpha with the cyclic image homomorphism_image int hifam,
+            then transfer subgroup structure from G to H using HsubH and HfamH_subset_H. **)
         admit.
       }
       claim HsgaH_partial : subgroups_generate_abelian H multG eG invG J GfamH.
