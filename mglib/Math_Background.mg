@@ -287196,6 +287196,44 @@ Admitted.
 (** ============================================================ **)
 
 (** Infrastructure: R^2 vector subtraction **)
+(** R^2 affine combination: (1-t)x + ty for t in [0,1], x,y in R^2 **)
+Definition R2_affine : set -> set -> set -> set := fun x y t =>
+  (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (x 0)) (mul_SNo t (y 0)),
+   add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (x 1)) (mul_SNo t (y 1))).
+
+(** R2_affine at t=0 gives x **)
+Lemma R2_affine_at_0 : forall x y:set,
+  x :e setprod R R -> y :e setprod R R ->
+  R2_affine x y 0 = x.
+admit.
+Admitted.
+
+(** R2_affine at t=1 gives y **)
+Lemma R2_affine_at_1 : forall x y:set,
+  x :e setprod R R -> y :e setprod R R ->
+  R2_affine x y 1 = y.
+admit.
+Admitted.
+
+(** R2_affine maps to R^2 **)
+Lemma R2_affine_in_R2 : forall x y t:set,
+  x :e setprod R R -> y :e setprod R R -> t :e unit_interval ->
+  R2_affine x y t :e setprod R R.
+admit.
+Admitted.
+
+(** Straight-line path from x to y in R^2 **)
+Definition R2_line_path : set -> set -> set := fun x y =>
+  graph unit_interval (fun t:set => R2_affine x y t).
+
+(** R2_line_path is continuous **)
+Lemma R2_line_path_continuous : forall x y:set,
+  x :e setprod R R -> y :e setprod R R ->
+  continuous_map unit_interval unit_interval_topology (setprod R R) R2_topology
+    (R2_line_path x y).
+admit.
+Admitted.
+
 Definition R2_sub : set -> set -> set := fun z w =>
   (add_SNo (z 0) (minus_SNo (w 0)), add_SNo (z 1) (minus_SNo (w 1))).
 
