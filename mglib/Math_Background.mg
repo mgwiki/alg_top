@@ -312938,15 +312938,36 @@ claim HfreeH :
 	            apply_fun alphas0 i0 <> apply_fun alphas0 j0.
 	        let xs0.
 	        assume Hxs0Fn : function_on xs0 n0 H.
-	        assume Hxs0Fam :
-	          forall i0:set, i0 :e n0 ->
-	            apply_fun xs0 i0 :e apply_fun GfamH (apply_fun alphas0 i0).
-	        assume Hprod0 :
-	          nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0 i0)) n0 = eG.
-	        admit.
-	      }
-	      exact HdsH_partial.
-		  }
+		        assume Hxs0Fam :
+		          forall i0:set, i0 :e n0 ->
+		            apply_fun xs0 i0 :e apply_fun GfamH (apply_fun alphas0 i0).
+		        assume Hprod0 :
+		          nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0 i0)) n0 = eG.
+		        claim Hhxs0_all_e :
+		          forall i0:set, i0 :e n0 ->
+		            apply_fun h (apply_fun xs0 i0) = eG.
+		        {
+		          (** TODO: derive by pushing Hprod0 through h and applying
+		              ex67_1_direct_sum_characterization on G to the family
+		              i0 |-> apply_fun h (apply_fun xs0 i0). **)
+		          admit.
+		        }
+		        claim Hker_on_GfamH :
+		          forall i0:set, i0 :e n0 ->
+		            apply_fun h (apply_fun xs0 i0) = eG ->
+		            apply_fun xs0 i0 = eG.
+		        {
+		          (** TODO: prove kernel-triviality of h on each component
+		              apply_fun GfamH (apply_fun alphas0 i0), using the cyclic
+		              parametrization and integer injectivity/no-torsion. **)
+		          admit.
+		        }
+		        let i0.
+		        assume Hi0 : i0 :e n0.
+		        exact (Hker_on_GfamH i0 Hi0 (Hhxs0_all_e i0 Hi0)).
+		      }
+		      exact HdsH_partial.
+			  }
   apply (and4I
     (abelian_group H multG eG invG)
     (function_on basis2 J H)
