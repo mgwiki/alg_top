@@ -279586,6 +279586,7 @@ Qed.
 
 (** Helper: in a locally connected space, components of open subsets are open **)
 (** and form a partition into open connected non-empty sets **)
+(** Proven Alice **)
 Lemma locally_connected_open_complement_two_component_partition :
   forall X Tx C:set,
   locally_connected X Tx ->
@@ -279601,8 +279602,87 @@ Lemma locally_connected_open_complement_two_component_partition :
       (subspace_topology X Tx (component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x1)) /\
     connected_space (component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x2)
       (subspace_topology X Tx (component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x2)).
-admit.
-Admitted.
+let X Tx C.
+assume Hlc : locally_connected X Tx.
+assume HCsub : C c= X.
+assume HSmCopen : X :\: C :e Tx.
+assume Hnotconn : ~(connected_space (X :\: C) (subspace_topology X Tx (X :\: C))).
+assume Hne : (X :\: C) <> Empty.
+set SmC := X :\: C.
+set TSmC := subspace_topology X Tx SmC.
+(** SmC is locally connected (open subspace of locally connected) **)
+claim HlcSmC : locally_connected SmC TSmC.
+{ exact (open_subspace_locally_connected X Tx SmC Hlc HSmCopen). }
+(** SmC has a topology **)
+claim HtopSmC : topology_on SmC TSmC.
+{ exact (locally_connected_topology SmC TSmC HlcSmC). }
+(** SmC disconnected -> two points in different components **)
+claim Htwo : exists x1 x2:set, x1 :e SmC /\ x2 :e SmC /\
+  component_of SmC TSmC x1 <> component_of SmC TSmC x2.
+{ exact (disconnected_has_two_components SmC TSmC HtopSmC Hnotconn Hne). }
+apply Htwo. let x1. assume Hx1e.
+apply Hx1e. let x2. assume Hx12.
+(** Unpack: x1 in SmC, x2 in SmC, components different **)
+apply (and3E (x1 :e SmC) (x2 :e SmC) (component_of SmC TSmC x1 <> component_of SmC TSmC x2) Hx12).
+assume Hx1 : x1 :e SmC.
+assume Hx2 : x2 :e SmC.
+assume Hdiff : component_of SmC TSmC x1 <> component_of SmC TSmC x2.
+witness x1. witness x2.
+(** Now prove the 6-fold conjunction **)
+(** Components are open in SmC (locally connected), and SmC is open in X, **)
+(** so components are open in X. **)
+(** Components are connected by component_of_connected. **)
+claim Hcomp1_open_SmC : open_in SmC TSmC (component_of SmC TSmC x1).
+{ exact (components_are_open_in_locally_connected SmC TSmC HlcSmC x1 Hx1). }
+claim Hcomp2_open_SmC : open_in SmC TSmC (component_of SmC TSmC x2).
+{ exact (components_are_open_in_locally_connected SmC TSmC HlcSmC x2 Hx2). }
+(** open_in SmC TSmC V means topology_on SmC TSmC /\ V :e TSmC **)
+(** V :e TSmC and SmC :e Tx implies V :e Tx (for subspace topology, **)
+(** V open in open subspace -> V open in ambient) **)
+claim Hcomp1_in_TSmC : component_of SmC TSmC x1 :e TSmC.
+{ exact (andER (topology_on SmC TSmC) (component_of SmC TSmC x1 :e TSmC) Hcomp1_open_SmC). }
+claim Hcomp2_in_TSmC : component_of SmC TSmC x2 :e TSmC.
+{ exact (andER (topology_on SmC TSmC) (component_of SmC TSmC x2 :e TSmC) Hcomp2_open_SmC). }
+(** Components open in subspace SmC which is open in X -> components open in X **)
+claim Htop : topology_on X Tx.
+{ exact (locally_connected_topology X Tx Hlc). }
+claim Hcomp1_sub_SmC : component_of SmC TSmC x1 c= SmC.
+{ exact (component_of_subset_space SmC TSmC x1 HtopSmC Hx1). }
+claim Hcomp2_sub_SmC : component_of SmC TSmC x2 c= SmC.
+{ exact (component_of_subset_space SmC TSmC x2 HtopSmC Hx2). }
+claim Hcomp1_in_Tx : component_of SmC TSmC x1 :e Tx.
+{ exact (open_in_subspace_if_ambient_open X Tx SmC
+    (component_of SmC TSmC x1) Htop HSmCopen Hcomp1_sub_SmC Hcomp1_open_SmC). }
+claim Hcomp2_in_Tx : component_of SmC TSmC x2 :e Tx.
+{ exact (open_in_subspace_if_ambient_open X Tx SmC
+    (component_of SmC TSmC x2) Htop HSmCopen Hcomp2_sub_SmC Hcomp2_open_SmC). }
+(** Components are connected **)
+claim Hcomp1_conn : connected_space (component_of SmC TSmC x1)
+  (subspace_topology SmC TSmC (component_of SmC TSmC x1)).
+{ exact (component_of_connected SmC TSmC x1 HtopSmC Hx1). }
+claim Hcomp2_conn : connected_space (component_of SmC TSmC x2)
+  (subspace_topology SmC TSmC (component_of SmC TSmC x2)).
+{ exact (component_of_connected SmC TSmC x2 HtopSmC Hx2). }
+(** Need connected in subspace of X, not subspace of SmC **)
+(** subspace_topology X Tx V = subspace_topology SmC TSmC V when V c= SmC and SmC = X\C **)
+claim Hcomp1_conn_X : connected_space (component_of SmC TSmC x1)
+  (subspace_topology X Tx (component_of SmC TSmC x1)).
+{ (** subspace_topology SmC TSmC V = subspace_topology X Tx V when V c= SmC **)
+  rewrite <- (subspace_topology_transitive_weak X Tx SmC (component_of SmC TSmC x1) Hcomp1_sub_SmC).
+  exact Hcomp1_conn. }
+claim Hcomp2_conn_X : connected_space (component_of SmC TSmC x2)
+  (subspace_topology X Tx (component_of SmC TSmC x2)).
+{ rewrite <- (subspace_topology_transitive_weak X Tx SmC (component_of SmC TSmC x2) Hcomp2_sub_SmC).
+  exact Hcomp2_conn. }
+apply and7I.
+- exact Hx1.
+- exact Hx2.
+- exact Hdiff.
+- exact Hcomp1_in_Tx.
+- exact Hcomp2_in_Tx.
+- exact Hcomp1_conn_X.
+- exact Hcomp2_conn_X.
+Qed.
 
 (** Helper: the pi1 of S^2 minus two points is nontrivial **)
 (** (it is infinite cyclic, isomorphic to Z) **)
