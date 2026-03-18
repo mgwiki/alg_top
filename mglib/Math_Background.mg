@@ -401240,6 +401240,18 @@ apply set_ext.
   - exact (polygon_pasting_equiv_chain_trans n w x y z Hxy Hyz).
 Qed.
 
+(** Equivalence classes for polygon_pasting_equiv are invariant under equivalence. **)
+(** (polygon_pasting_equiv is definitionally the same as polygon_pasting_equiv_chain.) **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_class_eq : forall n w x y:set,
+  polygon_pasting_equiv n w x y ->
+  {z :e B2 | polygon_pasting_equiv n w x z} =
+  {z :e B2 | polygon_pasting_equiv n w y z}.
+let n w x y.
+assume Hxy.
+exact (polygon_pasting_equiv_chain_class_eq n w x y Hxy).
+Qed.
+
 (** polygon_pasting_equiv_chain is an equivalence relation on B2. **)
 (** Proven Charlie **)
 Lemma polygon_pasting_equiv_chain_equivalence_relation : forall n w:set,
@@ -401399,6 +401411,29 @@ claim Hyx : polygon_pasting_equiv n w y x.
   exact (SepE2 B2 (fun z:set => polygon_pasting_equiv n w y z) x HxInClassY).
 }
 exact (polygon_pasting_equiv_chain_symm n w y x Hyx).
+Qed.
+
+(** If two points are equivalent, they map to the same equivalence class. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_equiv_implies_map_eq : forall n w x y:set,
+  x :e B2 ->
+  y :e B2 ->
+  polygon_pasting_equiv n w x y ->
+  apply_fun (polygon_pasting_map n w) x = apply_fun (polygon_pasting_map n w) y.
+let n w x y.
+assume HxB2 HyB2 Hxy.
+set pi := polygon_pasting_map n w.
+claim HpiX : apply_fun pi x = {z :e B2 | polygon_pasting_equiv n w x z}.
+{
+  exact (apply_fun_graph B2 (fun x0:set => {z :e B2 | polygon_pasting_equiv n w x0 z}) x HxB2).
+}
+claim HpiY : apply_fun pi y = {z :e B2 | polygon_pasting_equiv n w y z}.
+{
+  exact (apply_fun_graph B2 (fun x0:set => {z :e B2 | polygon_pasting_equiv n w x0 z}) y HyB2).
+}
+rewrite HpiX.
+rewrite HpiY.
+exact (polygon_pasting_equiv_class_eq n w x y Hxy).
 Qed.
 
 (** polygon_pasting_map is injective on interior points. **)
