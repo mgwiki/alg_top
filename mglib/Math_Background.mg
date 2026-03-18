@@ -425112,6 +425112,24 @@ claim Hinv : forall g0:set, g0 :e G ->
 exact (orbit_map_eq_of_orbit_equiv E G x y Horb Hcomp Hinv).
 Qed.
 
+(** Helper: orbit_map equality implies orbit_equiv for CTG **)
+(** Proven Alice **)
+Lemma ctg_orbit_map_eq_implies_orbit_equiv : forall E Te B Tb p x y:set,
+  covering_map E Te B Tb p ->
+  x :e E -> y :e E ->
+  apply_fun (orbit_map E (covering_transformation_group E Te B Tb p)) x =
+  apply_fun (orbit_map E (covering_transformation_group E Te B Tb p)) y ->
+  orbit_equiv E (covering_transformation_group E Te B Tb p) x y.
+let E Te B Tb p x y. assume Hcov HxE HyE Heq.
+set G := covering_transformation_group E Te B Tb p.
+set idG := covering_transformation_id E Te B Tb p.
+claim HidG : idG :e G. { exact (covering_transformation_id_in_group E Te B Tb p Hcov). }
+claim HidAct : forall z:set, z :e E -> apply_fun idG z = z.
+{ let z. assume Hz. exact (covering_transformation_id_apply E Te B Tb p z Hz). }
+exact (andEL (orbit_equiv E G x y) (orbit_equiv E G y x)
+  (orbit_map_eq_implies_orbit_equiv_both E G x y idG HidG HidAct HxE HyE Heq)).
+Qed.
+
 (** Helper: preimage(image(pi,U0)) equality from homeomorphism action + group data **)
 (** Proven Bob **)
 Theorem orbit_map_preimage_image_eq_action_union_with_group_data :
