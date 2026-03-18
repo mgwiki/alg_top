@@ -415852,8 +415852,28 @@ apply and4I.
       { admit. (** unique path lifting: alpha is a lift of f_B starting at e **) }
       (** Step 7: lift of g_B = constant_path u at e has endpoint e **)
       (** The lift of constant path is constant, so endpoint = e **)
+      claim Hu_in_B : u :e B. { exact (HUsub u HuU). }
+      claim Hpe_eq_u_start : apply_fun p e = apply_fun g_B 0.
+      { rewrite Hpe_eq_u. symmetry. exact (constant_path_at_zero u). }
+      claim Hg_B_cont : continuous_map unit_interval unit_interval_topology B Tb g_B.
+      { exact (constant_path_continuous B Tb u HtopB Hu_in_B). }
+      claim Hlift_g_is_lift : lifting_of unit_interval unit_interval_topology E Te B Tb p g_B
+        (path_lift E Te B Tb p e g_B).
+      { exact (path_lift_is_lifting_of E Te B Tb p e g_B Hcov HeE Hpe_eq_u_start Hg_B_cont). }
+      set lift_g := path_lift E Te B Tb p e g_B.
+      set lift_g_cont_type := continuous_map unit_interval unit_interval_topology E Te lift_g.
+      set lift_g_start_type := apply_fun lift_g 0 = e.
+      set lift_g_comm_type := forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun lift_g t) = apply_fun g_B t.
+      claim Hlift_g_data : (lift_g_cont_type /\ lift_g_start_type) /\ lift_g_comm_type.
+      { exact (lemma54_1_path_lifting E Te B Tb p e g_B Hcov HeE Hpe_eq_u_start Hg_B_cont). }
+      claim Hlift_g_left : lift_g_cont_type /\ lift_g_start_type.
+      { exact (andEL (lift_g_cont_type /\ lift_g_start_type) lift_g_comm_type Hlift_g_data). }
+      claim Hlift_g_start : lift_g_start_type.
+      { exact (andER lift_g_cont_type lift_g_start_type Hlift_g_left). }
       claim Hlift_g_endpoint : apply_fun (path_lift E Te B Tb p e g_B) 1 = e.
-      { admit. (** unique path lifting: constant_e is a lift of constant_u starting at e **) }
+      { exact (constant_path_lift_at_one E Te B Tb p e u (path_lift E Te B Tb p e g_B)
+          Hcov HeE Hu_in_B Hpe_eq_u Hlift_g_is_lift Hlift_g_start). }
       (** Conclusion: e' = lift_f(1) = lift_g(1) = e **)
       rewrite <- Hlift_f_endpoint.
       rewrite Hlift_eq.
