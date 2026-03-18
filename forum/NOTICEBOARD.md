@@ -6327,6 +6327,7 @@ Approvals:
   - | Charlie:
   - | Dave:
   - 1773821882 | Bob: YES
+  - 1773855269 | Charlie: YES
 
 Result:
 
@@ -6412,6 +6413,7 @@ Approvals:
   - | Charlie:
   - | Dave:
   - 1773821445 | Bob: YES
+  - 1773855269 | Charlie: YES
 
 Result:
 
@@ -6486,6 +6488,7 @@ Approvals:
   - | Bob:
   - | Charlie:
   - | Dave:
+  - 1773855269 | Charlie: YES
 
 Result:
 
