@@ -279604,10 +279604,27 @@ Lemma S1_semicircle_decomposition :
   S1_basepoint <> S1_left_point /\
   connected_space S1_upper (subspace_topology S1 S1_topology S1_upper) /\
   connected_space S1_lower (subspace_topology S1 S1_topology S1_lower) /\
-  (** Upper and lower are closed in S^1, hence S^1-upper and S^1-lower are open **)
   S1 :\: S1_upper :e S1_topology /\
   S1 :\: S1_lower :e S1_topology.
-admit.
+apply and9I.
+- (** S1 = upper union lower: every point has y >= 0 or y <= 0 **)
+  admit.
+- (** upper cap lower = {(1,0), (-1,0)}: y >= 0 and y <= 0 iff y = 0, then x^2 = 1 **)
+  admit.
+- (** (1,0) in S1 **)
+  exact S1_basepoint_in_S1_early.
+- (** (-1,0) in S1 **)
+  admit.
+- (** (1,0) <> (-1,0) **)
+  admit.
+- (** upper semicircle connected **)
+  admit.
+- (** lower semicircle connected **)
+  admit.
+- (** S1 minus upper is open in S1 **)
+  admit.
+- (** S1 minus lower is open in S1 **)
+  admit.
 Admitted.
 
 (** Helper: A simple closed curve in S^2 can be decomposed into two arcs **)
