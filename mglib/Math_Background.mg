@@ -279587,8 +279587,9 @@ claim Hcompact : compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C).
   (** Step A: from Himg_compact + Himg_eq, derive compact_space C (subspace C TC C) **)
   (** Use the equality directly: rewrite only where needed **)
   claim Hcompact2 : compact_space C (subspace_topology C TC C).
-  { (** Instead of rewrite (too aggressive), use eq_ind2 or manual construction **)
-    admit. }
+  { prove compact_space C (subspace_topology C TC C).
+    rewrite <- Himg_eq at 1 4.
+    exact Himg_compact. }
   (** Step B: subspace C TC C = TC **)
   claim Hself : subspace_topology C TC C = TC.
   { exact (subspace_topology_transitive_weak (Sn 2) (Sn_topology 2) C C (Subq_ref C)). }
@@ -279612,7 +279613,7 @@ claim Hdouble : Sn 2 :\: C = U.
       (euclidean_space (ordsucc 2)) (euclidean_topology (ordsucc 2)) (Sn 2) U HUopen). }
   rewrite HCeq. exact (setminus_setminus_eq (Sn 2) U HUsub). }
 rewrite Hdouble. exact HUopen.
-Admitted.
+Qed.
 
 (** Helper: disconnected space has at least 2 distinct points in different components **)
 (** Proven Alice **)
