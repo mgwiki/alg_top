@@ -1,5 +1,5 @@
 (** Balance Alice 9223 **)
-(** Balance Bob 6012 **)
+(** Balance Bob 6067 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
 
@@ -215006,13 +215006,230 @@ Admitted.
 (** from S57 Exercise 4(a) (line 1261 in algtop.tex) **)
 (** LATEX VERSION: Given no continuous antipode-preserving map h: S^n -> S^n is nulhomotopic, there is no retraction r: B^{n+1} -> S^n. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem ex57_4a_no_retraction_from_borsuk : forall n:set, n :e omega ->
   (forall h:set, antipode_preserving_Sn n n h ->
     ~(nulhomotopic (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h)) ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)).
-admit.
-Admitted.
+let n.
+assume Hn_om.
+assume HantiNoNul.
+assume Hretr.
+set idSn := graph (Sn n) (fun x:set => x).
+claim HtopSn : topology_on (Sn n) (Sn_topology n).
+{
+  exact (continuous_map_topology_dom
+    (Sn n)
+    (Sn_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (graph (Sn n) (fun x:set => x))
+    (Sn_inclusion_Bn_closed_continuous n)).
+}
+claim HidCont :
+  continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) idSn.
+{
+  exact (identity_continuous
+    (Sn n)
+    (Sn_topology n)
+    HtopSn).
+}
+claim HidAP : antipode_preserving_Sn n n idSn.
+{
+  claim HantiId :
+    forall x:set, x :e Sn n ->
+      apply_fun idSn (Rn_negate (ordsucc n) x) =
+      Rn_negate (ordsucc n) (apply_fun idSn x).
+  {
+    let x.
+    assume HxSn.
+    claim HnxSn : Rn_negate (ordsucc n) x :e Sn n.
+    {
+      exact (Rn_negate_in_Sn_ordsucc
+        n
+        x
+        Hn_om
+        HxSn).
+    }
+    rewrite (apply_fun_graph
+      (Sn n)
+      (fun z:set => z)
+      (Rn_negate (ordsucc n) x)
+      HnxSn).
+    rewrite (apply_fun_graph
+      (Sn n)
+      (fun z:set => z)
+      x
+      HxSn).
+    reflexivity.
+  }
+  exact (andI
+    (continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) idSn)
+    (forall x:set, x :e Sn n ->
+      apply_fun idSn (Rn_negate (ordsucc n) x) =
+      Rn_negate (ordsucc n) (apply_fun idSn x))
+    HidCont
+    HantiId).
+}
+claim HnotNulId :
+  ~(nulhomotopic
+    (Sn n)
+    (Sn_topology n)
+    (Sn n)
+    (Sn_topology n)
+    idSn).
+{
+  exact (HantiNoNul
+    idSn
+    HidAP).
+}
+claim HnulId :
+  nulhomotopic
+    (Sn n)
+    (Sn_topology n)
+    (Sn n)
+    (Sn_topology n)
+    idSn.
+{
+  claim HretrPack :
+    Sn n c= Bn_closed n /\
+    exists r:set,
+      function_on r (Bn_closed n) (Bn_closed n) /\
+      continuous_map (Bn_closed n) (Bn_closed_topology n)
+                     (Bn_closed n) (Bn_closed_topology n) r /\
+      (forall x:set, x :e Bn_closed n -> apply_fun r x :e Sn n) /\
+      (forall x:set, x :e Sn n -> apply_fun r x = x).
+  {
+    exact Hretr.
+  }
+  claim Hexr :
+    exists r:set,
+      function_on r (Bn_closed n) (Bn_closed n) /\
+      continuous_map (Bn_closed n) (Bn_closed_topology n)
+                     (Bn_closed n) (Bn_closed_topology n) r /\
+      (forall x:set, x :e Bn_closed n -> apply_fun r x :e Sn n) /\
+      (forall x:set, x :e Sn n -> apply_fun r x = x).
+  {
+    exact (andER
+      (Sn n c= Bn_closed n)
+      (exists r:set,
+        function_on r (Bn_closed n) (Bn_closed n) /\
+        continuous_map (Bn_closed n) (Bn_closed_topology n)
+                       (Bn_closed n) (Bn_closed_topology n) r /\
+        (forall x:set, x :e Bn_closed n -> apply_fun r x :e Sn n) /\
+        (forall x:set, x :e Sn n -> apply_fun r x = x))
+      HretrPack).
+  }
+  apply Hexr.
+  let r.
+  assume HrPack.
+  claim HrABC :
+    ((function_on r (Bn_closed n) (Bn_closed n) /\
+      continuous_map (Bn_closed n) (Bn_closed_topology n)
+                     (Bn_closed n) (Bn_closed_topology n) r) /\
+     (forall x:set, x :e Bn_closed n -> apply_fun r x :e Sn n)).
+  {
+    exact (andEL
+      ((function_on r (Bn_closed n) (Bn_closed n) /\
+        continuous_map (Bn_closed n) (Bn_closed_topology n)
+                       (Bn_closed n) (Bn_closed_topology n) r) /\
+       (forall x:set, x :e Bn_closed n -> apply_fun r x :e Sn n))
+      (forall x:set, x :e Sn n -> apply_fun r x = x)
+      HrPack).
+  }
+  claim HrFunCont :
+    function_on r (Bn_closed n) (Bn_closed n) /\
+    continuous_map (Bn_closed n) (Bn_closed_topology n)
+                   (Bn_closed n) (Bn_closed_topology n) r.
+  {
+    exact (andEL
+      (function_on r (Bn_closed n) (Bn_closed n) /\
+       continuous_map (Bn_closed n) (Bn_closed_topology n)
+                      (Bn_closed n) (Bn_closed_topology n) r)
+      (forall x:set, x :e Bn_closed n -> apply_fun r x :e Sn n)
+      HrABC).
+  }
+  claim HrCont :
+    continuous_map (Bn_closed n) (Bn_closed_topology n)
+                   (Bn_closed n) (Bn_closed_topology n) r.
+  {
+    exact (andER
+      (function_on r (Bn_closed n) (Bn_closed n))
+      (continuous_map (Bn_closed n) (Bn_closed_topology n)
+                      (Bn_closed n) (Bn_closed_topology n) r)
+      HrFunCont).
+  }
+  claim HrIntoSn :
+    forall x:set, x :e Bn_closed n -> apply_fun r x :e Sn n.
+  {
+    exact (andER
+      (function_on r (Bn_closed n) (Bn_closed n) /\
+       continuous_map (Bn_closed n) (Bn_closed_topology n)
+                      (Bn_closed n) (Bn_closed_topology n) r)
+      (forall x:set, x :e Bn_closed n -> apply_fun r x :e Sn n)
+      HrABC).
+  }
+  claim HrContSn :
+    continuous_map (Bn_closed n) (Bn_closed_topology n)
+                   (Sn n) (Sn_topology n) r.
+  {
+    rewrite <- (Sn_topology_subspace_of_Bn_closed
+      n).
+    exact (continuous_map_range_restrict
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      r
+      (Sn n)
+      HrCont
+      (fun x HxSn =>
+        Sn_subset_Bn_closed
+          n
+          x
+          HxSn)
+      HrIntoSn).
+  }
+  claim HrFixSn : forall x:set, x :e Sn n -> apply_fun r x = x.
+  {
+    exact (andER
+      ((function_on r (Bn_closed n) (Bn_closed n) /\
+        continuous_map (Bn_closed n) (Bn_closed_topology n)
+                       (Bn_closed n) (Bn_closed_topology n) r) /\
+       (forall x:set, x :e Bn_closed n -> apply_fun r x :e Sn n))
+      (forall x:set, x :e Sn n -> apply_fun r x = x)
+      HrPack).
+  }
+  claim HextId : forall x:set, x :e Sn n ->
+    apply_fun idSn x = apply_fun r x.
+  {
+    let x.
+    assume HxSn.
+    rewrite (apply_fun_graph
+      (Sn n)
+      (fun z:set => z)
+      x
+      HxSn).
+    exact (eq_symm
+      (apply_fun r x)
+      x
+      (HrFixSn x HxSn)).
+  }
+  exact (Sn_extends_to_Bn_closed_implies_nulhomotopic
+    n
+    (Sn n)
+    (Sn_topology n)
+    idSn
+    r
+    Hn_om
+    HidCont
+    HrContSn
+    HextId).
+}
+exact (HnotNulId
+  HnulId).
+Qed.
 
 (** from S57 Exercise 4(b) (line 1262 in algtop.tex) **)
 (** LATEX VERSION: Given the hypothesis, there is no continuous antipode-preserving map g: S^{n+1} -> S^n. **)
