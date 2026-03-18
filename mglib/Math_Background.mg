@@ -183966,6 +183966,29 @@ Definition monic_poly_eval : set -> set -> set -> set := fun a n z =>
     (complex_power_R2 z n)
     (finite_complex_sum (fun k:set => complex_mult_R2 (apply_fun a k) (complex_power_R2 z k)) n).
 
+(** Helper: the power map z^n on S1 into R2-{0} is NOT nulhomotopic when n != 0. **)
+(** Proof sketch: If it were, composing with the retraction R2-{0} -> S1 gives **)
+(** S1_power_map n nulhomotopic in S1, hence degree 0. But degree is n != 0. **)
+Lemma power_map_R2_not_nulhomotopic : forall n:set,
+  n :e omega -> n <> 0 ->
+  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun z:set => complex_power_R2 z n))).
+admit.
+Admitted.
+
+(** Helper: if the monic polynomial has no roots, then z^n: S1 -> R2-{0} is nulhomotopic. **)
+(** Proof sketch: the homotopy H(z,t) = p(tz) / ||p(tz)|| for t in [0,1] connects **)
+(** the constant p(0)/||p(0)|| (at t=0) to z^n/||z^n||=z^n (via polynomial homotopy) **)
+(** Then scale to show z^n on S1 is nulhomotopic in R2-{0}. **)
+Lemma power_map_nul_from_no_roots_of_poly : forall n a:set,
+  n :e omega -> n <> 0 ->
+  function_on a n (setprod R R) ->
+  (forall z:set, z :e setprod R R -> monic_poly_eval a n z <> (0, 0)) ->
+  nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun z:set => complex_power_R2 z n)).
+admit.
+Admitted.
+
 (** from S56 Thm 56.1 (line 1066 in algtop.tex): Fundamental theorem of algebra **)
 (** LATEX VERSION: A polynomial equation x^n + a_{n-1} x^{n-1} + ... + a_0 = 0 of degree n > 0 with real or complex coefficients has at least one root. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 400 **)
@@ -183991,31 +184014,18 @@ claim Hpnonzero : forall z:set, z :e setprod R R ->
   apply Hnoroot. witness z.
   exact (andI (z :e setprod R R) (monic_poly_eval a n z = (0, 0)) Hz Heq).
 }
-(** Step 2: The power map z -> z^n composed with inclusion S1 -> R2 minus origin
-    is nulhomotopic (follows from no-root assumption via homotopy argument).
-    Strategy: f_c(z) = p(cz) gives a homotopy from constant map f_0 = p(0)
-    to f_C for any C. For large C, f_C is homotopic to z -> C^n z^n.
-    Rescaling shows z -> z^n is nulhomotopic in R2 minus origin. **)
 set power_map_R2 := graph S1 (fun z:set => complex_power_R2 z n).
+(** Step 2: The power map is nulhomotopic (polynomial homotopy from constant). **)
 claim Hpower_nul : nulhomotopic S1 S1_topology
   R2_minus_origin R2_minus_origin_topology power_map_R2.
 {
-  (** Key analytical step: build the homotopy chain
-      const = f_0 ~ f_C ~ (z -> C^n z^n) ~ (z -> z^n)
-      using the no-root hypothesis to stay in R2 minus origin. **)
-  admit.
+  exact (power_map_nul_from_no_roots_of_poly n a Hn Hn0 Ha Hpnonzero).
 }
-(** Step 3: But the power map z -> z^n is NOT nulhomotopic in R2 minus origin.
-    This follows because z^n restricted to S1 has degree n != 0,
-    and the inclusion S1 -> R2 minus origin induces a pi1 isomorphism.
-    In particular, for n = 1 this is cor55_4a. For general n,
-    z^n factors as (inclusion) o (self-map of S1 of degree n),
-    and degree n maps are not nulhomotopic. **)
+(** Step 3: But z^n has nonzero degree, so NOT nulhomotopic. **)
 claim Hpower_not_nul : ~(nulhomotopic S1 S1_topology
   R2_minus_origin R2_minus_origin_topology power_map_R2).
 {
-  (** Key topological step: z^n has nonzero degree, so not nulhomotopic. **)
-  admit.
+  exact (power_map_R2_not_nulhomotopic n Hn Hn0).
 }
 exact (Hpower_not_nul Hpower_nul).
 Admitted.
