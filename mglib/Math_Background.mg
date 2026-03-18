@@ -280110,11 +280110,32 @@ Lemma S2_complement_simple_closed_curve_exactly_two_components :
 admit.
 Admitted.
 
+(** Helper: euclidean space R^n is locally connected **)
+(** Proof: R^n is locally m-euclidean (identity chart). **)
+(** Each point has open balls which are convex hence connected. **)
+(** This is the fundamental gap - needs convex path connectivity in R^n. **)
+Lemma euclidean_space_locally_connected : forall n:set,
+  n :e omega -> locally_connected (euclidean_space n) (euclidean_topology n).
+admit.
+Admitted.
+
+(** Helper: locally m-euclidean implies locally connected **)
+(** Uses: charts give local neighborhoods homeomorphic to open in R^m. **)
+(** R^m locally connected (from above). Homeomorphism preserves connectivity. **)
+(** Open in open gives open in ambient. **)
+Lemma locally_m_euclidean_lc_from_Rn_lc : forall X Tx m:set,
+  locally_m_euclidean X Tx m ->
+  locally_connected (euclidean_space m) (euclidean_topology m) ->
+  locally_connected X Tx.
+admit.
+Admitted.
+
 (** Forward declaration: S^2 is locally connected **)
-(** The full proof is Sn2_locally_connected (later in file) **)
 Lemma Sn2_locally_connected_fwd :
   locally_connected (Sn 2) (Sn_topology 2).
-admit.
+exact (locally_m_euclidean_lc_from_Rn_lc (Sn 2) (Sn_topology 2) 2
+  Sn_2_locally_m_euclidean
+  (euclidean_space_locally_connected 2 (nat_p_omega 2 nat_2))).
 Admitted.
 
 (** Forward declaration: components of S^2-C are open in S^2 **)
