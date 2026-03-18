@@ -426692,6 +426692,36 @@ apply and3I. exact HxE. exact HgxE.
 witness g. apply andI. exact HgG. reflexivity.
 Qed.
 
+(** Helper: CTG orbit equivalence is symmetric **)
+(** Proven Alice **)
+Lemma ctg_orbit_equiv_symmetric : forall E Te B Tb p x y:set,
+  covering_map E Te B Tb p ->
+  orbit_equiv E (covering_transformation_group E Te B Tb p) x y ->
+  orbit_equiv E (covering_transformation_group E Te B Tb p) y x.
+let E Te B Tb p x y. assume Hcov Horb.
+claim Hinv : forall g0:set, g0 :e covering_transformation_group E Te B Tb p ->
+  exists ginv:set, ginv :e covering_transformation_group E Te B Tb p /\
+    forall z:set, z :e E -> apply_fun ginv (apply_fun g0 z) = z.
+{ let g0. assume Hg0. exact (ctg_inverse_closure E Te B Tb p g0 Hcov Hg0). }
+exact (orbit_equiv_symmetric E (covering_transformation_group E Te B Tb p) x y Horb Hinv).
+Qed.
+
+(** Helper: CTG orbit equivalence is transitive **)
+(** Proven Alice **)
+Lemma ctg_orbit_equiv_transitive : forall E Te B Tb p x y z:set,
+  covering_map E Te B Tb p ->
+  orbit_equiv E (covering_transformation_group E Te B Tb p) x y ->
+  orbit_equiv E (covering_transformation_group E Te B Tb p) y z ->
+  orbit_equiv E (covering_transformation_group E Te B Tb p) x z.
+let E Te B Tb p x y z. assume Hcov Hxy Hyz.
+claim Hcomp : forall g1 g2:set, g1 :e covering_transformation_group E Te B Tb p ->
+  g2 :e covering_transformation_group E Te B Tb p ->
+  exists g3:set, g3 :e covering_transformation_group E Te B Tb p /\
+    forall w:set, w :e E -> apply_fun g3 w = apply_fun g2 (apply_fun g1 w).
+{ let g1 g2. assume Hg1 Hg2. exact (ctg_composition_closure E Te B Tb p g1 g2 Hcov Hg1 Hg2). }
+exact (orbit_equiv_transitive E (covering_transformation_group E Te B Tb p) x y z Hxy Hyz Hcomp).
+Qed.
+
 (** Helper: preimage(image(pi,U0)) equality from homeomorphism action + group data **)
 (** Proven Bob **)
 Theorem orbit_map_preimage_image_eq_action_union_with_group_data :
