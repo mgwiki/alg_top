@@ -416801,6 +416801,14 @@ witness V. apply and5I.
 - exact HVev.
 Qed.
 
+(** Helper: covering map sends open sets to open sets **)
+(** Proven Alice **)
+Lemma covering_map_image_open : forall E Te B Tb p U:set,
+  covering_map E Te B Tb p -> U :e Te -> image_of p U :e Tb.
+let E Te B Tb p U. assume Hcov HUopen.
+exact (open_map_image_open E Te B Tb p U (covering_map_is_open E Te B Tb p Hcov) HUopen).
+Qed.
+
 (** Helper: path in subspace composed with inclusion gives path in ambient **)
 (** Common pattern in covering space proofs **)
 (** Proven Alice **)
