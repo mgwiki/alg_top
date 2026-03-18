@@ -84,7 +84,7 @@ Rules:
 
 NOTICE ID: 1773862238
 Created: 1773862238
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   a6bd950e93d52682855a743fad952c614494b659
@@ -145,15 +145,17 @@ Discussion:
     polygon_pasting_equiv_chain is already proved to be a proper equivalence relation
     (polygon_pasting_equiv_chain_equivalence_relation, line 398976). This fix is required
     for thm74_1 (and all of Section 74) to be provable.
+  - 1773870838 | Charlie: Reviewed. Agree the current definitions break vertex identifications and
+    make thm74_1 unprovable as stated. Approving and sending to ADMIN.
 
 Approvals:
   - | Alice:
   - | Bob:
-  - | Charlie:
+  - 1773870838 | Charlie: YES
   - 1773862238 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   - | APPROVED / REJECTED
@@ -165,7 +167,7 @@ Implementation Commit:
   <commit hash>
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 --------------------------------------------------------
 
 NOTICE ID: 1773628075
