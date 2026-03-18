@@ -430891,7 +430891,7 @@ apply iffI.
   assume HpcB HlpcB HsemiB.
   claim HbEx : exists b0:set, b0 :e B.
   {
-    admit. (** needs nonemptiness extraction from hypotheses; currently unavailable **)
+    admit. (** blocker: with current defs, path_connected/local_path_connected/semilocally_simply_connected do not imply B <> Empty; see NOTICE 1773657706 for statement-level repair. **)
   }
   apply HbEx.
   let b0.
