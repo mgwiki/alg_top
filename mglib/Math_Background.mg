@@ -286886,6 +286886,55 @@ Admitted.
 Definition R2_sub : set -> set -> set := fun z w =>
   (add_SNo (z 0) (minus_SNo (w 0)), add_SNo (z 1) (minus_SNo (w 1))).
 
+(** Helper: R2_sub of two R^2 points is in R^2 **)
+Lemma R2_sub_in_R2 : forall z w:set,
+  z :e setprod R R -> w :e setprod R R ->
+  R2_sub z w :e setprod R R.
+admit.
+Admitted.
+
+(** Helper: R2_sub is nonzero when z and w are different R^2 points **)
+Lemma R2_sub_nonzero_of_ne : forall z w:set,
+  z :e setprod R R -> w :e setprod R R -> z <> w ->
+  R2_sub z w <> (0, 0).
+admit.
+Admitted.
+
+(** Helper: for the translation homotopy G(x,t)=g(x)-alpha(t), **)
+(** if alpha avoids image(g), then G avoids 0. **)
+Lemma R2_translation_homotopy_avoids_zero : forall A TA g alpha:set,
+  (forall x:set, x :e A -> apply_fun g x :e setprod R R) ->
+  (forall t:set, t :e unit_interval -> apply_fun alpha t :e setprod R R) ->
+  (forall t:set, t :e unit_interval -> ~(apply_fun alpha t :e image_of g A)) ->
+  forall x t:set, x :e A -> t :e unit_interval ->
+  R2_sub (apply_fun g x) (apply_fun alpha t) <> (0, 0).
+let A TA g alpha.
+assume Hg Ha Havoid.
+let x t. assume Hx Ht.
+(** If g(x) - alpha(t) = 0, then g(x) = alpha(t), so alpha(t) in image(g). **)
+(** But alpha avoids image(g). Contradiction. **)
+assume Heq : R2_sub (apply_fun g x) (apply_fun alpha t) = (0, 0).
+(** R2_sub z w = 0 implies z = w **)
+claim Hzw : apply_fun g x = apply_fun alpha t.
+{ admit. }
+claim Hin : apply_fun alpha t :e image_of g A.
+{ admit. }
+exact (Havoid t Ht Hin).
+Admitted.
+
+(** Helper: for the scaling homotopy H(x,t)=t.g(x)-p, **)
+(** if g(A) c= ball B and p not in B, then H avoids 0. **)
+Lemma R2_scaling_homotopy_avoids_zero : forall A TA g p M:set,
+  M :e R -> Rlt 0 M ->
+  (forall x:set, x :e A ->
+    ~(Rlt M (add_SNo (mul_SNo (apply_fun g x 0) (apply_fun g x 0))
+                     (mul_SNo (apply_fun g x 1) (apply_fun g x 1))))) ->
+  Rlt M (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1))) ->
+  forall x t:set, x :e A -> t :e unit_interval ->
+  R2_sub (R2_scalar_mult t (apply_fun g x)) p <> (0, 0).
+admit.
+Admitted.
+
 (** Infrastructure: R^2 normalization v/||v||, maps nonzero v to S^1 **)
 Definition R2_normalize : set -> set := fun v =>
   R2_scalar_mult (recip_SNo (complex_modulus v)) v.
