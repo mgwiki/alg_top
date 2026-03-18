@@ -415003,26 +415003,6 @@ assume Huniv.
 admit.
 Admitted.
 
-(** Helper: homeomorphism preserves locally path-connected **)
-Lemma homeomorphism_preserves_lpc_left : forall X Tx Y Ty f:set,
-  homeomorphism X Tx Y Ty f ->
-  locally_path_connected Y Ty ->
-  locally_path_connected X Tx.
-let X Tx Y Ty f.
-assume Hhome HlpcY.
-claim HtopX : topology_on X Tx. { exact (homeomorphism_topology_left X Tx Y Ty f Hhome). }
-claim HtopY : topology_on Y Ty. { exact (homeomorphism_topology_right X Tx Y Ty f Hhome). }
-prove topology_on X Tx /\
-  forall x:set, x :e X -> forall U:set, U :e Tx -> x :e U ->
-    exists V:set, V :e Tx /\ x :e V /\ V c= U /\ path_connected_space V (subspace_topology X Tx V).
-apply andI.
-- exact HtopX.
-- let x. assume HxX.
-  let U. assume HUopen HxU.
-  (** Map U to f(U) open in Y, get pc neighborhood of f(x) in f(U), pull back **)
-  admit.
-Admitted.
-
 (** Helper: open subspace of locally path-connected space is locally path-connected **)
 (** Proven Alice **)
 Lemma open_subspace_locally_path_connected : forall X Tx Y:set,
@@ -415155,6 +415135,73 @@ exact (homeomorphism_preserves_path_connected_space_left
   Vpc (subspace_topology Y Ty Vpc) f
   (homeomorphism_restrict_to_preimage X Tx Y Ty f Vpc Hhome HVpcsub)
   HVpcPC).
+Qed.
+
+(** Helper: homeomorphism preserves locally path-connected **)
+(** Proven Alice **)
+Lemma homeomorphism_preserves_lpc_left : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_path_connected Y Ty ->
+  locally_path_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HlpcY.
+claim HtopX : topology_on X Tx. { exact (homeomorphism_topology_left X Tx Y Ty f Hhome). }
+claim HtopY : topology_on Y Ty. { exact (homeomorphism_topology_right X Tx Y Ty f Hhome). }
+prove topology_on X Tx /\
+  forall x:set, x :e X -> forall U:set, U :e Tx -> x :e U ->
+    exists V:set, V :e Tx /\ x :e V /\ V c= U /\ path_connected_space V (subspace_topology X Tx V).
+apply andI.
+- exact HtopX.
+- let x. assume HxX.
+  let U. assume HUopen HxU.
+  claim Hopen_map : open_map X Tx Y Ty f.
+  { exact (homeomorphism_open_map X Tx Y Ty f Hhome). }
+  claim HfU_open : image_of f U :e Ty.
+  { exact (open_map_image_open X Tx Y Ty f U Hopen_map HUopen). }
+  claim HfxY : apply_fun f x :e Y.
+  { exact (homeomorphism_function_on X Tx Y Ty f Hhome x HxX). }
+  claim Hfx_fU : apply_fun f x :e image_of f U.
+  { exact (ReplI U (fun z:set => apply_fun f z) x HxU). }
+  apply (locally_path_connected_local Y Ty (apply_fun f x) (image_of f U) HlpcY HfxY HfU_open Hfx_fU).
+  let V'. assume HV'pack.
+  set pc_type' := path_connected_space V' (subspace_topology Y Ty V').
+  claim HV'pc : pc_type'.
+  { exact (andER (((V' :e Ty) /\ (apply_fun f x :e V')) /\ (V' c= image_of f U)) pc_type' HV'pack). }
+  claim HV'left3 : ((V' :e Ty) /\ (apply_fun f x :e V')) /\ (V' c= image_of f U).
+  { exact (andEL (((V' :e Ty) /\ (apply_fun f x :e V')) /\ (V' c= image_of f U)) pc_type' HV'pack). }
+  claim HV'sub_fU : V' c= image_of f U.
+  { exact (andER ((V' :e Ty) /\ (apply_fun f x :e V')) (V' c= image_of f U) HV'left3). }
+  claim HV'left2 : (V' :e Ty) /\ (apply_fun f x :e V').
+  { exact (andEL ((V' :e Ty) /\ (apply_fun f x :e V')) (V' c= image_of f U) HV'left3). }
+  claim HV'open : V' :e Ty. { exact (andEL (V' :e Ty) (apply_fun f x :e V') HV'left2). }
+  claim HfxV' : apply_fun f x :e V'. { exact (andER (V' :e Ty) (apply_fun f x :e V') HV'left2). }
+  set W := preimage_of X f V'.
+  claim HWopen : W :e Tx.
+  { exact (continuous_map_preimage X Tx Y Ty f (homeomorphism_continuous X Tx Y Ty f Hhome) V' HV'open). }
+  claim HxW : x :e W.
+  { prove x :e {z :e X | apply_fun f z :e V'}.
+    exact (SepI X (fun z:set => apply_fun f z :e V') x HxX HfxV'). }
+  claim HWsub : W c= X. { exact (Sep_Subq X (fun z:set => apply_fun f z :e V')). }
+  claim HWsubU : W c= U.
+  { let w. assume Hw.
+    claim HwX : w :e X. { exact (HWsub w Hw). }
+    claim Hfw_V' : apply_fun f w :e V'. { exact (SepE2 X (fun z:set => apply_fun f z :e V') w Hw). }
+    claim Hfw_fU : apply_fun f w :e image_of f U. { exact (HV'sub_fU (apply_fun f w) Hfw_V'). }
+    apply (ReplE_impred U (fun z:set => apply_fun f z) (apply_fun f w) Hfw_fU).
+    let u. assume HuU Hfweq.
+    claim Hwu : w = u.
+    { exact (homeomorphism_injective X Tx Y Ty f Hhome w u HwX
+        (topology_elem_subset X Tx U HtopX HUopen u HuU) Hfweq). }
+    rewrite Hwu. exact HuU. }
+  claim HWpc : path_connected_space W (subspace_topology X Tx W).
+  { exact (preimage_pc_under_homeomorphism X Tx Y Ty f V' Hhome
+      (topology_elem_subset Y Ty V' HtopY HV'open) HV'pc). }
+  witness W.
+  apply and4I.
+  + exact HWopen.
+  + exact HxW.
+  + exact HWsubU.
+  + exact HWpc.
 Qed.
 
 (** Old version with C parameter - kept for reference, false for C != X **)
