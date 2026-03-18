@@ -415785,7 +415785,39 @@ apply and4I.
         rewrite Halpha1. exact Hpe'eq. }
       claim Hpalpha_cont : continuous_map unit_interval unit_interval_topology
         U (subspace_topology B Tb U) palpha.
-      { admit. (** needs: compose alpha with (subspace inclusion preU -> E) then p, range restrict, congr_on **) }
+      { (** Chain: [0,1] ->alpha preU ->incl E ->p B, then range restrict to U, congr_on with palpha **)
+        set incl_preU := graph preU (fun x:set => x).
+        claim Hincl_preU_cont : continuous_map preU T_preU E Te incl_preU.
+        { exact (subspace_inclusion_continuous E Te preU HtopE HpreU_sub). }
+        set comp1 := compose_fun unit_interval alpha incl_preU.
+        claim Hcomp1_cont : continuous_map unit_interval unit_interval_topology E Te comp1.
+        { exact (composition_continuous unit_interval unit_interval_topology preU T_preU E Te
+            alpha incl_preU Halpha_cont_preU Hincl_preU_cont). }
+        set comp2 := compose_fun unit_interval comp1 p.
+        claim Hcomp2_cont : continuous_map unit_interval unit_interval_topology B Tb comp2.
+        { exact (composition_continuous unit_interval unit_interval_topology E Te B Tb
+            comp1 p Hcomp1_cont Hcont_p). }
+        claim Hcomp2_in_U : forall t:set, t :e unit_interval -> apply_fun comp2 t :e U.
+        { let t. assume Ht.
+          rewrite (compose_fun_apply unit_interval comp1 p t Ht).
+          rewrite (compose_fun_apply unit_interval alpha incl_preU t Ht).
+          rewrite (apply_fun_graph preU (fun x:set => x) (apply_fun alpha t) (Halpha_fn_preU t Ht)).
+          exact (Hpalpha_raw_fn t Ht). }
+        claim Hcomp2_U : continuous_map unit_interval unit_interval_topology
+          U (subspace_topology B Tb U) comp2.
+        { exact (continuous_map_range_restrict unit_interval unit_interval_topology B Tb comp2 U
+            Hcomp2_cont HUsub Hcomp2_in_U). }
+        claim Hpalpha_agree : forall t:set, t :e unit_interval ->
+          apply_fun comp2 t = apply_fun palpha t.
+        { let t. assume Ht.
+          rewrite (compose_fun_apply unit_interval comp1 p t Ht).
+          rewrite (compose_fun_apply unit_interval alpha incl_preU t Ht).
+          rewrite (apply_fun_graph preU (fun x:set => x) (apply_fun alpha t) (Halpha_fn_preU t Ht)).
+          symmetry.
+          exact (apply_fun_graph unit_interval
+            (fun t0:set => apply_fun p (apply_fun alpha t0)) t Ht). }
+        exact (continuous_map_congr_on unit_interval unit_interval_topology
+          U (subspace_topology B Tb U) comp2 palpha Hcomp2_U Hpalpha_fn_U Hpalpha_agree). }
       claim Hpalpha_loop_at : loop_at U (subspace_topology B Tb U) u palpha.
       { prove (continuous_map unit_interval unit_interval_topology
           U (subspace_topology B Tb U) palpha /\ apply_fun palpha 0 = u) /\ apply_fun palpha 1 = u.
