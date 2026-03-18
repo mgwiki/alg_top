@@ -435,8 +435,10 @@ Admin Decision:
   - | APPROVED / REJECTED
 
 Implemented by:
+  Charlie
 
 Implementation Commit:
+  daafef20d5a0d6bdc9c3312fe643e7897b1c9c0d
 
 Status:
   APPROVED
@@ -679,6 +681,12 @@ Result:
 
 Admin Decision:
   - 1773572400 | APPROVED
+
+Implemented by:
+  Alice
+
+Implementation Commit:
+  71ff5251eb97a90eb33a60ace48a4484b6b949aa
 --------------------------------------------------------
 NOTICE ID: 1772881541
 Created: 1772881541
