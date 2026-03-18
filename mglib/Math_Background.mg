@@ -416671,6 +416671,24 @@ apply andI. apply andI. apply andI. apply andI. apply andI. apply andI.
 - exact Hsright.
 Qed.
 
+(** Helper: covering map fiber point in preimage **)
+(** Proven Alice **)
+Lemma covering_map_fiber_in_preimage : forall E Te B Tb p U b:set,
+  covering_map E Te B Tb p -> U c= B -> b :e U ->
+  exists e:set, e :e preimage_of E p U /\ apply_fun p e = b.
+let E Te B Tb p U b. assume Hcov HUsub HbU.
+claim HbB : b :e B. { exact (HUsub b HbU). }
+apply (covering_map_surjective_value E Te B Tb p b Hcov HbB).
+let e. assume Hepack.
+claim HeE : e :e E. { exact (andEL (e :e E) (apply_fun p e = b) Hepack). }
+claim Hpeb : apply_fun p e = b. { exact (andER (e :e E) (apply_fun p e = b) Hepack). }
+witness e. apply andI.
+- prove e :e {x :e E | apply_fun p x :e U}.
+  apply (SepI E (fun x:set => apply_fun p x :e U) e HeE).
+  rewrite Hpeb. exact HbU.
+- exact Hpeb.
+Qed.
+
 (** Proven Alice **)
 Lemma covering_map_local_section_at_point : forall E Te B Tb p e S V s:set,
   covering_map E Te B Tb p -> e :e E ->
