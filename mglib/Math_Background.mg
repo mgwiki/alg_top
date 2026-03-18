@@ -279466,6 +279466,16 @@ let y. assume Hy : y :e component_of X Tx x.
 exact (SepE1 X (fun z:set => exists C:set, connected_space C (subspace_topology X Tx C) /\ x :e C /\ z :e C) y Hy).
 Qed.
 
+(** Helper: S^2 minus a single point is simply connected **)
+(** Proof: S^2-{south} homeo R^2 via stereo_S_map_homeomorphism (proved). **)
+(** R^2 contractible hence simply connected. For general p, use rotation/homogeneity. **)
+Lemma Sn2_minus_point_simply_connected : forall p:set,
+  p :e Sn 2 ->
+  simply_connected (Sn 2 :\: Sing p)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p)).
+admit.
+Admitted.
+
 (** Helper: S^2 minus a simple closed curve is nonempty **)
 (** Proof: If C = S^2 then S^2 homeo S^1. But S^2 is simply connected **)
 (** (thm59_3) while S^1 has nontrivial pi_1. Contradiction. **)
