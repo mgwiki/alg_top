@@ -287440,13 +287440,124 @@ Qed.
 Definition R2_line_path : set -> set -> set := fun x y =>
   graph unit_interval (fun t:set => R2_affine x y t).
 
+(** R2_line_path application: apply_fun (R2_line_path x y) s = R2_affine x y s **)
+(** Proven Dave **)
+Lemma R2_line_path_apply : forall x y s:set,
+  s :e unit_interval ->
+  apply_fun (R2_line_path x y) s = R2_affine x y s.
+let x y s. assume Hs.
+exact (apply_fun_graph unit_interval (fun t:set => R2_affine x y t) s Hs).
+Qed.
+
 (** R2_line_path is continuous **)
+(** Proven Dave **)
 Lemma R2_line_path_continuous : forall x y:set,
   x :e setprod R R -> y :e setprod R R ->
   continuous_map unit_interval unit_interval_topology (setprod R R) R2_topology
     (R2_line_path x y).
-admit.
-Admitted.
+let x y. assume Hx Hy.
+claim Hx0R : x 0 :e R. { exact (ap0_Sigma R (fun _ => R) x Hx). }
+claim Hx1R : x 1 :e R. { exact (ap1_Sigma R (fun _ => R) x Hx). }
+claim Hy0R : y 0 :e R. { exact (ap0_Sigma R (fun _ => R) y Hy). }
+claim Hy1R : y 1 :e R. { exact (ap1_Sigma R (fun _ => R) y Hy). }
+set one_minus_t := flip_unit_interval.
+set incl_t := {(t,t)|t :e unit_interval}.
+set const_x0 := const_fun unit_interval (x 0).
+set const_x1 := const_fun unit_interval (x 1).
+set const_y0 := const_fun unit_interval (y 0).
+set const_y1 := const_fun unit_interval (y 1).
+set x0_term := compose_fun unit_interval (pair_map unit_interval one_minus_t const_x0) mul_fun_R.
+set y0_term := compose_fun unit_interval (pair_map unit_interval incl_t const_y0) mul_fun_R.
+set x1_term := compose_fun unit_interval (pair_map unit_interval one_minus_t const_x1) mul_fun_R.
+set y1_term := compose_fun unit_interval (pair_map unit_interval incl_t const_y1) mul_fun_R.
+set coord0 := compose_fun unit_interval (pair_map unit_interval x0_term y0_term) add_fun_R.
+set coord1 := compose_fun unit_interval (pair_map unit_interval x1_term y1_term) add_fun_R.
+set pR2 := pair_map unit_interval coord0 coord1.
+(** Continuity of flip_unit_interval to R **)
+claim HoneMinusR : continuous_map unit_interval unit_interval_topology R R_standard_topology one_minus_t.
+{ exact (continuous_map_range_expand unit_interval unit_interval_topology unit_interval unit_interval_topology R R_standard_topology one_minus_t flip_unit_interval_continuous unit_interval_sub_R R_standard_topology_is_topology (fun Q H => H)). }
+(** incl_t is continuous to R **)
+claim HinclR : continuous_map unit_interval unit_interval_topology R R_standard_topology incl_t.
+{ exact unit_interval_inclusion_continuous. }
+(** Constant functions are continuous **)
+claim Hconst_x0 : continuous_map unit_interval unit_interval_topology R R_standard_topology const_x0.
+{ exact (const_fun_continuous unit_interval unit_interval_topology R R_standard_topology (x 0) unit_interval_topology_on R_standard_topology_is_topology Hx0R). }
+claim Hconst_x1 : continuous_map unit_interval unit_interval_topology R R_standard_topology const_x1.
+{ exact (const_fun_continuous unit_interval unit_interval_topology R R_standard_topology (x 1) unit_interval_topology_on R_standard_topology_is_topology Hx1R). }
+claim Hconst_y0 : continuous_map unit_interval unit_interval_topology R R_standard_topology const_y0.
+{ exact (const_fun_continuous unit_interval unit_interval_topology R R_standard_topology (y 0) unit_interval_topology_on R_standard_topology_is_topology Hy0R). }
+claim Hconst_y1 : continuous_map unit_interval unit_interval_topology R R_standard_topology const_y1.
+{ exact (const_fun_continuous unit_interval unit_interval_topology R R_standard_topology (y 1) unit_interval_topology_on R_standard_topology_is_topology Hy1R). }
+(** Product term continuity **)
+claim Hx0Term : continuous_map unit_interval unit_interval_topology R R_standard_topology x0_term.
+{ exact (mul_two_continuous_R unit_interval unit_interval_topology one_minus_t const_x0 unit_interval_topology_on HoneMinusR Hconst_x0). }
+claim Hy0Term : continuous_map unit_interval unit_interval_topology R R_standard_topology y0_term.
+{ exact (mul_two_continuous_R unit_interval unit_interval_topology incl_t const_y0 unit_interval_topology_on HinclR Hconst_y0). }
+claim Hx1Term : continuous_map unit_interval unit_interval_topology R R_standard_topology x1_term.
+{ exact (mul_two_continuous_R unit_interval unit_interval_topology one_minus_t const_x1 unit_interval_topology_on HoneMinusR Hconst_x1). }
+claim Hy1Term : continuous_map unit_interval unit_interval_topology R R_standard_topology y1_term.
+{ exact (mul_two_continuous_R unit_interval unit_interval_topology incl_t const_y1 unit_interval_topology_on HinclR Hconst_y1). }
+(** Coordinate function continuity **)
+claim Hcoord0 : continuous_map unit_interval unit_interval_topology R R_standard_topology coord0.
+{ exact (add_two_continuous_R unit_interval unit_interval_topology x0_term y0_term unit_interval_topology_on Hx0Term Hy0Term). }
+claim Hcoord1 : continuous_map unit_interval unit_interval_topology R R_standard_topology coord1.
+{ exact (add_two_continuous_R unit_interval unit_interval_topology x1_term y1_term unit_interval_topology_on Hx1Term Hy1Term). }
+(** pR2 is continuous to R^2 **)
+claim HpR2Cont : continuous_map unit_interval unit_interval_topology (setprod R R) R2_topology pR2.
+{ exact (maps_into_products unit_interval unit_interval_topology R R_standard_topology R R_standard_topology coord0 coord1 Hcoord0 Hcoord1). }
+(** R2_line_path x y is a function **)
+claim HlineFun : function_on (R2_line_path x y) unit_interval (setprod R R).
+{ claim HlineVals : forall t:set, t :e unit_interval -> R2_affine x y t :e setprod R R.
+  { let t. assume Ht. exact (R2_affine_in_R2 x y t Hx Hy Ht). }
+  exact (function_on_of_function_space (R2_line_path x y) unit_interval (setprod R R)
+    (graph_in_function_space unit_interval (setprod R R) (fun t => R2_affine x y t) HlineVals)). }
+(** pR2 and R2_line_path x y agree pointwise **)
+claim HEqOn : forall t:set, t :e unit_interval -> apply_fun pR2 t = apply_fun (R2_line_path x y) t.
+{ let t. assume Ht.
+  claim HtR : t :e R. { exact (unit_interval_sub_R t Ht). }
+  claim HoneVal : apply_fun one_minus_t t :e R. { exact (flip_unit_interval_in_R t Ht). }
+  claim HinclVal : apply_fun incl_t t :e R.
+  { rewrite (identity_function_apply unit_interval t Ht). exact HtR. }
+  claim Hconst_x0_val : apply_fun const_x0 t :e R.
+  { rewrite (const_fun_apply unit_interval (x 0) t Ht). exact Hx0R. }
+  claim Hconst_x1_val : apply_fun const_x1 t :e R.
+  { rewrite (const_fun_apply unit_interval (x 1) t Ht). exact Hx1R. }
+  claim Hconst_y0_val : apply_fun const_y0 t :e R.
+  { rewrite (const_fun_apply unit_interval (y 0) t Ht). exact Hy0R. }
+  claim Hconst_y1_val : apply_fun const_y1 t :e R.
+  { rewrite (const_fun_apply unit_interval (y 1) t Ht). exact Hy1R. }
+  claim Hx0TermValR : apply_fun x0_term t :e R.
+  { rewrite (mul_of_pair_map_apply unit_interval one_minus_t const_x0 t Ht HoneVal Hconst_x0_val).
+    exact (real_mul_SNo (apply_fun one_minus_t t) HoneVal (apply_fun const_x0 t) Hconst_x0_val). }
+  claim Hy0TermValR : apply_fun y0_term t :e R.
+  { rewrite (mul_of_pair_map_apply unit_interval incl_t const_y0 t Ht HinclVal Hconst_y0_val).
+    exact (real_mul_SNo (apply_fun incl_t t) HinclVal (apply_fun const_y0 t) Hconst_y0_val). }
+  claim Hx1TermValR : apply_fun x1_term t :e R.
+  { rewrite (mul_of_pair_map_apply unit_interval one_minus_t const_x1 t Ht HoneVal Hconst_x1_val).
+    exact (real_mul_SNo (apply_fun one_minus_t t) HoneVal (apply_fun const_x1 t) Hconst_x1_val). }
+  claim Hy1TermValR : apply_fun y1_term t :e R.
+  { rewrite (mul_of_pair_map_apply unit_interval incl_t const_y1 t Ht HinclVal Hconst_y1_val).
+    exact (real_mul_SNo (apply_fun incl_t t) HinclVal (apply_fun const_y1 t) Hconst_y1_val). }
+  (** The RHS: apply_fun (R2_line_path x y) t = R2_affine x y t **)
+  rewrite (R2_line_path_apply x y t Ht).
+  (** Goal is now: apply_fun pR2 t = R2_affine x y t **)
+  prove apply_fun pR2 t = R2_affine x y t.
+  rewrite (pair_map_apply unit_interval R R coord0 coord1 t Ht).
+  rewrite (add_of_pair_map_apply unit_interval x0_term y0_term t Ht Hx0TermValR Hy0TermValR).
+  rewrite (add_of_pair_map_apply unit_interval x1_term y1_term t Ht Hx1TermValR Hy1TermValR).
+  rewrite (mul_of_pair_map_apply unit_interval one_minus_t const_x0 t Ht HoneVal Hconst_x0_val).
+  rewrite (mul_of_pair_map_apply unit_interval incl_t const_y0 t Ht HinclVal Hconst_y0_val).
+  rewrite (mul_of_pair_map_apply unit_interval one_minus_t const_x1 t Ht HoneVal Hconst_x1_val).
+  rewrite (mul_of_pair_map_apply unit_interval incl_t const_y1 t Ht HinclVal Hconst_y1_val).
+  rewrite (flip_unit_interval_apply t Ht).
+  rewrite (identity_function_apply unit_interval t Ht).
+  rewrite (const_fun_apply unit_interval (x 0) t Ht).
+  rewrite (const_fun_apply unit_interval (x 1) t Ht).
+  rewrite (const_fun_apply unit_interval (y 0) t Ht).
+  rewrite (const_fun_apply unit_interval (y 1) t Ht).
+  reflexivity. }
+exact (continuous_map_congr_on unit_interval unit_interval_topology (setprod R R) R2_topology pR2 (R2_line_path x y) HpR2Cont HlineFun HEqOn).
+Qed.
 
 Definition R2_sub : set -> set -> set := fun z w =>
   (add_SNo (z 0) (minus_SNo (w 0)), add_SNo (z 1) (minus_SNo (w 1))).
