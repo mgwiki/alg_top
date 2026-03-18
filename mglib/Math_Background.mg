@@ -416750,6 +416750,22 @@ exact (topology_elem_subset E Te (preimage_of E p U)
   (covering_map_preimage_open E Te B Tb p U Hcov HUopen)).
 Qed.
 
+(** Helper: evenly covered slice gives local section (inverse of projection) **)
+(** Proven Alice **)
+Lemma evenly_covered_slice_section : forall E Te B Tb p V S:set,
+  evenly_covered E Te B Tb p V ->
+  S :e Te ->
+  homeomorphism S (subspace_topology E Te S) V (subspace_topology B Tb V)
+    (graph S (fun x:set => apply_fun p x)) ->
+  exists s:set,
+    continuous_map V (subspace_topology B Tb V) S (subspace_topology E Te S) s /\
+    (forall x:set, x :e S -> apply_fun s (apply_fun (graph S (fun z:set => apply_fun p z)) x) = x) /\
+    (forall u:set, u :e V -> apply_fun (graph S (fun z:set => apply_fun p z)) (apply_fun s u) = u).
+let E Te B Tb p V S. assume Hev HSopen Hhomeo.
+exact (homeomorphism_inverse_package S (subspace_topology E Te S)
+  V (subspace_topology B Tb V) (graph S (fun x:set => apply_fun p x)) Hhomeo).
+Qed.
+
 (** Helper: path in subspace composed with inclusion gives path in ambient **)
 (** Common pattern in covering space proofs **)
 (** Proven Alice **)
