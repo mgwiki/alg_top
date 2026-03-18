@@ -6246,12 +6246,16 @@ Discussion:
     with admits. Adding them as hypotheses makes the theorem provable. The 854-line
     proof body is otherwise complete. This matches the textbook which explicitly
     says "G is a group of homeomorphisms."
+  - 1773821882 | Bob: YES. This matches the observed admits in the current proof
+    (`Hcomp`/`Hinv` placeholders) and is the minimal statement repair consistent
+    with the textbook's explicit "group of homeomorphisms" assumption.
 
 Approvals:
   - 1773656677 | Alice: YES
   - | Bob:
   - | Charlie:
   - | Dave:
+  - 1773821882 | Bob: YES
 
 Result:
 
@@ -6313,12 +6317,16 @@ Discussion:
   - 1773657116 | Alice: Same pattern as NOTICE 1773656677 (thm81_5). The LaTeX
     explicitly says "G is a group of homeomorphisms." The orbit_equiv relation
     needs composition closure for transitivity and inverse closure for symmetry.
+  - 1773821882 | Bob: YES. The current theorem body depends on orbit-equivalence
+    behavior that requires closure under composition and inverses; adding these two
+    hypotheses is the right local fix.
 
 Approvals:
   - 1773657116 | Alice: YES
   - | Bob:
   - | Charlie:
   - | Dave:
+  - 1773821882 | Bob: YES
 
 Result:
 
