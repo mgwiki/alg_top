@@ -415750,9 +415750,46 @@ apply and4I.
           (andEL (function_on alpha unit_interval preU /\
             continuous_map unit_interval unit_interval_topology preU T_preU alpha)
             (apply_fun alpha 0 = e) Halpha_left3)). }
-      (** Step 2-7: project, apply Hloops + thm54_3, conclude e' = e **)
-      (** Requires: loop_space membership, Hloops application, thm54_3_homotopic_lifts **)
-      (** and path_lift uniqueness to identify lift of p o alpha with alpha **)
+      (** Step 2: Construct projected loop as a graph (for loop_space membership) **)
+      set palpha := graph unit_interval (fun t:set => apply_fun p (apply_fun alpha t)).
+      claim Halpha_fn_preU : function_on alpha unit_interval preU.
+      { exact (continuous_map_function_on unit_interval unit_interval_topology preU T_preU alpha
+          Halpha_cont_preU). }
+      claim Hpalpha_fn_U : function_on palpha unit_interval U.
+      { let t. assume Ht.
+        rewrite (apply_fun_graph unit_interval (fun t0:set => apply_fun p (apply_fun alpha t0)) t Ht).
+        claim Hat_preU : apply_fun alpha t :e preU. { exact (Halpha_fn_preU t Ht). }
+        exact (SepE2 E (fun z:set => apply_fun p z :e U) (apply_fun alpha t) Hat_preU). }
+      (** Step 3: palpha :e loop_space U (subspace B Tb U) u **)
+      claim Hpalpha_raw_fn : forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun alpha t) :e U.
+      { let t. assume Ht.
+        exact (SepE2 E (fun z:set => apply_fun p z :e U) (apply_fun alpha t) (Halpha_fn_preU t Ht)). }
+      claim Hpalpha_sub_prod : palpha c= setprod unit_interval U.
+      { exact (graph_subset_setprod unit_interval U
+          (fun t:set => apply_fun p (apply_fun alpha t)) Hpalpha_raw_fn). }
+      claim Hpalpha_in_fs : palpha :e function_space unit_interval U.
+      { prove palpha :e {f :e Power (setprod unit_interval U) | function_on f unit_interval U}.
+        apply (SepI (Power (setprod unit_interval U)) (fun f:set => function_on f unit_interval U)
+          palpha (PowerI (setprod unit_interval U) palpha Hpalpha_sub_prod)).
+        exact Hpalpha_fn_U. }
+      claim Hpalpha_loop_at : loop_at U (subspace_topology B Tb U) u palpha.
+      { admit. (** needs: continuous from [0,1] to (U, sub B Tb U), palpha(0)=u, palpha(1)=u **) }
+      claim Hpalpha_ls : palpha :e loop_space U (subspace_topology B Tb U) u.
+      { prove palpha :e {f :e function_space unit_interval U | loop_at U (subspace_topology B Tb U) u f}.
+        exact (SepI (function_space unit_interval U)
+          (fun f:set => loop_at U (subspace_topology B Tb U) u f)
+          palpha Hpalpha_in_fs Hpalpha_loop_at). }
+      (** Step 4: Apply Hloops to get null-homotopy **)
+      claim HuU2 : u :e U. { exact HuU. }
+      claim Hph : path_homotopic B Tb u u
+        (compose_fun unit_interval palpha (graph U (fun x:set => x)))
+        (constant_path u).
+      { exact (Hloops u HuU2 palpha Hpalpha_ls). }
+      (** Step 5-7: Use thm54_3_homotopic_lifts + path_lift uniqueness **)
+      (** lift of (compose palpha incl) at e = alpha (by uniqueness) **)
+      (** lift of (constant_path u) at e = constant_e **)
+      (** By thm54_3: same endpoint => e' = e **)
       admit. }
 
   exact (open_map_bijection_homeomorphism
