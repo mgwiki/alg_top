@@ -203228,6 +203228,198 @@ rewrite HcompGammaClass.
 reflexivity.
 Admitted.
 
+(** The identity class at a lifted basepoint lies in the image of the induced
+    map on fundamental groups for the universal covering R -> S1. **)
+Theorem covering_map_R_S1_fundamental_group_id_in_image : forall e0:set,
+  e0 :e R ->
+  fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0) :e
+  homomorphism_image
+    (fundamental_group R R_standard_topology e0)
+    (induced_homomorphism
+      R
+      R_standard_topology
+      e0
+      S1
+      S1_topology
+      (apply_fun covering_map_R_S1 e0)
+      covering_map_R_S1).
+let e0.
+assume He0R.
+claim HtopR : topology_on R R_standard_topology.
+{
+  exact R_standard_topology_is_topology_local.
+}
+claim HpCont :
+  continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1.
+{
+  exact (andEL
+    (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1)
+    (surjective_map R S1 covering_map_R_S1)
+    (andEL
+      (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1 /\
+       surjective_map R S1 covering_map_R_S1)
+      (forall b:set, b :e S1 ->
+        exists U:set, U :e S1_topology /\ b :e U /\
+          evenly_covered R R_standard_topology S1 S1_topology covering_map_R_S1 U)
+      thm53_1_R_covers_S1)).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_cod
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    HpCont).
+}
+claim HgrpR :
+  group_structure
+    (fundamental_group R R_standard_topology e0)
+    (fundamental_group_mult R R_standard_topology e0)
+    (fundamental_group_id R R_standard_topology e0)
+    (fundamental_group_inv R R_standard_topology e0).
+{
+  exact (fundamental_group_is_group
+    R
+    R_standard_topology
+    e0
+    HtopR
+    He0R).
+}
+claim HgrpS1 :
+  group_structure
+    (fundamental_group S1 S1_topology (apply_fun covering_map_R_S1 e0))
+    (fundamental_group_mult S1 S1_topology (apply_fun covering_map_R_S1 e0))
+    (fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0))
+    (fundamental_group_inv S1 S1_topology (apply_fun covering_map_R_S1 e0)).
+{
+  exact (fundamental_group_is_group
+    S1
+    S1_topology
+    (apply_fun covering_map_R_S1 e0)
+    HtopS1
+    (covering_map_R_S1_on_S1 e0 He0R)).
+}
+claim HpstarHom :
+  group_homomorphism
+    (fundamental_group R R_standard_topology e0)
+    (fundamental_group_mult R R_standard_topology e0)
+    (fundamental_group S1 S1_topology (apply_fun covering_map_R_S1 e0))
+    (fundamental_group_mult S1 S1_topology (apply_fun covering_map_R_S1 e0))
+    (induced_homomorphism
+      R
+      R_standard_topology
+      e0
+      S1
+      S1_topology
+      (apply_fun covering_map_R_S1 e0)
+      covering_map_R_S1).
+{
+  exact (induced_homomorphism_is_homomorphism
+    R
+    R_standard_topology
+    e0
+    S1
+    S1_topology
+    (apply_fun covering_map_R_S1 e0)
+    covering_map_R_S1
+    HpCont
+    (eq_refl (apply_fun covering_map_R_S1 e0))
+    He0R).
+}
+claim HidrMem :
+  fundamental_group_id R R_standard_topology e0 :e
+  fundamental_group R R_standard_topology e0.
+{
+  claim HconstLoopAt : loop_at R R_standard_topology e0 (constant_path e0).
+  {
+    exact (loop_at_constant_path
+      R
+      R_standard_topology
+      e0
+      HtopR
+      He0R).
+  }
+  claim HconstFS :
+    (constant_path e0) :e function_space unit_interval R.
+  {
+    exact (graph_in_function_space
+      unit_interval
+      R
+      (fun _:set => e0)
+      (fun _ _ => He0R)).
+  }
+  claim HconstLoop :
+    (constant_path e0) :e loop_space R R_standard_topology e0.
+  {
+    exact (SepI
+      (function_space unit_interval R)
+      (fun g:set => loop_at R R_standard_topology e0 g)
+      (constant_path e0)
+      HconstFS
+      HconstLoopAt).
+  }
+  exact (path_homotopy_class_in_fundamental_group
+    R
+    R_standard_topology
+    e0
+    (constant_path e0)
+    HconstLoop).
+}
+claim HpresId :
+  apply_fun
+    (induced_homomorphism
+      R
+      R_standard_topology
+      e0
+      S1
+      S1_topology
+      (apply_fun covering_map_R_S1 e0)
+      covering_map_R_S1)
+    (fundamental_group_id R R_standard_topology e0)
+  =
+  fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0).
+{
+  exact (group_hom_sends_identity_cyclic_helper
+    (fundamental_group R R_standard_topology e0)
+    (fundamental_group_mult R R_standard_topology e0)
+    (fundamental_group_id R R_standard_topology e0)
+    (fundamental_group_inv R R_standard_topology e0)
+    (fundamental_group S1 S1_topology (apply_fun covering_map_R_S1 e0))
+    (fundamental_group_mult S1 S1_topology (apply_fun covering_map_R_S1 e0))
+    (fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0))
+    (fundamental_group_inv S1 S1_topology (apply_fun covering_map_R_S1 e0))
+    (induced_homomorphism
+      R
+      R_standard_topology
+      e0
+      S1
+      S1_topology
+      (apply_fun covering_map_R_S1 e0)
+      covering_map_R_S1)
+    HgrpR
+    HgrpS1
+    HpstarHom).
+}
+rewrite <- HpresId.
+exact (ReplI
+  (fundamental_group R R_standard_topology e0)
+  (fun cls:set =>
+    apply_fun
+      (induced_homomorphism
+        R
+        R_standard_topology
+        e0
+        S1
+        S1_topology
+        (apply_fun covering_map_R_S1 e0)
+        covering_map_R_S1)
+      cls)
+  (fundamental_group_id R R_standard_topology e0)
+  HidrMem).
+Admitted.
+
 (** from S57 Thm 57.1 (line 1186 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is continuous and antipode-preserving, then h is not nulhomotopic. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
@@ -203387,193 +203579,10 @@ claim HgammaClassInImage :
       He0R
       He0Start).
   }
-  claim HtopR : topology_on R R_standard_topology.
-  { exact R_standard_topology_is_topology_local. }
-  claim HtopS1 : topology_on S1 S1_topology.
-  {
-    exact (continuous_map_topology_cod
-      S1
-      S1_topology
-      S1
-      S1_topology
-      h
-      HhCont).
-  }
-  claim HgrpR :
-    group_structure
-      (fundamental_group R R_standard_topology e0)
-      (fundamental_group_mult R R_standard_topology e0)
-      (fundamental_group_id R R_standard_topology e0)
-      (fundamental_group_inv R R_standard_topology e0).
-  {
-    exact (fundamental_group_is_group
-      R
-      R_standard_topology
-      e0
-      HtopR
-      He0R).
-  }
-  claim HgrpS1 :
-    group_structure
-      (fundamental_group S1 S1_topology (apply_fun covering_map_R_S1 e0))
-      (fundamental_group_mult S1 S1_topology (apply_fun covering_map_R_S1 e0))
-      (fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0))
-      (fundamental_group_inv S1 S1_topology (apply_fun covering_map_R_S1 e0)).
-  {
-    exact (fundamental_group_is_group
-      S1
-      S1_topology
-      (apply_fun covering_map_R_S1 e0)
-      HtopS1
-      (covering_map_R_S1_on_S1 e0 He0R)).
-  }
-  claim HpCont :
-    continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1.
-  {
-    exact (andEL
-      (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1)
-      (surjective_map R S1 covering_map_R_S1)
-      (andEL
-        (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1 /\
-         surjective_map R S1 covering_map_R_S1)
-        (forall b:set, b :e S1 ->
-          exists U:set, U :e S1_topology /\ b :e U /\
-            evenly_covered R R_standard_topology S1 S1_topology covering_map_R_S1 U)
-        thm53_1_R_covers_S1)).
-  }
-  claim HpstarHom :
-    group_homomorphism
-      (fundamental_group R R_standard_topology e0)
-      (fundamental_group_mult R R_standard_topology e0)
-      (fundamental_group S1 S1_topology (apply_fun covering_map_R_S1 e0))
-      (fundamental_group_mult S1 S1_topology (apply_fun covering_map_R_S1 e0))
-      (induced_homomorphism
-        R
-        R_standard_topology
-        e0
-        S1
-        S1_topology
-        (apply_fun covering_map_R_S1 e0)
-        covering_map_R_S1).
-  {
-    exact (induced_homomorphism_is_homomorphism
-      R
-      R_standard_topology
-      e0
-      S1
-      S1_topology
-      (apply_fun covering_map_R_S1 e0)
-      covering_map_R_S1
-      HpCont
-      (eq_refl (apply_fun covering_map_R_S1 e0))
-      He0R).
-  }
-  claim HidrMem :
-    fundamental_group_id R R_standard_topology e0 :e
-    fundamental_group R R_standard_topology e0.
-  {
-    claim HconstLoopAt : loop_at R R_standard_topology e0 (constant_path e0).
-    {
-      exact (loop_at_constant_path
-        R
-        R_standard_topology
-        e0
-        HtopR
-        He0R).
-    }
-    claim HconstFS :
-      (constant_path e0) :e function_space unit_interval R.
-    {
-      exact (graph_in_function_space
-        unit_interval
-        R
-        (fun _:set => e0)
-        (fun _ _ => He0R)).
-    }
-    claim HconstLoop :
-      (constant_path e0) :e loop_space R R_standard_topology e0.
-    {
-      exact (SepI
-        (function_space unit_interval R)
-        (fun g:set => loop_at R R_standard_topology e0 g)
-        (constant_path e0)
-        HconstFS
-        HconstLoopAt).
-    }
-    exact (path_homotopy_class_in_fundamental_group
-      R
-      R_standard_topology
-      e0
-      (constant_path e0)
-      HconstLoop).
-  }
-  claim HidImg :
-    fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0) :e
-    homomorphism_image
-      (fundamental_group R R_standard_topology e0)
-      (induced_homomorphism
-        R
-        R_standard_topology
-        e0
-        S1
-        S1_topology
-        (apply_fun covering_map_R_S1 e0)
-        covering_map_R_S1).
-  {
-    claim HpresId :
-      apply_fun
-        (induced_homomorphism
-          R
-          R_standard_topology
-          e0
-          S1
-          S1_topology
-          (apply_fun covering_map_R_S1 e0)
-          covering_map_R_S1)
-        (fundamental_group_id R R_standard_topology e0)
-      =
-      fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0).
-    {
-      exact (group_hom_sends_identity_cyclic_helper
-        (fundamental_group R R_standard_topology e0)
-        (fundamental_group_mult R R_standard_topology e0)
-        (fundamental_group_id R R_standard_topology e0)
-        (fundamental_group_inv R R_standard_topology e0)
-        (fundamental_group S1 S1_topology (apply_fun covering_map_R_S1 e0))
-        (fundamental_group_mult S1 S1_topology (apply_fun covering_map_R_S1 e0))
-        (fundamental_group_id S1 S1_topology (apply_fun covering_map_R_S1 e0))
-        (fundamental_group_inv S1 S1_topology (apply_fun covering_map_R_S1 e0))
-        (induced_homomorphism
-          R
-          R_standard_topology
-          e0
-          S1
-          S1_topology
-          (apply_fun covering_map_R_S1 e0)
-          covering_map_R_S1)
-        HgrpR
-        HgrpS1
-        HpstarHom).
-    }
-    rewrite <- HpresId.
-    exact (ReplI
-      (fundamental_group R R_standard_topology e0)
-      (fun cls:set =>
-        apply_fun
-          (induced_homomorphism
-            R
-            R_standard_topology
-            e0
-            S1
-            S1_topology
-            (apply_fun covering_map_R_S1 e0)
-            covering_map_R_S1)
-          cls)
-      (fundamental_group_id R R_standard_topology e0)
-      HidrMem).
-  }
   rewrite HgammaClassId.
-  exact HidImg.
+  exact (covering_map_R_S1_fundamental_group_id_in_image
+    e0
+    He0R).
 }
 claim HliftLoop :
   apply_fun (path_lift
