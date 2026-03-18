@@ -415961,6 +415961,28 @@ apply Hinv. let g. assume Hghome.
 exact (homeomorphism_preserves_lpc_left Y Ty X Tx g Hghome HlpcX).
 Qed.
 
+(** Proven Alice **)
+Theorem exists_homeomorphism_preserves_lpc_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_path_connected Y Ty ->
+  locally_path_connected X Tx.
+let X Tx Y Ty. assume Hhex HlpcY.
+apply Hhex. let h. assume Hhome.
+exact (homeomorphism_preserves_lpc_left X Tx Y Ty h Hhome HlpcY).
+Qed.
+
+(** Proven Alice **)
+Theorem exists_homeomorphism_preserves_lpc_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_path_connected X Tx ->
+  locally_path_connected Y Ty.
+let X Tx Y Ty. assume Hhex HlpcX.
+apply Hhex. let h. assume Hhome.
+exact (homeomorphism_preserves_lpc_right X Tx Y Ty h Hhome HlpcX).
+Qed.
+
 (** Helper: locally path-connected implies locally connected **)
 (** Proven Alice **)
 Lemma locally_path_connected_implies_locally_connected : forall X Tx:set,
