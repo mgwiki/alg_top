@@ -314848,8 +314848,162 @@ claim HfreeH :
 		                  HgrpG
 		                  HskO).
 		              + assume Hinvb2Ne : apply_fun invG (apply_fun basis2 alpha) <> eG.
-		                (** TODO: finish the nontrivial inverse-generator case using no-torsion on inv(basis2 alpha). **)
-		                admit.
+		                claim Hb2H : apply_fun basis2 alpha :e H.
+		                { exact (Hbasis2_fn alpha Halpha). }
+		                claim Hb2G : apply_fun basis2 alpha :e G.
+		                { exact (subgroup_of_mem_in_G
+		                    H
+		                    G
+		                    multG
+		                    eG
+		                    invG
+		                    (apply_fun basis2 alpha)
+		                    HsubH
+		                    Hb2H). }
+		                claim Hinvb2G : apply_fun invG (apply_fun basis2 alpha) :e G.
+		                {
+		                  apply (and6E
+		                    (function_on multG (setprod G G) G)
+		                    (function_on invG G G)
+		                    (eG :e G)
+		                    (forall u v w:set, u :e G -> v :e G -> w :e G ->
+		                      apply_fun multG (apply_fun multG (u, v), w) = apply_fun multG (u, apply_fun multG (v, w)))
+		                    (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+		                    (forall u:set, u :e G ->
+		                      apply_fun multG (u, apply_fun invG u) = eG /\ apply_fun multG (apply_fun invG u, u) = eG)
+		                    HgrpG).
+		                  assume HmultFn HinvFn HeGG Hassoc Hid HinvLaw.
+		                  exact (HinvFn
+		                    (apply_fun basis2 alpha)
+		                    Hb2G).
+		                }
+		                claim HnoTorsInv :
+		                  ~(exists n1:set, n1 :e omega /\ n1 <> 0 /\
+		                    group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) n1 = eG).
+		                {
+		                  exact (ex67_4b_free_abelian_no_torsion
+		                    G
+		                    multG
+		                    eG
+		                    invG
+		                    J
+		                    basis1
+		                    HfreeG
+		                    (apply_fun invG (apply_fun basis2 alpha))
+		                    Hinvb2G
+		                    Hinvb2Ne).
+		                }
+		                claim Hhpow_neg_pres :
+		                  apply_fun h (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)) =
+		                  group_power_nat multG eG (apply_fun h (apply_fun invG (apply_fun basis2 alpha))) (ordsucc k).
+		                {
+		                  exact (group_homomorphism_preserves_power_nat_cyclic_helper
+		                    G
+		                    multG
+		                    eG
+		                    invG
+		                    G
+		                    multG
+		                    eG
+		                    invG
+		                    h
+		                    (apply_fun invG (apply_fun basis2 alpha))
+		                    (ordsucc k)
+		                    HgrpG
+		                    HgrpG
+		                    Hh_hom
+		                    Hinvb2G
+		                    HskO).
+		                }
+		                claim Hpow_hinvb2_e :
+		                  group_power_nat multG eG (apply_fun h (apply_fun invG (apply_fun basis2 alpha))) (ordsucc k) = eG.
+		                {
+		                  exact (eq_i_tra
+		                    (group_power_nat multG eG (apply_fun h (apply_fun invG (apply_fun basis2 alpha))) (ordsucc k))
+		                    (apply_fun h (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)))
+		                    eG
+		                    (eq_symm
+		                      (apply_fun h (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)))
+		                      (group_power_nat multG eG (apply_fun h (apply_fun invG (apply_fun basis2 alpha))) (ordsucc k))
+		                      Hhpow_neg_pres)
+		                    Hhneg_e).
+		                }
+		                claim Hh_invb2_pow2 :
+		                  apply_fun h (apply_fun invG (apply_fun basis2 alpha)) =
+		                  group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2.
+		                {
+		                  (** TODO: derive from h-hom + inverse law + basis-square relation. **)
+		                  admit.
+		                }
+		                claim Hpowpow_e :
+		                  group_power_nat multG eG
+		                    (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2)
+		                    (ordsucc k) = eG.
+		                {
+		                  rewrite <- Hh_invb2_pow2.
+		                  exact Hpow_hinvb2_e.
+		                }
+		                claim H2O : 2 :e omega.
+		                { exact (nat_p_omega 2 nat_2). }
+		                claim Hpow2sk_e :
+		                  group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (mul_nat 2 (ordsucc k)) = eG.
+		                {
+		                  exact (eq_i_tra
+		                    (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (mul_nat 2 (ordsucc k)))
+		                    (group_power_nat multG eG
+		                      (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2)
+		                      (ordsucc k))
+		                    eG
+		                    (eq_symm
+		                      (group_power_nat multG eG
+		                        (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2)
+		                        (ordsucc k))
+		                      (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (mul_nat 2 (ordsucc k)))
+		                      (group_power_nat_of_power_nat
+		                        G
+		                        multG
+		                        eG
+		                        invG
+		                        (apply_fun invG (apply_fun basis2 alpha))
+		                        2
+		                        (ordsucc k)
+		                        HgrpG
+		                        Hinvb2G
+		                        H2O
+		                        HskO))
+		                    Hpowpow_e).
+		                }
+		                claim HskNat : nat_p (ordsucc k).
+		                { exact (omega_nat_p (ordsucc k) HskO). }
+		                claim H2skNat : nat_p (mul_nat 2 (ordsucc k)).
+		                { exact (mul_nat_p 2 nat_2 (ordsucc k) HskNat). }
+		                claim H2skO : mul_nat 2 (ordsucc k) :e omega.
+		                { exact (nat_p_omega (mul_nat 2 (ordsucc k)) H2skNat). }
+		                claim H2skNe0 : mul_nat 2 (ordsucc k) <> 0.
+		                {
+		                  assume H2sk0.
+		                  claim HzeroCases : 2 = 0 \/ ordsucc k = 0.
+		                  { exact (mul_nat_0_inv 2 nat_2 (ordsucc k) HskNat H2sk0). }
+		                  apply HzeroCases.
+		                  - assume H20.
+		                    exact (neq_2_0 H20).
+		                  - assume Hsk0.
+		                    exact (neq_ordsucc_0 k Hsk0).
+		                }
+		                claim HexTor :
+		                  exists n1:set, n1 :e omega /\ n1 <> 0 /\
+		                    group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) n1 = eG.
+		                {
+		                  witness (mul_nat 2 (ordsucc k)).
+		                  apply andI.
+		                  - apply andI.
+		                    + exact H2skO.
+		                    + exact H2skNe0.
+		                  - exact Hpow2sk_e.
+		                }
+		                exact (FalseE
+		                  (HnoTorsInv HexTor)
+		                  (x = eG)).
 		          }
 		          let i0.
 		          assume Hi0 : i0 :e n0.
