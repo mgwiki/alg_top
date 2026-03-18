@@ -415773,8 +415773,23 @@ apply and4I.
         apply (SepI (Power (setprod unit_interval U)) (fun f:set => function_on f unit_interval U)
           palpha (PowerI (setprod unit_interval U) palpha Hpalpha_sub_prod)).
         exact Hpalpha_fn_U. }
+      claim Hpalpha0 : apply_fun palpha 0 = u.
+      { rewrite (apply_fun_graph unit_interval (fun t:set => apply_fun p (apply_fun alpha t))
+          0 zero_in_unit_interval).
+        prove apply_fun p (apply_fun alpha 0) = u.
+        rewrite Halpha0. exact Hpe_eq_u. }
+      claim Hpalpha1 : apply_fun palpha 1 = u.
+      { rewrite (apply_fun_graph unit_interval (fun t:set => apply_fun p (apply_fun alpha t))
+          1 one_in_unit_interval).
+        prove apply_fun p (apply_fun alpha 1) = u.
+        rewrite Halpha1. exact Hpe'eq. }
+      claim Hpalpha_cont : continuous_map unit_interval unit_interval_topology
+        U (subspace_topology B Tb U) palpha.
+      { admit. (** needs: compose alpha with (subspace inclusion preU -> E) then p, range restrict, congr_on **) }
       claim Hpalpha_loop_at : loop_at U (subspace_topology B Tb U) u palpha.
-      { admit. (** needs: continuous from [0,1] to (U, sub B Tb U), palpha(0)=u, palpha(1)=u **) }
+      { prove (continuous_map unit_interval unit_interval_topology
+          U (subspace_topology B Tb U) palpha /\ apply_fun palpha 0 = u) /\ apply_fun palpha 1 = u.
+        apply andI. apply andI. exact Hpalpha_cont. exact Hpalpha0. exact Hpalpha1. }
       claim Hpalpha_ls : palpha :e loop_space U (subspace_topology B Tb U) u.
       { prove palpha :e {f :e function_space unit_interval U | loop_at U (subspace_topology B Tb U) u f}.
         exact (SepI (function_space unit_interval U)
