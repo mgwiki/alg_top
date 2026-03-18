@@ -1,5 +1,5 @@
 (** Balance Alice 9223 **)
-(** Balance Bob 6067 **)
+(** Balance Bob 6166 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
 
@@ -120837,8 +120837,7 @@ Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
       (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
   <->
   apply_fun (path_lift E Te B Tb p e0 f) 1 = e0.
-admit.
-Admitted. (** TODO: statement likely missing parentheses; use thm54_6c_loop_characterization_equiv for intended direction. **)
+Admitted. (** TODO: statement parses as ((A->B->C->D) <-> E); needs noticeboard correction or a dedicated bridge proof. **)
 
 (** Infrastructure: loop characterization under covering assumptions **)
 (** Proven Alice **)
@@ -120851,19 +120850,7 @@ Lemma thm54_6c_loop_characterization_assumptions : forall E Te B Tb p e0 f:set,
        (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
    <->
    apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
-let E Te B Tb p e0 f.
-assume Hcov He0 Hloop.
-exact (thm54_6c_loop_characterization_equiv
-  E
-  Te
-  B
-  Tb
-  p
-  e0
-  f
-  Hcov
-  He0
-  Hloop).
+exact thm54_6c_loop_characterization_equiv.
 Qed.
 
 (** from S54 Exercise 3 (line 871 in algtop.tex) **)
@@ -224239,7 +224226,8 @@ Qed.
 
 (** from S58 Exercise 2(a) (line 1477 in algtop.tex): solid torus B^2 x S^1 has infinite cyclic pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Bob 33 **)
+(** Proven Bob **)
 Theorem ex58_2a_solid_torus_pi1 : forall x0:set,
   x0 :e setprod B2 S1 ->
   exists phi:set,
@@ -224249,8 +224237,707 @@ Theorem ex58_2a_solid_torus_pi1 : forall x0:set,
       (fundamental_group S1 S1_topology (x0 1))
       (fundamental_group_mult S1 S1_topology (x0 1))
       phi.
-admit.
-Admitted.
+let x0.
+assume Hx0.
+set X := setprod B2 S1.
+set Tx := product_topology B2 B2_topology S1 S1_topology.
+set idB2 := graph B2 (fun b:set => b).
+set idS1 := graph S1 (fun z:set => z).
+set idX := graph X (fun x:set => x).
+claim HtopB2 : topology_on B2 B2_topology.
+{
+  exact (andEL
+    (topology_on B2 B2_topology)
+    (nulhomotopic B2 B2_topology B2 B2_topology (graph B2 (fun x:set => x)))
+    B2_contractible).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_dom
+    S1
+    S1_topology
+    B2
+    B2_topology
+    (graph S1 (fun x:set => x))
+    inclusion_S1_B2_continuous).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (product_topology_is_topology
+    B2 B2_topology S1 S1_topology
+    HtopB2 HtopS1).
+}
+claim HnulB2 :
+  nulhomotopic B2 B2_topology B2 B2_topology idB2.
+{
+  exact (andER
+    (topology_on B2 B2_topology)
+    (nulhomotopic B2 B2_topology B2 B2_topology (graph B2 (fun x:set => x)))
+    B2_contractible).
+}
+claim Hy0Ex :
+  exists y0:set, y0 :e B2 /\
+    homotopic_maps B2 B2_topology B2 B2_topology idB2 (const_fun B2 y0).
+{
+  exact (nulhomotopic_unfold
+    B2
+    B2_topology
+    B2
+    B2_topology
+    idB2
+    HnulB2).
+}
+apply Hy0Ex.
+let y0.
+assume Hy0Pack :
+  y0 :e B2 /\
+  homotopic_maps B2 B2_topology B2 B2_topology idB2 (const_fun B2 y0).
+claim Hy0B2 : y0 :e B2.
+{
+  exact (andEL
+    (y0 :e B2)
+    (homotopic_maps B2 B2_topology B2 B2_topology idB2 (const_fun B2 y0))
+    Hy0Pack).
+}
+claim HidToConst :
+  homotopic_maps B2 B2_topology B2 B2_topology idB2 (const_fun B2 y0).
+{
+  exact (andER
+    (y0 :e B2)
+    (homotopic_maps B2 B2_topology B2 B2_topology idB2 (const_fun B2 y0))
+    Hy0Pack).
+}
+claim HconstToId :
+  homotopic_maps B2 B2_topology B2 B2_topology (const_fun B2 y0) idB2.
+{
+  exact (Lemma_51_1_homotopy_sym
+    B2
+    B2_topology
+    B2
+    B2_topology
+    idB2
+    (const_fun B2 y0)
+    HidToConst).
+}
+claim HconstIdPair :
+  continuous_map B2 B2_topology B2 B2_topology (const_fun B2 y0) /\
+  continuous_map B2 B2_topology B2 B2_topology idB2.
+{
+  exact (andEL
+    (continuous_map B2 B2_topology B2 B2_topology (const_fun B2 y0) /\
+     continuous_map B2 B2_topology B2 B2_topology idB2)
+    (exists F:set,
+      continuous_map
+        (setprod B2 unit_interval)
+        (product_topology B2 B2_topology unit_interval unit_interval_topology)
+        B2
+        B2_topology
+        F /\
+      (forall x:set, x :e B2 ->
+        apply_fun F (x, 0) = apply_fun (const_fun B2 y0) x) /\
+      (forall x:set, x :e B2 ->
+        apply_fun F (x, 1) = apply_fun idB2 x))
+    (homotopic_maps_unfold
+      B2
+      B2_topology
+      B2
+      B2_topology
+      (const_fun B2 y0)
+      idB2
+      HconstToId)).
+}
+claim HconstCont :
+  continuous_map B2 B2_topology B2 B2_topology (const_fun B2 y0).
+{
+  exact (andEL
+    (continuous_map B2 B2_topology B2 B2_topology (const_fun B2 y0))
+    (continuous_map B2 B2_topology B2 B2_topology idB2)
+    HconstIdPair).
+}
+claim HidB2Cont :
+  continuous_map B2 B2_topology B2 B2_topology idB2.
+{
+  exact (andER
+    (continuous_map B2 B2_topology B2 B2_topology (const_fun B2 y0))
+    (continuous_map B2 B2_topology B2 B2_topology idB2)
+    HconstIdPair).
+}
+claim HFBEx :
+  exists FB:set,
+    continuous_map
+      (setprod B2 unit_interval)
+      (product_topology B2 B2_topology unit_interval unit_interval_topology)
+      B2
+      B2_topology
+      FB /\
+    (forall b:set, b :e B2 ->
+      apply_fun FB (b, 0) = apply_fun (const_fun B2 y0) b) /\
+    (forall b:set, b :e B2 ->
+      apply_fun FB (b, 1) = apply_fun idB2 b).
+{
+  exact (andER
+    (continuous_map B2 B2_topology B2 B2_topology (const_fun B2 y0) /\
+     continuous_map B2 B2_topology B2 B2_topology idB2)
+    (exists F:set,
+      continuous_map
+        (setprod B2 unit_interval)
+        (product_topology B2 B2_topology unit_interval unit_interval_topology)
+        B2
+        B2_topology
+        F /\
+      (forall x:set, x :e B2 ->
+        apply_fun F (x, 0) = apply_fun (const_fun B2 y0) x) /\
+      (forall x:set, x :e B2 ->
+        apply_fun F (x, 1) = apply_fun idB2 x))
+    (homotopic_maps_unfold
+      B2
+      B2_topology
+      B2
+      B2_topology
+      (const_fun B2 y0)
+      idB2
+      HconstToId)).
+}
+apply HFBEx.
+let FB.
+assume HFBPack :
+  continuous_map
+    (setprod B2 unit_interval)
+    (product_topology B2 B2_topology unit_interval unit_interval_topology)
+    B2
+    B2_topology
+    FB /\
+  (forall b:set, b :e B2 ->
+    apply_fun FB (b, 0) = apply_fun (const_fun B2 y0) b) /\
+  (forall b:set, b :e B2 ->
+    apply_fun FB (b, 1) = apply_fun idB2 b).
+claim HFBContAt0Pack :
+  continuous_map
+    (setprod B2 unit_interval)
+    (product_topology B2 B2_topology unit_interval unit_interval_topology)
+    B2
+    B2_topology
+    FB /\
+  (forall b:set, b :e B2 ->
+    apply_fun FB (b, 0) = apply_fun (const_fun B2 y0) b).
+{
+  exact (andEL
+    (continuous_map
+      (setprod B2 unit_interval)
+      (product_topology B2 B2_topology unit_interval unit_interval_topology)
+      B2
+      B2_topology
+      FB /\
+     (forall b:set, b :e B2 ->
+       apply_fun FB (b, 0) = apply_fun (const_fun B2 y0) b))
+    (forall b:set, b :e B2 ->
+      apply_fun FB (b, 1) = apply_fun idB2 b)
+    HFBPack).
+}
+claim HFBAt0 : forall b:set, b :e B2 ->
+  apply_fun FB (b, 0) = apply_fun (const_fun B2 y0) b.
+{
+  exact (andER
+    (continuous_map
+      (setprod B2 unit_interval)
+      (product_topology B2 B2_topology unit_interval unit_interval_topology)
+      B2
+      B2_topology
+      FB)
+    (forall b:set, b :e B2 ->
+      apply_fun FB (b, 0) = apply_fun (const_fun B2 y0) b)
+    HFBContAt0Pack).
+}
+claim HFBAt1 : forall b:set, b :e B2 ->
+  apply_fun FB (b, 1) = apply_fun idB2 b.
+{
+  exact (andER
+    (continuous_map
+      (setprod B2 unit_interval)
+      (product_topology B2 B2_topology unit_interval unit_interval_topology)
+      B2
+      B2_topology
+      FB /\
+     (forall b:set, b :e B2 ->
+       apply_fun FB (b, 0) = apply_fun (const_fun B2 y0) b))
+    (forall b:set, b :e B2 ->
+      apply_fun FB (b, 1) = apply_fun idB2 b)
+    HFBPack).
+}
+set f := projection_map2 B2 S1.
+set g := pair_map S1 (const_fun S1 y0) idS1.
+claim HprojXPack :
+  continuous_map X Tx B2 B2_topology (projection_map1 B2 S1) /\
+  continuous_map X Tx S1 S1_topology (projection_map2 B2 S1).
+{
+  exact (projections_are_continuous
+    B2 B2_topology S1 S1_topology
+    HtopB2 HtopS1).
+}
+claim HfCont : continuous_map X Tx S1 S1_topology f.
+{
+  exact (andER
+    (continuous_map X Tx B2 B2_topology (projection_map1 B2 S1))
+    (continuous_map X Tx S1 S1_topology (projection_map2 B2 S1))
+    HprojXPack).
+}
+claim HidS1Cont : continuous_map S1 S1_topology S1 S1_topology idS1.
+{
+  exact (identity_continuous S1 S1_topology HtopS1).
+}
+claim HgCont : continuous_map S1 S1_topology X Tx g.
+{
+  exact (maps_into_products
+    S1
+    S1_topology
+    B2
+    B2_topology
+    S1
+    S1_topology
+    (const_fun S1 y0)
+    idS1
+    (const_fun_continuous
+      S1
+      S1_topology
+      B2
+      B2_topology
+      y0
+      HtopS1
+      HtopB2
+      Hy0B2)
+    HidS1Cont).
+}
+claim HgFun : function_on g S1 X.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    X
+    Tx
+    g
+    HgCont).
+}
+set XI := setprod X unit_interval.
+set TXI := product_topology X Tx unit_interval unit_interval_topology.
+set pX := projection_map1 X unit_interval.
+set scoord := projection_map2 X unit_interval.
+set bcoord := compose_fun XI pX (projection_map1 B2 S1).
+set zcoord := compose_fun XI pX (projection_map2 B2 S1).
+set pairBI := pair_map XI bcoord scoord.
+set firstH := compose_fun XI pairBI FB.
+set HX := pair_map XI firstH zcoord.
+claim HtopXI : topology_on XI TXI.
+{
+  exact (product_topology_is_topology
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    HtopX
+    unit_interval_topology_on).
+}
+claim HprojXIPack :
+  continuous_map XI TXI X Tx pX /\
+  continuous_map XI TXI unit_interval unit_interval_topology scoord.
+{
+  exact (projections_are_continuous
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    HtopX
+    unit_interval_topology_on).
+}
+claim HpXCont : continuous_map XI TXI X Tx pX.
+{
+  exact (andEL
+    (continuous_map XI TXI X Tx pX)
+    (continuous_map XI TXI unit_interval unit_interval_topology scoord)
+    HprojXIPack).
+}
+claim HscoordCont :
+  continuous_map XI TXI unit_interval unit_interval_topology scoord.
+{
+  exact (andER
+    (continuous_map XI TXI X Tx pX)
+    (continuous_map XI TXI unit_interval unit_interval_topology scoord)
+    HprojXIPack).
+}
+claim HbcoordCont : continuous_map XI TXI B2 B2_topology bcoord.
+{
+  exact (composition_continuous
+    XI
+    TXI
+    X
+    Tx
+    B2
+    B2_topology
+    pX
+    (projection_map1 B2 S1)
+    HpXCont
+    (andEL
+      (continuous_map X Tx B2 B2_topology (projection_map1 B2 S1))
+      (continuous_map X Tx S1 S1_topology (projection_map2 B2 S1))
+      HprojXPack)).
+}
+claim HzcoordCont : continuous_map XI TXI S1 S1_topology zcoord.
+{
+  exact (composition_continuous
+    XI
+    TXI
+    X
+    Tx
+    S1
+    S1_topology
+    pX
+    (projection_map2 B2 S1)
+    HpXCont
+    (andER
+      (continuous_map X Tx B2 B2_topology (projection_map1 B2 S1))
+      (continuous_map X Tx S1 S1_topology (projection_map2 B2 S1))
+      HprojXPack)).
+}
+claim HpairBICont :
+  continuous_map
+    XI
+    TXI
+    (setprod B2 unit_interval)
+    (product_topology B2 B2_topology unit_interval unit_interval_topology)
+    pairBI.
+{
+  exact (maps_into_products
+    XI
+    TXI
+    B2
+    B2_topology
+    unit_interval
+    unit_interval_topology
+    bcoord
+    scoord
+    HbcoordCont
+    HscoordCont).
+}
+claim HFBCont :
+  continuous_map
+    (setprod B2 unit_interval)
+    (product_topology B2 B2_topology unit_interval unit_interval_topology)
+    B2
+    B2_topology
+    FB.
+{
+  exact (andEL
+    (continuous_map
+      (setprod B2 unit_interval)
+      (product_topology B2 B2_topology unit_interval unit_interval_topology)
+      B2
+      B2_topology
+      FB)
+    (forall b:set, b :e B2 ->
+      apply_fun FB (b, 0) = apply_fun (const_fun B2 y0) b)
+    HFBContAt0Pack).
+}
+claim HfirstHCont : continuous_map XI TXI B2 B2_topology firstH.
+{
+  exact (composition_continuous
+    XI
+    TXI
+    (setprod B2 unit_interval)
+    (product_topology B2 B2_topology unit_interval unit_interval_topology)
+    B2
+    B2_topology
+    pairBI
+    FB
+    HpairBICont
+    HFBCont).
+}
+claim HHXCont : continuous_map XI TXI X Tx HX.
+{
+  exact (maps_into_products
+    XI
+    TXI
+    B2
+    B2_topology
+    S1
+    S1_topology
+    firstH
+    zcoord
+    HfirstHCont
+    HzcoordCont).
+}
+claim HHXAt0 : forall x:set, x :e X ->
+  apply_fun HX (x, 0) = apply_fun (compose_fun X f g) x.
+{
+  let x.
+  assume HxX.
+  claim Hx0XI : (x, 0) :e XI.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      X
+      unit_interval
+      x
+      0
+      HxX
+      zero_in_unit_interval).
+  }
+  rewrite (compose_fun_apply X f g x HxX).
+  rewrite (pair_map_apply XI B2 S1 firstH zcoord (x, 0) Hx0XI).
+  rewrite (compose_fun_apply XI pairBI FB (x, 0) Hx0XI).
+  rewrite (pair_map_apply XI B2 unit_interval bcoord scoord (x, 0) Hx0XI).
+  rewrite (compose_fun_apply XI pX (projection_map1 B2 S1) (x, 0) Hx0XI).
+  rewrite (projection1_apply X unit_interval (x, 0) Hx0XI).
+  rewrite (tuple_2_0_eq x 0).
+  rewrite (projection2_apply X unit_interval (x, 0) Hx0XI).
+  rewrite (tuple_2_1_eq x 0).
+  rewrite (HFBAt0
+    (apply_fun (projection_map1 B2 S1) x)
+    (continuous_map_function_on
+      X
+      Tx
+      B2
+      B2_topology
+      (projection_map1 B2 S1)
+      (andEL
+        (continuous_map X Tx B2 B2_topology (projection_map1 B2 S1))
+        (continuous_map X Tx S1 S1_topology (projection_map2 B2 S1))
+        HprojXPack)
+      x
+      HxX)).
+  rewrite (const_fun_apply
+    B2
+    y0
+    (apply_fun (projection_map1 B2 S1) x)
+    (continuous_map_function_on
+      X
+      Tx
+      B2
+      B2_topology
+      (projection_map1 B2 S1)
+      (andEL
+        (continuous_map X Tx B2 B2_topology (projection_map1 B2 S1))
+        (continuous_map X Tx S1 S1_topology (projection_map2 B2 S1))
+        HprojXPack)
+      x
+      HxX)).
+  rewrite (compose_fun_apply XI pX (projection_map2 B2 S1) (x, 0) Hx0XI).
+  rewrite (projection1_apply X unit_interval (x, 0) Hx0XI).
+  rewrite (tuple_2_0_eq x 0).
+  rewrite (pair_map_apply
+    S1
+    B2
+    S1
+    (const_fun S1 y0)
+    idS1
+    (apply_fun (projection_map2 B2 S1) x)
+    (continuous_map_function_on
+      X
+      Tx
+      S1
+      S1_topology
+      (projection_map2 B2 S1)
+      (andER
+        (continuous_map X Tx B2 B2_topology (projection_map1 B2 S1))
+        (continuous_map X Tx S1 S1_topology (projection_map2 B2 S1))
+        HprojXPack)
+      x
+      HxX)).
+  rewrite (apply_fun_graph S1 (fun z:set => z) (apply_fun (projection_map2 B2 S1) x)
+    (continuous_map_function_on
+      X
+      Tx
+      S1
+      S1_topology
+      (projection_map2 B2 S1)
+      (andER
+        (continuous_map X Tx B2 B2_topology (projection_map1 B2 S1))
+        (continuous_map X Tx S1 S1_topology (projection_map2 B2 S1))
+        HprojXPack)
+      x
+      HxX)).
+  rewrite (const_fun_apply S1 y0 (apply_fun (projection_map2 B2 S1) x)
+    (continuous_map_function_on
+      X
+      Tx
+      S1
+      S1_topology
+      (projection_map2 B2 S1)
+      (andER
+        (continuous_map X Tx B2 B2_topology (projection_map1 B2 S1))
+        (continuous_map X Tx S1 S1_topology (projection_map2 B2 S1))
+        HprojXPack)
+      x
+      HxX)).
+  reflexivity.
+}
+claim HHXAt1 : forall x:set, x :e X ->
+  apply_fun HX (x, 1) = apply_fun idX x.
+{
+  let x.
+  assume HxX.
+  claim Hx1XI : (x, 1) :e XI.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      X
+      unit_interval
+      x
+      1
+      HxX
+      one_in_unit_interval).
+  }
+  rewrite (pair_map_apply XI B2 S1 firstH zcoord (x, 1) Hx1XI).
+  rewrite (compose_fun_apply XI pairBI FB (x, 1) Hx1XI).
+  rewrite (pair_map_apply XI B2 unit_interval bcoord scoord (x, 1) Hx1XI).
+  rewrite (compose_fun_apply XI pX (projection_map1 B2 S1) (x, 1) Hx1XI).
+  rewrite (projection1_apply X unit_interval (x, 1) Hx1XI).
+  rewrite (tuple_2_0_eq x 1).
+  rewrite (projection2_apply X unit_interval (x, 1) Hx1XI).
+  rewrite (tuple_2_1_eq x 1).
+  rewrite (HFBAt1
+    (apply_fun (projection_map1 B2 S1) x)
+    (continuous_map_function_on
+      X
+      Tx
+      B2
+      B2_topology
+      (projection_map1 B2 S1)
+      (andEL
+        (continuous_map X Tx B2 B2_topology (projection_map1 B2 S1))
+        (continuous_map X Tx S1 S1_topology (projection_map2 B2 S1))
+        HprojXPack)
+      x
+      HxX)).
+  rewrite (apply_fun_graph B2 (fun b:set => b) (apply_fun (projection_map1 B2 S1) x)
+    (continuous_map_function_on
+      X
+      Tx
+      B2
+      B2_topology
+      (projection_map1 B2 S1)
+      (andEL
+        (continuous_map X Tx B2 B2_topology (projection_map1 B2 S1))
+        (continuous_map X Tx S1 S1_topology (projection_map2 B2 S1))
+        HprojXPack)
+      x
+      HxX)).
+  rewrite (projection1_apply B2 S1 x HxX).
+  rewrite (compose_fun_apply XI pX (projection_map2 B2 S1) (x, 1) Hx1XI).
+  rewrite (projection1_apply X unit_interval (x, 1) Hx1XI).
+  rewrite (tuple_2_0_eq x 1).
+  rewrite (projection2_apply B2 S1 x HxX).
+  rewrite (apply_fun_graph X (fun x0:set => x0) x HxX).
+  symmetry.
+  exact (setprod_eta B2 S1 x HxX).
+}
+claim HhomX :
+  homotopic_maps X Tx X Tx (compose_fun X f g) idX.
+{
+  prove continuous_map X Tx X Tx (compose_fun X f g) /\
+    continuous_map X Tx X Tx idX /\
+    exists F:set,
+      continuous_map XI TXI X Tx F /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 0) = apply_fun (compose_fun X f g) x) /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 1) = apply_fun idX x).
+  apply and3I.
+  - exact (composition_continuous
+      X Tx S1 S1_topology X Tx
+      f g
+      HfCont
+      HgCont).
+  - exact (identity_continuous X Tx HtopX).
+  - witness HX.
+    exact (and3I
+      (continuous_map XI TXI X Tx HX)
+      (forall x:set, x :e X ->
+        apply_fun HX (x, 0) = apply_fun (compose_fun X f g) x)
+      (forall x:set, x :e X ->
+        apply_fun HX (x, 1) = apply_fun idX x)
+      HHXCont
+      HHXAt0
+      HHXAt1).
+}
+claim HidS1Fun : function_on idS1 S1 S1.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    S1
+    S1_topology
+    idS1
+    HidS1Cont).
+}
+claim HcompgfApply : forall z:set, z :e S1 ->
+  apply_fun (compose_fun S1 g f) z = apply_fun idS1 z.
+{
+  let z.
+  assume HzS1.
+  rewrite (compose_fun_apply S1 g f z HzS1).
+  rewrite (projection2_apply B2 S1 (apply_fun g z) (HgFun z HzS1)).
+  rewrite (pair_map_apply S1 B2 S1 (const_fun S1 y0) idS1 z HzS1).
+  rewrite (tuple_2_1_eq (apply_fun (const_fun S1 y0) z) (apply_fun idS1 z)).
+  reflexivity.
+}
+claim HhomS1 :
+  homotopic_maps S1 S1_topology S1 S1_topology (compose_fun S1 g f) idS1.
+{
+  exact (homotopic_maps_of_pointwise_equal
+    S1
+    S1_topology
+    S1
+    S1_topology
+    (compose_fun S1 g f)
+    idS1
+    (composition_continuous
+      S1
+      S1_topology
+      X
+      Tx
+      S1
+      S1_topology
+      g
+      f
+      HgCont
+      HfCont)
+    HidS1Fun
+    HcompgfApply).
+}
+claim Hequiv : homotopy_equivalence X Tx S1 S1_topology f.
+{
+  prove continuous_map X Tx S1 S1_topology f /\
+    exists g0:set, continuous_map S1 S1_topology X Tx g0 /\
+      homotopic_maps X Tx X Tx
+        (compose_fun X f g0) (graph X (fun x:set => x)) /\
+      homotopic_maps S1 S1_topology S1 S1_topology
+        (compose_fun S1 g0 f) (graph S1 (fun z:set => z)).
+  apply andI.
+  - exact HfCont.
+  - witness g.
+    exact (and3I
+      (continuous_map S1 S1_topology X Tx g)
+      (homotopic_maps X Tx X Tx
+        (compose_fun X f g) (graph X (fun x:set => x)))
+      (homotopic_maps S1 S1_topology S1 S1_topology
+        (compose_fun S1 g f) (graph S1 (fun z:set => z)))
+      HgCont
+      HhomX
+      HhomS1).
+}
+claim Hfx0 : apply_fun f x0 = x0 1.
+{
+  exact (projection2_apply B2 S1 x0 Hx0).
+}
+rewrite <- Hfx0.
+witness (induced_homomorphism X Tx x0 S1 S1_topology (apply_fun f x0) f).
+exact (thm58_7_homotopy_equiv_isomorphism
+  X
+  Tx
+  S1
+  S1_topology
+  f
+  x0
+  Hequiv
+  Hx0).
+  Qed.
 
 (** from S58 Exercise 2(b) (line 1478 in algtop.tex): torus minus point **)
 (** This is the free group on 2 generators (stated via homotopy equivalence) **)
@@ -224272,8 +224959,9 @@ Admitted.
 
 (** from S58 Exercise 2(c) (line 1479 in algtop.tex): cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Bob 33 **)
 (** Admin-approved-refactored per noticeboard proposal batch1 **)
+(** Proven Bob **)
 Theorem ex58_2c_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 unit_interval ->
   exists phi:set,
@@ -224285,13 +224973,393 @@ Theorem ex58_2c_cylinder_pi1 : forall x0:set,
       (fundamental_group S1 S1_topology (x0 0))
       (fundamental_group_mult S1 S1_topology (x0 0))
       phi.
-admit.
-Admitted.
+let x0.
+assume Hx0.
+set X := setprod S1 unit_interval.
+set Tx := product_topology S1 S1_topology unit_interval unit_interval_topology.
+set idS1 := graph S1 (fun z:set => z).
+set idX := graph X (fun x:set => x).
+set f := projection_map1 S1 unit_interval.
+set g := pair_map S1 idS1 (const_fun S1 0).
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_dom
+    S1
+    S1_topology
+    B2
+    B2_topology
+    (graph S1 (fun x:set => x))
+    inclusion_S1_B2_continuous).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (product_topology_is_topology
+    S1 S1_topology unit_interval unit_interval_topology
+    HtopS1 unit_interval_topology_on).
+}
+claim HprojXPack :
+  continuous_map X Tx S1 S1_topology (projection_map1 S1 unit_interval) /\
+  continuous_map X Tx unit_interval unit_interval_topology (projection_map2 S1 unit_interval).
+{
+  exact (projections_are_continuous
+    S1 S1_topology unit_interval unit_interval_topology
+    HtopS1 unit_interval_topology_on).
+}
+claim HfCont : continuous_map X Tx S1 S1_topology f.
+{
+  exact (andEL
+    (continuous_map X Tx S1 S1_topology (projection_map1 S1 unit_interval))
+    (continuous_map X Tx unit_interval unit_interval_topology (projection_map2 S1 unit_interval))
+    HprojXPack).
+}
+claim HfFun : function_on f X S1.
+{
+  exact (continuous_map_function_on X Tx S1 S1_topology f HfCont).
+}
+claim HidS1Cont : continuous_map S1 S1_topology S1 S1_topology idS1.
+{
+  exact (identity_continuous S1 S1_topology HtopS1).
+}
+claim Hconst0Cont : continuous_map S1 S1_topology unit_interval unit_interval_topology (const_fun S1 0).
+{
+  exact (const_fun_continuous
+    S1 S1_topology unit_interval unit_interval_topology 0
+    HtopS1 unit_interval_topology_on zero_in_unit_interval).
+}
+claim HgCont : continuous_map S1 S1_topology X Tx g.
+{
+  exact (maps_into_products
+    S1 S1_topology
+    S1 S1_topology
+    unit_interval unit_interval_topology
+    idS1 (const_fun S1 0)
+    HidS1Cont Hconst0Cont).
+}
+claim HgFun : function_on g S1 X.
+{
+  exact (continuous_map_function_on S1 S1_topology X Tx g HgCont).
+}
+set XI := setprod X unit_interval.
+set TXI := product_topology X Tx unit_interval unit_interval_topology.
+set pX := projection_map1 X unit_interval.
+set scoord := projection_map2 X unit_interval.
+set zcoord := compose_fun XI pX (projection_map1 S1 unit_interval).
+set tcoord := compose_fun XI pX (projection_map2 S1 unit_interval).
+set ts := compose_fun XI (pair_map XI tcoord scoord) mul_fun_R.
+set Hx := pair_map XI zcoord ts.
+claim HtopXI : topology_on XI TXI.
+{
+  exact (product_topology_is_topology
+    X Tx unit_interval unit_interval_topology
+    HtopX unit_interval_topology_on).
+}
+claim HprojXIPack :
+  continuous_map XI TXI X Tx pX /\
+  continuous_map XI TXI unit_interval unit_interval_topology scoord.
+{
+  exact (projections_are_continuous
+    X Tx unit_interval unit_interval_topology
+    HtopX unit_interval_topology_on).
+}
+claim HpXCont : continuous_map XI TXI X Tx pX.
+{
+  exact (andEL
+    (continuous_map XI TXI X Tx pX)
+    (continuous_map XI TXI unit_interval unit_interval_topology scoord)
+    HprojXIPack).
+}
+claim HscoordCont : continuous_map XI TXI unit_interval unit_interval_topology scoord.
+{
+  exact (andER
+    (continuous_map XI TXI X Tx pX)
+    (continuous_map XI TXI unit_interval unit_interval_topology scoord)
+    HprojXIPack).
+}
+claim HzcoordCont : continuous_map XI TXI S1 S1_topology zcoord.
+{
+  exact (composition_continuous
+    XI TXI X Tx S1 S1_topology
+    pX (projection_map1 S1 unit_interval)
+    HpXCont
+    (andEL
+      (continuous_map X Tx S1 S1_topology (projection_map1 S1 unit_interval))
+      (continuous_map X Tx unit_interval unit_interval_topology (projection_map2 S1 unit_interval))
+      HprojXPack)).
+}
+claim HtcoordCont : continuous_map XI TXI unit_interval unit_interval_topology tcoord.
+{
+  exact (composition_continuous
+    XI TXI X Tx unit_interval unit_interval_topology
+    pX (projection_map2 S1 unit_interval)
+    HpXCont
+    (andER
+      (continuous_map X Tx S1 S1_topology (projection_map1 S1 unit_interval))
+      (continuous_map X Tx unit_interval unit_interval_topology (projection_map2 S1 unit_interval))
+      HprojXPack)).
+}
+claim HtsCont : continuous_map XI TXI unit_interval unit_interval_topology ts.
+{
+  exact (mul_two_continuous_unit_interval
+    XI TXI tcoord scoord
+    HtopXI HtcoordCont HscoordCont).
+}
+claim HxCont : continuous_map XI TXI X Tx Hx.
+{
+  exact (maps_into_products
+    XI TXI
+    S1 S1_topology
+    unit_interval unit_interval_topology
+    zcoord ts
+    HzcoordCont HtsCont).
+}
+claim HxAt0 : forall x:set, x :e X ->
+  apply_fun Hx (x, 0) = (x 0, 0).
+{
+  let x.
+  assume HxX.
+  claim Hx0XI : (x, 0) :e XI.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      X unit_interval x 0 HxX zero_in_unit_interval).
+  }
+  rewrite (pair_map_apply XI S1 unit_interval zcoord ts (x, 0) Hx0XI).
+  rewrite (compose_fun_apply XI pX (projection_map1 S1 unit_interval) (x, 0) Hx0XI).
+  rewrite (projection1_apply X unit_interval (x, 0) Hx0XI).
+  rewrite (tuple_2_0_eq x 0).
+  rewrite (projection1_apply S1 unit_interval x HxX).
+  claim HtcoordI : apply_fun tcoord (x, 0) :e unit_interval.
+  {
+    exact (continuous_map_function_on
+      XI TXI unit_interval unit_interval_topology
+      tcoord HtcoordCont (x, 0) Hx0XI).
+  }
+  claim HscoordI : apply_fun scoord (x, 0) :e unit_interval.
+  {
+    exact (continuous_map_function_on
+      XI TXI unit_interval unit_interval_topology
+      scoord HscoordCont (x, 0) Hx0XI).
+  }
+  rewrite (mul_of_pair_map_apply
+    XI tcoord scoord (x, 0) Hx0XI
+    (unit_interval_sub_R (apply_fun tcoord (x, 0)) HtcoordI)
+    (unit_interval_sub_R (apply_fun scoord (x, 0)) HscoordI)).
+  claim Hs0 : apply_fun scoord (x, 0) = 0.
+  {
+    rewrite (projection2_apply X unit_interval (x, 0) Hx0XI).
+    exact (tuple_2_1_eq x 0).
+  }
+  rewrite Hs0.
+  claim HtcoordSNo : SNo (apply_fun tcoord (x, 0)).
+  {
+    exact (real_SNo
+      (apply_fun tcoord (x, 0))
+      (unit_interval_sub_R (apply_fun tcoord (x, 0)) HtcoordI)).
+  }
+  rewrite (mul_SNo_zeroR (apply_fun tcoord (x, 0)) HtcoordSNo).
+  reflexivity.
+}
+claim HxAt1 : forall x:set, x :e X ->
+  apply_fun Hx (x, 1) = x.
+{
+  let x.
+  assume HxX.
+  claim Hx1XI : (x, 1) :e XI.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      X unit_interval x 1 HxX one_in_unit_interval).
+  }
+  rewrite (pair_map_apply XI S1 unit_interval zcoord ts (x, 1) Hx1XI).
+  rewrite (compose_fun_apply XI pX (projection_map1 S1 unit_interval) (x, 1) Hx1XI).
+  rewrite (projection1_apply X unit_interval (x, 1) Hx1XI).
+  rewrite (tuple_2_0_eq x 1).
+  rewrite (projection1_apply S1 unit_interval x HxX).
+  claim HtcoordI : apply_fun tcoord (x, 1) :e unit_interval.
+  {
+    exact (continuous_map_function_on
+      XI TXI unit_interval unit_interval_topology
+      tcoord HtcoordCont (x, 1) Hx1XI).
+  }
+  claim HscoordI : apply_fun scoord (x, 1) :e unit_interval.
+  {
+    exact (continuous_map_function_on
+      XI TXI unit_interval unit_interval_topology
+      scoord HscoordCont (x, 1) Hx1XI).
+  }
+  rewrite (mul_of_pair_map_apply
+    XI tcoord scoord (x, 1) Hx1XI
+    (unit_interval_sub_R (apply_fun tcoord (x, 1)) HtcoordI)
+    (unit_interval_sub_R (apply_fun scoord (x, 1)) HscoordI)).
+  rewrite (compose_fun_apply XI pX (projection_map2 S1 unit_interval) (x, 1) Hx1XI).
+  rewrite (projection1_apply X unit_interval (x, 1) Hx1XI).
+  rewrite (tuple_2_0_eq x 1).
+  rewrite (projection2_apply S1 unit_interval x HxX).
+  rewrite (projection2_apply X unit_interval (x, 1) Hx1XI).
+  rewrite (tuple_2_1_eq x 1).
+  claim Hx1I : x 1 :e unit_interval.
+  {
+    exact (ap1_Sigma S1 (fun _ : set => unit_interval) x HxX).
+  }
+  rewrite (mul_SNo_oneR (x 1)
+    (real_SNo (x 1) (unit_interval_sub_R (x 1) Hx1I))).
+  symmetry.
+  exact (setprod_eta S1 unit_interval x HxX).
+}
+claim HcompfgApply : forall x:set, x :e X ->
+  apply_fun (compose_fun X f g) x = (x 0, 0).
+{
+  let x.
+  assume HxX.
+  rewrite (compose_fun_apply X f g x HxX).
+  claim HfxS1 : apply_fun f x :e S1.
+  {
+    exact (HfFun x HxX).
+  }
+  rewrite (pair_map_apply S1 S1 unit_interval idS1 (const_fun S1 0) (apply_fun f x) HfxS1).
+  rewrite (apply_fun_graph S1 (fun z:set => z) (apply_fun f x) HfxS1).
+  rewrite (const_fun_apply S1 0 (apply_fun f x) HfxS1).
+  rewrite (projection1_apply S1 unit_interval x HxX).
+  reflexivity.
+}
+claim HhomX : homotopic_maps X Tx X Tx (compose_fun X f g) idX.
+{
+  prove continuous_map X Tx X Tx (compose_fun X f g) /\
+    continuous_map X Tx X Tx idX /\
+    exists F:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        X Tx F /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 0) = apply_fun (compose_fun X f g) x) /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 1) = apply_fun idX x).
+  apply and3I.
+  - exact (composition_continuous X Tx S1 S1_topology X Tx f g HfCont HgCont).
+  - exact (identity_continuous X Tx HtopX).
+  - witness Hx.
+    apply and3I.
+    + exact HxCont.
+    + let x.
+      assume HxX.
+      rewrite (HxAt0 x HxX).
+      symmetry.
+      exact (HcompfgApply x HxX).
+    + let x.
+      assume HxX.
+      rewrite (HxAt1 x HxX).
+      symmetry.
+      exact (apply_fun_graph X (fun x0:set => x0) x HxX).
+}
+set Hy := projection_map1 S1 unit_interval.
+claim HyCont :
+  continuous_map
+    (setprod S1 unit_interval)
+    (product_topology S1 S1_topology unit_interval unit_interval_topology)
+    S1 S1_topology
+    Hy.
+{
+  exact (andEL
+    (continuous_map (setprod S1 unit_interval)
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      S1 S1_topology
+      (projection_map1 S1 unit_interval))
+    (continuous_map (setprod S1 unit_interval)
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      unit_interval unit_interval_topology
+      (projection_map2 S1 unit_interval))
+    HprojXPack).
+}
+claim HcompgfApply : forall z:set, z :e S1 ->
+  apply_fun (compose_fun S1 g f) z = z.
+{
+  let z.
+  assume HzS1.
+  rewrite (compose_fun_apply S1 g f z HzS1).
+  claim HgzX : apply_fun g z :e X.
+  {
+    exact (HgFun z HzS1).
+  }
+  rewrite (projection1_apply S1 unit_interval (apply_fun g z) HgzX).
+  rewrite (pair_map_apply S1 S1 unit_interval idS1 (const_fun S1 0) z HzS1).
+  rewrite (tuple_2_0_eq (apply_fun idS1 z) (apply_fun (const_fun S1 0) z)).
+  rewrite (apply_fun_graph S1 (fun z0:set => z0) z HzS1).
+  reflexivity.
+}
+claim HhomS1 :
+  homotopic_maps S1 S1_topology S1 S1_topology (compose_fun S1 g f) idS1.
+{
+  prove continuous_map S1 S1_topology S1 S1_topology (compose_fun S1 g f) /\
+    continuous_map S1 S1_topology S1 S1_topology idS1 /\
+    exists F:set,
+      continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        S1 S1_topology F /\
+      (forall z:set, z :e S1 ->
+        apply_fun F (z, 0) = apply_fun (compose_fun S1 g f) z) /\
+      (forall z:set, z :e S1 ->
+        apply_fun F (z, 1) = apply_fun idS1 z).
+  apply and3I.
+  - exact (composition_continuous S1 S1_topology X Tx S1 S1_topology g f HgCont HfCont).
+  - exact HidS1Cont.
+  - witness Hy.
+    apply and3I.
+    + exact HyCont.
+    + let z.
+      assume HzS1.
+      claim Hz0 : (z, 0) :e setprod S1 unit_interval.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          S1 unit_interval z 0 HzS1 zero_in_unit_interval).
+      }
+      rewrite (projection1_apply S1 unit_interval (z, 0) Hz0).
+      rewrite (tuple_2_0_eq z 0).
+      symmetry.
+      exact (HcompgfApply z HzS1).
+    + let z.
+      assume HzS1.
+      claim Hz1 : (z, 1) :e setprod S1 unit_interval.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          S1 unit_interval z 1 HzS1 one_in_unit_interval).
+      }
+      rewrite (projection1_apply S1 unit_interval (z, 1) Hz1).
+      rewrite (tuple_2_0_eq z 1).
+      symmetry.
+      exact (apply_fun_graph S1 (fun z0:set => z0) z HzS1).
+}
+claim Hequiv : homotopy_equivalence X Tx S1 S1_topology f.
+{
+  prove continuous_map X Tx S1 S1_topology f /\
+    exists g0:set, continuous_map S1 S1_topology X Tx g0 /\
+      homotopic_maps X Tx X Tx
+        (compose_fun X f g0) (graph X (fun x:set => x)) /\
+      homotopic_maps S1 S1_topology S1 S1_topology
+        (compose_fun S1 g0 f) (graph S1 (fun z:set => z)).
+  apply andI.
+  - exact HfCont.
+  - witness g.
+    exact (and3I
+      (continuous_map S1 S1_topology X Tx g)
+      (homotopic_maps X Tx X Tx
+        (compose_fun X f g) (graph X (fun x:set => x)))
+      (homotopic_maps S1 S1_topology S1 S1_topology
+        (compose_fun S1 g f) (graph S1 (fun z:set => z)))
+      HgCont HhomX HhomS1).
+}
+claim Hfx0 : apply_fun f x0 = x0 0.
+{
+  exact (projection1_apply S1 unit_interval x0 Hx0).
+}
+rewrite <- Hfx0.
+witness (induced_homomorphism X Tx x0 S1 S1_topology (apply_fun f x0) f).
+exact (thm58_7_homotopy_equiv_isomorphism
+  X Tx S1 S1_topology f x0 Hequiv Hx0).
+Qed.
 
 (** from S58 Exercise 2(d) (line 1480 in algtop.tex): infinite cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Bob 33 **)
 (** Admin-approved-refactored per noticeboard proposal batch1 **)
+(** Proven Bob **)
 Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 R ->
   exists phi:set,
@@ -224303,8 +225371,409 @@ Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
       (fundamental_group S1 S1_topology (x0 0))
       (fundamental_group_mult S1 S1_topology (x0 0))
       phi.
-admit.
-Admitted.
+let x0.
+assume Hx0.
+set X := setprod S1 R.
+set Tx := product_topology S1 S1_topology R R_standard_topology.
+set idS1 := graph S1 (fun z:set => z).
+set idX := graph X (fun x:set => x).
+set f := projection_map1 S1 R.
+set g := pair_map S1 idS1 (const_fun S1 0).
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_dom
+    S1
+    S1_topology
+    B2
+    B2_topology
+    (graph S1 (fun x:set => x))
+    inclusion_S1_B2_continuous).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (product_topology_is_topology
+    S1 S1_topology R R_standard_topology
+    HtopS1 R_standard_topology_is_topology).
+}
+claim HprojXPack :
+  continuous_map X Tx S1 S1_topology (projection_map1 S1 R) /\
+  continuous_map X Tx R R_standard_topology (projection_map2 S1 R).
+{
+  exact (projections_are_continuous
+    S1 S1_topology R R_standard_topology
+    HtopS1 R_standard_topology_is_topology).
+}
+claim HfCont : continuous_map X Tx S1 S1_topology f.
+{
+  exact (andEL
+    (continuous_map X Tx S1 S1_topology (projection_map1 S1 R))
+    (continuous_map X Tx R R_standard_topology (projection_map2 S1 R))
+    HprojXPack).
+}
+claim HfFun : function_on f X S1.
+{
+  exact (continuous_map_function_on X Tx S1 S1_topology f HfCont).
+}
+claim HidS1Cont : continuous_map S1 S1_topology S1 S1_topology idS1.
+{
+  exact (identity_continuous S1 S1_topology HtopS1).
+}
+claim Hconst0Cont : continuous_map S1 S1_topology R R_standard_topology (const_fun S1 0).
+{
+  exact (const_fun_continuous
+    S1 S1_topology R R_standard_topology 0
+    HtopS1 R_standard_topology_is_topology real_0).
+}
+claim HgCont : continuous_map S1 S1_topology X Tx g.
+{
+  exact (maps_into_products
+    S1 S1_topology
+    S1 S1_topology
+    R R_standard_topology
+    idS1 (const_fun S1 0)
+    HidS1Cont Hconst0Cont).
+}
+claim HgFun : function_on g S1 X.
+{
+  exact (continuous_map_function_on S1 S1_topology X Tx g HgCont).
+}
+set XI := setprod X unit_interval.
+set TXI := product_topology X Tx unit_interval unit_interval_topology.
+set pX := projection_map1 X unit_interval.
+set scoordI := projection_map2 X unit_interval.
+set zcoord := compose_fun XI pX (projection_map1 S1 R).
+set rcoord := compose_fun XI pX (projection_map2 S1 R).
+set incl_I := {(t,t)|t :e unit_interval}.
+set scoordR := compose_fun XI scoordI incl_I.
+set ts := compose_fun XI (pair_map XI rcoord scoordR) mul_fun_R.
+set Hx := pair_map XI zcoord ts.
+claim HtopXI : topology_on XI TXI.
+{
+  exact (product_topology_is_topology
+    X Tx unit_interval unit_interval_topology
+    HtopX unit_interval_topology_on).
+}
+claim HinclICont : continuous_map unit_interval unit_interval_topology R R_standard_topology incl_I.
+{
+  exact unit_interval_inclusion_continuous.
+}
+claim HprojXIPack :
+  continuous_map XI TXI X Tx pX /\
+  continuous_map XI TXI unit_interval unit_interval_topology scoordI.
+{
+  exact (projections_are_continuous
+    X Tx unit_interval unit_interval_topology
+    HtopX unit_interval_topology_on).
+}
+claim HpXCont : continuous_map XI TXI X Tx pX.
+{
+  exact (andEL
+    (continuous_map XI TXI X Tx pX)
+    (continuous_map XI TXI unit_interval unit_interval_topology scoordI)
+    HprojXIPack).
+}
+claim HscoordICont : continuous_map XI TXI unit_interval unit_interval_topology scoordI.
+{
+  exact (andER
+    (continuous_map XI TXI X Tx pX)
+    (continuous_map XI TXI unit_interval unit_interval_topology scoordI)
+    HprojXIPack).
+}
+claim HzcoordCont : continuous_map XI TXI S1 S1_topology zcoord.
+{
+  exact (composition_continuous
+    XI TXI X Tx S1 S1_topology
+    pX (projection_map1 S1 R)
+    HpXCont
+    (andEL
+      (continuous_map X Tx S1 S1_topology (projection_map1 S1 R))
+      (continuous_map X Tx R R_standard_topology (projection_map2 S1 R))
+      HprojXPack)).
+}
+claim HrcoordCont : continuous_map XI TXI R R_standard_topology rcoord.
+{
+  exact (composition_continuous
+    XI TXI X Tx R R_standard_topology
+    pX (projection_map2 S1 R)
+    HpXCont
+    (andER
+      (continuous_map X Tx S1 S1_topology (projection_map1 S1 R))
+      (continuous_map X Tx R R_standard_topology (projection_map2 S1 R))
+      HprojXPack)).
+}
+claim HscoordRCont : continuous_map XI TXI R R_standard_topology scoordR.
+{
+  exact (composition_continuous
+    XI TXI unit_interval unit_interval_topology R R_standard_topology
+    scoordI incl_I
+    HscoordICont HinclICont).
+}
+claim HtsCont : continuous_map XI TXI R R_standard_topology ts.
+{
+  exact (mul_two_continuous_R
+    XI TXI rcoord scoordR
+    HtopXI HrcoordCont HscoordRCont).
+}
+claim HxCont : continuous_map XI TXI X Tx Hx.
+{
+  exact (maps_into_products
+    XI TXI
+    S1 S1_topology
+    R R_standard_topology
+    zcoord ts
+    HzcoordCont HtsCont).
+}
+claim HxAt0 : forall x:set, x :e X ->
+  apply_fun Hx (x, 0) = (x 0, 0).
+{
+  let x.
+  assume HxX.
+  claim Hx0XI : (x, 0) :e XI.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      X unit_interval x 0 HxX zero_in_unit_interval).
+  }
+  rewrite (pair_map_apply XI S1 R zcoord ts (x, 0) Hx0XI).
+  rewrite (compose_fun_apply XI pX (projection_map1 S1 R) (x, 0) Hx0XI).
+  rewrite (projection1_apply X unit_interval (x, 0) Hx0XI).
+  rewrite (tuple_2_0_eq x 0).
+  rewrite (projection1_apply S1 R x HxX).
+  claim HrcoordR : apply_fun rcoord (x, 0) :e R.
+  {
+    exact (continuous_map_function_on
+      XI TXI R R_standard_topology
+      rcoord HrcoordCont (x, 0) Hx0XI).
+  }
+  claim HscoordRR : apply_fun scoordR (x, 0) :e R.
+  {
+    exact (continuous_map_function_on
+      XI TXI R R_standard_topology
+      scoordR HscoordRCont (x, 0) Hx0XI).
+  }
+  rewrite (mul_of_pair_map_apply
+    XI rcoord scoordR (x, 0) Hx0XI
+    HrcoordR HscoordRR).
+  claim Hs0 : apply_fun scoordR (x, 0) = 0.
+  {
+    rewrite (compose_fun_apply XI scoordI incl_I (x, 0) Hx0XI).
+    rewrite (projection2_apply X unit_interval (x, 0) Hx0XI).
+    rewrite (tuple_2_1_eq x 0).
+    exact (identity_function_apply unit_interval 0 zero_in_unit_interval).
+  }
+  rewrite Hs0.
+  rewrite (mul_SNo_zeroR (apply_fun rcoord (x, 0)) (real_SNo (apply_fun rcoord (x, 0)) HrcoordR)).
+  reflexivity.
+}
+claim HxAt1 : forall x:set, x :e X ->
+  apply_fun Hx (x, 1) = x.
+{
+  let x.
+  assume HxX.
+  claim Hx1XI : (x, 1) :e XI.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      X unit_interval x 1 HxX one_in_unit_interval).
+  }
+  rewrite (pair_map_apply XI S1 R zcoord ts (x, 1) Hx1XI).
+  rewrite (compose_fun_apply XI pX (projection_map1 S1 R) (x, 1) Hx1XI).
+  rewrite (projection1_apply X unit_interval (x, 1) Hx1XI).
+  rewrite (tuple_2_0_eq x 1).
+  rewrite (projection1_apply S1 R x HxX).
+  claim HrcoordR : apply_fun rcoord (x, 1) :e R.
+  {
+    exact (continuous_map_function_on
+      XI TXI R R_standard_topology
+      rcoord HrcoordCont (x, 1) Hx1XI).
+  }
+  claim HscoordRR : apply_fun scoordR (x, 1) :e R.
+  {
+    exact (continuous_map_function_on
+      XI TXI R R_standard_topology
+      scoordR HscoordRCont (x, 1) Hx1XI).
+  }
+  rewrite (mul_of_pair_map_apply
+    XI rcoord scoordR (x, 1) Hx1XI
+    HrcoordR HscoordRR).
+  claim Hs1 : apply_fun scoordR (x, 1) = 1.
+  {
+    rewrite (compose_fun_apply XI scoordI incl_I (x, 1) Hx1XI).
+    rewrite (projection2_apply X unit_interval (x, 1) Hx1XI).
+    rewrite (tuple_2_1_eq x 1).
+    exact (identity_function_apply unit_interval 1 one_in_unit_interval).
+  }
+  rewrite Hs1.
+  rewrite (mul_SNo_oneR (apply_fun rcoord (x, 1)) (real_SNo (apply_fun rcoord (x, 1)) HrcoordR)).
+  rewrite (compose_fun_apply XI pX (projection_map2 S1 R) (x, 1) Hx1XI).
+  rewrite (projection1_apply X unit_interval (x, 1) Hx1XI).
+  rewrite (tuple_2_0_eq x 1).
+  rewrite (projection2_apply S1 R x HxX).
+  symmetry.
+  exact (setprod_eta S1 R x HxX).
+}
+claim HcompfgApply : forall x:set, x :e X ->
+  apply_fun (compose_fun X f g) x = (x 0, 0).
+{
+  let x.
+  assume HxX.
+  rewrite (compose_fun_apply X f g x HxX).
+  claim HfxS1 : apply_fun f x :e S1.
+  {
+    exact (HfFun x HxX).
+  }
+  rewrite (pair_map_apply S1 S1 R idS1 (const_fun S1 0) (apply_fun f x) HfxS1).
+  rewrite (apply_fun_graph S1 (fun z:set => z) (apply_fun f x) HfxS1).
+  rewrite (const_fun_apply S1 0 (apply_fun f x) HfxS1).
+  rewrite (projection1_apply S1 R x HxX).
+  reflexivity.
+}
+claim HhomX : homotopic_maps X Tx X Tx (compose_fun X f g) idX.
+{
+  prove continuous_map X Tx X Tx (compose_fun X f g) /\
+    continuous_map X Tx X Tx idX /\
+    exists F:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        X Tx F /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 0) = apply_fun (compose_fun X f g) x) /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 1) = apply_fun idX x).
+  apply and3I.
+  - exact (composition_continuous X Tx S1 S1_topology X Tx f g HfCont HgCont).
+  - exact (identity_continuous X Tx HtopX).
+  - witness Hx.
+    apply and3I.
+    + exact HxCont.
+    + let x.
+      assume HxX.
+      rewrite (HxAt0 x HxX).
+      symmetry.
+      exact (HcompfgApply x HxX).
+    + let x.
+      assume HxX.
+      rewrite (HxAt1 x HxX).
+      symmetry.
+      exact (apply_fun_graph X (fun x0:set => x0) x HxX).
+}
+set Hy := projection_map1 S1 unit_interval.
+claim HprojYPack :
+  continuous_map (setprod S1 unit_interval)
+    (product_topology S1 S1_topology unit_interval unit_interval_topology)
+    S1 S1_topology
+    (projection_map1 S1 unit_interval) /\
+  continuous_map (setprod S1 unit_interval)
+    (product_topology S1 S1_topology unit_interval unit_interval_topology)
+    unit_interval unit_interval_topology
+    (projection_map2 S1 unit_interval).
+{
+  exact (projections_are_continuous
+    S1 S1_topology unit_interval unit_interval_topology
+    HtopS1 unit_interval_topology_on).
+}
+claim HyCont :
+  continuous_map
+    (setprod S1 unit_interval)
+    (product_topology S1 S1_topology unit_interval unit_interval_topology)
+    S1 S1_topology
+    Hy.
+{
+  exact (andEL
+    (continuous_map (setprod S1 unit_interval)
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      S1 S1_topology
+      (projection_map1 S1 unit_interval))
+    (continuous_map (setprod S1 unit_interval)
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      unit_interval unit_interval_topology
+      (projection_map2 S1 unit_interval))
+    HprojYPack).
+}
+claim HcompgfApply : forall z:set, z :e S1 ->
+  apply_fun (compose_fun S1 g f) z = z.
+{
+  let z.
+  assume HzS1.
+  rewrite (compose_fun_apply S1 g f z HzS1).
+  claim HgzX : apply_fun g z :e X.
+  {
+    exact (HgFun z HzS1).
+  }
+  rewrite (projection1_apply S1 R (apply_fun g z) HgzX).
+  rewrite (pair_map_apply S1 S1 R idS1 (const_fun S1 0) z HzS1).
+  rewrite (tuple_2_0_eq (apply_fun idS1 z) (apply_fun (const_fun S1 0) z)).
+  rewrite (apply_fun_graph S1 (fun z0:set => z0) z HzS1).
+  reflexivity.
+}
+claim HhomS1 :
+  homotopic_maps S1 S1_topology S1 S1_topology (compose_fun S1 g f) idS1.
+{
+  prove continuous_map S1 S1_topology S1 S1_topology (compose_fun S1 g f) /\
+    continuous_map S1 S1_topology S1 S1_topology idS1 /\
+    exists F:set,
+      continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        S1 S1_topology F /\
+      (forall z:set, z :e S1 ->
+        apply_fun F (z, 0) = apply_fun (compose_fun S1 g f) z) /\
+      (forall z:set, z :e S1 ->
+        apply_fun F (z, 1) = apply_fun idS1 z).
+  apply and3I.
+  - exact (composition_continuous S1 S1_topology X Tx S1 S1_topology g f HgCont HfCont).
+  - exact HidS1Cont.
+  - witness Hy.
+    apply and3I.
+    + exact HyCont.
+    + let z.
+      assume HzS1.
+      claim Hz0 : (z, 0) :e setprod S1 unit_interval.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          S1 unit_interval z 0 HzS1 zero_in_unit_interval).
+      }
+      rewrite (projection1_apply S1 unit_interval (z, 0) Hz0).
+      rewrite (tuple_2_0_eq z 0).
+      symmetry.
+      exact (HcompgfApply z HzS1).
+    + let z.
+      assume HzS1.
+      claim Hz1 : (z, 1) :e setprod S1 unit_interval.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          S1 unit_interval z 1 HzS1 one_in_unit_interval).
+      }
+      rewrite (projection1_apply S1 unit_interval (z, 1) Hz1).
+      rewrite (tuple_2_0_eq z 1).
+      symmetry.
+      exact (apply_fun_graph S1 (fun z0:set => z0) z HzS1).
+}
+claim Hequiv : homotopy_equivalence X Tx S1 S1_topology f.
+{
+  prove continuous_map X Tx S1 S1_topology f /\
+    exists g0:set, continuous_map S1 S1_topology X Tx g0 /\
+      homotopic_maps X Tx X Tx
+        (compose_fun X f g0) (graph X (fun x:set => x)) /\
+      homotopic_maps S1 S1_topology S1 S1_topology
+        (compose_fun S1 g0 f) (graph S1 (fun z:set => z)).
+  apply andI.
+  - exact HfCont.
+  - witness g.
+    exact (and3I
+      (continuous_map S1 S1_topology X Tx g)
+      (homotopic_maps X Tx X Tx
+        (compose_fun X f g) (graph X (fun x:set => x)))
+      (homotopic_maps S1 S1_topology S1 S1_topology
+        (compose_fun S1 g f) (graph S1 (fun z:set => z)))
+      HgCont HhomX HhomS1).
+}
+claim Hfx0 : apply_fun f x0 = x0 0.
+{
+  exact (projection1_apply S1 R x0 Hx0).
+}
+rewrite <- Hfx0.
+witness (induced_homomorphism X Tx x0 S1 S1_topology (apply_fun f x0) f).
+exact (thm58_7_homotopy_equiv_isomorphism
+  X Tx S1 S1_topology f x0 Hequiv Hx0).
+Qed.
 
 (** from S58 Exercise 2(e) (line 1481 in algtop.tex): R^3 with nonneg axes deleted pi1 **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
@@ -392789,7 +394258,30 @@ apply andI.
       (fun y Hy => HpiSurj y Hy)).
   }
   claim HT1X : T1_space X Tx.
-  { admit. }
+  {
+    claim HoneptX : one_point_sets_closed X Tx.
+    {
+      exact (andEL
+        (one_point_sets_closed X Tx)
+        (forall A B : set , closed_in X Tx A -> closed_in X Tx B -> A :/\: B = Empty ->
+          exists U V : set , U :e Tx /\ V :e Tx /\ A c= U /\ B c= V /\ U :/\: V = Empty)
+        HnormX).
+    }
+    claim HsingletonsX : forall x:set, x :e X -> closed_in X Tx {x}.
+    {
+      exact (andER
+        (topology_on X Tx)
+        (forall x:set, x :e X -> closed_in X Tx {x})
+        HoneptX).
+    }
+    claim HT1Iff : T1_space X Tx <-> (forall x:set, x :e X -> closed_in X Tx {x}).
+    { exact (lemma_T1_singletons_closed X Tx HtopX). }
+    exact (iffER
+      (T1_space X Tx)
+      (forall x:set, x :e X -> closed_in X Tx {x})
+      HT1Iff
+      HsingletonsX).
+  }
   exact (normal_T1_implies_Hausdorff X Tx HnormX HT1X).
 Admitted.
 
