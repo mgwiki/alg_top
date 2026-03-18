@@ -280110,14 +280110,42 @@ Lemma S2_complement_simple_closed_curve_exactly_two_components :
 admit.
 Admitted.
 
+(** Forward declaration: S^2 is locally connected **)
+(** The full proof is Sn2_locally_connected (later in file) **)
+Lemma Sn2_locally_connected_fwd :
+  locally_connected (Sn 2) (Sn_topology 2).
+admit.
+Admitted.
+
 (** Forward declaration: components of S^2-C are open in S^2 **)
-(** Uses Sn2_locally_connected (later) + Sn2_complement_open (later) **)
+(** Uses Sn2_locally_connected + Sn2_complement_open (QED) **)
 Lemma jordan_step1_component_open : forall C x:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
   x :e Sn 2 :\: C ->
   component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x :e Sn_topology 2.
-admit.
+let C x. assume HC Hscc Hx.
+set SmC := Sn 2 :\: C.
+set TSmC := subspace_topology (Sn 2) (Sn_topology 2) SmC.
+(** SmC is open in S^2 **)
+claim HSmCopen : SmC :e Sn_topology 2.
+{ exact (Sn2_complement_simple_closed_curve_open C HC Hscc). }
+(** S^2 locally connected -> SmC locally connected (open subspace) **)
+claim HlcSmC : locally_connected SmC TSmC.
+{ exact (open_subspace_locally_connected (Sn 2) (Sn_topology 2) SmC Sn2_locally_connected_fwd HSmCopen). }
+(** Components of SmC are open in SmC **)
+claim Hcomp_open_SmC : open_in SmC TSmC (component_of SmC TSmC x).
+{ exact (components_are_open_in_locally_connected SmC TSmC HlcSmC x Hx). }
+claim Hcomp_in_TSmC : component_of SmC TSmC x :e TSmC.
+{ exact (andER (topology_on SmC TSmC) (component_of SmC TSmC x :e TSmC) Hcomp_open_SmC). }
+(** Open in open subspace -> open in ambient **)
+claim HtopSn : topology_on (Sn 2) (Sn_topology 2).
+{ exact (lemma59_3_Sn_topology_on 2). }
+claim Hcomp_sub : component_of SmC TSmC x c= SmC.
+{ exact (component_of_subset_space SmC TSmC x
+    (locally_connected_topology SmC TSmC HlcSmC) Hx). }
+exact (open_in_subspace_if_ambient_open (Sn 2) (Sn_topology 2) SmC
+  (component_of SmC TSmC x) HtopSn HSmCopen Hcomp_sub Hcomp_open_SmC).
 Admitted.
 
 (** Forward declaration: components of S^2-C are connected in S^2 subspace topology **)
