@@ -279331,6 +279331,16 @@ Theorem thm63_2_arc_nonseparation : forall D:set,
   D c= Sn 2 ->
   is_arc D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
   ~(separates (Sn 2) (Sn_topology 2) D).
+let D.
+assume HD : D c= Sn 2.
+assume Harc : is_arc D (subspace_topology (Sn 2) (Sn_topology 2) D).
+(** First proof from textbook: D contractible -> nulhomotopic -> Borsuk -> connected **)
+(** Assume for contradiction that D separates S^2 **)
+assume Hsep : separates (Sn 2) (Sn_topology 2) D.
+(** separates means D c= Sn 2 /\ ~connected(Sn 2 - D) **)
+(** From ~connected, get two points a,b in different components of S^2-D **)
+(** D is contractible (arc homeo [0,1]). So inclusion j: D -> S^2-{a,b} nulhomotopic. **)
+(** j is injective. By Borsuk (62.2): a,b in same component. Contradiction. **)
 admit.
 Admitted.
 
@@ -279349,6 +279359,27 @@ Theorem thm63_3_general_nonseparation : forall D1 D2:set,
   ~(separates (Sn 2) (Sn_topology 2) D1) ->
   ~(separates (Sn 2) (Sn_topology 2) D2) ->
   ~(separates (Sn 2) (Sn_topology 2) (D1 :\/: D2)).
+let D1 D2.
+assume HD1 : D1 c= Sn 2.
+assume HD2 : D2 c= Sn 2.
+assume HD1closed : Sn 2 :\: D1 :e Sn_topology 2.
+assume HD2closed : Sn 2 :\: D2 :e Sn_topology 2.
+assume Hsc : simply_connected (Sn 2 :\: (D1 :/\: D2))
+  (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: (D1 :/\: D2))).
+assume Hnsep1 : ~(separates (Sn 2) (Sn_topology 2) D1).
+assume Hnsep2 : ~(separates (Sn 2) (Sn_topology 2) D2).
+(** Proof (Thm 63.3): Suppose D1 union D2 separates S^2. **)
+(** Let X = S^2-(D1 cap D2), U = S^2-D1, V = S^2-D2 (open in S^2, hence in X). **)
+(** X = U union V. U cap V = S^2-(D1 union D2). **)
+(** If D1 union D2 separates, then S^2-(D1 union D2) is disconnected. **)
+(** Since S^2 locally connected, components of S^2-(D1 union D2) are open. **)
+(** Write U cap V = A sqcup B (at least 2 nonempty open pieces). **)
+(** Since D1 doesn't separate: can connect a in A to b in B via path in S^2-D1 = U. **)
+(** Since D2 doesn't separate: can connect b to a via path in S^2-D2 = V. **)
+(** By thm 63.1(a): pi_1(X,a) contains infinite cyclic subgroup. **)
+(** But X = S^2-(D1 cap D2) is simply connected. Contradiction. **)
+assume Hsep : separates (Sn 2) (Sn_topology 2) (D1 :\/: D2).
+(** The full argument is encapsulated here **)
 admit.
 Admitted.
 
@@ -279658,17 +279689,48 @@ claim Htwo : exists x1 x2:set, x1 :e Sn 2 :\: C /\ x2 :e Sn 2 :\: C /\
 { exact (S2_complement_simple_closed_curve_exactly_two_components C HC Hscc). }
 apply Htwo. let x1. assume Hx1e.
 apply Hx1e. let x2. assume Hx12.
-(** abbreviations **)
-set Smc := Sn 2 :\: C.
-set Tsmc := subspace_topology (Sn 2) (Sn_topology 2) Smc.
-set W1 := component_of Smc Tsmc x1.
-set W2 := component_of Smc Tsmc x2.
+(** Extract: x1, x2 in S^2-C, components distinct, all points in one of two **)
+(** We'll use the components as W1, W2 **)
+(** Need: x1 in S^2-C, x2 in S^2-C, components different, and universality **)
+(** The exact unpacking depends on the conjunction structure **)
 admit.
 Admitted.
 
 (** JCT Step 2: boundary condition -- each point of C is in the boundary **)
 (** of each component. Uses: arc decomposition of simple closed curve, **)
 (** arc nonseparation (63.2), and the intermediate value theorem argument. **)
+(** Helper for step 2: closure(W) \ W is contained in C **)
+(** This is the easy direction: W is open in S^2, W c= S^2-C, **)
+(** so closure(W)\W c= S^2\W. And W c= S^2-C means C c= S^2\W. **)
+(** Actually, closure(W)\W c= S^2\(S^2-C) = C since W is a component of S^2-C. **)
+Lemma boundary_subset_C : forall C W:set,
+  C c= Sn 2 ->
+  W :e Sn_topology 2 -> W c= Sn 2 :\: C ->
+  closure_of (Sn 2) (Sn_topology 2) W :\: W c= C.
+admit.
+Admitted.
+
+(** Helper for step 2: each point of C is in closure(W)\W **)
+(** This is the hard direction. For each x in C and open U containing x: **)
+(** break C into small arc C1 c= U and C2. By arc nonseparation, **)
+(** S^2-C2 is path connected. Since W1, W2 are both subsets of S^2-C c= S^2-C2, **)
+(** there is a path in S^2-C2 from a point of W1 to a point of W2. **)
+(** This path must cross closure(W1)\W1 (since W1, W2 are separated). **)
+(** The crossing point is in C (since closure(W1)\W1 c= C), and avoids C2, **)
+(** so it's in C1 c= U. Hence U intersects closure(W1)\W1. **)
+Lemma C_subset_boundary : forall C W1 W2:set,
+  C c= Sn 2 ->
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
+  W1 :e Sn_topology 2 -> W2 :e Sn_topology 2 ->
+  W1 :/\: W2 = Empty ->
+  Sn 2 :\: C = W1 :\/: W2 ->
+  W1 <> Empty -> W2 <> Empty ->
+  connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) ->
+  connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) ->
+  C c= closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
+admit.
+Admitted.
+
 Lemma jordan_curve_step2_boundary : forall C W1 W2:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -279680,7 +279742,38 @@ Lemma jordan_curve_step2_boundary : forall C W1 W2:set,
   connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) ->
   closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C /\
   closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C.
-admit.
+let C W1 W2.
+assume HC : C c= Sn 2.
+assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
+assume HW1open : W1 :e Sn_topology 2.
+assume HW2open : W2 :e Sn_topology 2.
+assume Hdisj : W1 :/\: W2 = Empty.
+assume Hunion : Sn 2 :\: C = W1 :\/: W2.
+assume HW1ne : W1 <> Empty.
+assume HW2ne : W2 <> Empty.
+assume HW1conn : connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1).
+assume HW2conn : connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
+(** W1 c= S^2-C and W2 c= S^2-C from the union decomposition **)
+claim HW1sub : W1 c= Sn 2 :\: C.
+{ admit. }
+claim HW2sub : W2 c= Sn 2 :\: C.
+{ admit. }
+apply andI.
+- (** closure(W1) \ W1 = C **)
+  (** Both directions: subset C (easy) and C subset boundary (hard) **)
+  claim Hsubset : closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 c= C.
+  { exact (boundary_subset_C C W1 HC HW1open HW1sub). }
+  claim Hsupset : C c= closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
+  { exact (C_subset_boundary C W1 W2 HC Hscc HW1open HW2open Hdisj Hunion HW1ne HW2ne HW1conn HW2conn). }
+  admit.
+- (** closure(W2) \ W2 = C - symmetric argument **)
+  claim Hsubset : closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 c= C.
+  { exact (boundary_subset_C C W2 HC HW2open HW2sub). }
+  claim Hsupset : C c= closure_of (Sn 2) (Sn_topology 2) W2 :\: W2.
+  { (** By symmetry: swap W1 and W2 in the C_subset_boundary argument **)
+    (** Need to show S^2-C = W2 union W1 and W2 cap W1 = Empty **)
+    admit. }
+  admit.
 Admitted.
 
 (** from S63 Thm 63.4 (line 2180 in algtop.tex) **)
