@@ -280171,11 +280171,15 @@ apply andI.
   claim HUmet : U :e metric_topology R R_bounded_metric.
   { rewrite metric_topology_R_bounded_metric_eq_R_standard_topology_early. exact HU. }
   (** Get a ball inside U **)
-  claim Hball_exists : exists r:set, r :e R /\ Rlt 0 r /\ open_ball R R_bounded_metric x r c= U.
-  { admit. }
-  (** Get r < 1 ball inside U **)
+  (** Get r < 1 ball inside U using metric_topology_neighborhood_contains_ball_bounded **)
   claim Hball_small : exists r:set, r :e R /\ Rlt 0 r /\ Rlt r 1 /\ open_ball R R_bounded_metric x r c= U.
-  { admit. }
+  { claim Hresult : exists r:set, r :e R /\ Rlt 0 r /\ open_ball R R_bounded_metric x r c= U /\ Rlt r 1.
+    { exact (metric_topology_neighborhood_contains_ball_bounded R R_bounded_metric x U 1
+        R_bounded_metric_is_metric_on HxR HUmet HxU real_1 Rlt_0_1). }
+    apply Hresult. let r. assume Hr4.
+    (** Hr4 : (r :e R /\ Rlt 0 r) /\ open_ball ... c= U /\ Rlt r 1 **)
+    (** Repackage: r :e R /\ Rlt 0 r /\ Rlt r 1 /\ ball c= U **)
+    witness r. admit. }
   apply Hball_small. let r. assume Hr.
   apply (and4E (r :e R) (Rlt 0 r) (Rlt r 1) (open_ball R R_bounded_metric x r c= U) Hr).
   assume HrR : r :e R.
@@ -280202,7 +280206,34 @@ apply andI.
     claim HxprR : add_SNo x r :e R.
     { exact (real_add_SNo x HxR r HrR). }
     claim Hlt : Rlt (add_SNo x (minus_SNo r)) (add_SNo x r).
-    { admit. }
+    { (** x + (-r) < x + r because -r < r (from 0 < r) **)
+      claim HxSNo : SNo x. { exact (real_SNo x HxR). }
+      claim HrSNo : SNo r. { exact (real_SNo r HrR). }
+      claim HmrSNo : SNo (minus_SNo r). { exact (SNo_minus_SNo r HrSNo). }
+      (** -r < 0 from 0 < r: use add_SNo_Lt2 then simplify **)
+      claim Hmr_lt_0 : SNoLt (minus_SNo r) 0.
+      { (** -r + r = 0 and 0 + r = r, so -r < 0 iff -r + r < 0 + r iff 0 < r **)
+        (** More directly: add_SNo_Lt2 (minus_SNo r) 0 r gives -r+0 < -r+r = 0 **)
+        claim Hr_pos_SNo : SNoLt 0 r. { exact (RltE_lt 0 r Hr_pos). }
+        (** -r < 0 from 0 < r: build -r+0 < -r+r then simplify **)
+        claim Hmr_lt_mr_plus_r : SNoLt (add_SNo (minus_SNo r) 0) (add_SNo (minus_SNo r) r).
+        { exact (add_SNo_Lt2 (minus_SNo r) 0 r HmrSNo SNo_0 HrSNo Hr_pos_SNo). }
+        (** -r + 0 = -r **)
+        (** -r + r = 0 **)
+        prove SNoLt (minus_SNo r) 0.
+        (** First rewrite 0 -> -r+r, then rewrite -r -> -r+0 **)
+        rewrite <- (add_SNo_minus_SNo_linv r HrSNo).
+        (** Goal: SNoLt (minus_SNo r) (add_SNo (minus_SNo r) r) **)
+        rewrite <- (add_SNo_0R (minus_SNo r) HmrSNo) at 1.
+        (** Goal: SNoLt (add_SNo (minus_SNo r) 0) (add_SNo (minus_SNo r) r) **)
+        exact Hmr_lt_mr_plus_r. }
+      (** Now -r < r by transitivity, then x+(-r) < x+r **)
+      claim Hr_pos_SNo2 : SNoLt 0 r. { exact (RltE_lt 0 r Hr_pos). }
+      claim Hmr_lt_r : SNoLt (minus_SNo r) r.
+      { exact (SNoLt_tra (minus_SNo r) 0 r HmrSNo SNo_0 HrSNo Hmr_lt_0 Hr_pos_SNo2). }
+      claim Hxmr_lt_xr : SNoLt (add_SNo x (minus_SNo r)) (add_SNo x r).
+      { exact (add_SNo_Lt2 x (minus_SNo r) r HxSNo HmrSNo HrSNo Hmr_lt_r). }
+      exact (RltI (add_SNo x (minus_SNo r)) (add_SNo x r) HxmrR HxprR Hxmr_lt_xr). }
     (** Need path_connected in subspace of R **)
     claim Hpc : path_connected_space (open_interval (add_SNo x (minus_SNo r)) (add_SNo x r))
       (subspace_topology R R_standard_topology (open_interval (add_SNo x (minus_SNo r)) (add_SNo x r))).
