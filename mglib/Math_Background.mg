@@ -420337,6 +420337,36 @@ exact (total_function_space_sub_function_space X Y (graphify_on X f)
   (continuous_map_graphify_in_total_function_space X Tx Y Ty f Hcont)).
 Qed.
 
+(** Helper: graphify of a loop is in loop_space **)
+(** Proven Alice **)
+Lemma loop_at_graphify_in_loop_space : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  graphify_on unit_interval f :e loop_space X Tx x0.
+let X Tx x0 f. assume Hla.
+set gf := graphify_on unit_interval f.
+claim Hcont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f Hla). }
+claim Hgf_fs : gf :e function_space unit_interval X.
+{ exact (continuous_map_graphify_in_function_space unit_interval unit_interval_topology X Tx f Hcont). }
+claim Hgf_la : loop_at X Tx x0 gf.
+{ prove (continuous_map unit_interval unit_interval_topology X Tx gf /\
+    apply_fun gf 0 = x0) /\ apply_fun gf 1 = x0.
+  apply andI. apply andI.
+  - claim Hagree : forall t:set, t :e unit_interval -> apply_fun f t = apply_fun gf t.
+    { let t. assume Ht. symmetry. exact (graphify_on_apply unit_interval f t Ht). }
+    claim Hgf_fn : function_on gf unit_interval X.
+    { let t. assume Ht. rewrite (graphify_on_apply unit_interval f t Ht).
+      exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f Hcont t Ht). }
+    exact (continuous_map_congr_on unit_interval unit_interval_topology X Tx f gf Hcont
+      Hgf_fn Hagree).
+  - rewrite (graphify_on_apply unit_interval f 0 zero_in_unit_interval).
+    exact (loop_at_at_zero X Tx x0 f Hla).
+  - rewrite (graphify_on_apply unit_interval f 1 one_in_unit_interval).
+    exact (loop_at_at_one X Tx x0 f Hla). }
+exact (SepI (function_space unit_interval X)
+  (fun g:set => loop_at X Tx x0 g) gf Hgf_fs Hgf_la).
+Qed.
+
 (** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
 Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
