@@ -414994,6 +414994,61 @@ set slices := {path_component_of preU (subspace_topology E Te preU) e | e :e pre
 admit.
 Admitted.
 
+(** Helper: open subspace of locally path-connected space is locally path-connected **)
+(** Proven Alice **)
+Lemma open_subspace_locally_path_connected : forall X Tx Y:set,
+  locally_path_connected X Tx -> Y :e Tx -> locally_path_connected Y (subspace_topology X Tx Y).
+let X Tx Y.
+assume HlpcX HYopen.
+claim HtopX : topology_on X Tx.
+{ exact (locally_path_connected_topology X Tx HlpcX). }
+claim HYsub : Y c= X. { exact (topology_elem_subset X Tx Y HtopX HYopen). }
+claim HtopY : topology_on Y (subspace_topology X Tx Y).
+{ exact (subspace_topology_is_topology X Tx Y HtopX HYsub). }
+prove topology_on Y (subspace_topology X Tx Y) /\
+  forall y:set, y :e Y -> forall U:set, U :e subspace_topology X Tx Y -> y :e U ->
+    exists V:set, V :e subspace_topology X Tx Y /\ y :e V /\ V c= U /\
+      path_connected_space V (subspace_topology Y (subspace_topology X Tx Y) V).
+apply andI.
+- exact HtopY.
+- let y. assume HyY.
+  let U. assume HUopen HyU.
+  claim HU_sub_Y : U c= Y. { exact (topology_elem_subset Y (subspace_topology X Tx Y) U HtopY HUopen). }
+  claim HU_open_in_Y : open_in Y (subspace_topology X Tx Y) U.
+  { prove topology_on Y (subspace_topology X Tx Y) /\ U :e subspace_topology X Tx Y.
+    apply andI. exact HtopY. exact HUopen. }
+  claim HU_open_X : U :e Tx.
+  { exact (open_in_subspace_if_ambient_open X Tx Y U HtopX HYopen HU_sub_Y HU_open_in_Y). }
+  claim HyX : y :e X. { exact (HYsub y HyY). }
+  apply (locally_path_connected_local X Tx y U HlpcX HyX HU_open_X HyU).
+  let V. assume HVpack.
+  (** HVpack : ((V :e Tx /\ y :e V) /\ V c= U) /\ pc V (sub X Tx V) (left-associative) **)
+  set pc_type := path_connected_space V (subspace_topology X Tx V).
+  claim HVpc : pc_type.
+  { exact (andER (((V :e Tx) /\ (y :e V)) /\ (V c= U)) pc_type HVpack). }
+  claim HVleft3 : ((V :e Tx) /\ (y :e V)) /\ (V c= U).
+  { exact (andEL (((V :e Tx) /\ (y :e V)) /\ (V c= U)) pc_type HVpack). }
+  claim HVsubU : V c= U.
+  { exact (andER ((V :e Tx) /\ (y :e V)) (V c= U) HVleft3). }
+  claim HVleft2 : (V :e Tx) /\ (y :e V).
+  { exact (andEL ((V :e Tx) /\ (y :e V)) (V c= U) HVleft3). }
+  claim HVopen : V :e Tx. { exact (andEL (V :e Tx) (y :e V) HVleft2). }
+  claim HyV : y :e V. { exact (andER (V :e Tx) (y :e V) HVleft2). }
+  claim HVsubY : V c= Y. { let v. assume Hv. exact (HU_sub_Y v (HVsubU v Hv)). }
+  claim HVopenSub : V :e subspace_topology X Tx Y.
+  { rewrite <- (binintersect_Subq_eq_1 V Y HVsubY).
+    exact (subspace_topology_intersection_open X Tx Y V HVopen). }
+  claim HVpc_sub : path_connected_space V (subspace_topology Y (subspace_topology X Tx Y) V).
+  { rewrite (subspace_topology_transitive_weak X Tx Y V HVsubY).
+    exact HVpc. }
+  witness V.
+  apply and4I.
+  + exact HVopenSub.
+  + exact HyV.
+  + exact HVsubU.
+  + exact HVpc_sub.
+Qed.
+
 (** Helper: image of preimage under homeomorphism equals original set **)
 (** Proven Alice **)
 Lemma homeomorphism_image_of_preimage_eq :
