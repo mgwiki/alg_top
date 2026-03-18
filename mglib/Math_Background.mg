@@ -280283,8 +280283,19 @@ apply and9I.
   (** So antipode = (minus_SNo 1, minus_SNo 0) = (minus_SNo 1, 0) **)
   admit.
 - (** (1,0) <> (-1,0): first coordinates differ since 1 > 0 > -1 **)
-  (** Proof: if equal, then first coords equal, but -1 < 0 < 1 **)
-  admit.
+  prove S1_basepoint <> S1_left_point.
+  prove (1, 0) <> (minus_SNo 1, 0).
+  assume Heq : (1, 0) = (minus_SNo 1, 0).
+  (** From Heq: first coordinates equal: 1 = -1 **)
+  claim H1eq : 1 = minus_SNo 1.
+  { exact (tuple_2_0_congr 1 0 (minus_SNo 1) 0 Heq). }
+  (** But -1 < 0 < 1, so -1 < 1 **)
+  claim Hm1lt1 : SNoLt (minus_SNo 1) 1.
+  { exact (SNoLt_tra (minus_SNo 1) 0 1 (SNo_minus_SNo 1 SNo_1) SNo_0 SNo_1 minus_1_lt_0 SNoLt_0_1). }
+  (** 1 = -1 and -1 < 1 gives 1 < 1, contradicting irreflexivity **)
+  claim H1lt1 : SNoLt 1 1.
+  { prove SNoLt 1 1. rewrite H1eq at 1. exact Hm1lt1. }
+  exact (SNoLt_irref 1 H1lt1).
 - (** upper semicircle connected **)
   admit.
 - (** lower semicircle connected **)
