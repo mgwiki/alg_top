@@ -1,5 +1,5 @@
 (** Balance Alice 9223 **)
-(** Balance Bob 6166 **)
+(** Balance Bob 6232 **)
 (** Balance Charlie 920 **)
 (** Balance Dave 2498 **)
 
@@ -307999,7 +307999,8 @@ Qed.
 (** from S67 Exercise 4(c) (line 2710 in algtop.tex) **)
 (** LATEX VERSION: The rationals have no elements of finite order but are not free abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
+(** Collected Bob 66 **)
+(** Proven Bob **)
 Theorem ex67_4c_rationals_not_free_abelian :
   (forall q:set, q :e rational -> q <> 0 ->
     ~(exists m:set, m :e omega /\ m <> 0 /\
@@ -308289,9 +308290,83 @@ apply andI.
   }
   claim Hh_r_2 : apply_fun h r :e 2.
   { exact (Hh_fn r HrRat). }
-  (** Remaining work: connect basis(alpha) with r+r and conclude via Z2 parity contradiction. **)
-  admit.
-Admitted.
+  claim HrSNo : SNo r.
+  { exact (real_SNo r HrReal). }
+  claim HnSNo : SNo n.
+  { exact (omega_SNo n HnO). }
+  claim H2O : 2 :e omega.
+  { exact (nat_p_omega 2 nat_2). }
+  claim HmulNatEq : mul_nat n 2 = mul_SNo n 2.
+  { exact (mul_nat_mul_SNo n HnO 2 H2O). }
+  claim HrDef : r = div_SNo m (mul_nat n 2).
+  { reflexivity. }
+  claim Hr_eq_div2 : r = div_SNo (div_SNo m n) 2.
+  {
+    rewrite HrDef.
+    rewrite HmulNatEq.
+    exact (eq_symm
+      (div_SNo (div_SNo m n) 2)
+      (div_SNo m (mul_SNo n 2))
+      (div_div_SNo m n 2 HmSNo HnSNo SNo_2)).
+  }
+  claim H2r_eq_divmn : mul_SNo 2 r = div_SNo m n.
+  {
+    rewrite Hr_eq_div2.
+    exact (mul_div_SNo_invR
+      (div_SNo m n)
+      2
+      (SNo_div_SNo m n HmSNo HnSNo)
+      SNo_2
+      neq_2_0).
+  }
+  claim Hbasis_alpha_from_r : apply_fun basis alpha = mul_SNo 2 r.
+  { exact (eq_i_tra
+      (apply_fun basis alpha)
+      (div_SNo m n)
+      (mul_SNo 2 r)
+      Hbasis_alpha_eq
+      (eq_symm (mul_SNo 2 r) (div_SNo m n) H2r_eq_divmn)). }
+  claim Hbasis_alpha_double : apply_fun basis alpha = add_SNo r r.
+  { exact (eq_i_tra
+      (apply_fun basis alpha)
+      (mul_SNo 2 r)
+      (add_SNo r r)
+      Hbasis_alpha_from_r
+      (mul_SNo_2_eq_add r HrSNo)). }
+  claim HmultQ_rr : apply_fun multQ (r, r) = add_SNo r r.
+  {
+    rewrite (apply_fun_graph
+      (setprod rational rational)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (r, r)
+      (tuple_2_setprod_by_pair_Sigma rational rational r r HrRat HrRat)).
+    rewrite (tuple_2_0_eq r r).
+    rewrite (tuple_2_1_eq r r).
+    reflexivity.
+  }
+  claim Hh_basis_mul : apply_fun h (apply_fun basis alpha) =
+    apply_fun Z2_mult (apply_fun h r, apply_fun h r).
+  {
+    rewrite Hbasis_alpha_double.
+    rewrite <- HmultQ_rr.
+    exact (Hh_mul r r HrRat HrRat).
+  }
+  claim Hh_basis_0 : apply_fun h (apply_fun basis alpha) = 0.
+  {
+    rewrite Hh_basis_mul.
+    apply (in_2_cases (apply_fun h r) Hh_r_2).
+    - assume Hr0.
+      rewrite Hr0.
+      exact Z2_mult_0_0.
+    - assume Hr1.
+      rewrite Hr1.
+      exact Z2_mult_1_1.
+  }
+  claim H10 : 1 = 0.
+  { rewrite <- Hh_basis_alpha_1.
+    exact Hh_basis_0. }
+  exact (neq_1_0 H10).
+Qed.
 
 (** from S67 Exercise 5 (line 2711 in algtop.tex) **)
 (** LATEX VERSION: Give an example of a free abelian group G of rank n having **)
