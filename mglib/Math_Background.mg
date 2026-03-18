@@ -279929,7 +279929,25 @@ apply andI.
     Sing (fundamental_group_id
       (Sn 2 :\: Sing p :\: Sing q)
       (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0).
-  { admit. }
+  { (** Set X = S^2-{p,q}, U = S^2-C1, V = S^2-C2 **)
+    (** X = U union V, U cap V = S^2-C (path connected) **)
+    (** i_star trivial by jordan_sep_inclusion_trivial **)
+    (** j_star trivial by jordan_sep_inclusion_trivial **)
+    (** SVK: trivial_inclusions_imply_trivial_pi1 **)
+    (** Need: topology_on X, U in Tx, V in Tx, x0 in U cap V, U cap V pc **)
+    (** All obtainable from the decomposition data **)
+    set X := Sn 2 :\: Sing p :\: Sing q.
+    set Tx := subspace_topology (Sn 2) (Sn_topology 2) X.
+    (** Topology on X **)
+    claim HtopX : topology_on X Tx.
+    { admit. }
+    (** U = S^2-C1 is open in S^2, and S^2-C1 c= X (since C1 contains {p,q} minus stuff in C2) **)
+    (** Actually U = S^2-C1 and V = S^2-C2 are open in S^2 **)
+    (** They are also open in X since X is open in S^2 **)
+    (** U cap V = S^2-(C1 union C2) = S^2-C **)
+    (** x0 in S^2-C = U cap V **)
+    (** Apply trivial_inclusions_imply_trivial_pi1 **)
+    admit. }
   (** But pi_1(S^2-{p,q}) is nontrivial **)
   exact (pi1_S2_minus_two_points_nontrivial p q Hp Hq Hpq x0 Hx0_in_Xpq Htrivial).
 - (** Part 2: S^2-C is nonempty **)
