@@ -420327,6 +420327,16 @@ exact (SepI (Power (setprod X Y))
     Hgf_total Hgf_func)).
 Qed.
 
+(** Helper: graphify of continuous map is in function_space **)
+(** Proven Alice **)
+Lemma continuous_map_graphify_in_function_space : forall X Tx Y Ty f:set,
+  continuous_map X Tx Y Ty f ->
+  graphify_on X f :e function_space X Y.
+let X Tx Y Ty f. assume Hcont.
+exact (total_function_space_sub_function_space X Y (graphify_on X f)
+  (continuous_map_graphify_in_total_function_space X Tx Y Ty f Hcont)).
+Qed.
+
 (** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
 Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
