@@ -279994,7 +279994,11 @@ apply andI.
     set Tx := subspace_topology (Sn 2) (Sn_topology 2) X.
     (** Topology on X **)
     claim HtopX : topology_on X Tx.
-    { admit. }
+    { claim HXsub : X c= Sn 2.
+      { let x. assume Hx : x :e Sn 2 :\: Sing p :\: Sing q.
+        exact (setminusE1 (Sn 2) (Sing p) x (setminusE1 (Sn 2 :\: Sing p) (Sing q) x Hx)). }
+      exact (subspace_topology_is_topology (Sn 2) (Sn_topology 2) X
+        (lemma59_3_Sn_topology_on 2) HXsub). }
     (** U = S^2-C1 is open in S^2, and S^2-C1 c= X (since C1 contains {p,q} minus stuff in C2) **)
     (** Actually U = S^2-C1 and V = S^2-C2 are open in S^2 **)
     (** They are also open in X since X is open in S^2 **)
