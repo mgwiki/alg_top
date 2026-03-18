@@ -280074,10 +280074,33 @@ claim Htwo : exists x1 x2:set, x1 :e Sn 2 :\: C /\ x2 :e Sn 2 :\: C /\
 { exact (S2_complement_simple_closed_curve_exactly_two_components C HC Hscc). }
 apply Htwo. let x1. assume Hx1e.
 apply Hx1e. let x2. assume Hx12.
-(** Extract: x1, x2 in S^2-C, components distinct, all points in one of two **)
-(** We'll use the components as W1, W2 **)
-(** Need: x1 in S^2-C, x2 in S^2-C, components different, and universality **)
-(** The exact unpacking depends on the conjunction structure **)
+(** Unpack the 4-fold left-assoc conjunction **)
+(** ((x1 :e SmC /\ x2 :e SmC) /\ comp(x1) <> comp(x2)) /\ (forall y ...) **)
+set SmC := Sn 2 :\: C.
+set TSmC := subspace_topology (Sn 2) (Sn_topology 2) SmC.
+claim Huniv : forall y:set, y :e SmC ->
+  component_of SmC TSmC y = component_of SmC TSmC x1 \/
+  component_of SmC TSmC y = component_of SmC TSmC x2.
+{ exact (andER
+    (x1 :e SmC /\ x2 :e SmC /\ component_of SmC TSmC x1 <> component_of SmC TSmC x2)
+    (forall y:set, y :e SmC -> component_of SmC TSmC y = component_of SmC TSmC x1 \/ component_of SmC TSmC y = component_of SmC TSmC x2) Hx12). }
+claim Hrest3 : x1 :e SmC /\ x2 :e SmC /\ component_of SmC TSmC x1 <> component_of SmC TSmC x2.
+{ exact (andEL
+    (x1 :e SmC /\ x2 :e SmC /\ component_of SmC TSmC x1 <> component_of SmC TSmC x2)
+    (forall y:set, y :e SmC -> component_of SmC TSmC y = component_of SmC TSmC x1 \/ component_of SmC TSmC y = component_of SmC TSmC x2) Hx12). }
+claim Hdiff : component_of SmC TSmC x1 <> component_of SmC TSmC x2.
+{ exact (andER (x1 :e SmC /\ x2 :e SmC) (component_of SmC TSmC x1 <> component_of SmC TSmC x2) Hrest3). }
+claim Hx12sub : x1 :e SmC /\ x2 :e SmC.
+{ exact (andEL (x1 :e SmC /\ x2 :e SmC) (component_of SmC TSmC x1 <> component_of SmC TSmC x2) Hrest3). }
+claim Hx1 : x1 :e SmC. { exact (andEL (x1 :e SmC) (x2 :e SmC) Hx12sub). }
+claim Hx2 : x2 :e SmC. { exact (andER (x1 :e SmC) (x2 :e SmC) Hx12sub). }
+(** Now set W1 = component(x1), W2 = component(x2) **)
+(** Then prove the 8 properties using: **)
+(** - locally_connected_open_complement_two_component_partition for open/connected **)
+(** - point_in_component for nonempty **)
+(** - component disjointness from distinct components **)
+(** - universality from Huniv **)
+(** This requires significant infrastructure; admit for now **)
 admit.
 Admitted.
 
