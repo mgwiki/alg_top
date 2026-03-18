@@ -279364,9 +279364,261 @@ let y. assume Hy : y :e component_of X Tx x.
 exact (SepE1 X (fun z:set => exists C:set, connected_space C (subspace_topology X Tx C) /\ x :e C /\ z :e C) y Hy).
 Qed.
 
+(** Helper: A simple closed curve in S^2 can be decomposed into two arcs **)
+(** meeting only at their endpoints. C = C1 union C2, C1 cap C2 = {p,q}. **)
+(** This follows from S^1 = upper_semicircle union lower_semicircle **)
+(** and the homeomorphism h: S^1 -> C. **)
+Lemma simple_closed_curve_arc_decomposition : forall C:set,
+  C c= Sn 2 ->
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
+  exists C1 C2 p q:set,
+    p :e Sn 2 /\ q :e Sn 2 /\ p <> q /\
+    C1 c= C /\ C2 c= C /\
+    C = C1 :\/: C2 /\ C1 :/\: C2 = UPair p q /\
+    connected_space C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) /\
+    connected_space C2 (subspace_topology (Sn 2) (Sn_topology 2) C2) /\
+    Sn 2 :\: C1 :e Sn_topology 2 /\
+    Sn 2 :\: C2 :e Sn_topology 2.
+admit.
+Admitted.
+
+(** Helper: S^2-C is open in S^2 when C is compact (a simple closed curve is compact). **)
+Lemma Sn2_complement_simple_closed_curve_open : forall C:set,
+  C c= Sn 2 ->
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
+  Sn 2 :\: C :e Sn_topology 2.
+admit.
+Admitted.
+
+(** Helper: disconnected space has at least 2 distinct points in different components **)
+Lemma disconnected_has_two_components : forall X Tx:set,
+  topology_on X Tx ->
+  ~(connected_space X Tx) ->
+  X <> Empty ->
+  exists x1 x2:set, x1 :e X /\ x2 :e X /\
+    component_of X Tx x1 <> component_of X Tx x2.
+admit.
+Admitted.
+
+(** Helper: in a locally connected space, components of open subsets are open **)
+(** and form a partition into open connected non-empty sets **)
+Lemma locally_connected_open_complement_two_component_partition :
+  forall X Tx C:set,
+  locally_connected X Tx ->
+  C c= X -> X :\: C :e Tx ->
+  ~(connected_space (X :\: C) (subspace_topology X Tx (X :\: C))) ->
+  (X :\: C) <> Empty ->
+  exists x1 x2:set, x1 :e X :\: C /\ x2 :e X :\: C /\
+    component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x1 <>
+    component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x2 /\
+    component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x1 :e Tx /\
+    component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x2 :e Tx /\
+    connected_space (component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x1)
+      (subspace_topology X Tx (component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x1)) /\
+    connected_space (component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x2)
+      (subspace_topology X Tx (component_of (X :\: C) (subspace_topology X Tx (X :\: C)) x2)).
+admit.
+Admitted.
+
+(** Helper: the pi1 of S^2 minus two points is nontrivial **)
+(** (it is infinite cyclic, isomorphic to Z) **)
+Lemma pi1_S2_minus_two_points_nontrivial : forall p q:set,
+  p :e Sn 2 -> q :e Sn 2 -> p <> q ->
+  forall x0:set, x0 :e Sn 2 :\: Sing p :\: Sing q ->
+  fundamental_group (Sn 2 :\: Sing p :\: Sing q)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0 <>
+  Sing (fundamental_group_id (Sn 2 :\: Sing p :\: Sing q)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0).
+admit.
+Admitted.
+
+(** Helper: if two points are in the same component of S^2-f(A), **)
+(** then the inclusion f: A -> S^2-{a,b} induces the trivial map on pi_1 of S^1 **)
+(** (essentially using lemma 61.2 nulhomotopy + lemma 55.3 extends_implies_trivial). **)
+(** Specifically: given a loop h: S^1 -> U (where U = S^2 - arc) and the inclusion **)
+(** i: U -> S^2-{a,b}, the induced i_star([h circ p]) is trivial. **)
+Lemma jordan_sep_inclusion_trivial_on_arc_complement :
+  forall C1 C2 p q:set,
+  C1 c= Sn 2 -> C2 c= Sn 2 ->
+  p :e Sn 2 -> q :e Sn 2 -> p <> q ->
+  C1 :/\: C2 = UPair p q ->
+  connected_space C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) ->
+  Sn 2 :\: C1 :e Sn_topology 2 ->
+  forall x0:set, x0 :e Sn 2 :\: (C1 :\/: C2) ->
+  forall cls:set,
+    cls :e fundamental_group
+      (Sn 2 :\: C1) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C1)) x0 ->
+  apply_fun (induced_homomorphism
+    (Sn 2 :\: C1) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C1)) x0
+    (Sn 2 :\: Sing p :\: Sing q)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0
+    (graph (Sn 2 :\: C1) (fun x:set => x))) cls =
+  fundamental_group_id
+    (Sn 2 :\: Sing p :\: Sing q)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0.
+admit.
+Admitted.
+
+(** Helper: if both i_star and j_star are trivial, and X = U union V with **)
+(** U cap V path connected, then pi_1(X) is trivial (by SVK-type argument). **)
+Lemma trivial_inclusions_imply_trivial_pi1 :
+  forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  x0 :e U :/\: V ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  (forall cls:set, cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) cls =
+    fundamental_group_id X Tx x0) ->
+  (forall cls:set, cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+    apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+      (graph V (fun x:set => x))) cls =
+    fundamental_group_id X Tx x0) ->
+  fundamental_group X Tx x0 = Sing (fundamental_group_id X Tx x0).
+admit.
+Admitted.
+
+(** Helper: jordan separation - S^2-C disconnected when C simple closed curve **)
+(** Proof (Thm 61.3): by contradiction using SVK + nulhomotopy + pi1(S2-2pts) nontrivial **)
+Lemma jordan_separation_disconnected : forall C:set,
+  C c= Sn 2 ->
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
+  ~(connected_space (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C))) /\
+  (Sn 2 :\: C) <> Empty.
+let C.
+assume HC : C c= Sn 2.
+assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
+(** Decompose C = C1 union C2, two arcs meeting at {p,q} **)
+claim Hdecomp : exists C1 C2 p q:set,
+  p :e Sn 2 /\ q :e Sn 2 /\ p <> q /\
+  C1 c= C /\ C2 c= C /\
+  C = C1 :\/: C2 /\ C1 :/\: C2 = UPair p q /\
+  connected_space C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) /\
+  connected_space C2 (subspace_topology (Sn 2) (Sn_topology 2) C2) /\
+  Sn 2 :\: C1 :e Sn_topology 2 /\
+  Sn 2 :\: C2 :e Sn_topology 2.
+{ exact (simple_closed_curve_arc_decomposition C HC Hscc). }
+apply Hdecomp. let C1. assume HC1e.
+apply HC1e. let C2. assume HC2e.
+apply HC2e. let p. assume Hpe.
+apply Hpe. let q. assume Hpq_all.
+(** The conclusion has 11 conjuncts (left-associative). **)
+(** Split: first 10 /\ last. Then use and10E on the first 10. **)
+claim HC2open_last : Sn 2 :\: C2 :e Sn_topology 2.
+{ exact (andER
+    (p :e Sn 2 /\ q :e Sn 2 /\ p <> q /\ C1 c= C /\ C2 c= C /\
+     C = C1 :\/: C2 /\ C1 :/\: C2 = UPair p q /\
+     connected_space C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) /\
+     connected_space C2 (subspace_topology (Sn 2) (Sn_topology 2) C2) /\
+     Sn 2 :\: C1 :e Sn_topology 2)
+    (Sn 2 :\: C2 :e Sn_topology 2)
+    Hpq_all). }
+claim Hpq_10 : p :e Sn 2 /\ q :e Sn 2 /\ p <> q /\ C1 c= C /\ C2 c= C /\
+  C = C1 :\/: C2 /\ C1 :/\: C2 = UPair p q /\
+  connected_space C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) /\
+  connected_space C2 (subspace_topology (Sn 2) (Sn_topology 2) C2) /\
+  Sn 2 :\: C1 :e Sn_topology 2.
+{ exact (andEL
+    (p :e Sn 2 /\ q :e Sn 2 /\ p <> q /\ C1 c= C /\ C2 c= C /\
+     C = C1 :\/: C2 /\ C1 :/\: C2 = UPair p q /\
+     connected_space C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) /\
+     connected_space C2 (subspace_topology (Sn 2) (Sn_topology 2) C2) /\
+     Sn 2 :\: C1 :e Sn_topology 2)
+    (Sn 2 :\: C2 :e Sn_topology 2)
+    Hpq_all). }
+apply (and10E
+  (p :e Sn 2) (q :e Sn 2) (p <> q) (C1 c= C) (C2 c= C)
+  (C = C1 :\/: C2) (C1 :/\: C2 = UPair p q)
+  (connected_space C1 (subspace_topology (Sn 2) (Sn_topology 2) C1))
+  (connected_space C2 (subspace_topology (Sn 2) (Sn_topology 2) C2))
+  (Sn 2 :\: C1 :e Sn_topology 2)
+  Hpq_10).
+assume Hp : p :e Sn 2.
+assume Hq : q :e Sn 2.
+assume Hpq : p <> q.
+assume HC1sub : C1 c= C.
+assume HC2sub : C2 c= C.
+assume Hunion : C = C1 :\/: C2.
+assume Hinter : C1 :/\: C2 = UPair p q.
+assume HC1conn : connected_space C1 (subspace_topology (Sn 2) (Sn_topology 2) C1).
+assume HC2conn : connected_space C2 (subspace_topology (Sn 2) (Sn_topology 2) C2).
+assume HC1open : Sn 2 :\: C1 :e Sn_topology 2.
+apply andI.
+- (** Part 1: S^2-C is NOT connected **)
+  (** Proof by contradiction: assume connected, derive pi_1(S^2-{p,q}) trivial, **)
+  (** but it is nontrivial (isomorphic to Z). **)
+  assume Hconn : connected_space (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)).
+  (** S^2-C is path connected (locally path connected open connected subset) **)
+  (** and there exists a basepoint x0 in S^2-C **)
+  claim HSmC_pc_and_point : path_connected_space (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) /\
+    exists x0:set, x0 :e Sn 2 :\: C.
+  { admit. }
+  claim HSmC_pc : path_connected_space (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)).
+  { exact (andEL
+      (path_connected_space (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)))
+      (exists x0:set, x0 :e Sn 2 :\: C)
+      HSmC_pc_and_point). }
+  claim Hx0_exists : exists x0:set, x0 :e Sn 2 :\: C.
+  { exact (andER
+      (path_connected_space (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)))
+      (exists x0:set, x0 :e Sn 2 :\: C)
+      HSmC_pc_and_point). }
+  apply Hx0_exists. let x0. assume Hx0 : x0 :e Sn 2 :\: C.
+  (** x0 is also in S^2-{p,q} since C contains {p,q} **)
+  claim Hx0_in_Xpq : x0 :e Sn 2 :\: Sing p :\: Sing q.
+  { admit. }
+  (** The topology on X = S^2-{p,q} **)
+  (** U = S^2-C1 and V = S^2-C2 are open in S^2, hence in X **)
+  (** X = U union V because any x in X is either not in C1 or not in C2 **)
+  (** U cap V = S^2-C (since C = C1 union C2) **)
+  (** U cap V = S^2-C is path connected by our assumption **)
+  (** Both i_star and j_star are trivial by jordan_sep_inclusion_trivial **)
+  (** Therefore by trivial_inclusions_imply_trivial_pi1, pi_1(X) is trivial **)
+  claim Htrivial : fundamental_group
+    (Sn 2 :\: Sing p :\: Sing q)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0 =
+    Sing (fundamental_group_id
+      (Sn 2 :\: Sing p :\: Sing q)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0).
+  { admit. }
+  (** But pi_1(S^2-{p,q}) is nontrivial **)
+  exact (pi1_S2_minus_two_points_nontrivial p q Hp Hq Hpq x0 Hx0_in_Xpq Htrivial).
+- (** Part 2: S^2-C is nonempty **)
+  (** S^2 has infinitely many points, C is homeomorphic to S^1 **)
+  (** so S^2 minus C is nonempty **)
+  admit.
+Admitted.
+
+(** Helper: S^2-C has exactly two components (not more) **)
+(** The ">= 2" part comes from jordan_separation_disconnected. **)
+(** The "<= 2" part uses the argument: if >= 3 components, then **)
+(** by thm 63.1, pi_1(X) has nontrivial elements from two **)
+(** different decompositions, but by thm 63.1(c) these generate **)
+(** subgroups with trivial intersection, contradicting pi_1(X) **)
+(** being infinite cyclic (it is Z). **)
+Lemma S2_complement_simple_closed_curve_exactly_two_components :
+  forall C:set,
+  C c= Sn 2 ->
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
+  exists x1 x2:set, x1 :e Sn 2 :\: C /\ x2 :e Sn 2 :\: C /\
+    component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 <>
+    component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2 /\
+    (forall y:set, y :e Sn 2 :\: C ->
+      component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) y =
+      component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 \/
+      component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) y =
+      component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2).
+admit.
+Admitted.
+
 (** JCT Step 1: S^2-C has exactly two open connected components **)
-(** Uses: jordan separation (61.3), arc nonseparation (63.2), **)
-(**        thm 63.1 (infinite cyclic subgroup), general nonseparation (63.3) **)
+(** Uses the helpers above to extract W1, W2 from the two components. **)
 Lemma jordan_curve_step1_two_components : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -279377,6 +279629,26 @@ Lemma jordan_curve_step1_two_components : forall C:set,
     W1 <> Empty /\ W2 <> Empty /\
     connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
     connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
+let C.
+assume HC : C c= Sn 2.
+assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
+(** Get exactly two components **)
+claim Htwo : exists x1 x2:set, x1 :e Sn 2 :\: C /\ x2 :e Sn 2 :\: C /\
+  component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 <>
+  component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2 /\
+  (forall y:set, y :e Sn 2 :\: C ->
+    component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) y =
+    component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 \/
+    component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) y =
+    component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2).
+{ exact (S2_complement_simple_closed_curve_exactly_two_components C HC Hscc). }
+apply Htwo. let x1. assume Hx1e.
+apply Hx1e. let x2. assume Hx12.
+(** abbreviations **)
+set Smc := Sn 2 :\: C.
+set Tsmc := subspace_topology (Sn 2) (Sn_topology 2) Smc.
+set W1 := component_of Smc Tsmc x1.
+set W2 := component_of Smc Tsmc x2.
 admit.
 Admitted.
 
