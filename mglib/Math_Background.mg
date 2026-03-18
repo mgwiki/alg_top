@@ -279422,14 +279422,126 @@ admit.
 Admitted.
 
 (** Helper: disconnected space has at least 2 distinct points in different components **)
+(** Proven Alice **)
 Lemma disconnected_has_two_components : forall X Tx:set,
   topology_on X Tx ->
   ~(connected_space X Tx) ->
   X <> Empty ->
   exists x1 x2:set, x1 :e X /\ x2 :e X /\
     component_of X Tx x1 <> component_of X Tx x2.
-admit.
-Admitted.
+let X Tx.
+assume Htop : topology_on X Tx.
+assume Hnotconn : ~(connected_space X Tx).
+assume Hne : X <> Empty.
+(** ~connected means there exists a separation U, V of X **)
+(** connected_space = topology_on /\ ~(exists U V, separation_of X U V) **)
+(** ~connected = ~topology_on \/ exists U V, separation_of X U V **)
+(** Since topology_on holds, we get exists U V with separation **)
+claim Hsep : exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V.
+{ apply (xm (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V)).
+  - assume H. exact H.
+  - assume H : ~(exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V).
+    claim Hconn : connected_space X Tx.
+    { prove topology_on X Tx /\ ~(exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V).
+      exact (andI (topology_on X Tx) (~(exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V)) Htop H). }
+    exact (Hnotconn Hconn (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V)). }
+apply Hsep. let U. assume HUe.
+apply HUe. let V. assume HUV.
+(** Extract: U in Tx, V in Tx, separation_of X U V **)
+(** Left-assoc: ((U :e Tx /\ V :e Tx) /\ separation_of X U V) **)
+claim Hsep_of : separation_of X U V.
+{ exact (andER (U :e Tx /\ V :e Tx) (separation_of X U V) HUV). }
+claim HUVopen : U :e Tx /\ V :e Tx.
+{ exact (andEL (U :e Tx /\ V :e Tx) (separation_of X U V) HUV). }
+claim HUopen : U :e Tx.
+{ exact (andEL (U :e Tx) (V :e Tx) HUVopen). }
+claim HVopen : V :e Tx.
+{ exact (andER (U :e Tx) (V :e Tx) HUVopen). }
+(** separation_of X U V gives: U c= X, V c= X, U cap V = Empty, U ne Empty, V ne Empty, U cup V = X **)
+(** Extract elements and subset properties from separation **)
+claim Helems : (exists x:set, x :e U) /\ (exists y:set, y :e V).
+{ exact (separation_has_elements X U V Hsep_of). }
+claim Hx1e : exists x1:set, x1 :e U.
+{ exact (andEL (exists x:set, x :e U) (exists y:set, y :e V) Helems). }
+claim Hx2e : exists x2:set, x2 :e V.
+{ exact (andER (exists x:set, x :e U) (exists y:set, y :e V) Helems). }
+claim Hsubs : U c= X /\ V c= X.
+{ exact (separation_subsets X U V Hsep_of). }
+claim HUsub : U c= X. { exact (andEL (U c= X) (V c= X) Hsubs). }
+claim HVsub : V c= X. { exact (andER (U c= X) (V c= X) Hsubs). }
+apply Hx1e. let x1. assume Hx1U : x1 :e U.
+apply Hx2e. let x2. assume Hx2V : x2 :e V.
+claim Hx1X : x1 :e X. { exact (HUsub x1 Hx1U). }
+claim Hx2X : x2 :e X. { exact (HVsub x2 Hx2V). }
+witness x1. witness x2.
+apply and3I.
+- exact Hx1X.
+- exact Hx2X.
+- (** component(x1) <> component(x2) **)
+  (** component(x1) c= U and component(x2) c= V by connected_subset_in_separation_side **)
+  (** Since U cap V = Empty, component(x1) and component(x2) are different **)
+  assume Heq : component_of X Tx x1 = component_of X Tx x2.
+  (** x2 is in component(x2) = component(x1) **)
+  claim Hx2_in_comp1 : x2 :e component_of X Tx x1.
+  { rewrite Heq. exact (point_in_component X Tx x2 Htop Hx2X). }
+  (** component(x1) is connected, so by connected_subset_in_separation_side, **)
+  (** it is either in U or in V **)
+  claim Hcomp1_conn : connected_space (component_of X Tx x1) (subspace_topology X Tx (component_of X Tx x1)).
+  { exact (component_of_connected X Tx x1 Htop Hx1X). }
+  claim Hcomp1_sub : component_of X Tx x1 c= X.
+  { exact (component_of_subset_space X Tx x1 Htop Hx1X). }
+  claim Hside : component_of X Tx x1 c= U \/ component_of X Tx x1 c= V.
+  { exact (connected_subset_in_separation_side X Tx U V (component_of X Tx x1)
+      Htop Hcomp1_sub Hcomp1_conn HUopen HVopen Hsep_of). }
+  (** x1 is in component(x1) **)
+  claim Hx1_in_comp1 : x1 :e component_of X Tx x1.
+  { exact (point_in_component X Tx x1 Htop Hx1X). }
+  apply Hside.
+  + (** component(x1) c= U **)
+    assume HsubU : component_of X Tx x1 c= U.
+    (** x2 in component(x1) c= U, so x2 in U **)
+    claim Hx2U : x2 :e U.
+    { exact (HsubU x2 Hx2_in_comp1). }
+    (** But x2 in V and U cap V = Empty. Contradiction. **)
+    claim HUVempty : U :/\: V = Empty.
+    { (** Extract from separation_of definition **)
+      prove U :/\: V = Empty.
+      exact (andER (U :e Power X /\ V :e Power X)
+        (U :/\: V = Empty)
+        (andEL (U :e Power X /\ V :e Power X /\ U :/\: V = Empty)
+          (U <> Empty)
+          (andEL (U :e Power X /\ V :e Power X /\ U :/\: V = Empty /\ U <> Empty)
+            (V <> Empty)
+            (andEL (U :e Power X /\ V :e Power X /\ U :/\: V = Empty /\ U <> Empty /\ V <> Empty)
+              (U :\/: V = X)
+              Hsep_of)))). }
+    claim Hx2UV : x2 :e U :/\: V.
+    { exact (binintersectI U V x2 Hx2U Hx2V). }
+    claim Hx2Empty : x2 :e Empty. { rewrite <- HUVempty. exact Hx2UV. }
+    exact (EmptyE x2 Hx2Empty False).
+  + (** component(x1) c= V **)
+    assume HsubV : component_of X Tx x1 c= V.
+    (** x1 in component(x1) c= V, so x1 in V **)
+    claim Hx1V : x1 :e V.
+    { exact (HsubV x1 Hx1_in_comp1). }
+    (** But x1 in U and U cap V = Empty. Contradiction. **)
+    claim HUVempty : U :/\: V = Empty.
+    { (** Extract from separation_of definition **)
+      prove U :/\: V = Empty.
+      exact (andER (U :e Power X /\ V :e Power X)
+        (U :/\: V = Empty)
+        (andEL (U :e Power X /\ V :e Power X /\ U :/\: V = Empty)
+          (U <> Empty)
+          (andEL (U :e Power X /\ V :e Power X /\ U :/\: V = Empty /\ U <> Empty)
+            (V <> Empty)
+            (andEL (U :e Power X /\ V :e Power X /\ U :/\: V = Empty /\ U <> Empty /\ V <> Empty)
+              (U :\/: V = X)
+              Hsep_of)))). }
+    claim Hx1UV : x1 :e U :/\: V.
+    { exact (binintersectI U V x1 Hx1U Hx1V). }
+    claim Hx1Empty : x1 :e Empty. { rewrite <- HUVempty. exact Hx1UV. }
+    exact (EmptyE x1 Hx1Empty False).
+Qed.
 
 (** Helper: in a locally connected space, components of open subsets are open **)
 (** and form a partition into open connected non-empty sets **)
