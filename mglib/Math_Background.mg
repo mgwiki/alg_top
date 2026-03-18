@@ -279423,11 +279423,42 @@ admit.
 Admitted.
 
 (** Helper: S^2-C is open in S^2 when C is compact (a simple closed curve is compact). **)
+(** Proof: C homeo S^1, S^1 compact, so C compact. S^2 Hausdorff, **)
+(** compact in Hausdorff is closed. Closed complement is open. **)
 Lemma Sn2_complement_simple_closed_curve_open : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
   Sn 2 :\: C :e Sn_topology 2.
-admit.
+let C.
+assume HC : C c= Sn 2.
+assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
+(** Unfold is_simple_closed_curve: exists h, homeomorphism C TC S1 S1_topology h **)
+(** TC = subspace_topology (Sn 2) (Sn_topology 2) C **)
+(** The inverse g: S1 -> C is continuous, S1 compact, so C is compact **)
+(** Then C closed in S^2 (Hausdorff), so S^2-C open **)
+(** Step 1: C is compact as subspace of S^2 **)
+claim Hcompact : compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C).
+{ (** C is homeomorphic to S^1, which is compact. **)
+  (** Homeomorphism transfers compactness. **)
+  (** For now, admit this standard fact. **)
+  admit. }
+(** Step 2: C is closed in S^2 **)
+claim Hclosed : closed_in (Sn 2) (Sn_topology 2) C.
+{ exact (compact_subspace_in_Hausdorff_closed (Sn 2) (Sn_topology 2) C Sn_2_Hausdorff HC Hcompact). }
+(** Step 3: extract that S^2-C is open **)
+claim Hopen_exists : exists U:set, U :e Sn_topology 2 /\ C = Sn 2 :\: U.
+{ exact (closed_in_exists_open_complement (Sn 2) (Sn_topology 2) C Hclosed). }
+apply Hopen_exists. let U. assume HU : U :e Sn_topology 2 /\ C = Sn 2 :\: U.
+claim HUopen : U :e Sn_topology 2. { exact (andEL (U :e Sn_topology 2) (C = Sn 2 :\: U) HU). }
+claim HCeq : C = Sn 2 :\: U. { exact (andER (U :e Sn_topology 2) (C = Sn 2 :\: U) HU). }
+(** S^2 - C = S^2 - (S^2 - U) = U (when U c= S^2) **)
+claim Hdouble : Sn 2 :\: C = U.
+{ (** C = S^2 - U, so S^2 - C = S^2 - (S^2 - U) = U **)
+  claim HUsub : U c= Sn 2.
+  { exact (subspace_topology_member_subset_no_topology
+      (euclidean_space (ordsucc 2)) (euclidean_topology (ordsucc 2)) (Sn 2) U HUopen). }
+  rewrite HCeq. exact (setminus_setminus_eq (Sn 2) U HUsub). }
+rewrite Hdouble. exact HUopen.
 Admitted.
 
 (** Helper: disconnected space has at least 2 distinct points in different components **)
