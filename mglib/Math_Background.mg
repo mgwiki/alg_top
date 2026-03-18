@@ -279427,7 +279427,8 @@ apply and9I.
   (** S1_basepoint 0 = 1, S1_basepoint 1 = 0 **)
   (** So antipode = (minus_SNo 1, minus_SNo 0) = (minus_SNo 1, 0) **)
   admit.
-- (** (1,0) <> (-1,0) **)
+- (** (1,0) <> (-1,0): first coordinates differ since 1 > 0 > -1 **)
+  (** Proof: if equal, then first coords equal, but -1 < 0 < 1 **)
   admit.
 - (** upper semicircle connected **)
   admit.
