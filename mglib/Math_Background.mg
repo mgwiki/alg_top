@@ -280032,12 +280032,18 @@ apply andI.
 Admitted.
 
 (** Helper: S^2-C has exactly two components (not more) **)
-(** The ">= 2" part comes from jordan_separation_disconnected. **)
-(** The "<= 2" part uses the argument: if >= 3 components, then **)
-(** by thm 63.1, pi_1(X) has nontrivial elements from two **)
-(** different decompositions, but by thm 63.1(c) these generate **)
-(** subgroups with trivial intersection, contradicting pi_1(X) **)
-(** being infinite cyclic (it is Z). **)
+(** The ">= 2" part comes from jordan_separation (61.3). **)
+(** The "<= 2" (at most 2) part: JCT Step 1 (algtop.tex line 2190) **)
+(** Decompose C = C1 union C2 (arcs), X = S^2-{p,q}, U = S^2-C1, V = S^2-C2. **)
+(** U cap V = S^2-C. If >= 3 components A1, A2, B: **)
+(** - Arc nonsep (63.2): paths exist in U (S^2-C1) and V (S^2-C2) **)
+(**   connecting any two components **)
+(** - Apply 63.1(a) twice with different partitions of U cap V: **)
+(**   (1) A1 union A2 vs B -> [f] = [alpha.beta] nontrivial **)
+(**   (2) A1 vs A2 union B -> [g] = [gamma.delta] nontrivial **)
+(** - pi_1(X) infinite cyclic (= Z), so [f]^m = [g]^k for some m,k != 0 **)
+(** - But 63.1(c): generated subgroups intersect trivially. Contradiction. **)
+(** Does NOT need 63.3 (general nonseparation). **)
 Lemma S2_complement_simple_closed_curve_exactly_two_components :
   forall C:set,
   C c= Sn 2 ->
