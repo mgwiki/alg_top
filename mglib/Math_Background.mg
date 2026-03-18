@@ -416017,6 +416017,44 @@ apply Hinv. let g. assume Hghome.
 exact (homeomorphism_preserves_lpc_left Y Ty X Tx g Hghome HlpcX).
 Qed.
 
+(** Helper: path components equal if one contains a point of the other **)
+(** Proven Alice **)
+Lemma path_component_of_eq_if_in : forall X Tx x y:set,
+  topology_on X Tx -> x :e X -> y :e path_component_of X Tx x ->
+  path_component_of X Tx y = path_component_of X Tx x.
+let X Tx x y. assume HtopX HxX HyPCx.
+claim HyX : y :e X.
+{ exact (Sep_Subq X (fun z:set => exists p:set,
+    function_on p unit_interval X /\
+    continuous_map unit_interval unit_interval_topology X Tx p /\
+    apply_fun p 0 = x /\ apply_fun p 1 = z) y HyPCx). }
+apply set_ext.
+- (** path_component_of y c= path_component_of x **)
+  let z. assume Hz.
+  claim HzX : z :e X.
+  { exact (Sep_Subq X (fun w:set => exists p:set,
+      function_on p unit_interval X /\
+      continuous_map unit_interval unit_interval_topology X Tx p /\
+      apply_fun p 0 = y /\ apply_fun p 1 = w) z Hz). }
+  claim Hyz : z :e path_component_of X Tx y.
+  { exact Hz. }
+  claim Hxy : y :e path_component_of X Tx x.
+  { exact HyPCx. }
+  exact (path_component_transitive_axiom X Tx x y z HtopX HxX HyX HzX Hxy Hyz).
+- (** path_component_of x c= path_component_of y **)
+  let z. assume Hz.
+  claim HzX : z :e X.
+  { exact (Sep_Subq X (fun w:set => exists p:set,
+      function_on p unit_interval X /\
+      continuous_map unit_interval unit_interval_topology X Tx p /\
+      apply_fun p 0 = x /\ apply_fun p 1 = w) z Hz). }
+  claim Hxz : z :e path_component_of X Tx x.
+  { exact Hz. }
+  claim Hyx : x :e path_component_of X Tx y.
+  { exact (path_component_symmetric_axiom X Tx x y HtopX HxX HyX HyPCx). }
+  exact (path_component_transitive_axiom X Tx y x z HtopX HyX HxX HzX Hyx Hxz).
+Qed.
+
 (** Proven Alice **)
 Theorem exists_homeomorphism_preserves_lpc_left :
   forall X Tx Y Ty:set,
