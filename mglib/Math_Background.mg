@@ -279554,9 +279554,25 @@ claim Hcompact : compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C).
   claim Hg_cont : continuous_map S1 S1_topology C TC g.
   { exact (andEL (continuous_map S1 S1_topology C TC g)
       (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x) Hg_first2). }
-  (** S1 compact + g continuous -> image(g) compact **)
-  (** Then image(g) = C -> C compact **)
-  (** This requires showing image_of_fun g S1 = C and then topology transfer **)
+  (** Extract left_inv **)
+  claim Hleft_inv : forall x:set, x :e C -> apply_fun g (apply_fun h x) = x.
+  { exact (andER (continuous_map S1 S1_topology C TC g)
+      (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x) Hg_first2). }
+  (** image(g, S1) compact in subspace of (C, TC) **)
+  claim Himg_compact : compact_space (image_of_fun g S1) (subspace_topology C TC (image_of_fun g S1)).
+  { exact (continuous_image_compact S1 S1_topology C TC g s54_S1_compact Hg_cont). }
+  (** image(g, S1) = C (g surjective via left inverse) **)
+  claim Himg_eq : image_of_fun g S1 = C.
+  { (** image_of_fun g S1 = {apply_fun g y | y in S1} **)
+    (** Need: C c= image and image c= C **)
+    (** C c= image: for x in C, g(h(x)) = x, and h(x) in S1 **)
+    (** image c= C: g maps S1 to C (continuous_map) **)
+    admit. }
+  (** compact_space (image g S1) (subspace C TC (image g S1)) **)
+  (** image g S1 = C, subspace C TC C = TC **)
+  (** Together: compact_space C TC **)
+  (** The rewriting is tricky because image=C replaces too aggressively **)
+  (** Need targeted substitution; admit this final step **)
   admit. }
 (** Step 2: C is closed in S^2 **)
 claim Hclosed : closed_in (Sn 2) (Sn_topology 2) C.
