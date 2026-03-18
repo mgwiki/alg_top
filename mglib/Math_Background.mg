@@ -416703,6 +416703,13 @@ rewrite <- (apply_fun_graph S (fun x:set => apply_fun p x) e HeS).
 exact (Hsleft e HeS).
 Qed.
 
+(** Helper: preimage is always a subset of the domain **)
+(** Proven Alice **)
+Lemma preimage_of_sub : forall X f V:set, preimage_of X f V c= X.
+let X f V.
+exact (Sep_Subq X (fun x:set => apply_fun f x :e V)).
+Qed.
+
 (** Helper: path components of covering preimage are open when base is lpc **)
 (** Proven Alice **)
 Lemma covering_preimage_path_component_open : forall E Te B Tb p U e:set,
