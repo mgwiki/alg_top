@@ -416320,6 +416320,18 @@ exact (covering_map_path_connected_evenly_covered E Te B Tb p b Hcov
   (covering_total_space_lpc E Te B Tb p Hcov HlpcB) HbB).
 Qed.
 
+(** Helper: path-connected subspace is contained in the path component of any of its points **)
+(** Proven Alice **)
+Lemma pc_subspace_contained_in_path_component : forall X Tx V y:set,
+  topology_on X Tx -> V c= X ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  y :e V ->
+  V c= path_component_of X Tx y.
+let X Tx V y. assume HtopX HVsub HVpc HyV.
+let z. assume HzV.
+exact (subspace_path_connected_implies_in_path_component X Tx V y z HtopX HVsub HVpc HyV HzV).
+Qed.
+
 (** Old version with C parameter - kept for reference, false for C != X **)
 Lemma preimage_pc_under_homeomorphism_restrict :
   forall X Tx Y Ty f C Vpc:set,
