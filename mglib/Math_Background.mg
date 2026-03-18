@@ -415549,6 +415549,39 @@ apply Hinv. let g. assume Hghome.
 exact (homeomorphism_preserves_lpc_left Y Ty X Tx g Hghome HlpcX).
 Qed.
 
+(** Helper: locally path-connected implies locally connected **)
+(** Proven Alice **)
+Lemma locally_path_connected_implies_locally_connected : forall X Tx:set,
+  locally_path_connected X Tx -> locally_connected X Tx.
+let X Tx. assume HlpcX.
+claim HtopX : topology_on X Tx. { exact (locally_path_connected_topology X Tx HlpcX). }
+prove topology_on X Tx /\
+  forall x:set, x :e X -> forall U:set, U :e Tx -> x :e U ->
+    exists V:set, V :e Tx /\ x :e V /\ V c= U /\ connected_space V (subspace_topology X Tx V).
+apply andI.
+- exact HtopX.
+- let x. assume HxX.
+  let U. assume HUopen HxU.
+  apply (locally_path_connected_local X Tx x U HlpcX HxX HUopen HxU).
+  let V. assume HVpack.
+  set pc_type := path_connected_space V (subspace_topology X Tx V).
+  claim HVpc : pc_type.
+  { exact (andER (((V :e Tx) /\ (x :e V)) /\ (V c= U)) pc_type HVpack). }
+  claim HVleft3 : ((V :e Tx) /\ (x :e V)) /\ (V c= U).
+  { exact (andEL (((V :e Tx) /\ (x :e V)) /\ (V c= U)) pc_type HVpack). }
+  claim HVsubU : V c= U. { exact (andER ((V :e Tx) /\ (x :e V)) (V c= U) HVleft3). }
+  claim HVleft2 : (V :e Tx) /\ (x :e V).
+  { exact (andEL ((V :e Tx) /\ (x :e V)) (V c= U) HVleft3). }
+  claim HVopen : V :e Tx. { exact (andEL (V :e Tx) (x :e V) HVleft2). }
+  claim HxV : x :e V. { exact (andER (V :e Tx) (x :e V) HVleft2). }
+  witness V.
+  apply and4I.
+  + exact HVopen.
+  + exact HxV.
+  + exact HVsubU.
+  + exact (path_connected_implies_connected V (subspace_topology X Tx V) HVpc).
+Qed.
+
 (** Helper: covering map total space inherits lpc from base **)
 (** Proven Alice **)
 Lemma covering_total_space_lpc : forall E Te B Tb p:set,
