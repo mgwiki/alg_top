@@ -278659,6 +278659,18 @@ Theorem lemma61_2_nulhomotopy : forall a b:set,
 admit.
 Admitted.
 
+(** Helper placed before 61.3 so it can be referenced in the proof **)
+(** Jordan separation core: S^2-C is not connected when C is a simple closed curve. **)
+(** Full proof is in jordan_separation_disconnected (later in file). **)
+(** This is an admitted forward-declaration to unblock 61.3. **)
+Lemma jordan_sep_core_not_connected : forall C:set,
+  C c= Sn 2 ->
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
+  ~(connected_space (Sn 2 :\: C)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C))).
+admit.
+Admitted.
+
 (** from S61 Thm 61.3 (line 1867 in algtop.tex) **)
 (** LATEX VERSION: (Jordan separation theorem) A simple closed curve in S^2 separates S^2. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
@@ -278670,18 +278682,11 @@ Theorem thm61_3_jordan_separation : forall C:set,
 let C.
 assume HC : C c= Sn 2.
 assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
-(** Proof of Jordan separation (Thm 61.3): **)
-(** By contradiction. Assume S^2-C connected. Decompose C = C1 union C2 (arcs). **)
-(** Set X = S^2-{p,q}, U = S^2-C1, V = S^2-C2. **)
-(** X = U union V, U cap V = S^2-C (path connected by assumption). **)
-(** Show i_star, j_star trivial (via nulhomotopy 61.2 + lemma 55.3). **)
-(** Then pi_1(X) trivial by SVK. But pi_1(S^2-{p,q}) = Z. Contradiction. **)
 prove C c= Sn 2 /\
   ~(connected_space (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C))).
 apply andI.
 - exact HC.
-- (** Proof that S^2-C is not connected **)
-  admit.
+- exact (jordan_sep_core_not_connected C HC Hscc).
 Admitted.
 
 (** from S61 Thm 61.4 (line 1908 in algtop.tex) **)
