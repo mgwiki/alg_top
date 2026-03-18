@@ -422735,7 +422735,66 @@ Theorem orbit_map_open :
   (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
   forall U0:set, U0 :e Tx ->
     image_of (orbit_map X G) U0 :e orbit_topology X Tx G.
-admit.
+let X Tx G.
+assume HtopX Hhomeo.
+let U0. assume HU0open.
+set pi := orbit_map X G.
+claim HU0sub : U0 c= X. { exact (topology_elem_subset X Tx U0 HtopX HU0open). }
+claim Hpi_fn : function_on pi X (orbit_space X G).
+{ exact (orbit_map_function_on_plain X G). }
+claim HimgPow : image_of pi U0 :e Power (orbit_space X G).
+{ exact (PowerI (orbit_space X G) (image_of pi U0)
+    (image_of_sub_codomain pi X (orbit_space X G) U0 Hpi_fn HU0sub)). }
+(** saturation = Union {g(U0) | g :e G} **)
+set slices := {image_of g U0 | g :e G}.
+claim Hslices_open : slices c= Tx.
+{ let V. assume HV.
+  apply (ReplE_impred G (fun g:set => image_of g U0) V HV).
+  let g. assume HgG HVeq. rewrite HVeq.
+  exact (open_map_image_open X Tx X Tx g U0
+    (homeomorphism_open_map X Tx X Tx g (Hhomeo g HgG)) HU0open). }
+(** preimage of image c= Union slices **)
+claim Hpre_sub_union : preimage_of X pi (image_of pi U0) c= Union slices.
+{ let z. assume Hz.
+  claim HzX : z :e X. { exact (SepE1 X (fun x:set => apply_fun pi x :e image_of pi U0) z Hz). }
+  claim Hpiz : apply_fun pi z :e image_of pi U0.
+  { exact (SepE2 X (fun x:set => apply_fun pi x :e image_of pi U0) z Hz). }
+  apply (ReplE_impred U0 (fun u:set => apply_fun pi u) (apply_fun pi z) Hpiz).
+  let u. assume HuU0 HpiEq.
+  claim HuX : u :e X. { exact (HU0sub u HuU0). }
+  (** pi(u) = pi(z) means orbit_equiv u z, i.e., exists g with g(u) = z **)
+  (** Actually: pi(u) = orbit of u, pi(z) = orbit of z **)
+  (** pi(u) = pi(z) means they're in the same orbit **)
+  (** So exists g :e G with g(u) = z **)
+  admit. }
+(** Union slices c= preimage **)
+claim Hunion_sub_pre : Union slices c= preimage_of X pi (image_of pi U0).
+{ let z. assume Hz.
+  apply (UnionE_impred slices z Hz). let S. assume HzS HSsl.
+  apply (ReplE_impred G (fun g:set => image_of g U0) S HSsl).
+  let g. assume HgG HSeq.
+  claim HzgU : z :e image_of g U0. { exact (eq_subst_mem_set z S (image_of g U0) HzS HSeq). }
+  apply (ReplE_impred U0 (fun u:set => apply_fun g u) z HzgU).
+  let u. assume HuU0 Hzeq.
+  claim HuX : u :e X. { exact (HU0sub u HuU0). }
+  claim HzX : z :e X.
+  { rewrite Hzeq. exact (homeomorphism_function_on X Tx X Tx g (Hhomeo g HgG) u HuX). }
+  prove z :e {x :e X | apply_fun pi x :e image_of pi U0}.
+  apply (SepI X (fun x:set => apply_fun pi x :e image_of pi U0) z HzX).
+  (** apply_fun pi z :e image_of pi U0 **)
+  (** pi(z) = orbit of z. z = g(u). orbit_equiv u z (via g). **)
+  (** So pi(z) = pi(u). And u :e U0, so pi(u) :e image_of pi U0. **)
+  admit. }
+claim Hpre_eq : preimage_of X pi (image_of pi U0) = Union slices.
+{ exact (set_ext (preimage_of X pi (image_of pi U0)) (Union slices) Hpre_sub_union Hunion_sub_pre). }
+claim Hpre_open : preimage_of X pi (image_of pi U0) :e Tx.
+{ rewrite Hpre_eq. exact (topology_union_closed X Tx slices HtopX Hslices_open). }
+prove image_of pi U0 :e orbit_topology X Tx G.
+prove image_of pi U0 :e quotient_topology X Tx (orbit_space X G) pi.
+prove image_of pi U0 :e {V :e Power (orbit_space X G) | preimage_of X pi V :e Tx}.
+exact (SepI (Power (orbit_space X G))
+  (fun V:set => preimage_of X pi V :e Tx)
+  (image_of pi U0) HimgPow Hpre_open).
 Admitted.
 
 (** Helper: orbit_map is an open map with group axioms (full version) **)
