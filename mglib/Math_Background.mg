@@ -279427,6 +279427,16 @@ let y. assume Hy : y :e component_of X Tx x.
 exact (SepE1 X (fun z:set => exists C:set, connected_space C (subspace_topology X Tx C) /\ x :e C /\ z :e C) y Hy).
 Qed.
 
+(** Helper: S^2 minus a simple closed curve is nonempty **)
+(** Proof: If C = S^2 then S^2 homeo S^1. But S^2 is simply connected **)
+(** (thm59_3) while S^1 has nontrivial pi_1. Contradiction. **)
+Lemma S2_minus_simple_closed_curve_nonempty : forall C:set,
+  C c= Sn 2 ->
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
+  (Sn 2 :\: C) <> Empty.
+admit.
+Admitted.
+
 (** Helper: A simple closed curve in S^2 can be decomposed into two arcs **)
 (** meeting only at their endpoints. C = C1 union C2, C1 cap C2 = {p,q}. **)
 (** This follows from S^1 = upper_semicircle union lower_semicircle **)
@@ -279862,8 +279872,9 @@ apply andI.
         Sn2_locally_path_connected HSmCopen_in Hconn). }
     apply andI.
     - exact HSmC_pc.
-    - (** S^2-C nonempty: from path_connected_space we can extract a point **)
-      admit. }
+    - (** S^2-C nonempty -> has element **)
+      exact (nonempty_has_element (Sn 2 :\: C)
+        (S2_minus_simple_closed_curve_nonempty C HC Hscc)). }
   claim HSmC_pc : path_connected_space (Sn 2 :\: C)
     (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)).
   { exact (andEL
@@ -279922,9 +279933,7 @@ apply andI.
   (** But pi_1(S^2-{p,q}) is nontrivial **)
   exact (pi1_S2_minus_two_points_nontrivial p q Hp Hq Hpq x0 Hx0_in_Xpq Htrivial).
 - (** Part 2: S^2-C is nonempty **)
-  (** S^2 has infinitely many points, C is homeomorphic to S^1 **)
-  (** so S^2 minus C is nonempty **)
-  admit.
+  exact (S2_minus_simple_closed_curve_nonempty C HC Hscc).
 Admitted.
 
 (** Helper: S^2-C has exactly two components (not more) **)
