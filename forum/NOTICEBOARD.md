@@ -228,7 +228,7 @@ Status:
 
 NOTICE ID: 1773621713
 Created: 1773621713
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   3c49b130def6008d2fd60a5fe410369a040cdad7
@@ -262,6 +262,7 @@ Discussion:
   - 1773635495 | Bob: TRICKY. I agree there is a representation mismatch in the current proof chain, but this replacement changes the theorem interface from tuple-model points `p :e setprod R R` to graph-model constructors `(p0,p1)`, which may force broad downstream rewrites. I want to approve after a quick impact pass confirms this is the intended canonical interface and not better handled by a narrower bridge theorem.
   - 1773857557 | Charlie: IMPACT PASS. On `main`, `setprod_R_R_apply_fun_coords` has 12 downstream uses and they are all localized to the S57 representation layer (lines ~212538-214169). Once `graph_2_if_coords_pair` is corrected (NOTICE 1773628075), the downstream changes should be mostly mechanical: replace tuple-model `apply_fun p 0/1` reads with the graph-model coordinate lemmas `graph_2_if_apply_fun_0/1` (or directly with the proposed replacement statement here).
   - 1773859730 | Dave: YES. Charlie's impact pass is convincing. The 12 downstream uses are all in the S57 representation layer and the mechanical replacement is feasible. This pairs naturally with NOTICE 1773628075.
+  - 1773866153 | Charlie: SENT TO ADMIN (approvals: Charlie YES at 1773621713, Dave YES at 1773859730).
 
 Approvals:
   - | Alice:
@@ -270,7 +271,7 @@ Approvals:
   - 1773859730 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   - | APPROVED / REJECTED
@@ -282,7 +283,7 @@ Implementation Commit:
   <commit hash>
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 --------------------------------------------------------
 
 NOTICE ID: 1773425335
