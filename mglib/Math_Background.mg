@@ -278589,6 +278589,42 @@ Theorem lemma61_1_components_stereographic : forall C:set,
 admit.
 Admitted.
 
+(** R^2 version of the nulhomotopy lemma (core of 61.2 proof). **)
+(** If g: A -> R^2-{0} continuous, A compact, and 0 is in the **)
+(** unbounded component of R^2-g(A), then g is nulhomotopic. **)
+(** Proof: **)
+(** (1) g(A) compact hence bounded; choose ball B containing g(A). **)
+(** (2) Choose p outside B; 0 and p both in unbounded component. **)
+(** (3) R^2-g(A) locally path connected -> path alpha from 0 to p in R^2-g(A). **)
+(** (4) G(x,t) = g(x) - alpha(t): homotopy g ~> k where k(x)=g(x)-p. **)
+(**     G avoids 0 since alpha(t) not in g(A) means g(x) <> alpha(t). **)
+(** (5) H(x,t) = t.g(x) - p: homotopy k ~> constant(-p). **)
+(**     H avoids 0 since t.g(x) in B but p not in B. **)
+Lemma nulhomotopy_R2_from_unbounded_component : forall A TA:set,
+  compact_space A TA ->
+  forall g:set,
+    continuous_map A TA (setprod R R :\: Sing (0, 0))
+      (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0, 0))) g ->
+    (** 0 is in the unbounded component of R^2-g(A) **)
+    (exists M:set, M :e R /\ Rlt 0 M /\
+      (forall a:set, a :e A ->
+        ~(Rlt M (add_SNo (mul_SNo (apply_fun g a 0) (apply_fun g a 0))
+                         (mul_SNo (apply_fun g a 1) (apply_fun g a 1)))))) ->
+    (** The origin can be connected to a far-away point in R^2-g(A) **)
+    (exists p:set, p :e setprod R R /\
+      ~(p :e image_of g A) /\
+      ~((0,0) :e image_of g A) /\
+      exists alpha:set,
+        path_between (setprod R R :\: image_of g A) (0,0) p alpha /\
+        continuous_map unit_interval unit_interval_topology
+          (setprod R R :\: image_of g A)
+          (subspace_topology (setprod R R) R2_topology (setprod R R :\: image_of g A)) alpha) ->
+    nulhomotopic A TA
+      (setprod R R :\: Sing (0, 0))
+      (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0, 0))) g.
+admit.
+Admitted.
+
 (** from S61 Lem 61.2 (line 1815 in algtop.tex) **)
 (** LATEX VERSION: Let a, b be points of S^2. Let A be compact, f: A -> S^2-a-b continuous. **)
 (** If a and b lie in the same component of S^2-f(A), then f is nulhomotopic. **)
