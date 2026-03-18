@@ -214739,6 +214739,21 @@ assume Hf.
 exact (thm57_3_borsuk_ulam_S2 f Hf).
 Admitted.
 
+(** Infrastructure for S57 Exercise 2: punctured sphere chart **)
+Theorem thm57_2_punctured_sphere_homeomorphic_R2 : forall y:set,
+  y :e Sn 2 ->
+  exists h:set,
+    homeomorphism
+      (Sn 2 :\: Sing y)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing y))
+      (setprod R R)
+      R2_topology
+      h.
+let y.
+assume Hy.
+admit.
+Admitted.
+
 (** from S57 Exercise 2 (line 1258 in algtop.tex) **)
 (** LATEX VERSION: If g: S^2 -> S^2 is continuous and g(x) != g(-x) for all x, then g is surjective. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
@@ -214823,8 +214838,9 @@ claim HsurjWit : forall y:set, y :e Sn 2 ->
         exists h:set,
           homeomorphism D DTop (setprod R R) R2_topology h.
       {
-        (** Remaining geometric input: punctured sphere Sn2 \ {y} is homeomorphic to R^2. **)
-        admit.
+        exact (thm57_2_punctured_sphere_homeomorphic_R2
+          y
+          Hy).
       }
       apply Hchart.
       let h.
