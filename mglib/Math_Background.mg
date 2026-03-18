@@ -425130,6 +425130,19 @@ exact (andEL (orbit_equiv E G x y) (orbit_equiv E G y x)
   (orbit_map_eq_implies_orbit_equiv_both E G x y idG HidG HidAct HxE HyE Heq)).
 Qed.
 
+(** Helper: orbit_equiv iff orbit_map equality for CTG **)
+(** Proven Alice **)
+Lemma ctg_orbit_equiv_iff_orbit_map_eq : forall E Te B Tb p x y:set,
+  covering_map E Te B Tb p -> x :e E -> y :e E ->
+  (orbit_equiv E (covering_transformation_group E Te B Tb p) x y <->
+   apply_fun (orbit_map E (covering_transformation_group E Te B Tb p)) x =
+   apply_fun (orbit_map E (covering_transformation_group E Te B Tb p)) y).
+let E Te B Tb p x y. assume Hcov HxE HyE.
+apply iffI.
+- assume Horb. exact (ctg_orbit_map_eq_of_orbit_equiv E Te B Tb p x y Hcov Horb).
+- assume Heq. exact (ctg_orbit_map_eq_implies_orbit_equiv E Te B Tb p x y Hcov HxE HyE Heq).
+Qed.
+
 (** Helper: preimage(image(pi,U0)) equality from homeomorphism action + group data **)
 (** Proven Bob **)
 Theorem orbit_map_preimage_image_eq_action_union_with_group_data :
