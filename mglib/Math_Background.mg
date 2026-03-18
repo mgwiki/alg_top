@@ -313270,18 +313270,922 @@ claim HfreeH :
 		              claim HfamH_to_imghifam :
 		                x :e homomorphism_image int (compose_fun int (apply_fun ifam alpha) h).
 		              {
-		                (** TODO: derive from the explicit description of GfamH(alpha)
-		                    as powers of basis2(alpha), using the local hifam
-		                    parametrization already established above. **)
-		                admit.
+		                claim HgrpG : group_structure G multG eG invG.
+		                { exact (andEL
+		                    (group_structure G multG eG invG)
+		                    (forall u v:set, u :e G -> v :e G ->
+		                      apply_fun multG (u, v) = apply_fun multG (v, u))
+		                    HabG). }
+		                claim HgrpZ : group_structure int integers_group_mult 0 integers_group_inv.
+		                { exact integers_group_is_group_cyclic_helper. }
+		                claim Hifam_pack :
+		                  group_homomorphism (apply_fun Gfam alpha)
+		                    (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+		                  (forall x0 y0:set, x0 :e apply_fun Gfam alpha -> y0 :e apply_fun Gfam alpha ->
+		                    apply_fun (apply_fun ifam alpha) x0 = apply_fun (apply_fun ifam alpha) y0 -> x0 = y0).
+		                { exact (Hifam_data alpha Halpha). }
+		                claim Hifam_hom_raw :
+		                  group_homomorphism (apply_fun Gfam alpha)
+		                    (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+		                { exact (andEL
+		                    (group_homomorphism (apply_fun Gfam alpha)
+		                      (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+		                    (forall x0 y0:set, x0 :e apply_fun Gfam alpha -> y0 :e apply_fun Gfam alpha ->
+		                      apply_fun (apply_fun ifam alpha) x0 = apply_fun (apply_fun ifam alpha) y0 -> x0 = y0)
+		                    Hifam_pack). }
+		                claim Hifam_hom :
+		                  group_homomorphism int integers_group_mult G multG (apply_fun ifam alpha).
+		                {
+		                  rewrite <- (apply_fun_graph J (fun _ : set => int) alpha Halpha).
+		                  rewrite <- (apply_fun_graph J (fun _ : set => integers_group_mult) alpha Halpha).
+		                  exact Hifam_hom_raw.
+		                }
+		                set hifam := compose_fun int (apply_fun ifam alpha) h.
+		                claim Hhifam_hom :
+		                  group_homomorphism int integers_group_mult G multG hifam.
+		                {
+		                  exact (group_homomorphism_compose_cyclic_helper
+		                    int
+		                    integers_group_mult
+		                    0
+		                    integers_group_inv
+		                    G
+		                    multG
+		                    G
+		                    multG
+		                    (apply_fun ifam alpha)
+		                    h
+		                    HgrpZ
+		                    Hifam_hom
+		                    Hh_hom).
+		                }
+		                claim HoneInt : 1 :e int.
+		                { exact (Subq_omega_int 1 (nat_p_omega 1 nat_1)). }
+		                claim Hhifam1_basis2 :
+		                  apply_fun hifam 1 = apply_fun basis2 alpha.
+		                {
+		                  rewrite (compose_fun_apply int (apply_fun ifam alpha) h 1 HoneInt).
+		                  rewrite (apply_fun_graph J (fun alpha0:set => apply_fun h (apply_fun basis1 alpha0)) alpha Halpha).
+		                  rewrite (Hbasis1_eq_ifam1 alpha Halpha).
+		                  reflexivity.
+		                }
+		                claim Hhifam_pos_pow : forall n:set, n :e omega ->
+		                  apply_fun hifam n =
+		                  group_power_nat multG eG (apply_fun basis2 alpha) n.
+		                {
+		                  let n.
+		                  assume HnO : n :e omega.
+		                  claim HnInt : n :e int.
+		                  { exact (Subq_omega_int n HnO). }
+		                  claim HnS : SNo n.
+		                  { exact (int_SNo n HnInt). }
+		                  claim HpowInt1 : group_power_nat integers_group_mult 0 1 n = n.
+		                  {
+		                    rewrite (integers_group_power_nat_mul_right_cyclic_helper 1 n HoneInt HnO).
+		                    exact (mul_SNo_oneL n HnS).
+		                  }
+		                  claim Hpow_pres :
+		                    apply_fun hifam (group_power_nat integers_group_mult 0 1 n) =
+		                    group_power_nat multG eG (apply_fun hifam 1) n.
+		                  {
+		                    exact (group_homomorphism_preserves_power_nat_cyclic_helper
+		                      int
+		                      integers_group_mult
+		                      0
+		                      integers_group_inv
+		                      G
+		                      multG
+		                      eG
+		                      invG
+		                      hifam
+		                      1
+		                      n
+		                      HgrpZ
+		                      HgrpG
+		                      Hhifam_hom
+		                      HoneInt
+		                      HnO).
+		                  }
+		                  claim Hlhs :
+		                    apply_fun hifam n =
+		                    apply_fun hifam (group_power_nat integers_group_mult 0 1 n).
+		                  { rewrite HpowInt1.
+		                    reflexivity. }
+		                  claim Hrhs :
+		                    group_power_nat multG eG (apply_fun hifam 1) n =
+		                    group_power_nat multG eG (apply_fun basis2 alpha) n.
+		                  { rewrite Hhifam1_basis2.
+		                    reflexivity. }
+		                  exact (eq_i_tra
+		                    (apply_fun hifam n)
+		                    (apply_fun hifam (group_power_nat integers_group_mult 0 1 n))
+		                    (group_power_nat multG eG (apply_fun basis2 alpha) n)
+		                    Hlhs
+		                    (eq_i_tra
+		                      (apply_fun hifam (group_power_nat integers_group_mult 0 1 n))
+		                      (group_power_nat multG eG (apply_fun hifam 1) n)
+		                      (group_power_nat multG eG (apply_fun basis2 alpha) n)
+		                      Hpow_pres
+		                      Hrhs)).
+		                }
+		                claim Hhifam_neg_pow : forall k:set, k :e omega ->
+		                  apply_fun hifam (minus_SNo (ordsucc k)) =
+		                  group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k).
+		                {
+		                  let k.
+		                  assume HkO : k :e omega.
+		                  claim HskO : ordsucc k :e omega.
+		                  { exact (omega_ordsucc k HkO). }
+		                  claim HskInt : ordsucc k :e int.
+		                  { exact (Subq_omega_int (ordsucc k) HskO). }
+		                  claim HskS : SNo (ordsucc k).
+		                  { exact (int_SNo (ordsucc k) HskInt). }
+		                  claim Hm1Int : minus_SNo 1 :e int.
+		                  { exact (int_minus_SNo 1 HoneInt). }
+		                  claim HpowIntMinusOne :
+		                    group_power_nat integers_group_mult 0 (minus_SNo 1) (ordsucc k) =
+		                    minus_SNo (ordsucc k).
+		                  {
+		                    rewrite (integers_group_power_nat_mul_right_cyclic_helper
+		                      (minus_SNo 1)
+		                      (ordsucc k)
+		                      Hm1Int
+		                      HskO).
+		                    rewrite (mul_SNo_minus_distrL 1 (ordsucc k) SNo_1 HskS).
+		                    rewrite (mul_SNo_oneL (ordsucc k) HskS).
+		                    reflexivity.
+		                  }
+		                  claim Hinv1 : apply_fun integers_group_inv 1 = minus_SNo 1.
+		                  {
+		                    rewrite (apply_fun_graph int (fun n0:set => minus_SNo n0) 1 HoneInt).
+		                    reflexivity.
+		                  }
+		                  claim Hpow_pres :
+		                    apply_fun hifam
+		                      (group_power_nat integers_group_mult 0 (apply_fun integers_group_inv 1) (ordsucc k)) =
+		                    group_power_nat multG eG (apply_fun invG (apply_fun hifam 1)) (ordsucc k).
+		                  {
+		                    exact (group_homomorphism_preserves_inverse_power_nat_cyclic_helper
+		                      int
+		                      integers_group_mult
+		                      0
+		                      integers_group_inv
+		                      G
+		                      multG
+		                      eG
+		                      invG
+		                      hifam
+		                      1
+		                      (ordsucc k)
+		                      HgrpZ
+		                      HgrpG
+		                      Hhifam_hom
+		                      HoneInt
+		                      HskO).
+		                  }
+		                  claim Hlhs :
+		                    apply_fun hifam (minus_SNo (ordsucc k)) =
+		                    apply_fun hifam
+		                      (group_power_nat integers_group_mult 0 (apply_fun integers_group_inv 1) (ordsucc k)).
+		                  {
+		                    rewrite Hinv1.
+		                    rewrite HpowIntMinusOne.
+		                    reflexivity.
+		                  }
+		                  claim Hrhs :
+		                    group_power_nat multG eG (apply_fun invG (apply_fun hifam 1)) (ordsucc k) =
+		                    group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k).
+		                  { rewrite Hhifam1_basis2.
+		                    reflexivity. }
+		                  exact (eq_i_tra
+		                    (apply_fun hifam (minus_SNo (ordsucc k)))
+		                    (apply_fun hifam
+		                      (group_power_nat integers_group_mult 0 (apply_fun integers_group_inv 1) (ordsucc k)))
+		                    (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))
+		                    Hlhs
+		                    (eq_i_tra
+		                      (apply_fun hifam
+		                        (group_power_nat integers_group_mult 0 (apply_fun integers_group_inv 1) (ordsucc k)))
+		                      (group_power_nat multG eG (apply_fun invG (apply_fun hifam 1)) (ordsucc k))
+		                      (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))
+		                      Hpow_pres
+		                      Hrhs)).
+		                }
+		                claim HxSep : x :e
+		                  {g0 :e H | exists m:set, m :e int /\
+		                    ((m :e omega /\ g0 = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                     (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                      g0 = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)))}.
+		                {
+		                  exact (eq_subst_mem_set
+		                    x
+		                    (apply_fun GfamH alpha)
+		                    {g0 :e H | exists m:set, m :e int /\
+		                      ((m :e omega /\ g0 = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                       (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                        g0 = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)))}
+		                    HxFamH
+		                    (apply_fun_graph J (fun alpha0:set =>
+		                      {g0 :e H | exists m:set, m :e int /\
+		                        ((m :e omega /\ g0 = group_power_nat multG eG (apply_fun basis2 alpha0) m) \/
+		                         (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                          g0 = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha0)) (ordsucc k)))})
+		                      alpha
+		                      Halpha)).
+		                }
+		                claim HmEx : exists m:set, m :e int /\
+		                  ((m :e omega /\ x = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                   (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                    x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))).
+		                { exact (SepE2
+		                    H
+		                    (fun g0:set => exists m:set, m :e int /\
+		                      ((m :e omega /\ g0 = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                       (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                        g0 = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))))
+		                    x
+		                    HxSep). }
+		                apply HmEx.
+		                let m.
+		                assume HmPack.
+		                claim HmInt : m :e int.
+		                { exact (andEL
+		                    (m :e int)
+		                    ((m :e omega /\ x = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                     (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                      x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)))
+		                    HmPack). }
+		                claim Hcases :
+		                  (m :e omega /\ x = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                  (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                    x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)).
+		                { exact (andER
+		                    (m :e int)
+		                    ((m :e omega /\ x = group_power_nat multG eG (apply_fun basis2 alpha) m) \/
+		                     (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+		                      x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k)))
+		                    HmPack). }
+		                apply Hcases.
+		                - assume Hpos.
+		                  claim HmO : m :e omega.
+		                  { exact (andEL
+		                      (m :e omega)
+		                      (x = group_power_nat multG eG (apply_fun basis2 alpha) m)
+		                      Hpos). }
+		                  claim HxPow :
+		                    x = group_power_nat multG eG (apply_fun basis2 alpha) m.
+		                  { exact (andER
+		                      (m :e omega)
+		                      (x = group_power_nat multG eG (apply_fun basis2 alpha) m)
+		                      Hpos). }
+		                  claim HhifamMx : apply_fun hifam m = x.
+		                  {
+		                    exact (eq_i_tra
+		                      (apply_fun hifam m)
+		                      (group_power_nat multG eG (apply_fun basis2 alpha) m)
+		                      x
+		                      (Hhifam_pos_pow m HmO)
+		                      (eq_symm
+		                        x
+		                        (group_power_nat multG eG (apply_fun basis2 alpha) m)
+		                        HxPow)).
+		                  }
+		                  claim HimgM :
+		                    apply_fun hifam m :e homomorphism_image int hifam.
+		                  { exact (homomorphism_image_intro int hifam m HmInt). }
+		                  rewrite <- HhifamMx.
+		                  exact HimgM.
+		                - assume Hneg.
+		                  apply Hneg.
+		                  let k.
+		                  assume HkPack.
+		                  claim HkO : k :e omega.
+		                  { exact (andEL
+		                      (k :e omega)
+		                      (m = minus_SNo (ordsucc k))
+		                      (andEL
+		                        (k :e omega /\ m = minus_SNo (ordsucc k))
+		                        (x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))
+		                        HkPack)). }
+		                  claim HmNeg : m = minus_SNo (ordsucc k).
+		                  { exact (andER
+		                      (k :e omega)
+		                      (m = minus_SNo (ordsucc k))
+		                      (andEL
+		                        (k :e omega /\ m = minus_SNo (ordsucc k))
+		                        (x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))
+		                        HkPack)). }
+		                  claim HxNeg :
+		                    x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k).
+		                  { exact (andER
+		                      (k :e omega /\ m = minus_SNo (ordsucc k))
+		                      (x = group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))
+		                      HkPack). }
+		                  claim HhifamMx : apply_fun hifam m = x.
+		                  {
+		                    claim Hstep0 :
+		                      apply_fun hifam m = apply_fun hifam (minus_SNo (ordsucc k)).
+		                    { rewrite HmNeg.
+		                      reflexivity. }
+		                    exact (eq_i_tra
+		                      (apply_fun hifam m)
+		                      (apply_fun hifam (minus_SNo (ordsucc k)))
+		                      x
+		                      Hstep0
+		                      (eq_i_tra
+		                        (apply_fun hifam (minus_SNo (ordsucc k)))
+		                        (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))
+		                        x
+		                        (Hhifam_neg_pow k HkO)
+		                        (eq_symm
+		                          x
+		                          (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))
+		                          HxNeg))).
+		                  }
+		                  claim HimgM :
+		                    apply_fun hifam m :e homomorphism_image int hifam.
+		                  { exact (homomorphism_image_intro int hifam m HmInt). }
+		                  rewrite <- HhifamMx.
+		                  exact HimgM.
 		              }
 		              claim Hh_on_imghifam :
 		                forall y:set, y :e homomorphism_image int (compose_fun int (apply_fun ifam alpha) h) ->
 		                  apply_fun h y :e apply_fun GfamImg alpha.
 		              {
-		                (** TODO: show h carries image(h o ifam_alpha) into
-		                    homomorphism_image(... ifam_alpha). **)
-		                admit.
+		                set hifam := compose_fun int (apply_fun ifam alpha) h.
+		                let y.
+		                assume HyImg : y :e homomorphism_image int hifam.
+		                claim Hex_t : exists t:set, t :e int /\ y = apply_fun hifam t.
+		                {
+		                  exact (iffEL
+		                    (y :e homomorphism_image int hifam)
+		                    (exists t:set, t :e int /\ y = apply_fun hifam t)
+		                    (homomorphism_image_mem int hifam y)
+		                    HyImg).
+		                }
+		                apply Hex_t.
+		                let t.
+		                assume HtPack.
+		                claim HtInt : t :e int.
+		                { exact (andEL
+		                    (t :e int)
+		                    (y = apply_fun hifam t)
+		                    HtPack). }
+		                claim HyEq : y = apply_fun hifam t.
+		                { exact (andER
+		                    (t :e int)
+		                    (y = apply_fun hifam t)
+		                    HtPack). }
+		                set hhifam := compose_fun int hifam h.
+		                claim HhyEq :
+		                  apply_fun h y = apply_fun hhifam t.
+		                {
+		                  rewrite HyEq.
+		                  rewrite (compose_fun_apply int hifam h t HtInt).
+		                  reflexivity.
+		                }
+		                claim Hhhifam_t_in :
+		                  apply_fun hhifam t :e apply_fun GfamImg alpha.
+		                {
+		                  set ImgAlpha := homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+		                  claim HimgAlphaEq : apply_fun GfamImg alpha = ImgAlpha.
+		                  {
+		                    exact (apply_fun_graph
+		                      J
+		                      (fun alpha0:set =>
+		                        homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))
+		                      alpha
+		                      Halpha).
+		                  }
+		                  claim HgrpG : group_structure G multG eG invG.
+		                  { exact (andEL
+		                      (group_structure G multG eG invG)
+		                      (forall u v:set, u :e G -> v :e G ->
+		                        apply_fun multG (u, v) = apply_fun multG (v, u))
+		                      HabG). }
+		                  claim HgrpZ : group_structure int integers_group_mult 0 integers_group_inv.
+		                  { exact integers_group_is_group_cyclic_helper. }
+		                  claim Hifam_hom_raw :
+		                    group_homomorphism (apply_fun Gfam alpha)
+		                      (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+		                  { exact (andEL
+		                      (group_homomorphism (apply_fun Gfam alpha)
+		                        (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+		                      (forall x0 y0:set, x0 :e apply_fun Gfam alpha -> y0 :e apply_fun Gfam alpha ->
+		                        apply_fun (apply_fun ifam alpha) x0 = apply_fun (apply_fun ifam alpha) y0 -> x0 = y0)
+		                      (Hifam_data alpha Halpha)). }
+		                  claim Hifam_hom_int :
+		                    group_homomorphism int integers_group_mult G multG (apply_fun ifam alpha).
+		                  {
+		                    rewrite <- (apply_fun_graph J (fun _ : set => int) alpha Halpha).
+		                    rewrite <- (apply_fun_graph J (fun _ : set => integers_group_mult) alpha Halpha).
+		                    exact Hifam_hom_raw.
+		                  }
+		                  claim Hifam_fn : function_on (apply_fun ifam alpha) (apply_fun Gfam alpha) G.
+		                  { exact (andEL
+		                      (function_on (apply_fun ifam alpha) (apply_fun Gfam alpha) G)
+		                      (forall x0 y0:set, x0 :e apply_fun Gfam alpha -> y0 :e apply_fun Gfam alpha ->
+		                        apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (x0, y0)) =
+		                        apply_fun multG (apply_fun (apply_fun ifam alpha) x0, apply_fun (apply_fun ifam alpha) y0))
+		                      Hifam_hom_raw). }
+		                  claim HgrpAlpha : group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) (apply_fun efam alpha) (apply_fun invfam alpha).
+		                  { exact (andEL
+		                      (group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) (apply_fun efam alpha) (apply_fun invfam alpha))
+		                      (forall x0 y0:set, x0 :e apply_fun Gfam alpha -> y0 :e apply_fun Gfam alpha ->
+		                        apply_fun (apply_fun multfam alpha) (x0, y0) = apply_fun (apply_fun multfam alpha) (y0, x0))
+		                      (HabFam alpha Halpha)). }
+		                  claim HimgAlphaSub : subgroup_of ImgAlpha G multG eG invG.
+		                  {
+		                    exact (homomorphism_image_subgroup_of
+		                      (apply_fun Gfam alpha)
+		                      (apply_fun multfam alpha)
+		                      (apply_fun efam alpha)
+		                      (apply_fun invfam alpha)
+		                      G
+		                      multG
+		                      eG
+		                      invG
+		                      (apply_fun ifam alpha)
+		                      HgrpAlpha
+		                      HgrpG
+		                      Hifam_hom_raw).
+		                  }
+		                  claim Hpow_cl_img : forall a:set, a :e ImgAlpha -> forall n:set, n :e omega ->
+		                    group_power_nat multG eG a n :e ImgAlpha.
+		                  {
+		                    let a.
+		                    assume Ha : a :e ImgAlpha.
+		                    apply (and6E
+		                      (function_on multG (setprod G G) G)
+		                      (function_on invG G G)
+		                      (eG :e G)
+		                      (forall u v w:set, u :e G -> v :e G -> w :e G ->
+		                        apply_fun multG (apply_fun multG (u, v), w) = apply_fun multG (u, apply_fun multG (v, w)))
+		                      (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+		                      (forall u:set, u :e G ->
+		                        apply_fun multG (u, apply_fun invG u) = eG /\ apply_fun multG (apply_fun invG u, u) = eG)
+		                      HgrpG).
+		                    assume HmultFn HinvFn HeGG Hassoc Hid HinvLaw.
+		                    let n.
+		                    assume HnO : n :e omega.
+		                    apply (nat_ind (fun k:set => group_power_nat multG eG a k :e ImgAlpha)).
+		                    - exact (eq_subst_mem
+		                        (group_power_nat multG eG a 0)
+		                        eG
+		                        ImgAlpha
+		                        (nat_primrec_0 eG (fun _ r => apply_fun multG (a, r)))
+		                        (subgroup_of_unit ImgAlpha G multG eG invG HimgAlphaSub)).
+		                    - let k.
+		                      assume Hk : nat_p k.
+		                      assume IHk : group_power_nat multG eG a k :e ImgAlpha.
+		                      exact (eq_subst_mem
+		                        (group_power_nat multG eG a (ordsucc k))
+		                        (apply_fun multG (a, group_power_nat multG eG a k))
+		                        ImgAlpha
+		                        (nat_primrec_S eG (fun _ r => apply_fun multG (a, r)) k Hk)
+		                        (subgroup_of_mult_closed
+		                          ImgAlpha
+		                          G
+		                          multG
+		                          eG
+		                          invG
+		                          a
+		                          (group_power_nat multG eG a k)
+		                          HimgAlphaSub
+		                          Ha
+		                          IHk)).
+		                    - exact (omega_nat_p n HnO).
+		                  }
+		                  claim Hh_mul :
+		                    forall u v:set, u :e G -> v :e G ->
+		                      apply_fun h (apply_fun multG (u, v)) =
+		                      apply_fun multG (apply_fun h u, apply_fun h v).
+		                  { exact (andER
+		                      (function_on h G G)
+		                      (forall u v:set, u :e G -> v :e G ->
+		                        apply_fun h (apply_fun multG (u, v)) =
+		                        apply_fun multG (apply_fun h u, apply_fun h v))
+		                      Hh_hom). }
+		                  claim Hh_basis2_local : K.
+		                  { exact (andER
+		                      (((((A /\ B) /\ C) /\ D) /\ E) /\ F)
+		                      K
+		                      Hleft6). }
+		                  claim HtwoInt : 2 :e int.
+		                  { exact (Subq_omega_int 2 (nat_p_omega 2 nat_2)). }
+		                  claim HtwoFam : 2 :e apply_fun Gfam alpha.
+		                  { rewrite (apply_fun_graph J (fun _ : set => int) alpha Halpha).
+		                    exact HtwoInt. }
+		                  claim Hbasis2_eq_ifam2 :
+		                    apply_fun basis2 alpha = apply_fun (apply_fun ifam alpha) 2.
+		                  {
+		                    rewrite (apply_fun_graph J (fun alpha0:set => apply_fun h (apply_fun basis1 alpha0)) alpha Halpha).
+		                    exact (Hh_basis2_local alpha Halpha).
+		                  }
+		                  claim Hb2G : apply_fun basis2 alpha :e G.
+		                  {
+		                    rewrite Hbasis2_eq_ifam2.
+		                    exact (Hifam_fn 2 HtwoFam).
+		                  }
+		                  claim Hb2Img : apply_fun basis2 alpha :e ImgAlpha.
+		                  {
+		                    rewrite Hbasis2_eq_ifam2.
+		                    exact (homomorphism_image_intro (apply_fun Gfam alpha) (apply_fun ifam alpha) 2 HtwoFam).
+		                  }
+		                  claim Hhb2_eq :
+		                    apply_fun h (apply_fun basis2 alpha) =
+		                    apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha).
+		                  {
+		                    claim Hstep0 :
+		                      apply_fun h (apply_fun basis2 alpha) =
+		                      apply_fun h (apply_fun h (apply_fun basis1 alpha)).
+		                    { rewrite (apply_fun_graph J (fun alpha0:set => apply_fun h (apply_fun basis1 alpha0)) alpha Halpha).
+		                      reflexivity. }
+		                    claim Hstep1 :
+		                      apply_fun h (apply_fun h (apply_fun basis1 alpha)) =
+		                      apply_fun h (apply_fun multG (apply_fun basis1 alpha, apply_fun basis1 alpha)).
+		                    { rewrite (Hbasis_square alpha Halpha).
+		                      reflexivity. }
+		                    claim Hstep2 :
+		                      apply_fun h (apply_fun multG (apply_fun basis1 alpha, apply_fun basis1 alpha)) =
+		                      apply_fun multG (apply_fun h (apply_fun basis1 alpha), apply_fun h (apply_fun basis1 alpha)).
+		                    {
+		                      exact (Hh_mul
+		                        (apply_fun basis1 alpha)
+		                        (apply_fun basis1 alpha)
+		                        (Hbasis1_fn alpha Halpha)
+		                        (Hbasis1_fn alpha Halpha)).
+		                    }
+		                    claim Hstep3 :
+		                      apply_fun multG (apply_fun h (apply_fun basis1 alpha), apply_fun h (apply_fun basis1 alpha)) =
+		                      apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha).
+		                    {
+		                      rewrite (apply_fun_graph J (fun alpha0:set => apply_fun h (apply_fun basis1 alpha0)) alpha Halpha).
+		                      reflexivity.
+		                    }
+		                    exact (eq_i_tra
+		                      (apply_fun h (apply_fun basis2 alpha))
+		                      (apply_fun h (apply_fun h (apply_fun basis1 alpha)))
+		                      (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha))
+		                      Hstep0
+		                      (eq_i_tra
+		                        (apply_fun h (apply_fun h (apply_fun basis1 alpha)))
+		                        (apply_fun h (apply_fun multG (apply_fun basis1 alpha, apply_fun basis1 alpha)))
+		                        (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha))
+		                        Hstep1
+		                        (eq_i_tra
+		                          (apply_fun h (apply_fun multG (apply_fun basis1 alpha, apply_fun basis1 alpha)))
+		                          (apply_fun multG (apply_fun h (apply_fun basis1 alpha), apply_fun h (apply_fun basis1 alpha)))
+		                          (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha))
+		                          Hstep2
+		                          Hstep3))).
+		                  }
+		                  claim Hhb2Img : apply_fun h (apply_fun basis2 alpha) :e ImgAlpha.
+		                  {
+		                    claim HmulImg :
+		                      apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha) :e ImgAlpha.
+		                    { exact (subgroup_of_mult_closed
+		                        ImgAlpha
+		                        G
+		                        multG
+		                        eG
+		                        invG
+		                        (apply_fun basis2 alpha)
+		                        (apply_fun basis2 alpha)
+		                        HimgAlphaSub
+		                        Hb2Img
+		                        Hb2Img). }
+		                    rewrite Hhb2_eq.
+		                    exact HmulImg.
+		                  }
+		                  claim Hhifam_hom :
+		                    group_homomorphism int integers_group_mult G multG hifam.
+		                  {
+		                    exact (group_homomorphism_compose_cyclic_helper
+		                      int
+		                      integers_group_mult
+		                      0
+		                      integers_group_inv
+		                      G
+		                      multG
+		                      G
+		                      multG
+		                      (apply_fun ifam alpha)
+		                      h
+		                      HgrpZ
+		                      Hifam_hom_int
+		                      Hh_hom).
+		                  }
+		                  claim HoneInt : 1 :e int.
+		                  { exact (Subq_omega_int 1 (nat_p_omega 1 nat_1)). }
+		                  claim Hhifam1_basis2 :
+		                    apply_fun hifam 1 = apply_fun basis2 alpha.
+		                  {
+		                    rewrite (compose_fun_apply int (apply_fun ifam alpha) h 1 HoneInt).
+		                    rewrite (apply_fun_graph J (fun alpha0:set => apply_fun h (apply_fun basis1 alpha0)) alpha Halpha).
+		                    rewrite (Hbasis1_eq_ifam1 alpha Halpha).
+		                    reflexivity.
+		                  }
+		                  claim Hhifam_neg_pow : forall k:set, k :e omega ->
+		                    apply_fun hifam (minus_SNo (ordsucc k)) =
+		                    group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k).
+		                  {
+		                    let k.
+		                    assume HkO : k :e omega.
+		                    claim HskO : ordsucc k :e omega.
+		                    { exact (omega_ordsucc k HkO). }
+		                    claim HskInt : ordsucc k :e int.
+		                    { exact (Subq_omega_int (ordsucc k) HskO). }
+		                    claim HskS : SNo (ordsucc k).
+		                    { exact (int_SNo (ordsucc k) HskInt). }
+		                    claim Hm1Int : minus_SNo 1 :e int.
+		                    { exact (int_minus_SNo 1 HoneInt). }
+		                    claim HpowIntMinusOne :
+		                      group_power_nat integers_group_mult 0 (minus_SNo 1) (ordsucc k) =
+		                      minus_SNo (ordsucc k).
+		                    {
+		                      rewrite (integers_group_power_nat_mul_right_cyclic_helper
+		                        (minus_SNo 1)
+		                        (ordsucc k)
+		                        Hm1Int
+		                        HskO).
+		                      rewrite (mul_SNo_minus_distrL 1 (ordsucc k) SNo_1 HskS).
+		                      rewrite (mul_SNo_oneL (ordsucc k) HskS).
+		                      reflexivity.
+		                    }
+		                    claim Hinv1 : apply_fun integers_group_inv 1 = minus_SNo 1.
+		                    {
+		                      rewrite (apply_fun_graph int (fun n0:set => minus_SNo n0) 1 HoneInt).
+		                      reflexivity.
+		                    }
+		                    claim Hpow_pres :
+		                      apply_fun hifam
+		                        (group_power_nat integers_group_mult 0 (apply_fun integers_group_inv 1) (ordsucc k)) =
+		                      group_power_nat multG eG (apply_fun invG (apply_fun hifam 1)) (ordsucc k).
+		                    {
+		                      exact (group_homomorphism_preserves_inverse_power_nat_cyclic_helper
+		                        int
+		                        integers_group_mult
+		                        0
+		                        integers_group_inv
+		                        G
+		                        multG
+		                        eG
+		                        invG
+		                        hifam
+		                        1
+		                        (ordsucc k)
+		                        HgrpZ
+		                        HgrpG
+		                        Hhifam_hom
+		                        HoneInt
+		                        HskO).
+		                    }
+		                    claim Hlhs :
+		                      apply_fun hifam (minus_SNo (ordsucc k)) =
+		                      apply_fun hifam
+		                        (group_power_nat integers_group_mult 0 (apply_fun integers_group_inv 1) (ordsucc k)).
+		                    {
+		                      rewrite Hinv1.
+		                      rewrite HpowIntMinusOne.
+		                      reflexivity.
+		                    }
+		                    claim Hrhs :
+		                      group_power_nat multG eG (apply_fun invG (apply_fun hifam 1)) (ordsucc k) =
+		                      group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k).
+		                    { rewrite Hhifam1_basis2.
+		                      reflexivity. }
+		                    exact (eq_i_tra
+		                      (apply_fun hifam (minus_SNo (ordsucc k)))
+		                      (apply_fun hifam
+		                        (group_power_nat integers_group_mult 0 (apply_fun integers_group_inv 1) (ordsucc k)))
+		                      (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))
+		                      Hlhs
+		                      (eq_i_tra
+		                        (apply_fun hifam
+		                          (group_power_nat integers_group_mult 0 (apply_fun integers_group_inv 1) (ordsucc k)))
+		                        (group_power_nat multG eG (apply_fun invG (apply_fun hifam 1)) (ordsucc k))
+		                        (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc k))
+		                        Hpow_pres
+		                        Hrhs)).
+		                  }
+		                  apply (xm (t :e omega)).
+		                  - assume HtO : t :e omega.
+		                    claim HtS : SNo t.
+		                    { exact (int_SNo t HtInt). }
+		                    claim HpowInt1 : group_power_nat integers_group_mult 0 1 t = t.
+		                    {
+		                      rewrite (integers_group_power_nat_mul_right_cyclic_helper 1 t HoneInt HtO).
+		                      exact (mul_SNo_oneL t HtS).
+		                    }
+		                    claim Hhifam_t :
+		                      apply_fun hifam t =
+		                      group_power_nat multG eG (apply_fun basis2 alpha) t.
+		                    {
+		                      claim Hpow_pres :
+		                        apply_fun hifam (group_power_nat integers_group_mult 0 1 t) =
+		                        group_power_nat multG eG (apply_fun hifam 1) t.
+		                      {
+		                        exact (group_homomorphism_preserves_power_nat_cyclic_helper
+		                          int
+		                          integers_group_mult
+		                          0
+		                          integers_group_inv
+		                          G
+		                          multG
+		                          eG
+		                          invG
+		                          hifam
+		                          1
+		                          t
+		                          HgrpZ
+		                          HgrpG
+		                          Hhifam_hom
+		                          HoneInt
+		                          HtO).
+		                      }
+		                      claim Hlhs :
+		                        apply_fun hifam t =
+		                        apply_fun hifam (group_power_nat integers_group_mult 0 1 t).
+		                      { rewrite HpowInt1.
+		                        reflexivity. }
+		                      claim Hrhs :
+		                        group_power_nat multG eG (apply_fun hifam 1) t =
+		                        group_power_nat multG eG (apply_fun basis2 alpha) t.
+		                      { rewrite Hhifam1_basis2.
+		                        reflexivity. }
+		                      exact (eq_i_tra
+		                        (apply_fun hifam t)
+		                        (apply_fun hifam (group_power_nat integers_group_mult 0 1 t))
+		                        (group_power_nat multG eG (apply_fun basis2 alpha) t)
+		                        Hlhs
+		                        (eq_i_tra
+		                          (apply_fun hifam (group_power_nat integers_group_mult 0 1 t))
+		                          (group_power_nat multG eG (apply_fun hifam 1) t)
+		                          (group_power_nat multG eG (apply_fun basis2 alpha) t)
+		                          Hpow_pres
+		                          Hrhs)).
+		                    }
+		                    claim Hhhifam_eval :
+		                      apply_fun hhifam t = apply_fun h (apply_fun hifam t).
+		                    { exact (compose_fun_apply int hifam h t HtInt). }
+		                    claim Hhpow_t :
+		                      apply_fun h (apply_fun hifam t) =
+		                      group_power_nat multG eG (apply_fun h (apply_fun basis2 alpha)) t.
+		                    {
+		                      rewrite Hhifam_t.
+		                      exact (group_homomorphism_preserves_power_nat_cyclic_helper
+		                        G
+		                        multG
+		                        eG
+		                        invG
+		                        G
+		                        multG
+		                        eG
+		                        invG
+		                        h
+		                        (apply_fun basis2 alpha)
+		                        t
+		                        HgrpG
+		                        HgrpG
+		                        Hh_hom
+		                        Hb2G
+		                        HtO).
+		                    }
+		                    claim HpowImg :
+		                      group_power_nat multG eG (apply_fun h (apply_fun basis2 alpha)) t :e ImgAlpha.
+		                    { exact (Hpow_cl_img
+		                        (apply_fun h (apply_fun basis2 alpha))
+		                        Hhb2Img
+		                        t
+		                        HtO). }
+		                    claim HmemImg : apply_fun hhifam t :e ImgAlpha.
+		                    {
+		                      rewrite Hhhifam_eval.
+		                      rewrite Hhpow_t.
+		                      exact HpowImg.
+		                    }
+		                    exact (eq_subst_mem_set
+		                      (apply_fun hhifam t)
+		                      ImgAlpha
+		                      (apply_fun GfamImg alpha)
+		                      HmemImg
+		                      (eq_symm
+		                        (apply_fun GfamImg alpha)
+		                        ImgAlpha
+		                        HimgAlphaEq)).
+		                  - assume HtNotO : ~(t :e omega).
+		                    claim HtNe0 : t <> 0.
+		                    {
+		                      assume Ht0.
+		                      apply HtNotO.
+		                      rewrite Ht0.
+		                      exact (nat_p_omega 0 nat_0).
+		                    }
+		                    claim HtCases :
+		                      (exists p:set, p :e omega /\ t = ordsucc p) \/
+		                      (exists p:set, p :e omega /\ t = minus_SNo (ordsucc p)).
+		                    { exact (int_nonzero_cases_cyclic_helper t HtInt HtNe0). }
+		                    apply HtCases.
+		                    + assume HtPos.
+		                      apply HtPos.
+		                      let p.
+		                      assume HpPack.
+		                      claim HpO : p :e omega.
+		                      { exact (andEL
+		                          (p :e omega)
+		                          (t = ordsucc p)
+		                          HpPack). }
+		                      claim HtPosEq : t = ordsucc p.
+		                      { exact (andER
+		                          (p :e omega)
+		                          (t = ordsucc p)
+		                          HpPack). }
+		                      claim HtO2 : t :e omega.
+		                      { rewrite HtPosEq.
+		                        exact (omega_ordsucc p HpO). }
+		                      exact (FalseE
+		                        (HtNotO HtO2)
+		                        (apply_fun hhifam t :e apply_fun GfamImg alpha)).
+		                    + assume HtNeg.
+		                      apply HtNeg.
+		                      let k.
+		                      assume HkPack.
+		                      claim HkO : k :e omega.
+		                      { exact (andEL
+		                          (k :e omega)
+		                          (t = minus_SNo (ordsucc k))
+		                          HkPack). }
+		                      claim HtNegEq : t = minus_SNo (ordsucc k).
+		                      { exact (andER
+		                          (k :e omega)
+		                          (t = minus_SNo (ordsucc k))
+		                          HkPack). }
+		                      claim HskO : ordsucc k :e omega.
+		                      { exact (omega_ordsucc k HkO). }
+		                      claim Hhhifam_eval :
+		                        apply_fun hhifam t = apply_fun h (apply_fun hifam t).
+		                      { exact (compose_fun_apply int hifam h t HtInt). }
+		                      claim Hhpow_t :
+		                        apply_fun h (apply_fun hifam t) =
+		                        group_power_nat multG eG (apply_fun invG (apply_fun h (apply_fun basis2 alpha))) (ordsucc k).
+		                      {
+		                        rewrite HtNegEq.
+		                        rewrite (Hhifam_neg_pow k HkO).
+		                        exact (group_homomorphism_preserves_inverse_power_nat_cyclic_helper
+		                          G
+		                          multG
+		                          eG
+		                          invG
+		                          G
+		                          multG
+		                          eG
+		                          invG
+		                          h
+		                          (apply_fun basis2 alpha)
+		                          (ordsucc k)
+		                          HgrpG
+		                          HgrpG
+		                          Hh_hom
+		                          Hb2G
+		                          HskO).
+		                      }
+		                      claim Hinvhb2Img :
+		                        apply_fun invG (apply_fun h (apply_fun basis2 alpha)) :e ImgAlpha.
+		                      { exact (subgroup_of_inv_closed
+		                          ImgAlpha
+		                          G
+		                          multG
+		                          eG
+		                          invG
+		                          (apply_fun h (apply_fun basis2 alpha))
+		                          HimgAlphaSub
+		                          Hhb2Img). }
+		                      claim HpowImg :
+		                        group_power_nat multG eG (apply_fun invG (apply_fun h (apply_fun basis2 alpha))) (ordsucc k) :e ImgAlpha.
+		                      { exact (Hpow_cl_img
+		                          (apply_fun invG (apply_fun h (apply_fun basis2 alpha)))
+		                          Hinvhb2Img
+		                          (ordsucc k)
+		                          HskO). }
+		                      claim HmemImg : apply_fun hhifam t :e ImgAlpha.
+		                      {
+		                        rewrite Hhhifam_eval.
+		                        rewrite Hhpow_t.
+		                        exact HpowImg.
+		                      }
+		                      exact (eq_subst_mem_set
+		                        (apply_fun hhifam t)
+		                        ImgAlpha
+		                        (apply_fun GfamImg alpha)
+		                        HmemImg
+		                        (eq_symm
+		                          (apply_fun GfamImg alpha)
+		                          ImgAlpha
+		                          HimgAlphaEq)).
+		                }
+		                rewrite HhyEq.
+		                exact Hhhifam_t_in.
 		              }
 		              exact (Hh_on_imghifam x HfamH_to_imghifam).
 		            }
