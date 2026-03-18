@@ -416710,6 +416710,28 @@ let X f V.
 exact (Sep_Subq X (fun x:set => apply_fun f x :e V)).
 Qed.
 
+(** Helper: element of preimage is in domain and maps into target **)
+(** Proven Alice **)
+Lemma preimage_of_mem_domain : forall X f V x:set,
+  x :e preimage_of X f V -> x :e X.
+let X f V x. assume Hx.
+exact (SepE1 X (fun z:set => apply_fun f z :e V) x Hx).
+Qed.
+
+(** Proven Alice **)
+Lemma preimage_of_mem_target : forall X f V x:set,
+  x :e preimage_of X f V -> apply_fun f x :e V.
+let X f V x. assume Hx.
+exact (SepE2 X (fun z:set => apply_fun f z :e V) x Hx).
+Qed.
+
+(** Proven Alice **)
+Lemma preimage_of_intro : forall X f V x:set,
+  x :e X -> apply_fun f x :e V -> x :e preimage_of X f V.
+let X f V x. assume HxX HfxV.
+exact (SepI X (fun z:set => apply_fun f z :e V) x HxX HfxV).
+Qed.
+
 (** Helper: path components of covering preimage are open when base is lpc **)
 (** Proven Alice **)
 Lemma covering_preimage_path_component_open : forall E Te B Tb p U e:set,
