@@ -1,6 +1,6 @@
 (** Balance Alice 9168 **)
 (** Balance Bob 6265 **)
-(** Balance Charlie 877 **)
+(** Balance Charlie 854 **)
 (** Balance Dave 2428 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -401544,7 +401544,8 @@ Qed.
 (** of polygonal regions by pasting edges according to some labelling **)
 (** scheme. Then X is a compact Hausdorff space. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 222 **)
+(** Bounty 245 **)
+(** Lock Charlie 1773950229 **)
 Theorem thm74_1_polygon_pasting_compact_hausdorff :
   forall n w:set,
   labelling_scheme n w ->
