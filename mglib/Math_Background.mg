@@ -313057,20 +313057,374 @@ claim HfreeH :
 		          forall i0:set, i0 :e n0 ->
 		            apply_fun h (apply_fun xs0 i0) = eG.
 		        {
-		          (** TODO: derive by pushing Hprod0 through h and applying
-		              ex67_1_direct_sum_characterization on G to the family
-		              i0 |-> apply_fun h (apply_fun xs0 i0). **)
-		          admit.
+		          claim HgrpG : group_structure G multG eG invG.
+		          { exact (andEL
+		              (group_structure G multG eG invG)
+		              (forall u v:set, u :e G -> v :e G ->
+		                apply_fun multG (u, v) = apply_fun multG (v, u))
+		              HabG). }
+		          claim Hh_fn : function_on h G G.
+		          { exact (andEL
+		              (function_on h G G)
+		              (forall u v:set, u :e G -> v :e G ->
+		                apply_fun h (apply_fun multG (u, v)) =
+		                apply_fun multG (apply_fun h u, apply_fun h v))
+		              Hh_hom). }
+		          claim HeGG : eG :e G.
+		          {
+		            apply (and6E
+		              (function_on multG (setprod G G) G)
+		              (function_on invG G G)
+		              (eG :e G)
+		              (forall u v w:set, u :e G -> v :e G -> w :e G ->
+		                apply_fun multG (apply_fun multG (u, v), w) = apply_fun multG (u, apply_fun multG (v, w)))
+		              (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+		              (forall u:set, u :e G ->
+		                apply_fun multG (u, apply_fun invG u) = eG /\ apply_fun multG (apply_fun invG u, u) = eG)
+		              HgrpG).
+		            assume _ _ He _ _ _.
+		            exact He.
+		          }
+		          claim Hxs0FnG : function_on xs0 n0 G.
+		          {
+		            let i0.
+		            assume Hi0 : i0 :e n0.
+		            exact (subgroup_of_mem_in_G
+		              H
+		              G
+		              multG
+		              eG
+		              invG
+		              (apply_fun xs0 i0)
+		              HsubH
+		              (Hxs0Fn i0 Hi0)).
+		          }
+		          claim HfG_all : forall i0:set, If_i (i0 :e n0) (apply_fun xs0 i0) eG :e G.
+		          {
+		            let i0.
+		            apply (xm (i0 :e n0)).
+		            - assume Hi0 : i0 :e n0.
+		              rewrite (If_i_1 (i0 :e n0) (apply_fun xs0 i0) eG Hi0).
+		              exact (Hxs0FnG i0 Hi0).
+		            - assume Hni0 : ~(i0 :e n0).
+		              rewrite (If_i_0 (i0 :e n0) (apply_fun xs0 i0) eG Hni0).
+		              exact HeGG.
+		          }
+		          claim Hprod_fG :
+		            nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0 i0)) n0 =
+		            nat_primrec eG (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG)) n0.
+		          {
+		            apply (nat_primrec_ext eG
+		              (fun i0 r0 => apply_fun multG (r0, apply_fun xs0 i0))
+		              (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG))
+		              n0
+		              Hn0O).
+		            let i0 r0.
+		            assume Hi0 : i0 :e n0.
+		            rewrite (If_i_1 (i0 :e n0) (apply_fun xs0 i0) eG Hi0).
+		            reflexivity.
+		          }
+		          claim HhomNat :
+		            apply_fun h (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG)) n0) =
+		            nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (If_i (i0 :e n0) (apply_fun xs0 i0) eG))) n0.
+		          {
+		            exact (hom_distributes_nat_primrec
+		              G multG eG invG
+		              G multG eG invG
+		              h
+		              HgrpG
+		              HgrpG
+		              Hh_hom
+		              (fun i0:set => If_i (i0 :e n0) (apply_fun xs0 i0) eG)
+		              HfG_all
+		              n0
+		              Hn0O).
+		          }
+		          claim Hprod_hfG :
+		            nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (If_i (i0 :e n0) (apply_fun xs0 i0) eG))) n0 =
+		            nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (apply_fun xs0 i0))) n0.
+		          {
+		            apply (nat_primrec_ext eG
+		              (fun i0 r0 => apply_fun multG (r0, apply_fun h (If_i (i0 :e n0) (apply_fun xs0 i0) eG)))
+		              (fun i0 r0 => apply_fun multG (r0, apply_fun h (apply_fun xs0 i0)))
+		              n0
+		              Hn0O).
+		            let i0 r0.
+		            assume Hi0 : i0 :e n0.
+		            rewrite (If_i_1 (i0 :e n0) (apply_fun xs0 i0) eG Hi0).
+		            reflexivity.
+		          }
+		          set xs0h := graph n0 (fun i0:set => apply_fun h (apply_fun xs0 i0)).
+		          claim Hprod_xs0h :
+		            nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (apply_fun xs0 i0))) n0 =
+		            nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0h i0)) n0.
+		          {
+		            apply (nat_primrec_ext eG
+		              (fun i0 r0 => apply_fun multG (r0, apply_fun h (apply_fun xs0 i0)))
+		              (fun i0 r0 => apply_fun multG (r0, apply_fun xs0h i0))
+		              n0
+		              Hn0O).
+		            let i0 r0.
+		            assume Hi0 : i0 :e n0.
+		            rewrite (apply_fun_graph n0 (fun i1:set => apply_fun h (apply_fun xs0 i1)) i0 Hi0).
+		            reflexivity.
+		          }
+		          claim HheG : apply_fun h eG = eG.
+		          {
+		            exact (group_hom_sends_identity_cyclic_helper
+		              G
+		              multG
+		              eG
+		              invG
+		              G
+		              multG
+		              eG
+		              invG
+		              h
+		              HgrpG
+		              HgrpG
+		              Hh_hom).
+		          }
+		          claim Hprod_hxs0_e :
+		            nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0h i0)) n0 = eG.
+		          {
+		            claim Hstep0 :
+		              apply_fun h (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0 i0)) n0) = eG.
+		            {
+		              rewrite Hprod0.
+		              exact HheG.
+		            }
+		            claim Hstep1 :
+		              apply_fun h (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG)) n0) = eG.
+		            {
+		              claim HargEq :
+		                nat_primrec eG (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG)) n0 =
+		                nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0 i0)) n0.
+		              {
+		                exact (eq_symm
+		                  (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0 i0)) n0)
+		                  (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG)) n0)
+		                  Hprod_fG).
+		              }
+		              claim HmapEq :
+		                apply_fun h (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG)) n0) =
+		                apply_fun h (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0 i0)) n0).
+		              { exact (apply_fun_congr_arg
+		                  h
+		                  (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG)) n0)
+		                  (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0 i0)) n0)
+		                  HargEq). }
+		              exact (eq_i_tra
+		                (apply_fun h (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG)) n0))
+		                (apply_fun h (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0 i0)) n0))
+		                eG
+		                HmapEq
+		                Hstep0).
+		            }
+		            claim Hstep2 :
+		              nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (If_i (i0 :e n0) (apply_fun xs0 i0) eG))) n0 = eG.
+		            {
+		              exact (eq_i_tra
+		                (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (If_i (i0 :e n0) (apply_fun xs0 i0) eG))) n0)
+		                (apply_fun h (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG)) n0))
+		                eG
+		                (eq_symm
+		                  (apply_fun h (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, If_i (i0 :e n0) (apply_fun xs0 i0) eG)) n0))
+		                  (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (If_i (i0 :e n0) (apply_fun xs0 i0) eG))) n0)
+		                  HhomNat)
+		                Hstep1).
+		            }
+		            claim Hstep3 :
+		              nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (apply_fun xs0 i0))) n0 = eG.
+		            {
+		              exact (eq_i_tra
+		                (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (apply_fun xs0 i0))) n0)
+		                (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (If_i (i0 :e n0) (apply_fun xs0 i0) eG))) n0)
+		                eG
+		                (eq_symm
+		                  (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (If_i (i0 :e n0) (apply_fun xs0 i0) eG))) n0)
+		                  (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (apply_fun xs0 i0))) n0)
+		                  Hprod_hfG)
+		                Hstep2).
+		            }
+		            exact (eq_i_tra
+		              (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0h i0)) n0)
+		              (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (apply_fun xs0 i0))) n0)
+		              eG
+		              (eq_symm
+		                (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun h (apply_fun xs0 i0))) n0)
+		                (nat_primrec eG (fun i0 r0 => apply_fun multG (r0, apply_fun xs0h i0)) n0)
+		                Hprod_xs0h)
+		              Hstep3).
+		          }
+		          set GfamImg := graph J (fun alpha:set =>
+		            homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)).
+		          claim HdsG_main :
+		            direct_sum_of_subgroups G multG eG invG J GfamImg.
+		          {
+		            exact (andER
+		              (A /\ B)
+		              C
+		              Hleft2).
+		          }
+		          claim HsgaG_main :
+		            subgroups_generate_abelian G multG eG invG J GfamImg.
+		          {
+		            exact (direct_sum_of_subgroups_subgroups_generate_abelian
+		              G
+		              multG
+		              eG
+		              invG
+		              J
+		              GfamImg
+		              HdsG_main).
+		          }
+		          claim Hzero_char_G :
+		            forall n1:set, n1 :e omega -> n1 <> 0 ->
+		              forall alphas1:set, function_on alphas1 n1 J ->
+		              (forall i1 j1:set, i1 :e n1 -> j1 :e n1 -> i1 <> j1 ->
+		                apply_fun alphas1 i1 <> apply_fun alphas1 j1) ->
+		              forall ys1:set, function_on ys1 n1 G ->
+		              (forall i1:set, i1 :e n1 ->
+		                apply_fun ys1 i1 :e apply_fun GfamImg (apply_fun alphas1 i1)) ->
+		              nat_primrec eG (fun i1 r1 => apply_fun multG (r1, apply_fun ys1 i1)) n1 = eG ->
+		              (forall i1:set, i1 :e n1 -> apply_fun ys1 i1 = eG).
+		          {
+		            exact (iffEL
+		              (direct_sum_of_subgroups G multG eG invG J GfamImg)
+		              (forall n1:set, n1 :e omega -> n1 <> 0 ->
+		                forall alphas1:set, function_on alphas1 n1 J ->
+		                (forall i1 j1:set, i1 :e n1 -> j1 :e n1 -> i1 <> j1 ->
+		                  apply_fun alphas1 i1 <> apply_fun alphas1 j1) ->
+		                forall ys1:set, function_on ys1 n1 G ->
+		                (forall i1:set, i1 :e n1 ->
+		                  apply_fun ys1 i1 :e apply_fun GfamImg (apply_fun alphas1 i1)) ->
+		                nat_primrec eG (fun i1 r1 => apply_fun multG (r1, apply_fun ys1 i1)) n1 = eG ->
+		                (forall i1:set, i1 :e n1 -> apply_fun ys1 i1 = eG))
+		              (ex67_1_direct_sum_characterization
+		                G
+		                multG
+		                eG
+		                invG
+		                J
+		                GfamImg
+		                HsgaG_main)
+		              HdsG_main).
+		          }
+		          claim Hxs0h_fn : function_on xs0h n0 G.
+		          {
+		            let i0.
+		            assume Hi0 : i0 :e n0.
+		            rewrite (apply_fun_graph n0 (fun i1:set => apply_fun h (apply_fun xs0 i1)) i0 Hi0).
+		            exact (Hh_fn
+		              (apply_fun xs0 i0)
+		              (Hxs0FnG i0 Hi0)).
+		          }
+		          claim Hxs0h_fam :
+		            forall i0:set, i0 :e n0 ->
+		              apply_fun xs0h i0 :e apply_fun GfamImg (apply_fun alphas0 i0).
+		          {
+		            claim Htransfer_GfamH_to_G :
+		              forall alpha x:set, alpha :e J ->
+		                x :e apply_fun GfamH alpha ->
+		                apply_fun h x :e apply_fun GfamImg alpha.
+		            {
+		              let alpha x.
+		              assume Halpha : alpha :e J.
+		              assume HxFamH : x :e apply_fun GfamH alpha.
+		              claim HfamH_to_imghifam :
+		                x :e homomorphism_image int (compose_fun int (apply_fun ifam alpha) h).
+		              {
+		                (** TODO: derive from the explicit description of GfamH(alpha)
+		                    as powers of basis2(alpha), using the local hifam
+		                    parametrization already established above. **)
+		                admit.
+		              }
+		              claim Hh_on_imghifam :
+		                forall y:set, y :e homomorphism_image int (compose_fun int (apply_fun ifam alpha) h) ->
+		                  apply_fun h y :e apply_fun GfamImg alpha.
+		              {
+		                (** TODO: show h carries image(h o ifam_alpha) into
+		                    homomorphism_image(... ifam_alpha). **)
+		                admit.
+		              }
+		              exact (Hh_on_imghifam x HfamH_to_imghifam).
+		            }
+		            let i0.
+		            assume Hi0 : i0 :e n0.
+		            claim Halpha0 : apply_fun alphas0 i0 :e J.
+		            { exact (Halphas0Fn i0 Hi0). }
+		            claim Hx0Fam : apply_fun xs0 i0 :e apply_fun GfamH (apply_fun alphas0 i0).
+		            { exact (Hxs0Fam i0 Hi0). }
+		            claim Hx0tr :
+		              apply_fun h (apply_fun xs0 i0) :e apply_fun GfamImg (apply_fun alphas0 i0).
+		            { exact (Htransfer_GfamH_to_G
+		                (apply_fun alphas0 i0)
+		                (apply_fun xs0 i0)
+		                Halpha0
+		                Hx0Fam). }
+		            claim Hxs0h_eval :
+		              apply_fun xs0h i0 = apply_fun h (apply_fun xs0 i0).
+		            { exact (apply_fun_graph n0 (fun i1:set => apply_fun h (apply_fun xs0 i1)) i0 Hi0). }
+		            rewrite Hxs0h_eval.
+		            exact Hx0tr.
+		          }
+		          let i0.
+		          assume Hi0 : i0 :e n0.
+		          claim Hxs0h_e : apply_fun xs0h i0 = eG.
+		          {
+		            exact (Hzero_char_G
+		              n0
+		              Hn0O
+		              Hn0Ne
+		              alphas0
+		              Halphas0Fn
+		              Hdist0
+		              xs0h
+		              Hxs0h_fn
+		              Hxs0h_fam
+		              Hprod_hxs0_e
+		              i0
+		              Hi0).
+		          }
+		          claim Hxs0h_eval :
+		            apply_fun xs0h i0 = apply_fun h (apply_fun xs0 i0).
+		          { exact (apply_fun_graph n0 (fun i1:set => apply_fun h (apply_fun xs0 i1)) i0 Hi0). }
+		          exact (eq_i_tra
+		            (apply_fun h (apply_fun xs0 i0))
+		            (apply_fun xs0h i0)
+		            eG
+		            (eq_symm
+		              (apply_fun xs0h i0)
+		              (apply_fun h (apply_fun xs0 i0))
+		              Hxs0h_eval)
+		            Hxs0h_e).
 		        }
 		        claim Hker_on_GfamH :
 		          forall i0:set, i0 :e n0 ->
 		            apply_fun h (apply_fun xs0 i0) = eG ->
 		            apply_fun xs0 i0 = eG.
 		        {
-		          (** TODO: prove kernel-triviality of h on each component
-		              apply_fun GfamH (apply_fun alphas0 i0), using the cyclic
-		              parametrization and integer injectivity/no-torsion. **)
-		          admit.
+		          claim Hker_component :
+		            forall alpha x:set, alpha :e J ->
+		              x :e apply_fun GfamH alpha ->
+		              apply_fun h x = eG ->
+		              x = eG.
+		          {
+		            (** TODO: prove kernel-triviality of h on each component
+		                apply_fun GfamH alpha, using cyclic parametrization
+		                and integer injectivity/no-torsion. **)
+		            admit.
+		          }
+		          let i0.
+		          assume Hi0 : i0 :e n0.
+		          assume Hhi0e : apply_fun h (apply_fun xs0 i0) = eG.
+		          exact (Hker_component
+		            (apply_fun alphas0 i0)
+		            (apply_fun xs0 i0)
+		            (Halphas0Fn i0 Hi0)
+		            (Hxs0Fam i0 Hi0)
+		            Hhi0e).
 		        }
 		        let i0.
 		        assume Hi0 : i0 :e n0.
