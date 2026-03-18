@@ -414994,6 +414994,35 @@ set slices := {path_component_of preU (subspace_topology E Te preU) e | e :e pre
 admit.
 Admitted.
 
+(** Helper: existence of universal cover implies locally path-connected **)
+Lemma universal_cover_implies_lpc : forall Z Tz:set,
+  (exists E Te p:set, covering_map E Te Z Tz p /\ simply_connected E Te) ->
+  locally_path_connected Z Tz.
+let Z Tz.
+assume Huniv.
+admit.
+Admitted.
+
+(** Helper: homeomorphism preserves locally path-connected **)
+Lemma homeomorphism_preserves_lpc_left : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_path_connected Y Ty ->
+  locally_path_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HlpcY.
+claim HtopX : topology_on X Tx. { exact (homeomorphism_topology_left X Tx Y Ty f Hhome). }
+claim HtopY : topology_on Y Ty. { exact (homeomorphism_topology_right X Tx Y Ty f Hhome). }
+prove topology_on X Tx /\
+  forall x:set, x :e X -> forall U:set, U :e Tx -> x :e U ->
+    exists V:set, V :e Tx /\ x :e V /\ V c= U /\ path_connected_space V (subspace_topology X Tx V).
+apply andI.
+- exact HtopX.
+- let x. assume HxX.
+  let U. assume HUopen HxU.
+  (** Map U to f(U) open in Y, get pc neighborhood of f(x) in f(U), pull back **)
+  admit.
+Admitted.
+
 (** Helper: open subspace of locally path-connected space is locally path-connected **)
 (** Proven Alice **)
 Lemma open_subspace_locally_path_connected : forall X Tx Y:set,
@@ -416581,10 +416610,11 @@ apply and3I.
       (** Transfer: loops in S_a null-homotopic in Y **)
       exact (loops_null_in_covering_slice Y Ty Z Tz r S_a V'
         Hcov_r HSa_open HV'open HSa_homeo HloopsV y0 Hy0 g HgLoop). }
-    (** Step 5: Apply covering_trivializes to q over each S'_a **)
-    (** Then combine q-sheets with r-homeomorphisms for p-sheets **)
-    (** This requires covering_trivializes_over_pi1_trivial_inclusion **)
-    (** and composition of homeomorphisms for the final evenly_covered **)
+    (** Step 5: For covering_trivializes_lpc, we need S_a to be path-connected and lpc **)
+    (** S_a is homeomorphic to V', V' is open in Z. **)
+    (** Z has a universal cover => Z is locally path-connected (standard result). **)
+    (** Then V' inherits lpc, and S_a inherits it via the homeomorphism. **)
+    (** For now, admit the Z-lpc derivation and the composition construction. **)
     admit.
 Admitted.
 
