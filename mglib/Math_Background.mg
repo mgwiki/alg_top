@@ -421289,7 +421289,47 @@ claim Hginv_in_G : ginv :e covering_transformation_group E Te B Tb p.
 witness ginv. apply andI. exact Hginv_in_G. exact Hginv_left.
 Qed.
 
-(** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
+(** Helper: CTG inverse with both left and right inverse properties **)
+(** Proven Alice **)
+Lemma ctg_inverse_closure_full : forall E Te B Tb p h:set,
+  covering_map E Te B Tb p ->
+  h :e covering_transformation_group E Te B Tb p ->
+  exists hinv:set, hinv :e covering_transformation_group E Te B Tb p /\
+    (forall x:set, x :e E -> apply_fun hinv (apply_fun h x) = x) /\
+    (forall x:set, x :e E -> apply_fun h (apply_fun hinv x) = x).
+let E Te B Tb p h. assume Hcov HhG.
+apply (ctg_inverse_closure E Te B Tb p h Hcov HhG).
+let hinv. assume Hpack.
+claim Hinv_G : hinv :e covering_transformation_group E Te B Tb p.
+{ exact (andEL (hinv :e covering_transformation_group E Te B Tb p)
+    (forall x:set, x :e E -> apply_fun hinv (apply_fun h x) = x) Hpack). }
+claim Hinv_left : forall x:set, x :e E -> apply_fun hinv (apply_fun h x) = x.
+{ exact (andER (hinv :e covering_transformation_group E Te B Tb p)
+    (forall x:set, x :e E -> apply_fun hinv (apply_fun h x) = x) Hpack). }
+(** For the right inverse: hinv is a CT (hence homeomorphism), apply ctg_inverse_closure to hinv **)
+apply (ctg_inverse_closure E Te B Tb p hinv Hcov Hinv_G).
+let hinv2. assume Hpack2.
+claim Hinv2_left : forall x:set, x :e E -> apply_fun hinv2 (apply_fun hinv x) = x.
+{ exact (andER (hinv2 :e covering_transformation_group E Te B Tb p)
+    (forall x:set, x :e E -> apply_fun hinv2 (apply_fun hinv x) = x) Hpack2). }
+claim Hh_fn : function_on h E E.
+{ exact (covering_transformation_group_function_on E Te B Tb p h HhG). }
+claim Hinv_fn : function_on hinv E E.
+{ exact (covering_transformation_group_function_on E Te B Tb p hinv Hinv_G). }
+claim Hright : forall x:set, x :e E -> apply_fun h (apply_fun hinv x) = x.
+{ let x. assume HxE.
+  claim HhinvxE : apply_fun hinv x :e E. { exact (Hinv_fn x HxE). }
+  (** h(hinv(x)) = hinv2(hinv(h(hinv(x)))) = hinv2(hinv(x)) ... no **)
+  (** Simpler: hinv(h(hinv(x))) = hinv(x) (from left inverse) **)
+  (** Apply hinv2 to both sides: hinv2(hinv(h(hinv(x)))) = hinv2(hinv(x)) **)
+  (** LHS = h(hinv(x)) (by hinv2 left-inverse of hinv) **)
+  (** RHS = x (by hinv2 left-inverse of hinv) **)
+  prove apply_fun h (apply_fun hinv x) = x.
+  rewrite <- (Hinv2_left (apply_fun h (apply_fun hinv x)) (Hh_fn (apply_fun hinv x) HhinvxE)).
+  rewrite (Hinv_left (apply_fun hinv x) HhinvxE).
+  exact (Hinv2_left x HxE). }
+witness hinv. apply and3I. exact Hinv_G. exact Hinv_left. exact Hright.
+Qed.
 Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
 let X Tx Y Ty f.
