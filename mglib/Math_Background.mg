@@ -279530,12 +279530,21 @@ claim Hcompact : compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C).
   set TC := subspace_topology (Sn 2) (Sn_topology 2) C.
   apply Hscc. let h. assume Hhomeo : homeomorphism C TC S1 S1_topology h.
   (** Extract: continuous h + exists g (continuous inverse) **)
+  (** Unfold homeomorphism: continuous h /\ exists g, continuous g /\ left_inv /\ right_inv **)
   claim Hh_cont : continuous_map C TC S1 S1_topology h.
-  { admit. }
+  { exact (andEL (continuous_map C TC S1 S1_topology h)
+      (exists g:set, continuous_map S1 S1_topology C TC g /\
+        (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x) /\
+        (forall y:set, y :e S1 -> apply_fun h (apply_fun g y) = y))
+      Hhomeo). }
   claim Hinv_exists : exists g:set, continuous_map S1 S1_topology C TC g /\
     (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x) /\
     (forall y:set, y :e S1 -> apply_fun h (apply_fun g y) = y).
-  { admit. }
+  { exact (andER (continuous_map C TC S1 S1_topology h)
+      (exists g:set, continuous_map S1 S1_topology C TC g /\
+        (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x) /\
+        (forall y:set, y :e S1 -> apply_fun h (apply_fun g y) = y))
+      Hhomeo). }
   apply Hinv_exists. let g. assume Hg_props.
   (** Left-assoc: ((g_cont /\ left_inv) /\ right_inv) **)
   claim Hg_first2 : continuous_map S1 S1_topology C TC g /\
