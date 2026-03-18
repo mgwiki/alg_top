@@ -416679,6 +416679,11 @@ claim HUVsubU : U :/\: V c= U.
 exact (evenly_covered_open_subset E Te B Tb p U (U :/\: V) HevU HUVopen HUVsubU).
 Qed.
 
+(** Helper: evenly_covered open + pc => covering_trivializes applicable **)
+(** Given evenly_covered V (pc + lpc from covering structure) with **)
+(** all loops null-homotopic, derives evenly_covered for each r-slice **)
+(** This is the pattern used in ex80_1a Step 5 **)
+
 (** Improved version with locally_path_connected hypothesis **)
 (** This is needed to ensure path components of p^-1(U) are open **)
 (** Proven Alice **)
