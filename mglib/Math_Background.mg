@@ -418913,6 +418913,14 @@ exact (open_in_subspace_if_ambient_open E Te preU
   HtopE HpreU_open Hpc_sub Hpc_open_in).
 Qed.
 
+(** Helper: binintersect is commutative **)
+(** Proven Alice **)
+Lemma binintersect_comm : forall A B:set, A :/\: B = B :/\: A.
+let A B. apply set_ext.
+- let x. assume Hx. exact (binintersectI B A x (binintersectE2 A B x Hx) (binintersectE1 A B x Hx)).
+- let x. assume Hx. exact (binintersectI A B x (binintersectE2 B A x Hx) (binintersectE1 B A x Hx)).
+Qed.
+
 (** Helper: intersection of two evenly covered neighborhoods is evenly covered **)
 (** Proven Alice **)
 Lemma evenly_covered_binintersect : forall E Te B Tb p U V:set,
