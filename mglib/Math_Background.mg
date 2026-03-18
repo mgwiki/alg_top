@@ -279265,11 +279265,19 @@ assume Hbetacont : continuous_map unit_interval unit_interval_topology V (subspa
 let m.
 assume Hm : m :e omega.
 assume Hmne0 : m <> 0.
-(** Proof: [gamma]^m = e leads to contradiction via covering space + monodromy. **)
-(** The full argument is encapsulated in thm63_1a_covering_monodromy_argument. **)
-(** Proof: [gamma]^m = e leads to contradiction via covering space + monodromy. **)
-(** Uses thm63_1a_covering_monodromy_argument which encapsulates the full argument. **)
-admit.
+(** Proof: [f]^m = e leads to contradiction via covering space monodromy. **)
+(** If [f]^m = e then the lift of f^m is a loop, but it starts at e_0 **)
+(** and ends at e_m with m > 0, so it's not a loop. Contradiction. **)
+assume Hpower_eq : group_power_nat
+  (fundamental_group_mult X Tx a) (fundamental_group_id X Tx a)
+  (path_homotopy_class_loop X Tx a (path_concat alpha beta)) m =
+  fundamental_group_id X Tx a.
+exact (thm63_1a_covering_monodromy_argument X Tx U V A B
+  Htop HUopen HVopen Hunion HAopen HBopen Hdecomp Hdisj
+  a b HaA HbB
+  alpha Halphapath Halphacont
+  beta Hbetapath Hbetacont
+  m Hm Hmne0 Hpower_eq).
 Admitted.
 
 (** from S63 Thm 63.1(b) (line 2018 in algtop.tex) **)
