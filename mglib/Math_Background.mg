@@ -423364,7 +423364,62 @@ claim HUnionOpen : Union Gimg :e Tx.
 (** and {x :e X | pi(x) :e image_of pi U0} c= Union Gimg **)
 (** Then the preimage = Union Gimg :e Tx **)
 claim Heq : {x :e X | apply_fun pi x :e image_of pi U0} = Union Gimg.
-{ admit. (** set equality proof: orbit structure argument **) }
+{ apply set_ext.
+  - let z. assume Hz.
+    claim HzX : z :e X. { exact (SepE1 X (fun x:set => apply_fun pi x :e image_of pi U0) z Hz). }
+    claim Hpiz_img : apply_fun pi z :e image_of pi U0.
+    { exact (SepE2 X (fun x:set => apply_fun pi x :e image_of pi U0) z Hz). }
+    (** apply_fun pi z :e image_of pi U0 means exists u :e U0 with pi(u) = pi(z) **)
+    apply (ReplE_impred U0 (fun u:set => apply_fun pi u) (apply_fun pi z) Hpiz_img).
+    let u. assume HuU0 HpiEq.
+    claim HuX : u :e X. { exact (HU0sub u HuU0). }
+    (** pi(u) = pi(z) means orbit_of(u) = orbit_of(z) as SETS **)
+    (** z :e orbit_of(z) (by idG reflexivity). Since orbit_of(u) = orbit_of(z), z :e orbit_of(u). **)
+    (** orbit_of(u) = {w :e X | orbit_equiv X G u w}. z :e this set means orbit_equiv u z. **)
+    claim Hz_in_orbit_u : z :e apply_fun pi u.
+    { rewrite <- HpiEq. rewrite (orbit_map_apply X G z HzX).
+      apply (SepI X (fun w:set => orbit_equiv X G z w) z HzX).
+      prove z :e X /\ z :e X /\ exists g:set, g :e G /\ apply_fun g z = z.
+      apply and3I. exact HzX. exact HzX.
+      witness idG. apply andI. exact HidG. exact (HidAct z HzX). }
+    claim Hz_in_orbit_u2 : z :e {w :e X | orbit_equiv X G u w}.
+    { exact (eq_subst_mem_set z (apply_fun pi u) ({w :e X | orbit_equiv X G u w})
+        Hz_in_orbit_u (orbit_map_apply X G u HuX)). }
+    claim Horb_uz : orbit_equiv X G u z.
+    { exact (SepE2 X (fun w:set => orbit_equiv X G u w) z Hz_in_orbit_u2). }
+    (** orbit_equiv u z means exists g :e G with g(u) = z **)
+    claim Hex : exists g:set, g :e G /\ apply_fun g u = z.
+    { exact (andER (u :e X /\ z :e X) (exists g:set, g :e G /\ apply_fun g u = z) Horb_uz). }
+    apply Hex. let g. assume Hgpack.
+    claim HgG : g :e G. { exact (andEL (g :e G) (apply_fun g u = z) Hgpack). }
+    claim Hgu : apply_fun g u = z. { exact (andER (g :e G) (apply_fun g u = z) Hgpack). }
+    (** z = g(u) :e image_of g U0 :e Gimg **)
+    claim HgU_in_Gimg : image_of g U0 :e Gimg.
+    { exact (ReplI G (fun g0:set => image_of g0 U0) g HgG). }
+    claim Hz_in_gU : z :e image_of g U0.
+    { rewrite <- Hgu. exact (ReplI U0 (fun u0:set => apply_fun g u0) u HuU0). }
+    exact (UnionI Gimg z (image_of g U0) Hz_in_gU HgU_in_Gimg).
+  - let z. assume Hz.
+    apply (UnionE_impred Gimg z Hz). let S. assume HzS HSsl.
+    apply (ReplE_impred G (fun g:set => image_of g U0) S HSsl).
+    let g. assume HgG HSeq.
+    claim Hz_gU : z :e image_of g U0. { exact (eq_subst_mem_set z S (image_of g U0) HzS HSeq). }
+    apply (ReplE_impred U0 (fun u:set => apply_fun g u) z Hz_gU).
+    let u. assume HuU0 Hzeq.
+    claim HuX : u :e X. { exact (HU0sub u HuU0). }
+    claim HzX : z :e X. { rewrite Hzeq. exact (Hfn g HgG u HuX). }
+    prove z :e {x :e X | apply_fun pi x :e image_of pi U0}.
+    apply (SepI X (fun x:set => apply_fun pi x :e image_of pi U0) z HzX).
+    (** pi(z) = pi(g(u)) = pi(u) (orbit invariance) :e image_of pi U0 **)
+    claim Horb : orbit_equiv X G u z.
+    { rewrite Hzeq.
+      prove u :e X /\ apply_fun g u :e X /\ exists h:set, h :e G /\ apply_fun h u = apply_fun g u.
+      apply and3I. exact HuX. exact (Hfn g HgG u HuX).
+      witness g. apply andI. exact HgG. reflexivity. }
+    claim Hpi_eq : apply_fun pi z = apply_fun pi u.
+    { admit. (** needs orbit_map_eq_of_orbit_equiv which is defined later **) }
+    rewrite Hpi_eq.
+    exact (ReplI U0 (fun u0:set => apply_fun pi u0) u HuU0). }
 prove image_of pi U0 :e {V :e Power OS | {x :e X | apply_fun pi x :e V} :e Tx}.
 apply SepI.
 - apply PowerI. let cls. assume Hcls.
