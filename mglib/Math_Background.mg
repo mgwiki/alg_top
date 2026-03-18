@@ -215240,7 +215240,63 @@ Theorem ex57_4b_no_antipode_higher : forall n:set, n :e omega ->
     ~(nulhomotopic (Sn (ordsucc n)) (Sn_topology (ordsucc n))
                    (Sn (ordsucc n)) (Sn_topology (ordsucc n)) h)) ->
   ~(exists g:set, antipode_preserving_Sn (ordsucc n) n g).
-admit.
+let n.
+assume Hn_om.
+assume HantiNoNul.
+assume Hexg.
+apply Hexg.
+let g.
+assume HgAP.
+claim Hbridge :
+  exists h:set,
+    antipode_preserving_Sn (ordsucc n) (ordsucc n) h /\
+    nulhomotopic
+      (Sn (ordsucc n))
+      (Sn_topology (ordsucc n))
+      (Sn (ordsucc n))
+      (Sn_topology (ordsucc n))
+      h.
+{
+  (** Remaining core step for S57.4(b):
+      from an antipode-preserving g : S^{n+1} -> S^n, construct an antipode-preserving
+      self-map h : S^{n+1} -> S^{n+1} that is nulhomotopic. **)
+  admit.
+}
+apply Hbridge.
+let h.
+assume HhPack.
+claim HhAP :
+  antipode_preserving_Sn (ordsucc n) (ordsucc n) h.
+{
+  exact (andEL
+    (antipode_preserving_Sn (ordsucc n) (ordsucc n) h)
+    (nulhomotopic
+      (Sn (ordsucc n))
+      (Sn_topology (ordsucc n))
+      (Sn (ordsucc n))
+      (Sn_topology (ordsucc n))
+      h)
+    HhPack).
+}
+claim HhNul :
+  nulhomotopic
+    (Sn (ordsucc n))
+    (Sn_topology (ordsucc n))
+    (Sn (ordsucc n))
+    (Sn_topology (ordsucc n))
+    h.
+{
+  exact (andER
+    (antipode_preserving_Sn (ordsucc n) (ordsucc n) h)
+    (nulhomotopic
+      (Sn (ordsucc n))
+      (Sn_topology (ordsucc n))
+      (Sn (ordsucc n))
+      (Sn_topology (ordsucc n))
+      h)
+    HhPack).
+}
+exact ((HantiNoNul h HhAP) HhNul).
 Admitted.
 
 (** from S57 Exercise 4(c) (line 1263 in algtop.tex) **)
