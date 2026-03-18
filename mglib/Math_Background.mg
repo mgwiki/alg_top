@@ -420367,6 +420367,15 @@ exact (SepI (function_space unit_interval X)
   (fun g:set => loop_at X Tx x0 g) gf Hgf_fs Hgf_la).
 Qed.
 
+(** Helper: graphify preserves loop_at **)
+(** Proven Alice **)
+Lemma graphify_on_preserves_loop_at : forall X Tx x0 f:set,
+  loop_at X Tx x0 f -> loop_at X Tx x0 (graphify_on unit_interval f).
+let X Tx x0 f. assume Hla.
+exact (loop_space_has_loop_at X Tx x0 (graphify_on unit_interval f)
+  (loop_at_graphify_in_loop_space X Tx x0 f Hla)).
+Qed.
+
 (** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
 Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
