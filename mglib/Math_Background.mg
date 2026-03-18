@@ -286918,7 +286918,10 @@ assume Heq : R2_sub (apply_fun g x) (apply_fun alpha t) = (0, 0).
 claim Hzw : apply_fun g x = apply_fun alpha t.
 { admit. }
 claim Hin : apply_fun alpha t :e image_of g A.
-{ admit. }
+{ (** apply_fun g x :e image_of g A by ReplI, then rewrite with Hzw **)
+  claim HgxInImg : apply_fun g x :e image_of g A.
+  { exact (ReplI A (fun y:set => apply_fun g y) x Hx). }
+  rewrite <- Hzw. exact HgxInImg. }
 exact (Havoid t Ht Hin).
 Admitted.
 
