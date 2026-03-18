@@ -278731,7 +278731,21 @@ Theorem thm61_3_jordan_separation : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
   separates (Sn 2) (Sn_topology 2) C.
-admit.
+let C.
+assume HC : C c= Sn 2.
+assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
+(** Proof of Jordan separation (Thm 61.3): **)
+(** By contradiction. Assume S^2-C connected. Decompose C = C1 union C2 (arcs). **)
+(** Set X = S^2-{p,q}, U = S^2-C1, V = S^2-C2. **)
+(** X = U union V, U cap V = S^2-C (path connected by assumption). **)
+(** Show i_star, j_star trivial (via nulhomotopy 61.2 + lemma 55.3). **)
+(** Then pi_1(X) trivial by SVK. But pi_1(S^2-{p,q}) = Z. Contradiction. **)
+prove C c= Sn 2 /\
+  ~(connected_space (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C))).
+apply andI.
+- exact HC.
+- (** Proof that S^2-C is not connected **)
+  admit.
 Admitted.
 
 (** from S61 Thm 61.4 (line 1908 in algtop.tex) **)
