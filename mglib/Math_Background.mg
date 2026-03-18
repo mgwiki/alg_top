@@ -280285,7 +280285,34 @@ Qed.
 (** sets is path-connected (finite_product_path_connected, proved). **)
 Lemma EuclidPlane_locally_path_connected :
   locally_path_connected (setprod R R) R2_topology.
-admit.
+prove topology_on (setprod R R) R2_topology /\
+  forall x:set, x :e setprod R R -> forall U:set, U :e R2_topology -> x :e U ->
+    exists V:set, V :e R2_topology /\ x :e V /\ V c= U /\
+      path_connected_space V (subspace_topology (setprod R R) R2_topology V).
+apply andI.
+- exact EuclidPlane_R2_standard_topology_on.
+- let p. assume HpR2 : p :e setprod R R.
+  let U. assume HU : U :e R2_topology. assume HpU : p :e U.
+  (** R2_topology = R2_standard_topology, which has rectangular_regions as basis **)
+  (** basis_refines: every point in open set has a basis element **)
+  (** basis_refines gives: forall U in T, forall x in U, exists b in B, x in b, b c= U **)
+  claim Hrefine : forall V:set, V :e R2_topology -> forall x:set, x :e V ->
+    exists b:set, b :e rectangular_regions /\ x :e b /\ b c= V.
+  { (** Extract from basis_refines (topology_on /\ refine_property) **)
+    claim Hbr : basis_refines (setprod R R) rectangular_regions R2_topology.
+    { exact (basis_generates_imp_basis_refines (setprod R R) R2_topology rectangular_regions
+        rectangular_regions_generate_R2_standard_topology). }
+    prove forall V:set, V :e R2_topology -> forall x:set, x :e V ->
+      exists b:set, b :e rectangular_regions /\ x :e b /\ b c= V.
+    admit. }
+  claim Hrect : exists R:set, R :e rectangular_regions /\ p :e R /\ R c= U.
+  { exact (Hrefine U HU p HpU). }
+  apply Hrect. let R. assume HR.
+  (** R is a rectangle (a,b) x (c,d), which is path-connected and open **)
+  witness R.
+  (** R is open (rectangle is in the topology since basis generates) **)
+  (** R is path-connected (product of path-connected intervals) **)
+  admit.
 Admitted.
 
 (** Helper: euclidean space R^n is locally connected **)
