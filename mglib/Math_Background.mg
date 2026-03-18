@@ -418439,6 +418439,26 @@ apply SepI.
 - exact (covering_transformation_group_fiber E Te B Tb p h e0 HhG He0E).
 Qed.
 
+(** Helper: inverse of homeomorphism commuting with p also commutes with p **)
+(** Proven Alice **)
+Lemma homeomorphism_inverse_commutes_with_p : forall E Te B Tb p h hinv:set,
+  covering_map E Te B Tb p ->
+  homeomorphism E Te E Te h ->
+  (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) ->
+  continuous_map E Te E Te hinv ->
+  (forall x:set, x :e E -> apply_fun h (apply_fun hinv x) = x) ->
+  forall x:set, x :e E -> apply_fun p (apply_fun hinv x) = apply_fun p x.
+let E Te B Tb p h hinv. assume Hcov Hhomeo Hcomm Hcont Hright.
+let x. assume HxE.
+claim Hhinvx_E : apply_fun hinv x :e E.
+{ exact (continuous_map_function_on E Te E Te hinv Hcont x HxE). }
+claim Hhx : apply_fun h (apply_fun hinv x) = x. { exact (Hright x HxE). }
+prove apply_fun p (apply_fun hinv x) = apply_fun p x.
+rewrite <- (Hcomm (apply_fun hinv x) Hhinvx_E).
+rewrite Hhx.
+reflexivity.
+Qed.
+
 (** Helper: evaluation at e0 distinguishes CTG members on connected spaces **)
 (** If h1(e0) = h2(e0) and E is connected, then h1 = h2 pointwise **)
 (** Proven Alice **)
