@@ -415833,11 +415833,31 @@ apply and4I.
         (compose_fun unit_interval palpha (graph U (fun x:set => x)))
         (constant_path u).
       { exact (Hloops u HuU2 palpha Hpalpha_ls). }
-      (** Step 5-7: Use thm54_3_homotopic_lifts + path_lift uniqueness **)
-      (** lift of (compose palpha incl) at e = alpha (by uniqueness) **)
-      (** lift of (constant_path u) at e = constant_e **)
-      (** By thm54_3: same endpoint => e' = e **)
-      admit. }
+      (** Step 5: Apply thm54_3_homotopic_lifts **)
+      set f_B := compose_fun unit_interval palpha (graph U (fun x:set => x)).
+      set g_B := constant_path u.
+      claim Hlift_eq : apply_fun (path_lift E Te B Tb p e f_B) 1 =
+        apply_fun (path_lift E Te B Tb p e g_B) 1.
+      { exact (andEL
+          (apply_fun (path_lift E Te B Tb p e f_B) 1 =
+           apply_fun (path_lift E Te B Tb p e g_B) 1)
+          (path_homotopic E Te e (apply_fun (path_lift E Te B Tb p e f_B) 1)
+            (path_lift E Te B Tb p e f_B) (path_lift E Te B Tb p e g_B))
+          (thm54_3_homotopic_lifts E Te B Tb p e u u f_B g_B
+            Hcov HeE Hpe_eq_u Hph)). }
+      (** Step 6: lift of f_B at e has endpoint e' **)
+      (** f_B = p o alpha (composed with incl), alpha lifts f_B starting at e **)
+      (** By unique path lifting: path_lift(e, f_B) = alpha, so endpoint = alpha(1) = e' **)
+      claim Hlift_f_endpoint : apply_fun (path_lift E Te B Tb p e f_B) 1 = e'.
+      { admit. (** unique path lifting: alpha is a lift of f_B starting at e **) }
+      (** Step 7: lift of g_B = constant_path u at e has endpoint e **)
+      (** The lift of constant path is constant, so endpoint = e **)
+      claim Hlift_g_endpoint : apply_fun (path_lift E Te B Tb p e g_B) 1 = e.
+      { admit. (** unique path lifting: constant_e is a lift of constant_u starting at e **) }
+      (** Conclusion: e' = lift_f(1) = lift_g(1) = e **)
+      rewrite <- Hlift_f_endpoint.
+      rewrite Hlift_eq.
+      exact Hlift_g_endpoint. }
 
   exact (open_map_bijection_homeomorphism
     C (subspace_topology E Te C) U (subspace_topology B Tb U) pC
