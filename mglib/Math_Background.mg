@@ -279529,10 +279529,25 @@ claim Hcompact : compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C).
   (** Unfold is_simple_closed_curve: exists h, homeomorphism C TC S1 S1_topology h **)
   set TC := subspace_topology (Sn 2) (Sn_topology 2) C.
   apply Hscc. let h. assume Hhomeo : homeomorphism C TC S1 S1_topology h.
-  (** From homeomorphism, get inverse g: S1 -> C continuous **)
-  (** Then image(g) compact in subspace of C, and image(g) = C **)
+  (** Extract: continuous h + exists g (continuous inverse) **)
+  claim Hh_cont : continuous_map C TC S1 S1_topology h.
+  { admit. }
+  claim Hinv_exists : exists g:set, continuous_map S1 S1_topology C TC g /\
+    (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x) /\
+    (forall y:set, y :e S1 -> apply_fun h (apply_fun g y) = y).
+  { admit. }
+  apply Hinv_exists. let g. assume Hg_props.
+  (** Left-assoc: ((g_cont /\ left_inv) /\ right_inv) **)
+  claim Hg_first2 : continuous_map S1 S1_topology C TC g /\
+    (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x).
+  { exact (andEL (continuous_map S1 S1_topology C TC g /\ (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x))
+      (forall y:set, y :e S1 -> apply_fun h (apply_fun g y) = y) Hg_props). }
+  claim Hg_cont : continuous_map S1 S1_topology C TC g.
+  { exact (andEL (continuous_map S1 S1_topology C TC g)
+      (forall x:set, x :e C -> apply_fun g (apply_fun h x) = x) Hg_first2). }
   (** S1 compact + g continuous -> image(g) compact **)
-  (** Admitted: extracting this from homeomorphism definition is tedious **)
+  (** Then image(g) = C -> C compact **)
+  (** This requires showing image_of_fun g S1 = C and then topology transfer **)
   admit. }
 (** Step 2: C is closed in S^2 **)
 claim Hclosed : closed_in (Sn 2) (Sn_topology 2) C.
