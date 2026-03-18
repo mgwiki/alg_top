@@ -419352,7 +419352,6 @@ Qed.
 (** if Z has a universal covering space, then p = r o q is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 107 **)
-(** Lock Alice 1773833087 **)
 Theorem ex80_1a_composition_of_coverings :
   forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q ->
@@ -426675,6 +426674,22 @@ exact (orbit_equiv_refl E (covering_transformation_group E Te B Tb p)
   (covering_transformation_id E Te B Tb p)
   x (covering_transformation_id_in_group E Te B Tb p Hcov)
   (covering_transformation_id_apply E Te B Tb p) HxE).
+Qed.
+
+(** Helper: CTG orbit equivalence from group action **)
+(** Proven Alice **)
+Lemma ctg_orbit_equiv_action : forall E Te B Tb p g x:set,
+  covering_map E Te B Tb p ->
+  g :e covering_transformation_group E Te B Tb p ->
+  x :e E ->
+  orbit_equiv E (covering_transformation_group E Te B Tb p) x (apply_fun g x).
+let E Te B Tb p g x. assume Hcov HgG HxE.
+set G := covering_transformation_group E Te B Tb p.
+claim HgxE : apply_fun g x :e E.
+{ exact (covering_transformation_group_function_on E Te B Tb p g HgG x HxE). }
+prove x :e E /\ apply_fun g x :e E /\ exists h:set, h :e G /\ apply_fun h x = apply_fun g x.
+apply and3I. exact HxE. exact HgxE.
+witness g. apply andI. exact HgG. reflexivity.
 Qed.
 
 (** Helper: preimage(image(pi,U0)) equality from homeomorphism action + group data **)
