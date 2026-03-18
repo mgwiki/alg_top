@@ -415713,18 +415713,46 @@ apply and4I.
         rewrite <- He'eq.
         symmetry.
         exact (apply_fun_graph C (fun z:set => apply_fun p z) e' He'C). }
-      (** Strategy: use thm54_3_homotopic_lifts **)
-      (** 1. Get path alpha from e to e' in preU (from path component) **)
-      (** 2. Project: p o alpha is a loop at u in U **)
-      (** 3. By Hloops: p o alpha is null-homotopic in B **)
-      (** 4. By thm54_3_homotopic_lifts: lift of (p o alpha) at e and lift of constant_u at e **)
-      (**    have the same endpoint **)
-      (** 5. Lift of (p o alpha) at e = alpha (by unique lifting), ending at e' **)
-      (** 6. Lift of constant_u at e = constant_e, ending at e **)
-      (** 7. Therefore e' = e **)
-      (** The detailed argument requires ~50 lines of formal proof **)
-      (** connecting path_component extraction, loop_space membership, **)
-      (** Hloops application, and thm54_3_homotopic_lifts **)
+      (** Step 1: e' :e path_component_of preU T_preU e **)
+      claim He'E : e' :e E. { exact (HC_sub_E e' He'C). }
+      claim He'preU : e' :e preU. { exact (HC_sub_preU e' He'C). }
+      claim He0_pc_e : e0 :e path_component_of preU T_preU e.
+      { exact (path_component_symmetric_axiom preU T_preU e0 e HpreU_top He0PreU
+          HePreU HeC). }
+      claim He'_pc_e : e' :e path_component_of preU T_preU e.
+      { exact (path_component_transitive_axiom preU T_preU e e0 e' HpreU_top
+          HePreU He0PreU He'preU He0_pc_e He'C). }
+      (** Extract path alpha from e to e' in preU **)
+      claim Halpha_exists : exists alpha:set,
+        function_on alpha unit_interval preU /\
+        continuous_map unit_interval unit_interval_topology preU T_preU alpha /\
+        apply_fun alpha 0 = e /\ apply_fun alpha 1 = e'.
+      { exact (SepE2 preU (fun y:set => exists q:set,
+          function_on q unit_interval preU /\
+          continuous_map unit_interval unit_interval_topology preU T_preU q /\
+          apply_fun q 0 = e /\ apply_fun q 1 = y) e' He'_pc_e). }
+      apply Halpha_exists.
+      let alpha. assume Halpha_pack.
+      set Halpha_left3_type := (function_on alpha unit_interval preU /\
+        continuous_map unit_interval unit_interval_topology preU T_preU alpha) /\
+        apply_fun alpha 0 = e.
+      claim Halpha1 : apply_fun alpha 1 = e'.
+      { exact (andER Halpha_left3_type (apply_fun alpha 1 = e') Halpha_pack). }
+      claim Halpha_left3 : Halpha_left3_type.
+      { exact (andEL Halpha_left3_type (apply_fun alpha 1 = e') Halpha_pack). }
+      claim Halpha0 : apply_fun alpha 0 = e.
+      { exact (andER (function_on alpha unit_interval preU /\
+          continuous_map unit_interval unit_interval_topology preU T_preU alpha)
+          (apply_fun alpha 0 = e) Halpha_left3). }
+      claim Halpha_cont_preU : continuous_map unit_interval unit_interval_topology preU T_preU alpha.
+      { exact (andER (function_on alpha unit_interval preU)
+          (continuous_map unit_interval unit_interval_topology preU T_preU alpha)
+          (andEL (function_on alpha unit_interval preU /\
+            continuous_map unit_interval unit_interval_topology preU T_preU alpha)
+            (apply_fun alpha 0 = e) Halpha_left3)). }
+      (** Step 2-7: project, apply Hloops + thm54_3, conclude e' = e **)
+      (** Requires: loop_space membership, Hloops application, thm54_3_homotopic_lifts **)
+      (** and path_lift uniqueness to identify lift of p o alpha with alpha **)
       admit. }
 
   exact (open_map_bijection_homeomorphism
