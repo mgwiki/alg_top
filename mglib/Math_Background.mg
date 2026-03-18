@@ -418921,6 +418921,14 @@ let A B. apply set_ext.
 - let x. assume Hx. exact (binintersectI A B x (binintersectE2 B A x Hx) (binintersectE1 B A x Hx)).
 Qed.
 
+(** Helper: membership in commuted intersection **)
+(** Proven Alice **)
+Lemma binintersect_comm_mem : forall A B x:set,
+  x :e A :/\: B -> x :e B :/\: A.
+let A B x. assume Hx.
+exact (binintersectI B A x (binintersectE2 A B x Hx) (binintersectE1 A B x Hx)).
+Qed.
+
 (** Helper: intersection of two evenly covered neighborhoods is evenly covered **)
 (** Proven Alice **)
 Lemma evenly_covered_binintersect : forall E Te B Tb p U V:set,
