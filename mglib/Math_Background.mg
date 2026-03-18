@@ -416112,6 +416112,17 @@ exact (Sep_Subq X (fun y:set => exists p:set,
   apply_fun p 0 = x /\ apply_fun p 1 = y)).
 Qed.
 
+(** Helper: path component is open in an lpc space (extracted from axiom) **)
+(** Proven Alice **)
+Lemma path_component_of_open_in_lpc : forall X Tx x:set,
+  locally_path_connected X Tx -> x :e X ->
+  path_component_of X Tx x :e Tx.
+let X Tx x. assume HlpcX HxX.
+claim Hpc_open_in : open_in X Tx (path_component_of X Tx x).
+{ exact (path_components_open X Tx HlpcX x HxX). }
+exact (andER (topology_on X Tx) (path_component_of X Tx x :e Tx) Hpc_open_in).
+Qed.
+
 (** Proven Alice **)
 Theorem exists_homeomorphism_preserves_lpc_left :
   forall X Tx Y Ty:set,
