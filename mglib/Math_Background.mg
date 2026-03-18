@@ -416646,6 +416646,39 @@ exact (open_in_subspace_if_ambient_open E Te preU
   HtopE HpreU_open Hpc_sub Hpc_open_in).
 Qed.
 
+(** Helper: intersection of two evenly covered neighborhoods is evenly covered **)
+(** Proven Alice **)
+Lemma evenly_covered_binintersect : forall E Te B Tb p U V:set,
+  covering_map E Te B Tb p ->
+  evenly_covered E Te B Tb p U -> evenly_covered E Te B Tb p V ->
+  evenly_covered E Te B Tb p (U :/\: V).
+let E Te B Tb p U V. assume Hcov HevU HevV.
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+claim HUopen : U :e Tb.
+{ exact (andER (topology_on E Te) (U :e Tb)
+    (andEL (topology_on E Te /\ U :e Tb)
+      (exists slices:set, slices c= Te /\ pairwise_disjoint slices /\
+        Union slices = preimage_of E p U /\
+        (forall V0:set, V0 :e slices ->
+          homeomorphism V0 (subspace_topology E Te V0) U (subspace_topology B Tb U)
+            (graph V0 (fun x:set => apply_fun p x))))
+      HevU)). }
+claim HVopen : V :e Tb.
+{ exact (andER (topology_on E Te) (V :e Tb)
+    (andEL (topology_on E Te /\ V :e Tb)
+      (exists slices:set, slices c= Te /\ pairwise_disjoint slices /\
+        Union slices = preimage_of E p V /\
+        (forall V0:set, V0 :e slices ->
+          homeomorphism V0 (subspace_topology E Te V0) V (subspace_topology B Tb V)
+            (graph V0 (fun x:set => apply_fun p x))))
+      HevV)). }
+claim HUVopen : U :/\: V :e Tb.
+{ exact (topology_binintersect_closed B Tb U V HtopB HUopen HVopen). }
+claim HUVsubU : U :/\: V c= U.
+{ let w. assume Hw. exact (binintersectE1 U V w Hw). }
+exact (evenly_covered_open_subset E Te B Tb p U (U :/\: V) HevU HUVopen HUVsubU).
+Qed.
+
 (** Improved version with locally_path_connected hypothesis **)
 (** This is needed to ensure path components of p^-1(U) are open **)
 (** Proven Alice **)
