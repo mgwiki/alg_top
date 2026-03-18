@@ -214772,11 +214772,158 @@ claim HsurjWit : forall y:set, y :e Sn 2 ->
   - assume HnoPreimage.
     claim Hfalse : False.
     {
-      (** Pending direct-book step:
-          If y is not in the image of g, build the translated map
-          f(x) = g(x) - y : S^2 -> R^2 and apply Borsuk-Ulam to f,
-          then contradict Hneq. **)
-      admit.
+      set D := Sn 2 :\: Sing y.
+      set DTop := subspace_topology (Sn 2) (Sn_topology 2) D.
+      claim H2om : 2 :e omega.
+      {
+        exact (nat_p_omega
+          2
+          nat_2).
+      }
+      claim HDsub : D c= Sn 2.
+      {
+        let z.
+        assume HzD.
+        exact (setminusE1 (Sn 2) (Sing y) z HzD).
+      }
+      claim HrangeD : forall x:set, x :e Sn 2 -> apply_fun g x :e D.
+      {
+        let x.
+        assume Hx.
+        claim HgxSn : apply_fun g x :e Sn 2.
+        { exact (Hgfun x Hx). }
+        claim HgxNotY : ~ (apply_fun g x :e Sing y).
+        {
+          assume HgySing.
+          claim HgyEq : apply_fun g x = y.
+          { exact (SingE y (apply_fun g x) HgySing). }
+          apply HnoPreimage.
+          witness x.
+          apply andI.
+          - exact Hx.
+          - exact HgyEq.
+        }
+        exact (setminusI (Sn 2) (Sing y) (apply_fun g x) HgxSn HgxNotY).
+      }
+      claim HgContD :
+        continuous_map (Sn 2) (Sn_topology 2) D DTop g.
+      {
+        exact (continuous_map_range_restrict
+          (Sn 2)
+          (Sn_topology 2)
+          (Sn 2)
+          (Sn_topology 2)
+          g
+          D
+          Hg
+          HDsub
+          HrangeD).
+      }
+      claim Hchart :
+        exists h:set,
+          homeomorphism D DTop (setprod R R) R2_topology h.
+      {
+        (** Remaining geometric input: punctured sphere Sn2 \ {y} is homeomorphic to R^2. **)
+        admit.
+      }
+      apply Hchart.
+      let h.
+      assume HhHomeo.
+      claim HhCont :
+        continuous_map D DTop (setprod R R) R2_topology h.
+      {
+        exact (homeomorphism_continuous
+          D
+          DTop
+          (setprod R R)
+          R2_topology
+          h
+          HhHomeo).
+      }
+      claim HfCont :
+        continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology
+          (compose_fun (Sn 2) g h).
+      {
+        exact (composition_continuous
+          (Sn 2)
+          (Sn_topology 2)
+          D
+          DTop
+          (setprod R R)
+          R2_topology
+          g
+          h
+          HgContD
+          HhCont).
+      }
+      apply (thm57_3_borsuk_ulam_S2 (compose_fun (Sn 2) g h) HfCont).
+      let x.
+      assume HxPack.
+      claim HxSn : x :e Sn 2.
+      {
+        exact (andEL
+          (x :e Sn 2)
+          (apply_fun (compose_fun (Sn 2) g h) x =
+            apply_fun (compose_fun (Sn 2) g h) (Rn_negate 3 x))
+          HxPack).
+      }
+      claim HfEq :
+        apply_fun (compose_fun (Sn 2) g h) x =
+        apply_fun (compose_fun (Sn 2) g h) (Rn_negate 3 x).
+      {
+        exact (andER
+          (x :e Sn 2)
+          (apply_fun (compose_fun (Sn 2) g h) x =
+            apply_fun (compose_fun (Sn 2) g h) (Rn_negate 3 x))
+          HxPack).
+      }
+      claim HnxSn : Rn_negate 3 x :e Sn 2.
+      {
+        exact (Rn_negate_in_Sn_ordsucc
+          2
+          x
+          H2om
+          HxSn).
+      }
+      claim HgxD : apply_fun g x :e D.
+      { exact (HrangeD x HxSn). }
+      claim HgnxD : apply_fun g (Rn_negate 3 x) :e D.
+      { exact (HrangeD (Rn_negate 3 x) HnxSn). }
+      claim Hcompx :
+        apply_fun (compose_fun (Sn 2) g h) x = apply_fun h (apply_fun g x).
+      {
+        exact (compose_fun_apply (Sn 2) g h x HxSn).
+      }
+      claim Hcompnx :
+        apply_fun (compose_fun (Sn 2) g h) (Rn_negate 3 x) =
+        apply_fun h (apply_fun g (Rn_negate 3 x)).
+      {
+        exact (compose_fun_apply (Sn 2) g h (Rn_negate 3 x) HnxSn).
+      }
+      claim HhEq :
+        apply_fun h (apply_fun g x) =
+        apply_fun h (apply_fun g (Rn_negate 3 x)).
+      {
+        rewrite <- Hcompx.
+        rewrite <- Hcompnx.
+        exact HfEq.
+      }
+      claim HgxEq : apply_fun g x = apply_fun g (Rn_negate 3 x).
+      {
+        exact (homeomorphism_injective
+          D
+          DTop
+          (setprod R R)
+          R2_topology
+          h
+          HhHomeo
+          (apply_fun g x)
+          (apply_fun g (Rn_negate 3 x))
+          HgxD
+          HgnxD
+          HhEq).
+      }
+      exact ((Hneq x HxSn) HgxEq).
     }
     exact (FalseE
       Hfalse
