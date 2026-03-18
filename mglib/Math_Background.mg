@@ -279848,7 +279848,22 @@ apply andI.
   claim HSmC_pc_and_point : path_connected_space (Sn 2 :\: C)
     (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) /\
     exists x0:set, x0 :e Sn 2 :\: C.
-  { admit. }
+  { (** S^2 locally path connected + S^2-C open + S^2-C connected -> S^2-C path connected **)
+    claim HSmCopen : Sn 2 :\: C :e Sn_topology 2.
+    { exact (Sn2_complement_simple_closed_curve_open C HC Hscc). }
+    claim HSmCopen_in : open_in (Sn 2) (Sn_topology 2) (Sn 2 :\: C).
+    { prove topology_on (Sn 2) (Sn_topology 2) /\ Sn 2 :\: C :e Sn_topology 2.
+      apply andI.
+      - exact (lemma59_3_Sn_topology_on 2).
+      - exact HSmCopen. }
+    claim HSmC_pc : path_connected_space (Sn 2 :\: C)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)).
+    { exact (ex23_connected_open_sets_path_connected (Sn 2) (Sn_topology 2) (Sn 2 :\: C)
+        Sn2_locally_path_connected HSmCopen_in Hconn). }
+    apply andI.
+    - exact HSmC_pc.
+    - (** S^2-C nonempty: from path_connected_space we can extract a point **)
+      admit. }
   claim HSmC_pc : path_connected_space (Sn 2 :\: C)
     (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)).
   { exact (andEL
