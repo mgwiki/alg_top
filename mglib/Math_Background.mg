@@ -309432,7 +309432,17 @@ claim HfreeG :
                 eG
                 Hifam_0_e))). }
         exact (HnNe0 Hn0).
-    - admit.
+    - set ImgFam := graph J (fun alpha:set =>
+        homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)).
+      claim Hfam_eq : Gfam_basis = ImgFam.
+      { admit. }
+      claim HdsImg : direct_sum_of_subgroups G multG eG invG J ImgFam.
+      { exact (andER
+          (A /\ B)
+          C
+          Hleft2). }
+      rewrite Hfam_eq.
+      exact HdsImg.
   }
   apply (and4I
     (abelian_group G multG eG invG)
