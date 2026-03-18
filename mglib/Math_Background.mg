@@ -214751,6 +214751,38 @@ Theorem thm57_2_punctured_sphere_homeomorphic_R2 : forall y:set,
       h.
 let y.
 assume Hy.
+set D := Sn 2 :\: Sing y.
+set DTop := subspace_topology (Sn 2) (Sn_topology 2) D.
+claim HDsub : D c= Sn 2.
+{
+  let z.
+  assume HzD.
+  exact (setminusE1 (Sn 2) (Sing y) z HzD).
+}
+claim HtopSn2 : topology_on (Sn 2) (Sn_topology 2).
+{
+  exact (subspace_topology_is_topology
+    (euclidean_space 3)
+    (euclidean_topology 3)
+    (Sn 2)
+    (euclidean_topology_is_topology 3)
+    (Sep_Subq
+      (euclidean_space 3)
+      (fun v:set => euclidean_norm_sq 3 v = 1))).
+}
+claim HDTop : topology_on D DTop.
+{
+  exact (subspace_topology_is_topology
+    (Sn 2)
+    (Sn_topology 2)
+    D
+    HtopSn2
+    HDsub).
+}
+(** Remaining geometric core:
+    construct an explicit global chart h : D -> R^2
+    (e.g. by composing a sphere self-homeomorphism sending y to the south pole
+    with stereographic projection), then package as a homeomorphism. **)
 admit.
 Admitted.
 
