@@ -82,6 +82,92 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773862238
+Created: 1773862238
+Status: PROPOSED
+
+Refers to Commit:
+  a6bd950e93d52682855a743fad952c614494b659
+
+Target:
+  Lines: 399177-399186
+  Names: polygon_pasting_space, polygon_pasting_map
+
+Problem:
+  Both definitions use `polygon_pasting_equiv n w x y` (the direct arc-identification
+  relation) to form equivalence classes. However, polygon_pasting_equiv is NOT transitive
+  at polygon vertices: a vertex point typically appears as both arc_i(0) and arc_{i-1}(1),
+  giving it different sets of partners via different arc representations. Concretely, for
+  n=4 with standard torus labelling (a,b,a^{-1},b^{-1}), the four corner vertices map to
+  four DISTINCT equivalence classes in polygon_pasting_space, making the quotient space
+  differ from the actual polygon pasting surface.
+
+  As a consequence:
+  1. The quotient space polygon_pasting_space n w is NOT the correct topological polygon
+     pasting space (it fails to identify all vertices that should be glued together).
+  2. The map pi: B2 -> polygon_pasting_space is NOT a closed map (counterexample: C =
+     arc_0([0,1/2]) is closed in B2 but pi^{-1}(pi(C)) is not closed, because it includes
+     arc_2((0,1/2]) without its limit point arc_2(0)).
+  3. Therefore thm74_1_polygon_pasting_compact_hausdorff is unprovable (and in fact false)
+     as stated.
+
+  The correct formulation uses polygon_pasting_equiv_chain (the finite-chain transitive
+  closure of the direct relation), which IS a proper equivalence relation (refl, symm, trans
+  are all proved: polygon_pasting_equiv_chain_equivalence_relation). The chain-based classes
+  correctly identify all vertices connected by a sequence of arc-identifications, giving the
+  standard polygon pasting quotient.
+
+Proposed Replacement:
+  Replace polygon_pasting_space:
+    Definition polygon_pasting_space : set -> set -> set :=
+      fun n w =>
+        {cls :e Power B2 |
+          exists x:set, x :e B2 /\
+            cls = {y :e B2 | polygon_pasting_equiv_chain n w x y}}.
+
+  Replace polygon_pasting_map:
+    Definition polygon_pasting_map : set -> set -> set :=
+      fun n w =>
+        graph B2 (fun x:set => {y :e B2 | polygon_pasting_equiv_chain n w x y}).
+
+  (polygon_pasting_topology uses only polygon_pasting_space and polygon_pasting_map, so
+  it is automatically corrected. The lemmas polygon_pasting_equiv_class_nonS1_singleton
+  and polygon_pasting_map_eq_implies_equiv would need analogous chain-based updates, but
+  the chain versions already exist: polygon_pasting_equiv_chain_class_nonS1_singleton and
+  polygon_pasting_equiv_chain_class_eq.)
+
+Proposed by:
+  Dave
+
+Discussion:
+  - 1773862238 | Dave: PROPOSED. polygon_pasting_equiv lacks transitivity at vertex points.
+    Detailed counterexample for n=4 torus labelling shown above. The chain version
+    polygon_pasting_equiv_chain is already proved to be a proper equivalence relation
+    (polygon_pasting_equiv_chain_equivalence_relation, line 398976). This fix is required
+    for thm74_1 (and all of Section 74) to be provable.
+
+Approvals:
+  - | Alice:
+  - | Bob:
+  - | Charlie:
+  - 1773862238 | Dave: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - | APPROVED / REJECTED
+
+Implemented by:
+  Dave
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+--------------------------------------------------------
+
 NOTICE ID: 1773628075
 Created: 1773628075
 Status: SENT TO ADMIN

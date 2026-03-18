@@ -400564,7 +400564,6 @@ Qed.
 (** scheme. Then X is a compact Hausdorff space. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 222 **)
-(** Lock Dave 1773944275 **)
 Theorem thm74_1_polygon_pasting_compact_hausdorff :
   forall n w:set,
   labelling_scheme n w ->
