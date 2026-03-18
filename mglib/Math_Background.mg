@@ -416614,6 +416614,38 @@ apply and4I.
   exact HV0_pc.
 Qed.
 
+(** Helper: path components of covering preimage are open when base is lpc **)
+(** Proven Alice **)
+Lemma covering_preimage_path_component_open : forall E Te B Tb p U e:set,
+  covering_map E Te B Tb p ->
+  U :e Tb ->
+  locally_path_connected U (subspace_topology B Tb U) ->
+  e :e preimage_of E p U ->
+  path_component_of (preimage_of E p U) (subspace_topology E Te (preimage_of E p U)) e :e Te.
+let E Te B Tb p U e. assume Hcov HUopen HlpcU HePreU.
+set preU := preimage_of E p U.
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HpreU_open : preU :e Te.
+{ exact (continuous_map_preimage E Te B Tb p (covering_map_continuous E Te B Tb p Hcov) U HUopen). }
+claim HpreU_sub : preU c= E. { exact (topology_elem_subset E Te preU HtopE HpreU_open). }
+claim HlpcPreU : locally_path_connected preU (subspace_topology E Te preU).
+{ exact (covering_preimage_locally_path_connected E Te B Tb p U Hcov HUopen HlpcU). }
+claim Hpc_open_sub : path_component_of preU (subspace_topology E Te preU) e :e subspace_topology E Te preU.
+{ exact (path_component_of_open_in_lpc preU (subspace_topology E Te preU) e HlpcPreU HePreU). }
+claim Hpc_sub : path_component_of preU (subspace_topology E Te preU) e c= preU.
+{ exact (path_component_of_sub preU (subspace_topology E Te preU) e). }
+claim Hpc_open_in : open_in preU (subspace_topology E Te preU)
+  (path_component_of preU (subspace_topology E Te preU) e).
+{ prove topology_on preU (subspace_topology E Te preU) /\
+    path_component_of preU (subspace_topology E Te preU) e :e subspace_topology E Te preU.
+  apply andI.
+  - exact (subspace_topology_is_topology E Te preU HtopE HpreU_sub).
+  - exact Hpc_open_sub. }
+exact (open_in_subspace_if_ambient_open E Te preU
+  (path_component_of preU (subspace_topology E Te preU) e)
+  HtopE HpreU_open Hpc_sub Hpc_open_in).
+Qed.
+
 (** Improved version with locally_path_connected hypothesis **)
 (** This is needed to ensure path components of p^-1(U) are open **)
 (** Proven Alice **)
