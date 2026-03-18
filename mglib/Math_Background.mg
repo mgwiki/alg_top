@@ -279466,7 +279466,39 @@ Lemma S1_semicircle_decomposition :
   S1 :\: S1_lower :e S1_topology.
 apply and9I.
 - (** S1 = upper union lower: every point has y >= 0 or y <= 0 **)
-  admit.
+  apply set_ext.
+  + (** S1 c= upper union lower **)
+    let p. assume Hp : p :e S1.
+    (** p 1 in R, hence SNo **)
+    claim HpR2 : p :e setprod R R.
+    { exact (SepE1 (setprod R R)
+        (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p Hp). }
+    claim Hp1R : p 1 :e R.
+    { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+    claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+    (** Either 0 < p1 (then upper) or p1 <= 0 (then lower) **)
+    claim Hor : SNoLt 0 (p 1) \/ SNoLe (p 1) 0.
+    { exact (SNoLtLe_or 0 (p 1) SNo_0 Hp1SNo). }
+    apply Hor.
+    { (** 0 < p1 implies p in upper **)
+      assume H0lt : SNoLt 0 (p 1).
+      apply (binunionI1 S1_upper S1_lower p).
+      prove p :e {q :e S1 | ~(SNoLt (q 1) 0)}.
+      exact (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) p Hp
+        (fun Hlt:SNoLt (p 1) 0 =>
+          SNoLt_irref (p 1) (SNoLt_tra (p 1) 0 (p 1) Hp1SNo SNo_0 Hp1SNo Hlt H0lt))). }
+    { (** p1 <= 0 implies p in lower **)
+      assume Hle : SNoLe (p 1) 0.
+      apply (binunionI2 S1_upper S1_lower p).
+      prove p :e {q :e S1 | ~(SNoLt 0 (q 1))}.
+      exact (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) p Hp
+        (fun Hlt:SNoLt 0 (p 1) =>
+          SNoLt_irref (p 1) (SNoLeLt_tra (p 1) 0 (p 1) Hp1SNo SNo_0 Hp1SNo Hle Hlt))). }
+  + (** upper union lower c= S1 **)
+    let p. assume Hp : p :e S1_upper :\/: S1_lower.
+    apply (binunionE S1_upper S1_lower p Hp).
+    { assume Hu : p :e S1_upper. exact (SepE1 S1 (fun q:set => ~(SNoLt (q 1) 0)) p Hu). }
+    { assume Hl : p :e S1_lower. exact (SepE1 S1 (fun q:set => ~(SNoLt 0 (q 1))) p Hl). }
 - (** upper cap lower = {(1,0), (-1,0)}: y >= 0 and y <= 0 iff y = 0, then x^2 = 1 **)
   admit.
 - (** (1,0) in S1 **)
