@@ -279512,6 +279512,7 @@ Admitted.
 (** Helper: S^2-C is open in S^2 when C is compact (a simple closed curve is compact). **)
 (** Proof: C homeo S^1, S^1 compact, so C compact. S^2 Hausdorff, **)
 (** compact in Hausdorff is closed. Closed complement is open. **)
+(** Proven Alice **)
 Lemma Sn2_complement_simple_closed_curve_open : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
