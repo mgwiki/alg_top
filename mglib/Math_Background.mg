@@ -1,5 +1,5 @@
 (** Balance Alice 9168 **)
-(** Balance Bob 6232 **)
+(** Balance Bob 6265 **)
 (** Balance Charlie 877 **)
 (** Balance Dave 2428 **)
 
@@ -309720,7 +309720,8 @@ Qed.
 (** LATEX VERSION: Give an example of a free abelian group G of rank n having **)
 (** a subgroup H of rank n for which H is not equal to G. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Bob 33 **)
+(** Proven Bob **)
 Theorem ex67_5_proper_subgroup_same_rank :
   forall n:set, n :e omega -> n <> 0 ->
   exists G mult e inv J1 basis1 J2 basis2:set,
@@ -315368,7 +315369,7 @@ apply andI.
       { exact Hproper. }
     * exact HfreeH.
   + exact HequipJ.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S68 Free Products of Groups                                  **)
