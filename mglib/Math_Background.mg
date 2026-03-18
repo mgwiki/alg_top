@@ -184779,6 +184779,19 @@ exact (eq_i_tra
     (neq_ordsucc_0 0))).
 Qed.
 
+(** Infrastructure: the graph-model point with coordinates x,y evaluates to x at 0 and y at 1. **)
+(** Proven Charlie **)
+Theorem graph_2_if_apply_fun_coords : forall x y:set,
+  apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 0 = x /\
+  apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 1 = y.
+let x y.
+apply (andI
+  (apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 0 = x)
+  (apply_fun (graph 2 (fun i:set => if i = 0 then x else y)) 1 = y)).
+- exact (graph_2_if_apply_fun_0 x y).
+- exact (graph_2_if_apply_fun_1 x y).
+Qed.
+
 (** Infrastructure: the 2-coordinate graph model equals the tuple pair model. **)
 Theorem graph_2_if_coords_pair : forall x y:set,
   graph 2 (fun i:set => if i = 0 then x else y) = (x,y).
