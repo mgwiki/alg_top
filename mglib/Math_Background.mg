@@ -420524,6 +420524,51 @@ claim Hagree : forall x:set, x :e X -> apply_fun f x = apply_fun (graphify_on X 
 exact (continuous_map_congr_on X Tx Y Ty f (graphify_on X f) Hcont Hfn Hagree).
 Qed.
 
+(** Helper: CTG inverse closure using graphify workaround **)
+(** The inverse of h :e CTG gives graphify(h_inv) :e CTG with left-inverse property **)
+Lemma ctg_inverse_closure : forall E Te B Tb p h:set,
+  covering_map E Te B Tb p ->
+  h :e covering_transformation_group E Te B Tb p ->
+  exists hinv:set, hinv :e covering_transformation_group E Te B Tb p /\
+    forall x:set, x :e E -> apply_fun hinv (apply_fun h x) = x.
+let E Te B Tb p h. assume Hcov HhG.
+claim Hct : covering_transformation E Te B Tb p h.
+{ exact (SepE2 (function_space E E) (fun g:set => covering_transformation E Te B Tb p g) h HhG). }
+claim Hhomeo : homeomorphism E Te E Te h.
+{ exact (andEL (homeomorphism E Te E Te h)
+    (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) Hct). }
+claim Hcomm : forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x.
+{ exact (andER (homeomorphism E Te E Te h)
+    (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x) Hct). }
+apply (homeomorphism_inverse_package E Te E Te h Hhomeo).
+let g. assume Hgpack.
+set g_cont_type := continuous_map E Te E Te g.
+set g_left_type := forall x:set, x :e E -> apply_fun g (apply_fun h x) = x.
+set g_right_type := forall x:set, x :e E -> apply_fun h (apply_fun g x) = x.
+claim Hg_right : g_right_type.
+{ exact (andER (g_cont_type /\ g_left_type) g_right_type Hgpack). }
+claim Hg_left2 : g_cont_type /\ g_left_type.
+{ exact (andEL (g_cont_type /\ g_left_type) g_right_type Hgpack). }
+claim Hg_cont : g_cont_type.
+{ exact (andEL g_cont_type g_left_type Hg_left2). }
+claim Hg_left : g_left_type.
+{ exact (andER g_cont_type g_left_type Hg_left2). }
+set ginv := graphify_on E g.
+claim Hginv_cont : continuous_map E Te E Te ginv.
+{ exact (graphify_on_continuous E Te E Te g Hg_cont). }
+claim Hginv_left : forall x:set, x :e E -> apply_fun ginv (apply_fun h x) = x.
+{ let x. assume Hx.
+  rewrite (graphify_on_apply E g (apply_fun h x) (homeomorphism_function_on E Te E Te h Hhomeo x Hx)).
+  exact (Hg_left x Hx). }
+claim Hginv_fs : ginv :e function_space E E.
+{ exact (continuous_map_graphify_in_function_space E Te E Te g Hg_cont). }
+claim Hginv_ct : covering_transformation E Te B Tb p ginv.
+{ admit. (** need homeomorphism E Te E Te ginv: graphify of homeo inverse **) }
+claim Hginv_in_G : ginv :e covering_transformation_group E Te B Tb p.
+{ exact (SepI (function_space E E) (fun k:set => covering_transformation E Te B Tb p k) ginv Hginv_fs Hginv_ct). }
+witness ginv. apply andI. exact Hginv_in_G. exact Hginv_left.
+Admitted.
+
 (** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
 Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
