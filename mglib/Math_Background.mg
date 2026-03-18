@@ -415528,7 +415528,22 @@ apply and4I.
   { admit. }
   (** Bijection: injective (via null-homotopy) + surjective (via path lifting) **)
   claim HpC_bij : bijection C U pC.
-  { admit. }
+  { prove function_on pC C U /\
+      (forall u:set, u :e U ->
+        exists e:set, e :e C /\ apply_fun pC e = u /\
+          (forall e':set, e' :e C -> apply_fun pC e' = u -> e' = e)).
+    apply andI.
+    - exact HpC_fn_U.
+    - let u. assume HuU.
+      (** Surjectivity: exists e :e C with p(e) = u **)
+      (** Use path-connectedness of U: path from p(e0) to u, lift to E from e0 **)
+      (** Lifted path stays in preU, hence in path component C **)
+      (** Injectivity: if e' :e C with p(e') = u, then e' = e **)
+      (** Path from e to e' in C projects to loop at u in U **)
+      (** By null-homotopy hypothesis, this loop is null-homotopic in B **)
+      (** By unique path lifting, the lifted loop is a loop, so e = e' **)
+      admit. }
+
   exact (open_map_bijection_homeomorphism
     C (subspace_topology E Te C) U (subspace_topology B Tb U) pC
     HpC_cont HpC_open HpC_bij).
