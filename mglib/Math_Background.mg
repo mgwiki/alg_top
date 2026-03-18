@@ -279688,6 +279688,7 @@ Admitted.
 (** Helper for step 2: closure(W1) \ W1 is contained in C **)
 (** Uses: W2 is open and disjoint from W1, S^2-C = W1 union W2. **)
 (** So any x in S^2-C-W1 is in W2 (open), hence not a limit point of W1. **)
+(** Proven Alice **)
 Lemma boundary_subset_C : forall C W1 W2:set,
   C c= Sn 2 ->
   W1 :e Sn_topology 2 -> W2 :e Sn_topology 2 ->
@@ -279702,14 +279703,49 @@ assume Hdisj : W1 :/\: W2 = Empty.
 assume Hunion : Sn 2 :\: C = W1 :\/: W2.
 (** Let x in closure(W1) \ W1. Show x in C. **)
 let x. assume Hx : x :e closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
-(** x in closure(W1) means x in S^2 and every open nbhd of x meets W1. **)
-(** x not in W1. Need to show x in C. **)
-(** By contradiction: suppose x not in C. Then x in S^2-C = W1 union W2. **)
-(** Since x not in W1, x in W2. W2 is open. **)
-(** But then W2 is an open nbhd of x with W2 cap W1 = empty (by disjointness). **)
-(** This contradicts x in closure(W1). **)
-admit.
-Admitted.
+(** Unpack: x in closure(W1), x not in W1 **)
+claim Hxcl : x :e closure_of (Sn 2) (Sn_topology 2) W1.
+{ exact (setminusE1 (closure_of (Sn 2) (Sn_topology 2) W1) W1 x Hx). }
+claim HxnW1 : x /:e W1.
+{ exact (setminusE2 (closure_of (Sn 2) (Sn_topology 2) W1) W1 x Hx). }
+(** x in S^2 from closure **)
+claim HxSn : x :e Sn 2.
+{ exact (SepE1 (Sn 2) (fun y:set => forall U:set, U :e Sn_topology 2 -> y :e U -> U :/\: W1 <> Empty) x Hxcl). }
+(** x in closure means every open set containing x meets W1 **)
+claim Hxlim : forall U:set, U :e Sn_topology 2 -> x :e U -> U :/\: W1 <> Empty.
+{ exact (SepE2 (Sn 2) (fun y:set => forall U:set, U :e Sn_topology 2 -> y :e U -> U :/\: W1 <> Empty) x Hxcl). }
+(** By contradiction: suppose x not in C **)
+apply (xm (x :e C)).
++ (** Case: x in C - done **)
+  assume HxC : x :e C. exact HxC.
++ (** Case: x not in C **)
+  assume HxnC : x /:e C.
+  (** x in S^2, x not in C, so x in S^2-C = W1 union W2 **)
+  claim HxSmC : x :e Sn 2 :\: C.
+  { exact (setminusI (Sn 2) C x HxSn HxnC). }
+  (** Rewrite: S^2-C = W1 union W2 **)
+  claim HxW1W2 : x :e W1 :\/: W2.
+  { rewrite <- Hunion. exact HxSmC. }
+  (** x in W1 or x in W2 **)
+  apply (binunionE W1 W2 x HxW1W2).
+  - (** x in W1 - contradicts HxnW1 **)
+    assume HxW1 : x :e W1. exact (HxnW1 HxW1 (x :e C)).
+  - (** x in W2. W2 is open, so W2 is an open nbhd of x. **)
+    (** By closure property: W2 cap W1 <> Empty. **)
+    (** But W1 cap W2 = Empty by disjointness. Contradiction. **)
+    assume HxW2 : x :e W2.
+    claim HW2meetsW1 : W2 :/\: W1 <> Empty.
+    { exact (Hxlim W2 HW2open HxW2). }
+    (** Need: W2 cap W1 = Empty (from W1 cap W2 = Empty by commutativity) **)
+    claim HW2W1empty : W2 :/\: W1 = Empty.
+    { apply set_ext.
+      - let z. assume Hz : z :e W2 :/\: W1.
+        claim HzW1W2 : z :e W1 :/\: W2.
+        { exact (binintersectI W1 W2 z (binintersectE2 W2 W1 z Hz) (binintersectE1 W2 W1 z Hz)). }
+        rewrite <- Hdisj. exact HzW1W2.
+      - let z. assume Hz : z :e Empty. exact (EmptyE z Hz (z :e W2 :/\: W1)). }
+    exact (HW2meetsW1 HW2W1empty (x :e C)).
+Qed.
 
 (** Helper for step 2: each point of C is in closure(W)\W **)
 (** This is the hard direction. For each x in C and open U containing x: **)
