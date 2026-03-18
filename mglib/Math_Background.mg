@@ -415832,11 +415832,16 @@ set slices := {path_component_of preU (subspace_topology E Te preU) e | e :e pre
 (** - The slice of V containing e0 is open and contained in C **)
 (** - So C is a union of open sets, hence open **)
 (** Each path component maps homeomorphically to U via p because: **)
-(** - Surjective: path lifting extends paths in U to paths in the component **)
-(** - Injective: null-homotopy hypothesis prevents different lifts of same point **)
-(** - Local homeomorphism: from covering map structure **)
-(** Full construction: requires showing path components are open in E **)
-(** (not just in preU), and that they satisfy the homeomorphism condition **)
+(** SECTION-BASED PROOF approach: for each e0 in fiber over u0, **)
+(** path lifting defines section s_{e0}: U -> E with p(s(u))=u. **)
+(** Requires ~150 lines of path lifting + unique lifting. **)
+(** Step 1: Get base point u0 :e U from path-connectedness **)
+claim Hsurj_p : surjective_map E B p. { exact (covering_map_surjective E Te B Tb p Hcov). }
+claim HUnonempty : U <> Empty.
+{ claim HtopUsub : topology_on U (subspace_topology B Tb U). { exact HtopU. }
+  admit. (** U is path-connected hence nonempty **) }
+(** Step 2-7: Define sections, show they form evenly_covered structure **)
+(** This requires ~150 lines of path lifting + unique lifting + local sheet arguments **)
 admit.
 Admitted.
 
@@ -416612,6 +416617,58 @@ apply and4I.
 - exact HV0_sub_W.
 - rewrite (subspace_topology_transitive_weak E Te preU V0 HV0_sub_preU).
   exact HV0_pc.
+Qed.
+
+(** Helper: covering map has local section at each point **)
+(** Given e :e E, there exist open S ∋ e in E and V ∋ p(e) in B **)
+(** with a continuous section s: V → S satisfying p(s(u)) = u and s(p(e)) = e **)
+(** Proven Alice **)
+Lemma covering_map_local_section : forall E Te B Tb p e:set,
+  covering_map E Te B Tb p -> e :e E ->
+  exists S V s:set,
+    S :e Te /\ e :e S /\ V :e Tb /\ apply_fun p e :e V /\
+    continuous_map V (subspace_topology B Tb V) S (subspace_topology E Te S) s /\
+    (forall x:set, x :e S -> apply_fun s (apply_fun (graph S (fun z:set => apply_fun p z)) x) = x) /\
+    (forall u:set, u :e V -> apply_fun (graph S (fun z:set => apply_fun p z)) (apply_fun s u) = u).
+let E Te B Tb p e. assume Hcov HeE.
+apply (covering_map_local_homeomorphism E Te B Tb p e Hcov HeE).
+let S. assume HS_inner. apply HS_inner.
+let V. assume Hpack.
+set pS := graph S (fun x:set => apply_fun p x).
+set Hhomeo_type := homeomorphism S (subspace_topology E Te S) V (subspace_topology B Tb V) pS.
+claim Hhomeo : Hhomeo_type.
+{ exact (andER (((S :e Te) /\ (e :e S)) /\ (V :e Tb)) Hhomeo_type Hpack). }
+claim Hleft3 : ((S :e Te) /\ (e :e S)) /\ (V :e Tb).
+{ exact (andEL (((S :e Te) /\ (e :e S)) /\ (V :e Tb)) Hhomeo_type Hpack). }
+claim HVopen : V :e Tb. { exact (andER ((S :e Te) /\ (e :e S)) (V :e Tb) Hleft3). }
+claim HSopen : S :e Te. { exact (andEL (S :e Te) (e :e S) (andEL ((S :e Te) /\ (e :e S)) (V :e Tb) Hleft3)). }
+claim HeS : e :e S. { exact (andER (S :e Te) (e :e S) (andEL ((S :e Te) /\ (e :e S)) (V :e Tb) Hleft3)). }
+claim HpSe_V : apply_fun pS e :e V.
+{ exact (homeomorphism_function_on S (subspace_topology E Te S) V (subspace_topology B Tb V) pS Hhomeo e HeS). }
+claim HpeV : apply_fun p e :e V.
+{ rewrite <- (apply_fun_graph S (fun x:set => apply_fun p x) e HeS). exact HpSe_V. }
+apply (homeomorphism_inverse_package S (subspace_topology E Te S) V (subspace_topology B Tb V) pS Hhomeo).
+let s. assume Hspack.
+set Hscont_type := continuous_map V (subspace_topology B Tb V) S (subspace_topology E Te S) s.
+set Hsleft_type := forall x:set, x :e S -> apply_fun s (apply_fun pS x) = x.
+set Hsright_type := forall u:set, u :e V -> apply_fun pS (apply_fun s u) = u.
+claim Hsright : Hsright_type.
+{ exact (andER (Hscont_type /\ Hsleft_type) Hsright_type Hspack). }
+claim Hsleft2 : Hscont_type /\ Hsleft_type.
+{ exact (andEL (Hscont_type /\ Hsleft_type) Hsright_type Hspack). }
+claim Hscont : Hscont_type.
+{ exact (andEL Hscont_type Hsleft_type Hsleft2). }
+claim Hsleft : Hsleft_type.
+{ exact (andER Hscont_type Hsleft_type Hsleft2). }
+witness S. witness V. witness s.
+apply andI. apply andI. apply andI. apply andI. apply andI. apply andI.
+- exact HSopen.
+- exact HeS.
+- exact HVopen.
+- exact HpeV.
+- exact Hscont.
+- exact Hsleft.
+- exact Hsright.
 Qed.
 
 (** Helper: path components of covering preimage are open when base is lpc **)
