@@ -430814,7 +430814,7 @@ apply iffI.
   }
   claim HlpcB : locally_path_connected B Tb.
   {
-    admit. (** missing bridge: universal-cover existence -> locally_path_connected base **)
+    exact (universal_cover_implies_lpc B Tb Huniv).
   }
   apply and3I.
   - exact HpcB.
