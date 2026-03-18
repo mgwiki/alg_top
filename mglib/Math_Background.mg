@@ -314955,8 +314955,298 @@ claim HfreeH :
 		                  apply_fun h (apply_fun invG (apply_fun basis2 alpha)) =
 		                  group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2.
 		                {
-		                  (** TODO: derive from h-hom + inverse law + basis-square relation. **)
-		                  admit.
+		                  claim Hh_mul :
+		                    forall u v:set, u :e G -> v :e G ->
+		                      apply_fun h (apply_fun multG (u, v)) =
+		                      apply_fun multG (apply_fun h u, apply_fun h v).
+		                  { exact (andER
+		                      (function_on h G G)
+		                      (forall u v:set, u :e G -> v :e G ->
+		                        apply_fun h (apply_fun multG (u, v)) =
+		                        apply_fun multG (apply_fun h u, apply_fun h v))
+		                      Hh_hom). }
+		                  claim Hha_mul :
+		                    apply_fun h (apply_fun basis2 alpha) =
+		                    apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha).
+		                  {
+		                    claim Hstep0 :
+		                      apply_fun h (apply_fun basis2 alpha) =
+		                      apply_fun h (apply_fun h (apply_fun basis1 alpha)).
+		                    { rewrite (apply_fun_graph J (fun alpha0:set => apply_fun h (apply_fun basis1 alpha0)) alpha Halpha).
+		                      reflexivity. }
+		                    claim Hstep1 :
+		                      apply_fun h (apply_fun h (apply_fun basis1 alpha)) =
+		                      apply_fun h (apply_fun multG (apply_fun basis1 alpha, apply_fun basis1 alpha)).
+		                    { rewrite (Hbasis_square alpha Halpha).
+		                      reflexivity. }
+		                    claim Hstep2 :
+		                      apply_fun h (apply_fun multG (apply_fun basis1 alpha, apply_fun basis1 alpha)) =
+		                      apply_fun multG (apply_fun h (apply_fun basis1 alpha), apply_fun h (apply_fun basis1 alpha)).
+		                    {
+		                      exact (Hh_mul
+		                        (apply_fun basis1 alpha)
+		                        (apply_fun basis1 alpha)
+		                        (Hbasis1_fn alpha Halpha)
+		                        (Hbasis1_fn alpha Halpha)).
+		                    }
+		                    claim Hstep3 :
+		                      apply_fun multG (apply_fun h (apply_fun basis1 alpha), apply_fun h (apply_fun basis1 alpha)) =
+		                      apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha).
+		                    {
+		                      rewrite (apply_fun_graph J (fun alpha0:set => apply_fun h (apply_fun basis1 alpha0)) alpha Halpha).
+		                      reflexivity.
+		                    }
+		                    exact (eq_i_tra
+		                      (apply_fun h (apply_fun basis2 alpha))
+		                      (apply_fun h (apply_fun h (apply_fun basis1 alpha)))
+		                      (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha))
+		                      Hstep0
+		                      (eq_i_tra
+		                        (apply_fun h (apply_fun h (apply_fun basis1 alpha)))
+		                        (apply_fun h (apply_fun multG (apply_fun basis1 alpha, apply_fun basis1 alpha)))
+		                        (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha))
+		                        Hstep1
+		                        (eq_i_tra
+		                          (apply_fun h (apply_fun multG (apply_fun basis1 alpha, apply_fun basis1 alpha)))
+		                          (apply_fun multG (apply_fun h (apply_fun basis1 alpha), apply_fun h (apply_fun basis1 alpha)))
+		                          (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha))
+		                          Hstep2
+		                          Hstep3))).
+		                  }
+		                  claim Hh_invb2 :
+		                    apply_fun h (apply_fun invG (apply_fun basis2 alpha)) =
+		                    apply_fun invG (apply_fun h (apply_fun basis2 alpha)).
+		                  {
+		                    exact (group_hom_sends_inverse_cyclic_helper
+		                      G
+		                      multG
+		                      eG
+		                      invG
+		                      G
+		                      multG
+		                      eG
+		                      invG
+		                      h
+		                      HgrpG
+		                      HgrpG
+		                      Hh_hom
+		                      (apply_fun basis2 alpha)
+		                      Hb2G).
+		                  }
+		                  claim Hinv_mul_b2 :
+		                    apply_fun invG (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha)) =
+		                    apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun invG (apply_fun basis2 alpha)).
+		                  {
+		                    apply (and6E
+		                      (function_on multG (setprod G G) G)
+		                      (function_on invG G G)
+		                      (eG :e G)
+		                      (forall u v w:set, u :e G -> v :e G -> w :e G ->
+		                        apply_fun multG (apply_fun multG (u, v), w) = apply_fun multG (u, apply_fun multG (v, w)))
+		                      (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+		                      (forall u:set, u :e G ->
+		                        apply_fun multG (u, apply_fun invG u) = eG /\ apply_fun multG (apply_fun invG u, u) = eG)
+		                      HgrpG).
+		                    assume HmultFn HinvFn HeGG Hassoc Hid HinvLaw.
+		                    claim Hb2b2G : apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha) :e G.
+		                    {
+		                      exact (HmultFn
+		                        (apply_fun basis2 alpha, apply_fun basis2 alpha)
+		                        (tuple_2_setprod_by_pair_Sigma
+		                          G
+		                          G
+		                          (apply_fun basis2 alpha)
+		                          (apply_fun basis2 alpha)
+		                          Hb2G
+		                          Hb2G)).
+		                    }
+		                    claim Hinvb2b2G :
+		                      apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun invG (apply_fun basis2 alpha)) :e G.
+		                    {
+		                      exact (HmultFn
+		                        (apply_fun invG (apply_fun basis2 alpha), apply_fun invG (apply_fun basis2 alpha))
+		                        (tuple_2_setprod_by_pair_Sigma
+		                          G
+		                          G
+		                          (apply_fun invG (apply_fun basis2 alpha))
+		                          (apply_fun invG (apply_fun basis2 alpha))
+		                          Hinvb2G
+		                          Hinvb2G)).
+		                    }
+		                    claim Hinvb2b2G' : apply_fun invG (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha)) :e G.
+		                    { exact (HinvFn
+		                        (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha))
+		                        Hb2b2G). }
+		                    claim HprodEqE :
+		                      apply_fun multG
+		                        (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha),
+		                         apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun invG (apply_fun basis2 alpha))) = eG.
+		                    {
+		                      rewrite (Hassoc
+		                        (apply_fun basis2 alpha)
+		                        (apply_fun basis2 alpha)
+		                        (apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun invG (apply_fun basis2 alpha)))
+		                        Hb2G
+		                        Hb2G
+		                        Hinvb2b2G).
+		                      rewrite <- (Hassoc
+		                        (apply_fun basis2 alpha)
+		                        (apply_fun invG (apply_fun basis2 alpha))
+		                        (apply_fun invG (apply_fun basis2 alpha))
+		                        Hb2G
+		                        Hinvb2G
+		                        Hinvb2G).
+		                      rewrite (andEL
+		                        (apply_fun multG (apply_fun basis2 alpha, apply_fun invG (apply_fun basis2 alpha)) = eG)
+		                        (apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun basis2 alpha) = eG)
+		                        (HinvLaw (apply_fun basis2 alpha) Hb2G)).
+		                      rewrite (andEL
+		                        (apply_fun multG (eG, apply_fun invG (apply_fun basis2 alpha)) = apply_fun invG (apply_fun basis2 alpha))
+		                        (apply_fun multG (apply_fun invG (apply_fun basis2 alpha), eG) = apply_fun invG (apply_fun basis2 alpha))
+		                        (Hid (apply_fun invG (apply_fun basis2 alpha)) Hinvb2G)).
+		                      exact (andEL
+		                        (apply_fun multG (apply_fun basis2 alpha, apply_fun invG (apply_fun basis2 alpha)) = eG)
+		                        (apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun basis2 alpha) = eG)
+		                        (HinvLaw (apply_fun basis2 alpha) Hb2G)).
+		                    }
+		                    claim Hsym :
+		                      apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun invG (apply_fun basis2 alpha)) =
+		                      apply_fun invG (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha)).
+		                    {
+		                      apply (group_left_inv_solve
+		                        G
+		                        multG
+		                        invG
+		                        eG
+		                        (apply_fun invG (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha)))
+		                        (apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun invG (apply_fun basis2 alpha)))
+		                        HmultFn
+		                        HinvFn
+		                        HeGG
+		                        Hassoc
+		                        Hid
+		                        HinvLaw
+		                        Hinvb2b2G'
+		                        Hinvb2b2G).
+		                      rewrite (group_inv_inv
+		                        G
+		                        multG
+		                        invG
+		                        eG
+		                        (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha))
+		                        HmultFn
+		                        HinvFn
+		                        HeGG
+		                        Hassoc
+		                        Hid
+		                        HinvLaw
+		                        Hb2b2G).
+		                      exact HprodEqE.
+		                    }
+		                    rewrite Hsym.
+		                    reflexivity.
+		                  }
+		                  claim Hpow1_invb2 :
+		                    group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 1 =
+		                    apply_fun invG (apply_fun basis2 alpha).
+		                  {
+		                    claim Hpow1S :
+		                      group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc 0) =
+		                      apply_fun multG
+		                        (apply_fun invG (apply_fun basis2 alpha),
+		                         group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 0).
+		                    {
+		                      exact (nat_primrec_S
+		                        eG
+		                        (fun _ r => apply_fun multG (apply_fun invG (apply_fun basis2 alpha), r))
+		                        0
+		                        nat_0).
+		                    }
+		                    claim Hpow0 :
+		                      group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 0 = eG.
+		                    {
+		                      exact (nat_primrec_0
+		                        eG
+		                        (fun _ r => apply_fun multG (apply_fun invG (apply_fun basis2 alpha), r))).
+		                    }
+		                    apply (and6E
+		                      (function_on multG (setprod G G) G)
+		                      (function_on invG G G)
+		                      (eG :e G)
+		                      (forall u v w:set, u :e G -> v :e G -> w :e G ->
+		                        apply_fun multG (apply_fun multG (u, v), w) = apply_fun multG (u, apply_fun multG (v, w)))
+		                      (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+		                      (forall u:set, u :e G ->
+		                        apply_fun multG (u, apply_fun invG u) = eG /\ apply_fun multG (apply_fun invG u, u) = eG)
+		                      HgrpG).
+		                    assume HmultFn HinvFn HeGG Hassoc Hid HinvLaw.
+		                    rewrite Hpow1S.
+		                    rewrite Hpow0.
+		                    exact (andER
+		                      (apply_fun multG (eG, apply_fun invG (apply_fun basis2 alpha)) = apply_fun invG (apply_fun basis2 alpha))
+		                      (apply_fun multG (apply_fun invG (apply_fun basis2 alpha), eG) = apply_fun invG (apply_fun basis2 alpha))
+		                      (Hid (apply_fun invG (apply_fun basis2 alpha)) Hinvb2G)).
+		                  }
+		                  claim Hpow2_invb2 :
+		                    group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2 =
+		                    apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun invG (apply_fun basis2 alpha)).
+		                  {
+		                    claim Hpow2_step :
+		                      group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2 =
+		                      apply_fun multG
+		                        (apply_fun invG (apply_fun basis2 alpha),
+		                         group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 1).
+		                    {
+		                      claim H2S : 2 = ordsucc 1.
+		                      { reflexivity. }
+		                      claim H2S_pow :
+		                        group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2 =
+		                        group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc 1).
+		                      { rewrite H2S.
+		                        reflexivity. }
+		                      exact (eq_i_tra
+		                        (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2)
+		                        (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) (ordsucc 1))
+		                        (apply_fun multG
+		                          (apply_fun invG (apply_fun basis2 alpha),
+		                           group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 1))
+		                        H2S_pow
+		                        (nat_primrec_S
+		                          eG
+		                          (fun _ r => apply_fun multG (apply_fun invG (apply_fun basis2 alpha), r))
+		                          1
+		                          nat_1)).
+		                    }
+		                    rewrite Hpow2_step.
+		                    rewrite Hpow1_invb2.
+		                    reflexivity.
+		                  }
+		                  claim Hinv_hb2_to_inv_mul :
+		                    apply_fun invG (apply_fun h (apply_fun basis2 alpha)) =
+		                    apply_fun invG (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha)).
+		                  {
+		                    rewrite Hha_mul.
+		                    reflexivity.
+		                  }
+		                  exact (eq_i_tra
+		                    (apply_fun h (apply_fun invG (apply_fun basis2 alpha)))
+		                    (apply_fun invG (apply_fun h (apply_fun basis2 alpha)))
+		                    (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2)
+		                    Hh_invb2
+		                    (eq_i_tra
+		                      (apply_fun invG (apply_fun h (apply_fun basis2 alpha)))
+		                      (apply_fun invG (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha)))
+		                      (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2)
+		                      Hinv_hb2_to_inv_mul
+		                      (eq_i_tra
+		                        (apply_fun invG (apply_fun multG (apply_fun basis2 alpha, apply_fun basis2 alpha)))
+		                        (apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun invG (apply_fun basis2 alpha)))
+		                        (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2)
+		                        Hinv_mul_b2
+		                        (eq_symm
+		                          (group_power_nat multG eG (apply_fun invG (apply_fun basis2 alpha)) 2)
+		                          (apply_fun multG (apply_fun invG (apply_fun basis2 alpha), apply_fun invG (apply_fun basis2 alpha)))
+		                          Hpow2_invb2)))).
 		                }
 		                claim Hpowpow_e :
 		                  group_power_nat multG eG
