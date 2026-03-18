@@ -415708,6 +415708,16 @@ apply and4I.
       (** Injectivity: any e' with p(e') = u must equal e **)
       let e'. assume He'C He'eq.
       (** e' :e C, apply_fun pC e' = u **)
+      claim Hpe'eq : apply_fun p e' = u.
+      { prove apply_fun p e' = u.
+        rewrite <- He'eq.
+        symmetry.
+        exact (apply_fun_graph C (fun z:set => apply_fun p z) e' He'C). }
+      (** e, e' both in C = path_component_of preU T_preU e0 with p(e) = p(e') = u **)
+      (** Path from e to e' in preU, project to loop at u in U **)
+      (** By Hloops: loop null-homotopic in B **)
+      (** By homotopy lifting + unique path lifting: e = e' **)
+      (** This requires lemma54_2_homotopy_lifting + lemma54_1_path_lifting_unique **)
       admit. }
 
   exact (open_map_bijection_homeomorphism
