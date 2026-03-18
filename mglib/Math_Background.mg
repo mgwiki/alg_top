@@ -215574,7 +215574,779 @@ Theorem thm58_2_inclusion_Sn_isomorphism : forall n:set, n :e omega ->
     (induced_homomorphism (Sn n) (Sn_topology n) b0
       (Rn_minus_origin (ordsucc n)) (Rn_minus_origin_topology (ordsucc n)) b0
       (graph (Sn n) (fun x:set => x))).
-admit.
+let n.
+assume Hn_om.
+let b0.
+assume Hb0Sn.
+set A := Sn n.
+set Ta := Sn_topology n.
+set X := Rn_minus_origin (ordsucc n).
+set Tx := Rn_minus_origin_topology (ordsucc n).
+set j := graph A (fun x:set => x).
+set r := Rn_normalize_to_Sn n.
+set GA := fundamental_group A Ta b0.
+set multA := fundamental_group_mult A Ta b0.
+set GX := fundamental_group X Tx b0.
+set multX := fundamental_group_mult X Tx b0.
+set jstar := induced_homomorphism A Ta b0 X Tx b0 j.
+set rstar := induced_homomorphism X Tx b0 A Ta b0 r.
+claim Hb0X : b0 :e X.
+{
+  exact (Sn_subset_Rn_minus_origin
+    n
+    b0
+    Hn_om
+    Hb0Sn).
+}
+claim HtopA : topology_on A Ta.
+{
+  exact (subspace_topology_is_topology
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    A
+    (euclidean_topology_is_topology
+      (ordsucc n))
+    (Sep_Subq
+      (euclidean_space (ordsucc n))
+      (fun v:set => euclidean_norm_sq (ordsucc n) v = 1))).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (subspace_topology_is_topology
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    X
+    (euclidean_topology_is_topology
+      (ordsucc n))
+    (Sep_Subq
+      (euclidean_space (ordsucc n))
+      (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0)))).
+}
+claim HjCont :
+  continuous_map A Ta X Tx j.
+{
+  exact (Sn_inclusion_Rn_minus_origin_continuous
+    n
+    Hn_om).
+}
+claim HrCont :
+  continuous_map X Tx A Ta r.
+{
+  exact (Rn_normalize_to_Sn_continuous
+    n
+    Hn_om).
+}
+claim Hjb0 : apply_fun j b0 = b0.
+{
+  exact (apply_fun_graph
+    A
+    (fun x:set => x)
+    b0
+    Hb0Sn).
+}
+claim Hrb0 : apply_fun r b0 = b0.
+{
+  exact (Rn_normalize_to_Sn_fix_on_Sn
+    n
+    b0
+    Hn_om
+    Hb0Sn).
+}
+claim HjstarHom :
+  group_homomorphism GA multA GX multX jstar.
+{
+  exact (induced_homomorphism_is_homomorphism
+    A
+    Ta
+    b0
+    X
+    Tx
+    b0
+    j
+    HjCont
+    Hjb0
+    Hb0Sn).
+}
+claim HrstarHom :
+  group_homomorphism GX multX GA multA rstar.
+{
+  exact (induced_homomorphism_is_homomorphism
+    X
+    Tx
+    b0
+    A
+    Ta
+    b0
+    r
+    HrCont
+    Hrb0
+    Hb0X).
+}
+claim HjFun : function_on j A X.
+{
+  exact (continuous_map_function_on
+    A
+    Ta
+    X
+    Tx
+    j
+    HjCont).
+}
+claim HrFun : function_on r X A.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    A
+    Ta
+    r
+    HrCont).
+}
+claim HcompjrEq :
+  compose_fun A j r = graph A (fun x:set => x).
+{
+  apply (total_function_space_extensional
+    A
+    A
+    (compose_fun A j r)
+    (graph A (fun x:set => x))).
+  - exact (compose_fun_in_total_function_space
+      A
+      X
+      A
+      j
+      r
+      HjFun
+      HrFun).
+  - exact (graph_in_total_function_space
+      A
+      A
+      (fun x:set => x)
+      (fun x Hx => Hx)).
+  - let x.
+    assume HxA.
+    rewrite (compose_fun_apply
+      A
+      j
+      r
+      x
+      HxA).
+    rewrite (apply_fun_graph
+      A
+      (fun z:set => z)
+      x
+      HxA) at 2.
+    rewrite (apply_fun_graph
+      A
+      (fun z:set => z)
+      x
+      HxA).
+    exact (Rn_normalize_to_Sn_fix_on_Sn
+      n
+      x
+      Hn_om
+      HxA).
+}
+claim Hrstar_jstar_id :
+  forall cls:set, cls :e GA ->
+    apply_fun (compose_fun GA jstar rstar) cls = cls.
+{
+  let cls.
+  assume Hcls.
+  claim Hcomp :
+    apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls =
+    apply_fun (compose_fun GA jstar rstar) cls.
+  {
+    exact (Theorem_52_4_functorial_composition
+      A
+      Ta
+      b0
+      X
+      Tx
+      b0
+      A
+      Ta
+      b0
+      j
+      r
+      HjCont
+      HrCont
+      Hjb0
+      Hrb0
+      Hb0Sn
+      cls
+      Hcls).
+  }
+  claim Hid :
+    apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls = cls.
+  {
+    rewrite HcompjrEq.
+    exact (Theorem_52_4_functorial_identity
+      A
+      Ta
+      b0
+      HtopA
+      Hb0Sn
+      cls
+      Hcls).
+  }
+  exact (eq_i_tra
+    (apply_fun (compose_fun GA jstar rstar) cls)
+    (apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls)
+    cls
+    (eq_symm
+      (apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls)
+      (apply_fun (compose_fun GA jstar rstar) cls)
+      Hcomp)
+    Hid).
+}
+(** Remaining geometric step: j o r is homotopic to id_X with basepoint fixed at b0. **)
+claim Hjstar_rstar_id :
+  forall cls:set, cls :e GX ->
+    apply_fun (compose_fun GX rstar jstar) cls = cls.
+{
+  set hX := compose_fun X r j.
+  set idXMap := graph X (fun x:set => x).
+  claim HhXDef : hX = compose_fun X r j.
+  {
+    reflexivity.
+  }
+  claim HidXDef : idXMap = graph X (fun x:set => x).
+  {
+    reflexivity.
+  }
+  claim HhXCont : continuous_map X Tx X Tx hX.
+  {
+    rewrite HhXDef.
+    exact (composition_continuous
+      X
+      Tx
+      A
+      Ta
+      X
+      Tx
+      r
+      j
+      HrCont
+      HjCont).
+  }
+  claim HidXCont : continuous_map X Tx X Tx idXMap.
+  {
+    rewrite HidXDef.
+    exact (identity_continuous
+      X
+      Tx
+      HtopX).
+  }
+  claim HhXb0 : apply_fun hX b0 = b0.
+  {
+    rewrite HhXDef.
+    rewrite (compose_fun_apply
+      X
+      r
+      j
+      b0
+      Hb0X).
+    rewrite Hrb0.
+    exact Hjb0.
+  }
+  claim HidXb0 : apply_fun idXMap b0 = b0.
+  {
+    rewrite HidXDef.
+    exact (apply_fun_graph
+      X
+      (fun x:set => x)
+      b0
+      Hb0X).
+  }
+  claim HexH :
+    exists H:set, continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+      (forall x:set, x :e X -> apply_fun H (x, 0) = apply_fun hX x) /\
+      (forall x:set, x :e X -> apply_fun H (x, 1) = apply_fun idXMap x) /\
+      (forall t:set, t :e unit_interval -> apply_fun H (b0, t) = b0).
+  {
+    claim Hn_nat : nat_p n.
+    {
+      exact (omega_nat_p
+        n
+        Hn_om).
+    }
+    claim Hsn_om : ordsucc n :e omega.
+    {
+      exact (omega_ordsucc
+        n
+        Hn_om).
+    }
+    claim HrDef : r = Rn_normalize_to_Sn n.
+    {
+      reflexivity.
+    }
+    set dom := setprod X unit_interval.
+    set Tdom := product_topology X Tx unit_interval unit_interval_topology.
+    set normX := Rn_minus_origin_norm_map (ordsucc n).
+    set H := graph dom (fun p:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (add_SNo
+          (apply_fun flip_unit_interval (p 1))
+          (mul_SNo
+            (p 1)
+            (apply_fun normX (p 0))))
+        (apply_fun r (p 0))).
+    claim HnormCont :
+      continuous_map X Tx R R_standard_topology normX.
+    {
+      exact (Rn_minus_origin_norm_map_continuous_to_R
+        (ordsucc n)
+        Hsn_om).
+    }
+    claim HHcont :
+      continuous_map dom Tdom X Tx H.
+    {
+      (** Remaining geometric gap: continuity and non-vanishing of the explicit radial homotopy. **)
+      admit.
+    }
+    claim HH0 :
+      forall x:set, x :e X ->
+        apply_fun H (x, 0) = apply_fun hX x.
+    {
+      let x.
+      assume HxX.
+      claim Hx0Dom : (x, 0) :e dom.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval
+          x
+          0
+          HxX
+          zero_in_unit_interval).
+      }
+      claim HnormXR : apply_fun normX x :e R.
+      {
+        exact (continuous_map_function_on
+          X
+          Tx
+          R
+          R_standard_topology
+          normX
+          HnormCont
+          x
+          HxX).
+      }
+      claim HnormXS : SNo (apply_fun normX x).
+      {
+        exact (real_SNo
+          (apply_fun normX x)
+          HnormXR).
+      }
+      claim HrxA : apply_fun r x :e A.
+      {
+        exact (HrFun
+          x
+          HxX).
+      }
+      claim HrxEu : apply_fun r x :e euclidean_space (ordsucc n).
+      {
+        exact (SepE1
+          (euclidean_space (ordsucc n))
+          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+          (apply_fun r x)
+          HrxA).
+      }
+      rewrite (apply_fun_graph
+        dom
+        (fun p:set =>
+          Rn_scalar_mult
+            (ordsucc n)
+            (add_SNo
+              (apply_fun flip_unit_interval (p 1))
+              (mul_SNo
+                (p 1)
+                (apply_fun normX (p 0))))
+            (apply_fun r (p 0)))
+        (x, 0)
+        Hx0Dom).
+      rewrite tuple_2_1_eq.
+      rewrite flip_unit_interval_at_0.
+      rewrite tuple_2_0_eq.
+      rewrite (mul_SNo_zeroL
+        (apply_fun normX x)
+        HnormXS).
+      rewrite (add_SNo_0R
+        1
+        SNo_1).
+      rewrite (Rn_scalar_mult_ordsucc_one
+        n
+        (apply_fun r x)
+        Hn_nat
+        HrxEu).
+      rewrite HhXDef.
+      rewrite (compose_fun_apply
+        X
+        r
+        j
+        x
+        HxX).
+      rewrite (apply_fun_graph
+        A
+        (fun z:set => z)
+        (apply_fun r x)
+        HrxA).
+      reflexivity.
+    }
+    claim HH1 :
+      forall x:set, x :e X ->
+        apply_fun H (x, 1) = apply_fun idXMap x.
+    {
+      let x.
+      assume HxX.
+      claim Hx1Dom : (x, 1) :e dom.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval
+          x
+          1
+          HxX
+          one_in_unit_interval).
+      }
+      claim HnormXR : apply_fun normX x :e R.
+      {
+        exact (continuous_map_function_on
+          X
+          Tx
+          R
+          R_standard_topology
+          normX
+          HnormCont
+          x
+          HxX).
+      }
+      claim HnormXS : SNo (apply_fun normX x).
+      {
+        exact (real_SNo
+          (apply_fun normX x)
+          HnormXR).
+      }
+      rewrite (apply_fun_graph
+        dom
+        (fun p:set =>
+          Rn_scalar_mult
+            (ordsucc n)
+            (add_SNo
+              (apply_fun flip_unit_interval (p 1))
+              (mul_SNo
+                (p 1)
+                (apply_fun normX (p 0))))
+            (apply_fun r (p 0)))
+        (x, 1)
+        Hx1Dom).
+      rewrite tuple_2_1_eq.
+      rewrite flip_unit_interval_at_1.
+      rewrite tuple_2_0_eq.
+      rewrite (mul_SNo_oneL
+        (apply_fun normX x)
+        HnormXS).
+      rewrite (add_SNo_0L
+        (apply_fun normX x)
+        HnormXS).
+      rewrite (Rn_minus_origin_norm_map_apply
+        (ordsucc n)
+        x
+        Hsn_om
+        HxX).
+      rewrite HrDef.
+      rewrite (Rn_scalar_mult_sqrt_norm_normalize_eq
+        n
+        x
+        Hn_om
+        HxX).
+      rewrite HidXDef.
+      rewrite (apply_fun_graph
+        X
+        (fun z:set => z)
+        x
+        HxX).
+      reflexivity.
+    }
+    claim HHb0 :
+      forall t:set, t :e unit_interval ->
+        apply_fun H (b0, t) = b0.
+    {
+      let t.
+      assume Ht.
+      claim Hb0tDom : (b0, t) :e dom.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval
+          b0
+          t
+          Hb0X
+          Ht).
+      }
+      claim HtR : t :e R.
+      {
+        exact (SepE1
+          R
+          (fun s:set => ~(Rlt s 0) /\ ~(Rlt 1 s))
+          t
+          Ht).
+      }
+      claim HtS : SNo t.
+      {
+        exact (real_SNo
+          t
+          HtR).
+      }
+      claim Hb0Norm1 :
+        euclidean_norm_sq (ordsucc n) b0 = 1.
+      {
+        exact (SepE2
+          (euclidean_space (ordsucc n))
+          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+          b0
+          Hb0Sn).
+      }
+      claim Hb0Eu : b0 :e euclidean_space (ordsucc n).
+      {
+        exact (SepE1
+          (euclidean_space (ordsucc n))
+          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+          b0
+          Hb0Sn).
+      }
+      rewrite (apply_fun_graph
+        dom
+        (fun p:set =>
+          Rn_scalar_mult
+            (ordsucc n)
+            (add_SNo
+              (apply_fun flip_unit_interval (p 1))
+              (mul_SNo
+                (p 1)
+                (apply_fun normX (p 0))))
+            (apply_fun r (p 0)))
+        (b0, t)
+        Hb0tDom).
+      rewrite tuple_2_1_eq.
+      rewrite (flip_unit_interval_apply
+        t
+        Ht).
+      rewrite tuple_2_0_eq.
+      rewrite (Rn_minus_origin_norm_map_apply
+        (ordsucc n)
+        b0
+        Hsn_om
+        Hb0X).
+      rewrite Hb0Norm1.
+      rewrite sqrt_SNo_nonneg_1.
+      rewrite (mul_SNo_oneR
+        t
+        HtS).
+      rewrite <- (add_SNo_assoc
+        1
+        (minus_SNo t)
+        t
+        SNo_1
+        (SNo_minus_SNo
+          t
+          HtS)
+        HtS).
+      rewrite (add_SNo_minus_SNo_linv
+        t
+        HtS).
+      rewrite (add_SNo_0R
+        1
+        SNo_1).
+      rewrite Hrb0.
+      rewrite (Rn_scalar_mult_ordsucc_one
+        n
+        b0
+        Hn_nat
+        Hb0Eu).
+      reflexivity.
+    }
+    witness H.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * exact HHcont.
+        * exact HH0.
+      + exact HH1.
+    - exact HHb0.
+  }
+  let cls.
+  assume Hcls.
+  claim HhomEq :
+    apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls =
+    apply_fun (induced_homomorphism X Tx b0 X Tx b0 idXMap) cls.
+  {
+    exact (lemma58_1_basepoint_fixed_homotopy
+      X
+      Tx
+      X
+      Tx
+      b0
+      b0
+      hX
+      idXMap
+      HhXCont
+      HidXCont
+      HhXb0
+      HidXb0
+      Hb0X
+      HexH
+      cls
+      Hcls).
+  }
+  claim Hcomp :
+    apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls =
+    apply_fun (compose_fun GX rstar jstar) cls.
+  {
+    rewrite HhXDef.
+    exact (Theorem_52_4_functorial_composition
+      X
+      Tx
+      b0
+      A
+      Ta
+      b0
+      X
+      Tx
+      b0
+      r
+      j
+      HrCont
+      HjCont
+      Hrb0
+      Hjb0
+      Hb0X
+      cls
+      Hcls).
+  }
+  claim Hid :
+    apply_fun (induced_homomorphism X Tx b0 X Tx b0 idXMap) cls = cls.
+  {
+    rewrite HidXDef.
+    exact (Theorem_52_4_functorial_identity
+      X
+      Tx
+      b0
+      HtopX
+      Hb0X
+      cls
+      Hcls).
+  }
+  exact (eq_i_tra
+    (apply_fun (compose_fun GX rstar jstar) cls)
+    (apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls)
+    cls
+    (eq_symm
+      (apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls)
+      (apply_fun (compose_fun GX rstar jstar) cls)
+      Hcomp)
+    (eq_i_tra
+      (apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls)
+      (apply_fun (induced_homomorphism X Tx b0 X Tx b0 idXMap) cls)
+      cls
+      HhomEq
+      Hid)).
+}
+claim HjstarFun : function_on jstar GA GX.
+{
+  exact (group_homomorphism_function_on
+    GA
+    multA
+    GX
+    multX
+    jstar
+    HjstarHom).
+}
+claim HrstarFun : function_on rstar GX GA.
+{
+  exact (group_homomorphism_function_on
+    GX
+    multX
+    GA
+    multA
+    rstar
+    HrstarHom).
+}
+claim HjstarBij : bijection GA GX jstar.
+{
+  prove function_on jstar GA GX /\
+    (forall y:set, y :e GX ->
+      exists x:set, x :e GA /\ apply_fun jstar x = y /\
+        (forall x':set, x' :e GA -> apply_fun jstar x' = y -> x' = x)).
+  apply andI.
+  - exact HjstarFun.
+  - let y.
+    assume HyGX.
+    witness (apply_fun rstar y).
+    apply andI.
+    + apply andI.
+      * exact (HrstarFun
+          y
+          HyGX).
+      * exact (eq_i_tra
+          (apply_fun jstar (apply_fun rstar y))
+          (apply_fun (compose_fun GX rstar jstar) y)
+          y
+          (eq_symm
+            (apply_fun (compose_fun GX rstar jstar) y)
+            (apply_fun jstar (apply_fun rstar y))
+            (compose_fun_apply
+              GX
+              rstar
+              jstar
+              y
+              HyGX))
+          (Hjstar_rstar_id
+            y
+            HyGX)).
+    + let x'.
+      assume Hx'GA Hx'Eq.
+      claim HrEq :
+        apply_fun rstar (apply_fun jstar x') =
+        apply_fun rstar y.
+      {
+        rewrite Hx'Eq.
+        reflexivity.
+      }
+      claim Hleftx' :
+        apply_fun rstar (apply_fun jstar x') = x'.
+      {
+        rewrite <- (compose_fun_apply
+          GA
+          jstar
+          rstar
+          x'
+          Hx'GA).
+        exact (Hrstar_jstar_id
+          x'
+          Hx'GA).
+      }
+      exact (eq_i_tra
+        x'
+        (apply_fun rstar (apply_fun jstar x'))
+        (apply_fun rstar y)
+        (eq_symm
+          (apply_fun rstar (apply_fun jstar x'))
+          x'
+          Hleftx')
+        HrEq).
+}
+exact (group_isomorphism_intro
+  GA
+  multA
+  GX
+  multX
+  jstar
+  HjstarHom
+  HjstarBij).
 Admitted.
 
 (** from S58 Definition (line 1315 in algtop.tex): deformation retract **)
