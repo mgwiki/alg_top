@@ -287205,8 +287205,34 @@ Definition R2_affine : set -> set -> set -> set := fun x y t =>
 Lemma R2_affine_at_0 : forall x y:set,
   x :e setprod R R -> y :e setprod R R ->
   R2_affine x y 0 = x.
-admit.
-Admitted.
+let x y. assume Hx Hy.
+(** R2_affine x y 0 = (add_SNo (mul_SNo (1-0) (x 0)) (mul_SNo 0 (y 0)), **)
+(**                     add_SNo (mul_SNo (1-0) (x 1)) (mul_SNo 0 (y 1))) **)
+(** = (add_SNo (mul_SNo 1 (x 0)) 0, add_SNo (mul_SNo 1 (x 1)) 0) **)
+(** = (x 0, x 1) = x **)
+prove (add_SNo (mul_SNo (add_SNo 1 (minus_SNo 0)) (x 0)) (mul_SNo 0 (y 0)),
+       add_SNo (mul_SNo (add_SNo 1 (minus_SNo 0)) (x 1)) (mul_SNo 0 (y 1))) = x.
+claim Hx0R : x 0 :e R. { exact (ap0_Sigma R (fun _ => R) x Hx). }
+claim Hx1R : x 1 :e R. { exact (ap1_Sigma R (fun _ => R) x Hx). }
+claim Hy0R : y 0 :e R. { exact (ap0_Sigma R (fun _ => R) y Hy). }
+claim Hy1R : y 1 :e R. { exact (ap1_Sigma R (fun _ => R) y Hy). }
+claim Hx0SNo : SNo (x 0). { exact (real_SNo (x 0) Hx0R). }
+claim Hx1SNo : SNo (x 1). { exact (real_SNo (x 1) Hx1R). }
+claim Hy0SNo : SNo (y 0). { exact (real_SNo (y 0) Hy0R). }
+claim Hy1SNo : SNo (y 1). { exact (real_SNo (y 1) Hy1R). }
+(** Simplify: -0 = 0, 1+0 = 1, 1.x0 = x0, 0.y0 = 0, x0+0 = x0 **)
+rewrite minus_SNo_0.
+rewrite (add_SNo_0R 1 SNo_1).
+rewrite (mul_SNo_oneL (x 0) Hx0SNo).
+rewrite (mul_SNo_oneL (x 1) Hx1SNo).
+rewrite (mul_SNo_zeroL (y 0) Hy0SNo).
+rewrite (mul_SNo_zeroL (y 1) Hy1SNo).
+rewrite (add_SNo_0R (x 0) Hx0SNo).
+rewrite (add_SNo_0R (x 1) Hx1SNo).
+(** Now goal should be (x 0, x 1) = x **)
+(** Use setprod_eta: p in setprod X Y -> p = (p 0, p 1) **)
+exact (eq_symm x (x 0, x 1) (setprod_eta R R x Hx)).
+Qed.
 
 (** R2_affine at t=1 gives y **)
 Lemma R2_affine_at_1 : forall x y:set,
