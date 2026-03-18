@@ -287268,11 +287268,34 @@ exact (eq_symm y (y 0, y 1) (setprod_eta R R y Hy)).
 Qed.
 
 (** R2_affine maps to R^2 **)
+(** Proven Alice **)
 Lemma R2_affine_in_R2 : forall x y t:set,
   x :e setprod R R -> y :e setprod R R -> t :e unit_interval ->
   R2_affine x y t :e setprod R R.
-admit.
-Admitted.
+let x y t. assume Hx Hy Ht.
+prove (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (x 0)) (mul_SNo t (y 0)),
+       add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (x 1)) (mul_SNo t (y 1))) :e setprod R R.
+claim Hx0R : x 0 :e R. { exact (ap0_Sigma R (fun _ => R) x Hx). }
+claim Hx1R : x 1 :e R. { exact (ap1_Sigma R (fun _ => R) x Hx). }
+claim Hy0R : y 0 :e R. { exact (ap0_Sigma R (fun _ => R) y Hy). }
+claim Hy1R : y 1 :e R. { exact (ap1_Sigma R (fun _ => R) y Hy). }
+claim HtR : t :e R.
+{ exact (unit_interval_sub_R t Ht). }
+claim HmtR : minus_SNo t :e R. { exact (real_minus_SNo t HtR). }
+claim H1mtR : add_SNo 1 (minus_SNo t) :e R. { exact (real_add_SNo 1 real_1 (minus_SNo t) HmtR). }
+claim Hcoord0 : add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (x 0)) (mul_SNo t (y 0)) :e R.
+{ exact (real_add_SNo
+    (mul_SNo (add_SNo 1 (minus_SNo t)) (x 0)) (real_mul_SNo (add_SNo 1 (minus_SNo t)) H1mtR (x 0) Hx0R)
+    (mul_SNo t (y 0)) (real_mul_SNo t HtR (y 0) Hy0R)). }
+claim Hcoord1 : add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (x 1)) (mul_SNo t (y 1)) :e R.
+{ exact (real_add_SNo
+    (mul_SNo (add_SNo 1 (minus_SNo t)) (x 1)) (real_mul_SNo (add_SNo 1 (minus_SNo t)) H1mtR (x 1) Hx1R)
+    (mul_SNo t (y 1)) (real_mul_SNo t HtR (y 1) Hy1R)). }
+exact (tuple_2_setprod_by_pair_Sigma R R
+  (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (x 0)) (mul_SNo t (y 0)))
+  (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (x 1)) (mul_SNo t (y 1)))
+  Hcoord0 Hcoord1).
+Qed.
 
 (** Straight-line path from x to y in R^2 **)
 Definition R2_line_path : set -> set -> set := fun x y =>
