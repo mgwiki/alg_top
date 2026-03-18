@@ -279613,7 +279613,13 @@ apply and9I.
   admit.
 - (** (1,0) in S1 **)
   exact S1_basepoint_in_S1_early.
-- (** (-1,0) in S1 **)
+- (** (-1,0) in S1: antipode of (1,0) **)
+  prove S1_left_point :e S1.
+  prove (minus_SNo 1, 0) :e S1.
+  claim Hanti : (minus_SNo (S1_basepoint 0), minus_SNo (S1_basepoint 1)) :e S1.
+  { exact (s55_S1_antipode_in_S1 S1_basepoint S1_basepoint_in_S1_early). }
+  (** S1_basepoint 0 = 1, S1_basepoint 1 = 0 **)
+  (** So antipode = (minus_SNo 1, minus_SNo 0) = (minus_SNo 1, 0) **)
   admit.
 - (** (1,0) <> (-1,0) **)
   admit.
