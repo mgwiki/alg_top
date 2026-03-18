@@ -415003,6 +415003,34 @@ assume Huniv.
 admit.
 Admitted.
 
+(** Helper: covering map total space inherits lpc from base **)
+Lemma covering_total_space_lpc : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  locally_path_connected B Tb ->
+  locally_path_connected E Te.
+let E Te B Tb p.
+assume Hcov HlpcB.
+claim HtopE : topology_on E Te. { exact (covering_map_topology_on_domain E Te B Tb p Hcov). }
+claim HtopB : topology_on B Tb. { exact (covering_map_topology_on_codomain E Te B Tb p Hcov). }
+prove topology_on E Te /\
+  forall e:set, e :e E -> forall U:set, U :e Te -> e :e U ->
+    exists V:set, V :e Te /\ e :e V /\ V c= U /\ path_connected_space V (subspace_topology E Te V).
+apply andI.
+- exact HtopE.
+- let e. assume HeE.
+  let W. assume HWopen HeW.
+  (** Get evenly covered neighborhood V of p(e) **)
+  apply (covering_map_local_homeomorphism E Te B Tb p e Hcov HeE).
+  let S. assume HS_inner. apply HS_inner.
+  let V. assume Hev_pack.
+  (** S is open in E, e :e S, V open in B, homeo S -> V via p **)
+  (** Intersect S with W: S' = S cap W is open, e :e S', S' c= W **)
+  (** p(S') is open in B (p is open map on S via homeomorphism) **)
+  (** Use lpc of B to get pc neighborhood of p(e) in p(S') **)
+  (** Pull back via homeomorphism to get pc neighborhood of e in S' c= W **)
+  admit.
+Admitted.
+
 (** Helper: open subspace of locally path-connected space is locally path-connected **)
 (** Proven Alice **)
 Lemma open_subspace_locally_path_connected : forall X Tx Y:set,
