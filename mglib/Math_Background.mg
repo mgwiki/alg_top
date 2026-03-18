@@ -416750,6 +416750,21 @@ exact (topology_elem_subset E Te (preimage_of E p U)
   (covering_map_preimage_open E Te B Tb p U Hcov HUopen)).
 Qed.
 
+(** Helper: path in subspace composed with inclusion gives path in ambient **)
+(** Common pattern in covering space proofs **)
+(** Proven Alice **)
+Lemma path_in_subspace_to_ambient : forall X Tx U x y gamma:set,
+  topology_on X Tx -> U c= X ->
+  continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) gamma ->
+  path_between U x y gamma ->
+  continuous_map unit_interval unit_interval_topology X Tx
+    (compose_fun unit_interval gamma (graph U (fun z:set => z))).
+let X Tx U x y gamma. assume HtopX HUsub HgammaCont Hpath.
+exact (composition_continuous unit_interval unit_interval_topology
+  U (subspace_topology X Tx U) X Tx gamma (graph U (fun z:set => z))
+  HgammaCont (subspace_inclusion_continuous X Tx U HtopX HUsub)).
+Qed.
+
 (** Helper: path components of covering preimage are open when base is lpc **)
 (** Proven Alice **)
 Lemma covering_preimage_path_component_open : forall E Te B Tb p U e:set,
