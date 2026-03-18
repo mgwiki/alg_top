@@ -420376,6 +420376,28 @@ exact (loop_space_has_loop_at X Tx x0 (graphify_on unit_interval f)
   (loop_at_graphify_in_loop_space X Tx x0 f Hla)).
 Qed.
 
+(** Helper: graphify version is path-homotopic to original **)
+(** Proven Alice **)
+Lemma path_homotopic_to_graphify : forall X Tx x0 x1 f:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
+  path_homotopic X Tx x0 x1 f (graphify_on unit_interval f).
+let X Tx x0 x1 f. assume Hcont Hf0 Hf1.
+set gf := graphify_on unit_interval f.
+claim Hgf_fn : function_on gf unit_interval X.
+{ let t. assume Ht. rewrite (graphify_on_apply unit_interval f t Ht).
+  exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f Hcont t Ht). }
+claim Hagree : forall t:set, t :e unit_interval -> apply_fun f t = apply_fun gf t.
+{ let t. assume Ht. symmetry. exact (graphify_on_apply unit_interval f t Ht). }
+claim Hgf_cont : continuous_map unit_interval unit_interval_topology X Tx gf.
+{ exact (continuous_map_congr_on unit_interval unit_interval_topology X Tx f gf Hcont Hgf_fn Hagree). }
+claim Hgf0 : apply_fun gf 0 = x0.
+{ rewrite (graphify_on_apply unit_interval f 0 zero_in_unit_interval). exact Hf0. }
+claim Hgf1 : apply_fun gf 1 = x1.
+{ rewrite (graphify_on_apply unit_interval f 1 one_in_unit_interval). exact Hf1. }
+exact (path_homotopic_of_pointwise_equal X Tx x0 x1 f gf Hcont Hgf_cont Hf0 Hf1 Hgf0 Hgf1 Hagree).
+Qed.
+
 (** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
 Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
