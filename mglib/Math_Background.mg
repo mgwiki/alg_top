@@ -8428,6 +8428,18 @@ Axiom ex30_13_disjoint_open_sets_countable : forall X Tx : set , (exists D : set
 Axiom ex30_14_product_Lindelof_compact : forall X Tx Y Ty : set , Lindelof_space X Tx -> compact_space Y Ty -> Lindelof_space (setprod X Y) (product_topology X Tx Y Ty).
 Definition graphify_on : set -> set -> set := fun X f => graph X (fun x : set => apply_fun f x).
 Axiom graphify_on_apply : forall X f x : set , x :e X -> apply_fun (graphify_on X f) x = apply_fun f x.
+(** Proven Charlie **)
+Theorem compose_fun_graphify_on_apply : forall X f g x:set,
+  x :e X ->
+  apply_fun (compose_fun X (graphify_on X f) g) x =
+  apply_fun (compose_fun X f g) x.
+let X f g x.
+assume Hx.
+rewrite (compose_fun_apply X (graphify_on X f) g x Hx).
+rewrite (graphify_on_apply X f x Hx).
+rewrite (compose_fun_apply X f g x Hx).
+reflexivity.
+Qed.
 Axiom graphify_on_idem : forall X f : set , graphify_on X (graphify_on X f) = graphify_on X f.
 Axiom graphify_on_unit_interval_in_power_real : forall f : set , function_on f unit_interval R -> graphify_on unit_interval f :e power_real unit_interval.
 Axiom graphify_on_unit_interval_in_function_space : forall f : set , function_on f unit_interval R -> graphify_on unit_interval f :e function_space unit_interval R.
@@ -203160,21 +203172,10 @@ claim HcompGammaClass :
   {
     let s.
     assume Hs.
-    rewrite (compose_fun_apply
-      unit_interval
-      pI
-      h
-      s
-      Hs).
-    rewrite (compose_fun_apply
+    rewrite (compose_fun_graphify_on_apply
       unit_interval
       covering_map_R_S1
       h
-      s
-      Hs).
-    rewrite (graphify_on_apply
-      unit_interval
-      covering_map_R_S1
       s
       Hs).
     reflexivity.
