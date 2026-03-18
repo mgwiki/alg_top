@@ -426722,6 +426722,25 @@ claim Hcomp : forall g1 g2:set, g1 :e covering_transformation_group E Te B Tb p 
 exact (orbit_equiv_transitive E (covering_transformation_group E Te B Tb p) x y z Hxy Hyz Hcomp).
 Qed.
 
+(** Helper: CTG orbit equivalence is an equivalence relation (packaged) **)
+(** Proven Alice **)
+Lemma ctg_orbit_equiv_is_equivalence : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  (forall x:set, x :e E -> orbit_equiv E (covering_transformation_group E Te B Tb p) x x) /\
+  (forall x y:set, x :e E -> y :e E ->
+    orbit_equiv E (covering_transformation_group E Te B Tb p) x y ->
+    orbit_equiv E (covering_transformation_group E Te B Tb p) y x) /\
+  (forall x y z:set, x :e E -> y :e E -> z :e E ->
+    orbit_equiv E (covering_transformation_group E Te B Tb p) x y ->
+    orbit_equiv E (covering_transformation_group E Te B Tb p) y z ->
+    orbit_equiv E (covering_transformation_group E Te B Tb p) x z).
+let E Te B Tb p. assume Hcov.
+apply and3I.
+- let x. assume HxE. exact (ctg_orbit_equiv_refl E Te B Tb p x Hcov HxE).
+- let x y. assume HxE HyE Hxy. exact (ctg_orbit_equiv_symmetric E Te B Tb p x y Hcov Hxy).
+- let x y z. assume HxE HyE HzE Hxy Hyz. exact (ctg_orbit_equiv_transitive E Te B Tb p x y z Hcov Hxy Hyz).
+Qed.
+
 (** Helper: preimage(image(pi,U0)) equality from homeomorphism action + group data **)
 (** Proven Bob **)
 Theorem orbit_map_preimage_image_eq_action_union_with_group_data :
