@@ -235033,7 +235033,27 @@ claim Htransition_exists :
     (** Alternatively, restructure Htransition_exists to use a weaker claim **)
     (** (existence of a finite word decomposition without monotone partition). **)
     claim HfV : forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V.
-    { admit. }
+    { let t. assume HtI Hle.
+      (** Use suffix coverage: t is in some ball j >= ordsucc k = m **)
+      apply (ball_chain_suffix_covers_interval r nch seq k s
+        HrR Hrpos HnchOmega HseqFn Hoverlap H1_in_seqn
+        Hk_nch Hs_seqk Hs_seqsk t HtI Hle).
+      let j. assume Hjpack.
+      (** Hjpack : ((ordsucc k c= j) /\ (j :e ordsucc nch)) /\ (t :e apply_fun seq j) **)
+      claim Ht_seqj : t :e apply_fun seq j.
+      { exact (andER ((ordsucc k c= j) /\ (j :e ordsucc nch)) (t :e apply_fun seq j) Hjpack). }
+      claim Hjleft : (ordsucc k c= j) /\ (j :e ordsucc nch).
+      { exact (andEL ((ordsucc k c= j) /\ (j :e ordsucc nch)) (t :e apply_fun seq j) Hjpack). }
+      claim Hj_ge_m : ordsucc k c= j.
+      { exact (andEL (ordsucc k c= j) (j :e ordsucc nch) Hjleft). }
+      claim Hj_On : j :e ordsucc nch.
+      { exact (andER (ordsucc k c= j) (j :e ordsucc nch) Hjleft). }
+      (** j >= m means j :e NotU (or j = m or j > m). Ball j should be V-type. **)
+      (** By Hm_least: m is LEAST in NotU. j >= m means either j :e NotU or j is NOT in NotU. **)
+      (** If j NOT in NotU: ball j is U-type. This can happen for j > m! **)
+      (** So we CANNOT conclude ball j is V-type in general. **)
+      (** ADMIT: needs induction on transitions for the general case. **)
+      admit. }
     apply and6I.
     + exact HsUI.
     + exact Hs_ne0.
