@@ -203520,7 +203520,6 @@ Admitted.
 (** LATEX VERSION: If h: S^1 -> S^1 is continuous and antipode-preserving, then h is not nulhomotopic. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 467 **)
-(** Lock Charlie 1773939455 **)
 Theorem thm57_1_antipode_preserving_not_nulhomotopic : forall h:set,
   antipode_preserving_S1 h ->
   ~(nulhomotopic S1 S1_topology S1 S1_topology h).
