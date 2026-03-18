@@ -426665,6 +426665,18 @@ apply iffI.
 - assume Heq. exact (ctg_orbit_map_eq_implies_orbit_equiv E Te B Tb p x y Hcov HxE HyE Heq).
 Qed.
 
+(** Helper: CTG orbit equivalence is reflexive **)
+(** Proven Alice **)
+Lemma ctg_orbit_equiv_refl : forall E Te B Tb p x:set,
+  covering_map E Te B Tb p -> x :e E ->
+  orbit_equiv E (covering_transformation_group E Te B Tb p) x x.
+let E Te B Tb p x. assume Hcov HxE.
+exact (orbit_equiv_refl E (covering_transformation_group E Te B Tb p)
+  (covering_transformation_id E Te B Tb p)
+  x (covering_transformation_id_in_group E Te B Tb p Hcov)
+  (covering_transformation_id_apply E Te B Tb p) HxE).
+Qed.
+
 (** Helper: preimage(image(pi,U0)) equality from homeomorphism action + group data **)
 (** Proven Bob **)
 Theorem orbit_map_preimage_image_eq_action_union_with_group_data :
