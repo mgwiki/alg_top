@@ -287235,11 +287235,27 @@ exact (eq_symm x (x 0, x 1) (setprod_eta R R x Hx)).
 Qed.
 
 (** R2_affine at t=1 gives y **)
+(** Proven Alice **)
 Lemma R2_affine_at_1 : forall x y:set,
   x :e setprod R R -> y :e setprod R R ->
   R2_affine x y 1 = y.
-admit.
-Admitted.
+let x y. assume Hx Hy.
+prove (add_SNo (mul_SNo (add_SNo 1 (minus_SNo 1)) (x 0)) (mul_SNo 1 (y 0)),
+       add_SNo (mul_SNo (add_SNo 1 (minus_SNo 1)) (x 1)) (mul_SNo 1 (y 1))) = y.
+claim Hx0SNo : SNo (x 0). { exact (real_SNo (x 0) (ap0_Sigma R (fun _ => R) x Hx)). }
+claim Hx1SNo : SNo (x 1). { exact (real_SNo (x 1) (ap1_Sigma R (fun _ => R) x Hx)). }
+claim Hy0SNo : SNo (y 0). { exact (real_SNo (y 0) (ap0_Sigma R (fun _ => R) y Hy)). }
+claim Hy1SNo : SNo (y 1). { exact (real_SNo (y 1) (ap1_Sigma R (fun _ => R) y Hy)). }
+(** 1 + (-1) = 0, 0.x0 = 0, 1.y0 = y0, 0 + y0 = y0 **)
+rewrite (add_SNo_minus_SNo_rinv 1 SNo_1).
+rewrite (mul_SNo_zeroL (x 0) Hx0SNo).
+rewrite (mul_SNo_zeroL (x 1) Hx1SNo).
+rewrite (mul_SNo_oneL (y 0) Hy0SNo).
+rewrite (mul_SNo_oneL (y 1) Hy1SNo).
+rewrite (add_SNo_0L (y 0) Hy0SNo).
+rewrite (add_SNo_0L (y 1) Hy1SNo).
+exact (eq_symm y (y 0, y 1) (setprod_eta R R y Hy)).
+Qed.
 
 (** R2_affine maps to R^2 **)
 Lemma R2_affine_in_R2 : forall x y t:set,
