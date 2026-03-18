@@ -425069,6 +425069,29 @@ apply set_ext.
   rewrite (Hginvact x HxX). exact Hkx.
 Qed.
 
+(** Helper: orbit_map invariant for CTG using proven composition + inverse closure **)
+(** Proven Alice **)
+Lemma ctg_orbit_map_invariant : forall E Te B Tb p g x:set,
+  covering_map E Te B Tb p ->
+  g :e covering_transformation_group E Te B Tb p ->
+  x :e E ->
+  apply_fun (orbit_map E (covering_transformation_group E Te B Tb p))
+    (apply_fun g x) =
+  apply_fun (orbit_map E (covering_transformation_group E Te B Tb p)) x.
+let E Te B Tb p g x. assume Hcov HgG HxE.
+set G := covering_transformation_group E Te B Tb p.
+claim Hfn : forall h:set, h :e G -> function_on h E E.
+{ let h. assume HhG.
+  exact (covering_transformation_group_function_on E Te B Tb p h HhG). }
+claim Hcomp : forall g1 g2:set, g1 :e G -> g2 :e G ->
+  exists g3:set, g3 :e G /\ forall z:set, z :e E -> apply_fun g3 z = apply_fun g2 (apply_fun g1 z).
+{ let g1 g2. assume Hg1 Hg2. exact (ctg_composition_closure E Te B Tb p g1 g2 Hcov Hg1 Hg2). }
+claim Hinv : forall g0:set, g0 :e G ->
+  exists ginv:set, ginv :e G /\ forall z:set, z :e E -> apply_fun ginv (apply_fun g0 z) = z.
+{ let g0. assume Hg0. exact (ctg_inverse_closure E Te B Tb p g0 Hcov Hg0). }
+exact (orbit_map_invariant E G g x HgG Hfn Hcomp Hinv HxE).
+Qed.
+
 (** Helper: preimage(image(pi,U0)) equality from homeomorphism action + group data **)
 (** Proven Bob **)
 Theorem orbit_map_preimage_image_eq_action_union_with_group_data :
