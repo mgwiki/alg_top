@@ -401468,6 +401468,64 @@ rewrite HpiY.
 exact (polygon_pasting_equiv_class_eq n w x y Hxy).
 Qed.
 
+(** Preimage of a singleton class is exactly that class. **)
+(** Proven Charlie **)
+Lemma polygon_pasting_preimage_Sing_eq_class : forall n w cls:set,
+  cls :e polygon_pasting_space n w ->
+  preimage_of B2 (polygon_pasting_map n w) (Sing cls) = cls.
+let n w cls.
+assume HclsX.
+set X := polygon_pasting_space n w.
+set pi := polygon_pasting_map n w.
+claim HclsWit :
+  exists x0:set, x0 :e B2 /\ cls = {y :e B2 | polygon_pasting_equiv n w x0 y}.
+{
+  exact (SepE2 (Power B2)
+    (fun c:set => exists x0:set, x0 :e B2 /\ c = {y :e B2 | polygon_pasting_equiv n w x0 y})
+    cls
+    HclsX).
+}
+apply HclsWit.
+let x0. assume Hpack.
+claim Hx0B2 : x0 :e B2.
+{ exact (andEL (x0 :e B2) (cls = {y :e B2 | polygon_pasting_equiv n w x0 y}) Hpack). }
+claim HclsEq : cls = {y :e B2 | polygon_pasting_equiv n w x0 y}.
+{ exact (andER (x0 :e B2) (cls = {y :e B2 | polygon_pasting_equiv n w x0 y}) Hpack). }
+claim HpiX0 : apply_fun pi x0 = cls.
+{
+  rewrite HclsEq.
+  exact (apply_fun_graph B2 (fun x1:set => {y :e B2 | polygon_pasting_equiv n w x1 y}) x0 Hx0B2).
+}
+apply set_ext.
+- let x. assume HxPre.
+  claim HxB2 : x :e B2.
+  { exact (SepE1 B2 (fun u:set => apply_fun pi u :e Sing cls) x HxPre). }
+  claim HpiIn : apply_fun pi x :e Sing cls.
+  { exact (SepE2 B2 (fun u:set => apply_fun pi u :e Sing cls) x HxPre). }
+  claim HpiEq : apply_fun pi x = cls.
+  { exact (SingE cls (apply_fun pi x) HpiIn). }
+  claim HpiEq' : apply_fun pi x0 = apply_fun pi x.
+  { exact (eq_i_tra (apply_fun pi x0) cls (apply_fun pi x) HpiX0 (eq_symm (apply_fun pi x) cls HpiEq)). }
+  claim Hx0x : polygon_pasting_equiv n w x0 x.
+  { exact (polygon_pasting_map_eq_implies_equiv n w x0 x Hx0B2 HxB2 HpiEq'). }
+  rewrite HclsEq.
+  apply (SepI B2 (fun y:set => polygon_pasting_equiv n w x0 y)).
+  * exact HxB2.
+  * exact Hx0x.
+- let x. assume HxCls.
+  claim HxB2 : x :e B2.
+  { exact (SepE1 B2 (fun y:set => polygon_pasting_equiv n w x0 y) x (HclsEq (fun C _ => x :e C) HxCls)). }
+  claim Hx0x : polygon_pasting_equiv n w x0 x.
+  { exact (SepE2 B2 (fun y:set => polygon_pasting_equiv n w x0 y) x (HclsEq (fun C _ => x :e C) HxCls)). }
+  claim HpiEq' : apply_fun pi x0 = apply_fun pi x.
+  { exact (polygon_pasting_equiv_implies_map_eq n w x0 x Hx0B2 HxB2 Hx0x). }
+  claim HpiEq : apply_fun pi x = cls.
+  { exact (eq_i_tra (apply_fun pi x) (apply_fun pi x0) cls (eq_symm (apply_fun pi x0) (apply_fun pi x) HpiEq') HpiX0). }
+  claim Hmem : apply_fun pi x :e Sing cls.
+  { rewrite HpiEq. exact (SingI cls). }
+  exact (SepI B2 (fun u:set => apply_fun pi u :e Sing cls) x HxB2 Hmem).
+Qed.
+
 (** polygon_pasting_map is injective on interior points. **)
 (** Proven Charlie **)
 Lemma polygon_pasting_map_inj_nonS1 : forall n w x y:set,
