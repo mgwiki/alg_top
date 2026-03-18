@@ -280047,6 +280047,54 @@ Lemma S2_complement_simple_closed_curve_exactly_two_components :
 admit.
 Admitted.
 
+(** Forward declaration: components of S^2-C are open in S^2 **)
+(** Uses Sn2_locally_connected (later) + Sn2_complement_open (later) **)
+Lemma jordan_step1_component_open : forall C x:set,
+  C c= Sn 2 ->
+  is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
+  x :e Sn 2 :\: C ->
+  component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x :e Sn_topology 2.
+admit.
+Admitted.
+
+(** Forward declaration: components of S^2-C are connected in S^2 subspace topology **)
+Lemma jordan_step1_component_connected : forall C x:set,
+  C c= Sn 2 ->
+  x :e Sn 2 :\: C ->
+  connected_space
+    (component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x)
+    (subspace_topology (Sn 2) (Sn_topology 2)
+      (component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x)).
+admit.
+Admitted.
+
+(** Forward declaration: distinct components are disjoint **)
+Lemma jordan_step1_components_disjoint : forall C x1 x2:set,
+  C c= Sn 2 ->
+  x1 :e Sn 2 :\: C -> x2 :e Sn 2 :\: C ->
+  component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 <>
+  component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2 ->
+  component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 :/\:
+  component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2 = Empty.
+admit.
+Admitted.
+
+(** Forward declaration: if every point of S^2-C is in comp(x1) or comp(x2), **)
+(** then S^2-C = comp(x1) union comp(x2) **)
+Lemma jordan_step1_components_cover : forall C x1 x2:set,
+  C c= Sn 2 ->
+  x1 :e Sn 2 :\: C -> x2 :e Sn 2 :\: C ->
+  (forall y:set, y :e Sn 2 :\: C ->
+    component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) y =
+    component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 \/
+    component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) y =
+    component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2) ->
+  Sn 2 :\: C =
+  component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 :\/:
+  component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2.
+admit.
+Admitted.
+
 (** JCT Step 1: S^2-C has exactly two open connected components **)
 (** Uses the helpers above to extract W1, W2 from the two components. **)
 Lemma jordan_curve_step1_two_components : forall C:set,
@@ -280094,14 +280142,50 @@ claim Hx12sub : x1 :e SmC /\ x2 :e SmC.
 { exact (andEL (x1 :e SmC /\ x2 :e SmC) (component_of SmC TSmC x1 <> component_of SmC TSmC x2) Hrest3). }
 claim Hx1 : x1 :e SmC. { exact (andEL (x1 :e SmC) (x2 :e SmC) Hx12sub). }
 claim Hx2 : x2 :e SmC. { exact (andER (x1 :e SmC) (x2 :e SmC) Hx12sub). }
-(** Now set W1 = component(x1), W2 = component(x2) **)
-(** Then prove the 8 properties using: **)
-(** - locally_connected_open_complement_two_component_partition for open/connected **)
-(** - point_in_component for nonempty **)
-(** - component disjointness from distinct components **)
-(** - universality from Huniv **)
-(** This requires significant infrastructure; admit for now **)
-admit.
+(** W1 = component(x1), W2 = component(x2) **)
+witness (component_of SmC TSmC x1).
+witness (component_of SmC TSmC x2).
+apply andI.
+- apply andI.
+  + apply andI.
+    { apply andI.
+      { apply andI.
+        { apply andI.
+          { apply andI.
+            { (** W1 open **)
+              exact (jordan_step1_component_open C x1 HC Hscc Hx1). }
+            (** W2 open **)
+            exact (jordan_step1_component_open C x2 HC Hscc Hx2). }
+          (** W1 cap W2 = Empty **)
+          exact (jordan_step1_components_disjoint C x1 x2 HC Hx1 Hx2 Hdiff). }
+        (** S^2-C = W1 union W2 **)
+        exact (jordan_step1_components_cover C x1 x2 HC Hx1 Hx2 Huniv). }
+      (** W1 nonempty **)
+      claim HtopSmC : topology_on SmC TSmC.
+      { claim HSmCsub : SmC c= Sn 2.
+        { let x. assume Hx. exact (setminusE1 (Sn 2) C x Hx). }
+        exact (subspace_topology_is_topology (Sn 2) (Sn_topology 2) SmC
+          (lemma59_3_Sn_topology_on 2) HSmCsub). }
+      assume Hempty : component_of SmC TSmC x1 = Empty.
+      claim Hx1in : x1 :e component_of SmC TSmC x1.
+      { exact (point_in_component SmC TSmC x1 HtopSmC Hx1). }
+      claim Hx1empty : x1 :e Empty. { rewrite <- Hempty. exact Hx1in. }
+      exact (EmptyE x1 Hx1empty False). }
+    (** W2 nonempty **)
+    claim HtopSmC : topology_on SmC TSmC.
+    { claim HSmCsub : SmC c= Sn 2.
+      { let x. assume Hx. exact (setminusE1 (Sn 2) C x Hx). }
+      exact (subspace_topology_is_topology (Sn 2) (Sn_topology 2) SmC
+        (lemma59_3_Sn_topology_on 2) HSmCsub). }
+    assume Hempty : component_of SmC TSmC x2 = Empty.
+    claim Hx2in : x2 :e component_of SmC TSmC x2.
+    { exact (point_in_component SmC TSmC x2 HtopSmC Hx2). }
+    claim Hx2empty : x2 :e Empty. { rewrite <- Hempty. exact Hx2in. }
+    exact (EmptyE x2 Hx2empty False).
+  + (** W1 connected **)
+    exact (jordan_step1_component_connected C x1 HC Hx1).
+- (** W2 connected **)
+  exact (jordan_step1_component_connected C x2 HC Hx2).
 Admitted.
 
 (** JCT Step 2: boundary condition -- each point of C is in the boundary **)
