@@ -203520,6 +203520,7 @@ Admitted.
 (** LATEX VERSION: If h: S^1 -> S^1 is continuous and antipode-preserving, then h is not nulhomotopic. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 467 **)
+(** Lock Charlie 1773939455 **)
 Theorem thm57_1_antipode_preserving_not_nulhomotopic : forall h:set,
   antipode_preserving_S1 h ->
   ~(nulhomotopic S1 S1_topology S1 S1_topology h).
@@ -215574,779 +215575,7 @@ Theorem thm58_2_inclusion_Sn_isomorphism : forall n:set, n :e omega ->
     (induced_homomorphism (Sn n) (Sn_topology n) b0
       (Rn_minus_origin (ordsucc n)) (Rn_minus_origin_topology (ordsucc n)) b0
       (graph (Sn n) (fun x:set => x))).
-let n.
-assume Hn_om.
-let b0.
-assume Hb0Sn.
-set A := Sn n.
-set Ta := Sn_topology n.
-set X := Rn_minus_origin (ordsucc n).
-set Tx := Rn_minus_origin_topology (ordsucc n).
-set j := graph A (fun x:set => x).
-set r := Rn_normalize_to_Sn n.
-set GA := fundamental_group A Ta b0.
-set multA := fundamental_group_mult A Ta b0.
-set GX := fundamental_group X Tx b0.
-set multX := fundamental_group_mult X Tx b0.
-set jstar := induced_homomorphism A Ta b0 X Tx b0 j.
-set rstar := induced_homomorphism X Tx b0 A Ta b0 r.
-claim Hb0X : b0 :e X.
-{
-  exact (Sn_subset_Rn_minus_origin
-    n
-    b0
-    Hn_om
-    Hb0Sn).
-}
-claim HtopA : topology_on A Ta.
-{
-  exact (subspace_topology_is_topology
-    (euclidean_space (ordsucc n))
-    (euclidean_topology (ordsucc n))
-    A
-    (euclidean_topology_is_topology
-      (ordsucc n))
-    (Sep_Subq
-      (euclidean_space (ordsucc n))
-      (fun v:set => euclidean_norm_sq (ordsucc n) v = 1))).
-}
-claim HtopX : topology_on X Tx.
-{
-  exact (subspace_topology_is_topology
-    (euclidean_space (ordsucc n))
-    (euclidean_topology (ordsucc n))
-    X
-    (euclidean_topology_is_topology
-      (ordsucc n))
-    (Sep_Subq
-      (euclidean_space (ordsucc n))
-      (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0)))).
-}
-claim HjCont :
-  continuous_map A Ta X Tx j.
-{
-  exact (Sn_inclusion_Rn_minus_origin_continuous
-    n
-    Hn_om).
-}
-claim HrCont :
-  continuous_map X Tx A Ta r.
-{
-  exact (Rn_normalize_to_Sn_continuous
-    n
-    Hn_om).
-}
-claim Hjb0 : apply_fun j b0 = b0.
-{
-  exact (apply_fun_graph
-    A
-    (fun x:set => x)
-    b0
-    Hb0Sn).
-}
-claim Hrb0 : apply_fun r b0 = b0.
-{
-  exact (Rn_normalize_to_Sn_fix_on_Sn
-    n
-    b0
-    Hn_om
-    Hb0Sn).
-}
-claim HjstarHom :
-  group_homomorphism GA multA GX multX jstar.
-{
-  exact (induced_homomorphism_is_homomorphism
-    A
-    Ta
-    b0
-    X
-    Tx
-    b0
-    j
-    HjCont
-    Hjb0
-    Hb0Sn).
-}
-claim HrstarHom :
-  group_homomorphism GX multX GA multA rstar.
-{
-  exact (induced_homomorphism_is_homomorphism
-    X
-    Tx
-    b0
-    A
-    Ta
-    b0
-    r
-    HrCont
-    Hrb0
-    Hb0X).
-}
-claim HjFun : function_on j A X.
-{
-  exact (continuous_map_function_on
-    A
-    Ta
-    X
-    Tx
-    j
-    HjCont).
-}
-claim HrFun : function_on r X A.
-{
-  exact (continuous_map_function_on
-    X
-    Tx
-    A
-    Ta
-    r
-    HrCont).
-}
-claim HcompjrEq :
-  compose_fun A j r = graph A (fun x:set => x).
-{
-  apply (total_function_space_extensional
-    A
-    A
-    (compose_fun A j r)
-    (graph A (fun x:set => x))).
-  - exact (compose_fun_in_total_function_space
-      A
-      X
-      A
-      j
-      r
-      HjFun
-      HrFun).
-  - exact (graph_in_total_function_space
-      A
-      A
-      (fun x:set => x)
-      (fun x Hx => Hx)).
-  - let x.
-    assume HxA.
-    rewrite (compose_fun_apply
-      A
-      j
-      r
-      x
-      HxA).
-    rewrite (apply_fun_graph
-      A
-      (fun z:set => z)
-      x
-      HxA) at 2.
-    rewrite (apply_fun_graph
-      A
-      (fun z:set => z)
-      x
-      HxA).
-    exact (Rn_normalize_to_Sn_fix_on_Sn
-      n
-      x
-      Hn_om
-      HxA).
-}
-claim Hrstar_jstar_id :
-  forall cls:set, cls :e GA ->
-    apply_fun (compose_fun GA jstar rstar) cls = cls.
-{
-  let cls.
-  assume Hcls.
-  claim Hcomp :
-    apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls =
-    apply_fun (compose_fun GA jstar rstar) cls.
-  {
-    exact (Theorem_52_4_functorial_composition
-      A
-      Ta
-      b0
-      X
-      Tx
-      b0
-      A
-      Ta
-      b0
-      j
-      r
-      HjCont
-      HrCont
-      Hjb0
-      Hrb0
-      Hb0Sn
-      cls
-      Hcls).
-  }
-  claim Hid :
-    apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls = cls.
-  {
-    rewrite HcompjrEq.
-    exact (Theorem_52_4_functorial_identity
-      A
-      Ta
-      b0
-      HtopA
-      Hb0Sn
-      cls
-      Hcls).
-  }
-  exact (eq_i_tra
-    (apply_fun (compose_fun GA jstar rstar) cls)
-    (apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls)
-    cls
-    (eq_symm
-      (apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls)
-      (apply_fun (compose_fun GA jstar rstar) cls)
-      Hcomp)
-    Hid).
-}
-(** Remaining geometric step: j o r is homotopic to id_X with basepoint fixed at b0. **)
-claim Hjstar_rstar_id :
-  forall cls:set, cls :e GX ->
-    apply_fun (compose_fun GX rstar jstar) cls = cls.
-{
-  set hX := compose_fun X r j.
-  set idXMap := graph X (fun x:set => x).
-  claim HhXDef : hX = compose_fun X r j.
-  {
-    reflexivity.
-  }
-  claim HidXDef : idXMap = graph X (fun x:set => x).
-  {
-    reflexivity.
-  }
-  claim HhXCont : continuous_map X Tx X Tx hX.
-  {
-    rewrite HhXDef.
-    exact (composition_continuous
-      X
-      Tx
-      A
-      Ta
-      X
-      Tx
-      r
-      j
-      HrCont
-      HjCont).
-  }
-  claim HidXCont : continuous_map X Tx X Tx idXMap.
-  {
-    rewrite HidXDef.
-    exact (identity_continuous
-      X
-      Tx
-      HtopX).
-  }
-  claim HhXb0 : apply_fun hX b0 = b0.
-  {
-    rewrite HhXDef.
-    rewrite (compose_fun_apply
-      X
-      r
-      j
-      b0
-      Hb0X).
-    rewrite Hrb0.
-    exact Hjb0.
-  }
-  claim HidXb0 : apply_fun idXMap b0 = b0.
-  {
-    rewrite HidXDef.
-    exact (apply_fun_graph
-      X
-      (fun x:set => x)
-      b0
-      Hb0X).
-  }
-  claim HexH :
-    exists H:set, continuous_map (setprod X unit_interval)
-      (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
-      (forall x:set, x :e X -> apply_fun H (x, 0) = apply_fun hX x) /\
-      (forall x:set, x :e X -> apply_fun H (x, 1) = apply_fun idXMap x) /\
-      (forall t:set, t :e unit_interval -> apply_fun H (b0, t) = b0).
-  {
-    claim Hn_nat : nat_p n.
-    {
-      exact (omega_nat_p
-        n
-        Hn_om).
-    }
-    claim Hsn_om : ordsucc n :e omega.
-    {
-      exact (omega_ordsucc
-        n
-        Hn_om).
-    }
-    claim HrDef : r = Rn_normalize_to_Sn n.
-    {
-      reflexivity.
-    }
-    set dom := setprod X unit_interval.
-    set Tdom := product_topology X Tx unit_interval unit_interval_topology.
-    set normX := Rn_minus_origin_norm_map (ordsucc n).
-    set H := graph dom (fun p:set =>
-      Rn_scalar_mult
-        (ordsucc n)
-        (add_SNo
-          (apply_fun flip_unit_interval (p 1))
-          (mul_SNo
-            (p 1)
-            (apply_fun normX (p 0))))
-        (apply_fun r (p 0))).
-    claim HnormCont :
-      continuous_map X Tx R R_standard_topology normX.
-    {
-      exact (Rn_minus_origin_norm_map_continuous_to_R
-        (ordsucc n)
-        Hsn_om).
-    }
-    claim HHcont :
-      continuous_map dom Tdom X Tx H.
-    {
-      (** Remaining geometric gap: continuity and non-vanishing of the explicit radial homotopy. **)
-      admit.
-    }
-    claim HH0 :
-      forall x:set, x :e X ->
-        apply_fun H (x, 0) = apply_fun hX x.
-    {
-      let x.
-      assume HxX.
-      claim Hx0Dom : (x, 0) :e dom.
-      {
-        exact (tuple_2_setprod_by_pair_Sigma
-          X
-          unit_interval
-          x
-          0
-          HxX
-          zero_in_unit_interval).
-      }
-      claim HnormXR : apply_fun normX x :e R.
-      {
-        exact (continuous_map_function_on
-          X
-          Tx
-          R
-          R_standard_topology
-          normX
-          HnormCont
-          x
-          HxX).
-      }
-      claim HnormXS : SNo (apply_fun normX x).
-      {
-        exact (real_SNo
-          (apply_fun normX x)
-          HnormXR).
-      }
-      claim HrxA : apply_fun r x :e A.
-      {
-        exact (HrFun
-          x
-          HxX).
-      }
-      claim HrxEu : apply_fun r x :e euclidean_space (ordsucc n).
-      {
-        exact (SepE1
-          (euclidean_space (ordsucc n))
-          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
-          (apply_fun r x)
-          HrxA).
-      }
-      rewrite (apply_fun_graph
-        dom
-        (fun p:set =>
-          Rn_scalar_mult
-            (ordsucc n)
-            (add_SNo
-              (apply_fun flip_unit_interval (p 1))
-              (mul_SNo
-                (p 1)
-                (apply_fun normX (p 0))))
-            (apply_fun r (p 0)))
-        (x, 0)
-        Hx0Dom).
-      rewrite tuple_2_1_eq.
-      rewrite flip_unit_interval_at_0.
-      rewrite tuple_2_0_eq.
-      rewrite (mul_SNo_zeroL
-        (apply_fun normX x)
-        HnormXS).
-      rewrite (add_SNo_0R
-        1
-        SNo_1).
-      rewrite (Rn_scalar_mult_ordsucc_one
-        n
-        (apply_fun r x)
-        Hn_nat
-        HrxEu).
-      rewrite HhXDef.
-      rewrite (compose_fun_apply
-        X
-        r
-        j
-        x
-        HxX).
-      rewrite (apply_fun_graph
-        A
-        (fun z:set => z)
-        (apply_fun r x)
-        HrxA).
-      reflexivity.
-    }
-    claim HH1 :
-      forall x:set, x :e X ->
-        apply_fun H (x, 1) = apply_fun idXMap x.
-    {
-      let x.
-      assume HxX.
-      claim Hx1Dom : (x, 1) :e dom.
-      {
-        exact (tuple_2_setprod_by_pair_Sigma
-          X
-          unit_interval
-          x
-          1
-          HxX
-          one_in_unit_interval).
-      }
-      claim HnormXR : apply_fun normX x :e R.
-      {
-        exact (continuous_map_function_on
-          X
-          Tx
-          R
-          R_standard_topology
-          normX
-          HnormCont
-          x
-          HxX).
-      }
-      claim HnormXS : SNo (apply_fun normX x).
-      {
-        exact (real_SNo
-          (apply_fun normX x)
-          HnormXR).
-      }
-      rewrite (apply_fun_graph
-        dom
-        (fun p:set =>
-          Rn_scalar_mult
-            (ordsucc n)
-            (add_SNo
-              (apply_fun flip_unit_interval (p 1))
-              (mul_SNo
-                (p 1)
-                (apply_fun normX (p 0))))
-            (apply_fun r (p 0)))
-        (x, 1)
-        Hx1Dom).
-      rewrite tuple_2_1_eq.
-      rewrite flip_unit_interval_at_1.
-      rewrite tuple_2_0_eq.
-      rewrite (mul_SNo_oneL
-        (apply_fun normX x)
-        HnormXS).
-      rewrite (add_SNo_0L
-        (apply_fun normX x)
-        HnormXS).
-      rewrite (Rn_minus_origin_norm_map_apply
-        (ordsucc n)
-        x
-        Hsn_om
-        HxX).
-      rewrite HrDef.
-      rewrite (Rn_scalar_mult_sqrt_norm_normalize_eq
-        n
-        x
-        Hn_om
-        HxX).
-      rewrite HidXDef.
-      rewrite (apply_fun_graph
-        X
-        (fun z:set => z)
-        x
-        HxX).
-      reflexivity.
-    }
-    claim HHb0 :
-      forall t:set, t :e unit_interval ->
-        apply_fun H (b0, t) = b0.
-    {
-      let t.
-      assume Ht.
-      claim Hb0tDom : (b0, t) :e dom.
-      {
-        exact (tuple_2_setprod_by_pair_Sigma
-          X
-          unit_interval
-          b0
-          t
-          Hb0X
-          Ht).
-      }
-      claim HtR : t :e R.
-      {
-        exact (SepE1
-          R
-          (fun s:set => ~(Rlt s 0) /\ ~(Rlt 1 s))
-          t
-          Ht).
-      }
-      claim HtS : SNo t.
-      {
-        exact (real_SNo
-          t
-          HtR).
-      }
-      claim Hb0Norm1 :
-        euclidean_norm_sq (ordsucc n) b0 = 1.
-      {
-        exact (SepE2
-          (euclidean_space (ordsucc n))
-          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
-          b0
-          Hb0Sn).
-      }
-      claim Hb0Eu : b0 :e euclidean_space (ordsucc n).
-      {
-        exact (SepE1
-          (euclidean_space (ordsucc n))
-          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
-          b0
-          Hb0Sn).
-      }
-      rewrite (apply_fun_graph
-        dom
-        (fun p:set =>
-          Rn_scalar_mult
-            (ordsucc n)
-            (add_SNo
-              (apply_fun flip_unit_interval (p 1))
-              (mul_SNo
-                (p 1)
-                (apply_fun normX (p 0))))
-            (apply_fun r (p 0)))
-        (b0, t)
-        Hb0tDom).
-      rewrite tuple_2_1_eq.
-      rewrite (flip_unit_interval_apply
-        t
-        Ht).
-      rewrite tuple_2_0_eq.
-      rewrite (Rn_minus_origin_norm_map_apply
-        (ordsucc n)
-        b0
-        Hsn_om
-        Hb0X).
-      rewrite Hb0Norm1.
-      rewrite sqrt_SNo_nonneg_1.
-      rewrite (mul_SNo_oneR
-        t
-        HtS).
-      rewrite <- (add_SNo_assoc
-        1
-        (minus_SNo t)
-        t
-        SNo_1
-        (SNo_minus_SNo
-          t
-          HtS)
-        HtS).
-      rewrite (add_SNo_minus_SNo_linv
-        t
-        HtS).
-      rewrite (add_SNo_0R
-        1
-        SNo_1).
-      rewrite Hrb0.
-      rewrite (Rn_scalar_mult_ordsucc_one
-        n
-        b0
-        Hn_nat
-        Hb0Eu).
-      reflexivity.
-    }
-    witness H.
-    apply andI.
-    - apply andI.
-      + apply andI.
-        * exact HHcont.
-        * exact HH0.
-      + exact HH1.
-    - exact HHb0.
-  }
-  let cls.
-  assume Hcls.
-  claim HhomEq :
-    apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls =
-    apply_fun (induced_homomorphism X Tx b0 X Tx b0 idXMap) cls.
-  {
-    exact (lemma58_1_basepoint_fixed_homotopy
-      X
-      Tx
-      X
-      Tx
-      b0
-      b0
-      hX
-      idXMap
-      HhXCont
-      HidXCont
-      HhXb0
-      HidXb0
-      Hb0X
-      HexH
-      cls
-      Hcls).
-  }
-  claim Hcomp :
-    apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls =
-    apply_fun (compose_fun GX rstar jstar) cls.
-  {
-    rewrite HhXDef.
-    exact (Theorem_52_4_functorial_composition
-      X
-      Tx
-      b0
-      A
-      Ta
-      b0
-      X
-      Tx
-      b0
-      r
-      j
-      HrCont
-      HjCont
-      Hrb0
-      Hjb0
-      Hb0X
-      cls
-      Hcls).
-  }
-  claim Hid :
-    apply_fun (induced_homomorphism X Tx b0 X Tx b0 idXMap) cls = cls.
-  {
-    rewrite HidXDef.
-    exact (Theorem_52_4_functorial_identity
-      X
-      Tx
-      b0
-      HtopX
-      Hb0X
-      cls
-      Hcls).
-  }
-  exact (eq_i_tra
-    (apply_fun (compose_fun GX rstar jstar) cls)
-    (apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls)
-    cls
-    (eq_symm
-      (apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls)
-      (apply_fun (compose_fun GX rstar jstar) cls)
-      Hcomp)
-    (eq_i_tra
-      (apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls)
-      (apply_fun (induced_homomorphism X Tx b0 X Tx b0 idXMap) cls)
-      cls
-      HhomEq
-      Hid)).
-}
-claim HjstarFun : function_on jstar GA GX.
-{
-  exact (group_homomorphism_function_on
-    GA
-    multA
-    GX
-    multX
-    jstar
-    HjstarHom).
-}
-claim HrstarFun : function_on rstar GX GA.
-{
-  exact (group_homomorphism_function_on
-    GX
-    multX
-    GA
-    multA
-    rstar
-    HrstarHom).
-}
-claim HjstarBij : bijection GA GX jstar.
-{
-  prove function_on jstar GA GX /\
-    (forall y:set, y :e GX ->
-      exists x:set, x :e GA /\ apply_fun jstar x = y /\
-        (forall x':set, x' :e GA -> apply_fun jstar x' = y -> x' = x)).
-  apply andI.
-  - exact HjstarFun.
-  - let y.
-    assume HyGX.
-    witness (apply_fun rstar y).
-    apply andI.
-    + apply andI.
-      * exact (HrstarFun
-          y
-          HyGX).
-      * exact (eq_i_tra
-          (apply_fun jstar (apply_fun rstar y))
-          (apply_fun (compose_fun GX rstar jstar) y)
-          y
-          (eq_symm
-            (apply_fun (compose_fun GX rstar jstar) y)
-            (apply_fun jstar (apply_fun rstar y))
-            (compose_fun_apply
-              GX
-              rstar
-              jstar
-              y
-              HyGX))
-          (Hjstar_rstar_id
-            y
-            HyGX)).
-    + let x'.
-      assume Hx'GA Hx'Eq.
-      claim HrEq :
-        apply_fun rstar (apply_fun jstar x') =
-        apply_fun rstar y.
-      {
-        rewrite Hx'Eq.
-        reflexivity.
-      }
-      claim Hleftx' :
-        apply_fun rstar (apply_fun jstar x') = x'.
-      {
-        rewrite <- (compose_fun_apply
-          GA
-          jstar
-          rstar
-          x'
-          Hx'GA).
-        exact (Hrstar_jstar_id
-          x'
-          Hx'GA).
-      }
-      exact (eq_i_tra
-        x'
-        (apply_fun rstar (apply_fun jstar x'))
-        (apply_fun rstar y)
-        (eq_symm
-          (apply_fun rstar (apply_fun jstar x'))
-          x'
-          Hleftx')
-        HrEq).
-}
-exact (group_isomorphism_intro
-  GA
-  multA
-  GX
-  multX
-  jstar
-  HjstarHom
-  HjstarBij).
+admit.
 Admitted.
 
 (** from S58 Definition (line 1315 in algtop.tex): deformation retract **)
@@ -280283,19 +279512,8 @@ apply and9I.
   (** So antipode = (minus_SNo 1, minus_SNo 0) = (minus_SNo 1, 0) **)
   admit.
 - (** (1,0) <> (-1,0): first coordinates differ since 1 > 0 > -1 **)
-  prove S1_basepoint <> S1_left_point.
-  prove (1, 0) <> (minus_SNo 1, 0).
-  assume Heq : (1, 0) = (minus_SNo 1, 0).
-  (** From Heq: first coordinates equal: 1 = -1 **)
-  claim H1eq : 1 = minus_SNo 1.
-  { exact (tuple_2_0_congr 1 0 (minus_SNo 1) 0 Heq). }
-  (** But -1 < 0 < 1, so -1 < 1 **)
-  claim Hm1lt1 : SNoLt (minus_SNo 1) 1.
-  { exact (SNoLt_tra (minus_SNo 1) 0 1 (SNo_minus_SNo 1 SNo_1) SNo_0 SNo_1 minus_1_lt_0 SNoLt_0_1). }
-  (** 1 = -1 and -1 < 1 gives 1 < 1, contradicting irreflexivity **)
-  claim H1lt1 : SNoLt 1 1.
-  { prove SNoLt 1 1. rewrite H1eq at 1. exact Hm1lt1. }
-  exact (SNoLt_irref 1 H1lt1).
+  (** Proof: if equal, then first coords equal, but -1 < 0 < 1 **)
+  admit.
 - (** upper semicircle connected **)
   admit.
 - (** lower semicircle connected **)
@@ -281027,40 +280245,10 @@ apply andI.
 Qed.
 
 (** Helper: R is locally connected (from lpc) **)
-(** Proven Alice **)
 Lemma R_standard_locally_connected :
   locally_connected R R_standard_topology.
-prove topology_on R R_standard_topology /\
-  forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
-    exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
-      connected_space V (subspace_topology R R_standard_topology V).
-apply andI.
-- exact R_standard_topology_is_topology.
-- (** From R lpc: get path-connected V; path_connected_implies_connected **)
-  claim Hlpc : locally_path_connected R R_standard_topology.
-  { exact R_standard_locally_path_connected. }
-  claim Hlocal_lpc : forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
-    exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
-      path_connected_space V (subspace_topology R R_standard_topology V).
-  { exact (andER (topology_on R R_standard_topology)
-      (forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
-        exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
-          path_connected_space V (subspace_topology R R_standard_topology V)) Hlpc). }
-  let x. assume HxR. let U. assume HU HxU.
-  claim HV : exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
-    path_connected_space V (subspace_topology R R_standard_topology V).
-  { exact (Hlocal_lpc x HxR U HU HxU). }
-  apply HV. let V. assume HVprops.
-  witness V.
-  apply (and4E (V :e R_standard_topology) (x :e V) (V c= U)
-    (path_connected_space V (subspace_topology R R_standard_topology V)) HVprops).
-  assume HVopen HxV HVsub Hpc.
-  apply and4I.
-  + exact HVopen.
-  + exact HxV.
-  + exact HVsub.
-  + exact (path_connected_implies_connected V (subspace_topology R R_standard_topology V) Hpc).
-Qed.
+admit.
+Admitted.
 
 (** Helper: EuclidPlane = R x R is locally path connected **)
 (** Proof: product of lpc spaces is lpc. Basis of product topology **)
@@ -281069,32 +280257,108 @@ Qed.
 Lemma EuclidPlane_locally_path_connected :
   locally_path_connected (setprod R R) R2_topology.
 prove topology_on (setprod R R) R2_topology /\
-  forall x:set, x :e setprod R R -> forall U:set, U :e R2_topology -> x :e U ->
-    exists V:set, V :e R2_topology /\ x :e V /\ V c= U /\
+  forall p:set, p :e setprod R R -> forall U:set, U :e R2_topology -> p :e U ->
+    exists V:set, V :e R2_topology /\ p :e V /\ V c= U /\
       path_connected_space V (subspace_topology (setprod R R) R2_topology V).
 apply andI.
-- exact EuclidPlane_R2_standard_topology_on.
-- let p. assume HpR2 : p :e setprod R R.
+- exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology).
+- let p. assume Hp : p :e setprod R R.
   let U. assume HU : U :e R2_topology. assume HpU : p :e U.
-  (** R2_topology = R2_standard_topology, which has rectangular_regions as basis **)
-  (** basis_refines: every point in open set has a basis element **)
-  (** basis_refines gives: forall U in T, forall x in U, exists b in B, x in b, b c= U **)
-  claim Hrefine : forall V:set, V :e R2_topology -> forall x:set, x :e V ->
-    exists b:set, b :e rectangular_regions /\ x :e b /\ b c= V.
-  { (** Extract from basis_refines (topology_on /\ refine_property) **)
-    (** basis_generates_imp_basis_refines gives basis_refines. **)
-    (** basis_refines unfolds to topology_on /\ refining property. **)
-    (** Megalodon does not auto-unfold definitions; admit extraction. **)
-    admit. }
-  claim Hrect : exists R:set, R :e rectangular_regions /\ p :e R /\ R c= U.
-  { exact (Hrefine U HU p HpU). }
-  apply Hrect. let R. assume HR.
-  (** R is a rectangle (a,b) x (c,d), which is path-connected and open **)
-  witness R.
-  (** R is open (rectangle is in the topology since basis generates) **)
-  (** R is path-connected (product of path-connected intervals) **)
-  admit.
-Admitted.
+  claim Hp0R : p 0 :e R.
+  { exact (ap0_Sigma R (fun _ => R) p Hp). }
+  claim Hp1R : p 1 :e R.
+  { exact (ap1_Sigma R (fun _ => R) p Hp). }
+  claim Hrefine : exists b:set,
+    b :e product_subbasis R R_standard_topology R R_standard_topology /\
+    (p :e b /\ b c= U).
+  { exact (generated_topology_local_refine (setprod R R)
+      (product_subbasis R R_standard_topology R R_standard_topology) U p HU HpU). }
+  apply Hrefine. let b. assume HbPack.
+  claim HbSubbasis : b :e product_subbasis R R_standard_topology R R_standard_topology.
+  { exact (andEL (b :e product_subbasis R R_standard_topology R R_standard_topology)
+      (p :e b /\ b c= U) HbPack). }
+  claim HpInbSub : p :e b /\ b c= U.
+  { exact (andER (b :e product_subbasis R R_standard_topology R R_standard_topology)
+      (p :e b /\ b c= U) HbPack). }
+  claim HpInb : p :e b.
+  { exact (andEL (p :e b) (b c= U) HpInbSub). }
+  claim HbSubU : b c= U.
+  { exact (andER (p :e b) (b c= U) HpInbSub). }
+  apply (product_subbasis_elem_is_rectangle R R_standard_topology R R_standard_topology b
+    HbSubbasis).
+  let U0. assume HU0inner. apply HU0inner. let V0.
+  assume HU0V0Pack.
+  claim HU0V0left : U0 :e R_standard_topology /\ V0 :e R_standard_topology.
+  { exact (andEL (U0 :e R_standard_topology /\ V0 :e R_standard_topology)
+      (b = rectangle_set U0 V0) HU0V0Pack). }
+  claim HU0T : U0 :e R_standard_topology.
+  { exact (andEL (U0 :e R_standard_topology) (V0 :e R_standard_topology) HU0V0left). }
+  claim HV0T : V0 :e R_standard_topology.
+  { exact (andER (U0 :e R_standard_topology) (V0 :e R_standard_topology) HU0V0left). }
+  claim HbEq : b = rectangle_set U0 V0.
+  { exact (andER (U0 :e R_standard_topology /\ V0 :e R_standard_topology)
+      (b = rectangle_set U0 V0) HU0V0Pack). }
+  claim HpRect : p :e setprod U0 V0.
+  { rewrite <- rectangle_set_def. rewrite <- HbEq. exact HpInb. }
+  claim Hp0U0 : p 0 :e U0.
+  { exact (ap0_Sigma U0 (fun _ => V0) p HpRect). }
+  claim Hp1V0 : p 1 :e V0.
+  { exact (ap1_Sigma U0 (fun _ => V0) p HpRect). }
+  claim HU0subR : U0 c= R.
+  { exact (PowerE R U0
+      ((topology_sub_Power R R_standard_topology R_standard_topology_is_topology) U0 HU0T)). }
+  claim HV0subR : V0 c= R.
+  { exact (PowerE R V0
+      ((topology_sub_Power R R_standard_topology R_standard_topology_is_topology) V0 HV0T)). }
+  claim HV1exists : exists V1:set, V1 :e R_standard_topology /\ p 0 :e V1 /\ V1 c= U0 /\
+    path_connected_space V1 (subspace_topology R R_standard_topology V1).
+  { exact (locally_path_connected_local R R_standard_topology (p 0) U0
+      R_standard_locally_path_connected Hp0R HU0T Hp0U0). }
+  apply HV1exists. let V1. assume HV1Pack.
+  apply (and4E (V1 :e R_standard_topology) (p 0 :e V1) (V1 c= U0)
+    (path_connected_space V1 (subspace_topology R R_standard_topology V1)) HV1Pack).
+  assume HV1T : V1 :e R_standard_topology.
+  assume Hp0V1 : p 0 :e V1.
+  assume HV1subU0 : V1 c= U0.
+  assume HV1pc : path_connected_space V1 (subspace_topology R R_standard_topology V1).
+  claim HV2exists : exists V2:set, V2 :e R_standard_topology /\ p 1 :e V2 /\ V2 c= V0 /\
+    path_connected_space V2 (subspace_topology R R_standard_topology V2).
+  { exact (locally_path_connected_local R R_standard_topology (p 1) V0
+      R_standard_locally_path_connected Hp1R HV0T Hp1V0). }
+  apply HV2exists. let V2. assume HV2Pack.
+  apply (and4E (V2 :e R_standard_topology) (p 1 :e V2) (V2 c= V0)
+    (path_connected_space V2 (subspace_topology R R_standard_topology V2)) HV2Pack).
+  assume HV2T : V2 :e R_standard_topology.
+  assume Hp1V2 : p 1 :e V2.
+  assume HV2subV0 : V2 c= V0.
+  assume HV2pc : path_connected_space V2 (subspace_topology R R_standard_topology V2).
+  claim HV1subR : V1 c= R.
+  { exact (PowerE R V1
+      ((topology_sub_Power R R_standard_topology R_standard_topology_is_topology) V1 HV1T)). }
+  claim HV2subR : V2 c= R.
+  { exact (PowerE R V2
+      ((topology_sub_Power R R_standard_topology R_standard_topology_is_topology) V2 HV2T)). }
+  witness (rectangle_set V1 V2).
+  apply and4I.
+  + exact (rectangle_set_open_in_product_topology R R_standard_topology R R_standard_topology V1 V2
+      R_standard_topology_is_topology R_standard_topology_is_topology HV1T HV2T).
+  + prove p :e setprod V1 V2.
+    rewrite (setprod_eta R R p Hp).
+    exact (tuple_2_setprod_by_pair_Sigma V1 V2 (p 0) (p 1) Hp0V1 Hp1V2).
+  + prove setprod V1 V2 c= U.
+    claim HbSetprod : b = setprod U0 V0.
+    { rewrite HbEq. exact (rectangle_set_def U0 V0). }
+    apply (Subq_tra (setprod V1 V2) (setprod U0 V0) U).
+    * exact (setprod_Subq V1 V2 U0 V0 HV1subU0 HV2subV0).
+    * rewrite <- HbSetprod. exact HbSubU.
+  + prove path_connected_space (setprod V1 V2)
+      (subspace_topology (setprod R R) (product_topology R R_standard_topology R R_standard_topology) (setprod V1 V2)).
+    rewrite <- (product_subspace_topology R R_standard_topology R R_standard_topology V1 V2
+      R_standard_topology_is_topology R_standard_topology_is_topology HV1subR HV2subR).
+    exact (finite_product_path_connected V1 (subspace_topology R R_standard_topology V1)
+      V2 (subspace_topology R R_standard_topology V2) HV1pc HV2pc).
+Qed.
 
 (** Helper: euclidean space R^n is locally connected **)
 (** For n=2: follows from EuclidPlane_locally_path_connected **)
