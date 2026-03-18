@@ -6392,12 +6392,18 @@ Discussion:
     locally_path_connected E Te to the universal covering hypothesis is the
     minimal fix that makes the forward direction provable (covering maps are
     local homeomorphisms, so lpc of E implies lpc of B).
+  - 1773821445 | Bob: YES. Confirmed in current `Math_Background.mg` that reverse
+    direction currently needs an unprovable nonemptiness extraction, while forward
+    direction depends on an admitted bridge from universal-cover existence to base lpc.
+    The proposed strengthening on the left is an appropriate repair for this file's
+    formal definitions.
 
 Approvals:
   - 1773657706 | Alice: YES
   - | Bob:
   - | Charlie:
   - | Dave:
+  - 1773821445 | Bob: YES
 
 Result:
 
