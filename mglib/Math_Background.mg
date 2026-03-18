@@ -280152,10 +280152,83 @@ Lemma S2_complement_simple_closed_curve_exactly_two_components :
 admit.
 Admitted.
 
+(** Helper: R is locally path connected **)
+(** Proof: open balls in R (with bounded metric, r < 1) are open intervals. **)
+(** Open intervals are path connected (open_interval_path_connected, proved). **)
+(** So every point has arbitrarily small path-connected open neighborhoods. **)
+Lemma R_standard_locally_path_connected :
+  locally_path_connected R R_standard_topology.
+prove topology_on R R_standard_topology /\
+  forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
+    exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+      path_connected_space V (subspace_topology R R_standard_topology V).
+apply andI.
+- exact R_standard_topology_is_topology.
+- let x. assume HxR : x :e R.
+  let U. assume HU : U :e R_standard_topology. assume HxU : x :e U.
+  (** Find ball B(x,r) c= U with r < 1, then B = open interval, which is pc **)
+  (** U is open in metric topology **)
+  claim HUmet : U :e metric_topology R R_bounded_metric.
+  { rewrite metric_topology_R_bounded_metric_eq_R_standard_topology_early. exact HU. }
+  (** Get a ball inside U **)
+  claim Hball_exists : exists r:set, r :e R /\ Rlt 0 r /\ open_ball R R_bounded_metric x r c= U.
+  { admit. }
+  (** Get r < 1 ball inside U **)
+  claim Hball_small : exists r:set, r :e R /\ Rlt 0 r /\ Rlt r 1 /\ open_ball R R_bounded_metric x r c= U.
+  { admit. }
+  apply Hball_small. let r. assume Hr.
+  apply (and4E (r :e R) (Rlt 0 r) (Rlt r 1) (open_ball R R_bounded_metric x r c= U) Hr).
+  assume HrR : r :e R.
+  assume Hr_pos : Rlt 0 r.
+  assume Hr_lt1 : Rlt r 1.
+  assume Hball_sub : open_ball R R_bounded_metric x r c= U.
+  set B := open_ball R R_bounded_metric x r.
+  witness B.
+  apply and4I.
+  + (** B is open in R_standard_topology **)
+    exact (open_ball_R_bounded_metric_in_R_standard_topology_early x r HxR HrR Hr_pos).
+  + (** x in B: center of open ball **)
+    exact (center_in_open_ball R R_bounded_metric x r R_bounded_metric_is_metric_on HxR Hr_pos).
+  + (** B c= U **)
+    exact Hball_sub.
+  + (** B is path-connected **)
+    (** B = open_interval (x-r) (x+r) for r < 1 **)
+    claim Hbeq : B = open_interval (add_SNo x (minus_SNo r)) (add_SNo x r).
+    { exact (open_ball_R_bounded_metric_eq_open_interval x r HxR HrR Hr_pos Hr_lt1). }
+    rewrite Hbeq.
+    (** open_interval is path connected **)
+    claim HxmrR : add_SNo x (minus_SNo r) :e R.
+    { exact (real_add_SNo x HxR (minus_SNo r) (real_minus_SNo r HrR)). }
+    claim HxprR : add_SNo x r :e R.
+    { exact (real_add_SNo x HxR r HrR). }
+    claim Hlt : Rlt (add_SNo x (minus_SNo r)) (add_SNo x r).
+    { admit. }
+    (** Need path_connected in subspace of R **)
+    claim Hpc : path_connected_space (open_interval (add_SNo x (minus_SNo r)) (add_SNo x r))
+      (subspace_topology R R_standard_topology (open_interval (add_SNo x (minus_SNo r)) (add_SNo x r))).
+    { exact (open_interval_path_connected (add_SNo x (minus_SNo r)) (add_SNo x r) HxmrR HxprR Hlt). }
+    exact Hpc.
+Admitted.
+
+(** Helper: R is locally connected (from lpc) **)
+Lemma R_standard_locally_connected :
+  locally_connected R R_standard_topology.
+admit.
+Admitted.
+
+(** Helper: EuclidPlane = R x R is locally path connected **)
+(** Proof: product of lpc spaces is lpc. Basis of product topology **)
+(** consists of products of open sets, and product of path-connected **)
+(** sets is path-connected (finite_product_path_connected, proved). **)
+Lemma EuclidPlane_locally_path_connected :
+  locally_path_connected (setprod R R) R2_topology.
+admit.
+Admitted.
+
 (** Helper: euclidean space R^n is locally connected **)
-(** Proof: R^n is locally m-euclidean (identity chart). **)
-(** Each point has open balls which are convex hence connected. **)
-(** This is the fundamental gap - needs convex path connectivity in R^n. **)
+(** For n=2: follows from EuclidPlane_locally_path_connected **)
+(** via homeomorphism EuclidPlane -> euclidean_space 2 **)
+(** General case: product of lpc spaces **)
 Lemma euclidean_space_locally_connected : forall n:set,
   n :e omega -> locally_connected (euclidean_space n) (euclidean_topology n).
 admit.
