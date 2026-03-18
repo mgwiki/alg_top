@@ -287034,8 +287034,32 @@ Qed.
 Lemma R2_sub_nonzero_of_ne : forall z w:set,
   z :e setprod R R -> w :e setprod R R -> z <> w ->
   R2_sub z w <> (0, 0).
-admit.
-Admitted.
+let z w. assume Hz Hw Hne.
+assume Heq : R2_sub z w = (0, 0).
+claim Hz0R : z 0 :e R. { exact (EuclidPlane_xcoord_in_R z Hz). }
+claim Hz1R : z 1 :e R. { exact (EuclidPlane_ycoord_in_R z Hz). }
+claim Hw0R : w 0 :e R. { exact (EuclidPlane_xcoord_in_R w Hw). }
+claim Hw1R : w 1 :e R. { exact (EuclidPlane_ycoord_in_R w Hw). }
+claim Hz0S : SNo (z 0). { exact (real_SNo (z 0) Hz0R). }
+claim Hz1S : SNo (z 1). { exact (real_SNo (z 1) Hz1R). }
+claim Hw0S : SNo (w 0). { exact (real_SNo (w 0) Hw0R). }
+claim Hw1S : SNo (w 1). { exact (real_SNo (w 1) Hw1R). }
+claim Hfst : add_SNo (z 0) (minus_SNo (w 0)) = 0.
+{ exact (pair_eq_fst (add_SNo (z 0) (minus_SNo (w 0))) (add_SNo (z 1) (minus_SNo (w 1))) 0 0 Heq). }
+claim Hsnd : add_SNo (z 1) (minus_SNo (w 1)) = 0.
+{ exact (pair_eq_snd (add_SNo (z 0) (minus_SNo (w 0))) (add_SNo (z 1) (minus_SNo (w 1))) 0 0 Heq). }
+claim Hfst0 : z 0 = w 0.
+{ apply (add_SNo_cancel_R (z 0) (minus_SNo (w 0)) (w 0) Hz0S (SNo_minus_SNo (w 0) Hw0S) Hw0S).
+  rewrite Hfst. rewrite (add_SNo_minus_SNo_rinv (w 0) Hw0S). reflexivity. }
+claim Hsnd1 : z 1 = w 1.
+{ apply (add_SNo_cancel_R (z 1) (minus_SNo (w 1)) (w 1) Hz1S (SNo_minus_SNo (w 1) Hw1S) Hw1S).
+  rewrite Hsnd. rewrite (add_SNo_minus_SNo_rinv (w 1) Hw1S). reflexivity. }
+claim HzEta : z = (z 0, z 1). { exact (setprod_eta R R z Hz). }
+claim HwEta : w = (w 0, w 1). { exact (setprod_eta R R w Hw). }
+apply Hne.
+rewrite HzEta. rewrite HwEta.
+exact (tuple_2_eq (z 0) (z 1) (w 0) (w 1) Hfst0 Hsnd1).
+Qed.
 
 (** Helper: for the translation homotopy G(x,t)=g(x)-alpha(t), **)
 (** if alpha avoids image(g), then G avoids 0. **)
@@ -287053,14 +287077,17 @@ let x t. assume Hx Ht.
 assume Heq : R2_sub (apply_fun g x) (apply_fun alpha t) = (0, 0).
 (** R2_sub z w = 0 implies z = w **)
 claim Hzw : apply_fun g x = apply_fun alpha t.
-{ admit. }
+{ apply (dneg (apply_fun g x = apply_fun alpha t)).
+  assume Hne : ~(apply_fun g x = apply_fun alpha t).
+  exact (R2_sub_nonzero_of_ne (apply_fun g x) (apply_fun alpha t)
+    (Hg x Hx) (Ha t Ht) Hne Heq). }
 claim Hin : apply_fun alpha t :e image_of g A.
 { (** apply_fun g x :e image_of g A by ReplI, then rewrite with Hzw **)
   claim HgxInImg : apply_fun g x :e image_of g A.
   { exact (ReplI A (fun y:set => apply_fun g y) x Hx). }
   rewrite <- Hzw. exact HgxInImg. }
 exact (Havoid t Ht Hin).
-Admitted.
+Qed.
 
 (** Helper: for the scaling homotopy H(x,t)=t.g(x)-p, **)
 (** if g(A) c= ball B and p not in B, then H avoids 0. **)
