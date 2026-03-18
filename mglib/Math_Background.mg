@@ -279755,7 +279755,33 @@ apply andI.
   apply Hx0_exists. let x0. assume Hx0 : x0 :e Sn 2 :\: C.
   (** x0 is also in S^2-{p,q} since C contains {p,q} **)
   claim Hx0_in_Xpq : x0 :e Sn 2 :\: Sing p :\: Sing q.
-  { admit. }
+  { (** x0 in S^2-C, and {p,q} c= C, so x0 not in {p} or {q} **)
+    claim HxSn : x0 :e Sn 2. { exact (setminusE1 (Sn 2) C x0 Hx0). }
+    claim HxnC : x0 /:e C. { exact (setminusE2 (Sn 2) C x0 Hx0). }
+    (** p in C (via C1 c= C and p in C1 cap C2) **)
+    claim HpC : p :e C.
+    { (** p in UPair p q = C1 cap C2, so p in C1, so p in C **)
+      claim HpC1C2 : p :e C1 :/\: C2.
+      { rewrite Hinter. exact (UPairI1 p q). }
+      exact (HC1sub p (binintersectE1 C1 C2 p HpC1C2)). }
+    claim HqC : q :e C.
+    { (** q in UPair p q = C1 cap C2, so q in C1, so q in C **)
+      claim HqC1C2 : q :e C1 :/\: C2.
+      { rewrite Hinter. exact (UPairI2 p q). }
+      exact (HC1sub q (binintersectE1 C1 C2 q HqC1C2)). }
+    claim Hxnp : x0 /:e Sing p.
+    { assume Hxp : x0 :e Sing p.
+      claim Hxeqp : x0 = p. { exact (SingE p x0 Hxp). }
+      claim Hx0inC : x0 :e C. { rewrite Hxeqp. exact HpC. }
+      exact (HxnC Hx0inC). }
+    claim Hxnq : x0 /:e Sing q.
+    { assume Hxq : x0 :e Sing q.
+      claim Hxeqq : x0 = q. { exact (SingE q x0 Hxq). }
+      claim Hx0inC : x0 :e C. { rewrite Hxeqq. exact HqC. }
+      exact (HxnC Hx0inC). }
+    exact (setminusI (Sn 2 :\: Sing p) (Sing q) x0
+      (setminusI (Sn 2) (Sing p) x0 HxSn Hxnp)
+      Hxnq). }
   (** The topology on X = S^2-{p,q} **)
   (** U = S^2-C1 and V = S^2-C2 are open in S^2, hence in X **)
   (** X = U union V because any x in X is either not in C1 or not in C2 **)
