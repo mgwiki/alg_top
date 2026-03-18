@@ -1,6 +1,6 @@
 (** Balance Alice 9223 **)
-(** Balance Bob 5979 **)
-(** Balance Charlie 920 **)
+(** Balance Bob 6232 **)
+(** Balance Charlie 1008 **)
 (** Balance Dave 2498 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -132554,7 +132554,7 @@ Qed.
 (** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
+(** Collected Bob 132 **)
 (** Proven Bob **)
 Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
   continuous_map S1 S1_topology X Tx h ->
@@ -157051,7 +157051,7 @@ Qed.
 (** from S55 Exercise 2 (line 1043 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is nulhomotopic, then h has a fixed point and h maps some point x to its antipode -x. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Collected Charlie 88 **)
 Definition s55_S1_antipode_map : set :=
   graph S1 (fun z:set => (minus_SNo (z 0), minus_SNo (z 1))).
 
@@ -214271,15 +214271,15 @@ apply (xm
     - exact HxSn2.
     - exact Heq.
   }
-  exact (FalseE
-    (thm57_2_no_antipode_preserving_S2_S1
-      (thm57_3_antipode_free_implies_antipode_preserving_map
-        f
-        Hf
-        Hneq))
-    (exists x:set, x :e Sn 2 /\
-      apply_fun f x = apply_fun f (Rn_negate 3 x))).
-Admitted.
+	  exact (FalseE
+	    (thm57_2_no_antipode_preserving_S2_S1
+	      (thm57_3_antipode_free_implies_antipode_preserving_map
+	        f
+	        Hf
+	        Hneq))
+	    (exists x:set, x :e Sn 2 /\
+	      apply_fun f x = apply_fun f (Rn_negate 3 x))).
+	Admitted.
 
 (** Infrastructure: bounded polygonal region in R^2 (abstract -- a bounded Jordan-measurable set) **)
 (** We abstract this as a bounded measurable subset of R^2 with an area function **)
@@ -214716,13 +214716,13 @@ apply andI.
       (apply_fun f1 (Rn_negate 3 u))
       (apply_fun f2 (Rn_negate 3 u))
       HpairEq).
-- exact (pair_eq_snd
-    (apply_fun f1 u)
-    (apply_fun f2 u)
-    (apply_fun f1 (Rn_negate 3 u))
-    (apply_fun f2 (Rn_negate 3 u))
-    HpairEq).
-Admitted. (** depends on unproved thm57_3_borsuk_ulam_S2 **)
+	- exact (pair_eq_snd
+	    (apply_fun f1 u)
+	    (apply_fun f2 u)
+	    (apply_fun f1 (Rn_negate 3 u))
+	    (apply_fun f2 (Rn_negate 3 u))
+	    HpairEq).
+	Admitted. (** depends on unproved thm57_3_borsuk_ulam_S2 **)
 
 (** from S57 Exercise 1 (line 1257 in algtop.tex) **)
 (** LATEX VERSION: At any given moment, there exist antipodal points on Earth **)
@@ -214748,7 +214748,46 @@ Theorem ex57_2_antipodal_distinct_surjective : forall g:set,
   (forall x:set, x :e Sn 2 ->
     apply_fun g x <> apply_fun g (Rn_negate 3 x)) ->
   surjective_map (Sn 2) (Sn 2) g.
-admit.
+let g.
+assume Hg.
+assume Hneq.
+claim Hgfun : function_on g (Sn 2) (Sn 2).
+{
+  exact (continuous_map_function_on
+    (Sn 2)
+    (Sn_topology 2)
+    (Sn 2)
+    (Sn_topology 2)
+    g
+    Hg).
+}
+claim HsurjWit : forall y:set, y :e Sn 2 ->
+  exists x:set, x :e Sn 2 /\ apply_fun g x = y.
+{
+  let y.
+  assume Hy.
+  apply xm (exists x:set, x :e Sn 2 /\ apply_fun g x = y).
+  - assume Hex.
+    exact Hex.
+  - assume HnoPreimage.
+    claim Hfalse : False.
+    {
+      (** Pending direct-book step:
+          If y is not in the image of g, build the translated map
+          f(x) = g(x) - y : S^2 -> R^2 and apply Borsuk-Ulam to f,
+          then contradict Hneq. **)
+      admit.
+    }
+    exact (FalseE
+      Hfalse
+      (exists x:set, x :e Sn 2 /\ apply_fun g x = y)).
+}
+exact (andI
+  (function_on g (Sn 2) (Sn 2))
+  (forall y:set, y :e Sn 2 ->
+    exists x:set, x :e Sn 2 /\ apply_fun g x = y)
+  Hgfun
+  HsurjWit).
 Admitted.
 
 (** from S57 Exercise 3 (line 1259 in algtop.tex) **)
@@ -260206,7 +260245,7 @@ Admitted.
 (** from S59 Exercise 3(a) (line 1617 in algtop.tex) **)
 (** LATEX VERSION: R^1 and R^n are not homeomorphic if n > 1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Collected Bob 88 **)
 (** Proven Bob **)
 Theorem R_minus_singleton_not_connected : forall a:set,
   a :e R ->
@@ -400463,13 +400502,306 @@ Admitted.
 (** from S79 Exercise 2(b) (line 4913 in algtop.tex) **)
 (** LATEX VERSION: There exists a continuous map of the torus into S^1 that is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Bob 33 **)
+(** Proven Bob **)
 Theorem ex79_2b_torus_to_S1_not_nulhomotopic :
   exists f:set,
     continuous_map torus torus_topology S1 S1_topology f /\
     ~(nulhomotopic torus torus_topology S1 S1_topology f).
-admit.
-Admitted.
+set f := projection_map1 S1 S1.
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun q:set =>
+      add_SNo (mul_SNo (q 0) (q 0))
+        (mul_SNo (q 1) (q 1)) = 1)).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (subspace_topology_is_topology
+    (setprod R R)
+    R2_topology
+    S1
+    HtopR2
+    HS1subR2).
+}
+claim HtopT : topology_on torus torus_topology.
+{
+  exact (product_topology_is_topology
+    S1
+    S1_topology
+    S1
+    S1_topology
+    HtopS1
+    HtopS1).
+}
+claim HprojPack :
+  continuous_map torus torus_topology S1 S1_topology (projection_map1 S1 S1) /\
+  continuous_map torus torus_topology S1 S1_topology (projection_map2 S1 S1).
+{
+  exact (projection_maps_continuous
+    S1
+    S1_topology
+    S1
+    S1_topology
+    HtopS1
+    HtopS1).
+}
+claim HfCont : continuous_map torus torus_topology S1 S1_topology f.
+{
+  exact (andEL
+    (continuous_map torus torus_topology S1 S1_topology (projection_map1 S1 S1))
+    (continuous_map torus torus_topology S1 S1_topology (projection_map2 S1 S1))
+    HprojPack).
+}
+claim HfFun : function_on f torus S1.
+{
+  exact (continuous_map_function_on
+    torus
+    torus_topology
+    S1
+    S1_topology
+    f
+    HfCont).
+}
+witness f.
+apply andI.
+- exact HfCont.
+- assume HnulF.
+  claim HidNul :
+    nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun z:set => z)).
+  {
+    apply HnulF.
+    let y0.
+    assume Hy0Pack.
+    claim Hy0S1 : y0 :e S1.
+    {
+      exact (andEL
+        (y0 :e S1)
+        (homotopic_maps torus torus_topology S1 S1_topology f (const_fun torus y0))
+        Hy0Pack).
+    }
+    claim HfHom :
+      homotopic_maps torus torus_topology S1 S1_topology f (const_fun torus y0).
+    {
+      exact (andER
+        (y0 :e S1)
+        (homotopic_maps torus torus_topology S1 S1_topology f (const_fun torus y0))
+        Hy0Pack).
+    }
+    claim Hb0S1 : S1_basepoint :e S1.
+    {
+      exact S1_basepoint_in_S1_early.
+    }
+    set idS1 := graph S1 (fun z:set => z).
+    set cS1 := const_fun S1 S1_basepoint.
+    set inc := pair_map S1 idS1 cS1.
+    claim HidS1Cont : continuous_map S1 S1_topology S1 S1_topology idS1.
+    {
+      exact (identity_continuous
+        S1
+        S1_topology
+        HtopS1).
+    }
+    claim HcS1Cont : continuous_map S1 S1_topology S1 S1_topology cS1.
+    {
+      exact (const_fun_continuous
+        S1
+        S1_topology
+        S1
+        S1_topology
+        S1_basepoint
+        HtopS1
+        HtopS1
+        Hb0S1).
+    }
+    claim HincCont : continuous_map S1 S1_topology torus torus_topology inc.
+    {
+      exact (maps_into_products
+        S1
+        S1_topology
+        S1
+        S1_topology
+        S1
+        S1_topology
+        idS1
+        cS1
+        HidS1Cont
+        HcS1Cont).
+    }
+    claim HincFun : function_on inc S1 torus.
+    {
+      exact (continuous_map_function_on
+        S1
+        S1_topology
+        torus
+        torus_topology
+        inc
+        HincCont).
+    }
+    claim HincHom :
+      homotopic_maps S1 S1_topology torus torus_topology inc inc.
+    {
+      exact (Lemma_51_1_homotopy_refl
+        S1
+        S1_topology
+        torus
+        torus_topology
+        inc
+        HincCont).
+    }
+    claim HcompHom :
+      homotopic_maps S1 S1_topology S1 S1_topology
+        (compose_fun S1 inc f)
+        (compose_fun S1 inc (const_fun torus y0)).
+    {
+      exact (ex51_1_composition_homotopic
+        S1
+        S1_topology
+        torus
+        torus_topology
+        S1
+        S1_topology
+        inc
+        inc
+        f
+        (const_fun torus y0)
+        HincHom
+        HfHom).
+    }
+    claim HcompIf :
+      compose_fun S1 inc f = graph S1 (fun z:set => z).
+    {
+      apply (total_function_space_extensional
+        S1
+        S1
+        (compose_fun S1 inc f)
+        (graph S1 (fun z:set => z))).
+      - exact (compose_fun_in_total_function_space
+          S1
+          torus
+          S1
+          inc
+          f
+          HincFun
+          HfFun).
+      - exact (graph_in_total_function_space
+          S1
+          S1
+          (fun z:set => z)
+          (fun z Hz => Hz)).
+      - let z.
+        assume HzS1.
+        rewrite (compose_fun_apply
+          S1
+          inc
+          f
+          z
+          HzS1).
+        rewrite (projection1_apply
+          S1
+          S1
+          (apply_fun inc z)
+          (HincFun z HzS1)).
+        rewrite (pair_map_apply
+          S1
+          S1
+          S1
+          idS1
+          cS1
+          z
+          HzS1).
+        rewrite tuple_2_0_eq.
+        rewrite (apply_fun_graph
+          S1
+          (fun z0:set => z0)
+          z
+          HzS1).
+        reflexivity.
+    }
+    claim HcompConst :
+      compose_fun S1 inc (const_fun torus y0) = const_fun S1 y0.
+    {
+      apply (total_function_space_extensional
+        S1
+        S1
+        (compose_fun S1 inc (const_fun torus y0))
+        (const_fun S1 y0)).
+      - claim HconstTorusFun : function_on (const_fun torus y0) torus S1.
+        {
+          exact (total_function_on_function_on
+            (const_fun torus y0)
+            torus
+            S1
+            (const_fun_total_function_on
+              torus
+              S1
+              y0
+              Hy0S1)).
+        }
+        exact (compose_fun_in_total_function_space
+          S1
+          torus
+          S1
+          inc
+          (const_fun torus y0)
+          HincFun
+          HconstTorusFun).
+      - exact (graph_in_total_function_space
+          S1
+          S1
+          (fun z:set => y0)
+          (fun z Hz => Hy0S1)).
+      - let z.
+        assume HzS1.
+        rewrite (compose_fun_apply
+          S1
+          inc
+          (const_fun torus y0)
+          z
+          HzS1).
+        rewrite (const_fun_apply
+          torus
+          y0
+          (apply_fun inc z)
+          (HincFun z HzS1)).
+        rewrite (const_fun_apply
+          S1
+          y0
+          z
+          HzS1).
+        reflexivity.
+    }
+    claim HnulComp :
+      nulhomotopic S1 S1_topology S1 S1_topology (compose_fun S1 inc f).
+    {
+      prove exists y':set, y' :e S1 /\
+        homotopic_maps S1 S1_topology S1 S1_topology
+          (compose_fun S1 inc f)
+          (const_fun S1 y').
+      witness y0.
+      apply andI.
+      - exact Hy0S1.
+      - rewrite <- HcompConst.
+        exact HcompHom.
+    }
+    rewrite <- HcompIf.
+    exact HnulComp.
+  }
+  exact (cor55_4b_identity_S1_not_nulhomotopic
+    HidNul).
+Qed.
 
 (** from S79 Exercise 3 (line 4914 in algtop.tex) **)
 (** LATEX VERSION: p-star(pi1(E,e0)) is normal in pi1(B,b0) iff for every **)
@@ -416785,7 +417117,6 @@ apply and3I.
     (** Full construction requires ~100 lines including the lpc bridge **)
     admit.
 Admitted.
-
 (** from S80 Exercise 1(b) (line 5013 in algtop.tex) **)
 (** LATEX VERSION: Give an example where q and r are covering maps but p = r o q is not. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
@@ -419079,6 +419410,9 @@ Qed.
 (** Bridge: continuous map is directly in total_function_space (admitted until graphify bridge is proven) **)
 Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f -> f :e total_function_space X Y.
+let X Tx Y Ty f.
+assume Hcont.
+admit.
 Admitted.
 
 (** Bridge: CTG members that agree pointwise are set-equal **)
@@ -419090,6 +419424,9 @@ Theorem ctg_pointwise_eq_implies_set_eq_early :
   h2 :e covering_transformation_group E Te B Tb p ->
   (forall x:set, x :e E -> apply_fun h1 x = apply_fun h2 x) ->
   h1 = h2.
+let E Te B Tb p h1 h2.
+assume Hcov Hh1G Hh2G Hpw.
+admit.
 Admitted.
 
 (** Infrastructure: covering transformation transport property **)
@@ -426506,8 +426843,8 @@ apply and3I.
     (** Both g(y) and y are in Sx with same p-value, so by injectivity g(y) = y **)
     claim Hgy_eq_y : apply_fun g y = y.
     { exact (Hp_inj_Sx (apply_fun g y) y Hgy_Sx HySx Hpeq). }
-    (** But g has no fixed points **)
-    exact (Hno_fixed g HgG HgNeq y HyX Hgy_eq_y).
+      (** But g has no fixed points **)
+exact (Hno_fixed g HgG HgNeq y HyX Hgy_eq_y).
 Admitted.
 
 (** Helper: orbit_map restricted to a p-slice is injective when G = CTG **)
@@ -480802,6 +481139,290 @@ exact (SepI
   HloopAtY).
 Qed.
 
+(** helper for S84.3: a reduced edge path in a subspace graph upgrades to the ambient graph. **)
+(** Proven Bob **)
+Theorem reduced_edge_path_subspace_upgrade_to_ambient :
+  forall T Tx Y ArcsT ArcsY n path_seq x0:set,
+  general_linear_graph Y (subspace_topology T Tx Y) ArcsY ->
+  Y c= T ->
+  ArcsY c= ArcsT ->
+  reduced_edge_path Y (subspace_topology T Tx Y) ArcsY n path_seq x0 ->
+  reduced_edge_path T Tx ArcsT n path_seq x0.
+let T Tx Y ArcsT ArcsY n path_seq x0.
+assume HglgY HYsubT HArcsSub HredY.
+claim HepY : edge_path Y (subspace_topology T Tx Y) ArcsY n path_seq x0.
+{ exact (reduced_edge_path_edge_path Y (subspace_topology T Tx Y) ArcsY n path_seq x0 HredY). }
+claim HnOm : n :e omega.
+{ exact (reduced_edge_path_n_in_omega Y (subspace_topology T Tx Y) ArcsY n path_seq x0 HredY). }
+claim HfunT : function_on path_seq n (setprod (setprod T T) (Power T)).
+{
+  let i.
+  assume Hi.
+  apply (reduced_edge_path_edge_decomposition
+    Y
+    (subspace_topology T Tx Y)
+    ArcsY
+    n
+    path_seq
+    x0
+    i
+    HredY
+    Hi).
+  let E.
+  assume HE.
+  apply HE.
+  let ini.
+  assume Hini.
+  apply Hini.
+  let fin.
+  assume Hfin.
+  claim Happ : apply_fun path_seq i = ((ini, fin), E).
+  {
+    exact (andEL
+      (apply_fun path_seq i = ((ini, fin), E))
+      (oriented_edge Y (subspace_topology T Tx Y) ArcsY E ini fin)
+      Hfin).
+  }
+  claim HoriY : oriented_edge Y (subspace_topology T Tx Y) ArcsY E ini fin.
+  {
+    exact (andER
+      (apply_fun path_seq i = ((ini, fin), E))
+      (oriented_edge Y (subspace_topology T Tx Y) ArcsY E ini fin)
+      Hfin).
+  }
+  claim HEArcsY : E :e ArcsY.
+  { exact (oriented_edge_in_arcs Y (subspace_topology T Tx Y) ArcsY E ini fin HoriY). }
+  claim HEsubY : E c= Y.
+  {
+    exact (andEL
+      (E c= Y)
+      (arc E (subspace_topology Y (subspace_topology T Tx Y) E))
+      (general_linear_graph_arc_data
+        Y
+        (subspace_topology T Tx Y)
+        ArcsY
+        E
+        HglgY
+        HEArcsY)).
+  }
+  claim HEsubT : E c= T.
+  {
+    let z.
+    assume HzE.
+    exact (HYsubT z (HEsubY z HzE)).
+  }
+  claim HendY : end_points_of_arc E (subspace_topology Y (subspace_topology T Tx Y) E) ini fin.
+  {
+    exact (oriented_edge_endpoints
+      Y
+      (subspace_topology T Tx Y)
+      ArcsY
+      E
+      ini
+      fin
+      HoriY).
+  }
+  claim HiniE : ini :e E.
+  {
+    exact (end_points_of_arc_left_in_set
+      E
+      (subspace_topology Y (subspace_topology T Tx Y) E)
+      ini
+      fin
+      HendY).
+  }
+  claim HfinE : fin :e E.
+  {
+    exact (end_points_of_arc_right_in_set
+      E
+      (subspace_topology Y (subspace_topology T Tx Y) E)
+      ini
+      fin
+      HendY).
+  }
+  claim HiniT : ini :e T.
+  { exact (HEsubT ini HiniE). }
+  claim HfinT : fin :e T.
+  { exact (HEsubT fin HfinE). }
+  claim HESubPowT : E :e Power T.
+  { exact (PowerI T E HEsubT). }
+  rewrite Happ.
+  exact (tuple_2_setprod_by_pair_Sigma
+    (setprod T T)
+    (Power T)
+    (ini, fin)
+    E
+    (tuple_2_setprod_by_pair_Sigma T T ini fin HiniT HfinT)
+    HESubPowT).
+}
+claim HdecT :
+  forall i:set, i :e n ->
+    exists E ini fin:set,
+      apply_fun path_seq i = ((ini, fin), E) /\
+      oriented_edge T Tx ArcsT E ini fin.
+{
+  let i.
+  assume Hi.
+  apply (reduced_edge_path_edge_decomposition
+    Y
+    (subspace_topology T Tx Y)
+    ArcsY
+    n
+    path_seq
+    x0
+    i
+    HredY
+    Hi).
+  let E.
+  assume HE.
+  apply HE.
+  let ini.
+  assume Hini.
+  apply Hini.
+  let fin.
+  assume Hfin.
+  claim Happ : apply_fun path_seq i = ((ini, fin), E).
+  {
+    exact (andEL
+      (apply_fun path_seq i = ((ini, fin), E))
+      (oriented_edge Y (subspace_topology T Tx Y) ArcsY E ini fin)
+      Hfin).
+  }
+  claim HoriY : oriented_edge Y (subspace_topology T Tx Y) ArcsY E ini fin.
+  {
+    exact (andER
+      (apply_fun path_seq i = ((ini, fin), E))
+      (oriented_edge Y (subspace_topology T Tx Y) ArcsY E ini fin)
+      Hfin).
+  }
+  claim HEArcsY : E :e ArcsY.
+  { exact (oriented_edge_in_arcs Y (subspace_topology T Tx Y) ArcsY E ini fin HoriY). }
+  claim HEArcsT : E :e ArcsT.
+  { exact (HArcsSub E HEArcsY). }
+  claim HEsubY : E c= Y.
+  {
+    exact (andEL
+      (E c= Y)
+      (arc E (subspace_topology Y (subspace_topology T Tx Y) E))
+      (general_linear_graph_arc_data
+        Y
+        (subspace_topology T Tx Y)
+        ArcsY
+        E
+        HglgY
+        HEArcsY)).
+  }
+  claim HeqTopE :
+    subspace_topology Y (subspace_topology T Tx Y) E = subspace_topology T Tx E.
+  { exact (subspace_topology_transitive_weak T Tx Y E HEsubY). }
+  claim HendY : end_points_of_arc E (subspace_topology Y (subspace_topology T Tx Y) E) ini fin.
+  {
+    exact (oriented_edge_endpoints
+      Y
+      (subspace_topology T Tx Y)
+      ArcsY
+      E
+      ini
+      fin
+      HoriY).
+  }
+  claim HendT : end_points_of_arc E (subspace_topology T Tx E) ini fin.
+  {
+    rewrite <- HeqTopE.
+    exact HendY.
+  }
+  witness E.
+  witness ini.
+  witness fin.
+  apply andI.
+  - exact Happ.
+  - exact (andI
+      (E :e ArcsT)
+      (end_points_of_arc E (subspace_topology T Tx E) ini fin)
+      HEArcsT
+      HendT).
+}
+claim HstartT :
+  n <> 0 ->
+  (apply_fun path_seq 0) 0 0 = x0.
+{
+  assume Hn0.
+  exact (reduced_edge_path_start_vertex
+    Y
+    (subspace_topology T Tx Y)
+    ArcsY
+    n
+    path_seq
+    x0
+    HredY
+    Hn0).
+}
+claim HstepT :
+  forall i:set, i :e n -> ordsucc i :e n ->
+    (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0.
+{
+  let i.
+  assume Hi His.
+  exact (reduced_edge_path_consecutive_match
+    Y
+    (subspace_topology T Tx Y)
+    ArcsY
+    n
+    path_seq
+    x0
+    i
+    HredY
+    Hi
+    His).
+}
+claim HepT : edge_path T Tx ArcsT n path_seq x0.
+{
+  exact (and5I
+    (n :e omega)
+    (function_on path_seq n (setprod (setprod T T) (Power T)))
+    (forall i:set, i :e n ->
+      exists E ini fin:set,
+        apply_fun path_seq i = ((ini, fin), E) /\
+        oriented_edge T Tx ArcsT E ini fin)
+    (n <> 0 -> (apply_fun path_seq 0) 0 0 = x0)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0)
+    HnOm
+    HfunT
+    HdecT
+    HstartT
+    HstepT).
+}
+claim HnobackT :
+  forall i:set, i :e n -> ordsucc i :e n ->
+    ~((apply_fun path_seq i) 1 = (apply_fun path_seq (ordsucc i)) 1 /\
+      (apply_fun path_seq i) 0 0 = (apply_fun path_seq (ordsucc i)) 0 1 /\
+      (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0).
+{
+  let i.
+  assume Hi His.
+  exact (reduced_edge_path_no_backtrack
+    Y
+    (subspace_topology T Tx Y)
+    ArcsY
+    n
+    path_seq
+    x0
+    i
+    HredY
+    Hi
+    His).
+}
+exact (andI
+  (edge_path T Tx ArcsT n path_seq x0)
+  (forall i:set, i :e n -> ordsucc i :e n ->
+    ~((apply_fun path_seq i) 1 = (apply_fun path_seq (ordsucc i)) 1 /\
+      (apply_fun path_seq i) 0 0 = (apply_fun path_seq (ordsucc i)) 0 1 /\
+      (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0))
+  HepT
+  HnobackT).
+Qed.
+
 	(** helper for S84.3: nontrivial loop class in a finite union of arcs yields a closed reduced edge path. **)
 	(** This is the remaining missing bridge needed for thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths. **)
 		(** NOTE: The natural version of this bridge assumes the basepoint is a graph vertex. **)
@@ -481616,10 +482237,75 @@ Qed.
 				    rewrite <- HincClsYeqGraph.
 				    exact HincId.
 				  }
-				  (** TODO:
-				      use HnoPath to force the inclusion-image class from Y to be trivial,
-				      contradicting HincClsYNontrivial. **)
-				  admit.
+				  claim HnoPathY :
+				    ~(exists n path_seq:set,
+				      n :e omega /\ n <> 0 /\
+				      reduced_edge_path Y (subspace_topology T Tx Y) Arcs' n path_seq x0 /\
+				      (exists j:set, j :e n /\ ordsucc j /:e n /\
+				        (apply_fun path_seq j) 0 1 = x0)).
+				  {
+				    assume HexY.
+				    apply HexY.
+				    let n.
+				    assume HnPack.
+				    apply HnPack.
+				    let path_seq.
+				    assume HpackY.
+				    apply (and4E
+				      (n :e omega)
+				      (n <> 0)
+				      (reduced_edge_path Y (subspace_topology T Tx Y) Arcs' n path_seq x0)
+				      (exists j:set, j :e n /\ ordsucc j /:e n /\
+				        (apply_fun path_seq j) 0 1 = x0)
+				      HpackY).
+				    assume HnOm HnNe HredY HclosedY.
+				    claim HredT : reduced_edge_path T Tx ArcsT n path_seq x0.
+				    {
+				      exact (reduced_edge_path_subspace_upgrade_to_ambient
+				        T
+				        Tx
+				        Y
+				        ArcsT
+				        Arcs'
+				        n
+				        path_seq
+				        x0
+				        HglgY
+				        HYsubT
+				        HsubArcs
+				        HredY).
+				    }
+				    apply HnoPath.
+				    witness n.
+				    witness path_seq.
+				    exact (and4I
+				      (n :e omega)
+				      (n <> 0)
+				      (reduced_edge_path T Tx ArcsT n path_seq x0)
+				      (exists j:set, j :e n /\ ordsucc j /:e n /\
+				        (apply_fun path_seq j) 0 1 = x0)
+				      HnOm
+				      HnNe
+				      HredT
+				      HclosedY).
+				  }
+				  claim HincClsYId :
+				    apply_fun (induced_homomorphism Y (subspace_topology T Tx Y) x0 T Tx x0 incY) clsY
+				    = fundamental_group_id T Tx x0.
+				  {
+				    (** Remaining gap:
+				        derive triviality of the inclusion image from HnoPathY. **)
+				    admit.
+				  }
+				  claim Hcontra : False.
+				  { exact (HincClsYNontrivial HincClsYId). }
+				  exact (FalseE
+				    Hcontra
+				    (exists n path_seq:set,
+				      n :e omega /\ n <> 0 /\
+				      reduced_edge_path T Tx ArcsT n path_seq x0 /\
+				      (exists j:set, j :e n /\ ordsucc j /:e n /\
+				        (apply_fun path_seq j) 0 1 = x0))).
 				Admitted.
 
 	Theorem loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs :
@@ -481954,7 +482640,410 @@ claim HexArc : exists A:set, A :e Arcs' /\ x0 :e A.
 	  (** Remaining non-vertex case:
 	      move the loop class to a graph vertex in the finite subgraph Y and
 	      transfer the resulting closed reduced edge path back to T. **)
-	  admit.
+	  claim HvertexBridge :
+	    forall v g Arcs0:set,
+	      v :e graph_vertices T Tx ArcsT ->
+	      g :e loop_space T Tx v ->
+	      Arcs0 c= ArcsT ->
+	      finite Arcs0 ->
+	      image_of_fun g unit_interval c= Union Arcs0 ->
+	      path_homotopy_class_loop T Tx v g <> fundamental_group_id T Tx v ->
+	      exists n path_seq:set,
+	        n :e omega /\ n <> 0 /\
+	        reduced_edge_path T Tx ArcsT n path_seq v /\
+	        (exists j:set, j :e n /\ ordsucc j /:e n /\
+	          (apply_fun path_seq j) 0 1 = v).
+	  {
+	    let v.
+	    let g.
+	    let Arcs0.
+	    assume HvV HgLoop Hsub0 Hfin0 Himg0 Hne0.
+	    exact (loop_space_nontrivial_class_has_closed_reduced_edge_path_in_finite_union_of_arcs_at_vertex
+	      T
+	      Tx
+	      ArcsT
+	      Arcs0
+	      v
+	      g
+	      Hglg
+	      HvV
+	      HgLoop
+	      Hsub0
+	      Hfin0
+	      Himg0
+	      Hne0).
+	  }
+	  claim HexVertexLoop :
+	    exists v g Arcs0:set,
+	      v :e graph_vertices T Tx ArcsT /\
+	      g :e loop_space T Tx v /\
+	      Arcs0 c= ArcsT /\ finite Arcs0 /\ image_of_fun g unit_interval c= Union Arcs0 /\
+	      path_homotopy_class_loop T Tx v g <> fundamental_group_id T Tx v.
+	  {
+	    apply HexArc.
+	    let A0.
+	    assume HA0pack.
+	    claim HA0Arcs' : A0 :e Arcs'.
+	    { exact (andEL (A0 :e Arcs') (x0 :e A0) HA0pack). }
+	    claim Hx0A0 : x0 :e A0.
+	    { exact (andER (A0 :e Arcs') (x0 :e A0) HA0pack). }
+	    claim HA0ArcsT : A0 :e ArcsT.
+	    { exact (HsubArcs A0 HA0Arcs'). }
+	    claim HA0Data : A0 c= T /\ arc A0 (subspace_topology T Tx A0).
+	    { exact (general_linear_graph_arc_data T Tx ArcsT A0 Hglg HA0ArcsT). }
+	    claim HA0subT : A0 c= T.
+	    { exact (andEL (A0 c= T) (arc A0 (subspace_topology T Tx A0)) HA0Data). }
+	    claim HarcA0 : arc A0 (subspace_topology T Tx A0).
+	    { exact (andER (A0 c= T) (arc A0 (subspace_topology T Tx A0)) HA0Data). }
+	    claim HepA0 :
+	      exists p0 q0:set, end_points_of_arc A0 (subspace_topology T Tx A0) p0 q0.
+	    { exact (arc_has_end_points_of_arc_pre A0 (subspace_topology T Tx A0) HarcA0). }
+	    apply HepA0.
+	    let p0.
+	    assume Hp0pack.
+	    apply Hp0pack.
+	    let q0.
+	    assume HendA0.
+	    set v := p0.
+	    claim HvEq : v = p0.
+	    { reflexivity. }
+	    claim HvA0 : v :e A0.
+	    {
+	      rewrite HvEq.
+	      exact (end_points_of_arc_left_in_set
+	        A0
+	        (subspace_topology T Tx A0)
+	        p0
+	        q0
+	        HendA0).
+	    }
+	    claim HvV : v :e graph_vertices T Tx ArcsT.
+	    {
+	      rewrite HvEq.
+	      exact (graph_vertices_intro_from_endpoint_left
+	        T
+	        Tx
+	        ArcsT
+	        A0
+	        p0
+	        q0
+	        Hglg
+	        HA0ArcsT
+	        HendA0).
+	    }
+	    claim HpcA0 : path_connected_space A0 (subspace_topology T Tx A0).
+	    { exact (arc_path_connected A0 (subspace_topology T Tx A0) HarcA0). }
+	    claim HexAlpha :
+	      exists alpha:set,
+	        path_between A0 x0 v alpha /\
+	        continuous_map unit_interval unit_interval_topology A0 (subspace_topology T Tx A0) alpha.
+	    {
+	      rewrite HvEq.
+	      exact (path_connected_space_has_path_between_continuous
+	        A0
+	        (subspace_topology T Tx A0)
+	        x0
+	        p0
+	        HpcA0
+	        Hx0A0
+	        (end_points_of_arc_left_in_set
+	          A0
+	          (subspace_topology T Tx A0)
+	          p0
+	          q0
+	          HendA0)).
+	    }
+	    apply HexAlpha.
+	    let alpha.
+	    assume HalphaPack.
+	    claim HalphaPB : path_between A0 x0 v alpha.
+	    { exact (andEL
+	        (path_between A0 x0 v alpha)
+	        (continuous_map unit_interval unit_interval_topology A0 (subspace_topology T Tx A0) alpha)
+	        HalphaPack). }
+	    claim HalphaContA : continuous_map unit_interval unit_interval_topology A0 (subspace_topology T Tx A0) alpha.
+	    { exact (andER
+	        (path_between A0 x0 v alpha)
+	        (continuous_map unit_interval unit_interval_topology A0 (subspace_topology T Tx A0) alpha)
+	        HalphaPack). }
+	    claim Halpha0 : apply_fun alpha 0 = x0.
+	    { exact (path_between_at_zero A0 x0 v alpha HalphaPB). }
+	    claim Halpha1 : apply_fun alpha 1 = v.
+	    { exact (path_between_at_one A0 x0 v alpha HalphaPB). }
+	    claim HalphaContT :
+	      continuous_map unit_interval unit_interval_topology T Tx alpha.
+	    {
+	      exact (continuous_map_range_expand
+	        unit_interval
+	        unit_interval_topology
+	        A0
+	        (subspace_topology T Tx A0)
+	        T
+	        Tx
+	        alpha
+	        HalphaContA
+	        HA0subT
+	        HtopT
+	        (eq_refl (subspace_topology T Tx A0))).
+	    }
+	    claim Hcls0Mem :
+	      path_homotopy_class_loop T Tx x0 f :e fundamental_group T Tx x0.
+	    { exact (path_homotopy_class_in_fundamental_group T Tx x0 f HfLoop). }
+	    claim HbcBij :
+	      bijection
+	        (fundamental_group T Tx x0)
+	        (fundamental_group T Tx v)
+	        (basepoint_change_map T Tx x0 v alpha).
+	    {
+	      exact (lemma52_1_basepoint_change_bijection
+	        T
+	        Tx
+	        x0
+	        v
+	        alpha
+	        HtopT
+	        HalphaContT
+	        Halpha0
+	        Halpha1).
+	    }
+	    set clsV := apply_fun (basepoint_change_map T Tx x0 v alpha)
+	      (path_homotopy_class_loop T Tx x0 f).
+	    claim HclsVMem : clsV :e fundamental_group T Tx v.
+	    {
+	      exact ((andEL
+	        (function_on
+	          (basepoint_change_map T Tx x0 v alpha)
+	          (fundamental_group T Tx x0)
+	          (fundamental_group T Tx v))
+	        (forall y:set, y :e fundamental_group T Tx v ->
+	          exists x:set, x :e fundamental_group T Tx x0 /\
+	            apply_fun (basepoint_change_map T Tx x0 v alpha) x = y /\
+	            (forall x':set, x' :e fundamental_group T Tx x0 ->
+	              apply_fun (basepoint_change_map T Tx x0 v alpha) x' = y -> x' = x))
+	        HbcBij)
+	        (path_homotopy_class_loop T Tx x0 f)
+	        Hcls0Mem).
+	    }
+	    claim Hx0idMem : fundamental_group_id T Tx x0 :e fundamental_group T Tx x0.
+	    {
+	      exact (group_e_in_G
+	        (fundamental_group T Tx x0)
+	        (fundamental_group_mult T Tx x0)
+	        (fundamental_group_id T Tx x0)
+	        (fundamental_group_inv T Tx x0)
+	        (fundamental_group_is_group T Tx x0 HtopT Hx0T)).
+	    }
+	    claim HclsVNe : clsV <> fundamental_group_id T Tx v.
+	    {
+	      assume HclsVId.
+	      claim HidImage :
+	        apply_fun (basepoint_change_map T Tx x0 v alpha)
+	          (fundamental_group_id T Tx x0)
+	        = fundamental_group_id T Tx v.
+	      {
+	        exact (basepoint_change_map_identity_on_id
+	          T
+	          Tx
+	          x0
+	          v
+	          alpha
+	          HtopT
+	          HalphaContT
+	          Halpha0
+	          Halpha1).
+	      }
+	      claim HimgEq :
+	        apply_fun (basepoint_change_map T Tx x0 v alpha)
+	          (path_homotopy_class_loop T Tx x0 f)
+	        = apply_fun (basepoint_change_map T Tx x0 v alpha)
+	          (fundamental_group_id T Tx x0).
+	      {
+	        rewrite HclsVId.
+	        rewrite <- HidImage.
+	        reflexivity.
+	      }
+	      claim HclsEqId :
+	        path_homotopy_class_loop T Tx x0 f = fundamental_group_id T Tx x0.
+	      {
+	        exact (bijection_inj
+	          (fundamental_group T Tx x0)
+	          (fundamental_group T Tx v)
+	          (basepoint_change_map T Tx x0 v alpha)
+	          (path_homotopy_class_loop T Tx x0 f)
+	          (fundamental_group_id T Tx x0)
+	          HbcBij
+	          Hcls0Mem
+	          Hx0idMem
+	          HimgEq).
+	      }
+	      exact (HneCls HclsEqId).
+	    }
+	    claim HexRepV :
+	      exists g Arcs0:set,
+	        g :e loop_space T Tx v /\
+	        clsV = path_homotopy_class_loop T Tx v g /\
+	        (Arcs0 c= ArcsT /\ finite Arcs0 /\ image_of_fun g unit_interval c= Union Arcs0).
+	    {
+	      exact (fundamental_group_member_representative_in_finite_union_of_arcs
+	        T
+	        Tx
+	        ArcsT
+	        v
+	        clsV
+	        Hglg
+	        HclsVMem).
+	    }
+	    apply HexRepV.
+	    let g.
+	    assume HgPack.
+	    apply HgPack.
+	    let Arcs0.
+	    assume HArcs0Pack.
+	    claim HgPair :
+	      g :e loop_space T Tx v /\
+	      clsV = path_homotopy_class_loop T Tx v g.
+	    {
+	      exact (andEL
+	        (g :e loop_space T Tx v /\ clsV = path_homotopy_class_loop T Tx v g)
+	        (Arcs0 c= ArcsT /\ finite Arcs0 /\ image_of_fun g unit_interval c= Union Arcs0)
+	        HArcs0Pack).
+	    }
+	    claim HgLoop : g :e loop_space T Tx v.
+	    {
+	      exact (andEL
+	        (g :e loop_space T Tx v)
+	        (clsV = path_homotopy_class_loop T Tx v g)
+	        HgPair).
+	    }
+	    claim HclsVEq :
+	      clsV = path_homotopy_class_loop T Tx v g.
+	    {
+	      exact (andER
+	        (g :e loop_space T Tx v)
+	        (clsV = path_homotopy_class_loop T Tx v g)
+	        HgPair).
+	    }
+	    claim HArcs0Data :
+	      Arcs0 c= ArcsT /\ finite Arcs0 /\ image_of_fun g unit_interval c= Union Arcs0.
+	    {
+	      exact (andER
+	        (g :e loop_space T Tx v /\ clsV = path_homotopy_class_loop T Tx v g)
+	        (Arcs0 c= ArcsT /\ finite Arcs0 /\ image_of_fun g unit_interval c= Union Arcs0)
+	        HArcs0Pack).
+	    }
+	    claim HgNe :
+	      path_homotopy_class_loop T Tx v g <> fundamental_group_id T Tx v.
+	    {
+	      assume HgId.
+	      apply HclsVNe.
+	      rewrite HclsVEq.
+	      exact HgId.
+	    }
+	    claim Hsub0' : Arcs0 c= ArcsT.
+	    {
+	      claim Hsubfin0' : Arcs0 c= ArcsT /\ finite Arcs0.
+	      {
+	        exact (andEL
+	          (Arcs0 c= ArcsT /\ finite Arcs0)
+	          (image_of_fun g unit_interval c= Union Arcs0)
+	          HArcs0Data).
+	      }
+	      exact (andEL
+	        (Arcs0 c= ArcsT)
+	        (finite Arcs0)
+	        Hsubfin0').
+	    }
+	    claim Hfin0' : finite Arcs0.
+	    {
+	      claim Hsubfin0' : Arcs0 c= ArcsT /\ finite Arcs0.
+	      {
+	        exact (andEL
+	          (Arcs0 c= ArcsT /\ finite Arcs0)
+	          (image_of_fun g unit_interval c= Union Arcs0)
+	          HArcs0Data).
+	      }
+	      exact (andER
+	        (Arcs0 c= ArcsT)
+	        (finite Arcs0)
+	        Hsubfin0').
+	    }
+	    claim Himg0' : image_of_fun g unit_interval c= Union Arcs0.
+	    {
+	      exact (andER
+	        (Arcs0 c= ArcsT /\ finite Arcs0)
+	        (image_of_fun g unit_interval c= Union Arcs0)
+	        HArcs0Data).
+	    }
+	    witness v.
+	    witness g.
+	    witness Arcs0.
+	    apply andI.
+	    - apply andI.
+	      + apply andI.
+	        * apply andI.
+	          { apply andI.
+	            - exact HvV.
+	            - exact HgLoop. }
+	          { exact Hsub0'. }
+	        * exact Hfin0'.
+	      + exact Himg0'.
+	    - exact HgNe.
+	  }
+	  claim HexClosedAtX0 :
+	    (exists v g Arcs0:set,
+	      v :e graph_vertices T Tx ArcsT /\
+	      g :e loop_space T Tx v /\
+	      Arcs0 c= ArcsT /\ finite Arcs0 /\ image_of_fun g unit_interval c= Union Arcs0 /\
+	      path_homotopy_class_loop T Tx v g <> fundamental_group_id T Tx v) ->
+	    exists n path_seq:set,
+	      n :e omega /\ n <> 0 /\
+	      reduced_edge_path T Tx ArcsT n path_seq x0 /\
+	      (exists j:set, j :e n /\ ordsucc j /:e n /\
+	        (apply_fun path_seq j) 0 1 = x0).
+	  {
+	    assume HexVG.
+	    apply HexVG.
+	    let v.
+	    assume HvPack.
+	    apply HvPack.
+	    let g.
+	    assume HgPack.
+	    apply HgPack.
+	    let Arcs0.
+	    assume HArcs0Pack.
+	    apply (and6E
+	      (v :e graph_vertices T Tx ArcsT)
+	      (g :e loop_space T Tx v)
+	      (Arcs0 c= ArcsT)
+	      (finite Arcs0)
+	      (image_of_fun g unit_interval c= Union Arcs0)
+	      (path_homotopy_class_loop T Tx v g <> fundamental_group_id T Tx v)
+	      HArcs0Pack).
+	    assume HvV HgLoop Hsub0 Hfin0 Himg0 HgNe.
+	    claim HexClosedV :
+	      exists n path_seq:set,
+	        n :e omega /\ n <> 0 /\
+	        reduced_edge_path T Tx ArcsT n path_seq v /\
+	        (exists j:set, j :e n /\ ordsucc j /:e n /\
+	          (apply_fun path_seq j) 0 1 = v).
+	    {
+	      exact (HvertexBridge
+	        v
+	        g
+	        Arcs0
+	        HvV
+	        HgLoop
+	        Hsub0
+	        Hfin0
+	        Himg0
+	        HgNe).
+	    }
+	    (** Remaining gap:
+	        transport the witness `HexClosedV` from basepoint v back to x0
+	        via a connecting path in T. **)
+	    admit.
+	  }
+	  exact (HexClosedAtX0 HexVertexLoop).
 	Admitted.
 
 (** helper for S84.3: no closed reduced edge path in a tree should force trivial pi1 at some basepoint. **)
@@ -482190,12 +483279,12 @@ apply andI.
         HconstFS
         HconstLoopAt).
     }
-    exact (path_homotopy_class_in_fundamental_group
-      T
-      (subspace_topology X Tx T)
-      x0
-      (constant_path x0)
-      HconstLoop).
+	    exact (path_homotopy_class_in_fundamental_group
+	      T
+	      (subspace_topology X Tx T)
+	      x0
+	      (constant_path x0)
+	      HconstLoop).
 Admitted.
 
 (** from S84 Thm 84.3 (line 5617 in algtop.tex): tree is simply connected **)
@@ -482367,9 +483456,9 @@ claim HsimpCore :
   }
   exact (HsimpFromNested
     HsimpNested).
-}
-exact HsimpCore.
-Admitted.
+	}
+	exact HsimpCore.
+	Admitted.
 
 (** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_component_obligation :
@@ -488709,6 +489798,16 @@ claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
 {
   admit.
 }
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax).
+}
 exact (thm84_4_forward_component_witness_from_component_obligations
   T
   ArcsT
@@ -488717,36 +489816,39 @@ exact (thm84_4_forward_component_witness_from_component_obligations
   Arcs
   A
   Hmeet
-  (thm84_4_forward_glg_obligation
+  (lemma84_2_tree_extension_general_linear_graph_part
     T
     ArcsT
     X
     Tx
     Arcs
     A
-    Hmax
+    Htree
     HA
-    Hnsub)
-  (thm84_4_forward_connected_obligation
+    Hnsub
+    Hmeet)
+  (lemma84_2_tree_extension_connected_part
     T
     ArcsT
     X
     Tx
     Arcs
     A
-    Hmax
+    Htree
     HA
-    Hnsub)
-  (thm84_4_forward_no_loop_obligation
+    Hnsub
+    Hmeet)
+  (lemma84_2_tree_extension_no_closed_reduced_edge_path_part
     T
     ArcsT
     X
     Tx
     Arcs
     A
-    Hmax
+    Htree
     HA
-    Hnsub)).
+    Hnsub
+    Hmeet)).
 (** blocked only on thm84_4_forward_meeting_obligation;
     the other three forward obligations now have explicit proof bodies. **)
 Admitted.
@@ -507766,7 +508868,46 @@ claim HoutsideFactorsRawExistenceForThm85_1GapH0 :
       reduced_word JH0 GfamH0 efamH0 n xs /\
       word_product multF eF xs n = x.
 {
-  admit. (** TODO S85.1 core gap: outside-factors nontrivial reduced-word existence in H. **)
+  let x.
+  assume HxH HxNe HxOutFactors.
+  claim Hambient :
+    exists n xs:set,
+      reduced_word J GfamF (graph J (fun _:set => eF)) n xs /\ n <> 0 /\
+      word_product multF eF xs n = x /\
+      (forall n' xs':set,
+        reduced_word J GfamF (graph J (fun _:set => eF)) n' xs' -> n' <> 0 ->
+        word_product multF eF xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+  {
+    exact (HambientReducedWordOnH
+      x
+      HxH
+      HxNe).
+  }
+  apply Hambient.
+  let n.
+  assume HnEx.
+  apply HnEx.
+  let xs.
+  assume HxsPack.
+  apply (and4E
+    (reduced_word J GfamF (graph J (fun _:set => eF)) n xs)
+    (n <> 0)
+    (word_product multF eF xs n = x)
+    (forall n' xs':set,
+      reduced_word J GfamF (graph J (fun _:set => eF)) n' xs' -> n' <> 0 ->
+      word_product multF eF xs' n' = x ->
+      n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))
+    HxsPack).
+  assume HredAmb HnNe HwpAmb HuniqAmb.
+  witness n.
+  witness xs.
+  apply andI.
+  - (** TODO S85.1 core gap: convert ambient reduced_word witness on J/GfamF to
+        a restricted reduced_word witness on JH0/GfamH0 using the outside-factors
+        hypothesis and factor-membership transfer. **)
+    admit.
+  - exact HwpAmb.
 }
 (** Remaining S85.1 core gap:
    complete Nielsen-Schreier: construct a Schreier-transformed generator system
@@ -509422,7 +510563,25 @@ assume HJeq.
 assume HcosetFin.
 assume HidxOmega.
 assume HidxEquip.
-admit. (** TODO S85.3 core gap: complete Schreier-rank derivation from explicit components. **)
+claim HrankData :
+  n :e omega /\ equip J (ordsucc n) /\
+  finite (right_coset_set F multF H) /\
+  subgroup_index H F multF eF invF :e omega /\
+  equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+{
+  exact (and5I
+    (n :e omega)
+    (equip J (ordsucc n))
+    (finite (right_coset_set F multF H))
+    (subgroup_index H F multF eF invF :e omega)
+    (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+    HnOmega
+    HJeq
+    HcosetFin
+    HidxOmega
+    HidxEquip).
+}
+admit. (** TODO S85.3 core gap: derive rank formula from bundled rank/index data HrankData. **)
 Admitted.
 
 (** Schreier-rank core packaged over bundled rank/index data. **)
@@ -509525,7 +510684,7 @@ exact (thm85_3_core_rank_from_components
   HcosetFin
   HidxOmega
   HidxEquip).
-Admitted.
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_from_components **)
 
 (** Build bundled rank/index data from explicit witness inputs. **)
 (** Proven Bob **)
@@ -515598,7 +516757,7 @@ exact (iffEL
       k
       HnPack
       HkPack))).
-Admitted.
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_from_rankdata **)
 
 (** Core Schreier-rank step at canonical subgroup_index cardinal. **)
 Theorem thm85_3_core_rank_at_subgroup_index :
@@ -515642,7 +516801,7 @@ exact (thm85_3_core_rank_from_rankdata
     HnOmega
     HJeq
     HcosetFin)).
-Admitted.
+Admitted. (** blocked: depends on admitted thm85_3_core_rank_from_rankdata **)
 
 Theorem thm85_3_core_rank_from_components_witness :
   forall F multF eF invF J gens H JH gensH n k:set,
@@ -537147,8 +538306,840 @@ Theorem ex85_2_infinite_index_subgroup :
       g = group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m)))} in
   subgroup_of H F multF eF invF /\
   ~finite (right_coset_set F multF H).
-admit.
-Admitted.
+let F multF eF invF J gens.
+assume Hfree.
+assume HJ2.
+let alpha.
+assume Halpha.
+set H := {g :e F | exists n:set, n :e int /\
+  ((n :e omega /\ g = group_power_nat multF eF (apply_fun gens alpha) n) \/
+   (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+    g = group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m)))}.
+claim HgrpF : group_structure F multF eF invF.
+{
+  apply (and4E
+    (group_structure F multF eF invF)
+    (function_on gens J F)
+    (forall beta:set, beta :e J ->
+      infinite_cyclic_subgroup F multF eF invF (apply_fun gens beta))
+    (free_product_of_subgroups F multF eF invF J
+      (graph J (fun beta:set =>
+        {g :e F | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat multF eF (apply_fun gens beta) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat multF eF (apply_fun invF (apply_fun gens beta)) (ordsucc m)))}))
+      (graph J (fun beta:set => eF)))
+    Hfree).
+  assume Hgrp _ _ _.
+  exact Hgrp.
+}
+claim HgensFn : function_on gens J F.
+{
+  apply (and4E
+    (group_structure F multF eF invF)
+    (function_on gens J F)
+    (forall beta:set, beta :e J ->
+      infinite_cyclic_subgroup F multF eF invF (apply_fun gens beta))
+    (free_product_of_subgroups F multF eF invF J
+      (graph J (fun beta:set =>
+        {g :e F | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat multF eF (apply_fun gens beta) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat multF eF (apply_fun invF (apply_fun gens beta)) (ordsucc m)))}))
+      (graph J (fun beta:set => eF)))
+    Hfree).
+  assume _ Hfn _ _.
+  exact Hfn.
+}
+claim HgenAlphaF : apply_fun gens alpha :e F.
+{
+  exact (HgensFn
+    alpha
+    Halpha).
+}
+claim HsubH : subgroup_of H F multF eF invF.
+{
+  exact (cyclic_generator_subgroup_is_subgroup
+    F
+    multF
+    eF
+    invF
+    (apply_fun gens alpha)
+    HgrpF
+    HgenAlphaF).
+}
+apply andI.
+- exact HsubH.
+- assume HcosetFin : finite (right_coset_set F multF H).
+  claim HsubHF : H c= F.
+  {
+    exact (subgroup_of_subset
+      H
+      F
+      multF
+      eF
+      invF
+      HsubH).
+  }
+  claim HeH : eF :e H.
+  {
+    exact (subgroup_of_unit
+      H
+      F
+      multF
+      eF
+      invF
+      HsubH).
+  }
+  claim HeF : eF :e F.
+  {
+    exact (HsubHF
+      eF
+      HeH).
+  }
+  claim HcosetMem :
+    right_coset multF H eF :e right_coset_set F multF H.
+  {
+    apply (iffER
+      (right_coset multF H eF :e right_coset_set F multF H)
+      (exists g:set, g :e F /\ right_coset multF H eF = right_coset multF H g)
+      (right_coset_set_mem
+        F
+        multF
+        H
+        (right_coset multF H eF))).
+    witness eF.
+    apply andI.
+    - exact HeF.
+    - reflexivity.
+  }
+  claim HcosetSetNe : right_coset_set F multF H <> Empty.
+  {
+    exact (elem_implies_nonempty
+      (right_coset_set F multF H)
+      (right_coset multF H eF)
+      HcosetMem).
+  }
+  claim HidxSpec :
+    subgroup_index H F multF eF invF :e omega /\
+    equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+  {
+    exact (subgroup_index_spec_from_finite
+      H
+      F
+      multF
+      eF
+      invF
+      HcosetFin).
+  }
+  claim HidxOmega : subgroup_index H F multF eF invF :e omega.
+  {
+    exact (andEL
+      (subgroup_index H F multF eF invF :e omega)
+      (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+      HidxSpec).
+  }
+  claim HidxEq :
+    equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+  {
+    exact (andER
+      (subgroup_index H F multF eF invF :e omega)
+      (equip (right_coset_set F multF H) (subgroup_index H F multF eF invF))
+      HidxSpec).
+  }
+  claim HidxNe0 : subgroup_index H F multF eF invF <> 0.
+  {
+    assume Hidx0.
+    claim HidxEq0 : equip (right_coset_set F multF H) 0.
+    {
+      rewrite <- Hidx0.
+      exact HidxEq.
+    }
+    claim HcosetEq0 : right_coset_set F multF H = 0.
+    {
+      apply (equip_0_Empty
+        (right_coset_set F multF H)).
+      exact HidxEq0.
+    }
+    exact (HcosetSetNe
+      HcosetEq0).
+  }
+  claim HidxPack :
+    subgroup_index H F multF eF invF :e omega /\
+    subgroup_index H F multF eF invF <> 0 /\
+    equip (right_coset_set F multF H) (subgroup_index H F multF eF invF).
+  {
+    apply and3I.
+    - exact HidxOmega.
+    - exact HidxNe0.
+    - exact HidxEq.
+  }
+  claim HrankWitness :
+    exists JH gensH:set,
+      free_group_with_generators H multF eF invF JH gensH /\
+      equip JH
+        (ordsucc
+          (mul_SNo
+            (subgroup_index H F multF eF invF)
+            (ordsucc 0))).
+  {
+    exact (thm85_3_free_gen_index_formula_from_components_nonzero_pack
+      F
+      multF
+      eF
+      invF
+      J
+      gens
+      Hfree
+      (ordsucc 0)
+      (omega_ordsucc
+        0
+        (nat_p_omega 0 nat_0))
+      H
+      HsubH
+      HJ2
+      (subgroup_index H F multF eF invF)
+      HidxPack).
+  }
+  apply HrankWitness.
+  let JH.
+  assume HJHEx : exists gensH:set,
+    free_group_with_generators H multF eF invF JH gensH /\
+    equip JH
+      (ordsucc
+        (mul_SNo
+          (subgroup_index H F multF eF invF)
+          (ordsucc 0))).
+  apply HJHEx.
+  let gensH.
+  assume HJHPack.
+  claim HfreeH :
+    free_group_with_generators H multF eF invF JH gensH.
+  {
+    exact (andEL
+      (free_group_with_generators H multF eF invF JH gensH)
+      (equip JH
+        (ordsucc
+          (mul_SNo
+            (subgroup_index H F multF eF invF)
+            (ordsucc 0))))
+      HJHPack).
+  }
+  claim HJHCard :
+    equip JH
+      (ordsucc
+        (mul_SNo
+          (subgroup_index H F multF eF invF)
+          (ordsucc 0))).
+  {
+    exact (andER
+      (free_group_with_generators H multF eF invF JH gensH)
+      (equip JH
+        (ordsucc
+          (mul_SNo
+            (subgroup_index H F multF eF invF)
+            (ordsucc 0))))
+      HJHPack).
+  }
+  claim HoneOmega : ordsucc 0 :e omega.
+  {
+    rewrite <- ordsucc_0_eq_1_nat.
+    exact (nat_p_omega
+      1
+      nat_1).
+  }
+  claim HmulOmega :
+    mul_SNo
+      (subgroup_index H F multF eF invF)
+      (ordsucc 0) :e omega.
+  {
+    exact (mul_SNo_In_omega
+      (subgroup_index H F multF eF invF)
+      HidxOmega
+      (ordsucc 0)
+      HoneOmega).
+  }
+  claim HrankCardOmega :
+    ordsucc
+      (mul_SNo
+        (subgroup_index H F multF eF invF)
+        (ordsucc 0)) :e omega.
+  {
+    exact (omega_ordsucc
+      (mul_SNo
+        (subgroup_index H F multF eF invF)
+        (ordsucc 0))
+      HmulOmega).
+  }
+  claim HrankCardFin :
+    finite
+      (ordsucc
+        (mul_SNo
+          (subgroup_index H F multF eF invF)
+          (ordsucc 0))).
+  {
+    exact (nat_finite
+      (ordsucc
+        (mul_SNo
+          (subgroup_index H F multF eF invF)
+          (ordsucc 0)))
+      (omega_nat_p
+        (ordsucc
+          (mul_SNo
+            (subgroup_index H F multF eF invF)
+            (ordsucc 0)))
+        HrankCardOmega)).
+  }
+  claim HJHFin : finite JH.
+  {
+    exact (equip_finite_transfer
+      JH
+      (ordsucc
+        (mul_SNo
+          (subgroup_index H F multF eF invF)
+          (ordsucc 0)))
+      HJHCard
+      HrankCardFin).
+  }
+  claim HgrpH : group_structure H multF eF invF.
+  {
+    exact (subgroup_inherits_group_structure
+      F
+      multF
+      eF
+      invF
+      H
+      HgrpF
+      HsubH).
+  }
+  claim HpowOneF :
+    group_power_nat multF eF (apply_fun gens alpha) 1 = apply_fun gens alpha.
+  {
+    apply (and6E
+      (function_on multF (setprod F F) F)
+      (function_on invF F F)
+      (eF :e F)
+      (forall x y z:set, x :e F -> y :e F -> z :e F ->
+        apply_fun multF (apply_fun multF (x, y), z) = apply_fun multF (x, apply_fun multF (y, z)))
+      (forall x:set, x :e F -> apply_fun multF (eF, x) = x /\ apply_fun multF (x, eF) = x)
+      (forall x:set, x :e F ->
+        apply_fun multF (x, apply_fun invF x) = eF /\ apply_fun multF (apply_fun invF x, x) = eF)
+      HgrpF).
+    assume HmultFfn HinvFfn HeFF HassocF HidF HinvLawF.
+    claim HS :
+      group_power_nat multF eF (apply_fun gens alpha) (ordsucc 0) =
+      apply_fun multF ((apply_fun gens alpha), group_power_nat multF eF (apply_fun gens alpha) 0).
+    {
+      exact (nat_primrec_S
+        eF
+        (fun _ r => apply_fun multF ((apply_fun gens alpha), r))
+        0
+        nat_0).
+    }
+    claim H0 :
+      group_power_nat multF eF (apply_fun gens alpha) 0 = eF.
+    {
+      exact (nat_primrec_0
+        eF
+        (fun _ r => apply_fun multF ((apply_fun gens alpha), r))).
+    }
+    rewrite <- ordsucc_0_eq_1_nat.
+    rewrite HS.
+    rewrite H0.
+    exact (andER
+      (apply_fun multF (eF, apply_fun gens alpha) = apply_fun gens alpha)
+      (apply_fun multF (apply_fun gens alpha, eF) = apply_fun gens alpha)
+      (HidF
+        (apply_fun gens alpha)
+        HgenAlphaF)).
+  }
+  claim HgenAlphaH :
+    apply_fun gens alpha :e H.
+  {
+    apply (SepI
+      F
+      (fun g:set => exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat multF eF (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m))))
+      (apply_fun gens alpha)
+      HgenAlphaF).
+    witness 1.
+    apply andI.
+    - exact (Subq_omega_int
+        1
+        (nat_p_omega 1 nat_1)).
+    - apply orIL.
+      apply andI.
+      + exact (nat_p_omega
+          1
+          nat_1).
+      + symmetry.
+        exact HpowOneF.
+  }
+  claim HgenOfH :
+    generator_of H multF eF invF (apply_fun gens alpha).
+  {
+    exact (andI
+      (apply_fun gens alpha :e H)
+      (forall g:set, g :e H ->
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat multF eF (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m))))
+      HgenAlphaH
+      (fun g HgH =>
+        SepE2
+          F
+          (fun g0:set => exists n:set, n :e int /\
+            ((n :e omega /\ g0 = group_power_nat multF eF (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g0 = group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m))))
+          g
+          HgH)).
+  }
+  claim HcycH : cyclic_group H multF eF invF.
+  {
+    exact (group_structure_and_generator_of_implies_cyclic_group
+      H
+      multF
+      eF
+      invF
+      (apply_fun gens alpha)
+      HgrpH
+      HgenOfH).
+  }
+  claim HinfAlphaF :
+    infinite_cyclic_subgroup F multF eF invF (apply_fun gens alpha).
+  {
+    apply (and4E
+      (group_structure F multF eF invF)
+      (function_on gens J F)
+      (forall beta:set, beta :e J ->
+        infinite_cyclic_subgroup F multF eF invF (apply_fun gens beta))
+      (free_product_of_subgroups F multF eF invF J
+        (graph J (fun beta:set =>
+          {g :e F | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat multF eF (apply_fun gens beta) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat multF eF (apply_fun invF (apply_fun gens beta)) (ordsucc m)))}))
+        (graph J (fun beta:set => eF)))
+      Hfree).
+    assume _ _ HinfFam _.
+    exact (HinfFam
+      alpha
+      Halpha).
+  }
+  claim HpowPosInH :
+    forall n:set, n :e omega ->
+      group_power_nat multF eF (apply_fun gens alpha) n :e H.
+  {
+    let n.
+    assume HnO.
+    apply (SepI
+      F
+      (fun g:set => exists n0:set, n0 :e int /\
+        ((n0 :e omega /\ g = group_power_nat multF eF (apply_fun gens alpha) n0) \/
+         (exists m:set, m :e omega /\ n0 = minus_SNo (ordsucc m) /\
+          g = group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m))))
+      (group_power_nat multF eF (apply_fun gens alpha) n)
+      (group_power_nat_closed_in_group
+        F
+        multF
+        eF
+        invF
+        (apply_fun gens alpha)
+        n
+        HgrpF
+        HgenAlphaF
+        HnO)).
+    witness n.
+    apply andI.
+    - exact (Subq_omega_int
+        n
+        HnO).
+    - apply orIL.
+      apply andI.
+      + exact HnO.
+      + reflexivity.
+  }
+  claim HpowNegInH :
+    forall m:set, m :e omega ->
+      group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m) :e H.
+  {
+    let m.
+    assume HmO.
+    claim HsmO : ordsucc m :e omega.
+    {
+      exact (omega_ordsucc
+        m
+        HmO).
+    }
+    claim HinvAlphaF : apply_fun invF (apply_fun gens alpha) :e F.
+    {
+      apply (and6E
+        (function_on multF (setprod F F) F)
+        (function_on invF F F)
+        (eF :e F)
+        (forall x y z:set, x :e F -> y :e F -> z :e F ->
+          apply_fun multF (apply_fun multF (x, y), z) = apply_fun multF (x, apply_fun multF (y, z)))
+        (forall x:set, x :e F -> apply_fun multF (eF, x) = x /\ apply_fun multF (x, eF) = x)
+        (forall x:set, x :e F ->
+          apply_fun multF (x, apply_fun invF x) = eF /\ apply_fun multF (apply_fun invF x, x) = eF)
+        HgrpF).
+      assume HmultFfn HinvFfn HeFF HassocF HidF HinvLawF.
+      exact (HinvFfn
+        (apply_fun gens alpha)
+        HgenAlphaF).
+    }
+    apply (SepI
+      F
+      (fun g:set => exists n0:set, n0 :e int /\
+        ((n0 :e omega /\ g = group_power_nat multF eF (apply_fun gens alpha) n0) \/
+         (exists m0:set, m0 :e omega /\ n0 = minus_SNo (ordsucc m0) /\
+          g = group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m0))))
+      (group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m))
+      (group_power_nat_closed_in_group
+        F
+        multF
+        eF
+        invF
+        (apply_fun invF (apply_fun gens alpha))
+        (ordsucc m)
+        HgrpF
+        HinvAlphaF
+        HsmO)).
+    witness (minus_SNo (ordsucc m)).
+    apply andI.
+    - exact (int_minus_SNo_omega
+        (ordsucc m)
+        HsmO).
+    - apply orIR.
+      witness m.
+      apply andI.
+      + apply andI.
+        * exact HmO.
+        * reflexivity.
+      + reflexivity.
+  }
+  claim HnontrivAlphaF :
+    ~(exists n:set, n :e omega /\ n <> 0 /\
+      group_power_nat multF eF (apply_fun gens alpha) n = eF).
+  {
+    apply (and4E
+      (apply_fun gens alpha :e F)
+      (forall n:set, n :e omega ->
+        group_power_nat multF eF (apply_fun gens alpha) n :e F)
+      (forall m:set, m :e omega ->
+        group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m) :e F)
+      (~(exists n:set, n :e omega /\ n <> 0 /\
+        group_power_nat multF eF (apply_fun gens alpha) n = eF))
+      HinfAlphaF).
+    assume HaF HpowPosF HpowNegF Hnontriv.
+    exact Hnontriv.
+  }
+  claim HinfH :
+    infinite_cyclic_subgroup H multF eF invF (apply_fun gens alpha).
+  {
+    exact (and4I
+      (apply_fun gens alpha :e H)
+      (forall n:set, n :e omega ->
+        group_power_nat multF eF (apply_fun gens alpha) n :e H)
+      (forall m:set, m :e omega ->
+        group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc m) :e H)
+      (~(exists n:set, n :e omega /\ n <> 0 /\
+        group_power_nat multF eF (apply_fun gens alpha) n = eF))
+      HgenAlphaH
+      HpowPosInH
+      HpowNegInH
+      HnontrivAlphaF).
+  }
+  claim HnonfinH : ~ finite H.
+  {
+    exact (infinite_cyclic_subgroup_nonfinite
+      H
+      multF
+      eF
+      invF
+      (apply_fun gens alpha)
+      HgrpH
+      HinfH).
+  }
+  set gens1 := graph (ordsucc 0) (fun _:set => apply_fun gens alpha).
+  claim Hgens1Fn : function_on gens1 (ordsucc 0) H.
+  {
+    claim Hgens1Total : total_function_on gens1 (ordsucc 0) H.
+    {
+      apply (total_function_on_graph
+        (ordsucc 0)
+        H
+        (fun _:set => apply_fun gens alpha)).
+      let i.
+      assume Hi1 : i :e ordsucc 0.
+      exact HgenAlphaH.
+    }
+    exact (total_function_on_function_on
+      gens1
+      (ordsucc 0)
+      H
+      Hgens1Total).
+  }
+  claim HfreeH1 :
+    free_group_with_generators H multF eF invF (ordsucc 0) gens1.
+  {
+    apply (iffER
+      (free_group_with_generators H multF eF invF (ordsucc 0) gens1)
+      (forall K multK eK invK:set,
+        group_structure K multK eK invK ->
+        forall ys:set, function_on ys (ordsucc 0) K ->
+          exists h:set,
+            group_homomorphism H multF K multK h /\
+            (forall i:set, i :e ordsucc 0 ->
+              apply_fun h (apply_fun gens1 i) = apply_fun ys i) /\
+            (forall h':set, group_homomorphism H multF K multK h' ->
+              (forall i:set, i :e ordsucc 0 ->
+                apply_fun h' (apply_fun gens1 i) = apply_fun ys i) ->
+              forall x:set, x :e H -> apply_fun h' x = apply_fun h x))
+      (lemma69_1_extension_free_group
+        H
+        multF
+        eF
+        invF
+        (ordsucc 0)
+        gens1
+        HgrpH
+        Hgens1Fn)).
+    let K multK eK invK.
+    assume HgrpK.
+    let ys.
+    assume Hys.
+    claim H0in1 : 0 :e ordsucc 0.
+    {
+      exact (nat_0_in_ordsucc
+        0
+        nat_0).
+    }
+    claim Hy0K : apply_fun ys 0 :e K.
+    {
+      exact (Hys
+        0
+        H0in1).
+    }
+    claim HcycUniv :
+      exists h:set,
+        group_homomorphism H multF K multK h /\
+        apply_fun h (apply_fun gens alpha) = apply_fun ys 0 /\
+        (forall h':set, group_homomorphism H multF K multK h' ->
+          apply_fun h' (apply_fun gens alpha) = apply_fun ys 0 ->
+          forall x:set, x :e H -> apply_fun h' x = apply_fun h x).
+    {
+      exact (infinite_cyclic_universal_property
+        H
+        multF
+        eF
+        invF
+        (apply_fun gens alpha)
+        K
+        multK
+        eK
+        invK
+        (apply_fun ys 0)
+        HgrpH
+        HcycH
+        HnonfinH
+        HgenOfH
+        HgrpK
+        Hy0K).
+    }
+    apply HcycUniv.
+    let h.
+    assume HhPack.
+    apply (and3E
+      (group_homomorphism H multF K multK h)
+      (apply_fun h (apply_fun gens alpha) = apply_fun ys 0)
+      (forall h':set, group_homomorphism H multF K multK h' ->
+        apply_fun h' (apply_fun gens alpha) = apply_fun ys 0 ->
+        forall x:set, x :e H -> apply_fun h' x = apply_fun h x)
+      HhPack).
+    assume HhHom HhGen HhUniq.
+    witness h.
+    apply and3I.
+    - exact HhHom.
+    - let i.
+      assume Hi1 : i :e ordsucc 0.
+      claim Hi0 : i = 0.
+      {
+        apply (ordsuccE
+          0
+          i
+          Hi1).
+        + assume HiE : i :e 0.
+          exact (EmptyE
+            i
+            HiE
+            (i = 0)).
+        + assume HiEq.
+          exact HiEq.
+      }
+      rewrite (apply_fun_graph
+        (ordsucc 0)
+        (fun _:set => apply_fun gens alpha)
+        i
+        Hi1).
+      rewrite HhGen.
+      rewrite Hi0.
+      reflexivity.
+    - let h'.
+      assume Hh'Hom.
+      assume Hh'OnGens.
+      claim Hh'Gen0 :
+        apply_fun h' (apply_fun gens1 0) = apply_fun ys 0.
+      {
+        exact (Hh'OnGens
+          0
+          H0in1).
+      }
+      claim Hgens10 :
+        apply_fun gens1 0 = apply_fun gens alpha.
+      {
+        exact (apply_fun_graph
+          (ordsucc 0)
+          (fun _:set => apply_fun gens alpha)
+          0
+          H0in1).
+      }
+      claim Hh'OnAlpha :
+        apply_fun h' (apply_fun gens alpha) = apply_fun ys 0.
+      {
+        claim Hh'At0Alpha :
+          apply_fun h' (apply_fun gens1 0) = apply_fun h' (apply_fun gens alpha).
+        {
+          rewrite Hgens10.
+          reflexivity.
+        }
+        exact (eq_i_tra
+          (apply_fun h' (apply_fun gens alpha))
+          (apply_fun h' (apply_fun gens1 0))
+          (apply_fun ys 0)
+          (eq_symm
+            (apply_fun h' (apply_fun gens1 0))
+            (apply_fun h' (apply_fun gens alpha))
+            Hh'At0Alpha)
+          Hh'Gen0).
+      }
+      let x.
+      assume HxH.
+      exact (HhUniq
+        h'
+        Hh'Hom
+        Hh'OnAlpha
+        x
+        HxH).
+  }
+  claim HrankOneCard : equip (ordsucc 0) JH.
+  {
+    exact (cor69_5_free_generators_well_defined
+      H
+      multF
+      eF
+      invF
+      (ordsucc 0)
+      JH
+      gens1
+      gensH
+      HfreeH1
+      HfreeH
+      (nat_finite
+        (ordsucc 0)
+        (nat_ordsucc
+          0
+          nat_0))
+      HJHFin).
+  }
+  claim HJHOneCard : equip JH (ordsucc 0).
+  {
+    exact (equip_sym
+      (ordsucc 0)
+      JH
+      HrankOneCard).
+  }
+  claim HrankEqOne :
+    ordsucc
+      (mul_SNo
+        (subgroup_index H F multF eF invF)
+        (ordsucc 0)) = ordsucc 0.
+  {
+    exact (equip_omega_eq
+      (ordsucc
+        (mul_SNo
+          (subgroup_index H F multF eF invF)
+          (ordsucc 0)))
+      (ordsucc 0)
+      HrankCardOmega
+      HoneOmega
+      (equip_tra
+        (ordsucc
+          (mul_SNo
+            (subgroup_index H F multF eF invF)
+            (ordsucc 0)))
+        JH
+        (ordsucc 0)
+        (equip_sym
+          JH
+          (ordsucc
+            (mul_SNo
+              (subgroup_index H F multF eF invF)
+              (ordsucc 0)))
+          HJHCard)
+        HJHOneCard)).
+  }
+  claim HmulEq0 :
+    mul_SNo
+      (subgroup_index H F multF eF invF)
+      (ordsucc 0) = 0.
+  {
+    exact (ordsucc_inj
+      (mul_SNo
+        (subgroup_index H F multF eF invF)
+        (ordsucc 0))
+      0
+      HrankEqOne).
+  }
+  claim HidxSNo : SNo (subgroup_index H F multF eF invF).
+  {
+    exact (omega_SNo
+      (subgroup_index H F multF eF invF)
+      HidxOmega).
+  }
+  claim HmulOneEq :
+    mul_SNo
+      (subgroup_index H F multF eF invF)
+      (ordsucc 0) =
+    subgroup_index H F multF eF invF.
+  {
+    exact (mul_SNo_oneR
+      (subgroup_index H F multF eF invF)
+      HidxSNo).
+  }
+  claim HidxEq0 : subgroup_index H F multF eF invF = 0.
+  {
+    exact (eq_i_tra
+      (subgroup_index H F multF eF invF)
+      (mul_SNo
+        (subgroup_index H F multF eF invF)
+        (ordsucc 0))
+      0
+      (eq_symm
+        (mul_SNo
+          (subgroup_index H F multF eF invF)
+          (ordsucc 0))
+        (subgroup_index H F multF eF invF)
+        HmulOneEq)
+      HmulEq0).
+  }
+	  exact (HidxNe0
+	    HidxEq0).
+	Admitted. (** depends on non-proved cor69_5_free_generators_well_defined **)
 
 (** from S85 Exercise 3 (line 5801 in algtop.tex) **)
 (** LATEX VERSION: Let p: R -> S^1 be the standard covering. Consider **)
