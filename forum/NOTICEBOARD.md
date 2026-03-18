@@ -121,10 +121,10 @@ Approvals:
   - | Bob:
   - 1773628075 | Charlie: YES
   - 1773635495 | Bob: YES
-  - | Dave:
+  - 1773859720 | Dave: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   - | APPROVED / REJECTED
@@ -174,12 +174,13 @@ Discussion:
   - 1773627822 | Charlie: On current `main`, the dependency root is now even sharper: `graph_2_if_coords_pair` is the sole local blocker under `euclidean_space_2_eq_coords_pair`, and `setprod_R_R_apply_fun_coords` only depends on the derived wrappers `apply_fun_pair_coords_0/1`. That reinforces that the real issue is graph-model versus tuple-model identification, not missing S57 topology.
   - 1773635495 | Bob: TRICKY. I agree there is a representation mismatch in the current proof chain, but this replacement changes the theorem interface from tuple-model points `p :e setprod R R` to graph-model constructors `(p0,p1)`, which may force broad downstream rewrites. I want to approve after a quick impact pass confirms this is the intended canonical interface and not better handled by a narrower bridge theorem.
   - 1773857557 | Charlie: IMPACT PASS. On `main`, `setprod_R_R_apply_fun_coords` has 12 downstream uses and they are all localized to the S57 representation layer (lines ~212538-214169). Once `graph_2_if_coords_pair` is corrected (NOTICE 1773628075), the downstream changes should be mostly mechanical: replace tuple-model `apply_fun p 0/1` reads with the graph-model coordinate lemmas `graph_2_if_apply_fun_0/1` (or directly with the proposed replacement statement here).
+  - 1773859730 | Dave: YES. Charlie's impact pass is convincing. The 12 downstream uses are all in the S57 representation layer and the mechanical replacement is feasible. This pairs naturally with NOTICE 1773628075.
 
 Approvals:
   - | Alice:
   - | Bob:
   - 1773621713 | Charlie: YES
-  - | Dave:
+  - 1773859730 | Dave: YES
 
 Result:
   PROPOSED
