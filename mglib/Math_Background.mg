@@ -415204,6 +415204,19 @@ apply andI.
   + exact HWpc.
 Qed.
 
+(** Proven Alice **)
+Lemma homeomorphism_preserves_lpc_right : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_path_connected X Tx ->
+  locally_path_connected Y Ty.
+let X Tx Y Ty f.
+assume Hhome HlpcX.
+claim Hinv : exists g:set, homeomorphism Y Ty X Tx g.
+{ exact (homeomorphism_inverse_is_homeomorphism_variant X Tx Y Ty f Hhome). }
+apply Hinv. let g. assume Hghome.
+exact (homeomorphism_preserves_lpc_left Y Ty X Tx g Hghome HlpcX).
+Qed.
+
 (** Old version with C parameter - kept for reference, false for C != X **)
 Lemma preimage_pc_under_homeomorphism_restrict :
   forall X Tx Y Ty f C Vpc:set,
