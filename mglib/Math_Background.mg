@@ -279357,13 +279357,26 @@ Theorem thm63_2_arc_nonseparation : forall D:set,
 let D.
 assume HD : D c= Sn 2.
 assume Harc : is_arc D (subspace_topology (Sn 2) (Sn_topology 2) D).
-(** First proof from textbook: D contractible -> nulhomotopic -> Borsuk -> connected **)
-(** Assume for contradiction that D separates S^2 **)
+(** Second proof (algtop.tex line 2141-2173): bisection argument. **)
+(** Does NOT need Borsuk or homotopy extension! Only needs 63.1. **)
+(** **)
+(** Assume a,b in S^2-D cannot be joined by path in S^2-D. **)
+(** Split D = D1 union D2 (two half-arcs meeting at midpoint d). **)
+(** X = S^2-{d}, U = S^2-D1, V = S^2-D2. **)
+(** X = U union V, U cap V = S^2-D (not path connected by assumption). **)
+(** Let A = path component of a, B = rest. A, B open (lpc). **)
+(** a can be joined to b in both U and V (since D1, D2 are proper subarcs). **)
+(** By Thm 63.1: pi_1(X) nontrivial. **)
+(** But X = S^2-{d} homeo R^2 which is simply connected. Contradiction. **)
+(** **)
+(** This shows a,b can be joined in at least one of S^2-D1, S^2-D2. **)
+(** Repeat bisection: get nested intervals I_n of length (1/2)^n, **)
+(** such that a,b cannot be joined in S^2-h(I_n). **)
+(** By compactness: I_n converge to point x. S^2-{h(x)} homeo R^2. **)
+(** Path alpha from a to b in S^2-{h(x)}. alpha(I) compact, closed, **)
+(** disjoint from h(x). By continuity: h(I_m) in epsilon-nbhd for large m. **)
+(** So alpha avoids h(I_m). Contradiction. **)
 assume Hsep : separates (Sn 2) (Sn_topology 2) D.
-(** separates means D c= Sn 2 /\ ~connected(Sn 2 - D) **)
-(** From ~connected, get two points a,b in different components of S^2-D **)
-(** D is contractible (arc homeo [0,1]). So inclusion j: D -> S^2-{a,b} nulhomotopic. **)
-(** j is injective. By Borsuk (62.2): a,b in same component. Contradiction. **)
 admit.
 Admitted.
 
