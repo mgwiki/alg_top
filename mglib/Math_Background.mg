@@ -416101,6 +416101,17 @@ apply set_ext.
   exact (path_component_transitive_axiom X Tx y x z HtopX HyX HxX HzX Hyx Hxz).
 Qed.
 
+(** Helper: path component is a subset of the space **)
+(** Proven Alice **)
+Lemma path_component_of_sub : forall X Tx x:set,
+  path_component_of X Tx x c= X.
+let X Tx x.
+exact (Sep_Subq X (fun y:set => exists p:set,
+  function_on p unit_interval X /\
+  continuous_map unit_interval unit_interval_topology X Tx p /\
+  apply_fun p 0 = x /\ apply_fun p 1 = y)).
+Qed.
+
 (** Proven Alice **)
 Theorem exists_homeomorphism_preserves_lpc_left :
   forall X Tx Y Ty:set,
