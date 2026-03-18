@@ -279699,14 +279699,29 @@ Admitted.
 (** JCT Step 2: boundary condition -- each point of C is in the boundary **)
 (** of each component. Uses: arc decomposition of simple closed curve, **)
 (** arc nonseparation (63.2), and the intermediate value theorem argument. **)
-(** Helper for step 2: closure(W) \ W is contained in C **)
-(** This is the easy direction: W is open in S^2, W c= S^2-C, **)
-(** so closure(W)\W c= S^2\W. And W c= S^2-C means C c= S^2\W. **)
-(** Actually, closure(W)\W c= S^2\(S^2-C) = C since W is a component of S^2-C. **)
-Lemma boundary_subset_C : forall C W:set,
+(** Helper for step 2: closure(W1) \ W1 is contained in C **)
+(** Uses: W2 is open and disjoint from W1, S^2-C = W1 union W2. **)
+(** So any x in S^2-C-W1 is in W2 (open), hence not a limit point of W1. **)
+Lemma boundary_subset_C : forall C W1 W2:set,
   C c= Sn 2 ->
-  W :e Sn_topology 2 -> W c= Sn 2 :\: C ->
-  closure_of (Sn 2) (Sn_topology 2) W :\: W c= C.
+  W1 :e Sn_topology 2 -> W2 :e Sn_topology 2 ->
+  W1 :/\: W2 = Empty ->
+  Sn 2 :\: C = W1 :\/: W2 ->
+  closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 c= C.
+let C W1 W2.
+assume HC : C c= Sn 2.
+assume HW1open : W1 :e Sn_topology 2.
+assume HW2open : W2 :e Sn_topology 2.
+assume Hdisj : W1 :/\: W2 = Empty.
+assume Hunion : Sn 2 :\: C = W1 :\/: W2.
+(** Let x in closure(W1) \ W1. Show x in C. **)
+let x. assume Hx : x :e closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
+(** x in closure(W1) means x in S^2 and every open nbhd of x meets W1. **)
+(** x not in W1. Need to show x in C. **)
+(** By contradiction: suppose x not in C. Then x in S^2-C = W1 union W2. **)
+(** Since x not in W1, x in W2. W2 is open. **)
+(** But then W2 is an open nbhd of x with W2 cap W1 = empty (by disjointness). **)
+(** This contradicts x in closure(W1). **)
 admit.
 Admitted.
 
@@ -279762,13 +279777,15 @@ apply andI.
 - (** closure(W1) \ W1 = C **)
   (** Both directions: subset C (easy) and C subset boundary (hard) **)
   claim Hsubset : closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 c= C.
-  { exact (boundary_subset_C C W1 HC HW1open HW1sub). }
+  { exact (boundary_subset_C C W1 W2 HC HW1open HW2open Hdisj Hunion). }
   claim Hsupset : C c= closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
   { exact (C_subset_boundary C W1 W2 HC Hscc HW1open HW2open Hdisj Hunion HW1ne HW2ne HW1conn HW2conn). }
   admit.
 - (** closure(W2) \ W2 = C - symmetric argument **)
   claim Hsubset : closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 c= C.
-  { exact (boundary_subset_C C W2 HC HW2open HW2sub). }
+  { (** Use boundary_subset_C with W2 as first component, W1 as second **)
+    (** Need: W2 cap W1 = Empty and S^2-C = W2 union W1 **)
+    admit. }
   claim Hsupset : C c= closure_of (Sn 2) (Sn_topology 2) W2 :\: W2.
   { (** By symmetry: swap W1 and W2 in the C_subset_boundary argument **)
     (** Need to show S^2-C = W2 union W1 and W2 cap W1 = Empty **)
