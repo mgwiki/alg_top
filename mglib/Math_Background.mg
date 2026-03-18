@@ -308384,6 +308384,210 @@ Theorem ex67_5_proper_subgroup_same_rank :
       subgroup_of H G mult e inv /\ H <> G /\
       free_abelian_group_with_basis H mult e inv J2 basis2 /\
       equip J2 n.
+let n.
+assume Hn : n :e omega.
+assume HnNZ : n <> 0.
+set J := n.
+set Gfam := graph J (fun _ : set => int).
+set multfam := graph J (fun _ : set => integers_group_mult).
+set efam := graph J (fun _ : set => 0).
+set invfam := graph J (fun _ : set => integers_group_inv).
+claim HabFam :
+  forall alpha:set, alpha :e J ->
+    abelian_group
+      (apply_fun Gfam alpha)
+      (apply_fun multfam alpha)
+      (apply_fun efam alpha)
+      (apply_fun invfam alpha).
+{
+  let alpha.
+  assume Halpha : alpha :e J.
+  rewrite (apply_fun_graph J (fun _ : set => int) alpha Halpha).
+  rewrite (apply_fun_graph J (fun _ : set => integers_group_mult) alpha Halpha).
+  rewrite (apply_fun_graph J (fun _ : set => 0) alpha Halpha).
+  rewrite (apply_fun_graph J (fun _ : set => integers_group_inv) alpha Halpha).
+  claim HcommZ : forall x y:set, x :e int -> y :e int ->
+    apply_fun integers_group_mult (x, y) = apply_fun integers_group_mult (y, x).
+  {
+    let x. let y.
+    assume Hx : x :e int.
+    assume Hy : y :e int.
+    claim Hxy : (x, y) :e setprod int int.
+    { exact (tuple_2_setprod_by_pair_Sigma int int x y Hx Hy). }
+    claim Hyx : (y, x) :e setprod int int.
+    { exact (tuple_2_setprod_by_pair_Sigma int int y x Hy Hx). }
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (x, y)
+      Hxy).
+    rewrite (tuple_2_0_eq x y).
+    rewrite (tuple_2_1_eq x y).
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (y, x)
+      Hyx).
+    rewrite (tuple_2_0_eq y x).
+    rewrite (tuple_2_1_eq y x).
+    exact (add_SNo_com x y (int_SNo x Hx) (int_SNo y Hy)).
+  }
+  exact (andI
+    (group_structure int integers_group_mult 0 integers_group_inv)
+    (forall x y:set, x :e int -> y :e int ->
+      apply_fun integers_group_mult (x, y) = apply_fun integers_group_mult (y, x))
+    integers_group_is_group_cyclic_helper
+    HcommZ).
+}
+claim HexDS :
+  exists G multG eG invG ifam:set,
+    abelian_group G multG eG invG /\
+    (forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam alpha)
+        (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)) /\
+    direct_sum_of_subgroups G multG eG invG J
+      (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))).
+{
+  exact (thm67_4_existence_external_direct_sum
+    J
+    Gfam
+    multfam
+    efam
+    invfam
+    HabFam).
+}
+claim HexDS_unpacked :
+  exists G multG eG invG ifam basis1:set,
+    abelian_group G multG eG invG /\
+    function_on basis1 J G /\
+    (forall alpha:set, alpha :e J ->
+      apply_fun basis1 alpha :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) /\
+    direct_sum_of_subgroups G multG eG invG J
+      (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))).
+{
+  apply HexDS.
+  let G.
+  assume HGpack.
+  apply HGpack.
+  let multG.
+  assume HmPack.
+  apply HmPack.
+  let eG.
+  assume HePack.
+  apply HePack.
+  let invG.
+  assume HinvPack.
+  apply HinvPack.
+  let ifam.
+  assume Hmain.
+  set basis1 := graph J (fun alpha:set => apply_fun (apply_fun ifam alpha) 1).
+  claim Hleft :
+    abelian_group G multG eG invG /\
+    (forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam alpha)
+        (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)).
+  { exact (andEL
+      (abelian_group G multG eG invG /\
+        (forall alpha:set, alpha :e J ->
+          group_homomorphism (apply_fun Gfam alpha)
+            (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+          (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+            apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)))
+      (direct_sum_of_subgroups G multG eG invG J
+        (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))))
+      Hmain). }
+  claim HabG : abelian_group G multG eG invG.
+  { exact (andEL
+      (abelian_group G multG eG invG)
+      (forall alpha:set, alpha :e J ->
+        group_homomorphism (apply_fun Gfam alpha)
+          (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y))
+      Hleft). }
+  claim Hifam_data :
+    forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam alpha)
+        (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y).
+  { exact (andER
+      (abelian_group G multG eG invG)
+      (forall alpha:set, alpha :e J ->
+        group_homomorphism (apply_fun Gfam alpha)
+          (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y))
+      Hleft). }
+  claim HdsG :
+    direct_sum_of_subgroups G multG eG invG J
+      (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))).
+  { exact (andER
+      (abelian_group G multG eG invG /\
+        (forall alpha:set, alpha :e J ->
+          group_homomorphism (apply_fun Gfam alpha)
+            (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+          (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+            apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)))
+      (direct_sum_of_subgroups G multG eG invG J
+        (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))))
+      Hmain). }
+  claim H1int : 1 :e int.
+  { exact (Subq_omega_int 1 (nat_p_omega 1 nat_1)). }
+  claim Hbasis1_fn : function_on basis1 J G.
+  {
+    let alpha.
+    assume Halpha : alpha :e J.
+    rewrite (apply_fun_graph J (fun alpha0:set => apply_fun (apply_fun ifam alpha0) 1) alpha Halpha).
+    claim Hhom :
+      group_homomorphism (apply_fun Gfam alpha)
+        (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+    { exact (andEL
+        (group_homomorphism (apply_fun Gfam alpha)
+          (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)
+        (Hifam_data alpha Halpha)). }
+    claim Hifn : function_on (apply_fun ifam alpha) (apply_fun Gfam alpha) G.
+    { exact (andEL
+        (function_on (apply_fun ifam alpha) (apply_fun Gfam alpha) G)
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (x, y)) =
+          apply_fun multG (apply_fun (apply_fun ifam alpha) x, apply_fun (apply_fun ifam alpha) y))
+        Hhom). }
+    claim H1in : 1 :e apply_fun Gfam alpha.
+    { rewrite (apply_fun_graph J (fun _ : set => int) alpha Halpha).
+      exact H1int. }
+    exact (Hifn 1 H1in).
+  }
+  claim Hbasis1_in_img :
+    forall alpha:set, alpha :e J ->
+      apply_fun basis1 alpha :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+  {
+    let alpha.
+    assume Halpha : alpha :e J.
+    rewrite (apply_fun_graph J (fun alpha0:set => apply_fun (apply_fun ifam alpha0) 1) alpha Halpha).
+    claim H1in : 1 :e apply_fun Gfam alpha.
+    { rewrite (apply_fun_graph J (fun _ : set => int) alpha Halpha).
+      exact H1int. }
+    exact (homomorphism_image_intro (apply_fun Gfam alpha) (apply_fun ifam alpha) 1 H1in).
+  }
+  witness G. witness multG. witness eG. witness invG. witness ifam. witness basis1.
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * exact HabG.
+      * exact Hbasis1_fn.
+    + exact Hbasis1_in_img.
+  - exact HdsG.
+}
+(** Concrete external-sum witness and basis candidate are extracted above.
+    Remaining gap: show free-abelian-with-basis for G, and construct a proper
+    subgroup of the same rank from these components. **)
 admit.
 Admitted.
 
