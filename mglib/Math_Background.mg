@@ -280108,6 +280108,7 @@ Qed.
 
 (** Forward declaration: if every point of S^2-C is in comp(x1) or comp(x2), **)
 (** then S^2-C = comp(x1) union comp(x2) **)
+(** Proven Alice **)
 Lemma jordan_step1_components_cover : forall C x1 x2:set,
   C c= Sn 2 ->
   x1 :e Sn 2 :\: C -> x2 :e Sn 2 :\: C ->
@@ -280119,8 +280120,40 @@ Lemma jordan_step1_components_cover : forall C x1 x2:set,
   Sn 2 :\: C =
   component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 :\/:
   component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2.
-admit.
-Admitted.
+let C x1 x2.
+assume HC Hx1 Hx2 Huniv.
+set SmC := Sn 2 :\: C.
+set TSmC := subspace_topology (Sn 2) (Sn_topology 2) SmC.
+claim HtopSmC : topology_on SmC TSmC.
+{ claim HSmCsub : SmC c= Sn 2.
+  { let x. assume Hx. exact (setminusE1 (Sn 2) C x Hx). }
+  exact (subspace_topology_is_topology (Sn 2) (Sn_topology 2) SmC
+    (lemma59_3_Sn_topology_on 2) HSmCsub). }
+apply set_ext.
+- (** SmC c= comp(x1) union comp(x2) **)
+  let y. assume Hy : y :e SmC.
+  (** y in comp(y), and comp(y) = comp(x1) or comp(x2) **)
+  claim Hy_in_comp : y :e component_of SmC TSmC y.
+  { exact (point_in_component SmC TSmC y HtopSmC Hy). }
+  apply (Huniv y Hy).
+  + (** comp(y) = comp(x1) **)
+    assume Heq1 : component_of SmC TSmC y = component_of SmC TSmC x1.
+    claim Hy1 : y :e component_of SmC TSmC x1.
+    { rewrite <- Heq1. exact Hy_in_comp. }
+    exact (binunionI1 (component_of SmC TSmC x1) (component_of SmC TSmC x2) y Hy1).
+  + (** comp(y) = comp(x2) **)
+    assume Heq2 : component_of SmC TSmC y = component_of SmC TSmC x2.
+    claim Hy2 : y :e component_of SmC TSmC x2.
+    { rewrite <- Heq2. exact Hy_in_comp. }
+    exact (binunionI2 (component_of SmC TSmC x1) (component_of SmC TSmC x2) y Hy2).
+- (** comp(x1) union comp(x2) c= SmC **)
+  let y. assume Hy : y :e component_of SmC TSmC x1 :\/: component_of SmC TSmC x2.
+  apply (binunionE (component_of SmC TSmC x1) (component_of SmC TSmC x2) y Hy).
+  + assume Hy1 : y :e component_of SmC TSmC x1.
+    exact (component_of_subset_space SmC TSmC x1 HtopSmC Hx1 y Hy1).
+  + assume Hy2 : y :e component_of SmC TSmC x2.
+    exact (component_of_subset_space SmC TSmC x2 HtopSmC Hx2 y Hy2).
+Qed.
 
 (** JCT Step 1: S^2-C has exactly two open connected components **)
 (** Uses the helpers above to extract W1, W2 from the two components. **)
