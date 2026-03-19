@@ -281520,7 +281520,16 @@ claim Hphi_graph : continuous_map X Tx (setprod X unit_interval)
 { exact (graph_of_phi_continuous X Tx phi Htop Hphi). }
 (** compose_fun X phi_graph G is continuous **)
 claim Hcomp : continuous_map X Tx Y Ty (compose_fun X phi_graph G).
-{ admit. }
+{ (** Composition of continuous maps is continuous **)
+  (** From continuous_construction_rules (3rd component): **)
+  (** forall f g, cont f -> cont g -> cont (compose_fun X f g) **)
+  set TXI := product_topology X Tx unit_interval unit_interval_topology.
+  claim HtopXI : topology_on (setprod X unit_interval) TXI.
+  { exact (product_topology_is_topology X Tx unit_interval unit_interval_topology Htop unit_interval_topology_on). }
+  claim HtopY : topology_on Y Ty. { admit. }
+  (** Use continuous_construction_rules to get composition rule **)
+  (** The 3rd component: forall f g, cont X->XxI f -> cont XxI->Y g -> cont X->Y (compose f g) **)
+  admit. }
 (** compose_fun X phi_graph G = graph X (fun x => G(x, phi(x))) **)
 claim Hcomp_eq : compose_fun X phi_graph G = graph X (fun x:set => apply_fun G (x, apply_fun phi x)).
 { admit. }
