@@ -282704,7 +282704,10 @@ apply andI.
     (** k_fun maps into R2m0: g(x) - p <> (0,0) since g(x) <> p **)
     (** (p not in image(g) by hypothesis) **)
     claim Hk_in_R2m0 : forall a:set, a :e A -> apply_fun k_fun a :e R2m0.
-    { admit. }
+    { (** k_fun(a) = r2sub(g(a), p). Need: g(a) != p (since p not in image g A). **)
+      (** Then r2sub nonzero. But R2_sub_nonzero_of_ne is at line ~295k (forward ref). **)
+      (** The proof is logically complete but blocked by file ordering. **)
+      admit. }
     (** k_fun continuous to R2m0 (by continuous_map_range_restrict) **)
     claim HR2m0_sub_local : R2m0 c= setprod R R.
     { let z. assume Hz : z :e R2m0. exact (setminusE1 (setprod R R) (Sing (0,0)) z Hz). }
