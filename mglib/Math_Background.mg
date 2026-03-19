@@ -279508,8 +279508,11 @@ apply and9I.
   prove (minus_SNo 1, 0) :e S1.
   claim Hanti : (minus_SNo (S1_basepoint 0), minus_SNo (S1_basepoint 1)) :e S1.
   { exact (s55_S1_antipode_in_S1 S1_basepoint S1_basepoint_in_S1_early). }
-  (** S1_basepoint 0 = 1, S1_basepoint 1 = 0 **)
-  (** So antipode = (minus_SNo 1, minus_SNo 0) = (minus_SNo 1, 0) **)
+  (** Goal: (minus_SNo 1, 0) in S1 **)
+  (** Hanti: (minus_SNo (S1_basepoint 0), minus_SNo (S1_basepoint 1)) in S1 **)
+  (** S1_basepoint = (1,0), so S1_basepoint 0 = 1, S1_basepoint 1 = 0 **)
+  (** (-1, 0) is directly in S1 by computing x^2 + y^2 = 1 **)
+  (** (-1)^2 + 0^2 = 1 + 0 = 1 **)
   admit.
 - (** (1,0) <> (-1,0): first coordinates differ since 1 > 0 > -1 **)
   (** Proof: if equal, then first coords equal, but -1 < 0 < 1 **)
