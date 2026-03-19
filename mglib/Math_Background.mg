@@ -283096,8 +283096,6 @@ Admitted.
 (** Follows from lme -> lpc -> lc, but lpc_implies_lc is defined later in file **)
 Lemma locally_m_euclidean_implies_locally_connected : forall X Tx m:set,
   locally_m_euclidean X Tx m -> locally_connected X Tx.
-(** Note: direct proof requires locally_m_euclidean_lc_from_Rn_lc which comes later **)
-(** See Sn2_locally_connected_fwd for the Qed proof for S^2 specifically **)
 admit.
 Admitted.
 
