@@ -281443,7 +281443,8 @@ claim HAI_closed : closed_in (setprod X unit_interval) TXI (setprod A unit_inter
 { exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology A unit_interval HA_closed HI_closed). }
 (** {1} closed in I (Hausdorff space + singleton) **)
 claim HI_Haus : Hausdorff_space unit_interval unit_interval_topology.
-{ admit. }
+{ exact (ex17_12_subspace_Hausdorff R R_standard_topology unit_interval
+    R_standard_topology_Hausdorff unit_interval_sub_R). }
 claim H1_in_I : 1 :e unit_interval. { exact one_in_unit_interval. }
 claim H1_closed : closed_in unit_interval unit_interval_topology (Sing 1).
 { exact (Hausdorff_singletons_closed unit_interval unit_interval_topology 1 HI_Haus H1_in_I). }
@@ -281460,7 +281461,7 @@ claim HX1_closed : closed_in (setprod X unit_interval) TXI (setprod X (Sing 1)).
 exact (closed_binunion (setprod X unit_interval) TXI
   (setprod A unit_interval) (setprod X (Sing 1))
   HAI_closed HX1_closed).
-Admitted.
+Qed.
 
 (** Helper for 62.1: the graph-of-phi map x -> (x, phi(x)) is continuous **)
 (** when phi: X -> [0,1] is continuous. **)
