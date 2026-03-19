@@ -282791,7 +282791,13 @@ claim Hpi1_triv : fundamental_group S1 S1_topology x0 = Sing (fundamental_group_
     Hx0_data). }
 (** Get path from x0 to S1_basepoint **)
 claim HS1_top : topology_on S1 S1_topology.
-{ admit. }
+{ claim HtopR2 : topology_on (setprod R R) R2_topology.
+  { exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+      R_standard_topology_is_topology R_standard_topology_is_topology). }
+  claim HS1subR2 : S1 c= setprod R R.
+  { exact (Sep_Subq (setprod R R)
+      (fun p:set => add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1)). }
+  exact (subspace_topology_is_topology (setprod R R) R2_topology S1 HtopR2 HS1subR2). }
 claim Hbp : S1_basepoint :e S1. { exact S1_basepoint_in_S1_early. }
 claim Hpath_exists : exists p:set, path_between S1 x0 S1_basepoint p /\
   continuous_map unit_interval unit_interval_topology S1 S1_topology p.
