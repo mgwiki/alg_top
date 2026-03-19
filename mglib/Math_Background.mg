@@ -283549,7 +283549,45 @@ apply and9I.
       R (open_ray_upper R 0) HtopR HtopR HRopen
       (open_ray_upper_in_R_standard_topology 0 real_0)). }
   claim Heq2 : S1 :\: S1_lower = Vopen2 :/\: S1.
-  { admit. }
+  { apply set_ext.
+    - let p. assume Hp : p :e S1 :\: S1_lower.
+      claim HpS1 : p :e S1. { exact (setminusE1 S1 S1_lower p Hp). }
+      claim HpnL : p /:e S1_lower. { exact (setminusE2 S1 S1_lower p Hp). }
+      claim HpR2 : p :e setprod R R.
+      { exact (SepE1 (setprod R R)
+          (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+      claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+      claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+      claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+      claim Hp1gt0 : SNoLt 0 (p 1).
+      { apply (dneg (SNoLt 0 (p 1))).
+        assume Hnneg : ~(SNoLt 0 (p 1)).
+        exact (HpnL (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) p HpS1 Hnneg)). }
+      claim Hp1Rlt : Rlt 0 (p 1). { exact (RltI 0 (p 1) real_0 Hp1R Hp1gt0). }
+      claim Hp1_ray : p 1 :e open_ray_upper R 0.
+      { exact (Rlt_in_open_ray_upper (p 1) 0 Hp1R real_0 Hp1Rlt). }
+      claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
+      apply binintersectI.
+      + prove p :e setprod R (open_ray_upper R 0).
+        rewrite Hpeta.
+        exact (tuple_2_setprod_by_pair_Sigma R (open_ray_upper R 0) (p 0) (p 1) Hp0R Hp1_ray).
+      + exact HpS1.
+    - let p. assume Hp : p :e Vopen2 :/\: S1.
+      claim HpS1 : p :e S1. { exact (binintersectE2 Vopen2 S1 p Hp). }
+      claim HpV : p :e Vopen2. { exact (binintersectE1 Vopen2 S1 p Hp). }
+      apply setminusI.
+      + exact HpS1.
+      + assume HpL : p :e S1_lower.
+        claim Hnneg : ~(SNoLt 0 (p 1)).
+        { exact (SepE2 S1 (fun q:set => ~(SNoLt 0 (q 1))) p HpL). }
+        claim Hp1_ray : p 1 :e open_ray_upper R 0.
+        { exact (ap1_Sigma R (fun _ => open_ray_upper R 0) p HpV). }
+        claim Hp1Rlt : Rlt 0 (p 1).
+        { (** From open_ray_upper: order_rel R 0 (p 1) -> Rlt 0 (p 1) **)
+          (** Symmetric to open_ray_lower_Rlt **)
+          admit. }
+        claim Hp1gt0 : SNoLt 0 (p 1). { exact (RltE_lt 0 (p 1) Hp1Rlt). }
+        exact (Hnneg Hp1gt0). }
   rewrite Heq2.
   exact (subspace_topologyI (setprod R R) R2_topology S1 Vopen2 HVopen2_in_R2).
 Admitted.
