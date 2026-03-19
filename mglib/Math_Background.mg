@@ -559112,6 +559112,22 @@ Qed.
 (** Sandbox Begin Bob **)
 (** Sandbox End Bob **)
 (** Sandbox Begin Charlie **)
+(** Work note (Charlie):
+    ball_cover_word_construction_mixed_finish is currently blocked by the monotone partition attempt.
+    The correct proof needs transition induction along the finite ball chain:
+    1. Shrink radius to r1 with 0<r1<r and r1<1 (exists_small_radius_lt_r_and_lt1, ball_cover_image_shrink_radius).
+    2. Build a finite overlapping ball chain seq(0..n) in unit_interval (unit_interval_ball_chain).
+    3. Classify each ball as U-type or V-type using the uniform ball-image hypothesis.
+    4. Pick overlap points t_seq(k) in seq(k) cap seq(k+1) (chain_overlap_points).
+    5. Let Trans := {k:e n | type(k) differs from type(k+1)}; this is nonempty in the mixed case.
+    6. Enumerate Trans increasingly (finite_subset_omega_increasing_enum).
+    7. For each maximal constant-type block of indices, concatenate the corresponding subpaths
+       to get a path in U or V between transition values (endpoints lie in U cap V).
+       Close each such block to a loop at x0 using U cap V path-connectedness (loop_from_path_between).
+    8. Show the loop class equals the product of the inclusion images of these block loop classes,
+       using path_concat_insert_reverse_gamma_gamma, associativity of path_concat, and
+       path_homotopy_class_loop_eq_mult_of_concat_homotopic plus word_data_of_loop_concat/eq_class.
+    This avoids the false claim that [s,1] maps entirely into V after the first transition. **)
 (** Sandbox End Charlie **)
 (** Sandbox Begin Dave **)
 (** Sandbox End Dave **)
