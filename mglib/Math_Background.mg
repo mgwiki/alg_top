@@ -280255,7 +280255,6 @@ apply andI.
 Qed.
 
 (** Helper: R is locally connected (from lpc) **)
-(** Proven Alice **)
 Lemma R_standard_locally_connected :
   locally_connected R R_standard_topology.
 admit.
