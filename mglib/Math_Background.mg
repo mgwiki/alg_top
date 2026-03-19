@@ -281242,6 +281242,29 @@ Lemma nulhomotopy_R2_from_unbounded_component : forall A TA:set,
     nulhomotopic A TA
       (setprod R R :\: Sing (0, 0))
       (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0, 0))) g.
+let A TA.
+assume Hcompact : compact_space A TA.
+let g.
+assume Hg_cont.
+assume Hbounded.
+assume Hpath_exists.
+(** Extract path data: point p and path alpha from 0 to p in R^2-g(A) **)
+apply Hpath_exists. let p. assume Hp_data.
+(** Hp_data : p in R^2 /\ p not in g(A) /\ 0 not in g(A) /\ exists alpha ... **)
+(** The nulhomotopy proceeds via two homotopies: **)
+(** 1. G(x,t) = g(x) - alpha(t): g ~ k where k(x) = g(x) - p **)
+(** 2. H(x,t) = (1-t)k(x) + t(-p) = (1-t)(g(x)-p) + t(-p): k ~ const(-p) **)
+(**    Actually H(x,t) = t.g(x) - p is simpler: H(x,1)=g(x)-p=k(x), H(x,0)=-p **)
+(** The nulhomotopic witness is y0 = -p (or R2_sub (0,0) p) **)
+(** Need: -p <> (0,0), i.e., p <> (0,0), which follows from p not in g(A) and **)
+(** the fact that g maps to R^2-{0} so all values avoid 0 **)
+(** Full construction requires: **)
+(** - homotopic_maps for G and H composed via transitivity **)
+(** - continuity of G and H (from R2_sub, R2_scalar_mult continuous) **)
+(** - G and H avoid (0,0) (from R2_translation/scaling_homotopy_avoids_zero) **)
+prove nulhomotopic A TA
+  (setprod R R :\: Sing (0, 0))
+  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0, 0))) g.
 admit.
 Admitted.
 
