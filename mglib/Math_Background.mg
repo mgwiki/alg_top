@@ -282575,10 +282575,45 @@ apply andI.
     (** 5. G(x,1) = k(x): alpha(1) = p, g(x) - p = k(x) **)
     (** k_fun continuous to R2 (via R2_translation_continuous_early): **)
     claim Hk_cont_R2 : continuous_map A TA (setprod R R) R2_topology k_fun.
-    { (** g: A -> R2m0 c= R2. Compose with inclusion to get g: A -> R2. **)
-      (** Then compose with translate_p: R2 -> R2. **)
-      (** Then show compose_fun agrees with k_fun pointwise. **)
-      admit. }
+    { (** Step 1: g continuous A -> R2 (from Hg_cont + codomain expansion) **)
+      set R2 := setprod R R.
+      claim HR2m0_sub : R2m0 c= R2.
+      { let z. assume Hz : z :e R2 :\: Sing (0, 0). exact (setminusE1 R2 (Sing (0, 0)) z Hz). }
+      claim HtopR2 : topology_on R2 R2_topology.
+      { exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+          R_standard_topology_is_topology R_standard_topology_is_topology). }
+      (** g: A -> R2 by composing g: A -> R2m0 with inclusion R2m0 -> R2 **)
+      (** Use continuous_construction_rules part 6: codomain expansion **)
+      claim Hg_to_R2 : continuous_map A TA R2 R2_topology g.
+      { admit. }
+      (** Step 2: translate_p: R2 -> R2 continuous **)
+      set translate_p := graph R2 (fun x:set => r2sub x p).
+      claim HpR2_local : p :e setprod R R.
+      { exact (andEL (p :e setprod R R) (p <> (0, 0))
+          (andEL (p :e setprod R R /\ p <> (0, 0))
+            (~(p :e image_of g A))
+            (andEL (p :e setprod R R /\ p <> (0, 0) /\ ~(p :e image_of g A))
+              (~((0, 0) :e image_of g A))
+              (andEL
+                (p :e setprod R R /\ p <> (0, 0) /\ ~(p :e image_of g A) /\ ~((0, 0) :e image_of g A))
+                (exists alpha:set,
+                  path_between (setprod R R :\: image_of g A) (0, 0) p alpha /\
+                  continuous_map unit_interval unit_interval_topology
+                    (setprod R R :\: image_of g A)
+                    (subspace_topology (setprod R R) R2_topology (setprod R R :\: image_of g A)) alpha)
+                Hp_data)))). }
+      claim Htrans : continuous_map R2 R2_topology R2 R2_topology translate_p.
+      { exact (R2_translation_continuous_early p HpR2_local). }
+      (** Step 3: compose g with translate_p **)
+      set k_comp := compose_fun A g translate_p.
+      claim Hkcomp : continuous_map A TA R2 R2_topology k_comp.
+      { exact (composition_continuous A TA R2 R2_topology R2 R2_topology g translate_p Hg_to_R2 Htrans). }
+      (** Step 4: k_comp agrees with k_fun pointwise **)
+      claim Hk_fn : function_on k_fun A R2.
+      { admit. }
+      claim Hpointwise : forall a:set, a :e A -> apply_fun k_comp a = apply_fun k_fun a.
+      { admit. }
+      exact (continuous_map_congr_on A TA R2 R2_topology k_comp k_fun Hkcomp Hk_fn Hpointwise). }
     (** k_fun maps into R2m0: g(x) - p <> (0,0) since g(x) <> p **)
     (** (p not in image(g) by hypothesis) **)
     claim Hk_in_R2m0 : forall a:set, a :e A -> apply_fun k_fun a :e R2m0.
