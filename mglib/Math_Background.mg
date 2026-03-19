@@ -236811,6 +236811,80 @@ exact (Lemma_51_1_path_homotopy_trans
 Qed.
 
 (** Infrastructure: mixed case for ball_cover_word_construction (to be completed). **)
+(** Infrastructure: shrink a ball-cover condition to a smaller radius. **)
+(** Proven Charlie **)
+Lemma ball_cover_image_shrink_radius : forall X Tx U V f r1 r2:set,
+  r1 :e R -> r2 :e R ->
+  Rlt 0 r1 -> Rlt r1 r2 ->
+  (forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r2 -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r2 -> apply_fun f t :e V)) ->
+  forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e V).
+let X Tx U V f r1 r2.
+assume Hr1R Hr2R Hr1pos Hr1lt Hball.
+let c. assume HcI.
+apply (Hball c HcI).
+- assume HballU.
+  apply orIL.
+  let t. assume Ht1.
+  claim Hsub : open_ball unit_interval R_bounded_metric c r1 c=
+    open_ball unit_interval R_bounded_metric c r2.
+  { exact (open_ball_radius_mono unit_interval R_bounded_metric c r1 r2 Hr1lt). }
+  exact (HballU t (Hsub t Ht1)).
+- assume HballV.
+  apply orIR.
+  let t. assume Ht1.
+  claim Hsub : open_ball unit_interval R_bounded_metric c r1 c=
+    open_ball unit_interval R_bounded_metric c r2.
+  { exact (open_ball_radius_mono unit_interval R_bounded_metric c r1 r2 Hr1lt). }
+  exact (HballV t (Hsub t Ht1)).
+Qed.
+
+(** Infrastructure: from r>0 pick r1 with 0<r1<r and r1<1. **)
+(** Proven Charlie **)
+Theorem exists_small_radius_lt_r_and_lt1 : forall r:set,
+  r :e R -> Rlt 0 r ->
+  exists r1:set, r1 :e R /\ Rlt 0 r1 /\ Rlt r1 r /\ Rlt r1 1.
+let r.
+assume HrR Hrpos.
+claim Hex : exists N:set, N :e omega /\ eps_ N < r.
+{ exact (exists_eps_lt_pos r HrR Hrpos). }
+apply Hex. let N. assume HNpack.
+claim HNomega : N :e omega.
+{ exact (andEL (N :e omega) (eps_ N < r) HNpack). }
+claim HNlt : eps_ N < r.
+{ exact (andER (N :e omega) (eps_ N < r) HNpack). }
+claim HsNO : ordsucc N :e omega.
+{ exact (omega_ordsucc N HNomega). }
+set r1 := eps_ (ordsucc N).
+claim Hr1R : r1 :e R.
+{ exact (eps_in_R_omega (ordsucc N) HsNO). }
+claim Hr1pos : Rlt 0 r1.
+{
+  exact (RltI 0 r1 real_0 Hr1R (SNo_eps_pos (ordsucc N) HsNO)).
+}
+claim Hr1lt1 : Rlt r1 1.
+{ exact (eps_ordsucc_lt1_R N HNomega). }
+claim HepsR : eps_ N :e R.
+{ exact (eps_in_R_omega N HNomega). }
+claim Hepslt : Rlt (eps_ N) r.
+{ exact (RltI (eps_ N) r HepsR HrR HNlt). }
+claim Hr1lt_eps : Rlt r1 (eps_ N).
+{ exact (eps_ordsucc_lt_eps N HNomega). }
+claim Hr1ltr : Rlt r1 r.
+{ exact (Rlt_tra r1 (eps_ N) r Hr1lt_eps Hepslt). }
+witness r1.
+apply andI.
+- apply andI.
+  * apply andI.
+    { exact Hr1R. }
+    { exact Hr1pos. }
+  * exact Hr1ltr.
+- exact Hr1lt1.
+Qed.
+
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
