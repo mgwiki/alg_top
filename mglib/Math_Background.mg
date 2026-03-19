@@ -283308,10 +283308,11 @@ apply andI.
       { claim HCsub2 : C c= X. { exact (open_in_subset X Tx C (andEL (open_in X Tx C) (x :e C) HCopen_xC)). }
         exact (subspace_topology_is_topology X Tx C Htop HCsub2). }
       (** Extract the restriction rule **)
-      claim Hrules : (forall ff A0:set, A0 c= W -> continuous_map W TW C TC ff ->
-        continuous_map A0 (subspace_topology W TW A0) C TC ff).
-      { admit. }
-      exact (Hrules g V' HV'sub_W Hg_cont). }
+      (** Restriction of continuous g to V' c= W is continuous: **)
+      (** For any V0 in TC, preimage_of V' g V0 = V' cap preimage_of W g V0. **)
+      (** Since preimage_of W g V0 in TW (g continuous), V' cap ... in subspace TW V'. **)
+      (** This is a standard fact; admit the formal extraction for now. **)
+      admit. }
     claim Himg_conn : connected_space (image_of_fun g V') (subspace_topology C TC (image_of_fun g V')).
     { exact (continuous_image_connected V' (subspace_topology W TW V') C TC g HV'conn Hg_restr). }
     (** image_of_fun g V' = V_pullback **)
