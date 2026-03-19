@@ -1,0 +1,15 @@
+CHANGES13581 - Dave
+Date: 2026-03-18
+
+## New Qed proofs
+
+### R2_affine_in_R2 (Proven Dave)
+Proved that R2_affine x y t :e setprod R R for x,y in setprod R R and t in unit_interval.
+- R2_affine x y t = ((1-t)*x0 + t*y0, (1-t)*x1 + t*y1)
+- Proof uses: ap0_Sigma, ap1_Sigma, unit_interval_sub_R, real_minus_SNo, real_add_SNo,
+  real_mul_SNo, tuple_2_setprod_by_pair_Sigma
+- No admitted dependencies; all helpers are proved axioms.
+- This was previously admitted (admit./Admitted.) - now Qed.
+
+## Size change
+Was admitted, now proved. File grows by ~25 lines.

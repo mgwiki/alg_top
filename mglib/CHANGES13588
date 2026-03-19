@@ -1,0 +1,17 @@
+CHANGES13588 - Dave
+Date: 2026-03-19
+
+## New Qed proofs
+
+### jordan_step1_component_open (Proven Dave)
+Proved that components of S^2 \ C are open in S^2 (for C simple closed curve).
+- The proof was already complete, just needed Admitted. -> Qed.
+- Proof uses:
+  1. Sn2_complement_simple_closed_curve_open: S^2 \ C is open
+  2. open_subspace_locally_connected + Sn2_locally_connected_fwd: S^2 \ C locally connected
+  3. components_are_open_in_locally_connected: component of x is open in S^2 \ C
+  4. open_in_subspace_if_ambient_open: transfers openness from subspace to ambient
+- Key: Sn2_locally_connected_fwd (Dave's Qed) was needed to unblock this
+
+## Size change
+One new QED (was Admitted). File grows by 1 line (bck13587: 553805 -> bck13588: 553806).

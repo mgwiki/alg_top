@@ -1,0 +1,28 @@
+CHANGES13589 - Dave
+Date: 2026-03-19
+
+## New Qed proofs
+
+### product_locally_connected (Proven Dave)
+Proved that product of two locally connected spaces is locally connected.
+- Key lemma for euclidean_space_locally_connected
+- Uses product_subbasis_elem_is_rectangle to decompose open sets
+- Uses finite_product_connected for connected rectangles
+- Uses product_subspace_topology for subspace compatibility
+
+## Admitted (partial proofs)
+
+### euclidean_space_locally_connected (partial - Admitted)
+Proved the inductive step via:
+1. euclidean_space_succ_split_homeomorphism: splits euclidean_space (ordsucc k) ~ setprod (euclidean_space k) R
+2. product_locally_connected: product of lc spaces is lc
+3. R_standard_locally_connected: R is lc
+4. homeomorphism_lc_transfer: transfer lc via homeomorphism
+- Base case (n=0): still Admitted - single-point space, needs cleaner proof
+
+## Bug fixes in product_locally_connected
+- Fixed: spurious "rewrite (rectangle_set_def W1 W2)" in wrong goal context
+- Fixed: Used eq_subst_mem_set instead of invalid "rewrite ... at H" syntax
+
+## Size change
+File grows by ~111 lines (bck13588: 553806 -> bck13589: 553917).

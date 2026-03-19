@@ -1,0 +1,30 @@
+CHANGES13583 - Dave
+Date: 2026-03-19
+
+## New Qed proofs
+
+### EuclidPlane_locally_path_connected (Proven Dave)
+Proved that the Euclidean plane (setprod R R) with R2_topology is locally path connected.
+- Proof strategy:
+  1. Show topology_on (setprod R R) R2_topology via product_topology_is_topology
+  2. For point p in open U in R2_topology, use generated_topology_local_refine to find
+     subbasis element b containing p inside U
+  3. Decompose b = rectangle_set U0 V0 via product_subbasis_elem_is_rectangle
+  4. Extract p 0 in U0 and p 1 in V0 via ap0_Sigma, ap1_Sigma
+  5. Apply R_standard_locally_path_connected on each coordinate:
+     - Get path-connected V1 open in R with p 0 in V1 c= U0
+     - Get path-connected V2 open in R with p 1 in V2 c= V0
+  6. Let W = rectangle_set V1 V2 = setprod V1 V2
+  7. W open in R2_topology: by rectangle_set_open_in_product_topology
+  8. p in W: by setprod_eta (p = (p 0, p 1)) and tuple_2_setprod_by_pair_Sigma
+  9. W c= U: by setprod_Subq + transitivity chain via b
+  10. W path-connected in subspace topology:
+      - Use product_subspace_topology to equate subspace topology with product topology
+      - Apply finite_product_path_connected on V1, V2 (both path-connected)
+- Key axioms: generated_topology_local_refine, product_subbasis_elem_is_rectangle,
+  R_standard_locally_path_connected, product_subspace_topology,
+  finite_product_path_connected, rectangle_set_open_in_product_topology, setprod_eta
+- No admitted dependencies (R_standard_locally_path_connected is Alice's QED proof)
+
+## Size change
+One new QED lemma added. File grows by ~186 lines (bck13582: 550248 -> bck13583: 550434).

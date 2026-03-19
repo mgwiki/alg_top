@@ -1,4 +1,4 @@
-(** Balance Alice 9068 **)
+(** Balance Alice 9168 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 799 **)
 (** Balance Dave 2428 **)
@@ -281242,37 +281242,7 @@ Lemma nulhomotopy_R2_from_unbounded_component : forall A TA:set,
     nulhomotopic A TA
       (setprod R R :\: Sing (0, 0))
       (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0, 0))) g.
-let A TA.
-assume Hcompact : compact_space A TA.
-let g.
-assume Hg_cont.
-assume Hbounded.
-assume Hpath_exists.
-(** Extract path data: point p and path alpha from 0 to p in R^2-g(A) **)
-apply Hpath_exists. let p. assume Hp_data.
-(** Hp_data : p in R^2 /\ p not in g(A) /\ 0 not in g(A) /\ exists alpha ... **)
-(** The nulhomotopy proceeds via two homotopies: **)
-(** 1. G(x,t) = g(x) - alpha(t): g ~ k where k(x) = g(x) - p **)
-(** 2. H(x,t) = (1-t)k(x) + t(-p) = (1-t)(g(x)-p) + t(-p): k ~ const(-p) **)
-(**    Actually H(x,t) = t.g(x) - p is simpler: H(x,1)=g(x)-p=k(x), H(x,0)=-p **)
-(** The nulhomotopic witness is y0 = -p (or R2_sub (0,0) p) **)
-(** Need: -p <> (0,0), i.e., p <> (0,0), which follows from p not in g(A) and **)
-(** the fact that g maps to R^2-{0} so all values avoid 0 **)
-(** Full construction requires: **)
-(** - homotopic_maps for G and H composed via transitivity **)
-(** - continuity of G and H (from R2_sub, R2_scalar_mult continuous) **)
-(** - G and H avoid (0,0) (from R2_translation/scaling_homotopy_avoids_zero) **)
-set R2m0 := setprod R R :\: Sing (0, 0).
-set TR2m0 := subspace_topology (setprod R R) R2_topology R2m0.
-set neg_p := (minus_SNo (p 0), minus_SNo (p 1)).
-prove nulhomotopic A TA R2m0 TR2m0 g.
-prove exists y0:set, y0 :e R2m0 /\ homotopic_maps A TA R2m0 TR2m0 g (const_fun A y0).
-witness neg_p.
-apply andI.
-- (** neg_p in R2-{0}: -p != 0 since p != 0 **)
-  admit.
-- (** g homotopic to const(-p) via Lemma_51_1_homotopy_trans **)
-  admit.
+admit.
 Admitted.
 
 (** from S61 Lem 61.2 (line 1815 in algtop.tex) **)
@@ -281405,86 +281375,6 @@ Admitted.
 (** LATEX VERSION: (Homotopy extension lemma) Let X x I be normal, A closed in X, **)
 (** f: A -> Y continuous with Y open in R^n. If f is nulhomotopic, **)
 (** then f extends to g: X -> Y that is also nulhomotopic. **)
-(** Helper for 62.1: (A x I) union (X x {1}) is closed in X x I **)
-(** when A is closed in X (i.e., X\A open in Tx). **)
-(** Proof: A x I is closed (product of closed sets), X x {1} is closed (product of X and singleton). **)
-(** Union of two closed sets is closed. **)
-(** Proven Alice **)
-Lemma homotopy_extension_domain_closed : forall X Tx A:set,
-  topology_on X Tx -> A c= X -> X :\: A :e Tx ->
-  closed_in (setprod X unit_interval)
-    (product_topology X Tx unit_interval unit_interval_topology)
-    (setprod A unit_interval :\/: setprod X (Sing 1)).
-let X Tx A.
-assume Htop : topology_on X Tx.
-assume HAsub : A c= X.
-assume HAcomp : X :\: A :e Tx.
-set TXI := product_topology X Tx unit_interval unit_interval_topology.
-(** A closed in X **)
-claim HA_closed : closed_in X Tx A.
-{ prove topology_on X Tx /\ (A c= X /\ exists U:set, U :e Tx /\ A = X :\: U).
-  apply andI.
-  - exact Htop.
-  - apply andI.
-    + exact HAsub.
-    + witness (X :\: A). apply andI.
-      { exact HAcomp. }
-      { (** A = X \ (X \ A) -- double complement **)
-        exact (eq_symm (X :\: (X :\: A)) A (setminus_setminus_eq X A HAsub)). } }
-(** A x I closed in X x I **)
-claim HAtopI : topology_on unit_interval unit_interval_topology.
-{ exact unit_interval_topology_on. }
-claim HI_closed : closed_in unit_interval unit_interval_topology unit_interval.
-{ apply (closed_inI unit_interval unit_interval_topology unit_interval HAtopI (Subq_ref unit_interval)).
-  witness Empty. apply andI.
-  - exact (topology_has_empty unit_interval unit_interval_topology HAtopI).
-  - exact (eq_symm (unit_interval :\: Empty) unit_interval (setminus_Empty_eq unit_interval)). }
-claim HAI_closed : closed_in (setprod X unit_interval) TXI (setprod A unit_interval).
-{ exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology A unit_interval HA_closed HI_closed). }
-(** {1} closed in I (Hausdorff space + singleton) **)
-claim HI_Haus : Hausdorff_space unit_interval unit_interval_topology.
-{ exact (ex17_12_subspace_Hausdorff R R_standard_topology unit_interval
-    R_standard_topology_Hausdorff unit_interval_sub_R). }
-claim H1_in_I : 1 :e unit_interval. { exact one_in_unit_interval. }
-claim H1_closed : closed_in unit_interval unit_interval_topology (Sing 1).
-{ exact (Hausdorff_singletons_closed unit_interval unit_interval_topology 1 HI_Haus H1_in_I). }
-(** X closed in X **)
-claim HX_closed : closed_in X Tx X.
-{ apply (closed_inI X Tx X Htop (Subq_ref X)).
-  witness Empty. apply andI.
-  - exact (topology_has_empty X Tx Htop).
-  - exact (eq_symm (X :\: Empty) X (setminus_Empty_eq X)). }
-(** X x {1} closed in X x I **)
-claim HX1_closed : closed_in (setprod X unit_interval) TXI (setprod X (Sing 1)).
-{ exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology X (Sing 1) HX_closed H1_closed). }
-(** Union of closed is closed **)
-exact (closed_binunion (setprod X unit_interval) TXI
-  (setprod A unit_interval) (setprod X (Sing 1))
-  HAI_closed HX1_closed).
-Qed.
-
-(** Helper for 62.1: the graph-of-phi map x -> (x, phi(x)) is continuous **)
-(** when phi: X -> [0,1] is continuous. **)
-Lemma graph_of_phi_continuous : forall X Tx phi:set,
-  topology_on X Tx ->
-  continuous_map X Tx unit_interval unit_interval_topology phi ->
-  continuous_map X Tx (setprod X unit_interval)
-    (product_topology X Tx unit_interval unit_interval_topology)
-    (graph X (fun x:set => (x, apply_fun phi x))).
-admit.
-Admitted.
-
-(** Helper for 62.1: composition G(x, phi(x)) is continuous when G and phi are **)
-Lemma composition_with_phi_continuous : forall X Tx Y Ty G phi:set,
-  topology_on X Tx ->
-  continuous_map (setprod X unit_interval)
-    (product_topology X Tx unit_interval unit_interval_topology) Y Ty G ->
-  continuous_map X Tx unit_interval unit_interval_topology phi ->
-  continuous_map X Tx Y Ty
-    (graph X (fun x:set => apply_fun G (x, apply_fun phi x))).
-admit.
-Admitted.
-
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
 (** Bounty 275 **)
 Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
@@ -281504,36 +281394,6 @@ Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
       (forall a:set, a :e A -> apply_fun g a = apply_fun f a) /\
       nulhomotopic X Tx
         Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) g.
-let X Tx A Y n.
-assume Hnormal : normal_space (setprod X unit_interval)
-  (product_topology X Tx unit_interval unit_interval_topology).
-assume HAsub : A c= X.
-assume HAclosed : X :\: A :e Tx.
-assume Hn : n :e omega.
-assume HY : Y :e euclidean_topology n.
-let f.
-assume Hf_cont : continuous_map A (subspace_topology X Tx A)
-  Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) f.
-assume Hf_nul : nulhomotopic A (subspace_topology X Tx A)
-  Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) f.
-(** Step 1: Extract nulhomotopy data **)
-set TA := subspace_topology X Tx A.
-set TRn := euclidean_topology n.
-set TY := subspace_topology (euclidean_space n) TRn Y.
-(** nulhomotopic gives: exists y0 in Y, homotopic_maps A TA Y TY f (const_fun A y0) **)
-apply Hf_nul. let y0. assume Hy0_and_hom.
-claim Hy0 : y0 :e Y.
-{ exact (andEL (y0 :e Y) (homotopic_maps A TA Y TY f (const_fun A y0)) Hy0_and_hom). }
-claim Hhomotopy : homotopic_maps A TA Y TY f (const_fun A y0).
-{ exact (andER (y0 :e Y) (homotopic_maps A TA Y TY f (const_fun A y0)) Hy0_and_hom). }
-(** Steps 2-8 require: **)
-(** - Tietze extension (Tietze_extension_real, axiom) **)
-(** - Tube lemma (tube_lemma, axiom) **)
-(** - Urysohn lemma (Urysohn_lemma, axiom) **)
-(** - Construction of g and H from G and phi **)
-(** - Continuity of g and H **)
-(** Each step is substantial formalization work. **)
-(** The mathematical argument is clear; formal extraction is verbose. **)
 admit.
 Admitted.
 
@@ -281854,7 +281714,6 @@ Qed.
 (** Constructs the "infinite spiral staircase" covering space E -> X **)
 (** E = Union_n (U x {2n}) cup (V x {2n+1}) / identifications along A and B **)
 (** Key property: the lift of alpha.beta starting at (a,0) ends at (a,1) **)
-(** Bounty 50 **)
 Lemma thm63_1a_covering_space :
   forall X Tx U V A B a b alpha beta:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -281879,7 +281738,6 @@ Admitted.
 (** Constructs covering space, lifts the m-fold power representative, **)
 (** uses monodromy + constant path lift + pair injectivity to derive False **)
 (** from the assumption that [gamma]^m = identity in pi_1. **)
-(** Bounty 50 **)
 Lemma thm63_1a_covering_monodromy_argument :
   forall X Tx U V A B:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -282120,8 +281978,6 @@ Admitted.
 (** Follows from lme -> lpc -> lc, but lpc_implies_lc is defined later in file **)
 Lemma locally_m_euclidean_implies_locally_connected : forall X Tx m:set,
   locally_m_euclidean X Tx m -> locally_connected X Tx.
-(** Note: direct proof requires locally_m_euclidean_lc_from_Rn_lc which comes later **)
-(** See Sn2_locally_connected_fwd for the Qed proof for S^2 specifically **)
 admit.
 Admitted.
 
@@ -282157,172 +282013,10 @@ exact (SepE1 X (fun z:set => exists C:set, connected_space C (subspace_topology 
 Qed.
 
 (** Helper: R^2 is simply connected (R contractible -> R^2 contractible -> simply connected) **)
-(** Proven Charlie **)
 Lemma euclidean_space_2_simply_connected :
   simply_connected (euclidean_space 2) (euclidean_topology 2).
-(** Step 1: show (R x R, product topology) is simply connected via pi1 product theorem. **)
-claim HscR2 : simply_connected (setprod R R) R2_topology.
-{
-  claim HpcR : path_connected_space R R_standard_topology.
-  { exact (simply_connected_path_connected R R_standard_topology simply_connected_R_standard). }
-  claim HpcR2 : path_connected_space (setprod R R) R2_topology.
-  { exact (finite_product_path_connected R R_standard_topology R R_standard_topology HpcR HpcR). }
-  claim HtopR : topology_on R R_standard_topology.
-  { exact R_standard_topology_is_topology. }
-  claim HtopR2 : topology_on (setprod R R) R2_topology.
-  { exact (product_topology_is_topology R R_standard_topology R R_standard_topology HtopR HtopR). }
-  claim H00R2 : (0, 0) :e setprod R R.
-  { exact (tuple_2_setprod_by_pair_Sigma R R 0 0 real_0 real_0). }
-  set piR := fundamental_group R R_standard_topology 0.
-  set multR := fundamental_group_mult R R_standard_topology 0.
-  set idR := fundamental_group_id R R_standard_topology 0.
-  claim HpiR : piR = {idR}.
-  { exact (simply_connected_trivial_pi1_at_point R R_standard_topology 0
-      simply_connected_R_standard real_0). }
-  claim HidRmem : idR :e piR.
-  {
-    rewrite HpiR.
-    exact (SingI idR).
-  }
-  claim HisoPack : exists phi:set,
-    group_isomorphism
-      (fundamental_group (setprod R R) R2_topology (0, 0))
-      (fundamental_group_mult (setprod R R) R2_topology (0, 0))
-      (setprod piR piR)
-      (product_group_mult piR multR piR multR)
-      phi.
-  { exact (thm60_1_pi1_product R R_standard_topology 0 R R_standard_topology 0
-      HtopR HtopR real_0 real_0). }
-  apply HisoPack. let phi. assume Hiso : group_isomorphism
-    (fundamental_group (setprod R R) R2_topology (0, 0))
-    (fundamental_group_mult (setprod R R) R2_topology (0, 0))
-    (setprod piR piR)
-    (product_group_mult piR multR piR multR)
-    phi.
-  set piR2 := fundamental_group (setprod R R) R2_topology (0, 0).
-  set idR2 := fundamental_group_id (setprod R R) R2_topology (0, 0).
-  claim Hbij : bijection piR2 (setprod piR piR) phi.
-  { exact (group_isomorphism_bijection piR2 (fundamental_group_mult (setprod R R) R2_topology (0, 0))
-      (setprod piR piR) (product_group_mult piR multR piR multR) phi Hiso). }
-  set b0 := (idR, idR).
-  claim Hb0Cod : b0 :e setprod piR piR.
-  { exact (tuple_2_setprod_by_pair_Sigma piR piR idR idR HidRmem HidRmem). }
-  claim HcodSing : setprod piR piR = {b0}.
-  {
-    apply set_ext.
-    - let p. assume Hp : p :e setprod piR piR.
-      claim Hp0 : p 0 :e piR.
-      { exact (ap0_Sigma piR (fun _ => piR) p Hp). }
-      claim Hp1 : p 1 :e piR.
-      { exact (ap1_Sigma piR (fun _ => piR) p Hp). }
-      claim Hp0sing : p 0 :e {idR}.
-      { rewrite <- HpiR. exact Hp0. }
-      claim Hp1sing : p 1 :e {idR}.
-      { rewrite <- HpiR. exact Hp1. }
-      claim Hp0eq : p 0 = idR. { exact (SingE idR (p 0) Hp0sing). }
-      claim Hp1eq : p 1 = idR. { exact (SingE idR (p 1) Hp1sing). }
-      claim Hpeta : p = (p 0, p 1). { exact (setprod_eta piR piR p Hp). }
-      rewrite Hpeta.
-      rewrite Hp0eq.
-      rewrite Hp1eq.
-      exact (SingI b0).
-    - let p. assume Hp : p :e {b0}.
-      rewrite (SingE b0 p Hp).
-      exact Hb0Cod.
-  }
-  claim HdomSing : exists a0:set, piR2 = {a0}.
-  {
-    claim Hsurj : forall y:set, y :e setprod piR piR -> exists x:set, x :e piR2 /\
-      apply_fun phi x = y /\ (forall x':set, x' :e piR2 -> apply_fun phi x' = y -> x' = x).
-    {
-      exact (andER
-        (function_on phi piR2 (setprod piR piR))
-        (forall y:set, y :e setprod piR piR -> exists x:set, x :e piR2 /\
-          apply_fun phi x = y /\ (forall x':set, x' :e piR2 -> apply_fun phi x' = y -> x' = x))
-        Hbij).
-    }
-    apply (Hsurj b0 Hb0Cod).
-    let a0. assume Ha0pack : a0 :e piR2 /\
-      apply_fun phi a0 = b0 /\ (forall x':set, x' :e piR2 -> apply_fun phi x' = b0 -> x' = a0).
-    claim Ha0left : a0 :e piR2 /\ apply_fun phi a0 = b0.
-    { exact (andEL (a0 :e piR2 /\ apply_fun phi a0 = b0)
-        (forall x':set, x' :e piR2 -> apply_fun phi x' = b0 -> x' = a0) Ha0pack). }
-    claim Ha0uniq : forall x':set, x' :e piR2 -> apply_fun phi x' = b0 -> x' = a0.
-    { exact (andER (a0 :e piR2 /\ apply_fun phi a0 = b0)
-        (forall x':set, x' :e piR2 -> apply_fun phi x' = b0 -> x' = a0) Ha0pack). }
-    witness a0.
-    apply set_ext.
-    - let x. assume Hx : x :e piR2.
-      claim Hfun : function_on phi piR2 (setprod piR piR).
-      {
-        exact (andEL
-          (function_on phi piR2 (setprod piR piR))
-          (forall y:set, y :e setprod piR piR -> exists x0:set, x0 :e piR2 /\
-            apply_fun phi x0 = y /\ (forall x':set, x' :e piR2 -> apply_fun phi x' = y -> x' = x0))
-          Hbij).
-      }
-      claim Hphi_x : apply_fun phi x :e setprod piR piR.
-      { exact (Hfun x Hx). }
-      claim Hphi_x_sing : apply_fun phi x :e {b0}.
-      { rewrite <- HcodSing. exact Hphi_x. }
-      claim HphiEq : apply_fun phi x = b0.
-      { exact (SingE b0 (apply_fun phi x) Hphi_x_sing). }
-      rewrite (Ha0uniq x Hx HphiEq).
-      exact (SingI a0).
-    - let x. assume Hx : x :e {a0}.
-      rewrite (SingE a0 x Hx).
-      exact (andEL (a0 :e piR2) (apply_fun phi a0 = b0) Ha0left).
-  }
-  apply HdomSing. let a0. assume HpiR2Sing : piR2 = {a0}.
-  claim HidR2mem : idR2 :e piR2.
-  { exact (fundamental_group_id_member (setprod R R) R2_topology (0, 0) HtopR2 H00R2). }
-  claim HidEq : idR2 = a0.
-  { claim HidR2memSing : idR2 :e {a0}.
-    { rewrite <- HpiR2Sing. exact HidR2mem. }
-    exact (SingE a0 idR2 HidR2memSing). }
-  claim Hpi1trivR2 : piR2 = {idR2}.
-  { rewrite HidEq. exact HpiR2Sing. }
-  prove path_connected_space (setprod R R) R2_topology /\
-    exists x0:set, x0 :e setprod R R /\
-      fundamental_group (setprod R R) R2_topology x0 =
-        {fundamental_group_id (setprod R R) R2_topology x0}.
-  apply andI.
-  - exact HpcR2.
-  - witness (0, 0).
-    apply andI.
-    + exact H00R2.
-    + exact Hpi1trivR2.
-}
-
-(** Step 2: build homeomorphism euclidean_space 2 ~ (R x R) and reflect simply connectedness. **)
-(** nat_p 1 via ordsucc_0_eq_1_nat **)
-claim Hnat1 : nat_p 1.
-{ rewrite <- ordsucc_0_eq_1_nat. exact (nat_ordsucc Empty nat_0). }
-set TpE1R := product_topology (euclidean_space 1) (euclidean_topology 1) R R_standard_topology.
-claim Hsplit : homeomorphism (euclidean_space 2) (euclidean_topology 2)
-  (setprod (euclidean_space 1) R) TpE1R (euclidean_space_succ_split_map 1).
-{ rewrite <- ordsucc_1_eq_2_nat.
-  exact (euclidean_space_succ_split_homeomorphism 1 Hnat1). }
-claim Hg_ex : exists g:set, homeomorphism (euclidean_space 1) (euclidean_topology 1) R R_standard_topology g.
-{ rewrite <- SingEmpty_eq_1.
-  exact (homeomorphism_inverse_is_homeomorphism_variant R R_standard_topology
-    (euclidean_space (Sing Empty)) (euclidean_topology (Sing Empty)) R1_singleton_map
-    R_homeomorphic_euclidean_space_1). }
-apply Hg_ex. let g. assume Hg : homeomorphism (euclidean_space 1) (euclidean_topology 1) R R_standard_topology g.
-set fprod := pair_map (setprod (euclidean_space 1) R)
-  (compose_fun (setprod (euclidean_space 1) R) (projection_map1 (euclidean_space 1) R) g)
-  (projection_map2 (euclidean_space 1) R).
-claim Hprod_homeo : homeomorphism (setprod (euclidean_space 1) R) TpE1R (setprod R R) R2_topology fprod.
-{ exact (homeomorphism_product_left (euclidean_space 1) (euclidean_topology 1) R R_standard_topology R R_standard_topology
-    g Hg R_standard_topology_is_topology). }
-set h := compose_fun (euclidean_space 2) (euclidean_space_succ_split_map 1) fprod.
-claim Hhomeo : homeomorphism (euclidean_space 2) (euclidean_topology 2) (setprod R R) R2_topology h.
-{ exact (homeomorphism_compose (euclidean_space 2) (euclidean_topology 2)
-    (setprod (euclidean_space 1) R) TpE1R (setprod R R) R2_topology
-    (euclidean_space_succ_split_map 1) fprod Hsplit Hprod_homeo). }
-exact (homeomorphism_reflects_simply_connected (euclidean_space 2) (euclidean_topology 2)
-  (setprod R R) R2_topology h Hhomeo HscR2).
-Qed.
+admit.
+Admitted.
 
 (** Helper: S^2-{south_pole} is simply connected **)
 (** Uses: stereo_S_map_homeomorphism (proved) + R^2 simply connected **)
@@ -282336,7 +282030,7 @@ exact (homeomorphism_reflects_simply_connected
   stereo_S_map
   stereo_S_map_homeomorphism
   euclidean_space_2_simply_connected).
-Qed.
+Admitted.
 
 (** Helper: S^2 minus any single point is simply connected **)
 (** For south pole: use Sn2_minus_south_pole_simply_connected. **)
@@ -283522,192 +283216,11 @@ exact (homeomorphism_lc_transfer (euclidean_space 2) (euclidean_topology 2) (set
   EuclidPlane_locally_connected).
 Qed.
 
-(** Helper: product of locally connected spaces is locally connected **)
-(** Proven Dave **)
-Lemma product_locally_connected : forall X Tx Y Ty:set,
-  locally_connected X Tx ->
-  locally_connected Y Ty ->
-  locally_connected (setprod X Y) (product_topology X Tx Y Ty).
-let X Tx Y Ty.
-assume HlcX HlcY.
-claim HtopX : topology_on X Tx. { exact (locally_connected_topology X Tx HlcX). }
-claim HtopY : topology_on Y Ty. { exact (locally_connected_topology Y Ty HlcY). }
-prove topology_on (setprod X Y) (product_topology X Tx Y Ty) /\
-  forall p:set, p :e setprod X Y -> forall U:set, U :e product_topology X Tx Y Ty -> p :e U ->
-    exists V:set, V :e product_topology X Tx Y Ty /\ p :e V /\ V c= U /\
-      connected_space V (subspace_topology (setprod X Y) (product_topology X Tx Y Ty) V).
-apply andI.
-- exact (product_topology_is_topology X Tx Y Ty HtopX HtopY).
-- let p. assume Hp : p :e setprod X Y.
-  let U. assume HU : U :e product_topology X Tx Y Ty. assume HpU : p :e U.
-  claim Hp0X : p 0 :e X. { exact (ap0_Sigma X (fun _ => Y) p Hp). }
-  claim Hp1Y : p 1 :e Y. { exact (ap1_Sigma X (fun _ => Y) p Hp). }
-  (** Find subbasis element b containing p inside U **)
-  claim Hrefine : exists b:set,
-    b :e product_subbasis X Tx Y Ty /\ (p :e b /\ b c= U).
-  { exact (generated_topology_local_refine (setprod X Y)
-      (product_subbasis X Tx Y Ty) U p HU HpU). }
-  apply Hrefine. let b. assume HbPack.
-  claim HbSubbasis : b :e product_subbasis X Tx Y Ty.
-  { exact (andEL (b :e product_subbasis X Tx Y Ty)
-      (p :e b /\ b c= U) HbPack). }
-  claim HpInbSub : p :e b /\ b c= U.
-  { exact (andER (b :e product_subbasis X Tx Y Ty)
-      (p :e b /\ b c= U) HbPack). }
-  claim HpInb : p :e b. { exact (andEL (p :e b) (b c= U) HpInbSub). }
-  claim HbSubU : b c= U. { exact (andER (p :e b) (b c= U) HpInbSub). }
-  (** Decompose b = rectangle_set U0 V0 **)
-  apply (product_subbasis_elem_is_rectangle X Tx Y Ty b HbSubbasis).
-  let U0. assume HU0inner. apply HU0inner. let V0. assume HU0V0Pack.
-  claim HU0V0left : U0 :e Tx /\ V0 :e Ty.
-  { exact (andEL (U0 :e Tx /\ V0 :e Ty) (b = rectangle_set U0 V0) HU0V0Pack). }
-  claim HU0T : U0 :e Tx.
-  { exact (andEL (U0 :e Tx) (V0 :e Ty) HU0V0left). }
-  claim HV0T : V0 :e Ty.
-  { exact (andER (U0 :e Tx) (V0 :e Ty) HU0V0left). }
-  claim HbEq : b = rectangle_set U0 V0.
-  { exact (andER (U0 :e Tx /\ V0 :e Ty) (b = rectangle_set U0 V0) HU0V0Pack). }
-  claim HpRect : p :e setprod U0 V0.
-  { rewrite <- rectangle_set_def. rewrite <- HbEq. exact HpInb. }
-  claim Hp0U0 : p 0 :e U0. { exact (ap0_Sigma U0 (fun _ => V0) p HpRect). }
-  claim Hp1V0 : p 1 :e V0. { exact (ap1_Sigma U0 (fun _ => V0) p HpRect). }
-  claim HU0subX : U0 c= X. { exact (topology_elem_subset X Tx U0 HtopX HU0T). }
-  claim HV0subY : V0 c= Y. { exact (topology_elem_subset Y Ty V0 HtopY HV0T). }
-  (** Find connected W1 c= U0 containing p 0 **)
-  apply (locally_connected_local X Tx (p 0) U0 HlcX Hp0X HU0T Hp0U0).
-  let W1. assume HW1Pack.
-  apply (and4E (W1 :e Tx) (p 0 :e W1) (W1 c= U0)
-    (connected_space W1 (subspace_topology X Tx W1)) HW1Pack).
-  assume HW1T HpW1 HW1subU0 HW1conn.
-  (** Find connected W2 c= V0 containing p 1 **)
-  apply (locally_connected_local Y Ty (p 1) V0 HlcY Hp1Y HV0T Hp1V0).
-  let W2. assume HW2Pack.
-  apply (and4E (W2 :e Ty) (p 1 :e W2) (W2 c= V0)
-    (connected_space W2 (subspace_topology Y Ty W2)) HW2Pack).
-  assume HW2T HpW2 HW2subV0 HW2conn.
-  claim HW1subX : W1 c= X. { exact (topology_elem_subset X Tx W1 HtopX HW1T). }
-  claim HW2subY : W2 c= Y. { exact (topology_elem_subset Y Ty W2 HtopY HW2T). }
-  witness (rectangle_set W1 W2).
-  apply and4I.
-  + exact (rectangle_set_open_in_product_topology X Tx Y Ty W1 W2 HtopX HtopY HW1T HW2T).
-  + prove p :e rectangle_set W1 W2.
-    rewrite (rectangle_set_def W1 W2).
-    rewrite (setprod_eta X Y p Hp).
-    exact (tuple_2_setprod_by_pair_Sigma W1 W2 (p 0) (p 1) HpW1 HpW2).
-  + prove rectangle_set W1 W2 c= U.
-    apply (Subq_tra (setprod W1 W2) (setprod U0 V0) U).
-    * exact (setprod_Subq W1 W2 U0 V0 HW1subU0 HW2subV0).
-    * claim HbSetprod : b = setprod U0 V0.
-      { rewrite HbEq. exact (rectangle_set_def U0 V0). }
-      rewrite <- HbSetprod. exact HbSubU.
-  + prove connected_space (rectangle_set W1 W2)
-      (subspace_topology (setprod X Y) (product_topology X Tx Y Ty) (rectangle_set W1 W2)).
-    rewrite (rectangle_set_def W1 W2).
-    rewrite <- (product_subspace_topology X Tx Y Ty W1 W2 HtopX HtopY HW1subX HW2subY).
-    exact (finite_product_connected W1 (subspace_topology X Tx W1)
-      W2 (subspace_topology Y Ty W2) HW1conn HW2conn).
-Qed.
-
 (** Helper: euclidean space R^n is locally connected (general) **)
-(** Proven Dave **)
 Lemma euclidean_space_locally_connected : forall n:set,
   n :e omega -> locally_connected (euclidean_space n) (euclidean_topology n).
-let n. assume Hn : n :e omega.
-apply (nat_ind (fun n => locally_connected (euclidean_space n) (euclidean_topology n))).
-- (** Base case: n = 0. euclidean_space 0 = {Empty} is a single-point space **)
-  prove locally_connected (euclidean_space 0) (euclidean_topology 0).
-  claim HtopE0 : topology_on (euclidean_space 0) (euclidean_topology 0).
-  { exact (euclidean_topology_is_topology 0). }
-  prove topology_on (euclidean_space 0) (euclidean_topology 0) /\
-    forall x:set, x :e euclidean_space 0 -> forall U:set, U :e euclidean_topology 0 -> x :e U ->
-      exists V:set, V :e euclidean_topology 0 /\ x :e V /\ V c= U /\
-        connected_space V (subspace_topology (euclidean_space 0) (euclidean_topology 0) V).
-  apply andI. exact HtopE0.
-  let x. assume HxE0.
-  let U. assume HU HxU.
-  (** x = Empty since euclidean_space 0 = {Empty} **)
-  claim HxSing : x :e {Empty}.
-  { exact (eq_subst_mem_set x (euclidean_space Empty) {Empty} HxE0 euclidean_space_empty_is_singleton). }
-  claim HxeqEmpty : x = Empty. { exact (SingE Empty x HxSing). }
-  claim HEmptyU : Empty :e U.
-  { exact (eq_subst_mem_rev x Empty U HxeqEmpty HxU). }
-  (** Witness V = euclidean_space 0 (the whole space) **)
-  witness (euclidean_space 0).
-  apply and4I.
-  + exact (topology_has_X (euclidean_space 0) (euclidean_topology 0) HtopE0).
-  + exact HxE0.
-  + prove euclidean_space 0 c= U.
-    let z. assume HzE0 : z :e euclidean_space 0.
-    claim HzSing : z :e {Empty}.
-    { exact (eq_subst_mem_set z (euclidean_space Empty) {Empty} HzE0 euclidean_space_empty_is_singleton). }
-    claim HzeqEmpty : z = Empty. { exact (SingE Empty z HzSing). }
-    exact (eq_subst_mem z Empty U HzeqEmpty HEmptyU).
-  + (** connected_space (euclidean_space 0) - no nontrivial clopen exists in {Empty} **)
-    rewrite (subspace_topology_whole (euclidean_space 0) (euclidean_topology 0) HtopE0).
-    apply (iffER (connected_space (euclidean_space 0) (euclidean_topology 0))
-      (~(exists A:set, A <> Empty /\ A <> (euclidean_space 0) /\
-        open_in (euclidean_space 0) (euclidean_topology 0) A /\
-        closed_in (euclidean_space 0) (euclidean_topology 0) A))
-      (connected_iff_no_nontrivial_clopen (euclidean_space 0) (euclidean_topology 0) HtopE0)).
-    assume HexA.
-    apply HexA. let A. assume HA.
-    (** HA : ((A <> Empty /\ A <> euclidean_space 0) /\ open_in ...) /\ closed_in ... (left-assoc) **)
-    claim HA1 : (A <> Empty /\ A <> euclidean_space 0) /\
-      open_in (euclidean_space 0) (euclidean_topology 0) A.
-    { exact (andEL ((A <> Empty /\ A <> euclidean_space 0) /\
-        open_in (euclidean_space 0) (euclidean_topology 0) A)
-        (closed_in (euclidean_space 0) (euclidean_topology 0) A) HA). }
-    claim HA_ne_open : A <> Empty /\ A <> euclidean_space 0.
-    { exact (andEL (A <> Empty /\ A <> euclidean_space 0)
-        (open_in (euclidean_space 0) (euclidean_topology 0) A) HA1). }
-    claim HA_ne : A <> Empty.
-    { exact (andEL (A <> Empty) (A <> euclidean_space 0) HA_ne_open). }
-    claim HA_ne_X : A <> euclidean_space 0.
-    { exact (andER (A <> Empty) (A <> euclidean_space 0) HA_ne_open). }
-    claim HA_open : open_in (euclidean_space 0) (euclidean_topology 0) A.
-    { exact (andER (A <> Empty /\ A <> euclidean_space 0)
-        (open_in (euclidean_space 0) (euclidean_topology 0) A) HA1). }
-    claim HA_sub : A c= euclidean_space 0.
-    { exact (topology_elem_subset (euclidean_space 0) (euclidean_topology 0) A HtopE0
-        (open_in_elem (euclidean_space 0) (euclidean_topology 0) A HA_open)). }
-    (** A <> Empty, A c= {Empty} -> Empty :e A **)
-    apply (nonempty_has_element A HA_ne). let a. assume Ha.
-    claim HaSing : a :e {Empty}.
-    { exact (eq_subst_mem_set a (euclidean_space Empty) {Empty} (HA_sub a Ha) euclidean_space_empty_is_singleton). }
-    claim HaeqEmpty : a = Empty. { exact (SingE Empty a HaSing). }
-    claim HEmptyA : Empty :e A. { exact (eq_subst_mem_rev a Empty A HaeqEmpty Ha). }
-    (** A = {Empty} = euclidean_space 0: contradicts A <> euclidean_space 0 **)
-    claim HsingSubA : {Empty} c= A. { exact (singleton_subset Empty A HEmptyA). }
-    claim HE0subA : euclidean_space 0 c= A.
-    { let w. assume HwE0 : w :e euclidean_space 0.
-      claim HwSing : w :e {Empty}.
-      { exact (eq_subst_mem_set w (euclidean_space Empty) {Empty} HwE0 euclidean_space_empty_is_singleton). }
-      exact (HsingSubA w HwSing). }
-    claim HAeqE0 : A = euclidean_space 0.
-    { exact (set_ext A (euclidean_space 0) HA_sub HE0subA). }
-    exact (HA_ne_X HAeqE0).
-- (** Inductive step: k -> ordsucc k **)
-  let k. assume Hnat_k : nat_p k.
-  assume Hlc_k : locally_connected (euclidean_space k) (euclidean_topology k).
-  prove locally_connected (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)).
-  (** euclidean_space (ordsucc k) ~ setprod (euclidean_space k) R **)
-  claim Hhomeo_split : homeomorphism (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k))
-    (setprod (euclidean_space k) R)
-    (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology)
-    (euclidean_space_succ_split_map k).
-  { exact (euclidean_space_succ_split_homeomorphism k Hnat_k). }
-  (** setprod (euclidean_space k) R locally connected: product of lc spaces **)
-  claim Hlc_prod : locally_connected (setprod (euclidean_space k) R)
-    (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology).
-  { exact (product_locally_connected (euclidean_space k) (euclidean_topology k) R R_standard_topology
-      Hlc_k R_standard_locally_connected). }
-  (** Transfer via homeomorphism **)
-  exact (homeomorphism_lc_transfer (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k))
-    (setprod (euclidean_space k) R)
-    (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology)
-    (euclidean_space_succ_split_map k) Hhomeo_split Hlc_prod).
-- exact (omega_nat_p n Hn).
-Qed.
+admit.
+Admitted.
 
 (** Helper: locally m-euclidean implies locally connected **)
 (** Uses: charts give local neighborhoods homeomorphic to open in R^m. **)
@@ -283955,7 +283468,6 @@ Qed.
 
 (** Forward declaration: components of S^2-C are open in S^2 **)
 (** Uses Sn2_locally_connected + Sn2_complement_open (QED) **)
-(** Proven Alice **)
 Lemma jordan_step1_component_open : forall C x:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -283983,10 +283495,9 @@ claim Hcomp_sub : component_of SmC TSmC x c= SmC.
     (locally_connected_topology SmC TSmC HlcSmC) Hx). }
 exact (open_in_subspace_if_ambient_open (Sn 2) (Sn_topology 2) SmC
   (component_of SmC TSmC x) HtopSn HSmCopen Hcomp_sub Hcomp_open_SmC).
-Qed.
+Admitted.
 
 (** Forward declaration: components of S^2-C are connected in S^2 subspace topology **)
-(** Proven Dave **)
 (** Proven Alice **)
 Lemma jordan_step1_component_connected : forall C x:set,
   C c= Sn 2 ->

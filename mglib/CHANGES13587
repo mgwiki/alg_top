@@ -1,0 +1,22 @@
+CHANGES13587 - Dave
+Date: 2026-03-19
+
+## Merge with upstream
+
+Merged upstream changes (d9fadc371: locally_m_euclidean_lc simplify last admit + 62b45b49d + 512b54222 + ex59_3b proofs).
+
+Key conflict in locally_m_euclidean_lc_from_Rn_lc proof:
+- Upstream still had Admitted. with admit for Hg_restr (restriction continuity)
+- Dave's version has Qed. using homeomorphism_restrict_to_image_of_subset approach
+- Kept Dave's Qed. version (complete proof is better progress)
+- All other upstream changes preserved (ex59_3b proofs, projection/compactness lemmas)
+
+## Current state after merge
+- locally_m_euclidean_lc_from_Rn_lc: Qed (Dave)
+- euclidean_space_2_locally_connected: Qed (Dave)
+- EuclidPlane_locally_connected: Qed (Dave)
+- homeomorphism_lc_transfer: Qed (Dave)
+- Sn2_locally_connected_fwd: Qed (Dave), recadmit:NO
+
+## Size change
+File grows by ~492 lines (bck13586: 553313 -> bck13587: 553805).

@@ -1,0 +1,27 @@
+CHANGES13582 - Dave
+Date: 2026-03-19
+
+## New Qed proofs
+
+### R2_line_path_apply (Proven Dave)
+Helper lemma: apply_fun (R2_line_path x y) s = R2_affine x y s for s in unit_interval.
+- Direct from apply_fun_graph with bound variable s (avoiding conflict with t)
+- No admitted dependencies
+
+### R2_line_path_continuous (Proven Dave)
+Proved that R2_line_path x y is continuous from unit_interval to setprod R R (R2_topology).
+- R2_topology = product_topology R R_standard_topology R R_standard_topology
+- Proof strategy:
+  1. Build ingredient functions: flip_unit_interval (1-t), incl_t = {(s,s)|s:e unit_interval} (identity)
+  2. Define coordinate products: x0_term = (1-t)*x0, y0_term = t*y0, etc.
+  3. Define coordinate sums: coord0 = (1-t)*x0 + t*y0, coord1 = (1-t)*x1 + t*y1
+  4. Combine via pair_map: pR2 = pair_map unit_interval coord0 coord1
+  5. pR2 continuous via maps_into_products + add_two_continuous_R + mul_two_continuous_R
+  6. pR2 agrees with R2_line_path x y via R2_line_path_apply
+  7. continuous_map_congr_on transfers continuity
+- Key axioms used: flip_unit_interval_continuous, unit_interval_inclusion_continuous,
+  const_fun_continuous, mul_two_continuous_R, add_two_continuous_R, maps_into_products,
+  continuous_map_range_expand, identity_function_apply, continuous_map_congr_on
+
+## Size change
+Two new QED lemmas added. File grows by ~120 lines.

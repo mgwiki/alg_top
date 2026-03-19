@@ -1,0 +1,24 @@
+CHANGES13584 - Dave
+Date: 2026-03-19
+
+## New Qed proofs
+
+### R_standard_locally_connected (Proven Dave)
+Proved that R (real line) with R_standard_topology is locally connected.
+- Proof strategy (direct, avoiding forward reference to locally_path_connected_implies_locally_connected):
+  1. Show topology_on R R_standard_topology via R_standard_topology_is_topology
+  2. For point x in open U in R_standard_topology:
+     - Convert U to metric_topology form via metric_topology_R_bounded_metric_eq_R_standard_topology_early
+     - Find small ball B = open_ball R R_bounded_metric x r with r < 1 and B ⊆ U
+       via metric_topology_neighborhood_contains_ball_bounded
+     - Show B is open in R_standard_topology via open_ball_R_bounded_metric_in_R_standard_topology_early
+     - B contains x via center_in_open_ball
+     - Show B = open_interval (x-r, x+r) via open_ball_R_bounded_metric_eq_open_interval
+     - open_interval (x-r, x+r) is connected via open_interval_connected,
+       with the ordering requirement satisfied via Rlt_implies_order_rel_R
+- Key axioms: metric_topology_neighborhood_contains_ball_bounded, open_ball_R_bounded_metric_eq_open_interval,
+  open_interval_connected, Rlt_implies_order_rel_R, open_ball_R_bounded_metric_in_R_standard_topology_early
+- No admitted dependencies
+
+## Size change
+One new QED lemma added. File grows by ~58 lines (bck13583: 550434 -> bck13584: 550492).
