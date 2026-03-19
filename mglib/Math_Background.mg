@@ -281275,10 +281275,45 @@ apply andI.
 - (** neg_p in R2-{0}: -p in R^2 and -p != (0,0) since p != (0,0) **)
   prove neg_p :e R2m0.
   prove neg_p :e setprod R R :\: Sing (0, 0).
-  (** Need: neg_p in R x R and neg_p not in {(0,0)} **)
   (** Extract p in R2 and p != (0,0) from Hp_data **)
-  (** Hp_data has shape: p in R2 /\ p != (0,0) /\ ... (5-fold left-assoc) **)
-  admit.
+  (** Left-assoc 5-fold: ((((pR2 /\ pne0) /\ ...) /\ ...) /\ exists alpha) **)
+  claim HpR2 : p :e setprod R R.
+  { admit. }
+  claim Hpne0 : p <> (0, 0).
+  { admit. }
+  (** neg_p = (-p0, -p1) in R x R **)
+  claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+  claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+  claim Hnp0R : minus_SNo (p 0) :e R. { exact (real_minus_SNo (p 0) Hp0R). }
+  claim Hnp1R : minus_SNo (p 1) :e R. { exact (real_minus_SNo (p 1) Hp1R). }
+  claim HnegpR2 : neg_p :e setprod R R.
+  { exact (tuple_2_setprod_by_pair_Sigma R R (minus_SNo (p 0)) (minus_SNo (p 1)) Hnp0R Hnp1R). }
+  (** neg_p != (0,0): if neg_p = (0,0) then p = (0,0) **)
+  claim Hnegpne : neg_p <> (0, 0).
+  { assume Heq : neg_p = (0, 0).
+    (** (-p0, -p1) = (0, 0) -> -p0 = 0 -> p0 = 0, similarly p1 = 0 **)
+    claim Hnp0_eq : minus_SNo (p 0) = 0.
+    { exact (tuple_2_0_congr (minus_SNo (p 0)) (minus_SNo (p 1)) 0 0 Heq). }
+    claim Hp0_eq : p 0 = 0.
+    { prove p 0 = 0.
+      rewrite <- (minus_SNo_invol (p 0) (real_SNo (p 0) Hp0R)).
+      rewrite Hnp0_eq.
+      exact minus_SNo_0. }
+    claim Hnp1_eq : minus_SNo (p 1) = 0.
+    { exact (tuple_2_1_congr (minus_SNo (p 0)) (minus_SNo (p 1)) 0 0 Heq). }
+    claim Hp1_eq : p 1 = 0.
+    { prove p 1 = 0.
+      rewrite <- (minus_SNo_invol (p 1) (real_SNo (p 1) Hp1R)).
+      rewrite Hnp1_eq. exact minus_SNo_0. }
+    (** p = (p0, p1) = (0, 0) by setprod_eta + Hp0_eq + Hp1_eq **)
+    claim Hpeq : p = (0, 0).
+    { claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
+      rewrite Hpeta. rewrite Hp0_eq. rewrite Hp1_eq. exact (eq_refl (0, 0)). }
+    exact (Hpne0 Hpeq). }
+  claim Hnegp_notin_sing : neg_p /:e Sing (0, 0).
+  { assume Hin : neg_p :e Sing (0, 0).
+    exact (Hnegpne (SingE (0, 0) neg_p Hin)). }
+  exact (setminusI (setprod R R) (Sing (0, 0)) neg_p HnegpR2 Hnegp_notin_sing).
 - (** g homotopic to const(-p) via Lemma_51_1_homotopy_trans **)
   admit.
 Admitted.
