@@ -283559,7 +283559,8 @@ exact (order_rel_R_implies_Rlt b a Hord).
 Qed.
 
 (** Helper: if x^2 = 1 for SNo x, then x = 1 or x = -1 **)
-(** Proof uses: SNoLt_trichotomy_or, mul_SNo_Lt1_pos_Lt, pos_mul_SNo_Lt' **)
+(** Proof uses: SNoLt_trichotomy_or_impred, mul_SNo_Lt1_pos_Lt, pos_mul_SNo_Lt', mul_SNo_minus_minus **)
+(** Proven Alice **)
 Lemma SNo_sq_eq_1_cases : forall x:set,
   SNo x -> mul_SNo x x = 1 -> x = 1 \/ x = minus_SNo 1.
 let x. assume HxSNo : SNo x. assume Hsq : mul_SNo x x = 1.
@@ -283570,7 +283571,47 @@ apply (SNoLt_trichotomy_or x 1 HxSNo SNo_1).
   + assume Hxlt1 : SNoLt x 1.
     (** Sub-trichotomy with 0: ((x < 0 \/ x = 0) \/ 0 < x) **)
     apply (SNoLt_trichotomy_or_impred x 0 HxSNo SNo_0).
-    * (** x < 0 **) assume Hxlt0 : SNoLt x 0. admit.
+    * (** x < 0 **)
+      assume Hxlt0 : SNoLt x 0.
+      set mx := minus_SNo x.
+      claim HmxSNo : SNo mx. { exact (SNo_minus_SNo x HxSNo). }
+      (** -x > 0 **)
+      claim H0ltmx : SNoLt 0 mx.
+      { prove SNoLt 0 mx.
+        prove SNoLt 0 (minus_SNo x).
+        rewrite <- (add_SNo_0L (minus_SNo x) HmxSNo).
+        exact (SNoLt_minus_pos x 0 HxSNo SNo_0 Hxlt0). }
+      (** (-x)^2 = x^2 = 1 **)
+      claim Hmxsq : mul_SNo mx mx = 1.
+      { prove mul_SNo (minus_SNo x) (minus_SNo x) = 1.
+        rewrite (mul_SNo_minus_minus x x HxSNo HxSNo). exact Hsq. }
+      (** Trichotomy on -x and 1 **)
+      apply (SNoLt_trichotomy_or_impred mx 1 HmxSNo SNo_1).
+      { (** -x < 1: 0 < -x < 1, so (-x)^2 < -x < 1. But (-x)^2 = 1. Contradiction. **)
+        assume Hmxlt1 : SNoLt mx 1.
+        claim Hmxsq_lt_mx : SNoLt (mul_SNo mx mx) mx.
+        { exact (mul_SNo_Lt1_pos_Lt mx mx HmxSNo HmxSNo Hmxlt1 H0ltmx). }
+        claim Hmxsq_lt_1 : SNoLt (mul_SNo mx mx) 1.
+        { exact (SNoLt_tra (mul_SNo mx mx) mx 1 (SNo_mul_SNo mx mx HmxSNo HmxSNo) HmxSNo SNo_1 Hmxsq_lt_mx Hmxlt1). }
+        claim H1lt1 : SNoLt 1 1. { rewrite <- Hmxsq at 1. exact Hmxsq_lt_1. }
+        exact (SNoLt_irref 1 H1lt1 (x = 1 \/ x = minus_SNo 1)). }
+      { (** -x = 1, so x = -1 **)
+        assume Hmxeq1 : mx = 1.
+        claim Hxeqm1 : x = minus_SNo 1.
+        { prove x = minus_SNo 1. rewrite <- Hmxeq1.
+          prove x = minus_SNo mx. prove x = minus_SNo (minus_SNo x).
+          symmetry. exact (minus_SNo_invol x HxSNo). }
+        apply orIR. exact Hxeqm1. }
+      { (** 1 < -x: (-x) < (-x)^2 = 1. So -x < 1 < -x. Contradiction. **)
+        assume H1ltmx : SNoLt 1 mx.
+        claim Hmx_lt_mxsq : SNoLt mx (mul_SNo mx mx).
+        { prove SNoLt mx (mul_SNo mx mx).
+          rewrite <- (mul_SNo_oneL mx HmxSNo) at 1.
+          exact (pos_mul_SNo_Lt' 1 mx mx SNo_1 HmxSNo HmxSNo H0ltmx H1ltmx). }
+        claim H1lt_mxsq : SNoLt 1 (mul_SNo mx mx).
+        { exact (SNoLt_tra 1 mx (mul_SNo mx mx) SNo_1 HmxSNo (SNo_mul_SNo mx mx HmxSNo HmxSNo) H1ltmx Hmx_lt_mxsq). }
+        claim H1lt1 : SNoLt 1 1. { rewrite <- Hmxsq at 2. exact H1lt_mxsq. }
+        exact (SNoLt_irref 1 H1lt1 (x = 1 \/ x = minus_SNo 1)). }
     * (** x = 0 **)
       assume Hxeq0 : x = 0.
       (** mul_SNo x x = 1 (from Hsq). But x = 0, so mul_SNo 0 0 = 1. **)
@@ -283605,7 +283646,7 @@ apply (SNoLt_trichotomy_or x 1 HxSNo SNo_1).
       (SNo_mul_SNo x x HxSNo HxSNo) H1ltx Hx_lt_xsq). }
   claim H1lt1 : SNoLt 1 1. { rewrite <- Hsq at 2. exact H1lt_xsq. }
   exact (SNoLt_irref 1 H1lt1 (x = 1 \/ x = minus_SNo 1)).
-Admitted.
+Qed.
 
 (** Helper: S^1 = upper union lower, upper cap lower = {(1,0), (-1,0)} **)
 (** Upper and lower are both arcs (homeomorphic to [-1,1] via x-projection) **)
