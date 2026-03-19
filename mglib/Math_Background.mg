@@ -285200,58 +285200,222 @@ Lemma simple_closed_curve_arc_decomposition : forall C:set,
     connected_space C2 (subspace_topology (Sn 2) (Sn_topology 2) C2) /\
     Sn 2 :\: C1 :e Sn_topology 2 /\
     Sn 2 :\: C2 :e Sn_topology 2.
-let C. assume HC Hscc.
-(** Extract homeomorphism h: C -> S^1 **)
-apply Hscc. let h. assume Hh : homeomorphism C (subspace_topology (Sn 2) (Sn_topology 2) C) S1 S1_topology h.
+let C. assume HC : C c= Sn 2. assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
 set TC := subspace_topology (Sn 2) (Sn_topology 2) C.
-(** Get inverse homeomorphism g: S1 -> C **)
-apply (homeomorphism_inverse_is_homeomorphism_variant C TC S1 S1_topology h Hh).
+(** Get g: S1 -> C homeomorphism via inverse of h: C -> S1 **)
+apply Hscc. let h. assume Hhomeo_h : homeomorphism C TC S1 S1_topology h.
+apply (homeomorphism_inverse_is_homeomorphism_variant C TC S1 S1_topology h Hhomeo_h).
 let g. assume Hg : homeomorphism S1 S1_topology C TC g.
-(** g: S1 -> C is a homeomorphism **)
+(** Basic facts **)
+claim HtopS1 : topology_on S1 S1_topology.
+{ exact (compact_space_topology S1 S1_topology s54_S1_compact). }
 claim Hg_cont : continuous_map S1 S1_topology C TC g.
-{ exact (andEL (continuous_map S1 S1_topology C TC g)
-    (exists g0:set, continuous_map C TC S1 S1_topology g0 /\
-      (forall x:set, x :e S1 -> apply_fun g0 (apply_fun g x) = x) /\
-      (forall y:set, y :e C -> apply_fun g (apply_fun g0 y) = y))
-    Hg). }
-claim Hg_fn : function_on g S1 C.
-{ exact (continuous_map_function_on S1 S1_topology C TC g Hg_cont). }
-(** Set C1 = g(S1_upper), C2 = g(S1_lower), p = g(S1_basepoint), q = g(S1_left_point) **)
-set C1 := image_of g S1_upper.
-set C2 := image_of g S1_lower.
-set p0 := apply_fun g S1_basepoint.
-set q0 := apply_fun g S1_left_point.
-(** p0 and q0 are in C c= Sn 2 **)
-claim Hp0C : p0 :e C. { exact (Hg_fn S1_basepoint S1_basepoint_in_S1_early). }
-claim Hq0C : q0 :e C.
-{ exact (Hg_fn S1_left_point S1_left_point_in_S1). }
-claim Hp0S2 : p0 :e Sn 2. { exact (HC p0 Hp0C). }
-claim Hq0S2 : q0 :e Sn 2. { exact (HC q0 Hq0C). }
-(** Properties from S1_semicircle_decomposition **)
-(** S1 = upper union lower, upper cap lower = {bp, left}, bp in S1, left in S1, **)
-(** bp <> left, upper connected, lower connected, S1-upper open, S1-lower open **)
-(** These transfer via g to C **)
-(** Full transfer of 11 properties needs ~60 more lines **)
-(** For now, witness the existentials and admit the conjunction **)
-witness C1. witness C2. witness p0. witness q0.
-apply andI.
-- (** ((((((((( p0S2 /\ q0S2) /\ p0neq0) /\ C1sub) /\ C2sub) /\ union) /\ inter) /\ C1conn) /\ C2conn) /\ C1open) **)
-  (** and last: C2open **)
+{ exact (homeomorphism_continuous S1 S1_topology C TC g Hg). }
+claim Hg_inj : forall x1 x2:set, x1 :e S1 -> x2 :e S1 -> apply_fun g x1 = apply_fun g x2 -> x1 = x2.
+{ exact (homeomorphism_injective S1 S1_topology C TC g Hg). }
+claim HS1upSubS1 : S1_upper c= S1.
+{ exact (Sep_Subq S1 (fun p:set => ~(SNoLt (p 1) 0))). }
+claim HS1loSubS1 : S1_lower c= S1.
+{ exact (Sep_Subq S1 (fun p:set => ~(SNoLt 0 (p 1)))). }
+(** image_of g subsets **)
+claim HgSubC : image_of g S1 c= C.
+{ exact (homeomorphism_image_subset_codomain S1 S1_topology C TC g S1 Hg (Subq_ref S1)). }
+claim HC1SubC : image_of g S1_upper c= C.
+{ exact (Subq_tra (image_of g S1_upper) (image_of g S1) C
+    (image_of_mono g S1_upper S1 HS1upSubS1) HgSubC). }
+claim HC2SubC : image_of g S1_lower c= C.
+{ exact (Subq_tra (image_of g S1_lower) (image_of g S1) C
+    (image_of_mono g S1_lower S1 HS1loSubS1) HgSubC). }
+claim HC1SubSn2 : image_of g S1_upper c= Sn 2.
+{ exact (Subq_tra (image_of g S1_upper) C (Sn 2) HC1SubC HC). }
+claim HC2SubSn2 : image_of g S1_lower c= Sn 2.
+{ exact (Subq_tra (image_of g S1_lower) C (Sn 2) HC2SubC HC). }
+(** S1_basepoint, S1_left_point in S1_upper and S1_lower **)
+claim HIntersect : S1_upper :/\: S1_lower = UPair S1_basepoint S1_left_point.
+{ exact S1_upper_lower_intersect. }
+claim HbpInIntersect : S1_basepoint :e S1_upper :/\: S1_lower.
+{ prove S1_basepoint :e S1_upper :/\: S1_lower. rewrite HIntersect.
+  exact (UPairI1 S1_basepoint S1_left_point). }
+claim HbpInS1up : S1_basepoint :e S1_upper.
+{ exact (binintersectE1 S1_upper S1_lower S1_basepoint HbpInIntersect). }
+claim HbpInS1lo : S1_basepoint :e S1_lower.
+{ exact (binintersectE2 S1_upper S1_lower S1_basepoint HbpInIntersect). }
+claim HleftInIntersect : S1_left_point :e S1_upper :/\: S1_lower.
+{ prove S1_left_point :e S1_upper :/\: S1_lower. rewrite HIntersect.
+  exact (UPairI2 S1_basepoint S1_left_point). }
+claim HleftInS1up : S1_left_point :e S1_upper.
+{ exact (binintersectE1 S1_upper S1_lower S1_left_point HleftInIntersect). }
+claim HleftInS1lo : S1_left_point :e S1_lower.
+{ exact (binintersectE2 S1_upper S1_lower S1_left_point HleftInIntersect). }
+(** p and q in Sn 2 **)
+claim HpInSn2 : apply_fun g S1_basepoint :e Sn 2.
+{ exact (HC1SubSn2 (apply_fun g S1_basepoint)
+    (ReplI S1_upper (fun x => apply_fun g x) S1_basepoint HbpInS1up)). }
+claim HqInSn2 : apply_fun g S1_left_point :e Sn 2.
+{ exact (HC2SubSn2 (apply_fun g S1_left_point)
+    (ReplI S1_lower (fun x => apply_fun g x) S1_left_point HleftInS1lo)). }
+(** p <> q **)
+claim HpNeq : apply_fun g S1_basepoint <> apply_fun g S1_left_point.
+{ assume Heqpq.
+  claim HbpEqleft : S1_basepoint = S1_left_point.
+  { exact (Hg_inj S1_basepoint S1_left_point
+      (HS1upSubS1 S1_basepoint HbpInS1up)
+      (HS1upSubS1 S1_left_point HleftInS1up) Heqpq). }
+  exact (S1_basepoint_neq_left_point HbpEqleft). }
+(** image_of g S1 = C via surjectivity **)
+claim HimgGisC : image_of g S1 = C.
+{ apply set_ext.
+  - exact HgSubC.
+  - let y. assume HyC : y :e C.
+    apply (homeomorphism_surjective_value S1 S1_topology C TC g y Hg HyC).
+    let x. assume HxPair : x :e S1 /\ apply_fun g x = y.
+    claim HxS1 : x :e S1. { exact (andEL (x :e S1) (apply_fun g x = y) HxPair). }
+    claim HgxEqy : apply_fun g x = y. { exact (andER (x :e S1) (apply_fun g x = y) HxPair). }
+    prove y :e image_of g S1.
+    rewrite <- HgxEqy.
+    exact (ReplI S1 (fun z => apply_fun g z) x HxS1). }
+(** C = C1 :\/: C2 **)
+claim HC_eq_C1_C2 : C = (image_of g S1_upper) :\/: (image_of g S1_lower).
+{ rewrite <- HimgGisC.
+  rewrite S1_upper_lower_union.
+  exact (image_of_binunion g S1_upper S1_lower). }
+(** C1 :/\: C2 = UPair p q **)
+claim HIntersect_C1_C2 : (image_of g S1_upper) :/\: (image_of g S1_lower) =
+    UPair (apply_fun g S1_basepoint) (apply_fun g S1_left_point).
+{ apply set_ext.
+  - let z. assume HzInt : z :e (image_of g S1_upper) :/\: (image_of g S1_lower).
+    claim HzC1 : z :e image_of g S1_upper.
+    { exact (binintersectE1 (image_of g S1_upper) (image_of g S1_lower) z HzInt). }
+    claim HzC2 : z :e image_of g S1_lower.
+    { exact (binintersectE2 (image_of g S1_upper) (image_of g S1_lower) z HzInt). }
+    apply (ReplE_impred S1_upper (fun x => apply_fun g x) z HzC1).
+    let x1. assume Hx1S1up : x1 :e S1_upper. assume Hzgx1 : z = apply_fun g x1.
+    apply (ReplE_impred S1_lower (fun x => apply_fun g x) z HzC2).
+    let x2. assume Hx2S1lo : x2 :e S1_lower. assume Hzgx2 : z = apply_fun g x2.
+    claim HgEq : apply_fun g x1 = apply_fun g x2.
+    { symmetry. rewrite <- Hzgx2. exact Hzgx1. }
+    claim Hx1eqx2 : x1 = x2.
+    { exact (Hg_inj x1 x2 (HS1upSubS1 x1 Hx1S1up) (HS1loSubS1 x2 Hx2S1lo) HgEq). }
+    claim Hx1InIntersect : x1 :e S1_upper :/\: S1_lower.
+    { apply binintersectI.
+      - exact Hx1S1up.
+      - rewrite Hx1eqx2. exact Hx2S1lo. }
+    claim Hx1InUPair : x1 :e UPair S1_basepoint S1_left_point.
+    { exact (eq_subst_mem_set x1 (S1_upper :/\: S1_lower) (UPair S1_basepoint S1_left_point)
+        Hx1InIntersect HIntersect). }
+    apply (UPairE x1 S1_basepoint S1_left_point Hx1InUPair).
+    - assume Hx1bp : x1 = S1_basepoint.
+      rewrite Hzgx1. rewrite Hx1bp.
+      exact (UPairI1 (apply_fun g S1_basepoint) (apply_fun g S1_left_point)).
+    - assume Hx1left : x1 = S1_left_point.
+      rewrite Hzgx1. rewrite Hx1left.
+      exact (UPairI2 (apply_fun g S1_basepoint) (apply_fun g S1_left_point)).
+  - let z. assume HzUP : z :e UPair (apply_fun g S1_basepoint) (apply_fun g S1_left_point).
+    apply (UPairE z (apply_fun g S1_basepoint) (apply_fun g S1_left_point) HzUP).
+    - assume Hzp : z = apply_fun g S1_basepoint.
+      rewrite Hzp.
+      apply binintersectI.
+      + exact (ReplI S1_upper (fun x => apply_fun g x) S1_basepoint HbpInS1up).
+      + exact (ReplI S1_lower (fun x => apply_fun g x) S1_basepoint HbpInS1lo).
+    - assume Hzq : z = apply_fun g S1_left_point.
+      rewrite Hzq.
+      apply binintersectI.
+      + exact (ReplI S1_upper (fun x => apply_fun g x) S1_left_point HleftInS1up).
+      + exact (ReplI S1_lower (fun x => apply_fun g x) S1_left_point HleftInS1lo). }
+(** S1_upper closed in S1, hence compact **)
+claim HclosedS1up : closed_in S1 S1_topology S1_upper.
+{ apply (closed_inI S1 S1_topology S1_upper HtopS1 HS1upSubS1).
+  witness (S1 :\: S1_upper).
   apply andI.
-  + apply andI. + apply andI. + apply andI. + apply andI.
-    + apply andI. + apply andI. + apply andI. + apply andI.
-      + (** p0 in Sn 2 **) exact Hp0S2.
-      + (** q0 in Sn 2 **) exact Hq0S2.
-    + (** p0 <> q0 **) admit.
-  + (** C1 c= C **) admit.
-  + (** C2 c= C **) admit.
-  + (** C = C1 union C2 **) admit.
-  + (** C1 cap C2 = UPair p0 q0 **) admit.
-  + (** C1 connected **) admit.
-  + (** C2 connected **) admit.
-  + (** S2 minus C1 open **) admit.
-- (** S2 minus C2 open **) admit.
-Admitted.
+  - exact S1_upper_complement_open.
+  - symmetry. exact (setminus_setminus_eq S1 S1_upper HS1upSubS1). }
+claim HcompS1up : compact_space S1_upper (subspace_topology S1 S1_topology S1_upper).
+{ exact (closed_subspace_compact S1 S1_topology S1_upper s54_S1_compact HclosedS1up). }
+(** S1_lower closed in S1, hence compact **)
+claim HclosedS1lo : closed_in S1 S1_topology S1_lower.
+{ apply (closed_inI S1 S1_topology S1_lower HtopS1 HS1loSubS1).
+  witness (S1 :\: S1_lower).
+  apply andI.
+  - exact S1_lower_complement_open.
+  - symmetry. exact (setminus_setminus_eq S1 S1_lower HS1loSubS1). }
+claim HcompS1lo : compact_space S1_lower (subspace_topology S1 S1_topology S1_lower).
+{ exact (closed_subspace_compact S1 S1_topology S1_lower s54_S1_compact HclosedS1lo). }
+(** Homeomorphism g restricted to S1_upper, connectivity of C1 **)
+claim Hg_S1up_homeo : homeomorphism S1_upper (subspace_topology S1 S1_topology S1_upper)
+    (image_of g S1_upper) (subspace_topology C TC (image_of g S1_upper)) g.
+{ exact (homeomorphism_restrict_to_image_of_subset S1 S1_topology C TC g S1_upper Hg HS1upSubS1). }
+claim HtopEq_C1 : subspace_topology C TC (image_of g S1_upper) =
+    subspace_topology (Sn 2) (Sn_topology 2) (image_of g S1_upper).
+{ exact (subspace_topology_transitive_weak (Sn 2) (Sn_topology 2) C (image_of g S1_upper) HC1SubC). }
+claim Hconn1 : connected_space (image_of g S1_upper)
+    (subspace_topology (Sn 2) (Sn_topology 2) (image_of g S1_upper)).
+{ apply (homeomorphism_preserves_connected S1_upper (subspace_topology S1 S1_topology S1_upper)
+    (image_of g S1_upper) (subspace_topology (Sn 2) (Sn_topology 2) (image_of g S1_upper)) g).
+  - rewrite <- HtopEq_C1. exact Hg_S1up_homeo.
+  - exact S1_upper_connected. }
+(** Homeomorphism g restricted to S1_lower, connectivity of C2 **)
+claim Hg_S1lo_homeo : homeomorphism S1_lower (subspace_topology S1 S1_topology S1_lower)
+    (image_of g S1_lower) (subspace_topology C TC (image_of g S1_lower)) g.
+{ exact (homeomorphism_restrict_to_image_of_subset S1 S1_topology C TC g S1_lower Hg HS1loSubS1). }
+claim HtopEq_C2 : subspace_topology C TC (image_of g S1_lower) =
+    subspace_topology (Sn 2) (Sn_topology 2) (image_of g S1_lower).
+{ exact (subspace_topology_transitive_weak (Sn 2) (Sn_topology 2) C (image_of g S1_lower) HC2SubC). }
+claim Hconn2 : connected_space (image_of g S1_lower)
+    (subspace_topology (Sn 2) (Sn_topology 2) (image_of g S1_lower)).
+{ apply (homeomorphism_preserves_connected S1_lower (subspace_topology S1 S1_topology S1_lower)
+    (image_of g S1_lower) (subspace_topology (Sn 2) (Sn_topology 2) (image_of g S1_lower)) g).
+  - rewrite <- HtopEq_C2. exact Hg_S1lo_homeo.
+  - exact S1_lower_connected. }
+(** Compactness of C1 => closed in Sn 2 => complement open **)
+claim Hg_S1up_cont : continuous_map S1_upper (subspace_topology S1 S1_topology S1_upper) C TC g.
+{ exact (continuous_on_subspace S1 S1_topology C TC g S1_upper HtopS1 HS1upSubS1 Hg_cont). }
+claim HcompC1 : compact_space (image_of g S1_upper)
+    (subspace_topology (Sn 2) (Sn_topology 2) (image_of g S1_upper)).
+{ rewrite <- HtopEq_C1.
+  exact (continuous_image_compact S1_upper (subspace_topology S1 S1_topology S1_upper)
+    C TC g HcompS1up Hg_S1up_cont). }
+claim HclosedC1 : closed_in (Sn 2) (Sn_topology 2) (image_of g S1_upper).
+{ exact (compact_subspace_in_Hausdorff_closed (Sn 2) (Sn_topology 2) (image_of g S1_upper)
+    Sn_2_Hausdorff HC1SubSn2 HcompC1). }
+claim Hopen1 : Sn 2 :\: (image_of g S1_upper) :e Sn_topology 2.
+{ exact (open_in_elem (Sn 2) (Sn_topology 2) (Sn 2 :\: (image_of g S1_upper))
+    (open_of_closed_complement (Sn 2) (Sn_topology 2) (image_of g S1_upper) HclosedC1)). }
+(** Compactness of C2 => closed in Sn 2 => complement open **)
+claim Hg_S1lo_cont : continuous_map S1_lower (subspace_topology S1 S1_topology S1_lower) C TC g.
+{ exact (continuous_on_subspace S1 S1_topology C TC g S1_lower HtopS1 HS1loSubS1 Hg_cont). }
+claim HcompC2 : compact_space (image_of g S1_lower)
+    (subspace_topology (Sn 2) (Sn_topology 2) (image_of g S1_lower)).
+{ rewrite <- HtopEq_C2.
+  exact (continuous_image_compact S1_lower (subspace_topology S1 S1_topology S1_lower)
+    C TC g HcompS1lo Hg_S1lo_cont). }
+claim HclosedC2 : closed_in (Sn 2) (Sn_topology 2) (image_of g S1_lower).
+{ exact (compact_subspace_in_Hausdorff_closed (Sn 2) (Sn_topology 2) (image_of g S1_lower)
+    Sn_2_Hausdorff HC2SubSn2 HcompC2). }
+claim Hopen2 : Sn 2 :\: (image_of g S1_lower) :e Sn_topology 2.
+{ exact (open_in_elem (Sn 2) (Sn_topology 2) (Sn 2 :\: (image_of g S1_lower))
+    (open_of_closed_complement (Sn 2) (Sn_topology 2) (image_of g S1_lower) HclosedC2)). }
+(** Provide witnesses and prove the 11-way conjunction **)
+witness (image_of g S1_upper).
+witness (image_of g S1_lower).
+witness (apply_fun g S1_basepoint).
+witness (apply_fun g S1_left_point).
+apply andI.
+- apply andI.
+  + apply andI.
+    * apply andI.
+      { apply and7I.
+        - exact HpInSn2.
+        - exact HqInSn2.
+        - exact HpNeq.
+        - exact HC1SubC.
+        - exact HC2SubC.
+        - exact HC_eq_C1_C2.
+        - exact HIntersect_C1_C2. }
+      { exact Hconn1. }
+    * exact Hconn2.
+  + exact Hopen1.
+- exact Hopen2.
+Qed.
 
 (** Helper: S^2-C is open in S^2 when C is compact (a simple closed curve is compact). **)
 (** Proof: C homeo S^1, S^1 compact, so C compact. S^2 Hausdorff, **)
