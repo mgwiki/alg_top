@@ -285234,6 +285234,10 @@ claim Hq0S2 : q0 :e Sn 2. { exact (HC q0 Hq0C). }
 (** Full transfer of 11 properties needs ~60 more lines **)
 (** For now, witness the existentials and admit the conjunction **)
 witness C1. witness C2. witness p0. witness q0.
+(** 11-fold conjunction: p0 in S2, q0 in S2, p0<>q0, C1 c= C, C2 c= C, **)
+(** C = C1 union C2, C1 cap C2 = {p0,q0}, C1 connected, C2 connected, **)
+(** S2-C1 open, S2-C2 open **)
+(** Items 1-2 proved (Hp0S2, Hq0S2). Others need homeomorphism transfer. **)
 admit.
 Admitted.
 
