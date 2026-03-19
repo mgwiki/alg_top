@@ -294034,6 +294034,7 @@ admit.
 Admitted.
 
 (** Helper: for fixed p in R2, the map x -> R2_sub x p is continuous R2 -> R2 **)
+(** Proven Alice **)
 Lemma R2_sub_right_continuous : forall p:set,
   p :e setprod R R ->
   continuous_map (setprod R R) R2_topology (setprod R R) R2_topology
@@ -294078,11 +294079,44 @@ claim Hh : continuous_map R2 R2_topology R2 (product_topology R R_standard_topol
 { exact (maps_into_products R2 R2_topology R R_standard_topology R R_standard_topology f0 f1 Hf0 Hf1). }
 (** Now need: graph R2 (fun x => R2_sub x p) agrees with h pointwise **)
 (** Then use continuous_map_congr_on to transfer continuity **)
-(** Need: function_on (graph ...) R2 R2 and pointwise equality with h **)
-(** Both require showing R2_sub x p in R2 and h(x) = R2_sub x p for x in R2 **)
-(** The pointwise equality needs add_of_pair_map_apply, projection_apply, const_fun_apply **)
-admit.
-Admitted.
+(** Transfer continuity from h to the graph via congr_on **)
+set g := graph R2 (fun x:set => R2_sub x p).
+claim Hg_fn : function_on g R2 R2.
+{ let x. assume Hx : x :e R2.
+  prove apply_fun g x :e R2.
+  rewrite (apply_fun_graph R2 (fun z:set => R2_sub z p) x Hx).
+  exact (R2_sub_in_R2 x p Hx HpR2). }
+claim Hpointwise : forall x:set, x :e R2 ->
+  apply_fun h x = apply_fun g x.
+{ let x. assume Hx : x :e R2.
+  claim Hx0R : x 0 :e R. { exact (ap0_Sigma R (fun _ => R) x Hx). }
+  claim Hx1R : x 1 :e R. { exact (ap1_Sigma R (fun _ => R) x Hx). }
+  (** apply_fun g x = R2_sub x p **)
+  rewrite (apply_fun_graph R2 (fun z:set => R2_sub z p) x Hx).
+  (** apply_fun h x = (apply_fun f0 x, apply_fun f1 x) **)
+  rewrite (pair_map_apply R2 R R f0 f1 x Hx).
+  (** apply_fun f0 x = add_SNo (x 0) neg_p0 **)
+  claim Hproj0x : apply_fun (projection1 R R) x :e R.
+  { rewrite (projection1_apply R R x Hx). exact Hx0R. }
+  claim Hconst0x : apply_fun (const_fun R2 neg_p0) x :e R.
+  { rewrite (const_fun_apply R2 neg_p0 x Hx). exact Hnp0R. }
+  rewrite (add_of_pair_map_apply R2 (projection1 R R) (const_fun R2 neg_p0) x Hx
+    Hproj0x Hconst0x).
+  rewrite (projection1_apply R R x Hx).
+  rewrite (const_fun_apply R2 neg_p0 x Hx).
+  claim Hproj1x : apply_fun (projection2 R R) x :e R.
+  { rewrite (projection2_apply R R x Hx). exact Hx1R. }
+  claim Hconst1x : apply_fun (const_fun R2 neg_p1) x :e R.
+  { rewrite (const_fun_apply R2 neg_p1 x Hx). exact Hnp1R. }
+  rewrite (add_of_pair_map_apply R2 (projection2 R R) (const_fun R2 neg_p1) x Hx
+    Hproj1x Hconst1x).
+  rewrite (projection2_apply R R x Hx).
+  rewrite (const_fun_apply R2 neg_p1 x Hx).
+  (** Goal: (add_SNo (x 0) neg_p0, add_SNo (x 1) neg_p1) = R2_sub x p **)
+  (** R2_sub x p = (add_SNo (x 0) (minus_SNo (p 0)), add_SNo (x 1) (minus_SNo (p 1))) **)
+  reflexivity. }
+exact (continuous_map_congr_on R2 R2_topology R2 R2_topology h g Hh Hg_fn Hpointwise).
+Qed.
 
 (** Helper: for the translation homotopy G(x,t)=g(x)-alpha(t), **)
 (** if alpha avoids image(g), then G avoids 0. **)
