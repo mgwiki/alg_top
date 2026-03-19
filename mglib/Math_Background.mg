@@ -237302,6 +237302,225 @@ apply andI.
 - exact Hseg1.
 Qed.
 
+(** Infrastructure: segment inside a unit_interval ball (r<1) as an element of function_space. **)
+(** This is useful when building path_concat_nat data. **)
+(** Proven Charlie **)
+Lemma unit_interval_ballFam_segment_function_space_lt1 : forall r B x y:set,
+  r :e R -> Rlt 0 r -> Rlt r 1 ->
+  B :e {open_ball unit_interval R_bounded_metric c r | c :e unit_interval} ->
+  x :e B -> y :e B ->
+  exists seg:set,
+    seg :e function_space unit_interval unit_interval /\
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg /\
+    (forall t:set, t :e unit_interval -> apply_fun seg t :e B) /\
+    apply_fun seg 0 = x /\
+    apply_fun seg 1 = y.
+let r B x y.
+assume HrR Hrpos Hrlt1 HB Hx Hy.
+apply (ReplE_impred unit_interval (fun c:set => open_ball unit_interval R_bounded_metric c r) B HB).
+let c. assume HcI HeqB.
+claim HxB : x :e open_ball unit_interval R_bounded_metric c r.
+{ rewrite <- HeqB. exact Hx. }
+claim HyB : y :e open_ball unit_interval R_bounded_metric c r.
+{ rewrite <- HeqB. exact Hy. }
+claim HsegBall_ex :
+  exists segBall:set,
+    continuous_map unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c r)) segBall /\
+    apply_fun segBall 0 = x /\
+    apply_fun segBall 1 = y.
+{
+  exact (open_ball_unit_interval_segment_continuous_lt1
+    c r x y HcI HrR Hrpos Hrlt1 HxB HyB).
+}
+apply HsegBall_ex.
+let segBall. assume HsegBallPack.
+claim HsegBallCont :
+  continuous_map unit_interval unit_interval_topology
+    (open_ball unit_interval R_bounded_metric c r)
+    (subspace_topology R R_standard_topology
+      (open_ball unit_interval R_bounded_metric c r)) segBall.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c r)) segBall)
+    (apply_fun segBall 0 = x)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c r)) segBall /\
+        apply_fun segBall 0 = x)
+      (apply_fun segBall 1 = y)
+      HsegBallPack)).
+}
+claim HsegBall0 : apply_fun segBall 0 = x.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c r)) segBall)
+    (apply_fun segBall 0 = x)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c r)) segBall /\
+        apply_fun segBall 0 = x)
+      (apply_fun segBall 1 = y)
+      HsegBallPack)).
+}
+claim HsegBall1 : apply_fun segBall 1 = y.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c r)) segBall /\
+      apply_fun segBall 0 = x)
+    (apply_fun segBall 1 = y)
+    HsegBallPack).
+}
+claim HsegBallFun :
+  function_on segBall unit_interval (open_ball unit_interval R_bounded_metric c r).
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    (open_ball unit_interval R_bounded_metric c r)
+    (subspace_topology R R_standard_topology
+      (open_ball unit_interval R_bounded_metric c r))
+    segBall
+    HsegBallCont).
+}
+set incB := graph (open_ball unit_interval R_bounded_metric c r) (fun z:set => z).
+claim HincB :
+  function_on incB (open_ball unit_interval R_bounded_metric c r) unit_interval.
+{
+  let z. assume Hz.
+  rewrite (apply_fun_graph
+    (open_ball unit_interval R_bounded_metric c r)
+    (fun z0:set => z0)
+    z
+    Hz).
+  exact (open_ball_subset_X unit_interval R_bounded_metric c r z Hz).
+}
+set seg := compose_fun unit_interval segBall incB.
+claim HsegFS : seg :e function_space unit_interval unit_interval.
+{
+  exact (compose_fun_in_function_space
+    unit_interval
+    (open_ball unit_interval R_bounded_metric c r)
+    unit_interval
+    segBall
+    incB
+    HsegBallFun
+    HincB).
+}
+claim HincCont :
+  continuous_map
+    (open_ball unit_interval R_bounded_metric c r)
+    (subspace_topology R R_standard_topology
+      (open_ball unit_interval R_bounded_metric c r))
+    unit_interval
+    unit_interval_topology
+    incB.
+{
+  claim HincCont0 :
+    continuous_map
+      (open_ball unit_interval R_bounded_metric c r)
+      (subspace_topology unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c r))
+      unit_interval
+      unit_interval_topology
+      incB.
+  {
+    exact (subspace_inclusion_continuous
+      unit_interval
+      unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)
+      unit_interval_topology_on
+      (open_ball_subset_X unit_interval R_bounded_metric c r)).
+  }
+  claim Hsubspace_eq :
+    subspace_topology unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r) =
+    subspace_topology R R_standard_topology
+      (open_ball unit_interval R_bounded_metric c r).
+  {
+    exact (ex16_1_subspace_transitive
+      R
+      R_standard_topology
+      unit_interval
+      (open_ball unit_interval R_bounded_metric c r)
+      R_standard_topology_is_topology
+      unit_interval_sub_R
+      (open_ball_subset_X unit_interval R_bounded_metric c r)).
+  }
+  rewrite <- Hsubspace_eq.
+  exact HincCont0.
+}
+claim HsegCont :
+  continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    (open_ball unit_interval R_bounded_metric c r)
+    (subspace_topology R R_standard_topology
+      (open_ball unit_interval R_bounded_metric c r))
+    unit_interval
+    unit_interval_topology
+    segBall
+    incB
+    HsegBallCont
+    HincCont).
+}
+claim HsegRange :
+  forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r.
+{
+  let t. assume HtI.
+  claim Hz : apply_fun segBall t :e open_ball unit_interval R_bounded_metric c r.
+  { exact (HsegBallFun t HtI). }
+  rewrite (compose_fun_apply unit_interval segBall incB t HtI).
+  rewrite (apply_fun_graph
+    (open_ball unit_interval R_bounded_metric c r)
+    (fun z:set => z)
+    (apply_fun segBall t)
+    Hz).
+  exact Hz.
+}
+witness seg.
+apply andI.
+- apply andI.
+  + apply andI.
+    * apply andI.
+      { exact HsegFS. }
+      { exact HsegCont. }
+    * let t. assume HtI.
+      rewrite HeqB.
+      exact (HsegRange t HtI).
+  + rewrite (compose_fun_apply unit_interval segBall incB 0 zero_in_unit_interval).
+    rewrite (apply_fun_graph
+      (open_ball unit_interval R_bounded_metric c r)
+      (fun z:set => z)
+      (apply_fun segBall 0)
+      (HsegBallFun 0 zero_in_unit_interval)).
+    exact HsegBall0.
+- rewrite (compose_fun_apply unit_interval segBall incB 1 one_in_unit_interval).
+  rewrite (apply_fun_graph
+    (open_ball unit_interval R_bounded_metric c r)
+    (fun z:set => z)
+    (apply_fun segBall 1)
+    (HsegBallFun 1 one_in_unit_interval)).
+  exact HsegBall1.
+Qed.
+
 (** Infrastructure: insert (reverse gamma) then gamma at a midpoint of a concatenation. **)
 (** This is the algebraic-topology standard trick used to turn paths into loops based at x0. **)
 (** Proven Charlie **)
