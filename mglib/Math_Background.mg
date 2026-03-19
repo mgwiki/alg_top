@@ -1,7 +1,7 @@
 (** Balance Alice 9024 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
-(** Balance Dave 2428 **)
+(** Balance Dave 2433 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -283450,17 +283450,15 @@ apply andI. exact (eq_refl R). exact Hba.
 Qed.
 
 (** Helper: if a in open_ray_lower R b then Rlt a b **)
-(** Bounty 5 **)
+(** Collected Dave 5 **)
+(** Proven Dave **)
 Lemma open_ray_lower_Rlt : forall a b:set,
   a :e open_ray_lower R b -> Rlt a b.
 let a b. assume Ha : a :e open_ray_lower R b.
 prove Rlt a b.
 claim Hord : order_rel R a b. { exact (SepE2 R (fun x => order_rel R x b) a Ha). }
-(** order_rel R a b has R = R /\ Rlt a b as first disjunct **)
-(** Extract via case analysis; R <> Q, R <> omega, etc. are contradictory **)
-(** For simplicity admit the extraction **)
-admit.
-Admitted.
+exact (order_rel_R_implies_Rlt a b Hord).
+Qed.
 
 (** Helper: S^1 = upper union lower, upper cap lower = {(1,0), (-1,0)} **)
 (** Upper and lower are both arcs (homeomorphic to [-1,1] via x-projection) **)
