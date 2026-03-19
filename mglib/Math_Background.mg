@@ -281327,8 +281327,24 @@ apply andI.
   { assume Hin : neg_p :e Sing (0, 0).
     exact (Hnegpne (SingE (0, 0) neg_p Hin)). }
   exact (setminusI (setprod R R) (Sing (0, 0)) neg_p HnegpR2 Hnegp_notin_sing).
-- (** g homotopic to const(-p) via Lemma_51_1_homotopy_trans **)
-  admit.
+- (** g homotopic to const(-p) via two homotopies composed: **)
+  (** G: g ~ k where k(x) = g(x) - p (translation by path alpha) **)
+  (** H: k ~ const(-p) where H(x,t) = t.g(x) - p (scaling) **)
+  (** Compose via Lemma_51_1_homotopy_trans **)
+  set k_fun := graph A (fun x:set => r2sub (apply_fun g x) p).
+  claim Hg_hom_k : homotopic_maps A TA R2m0 TR2m0 g k_fun.
+  { (** Translation homotopy G(x,t) = g(x) - alpha(t) **)
+    (** G(x,0) = g(x) - alpha(0) = g(x) - (0,0) = g(x) **)
+    (** G(x,1) = g(x) - alpha(1) = g(x) - p = k(x) **)
+    (** G avoids (0,0) since alpha(t) not in g(A) **)
+    admit. }
+  claim Hk_hom_const : homotopic_maps A TA R2m0 TR2m0 k_fun (const_fun A neg_p).
+  { (** Scaling homotopy H(x,t) = t.g(x) - p **)
+    (** H(x,1) = g(x) - p = k(x) **)
+    (** H(x,0) = 0 - p = -p = neg_p **)
+    (** H avoids (0,0) since t.g(x) in ball B, p outside B **)
+    admit. }
+  exact (Lemma_51_1_homotopy_trans A TA R2m0 TR2m0 g k_fun (const_fun A neg_p) Hg_hom_k Hk_hom_const).
 Admitted.
 
 (** from S61 Lem 61.2 (line 1815 in algtop.tex) **)
