@@ -282585,7 +282585,20 @@ apply andI.
       (** g: A -> R2 by composing g: A -> R2m0 with inclusion R2m0 -> R2 **)
       (** Use continuous_construction_rules part 6: codomain expansion **)
       claim Hg_to_R2 : continuous_map A TA R2 R2_topology g.
-      { admit. }
+      { (** g: A -> R2m0, inclusion R2m0 -> R2, compose, then congr_on **)
+        set incl_R2m0 := {(y,y)|y :e R2m0}.
+        claim Hincl : continuous_map R2m0 TR2m0 R2 R2_topology incl_R2m0.
+        { exact (subspace_inclusion_continuous R2 R2_topology R2m0 HtopR2 HR2m0_sub). }
+        claim Hcomp : continuous_map A TA R2 R2_topology (compose_fun A g incl_R2m0).
+        { exact (composition_continuous A TA R2m0 TR2m0 R2 R2_topology g incl_R2m0 Hg_cont Hincl). }
+        claim Hg_fn_R2 : function_on g A R2.
+        { let a. assume Ha : a :e A.
+          exact (HR2m0_sub (apply_fun g a) (continuous_map_function_on A TA R2m0 TR2m0 g Hg_cont a Ha)). }
+        claim Hpw : forall a:set, a :e A ->
+          apply_fun (compose_fun A g incl_R2m0) a = apply_fun g a.
+        { (** compose gives: apply incl (apply g a) = apply g a since incl is identity **)
+          admit. }
+        exact (continuous_map_congr_on A TA R2 R2_topology (compose_fun A g incl_R2m0) g Hcomp Hg_fn_R2 Hpw). }
       (** Step 2: translate_p: R2 -> R2 continuous **)
       set translate_p := graph R2 (fun x:set => r2sub x p).
       claim HpR2_local : p :e setprod R R.
