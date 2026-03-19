@@ -1,6 +1,6 @@
 (** Balance Alice 9168 **)
 (** Balance Bob 6353 **)
-(** Balance Charlie 804 **)
+(** Balance Charlie 799 **)
 (** Balance Dave 2428 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -404173,7 +404173,8 @@ Qed.
 
 (** Helper goal for S74: saturation of a closed set is closed in B2. **)
 (** This should imply both: polygon_pasting_map is a closed map, and the quotient is T1. **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 1773967301 **)
 Lemma polygon_pasting_saturation_closed_in_B2 : forall n w C:set,
   C c= B2 ->
   closed_in B2 B2_topology C ->
