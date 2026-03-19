@@ -284073,14 +284073,29 @@ assume Hsc : simply_connected R2_minus_origin R2_minus_origin_topology.
 claim Hnot_nul : ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
   (graph S1 (fun x:set => x))).
 { exact cor55_4a_inclusion_S1_R2_not_nulhomotopic. }
-(** But in a simply connected space, any continuous map from S^1 is nulhomotopic. **)
-(** Proof: s55_trivial_implies_nulhomotopic needs h_star trivial at basepoint. **)
-(** Since R2m0 simply connected, pi1(R2m0, b) = {e} at some b, then **)
-(** path connectedness + basepoint change gives pi1(R2m0, S1_bp) = {e}. **)
-(** Then h_star maps into {e}, hence trivial. **)
-(** Then s55_trivial_implies_nulhomotopic gives nulhomotopic. Contradiction. **)
-(** Remaining admits: basepoint transfer of trivial pi1, h_star trivial extraction **)
-admit.
+(** In a simply connected space, any continuous map from S^1 is nulhomotopic **)
+set incl := graph S1 (fun x:set => x).
+claim Hincl_cont : continuous_map S1 S1_topology R2_minus_origin R2_minus_origin_topology incl.
+{ exact s55_inclusion_S1_R2_minus_origin_continuous. }
+claim Hb0 : S1_basepoint :e S1. { exact S1_basepoint_in_S1_early. }
+(** Need: h_star is trivial, i.e., for all cls in pi1(S1, b0), **)
+(** ih(cls) = identity in pi1(R2m0, incl(b0)) **)
+(** This requires: pi1(R2m0, incl(b0)) = {e} (from simply connected) **)
+(** Then any map into it hits only e **)
+claim Hincl_triv : forall cls:set,
+  cls :e fundamental_group S1 S1_topology S1_basepoint ->
+  apply_fun (induced_homomorphism S1 S1_topology S1_basepoint
+    R2_minus_origin R2_minus_origin_topology (apply_fun incl S1_basepoint) incl) cls =
+  fundamental_group_id R2_minus_origin R2_minus_origin_topology (apply_fun incl S1_basepoint).
+{ (** From Hsc: pi1(R2m0, x0) = {e} for some x0 **)
+  (** Path connect to incl(b0), basepoint change iso, still trivial **)
+  (** Then induced_hom maps into trivial group -> trivial **)
+  admit. }
+(** By s55_trivial_implies_nulhomotopic: incl is nulhomotopic **)
+claim Hnul : nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology incl.
+{ exact (s55_trivial_implies_nulhomotopic R2_minus_origin R2_minus_origin_topology incl
+    S1_basepoint Hincl_cont Hb0 Hincl_triv). }
+exact (Hnot_nul Hnul).
 Admitted.
 
 (** Helper: the pi1 of S^2 minus two points is nontrivial **)
