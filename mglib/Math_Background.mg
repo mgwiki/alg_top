@@ -281266,6 +281266,8 @@ apply Hpath_exists. let p. assume Hp_data.
 set R2m0 := setprod R R :\: Sing (0, 0).
 set TR2m0 := subspace_topology (setprod R R) R2_topology R2m0.
 set neg_p := (minus_SNo (p 0), minus_SNo (p 1)).
+(** Local helper: R^2 subtraction (defined here since R2_sub is later in file) **)
+set r2sub := fun z w:set => (add_SNo (z 0) (minus_SNo (w 0)), add_SNo (z 1) (minus_SNo (w 1))).
 prove nulhomotopic A TA R2m0 TR2m0 g.
 prove exists y0:set, y0 :e R2m0 /\ homotopic_maps A TA R2m0 TR2m0 g (const_fun A y0).
 witness neg_p.
