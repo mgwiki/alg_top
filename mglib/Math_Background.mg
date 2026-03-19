@@ -282326,14 +282326,47 @@ claim Hy0 : y0 :e Y.
 { exact (andEL (y0 :e Y) (homotopic_maps A TA Y TY f (const_fun A y0)) Hy0_and_hom). }
 claim Hhomotopy : homotopic_maps A TA Y TY f (const_fun A y0).
 { exact (andER (y0 :e Y) (homotopic_maps A TA Y TY f (const_fun A y0)) Hy0_and_hom). }
-(** Steps 2-8 require: **)
-(** - Tietze extension (Tietze_extension_real, axiom) **)
-(** - Tube lemma (tube_lemma, axiom) **)
-(** - Urysohn lemma (Urysohn_lemma, axiom) **)
-(** - Construction of g and H from G and phi **)
-(** - Continuity of g and H **)
-(** Each step is substantial formalization work. **)
-(** The mathematical argument is clear; formal extraction is verbose. **)
+(** Step 2: Extract homotopy witness F0 from Hhomotopy **)
+set TXI := product_topology X Tx unit_interval unit_interval_topology.
+claim Hhomotopy_data : continuous_map A TA Y TY f /\ continuous_map A TA Y TY (const_fun A y0) /\
+  exists F0:set, continuous_map (setprod A unit_interval)
+    (product_topology A TA unit_interval unit_interval_topology) Y TY F0 /\
+  (forall a:set, a :e A -> apply_fun F0 (a, 0) = apply_fun f a) /\
+  (forall a:set, a :e A -> apply_fun F0 (a, 1) = apply_fun (const_fun A y0) a).
+{ exact Hhomotopy. }
+(** Extract F0 **)
+claim HF0_exists : exists F0:set, continuous_map (setprod A unit_interval)
+  (product_topology A TA unit_interval unit_interval_topology) Y TY F0 /\
+  (forall a:set, a :e A -> apply_fun F0 (a, 0) = apply_fun f a) /\
+  (forall a:set, a :e A -> apply_fun F0 (a, 1) = apply_fun (const_fun A y0) a).
+{ exact (andER (continuous_map A TA Y TY f /\ continuous_map A TA Y TY (const_fun A y0))
+    (exists F0:set, continuous_map (setprod A unit_interval)
+      (product_topology A TA unit_interval unit_interval_topology) Y TY F0 /\
+    (forall a:set, a :e A -> apply_fun F0 (a, 0) = apply_fun f a) /\
+    (forall a:set, a :e A -> apply_fun F0 (a, 1) = apply_fun (const_fun A y0) a))
+    Hhomotopy_data). }
+apply HF0_exists. let F0. assume HF0_data.
+(** Extract F0 properties **)
+set F0_type1 := continuous_map (setprod A unit_interval)
+  (product_topology A TA unit_interval unit_interval_topology) Y TY F0.
+set F0_type2 := forall a:set, a :e A -> apply_fun F0 (a, 0) = apply_fun f a.
+set F0_type3 := forall a:set, a :e A -> apply_fun F0 (a, 1) = apply_fun (const_fun A y0) a.
+claim HF0_cont : F0_type1.
+{ exact (andEL F0_type1 F0_type2 (andEL (F0_type1 /\ F0_type2) F0_type3 HF0_data)). }
+claim HF0_at_0 : F0_type2.
+{ exact (andER F0_type1 F0_type2 (andEL (F0_type1 /\ F0_type2) F0_type3 HF0_data)). }
+claim HF0_at_1 : F0_type3.
+{ exact (andER (F0_type1 /\ F0_type2) F0_type3 HF0_data). }
+(** Step 3: Tietze extension to G: X x I -> R^n **)
+(** Need: F0 viewed as map to R^n (not just Y), extended from closed domain **)
+(** Domain: (A x I) union (X x {1}), closed in X x I **)
+(** Range: euclidean_space n **)
+(** Extended F on (A x I) union (X x {1}) maps: **)
+(**   (a,t) -> apply_fun F0 (a,t) for a in A, t in I **)
+(**   (x,1) -> y0 for x in X **)
+(** This agrees on the overlap: for a in A, F0(a,1) = const(y0)(a) = y0 **)
+(** Steps 4-8: tube lemma + Urysohn + phi construction **)
+(** Full proof requires ~200 lines of continuity arguments **)
 admit.
 Admitted.
 
