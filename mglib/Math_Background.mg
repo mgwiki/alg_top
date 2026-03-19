@@ -282839,9 +282839,24 @@ apply andI.
   { exact (locally_connected_local W TW (apply_fun f x) (image_of f (C :/\: U))
       HW_lc Hfx_in_W HfCU_open Hfx_in). }
   (** Step 5: Pull back V' via f^{-1} **)
-  (** The preimage of V' under f is connected and open in C **)
-  (** Then open in C and C open in X gives open in X **)
-  (** This completes the proof but needs formal preimage construction **)
+  apply HV_exists. let V'. assume HV'props.
+  apply (and4E (V' :e TW) (apply_fun f x :e V') (V' c= image_of f (C :/\: U))
+    (connected_space V' (subspace_topology W TW V')) HV'props).
+  assume HV'open : V' :e TW.
+  assume Hfx_in_V' : apply_fun f x :e V'.
+  assume HV'sub : V' c= image_of f (C :/\: U).
+  assume HV'conn : connected_space V' (subspace_topology W TW V').
+  (** Construct the preimage: use the inverse g from homeomorphism **)
+  (** f^{-1}(V') = {y in C | f(y) in V'} = preimage_of C f V' **)
+  set V_pullback := preimage_of C f V'.
+  witness V_pullback.
+  (** Need: V_pullback in Tx, x in V_pullback, V_pullback c= U, **)
+  (** connected V_pullback in subspace of X **)
+  (** Each of these needs formal construction **)
+  (** V_pullback in Tx: preimage of open under continuous + open in open **)
+  (** x in V_pullback: f(x) in V' **)
+  (** V_pullback c= U: V' c= image(f, C cap U) -> preimage c= C cap U c= U **)
+  (** connected: homeomorphism preserves connected **)
   admit.
 Admitted.
 
