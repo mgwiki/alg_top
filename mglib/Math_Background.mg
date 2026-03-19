@@ -282852,9 +282852,29 @@ apply andI.
   witness V_pullback.
   apply and4I.
   + (** V_pullback in Tx **)
-    (** preimage_of C f V' is open in C (preimage of open under continuous) **)
-    (** then open in C and C open in X gives open in X **)
-    admit.
+    (** f continuous -> preimage of V' (open in W) is open in C **)
+    claim Hf_cont : continuous_map C TC W TW f.
+    { exact (andEL (continuous_map C TC W TW f)
+        (exists g:set, continuous_map W TW C TC g /\
+          (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y) /\
+          (forall z:set, z :e W -> apply_fun f (apply_fun g z) = z)) Hhomeo). }
+    claim Hpreimage_cont : forall V0:set, V0 :e TW -> preimage_of C f V0 :e TC.
+    { exact (andER (topology_on C TC /\ topology_on W TW /\ function_on f C W)
+        (forall V0:set, V0 :e TW -> preimage_of C f V0 :e TC)
+        Hf_cont). }
+    claim HVpb_in_TC : V_pullback :e TC.
+    { exact (Hpreimage_cont V' HV'open). }
+    (** V_pullback in TC and C in Tx -> V_pullback in Tx **)
+    claim HVpb_sub_C : V_pullback c= C.
+    { let y. assume Hy. exact (SepE1 C (fun z:set => apply_fun f z :e V') y Hy). }
+    claim HtopC : topology_on C TC.
+    { claim HCsub : C c= X.
+      { exact (open_in_subset X Tx C (andEL (open_in X Tx C) (x :e C) HCopen_xC)). }
+      exact (subspace_topology_is_topology X Tx C Htop HCsub). }
+    claim HVpb_open_in : open_in C TC V_pullback.
+    { prove topology_on C TC /\ V_pullback :e TC.
+      exact (andI (topology_on C TC) (V_pullback :e TC) HtopC HVpb_in_TC). }
+    exact (open_in_subspace_if_ambient_open X Tx C V_pullback Htop HCopen HVpb_sub_C HVpb_open_in).
   + (** x in V_pullback **)
     prove x :e preimage_of C f V'.
     prove x :e {y :e C | apply_fun f y :e V'}.
