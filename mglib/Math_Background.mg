@@ -283603,7 +283603,9 @@ apply and9I.
     (** then x^2 = 1, then x=1 or x=-1 by mul_SNo_Lt1_pos_Lt + pos_mul_SNo_Lt' **)
     admit.
   + (** c=: UPair bp left c= upper cap lower **)
-    (** bp = (1,0) and left = (-1,0) both have y=0, so y >= 0 and y <= 0 **)
+    (** bp=(1,0) and left=(-1,0) both have y-coord = 0, so both >=0 and <=0 **)
+    (** Needs: (1,0) 1 = 0 and (-1,0) 1 = 0 (from tuple_2_1_eq) **)
+    (** Then not(0<0) by SNoLt_irref **)
     admit.
 - (** (1,0) in S1 **)
   exact S1_basepoint_in_S1_early.
