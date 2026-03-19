@@ -236485,6 +236485,331 @@ rewrite <- metric_topology_unit_interval_eq_I_topology.
 exact Hint_in_metric.
 Qed.
 
+(** Infrastructure: a segment inside an r<1 unit-interval ball, viewed as a path in unit_interval. **)
+(** This is a small wrapper around open_ball_unit_interval_segment_continuous_lt1 that upgrades the codomain. **)
+(** Proven Charlie **)
+Lemma open_ball_unit_interval_segment_continuous_lt1_in_unit_interval :
+  forall c r x y:set,
+    c :e unit_interval ->
+    r :e R -> Rlt 0 r -> Rlt r 1 ->
+    x :e open_ball unit_interval R_bounded_metric c r ->
+    y :e open_ball unit_interval R_bounded_metric c r ->
+    exists seg:set,
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg /\
+      (forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r) /\
+      apply_fun seg 0 = x /\
+      apply_fun seg 1 = y.
+let c r x y.
+assume HcI HrR Hrpos Hrlt1 Hx Hy.
+claim Hseg_ex :
+  exists seg0:set,
+    continuous_map unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c r)) seg0 /\
+    apply_fun seg0 0 = x /\
+    apply_fun seg0 1 = y.
+{ exact (open_ball_unit_interval_segment_continuous_lt1 c r x y HcI HrR Hrpos Hrlt1 Hx Hy). }
+apply Hseg_ex. let seg0. assume Hseg0pack.
+claim Hseg0_cont_ballR :
+  continuous_map unit_interval unit_interval_topology
+    (open_ball unit_interval R_bounded_metric c r)
+    (subspace_topology R R_standard_topology
+      (open_ball unit_interval R_bounded_metric c r)) seg0.
+{ exact (andEL
+    (continuous_map unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c r)) seg0)
+    (apply_fun seg0 0 = x)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c r)) seg0 /\
+        apply_fun seg0 0 = x)
+      (apply_fun seg0 1 = y)
+      Hseg0pack)). }
+claim Hseg0_0 : apply_fun seg0 0 = x.
+{ exact (andER
+    (continuous_map unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c r)) seg0)
+    (apply_fun seg0 0 = x)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric c r)
+        (subspace_topology R R_standard_topology
+          (open_ball unit_interval R_bounded_metric c r)) seg0 /\
+        apply_fun seg0 0 = x)
+      (apply_fun seg0 1 = y)
+      Hseg0pack)). }
+claim Hseg0_1 : apply_fun seg0 1 = y.
+{ exact (andER
+    (continuous_map unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)
+      (subspace_topology R R_standard_topology
+        (open_ball unit_interval R_bounded_metric c r)) seg0 /\
+      apply_fun seg0 0 = x)
+    (apply_fun seg0 1 = y)
+    Hseg0pack). }
+(** Identify the codomain topology as a subspace topology of unit_interval. **)
+claim HtopUI : topology_on unit_interval unit_interval_topology.
+{ exact unit_interval_topology_on. }
+claim Hball_sub_UI : open_ball unit_interval R_bounded_metric c r c= unit_interval.
+{ exact (open_ball_subset_X unit_interval R_bounded_metric c r). }
+claim Htop_ball_eq :
+  subspace_topology R R_standard_topology (open_ball unit_interval R_bounded_metric c r) =
+  subspace_topology unit_interval unit_interval_topology (open_ball unit_interval R_bounded_metric c r).
+{
+  (** unit_interval_topology is itself a subspace topology of R, so subspaces are transitive **)
+  exact (eq_symm
+    (subspace_topology unit_interval unit_interval_topology (open_ball unit_interval R_bounded_metric c r))
+    (subspace_topology R R_standard_topology (open_ball unit_interval R_bounded_metric c r))
+    (ex16_1_subspace_transitive
+      R R_standard_topology unit_interval (open_ball unit_interval R_bounded_metric c r)
+      (R_standard_topology_is_topology_local)
+      unit_interval_sub_R
+      Hball_sub_UI)).
+}
+claim Hseg0_cont_ballUI :
+  continuous_map unit_interval unit_interval_topology
+    (open_ball unit_interval R_bounded_metric c r)
+    (subspace_topology unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)) seg0.
+{ rewrite <- Htop_ball_eq. exact Hseg0_cont_ballR. }
+(** Expand the codomain from the subspace to unit_interval. **)
+claim Hseg0_cont_UI :
+  continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg0.
+{
+  exact (continuous_map_range_expand
+    unit_interval unit_interval_topology
+    (open_ball unit_interval R_bounded_metric c r)
+    (subspace_topology unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r))
+    unit_interval unit_interval_topology
+    seg0
+    Hseg0_cont_ballUI
+    Hball_sub_UI
+    HtopUI
+    (eq_refl (subspace_topology unit_interval unit_interval_topology
+      (open_ball unit_interval R_bounded_metric c r)))).
+}
+witness seg0.
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact Hseg0_cont_UI.
+    * let t. assume HtI.
+      claim Hseg0_fun_ball :
+        function_on seg0 unit_interval (open_ball unit_interval R_bounded_metric c r).
+      {
+        exact (continuous_map_function_on
+          unit_interval unit_interval_topology
+          (open_ball unit_interval R_bounded_metric c r)
+          (subspace_topology unit_interval unit_interval_topology
+            (open_ball unit_interval R_bounded_metric c r))
+          seg0
+          Hseg0_cont_ballUI).
+      }
+      exact (Hseg0_fun_ball t HtI).
+  + exact Hseg0_0.
+- exact Hseg0_1.
+Qed.
+
+(** Infrastructure: insert (reverse gamma) then gamma at a midpoint of a concatenation. **)
+(** This is the algebraic-topology standard trick used to turn paths into loops based at x0. **)
+(** Proven Charlie **)
+Lemma path_concat_insert_reverse_gamma_gamma :
+  forall X Tx x0 y x1 p q gamma:set,
+    topology_on X Tx ->
+    path_between X x0 y p ->
+    continuous_map unit_interval unit_interval_topology X Tx p ->
+    path_between X y x1 q ->
+    continuous_map unit_interval unit_interval_topology X Tx q ->
+    path_between X x0 y gamma ->
+    continuous_map unit_interval unit_interval_topology X Tx gamma ->
+    path_homotopic X Tx x0 x1
+      (path_concat p q)
+      (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q)).
+let X Tx x0 y x1 p q gamma.
+assume Htop Hp HpC Hq HqC Hgamma HgammaC.
+claim Hp0 : apply_fun p 0 = x0.
+{ exact (path_between_at_zero X x0 y p Hp). }
+claim Hp1 : apply_fun p 1 = y.
+{ exact (path_between_at_one X x0 y p Hp). }
+claim Hq0 : apply_fun q 0 = y.
+{ exact (path_between_at_zero X y x1 q Hq). }
+claim Hq1 : apply_fun q 1 = x1.
+{ exact (path_between_at_one X y x1 q Hq). }
+claim Hg0 : apply_fun gamma 0 = x0.
+{ exact (path_between_at_zero X x0 y gamma Hgamma). }
+claim Hg1 : apply_fun gamma 1 = y.
+{ exact (path_between_at_one X x0 y gamma Hgamma). }
+claim HrevC : continuous_map unit_interval unit_interval_topology X Tx (reverse_path gamma).
+{ exact (reverse_path_continuous X Tx gamma HgammaC). }
+claim Hrev0 : apply_fun (reverse_path gamma) 0 = y.
+{ rewrite (reverse_path_at_zero gamma). exact Hg1. }
+claim Hrev1 : apply_fun (reverse_path gamma) 1 = x0.
+{ rewrite (reverse_path_at_one gamma). exact Hg0. }
+(** Useful endpoint membership facts. **)
+claim Hpfun : function_on p unit_interval X.
+{ exact (path_between_function_on X x0 y p Hp). }
+claim Hqfun : function_on q unit_interval X.
+{ exact (path_between_function_on X y x1 q Hq). }
+claim HyX : y :e X.
+{ rewrite <- Hp1. exact (Hpfun 1 one_in_unit_interval). }
+claim Hx1X : x1 :e X.
+{ rewrite <- Hq1. exact (Hqfun 1 one_in_unit_interval). }
+(** (reverse gamma) then gamma is homotopic to the constant path at y. **)
+claim Hinv_left :
+  path_homotopic X Tx y y (path_concat (reverse_path gamma) gamma) (constant_path y).
+{ exact (Theorem_51_2_left_inverse X Tx x0 y gamma HgammaC Hg0 Hg1). }
+claim Hinv_left_sym :
+  path_homotopic X Tx y y (constant_path y) (path_concat (reverse_path gamma) gamma).
+{ exact (Lemma_51_1_path_homotopy_sym
+    X Tx y y (path_concat (reverse_path gamma) gamma) (constant_path y) Hinv_left). }
+(** Step 1: (path_concat p q) ~ (path_concat (path_concat p (constant_path y)) q). **)
+claim Hpc : continuous_map unit_interval unit_interval_topology X Tx (constant_path y).
+{ exact (constant_path_continuous X Tx y Htop HyX). }
+claim Hpy0 : apply_fun (constant_path y) 0 = y.
+{ exact (constant_path_at_zero y). }
+claim Hpy1 : apply_fun (constant_path y) 1 = y.
+{ exact (constant_path_at_one y). }
+claim Hassoc1 :
+  path_homotopic X Tx x0 x1
+    (path_concat p (path_concat (constant_path y) q))
+    (path_concat (path_concat p (constant_path y)) q).
+{
+  exact (Theorem_51_2_associativity
+    X Tx x0 y y x1
+    p (constant_path y) q
+    HpC Hpc HqC
+    Hp0 Hp1 Hpy0 Hpy1 Hq0 Hq1).
+}
+claim Hleft_id :
+  path_homotopic X Tx y x1 (path_concat (constant_path y) q) q.
+{
+  exact (Theorem_51_2_left_identity
+    X Tx y x1 q
+    HqC Hq0 Hq1 HyX).
+}
+claim Hpq_to_pconstq :
+  path_homotopic X Tx x0 x1 (path_concat p q) (path_concat p (path_concat (constant_path y) q)).
+{
+  exact (path_concat_well_defined_on_classes
+    X Tx x0 y x1
+    p p q (path_concat (constant_path y) q)
+    (Lemma_51_1_path_homotopy_refl X Tx x0 y p HpC Hp0 Hp1)
+    (Lemma_51_1_path_homotopy_sym
+      X Tx y x1 (path_concat (constant_path y) q) q
+      Hleft_id)).
+}
+claim Hpq_to_pconstq' :
+  path_homotopic X Tx x0 x1 (path_concat p q) (path_concat (path_concat p (constant_path y)) q).
+{
+  exact (Lemma_51_1_path_homotopy_trans
+    X Tx x0 x1
+    (path_concat p q)
+    (path_concat p (path_concat (constant_path y) q))
+    (path_concat (path_concat p (constant_path y)) q)
+    Hpq_to_pconstq
+    Hassoc1).
+}
+(** Step 2: replace constant_path y by (reverse gamma) then gamma. **)
+claim Hreplace_mid :
+  path_homotopic X Tx x0 y
+    (path_concat p (constant_path y))
+    (path_concat p (path_concat (reverse_path gamma) gamma)).
+{
+  exact (path_concat_well_defined_on_classes
+    X Tx x0 y y
+    p p (constant_path y) (path_concat (reverse_path gamma) gamma)
+    (Lemma_51_1_path_homotopy_refl X Tx x0 y p HpC Hp0 Hp1)
+    Hinv_left_sym).
+}
+claim Hreplace_mid2 :
+  path_homotopic X Tx x0 x1
+    (path_concat (path_concat p (constant_path y)) q)
+    (path_concat (path_concat p (path_concat (reverse_path gamma) gamma)) q).
+{
+  exact (path_concat_well_defined_on_classes
+    X Tx x0 y x1
+    (path_concat p (constant_path y))
+    (path_concat p (path_concat (reverse_path gamma) gamma))
+    q q
+    Hreplace_mid
+    (Lemma_51_1_path_homotopy_refl X Tx y x1 q HqC Hq0 Hq1)).
+}
+(** Step 3: reassociate to reach (p then reverse gamma) then (gamma then q). **)
+claim Hpr0 : apply_fun (path_concat p (reverse_path gamma)) 0 = x0.
+{ rewrite (path_concat_at_zero p (reverse_path gamma)). exact Hp0. }
+claim Hpr1 : apply_fun (path_concat p (reverse_path gamma)) 1 = x0.
+{ rewrite (path_concat_at_one p (reverse_path gamma)). exact Hrev1. }
+claim Hassoc_pg :
+  path_homotopic X Tx x0 y
+    (path_concat p (path_concat (reverse_path gamma) gamma))
+    (path_concat (path_concat p (reverse_path gamma)) gamma).
+{
+  exact (Theorem_51_2_associativity
+    X Tx x0 y x0 y
+    p (reverse_path gamma) gamma
+    HpC HrevC HgammaC
+    Hp0 Hp1 Hrev0 Hrev1 Hg0 Hg1).
+}
+claim Hassoc3a :
+  path_homotopic X Tx x0 x1
+    (path_concat (path_concat p (path_concat (reverse_path gamma) gamma)) q)
+    (path_concat (path_concat (path_concat p (reverse_path gamma)) gamma) q).
+{
+  exact (path_concat_well_defined_on_classes
+    X Tx x0 y x1
+    (path_concat p (path_concat (reverse_path gamma) gamma))
+    (path_concat (path_concat p (reverse_path gamma)) gamma)
+    q q
+    Hassoc_pg
+    (Lemma_51_1_path_homotopy_refl X Tx y x1 q HqC Hq0 Hq1)).
+}
+claim Hassoc3b :
+  path_homotopic X Tx x0 x1
+    (path_concat (path_concat (path_concat p (reverse_path gamma)) gamma) q)
+    (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q)).
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X Tx x0 x1
+    (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q))
+    (path_concat (path_concat (path_concat p (reverse_path gamma)) gamma) q)
+    (Theorem_51_2_associativity
+      X Tx x0 x0 y x1
+      (path_concat p (reverse_path gamma)) gamma q
+      (path_concat_continuous X Tx x0 y x0 p (reverse_path gamma) HpC HrevC Hp0 Hp1 Hrev0 Hrev1)
+      HgammaC HqC
+      Hpr0
+      Hpr1
+      Hg0 Hg1 Hq0 Hq1)).
+}
+exact (Lemma_51_1_path_homotopy_trans
+  X Tx x0 x1
+  (path_concat p q)
+  (path_concat (path_concat p (constant_path y)) q)
+  (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q))
+  Hpq_to_pconstq'
+  (Lemma_51_1_path_homotopy_trans
+    X Tx x0 x1
+    (path_concat (path_concat p (constant_path y)) q)
+    (path_concat (path_concat p (path_concat (reverse_path gamma) gamma)) q)
+    (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q))
+    Hreplace_mid2
+    (Lemma_51_1_path_homotopy_trans
+      X Tx x0 x1
+      (path_concat (path_concat p (path_concat (reverse_path gamma) gamma)) q)
+      (path_concat (path_concat (path_concat p (reverse_path gamma)) gamma) q)
+      (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q))
+      Hassoc3a
+      Hassoc3b))).
+Qed.
+
 (** Infrastructure: mixed case for ball_cover_word_construction (to be completed). **)
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
