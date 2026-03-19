@@ -238881,17 +238881,26 @@ claim Htransition_exists :
     + exact HfU.
     + exact HfV.
 }
-apply Htransition_exists. let s_trans. assume Hs_pack.
-apply (and6E
-  (s_trans :e unit_interval) (s_trans <> 0) (s_trans <> 1)
-  (apply_fun f s_trans :e U :/\: V)
-  (forall t:set, t :e unit_interval -> Rle t s_trans -> apply_fun f t :e U)
-  (forall t:set, t :e unit_interval -> Rle s_trans t -> apply_fun f t :e V)
-  Hs_pack).
-assume HsUI Hsne0 Hsne1 HfsUV HfU HfV.
-exact (loop_class_split_at_transition X Tx U V x0 f
-  Htop HU HV Hcover Hx0UV HpcUV HfLoop
-  s_trans HsUI Hsne0 Hsne1 HfsUV HfU HfV).
+(** The Htransition_exists monotone-split claim above is not valid in general and
+    must not be used. The correct proof shrinks to a radius r1 with r1 < r and r1 < 1,
+    rebuilds a small-ball chain, and performs transition induction along the chain
+    order, closing each block at x0 using path connectivity of U cap V and combining
+    word data via word_data_of_loop_concat_nat. **)
+claim Hr1_ex : exists r1:set, r1 :e R /\ Rlt 0 r1 /\ Rlt r1 r /\ Rlt r1 1.
+{ exact (exists_small_radius_lt_r_and_lt1 r HrR Hrpos). }
+apply Hr1_ex. let r1. assume Hr1pack.
+apply (and4E (r1 :e R) (Rlt 0 r1) (Rlt r1 r) (Rlt r1 1) Hr1pack).
+assume Hr1R Hr1pos Hr1ltr Hr1lt1.
+claim Hball_image1 :
+  forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r1 -> apply_fun f t :e V).
+{
+  let c. assume HcI.
+  exact (ball_cover_image_shrink_radius X Tx U V f r1 r
+    Hr1R HrR Hr1pos Hr1ltr Hball_image c HcI).
+}
+admit.
 Admitted.
 
 Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
