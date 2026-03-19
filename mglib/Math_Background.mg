@@ -235776,6 +235776,46 @@ exact (path_between_continuous_loop_at X Tx x0
   HallBetween HallCont).
 Qed.
 
+(** Infrastructure: concatenate a finite sequence of paths indexed by a natural number. **)
+(** The input segs is intended to be a function on ordsucc n, so indices 0..n. **)
+Definition path_concat_nat : set -> set -> set :=
+  fun n segs:set =>
+    nat_primrec (apply_fun segs 0)
+      (fun k acc:set => path_concat acc (apply_fun segs (ordsucc k))) n.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_def : forall n segs:set,
+  path_concat_nat n segs =
+    nat_primrec (apply_fun segs 0)
+      (fun k acc:set => path_concat acc (apply_fun segs (ordsucc k))) n.
+let n segs.
+reflexivity.
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_0 : forall segs:set,
+  path_concat_nat 0 segs = apply_fun segs 0.
+let segs.
+rewrite (path_concat_nat_def 0 segs).
+rewrite (nat_primrec_0 (apply_fun segs 0)
+  (fun k acc:set => path_concat acc (apply_fun segs (ordsucc k)))).
+reflexivity.
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_S : forall n segs:set,
+  nat_p n ->
+  path_concat_nat (ordsucc n) segs =
+    path_concat (path_concat_nat n segs) (apply_fun segs (ordsucc n)).
+let n segs.
+assume HnNat.
+rewrite (path_concat_nat_def (ordsucc n) segs).
+rewrite (path_concat_nat_def n segs).
+rewrite (nat_primrec_S (apply_fun segs 0)
+  (fun k acc:set => path_concat acc (apply_fun segs (ordsucc k))) n HnNat).
+reflexivity.
+Qed.
+
 (** Infrastructure: chain of U-type open balls in unit_interval covers a subinterval. **)
 (** Given overlapping balls 0..k all mapping f to U, their union is connected **)
 (** and contains 0 (from ball 0). By connected_subsets_real_are_intervals, **)
