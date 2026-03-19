@@ -236137,6 +236137,195 @@ claim HP : P n.
 exact (HP segs h HsegsFun HsegsCont Hcompat Hh).
 Qed.
 
+(** Infrastructure: concatenation of a finite sequence of based loops is a based loop. **)
+(** Proven Charlie **)
+Lemma path_concat_nat_preserves_loop_space : forall X Tx x0 n segs:set,
+  n :e omega ->
+  function_on segs (ordsucc n) (loop_space X Tx x0) ->
+  path_concat_nat n segs :e loop_space X Tx x0.
+let X Tx x0 n segs.
+assume HnOmega Hsegs.
+claim HnNat : nat_p n. { exact (omega_nat_p n HnOmega). }
+set P := fun m:set =>
+  forall segsm:set,
+    function_on segsm (ordsucc m) (loop_space X Tx x0) ->
+    path_concat_nat m segsm :e loop_space X Tx x0.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsm. assume Hsegsm.
+    rewrite (path_concat_nat_0 segsm).
+    exact (Hsegsm 0 (ordsuccI2 0)).
+  - let m. assume HmNat IH.
+    let segsm. assume Hsegsm.
+    rewrite (path_concat_nat_S m segsm HmNat).
+    set f0 := path_concat_nat m segsm.
+    set g0 := apply_fun segsm (ordsucc m).
+    claim Hf0Loop : f0 :e loop_space X Tx x0.
+    {
+      exact (IH segsm
+        (function_on_subdomain
+          segsm
+          (ordsucc (ordsucc m))
+          (loop_space X Tx x0)
+          (ordsucc m)
+          Hsegsm
+          (ordsuccI1 (ordsucc m)))).
+    }
+    claim Hg0Loop : g0 :e loop_space X Tx x0.
+    { exact (Hsegsm (ordsucc m) (ordsuccI2 (ordsucc m))). }
+    exact (path_concat_preserves_loop_space X Tx x0 f0 g0 Hf0Loop Hg0Loop).
+  - exact HnNat.
+}
+exact (HP segs Hsegs).
+Qed.
+
+(** Infrastructure: combine word data for a finite concatenation of based loops. **)
+(** Proven Charlie **)
+Lemma word_data_of_loop_concat_nat : forall X Tx U V x0 n segs:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  x0 :e U :/\: V ->
+  n :e omega ->
+  function_on segs (ordsucc n) (loop_space X Tx x0) ->
+  (forall k:set, k :e ordsucc n ->
+    exists nk:set, nk :e omega /\
+    exists gsk:set, function_on gsk nk (fundamental_group X Tx x0) /\
+      (forall i:set, i :e nk ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gsk i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gsk i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)) /\
+      path_homotopy_class_loop X Tx x0 (apply_fun segs k) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun i rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gsk i)) nk) ->
+  exists n0:set, n0 :e omega /\
+  exists gs0:set, function_on gs0 n0 (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n0 ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs0 i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs0 i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 (path_concat_nat n segs) =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun i rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs0 i)) n0.
+let X Tx U V x0 n segs.
+assume Htop HU HV Hx0UV HnOmega HsegsLoop Hwd.
+claim HnNat : nat_p n. { exact (omega_nat_p n HnOmega). }
+set P := fun m:set =>
+  forall segsm:set,
+    function_on segsm (ordsucc m) (loop_space X Tx x0) ->
+    (forall k:set, k :e ordsucc m ->
+      exists nk:set, nk :e omega /\
+      exists gsk:set, function_on gsk nk (fundamental_group X Tx x0) /\
+        (forall i:set, i :e nk ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gsk i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gsk i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)) /\
+        path_homotopy_class_loop X Tx x0 (apply_fun segsm k) =
+          nat_primrec (fundamental_group_id X Tx x0)
+            (fun i rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gsk i)) nk) ->
+    exists n0:set, n0 :e omega /\
+    exists gs0:set, function_on gs0 n0 (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n0 ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs0 i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs0 i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)) /\
+      path_homotopy_class_loop X Tx x0 (path_concat_nat m segsm) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun i rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs0 i)) n0.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsm. assume HsegsmLoop Hwdm.
+    rewrite (path_concat_nat_0 segsm).
+    exact (Hwdm 0 (ordsuccI2 0)).
+  - let m. assume HmNat IH.
+    let segsm. assume HsegsmLoop Hwdm.
+    rewrite (path_concat_nat_S m segsm HmNat).
+    set f0 := path_concat_nat m segsm.
+    set g0 := apply_fun segsm (ordsucc m).
+    claim Hf0Loop : f0 :e loop_space X Tx x0.
+    {
+      exact (path_concat_nat_preserves_loop_space X Tx x0 m segsm
+        (nat_p_omega m HmNat)
+        (function_on_subdomain
+          segsm
+          (ordsucc (ordsucc m))
+          (loop_space X Tx x0)
+          (ordsucc m)
+          HsegsmLoop
+          (ordsuccI1 (ordsucc m)))).
+    }
+    claim Hg0Loop : g0 :e loop_space X Tx x0.
+    { exact (HsegsmLoop (ordsucc m) (ordsuccI2 (ordsucc m))). }
+    claim Hf0Wd :
+      exists n1:set, n1 :e omega /\
+      exists gs1:set, function_on gs1 n1 (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n1 ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs1 i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs1 i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)) /\
+        path_homotopy_class_loop X Tx x0 f0 =
+          nat_primrec (fundamental_group_id X Tx x0)
+            (fun i rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 i)) n1.
+    {
+      exact (IH segsm
+        (function_on_subdomain
+          segsm
+          (ordsucc (ordsucc m))
+          (loop_space X Tx x0)
+          (ordsucc m)
+          HsegsmLoop
+          (ordsuccI1 (ordsucc m)))
+        (fun k Hk => Hwdm k (ordsuccI1 (ordsucc m) k Hk))).
+    }
+    claim Hg0Wd :
+      exists n2:set, n2 :e omega /\
+      exists gs2:set, function_on gs2 n2 (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n2 ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs2 i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs2 i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)) /\
+        path_homotopy_class_loop X Tx x0 g0 =
+          nat_primrec (fundamental_group_id X Tx x0)
+            (fun i rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs2 i)) n2.
+    { exact (Hwdm (ordsucc m) (ordsuccI2 (ordsucc m))). }
+    exact (word_data_of_loop_concat X Tx U V x0 f0 g0
+      Htop HU HV Hx0UV Hf0Loop Hg0Loop Hf0Wd Hg0Wd).
+  - exact HnNat.
+}
+exact (HP segs HsegsLoop Hwd).
+Qed.
+
 (** Infrastructure: chain of U-type open balls in unit_interval covers a subinterval. **)
 (** Given overlapping balls 0..k all mapping f to U, their union is connected **)
 (** and contains 0 (from ball 0). By connected_subsets_real_are_intervals, **)
