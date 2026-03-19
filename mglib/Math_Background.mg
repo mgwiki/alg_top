@@ -283568,10 +283568,18 @@ apply (SNoLt_trichotomy_or x 1 HxSNo SNo_1).
 - assume Hle : SNoLt x 1 \/ x = 1.
   apply Hle.
   + assume Hxlt1 : SNoLt x 1.
-    (** Sub-trichotomy with 0 **)
-    (** Sub-trichotomy with 0: (x < 0 \/ x = 0) \/ 0 < x **)
-    (** Negative, zero, and positive subcases: all admitted except the structure **)
-    admit.
+    (** Sub-trichotomy with 0: ((x < 0 \/ x = 0) \/ 0 < x) **)
+    apply (SNoLt_trichotomy_or_impred x 0 HxSNo SNo_0).
+    - (** x < 0 **) assume Hxlt0 : SNoLt x 0. admit.
+    - (** x = 0 **) assume Hxeq0 : x = 0. admit.
+    - (** 0 < x **)
+      assume H0ltx : SNoLt 0 x.
+      claim Hxsq_lt_x : SNoLt (mul_SNo x x) x.
+      { exact (mul_SNo_Lt1_pos_Lt x x HxSNo HxSNo Hxlt1 H0ltx). }
+      claim Hxsq_lt_1 : SNoLt (mul_SNo x x) 1.
+      { exact (SNoLt_tra (mul_SNo x x) x 1 (SNo_mul_SNo x x HxSNo HxSNo) HxSNo SNo_1 Hxsq_lt_x Hxlt1). }
+      claim H1lt1 : SNoLt 1 1. { rewrite <- Hsq at 1. exact Hxsq_lt_1. }
+      exact (SNoLt_irref 1 H1lt1 (x = 1 \/ x = minus_SNo 1)).
   + assume Hxeq1 : x = 1. apply orIL. exact Hxeq1.
 - assume H1ltx : SNoLt 1 x.
   (** 1 < x: pos_mul_SNo_Lt' gives x < x^2, so 1 < x < x^2 = 1, contradiction **)
