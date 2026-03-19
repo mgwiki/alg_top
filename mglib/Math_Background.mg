@@ -1,4 +1,4 @@
-(** Balance Alice 9168 **)
+(** Balance Alice 9068 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 799 **)
 (** Balance Dave 2428 **)
@@ -281714,6 +281714,7 @@ Qed.
 (** Constructs the "infinite spiral staircase" covering space E -> X **)
 (** E = Union_n (U x {2n}) cup (V x {2n+1}) / identifications along A and B **)
 (** Key property: the lift of alpha.beta starting at (a,0) ends at (a,1) **)
+(** Bounty 50 **)
 Lemma thm63_1a_covering_space :
   forall X Tx U V A B a b alpha beta:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -281738,6 +281739,7 @@ Admitted.
 (** Constructs covering space, lifts the m-fold power representative, **)
 (** uses monodromy + constant path lift + pair injectivity to derive False **)
 (** from the assumption that [gamma]^m = identity in pi_1. **)
+(** Bounty 50 **)
 Lemma thm63_1a_covering_monodromy_argument :
   forall X Tx U V A B:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
