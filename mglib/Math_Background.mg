@@ -283365,14 +283365,83 @@ apply andI.
 Qed.
 
 (** Helper: euclidean space R^n is locally connected (general) **)
+(** Proven Dave **)
 Lemma euclidean_space_locally_connected : forall n:set,
   n :e omega -> locally_connected (euclidean_space n) (euclidean_topology n).
 let n. assume Hn : n :e omega.
 apply (nat_ind (fun n => locally_connected (euclidean_space n) (euclidean_topology n))).
-- (** Base case: n = 0. euclidean_space 0 = {Empty} is locally connected **)
-  (** Singleton space: every open set containing the point is the whole space, **)
-  (** which is connected. Proof needs topology_on + local connectivity. **)
-  admit.
+- (** Base case: n = 0. euclidean_space 0 = {Empty} is a single-point space **)
+  prove locally_connected (euclidean_space 0) (euclidean_topology 0).
+  claim HtopE0 : topology_on (euclidean_space 0) (euclidean_topology 0).
+  { exact (euclidean_topology_is_topology 0). }
+  prove topology_on (euclidean_space 0) (euclidean_topology 0) /\
+    forall x:set, x :e euclidean_space 0 -> forall U:set, U :e euclidean_topology 0 -> x :e U ->
+      exists V:set, V :e euclidean_topology 0 /\ x :e V /\ V c= U /\
+        connected_space V (subspace_topology (euclidean_space 0) (euclidean_topology 0) V).
+  apply andI. exact HtopE0.
+  let x. assume HxE0.
+  let U. assume HU HxU.
+  (** x = Empty since euclidean_space 0 = {Empty} **)
+  claim HxSing : x :e {Empty}.
+  { exact (eq_subst_mem_set x (euclidean_space Empty) {Empty} HxE0 euclidean_space_empty_is_singleton). }
+  claim HxeqEmpty : x = Empty. { exact (SingE Empty x HxSing). }
+  claim HEmptyU : Empty :e U.
+  { exact (eq_subst_mem_rev x Empty U HxeqEmpty HxU). }
+  (** Witness V = euclidean_space 0 (the whole space) **)
+  witness (euclidean_space 0).
+  apply and4I.
+  + exact (topology_has_X (euclidean_space 0) (euclidean_topology 0) HtopE0).
+  + exact HxE0.
+  + prove euclidean_space 0 c= U.
+    let z. assume HzE0 : z :e euclidean_space 0.
+    claim HzSing : z :e {Empty}.
+    { exact (eq_subst_mem_set z (euclidean_space Empty) {Empty} HzE0 euclidean_space_empty_is_singleton). }
+    claim HzeqEmpty : z = Empty. { exact (SingE Empty z HzSing). }
+    exact (eq_subst_mem z Empty U HzeqEmpty HEmptyU).
+  + (** connected_space (euclidean_space 0) - no nontrivial clopen exists in {Empty} **)
+    rewrite (subspace_topology_whole (euclidean_space 0) (euclidean_topology 0) HtopE0).
+    apply (iffER (connected_space (euclidean_space 0) (euclidean_topology 0))
+      (~(exists A:set, A <> Empty /\ A <> (euclidean_space 0) /\
+        open_in (euclidean_space 0) (euclidean_topology 0) A /\
+        closed_in (euclidean_space 0) (euclidean_topology 0) A))
+      (connected_iff_no_nontrivial_clopen (euclidean_space 0) (euclidean_topology 0) HtopE0)).
+    assume HexA.
+    apply HexA. let A. assume HA.
+    (** HA : ((A <> Empty /\ A <> euclidean_space 0) /\ open_in ...) /\ closed_in ... (left-assoc) **)
+    claim HA1 : (A <> Empty /\ A <> euclidean_space 0) /\
+      open_in (euclidean_space 0) (euclidean_topology 0) A.
+    { exact (andEL ((A <> Empty /\ A <> euclidean_space 0) /\
+        open_in (euclidean_space 0) (euclidean_topology 0) A)
+        (closed_in (euclidean_space 0) (euclidean_topology 0) A) HA). }
+    claim HA_ne_open : A <> Empty /\ A <> euclidean_space 0.
+    { exact (andEL (A <> Empty /\ A <> euclidean_space 0)
+        (open_in (euclidean_space 0) (euclidean_topology 0) A) HA1). }
+    claim HA_ne : A <> Empty.
+    { exact (andEL (A <> Empty) (A <> euclidean_space 0) HA_ne_open). }
+    claim HA_ne_X : A <> euclidean_space 0.
+    { exact (andER (A <> Empty) (A <> euclidean_space 0) HA_ne_open). }
+    claim HA_open : open_in (euclidean_space 0) (euclidean_topology 0) A.
+    { exact (andER (A <> Empty /\ A <> euclidean_space 0)
+        (open_in (euclidean_space 0) (euclidean_topology 0) A) HA1). }
+    claim HA_sub : A c= euclidean_space 0.
+    { exact (topology_elem_subset (euclidean_space 0) (euclidean_topology 0) A HtopE0
+        (open_in_elem (euclidean_space 0) (euclidean_topology 0) A HA_open)). }
+    (** A <> Empty, A c= {Empty} -> Empty :e A **)
+    apply (nonempty_has_element A HA_ne). let a. assume Ha.
+    claim HaSing : a :e {Empty}.
+    { exact (eq_subst_mem_set a (euclidean_space Empty) {Empty} (HA_sub a Ha) euclidean_space_empty_is_singleton). }
+    claim HaeqEmpty : a = Empty. { exact (SingE Empty a HaSing). }
+    claim HEmptyA : Empty :e A. { exact (eq_subst_mem_rev a Empty A HaeqEmpty Ha). }
+    (** A = {Empty} = euclidean_space 0: contradicts A <> euclidean_space 0 **)
+    claim HsingSubA : {Empty} c= A. { exact (singleton_subset Empty A HEmptyA). }
+    claim HE0subA : euclidean_space 0 c= A.
+    { let w. assume HwE0 : w :e euclidean_space 0.
+      claim HwSing : w :e {Empty}.
+      { exact (eq_subst_mem_set w (euclidean_space Empty) {Empty} HwE0 euclidean_space_empty_is_singleton). }
+      exact (HsingSubA w HwSing). }
+    claim HAeqE0 : A = euclidean_space 0.
+    { exact (set_ext A (euclidean_space 0) HA_sub HE0subA). }
+    exact (HA_ne_X HAeqE0).
 - (** Inductive step: k -> ordsucc k **)
   let k. assume Hnat_k : nat_p k.
   assume Hlc_k : locally_connected (euclidean_space k) (euclidean_topology k).
@@ -283394,7 +283463,7 @@ apply (nat_ind (fun n => locally_connected (euclidean_space n) (euclidean_topolo
     (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology)
     (euclidean_space_succ_split_map k) Hhomeo_split Hlc_prod).
 - exact (omega_nat_p n Hn).
-Admitted.
+Qed.
 
 (** Helper: locally m-euclidean implies locally connected **)
 (** Uses: charts give local neighborhoods homeomorphic to open in R^m. **)
