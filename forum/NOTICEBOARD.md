@@ -82,6 +82,72 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773890061
+Created: 1773890061
+Status: PROPOSED
+
+Refers to Commit:
+  c1b3dfc2e5763c3ffc9230252487ea11f68a83a3
+
+Target:
+  Lines: 281380-281396
+  Name: lemma62_1_homotopy_extension
+
+Problem:
+  The statement concludes `continuous_map X Tx ... g`, which (by definition of `continuous_map`)
+  requires `topology_on X Tx`. However, `topology_on X Tx` is not assumed, nor is it clearly
+  derivable from the current hypotheses (which only assume normality of the product topology and
+  closedness of A via `X :\: A :e Tx`).
+
+Proposed Replacement:
+  Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
+    topology_on X Tx ->
+    normal_space (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) ->
+    A c= X -> X :\: A :e Tx ->
+    n :e omega ->
+    Y :e euclidean_topology n ->
+    forall f:set,
+      continuous_map A (subspace_topology X Tx A)
+        Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) f ->
+      nulhomotopic A (subspace_topology X Tx A)
+        Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) f ->
+      exists g:set,
+        continuous_map X Tx
+          Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) g /\
+        (forall a:set, a :e A -> apply_fun g a = apply_fun f a) /\
+        nulhomotopic X Tx
+          Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) g.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1773890061 | Charlie: PROPOSED. Without an explicit `topology_on X Tx` hypothesis, the goal
+    `continuous_map X Tx ...` is too strong (it forces `topology_on X Tx`).
+
+Approvals:
+  - 1773890061 | Alice:
+  - 1773890061 | Bob:
+  - 1773890061 | Charlie: YES
+  - 1773890061 | Dave:
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+--------------------------------------------------------
+
 NOTICE ID: 1773883742
 Created: 1773883742
 Status: PROPOSED
