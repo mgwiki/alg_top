@@ -282672,21 +282672,46 @@ apply andI.
       { exact (composition_continuous A TA R2 R2_topology R2 R2_topology g translate_p Hg_to_R2 Htrans). }
       (** Step 4: k_comp agrees with k_fun pointwise **)
       claim Hk_fn : function_on k_fun A R2.
-      { (** k_fun maps A to R2 - same as k_comp which is proved continuous to R2 **)
-        (** But set abbreviation prevents direct transfer. Admit for Megalodon technical reason. **)
-        admit. }
+      { let a. assume Ha : a :e A.
+        claim Hga_R2 : apply_fun g a :e R2.
+        { exact (HR2m0_sub (apply_fun g a) (continuous_map_function_on A TA R2m0 TR2m0 g Hg_cont a Ha)). }
+        claim Hga0 : apply_fun g a 0 :e R. { exact (ap0_Sigma R (fun _ => R) (apply_fun g a) Hga_R2). }
+        claim Hga1 : apply_fun g a 1 :e R. { exact (ap1_Sigma R (fun _ => R) (apply_fun g a) Hga_R2). }
+        claim Hp0 : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2_local). }
+        claim Hp1 : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2_local). }
+        (** Use eq_subst_mem_set to substitute k_fun(a) = r2sub(...) into the goal **)
+        claim Hkfa_eq : apply_fun k_fun a = r2sub (apply_fun g a) p.
+        { exact (apply_fun_graph A (fun x:set => r2sub (apply_fun g x) p) a Ha). }
+        claim Hr2sub_in : r2sub (apply_fun g a) p :e R2.
+        { exact (tuple_2_setprod_by_pair_Sigma R R
+            (add_SNo (apply_fun g a 0) (minus_SNo (p 0)))
+            (add_SNo (apply_fun g a 1) (minus_SNo (p 1)))
+            (real_add_SNo (apply_fun g a 0) Hga0 (minus_SNo (p 0)) (real_minus_SNo (p 0) Hp0))
+            (real_add_SNo (apply_fun g a 1) Hga1 (minus_SNo (p 1)) (real_minus_SNo (p 1) Hp1))). }
+        exact (eq_subst_mem (apply_fun k_fun a) (r2sub (apply_fun g a) p) R2 Hkfa_eq Hr2sub_in). }
       claim Hpointwise : forall a:set, a :e A -> apply_fun k_comp a = apply_fun k_fun a.
-      { (** Both k_comp and k_fun compute r2sub (g a) p for a in A **)
-        (** But set abbreviation for k_fun prevents rewrite. Admit. **)
-        admit. }
+      { let a. assume Ha : a :e A.
+        claim Hga_R2 : apply_fun g a :e R2.
+        { exact (HR2m0_sub (apply_fun g a) (continuous_map_function_on A TA R2m0 TR2m0 g Hg_cont a Ha)). }
+        claim Hkca : apply_fun k_comp a = r2sub (apply_fun g a) p.
+        { exact (eq_i_tra (apply_fun k_comp a) (apply_fun translate_p (apply_fun g a)) (r2sub (apply_fun g a) p)
+            (compose_fun_apply A g translate_p a Ha)
+            (apply_fun_graph R2 (fun x:set => r2sub x p) (apply_fun g a) Hga_R2)). }
+        claim Hkfa : apply_fun k_fun a = r2sub (apply_fun g a) p.
+        { exact (apply_fun_graph A (fun x:set => r2sub (apply_fun g x) p) a Ha). }
+        exact (eq_i_tra (apply_fun k_comp a) (r2sub (apply_fun g a) p) (apply_fun k_fun a)
+          Hkca (eq_symm (apply_fun k_fun a) (r2sub (apply_fun g a) p) Hkfa)). }
       exact (continuous_map_congr_on A TA R2 R2_topology k_comp k_fun Hkcomp Hk_fn Hpointwise). }
     (** k_fun maps into R2m0: g(x) - p <> (0,0) since g(x) <> p **)
     (** (p not in image(g) by hypothesis) **)
     claim Hk_in_R2m0 : forall a:set, a :e A -> apply_fun k_fun a :e R2m0.
     { admit. }
     (** k_fun continuous to R2m0 (by continuous_map_range_restrict) **)
+    claim HR2m0_sub_local : R2m0 c= setprod R R.
+    { let z. assume Hz : z :e R2m0. exact (setminusE1 (setprod R R) (Sing (0,0)) z Hz). }
     claim Hk_cont : continuous_map A TA R2m0 TR2m0 k_fun.
-    { admit. }
+    { exact (continuous_map_range_restrict A TA (setprod R R) R2_topology k_fun R2m0
+        Hk_cont_R2 HR2m0_sub_local Hk_in_R2m0). }
     (** Full homotopy F: A x I -> R2m0 still needs construction **)
     admit. }
   claim Hk_hom_const : homotopic_maps A TA R2m0 TR2m0 k_fun (const_fun A neg_p).
