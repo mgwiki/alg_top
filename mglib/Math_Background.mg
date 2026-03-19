@@ -284058,6 +284058,16 @@ Lemma R2_minus_point_homeo_R2_minus_origin : forall p':set,
     homeomorphism (setprod R R :\: Sing p')
       (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'))
       R2_minus_origin R2_minus_origin_topology f.
+let p'. assume Hp'R2 : p' :e setprod R R.
+(** The homeomorphism is translation by -p': f(x) = x - p' **)
+(** f = graph (R^2-{p'}) (fun x => R2_sub x p') **)
+(** Inverse: g(y) = y + p' (here R2_sub y (neg p') or direct addition) **)
+(** Both continuous via R2_sub continuous **)
+(** R2_sub x p' = (0,0) iff x = p' (by R2_sub_nonzero_of_ne) **)
+(** So f maps R^2-{p'} to R^2-{0} bijectively **)
+(** The R2_minus_origin uses a different definition (Sep not Sing), **)
+(** but {p in R^2 | not(p0=0 and p1=0)} = R^2 setminus {(0,0)} for elements of R^2 **)
+(** Full proof needs careful handling of the R2_minus_origin definition **)
 admit.
 Admitted.
 
