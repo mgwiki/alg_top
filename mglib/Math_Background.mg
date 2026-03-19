@@ -282599,16 +282599,37 @@ apply andI.
   apply Hchart. let C. assume HCe.
   apply HCe. let W. assume HWe.
   apply HWe. let f. assume Hfprops.
-  (** The 5-fold conjunction from the chart: **)
-  (** (((open_in C /\ x in C) /\ W c= R^m) /\ open_in W) /\ homeomorphism **)
-  (** For the locally connected argument: **)
-  (** 1. C cap U open in X (intersection of opens) **)
-  (** 2. C cap U open in C (subspace of open) **)
-  (** 3. f(C cap U) open in W (f homeomorphism -> open map) **)
-  (** 4. R^m lc -> W lc (open subspace) -> f(C cap U) has connected open nbhd **)
-  (** 5. Pull back via f^{-1}: connected (by homeo), open in C, open in X **)
-  (** This is correct but requires substantial subspace topology bookkeeping **)
-  (** Admit for now; the mathematical argument is clear **)
+  (** Extract from the 5-fold conjunction **)
+  claim Hhomeo : homeomorphism C (subspace_topology X Tx C) W
+    (subspace_topology (euclidean_space m) (euclidean_topology m) W) f.
+  { exact (andER
+      (open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\ open_in (euclidean_space m) (euclidean_topology m) W)
+      (homeomorphism C (subspace_topology X Tx C) W (subspace_topology (euclidean_space m) (euclidean_topology m) W) f) Hfprops). }
+  claim Hfirst4 : open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\
+    open_in (euclidean_space m) (euclidean_topology m) W.
+  { exact (andEL
+      (open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\ open_in (euclidean_space m) (euclidean_topology m) W)
+      (homeomorphism C (subspace_topology X Tx C) W (subspace_topology (euclidean_space m) (euclidean_topology m) W) f) Hfprops). }
+  claim HCopen : C :e Tx.
+  { admit. }
+  claim HxC : x :e C.
+  { admit. }
+  (** C cap U is open in X **)
+  claim HCU_open : C :/\: U :e Tx.
+  { claim HCopen_in : open_in X Tx C.
+    { prove topology_on X Tx /\ C :e Tx. exact (andI (topology_on X Tx) (C :e Tx) Htop HCopen). }
+    claim HUopen_in : open_in X Tx U.
+    { prove topology_on X Tx /\ U :e Tx. exact (andI (topology_on X Tx) (U :e Tx) Htop HU). }
+    claim HCUopen_in : open_in X Tx (C :/\: U).
+    { exact (binintersect_open X Tx C U HCopen_in HUopen_in). }
+    exact (andER (topology_on X Tx) (C :/\: U :e Tx) HCUopen_in). }
+  (** x in C cap U **)
+  claim HxCU : x :e C :/\: U. { exact (binintersectI C U x HxC HxU). }
+  (** Now use R^m locally connected to find connected neighborhood **)
+  (** in the image f(C cap U), then pull back **)
+  (** This requires: f maps C cap U to an open set in W, **)
+  (** find connected open subset, pull back **)
+  (** Admit the remaining subspace topology work **)
   admit.
 Admitted.
 
