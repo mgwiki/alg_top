@@ -281619,9 +281619,23 @@ apply and9I.
   (** Goal: (minus_SNo 1, 0) in S1 **)
   (** Hanti: (minus_SNo (S1_basepoint 0), minus_SNo (S1_basepoint 1)) in S1 **)
   (** S1_basepoint = (1,0), so S1_basepoint 0 = 1, S1_basepoint 1 = 0 **)
-  (** (-1, 0) is directly in S1 by computing x^2 + y^2 = 1 **)
-  (** (-1)^2 + 0^2 = 1 + 0 = 1 **)
-  admit.
+  (** Prove directly: (-1)^2 + 0^2 = 1 **)
+  prove (minus_SNo 1, 0) :e S1.
+  prove (minus_SNo 1, 0) :e {p :e setprod R R |
+    add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1}.
+  apply SepI.
+  + (** (-1,0) in R x R **)
+    exact (tuple_2_setprod_by_pair_Sigma R R (minus_SNo 1) 0 (real_minus_SNo 1 real_1) real_0).
+  + (** (-1)^2 + 0^2 = 1 **)
+    prove add_SNo (mul_SNo ((minus_SNo 1, 0) 0) ((minus_SNo 1, 0) 0))
+                  (mul_SNo ((minus_SNo 1, 0) 1) ((minus_SNo 1, 0) 1)) = 1.
+    rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+    (** Goal: add_SNo ((-1).(-1)) (0.0) = 1 **)
+    rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
+    rewrite (mul_SNo_oneR 1 SNo_1).
+    rewrite (mul_SNo_zeroL 0 SNo_0).
+    rewrite (add_SNo_0R 1 SNo_1).
+    exact (eq_refl 1).
 - (** (1,0) <> (-1,0): first coordinates differ since 1 > 0 > -1 **)
   prove S1_basepoint <> S1_left_point.
   prove (1, 0) <> (minus_SNo 1, 0).
