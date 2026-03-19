@@ -1,7 +1,7 @@
 (** Balance Alice 8984 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
-(** Balance Dave 2433 **)
+(** Balance Dave 2453 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -284360,27 +284360,624 @@ apply (SNoLt_trichotomy_or x 1 HxSNo SNo_1).
   exact (SNoLt_irref 1 H1lt1 (x = 1 \/ x = minus_SNo 1)).
 Qed.
 
+(** Helper: [-1,1] is connected via homeomorphism from [0,1] **)
+(** Proven Dave **)
+Lemma closed_interval_minus1_1_connected :
+  connected_space (closed_interval (minus_SNo 1) 1)
+    (closed_interval_topology (minus_SNo 1) 1).
+claim HRle01 : Rle 0 1.
+{ exact (Rlt_implies_Rle 0 1 Rlt_0_1). }
+claim Haffine : exists h : set, exists hinv : set,
+  continuous_map (closed_interval 0 1) (closed_interval_topology 0 1)
+    (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) h /\
+  (continuous_map (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+     (closed_interval 0 1) (closed_interval_topology 0 1) hinv /\
+   ((forall t:set, t :e closed_interval 0 1 -> apply_fun hinv (apply_fun h t) = t) /\
+    (forall s:set, s :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun hinv s) = s))).
+{ exact (closed_interval_affine_equiv_minus1_1 0 1 HRle01 neq_0_1). }
+apply Haffine. let h. assume Hexhinv. apply Hexhinv. let hinv. assume Hconj.
+claim Hconth : continuous_map (closed_interval 0 1) (closed_interval_topology 0 1)
+  (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) h.
+{ exact (andEL
+    (continuous_map (closed_interval 0 1) (closed_interval_topology 0 1)
+      (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) h)
+    (continuous_map (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+       (closed_interval 0 1) (closed_interval_topology 0 1) hinv /\
+     ((forall t:set, t :e closed_interval 0 1 -> apply_fun hinv (apply_fun h t) = t) /\
+      (forall s:set, s :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun hinv s) = s)))
+    Hconj). }
+claim Hconj2 : continuous_map (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+  (closed_interval 0 1) (closed_interval_topology 0 1) hinv /\
+  ((forall t:set, t :e closed_interval 0 1 -> apply_fun hinv (apply_fun h t) = t) /\
+   (forall s:set, s :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun hinv s) = s)).
+{ exact (andER
+    (continuous_map (closed_interval 0 1) (closed_interval_topology 0 1)
+      (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) h)
+    (continuous_map (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+       (closed_interval 0 1) (closed_interval_topology 0 1) hinv /\
+     ((forall t:set, t :e closed_interval 0 1 -> apply_fun hinv (apply_fun h t) = t) /\
+      (forall s:set, s :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun hinv s) = s)))
+    Hconj). }
+claim Hcontinv : continuous_map (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+  (closed_interval 0 1) (closed_interval_topology 0 1) hinv.
+{ exact (andEL
+    (continuous_map (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+       (closed_interval 0 1) (closed_interval_topology 0 1) hinv)
+    ((forall t:set, t :e closed_interval 0 1 -> apply_fun hinv (apply_fun h t) = t) /\
+     (forall s:set, s :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun hinv s) = s))
+    Hconj2). }
+claim Hinvpair : (forall t:set, t :e closed_interval 0 1 -> apply_fun hinv (apply_fun h t) = t) /\
+  (forall s:set, s :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun hinv s) = s).
+{ exact (andER
+    (continuous_map (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+       (closed_interval 0 1) (closed_interval_topology 0 1) hinv)
+    ((forall t:set, t :e closed_interval 0 1 -> apply_fun hinv (apply_fun h t) = t) /\
+     (forall s:set, s :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun hinv s) = s))
+    Hconj2). }
+claim Hinv1 : forall t:set, t :e closed_interval 0 1 -> apply_fun hinv (apply_fun h t) = t.
+{ exact (andEL
+    (forall t:set, t :e closed_interval 0 1 -> apply_fun hinv (apply_fun h t) = t)
+    (forall s:set, s :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun hinv s) = s)
+    Hinvpair). }
+claim Hinv2 : forall s:set, s :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun hinv s) = s.
+{ exact (andER
+    (forall t:set, t :e closed_interval 0 1 -> apply_fun hinv (apply_fun h t) = t)
+    (forall s:set, s :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun hinv s) = s)
+    Hinvpair). }
+claim Hhome_h : homeomorphism
+  (closed_interval 0 1) (closed_interval_topology 0 1)
+  (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) h.
+{ prove continuous_map (closed_interval 0 1) (closed_interval_topology 0 1)
+    (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) h /\
+    exists g:set, continuous_map (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+      (closed_interval 0 1) (closed_interval_topology 0 1) g /\
+    (forall x:set, x :e closed_interval 0 1 -> apply_fun g (apply_fun h x) = x) /\
+    (forall y:set, y :e closed_interval (minus_SNo 1) 1 -> apply_fun h (apply_fun g y) = y).
+  apply andI.
+  + exact Hconth.
+  + witness hinv.
+    apply and3I.
+    - exact Hcontinv.
+    - let t. assume Ht. exact (Hinv1 t Ht).
+    - let s. assume Hs. exact (Hinv2 s Hs). }
+exact (homeomorphism_preserves_connected
+  (closed_interval 0 1) (closed_interval_topology 0 1)
+  (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+  h Hhome_h unit_interval_connected).
+Qed.
+
+(** Helper: S1 minus S1_upper is open in S1_topology **)
+(** Proven Dave **)
+Lemma S1_upper_complement_open :
+  S1 :\: S1_upper :e S1_topology.
+prove S1 :\: S1_upper :e subspace_topology (setprod R R) R2_topology S1.
+set Vopen := rectangle_set R (open_ray_lower R 0).
+claim HtopR : topology_on R R_standard_topology. { exact R_standard_topology_is_topology. }
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{ exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology). }
+claim HRopen : R :e R_standard_topology.
+{ apply (and5E
+    (R_standard_topology c= Power R)
+    (Empty :e R_standard_topology)
+    (R :e R_standard_topology)
+    (forall UFam :e Power R_standard_topology, Union UFam :e R_standard_topology)
+    (forall U :e R_standard_topology, forall V :e R_standard_topology, U :/\: V :e R_standard_topology)
+    HtopR). assume _ _ H _ _. exact H. }
+claim HVopen_in_R2 : Vopen :e R2_topology.
+{ exact (rectangle_set_open_in_product_topology R R_standard_topology R R_standard_topology
+    R (open_ray_lower R 0) HtopR HtopR HRopen
+    (open_ray_lower_in_R_standard_topology 0 real_0)). }
+claim Heq : S1 :\: S1_upper = Vopen :/\: S1.
+{ apply set_ext.
+  - let p. assume Hp : p :e S1 :\: S1_upper.
+    claim HpS1 : p :e S1. { exact (setminusE1 S1 S1_upper p Hp). }
+    claim HpnU : p /:e S1_upper. { exact (setminusE2 S1 S1_upper p Hp). }
+    claim HpR2 : p :e setprod R R.
+    { exact (SepE1 (setprod R R)
+        (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+    claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+    claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+    claim Hp1lt0 : SNoLt (p 1) 0.
+    { apply (dneg (SNoLt (p 1) 0)).
+      assume Hnneg : ~(SNoLt (p 1) 0).
+      exact (HpnU (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpS1 Hnneg)). }
+    claim Hp1Rlt : Rlt (p 1) 0. { exact (RltI (p 1) 0 Hp1R real_0 Hp1lt0). }
+    claim Hp1_ray : p 1 :e open_ray_lower R 0.
+    { exact (Rlt_in_open_ray_lower (p 1) 0 Hp1R real_0 Hp1Rlt). }
+    apply binintersectI.
+    + prove p :e setprod R (open_ray_lower R 0).
+      claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
+      rewrite Hpeta.
+      exact (tuple_2_setprod_by_pair_Sigma R (open_ray_lower R 0)
+        (p 0) (p 1) Hp0R Hp1_ray).
+    + exact HpS1.
+  - let p. assume Hp : p :e Vopen :/\: S1.
+    claim HpS1 : p :e S1. { exact (binintersectE2 Vopen S1 p Hp). }
+    claim HpV : p :e Vopen. { exact (binintersectE1 Vopen S1 p Hp). }
+    apply setminusI.
+    + exact HpS1.
+    + assume HpU : p :e S1_upper.
+      claim Hnneg : ~(SNoLt (p 1) 0).
+      { exact (SepE2 S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpU). }
+      claim Hp1_ray : p 1 :e open_ray_lower R 0.
+      { exact (ap1_Sigma R (fun _ => open_ray_lower R 0) p HpV). }
+      claim Hp1Rlt : Rlt (p 1) 0. { exact (open_ray_lower_Rlt (p 1) 0 Hp1_ray). }
+      claim Hp1lt0 : SNoLt (p 1) 0. { exact (RltE_lt (p 1) 0 Hp1Rlt). }
+      exact (Hnneg Hp1lt0). }
+rewrite Heq.
+exact (subspace_topologyI (setprod R R) R2_topology S1 Vopen HVopen_in_R2).
+Qed.
+
+(** Helper: S1 minus S1_lower is open in S1_topology **)
+(** Proven Dave **)
+Lemma S1_lower_complement_open :
+  S1 :\: S1_lower :e S1_topology.
+prove S1 :\: S1_lower :e subspace_topology (setprod R R) R2_topology S1.
+set Vopen2 := rectangle_set R (open_ray_upper R 0).
+claim HtopR : topology_on R R_standard_topology. { exact R_standard_topology_is_topology. }
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{ exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology). }
+claim HRopen : R :e R_standard_topology.
+{ apply (and5E
+    (R_standard_topology c= Power R)
+    (Empty :e R_standard_topology)
+    (R :e R_standard_topology)
+    (forall UFam :e Power R_standard_topology, Union UFam :e R_standard_topology)
+    (forall U :e R_standard_topology, forall V :e R_standard_topology, U :/\: V :e R_standard_topology)
+    HtopR). assume _ _ H _ _. exact H. }
+claim HVopen2_in_R2 : Vopen2 :e R2_topology.
+{ exact (rectangle_set_open_in_product_topology R R_standard_topology R R_standard_topology
+    R (open_ray_upper R 0) HtopR HtopR HRopen
+    (open_ray_upper_in_R_standard_topology 0 real_0)). }
+claim Heq2 : S1 :\: S1_lower = Vopen2 :/\: S1.
+{ apply set_ext.
+  - let p. assume Hp : p :e S1 :\: S1_lower.
+    claim HpS1 : p :e S1. { exact (setminusE1 S1 S1_lower p Hp). }
+    claim HpnL : p /:e S1_lower. { exact (setminusE2 S1 S1_lower p Hp). }
+    claim HpR2 : p :e setprod R R.
+    { exact (SepE1 (setprod R R)
+        (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+    claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+    claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+    claim Hp1gt0 : SNoLt 0 (p 1).
+    { apply (dneg (SNoLt 0 (p 1))).
+      assume Hnneg : ~(SNoLt 0 (p 1)).
+      exact (HpnL (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) p HpS1 Hnneg)). }
+    claim Hp1Rlt : Rlt 0 (p 1). { exact (RltI 0 (p 1) real_0 Hp1R Hp1gt0). }
+    claim Hp1_ray : p 1 :e open_ray_upper R 0.
+    { exact (Rlt_in_open_ray_upper (p 1) 0 Hp1R real_0 Hp1Rlt). }
+    apply binintersectI.
+    + prove p :e setprod R (open_ray_upper R 0).
+      claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
+      rewrite Hpeta.
+      exact (tuple_2_setprod_by_pair_Sigma R (open_ray_upper R 0)
+        (p 0) (p 1) Hp0R Hp1_ray).
+    + exact HpS1.
+  - let p. assume Hp : p :e Vopen2 :/\: S1.
+    claim HpS1 : p :e S1. { exact (binintersectE2 Vopen2 S1 p Hp). }
+    claim HpV : p :e Vopen2. { exact (binintersectE1 Vopen2 S1 p Hp). }
+    apply setminusI.
+    + exact HpS1.
+    + assume HpL : p :e S1_lower.
+      claim Hnneg : ~(SNoLt 0 (p 1)).
+      { exact (SepE2 S1 (fun q:set => ~(SNoLt 0 (q 1))) p HpL). }
+      claim Hp1_ray : p 1 :e open_ray_upper R 0.
+      { exact (ap1_Sigma R (fun _ => open_ray_upper R 0) p HpV). }
+      claim Hp1Rlt : Rlt 0 (p 1). { exact (open_ray_upper_Rlt (p 1) 0 Hp1_ray). }
+      claim Hp1gt0 : SNoLt 0 (p 1). { exact (RltE_lt 0 (p 1) Hp1Rlt). }
+      exact (Hnneg Hp1gt0). }
+rewrite Heq2.
+exact (subspace_topologyI (setprod R R) R2_topology S1 Vopen2 HVopen2_in_R2).
+Qed.
+
 (** Helper: upper semicircle is connected **)
-(** Proof: S1_upper = image of [0, 1/2] under covering_map_R_S1. **)
-(** [0, 1/2] is connected (interval in [0,1]). covering_map continuous. **)
-(** continuous_image_connected gives the result. **)
-(** Bounty 10 **)
+(** Collected Dave 10 **)
+(** Proven Dave **)
 Lemma S1_upper_connected :
   connected_space S1_upper (subspace_topology S1 S1_topology S1_upper).
-(** S1_upper = {(cos 2pi t, sin 2pi t) | t in [0, 1/2]} **)
-(** = image of unit_interval_left_half under covering_map_R_S1 **)
-(** unit_interval_left_half is connected (interval [0, 1/2] in [0,1]) **)
-(** covering_map restricted to left_half is continuous **)
-(** Image of connected under continuous is connected **)
-admit.
-Admitted.
+(** Strategy: S1_upper homeomorphic to [-1,1] via x-projection **)
+claim HtopR : topology_on R R_standard_topology. { exact R_standard_topology_is_topology. }
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{ exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology). }
+claim HS1subR2 : S1 c= setprod R R.
+{ exact (Sep_Subq (setprod R R) (fun p:set =>
+    add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1)). }
+claim HS1upSubS1 : S1_upper c= S1.
+{ exact (Sep_Subq S1 (fun p:set => ~(SNoLt (p 1) 0))). }
+claim HS1upSubR2 : S1_upper c= setprod R R.
+{ exact (Subq_tra S1_upper S1 (setprod R R) HS1upSubS1 HS1subR2). }
+claim HtopS1 : topology_on S1 S1_topology.
+{ exact (subspace_topology_is_topology (setprod R R) R2_topology S1 HtopR2 HS1subR2). }
+claim HtopTU : topology_on S1_upper (subspace_topology S1 S1_topology S1_upper).
+{ exact (subspace_topology_is_topology S1 S1_topology S1_upper HtopS1 HS1upSubS1). }
+(** S1_upper is closed in S1, hence compact **)
+claim HclosedS1up : closed_in S1 S1_topology S1_upper.
+{ apply (closed_inI S1 S1_topology S1_upper HtopS1 HS1upSubS1).
+  witness (S1 :\: S1_upper).
+  apply andI.
+  + exact S1_upper_complement_open.
+  + symmetry. exact (setminus_setminus_eq S1 S1_upper HS1upSubS1). }
+claim HcompS1up : compact_space S1_upper (subspace_topology S1 S1_topology S1_upper).
+{ exact (closed_subspace_compact S1 S1_topology S1_upper s54_S1_compact HclosedS1up). }
+(** [-1,1] is Hausdorff **)
+claim HHausdCI : Hausdorff_space (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1).
+{ exact (ex17_12_subspace_Hausdorff R R_standard_topology (closed_interval (minus_SNo 1) 1)
+    R_standard_topology_Hausdorff (closed_interval_sub_R (minus_SNo 1) 1)). }
+(** Continuity of projection1 on S1_upper -> [-1,1] **)
+claim Hproj1Cont : continuous_map (setprod R R) R2_topology R R_standard_topology (projection1 R R).
+{ exact (projection1_continuous_in_product R R_standard_topology R R_standard_topology HtopR HtopR). }
+claim Hproj1S1upCont : continuous_map S1_upper (subspace_topology (setprod R R) R2_topology S1_upper) R R_standard_topology (projection1 R R).
+{ exact (continuous_on_subspace (setprod R R) R2_topology R R_standard_topology (projection1 R R) S1_upper HtopR2 HS1upSubR2 Hproj1Cont). }
+claim HtopEq : subspace_topology S1 S1_topology S1_upper = subspace_topology (setprod R R) R2_topology S1_upper.
+{ exact (subspace_topology_transitive_weak (setprod R R) R2_topology S1 S1_upper HS1upSubS1). }
+claim Hproj1TUCont : continuous_map S1_upper (subspace_topology S1 S1_topology S1_upper) R R_standard_topology (projection1 R R).
+{ rewrite HtopEq. exact Hproj1S1upCont. }
+(** For each p in S1_upper, p 0 in [-1,1] **)
+claim HrangeCI : forall p:set, p :e S1_upper -> apply_fun (projection1 R R) p :e closed_interval (minus_SNo 1) 1.
+{ let p. assume HpS1up.
+  claim HpS1 : p :e S1. { exact (HS1upSubS1 p HpS1up). }
+  claim HpR2 : p :e setprod R R. { exact (HS1subR2 p HpS1). }
+  claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+  claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+  claim HpSumEq : add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1.
+  { exact (SepE2 (setprod R R)
+      (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+  claim Hpsq0SNo : SNo (mul_SNo (p 0) (p 0)).
+  { exact (SNo_mul_SNo (p 0) (p 0) (real_SNo (p 0) Hp0R) (real_SNo (p 0) Hp0R)). }
+  claim Hpsq1SNo : SNo (mul_SNo (p 1) (p 1)).
+  { exact (SNo_mul_SNo (p 1) (p 1) (real_SNo (p 1) Hp1R) (real_SNo (p 1) Hp1R)). }
+  claim Hp1sq_nonneg : 0 <= mul_SNo (p 1) (p 1).
+  { exact (SNo_sqr_nonneg (p 1) (real_SNo (p 1) Hp1R)). }
+  claim Hp0sq_le_1 : mul_SNo (p 0) (p 0) <= 1.
+  { apply (SNoLe_tra (mul_SNo (p 0) (p 0)) (add_SNo (mul_SNo (p 0) (p 0)) 0) 1
+      Hpsq0SNo (SNo_add_SNo (mul_SNo (p 0) (p 0)) 0 Hpsq0SNo SNo_0) SNo_1).
+    + rewrite (add_SNo_0R (mul_SNo (p 0) (p 0)) Hpsq0SNo). exact (SNoLe_ref (mul_SNo (p 0) (p 0))).
+    + rewrite <- HpSumEq.
+      exact (add_SNo_Le2 (mul_SNo (p 0) (p 0)) 0 (mul_SNo (p 1) (p 1)) Hpsq0SNo SNo_0 Hpsq1SNo Hp1sq_nonneg). }
+  rewrite (projection1_apply R R p HpR2).
+  exact (real_sqr_le_1_in_closed_interval (p 0) Hp0R Hp0sq_le_1). }
+claim Hproj1CICont : continuous_map S1_upper (subspace_topology S1 S1_topology S1_upper) (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) (projection1 R R).
+{ exact (continuous_map_range_restrict S1_upper (subspace_topology S1 S1_topology S1_upper) R R_standard_topology (projection1 R R) (closed_interval (minus_SNo 1) 1) Hproj1TUCont (closed_interval_sub_R (minus_SNo 1) 1) HrangeCI). }
+(** Bijection **)
+claim HfunOn : function_on (projection1 R R) S1_upper (closed_interval (minus_SNo 1) 1).
+{ exact (continuous_map_function_on S1_upper (subspace_topology S1 S1_topology S1_upper) (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) (projection1 R R) Hproj1CICont). }
+claim Hbij : bijection S1_upper (closed_interval (minus_SNo 1) 1) (projection1 R R).
+{ prove function_on (projection1 R R) S1_upper (closed_interval (minus_SNo 1) 1) /\
+    (forall y:set, y :e closed_interval (minus_SNo 1) 1 ->
+      exists x:set, x :e S1_upper /\ apply_fun (projection1 R R) x = y /\
+        (forall x':set, x' :e S1_upper -> apply_fun (projection1 R R) x' = y -> x' = x)).
+  apply andI.
+  + exact HfunOn.
+  + let y. assume HyCl.
+    claim HyR : y :e R. { exact (closed_interval_sub_R (minus_SNo 1) 1 y HyCl). }
+    claim HySNo : SNo y. { exact (real_SNo y HyR). }
+    claim HyboundsRle : Rle (minus_SNo 1) y /\ Rle y 1.
+    { exact (closed_interval_bounds (minus_SNo 1) 1 y (real_minus_SNo 1 real_1) real_1 HyCl). }
+    claim HySNoLe1 : y <= 1. { exact (SNoLe_of_Rle y 1 (andER (Rle (minus_SNo 1) y) (Rle y 1) HyboundsRle)). }
+    claim Hm1SNoLey : minus_SNo 1 <= y. { exact (SNoLe_of_Rle (minus_SNo 1) y (andEL (Rle (minus_SNo 1) y) (Rle y 1) HyboundsRle)). }
+    claim Hysq_SNo : SNo (mul_SNo y y). { exact (SNo_mul_SNo y y HySNo HySNo). }
+    claim Hmysq_SNo : SNo (minus_SNo (mul_SNo y y)). { exact (SNo_minus_SNo (mul_SNo y y) Hysq_SNo). }
+    claim Hysq_le_1 : mul_SNo y y <= 1.
+    { apply (SNoLtLe_or y 0 HySNo SNo_0).
+      + assume Hylt0 : y < 0.
+        claim HmySNo : SNo (minus_SNo y). { exact (SNo_minus_SNo y HySNo). }
+        claim H0ltmy : 0 < minus_SNo y.
+        { rewrite <- (add_SNo_0L (minus_SNo y) HmySNo).
+          exact (SNoLt_minus_pos y 0 HySNo SNo_0 Hylt0). }
+        claim Hmyge0 : 0 <= minus_SNo y. { exact (SNoLtLe 0 (minus_SNo y) H0ltmy). }
+        claim Hmyle1 : minus_SNo y <= 1.
+        { rewrite <- (minus_SNo_invol 1 SNo_1).
+          exact (minus_SNo_Le_contra (minus_SNo 1) y (SNo_minus_SNo 1 SNo_1) HySNo Hm1SNoLey). }
+        rewrite <- (mul_SNo_oneR 1 SNo_1).
+        rewrite <- (mul_SNo_minus_minus y y HySNo HySNo).
+        exact (nonneg_mul_SNo_Le2 (minus_SNo y) (minus_SNo y) 1 1 HmySNo HmySNo SNo_1 SNo_1 Hmyge0 Hmyge0 Hmyle1 Hmyle1).
+      + assume H0ley : 0 <= y.
+        rewrite <- (mul_SNo_oneR 1 SNo_1).
+        exact (nonneg_mul_SNo_Le2 y y 1 1 HySNo HySNo SNo_1 SNo_1 H0ley H0ley HySNoLe1 HySNoLe1). }
+    set d := add_SNo 1 (minus_SNo (mul_SNo y y)).
+    claim HdSNo : SNo d.
+    { exact (SNo_add_SNo 1 (minus_SNo (mul_SNo y y)) SNo_1 Hmysq_SNo). }
+    claim HdR : d :e R.
+    { exact (real_add_SNo 1 real_1 (minus_SNo (mul_SNo y y)) (real_minus_SNo (mul_SNo y y) (real_mul_SNo y HyR y HyR))). }
+    claim Hd_nonneg : 0 <= d.
+    { apply (SNoLe_tra 0 (add_SNo 1 (minus_SNo 1)) d SNo_0
+        (SNo_add_SNo 1 (minus_SNo 1) SNo_1 (SNo_minus_SNo 1 SNo_1)) HdSNo).
+      + rewrite (add_SNo_minus_SNo_rinv 1 SNo_1). exact (SNoLe_ref 0).
+      + exact (add_SNo_Le2 1 (minus_SNo 1) (minus_SNo (mul_SNo y y)) SNo_1
+          (SNo_minus_SNo 1 SNo_1) Hmysq_SNo
+          (minus_SNo_Le_contra (mul_SNo y y) 1 Hysq_SNo SNo_1 Hysq_le_1)). }
+    set sq := sqrt_SNo_nonneg d.
+    claim HsqR : sq :e R. { exact (sqrt_SNo_nonneg_real d HdR Hd_nonneg). }
+    claim HsqSNo : SNo sq. { exact (real_SNo sq HsqR). }
+    claim Hsq_nonneg : 0 <= sq. { exact (sqrt_SNo_nonneg_nonneg d HdSNo Hd_nonneg). }
+    claim Hsqsq : mul_SNo sq sq = d. { exact (sqrt_SNo_nonneg_sqr d HdSNo Hd_nonneg). }
+    (** yd_sum: y^2 + d = 1 **)
+    claim Hyd_sum : add_SNo (mul_SNo y y) d = 1.
+    { rewrite (add_SNo_assoc (mul_SNo y y) 1 (minus_SNo (mul_SNo y y)) Hysq_SNo SNo_1 Hmysq_SNo).
+      rewrite (add_SNo_com (mul_SNo y y) 1 Hysq_SNo SNo_1).
+      exact (add_SNo_minus_R2 1 (mul_SNo y y) SNo_1 Hysq_SNo). }
+    set w := (y, sq).
+    claim HwR2 : w :e setprod R R.
+    { exact (tuple_2_setprod_by_pair_Sigma R R y sq HyR HsqR). }
+    claim Hw0 : w 0 = y. { exact (tuple_2_0_eq y sq). }
+    claim Hw1 : w 1 = sq. { exact (tuple_2_1_eq y sq). }
+    claim Hsum_w : add_SNo (mul_SNo (w 0) (w 0)) (mul_SNo (w 1) (w 1)) = 1.
+    { rewrite Hw0. rewrite Hw1. rewrite Hsqsq. exact Hyd_sum. }
+    claim HwS1 : w :e S1.
+    { exact (SepI (setprod R R)
+        (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1)
+        w HwR2 Hsum_w). }
+    claim HwS1up : w :e S1_upper.
+    { apply (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) w HwS1).
+      assume Hwlt0 : SNoLt (w 1) 0.
+      claim Hsqlt0 : SNoLt sq 0.
+      { rewrite <- Hw1. exact Hwlt0. }
+      exact (SNoLt_irref 0 (SNoLeLt_tra 0 sq 0 SNo_0 HsqSNo SNo_0 Hsq_nonneg Hsqlt0)). }
+    claim Hproj1w : apply_fun (projection1 R R) w = y.
+    { rewrite (projection1_apply R R w HwR2). exact Hw0. }
+    witness w.
+    apply andI.
+    + apply andI. exact HwS1up. exact Hproj1w.
+    + let xp. assume Hxp : xp :e S1_upper. assume Hxpproj : apply_fun (projection1 R R) xp = y.
+      claim HxpS1 : xp :e S1. { exact (HS1upSubS1 xp Hxp). }
+      claim HxpR2 : xp :e setprod R R. { exact (HS1subR2 xp HxpS1). }
+      claim Hxp0R : xp 0 :e R. { exact (ap0_Sigma R (fun _ => R) xp HxpR2). }
+      claim Hxp1R : xp 1 :e R. { exact (ap1_Sigma R (fun _ => R) xp HxpR2). }
+      claim Hxp1SNo : SNo (xp 1). { exact (real_SNo (xp 1) Hxp1R). }
+      claim Hxp1sq_SNo : SNo (mul_SNo (xp 1) (xp 1)). { exact (SNo_mul_SNo (xp 1) (xp 1) Hxp1SNo Hxp1SNo). }
+      claim Hxp0_y : xp 0 = y.
+      { rewrite <- (projection1_apply R R xp HxpR2). exact Hxpproj. }
+      claim HxpSumEq : add_SNo (mul_SNo (xp 0) (xp 0)) (mul_SNo (xp 1) (xp 1)) = 1.
+      { exact (SepE2 (setprod R R)
+          (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) xp HxpS1). }
+      claim Hxpsum_y : add_SNo (mul_SNo y y) (mul_SNo (xp 1) (xp 1)) = 1.
+      { rewrite <- Hxp0_y. exact HxpSumEq. }
+      claim H_xp1sq_eq_d : mul_SNo (xp 1) (xp 1) = d.
+      { apply (add_SNo_cancel_L (mul_SNo y y) (mul_SNo (xp 1) (xp 1)) d Hysq_SNo Hxp1sq_SNo HdSNo).
+        apply (eq_i_tra (add_SNo (mul_SNo y y) (mul_SNo (xp 1) (xp 1))) 1 (add_SNo (mul_SNo y y) d)
+          Hxpsum_y). symmetry. exact Hyd_sum. }
+      claim Hxp1_nonneg : 0 <= xp 1.
+      { apply (SNoLtLe_or (xp 1) 0 Hxp1SNo SNo_0).
+        + assume Hlt : xp 1 < 0.
+          exact (FalseE (SepE2 S1 (fun q:set => ~(SNoLt (q 1) 0)) xp Hxp Hlt) (0 <= xp 1)).
+        + assume Hge : 0 <= xp 1. exact Hge. }
+      claim H_xp1sq_sq_eq : mul_SNo (xp 1) (xp 1) = mul_SNo sq sq.
+      { rewrite Hsqsq. exact H_xp1sq_eq_d. }
+      claim Hxp1_eq_sq : xp 1 = sq.
+      { exact (SNo_nonneg_sqr_uniq (xp 1) sq Hxp1SNo HsqSNo Hxp1_nonneg Hsq_nonneg H_xp1sq_sq_eq). }
+      prove xp = w.
+      rewrite (setprod_eta R R xp HxpR2).
+      rewrite (setprod_eta R R w HwR2).
+      exact (tuple_coords_eq (xp 0) (xp 1) (w 0) (w 1)
+        (eq_i_tra (xp 0) y (w 0) Hxp0_y (eq_symm (w 0) y Hw0))
+        (eq_i_tra (xp 1) sq (w 1) Hxp1_eq_sq (eq_symm (w 1) sq Hw1))). }
+(** Apply compact-to-Hausdorff homeomorphism **)
+claim Hhome : homeomorphism S1_upper (subspace_topology S1 S1_topology S1_upper) (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) (projection1 R R).
+{ exact (compact_to_Hausdorff_bijection_homeomorphism S1_upper (subspace_topology S1 S1_topology S1_upper) (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) (projection1 R R) HcompS1up HHausdCI Hproj1CICont Hbij). }
+claim Hinv_home_ex : exists g:set, homeomorphism (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) S1_upper (subspace_topology S1 S1_topology S1_upper) g.
+{ exact (homeomorphism_inverse_is_homeomorphism_variant S1_upper (subspace_topology S1 S1_topology S1_upper) (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) (projection1 R R) Hhome). }
+apply Hinv_home_ex. let g. assume Hg_home.
+exact (homeomorphism_preserves_connected
+  (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+  S1_upper (subspace_topology S1 S1_topology S1_upper)
+  g Hg_home closed_interval_minus1_1_connected).
+Qed.
 
 (** Helper: lower semicircle is connected **)
-(** Bounty 10 **)
+(** Collected Dave 10 **)
+(** Proven Dave **)
 Lemma S1_lower_connected :
   connected_space S1_lower (subspace_topology S1 S1_topology S1_lower).
-admit.
-Admitted.
+(** Strategy: S1_lower homeomorphic to [-1,1] via x-projection **)
+claim HtopR : topology_on R R_standard_topology. { exact R_standard_topology_is_topology. }
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{ exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology). }
+claim HS1subR2 : S1 c= setprod R R.
+{ exact (Sep_Subq (setprod R R) (fun p:set =>
+    add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1)). }
+claim HS1loSubS1 : S1_lower c= S1.
+{ exact (Sep_Subq S1 (fun p:set => ~(SNoLt 0 (p 1)))). }
+claim HS1loSubR2 : S1_lower c= setprod R R.
+{ exact (Subq_tra S1_lower S1 (setprod R R) HS1loSubS1 HS1subR2). }
+claim HtopS1 : topology_on S1 S1_topology.
+{ exact (subspace_topology_is_topology (setprod R R) R2_topology S1 HtopR2 HS1subR2). }
+(** S1_lower is closed in S1, hence compact **)
+claim HclosedS1lo : closed_in S1 S1_topology S1_lower.
+{ apply (closed_inI S1 S1_topology S1_lower HtopS1 HS1loSubS1).
+  witness (S1 :\: S1_lower).
+  apply andI.
+  + exact S1_lower_complement_open.
+  + symmetry. exact (setminus_setminus_eq S1 S1_lower HS1loSubS1). }
+claim HcompS1lo : compact_space S1_lower (subspace_topology S1 S1_topology S1_lower).
+{ exact (closed_subspace_compact S1 S1_topology S1_lower s54_S1_compact HclosedS1lo). }
+(** [-1,1] is Hausdorff **)
+claim HHausdCI : Hausdorff_space (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1).
+{ exact (ex17_12_subspace_Hausdorff R R_standard_topology (closed_interval (minus_SNo 1) 1)
+    R_standard_topology_Hausdorff (closed_interval_sub_R (minus_SNo 1) 1)). }
+(** Continuity of projection1 on S1_lower -> [-1,1] **)
+claim Hproj1Cont : continuous_map (setprod R R) R2_topology R R_standard_topology (projection1 R R).
+{ exact (projection1_continuous_in_product R R_standard_topology R R_standard_topology HtopR HtopR). }
+claim Hproj1S1loCont : continuous_map S1_lower (subspace_topology (setprod R R) R2_topology S1_lower) R R_standard_topology (projection1 R R).
+{ exact (continuous_on_subspace (setprod R R) R2_topology R R_standard_topology (projection1 R R) S1_lower HtopR2 HS1loSubR2 Hproj1Cont). }
+claim HtopEq : subspace_topology S1 S1_topology S1_lower = subspace_topology (setprod R R) R2_topology S1_lower.
+{ exact (subspace_topology_transitive_weak (setprod R R) R2_topology S1 S1_lower HS1loSubS1). }
+claim Hproj1TLCont : continuous_map S1_lower (subspace_topology S1 S1_topology S1_lower) R R_standard_topology (projection1 R R).
+{ rewrite HtopEq. exact Hproj1S1loCont. }
+(** For each p in S1_lower, p 0 in [-1,1] **)
+claim HrangeCI : forall p:set, p :e S1_lower -> apply_fun (projection1 R R) p :e closed_interval (minus_SNo 1) 1.
+{ let p. assume HpS1lo.
+  claim HpS1 : p :e S1. { exact (HS1loSubS1 p HpS1lo). }
+  claim HpR2 : p :e setprod R R. { exact (HS1subR2 p HpS1). }
+  claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+  claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+  claim HpSumEq : add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1.
+  { exact (SepE2 (setprod R R)
+      (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+  claim Hpsq0SNo : SNo (mul_SNo (p 0) (p 0)).
+  { exact (SNo_mul_SNo (p 0) (p 0) (real_SNo (p 0) Hp0R) (real_SNo (p 0) Hp0R)). }
+  claim Hpsq1SNo : SNo (mul_SNo (p 1) (p 1)).
+  { exact (SNo_mul_SNo (p 1) (p 1) (real_SNo (p 1) Hp1R) (real_SNo (p 1) Hp1R)). }
+  claim Hp1sq_nonneg : 0 <= mul_SNo (p 1) (p 1).
+  { exact (SNo_sqr_nonneg (p 1) (real_SNo (p 1) Hp1R)). }
+  claim Hp0sq_le_1 : mul_SNo (p 0) (p 0) <= 1.
+  { apply (SNoLe_tra (mul_SNo (p 0) (p 0)) (add_SNo (mul_SNo (p 0) (p 0)) 0) 1
+      Hpsq0SNo (SNo_add_SNo (mul_SNo (p 0) (p 0)) 0 Hpsq0SNo SNo_0) SNo_1).
+    + rewrite (add_SNo_0R (mul_SNo (p 0) (p 0)) Hpsq0SNo). exact (SNoLe_ref (mul_SNo (p 0) (p 0))).
+    + rewrite <- HpSumEq.
+      exact (add_SNo_Le2 (mul_SNo (p 0) (p 0)) 0 (mul_SNo (p 1) (p 1)) Hpsq0SNo SNo_0 Hpsq1SNo Hp1sq_nonneg). }
+  rewrite (projection1_apply R R p HpR2).
+  exact (real_sqr_le_1_in_closed_interval (p 0) Hp0R Hp0sq_le_1). }
+claim Hproj1CICont : continuous_map S1_lower (subspace_topology S1 S1_topology S1_lower) (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) (projection1 R R).
+{ exact (continuous_map_range_restrict S1_lower (subspace_topology S1 S1_topology S1_lower) R R_standard_topology (projection1 R R) (closed_interval (minus_SNo 1) 1) Hproj1TLCont (closed_interval_sub_R (minus_SNo 1) 1) HrangeCI). }
+(** Bijection **)
+claim HfunOn : function_on (projection1 R R) S1_lower (closed_interval (minus_SNo 1) 1).
+{ exact (continuous_map_function_on S1_lower (subspace_topology S1 S1_topology S1_lower) (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) (projection1 R R) Hproj1CICont). }
+claim Hbij : bijection S1_lower (closed_interval (minus_SNo 1) 1) (projection1 R R).
+{ prove function_on (projection1 R R) S1_lower (closed_interval (minus_SNo 1) 1) /\
+    (forall y:set, y :e closed_interval (minus_SNo 1) 1 ->
+      exists x:set, x :e S1_lower /\ apply_fun (projection1 R R) x = y /\
+        (forall x':set, x' :e S1_lower -> apply_fun (projection1 R R) x' = y -> x' = x)).
+  apply andI.
+  + exact HfunOn.
+  + let y. assume HyCl.
+    claim HyR : y :e R. { exact (closed_interval_sub_R (minus_SNo 1) 1 y HyCl). }
+    claim HySNo : SNo y. { exact (real_SNo y HyR). }
+    claim HyboundsRle : Rle (minus_SNo 1) y /\ Rle y 1.
+    { exact (closed_interval_bounds (minus_SNo 1) 1 y (real_minus_SNo 1 real_1) real_1 HyCl). }
+    claim HySNoLe1 : y <= 1. { exact (SNoLe_of_Rle y 1 (andER (Rle (minus_SNo 1) y) (Rle y 1) HyboundsRle)). }
+    claim Hm1SNoLey : minus_SNo 1 <= y. { exact (SNoLe_of_Rle (minus_SNo 1) y (andEL (Rle (minus_SNo 1) y) (Rle y 1) HyboundsRle)). }
+    claim Hysq_SNo : SNo (mul_SNo y y). { exact (SNo_mul_SNo y y HySNo HySNo). }
+    claim Hmysq_SNo : SNo (minus_SNo (mul_SNo y y)). { exact (SNo_minus_SNo (mul_SNo y y) Hysq_SNo). }
+    claim Hysq_le_1 : mul_SNo y y <= 1.
+    { apply (SNoLtLe_or y 0 HySNo SNo_0).
+      + assume Hylt0 : y < 0.
+        claim HmySNo : SNo (minus_SNo y). { exact (SNo_minus_SNo y HySNo). }
+        claim H0ltmy : 0 < minus_SNo y.
+        { rewrite <- (add_SNo_0L (minus_SNo y) HmySNo).
+          exact (SNoLt_minus_pos y 0 HySNo SNo_0 Hylt0). }
+        claim Hmyge0 : 0 <= minus_SNo y. { exact (SNoLtLe 0 (minus_SNo y) H0ltmy). }
+        claim Hmyle1 : minus_SNo y <= 1.
+        { rewrite <- (minus_SNo_invol 1 SNo_1).
+          exact (minus_SNo_Le_contra (minus_SNo 1) y (SNo_minus_SNo 1 SNo_1) HySNo Hm1SNoLey). }
+        rewrite <- (mul_SNo_oneR 1 SNo_1).
+        rewrite <- (mul_SNo_minus_minus y y HySNo HySNo).
+        exact (nonneg_mul_SNo_Le2 (minus_SNo y) (minus_SNo y) 1 1 HmySNo HmySNo SNo_1 SNo_1 Hmyge0 Hmyge0 Hmyle1 Hmyle1).
+      + assume H0ley : 0 <= y.
+        rewrite <- (mul_SNo_oneR 1 SNo_1).
+        exact (nonneg_mul_SNo_Le2 y y 1 1 HySNo HySNo SNo_1 SNo_1 H0ley H0ley HySNoLe1 HySNoLe1). }
+    set d := add_SNo 1 (minus_SNo (mul_SNo y y)).
+    claim HdSNo : SNo d.
+    { exact (SNo_add_SNo 1 (minus_SNo (mul_SNo y y)) SNo_1 Hmysq_SNo). }
+    claim HdR : d :e R.
+    { exact (real_add_SNo 1 real_1 (minus_SNo (mul_SNo y y)) (real_minus_SNo (mul_SNo y y) (real_mul_SNo y HyR y HyR))). }
+    claim Hd_nonneg : 0 <= d.
+    { apply (SNoLe_tra 0 (add_SNo 1 (minus_SNo 1)) d SNo_0
+        (SNo_add_SNo 1 (minus_SNo 1) SNo_1 (SNo_minus_SNo 1 SNo_1)) HdSNo).
+      + rewrite (add_SNo_minus_SNo_rinv 1 SNo_1). exact (SNoLe_ref 0).
+      + exact (add_SNo_Le2 1 (minus_SNo 1) (minus_SNo (mul_SNo y y)) SNo_1
+          (SNo_minus_SNo 1 SNo_1) Hmysq_SNo
+          (minus_SNo_Le_contra (mul_SNo y y) 1 Hysq_SNo SNo_1 Hysq_le_1)). }
+    set sq := sqrt_SNo_nonneg d.
+    claim HsqR : sq :e R. { exact (sqrt_SNo_nonneg_real d HdR Hd_nonneg). }
+    claim HsqSNo : SNo sq. { exact (real_SNo sq HsqR). }
+    claim Hsq_nonneg : 0 <= sq. { exact (sqrt_SNo_nonneg_nonneg d HdSNo Hd_nonneg). }
+    claim Hsqsq : mul_SNo sq sq = d. { exact (sqrt_SNo_nonneg_sqr d HdSNo Hd_nonneg). }
+    claim HmsqR : minus_SNo sq :e R. { exact (real_minus_SNo sq HsqR). }
+    claim HmsqSNo : SNo (minus_SNo sq). { exact (real_SNo (minus_SNo sq) HmsqR). }
+    claim Hmsq_nonpos : minus_SNo sq <= 0.
+    { claim Hm0sq : minus_SNo sq <= minus_SNo 0.
+      { exact (minus_SNo_Le_contra 0 sq SNo_0 HsqSNo Hsq_nonneg). }
+      claim Hm0le0 : minus_SNo 0 <= 0.
+      { rewrite minus_SNo_0. exact (SNoLe_ref 0). }
+      exact (SNoLe_tra (minus_SNo sq) (minus_SNo 0) 0 HmsqSNo (SNo_minus_SNo 0 SNo_0) SNo_0 Hm0sq Hm0le0). }
+    claim Hmsqsq : mul_SNo (minus_SNo sq) (minus_SNo sq) = d.
+    { rewrite (mul_SNo_minus_minus sq sq HsqSNo HsqSNo). exact Hsqsq. }
+    claim Hyd_sum : add_SNo (mul_SNo y y) d = 1.
+    { rewrite (add_SNo_assoc (mul_SNo y y) 1 (minus_SNo (mul_SNo y y)) Hysq_SNo SNo_1 Hmysq_SNo).
+      rewrite (add_SNo_com (mul_SNo y y) 1 Hysq_SNo SNo_1).
+      exact (add_SNo_minus_R2 1 (mul_SNo y y) SNo_1 Hysq_SNo). }
+    set w := (y, minus_SNo sq).
+    claim HwR2 : w :e setprod R R.
+    { exact (tuple_2_setprod_by_pair_Sigma R R y (minus_SNo sq) HyR HmsqR). }
+    claim Hw0 : w 0 = y. { exact (tuple_2_0_eq y (minus_SNo sq)). }
+    claim Hw1 : w 1 = minus_SNo sq. { exact (tuple_2_1_eq y (minus_SNo sq)). }
+    claim Hsum_w : add_SNo (mul_SNo (w 0) (w 0)) (mul_SNo (w 1) (w 1)) = 1.
+    { rewrite Hw0. rewrite Hw1. rewrite Hmsqsq. exact Hyd_sum. }
+    claim HwS1 : w :e S1.
+    { exact (SepI (setprod R R)
+        (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1)
+        w HwR2 Hsum_w). }
+    claim HwS1lo : w :e S1_lower.
+    { apply (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) w HwS1).
+      assume Hwgt0 : SNoLt 0 (w 1).
+      claim Hmsqgt0 : SNoLt 0 (minus_SNo sq).
+      { rewrite <- Hw1. exact Hwgt0. }
+      exact (SNoLt_irref 0 (SNoLtLe_tra 0 (minus_SNo sq) 0 SNo_0 HmsqSNo SNo_0 Hmsqgt0 Hmsq_nonpos)). }
+    claim Hproj1w : apply_fun (projection1 R R) w = y.
+    { rewrite (projection1_apply R R w HwR2). exact Hw0. }
+    witness w.
+    apply andI.
+    + apply andI. exact HwS1lo. exact Hproj1w.
+    + let xp. assume Hxp : xp :e S1_lower. assume Hxpproj : apply_fun (projection1 R R) xp = y.
+      claim HxpS1 : xp :e S1. { exact (HS1loSubS1 xp Hxp). }
+      claim HxpR2 : xp :e setprod R R. { exact (HS1subR2 xp HxpS1). }
+      claim Hxp0R : xp 0 :e R. { exact (ap0_Sigma R (fun _ => R) xp HxpR2). }
+      claim Hxp1R : xp 1 :e R. { exact (ap1_Sigma R (fun _ => R) xp HxpR2). }
+      claim Hxp1SNo : SNo (xp 1). { exact (real_SNo (xp 1) Hxp1R). }
+      claim Hxp1sq_SNo : SNo (mul_SNo (xp 1) (xp 1)). { exact (SNo_mul_SNo (xp 1) (xp 1) Hxp1SNo Hxp1SNo). }
+      claim Hxp0_y : xp 0 = y.
+      { rewrite <- (projection1_apply R R xp HxpR2). exact Hxpproj. }
+      claim HxpSumEq : add_SNo (mul_SNo (xp 0) (xp 0)) (mul_SNo (xp 1) (xp 1)) = 1.
+      { exact (SepE2 (setprod R R)
+          (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) xp HxpS1). }
+      claim Hxpsum_y : add_SNo (mul_SNo y y) (mul_SNo (xp 1) (xp 1)) = 1.
+      { rewrite <- Hxp0_y. exact HxpSumEq. }
+      claim H_xp1sq_eq_d : mul_SNo (xp 1) (xp 1) = d.
+      { apply (add_SNo_cancel_L (mul_SNo y y) (mul_SNo (xp 1) (xp 1)) d Hysq_SNo Hxp1sq_SNo HdSNo).
+        apply (eq_i_tra (add_SNo (mul_SNo y y) (mul_SNo (xp 1) (xp 1))) 1 (add_SNo (mul_SNo y y) d)
+          Hxpsum_y). symmetry. exact Hyd_sum. }
+      claim Hxp1_nonpos : xp 1 <= 0.
+      { apply (SNoLtLe_or 0 (xp 1) SNo_0 Hxp1SNo).
+        + assume Hgt : 0 < xp 1.
+          exact (FalseE (SepE2 S1 (fun q:set => ~(SNoLt 0 (q 1))) xp Hxp Hgt) (xp 1 <= 0)).
+        + assume Hle : xp 1 <= 0. exact Hle. }
+      claim Hxp1_nonneg2 : 0 <= minus_SNo (xp 1).
+      { claim Hstep : minus_SNo 0 <= minus_SNo (xp 1).
+        { exact (minus_SNo_Le_contra (xp 1) 0 Hxp1SNo SNo_0 Hxp1_nonpos). }
+        claim H0lem0 : 0 <= minus_SNo 0.
+        { rewrite minus_SNo_0. exact (SNoLe_ref 0). }
+        exact (SNoLe_tra 0 (minus_SNo 0) (minus_SNo (xp 1)) SNo_0 (SNo_minus_SNo 0 SNo_0) (SNo_minus_SNo (xp 1) Hxp1SNo) H0lem0 Hstep). }
+      claim H_mxp1sq_sqsq_eq : mul_SNo (minus_SNo (xp 1)) (minus_SNo (xp 1)) = mul_SNo sq sq.
+      { rewrite (mul_SNo_minus_minus (xp 1) (xp 1) Hxp1SNo Hxp1SNo).
+        apply (eq_i_tra (mul_SNo (xp 1) (xp 1)) d (mul_SNo sq sq) H_xp1sq_eq_d).
+        symmetry. exact Hsqsq. }
+      claim Hmxp1_eq_sq : minus_SNo (xp 1) = sq.
+      { exact (SNo_nonneg_sqr_uniq (minus_SNo (xp 1)) sq
+          (SNo_minus_SNo (xp 1) Hxp1SNo) HsqSNo Hxp1_nonneg2 Hsq_nonneg
+          H_mxp1sq_sqsq_eq). }
+      claim Hxp1_eq_msq : xp 1 = minus_SNo sq.
+      { rewrite <- (minus_SNo_invol (xp 1) Hxp1SNo). rewrite Hmxp1_eq_sq. reflexivity. }
+      prove xp = w.
+      rewrite (setprod_eta R R xp HxpR2).
+      rewrite (setprod_eta R R w HwR2).
+      exact (tuple_coords_eq (xp 0) (xp 1) (w 0) (w 1)
+        (eq_i_tra (xp 0) y (w 0) Hxp0_y (eq_symm (w 0) y Hw0))
+        (eq_i_tra (xp 1) (minus_SNo sq) (w 1) Hxp1_eq_msq (eq_symm (w 1) (minus_SNo sq) Hw1))). }
+(** Apply compact-to-Hausdorff homeomorphism **)
+claim Hhome : homeomorphism S1_lower (subspace_topology S1 S1_topology S1_lower) (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) (projection1 R R).
+{ exact (compact_to_Hausdorff_bijection_homeomorphism S1_lower (subspace_topology S1 S1_topology S1_lower) (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) (projection1 R R) HcompS1lo HHausdCI Hproj1CICont Hbij). }
+claim Hinv_home_ex : exists g:set, homeomorphism (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) S1_lower (subspace_topology S1 S1_topology S1_lower) g.
+{ exact (homeomorphism_inverse_is_homeomorphism_variant S1_lower (subspace_topology S1 S1_topology S1_lower) (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1) (projection1 R R) Hhome). }
+apply Hinv_home_ex. let g. assume Hg_home.
+exact (homeomorphism_preserves_connected
+  (closed_interval (minus_SNo 1) 1) (closed_interval_topology (minus_SNo 1) 1)
+  S1_lower (subspace_topology S1 S1_topology S1_lower)
+  g Hg_home closed_interval_minus1_1_connected).
+Qed.
 
 (** Helper: S^1 = upper union lower, upper cap lower = {(1,0), (-1,0)} **)
 (** Upper and lower are both arcs (homeomorphic to [-1,1] via x-projection) **)
