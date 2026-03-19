@@ -282610,10 +282610,17 @@ apply andI.
   { exact (andEL
       (open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\ open_in (euclidean_space m) (euclidean_topology m) W)
       (homeomorphism C (subspace_topology X Tx C) W (subspace_topology (euclidean_space m) (euclidean_topology m) W) f) Hfprops). }
+  (** Extract C open and x in C from Hfirst4 **)
+  (** Hfirst4 : (((open_in C /\ x in C) /\ W sub) /\ open_in W) - left assoc **)
+  claim HCopen_xC : open_in X Tx C /\ x :e C.
+  { exact (andEL (open_in X Tx C /\ x :e C) (W c= euclidean_space m)
+      (andEL (open_in X Tx C /\ x :e C /\ W c= euclidean_space m)
+        (open_in (euclidean_space m) (euclidean_topology m) W) Hfirst4)). }
   claim HCopen : C :e Tx.
-  { admit. }
+  { exact (andER (topology_on X Tx) (C :e Tx)
+      (andEL (open_in X Tx C) (x :e C) HCopen_xC)). }
   claim HxC : x :e C.
-  { admit. }
+  { exact (andER (open_in X Tx C) (x :e C) HCopen_xC). }
   (** C cap U is open in X **)
   claim HCU_open : C :/\: U :e Tx.
   { claim HCopen_in : open_in X Tx C.
