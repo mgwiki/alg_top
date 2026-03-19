@@ -282850,14 +282850,22 @@ apply andI.
   (** f^{-1}(V') = {y in C | f(y) in V'} = preimage_of C f V' **)
   set V_pullback := preimage_of C f V'.
   witness V_pullback.
-  (** Need: V_pullback in Tx, x in V_pullback, V_pullback c= U, **)
-  (** connected V_pullback in subspace of X **)
-  (** Each of these needs formal construction **)
-  (** V_pullback in Tx: preimage of open under continuous + open in open **)
-  (** x in V_pullback: f(x) in V' **)
-  (** V_pullback c= U: V' c= image(f, C cap U) -> preimage c= C cap U c= U **)
-  (** connected: homeomorphism preserves connected **)
-  admit.
+  apply and4I.
+  + (** V_pullback in Tx **)
+    (** preimage_of C f V' is open in C (preimage of open under continuous) **)
+    (** then open in C and C open in X gives open in X **)
+    admit.
+  + (** x in V_pullback **)
+    prove x :e preimage_of C f V'.
+    prove x :e {y :e C | apply_fun f y :e V'}.
+    exact (SepI C (fun y:set => apply_fun f y :e V') x HxC Hfx_in_V').
+  + (** V_pullback c= U **)
+    (** V' c= image(f, C cap U) -> preimage(f, V') c= C cap U c= U **)
+    admit.
+  + (** connected V_pullback in subspace of X **)
+    (** V_pullback in C, homeomorphism f maps V_pullback to V' (connected) **)
+    (** homeomorphism preserves connected **)
+    admit.
 Admitted.
 
 (** Forward declaration: S^2 is locally connected **)
