@@ -282596,8 +282596,11 @@ apply andI.
           exact (HR2m0_sub (apply_fun g a) (continuous_map_function_on A TA R2m0 TR2m0 g Hg_cont a Ha)). }
         claim Hpw : forall a:set, a :e A ->
           apply_fun (compose_fun A g incl_R2m0) a = apply_fun g a.
-        { (** compose gives: apply incl (apply g a) = apply g a since incl is identity **)
-          admit. }
+        { let a. assume Ha : a :e A.
+          rewrite (compose_fun_apply A g incl_R2m0 a Ha).
+          claim Hga_in : apply_fun g a :e R2m0.
+          { exact (continuous_map_function_on A TA R2m0 TR2m0 g Hg_cont a Ha). }
+          exact (identity_function_apply R2m0 (apply_fun g a) Hga_in). }
         exact (continuous_map_congr_on A TA R2 R2_topology (compose_fun A g incl_R2m0) g Hcomp Hg_fn_R2 Hpw). }
       (** Step 2: translate_p: R2 -> R2 continuous **)
       set translate_p := graph R2 (fun x:set => r2sub x p).
