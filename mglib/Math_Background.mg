@@ -282357,16 +282357,29 @@ claim HF0_at_0 : F0_type2.
 { exact (andER F0_type1 F0_type2 (andEL (F0_type1 /\ F0_type2) F0_type3 HF0_data)). }
 claim HF0_at_1 : F0_type3.
 { exact (andER (F0_type1 /\ F0_type2) F0_type3 HF0_data). }
-(** Step 3: Tietze extension to G: X x I -> R^n **)
-(** Need: F0 viewed as map to R^n (not just Y), extended from closed domain **)
-(** Domain: (A x I) union (X x {1}), closed in X x I **)
-(** Range: euclidean_space n **)
-(** Extended F on (A x I) union (X x {1}) maps: **)
-(**   (a,t) -> apply_fun F0 (a,t) for a in A, t in I **)
-(**   (x,1) -> y0 for x in X **)
-(** This agrees on the overlap: for a in A, F0(a,1) = const(y0)(a) = y0 **)
-(** Steps 4-8: tube lemma + Urysohn + phi construction **)
-(** Full proof requires ~200 lines of continuity arguments **)
+(** Step 2: Construct extended F on (A x I) union (X x {1}) **)
+set domain_ext := setprod A unit_interval :\/: setprod X (Sing 1).
+set domain_ext_top := subspace_topology (setprod X unit_interval) TXI domain_ext.
+(** The extended function: **)
+(** - On A x I: F0(a,t) (viewed in R^n, not just Y) **)
+(** - On X x {1}: const y0 **)
+(** These agree on overlap A x {1}: F0(a,1) = y0 = const(y0) **)
+(** Step 3: Domain is closed (by homotopy_extension_domain_closed) **)
+claim Htop : topology_on X Tx.
+{ (** Derivable from Hf_cont and subspace topology properties **)
+  admit. }
+claim Hdomain_closed : closed_in (setprod X unit_interval) TXI domain_ext.
+{ exact (homotopy_extension_domain_closed X Tx A Htop HAsub HAclosed). }
+(** Step 4: Tietze extends F to G: X x I -> R^n **)
+(** Need: construct extended F as continuous map domain_ext -> R^n **)
+(** Then Tietze_extension_Rn gives G: X x I -> R^n with G|domain_ext = F **)
+(** Step 5: U = G^{-1}(Y) open in X x I, contains domain_ext **)
+(** Step 6: Tube lemma gives W containing A with W x I c= U **)
+(** Step 7: Urysohn: phi = 0 on A, phi = 1 on X-W **)
+(** Step 8: g(x) = G(x, phi(x)) maps to Y, extends f **)
+(** Step 9: H(x,t) = G(x, (1-t)phi(x)+t) is nulhomotopy **)
+(** Each remaining step requires substantial continuity infrastructure **)
+(** The key axioms needed: tube_lemma, Urysohn_lemma, Tietze_extension_Rn (QED) **)
 admit.
 Admitted.
 
