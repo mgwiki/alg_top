@@ -137809,9 +137809,18 @@ apply andI.
   + apply andI.
     * exact Hh.
     * exact HconstCont.
-  + (** TODO: build homotopy via quotient/loop presentation of S1 **)
+  + (** Build homotopy F: S1 x I -> X via covering map quotient **)
+    (** Step 1: The covering map p = covering_map_R_S1 restricted to [0,1] is a loop at b0 **)
+    (** We need b0 = S1_basepoint for this to work with covering_map_R_S1 **)
+    (** Step 2: Apply Hloop_null to get path-homotopy H: IxI -> X **)
+    (** Step 3: H descends to F: S1xI -> X via the quotient p x id **)
+    (** Step 4: p x id is a quotient map (p closed surjective continuous, id compact) **)
+    (** Step 5: F continuous by s55_continuous_descends_to_quotient_topology **)
+    (** For now admit - key infrastructure needed: **)
+    (** - standard_loop in loop_space S1 S1_topology b0 **)
+    (** - product of quotient map with identity is quotient **)
     admit.
-Admitted. (** TODO: needs quotient model of S1 or pi1(S1) classification. **)
+Admitted.
 
 Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
