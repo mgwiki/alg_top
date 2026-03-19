@@ -284087,10 +284087,55 @@ claim Hincl_triv : forall cls:set,
   apply_fun (induced_homomorphism S1 S1_topology S1_basepoint
     R2_minus_origin R2_minus_origin_topology (apply_fun incl S1_basepoint) incl) cls =
   fundamental_group_id R2_minus_origin R2_minus_origin_topology (apply_fun incl S1_basepoint).
-{ (** From Hsc: pi1(R2m0, x0) = {e} for some x0 **)
-  (** Path connect to incl(b0), basepoint change iso, still trivial **)
-  (** Then induced_hom maps into trivial group -> trivial **)
-  admit. }
+{ let cls. assume Hcls.
+  (** Need: incl(b0) = b0 **)
+  claim Hincl_b0 : apply_fun incl S1_basepoint = S1_basepoint.
+  { exact (apply_fun_graph S1 (fun x:set => x) S1_basepoint Hb0). }
+  (** Rewrite goal to use S1_basepoint directly **)
+  prove apply_fun (induced_homomorphism S1 S1_topology S1_basepoint
+    R2_minus_origin R2_minus_origin_topology (apply_fun incl S1_basepoint) incl) cls =
+    fundamental_group_id R2_minus_origin R2_minus_origin_topology (apply_fun incl S1_basepoint).
+  rewrite Hincl_b0.
+  (** Goal: ih(cls) = fg_id at S1_basepoint **)
+  (** From simply connected: pi1(R2m0, b0') = {e} for some b0' **)
+  (** b0' might not be S1_basepoint, need basepoint change **)
+  (** For now, derive pi1(R2m0, S1_basepoint) trivial via admitted helper **)
+  claim Hpi1_triv : fundamental_group R2_minus_origin R2_minus_origin_topology S1_basepoint =
+    Sing (fundamental_group_id R2_minus_origin R2_minus_origin_topology S1_basepoint).
+  { (** Requires: simply connected at some x0 + basepoint change to S1_basepoint **)
+    (** Path connected from Hsc. Get path from x0 to S1_basepoint. **)
+    (** Basepoint change isomorphism. Bijection from singleton -> singleton. **)
+    admit. }
+  (** induced_hom maps into pi1(R2m0, S1_basepoint) = {e}, so ih(cls) = e **)
+  claim Hih_maps : apply_fun (induced_homomorphism S1 S1_topology S1_basepoint
+    R2_minus_origin R2_minus_origin_topology S1_basepoint incl) cls
+    :e fundamental_group R2_minus_origin R2_minus_origin_topology S1_basepoint.
+  { (** induced_homomorphism is a group_homomorphism, hence function_on **)
+    claim Hhom : group_homomorphism
+      (fundamental_group S1 S1_topology S1_basepoint)
+      (fundamental_group_mult S1 S1_topology S1_basepoint)
+      (fundamental_group R2_minus_origin R2_minus_origin_topology S1_basepoint)
+      (fundamental_group_mult R2_minus_origin R2_minus_origin_topology S1_basepoint)
+      (induced_homomorphism S1 S1_topology S1_basepoint R2_minus_origin R2_minus_origin_topology S1_basepoint incl).
+    { exact (induced_homomorphism_is_homomorphism S1 S1_topology S1_basepoint
+        R2_minus_origin R2_minus_origin_topology S1_basepoint incl
+        Hincl_cont (apply_fun_graph S1 (fun x:set => x) S1_basepoint Hb0) Hb0). }
+    exact (group_homomorphism_function_on
+      (fundamental_group S1 S1_topology S1_basepoint)
+      (fundamental_group_mult S1 S1_topology S1_basepoint)
+      (fundamental_group R2_minus_origin R2_minus_origin_topology S1_basepoint)
+      (fundamental_group_mult R2_minus_origin R2_minus_origin_topology S1_basepoint)
+      (induced_homomorphism S1 S1_topology S1_basepoint R2_minus_origin R2_minus_origin_topology S1_basepoint incl)
+      Hhom cls Hcls). }
+  (** ih(cls) in {e}, so ih(cls) = e **)
+  claim Hih_in_sing : apply_fun (induced_homomorphism S1 S1_topology S1_basepoint
+    R2_minus_origin R2_minus_origin_topology S1_basepoint incl) cls
+    :e Sing (fundamental_group_id R2_minus_origin R2_minus_origin_topology S1_basepoint).
+  { rewrite <- Hpi1_triv. exact Hih_maps. }
+  exact (SingE (fundamental_group_id R2_minus_origin R2_minus_origin_topology S1_basepoint)
+    (apply_fun (induced_homomorphism S1 S1_topology S1_basepoint
+      R2_minus_origin R2_minus_origin_topology S1_basepoint incl) cls)
+    Hih_in_sing). }
 (** By s55_trivial_implies_nulhomotopic: incl is nulhomotopic **)
 claim Hnul : nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology incl.
 { exact (s55_trivial_implies_nulhomotopic R2_minus_origin R2_minus_origin_topology incl
