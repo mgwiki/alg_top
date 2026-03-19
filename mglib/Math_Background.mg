@@ -401908,6 +401908,14 @@ apply set_ext.
   exact (SepI B2 (fun u:set => apply_fun pi u :e image_of pi C) x HxB2 Hmem).
 Qed.
 
+(** Helper goal for S74: saturation of a closed set is closed in B2. **)
+(** This should imply both: polygon_pasting_map is a closed map, and the quotient is T1. **)
+Lemma polygon_pasting_saturation_closed_in_B2 : forall n w C:set,
+  C c= B2 ->
+  closed_in B2 B2_topology C ->
+  closed_in B2 B2_topology {x :e B2 | exists c:set, c :e C /\ polygon_pasting_equiv n w x c}.
+Admitted.
+
 (** polygon_pasting_map is injective on interior points. **)
 (** Proven Charlie **)
 Lemma polygon_pasting_map_inj_nonS1 : forall n w x y:set,
@@ -402486,7 +402494,40 @@ apply andI.
     exact (compact_Hausdorff_normal B2 B2_topology B2_compact B2_Hausdorff).
   }
   claim HpiClosedMap : forall C:set, closed_in B2 B2_topology C -> closed_in X Tx (image_of pi C).
-  { admit. }
+  {
+    let C. assume HCclosed.
+    claim HCsubB2 : C c= B2.
+    { exact (closed_in_subset B2 B2_topology C HCclosed). }
+    set SatC := {x :e B2 | exists c:set, c :e C /\ polygon_pasting_equiv n w x c}.
+    claim HsatClosed : closed_in B2 B2_topology SatC.
+    { exact (polygon_pasting_saturation_closed_in_B2 n w C HCsubB2 HCclosed). }
+    claim HpreImgEq :
+      preimage_of B2 pi (image_of pi C) = SatC.
+    { exact (polygon_pasting_preimage_image_eq_saturation n w C HCsubB2). }
+    claim HcompOpen : X :\: image_of pi C :e Tx.
+    {
+      rewrite HTxEq.
+      claim HPow : (X :\: image_of pi C) :e Power X.
+      { exact (PowerI X (X :\: image_of pi C) (setminus_Subq X (image_of pi C))). }
+      claim HpreOpen : preimage_of B2 pi (X :\: image_of pi C) :e B2_topology.
+      {
+        claim HpreComp :
+          preimage_of B2 pi (X :\: image_of pi C) = B2 :\: preimage_of B2 pi (image_of pi C).
+        { exact (preimage_of_complement B2 X pi (image_of pi C) HpiFun). }
+        rewrite HpreComp.
+        rewrite HpreImgEq.
+        claim HopenIn : open_in B2 B2_topology (B2 :\: SatC).
+        { exact (open_of_closed_complement B2 B2_topology SatC HsatClosed). }
+        exact (andER (topology_on B2 B2_topology) ((B2 :\: SatC) :e B2_topology) HopenIn).
+      }
+      exact (SepI (Power X) (fun V:set => preimage_of B2 pi V :e B2_topology)
+        (X :\: image_of pi C) HPow HpreOpen).
+    }
+    claim HimgSubX : image_of pi C c= X.
+    { exact (image_of_sub_codomain pi B2 X C HpiFun HCsubB2). }
+    rewrite <- (setminus_setminus_eq X (image_of pi C) HimgSubX).
+    exact (closed_of_open_complement X Tx (X :\: image_of pi C) HtopX HcompOpen).
+  }
   claim HpreimOpen :
     forall V:set, V :e Tx -> {x :e B2 | apply_fun pi x :e V} :e B2_topology.
   {
@@ -402502,7 +402543,122 @@ apply andI.
       (fun y Hy => HpiSurj y Hy)).
   }
   claim HT1X : T1_space X Tx.
-  { admit. }
+  {
+    apply (iffER
+      (T1_space X Tx)
+      (forall cls:set, cls :e X -> closed_in X Tx {cls})
+      (lemma_T1_singletons_closed X Tx HtopX)).
+    let cls. assume HclsX.
+    (** It suffices to show X :\: {cls} is open in Tx (then {cls} is closed). **)
+    claim HclsWit :
+      exists x0:set, x0 :e B2 /\ cls = {y :e B2 | polygon_pasting_equiv n w x0 y}.
+    {
+      exact (SepE2 (Power B2)
+        (fun c:set => exists x0:set, x0 :e B2 /\ c = {y :e B2 | polygon_pasting_equiv n w x0 y})
+        cls
+        HclsX).
+    }
+    apply HclsWit.
+    let x0. assume Hpack.
+    claim Hx0B2 : x0 :e B2.
+    { exact (andEL (x0 :e B2) (cls = {y :e B2 | polygon_pasting_equiv n w x0 y}) Hpack). }
+    claim HclsEq : cls = {y :e B2 | polygon_pasting_equiv n w x0 y}.
+    { exact (andER (x0 :e B2) (cls = {y :e B2 | polygon_pasting_equiv n w x0 y}) Hpack). }
+    claim HSingClosed : closed_in B2 B2_topology {x0}.
+    { exact (Hausdorff_singletons_closed B2 B2_topology x0 B2_Hausdorff Hx0B2). }
+    claim HSingSub : {x0} c= B2.
+    {
+      let z. assume Hz.
+      rewrite (SingE x0 z Hz).
+      exact Hx0B2.
+    }
+    set Sat0 := {x :e B2 | exists c:set, c :e {x0} /\ polygon_pasting_equiv n w x c}.
+    claim Hsat0Closed : closed_in B2 B2_topology Sat0.
+    { exact (polygon_pasting_saturation_closed_in_B2 n w {x0} HSingSub HSingClosed). }
+    claim Hsat0Eq : Sat0 = {y :e B2 | polygon_pasting_equiv n w y x0}.
+    {
+      apply set_ext.
+      - let y. assume HySat.
+        claim HyB2 : y :e B2.
+        { exact (SepE1 B2 (fun u:set => exists c:set, c :e {x0} /\ polygon_pasting_equiv n w u c) y HySat). }
+        claim Hex : exists c:set, c :e {x0} /\ polygon_pasting_equiv n w y c.
+        { exact (SepE2 B2 (fun u:set => exists c:set, c :e {x0} /\ polygon_pasting_equiv n w u c) y HySat). }
+        apply Hex. let c. assume HcPack.
+        claim HcSing : c :e {x0}.
+        { exact (andEL (c :e {x0}) (polygon_pasting_equiv n w y c) HcPack). }
+        claim Hyc : polygon_pasting_equiv n w y c.
+        { exact (andER (c :e {x0}) (polygon_pasting_equiv n w y c) HcPack). }
+        claim HcEq : c = x0.
+        { exact (SingE x0 c HcSing). }
+        apply (SepI B2 (fun u:set => polygon_pasting_equiv n w u x0) y HyB2).
+        rewrite <- HcEq.
+        exact Hyc.
+      - let y. assume Hy.
+        claim HyB2 : y :e B2.
+        { exact (SepE1 B2 (fun u:set => polygon_pasting_equiv n w u x0) y Hy). }
+        claim Hyx0 : polygon_pasting_equiv n w y x0.
+        { exact (SepE2 B2 (fun u:set => polygon_pasting_equiv n w u x0) y Hy). }
+        apply (SepI B2 (fun u:set => exists c:set, c :e {x0} /\ polygon_pasting_equiv n w u c) y HyB2).
+        witness x0.
+        exact (andI (x0 :e {x0}) (polygon_pasting_equiv n w y x0) (SingI x0) Hyx0).
+    }
+    claim HclsClosed : closed_in B2 B2_topology cls.
+    {
+      claim HsymmEq : {y :e B2 | polygon_pasting_equiv n w y x0} = {y :e B2 | polygon_pasting_equiv n w x0 y}.
+      {
+        apply set_ext.
+        - let y. assume Hy.
+          claim HyB2 : y :e B2.
+          { exact (SepE1 B2 (fun u:set => polygon_pasting_equiv n w u x0) y Hy). }
+          claim Hyx0 : polygon_pasting_equiv n w y x0.
+          { exact (SepE2 B2 (fun u:set => polygon_pasting_equiv n w u x0) y Hy). }
+          apply (SepI B2 (fun u:set => polygon_pasting_equiv n w x0 u) y HyB2).
+          exact (polygon_pasting_equiv_symm n w y x0 Hyx0).
+        - let y. assume Hy.
+          claim HyB2 : y :e B2.
+          { exact (SepE1 B2 (fun u:set => polygon_pasting_equiv n w x0 u) y Hy). }
+          claim Hx0y : polygon_pasting_equiv n w x0 y.
+          { exact (SepE2 B2 (fun u:set => polygon_pasting_equiv n w x0 u) y Hy). }
+          apply (SepI B2 (fun u:set => polygon_pasting_equiv n w u x0) y HyB2).
+          exact (polygon_pasting_equiv_symm n w x0 y Hx0y).
+      }
+      claim Hsat0Eq2 : Sat0 = {y :e B2 | polygon_pasting_equiv n w x0 y}.
+      {
+        rewrite Hsat0Eq.
+        exact HsymmEq.
+      }
+      rewrite HclsEq.
+      rewrite <- Hsat0Eq2.
+      exact Hsat0Closed.
+    }
+    claim HopenComp : X :\: (Sing cls) :e Tx.
+    {
+      rewrite HTxEq.
+      claim HPow : (X :\: (Sing cls)) :e Power X.
+      { exact (PowerI X (X :\: (Sing cls)) (setminus_Subq X (Sing cls))). }
+      claim HpreOpen : preimage_of B2 pi (X :\: (Sing cls)) :e B2_topology.
+      {
+        claim HpreComp :
+          preimage_of B2 pi (X :\: (Sing cls)) = B2 :\: preimage_of B2 pi (Sing cls).
+        { exact (preimage_of_complement B2 X pi (Sing cls) HpiFun). }
+        rewrite HpreComp.
+        rewrite (polygon_pasting_preimage_Sing_eq_class n w cls HclsX).
+        claim HopenIn : open_in B2 B2_topology (B2 :\: cls).
+        { exact (open_of_closed_complement B2 B2_topology cls HclsClosed). }
+        exact (andER (topology_on B2 B2_topology) ((B2 :\: cls) :e B2_topology) HopenIn).
+      }
+      exact (SepI (Power X) (fun V:set => preimage_of B2 pi V :e B2_topology)
+        (X :\: (Sing cls)) HPow HpreOpen).
+    }
+    claim HSingSubX : (Sing cls) c= X.
+    {
+      let z. assume Hz.
+      rewrite (SingE cls z Hz).
+      exact HclsX.
+    }
+    rewrite <- (setminus_setminus_eq X (Sing cls) HSingSubX).
+    exact (closed_of_open_complement X Tx (X :\: (Sing cls)) HtopX HopenComp).
+  }
   exact (normal_T1_implies_Hausdorff X Tx HnormX HT1X).
 Admitted.
 
