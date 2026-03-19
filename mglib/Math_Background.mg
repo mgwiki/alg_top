@@ -281232,7 +281232,7 @@ Lemma nulhomotopy_R2_from_unbounded_component : forall A TA:set,
         ~(Rlt M (add_SNo (mul_SNo (apply_fun g a 0) (apply_fun g a 0))
                          (mul_SNo (apply_fun g a 1) (apply_fun g a 1)))))) ->
     (** The origin can be connected to a far-away point in R^2-g(A) **)
-    (exists p:set, p :e setprod R R /\
+    (exists p:set, p :e setprod R R /\ p <> (0, 0) /\
       ~(p :e image_of g A) /\
       ~((0,0) :e image_of g A) /\
       exists alpha:set,
