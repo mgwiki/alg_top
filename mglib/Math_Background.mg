@@ -292220,6 +292220,27 @@ Lemma R2_scaling_homotopy_avoids_zero : forall A TA g p M:set,
   Rlt M (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1))) ->
   forall x t:set, x :e A -> t :e unit_interval ->
   R2_sub (R2_scalar_mult t (apply_fun g x)) p <> (0, 0).
+let A TA g p M.
+assume HM : M :e R. assume HMpos : Rlt 0 M.
+assume Hbdd : forall x:set, x :e A ->
+  ~(Rlt M (add_SNo (mul_SNo (apply_fun g x 0) (apply_fun g x 0))
+                   (mul_SNo (apply_fun g x 1) (apply_fun g x 1)))).
+assume Hpbig : Rlt M (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1))).
+let x t. assume Hx : x :e A. assume Ht : t :e unit_interval.
+assume Heq : R2_sub (R2_scalar_mult t (apply_fun g x)) p = (0, 0).
+(** If R2_sub z p = 0 then z = p **)
+claim Htgx_eq_p : R2_scalar_mult t (apply_fun g x) = p.
+{ apply (dneg (R2_scalar_mult t (apply_fun g x) = p)).
+  assume Hne : ~(R2_scalar_mult t (apply_fun g x) = p).
+  (** Need: R2_scalar_mult t (apply_fun g x) in R^2 and p in R^2 **)
+  (** Then R2_sub_nonzero_of_ne gives R2_sub ... <> (0,0), contradicting Heq **)
+  admit. }
+(** Extract component equalities **)
+(** R2_scalar_mult t gx = (mul_SNo t (gx 0), mul_SNo t (gx 1)) **)
+(** So p 0 = mul_SNo t (gx 0), p 1 = mul_SNo t (gx 1) **)
+(** Then |p|^2 = (t gx0)^2 + (t gx1)^2 = t^2 (gx0^2 + gx1^2) **)
+(** Since t in [0,1], t^2 <= 1, so |p|^2 <= gx0^2 + gx1^2 = |gx|^2 <= M **)
+(** But |p|^2 > M. Contradiction. **)
 admit.
 Admitted.
 
