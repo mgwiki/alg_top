@@ -237226,6 +237226,82 @@ apply andI.
 - exact Hseg0_1.
 Qed.
 
+(** Infrastructure: a segment inside a unit_interval ball from the fixed-radius family (r<1). **)
+(** Proven Charlie **)
+Lemma unit_interval_ballFam_segment_continuous_lt1 : forall r B x y:set,
+  r :e R -> Rlt 0 r -> Rlt r 1 ->
+  B :e {open_ball unit_interval R_bounded_metric c r | c :e unit_interval} ->
+  x :e B -> y :e B ->
+  exists seg:set,
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg /\
+    (forall t:set, t :e unit_interval -> apply_fun seg t :e B) /\
+    apply_fun seg 0 = x /\
+    apply_fun seg 1 = y.
+let r B x y.
+assume HrR Hrpos Hrlt1 HB Hx Hy.
+apply (ReplE_impred unit_interval (fun c:set => open_ball unit_interval R_bounded_metric c r) B HB).
+let c. assume HcI Heq.
+claim HxB : x :e open_ball unit_interval R_bounded_metric c r.
+{ rewrite <- Heq. exact Hx. }
+claim HyB : y :e open_ball unit_interval R_bounded_metric c r.
+{ rewrite <- Heq. exact Hy. }
+apply (open_ball_unit_interval_segment_continuous_lt1_in_unit_interval c r x y
+  HcI HrR Hrpos Hrlt1 HxB HyB).
+let seg. assume HsegPack.
+witness seg.
+claim HsegPack0 :
+  (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg /\
+   (forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r)) /\
+  apply_fun seg 0 = x.
+{ exact (andEL
+    ((continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg /\
+      (forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r)) /\
+     apply_fun seg 0 = x)
+    (apply_fun seg 1 = y)
+    HsegPack). }
+claim Hseg1 : apply_fun seg 1 = y.
+{ exact (andER
+    ((continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg /\
+      (forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r)) /\
+     apply_fun seg 0 = x)
+    (apply_fun seg 1 = y)
+    HsegPack). }
+claim HsegPack1 :
+  continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg /\
+  (forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r).
+{ exact (andEL
+    (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg /\
+     (forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r))
+    (apply_fun seg 0 = x)
+    HsegPack0). }
+claim Hseg0 : apply_fun seg 0 = x.
+{ exact (andER
+    (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg /\
+     (forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r))
+    (apply_fun seg 0 = x)
+    HsegPack0). }
+claim HsegCont : continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg.
+{ exact (andEL
+    (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg)
+    (forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r)
+    HsegPack1). }
+claim HsegRange :
+  forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r.
+{ exact (andER
+    (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg)
+    (forall t:set, t :e unit_interval -> apply_fun seg t :e open_ball unit_interval R_bounded_metric c r)
+    HsegPack1). }
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact HsegCont.
+    * let t. assume Ht.
+      rewrite Heq.
+      exact (HsegRange t Ht).
+  + exact Hseg0.
+- exact Hseg1.
+Qed.
+
 (** Infrastructure: insert (reverse gamma) then gamma at a midpoint of a concatenation. **)
 (** This is the algebraic-topology standard trick used to turn paths into loops based at x0. **)
 (** Proven Charlie **)
