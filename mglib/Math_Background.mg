@@ -281536,6 +281536,18 @@ claim Hcomp_eq : compose_fun X phi_graph G = graph X (fun x:set => apply_fun G (
 rewrite <- Hcomp_eq. exact Hcomp.
 Qed.
 
+(** Helper: Tietze extension coordinate-wise for maps to R^n. **)
+(** If f: A -> R^n continuous and A closed in normal X, **)
+(** then f extends to g: X -> R^n continuous. **)
+(** Proof: apply Tietze_extension_real to each coordinate projection. **)
+Lemma Tietze_extension_Rn : forall X Tx A n f:set,
+  normal_space X Tx -> closed_in X Tx A -> n :e omega ->
+  continuous_map A (subspace_topology X Tx A) (euclidean_space n) (euclidean_topology n) f ->
+  exists g:set, continuous_map X Tx (euclidean_space n) (euclidean_topology n) g /\
+    (forall x:set, x :e A -> apply_fun g x = apply_fun f x).
+admit.
+Admitted.
+
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
 (** Bounty 275 **)
 Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
