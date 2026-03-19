@@ -282159,8 +282159,169 @@ Qed.
 (** Helper: R^2 is simply connected (R contractible -> R^2 contractible -> simply connected) **)
 Lemma euclidean_space_2_simply_connected :
   simply_connected (euclidean_space 2) (euclidean_topology 2).
-admit.
-Admitted.
+(** Step 1: show (R x R, product topology) is simply connected via pi1 product theorem. **)
+claim HscR2 : simply_connected (setprod R R) R2_topology.
+{
+  claim HpcR : path_connected_space R R_standard_topology.
+  { exact (simply_connected_path_connected R R_standard_topology simply_connected_R_standard). }
+  claim HpcR2 : path_connected_space (setprod R R) R2_topology.
+  { exact (finite_product_path_connected R R_standard_topology R R_standard_topology HpcR HpcR). }
+  claim HtopR : topology_on R R_standard_topology.
+  { exact R_standard_topology_is_topology. }
+  claim HtopR2 : topology_on (setprod R R) R2_topology.
+  { exact (product_topology_is_topology R R_standard_topology R R_standard_topology HtopR HtopR). }
+  claim H00R2 : (0, 0) :e setprod R R.
+  { exact (tuple_2_setprod_by_pair_Sigma R R 0 0 real_0 real_0). }
+  set piR := fundamental_group R R_standard_topology 0.
+  set multR := fundamental_group_mult R R_standard_topology 0.
+  set idR := fundamental_group_id R R_standard_topology 0.
+  claim HpiR : piR = {idR}.
+  { exact (simply_connected_trivial_pi1_at_point R R_standard_topology 0
+      simply_connected_R_standard real_0). }
+  claim HidRmem : idR :e piR.
+  {
+    rewrite HpiR.
+    exact (SingI idR).
+  }
+  claim HisoPack : exists phi:set,
+    group_isomorphism
+      (fundamental_group (setprod R R) R2_topology (0, 0))
+      (fundamental_group_mult (setprod R R) R2_topology (0, 0))
+      (setprod piR piR)
+      (product_group_mult piR multR piR multR)
+      phi.
+  { exact (thm60_1_pi1_product R R_standard_topology 0 R R_standard_topology 0
+      HtopR HtopR real_0 real_0). }
+  apply HisoPack. let phi. assume Hiso : group_isomorphism
+    (fundamental_group (setprod R R) R2_topology (0, 0))
+    (fundamental_group_mult (setprod R R) R2_topology (0, 0))
+    (setprod piR piR)
+    (product_group_mult piR multR piR multR)
+    phi.
+  set piR2 := fundamental_group (setprod R R) R2_topology (0, 0).
+  set idR2 := fundamental_group_id (setprod R R) R2_topology (0, 0).
+  claim Hbij : bijection piR2 (setprod piR piR) phi.
+  { exact (group_isomorphism_bijection piR2 (fundamental_group_mult (setprod R R) R2_topology (0, 0))
+      (setprod piR piR) (product_group_mult piR multR piR multR) phi Hiso). }
+  set b0 := (idR, idR).
+  claim Hb0Cod : b0 :e setprod piR piR.
+  { exact (tuple_2_setprod_by_pair_Sigma piR piR idR idR HidRmem HidRmem). }
+  claim HcodSing : setprod piR piR = {b0}.
+  {
+    apply set_ext.
+    - let p. assume Hp : p :e setprod piR piR.
+      claim Hp0 : p 0 :e piR.
+      { exact (ap0_Sigma piR (fun _ => piR) p Hp). }
+      claim Hp1 : p 1 :e piR.
+      { exact (ap1_Sigma piR (fun _ => piR) p Hp). }
+      claim Hp0sing : p 0 :e {idR}.
+      { rewrite <- HpiR. exact Hp0. }
+      claim Hp1sing : p 1 :e {idR}.
+      { rewrite <- HpiR. exact Hp1. }
+      claim Hp0eq : p 0 = idR. { exact (SingE idR (p 0) Hp0sing). }
+      claim Hp1eq : p 1 = idR. { exact (SingE idR (p 1) Hp1sing). }
+      claim Hpeta : p = (p 0, p 1). { exact (setprod_eta piR piR p Hp). }
+      rewrite Hpeta.
+      rewrite Hp0eq.
+      rewrite Hp1eq.
+      exact (SingI b0).
+    - let p. assume Hp : p :e {b0}.
+      rewrite (SingE b0 p Hp).
+      exact Hb0Cod.
+  }
+  claim HdomSing : exists a0:set, piR2 = {a0}.
+  {
+    claim Hsurj : forall y:set, y :e setprod piR piR -> exists x:set, x :e piR2 /\
+      apply_fun phi x = y /\ (forall x':set, x' :e piR2 -> apply_fun phi x' = y -> x' = x).
+    {
+      exact (andER
+        (function_on phi piR2 (setprod piR piR))
+        (forall y:set, y :e setprod piR piR -> exists x:set, x :e piR2 /\
+          apply_fun phi x = y /\ (forall x':set, x' :e piR2 -> apply_fun phi x' = y -> x' = x))
+        Hbij).
+    }
+    apply (Hsurj b0 Hb0Cod).
+    let a0. assume Ha0pack : a0 :e piR2 /\
+      apply_fun phi a0 = b0 /\ (forall x':set, x' :e piR2 -> apply_fun phi x' = b0 -> x' = a0).
+    claim Ha0left : a0 :e piR2 /\ apply_fun phi a0 = b0.
+    { exact (andEL (a0 :e piR2 /\ apply_fun phi a0 = b0)
+        (forall x':set, x' :e piR2 -> apply_fun phi x' = b0 -> x' = a0) Ha0pack). }
+    claim Ha0uniq : forall x':set, x' :e piR2 -> apply_fun phi x' = b0 -> x' = a0.
+    { exact (andER (a0 :e piR2 /\ apply_fun phi a0 = b0)
+        (forall x':set, x' :e piR2 -> apply_fun phi x' = b0 -> x' = a0) Ha0pack). }
+    witness a0.
+    apply set_ext.
+    - let x. assume Hx : x :e piR2.
+      claim Hfun : function_on phi piR2 (setprod piR piR).
+      {
+        exact (andEL
+          (function_on phi piR2 (setprod piR piR))
+          (forall y:set, y :e setprod piR piR -> exists x0:set, x0 :e piR2 /\
+            apply_fun phi x0 = y /\ (forall x':set, x' :e piR2 -> apply_fun phi x' = y -> x' = x0))
+          Hbij).
+      }
+      claim Hphi_x : apply_fun phi x :e setprod piR piR.
+      { exact (Hfun x Hx). }
+      claim Hphi_x_sing : apply_fun phi x :e {b0}.
+      { rewrite <- HcodSing. exact Hphi_x. }
+      claim HphiEq : apply_fun phi x = b0.
+      { exact (SingE b0 (apply_fun phi x) Hphi_x_sing). }
+      rewrite (Ha0uniq x Hx HphiEq).
+      exact (SingI a0).
+    - let x. assume Hx : x :e {a0}.
+      rewrite (SingE a0 x Hx).
+      exact (andEL (a0 :e piR2) (apply_fun phi a0 = b0) Ha0left).
+  }
+  apply HdomSing. let a0. assume HpiR2Sing : piR2 = {a0}.
+  claim HidR2mem : idR2 :e piR2.
+  { exact (fundamental_group_id_member (setprod R R) R2_topology (0, 0) HtopR2 H00R2). }
+  claim HidEq : idR2 = a0.
+  { claim HidR2memSing : idR2 :e {a0}.
+    { rewrite <- HpiR2Sing. exact HidR2mem. }
+    exact (SingE a0 idR2 HidR2memSing). }
+  claim Hpi1trivR2 : piR2 = {idR2}.
+  { rewrite HidEq. exact HpiR2Sing. }
+  prove path_connected_space (setprod R R) R2_topology /\
+    exists x0:set, x0 :e setprod R R /\
+      fundamental_group (setprod R R) R2_topology x0 =
+        {fundamental_group_id (setprod R R) R2_topology x0}.
+  apply andI.
+  - exact HpcR2.
+  - witness (0, 0).
+    apply andI.
+    + exact H00R2.
+    + exact Hpi1trivR2.
+}
+
+(** Step 2: build homeomorphism euclidean_space 2 ~ (R x R) and reflect simply connectedness. **)
+(** nat_p 1 via ordsucc_0_eq_1_nat **)
+claim Hnat1 : nat_p 1.
+{ rewrite <- ordsucc_0_eq_1_nat. exact (nat_ordsucc Empty nat_0). }
+set TpE1R := product_topology (euclidean_space 1) (euclidean_topology 1) R R_standard_topology.
+claim Hsplit : homeomorphism (euclidean_space 2) (euclidean_topology 2)
+  (setprod (euclidean_space 1) R) TpE1R (euclidean_space_succ_split_map 1).
+{ rewrite <- ordsucc_1_eq_2_nat.
+  exact (euclidean_space_succ_split_homeomorphism 1 Hnat1). }
+claim Hg_ex : exists g:set, homeomorphism (euclidean_space 1) (euclidean_topology 1) R R_standard_topology g.
+{ rewrite <- SingEmpty_eq_1.
+  exact (homeomorphism_inverse_is_homeomorphism_variant R R_standard_topology
+    (euclidean_space (Sing Empty)) (euclidean_topology (Sing Empty)) R1_singleton_map
+    R_homeomorphic_euclidean_space_1). }
+apply Hg_ex. let g. assume Hg : homeomorphism (euclidean_space 1) (euclidean_topology 1) R R_standard_topology g.
+set fprod := pair_map (setprod (euclidean_space 1) R)
+  (compose_fun (setprod (euclidean_space 1) R) (projection_map1 (euclidean_space 1) R) g)
+  (projection_map2 (euclidean_space 1) R).
+claim Hprod_homeo : homeomorphism (setprod (euclidean_space 1) R) TpE1R (setprod R R) R2_topology fprod.
+{ exact (homeomorphism_product_left (euclidean_space 1) (euclidean_topology 1) R R_standard_topology R R_standard_topology
+    g Hg R_standard_topology_is_topology). }
+set h := compose_fun (euclidean_space 2) (euclidean_space_succ_split_map 1) fprod.
+claim Hhomeo : homeomorphism (euclidean_space 2) (euclidean_topology 2) (setprod R R) R2_topology h.
+{ exact (homeomorphism_compose (euclidean_space 2) (euclidean_topology 2)
+    (setprod (euclidean_space 1) R) TpE1R (setprod R R) R2_topology
+    (euclidean_space_succ_split_map 1) fprod Hsplit Hprod_homeo). }
+exact (homeomorphism_reflects_simply_connected (euclidean_space 2) (euclidean_topology 2)
+  (setprod R R) R2_topology h Hhomeo HscR2).
+Qed.
 
 (** Helper: S^2-{south_pole} is simply connected **)
 (** Uses: stereo_S_map_homeomorphism (proved) + R^2 simply connected **)
@@ -282174,7 +282335,7 @@ exact (homeomorphism_reflects_simply_connected
   stereo_S_map
   stereo_S_map_homeomorphism
   euclidean_space_2_simply_connected).
-Admitted.
+Qed.
 
 (** Helper: S^2 minus any single point is simply connected **)
 (** For south pole: use Sn2_minus_south_pole_simply_connected. **)
