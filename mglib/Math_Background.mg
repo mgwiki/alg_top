@@ -281814,7 +281814,16 @@ apply andI.
   { (** Translation homotopy G(x,t) = g(x) - alpha(t) **)
     (** G(x,0) = g(x) - alpha(0) = g(x) - (0,0) = g(x) **)
     (** G(x,1) = g(x) - alpha(1) = g(x) - p = k(x) **)
-    (** G avoids (0,0) since alpha(t) not in g(A) **)
+    (** G avoids (0,0) since alpha(t) not in g(A): by R2_translation_homotopy_avoids_zero (QED) **)
+    (** Construction needs: **)
+    (** 1. k_fun continuous: composition g with (- p), i.e., g(x) - p continuous **)
+    (** 2. G = graph (A x I) (fun (x,t) => g(x) - alpha(t)) continuous **)
+    (**    via: (g o pi1, alpha o pi2): AxI -> R2 x R2, then subtract: R2xR2 -> R2 **)
+    (**    Both g o pi1 and alpha o pi2 continuous by composition **)
+    (**    Subtraction continuous by component: add_fun_R + neg on second arg **)
+    (** 3. G maps to R2m0: by R2_translation_homotopy_avoids_zero **)
+    (** 4. G(x,0) = g(x): alpha(0) = (0,0), g(x) - (0,0) = g(x) **)
+    (** 5. G(x,1) = k(x): alpha(1) = p, g(x) - p = k(x) **)
     admit. }
   claim Hk_hom_const : homotopic_maps A TA R2m0 TR2m0 k_fun (const_fun A neg_p).
   { (** Scaling homotopy H(x,t) = (1-t).g(x) - p **)
