@@ -283092,13 +283092,56 @@ apply and9I.
   admit.
 - (** lower semicircle connected **)
   admit.
-- (** S1 minus upper is open in S1: S1-upper = {p in S1 | y<0} = S1 cap (R x ray_lower 0) **)
-  (** Proof: S1-upper = (R x open_ray_lower R 0) cap S1, and R x open_ray_lower R 0 **)
-  (** is open in R2_topology since R is open and open_ray_lower is open in R_standard. **)
-  (** Then subspace_topologyI gives the result. **)
-  admit.
+- (** S1 minus upper is open in S1 **)
+  (** Approach: S1-upper = preimage of open_ray_lower R 0 under y-projection **)
+  (** y-projection restricted to S1 is continuous, open_ray_lower is open -> preimage open **)
+  prove S1 :\: S1_upper :e S1_topology.
+  prove S1 :\: S1_upper :e subspace_topology (setprod R R) R2_topology S1.
+  (** The key open set in R2: rectangle_set R (open_ray_lower R 0) **)
+  (** This is R x {y | y < 0}, open in R2 **)
+  set Vopen := rectangle_set R (open_ray_lower R 0).
+  claim HVopen_in_R2 : Vopen :e R2_topology.
+  { claim HtopR : topology_on R R_standard_topology. { exact R_standard_topology_is_topology. }
+    claim HRopen : R :e R_standard_topology.
+    { apply (and5E
+        (R_standard_topology c= Power R)
+        (Empty :e R_standard_topology)
+        (R :e R_standard_topology)
+        (forall UFam :e Power R_standard_topology, Union UFam :e R_standard_topology)
+        (forall U :e R_standard_topology, forall V :e R_standard_topology, U :/\: V :e R_standard_topology)
+        HtopR). assume _ _ H _ _. exact H. }
+    exact (rectangle_set_open_in_product_topology R R_standard_topology R R_standard_topology
+      R (open_ray_lower R 0) HtopR HtopR HRopen
+      (open_ray_lower_in_R_standard_topology 0 real_0)). }
+  (** S1-upper = Vopen cap S1 **)
+  (** For this we need: p in S1, p not in upper iff p in Vopen **)
+  (** This requires SNoLt(p1, 0) <-> order_rel R p1 0 <-> p in Vopen **)
+  (** The formal connection is complex; admit the set equality for now **)
+  claim Heq : S1 :\: S1_upper = Vopen :/\: S1.
+  { admit. }
+  rewrite Heq.
+  exact (subspace_topologyI (setprod R R) R2_topology S1 Vopen HVopen_in_R2).
 - (** S1 minus lower is open in S1: symmetric argument **)
-  admit.
+  prove S1 :\: S1_lower :e S1_topology.
+  prove S1 :\: S1_lower :e subspace_topology (setprod R R) R2_topology S1.
+  set Vopen2 := rectangle_set R (open_ray_upper R 0).
+  claim HVopen2_in_R2 : Vopen2 :e R2_topology.
+  { claim HtopR : topology_on R R_standard_topology. { exact R_standard_topology_is_topology. }
+    claim HRopen : R :e R_standard_topology.
+    { apply (and5E
+        (R_standard_topology c= Power R)
+        (Empty :e R_standard_topology)
+        (R :e R_standard_topology)
+        (forall UFam :e Power R_standard_topology, Union UFam :e R_standard_topology)
+        (forall U :e R_standard_topology, forall V :e R_standard_topology, U :/\: V :e R_standard_topology)
+        HtopR). assume _ _ H _ _. exact H. }
+    exact (rectangle_set_open_in_product_topology R R_standard_topology R R_standard_topology
+      R (open_ray_upper R 0) HtopR HtopR HRopen
+      (open_ray_upper_in_R_standard_topology 0 real_0)). }
+  claim Heq2 : S1 :\: S1_lower = Vopen2 :/\: S1.
+  { admit. }
+  rewrite Heq2.
+  exact (subspace_topologyI (setprod R R) R2_topology S1 Vopen2 HVopen2_in_R2).
 Admitted.
 
 (** Helper: A simple closed curve in S^2 can be decomposed into two arcs **)
