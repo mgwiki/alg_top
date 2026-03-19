@@ -281500,6 +281500,7 @@ rewrite <- Hpair_eq. exact Hpair_cont.
 Qed.
 
 (** Helper for 62.1: composition G(x, phi(x)) is continuous when G and phi are **)
+(** Proven Alice **)
 Lemma composition_with_phi_continuous : forall X Tx Y Ty G phi:set,
   topology_on X Tx ->
   continuous_map (setprod X unit_interval)
@@ -281507,7 +281508,23 @@ Lemma composition_with_phi_continuous : forall X Tx Y Ty G phi:set,
   continuous_map X Tx unit_interval unit_interval_topology phi ->
   continuous_map X Tx Y Ty
     (graph X (fun x:set => apply_fun G (x, apply_fun phi x))).
-admit.
+let X Tx Y Ty G phi.
+assume Htop : topology_on X Tx.
+assume HG : continuous_map (setprod X unit_interval)
+  (product_topology X Tx unit_interval unit_interval_topology) Y Ty G.
+assume Hphi : continuous_map X Tx unit_interval unit_interval_topology phi.
+(** graph_of_phi: X -> X x I is continuous **)
+set phi_graph := graph X (fun x:set => (x, apply_fun phi x)).
+claim Hphi_graph : continuous_map X Tx (setprod X unit_interval)
+  (product_topology X Tx unit_interval unit_interval_topology) phi_graph.
+{ exact (graph_of_phi_continuous X Tx phi Htop Hphi). }
+(** compose_fun X phi_graph G is continuous **)
+claim Hcomp : continuous_map X Tx Y Ty (compose_fun X phi_graph G).
+{ admit. }
+(** compose_fun X phi_graph G = graph X (fun x => G(x, phi(x))) **)
+claim Hcomp_eq : compose_fun X phi_graph G = graph X (fun x:set => apply_fun G (x, apply_fun phi x)).
+{ admit. }
+rewrite <- Hcomp_eq. exact Hcomp.
 Admitted.
 
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
