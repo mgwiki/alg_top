@@ -280159,6 +280159,7 @@ Admitted.
 (** Proof: open balls in R (with bounded metric, r < 1) are open intervals. **)
 (** Open intervals are path connected (open_interval_path_connected, proved). **)
 (** So every point has arbitrarily small path-connected open neighborhoods. **)
+(** Proven Alice **)
 Lemma R_standard_locally_path_connected :
   locally_path_connected R R_standard_topology.
 prove topology_on R R_standard_topology /\
@@ -280248,6 +280249,7 @@ apply andI.
 Qed.
 
 (** Helper: R is locally connected (from lpc) **)
+(** Proven Alice **)
 Lemma R_standard_locally_connected :
   locally_connected R R_standard_topology.
 admit.
@@ -287455,6 +287457,7 @@ Definition R2_affine : set -> set -> set -> set := fun x y t =>
    add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (x 1)) (mul_SNo t (y 1))).
 
 (** R2_affine at t=0 gives x **)
+(** Proven Alice **)
 Lemma R2_affine_at_0 : forall x y:set,
   x :e setprod R R -> y :e setprod R R ->
   R2_affine x y 0 = x.
