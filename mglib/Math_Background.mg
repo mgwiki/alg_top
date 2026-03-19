@@ -283495,9 +283495,10 @@ claim Hcomp_sub : component_of SmC TSmC x c= SmC.
     (locally_connected_topology SmC TSmC HlcSmC) Hx). }
 exact (open_in_subspace_if_ambient_open (Sn 2) (Sn_topology 2) SmC
   (component_of SmC TSmC x) HtopSn HSmCopen Hcomp_sub Hcomp_open_SmC).
-Admitted.
+Qed.
 
 (** Forward declaration: components of S^2-C are connected in S^2 subspace topology **)
+(** Proven Dave **)
 (** Proven Alice **)
 Lemma jordan_step1_component_connected : forall C x:set,
   C c= Sn 2 ->
