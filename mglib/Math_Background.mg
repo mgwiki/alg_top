@@ -293147,6 +293147,27 @@ rewrite HzEta. rewrite HwEta.
 exact (tuple_2_eq (z 0) (z 1) (w 0) (w 1) Hfst0 Hsnd1).
 Qed.
 
+(** Helper: the map (z,w) -> R2_sub z w is continuous from R2 x R2 to R2 **)
+(** Proof: R2_sub(z,w) = (z0-w0, z1-w1) = (z0+(-w0), z1+(-w1)) **)
+(** Addition is continuous (add_fun_R_continuous) and negation is continuous **)
+(** Component-wise: pi_i compose sub = add(pi_i(z), neg(pi_i(w))) **)
+Lemma R2_sub_map_continuous :
+  continuous_map
+    (setprod (setprod R R) (setprod R R))
+    (product_topology (setprod R R) R2_topology (setprod R R) R2_topology)
+    (setprod R R) R2_topology
+    (graph (setprod (setprod R R) (setprod R R)) (fun p:set => R2_sub (p 0) (p 1))).
+admit.
+Admitted.
+
+(** Helper: for fixed p in R2, the map x -> R2_sub x p is continuous R2 -> R2 **)
+Lemma R2_sub_right_continuous : forall p:set,
+  p :e setprod R R ->
+  continuous_map (setprod R R) R2_topology (setprod R R) R2_topology
+    (graph (setprod R R) (fun x:set => R2_sub x p)).
+admit.
+Admitted.
+
 (** Helper: for the translation homotopy G(x,t)=g(x)-alpha(t), **)
 (** if alpha avoids image(g), then G avoids 0. **)
 Lemma R2_translation_homotopy_avoids_zero : forall A TA g alpha:set,
