@@ -281405,6 +281405,40 @@ Admitted.
 (** LATEX VERSION: (Homotopy extension lemma) Let X x I be normal, A closed in X, **)
 (** f: A -> Y continuous with Y open in R^n. If f is nulhomotopic, **)
 (** then f extends to g: X -> Y that is also nulhomotopic. **)
+(** Helper for 62.1: (A x I) union (X x {1}) is closed in X x I **)
+(** when A is closed in X (i.e., X\A open in Tx). **)
+(** Proof: A x I is closed (product of closed sets), X x {1} is closed (product of X and singleton). **)
+(** Union of two closed sets is closed. **)
+Lemma homotopy_extension_domain_closed : forall X Tx A:set,
+  topology_on X Tx -> A c= X -> X :\: A :e Tx ->
+  closed_in (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    (setprod A unit_interval :\/: setprod X (Sing 1)).
+admit.
+Admitted.
+
+(** Helper for 62.1: the graph-of-phi map x -> (x, phi(x)) is continuous **)
+(** when phi: X -> [0,1] is continuous. **)
+Lemma graph_of_phi_continuous : forall X Tx phi:set,
+  topology_on X Tx ->
+  continuous_map X Tx unit_interval unit_interval_topology phi ->
+  continuous_map X Tx (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    (graph X (fun x:set => (x, apply_fun phi x))).
+admit.
+Admitted.
+
+(** Helper for 62.1: composition G(x, phi(x)) is continuous when G and phi are **)
+Lemma composition_with_phi_continuous : forall X Tx Y Ty G phi:set,
+  topology_on X Tx ->
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) Y Ty G ->
+  continuous_map X Tx unit_interval unit_interval_topology phi ->
+  continuous_map X Tx Y Ty
+    (graph X (fun x:set => apply_fun G (x, apply_fun phi x))).
+admit.
+Admitted.
+
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
 (** Bounty 275 **)
 Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
