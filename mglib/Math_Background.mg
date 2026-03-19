@@ -235816,6 +235816,170 @@ rewrite (nat_primrec_S (apply_fun segs 0)
 reflexivity.
 Qed.
 
+(** Proven Charlie **)
+Lemma path_concat_nat_at_zero : forall n segs:set,
+  nat_p n ->
+  apply_fun (path_concat_nat n segs) 0 = apply_fun (apply_fun segs 0) 0.
+let n segs.
+assume HnNat.
+set P := fun m:set =>
+  apply_fun (path_concat_nat m segs) 0 = apply_fun (apply_fun segs 0) 0.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - exact (apply_fun_congr
+      (path_concat_nat 0 segs)
+      (apply_fun segs 0)
+      0
+      (path_concat_nat_0 segs)).
+  - let m. assume HmNat IH.
+    claim Heq :
+      path_concat_nat (ordsucc m) segs =
+        path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m)).
+    { exact (path_concat_nat_S m segs HmNat). }
+    claim Happ :
+      apply_fun (path_concat_nat (ordsucc m) segs) 0 =
+        apply_fun (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m))) 0.
+    {
+      exact (apply_fun_congr
+        (path_concat_nat (ordsucc m) segs)
+        (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m)))
+        0
+        Heq).
+    }
+    exact (eq_i_tra
+      (apply_fun (path_concat_nat (ordsucc m) segs) 0)
+      (apply_fun (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m))) 0)
+      (apply_fun (apply_fun segs 0) 0)
+      Happ
+      (eq_i_tra
+        (apply_fun (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m))) 0)
+        (apply_fun (path_concat_nat m segs) 0)
+        (apply_fun (apply_fun segs 0) 0)
+        (path_concat_at_zero (path_concat_nat m segs) (apply_fun segs (ordsucc m)))
+        IH)).
+  - exact HnNat.
+}
+exact HP.
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_at_one : forall n segs:set,
+  nat_p n ->
+  apply_fun (path_concat_nat n segs) 1 = apply_fun (apply_fun segs n) 1.
+let n segs.
+assume HnNat.
+set P := fun m:set =>
+  apply_fun (path_concat_nat m segs) 1 = apply_fun (apply_fun segs m) 1.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - exact (apply_fun_congr
+      (path_concat_nat 0 segs)
+      (apply_fun segs 0)
+      1
+      (path_concat_nat_0 segs)).
+  - let m. assume HmNat IH.
+    claim Heq :
+      path_concat_nat (ordsucc m) segs =
+        path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m)).
+    { exact (path_concat_nat_S m segs HmNat). }
+    claim Happ :
+      apply_fun (path_concat_nat (ordsucc m) segs) 1 =
+        apply_fun (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m))) 1.
+    {
+      exact (apply_fun_congr
+        (path_concat_nat (ordsucc m) segs)
+        (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m)))
+        1
+        Heq).
+    }
+    exact (eq_i_tra
+      (apply_fun (path_concat_nat (ordsucc m) segs) 1)
+      (apply_fun (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m))) 1)
+      (apply_fun (apply_fun segs (ordsucc m)) 1)
+      Happ
+      (path_concat_at_one (path_concat_nat m segs) (apply_fun segs (ordsucc m)))).
+  - exact HnNat.
+}
+exact HP.
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_continuous : forall X Tx n segs:set,
+  topology_on X Tx ->
+  nat_p n ->
+  function_on segs (ordsucc n) (function_space unit_interval X) ->
+  (forall k:set, k :e ordsucc n ->
+    continuous_map unit_interval unit_interval_topology X Tx (apply_fun segs k)) ->
+  (forall k:set, k :e n ->
+    apply_fun (apply_fun segs k) 1 = apply_fun (apply_fun segs (ordsucc k)) 0) ->
+  continuous_map unit_interval unit_interval_topology X Tx (path_concat_nat n segs).
+let X Tx n segs.
+assume Htop HnNat HsegsFun HsegsCont Hcompat.
+set P := fun m:set =>
+  forall segsm:set,
+    function_on segsm (ordsucc m) (function_space unit_interval X) ->
+    (forall k:set, k :e ordsucc m ->
+      continuous_map unit_interval unit_interval_topology X Tx (apply_fun segsm k)) ->
+    (forall k:set, k :e m ->
+      apply_fun (apply_fun segsm k) 1 = apply_fun (apply_fun segsm (ordsucc k)) 0) ->
+    continuous_map unit_interval unit_interval_topology X Tx (path_concat_nat m segsm).
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsm.
+    assume HsegsmFun HsegsmCont HsegsmCompat.
+    rewrite (path_concat_nat_0 segsm).
+    exact (HsegsmCont 0 (ordsuccI2 0)).
+  - let m. assume HmNat IH.
+    let segsm.
+    assume HsegsmFun HsegsmCont HsegsmCompat.
+    rewrite (path_concat_nat_S m segsm HmNat).
+    set f0 := path_concat_nat m segsm.
+    set g0 := apply_fun segsm (ordsucc m).
+    claim Hf0Cont :
+      continuous_map unit_interval unit_interval_topology X Tx f0.
+    {
+      exact (IH segsm
+        (function_on_subdomain segsm (ordsucc (ordsucc m)) (function_space unit_interval X) (ordsucc m)
+          HsegsmFun (ordsuccI1 (ordsucc m)))
+        (fun k Hk => HsegsmCont k (ordsuccI1 (ordsucc m) k Hk))
+        (fun k Hk => HsegsmCompat k (ordsuccI1 m k Hk))).
+    }
+    claim Hg0Cont :
+      continuous_map unit_interval unit_interval_topology X Tx g0.
+    { exact (HsegsmCont (ordsucc m) (ordsuccI2 (ordsucc m))). }
+    (** Endpoint compatibility for path_concat_continuous **)
+    set x0 := apply_fun (apply_fun segsm 0) 0.
+    set x1 := apply_fun (apply_fun segsm m) 1.
+    set x2 := apply_fun (apply_fun segsm (ordsucc m)) 1.
+    claim Hf0_0 : apply_fun f0 0 = x0.
+    {
+      rewrite (path_concat_nat_at_zero m segsm HmNat).
+      reflexivity.
+    }
+    claim Hf0_1 : apply_fun f0 1 = x1.
+    {
+      rewrite (path_concat_nat_at_one m segsm HmNat).
+      reflexivity.
+    }
+    claim Hg0_0 : apply_fun g0 0 = x1.
+    {
+      claim Hcmp : apply_fun (apply_fun segsm m) 1 = apply_fun (apply_fun segsm (ordsucc m)) 0.
+      { exact (HsegsmCompat m (ordsuccI2 m)). }
+      rewrite <- Hcmp.
+      reflexivity.
+    }
+    claim Hg0_1 : apply_fun g0 1 = x2.
+    { reflexivity. }
+    exact (path_concat_continuous X Tx x0 x1 x2 f0 g0
+      Hf0Cont Hg0Cont Hf0_0 Hf0_1 Hg0_0 Hg0_1).
+  - exact HnNat.
+}
+exact (HP segs HsegsFun HsegsCont Hcompat).
+Qed.
+
 (** Infrastructure: chain of U-type open balls in unit_interval covers a subinterval. **)
 (** Given overlapping balls 0..k all mapping f to U, their union is connected **)
 (** and contains 0 (from ball 0). By connected_subsets_real_are_intervals, **)
