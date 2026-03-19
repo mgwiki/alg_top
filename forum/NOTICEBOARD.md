@@ -82,6 +82,59 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1773883742
+Created: 1773883742
+Status: PROPOSED
+
+Refers to Commit:
+  0a7f0094121474f61c653e4c3c7fd9a91dd64bef
+
+Target:
+  Lines: 404174-404182
+  Name: polygon_pasting_saturation_closed_in_B2
+
+Problem:
+  The statement currently quantifies over arbitrary `n` and `w`, but the intended
+  use in S74 (e.g. thm74_1_polygon_pasting_compact_hausdorff) is always under the
+  typing/finite-data assumptions of `labelling_scheme n w` (in particular `n :e omega`).
+  Without those assumptions, the equivalence relation can be ill-behaved, and the
+  closedness of the saturation is not clearly justified.
+
+Proposed Replacement:
+  Lemma polygon_pasting_saturation_closed_in_B2 : forall n w C:set,
+    labelling_scheme n w ->
+    C c= B2 ->
+    closed_in B2 B2_topology C ->
+    closed_in B2 B2_topology {x :e B2 | exists c:set, c :e C /\ polygon_pasting_equiv n w x c}.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1773883742 | Charlie: PROPOSED. This would align the lemma with how it is used in S74.
+
+Approvals:
+  - 1773883742 | Alice:
+  - 1773883742 | Bob:
+  - 1773883742 | Charlie: YES
+  - 1773883742 | Dave:
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+--------------------------------------------------------
+
 NOTICE ID: 1773862238
 Created: 1773862238
 Status: SENT TO ADMIN
