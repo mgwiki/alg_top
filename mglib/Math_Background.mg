@@ -283570,9 +283570,21 @@ apply (SNoLt_trichotomy_or x 1 HxSNo SNo_1).
   + assume Hxlt1 : SNoLt x 1.
     (** Sub-trichotomy with 0: ((x < 0 \/ x = 0) \/ 0 < x) **)
     apply (SNoLt_trichotomy_or_impred x 0 HxSNo SNo_0).
-    - (** x < 0 **) assume Hxlt0 : SNoLt x 0. admit.
-    - (** x = 0 **) assume Hxeq0 : x = 0. admit.
-    - (** 0 < x **)
+    * (** x < 0 **) assume Hxlt0 : SNoLt x 0. admit.
+    * (** x = 0 **)
+      assume Hxeq0 : x = 0.
+      (** mul_SNo x x = 1 (from Hsq). But x = 0, so mul_SNo 0 0 = 1. **)
+      (** mul_SNo 0 0 = 0 (from mul_SNo_zeroL). So 0 = 1. Contradiction. **)
+      claim Hxsq_eq_0 : mul_SNo x x = 0.
+      { (** Use mul_SNo_zeroL on the left factor, then mul_SNo_zeroR on the right **)
+        claim H1 : mul_SNo x x = mul_SNo x 0.
+        { rewrite Hxeq0 at 2. reflexivity. }
+        claim H2 : mul_SNo x 0 = 0.
+        { exact (mul_SNo_zeroR x HxSNo). }
+        rewrite H1. exact H2. }
+      claim H0eq1 : 0 = 1. { rewrite <- Hxsq_eq_0 at 1. exact Hsq. }
+      exact (neq_0_1 H0eq1 (x = 1 \/ x = minus_SNo 1)).
+    * (** 0 < x **)
       assume H0ltx : SNoLt 0 x.
       claim Hxsq_lt_x : SNoLt (mul_SNo x x) x.
       { exact (mul_SNo_Lt1_pos_Lt x x HxSNo HxSNo Hxlt1 H0ltx). }
