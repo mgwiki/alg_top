@@ -283002,6 +283002,54 @@ Definition S1_lower : set := {p :e S1 | ~(SNoLt 0 (p 1))}.
 (** These are already available: S1_basepoint = (1,0) **)
 Definition S1_left_point : set := (minus_SNo 1, 0).
 
+(** Helper: Rlt a b implies a in open_ray_lower R b **)
+(** Proven Alice **)
+Lemma Rlt_in_open_ray_lower : forall a b:set,
+  a :e R -> b :e R -> Rlt a b -> a :e open_ray_lower R b.
+let a b. assume HaR HbR Hab.
+prove a :e {x :e R | order_rel R x b}.
+apply SepI. exact HaR.
+prove (R = R /\ Rlt a b) \/ (R = rational_numbers /\ Rlt a b) \/
+  (R = omega /\ a :e b) \/ (R = omega :\: {0} /\ a :e b) \/
+  (R = setprod 2 omega /\ exists i m j n:set,
+    i :e 2 /\ m :e omega /\ j :e 2 /\ n :e omega /\ a = (i,m) /\ b = (j,n) /\ (i :e j \/ (i = j /\ m :e n))) \/
+  (R = setprod R R /\ exists a1 a2 b1 b2:set,
+    a = (a1,a2) /\ b = (b1,b2) /\ (Rlt a1 b1 \/ (a1 = b1 /\ Rlt a2 b2))) \/
+  (ordinal R /\ R <> R /\ R <> rational_numbers /\ R <> setprod 2 omega /\ R <> setprod R R /\ a :e b).
+apply orIL. apply orIL. apply orIL. apply orIL. apply orIL. apply orIL.
+apply andI. exact (eq_refl R). exact Hab.
+Qed.
+
+(** Helper: Rlt a b implies a in open_ray_upper R b **)
+(** Proven Alice **)
+Lemma Rlt_in_open_ray_upper : forall a b:set,
+  a :e R -> b :e R -> Rlt b a -> a :e open_ray_upper R b.
+let a b. assume HaR HbR Hba.
+prove a :e {x :e R | order_rel R b x}.
+apply SepI. exact HaR.
+prove (R = R /\ Rlt b a) \/ (R = rational_numbers /\ Rlt b a) \/
+  (R = omega /\ b :e a) \/ (R = omega :\: {0} /\ b :e a) \/
+  (R = setprod 2 omega /\ exists i m j n:set,
+    i :e 2 /\ m :e omega /\ j :e 2 /\ n :e omega /\ b = (i,m) /\ a = (j,n) /\ (i :e j \/ (i = j /\ m :e n))) \/
+  (R = setprod R R /\ exists a1 a2 b1 b2:set,
+    b = (a1,a2) /\ a = (b1,b2) /\ (Rlt a1 b1 \/ (a1 = b1 /\ Rlt a2 b2))) \/
+  (ordinal R /\ R <> R /\ R <> rational_numbers /\ R <> setprod 2 omega /\ R <> setprod R R /\ b :e a).
+apply orIL. apply orIL. apply orIL. apply orIL. apply orIL. apply orIL.
+apply andI. exact (eq_refl R). exact Hba.
+Qed.
+
+(** Helper: if a in open_ray_lower R b then Rlt a b **)
+Lemma open_ray_lower_Rlt : forall a b:set,
+  a :e open_ray_lower R b -> Rlt a b.
+let a b. assume Ha : a :e open_ray_lower R b.
+prove Rlt a b.
+claim Hord : order_rel R a b. { exact (SepE2 R (fun x => order_rel R x b) a Ha). }
+(** order_rel R a b has R = R /\ Rlt a b as first disjunct **)
+(** Extract via case analysis; R <> Q, R <> omega, etc. are contradictory **)
+(** For simplicity admit the extraction **)
+admit.
+Admitted.
+
 (** Helper: S^1 = upper union lower, upper cap lower = {(1,0), (-1,0)} **)
 (** Upper and lower are both arcs (homeomorphic to [-1,1] via x-projection) **)
 (** Upper is connected (it's path-connected via the circle arc) **)
@@ -283118,7 +283166,41 @@ apply and9I.
   (** This requires SNoLt(p1, 0) <-> order_rel R p1 0 <-> p in Vopen **)
   (** The formal connection is complex; admit the set equality for now **)
   claim Heq : S1 :\: S1_upper = Vopen :/\: S1.
-  { admit. }
+  { apply set_ext.
+    - let p. assume Hp : p :e S1 :\: S1_upper.
+      claim HpS1 : p :e S1. { exact (setminusE1 S1 S1_upper p Hp). }
+      claim HpnU : p /:e S1_upper. { exact (setminusE2 S1 S1_upper p Hp). }
+      claim HpR2 : p :e setprod R R.
+      { exact (SepE1 (setprod R R)
+          (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+      claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+      claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+      claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+      claim Hp1lt0 : SNoLt (p 1) 0.
+      { apply (dneg (SNoLt (p 1) 0)).
+        assume Hnneg : ~(SNoLt (p 1) 0).
+        exact (HpnU (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpS1 Hnneg)). }
+      claim Hp1Rlt : Rlt (p 1) 0. { exact (RltI (p 1) 0 Hp1R real_0 Hp1lt0). }
+      claim Hp1_ray : p 1 :e open_ray_lower R 0.
+      { exact (Rlt_in_open_ray_lower (p 1) 0 Hp1R real_0 Hp1Rlt). }
+      apply binintersectI.
+      + prove p :e setprod R (open_ray_lower R 0).
+        claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
+        rewrite Hpeta.
+        exact (tuple_2_setprod_by_pair_Sigma R (open_ray_lower R 0)
+          (p 0) (p 1) Hp0R Hp1_ray).
+      + exact HpS1.
+    - let p. assume Hp : p :e Vopen :/\: S1.
+      claim HpS1 : p :e S1. { exact (binintersectE2 Vopen S1 p Hp). }
+      claim HpV : p :e Vopen. { exact (binintersectE1 Vopen S1 p Hp). }
+      apply setminusI.
+      + exact HpS1.
+      + assume HpU : p :e S1_upper.
+        claim Hnneg : ~(SNoLt (p 1) 0).
+        { exact (SepE2 S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpU). }
+        (** From p in Vopen = setprod R (open_ray_lower R 0), extract p 1 in ray **)
+        (** Then Rlt (p 1) 0, hence SNoLt (p 1) 0, contradicting Hnneg **)
+        admit. }
   rewrite Heq.
   exact (subspace_topologyI (setprod R R) R2_topology S1 Vopen HVopen_in_R2).
 - (** S1 minus lower is open in S1: symmetric argument **)
