@@ -239658,6 +239658,338 @@ claim Hball_image1 :
   exact (ball_cover_image_shrink_radius X Tx U V f r1 r
     Hr1R HrR Hr1pos Hr1ltr Hball_image c HcI).
 }
+(** Build a finite r1-ball chain and a chain-ordered reparametrization h : I -> I,
+    then precompose f with h to get an equivalent loop fh that traverses the chain in order. **)
+claim Hchain1 : exists U0 U1 n1 seq1:set,
+  U0 :e {open_ball unit_interval R_bounded_metric x r1 | x :e unit_interval} /\ 0 :e U0 /\
+  U1 :e {open_ball unit_interval R_bounded_metric x r1 | x :e unit_interval} /\ 1 :e U1 /\
+  n1 :e omega /\
+  function_on seq1 (ordsucc n1) {open_ball unit_interval R_bounded_metric x r1 | x :e unit_interval} /\
+  apply_fun seq1 0 = U0 /\ apply_fun seq1 n1 = U1 /\
+  (forall k:set, k :e n1 -> apply_fun seq1 k :/\: apply_fun seq1 (ordsucc k) <> Empty).
+{ exact (unit_interval_ball_chain r1 Hr1R Hr1pos). }
+apply Hchain1. let U0. assume HU1_ex.
+apply HU1_ex. let U1. assume Hn1_ex.
+apply Hn1_ex. let n1. assume Hseq1_ex.
+apply Hseq1_ex. let seq1. assume Hpack1.
+apply (and9E
+  (U0 :e {open_ball unit_interval R_bounded_metric x r1 | x :e unit_interval})
+  (0 :e U0)
+  (U1 :e {open_ball unit_interval R_bounded_metric x r1 | x :e unit_interval})
+  (1 :e U1)
+  (n1 :e omega)
+  (function_on seq1 (ordsucc n1) {open_ball unit_interval R_bounded_metric x r1 | x :e unit_interval})
+  (apply_fun seq1 0 = U0)
+  (apply_fun seq1 n1 = U1)
+  (forall k:set, k :e n1 -> apply_fun seq1 k :/\: apply_fun seq1 (ordsucc k) <> Empty)
+  Hpack1).
+assume HU0ball1 H0inU0 HU1ball1 H1inU1 Hn1Omega Hseq1Fn Hseq10 Hseq1N Hoverlap1.
+claim Hn1Nat : nat_p n1. { exact (omega_nat_p n1 Hn1Omega). }
+claim H0_in_seq10 : 0 :e apply_fun seq1 0.
+{ rewrite Hseq10. exact H0inU0. }
+claim H1_in_seq1n : 1 :e apply_fun seq1 n1.
+{ rewrite Hseq1N. exact H1inU1. }
+claim HsegsI_ex : exists segsI:set,
+  function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+  (forall k:set, k :e ordsucc n1 ->
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+    (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k)) /\
+  apply_fun (apply_fun segsI 0) 0 = 0 /\
+  apply_fun (apply_fun segsI n1) 1 = 1 /\
+  (forall k:set, k :e n1 ->
+    apply_fun (apply_fun segsI k) 1 = apply_fun (apply_fun segsI (ordsucc k)) 0).
+{
+  exact (unit_interval_ball_chain_path_concat_nat_data_lt1
+    r1 n1 seq1 0 1 Hr1R Hr1pos Hr1lt1 Hn1Omega Hseq1Fn H0_in_seq10 H1_in_seq1n Hoverlap1).
+}
+apply HsegsI_ex. let segsI. assume HsegsIPack.
+claim HsegsIPack1 :
+  (((function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+     (forall k:set, k :e ordsucc n1 ->
+       continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+       (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k))) /\
+    apply_fun (apply_fun segsI 0) 0 = 0) /\
+   apply_fun (apply_fun segsI n1) 1 = 1) /\
+  (forall k:set, k :e n1 ->
+    apply_fun (apply_fun segsI k) 1 = apply_fun (apply_fun segsI (ordsucc k)) 0).
+{ exact HsegsIPack. }
+claim HsegsIPack2 :
+  ((function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+    (forall k:set, k :e ordsucc n1 ->
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+      (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k))) /\
+   apply_fun (apply_fun segsI 0) 0 = 0) /\
+  apply_fun (apply_fun segsI n1) 1 = 1.
+{
+  exact (andEL
+    (((function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+       (forall k:set, k :e ordsucc n1 ->
+         continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+         (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k))) /\
+      apply_fun (apply_fun segsI 0) 0 = 0) /\
+     apply_fun (apply_fun segsI n1) 1 = 1)
+    (forall k:set, k :e n1 ->
+      apply_fun (apply_fun segsI k) 1 = apply_fun (apply_fun segsI (ordsucc k)) 0)
+    HsegsIPack1).
+}
+claim HsegsICompatAll :
+  forall k:set, k :e n1 ->
+    apply_fun (apply_fun segsI k) 1 = apply_fun (apply_fun segsI (ordsucc k)) 0.
+{
+  exact (andER
+    (((function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+       (forall k:set, k :e ordsucc n1 ->
+         continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+         (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k))) /\
+      apply_fun (apply_fun segsI 0) 0 = 0) /\
+     apply_fun (apply_fun segsI n1) 1 = 1)
+    (forall k:set, k :e n1 ->
+      apply_fun (apply_fun segsI k) 1 = apply_fun (apply_fun segsI (ordsucc k)) 0)
+    HsegsIPack1).
+}
+claim HsegsIPack3 :
+  (function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+   (forall k:set, k :e ordsucc n1 ->
+     continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+     (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k))) /\
+  apply_fun (apply_fun segsI 0) 0 = 0.
+{
+  exact (andEL
+    ((function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+      (forall k:set, k :e ordsucc n1 ->
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+        (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k))) /\
+     apply_fun (apply_fun segsI 0) 0 = 0)
+    (apply_fun (apply_fun segsI n1) 1 = 1)
+    HsegsIPack2).
+}
+claim HsegsIn1 : apply_fun (apply_fun segsI n1) 1 = 1.
+{
+  exact (andER
+    ((function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+      (forall k:set, k :e ordsucc n1 ->
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+        (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k))) /\
+     apply_fun (apply_fun segsI 0) 0 = 0)
+    (apply_fun (apply_fun segsI n1) 1 = 1)
+    HsegsIPack2).
+}
+claim HsegsIPack4 :
+  function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+  (forall k:set, k :e ordsucc n1 ->
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+    (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k)).
+{
+  exact (andEL
+    (function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+     (forall k:set, k :e ordsucc n1 ->
+       continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+       (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k)))
+    (apply_fun (apply_fun segsI 0) 0 = 0)
+    HsegsIPack3).
+}
+claim HsegsI0 : apply_fun (apply_fun segsI 0) 0 = 0.
+{
+  exact (andER
+    (function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+     (forall k:set, k :e ordsucc n1 ->
+       continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+       (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k)))
+    (apply_fun (apply_fun segsI 0) 0 = 0)
+    HsegsIPack3).
+}
+claim HsegsIFun : function_on segsI (ordsucc n1) (function_space unit_interval unit_interval).
+{ exact (andEL
+    (function_on segsI (ordsucc n1) (function_space unit_interval unit_interval))
+    (forall k:set, k :e ordsucc n1 ->
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+      (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k))
+    HsegsIPack4). }
+claim HsegsIAll :
+  forall k:set, k :e ordsucc n1 ->
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+    (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k).
+{ exact (andER
+    (function_on segsI (ordsucc n1) (function_space unit_interval unit_interval))
+    (forall k:set, k :e ordsucc n1 ->
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+      (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k))
+    HsegsIPack4). }
+claim HsegsICont :
+  forall k:set, k :e ordsucc n1 ->
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k).
+{
+  let k. assume Hk.
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k))
+    (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k)
+    (HsegsIAll k Hk)).
+}
+claim HsegsICompat : forall k:set, k :e n1 ->
+  apply_fun (apply_fun segsI k) 1 = apply_fun (apply_fun segsI (ordsucc k)) 0.
+{
+  let k. assume Hk.
+  exact (HsegsICompatAll k Hk).
+}
+set h := path_concat_nat n1 segsI.
+claim Hh_cont :
+  continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h.
+{
+  exact (path_concat_nat_continuous
+    unit_interval
+    unit_interval_topology
+    n1
+    segsI
+    unit_interval_topology_on
+    Hn1Nat
+    HsegsIFun
+    HsegsICont
+    HsegsICompat).
+}
+claim Hh0 : apply_fun h 0 = 0.
+{
+  rewrite (path_concat_nat_at_zero n1 segsI Hn1Nat).
+  exact HsegsI0.
+}
+claim Hh1 : apply_fun h 1 = 1.
+{
+  rewrite (path_concat_nat_at_one n1 segsI Hn1Nat).
+  exact HsegsIn1.
+}
+set fh := compose_fun unit_interval h f.
+claim Hfh_cont :
+  continuous_map unit_interval unit_interval_topology X Tx fh.
+{
+  exact (composition_continuous
+    unit_interval unit_interval_topology
+    unit_interval unit_interval_topology
+    X Tx h f Hh_cont HfCont).
+}
+claim Hfh0 : apply_fun fh 0 = x0.
+{
+  rewrite (compose_fun_apply unit_interval h f 0 zero_in_unit_interval).
+  rewrite Hh0.
+  exact Hf0.
+}
+claim Hfh1 : apply_fun fh 1 = x0.
+{
+  rewrite (compose_fun_apply unit_interval h f 1 one_in_unit_interval).
+  rewrite Hh1.
+  exact Hf1.
+}
+set idI := graph unit_interval (fun t:set => t).
+claim HidICont :
+  continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology idI.
+{
+  exact (identity_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on).
+}
+claim Hh_hom_id :
+  path_homotopic unit_interval unit_interval_topology 0 1 h idI.
+{ exact (unit_interval_path_homotopic_to_id h Hh_cont Hh0 Hh1). }
+set fid := compose_fun unit_interval idI f.
+set fphi := fh.
+claim Hfphi_hom_fid :
+  path_homotopic X Tx x0 x0 fphi fid.
+{
+  exact (path_homotopic_precompose
+    X
+    Tx
+    x0
+    x0
+    f
+    h
+    idI
+    HfCont
+    Hf0
+    Hf1
+    Hh_hom_id).
+}
+claim Hfid_cont :
+  continuous_map unit_interval unit_interval_topology X Tx fid.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    idI
+    f
+    HidICont
+    HfCont).
+}
+claim Hfid0 : apply_fun fid 0 = x0.
+{
+  rewrite (compose_fun_apply unit_interval idI f 0 zero_in_unit_interval).
+  rewrite (apply_fun_graph unit_interval (fun s:set => s) 0 zero_in_unit_interval).
+  exact Hf0.
+}
+claim Hfid1 : apply_fun fid 1 = x0.
+{
+  rewrite (compose_fun_apply unit_interval idI f 1 one_in_unit_interval).
+  rewrite (apply_fun_graph unit_interval (fun s:set => s) 1 one_in_unit_interval).
+  exact Hf1.
+}
+claim Hfid_pw :
+  forall t:set, t :e unit_interval -> apply_fun fid t = apply_fun f t.
+{
+  let t. assume Ht.
+  rewrite (compose_fun_apply unit_interval idI f t Ht).
+  rewrite (apply_fun_graph unit_interval (fun s:set => s) t Ht).
+  exact (fun P H => H).
+}
+claim Hfid_hom_f :
+  path_homotopic X Tx x0 x0 fid f.
+{
+  exact (path_homotopic_of_pointwise_equal
+    X Tx x0 x0 fid f
+    Hfid_cont HfCont Hfid0 Hfid1 Hf0 Hf1 Hfid_pw).
+}
+claim Hfh_hom_f :
+  path_homotopic X Tx x0 x0 fh f.
+{
+  exact (Lemma_51_1_path_homotopy_trans
+    X Tx x0 x0 fh fid f
+    Hfphi_hom_fid
+    Hfid_hom_f).
+}
+claim Hclass_fh_eq :
+  path_homotopy_class_loop X Tx x0 fh =
+    path_homotopy_class_loop X Tx x0 f.
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X Tx x0 fh f Hfh_hom_f).
+}
+
+(** Useful normal form: fh is the concatenation (path_concat_nat) of the composed chain segments. **)
+claim HfFun : function_on f unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f HfCont). }
+set segsF := graph (ordsucc n1) (fun k:set => compose_fun unit_interval (apply_fun segsI k) f).
+claim Hfh_eq_concat :
+  fh = path_concat_nat n1 segsF.
+{
+  rewrite (compose_path_concat_nat_eq_algtop
+    unit_interval
+    unit_interval_topology
+    X
+    n1
+    segsI
+    f
+    unit_interval_topology_on
+    Hn1Nat
+    HsegsIFun
+    HsegsICont
+    HsegsICompat
+    HfFun).
+  reflexivity.
+}
+
+(** TODO: transition induction along the chain order (using segsI and Hball_image1)
+    to build a finite word decomposition for fh, then transfer to f via Hclass_fh_eq. **)
 admit.
 Admitted.
 
