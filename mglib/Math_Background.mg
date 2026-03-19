@@ -235642,6 +235642,82 @@ apply andI.
       (Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k))) Heps_in).
 Qed.
 
+(** Infrastructure: build a loop from a path between x and y plus connecting paths from x0. **)
+(** This is the standard "close up a path" construction used in van Kampen style proofs. **)
+(** Proven Charlie **)
+Lemma loop_from_path_between : forall X Tx x0 x y p alpha beta:set,
+  path_between X x y p ->
+  continuous_map unit_interval unit_interval_topology X Tx p ->
+  path_between X x0 x alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  path_between X x0 y beta ->
+  continuous_map unit_interval unit_interval_topology X Tx beta ->
+  loop_at X Tx x0 (path_concat alpha (path_concat p (reverse_path beta))).
+let X Tx x0 x y p alpha beta.
+assume Hp Hcp Halpha HalphaC Hbeta HbetaC.
+claim Halpha0 : apply_fun alpha 0 = x0.
+{ exact (path_between_at_zero X x0 x alpha Halpha). }
+claim Halpha1 : apply_fun alpha 1 = x.
+{ exact (path_between_at_one X x0 x alpha Halpha). }
+claim Hp0 : apply_fun p 0 = x.
+{ exact (path_between_at_zero X x y p Hp). }
+claim Hp1 : apply_fun p 1 = y.
+{ exact (path_between_at_one X x y p Hp). }
+claim Hbeta0 : apply_fun beta 0 = x0.
+{ exact (path_between_at_zero X x0 y beta Hbeta). }
+claim Hbeta1 : apply_fun beta 1 = y.
+{ exact (path_between_at_one X x0 y beta Hbeta). }
+claim HrevB :
+  continuous_map unit_interval unit_interval_topology X Tx (reverse_path beta).
+{ exact (reverse_path_continuous X Tx beta HbetaC). }
+claim HrevB0 : apply_fun (reverse_path beta) 0 = y.
+{
+  rewrite (reverse_path_at_zero beta).
+  exact Hbeta1.
+}
+claim HrevB1 : apply_fun (reverse_path beta) 1 = x0.
+{
+  rewrite (reverse_path_at_one beta).
+  exact Hbeta0.
+}
+claim Hcompat_p_rev : apply_fun p 1 = apply_fun (reverse_path beta) 0.
+{ rewrite Hp1. symmetry. exact HrevB0. }
+claim HpRevCont :
+  continuous_map unit_interval unit_interval_topology X Tx (path_concat p (reverse_path beta)).
+{
+  exact (path_concat_continuous X Tx x y x0 p (reverse_path beta)
+    Hcp HrevB Hp0 Hp1 HrevB0 HrevB1).
+}
+claim HpRev0 : apply_fun (path_concat p (reverse_path beta)) 0 = x.
+{ rewrite (path_concat_at_zero p (reverse_path beta)). exact Hp0. }
+claim HpRev1 : apply_fun (path_concat p (reverse_path beta)) 1 = x0.
+{ rewrite (path_concat_at_one p (reverse_path beta)). exact HrevB1. }
+claim Hcompat_a_prev : apply_fun alpha 1 = apply_fun (path_concat p (reverse_path beta)) 0.
+{ rewrite Halpha1. symmetry. exact HpRev0. }
+claim HallCont :
+  continuous_map unit_interval unit_interval_topology X Tx
+    (path_concat alpha (path_concat p (reverse_path beta))).
+{
+  exact (path_concat_continuous X Tx x0 x x0 alpha (path_concat p (reverse_path beta))
+    HalphaC HpRevCont Halpha0 Halpha1 HpRev0 HpRev1).
+}
+claim Hall0 : apply_fun (path_concat alpha (path_concat p (reverse_path beta))) 0 = x0.
+{ rewrite (path_concat_at_zero alpha (path_concat p (reverse_path beta))). exact Halpha0. }
+claim Hall1 : apply_fun (path_concat alpha (path_concat p (reverse_path beta))) 1 = x0.
+{ rewrite (path_concat_at_one alpha (path_concat p (reverse_path beta))). exact HpRev1. }
+claim HallFun :
+  function_on (path_concat alpha (path_concat p (reverse_path beta))) unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx
+    (path_concat alpha (path_concat p (reverse_path beta))) HallCont). }
+claim HallBetween :
+  path_between X x0 x0 (path_concat alpha (path_concat p (reverse_path beta))).
+{ exact (path_betweenI X x0 x0 (path_concat alpha (path_concat p (reverse_path beta)))
+    HallFun Hall0 Hall1). }
+exact (path_between_continuous_loop_at X Tx x0
+  (path_concat alpha (path_concat p (reverse_path beta)))
+  HallBetween HallCont).
+Qed.
+
 (** Infrastructure: chain of U-type open balls in unit_interval covers a subinterval. **)
 (** Given overlapping balls 0..k all mapping f to U, their union is connected **)
 (** and contains 0 (from ball 0). By connected_subsets_real_are_intervals, **)
