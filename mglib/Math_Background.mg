@@ -282573,6 +282573,20 @@ apply andI.
     (** 3. G maps to R2m0: by R2_translation_homotopy_avoids_zero **)
     (** 4. G(x,0) = g(x): alpha(0) = (0,0), g(x) - (0,0) = g(x) **)
     (** 5. G(x,1) = k(x): alpha(1) = p, g(x) - p = k(x) **)
+    (** k_fun continuous to R2 (via R2_translation_continuous_early): **)
+    claim Hk_cont_R2 : continuous_map A TA (setprod R R) R2_topology k_fun.
+    { (** g: A -> R2m0 c= R2. Compose with inclusion to get g: A -> R2. **)
+      (** Then compose with translate_p: R2 -> R2. **)
+      (** Then show compose_fun agrees with k_fun pointwise. **)
+      admit. }
+    (** k_fun maps into R2m0: g(x) - p <> (0,0) since g(x) <> p **)
+    (** (p not in image(g) by hypothesis) **)
+    claim Hk_in_R2m0 : forall a:set, a :e A -> apply_fun k_fun a :e R2m0.
+    { admit. }
+    (** k_fun continuous to R2m0 (by continuous_map_range_restrict) **)
+    claim Hk_cont : continuous_map A TA R2m0 TR2m0 k_fun.
+    { admit. }
+    (** Full homotopy F: A x I -> R2m0 still needs construction **)
     admit. }
   claim Hk_hom_const : homotopic_maps A TA R2m0 TR2m0 k_fun (const_fun A neg_p).
   { (** Scaling homotopy H(x,t) = (1-t).g(x) - p **)
