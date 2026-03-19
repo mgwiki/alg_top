@@ -236901,6 +236901,578 @@ apply binintersectI.
 - exact (H2 s Hs2).
 Qed.
 
+(** Infrastructure: in a finite overlapping chain of small balls whose images are U-or-V on each ball,
+    if f is not globally in U and not globally in V, then some adjacent pair of balls has opposite types,
+    and an overlap point maps into U cap V. **)
+(** Proven Charlie **)
+Lemma ball_chain_has_adjacent_UV_transition_point :
+  forall X Tx U V x0 f r n seq:set,
+    topology_on X Tx ->
+    U :e Tx -> V :e Tx ->
+    X = U :\/: V ->
+    x0 :e U :/\: V ->
+    f :e loop_space X Tx x0 ->
+    r :e R -> Rlt 0 r -> Rlt r 1 ->
+    n :e omega ->
+    function_on seq (ordsucc n) {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} ->
+    0 :e apply_fun seq 0 ->
+    1 :e apply_fun seq n ->
+    (forall k:set, k :e n -> apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty) ->
+    (forall c:set, c :e unit_interval ->
+      (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e U) \/
+      (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V)) ->
+    ~(forall t:set, t :e unit_interval -> apply_fun f t :e U) ->
+    ~(forall t:set, t :e unit_interval -> apply_fun f t :e V) ->
+    exists k:set, k :e n /\
+      (((forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) /\
+        (forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e V)) \/
+       ((forall t:set, t :e apply_fun seq k -> apply_fun f t :e V) /\
+        (forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e U))) /\
+      exists s:set, s :e apply_fun seq k /\ s :e apply_fun seq (ordsucc k) /\
+        apply_fun f s :e U :/\: V.
+let X Tx U V x0 f r n seq.
+assume Htop HU HV Hcover Hx0UV HfLoop HrR Hrpos Hrlt1 HnOmega HseqFun H0in H1in Hoverlap Hball_image HnotAllU HnotAllV.
+set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+claim Hx0U : x0 :e U. { exact (binintersectE1 U V x0 Hx0UV). }
+claim Hx0V : x0 :e V. { exact (binintersectE2 U V x0 Hx0UV). }
+claim HUsub : U c= X. { exact (topology_elem_subset X Tx U Htop HU). }
+claim HVsub : V c= X. { exact (topology_elem_subset X Tx V Htop HV). }
+claim Hx0X : x0 :e X. { exact (HUsub x0 Hx0U). }
+claim HfLoopAt : loop_at X Tx x0 f.
+{ exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f HfLoopAt). }
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
+claim Hf1 : apply_fun f 1 = x0.
+{ exact (loop_at_at_one X Tx x0 f HfLoopAt). }
+(** Each chain set maps entirely to U or entirely to V. **)
+claim Htype : forall k:set, k :e ordsucc n ->
+  (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) \/
+  (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V).
+{
+  let k. assume HkOn.
+  claim HseqkFam : apply_fun seq k :e BallFam.
+  { exact (HseqFun k HkOn). }
+  apply (ReplE_impred unit_interval
+    (fun c:set => open_ball unit_interval R_bounded_metric c r)
+    (apply_fun seq k) HseqkFam).
+  let c. assume HcI Heq.
+  apply (Hball_image c HcI).
+	  - assume HallU.
+	    apply orIL.
+	    let t. assume Ht.
+	    claim HtBall : t :e open_ball unit_interval R_bounded_metric c r.
+	    { rewrite <- Heq. exact Ht. }
+	    exact (HallU t HtBall).
+	  - assume HallV.
+	    apply orIR.
+	    let t. assume Ht.
+	    claim HtBall : t :e open_ball unit_interval R_bounded_metric c r.
+	    { rewrite <- Heq. exact Ht. }
+	    exact (HallV t HtBall).
+	}
+(** The union of the chain is connected and contains 0 and 1, hence covers unit_interval. **)
+claim HBallSubUI : forall j:set, j :e ordsucc n -> apply_fun seq j c= unit_interval.
+{
+  let j. assume HjOn.
+  claim HseqjFam : apply_fun seq j :e BallFam.
+  { exact (HseqFun j HjOn). }
+  apply (ReplE_impred unit_interval
+    (fun c:set => open_ball unit_interval R_bounded_metric c r)
+    (apply_fun seq j) HseqjFam).
+  let c. assume HcI Heq.
+  rewrite Heq.
+  exact (open_ball_subset_X unit_interval R_bounded_metric c r).
+}
+claim HBallConn : forall j:set, j :e ordsucc n ->
+  connected_space (apply_fun seq j) (subspace_topology unit_interval unit_interval_topology (apply_fun seq j)).
+{
+  let j. assume HjOn.
+  claim HseqjFam : apply_fun seq j :e BallFam.
+  { exact (HseqFun j HjOn). }
+  apply (ReplE_impred unit_interval
+    (fun c:set => open_ball unit_interval R_bounded_metric c r)
+    (apply_fun seq j) HseqjFam).
+  let c. assume HcI Heq.
+  rewrite Heq.
+  exact (open_ball_unit_interval_connected_lt1 c r HcI HrR Hrpos Hrlt1).
+}
+claim HBallConnSub : forall j:set, j :e ordsucc n ->
+  apply_fun seq j c= unit_interval /\
+  connected_space (apply_fun seq j) (subspace_topology unit_interval unit_interval_topology (apply_fun seq j)).
+{
+  let j. assume HjOn.
+  apply andI.
+  - exact (HBallSubUI j HjOn).
+  - exact (HBallConn j HjOn).
+}
+set UnionAll := Union {apply_fun seq j | j :e ordsucc n}.
+claim HunionConn : connected_space UnionAll (subspace_topology unit_interval unit_interval_topology UnionAll).
+{
+  exact (overlapping_chain_union_connected unit_interval unit_interval_topology n seq
+    unit_interval_topology_on HnOmega HBallConnSub Hoverlap).
+}
+claim HunionSub : UnionAll c= unit_interval.
+{
+  let t. assume HtU : t :e UnionAll.
+  apply (UnionE_impred {apply_fun seq j | j :e ordsucc n} t HtU).
+  let B. assume HtB : t :e B. assume HBfam : B :e {apply_fun seq j | j :e ordsucc n}.
+  apply (ReplE_impred (ordsucc n) (fun j:set => apply_fun seq j) B HBfam).
+  let j. assume HjOn. assume Heq : B = apply_fun seq j.
+  claim HtSeqj : t :e apply_fun seq j.
+  { exact (mem_eqR t B (apply_fun seq j) Heq HtB). }
+  exact (HBallSubUI j HjOn t HtSeqj).
+}
+claim H0Union : 0 :e UnionAll.
+{
+  apply (UnionI {apply_fun seq j | j :e ordsucc n} 0 (apply_fun seq 0)).
+  - exact H0in.
+  - exact (ReplI (ordsucc n) (fun j:set => apply_fun seq j) 0 (nat_0_in_ordsucc n (omega_nat_p n HnOmega))).
+}
+claim H1Union : 1 :e UnionAll.
+{
+  apply (UnionI {apply_fun seq j | j :e ordsucc n} 1 (apply_fun seq n)).
+  - exact H1in.
+  - exact (ReplI (ordsucc n) (fun j:set => apply_fun seq j) n (ordsuccI2 n)).
+}
+claim HcoversUI : forall t:set, t :e unit_interval -> t :e UnionAll.
+{
+  let t. assume HtUI : t :e unit_interval.
+  apply (xm (t = 0)).
+  - assume Ht0. rewrite Ht0. exact H0Union.
+  - assume Htne0.
+    apply (xm (t = 1)).
+    + assume Ht1. rewrite Ht1. exact H1Union.
+    + assume Htne1.
+      claim HtR : t :e R. { exact (unit_interval_sub_R t HtUI). }
+      claim H0le : Rle 0 t. { exact (unit_interval_Rle0 t HtUI). }
+      claim Hle1 : Rle t 1. { exact (unit_interval_Rle1 t HtUI). }
+	      claim H0ne : ~(0 = t).
+	      { assume H0t. exact (Htne0 (eq_symm 0 t H0t)). }
+	      claim Hne1 : ~(t = 1). { exact Htne1. }
+	      claim H0lt : Rlt 0 t.
+	      { exact (Rle_neq_implies_Rlt 0 t H0le H0ne). }
+      claim Hlt1 : Rlt t 1.
+      { exact (Rle_neq_implies_Rlt t 1 Hle1 Hne1). }
+	      exact (connected_subset_unit_interval_interval_property UnionAll
+	        HunionSub HunionConn 0 1 t H0Union H1Union HtUI
+	        (orIL (Rlt 0 t /\ Rlt t 1) (Rlt 1 t /\ Rlt t 0) (andI (Rlt 0 t) (Rlt t 1) H0lt Hlt1))).
+	}
+	(** In particular, n is nonzero, hence 0 :e n and 1 :e ordsucc n. **)
+	claim HnNat : nat_p n.
+	{ exact (omega_nat_p n HnOmega). }
+	claim H0On : 0 :e ordsucc n.
+	{ exact (nat_0_in_ordsucc n HnNat). }
+	claim HnNe0 : ~(n = 0).
+	{
+		  assume Hn0.
+		  claim H1in0 : 1 :e apply_fun seq 0.
+		  { rewrite <- Hn0 at 2. exact H1in. }
+		  claim HallSeq0 : forall t:set, t :e unit_interval -> t :e apply_fun seq 0.
+		  {
+		    let t. assume HtUI : t :e unit_interval.
+	    apply (xm (t = 0)).
+	    - assume Ht0. rewrite Ht0. exact H0in.
+	    - assume Htne0.
+	      apply (xm (t = 1)).
+	      + assume Ht1. rewrite Ht1. exact H1in0.
+	      + assume Htne1.
+	        claim H0le : Rle 0 t. { exact (unit_interval_Rle0 t HtUI). }
+	        claim Hle1 : Rle t 1. { exact (unit_interval_Rle1 t HtUI). }
+	        claim H0ne : ~(0 = t).
+	        { assume H0t. exact (Htne0 (eq_symm 0 t H0t)). }
+	        claim Hne1 : ~(t = 1). { exact Htne1. }
+	        claim H0lt : Rlt 0 t.
+	        { exact (Rle_neq_implies_Rlt 0 t H0le H0ne). }
+	        claim Hlt1 : Rlt t 1.
+	        { exact (Rle_neq_implies_Rlt t 1 Hle1 Hne1). }
+	        exact (connected_subset_unit_interval_interval_property (apply_fun seq 0)
+	          (HBallSubUI 0 H0On)
+	          (HBallConn 0 H0On)
+	          0 1 t
+	          H0in
+	          H1in0
+	          HtUI
+	          (orIL (Rlt 0 t /\ Rlt t 1) (Rlt 1 t /\ Rlt t 0) (andI (Rlt 0 t) (Rlt t 1) H0lt Hlt1))).
+	  }
+	  claim Hseq0UorV :
+	    (forall t:set, t :e apply_fun seq 0 -> apply_fun f t :e U) \/
+	    (forall t:set, t :e apply_fun seq 0 -> apply_fun f t :e V).
+	  { exact (Htype 0 H0On). }
+	  apply Hseq0UorV.
+	  - assume HallU0.
+	    claim HallU : forall t:set, t :e unit_interval -> apply_fun f t :e U.
+	    { let t. assume HtUI. exact (HallU0 t (HallSeq0 t HtUI)). }
+	    exact (HnotAllU HallU).
+	  - assume HallV0.
+	    claim HallV : forall t:set, t :e unit_interval -> apply_fun f t :e V.
+	    { let t. assume HtUI. exact (HallV0 t (HallSeq0 t HtUI)). }
+	    exact (HnotAllV HallV).
+	}
+	claim H0InN : 0 :e n.
+	{
+	  apply (nat_inv n HnNat).
+	  - assume Hn0. exact (FalseE (HnNe0 Hn0) (0 :e n)).
+	  - assume HnSucc.
+	    apply HnSucc.
+	    let m. assume HmPack.
+	    claim HmNat : nat_p m.
+	    { exact (andEL (nat_p m) (n = ordsucc m) HmPack). }
+	    claim Hneq : n = ordsucc m.
+	    { exact (andER (nat_p m) (n = ordsucc m) HmPack). }
+	    rewrite Hneq.
+	    exact (nat_0_in_ordsucc m HmNat).
+	}
+	claim H1OnN : 1 :e ordsucc n.
+	{ exact (nat_ordsucc_in_ordsucc n HnNat 0 H0InN). }
+	(** Find a V-type ball: pick t with f(t) not in U. **)
+	claim HexV : exists tV:set, tV :e unit_interval /\ ~(apply_fun f tV :e U).
+	{
+	  apply (xm (exists tV:set, tV :e unit_interval /\ ~(apply_fun f tV :e U))).
+  - assume Hex. exact Hex.
+  - assume Hno.
+    claim HallU : forall t:set, t :e unit_interval -> apply_fun f t :e U.
+    {
+      let t. assume HtUI.
+      apply dneg. assume Hnot.
+      apply Hno.
+      witness t.
+      exact (andI (t :e unit_interval) (~(apply_fun f t :e U)) HtUI Hnot).
+    }
+    exact (FalseE (HnotAllU HallU) (exists tV:set, tV :e unit_interval /\ ~(apply_fun f tV :e U))).
+}
+apply HexV. let tV. assume HtVpack.
+claim HtVUI : tV :e unit_interval.
+{ exact (andEL (tV :e unit_interval) (~(apply_fun f tV :e U)) HtVpack). }
+claim HtVnotU : ~(apply_fun f tV :e U).
+{ exact (andER (tV :e unit_interval) (~(apply_fun f tV :e U)) HtVpack). }
+claim HtVUnion : tV :e UnionAll.
+{ exact (HcoversUI tV HtVUI). }
+claim HexjV : exists jV:set, jV :e ordsucc n /\ tV :e apply_fun seq jV.
+{
+  apply (UnionE_impred {apply_fun seq j | j :e ordsucc n} tV HtVUnion).
+  let B. assume HtVB : tV :e B. assume HBfam : B :e {apply_fun seq j | j :e ordsucc n}.
+  apply (ReplE_impred (ordsucc n) (fun j:set => apply_fun seq j) B HBfam).
+  let j. assume HjOn. assume Heq : B = apply_fun seq j.
+  witness j.
+  apply andI.
+  - exact HjOn.
+  - exact (mem_eqR tV B (apply_fun seq j) Heq HtVB).
+}
+apply HexjV. let jV. assume HjVpack.
+claim HjVOn : jV :e ordsucc n.
+{ exact (andEL (jV :e ordsucc n) (tV :e apply_fun seq jV) HjVpack). }
+claim HtVSeq : tV :e apply_fun seq jV.
+{ exact (andER (jV :e ordsucc n) (tV :e apply_fun seq jV) HjVpack). }
+claim HVtype : forall t:set, t :e apply_fun seq jV -> apply_fun f t :e V.
+{
+  apply (Htype jV HjVOn).
+  - assume HallU.
+    claim Hfalse : False.
+    { exact (HtVnotU (HallU tV HtVSeq)). }
+    exact (FalseE Hfalse (forall t:set, t :e apply_fun seq jV -> apply_fun f t :e V)).
+  - assume HallV.
+    exact HallV.
+}
+(** Find a U-type ball: pick t with f(t) not in V. **)
+claim HexU : exists tU:set, tU :e unit_interval /\ ~(apply_fun f tU :e V).
+{
+  apply (xm (exists tU:set, tU :e unit_interval /\ ~(apply_fun f tU :e V))).
+  - assume Hex. exact Hex.
+  - assume Hno.
+    claim HallV : forall t:set, t :e unit_interval -> apply_fun f t :e V.
+    {
+      let t. assume HtUI.
+      apply dneg. assume Hnot.
+      apply Hno.
+      witness t.
+      exact (andI (t :e unit_interval) (~(apply_fun f t :e V)) HtUI Hnot).
+    }
+    exact (FalseE (HnotAllV HallV) (exists tU:set, tU :e unit_interval /\ ~(apply_fun f tU :e V))).
+}
+apply HexU. let tU. assume HtUpack.
+claim HtUUI : tU :e unit_interval.
+{ exact (andEL (tU :e unit_interval) (~(apply_fun f tU :e V)) HtUpack). }
+claim HtUnotV : ~(apply_fun f tU :e V).
+{ exact (andER (tU :e unit_interval) (~(apply_fun f tU :e V)) HtUpack). }
+claim HtUUnion : tU :e UnionAll.
+{ exact (HcoversUI tU HtUUI). }
+claim HexjU : exists jU:set, jU :e ordsucc n /\ tU :e apply_fun seq jU.
+{
+  apply (UnionE_impred {apply_fun seq j | j :e ordsucc n} tU HtUUnion).
+  let B. assume HtUB : tU :e B. assume HBfam : B :e {apply_fun seq j | j :e ordsucc n}.
+  apply (ReplE_impred (ordsucc n) (fun j:set => apply_fun seq j) B HBfam).
+  let j. assume HjOn. assume Heq : B = apply_fun seq j.
+  witness j.
+  apply andI.
+  - exact HjOn.
+  - exact (mem_eqR tU B (apply_fun seq j) Heq HtUB).
+}
+apply HexjU. let jU. assume HjUpack.
+claim HjUOn : jU :e ordsucc n.
+{ exact (andEL (jU :e ordsucc n) (tU :e apply_fun seq jU) HjUpack). }
+claim HtUSeq : tU :e apply_fun seq jU.
+{ exact (andER (jU :e ordsucc n) (tU :e apply_fun seq jU) HjUpack). }
+claim HUtype : forall t:set, t :e apply_fun seq jU -> apply_fun f t :e U.
+{
+  apply (Htype jU HjUOn).
+  - assume HallU. exact HallU.
+  - assume HallV.
+    claim Hfalse : False.
+    { exact (HtUnotV (HallV tU HtUSeq)). }
+    exact (FalseE Hfalse (forall t:set, t :e apply_fun seq jU -> apply_fun f t :e U)).
+}
+(** Define the V-index set and take its least element to get an adjacent transition. **)
+set Vset := {k :e ordsucc n | (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V)}.
+set Uset := {k :e ordsucc n | (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U)}.
+claim HVset_nonempty : Vset <> Empty.
+{
+  assume Hempty : Vset = Empty.
+  exact (EmptyE jV (eq_subst_mem_set jV Vset Empty (SepI (ordsucc n)
+    (fun k:set => forall t:set, t :e apply_fun seq k -> apply_fun f t :e V) jV HjVOn HVtype) Hempty)).
+}
+claim HUset_nonempty : Uset <> Empty.
+{
+  assume Hempty : Uset = Empty.
+  exact (EmptyE jU (eq_subst_mem_set jU Uset Empty (SepI (ordsucc n)
+    (fun k:set => forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) jU HjUOn HUtype) Hempty)).
+}
+claim Hordsucc_sub_omega : forall k:set, k :e ordsucc n -> k :e omega.
+{
+  let k. assume HkOn.
+  exact (ordinal_TransSet omega omega_ordinal (ordsucc n)
+    (omega_ordsucc n HnOmega) k HkOn).
+}
+claim HVset_sub_omega : Vset c= omega.
+{
+  let k. assume HkV : k :e Vset.
+  exact (Hordsucc_sub_omega k (SepE1 (ordsucc n)
+    (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) k HkV)).
+}
+claim HUset_sub_omega : Uset c= omega.
+{
+  let k. assume HkU : k :e Uset.
+  exact (Hordsucc_sub_omega k (SepE1 (ordsucc n)
+    (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) k HkU)).
+}
+claim HVleast_ex : exists m:set, m :e Vset /\ forall k:set, k :e Vset -> (m :e k \/ m = k).
+{ exact (omega_nonempty_subset_has_least Vset HVset_sub_omega HVset_nonempty). }
+apply HVleast_ex.
+let mV. assume HmVpack.
+claim HmV_V : mV :e Vset.
+{ exact (andEL (mV :e Vset) (forall k:set, k :e Vset -> (mV :e k \/ mV = k)) HmVpack). }
+claim HmV_least : forall k:set, k :e Vset -> (mV :e k \/ mV = k).
+{ exact (andER (mV :e Vset) (forall k:set, k :e Vset -> (mV :e k \/ mV = k)) HmVpack). }
+claim HmVOn : mV :e ordsucc n.
+{ exact (SepE1 (ordsucc n)
+    (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) mV HmV_V). }
+claim HmVnat : nat_p mV.
+{ exact (omega_nat_p mV (Hordsucc_sub_omega mV HmVOn)). }
+apply (nat_inv mV HmVnat).
+- assume HmV0 : mV = 0.
+  (** If the first V ball is at 0, use the least U ball to get a V->U transition. **)
+  claim HUleast_ex : exists m:set, m :e Uset /\ forall k:set, k :e Uset -> (m :e k \/ m = k).
+  { exact (omega_nonempty_subset_has_least Uset HUset_sub_omega HUset_nonempty). }
+  apply HUleast_ex.
+  let mU. assume HmUpack.
+  claim HmU_U : mU :e Uset.
+  { exact (andEL (mU :e Uset) (forall k:set, k :e Uset -> (mU :e k \/ mU = k)) HmUpack). }
+  claim HmU_least : forall k:set, k :e Uset -> (mU :e k \/ mU = k).
+  { exact (andER (mU :e Uset) (forall k:set, k :e Uset -> (mU :e k \/ mU = k)) HmUpack). }
+  claim HmUOn : mU :e ordsucc n.
+  { exact (SepE1 (ordsucc n)
+      (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) mU HmU_U). }
+  claim HmUnat : nat_p mU.
+  { exact (omega_nat_p mU (Hordsucc_sub_omega mU HmUOn)). }
+  apply (nat_inv mU HmUnat).
+	  * assume HmU0 : mU = 0.
+	    (** Then ball 0 is both U-type and V-type; pick k=0 and any overlap point with 1. **)
+	    witness 0.
+	    apply andI.
+	    - apply andI.
+	      + exact H0InN.
+	      + claim HU0a : forall t:set, t :e apply_fun seq 0 -> apply_fun f t :e U.
+	        { rewrite <- HmU0. exact (SepE2 (ordsucc n)
+	            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) mU HmU_U). }
+	        claim HV0a : forall t:set, t :e apply_fun seq 0 -> apply_fun f t :e V.
+	        { rewrite <- HmV0. exact (SepE2 (ordsucc n)
+	            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) mV HmV_V). }
+	        apply (Htype 1 H1OnN).
+	        * assume HallU1.
+	          apply orIR.
+	          apply andI.
+	          - exact HV0a.
+	          - exact HallU1.
+	        * assume HallV1.
+	          apply orIL.
+	          apply andI.
+	          - exact HU0a.
+	          - exact HallV1.
+	    - claim Hovlp0 : apply_fun seq 0 :/\: apply_fun seq 1 <> Empty.
+	      { exact (Hoverlap 0 H0InN). }
+	      apply (nonempty_has_element (apply_fun seq 0 :/\: apply_fun seq 1) Hovlp0).
+	      let s. assume HsIn.
+	      witness s.
+	      apply andI.
+	      + apply andI.
+	        * exact (binintersectE1 (apply_fun seq 0) (apply_fun seq 1) s HsIn).
+	        * exact (binintersectE2 (apply_fun seq 0) (apply_fun seq 1) s HsIn).
+	      + apply (binintersectI U V (apply_fun f s)).
+	        * claim HU0 : forall t:set, t :e apply_fun seq 0 -> apply_fun f t :e U.
+	          { rewrite <- HmU0. exact (SepE2 (ordsucc n)
+	              (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) mU HmU_U). }
+	          exact (HU0 s (binintersectE1 (apply_fun seq 0) (apply_fun seq 1) s HsIn)).
+	        * claim HV0 : forall t:set, t :e apply_fun seq 0 -> apply_fun f t :e V.
+	          { rewrite <- HmV0. exact (SepE2 (ordsucc n)
+	              (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) mV HmV_V). }
+	          exact (HV0 s (binintersectE1 (apply_fun seq 0) (apply_fun seq 1) s HsIn)).
+  * assume HmUsucc : exists k:set, nat_p k /\ mU = ordsucc k.
+    apply HmUsucc.
+    let k. assume Hkpack.
+    claim HkNat : nat_p k.
+    { exact (andEL (nat_p k) (mU = ordsucc k) Hkpack). }
+	    claim HmUeq : mU = ordsucc k.
+	    { exact (andER (nat_p k) (mU = ordsucc k) Hkpack). }
+	    claim Hk_in_mU : k :e mU.
+	    { rewrite HmUeq. exact (ordsuccI2 k). }
+	    claim HkOn : k :e ordsucc n.
+	    { exact (ordinal_TransSet (ordsucc n) (nat_p_ordinal (ordsucc n) (omega_nat_p (ordsucc n) (omega_ordsucc n HnOmega)))
+	        mU HmUOn k Hk_in_mU). }
+	    claim HkIn : k :e n.
+	    {
+	      apply (ordsuccE n mU HmUOn).
+	      - assume HmU_in_n.
+	        exact (ordinal_TransSet n (nat_p_ordinal n (omega_nat_p n HnOmega))
+	          mU HmU_in_n k Hk_in_mU).
+	      - assume HmUeqn.
+	        rewrite <- HmUeqn.
+	        exact Hk_in_mU.
+	    }
+    (** k is V-type by minimality of mU (least U index). **)
+    claim HkV : forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
+    {
+      apply (Htype k HkOn).
+      - assume HallU.
+        claim HkU_mem : k :e Uset.
+        {
+          exact (SepI (ordsucc n)
+            (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) k HkOn HallU).
+	        }
+	        claim HmU_le_k : mU :e k \/ mU = k.
+	        { exact (HmU_least k HkU_mem). }
+	        apply HmU_le_k.
+	        + assume HmU_in_k.
+	          claim HkInk : k :e k.
+	          { exact (ordinal_TransSet k (nat_p_ordinal k HkNat) mU HmU_in_k k Hk_in_mU). }
+	          exact (FalseE (In_irref k HkInk) (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V)).
+	        + assume HmUeqk.
+	          claim HkInk : k :e k.
+	          { rewrite <- HmUeqk at 2. exact Hk_in_mU. }
+	          exact (FalseE (In_irref k HkInk) (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V)).
+      - assume HallV.
+        exact HallV.
+    }
+	    claim HmU_Utype : forall t:set, t :e apply_fun seq mU -> apply_fun f t :e U.
+	    { exact (SepE2 (ordsucc n)
+	        (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e U) mU HmU_U). }
+	    (** Use overlap at k to get s and conclude. **)
+	    witness k.
+	    apply andI.
+	    - apply andI.
+	      + exact HkIn.
+		      + apply orIR.
+		        apply andI.
+		        * exact HkV.
+		        * rewrite <- HmUeq. exact HmU_Utype.
+	    - claim Hovlp : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+	      { exact (Hoverlap k HkIn). }
+	      apply (nonempty_has_element (apply_fun seq k :/\: apply_fun seq (ordsucc k)) Hovlp).
+	      let s. assume HsIn.
+	      witness s.
+	      apply andI.
+	      + apply andI.
+	        * exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn).
+	        * exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn).
+		      + apply (binintersectI U V (apply_fun f s)).
+		        * claim HU_succ : forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e U.
+		          { rewrite <- HmUeq. exact HmU_Utype. }
+		          exact (HU_succ s (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn)).
+		        * exact (HkV s (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn)).
+- assume HmVsucc : exists k:set, nat_p k /\ mV = ordsucc k.
+  apply HmVsucc.
+  let k. assume Hkpack.
+  claim HkNat : nat_p k.
+  { exact (andEL (nat_p k) (mV = ordsucc k) Hkpack). }
+  claim HmVeq : mV = ordsucc k.
+  { exact (andER (nat_p k) (mV = ordsucc k) Hkpack). }
+	  claim HkInmV : k :e mV.
+	  { rewrite HmVeq. exact (ordsuccI2 k). }
+	  claim HkOn : k :e ordsucc n.
+	  {
+	    exact (ordinal_TransSet (ordsucc n) (nat_p_ordinal (ordsucc n) (omega_nat_p (ordsucc n) (omega_ordsucc n HnOmega)))
+      mV HmVOn k HkInmV).
+  }
+  claim HkIn : k :e n.
+	  {
+	    apply (ordsuccE n mV HmVOn).
+	    - assume HmV_in_n.
+	      exact (ordinal_TransSet n (nat_p_ordinal n (omega_nat_p n HnOmega))
+	        mV HmV_in_n k HkInmV).
+	    - assume HmVeqn.
+	      rewrite <- HmVeqn.
+	      exact HkInmV.
+	  }
+  (** k is U-type since it is < mV and mV is least V index. **)
+  claim HkU : forall t:set, t :e apply_fun seq k -> apply_fun f t :e U.
+  {
+    apply (Htype k HkOn).
+    - assume HallU. exact HallU.
+    - assume HallV.
+      claim HkV_mem : k :e Vset.
+      {
+        exact (SepI (ordsucc n)
+          (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) k HkOn HallV).
+	      }
+	      claim HmV_le_k : mV :e k \/ mV = k.
+	      { exact (HmV_least k HkV_mem). }
+	      apply HmV_le_k.
+	      + assume HmV_in_k.
+	        claim HkInk : k :e k.
+	        { exact (ordinal_TransSet k (nat_p_ordinal k HkNat) mV HmV_in_k k HkInmV). }
+	        exact (FalseE (In_irref k HkInk) (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U)).
+	      + assume HmVeqk.
+	        claim HkInk : k :e k.
+	        { rewrite <- HmVeqk at 2. exact HkInmV. }
+	        exact (FalseE (In_irref k HkInk) (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U)).
+  }
+  claim HmV_Vtype : forall t:set, t :e apply_fun seq mV -> apply_fun f t :e V.
+  { exact (SepE2 (ordsucc n)
+      (fun k0:set => forall t:set, t :e apply_fun seq k0 -> apply_fun f t :e V) mV HmV_V). }
+  witness k.
+  apply andI.
+  - apply andI.
+    + exact HkIn.
+    + apply orIL.
+      apply andI.
+      * exact HkU.
+      * rewrite <- HmVeq. exact HmV_Vtype.
+  - claim Hovlp : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+    { exact (Hoverlap k HkIn). }
+    apply (nonempty_has_element (apply_fun seq k :/\: apply_fun seq (ordsucc k)) Hovlp).
+    let s. assume HsIn.
+    witness s.
+    apply andI.
+    + apply andI.
+      * exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn).
+      * exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn).
+    + apply (binintersectI U V (apply_fun f s)).
+      * exact (HkU s (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn)).
+      * claim HV_succ : forall t:set, t :e apply_fun seq (ordsucc k) -> apply_fun f t :e V.
+        { rewrite <- HmVeq. exact HmV_Vtype. }
+        exact (HV_succ s (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn)).
+Qed.
+
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
