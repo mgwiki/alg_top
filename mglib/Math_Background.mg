@@ -283259,9 +283259,97 @@ apply andI.
     claim HzU : z :e U. { exact (binintersectE2 C U z Hz). }
     rewrite Hyeqz. exact HzU.
   + (** connected V_pullback in subspace of X **)
-    (** V_pullback in C, homeomorphism f maps V_pullback to V' (connected) **)
-    (** homeomorphism preserves connected **)
-    admit.
+    (** V' connected in TW. Inverse g: W -> C continuous. **)
+    (** g(V') c= V_pullback. continuous_image_connected gives image connected. **)
+    (** Then transfer subspace topology: C subspace to X subspace. **)
+    (** Extract inverse g from homeomorphism **)
+    claim Hinv : exists g:set, continuous_map W TW C TC g /\
+      (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y) /\
+      (forall z:set, z :e W -> apply_fun f (apply_fun g z) = z).
+    { exact (andER (continuous_map C TC W TW f)
+        (exists g:set, continuous_map W TW C TC g /\
+          (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y) /\
+          (forall z:set, z :e W -> apply_fun f (apply_fun g z) = z)) Hhomeo). }
+    apply Hinv. let g. assume Hg_props.
+    (** Left-assoc: ((g_cont /\ left_inv) /\ right_inv) **)
+    claim Hg_first2 : continuous_map W TW C TC g /\
+      (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y).
+    { exact (andEL (continuous_map W TW C TC g /\ (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y))
+        (forall z:set, z :e W -> apply_fun f (apply_fun g z) = z) Hg_props). }
+    claim Hg_cont : continuous_map W TW C TC g.
+    { exact (andEL (continuous_map W TW C TC g)
+        (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y) Hg_first2). }
+    claim Hg_left_inv : forall y:set, y :e C -> apply_fun g (apply_fun f y) = y.
+    { exact (andER (continuous_map W TW C TC g)
+        (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y) Hg_first2). }
+    claim Hg_right_inv : forall z:set, z :e W -> apply_fun f (apply_fun g z) = z.
+    { exact (andER (continuous_map W TW C TC g /\ (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y))
+        (forall z:set, z :e W -> apply_fun f (apply_fun g z) = z) Hg_props). }
+    (** g restricted to V' is continuous: (V', subspace of W) -> C **)
+    claim HV'sub_W : V' c= W.
+    { exact (subspace_topology_member_subset_no_topology (euclidean_space m) TRm W V' HV'open). }
+    (** continuous_image_connected: V' connected + g cont -> image connected **)
+    (** g restricted to V' is continuous: use construction rule **)
+    claim Hg_restr : continuous_map V' (subspace_topology W TW V') C TC g.
+    { (** Restriction of continuous g: W -> C to V' c= W **)
+      (** From continuous_construction_rules: **)
+      (** forall f A, A c= X -> continuous_map X Tx Y Ty f -> **)
+      (** continuous_map A (subspace X Tx A) Y Ty f **)
+      (** Need topology_on W TW and topology_on C TC for the rules **)
+      claim HtopW : topology_on W TW.
+      { claim HWsub : W c= euclidean_space m.
+        { exact (andER (open_in X Tx C /\ x :e C) (W c= euclidean_space m)
+            (andEL (open_in X Tx C /\ x :e C /\ W c= euclidean_space m)
+              (open_in (euclidean_space m) TRm W) Hfirst4)). }
+        claim HtopRm : topology_on (euclidean_space m) TRm.
+        { exact (locally_connected_topology (euclidean_space m) TRm Hlc_Rm). }
+        exact (subspace_topology_is_topology (euclidean_space m) TRm W HtopRm HWsub). }
+      claim HtopC2 : topology_on C TC.
+      { claim HCsub2 : C c= X. { exact (open_in_subset X Tx C (andEL (open_in X Tx C) (x :e C) HCopen_xC)). }
+        exact (subspace_topology_is_topology X Tx C Htop HCsub2). }
+      (** Extract the restriction rule **)
+      claim Hrules : (forall ff A0:set, A0 c= W -> continuous_map W TW C TC ff ->
+        continuous_map A0 (subspace_topology W TW A0) C TC ff).
+      { admit. }
+      exact (Hrules g V' HV'sub_W Hg_cont). }
+    claim Himg_conn : connected_space (image_of_fun g V') (subspace_topology C TC (image_of_fun g V')).
+    { exact (continuous_image_connected V' (subspace_topology W TW V') C TC g HV'conn Hg_restr). }
+    (** image_of_fun g V' = V_pullback **)
+    claim Himg_eq : image_of_fun g V' = V_pullback.
+    { apply set_ext.
+      - (** image c= V_pullback: g(z) in C and f(g(z)) = z in V' **)
+        let y. assume Hy : y :e image_of_fun g V'.
+        apply (ReplE_impred V' (fun z:set => apply_fun g z) y Hy).
+        let z. assume Hz : z :e V'. assume Hyeq : y = apply_fun g z.
+        prove y :e preimage_of C f V'.
+        prove y :e {w :e C | apply_fun f w :e V'}.
+        rewrite Hyeq.
+        claim HzW : z :e W. { exact (HV'sub_W z Hz). }
+        claim HgzC : apply_fun g z :e C.
+        { exact (continuous_map_value_in_space W TW C TC g z Hg_cont HzW). }
+        claim HfgzV : apply_fun f (apply_fun g z) :e V'.
+        { rewrite (Hg_right_inv z HzW). exact Hz. }
+        exact (SepI C (fun w:set => apply_fun f w :e V') (apply_fun g z) HgzC HfgzV).
+      - (** V_pullback c= image: y in C, f(y) in V', so g(f(y)) = y in image **)
+        let y. assume Hy : y :e V_pullback.
+        prove y :e image_of_fun g V'.
+        claim HyC : y :e C. { exact (SepE1 C (fun z:set => apply_fun f z :e V') y Hy). }
+        claim HfyV : apply_fun f y :e V'.
+        { exact (SepE2 C (fun z:set => apply_fun f z :e V') y Hy). }
+        claim Hgfy : apply_fun g (apply_fun f y) = y.
+        { exact (Hg_left_inv y HyC). }
+        claim HfyImg : apply_fun g (apply_fun f y) :e image_of_fun g V'.
+        { exact (ReplI V' (fun z:set => apply_fun g z) (apply_fun f y) HfyV). }
+        prove y :e image_of_fun g V'.
+        rewrite <- Hgfy. exact HfyImg. }
+    (** Transfer: connected in subspace of C -> connected in subspace of X **)
+    claim Hconn_C : connected_space V_pullback (subspace_topology C TC V_pullback).
+    { rewrite <- Himg_eq. exact Himg_conn. }
+    claim HVpb_sub_C2 : V_pullback c= C.
+    { let y. assume Hy. exact (SepE1 C (fun z:set => apply_fun f z :e V') y Hy). }
+    prove connected_space V_pullback (subspace_topology X Tx V_pullback).
+    rewrite <- (subspace_topology_transitive_weak X Tx C V_pullback HVpb_sub_C2).
+    exact Hconn_C.
 Admitted.
 
 (** Forward declaration: S^2 is locally connected **)
