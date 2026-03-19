@@ -282426,8 +282426,35 @@ Admitted.
 Lemma R2_sub_nonzero_of_ne_early : forall z w:set,
   z :e setprod R R -> w :e setprod R R -> z <> w ->
   (add_SNo (z 0) (minus_SNo (w 0)), add_SNo (z 1) (minus_SNo (w 1))) <> (0, 0).
-admit.
-Admitted.
+let z w.
+assume Hz : z :e setprod R R.
+assume Hw : w :e setprod R R.
+assume Hne : z <> w.
+assume Heq : (add_SNo (z 0) (minus_SNo (w 0)), add_SNo (z 1) (minus_SNo (w 1))) = (0, 0).
+claim Hz0R : z 0 :e R. { exact (EuclidPlane_xcoord_in_R z Hz). }
+claim Hz1R : z 1 :e R. { exact (EuclidPlane_ycoord_in_R z Hz). }
+claim Hw0R : w 0 :e R. { exact (EuclidPlane_xcoord_in_R w Hw). }
+claim Hw1R : w 1 :e R. { exact (EuclidPlane_ycoord_in_R w Hw). }
+claim Hz0S : SNo (z 0). { exact (real_SNo (z 0) Hz0R). }
+claim Hz1S : SNo (z 1). { exact (real_SNo (z 1) Hz1R). }
+claim Hw0S : SNo (w 0). { exact (real_SNo (w 0) Hw0R). }
+claim Hw1S : SNo (w 1). { exact (real_SNo (w 1) Hw1R). }
+claim Hfst : add_SNo (z 0) (minus_SNo (w 0)) = 0.
+{ exact (pair_eq_fst (add_SNo (z 0) (minus_SNo (w 0))) (add_SNo (z 1) (minus_SNo (w 1))) 0 0 Heq). }
+claim Hsnd : add_SNo (z 1) (minus_SNo (w 1)) = 0.
+{ exact (pair_eq_snd (add_SNo (z 0) (minus_SNo (w 0))) (add_SNo (z 1) (minus_SNo (w 1))) 0 0 Heq). }
+claim Hfst0 : z 0 = w 0.
+{ apply (add_SNo_cancel_R (z 0) (minus_SNo (w 0)) (w 0) Hz0S (SNo_minus_SNo (w 0) Hw0S) Hw0S).
+  rewrite Hfst. rewrite (add_SNo_minus_SNo_rinv (w 0) Hw0S). reflexivity. }
+claim Hsnd1 : z 1 = w 1.
+{ apply (add_SNo_cancel_R (z 1) (minus_SNo (w 1)) (w 1) Hz1S (SNo_minus_SNo (w 1) Hw1S) Hw1S).
+  rewrite Hsnd. rewrite (add_SNo_minus_SNo_rinv (w 1) Hw1S). reflexivity. }
+claim HzEta : z = (z 0, z 1). { exact (setprod_eta R R z Hz). }
+claim HwEta : w = (w 0, w 1). { exact (setprod_eta R R w Hw). }
+apply Hne.
+rewrite HzEta. rewrite HwEta.
+exact (tuple_2_eq (z 0) (z 1) (w 0) (w 1) Hfst0 Hsnd1).
+Qed.
 
 (** placed here to avoid forward reference in nulhomotopy proof **)
 (** Proven Alice **)
