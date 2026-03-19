@@ -281693,6 +281693,75 @@ Qed.
 (** If f: A -> R^n continuous and A closed in normal X, **)
 (** then f extends to g: X -> R^n continuous. **)
 (** Proof: apply Tietze_extension_real to each coordinate projection. **)
+(** Tietze for R^2 (EuclidPlane): extend coordinate-wise **)
+Lemma Tietze_extension_R2 : forall X Tx A f:set,
+  normal_space X Tx -> closed_in X Tx A ->
+  continuous_map A (subspace_topology X Tx A) (setprod R R) R2_topology f ->
+  exists g:set, continuous_map X Tx (setprod R R) R2_topology g /\
+    (forall x:set, x :e A -> apply_fun g x = apply_fun f x).
+let X Tx A f.
+assume Hnormal : normal_space X Tx.
+assume Hclosed : closed_in X Tx A.
+assume Hf : continuous_map A (subspace_topology X Tx A) (setprod R R) R2_topology f.
+set TA := subspace_topology X Tx A.
+(** Project f to each coordinate **)
+set f0 := compose_fun A f (projection1 R R).
+set f1 := compose_fun A f (projection2 R R).
+(** f0, f1 continuous: f continuous + projection continuous + composition **)
+claim Hf0 : continuous_map A TA R R_standard_topology f0.
+{ exact (composition_continuous A TA (setprod R R) R2_topology R R_standard_topology
+    f (projection1 R R) Hf
+    (projection1_continuous_in_product R R_standard_topology R R_standard_topology
+      R_standard_topology_is_topology R_standard_topology_is_topology)). }
+claim Hf1 : continuous_map A TA R R_standard_topology f1.
+{ exact (composition_continuous A TA (setprod R R) R2_topology R R_standard_topology
+    f (projection2 R R) Hf
+    (projection2_continuous_in_product R R_standard_topology R R_standard_topology
+      R_standard_topology_is_topology R_standard_topology_is_topology)). }
+(** Extend each coordinate by Tietze **)
+claim Hg0 : exists g0:set, continuous_map X Tx R R_standard_topology g0 /\
+  (forall x:set, x :e A -> apply_fun g0 x = apply_fun f0 x).
+{ exact (Tietze_extension_real X Tx A f0 Hnormal Hclosed Hf0). }
+claim Hg1 : exists g1:set, continuous_map X Tx R R_standard_topology g1 /\
+  (forall x:set, x :e A -> apply_fun g1 x = apply_fun f1 x).
+{ exact (Tietze_extension_real X Tx A f1 Hnormal Hclosed Hf1). }
+apply Hg0. let g0. assume Hg0_props.
+apply Hg1. let g1. assume Hg1_props.
+claim Hg0_cont : continuous_map X Tx R R_standard_topology g0.
+{ exact (andEL (continuous_map X Tx R R_standard_topology g0)
+    (forall x:set, x :e A -> apply_fun g0 x = apply_fun f0 x) Hg0_props). }
+claim Hg1_cont : continuous_map X Tx R R_standard_topology g1.
+{ exact (andEL (continuous_map X Tx R R_standard_topology g1)
+    (forall x:set, x :e A -> apply_fun g1 x = apply_fun f1 x) Hg1_props). }
+claim Hg0_ext : forall x:set, x :e A -> apply_fun g0 x = apply_fun f0 x.
+{ exact (andER (continuous_map X Tx R R_standard_topology g0)
+    (forall x:set, x :e A -> apply_fun g0 x = apply_fun f0 x) Hg0_props). }
+claim Hg1_ext : forall x:set, x :e A -> apply_fun g1 x = apply_fun f1 x.
+{ exact (andER (continuous_map X Tx R R_standard_topology g1)
+    (forall x:set, x :e A -> apply_fun g1 x = apply_fun f1 x) Hg1_props). }
+(** Combine: g = pair_map X g0 g1 **)
+set g := pair_map X g0 g1.
+witness g.
+apply andI.
+- (** g continuous: maps_into_products **)
+  exact (maps_into_products X Tx R R_standard_topology R R_standard_topology g0 g1 Hg0_cont Hg1_cont).
+- (** g extends f: for x in A, g(x) = (g0(x), g1(x)) = (f0(x), f1(x)) = f(x) **)
+  let x. assume Hx : x :e A.
+  claim HxX : x :e X.
+  { exact (closed_in_subset X Tx A Hclosed x Hx). }
+  claim Hfx_in : apply_fun f x :e setprod R R.
+  { exact (continuous_map_function_on A TA (setprod R R) R2_topology f Hf x Hx). }
+  rewrite (pair_map_apply X R R g0 g1 x HxX).
+  rewrite (Hg0_ext x Hx).
+  rewrite (Hg1_ext x Hx).
+  rewrite (compose_fun_apply A f (projection1 R R) x Hx).
+  rewrite (compose_fun_apply A f (projection2 R R) x Hx).
+  rewrite (projection1_apply R R (apply_fun f x) Hfx_in).
+  rewrite (projection2_apply R R (apply_fun f x) Hfx_in).
+  symmetry. exact (setprod_eta R R (apply_fun f x) Hfx_in).
+Qed.
+
+(** Tietze for general R^n (euclidean_space n) **)
 Lemma Tietze_extension_Rn : forall X Tx A n f:set,
   normal_space X Tx -> closed_in X Tx A -> n :e omega ->
   continuous_map A (subspace_topology X Tx A) (euclidean_space n) (euclidean_topology n) f ->
@@ -283091,8 +283160,193 @@ Lemma trivial_inclusions_imply_trivial_pi1 :
       (graph V (fun x:set => x))) cls =
     fundamental_group_id X Tx x0) ->
   fundamental_group X Tx x0 = Sing (fundamental_group_id X Tx x0).
-admit.
+let X Tx U V x0.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hcover : X = U :\/: V.
+assume Hx0UV : x0 :e U :/\: V.
+assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+assume Hi_triv : forall cls:set, cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+assume Hj_triv : forall cls:set, cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+  apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+    (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+set G := fundamental_group X Tx x0.
+set e := fundamental_group_id X Tx x0.
+set mult := fundamental_group_mult X Tx x0.
+set inv := fundamental_group_inv X Tx x0.
+(** x0 in X **)
+claim Hx0U : x0 :e U. { exact (binintersectE1 U V x0 Hx0UV). }
+claim Hx0X : x0 :e X.
+{ rewrite Hcover. exact (binunionI1 U V x0 Hx0U). }
+(** Destructure group_structure via and6E **)
+claim Hgrp : group_structure G mult e inv.
+{ exact (fundamental_group_is_group X Tx x0 Htop Hx0X). }
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume Hmult_fn : function_on mult (setprod G G) G.
+assume _ : function_on inv G G.
+assume He_in_G : e :e G.
+assume _ : forall x y z:set, x :e G -> y :e G -> z :e G ->
+  apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)).
+assume Hid_law : forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x.
+assume _ : forall x:set, x :e G ->
+  apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e.
+(** Right identity law **)
+claim Hrid : forall x:set, x :e G -> apply_fun mult (x, e) = x.
+{ let x. assume Hx : x :e G.
+  exact (andER (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid_law x Hx)). }
+(** Every element of G equals e **)
+claim Hall_eq_e : forall cls:set, cls :e G -> cls = e.
+{ let cls. assume Hcls : cls :e G.
+  apply (thm59_1_open_cover_generates_pi1 X Tx U V x0 Htop HU HV Hcover Hx0UV HpcUV cls Hcls).
+  let n. assume Hn_data.
+  claim Hn : n :e omega.
+  { exact (andEL (n :e omega)
+      (exists gs:set, function_on gs n G /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)) /\
+        cls = nat_primrec e (fun k r => apply_fun mult (r, apply_fun gs k)) n)
+      Hn_data). }
+  claim Hgs_data : exists gs:set, function_on gs n G /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    cls = nat_primrec e (fun k r => apply_fun mult (r, apply_fun gs k)) n.
+  { exact (andER (n :e omega)
+      (exists gs:set, function_on gs n G /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)) /\
+        cls = nat_primrec e (fun k r => apply_fun mult (r, apply_fun gs k)) n)
+      Hn_data). }
+  apply Hgs_data. let gs. assume Hgs_props.
+  (** Left-assoc: ((fn_on /\ factors) /\ cls_eq) **)
+  set factors_type := forall i:set, i :e n ->
+    (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      apply_fun gs i =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls) \/
+    (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+      apply_fun gs i =
+        apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+          (graph V (fun x:set => x))) vcls).
+  set cls_eq_type := cls = nat_primrec e (fun k r => apply_fun mult (r, apply_fun gs k)) n.
+  claim Hcls_eq : cls_eq_type.
+  { exact (andER (function_on gs n G /\ factors_type) cls_eq_type Hgs_props). }
+  claim Hfn_factors : function_on gs n G /\ factors_type.
+  { exact (andEL (function_on gs n G /\ factors_type) cls_eq_type Hgs_props). }
+  claim Hfactors : factors_type.
+  { exact (andER (function_on gs n G) factors_type Hfn_factors). }
+  (** Key: each gs(i) = e **)
+  claim Hgs_all_e : forall i:set, i :e n -> apply_fun gs i = e.
+  { let i. assume Hi : i :e n.
+    apply (Hfactors i Hi).
+    - assume Hfrom_U : exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls.
+      apply Hfrom_U. let ucls. assume Hucls_data.
+      claim Hucls_in : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
+      { exact (andEL
+          (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+          (apply_fun gs i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls)
+          Hucls_data). }
+      claim Hgs_eq : apply_fun gs i =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls.
+      { exact (andER
+          (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+          (apply_fun gs i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls)
+          Hucls_data). }
+      rewrite Hgs_eq. exact (Hi_triv ucls Hucls_in).
+    - assume Hfrom_V : exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls.
+      apply Hfrom_V. let vcls. assume Hvcls_data.
+      claim Hvcls_in : vcls :e fundamental_group V (subspace_topology X Tx V) x0.
+      { exact (andEL
+          (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+          (apply_fun gs i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)
+          Hvcls_data). }
+      claim Hgs_eq : apply_fun gs i =
+        apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+          (graph V (fun x:set => x))) vcls.
+      { exact (andER
+          (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+          (apply_fun gs i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)
+          Hvcls_data). }
+      rewrite Hgs_eq. exact (Hj_triv vcls Hvcls_in). }
+  (** Product of identities is identity by induction **)
+  claim Hprod_e : nat_primrec e (fun k r => apply_fun mult (r, apply_fun gs k)) n = e.
+  { apply (nat_ind (fun m => m :e omega -> (forall i:set, i :e m -> apply_fun gs i = e) ->
+      nat_primrec e (fun k r => apply_fun mult (r, apply_fun gs k)) m = e)).
+    - assume _ _. exact (nat_primrec_0 e (fun k r => apply_fun mult (r, apply_fun gs k))).
+    - let m. assume Hm : nat_p m.
+      assume IH : m :e omega -> (forall i:set, i :e m -> apply_fun gs i = e) ->
+        nat_primrec e (fun k r => apply_fun mult (r, apply_fun gs k)) m = e.
+      assume Hsom : ordsucc m :e omega.
+      assume Hall : forall i:set, i :e ordsucc m -> apply_fun gs i = e.
+      rewrite (nat_primrec_S e (fun k r => apply_fun mult (r, apply_fun gs k)) m Hm).
+      claim Hm_omega : m :e omega. { exact (nat_p_omega m Hm). }
+      claim HallM : forall i:set, i :e m -> apply_fun gs i = e.
+      { let i. assume Hi : i :e m. exact (Hall i (ordsuccI1 m i Hi)). }
+      claim Hprev : nat_primrec e (fun k r => apply_fun mult (r, apply_fun gs k)) m = e.
+      { exact (IH Hm_omega HallM). }
+      rewrite Hprev.
+      claim Hgsm : apply_fun gs m = e.
+      { exact (Hall m (ordsuccI2 m)). }
+      rewrite Hgsm.
+      exact (Hrid e He_in_G).
+    - exact (omega_nat_p n Hn).
+    - exact Hn.
+    - exact Hgs_all_e. }
+  rewrite Hcls_eq. exact Hprod_e. }
+apply (set_ext G (Sing e)).
+- let cls. assume Hcls : cls :e G.
+  rewrite (Hall_eq_e cls Hcls). exact (SingI e).
+- let cls. assume Hcls : cls :e Sing e.
+  rewrite (SingE e cls Hcls). exact He_in_G.
 Admitted.
+(** Proof complete modulo thm59_1_open_cover_generates_pi1 (which depends on admitted core) **)
 
 (** Helper: jordan separation - S^2-C disconnected when C simple closed curve **)
 (** Proof (Thm 61.3): by contradiction using SVK + nulhomotopy + pi1(S2-2pts) nontrivial **)
