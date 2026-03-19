@@ -283369,7 +283369,9 @@ Lemma euclidean_space_locally_connected : forall n:set,
   n :e omega -> locally_connected (euclidean_space n) (euclidean_topology n).
 let n. assume Hn : n :e omega.
 apply (nat_ind (fun n => locally_connected (euclidean_space n) (euclidean_topology n))).
-- (** Base case: n = 0. euclidean_space 0 = {Empty} is a single-point space **)
+- (** Base case: n = 0. euclidean_space 0 = {Empty} is locally connected **)
+  (** Singleton space: every open set containing the point is the whole space, **)
+  (** which is connected. Proof needs topology_on + local connectivity. **)
   admit.
 - (** Inductive step: k -> ordsucc k **)
   let k. assume Hnat_k : nat_p k.
