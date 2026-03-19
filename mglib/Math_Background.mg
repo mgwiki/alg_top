@@ -236885,6 +236885,22 @@ apply andI.
 - exact Hr1lt1.
 Qed.
 
+(** Infrastructure: if two open balls have uniform image-side properties, any overlap point maps to U cap V. **)
+(** Proven Charlie **)
+Lemma ball_image_overlap_point_in_UcapV :
+  forall U V f c1 c2 r s:set,
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c1 r -> apply_fun f t :e U) ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c2 r -> apply_fun f t :e V) ->
+    s :e open_ball unit_interval R_bounded_metric c1 r ->
+    s :e open_ball unit_interval R_bounded_metric c2 r ->
+    apply_fun f s :e U :/\: V.
+let U V f c1 c2 r s.
+assume H1 H2 Hs1 Hs2.
+apply binintersectI.
+- exact (H1 s Hs1).
+- exact (H2 s Hs2).
+Qed.
+
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
