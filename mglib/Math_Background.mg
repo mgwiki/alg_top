@@ -1,4 +1,4 @@
-(** Balance Alice 9024 **)
+(** Balance Alice 9004 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
 (** Balance Dave 2433 **)
@@ -283080,8 +283080,12 @@ claim Hdomain_closed : closed_in (setprod X unit_interval) TXI domain_ext.
 (** Step 7: Urysohn: phi = 0 on A, phi = 1 on X-W **)
 (** Step 8: g(x) = G(x, phi(x)) maps to Y, extends f **)
 (** Step 9: H(x,t) = G(x, (1-t)phi(x)+t) is nulhomotopy **)
-(** Each remaining step requires substantial continuity infrastructure **)
-(** The key axioms needed: tube_lemma, Urysohn_lemma, Tietze_extension_Rn (QED) **)
+(** Step 4: Build extended F on domain_ext and apply Tietze **)
+(** Need: closed pasting lemma (glue F0 on AxI and const y0 on Xx{1}) **)
+(** Then Tietze_extension_Rn extends to G: XxI -> Rn **)
+(** Steps 5-9: tube lemma, Urysohn, phi construction **)
+(** All axioms available: tube_lemma, Urysohn_lemma, Tietze_extension_Rn (QED) **)
+(** Missing: closed pasting lemma (Munkres Thm 18.3) **)
 admit.
 Admitted.
 
@@ -284220,6 +284224,28 @@ apply (SNoLt_trichotomy_or x 1 HxSNo SNo_1).
   exact (SNoLt_irref 1 H1lt1 (x = 1 \/ x = minus_SNo 1)).
 Qed.
 
+(** Helper: upper semicircle is connected **)
+(** Proof: S1_upper = image of [0, 1/2] under covering_map_R_S1. **)
+(** [0, 1/2] is connected (interval in [0,1]). covering_map continuous. **)
+(** continuous_image_connected gives the result. **)
+(** Bounty 10 **)
+Lemma S1_upper_connected :
+  connected_space S1_upper (subspace_topology S1 S1_topology S1_upper).
+(** S1_upper = {(cos 2pi t, sin 2pi t) | t in [0, 1/2]} **)
+(** = image of unit_interval_left_half under covering_map_R_S1 **)
+(** unit_interval_left_half is connected (interval [0, 1/2] in [0,1]) **)
+(** covering_map restricted to left_half is continuous **)
+(** Image of connected under continuous is connected **)
+admit.
+Admitted.
+
+(** Helper: lower semicircle is connected **)
+(** Bounty 10 **)
+Lemma S1_lower_connected :
+  connected_space S1_lower (subspace_topology S1 S1_topology S1_lower).
+admit.
+Admitted.
+
 (** Helper: S^1 = upper union lower, upper cap lower = {(1,0), (-1,0)} **)
 (** Upper and lower are both arcs (homeomorphic to [-1,1] via x-projection) **)
 (** Upper is connected (it's path-connected via the circle arc) **)
@@ -284407,9 +284433,9 @@ apply and9I.
   claim H1lt1 : SNoLt 1 1. { prove SNoLt 1 1. rewrite H1eq at 1. exact Hm1lt1. }
   exact (SNoLt_irref 1 H1lt1).
 - (** upper semicircle connected **)
-  admit.
+  exact S1_upper_connected.
 - (** lower semicircle connected **)
-  admit.
+  exact S1_lower_connected.
 - (** S1 minus upper is open in S1 **)
   (** Approach: S1-upper = preimage of open_ray_lower R 0 under y-projection **)
   (** y-projection restricted to S1 is continuous, open_ray_lower is open -> preimage open **)
