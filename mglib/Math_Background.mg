@@ -282625,9 +282625,11 @@ apply andI.
       { exact (composition_continuous A TA R2 R2_topology R2 R2_topology g translate_p Hg_to_R2 Htrans). }
       (** Step 4: k_comp agrees with k_fun pointwise **)
       claim Hk_fn : function_on k_fun A R2.
-      { admit. }
+      { (** k_fun(a) = r2sub(g(a), p) which is in R2 since g(a), p in R2 **)
+        admit. }
       claim Hpointwise : forall a:set, a :e A -> apply_fun k_comp a = apply_fun k_fun a.
-      { admit. }
+      { (** compose_fun_apply + apply_fun_graph gives pointwise equality **)
+        admit. }
       exact (continuous_map_congr_on A TA R2 R2_topology k_comp k_fun Hkcomp Hk_fn Hpointwise). }
     (** k_fun maps into R2m0: g(x) - p <> (0,0) since g(x) <> p **)
     (** (p not in image(g) by hypothesis) **)
