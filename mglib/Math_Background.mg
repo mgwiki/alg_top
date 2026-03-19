@@ -203533,7 +203533,6 @@ Admitted.
 (** LATEX VERSION: If h: S^1 -> S^1 is continuous and antipode-preserving, then h is not nulhomotopic. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 467 **)
-(** Lock Charlie 1773939455 **)
 Theorem thm57_1_antipode_preserving_not_nulhomotopic : forall h:set,
   antipode_preserving_S1 h ->
   ~(nulhomotopic S1 S1_topology S1 S1_topology h).
@@ -284995,9 +284994,171 @@ exact (homeomorphism_preserves_connected
   g Hg_home closed_interval_minus1_1_connected).
 Qed.
 
+(** Helper: S^1 = S1_upper union S1_lower **)
+(** Proven Dave **)
+Lemma S1_upper_lower_union : S1 = S1_upper :\/: S1_lower.
+apply set_ext.
++ (** S1 c= upper union lower **)
+  let p. assume Hp : p :e S1.
+  claim HpR2 : p :e setprod R R.
+  { exact (SepE1 (setprod R R)
+      (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p Hp). }
+  claim Hp1R : p 1 :e R.
+  { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+  claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+  claim Hor : SNoLt 0 (p 1) \/ SNoLe (p 1) 0.
+  { exact (SNoLtLe_or 0 (p 1) SNo_0 Hp1SNo). }
+  apply Hor.
+  { assume H0lt : SNoLt 0 (p 1).
+    apply (binunionI1 S1_upper S1_lower p).
+    prove p :e {q :e S1 | ~(SNoLt (q 1) 0)}.
+    exact (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) p Hp
+      (fun Hlt:SNoLt (p 1) 0 =>
+        SNoLt_irref (p 1) (SNoLt_tra (p 1) 0 (p 1) Hp1SNo SNo_0 Hp1SNo Hlt H0lt))). }
+  { assume Hle : SNoLe (p 1) 0.
+    apply (binunionI2 S1_upper S1_lower p).
+    prove p :e {q :e S1 | ~(SNoLt 0 (q 1))}.
+    exact (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) p Hp
+      (fun Hlt:SNoLt 0 (p 1) =>
+        SNoLt_irref (p 1) (SNoLeLt_tra (p 1) 0 (p 1) Hp1SNo SNo_0 Hp1SNo Hle Hlt))). }
++ (** upper union lower c= S1 **)
+  let p. assume Hp : p :e S1_upper :\/: S1_lower.
+  apply (binunionE S1_upper S1_lower p Hp).
+  { assume Hu : p :e S1_upper. exact (SepE1 S1 (fun q:set => ~(SNoLt (q 1) 0)) p Hu). }
+  { assume Hl : p :e S1_lower. exact (SepE1 S1 (fun q:set => ~(SNoLt 0 (q 1))) p Hl). }
+Qed.
+
+(** Helper: S1_upper intersect S1_lower = {(1,0), (-1,0)} **)
+(** Proven Dave **)
+Lemma S1_upper_lower_intersect : S1_upper :/\: S1_lower = UPair S1_basepoint S1_left_point.
+apply set_ext.
++ (** c=: upper cap lower c= UPair bp left **)
+  let p. assume Hp : p :e S1_upper :/\: S1_lower.
+  claim HpU : p :e S1_upper. { exact (binintersectE1 S1_upper S1_lower p Hp). }
+  claim HpL : p :e S1_lower. { exact (binintersectE2 S1_upper S1_lower p Hp). }
+  claim HpS1 : p :e S1. { exact (SepE1 S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpU). }
+  claim Hnneg : ~(SNoLt (p 1) 0). { exact (SepE2 S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpU). }
+  claim Hnpos : ~(SNoLt 0 (p 1)). { exact (SepE2 S1 (fun q:set => ~(SNoLt 0 (q 1))) p HpL). }
+  claim HpR2 : p :e setprod R R.
+  { exact (SepE1 (setprod R R)
+      (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+  claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+  claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+  claim Hp0SNo : SNo (p 0). { exact (real_SNo (p 0) Hp0R). }
+  claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+  claim Hp1eq0 : p 1 = 0.
+  { apply (SNoLt_trichotomy_or_impred (p 1) 0 Hp1SNo SNo_0).
+    - assume H : SNoLt (p 1) 0. exact (Hnneg H (p 1 = 0)).
+    - assume H : p 1 = 0. exact H.
+    - assume H : SNoLt 0 (p 1). exact (Hnpos H (p 1 = 0)). }
+  claim Hnorm : add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1.
+  { exact (SepE2 (setprod R R)
+      (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+  claim Hp1sq0 : mul_SNo (p 1) (p 1) = 0.
+  { prove mul_SNo (p 1) (p 1) = 0.
+    rewrite Hp1eq0.
+    exact (mul_SNo_zeroL 0 SNo_0). }
+  claim Hp0sq : mul_SNo (p 0) (p 0) = 1.
+  { claim H1_plus_p1sq : add_SNo 1 (mul_SNo (p 1) (p 1)) = 1.
+    { prove add_SNo 1 (mul_SNo (p 1) (p 1)) = 1.
+      rewrite Hp1sq0. exact (add_SNo_0R 1 SNo_1). }
+    claim Hnorm_eq : add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) =
+      add_SNo 1 (mul_SNo (p 1) (p 1)).
+    { rewrite H1_plus_p1sq. exact Hnorm. }
+    exact (add_SNo_cancel_R
+      (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1))
+      1
+      (SNo_mul_SNo (p 0) (p 0) Hp0SNo Hp0SNo)
+      (SNo_mul_SNo (p 1) (p 1) Hp1SNo Hp1SNo)
+      SNo_1
+      Hnorm_eq). }
+  apply (SNo_sq_eq_1_cases (p 0) Hp0SNo Hp0sq).
+  - assume Hp0eq1 : p 0 = 1.
+    claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
+    claim Hpeq : p = S1_basepoint.
+    { rewrite Hpeta. rewrite Hp0eq1. rewrite Hp1eq0. reflexivity. }
+    rewrite Hpeq. exact (UPairI1 S1_basepoint S1_left_point).
+  - assume Hp0eqm1 : p 0 = minus_SNo 1.
+    claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
+    claim Hpeq : p = S1_left_point.
+    { rewrite Hpeta. rewrite Hp0eqm1. rewrite Hp1eq0. reflexivity. }
+    rewrite Hpeq. exact (UPairI2 S1_basepoint S1_left_point).
++ (** c=: UPair bp left c= upper cap lower **)
+  let p. assume Hp : p :e UPair S1_basepoint S1_left_point.
+  claim Hbp_y0 : S1_basepoint 1 = 0.
+  { prove (1, 0) 1 = 0. exact (tuple_2_1_eq 1 0). }
+  claim Hleft_y0 : S1_left_point 1 = 0.
+  { prove (minus_SNo 1, 0) 1 = 0. exact (tuple_2_1_eq (minus_SNo 1) 0). }
+  claim HbpS1 : S1_basepoint :e S1. { exact S1_basepoint_in_S1_early. }
+  claim HleftS1 : S1_left_point :e S1.
+  { prove (minus_SNo 1, 0) :e {p :e setprod R R |
+        add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1}.
+    apply SepI.
+    + exact (tuple_2_setprod_by_pair_Sigma R R (minus_SNo 1) 0 (real_minus_SNo 1 real_1) real_0).
+    + prove add_SNo (mul_SNo ((minus_SNo 1, 0) 0) ((minus_SNo 1, 0) 0))
+                    (mul_SNo ((minus_SNo 1, 0) 1) ((minus_SNo 1, 0) 1)) = 1.
+      rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+      rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
+      rewrite (mul_SNo_oneR 1 SNo_1).
+      rewrite (mul_SNo_zeroL 0 SNo_0).
+      rewrite (add_SNo_0R 1 SNo_1).
+      exact (eq_refl 1). }
+  apply (UPairE p S1_basepoint S1_left_point Hp).
+  * assume Hpeq : p = S1_basepoint. rewrite Hpeq.
+    claim Hbp_nneg : ~(SNoLt (S1_basepoint 1) 0).
+    { prove ~(SNoLt (S1_basepoint 1) 0). rewrite Hbp_y0. exact (SNoLt_irref 0). }
+    claim Hbp_npos : ~(SNoLt 0 (S1_basepoint 1)).
+    { prove ~(SNoLt 0 (S1_basepoint 1)). rewrite Hbp_y0. exact (SNoLt_irref 0). }
+    exact (binintersectI S1_upper S1_lower S1_basepoint
+      (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) S1_basepoint HbpS1 Hbp_nneg)
+      (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) S1_basepoint HbpS1 Hbp_npos)).
+  * assume Hpeq : p = S1_left_point. rewrite Hpeq.
+    claim Hleft_nneg : ~(SNoLt (S1_left_point 1) 0).
+    { prove ~(SNoLt (S1_left_point 1) 0). rewrite Hleft_y0. exact (SNoLt_irref 0). }
+    claim Hleft_npos : ~(SNoLt 0 (S1_left_point 1)).
+    { prove ~(SNoLt 0 (S1_left_point 1)). rewrite Hleft_y0. exact (SNoLt_irref 0). }
+    exact (binintersectI S1_upper S1_lower S1_left_point
+      (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) S1_left_point HleftS1 Hleft_nneg)
+      (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) S1_left_point HleftS1 Hleft_npos)).
+Qed.
+
+(** Helper: (-1,0) is in S1 **)
+(** Proven Dave **)
+Lemma S1_left_point_in_S1 : S1_left_point :e S1.
+prove (minus_SNo 1, 0) :e S1.
+prove (minus_SNo 1, 0) :e {p :e setprod R R |
+    add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1}.
+apply SepI.
++ (** (-1,0) in R x R **)
+  exact (tuple_2_setprod_by_pair_Sigma R R (minus_SNo 1) 0 (real_minus_SNo 1 real_1) real_0).
++ (** (-1)^2 + 0^2 = 1 **)
+  prove add_SNo (mul_SNo ((minus_SNo 1, 0) 0) ((minus_SNo 1, 0) 0))
+                (mul_SNo ((minus_SNo 1, 0) 1) ((minus_SNo 1, 0) 1)) = 1.
+  rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+  rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
+  rewrite (mul_SNo_oneR 1 SNo_1).
+  rewrite (mul_SNo_zeroL 0 SNo_0).
+  rewrite (add_SNo_0R 1 SNo_1).
+  exact (eq_refl 1).
+Qed.
+
+(** Helper: (1,0) is not equal to (-1,0) **)
+(** Proven Dave **)
+Lemma S1_basepoint_neq_left_point : S1_basepoint <> S1_left_point.
+prove (1, 0) <> (minus_SNo 1, 0).
+assume Heq : (1, 0) = (minus_SNo 1, 0).
+claim H1eq : 1 = minus_SNo 1. { exact (tuple_2_0_congr 1 0 (minus_SNo 1) 0 Heq). }
+claim Hm1lt1 : SNoLt (minus_SNo 1) 1.
+{ exact (SNoLt_tra (minus_SNo 1) 0 1 (SNo_minus_SNo 1 SNo_1) SNo_0 SNo_1 minus_1_lt_0 SNoLt_0_1). }
+claim H1lt1 : SNoLt 1 1. { prove SNoLt 1 1. rewrite H1eq at 1. exact Hm1lt1. }
+exact (SNoLt_irref 1 H1lt1).
+Qed.
+
 (** Helper: S^1 = upper union lower, upper cap lower = {(1,0), (-1,0)} **)
 (** Upper and lower are both arcs (homeomorphic to [-1,1] via x-projection) **)
 (** Upper is connected (it's path-connected via the circle arc) **)
+(** Proven Dave **)
 Lemma S1_semicircle_decomposition :
   S1 = S1_upper :\/: S1_lower /\
   S1_upper :/\: S1_lower = UPair S1_basepoint S1_left_point /\
@@ -285008,307 +285169,19 @@ Lemma S1_semicircle_decomposition :
   connected_space S1_lower (subspace_topology S1 S1_topology S1_lower) /\
   S1 :\: S1_upper :e S1_topology /\
   S1 :\: S1_lower :e S1_topology.
-apply and9I.
-- (** S1 = upper union lower: every point has y >= 0 or y <= 0 **)
-  apply set_ext.
-  + (** S1 c= upper union lower **)
-    let p. assume Hp : p :e S1.
-    (** p 1 in R, hence SNo **)
-    claim HpR2 : p :e setprod R R.
-    { exact (SepE1 (setprod R R)
-        (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p Hp). }
-    claim Hp1R : p 1 :e R.
-    { exact (ap1_Sigma R (fun _ => R) p HpR2). }
-    claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
-    (** Either 0 < p1 (then upper) or p1 <= 0 (then lower) **)
-    claim Hor : SNoLt 0 (p 1) \/ SNoLe (p 1) 0.
-    { exact (SNoLtLe_or 0 (p 1) SNo_0 Hp1SNo). }
-    apply Hor.
-    { (** 0 < p1 implies p in upper **)
-      assume H0lt : SNoLt 0 (p 1).
-      apply (binunionI1 S1_upper S1_lower p).
-      prove p :e {q :e S1 | ~(SNoLt (q 1) 0)}.
-      exact (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) p Hp
-        (fun Hlt:SNoLt (p 1) 0 =>
-          SNoLt_irref (p 1) (SNoLt_tra (p 1) 0 (p 1) Hp1SNo SNo_0 Hp1SNo Hlt H0lt))). }
-    { (** p1 <= 0 implies p in lower **)
-      assume Hle : SNoLe (p 1) 0.
-      apply (binunionI2 S1_upper S1_lower p).
-      prove p :e {q :e S1 | ~(SNoLt 0 (q 1))}.
-      exact (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) p Hp
-        (fun Hlt:SNoLt 0 (p 1) =>
-          SNoLt_irref (p 1) (SNoLeLt_tra (p 1) 0 (p 1) Hp1SNo SNo_0 Hp1SNo Hle Hlt))). }
-  + (** upper union lower c= S1 **)
-    let p. assume Hp : p :e S1_upper :\/: S1_lower.
-    apply (binunionE S1_upper S1_lower p Hp).
-    { assume Hu : p :e S1_upper. exact (SepE1 S1 (fun q:set => ~(SNoLt (q 1) 0)) p Hu). }
-    { assume Hl : p :e S1_lower. exact (SepE1 S1 (fun q:set => ~(SNoLt 0 (q 1))) p Hl). }
-- (** upper cap lower = {(1,0), (-1,0)} **)
-  (** Forward: p in both means y=0 (by trichotomy), then x^2=1, then x=1 or x=-1 **)
-  (** Backward: bp and left satisfy both y>=0 and y<=0 since y=0 **)
-  (** Key tools: SNoLt_trichotomy_or, mul_SNo_Lt1_pos_Lt, pos_mul_SNo_Lt', SNoLt_irref **)
-  (** Backward direction is straightforward; forward needs careful trichotomy + rewrite handling **)
-  apply set_ext.
-  + (** c=: upper cap lower c= UPair bp left **)
-    let p. assume Hp : p :e S1_upper :/\: S1_lower.
-    claim HpU : p :e S1_upper. { exact (binintersectE1 S1_upper S1_lower p Hp). }
-    claim HpL : p :e S1_lower. { exact (binintersectE2 S1_upper S1_lower p Hp). }
-    claim HpS1 : p :e S1. { exact (SepE1 S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpU). }
-    claim Hnneg : ~(SNoLt (p 1) 0). { exact (SepE2 S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpU). }
-    claim Hnpos : ~(SNoLt 0 (p 1)). { exact (SepE2 S1 (fun q:set => ~(SNoLt 0 (q 1))) p HpL). }
-    claim HpR2 : p :e setprod R R.
-    { exact (SepE1 (setprod R R)
-        (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
-    claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
-    claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
-    claim Hp0SNo : SNo (p 0). { exact (real_SNo (p 0) Hp0R). }
-    claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
-    (** p 1 = 0 by trichotomy **)
-    claim Hp1eq0 : p 1 = 0.
-    { apply (SNoLt_trichotomy_or_impred (p 1) 0 Hp1SNo SNo_0).
-      - assume H : SNoLt (p 1) 0. exact (Hnneg H (p 1 = 0)).
-      - assume H : p 1 = 0. exact H.
-      - assume H : SNoLt 0 (p 1). exact (Hnpos H (p 1 = 0)). }
-    (** p0^2 = 1 **)
-    claim Hnorm : add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1.
-    { exact (SepE2 (setprod R R)
-        (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
-    claim Hp1sq0 : mul_SNo (p 1) (p 1) = 0.
-    { prove mul_SNo (p 1) (p 1) = 0.
-      rewrite Hp1eq0.
-      exact (mul_SNo_zeroL 0 SNo_0). }
-    claim Hp0sq : mul_SNo (p 0) (p 0) = 1.
-    { (** From p0^2 + p1^2 = 1 and p1^2 = 0: need p0^2 + p1^2 = 1 + p1^2 **)
-      (** Then cancel_R gives p0^2 = 1 **)
-      claim H1_plus_p1sq : add_SNo 1 (mul_SNo (p 1) (p 1)) = 1.
-      { prove add_SNo 1 (mul_SNo (p 1) (p 1)) = 1.
-        rewrite Hp1sq0. exact (add_SNo_0R 1 SNo_1). }
-      claim Hnorm_eq : add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) =
-        add_SNo 1 (mul_SNo (p 1) (p 1)).
-      { rewrite H1_plus_p1sq. exact Hnorm. }
-      exact (add_SNo_cancel_R
-        (mul_SNo (p 0) (p 0))
-        (mul_SNo (p 1) (p 1))
-        1
-        (SNo_mul_SNo (p 0) (p 0) Hp0SNo Hp0SNo)
-        (SNo_mul_SNo (p 1) (p 1) Hp1SNo Hp1SNo)
-        SNo_1
-        Hnorm_eq). }
-    (** By SNo_sq_eq_1_cases: p 0 = 1 or p 0 = -1 **)
-    apply (SNo_sq_eq_1_cases (p 0) Hp0SNo Hp0sq).
-    - assume Hp0eq1 : p 0 = 1.
-      claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
-      claim Hpeq : p = S1_basepoint.
-      { rewrite Hpeta. rewrite Hp0eq1. rewrite Hp1eq0. reflexivity. }
-      rewrite Hpeq. exact (UPairI1 S1_basepoint S1_left_point).
-    - assume Hp0eqm1 : p 0 = minus_SNo 1.
-      claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
-      claim Hpeq : p = S1_left_point.
-      { rewrite Hpeta. rewrite Hp0eqm1. rewrite Hp1eq0. reflexivity. }
-      rewrite Hpeq. exact (UPairI2 S1_basepoint S1_left_point).
-  + (** c=: UPair bp left c= upper cap lower **)
-    let p. assume Hp : p :e UPair S1_basepoint S1_left_point.
-    (** S1_basepoint = (1,0) and S1_left_point = (-1,0). Both have y = 0. **)
-    (** y = 0 means ¬(y<0) and ¬(0<y), both by SNoLt_irref 0. **)
-    claim Hbp_y0 : S1_basepoint 1 = 0.
-    { prove (1, 0) 1 = 0. exact (tuple_2_1_eq 1 0). }
-    claim Hleft_y0 : S1_left_point 1 = 0.
-    { prove (minus_SNo 1, 0) 1 = 0. exact (tuple_2_1_eq (minus_SNo 1) 0). }
-    claim HbpS1 : S1_basepoint :e S1. { exact S1_basepoint_in_S1_early. }
-    claim HleftS1 : S1_left_point :e S1.
-    { prove (minus_SNo 1, 0) :e {p :e setprod R R |
-        add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1}.
-      apply SepI.
-      + exact (tuple_2_setprod_by_pair_Sigma R R (minus_SNo 1) 0 (real_minus_SNo 1 real_1) real_0).
-      + prove add_SNo (mul_SNo ((minus_SNo 1, 0) 0) ((minus_SNo 1, 0) 0))
-                      (mul_SNo ((minus_SNo 1, 0) 1) ((minus_SNo 1, 0) 1)) = 1.
-        rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
-        rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
-        rewrite (mul_SNo_oneR 1 SNo_1).
-        rewrite (mul_SNo_zeroL 0 SNo_0).
-        rewrite (add_SNo_0R 1 SNo_1).
-        exact (eq_refl 1). }
-    apply (UPairE p S1_basepoint S1_left_point Hp).
-    * assume Hpeq : p = S1_basepoint. rewrite Hpeq.
-      claim Hbp_nneg : ~(SNoLt (S1_basepoint 1) 0).
-      { prove ~(SNoLt (S1_basepoint 1) 0). rewrite Hbp_y0. exact (SNoLt_irref 0). }
-      claim Hbp_npos : ~(SNoLt 0 (S1_basepoint 1)).
-      { prove ~(SNoLt 0 (S1_basepoint 1)). rewrite Hbp_y0. exact (SNoLt_irref 0). }
-      exact (binintersectI S1_upper S1_lower S1_basepoint
-        (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) S1_basepoint HbpS1 Hbp_nneg)
-        (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) S1_basepoint HbpS1 Hbp_npos)).
-    * assume Hpeq : p = S1_left_point. rewrite Hpeq.
-      claim Hleft_nneg : ~(SNoLt (S1_left_point 1) 0).
-      { prove ~(SNoLt (S1_left_point 1) 0). rewrite Hleft_y0. exact (SNoLt_irref 0). }
-      claim Hleft_npos : ~(SNoLt 0 (S1_left_point 1)).
-      { prove ~(SNoLt 0 (S1_left_point 1)). rewrite Hleft_y0. exact (SNoLt_irref 0). }
-      exact (binintersectI S1_upper S1_lower S1_left_point
-        (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) S1_left_point HleftS1 Hleft_nneg)
-        (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) S1_left_point HleftS1 Hleft_npos)).
-- (** (1,0) in S1 **)
-  exact S1_basepoint_in_S1_early.
-- (** (-1,0) in S1: antipode of (1,0) **)
-  prove S1_left_point :e S1.
-  prove (minus_SNo 1, 0) :e S1.
-  claim Hanti : (minus_SNo (S1_basepoint 0), minus_SNo (S1_basepoint 1)) :e S1.
-  { exact (s55_S1_antipode_in_S1 S1_basepoint S1_basepoint_in_S1_early). }
-  (** Goal: (minus_SNo 1, 0) in S1 **)
-  (** Hanti: (minus_SNo (S1_basepoint 0), minus_SNo (S1_basepoint 1)) in S1 **)
-  (** S1_basepoint = (1,0), so S1_basepoint 0 = 1, S1_basepoint 1 = 0 **)
-  (** Prove directly: (-1)^2 + 0^2 = 1 **)
-  prove (minus_SNo 1, 0) :e S1.
-  prove (minus_SNo 1, 0) :e {p :e setprod R R |
-    add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1}.
-  apply SepI.
-  + (** (-1,0) in R x R **)
-    exact (tuple_2_setprod_by_pair_Sigma R R (minus_SNo 1) 0 (real_minus_SNo 1 real_1) real_0).
-  + (** (-1)^2 + 0^2 = 1 **)
-    prove add_SNo (mul_SNo ((minus_SNo 1, 0) 0) ((minus_SNo 1, 0) 0))
-                  (mul_SNo ((minus_SNo 1, 0) 1) ((minus_SNo 1, 0) 1)) = 1.
-    rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
-    (** Goal: add_SNo ((-1).(-1)) (0.0) = 1 **)
-    rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
-    rewrite (mul_SNo_oneR 1 SNo_1).
-    rewrite (mul_SNo_zeroL 0 SNo_0).
-    rewrite (add_SNo_0R 1 SNo_1).
-    exact (eq_refl 1).
-- (** (1,0) <> (-1,0): first coordinates differ since 1 > 0 > -1 **)
-  prove S1_basepoint <> S1_left_point.
-  prove (1, 0) <> (minus_SNo 1, 0).
-  assume Heq : (1, 0) = (minus_SNo 1, 0).
-  claim H1eq : 1 = minus_SNo 1. { exact (tuple_2_0_congr 1 0 (minus_SNo 1) 0 Heq). }
-  claim Hm1lt1 : SNoLt (minus_SNo 1) 1.
-  { exact (SNoLt_tra (minus_SNo 1) 0 1 (SNo_minus_SNo 1 SNo_1) SNo_0 SNo_1 minus_1_lt_0 SNoLt_0_1). }
-  claim H1lt1 : SNoLt 1 1. { prove SNoLt 1 1. rewrite H1eq at 1. exact Hm1lt1. }
-  exact (SNoLt_irref 1 H1lt1).
-- (** upper semicircle connected **)
-  exact S1_upper_connected.
-- (** lower semicircle connected **)
-  exact S1_lower_connected.
-- (** S1 minus upper is open in S1 **)
-  (** Approach: S1-upper = preimage of open_ray_lower R 0 under y-projection **)
-  (** y-projection restricted to S1 is continuous, open_ray_lower is open -> preimage open **)
-  prove S1 :\: S1_upper :e S1_topology.
-  prove S1 :\: S1_upper :e subspace_topology (setprod R R) R2_topology S1.
-  (** The key open set in R2: rectangle_set R (open_ray_lower R 0) **)
-  (** This is R x {y | y < 0}, open in R2 **)
-  set Vopen := rectangle_set R (open_ray_lower R 0).
-  claim HVopen_in_R2 : Vopen :e R2_topology.
-  { claim HtopR : topology_on R R_standard_topology. { exact R_standard_topology_is_topology. }
-    claim HRopen : R :e R_standard_topology.
-    { apply (and5E
-        (R_standard_topology c= Power R)
-        (Empty :e R_standard_topology)
-        (R :e R_standard_topology)
-        (forall UFam :e Power R_standard_topology, Union UFam :e R_standard_topology)
-        (forall U :e R_standard_topology, forall V :e R_standard_topology, U :/\: V :e R_standard_topology)
-        HtopR). assume _ _ H _ _. exact H. }
-    exact (rectangle_set_open_in_product_topology R R_standard_topology R R_standard_topology
-      R (open_ray_lower R 0) HtopR HtopR HRopen
-      (open_ray_lower_in_R_standard_topology 0 real_0)). }
-  (** S1-upper = Vopen cap S1 **)
-  (** For this we need: p in S1, p not in upper iff p in Vopen **)
-  (** This requires SNoLt(p1, 0) <-> order_rel R p1 0 <-> p in Vopen **)
-  (** The formal connection is complex; admit the set equality for now **)
-  claim Heq : S1 :\: S1_upper = Vopen :/\: S1.
-  { apply set_ext.
-    - let p. assume Hp : p :e S1 :\: S1_upper.
-      claim HpS1 : p :e S1. { exact (setminusE1 S1 S1_upper p Hp). }
-      claim HpnU : p /:e S1_upper. { exact (setminusE2 S1 S1_upper p Hp). }
-      claim HpR2 : p :e setprod R R.
-      { exact (SepE1 (setprod R R)
-          (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
-      claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
-      claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
-      claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
-      claim Hp1lt0 : SNoLt (p 1) 0.
-      { apply (dneg (SNoLt (p 1) 0)).
-        assume Hnneg : ~(SNoLt (p 1) 0).
-        exact (HpnU (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpS1 Hnneg)). }
-      claim Hp1Rlt : Rlt (p 1) 0. { exact (RltI (p 1) 0 Hp1R real_0 Hp1lt0). }
-      claim Hp1_ray : p 1 :e open_ray_lower R 0.
-      { exact (Rlt_in_open_ray_lower (p 1) 0 Hp1R real_0 Hp1Rlt). }
-      apply binintersectI.
-      + prove p :e setprod R (open_ray_lower R 0).
-        claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
-        rewrite Hpeta.
-        exact (tuple_2_setprod_by_pair_Sigma R (open_ray_lower R 0)
-          (p 0) (p 1) Hp0R Hp1_ray).
-      + exact HpS1.
-    - let p. assume Hp : p :e Vopen :/\: S1.
-      claim HpS1 : p :e S1. { exact (binintersectE2 Vopen S1 p Hp). }
-      claim HpV : p :e Vopen. { exact (binintersectE1 Vopen S1 p Hp). }
-      apply setminusI.
-      + exact HpS1.
-      + assume HpU : p :e S1_upper.
-        claim Hnneg : ~(SNoLt (p 1) 0).
-        { exact (SepE2 S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpU). }
-        (** p in setprod R (open_ray_lower R 0) -> p 1 in open_ray_lower R 0 -> Rlt (p 1) 0 **)
-        claim Hp1_ray : p 1 :e open_ray_lower R 0.
-        { exact (ap1_Sigma R (fun _ => open_ray_lower R 0) p HpV). }
-        claim Hp1Rlt : Rlt (p 1) 0. { exact (open_ray_lower_Rlt (p 1) 0 Hp1_ray). }
-        claim Hp1lt0 : SNoLt (p 1) 0. { exact (RltE_lt (p 1) 0 Hp1Rlt). }
-        exact (Hnneg Hp1lt0). }
-  rewrite Heq.
-  exact (subspace_topologyI (setprod R R) R2_topology S1 Vopen HVopen_in_R2).
-- (** S1 minus lower is open in S1: symmetric argument **)
-  prove S1 :\: S1_lower :e S1_topology.
-  prove S1 :\: S1_lower :e subspace_topology (setprod R R) R2_topology S1.
-  set Vopen2 := rectangle_set R (open_ray_upper R 0).
-  claim HVopen2_in_R2 : Vopen2 :e R2_topology.
-  { claim HtopR : topology_on R R_standard_topology. { exact R_standard_topology_is_topology. }
-    claim HRopen : R :e R_standard_topology.
-    { apply (and5E
-        (R_standard_topology c= Power R)
-        (Empty :e R_standard_topology)
-        (R :e R_standard_topology)
-        (forall UFam :e Power R_standard_topology, Union UFam :e R_standard_topology)
-        (forall U :e R_standard_topology, forall V :e R_standard_topology, U :/\: V :e R_standard_topology)
-        HtopR). assume _ _ H _ _. exact H. }
-    exact (rectangle_set_open_in_product_topology R R_standard_topology R R_standard_topology
-      R (open_ray_upper R 0) HtopR HtopR HRopen
-      (open_ray_upper_in_R_standard_topology 0 real_0)). }
-  claim Heq2 : S1 :\: S1_lower = Vopen2 :/\: S1.
-  { apply set_ext.
-    - let p. assume Hp : p :e S1 :\: S1_lower.
-      claim HpS1 : p :e S1. { exact (setminusE1 S1 S1_lower p Hp). }
-      claim HpnL : p /:e S1_lower. { exact (setminusE2 S1 S1_lower p Hp). }
-      claim HpR2 : p :e setprod R R.
-      { exact (SepE1 (setprod R R)
-          (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
-      claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
-      claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
-      claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
-      claim Hp1gt0 : SNoLt 0 (p 1).
-      { apply (dneg (SNoLt 0 (p 1))).
-        assume Hnneg : ~(SNoLt 0 (p 1)).
-        exact (HpnL (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) p HpS1 Hnneg)). }
-      claim Hp1Rlt : Rlt 0 (p 1). { exact (RltI 0 (p 1) real_0 Hp1R Hp1gt0). }
-      claim Hp1_ray : p 1 :e open_ray_upper R 0.
-      { exact (Rlt_in_open_ray_upper (p 1) 0 Hp1R real_0 Hp1Rlt). }
-      claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
-      apply binintersectI.
-      + prove p :e setprod R (open_ray_upper R 0).
-        rewrite Hpeta.
-        exact (tuple_2_setprod_by_pair_Sigma R (open_ray_upper R 0) (p 0) (p 1) Hp0R Hp1_ray).
-      + exact HpS1.
-    - let p. assume Hp : p :e Vopen2 :/\: S1.
-      claim HpS1 : p :e S1. { exact (binintersectE2 Vopen2 S1 p Hp). }
-      claim HpV : p :e Vopen2. { exact (binintersectE1 Vopen2 S1 p Hp). }
-      apply setminusI.
-      + exact HpS1.
-      + assume HpL : p :e S1_lower.
-        claim Hnneg : ~(SNoLt 0 (p 1)).
-        { exact (SepE2 S1 (fun q:set => ~(SNoLt 0 (q 1))) p HpL). }
-        claim Hp1_ray : p 1 :e open_ray_upper R 0.
-        { exact (ap1_Sigma R (fun _ => open_ray_upper R 0) p HpV). }
-        claim Hp1Rlt : Rlt 0 (p 1).
-        { exact (open_ray_upper_Rlt (p 1) 0 Hp1_ray). }
-        claim Hp1gt0 : SNoLt 0 (p 1). { exact (RltE_lt 0 (p 1) Hp1Rlt). }
-        exact (Hnneg Hp1gt0). }
-  rewrite Heq2.
-  exact (subspace_topologyI (setprod R R) R2_topology S1 Vopen2 HVopen2_in_R2).
-Admitted.
+apply andI.
+- apply andI.
+  + apply and7I.
+    * exact S1_upper_lower_union.
+    * exact S1_upper_lower_intersect.
+    * exact S1_basepoint_in_S1_early.
+    * exact S1_left_point_in_S1.
+    * exact S1_basepoint_neq_left_point.
+    * exact S1_upper_connected.
+    * exact S1_lower_connected.
+  + exact S1_upper_complement_open.
+- exact S1_lower_complement_open.
+Qed.
 
 (** Helper: A simple closed curve in S^2 can be decomposed into two arcs **)
 (** meeting only at their endpoints. C = C1 union C2, C1 cap C2 = {p,q}. **)
