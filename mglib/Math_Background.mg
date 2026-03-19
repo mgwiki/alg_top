@@ -283524,8 +283524,201 @@ apply andI.
     (** 5. j_star: pi1(V) -> pi1(X) is trivial **)
     (**    (by jordan_sep_inclusion_trivial on C2) **)
     (** 6. By trivial_inclusions_imply_trivial_pi1: pi1(X) trivial **)
-    (** This chain requires admitted lemmas; encapsulate as single admit **)
-    admit. }
+    set U := Sn 2 :\: C1.
+    set V := Sn 2 :\: C2.
+    (** U c= X: S^2-C1 c= S^2-{p,q} since {p,q} c= C1 **)
+    claim HpC1 : p :e C1.
+    { claim HpC1C2 : p :e C1 :/\: C2.
+      { rewrite Hinter. exact (UPairI1 p q). }
+      exact (binintersectE1 C1 C2 p HpC1C2). }
+    claim HqC1 : q :e C1.
+    { claim HqC1C2 : q :e C1 :/\: C2.
+      { rewrite Hinter. exact (UPairI2 p q). }
+      exact (binintersectE1 C1 C2 q HqC1C2). }
+    claim HpC2 : p :e C2.
+    { claim HpC1C2 : p :e C1 :/\: C2.
+      { rewrite Hinter. exact (UPairI1 p q). }
+      exact (binintersectE2 C1 C2 p HpC1C2). }
+    claim HqC2 : q :e C2.
+    { claim HqC1C2 : q :e C1 :/\: C2.
+      { rewrite Hinter. exact (UPairI2 p q). }
+      exact (binintersectE2 C1 C2 q HqC1C2). }
+    claim HUsub : U c= X.
+    { let x. assume Hx : x :e Sn 2 :\: C1.
+      claim HxS2 : x :e Sn 2. { exact (setminusE1 (Sn 2) C1 x Hx). }
+      claim HxnC1 : x /:e C1. { exact (setminusE2 (Sn 2) C1 x Hx). }
+      claim Hxnp : x /:e Sing p.
+      { assume Hxp : x :e Sing p.
+        exact (HxnC1 (eq_subst_mem x p C1 (SingE p x Hxp) HpC1)). }
+      claim Hxnq : x /:e Sing q.
+      { assume Hxq : x :e Sing q.
+        exact (HxnC1 (eq_subst_mem x q C1 (SingE q x Hxq) HqC1)). }
+      exact (setminusI (Sn 2 :\: Sing p) (Sing q) x
+        (setminusI (Sn 2) (Sing p) x HxS2 Hxnp) Hxnq). }
+    claim HVsub : V c= X.
+    { let x. assume Hx : x :e Sn 2 :\: C2.
+      claim HxS2 : x :e Sn 2. { exact (setminusE1 (Sn 2) C2 x Hx). }
+      claim HxnC2 : x /:e C2. { exact (setminusE2 (Sn 2) C2 x Hx). }
+      claim Hxnp : x /:e Sing p.
+      { assume Hxp : x :e Sing p.
+        exact (HxnC2 (eq_subst_mem x p C2 (SingE p x Hxp) HpC2)). }
+      claim Hxnq : x /:e Sing q.
+      { assume Hxq : x :e Sing q.
+        exact (HxnC2 (eq_subst_mem x q C2 (SingE q x Hxq) HqC2)). }
+      exact (setminusI (Sn 2 :\: Sing p) (Sing q) x
+        (setminusI (Sn 2) (Sing p) x HxS2 Hxnp) Hxnq). }
+    (** U :e Tx: S^2-C1 is open in S^2 and c= X, so it's in subspace topology **)
+    claim HU_in_Tx : U :e Tx.
+    { prove U :e subspace_topology (Sn 2) (Sn_topology 2) X.
+      claim HUeq : U = U :/\: X.
+      { apply set_ext.
+        - let x. assume Hx : x :e U.
+          exact (binintersectI U X x Hx (HUsub x Hx)).
+        - let x. assume Hx : x :e U :/\: X.
+          exact (binintersectE1 U X x Hx). }
+      rewrite HUeq.
+      exact (subspace_topologyI (Sn 2) (Sn_topology 2) X U HC1open). }
+    claim HV_in_Tx : V :e Tx.
+    { prove V :e subspace_topology (Sn 2) (Sn_topology 2) X.
+      claim HVeq : V = V :/\: X.
+      { apply set_ext.
+        - let x. assume Hx : x :e V.
+          exact (binintersectI V X x Hx (HVsub x Hx)).
+        - let x. assume Hx : x :e V :/\: X.
+          exact (binintersectE1 V X x Hx). }
+      rewrite HVeq.
+      exact (subspace_topologyI (Sn 2) (Sn_topology 2) X V HC2open_last). }
+    (** X = U union V **)
+    claim Hcover_UV : X = U :\/: V.
+    { apply set_ext.
+      - (** X c= U union V: for x in X, x not in C1 or x not in C2 **)
+        let x. assume Hx : x :e X.
+        claim HxS2 : x :e Sn 2.
+        { exact (setminusE1 (Sn 2) (Sing p) x (setminusE1 (Sn 2 :\: Sing p) (Sing q) x Hx)). }
+        claim HxnP : x /:e Sing p.
+        { exact (setminusE2 (Sn 2) (Sing p) x (setminusE1 (Sn 2 :\: Sing p) (Sing q) x Hx)). }
+        claim HxnQ : x /:e Sing q.
+        { exact (setminusE2 (Sn 2 :\: Sing p) (Sing q) x Hx). }
+        (** x not in C1 cap C2 = {p,q} **)
+        claim HxnPQ : x /:e C1 :/\: C2.
+        { rewrite Hinter. assume Hx_pq : x :e UPair p q.
+          apply (UPairE x p q Hx_pq).
+          - assume Hxeqp : x = p.
+            exact (HxnP (eq_subst_mem x p (Sing p) Hxeqp (SingI p))).
+          - assume Hxeqq : x = q.
+            exact (HxnQ (eq_subst_mem x q (Sing q) Hxeqq (SingI q))). }
+        (** If x in C1 then x not in C2 (since x not in C1 cap C2) **)
+        apply (xm (x :e C1)).
+        + assume HxC1 : x :e C1.
+          claim HxnC2 : x /:e C2.
+          { assume HxC2 : x :e C2.
+            exact (HxnPQ (binintersectI C1 C2 x HxC1 HxC2)). }
+          exact (binunionI2 U V x (setminusI (Sn 2) C2 x HxS2 HxnC2)).
+        + assume HxnC1 : x /:e C1.
+          exact (binunionI1 U V x (setminusI (Sn 2) C1 x HxS2 HxnC1)).
+      - (** U union V c= X **)
+        let x. assume Hx : x :e U :\/: V.
+        apply (binunionE U V x Hx).
+        + assume HxU : x :e U. exact (HUsub x HxU).
+        + assume HxV : x :e V. exact (HVsub x HxV). }
+    (** x0 in U cap V **)
+    claim Hx0UV : x0 :e U :/\: V.
+    { (** x0 in S^2-C means x0 not in C = C1 union C2, so x0 not in C1 and not in C2 **)
+      claim HxnC : x0 /:e C. { exact (setminusE2 (Sn 2) C x0 Hx0). }
+      claim HxS2 : x0 :e Sn 2. { exact (setminusE1 (Sn 2) C x0 Hx0). }
+      claim HxnC1 : x0 /:e C1.
+      { assume HxC1 : x0 :e C1. exact (HxnC (HC1sub x0 HxC1)). }
+      claim HxnC2 : x0 /:e C2.
+      { assume HxC2 : x0 :e C2. exact (HxnC (HC2sub x0 HxC2)). }
+      exact (binintersectI U V x0
+        (setminusI (Sn 2) C1 x0 HxS2 HxnC1)
+        (setminusI (Sn 2) C2 x0 HxS2 HxnC2)). }
+    (** U cap V = S^2-C: setminus complement union **)
+    claim HUV_eq_SmC : U :/\: V = Sn 2 :\: C.
+    { apply set_ext.
+      - let x. assume Hx : x :e U :/\: V.
+        claim HxS2 : x :e Sn 2.
+        { exact (setminusE1 (Sn 2) C1 x (binintersectE1 U V x Hx)). }
+        claim HxnC : x /:e C.
+        { rewrite Hunion. assume HxC : x :e C1 :\/: C2.
+          apply (binunionE C1 C2 x HxC).
+          - assume HxC1 : x :e C1.
+            exact (setminusE2 (Sn 2) C1 x (binintersectE1 U V x Hx) HxC1).
+          - assume HxC2 : x :e C2.
+            exact (setminusE2 (Sn 2) C2 x (binintersectE2 U V x Hx) HxC2). }
+        exact (setminusI (Sn 2) C x HxS2 HxnC).
+      - let x. assume Hx : x :e Sn 2 :\: C.
+        claim HxS2 : x :e Sn 2. { exact (setminusE1 (Sn 2) C x Hx). }
+        claim HxnC : x /:e C. { exact (setminusE2 (Sn 2) C x Hx). }
+        claim HxnC1 : x /:e C1.
+        { assume HxC1 : x :e C1.
+          apply HxnC. prove x :e C. rewrite Hunion. exact (binunionI1 C1 C2 x HxC1). }
+        claim HxnC2 : x /:e C2.
+        { assume HxC2 : x :e C2.
+          apply HxnC. prove x :e C. rewrite Hunion. exact (binunionI2 C1 C2 x HxC2). }
+        exact (binintersectI U V x
+          (setminusI (Sn 2) C1 x HxS2 HxnC1)
+          (setminusI (Sn 2) C2 x HxS2 HxnC2)). }
+    (** U cap V path connected in subspace of X **)
+    (** subspace_top X Tx (U cap V) = subspace_top Sn2 SnTop (U cap V) by transitivity **)
+    (** = subspace_top Sn2 SnTop (S^2-C) by HUV_eq_SmC **)
+    claim HUV_pc : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+    { claim HUVsubX : U :/\: V c= X.
+      { let x. assume Hx : x :e U :/\: V.
+        exact (HUsub x (binintersectE1 U V x Hx)). }
+      claim Htopeq : subspace_topology X Tx (U :/\: V) = subspace_topology (Sn 2) (Sn_topology 2) (U :/\: V).
+      { exact (subspace_topology_transitive_weak (Sn 2) (Sn_topology 2) X (U :/\: V) HUVsubX). }
+      rewrite Htopeq.
+      rewrite HUV_eq_SmC.
+      exact HSmC_pc. }
+    (** i_star trivial: rewrite topology to use jordan_sep_inclusion_trivial **)
+    (** Topology equalities via subspace transitivity **)
+    claim Htopeq_U : subspace_topology X Tx U = subspace_topology (Sn 2) (Sn_topology 2) U.
+    { exact (subspace_topology_transitive_weak (Sn 2) (Sn_topology 2) X U HUsub). }
+    claim Htopeq_V : subspace_topology X Tx V = subspace_topology (Sn 2) (Sn_topology 2) V.
+    { exact (subspace_topology_transitive_weak (Sn 2) (Sn_topology 2) X V HVsub). }
+    (** x0 in S^2-(C1 union C2) **)
+    claim Hx0_union : x0 :e Sn 2 :\: (C1 :\/: C2).
+    { prove x0 :e Sn 2 :\: (C1 :\/: C2).
+      rewrite <- Hunion. exact Hx0. }
+    (** C1, C2 c= Sn 2 (from C1 c= C c= Sn 2) **)
+    claim HC1subS2 : C1 c= Sn 2.
+    { let x. assume Hx : x :e C1. exact (HC x (HC1sub x Hx)). }
+    claim HC2subS2 : C2 c= Sn 2.
+    { let x. assume Hx : x :e C2. exact (HC x (HC2sub x Hx)). }
+    claim Hi_triv : forall cls:set, cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+    { rewrite Htopeq_U.
+      exact (jordan_sep_inclusion_trivial_on_arc_complement C1 C2 p q
+        HC1subS2 HC2subS2 Hp Hq Hpq Hinter HC1conn HC1open x0 Hx0_union). }
+    claim Hj_triv : forall cls:set, cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+      apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+    { rewrite Htopeq_V.
+      claim Hinter_sym : C2 :/\: C1 = UPair p q.
+      { claim Hcomm : C2 :/\: C1 = C1 :/\: C2.
+        { apply set_ext.
+          - let x. assume Hx. exact (binintersectI C1 C2 x
+              (binintersectE2 C2 C1 x Hx) (binintersectE1 C2 C1 x Hx)).
+          - let x. assume Hx. exact (binintersectI C2 C1 x
+              (binintersectE2 C1 C2 x Hx) (binintersectE1 C1 C2 x Hx)). }
+        rewrite Hcomm. exact Hinter. }
+      claim Hx0_union_sym : x0 :e Sn 2 :\: (C2 :\/: C1).
+      { claim Hunion_sym : C2 :\/: C1 = C1 :\/: C2.
+        { apply set_ext.
+          - let x. assume Hx. apply (binunionE C2 C1 x Hx).
+            + assume H. exact (binunionI2 C1 C2 x H).
+            + assume H. exact (binunionI1 C1 C2 x H).
+          - let x. assume Hx. apply (binunionE C1 C2 x Hx).
+            + assume H. exact (binunionI2 C2 C1 x H).
+            + assume H. exact (binunionI1 C2 C1 x H). }
+        prove x0 :e Sn 2 :\: (C2 :\/: C1).
+        rewrite Hunion_sym. exact Hx0_union. }
+      exact (jordan_sep_inclusion_trivial_on_arc_complement C2 C1 p q
+        HC2subS2 HC1subS2 Hp Hq Hpq Hinter_sym HC2conn HC2open_last x0 Hx0_union_sym). }
+    exact (trivial_inclusions_imply_trivial_pi1 X Tx U V x0
+      HtopX HU_in_Tx HV_in_Tx Hcover_UV Hx0UV HUV_pc Hi_triv Hj_triv). }
   (** But pi_1(S^2-{p,q}) is nontrivial **)
   exact (pi1_S2_minus_two_points_nontrivial p q Hp Hq Hpq x0 Hx0_in_Xpq Htrivial).
 - (** Part 2: S^2-C is nonempty **)
