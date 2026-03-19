@@ -137729,9 +137729,56 @@ rewrite HclassEq.
 reflexivity.
 Qed.
 
+(** Forward declarations needed for s55_loop_null proof **)
+(** These are proved later in the file but needed here **)
+Lemma covering_map_R_S1_at_0_early : apply_fun covering_map_R_S1 0 = S1_basepoint.
+admit. Admitted.
+Lemma covering_map_R_S1_at_1_early : apply_fun covering_map_R_S1 1 = S1_basepoint.
+admit. Admitted.
+Lemma covering_map_R_S1_cont_on_I_early :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology covering_map_R_S1.
+admit. Admitted.
+
+(** Standard loop: covering map restricted to [0,1] **)
+Definition standard_S1_loop : set := graphify_on unit_interval covering_map_R_S1.
+
+Lemma standard_S1_loop_in_loop_space :
+  standard_S1_loop :e loop_space S1 S1_topology S1_basepoint.
+prove standard_S1_loop :e {f :e function_space unit_interval S1 | loop_at S1 S1_topology S1_basepoint f}.
+apply SepI.
+- (** standard_S1_loop in function_space unit_interval S1 **)
+  exact (graph_in_function_space unit_interval S1
+    (fun t:set => apply_fun covering_map_R_S1 t)
+    (fun t Ht => continuous_map_function_on unit_interval unit_interval_topology
+      S1 S1_topology covering_map_R_S1 covering_map_R_S1_cont_on_I_early t Ht)).
+- (** loop_at = ((continuous /\ f(0)=bp) /\ f(1)=bp) left-assoc **)
+  claim Hloop_cont : continuous_map unit_interval unit_interval_topology S1 S1_topology standard_S1_loop.
+  { claim Hfn : function_on standard_S1_loop unit_interval S1.
+    { let t. assume Ht : t :e unit_interval.
+      prove apply_fun standard_S1_loop t :e S1.
+      rewrite (graphify_on_apply unit_interval covering_map_R_S1 t Ht).
+      exact (continuous_map_function_on unit_interval unit_interval_topology
+        S1 S1_topology covering_map_R_S1 covering_map_R_S1_cont_on_I_early t Ht). }
+    claim Hpw : forall t:set, t :e unit_interval ->
+      apply_fun covering_map_R_S1 t = apply_fun standard_S1_loop t.
+    { let t. assume Ht : t :e unit_interval.
+      symmetry. exact (graphify_on_apply unit_interval covering_map_R_S1 t Ht). }
+    exact (continuous_map_congr_on unit_interval unit_interval_topology S1 S1_topology
+      covering_map_R_S1 standard_S1_loop covering_map_R_S1_cont_on_I_early Hfn Hpw). }
+  claim Hat0 : apply_fun standard_S1_loop 0 = S1_basepoint.
+  { rewrite (graphify_on_apply unit_interval covering_map_R_S1 0 zero_in_unit_interval).
+    exact covering_map_R_S1_at_0_early. }
+  claim Hat1 : apply_fun standard_S1_loop 1 = S1_basepoint.
+  { rewrite (graphify_on_apply unit_interval covering_map_R_S1 1 one_in_unit_interval).
+    exact covering_map_R_S1_at_1_early. }
+  exact (andI (continuous_map unit_interval unit_interval_topology S1 S1_topology standard_S1_loop /\ apply_fun standard_S1_loop 0 = S1_basepoint)
+    (apply_fun standard_S1_loop 1 = S1_basepoint)
+    (andI (continuous_map unit_interval unit_interval_topology S1 S1_topology standard_S1_loop)
+      (apply_fun standard_S1_loop 0 = S1_basepoint) Hloop_cont Hat0)
+    Hat1).
+Admitted. (** depends on forward-declared covering map properties **)
+
 (** KEY BOTTLENECK: If proved, cascades to make R2_minus_origin_not_simply_connected QED **)
-(** Needs: S1 quotient model (covering_map_R_S1 restricted to [0,1] as quotient map) **)
-(** Then path-homotopy H: IxI -> X with H(0,t)=H(1,t) descends to F: S1xI -> X **)
 (** Bounty 20 **)
 Lemma s55_loop_null_implies_nulhomotopic : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
