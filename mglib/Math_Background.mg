@@ -283570,10 +283570,9 @@ apply (SNoLt_trichotomy_or x 1 HxSNo SNo_1).
 - assume Hle : SNoLt x 1 \/ x = 1.
   apply Hle.
   + assume Hxlt1 : SNoLt x 1.
-    (** 0 < x < 1 case: mul_SNo_Lt1_pos_Lt gives x^2 < x, so 1 = x^2 < x < 1, contradiction **)
-    (** x = 0 case: 0^2 = 0 <> 1 **)
-    (** x < 0 cases: use -x and mul_SNo_minus_minus **)
-    (** Each subcase needs careful trichotomy handling **)
+    (** Sub-trichotomy with 0 **)
+    (** Sub-trichotomy with 0: (x < 0 \/ x = 0) \/ 0 < x **)
+    (** Negative, zero, and positive subcases: all admitted except the structure **)
     admit.
   + assume Hxeq1 : x = 1. apply orIL. exact Hxeq1.
 - assume H1ltx : SNoLt 1 x.
