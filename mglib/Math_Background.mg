@@ -283592,8 +283592,19 @@ apply and9I.
     apply (binunionE S1_upper S1_lower p Hp).
     { assume Hu : p :e S1_upper. exact (SepE1 S1 (fun q:set => ~(SNoLt (q 1) 0)) p Hu). }
     { assume Hl : p :e S1_lower. exact (SepE1 S1 (fun q:set => ~(SNoLt 0 (q 1))) p Hl). }
-- (** upper cap lower = {(1,0), (-1,0)}: y >= 0 and y <= 0 iff y = 0, then x^2 = 1 **)
-  admit.
+- (** upper cap lower = {(1,0), (-1,0)} **)
+  (** Forward: p in both means y=0 (by trichotomy), then x^2=1, then x=1 or x=-1 **)
+  (** Backward: bp and left satisfy both y>=0 and y<=0 since y=0 **)
+  (** Key tools: SNoLt_trichotomy_or, mul_SNo_Lt1_pos_Lt, pos_mul_SNo_Lt', SNoLt_irref **)
+  (** Backward direction is straightforward; forward needs careful trichotomy + rewrite handling **)
+  apply set_ext.
+  + (** c=: upper cap lower c= UPair bp left **)
+    (** Proof outline: extract y>=0 and y<=0, derive y=0 by trichotomy, **)
+    (** then x^2 = 1, then x=1 or x=-1 by mul_SNo_Lt1_pos_Lt + pos_mul_SNo_Lt' **)
+    admit.
+  + (** c=: UPair bp left c= upper cap lower **)
+    (** bp = (1,0) and left = (-1,0) both have y=0, so y >= 0 and y <= 0 **)
+    admit.
 - (** (1,0) in S1 **)
   exact S1_basepoint_in_S1_early.
 - (** (-1,0) in S1: antipode of (1,0) **)
