@@ -1,5 +1,5 @@
 (** Balance Alice 9168 **)
-(** Balance Bob 6265 **)
+(** Balance Bob 6353 **)
 (** Balance Charlie 854 **)
 (** Balance Dave 2428 **)
 
@@ -215564,7 +215564,8 @@ Qed.
 (** from S58 Thm 58.2 (line 1284 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^n -> R^{n+1}-0 induces an isomorphism of fundamental groups. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Collected Bob 88 **)
+(** Proven Bob **)
 Theorem thm58_2_inclusion_Sn_isomorphism : forall n:set, n :e omega ->
   forall b0:set, b0 :e Sn n ->
   group_isomorphism
@@ -215575,8 +215576,2115 @@ Theorem thm58_2_inclusion_Sn_isomorphism : forall n:set, n :e omega ->
     (induced_homomorphism (Sn n) (Sn_topology n) b0
       (Rn_minus_origin (ordsucc n)) (Rn_minus_origin_topology (ordsucc n)) b0
       (graph (Sn n) (fun x:set => x))).
-admit.
-Admitted.
+let n.
+assume Hn_om.
+let b0.
+assume Hb0Sn.
+set A := Sn n.
+set Ta := Sn_topology n.
+set X := Rn_minus_origin (ordsucc n).
+set Tx := Rn_minus_origin_topology (ordsucc n).
+set j := graph A (fun x:set => x).
+set r := Rn_normalize_to_Sn n.
+set GA := fundamental_group A Ta b0.
+set multA := fundamental_group_mult A Ta b0.
+set GX := fundamental_group X Tx b0.
+set multX := fundamental_group_mult X Tx b0.
+set jstar := induced_homomorphism A Ta b0 X Tx b0 j.
+set rstar := induced_homomorphism X Tx b0 A Ta b0 r.
+claim Hb0X : b0 :e X.
+{
+  exact (Sn_subset_Rn_minus_origin
+    n
+    b0
+    Hn_om
+    Hb0Sn).
+}
+claim HtopA : topology_on A Ta.
+{
+  exact (subspace_topology_is_topology
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    A
+    (euclidean_topology_is_topology
+      (ordsucc n))
+    (Sep_Subq
+      (euclidean_space (ordsucc n))
+      (fun v:set => euclidean_norm_sq (ordsucc n) v = 1))).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (subspace_topology_is_topology
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    X
+    (euclidean_topology_is_topology
+      (ordsucc n))
+    (Sep_Subq
+      (euclidean_space (ordsucc n))
+      (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0)))).
+}
+claim HjCont :
+  continuous_map A Ta X Tx j.
+{
+  exact (Sn_inclusion_Rn_minus_origin_continuous
+    n
+    Hn_om).
+}
+claim HrCont :
+  continuous_map X Tx A Ta r.
+{
+  exact (Rn_normalize_to_Sn_continuous
+    n
+    Hn_om).
+}
+claim Hjb0 : apply_fun j b0 = b0.
+{
+  exact (apply_fun_graph
+    A
+    (fun x:set => x)
+    b0
+    Hb0Sn).
+}
+claim Hrb0 : apply_fun r b0 = b0.
+{
+  exact (Rn_normalize_to_Sn_fix_on_Sn
+    n
+    b0
+    Hn_om
+    Hb0Sn).
+}
+claim HjstarHom :
+  group_homomorphism GA multA GX multX jstar.
+{
+  exact (induced_homomorphism_is_homomorphism
+    A
+    Ta
+    b0
+    X
+    Tx
+    b0
+    j
+    HjCont
+    Hjb0
+    Hb0Sn).
+}
+claim HrstarHom :
+  group_homomorphism GX multX GA multA rstar.
+{
+  exact (induced_homomorphism_is_homomorphism
+    X
+    Tx
+    b0
+    A
+    Ta
+    b0
+    r
+    HrCont
+    Hrb0
+    Hb0X).
+}
+claim HjFun : function_on j A X.
+{
+  exact (continuous_map_function_on
+    A
+    Ta
+    X
+    Tx
+    j
+    HjCont).
+}
+claim HrFun : function_on r X A.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    A
+    Ta
+    r
+    HrCont).
+}
+claim HcompjrEq :
+  compose_fun A j r = graph A (fun x:set => x).
+{
+  apply (total_function_space_extensional
+    A
+    A
+    (compose_fun A j r)
+    (graph A (fun x:set => x))).
+  - exact (compose_fun_in_total_function_space
+      A
+      X
+      A
+      j
+      r
+      HjFun
+      HrFun).
+  - exact (graph_in_total_function_space
+      A
+      A
+      (fun x:set => x)
+      (fun x Hx => Hx)).
+  - let x.
+    assume HxA.
+    rewrite (compose_fun_apply
+      A
+      j
+      r
+      x
+      HxA).
+    rewrite (apply_fun_graph
+      A
+      (fun z:set => z)
+      x
+      HxA) at 2.
+    rewrite (apply_fun_graph
+      A
+      (fun z:set => z)
+      x
+      HxA).
+    exact (Rn_normalize_to_Sn_fix_on_Sn
+      n
+      x
+      Hn_om
+      HxA).
+}
+claim Hrstar_jstar_id :
+  forall cls:set, cls :e GA ->
+    apply_fun (compose_fun GA jstar rstar) cls = cls.
+{
+  let cls.
+  assume Hcls.
+  claim Hcomp :
+    apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls =
+    apply_fun (compose_fun GA jstar rstar) cls.
+  {
+    exact (Theorem_52_4_functorial_composition
+      A
+      Ta
+      b0
+      X
+      Tx
+      b0
+      A
+      Ta
+      b0
+      j
+      r
+      HjCont
+      HrCont
+      Hjb0
+      Hrb0
+      Hb0Sn
+      cls
+      Hcls).
+  }
+  claim Hid :
+    apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls = cls.
+  {
+    rewrite HcompjrEq.
+    exact (Theorem_52_4_functorial_identity
+      A
+      Ta
+      b0
+      HtopA
+      Hb0Sn
+      cls
+      Hcls).
+  }
+  exact (eq_i_tra
+    (apply_fun (compose_fun GA jstar rstar) cls)
+    (apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls)
+    cls
+    (eq_symm
+      (apply_fun (induced_homomorphism A Ta b0 A Ta b0 (compose_fun A j r)) cls)
+      (apply_fun (compose_fun GA jstar rstar) cls)
+      Hcomp)
+    Hid).
+}
+(** Remaining geometric step: j o r is homotopic to id_X with basepoint fixed at b0. **)
+claim Hjstar_rstar_id :
+  forall cls:set, cls :e GX ->
+    apply_fun (compose_fun GX rstar jstar) cls = cls.
+{
+  set hX := compose_fun X r j.
+  set idXMap := graph X (fun x:set => x).
+  claim HhXDef : hX = compose_fun X r j.
+  {
+    reflexivity.
+  }
+  claim HidXDef : idXMap = graph X (fun x:set => x).
+  {
+    reflexivity.
+  }
+  claim HhXCont : continuous_map X Tx X Tx hX.
+  {
+    rewrite HhXDef.
+    exact (composition_continuous
+      X
+      Tx
+      A
+      Ta
+      X
+      Tx
+      r
+      j
+      HrCont
+      HjCont).
+  }
+  claim HidXCont : continuous_map X Tx X Tx idXMap.
+  {
+    rewrite HidXDef.
+    exact (identity_continuous
+      X
+      Tx
+      HtopX).
+  }
+  claim HhXb0 : apply_fun hX b0 = b0.
+  {
+    rewrite HhXDef.
+    rewrite (compose_fun_apply
+      X
+      r
+      j
+      b0
+      Hb0X).
+    rewrite Hrb0.
+    exact Hjb0.
+  }
+  claim HidXb0 : apply_fun idXMap b0 = b0.
+  {
+    rewrite HidXDef.
+    exact (apply_fun_graph
+      X
+      (fun x:set => x)
+      b0
+      Hb0X).
+  }
+  claim HexH :
+    exists H:set, continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+      (forall x:set, x :e X -> apply_fun H (x, 0) = apply_fun hX x) /\
+      (forall x:set, x :e X -> apply_fun H (x, 1) = apply_fun idXMap x) /\
+      (forall t:set, t :e unit_interval -> apply_fun H (b0, t) = b0).
+  {
+    claim Hn_nat : nat_p n.
+    {
+      exact (omega_nat_p
+        n
+        Hn_om).
+    }
+    claim Hsn_om : ordsucc n :e omega.
+    {
+      exact (omega_ordsucc
+        n
+        Hn_om).
+    }
+    claim HrDef : r = Rn_normalize_to_Sn n.
+    {
+      reflexivity.
+    }
+    set dom := setprod X unit_interval.
+    set Tdom := product_topology X Tx unit_interval unit_interval_topology.
+    set normX := Rn_minus_origin_norm_map (ordsucc n).
+    set H := graph dom (fun p:set =>
+      Rn_scalar_mult
+        (ordsucc n)
+        (add_SNo
+          (apply_fun flip_unit_interval (p 1))
+          (mul_SNo
+            (p 1)
+            (apply_fun normX (p 0))))
+        (apply_fun r (p 0))).
+    claim HnormCont :
+      continuous_map X Tx R R_standard_topology normX.
+    {
+      exact (Rn_minus_origin_norm_map_continuous_to_R
+        (ordsucc n)
+        Hsn_om).
+    }
+    claim HHcont :
+      continuous_map dom Tdom X Tx H.
+    {
+      claim HcontEu :
+        continuous_map
+          dom
+          Tdom
+          (euclidean_space (ordsucc n))
+          (euclidean_topology (ordsucc n))
+          H.
+      {
+        set xproj := projection_map1 X unit_interval.
+        set tproj := projection_map2 X unit_interval.
+        set one_minus_t := compose_fun dom tproj flip_unit_interval.
+        set norm_proj := compose_fun dom xproj normX.
+        set tnorm := compose_fun dom (pair_map dom tproj norm_proj) mul_fun_R.
+        set lam_raw := compose_fun dom (pair_map dom one_minus_t tnorm) add_fun_R.
+        set lam := graph dom (fun p:set =>
+          add_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (mul_SNo
+              (p 1)
+              (apply_fun normX (p 0)))).
+        set rx := compose_fun dom xproj r.
+        claim HtopDom :
+          topology_on dom Tdom.
+        {
+          exact (product_topology_is_topology
+            X
+            Tx
+            unit_interval
+            unit_interval_topology
+            HtopX
+            unit_interval_topology_on).
+        }
+        claim HprojPair :
+          continuous_map dom Tdom X Tx xproj /\
+          continuous_map dom Tdom unit_interval unit_interval_topology tproj.
+        {
+          exact (projection_maps_continuous
+            X
+            Tx
+            unit_interval
+            unit_interval_topology
+            HtopX
+            unit_interval_topology_on).
+        }
+        claim HxprojCont :
+          continuous_map dom Tdom X Tx xproj.
+        {
+          exact (andEL
+            (continuous_map dom Tdom X Tx xproj)
+            (continuous_map dom Tdom unit_interval unit_interval_topology tproj)
+            HprojPair).
+        }
+        claim HtprojContI :
+          continuous_map dom Tdom unit_interval unit_interval_topology tproj.
+        {
+          exact (andER
+            (continuous_map dom Tdom X Tx xproj)
+            (continuous_map dom Tdom unit_interval unit_interval_topology tproj)
+            HprojPair).
+        }
+        claim HtprojContR :
+          continuous_map dom Tdom R R_standard_topology tproj.
+        {
+          exact (continuous_map_range_expand
+            dom
+            Tdom
+            unit_interval
+            unit_interval_topology
+            R
+            R_standard_topology
+            tproj
+            HtprojContI
+            unit_interval_sub_R
+            R_standard_topology_is_topology
+            (fun P H => H)).
+        }
+        claim HoneMinusContI :
+          continuous_map dom Tdom unit_interval unit_interval_topology one_minus_t.
+        {
+          exact (composition_continuous
+            dom
+            Tdom
+            unit_interval
+            unit_interval_topology
+            unit_interval
+            unit_interval_topology
+            tproj
+            flip_unit_interval
+            HtprojContI
+            flip_unit_interval_continuous).
+        }
+        claim HoneMinusContR :
+          continuous_map dom Tdom R R_standard_topology one_minus_t.
+        {
+          exact (continuous_map_range_expand
+            dom
+            Tdom
+            unit_interval
+            unit_interval_topology
+            R
+            R_standard_topology
+            one_minus_t
+            HoneMinusContI
+            unit_interval_sub_R
+            R_standard_topology_is_topology
+            (fun P H => H)).
+        }
+        claim HnormProjCont :
+          continuous_map dom Tdom R R_standard_topology norm_proj.
+        {
+          exact (composition_continuous
+            dom
+            Tdom
+            X
+            Tx
+            R
+            R_standard_topology
+            xproj
+            normX
+            HxprojCont
+            HnormCont).
+        }
+        claim HtnormCont :
+          continuous_map dom Tdom R R_standard_topology tnorm.
+        {
+          exact (mul_two_continuous_R
+            dom
+            Tdom
+            tproj
+            norm_proj
+            HtopDom
+            HtprojContR
+            HnormProjCont).
+        }
+        claim HlamRawCont :
+          continuous_map dom Tdom R R_standard_topology lam_raw.
+        {
+          exact (add_two_continuous_R
+            dom
+            Tdom
+            one_minus_t
+            tnorm
+            HtopDom
+            HoneMinusContR
+            HtnormCont).
+        }
+        claim Hlam_val_in_R :
+          forall p:set, p :e dom ->
+            add_SNo
+              (apply_fun flip_unit_interval (p 1))
+              (mul_SNo
+                (p 1)
+                (apply_fun normX (p 0))) :e R.
+        {
+          let p.
+          assume Hp.
+          claim Hp0X : p 0 :e X.
+          {
+            exact (ap0_Sigma
+              X
+              (fun _ : set => unit_interval)
+              p
+              Hp).
+          }
+          claim Hp1I : p 1 :e unit_interval.
+          {
+            exact (ap1_Sigma
+              X
+              (fun _ : set => unit_interval)
+              p
+              Hp).
+          }
+          exact (real_add_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (flip_unit_interval_in_R
+              (p 1)
+              Hp1I)
+            (mul_SNo
+              (p 1)
+              (apply_fun normX (p 0)))
+            (real_mul_SNo
+              (p 1)
+              (SepE1
+                R
+                (fun s:set => ~(Rlt s 0) /\ ~(Rlt 1 s))
+                (p 1)
+                Hp1I)
+              (apply_fun normX (p 0))
+              (continuous_map_function_on
+                X
+                Tx
+                R
+                R_standard_topology
+                normX
+                HnormCont
+                (p 0)
+                Hp0X))).
+        }
+        claim HlamFun :
+          function_on lam dom R.
+        {
+          exact (function_on_of_function_space
+            lam
+            dom
+            R
+            (graph_in_function_space
+              dom
+              R
+              (fun p:set =>
+                add_SNo
+                  (apply_fun flip_unit_interval (p 1))
+                  (mul_SNo
+                    (p 1)
+                    (apply_fun normX (p 0))))
+              (fun p Hp =>
+                Hlam_val_in_R
+                  p
+                  Hp))).
+        }
+        claim HlamRawEqOn :
+          forall p:set, p :e dom -> apply_fun lam_raw p = apply_fun lam p.
+        {
+          let p.
+          assume Hp.
+          claim HoneMinusR :
+            apply_fun one_minus_t p :e R.
+          {
+            exact (continuous_map_function_on
+              dom
+              Tdom
+              R
+              R_standard_topology
+              one_minus_t
+              HoneMinusContR
+              p
+              Hp).
+          }
+          claim HtnormR :
+            apply_fun tnorm p :e R.
+          {
+            exact (continuous_map_function_on
+              dom
+              Tdom
+              R
+              R_standard_topology
+              tnorm
+              HtnormCont
+              p
+              Hp).
+          }
+          rewrite (add_of_pair_map_apply
+            dom
+            one_minus_t
+            tnorm
+            p
+            Hp
+            HoneMinusR
+            HtnormR).
+          rewrite (compose_fun_apply
+            dom
+            tproj
+            flip_unit_interval
+            p
+            Hp).
+          rewrite (projection2_apply
+            X
+            unit_interval
+            p
+            Hp).
+          rewrite (mul_of_pair_map_apply
+            dom
+            tproj
+            norm_proj
+            p
+            Hp
+            (continuous_map_function_on
+              dom
+              Tdom
+              R
+              R_standard_topology
+              tproj
+              HtprojContR
+              p
+              Hp)
+            (continuous_map_function_on
+              dom
+              Tdom
+              R
+              R_standard_topology
+              norm_proj
+              HnormProjCont
+              p
+              Hp)).
+          rewrite (projection2_apply
+            X
+            unit_interval
+            p
+            Hp).
+          rewrite (compose_fun_apply
+            dom
+            xproj
+            normX
+            p
+            Hp).
+          rewrite (projection1_apply
+            X
+            unit_interval
+            p
+            Hp).
+          symmetry.
+          exact (apply_fun_graph
+            dom
+            (fun p0:set =>
+              add_SNo
+                (apply_fun flip_unit_interval (p0 1))
+                (mul_SNo
+                  (p0 1)
+                  (apply_fun normX (p0 0))))
+            p
+            Hp).
+        }
+        claim HlamCont :
+          continuous_map dom Tdom R R_standard_topology lam.
+        {
+          exact (continuous_map_congr_on
+            dom
+            Tdom
+            R
+            R_standard_topology
+            lam_raw
+            lam
+            HlamRawCont
+            HlamFun
+            HlamRawEqOn).
+        }
+        claim HrxCont :
+          continuous_map dom Tdom A Ta rx.
+        {
+          exact (composition_continuous
+            dom
+            Tdom
+            X
+            Tx
+            A
+            Ta
+            xproj
+            r
+            HxprojCont
+            HrCont).
+        }
+        set Fcoord := graph (ordsucc n) (fun i:set =>
+          graph dom (fun p:set =>
+            mul_SNo
+              (apply_fun lam p)
+              (apply_fun (apply_fun r (p 0)) i))).
+        claim Hcoord_val_in_R :
+          forall i p:set, i :e ordsucc n -> p :e dom ->
+            mul_SNo
+              (apply_fun lam p)
+              (apply_fun (apply_fun r (p 0)) i) :e R.
+        {
+          let i p.
+          assume Hi Hp.
+          claim Hp0X : p 0 :e X.
+          {
+            exact (ap0_Sigma
+              X
+              (fun _ : set => unit_interval)
+              p
+              Hp).
+          }
+          claim Hr0A : apply_fun r (p 0) :e A.
+          {
+            exact (HrFun
+              (p 0)
+              Hp0X).
+          }
+          exact (real_mul_SNo
+            (apply_fun lam p)
+            (continuous_map_function_on
+              dom
+              Tdom
+              R
+              R_standard_topology
+              lam
+              HlamCont
+              p
+              Hp)
+            (apply_fun (apply_fun r (p 0)) i)
+            (euclidean_space_coord_in_R
+              (ordsucc n)
+              (apply_fun r (p 0))
+              i
+              (SepE1
+                (euclidean_space (ordsucc n))
+                (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+                (apply_fun r (p 0))
+                Hr0A)
+              Hi)).
+        }
+        claim HFcoord_total :
+          total_function_on Fcoord (ordsucc n) (function_space dom R).
+        {
+          apply (total_function_on_graph
+            (ordsucc n)
+            (function_space dom R)
+            (fun i:set =>
+              graph dom (fun p:set =>
+                mul_SNo
+                  (apply_fun lam p)
+                  (apply_fun (apply_fun r (p 0)) i)))).
+          let i.
+          assume Hi.
+          exact (graph_in_function_space
+            dom
+            R
+            (fun p:set =>
+              mul_SNo
+                (apply_fun lam p)
+                (apply_fun (apply_fun r (p 0)) i))
+            (fun p Hp =>
+              Hcoord_val_in_R
+                i
+                p
+                Hi
+                Hp)).
+        }
+        claim HFcoord_cont :
+          forall i:set, i :e ordsucc n ->
+            continuous_map dom Tdom R R_standard_topology (apply_fun Fcoord i).
+        {
+          let i.
+          assume Hi.
+          set xcoord := compose_fun
+            dom
+            rx
+            (graph A (fun x:set => apply_fun x i)).
+          claim HxcoordCont :
+            continuous_map dom Tdom R R_standard_topology xcoord.
+          {
+            exact (composition_continuous
+              dom
+              Tdom
+              A
+              Ta
+              R
+              R_standard_topology
+              rx
+              (graph A (fun x:set => apply_fun x i))
+              HrxCont
+              (Sn_coord_continuous
+                n
+                i
+                Hn_om
+                Hi)).
+          }
+          set prodcoord := compose_fun dom (pair_map dom lam xcoord) mul_fun_R.
+          claim HprodCont :
+            continuous_map dom Tdom R R_standard_topology prodcoord.
+          {
+            exact (mul_two_continuous_R
+              dom
+              Tdom
+              lam
+              xcoord
+              HtopDom
+              HlamCont
+              HxcoordCont).
+          }
+          claim HcoordGraphFun :
+            function_on
+              (graph dom (fun p:set =>
+                mul_SNo
+                  (apply_fun lam p)
+                  (apply_fun (apply_fun r (p 0)) i)))
+              dom
+              R.
+          {
+            exact (function_on_of_function_space
+              (graph dom (fun p:set =>
+                mul_SNo
+                  (apply_fun lam p)
+                  (apply_fun (apply_fun r (p 0)) i)))
+              dom
+              R
+              (graph_in_function_space
+                dom
+                R
+                (fun p:set =>
+                  mul_SNo
+                    (apply_fun lam p)
+                    (apply_fun (apply_fun r (p 0)) i))
+                (fun p Hp =>
+                  Hcoord_val_in_R
+                    i
+                    p
+                    Hi
+                    Hp))).
+          }
+          claim HprodEqOn :
+            forall p:set, p :e dom ->
+              apply_fun prodcoord p =
+              apply_fun
+                (graph dom (fun p0:set =>
+                  mul_SNo
+                    (apply_fun lam p0)
+                    (apply_fun (apply_fun r (p0 0)) i)))
+                p.
+          {
+            let p.
+            assume Hp.
+            claim HxcoordVal :
+              apply_fun xcoord p = apply_fun (apply_fun r (p 0)) i.
+            {
+              rewrite (compose_fun_apply
+                dom
+                rx
+                (graph A (fun x:set => apply_fun x i))
+                p
+                Hp).
+              rewrite (compose_fun_apply
+                dom
+                xproj
+                r
+                p
+                Hp).
+              rewrite (projection1_apply
+                X
+                unit_interval
+                p
+                Hp).
+              rewrite (apply_fun_graph
+                A
+                (fun x:set => apply_fun x i)
+                (apply_fun r (p 0))
+                (HrFun
+                  (p 0)
+                  (ap0_Sigma
+                    X
+                    (fun _ : set => unit_interval)
+                    p
+                    Hp))).
+              reflexivity.
+            }
+            rewrite (mul_of_pair_map_apply
+              dom
+              lam
+              xcoord
+              p
+              Hp
+              (continuous_map_function_on
+                dom
+                Tdom
+                R
+                R_standard_topology
+                lam
+                HlamCont
+                p
+                Hp)
+              (continuous_map_function_on
+                dom
+                Tdom
+                R
+                R_standard_topology
+                xcoord
+                HxcoordCont
+                p
+                Hp)).
+            rewrite HxcoordVal.
+            symmetry.
+            exact (apply_fun_graph
+              dom
+              (fun p0:set =>
+                mul_SNo
+                  (apply_fun lam p0)
+                  (apply_fun (apply_fun r (p0 0)) i))
+              p
+              Hp).
+          }
+          rewrite (apply_fun_graph
+            (ordsucc n)
+            (fun i0:set =>
+              graph dom (fun p:set =>
+                mul_SNo
+                  (apply_fun lam p)
+                  (apply_fun (apply_fun r (p 0)) i0)))
+            i
+            Hi).
+          exact (continuous_map_congr_on
+            dom
+            Tdom
+            R
+            R_standard_topology
+            prodcoord
+            (graph dom (fun p:set =>
+              mul_SNo
+                (apply_fun lam p)
+                (apply_fun (apply_fun r (p 0)) i)))
+            HprodCont
+            HcoordGraphFun
+            HprodEqOn).
+        }
+        claim HJnonempty :
+          ordsucc n <> Empty.
+        {
+          assume Hempty.
+          claim H0in :
+            0 :e ordsucc n.
+          {
+            exact (nat_0_in_ordsucc
+              n
+              Hn_nat).
+          }
+          exact (EmptyE
+            0
+            (mem_eqR
+              0
+              (ordsucc n)
+              Empty
+              Hempty
+              H0in)).
+        }
+        claim HdiagContPR :
+          continuous_map
+            dom
+            Tdom
+            (power_real (ordsucc n))
+            (product_topology_full (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology))
+            (diagonal_map dom Fcoord (ordsucc n)).
+        {
+          exact (diagonal_map_continuous_power_real
+            dom
+            Tdom
+            Fcoord
+            (ordsucc n)
+            HtopDom
+            HJnonempty
+            HFcoord_total
+            HFcoord_cont).
+        }
+        claim HdiagFun :
+          function_on
+            (diagonal_map dom Fcoord (ordsucc n))
+            dom
+            (power_real (ordsucc n)).
+        {
+          exact (diagonal_map_function_on_power_real
+            dom
+            Fcoord
+            (ordsucc n)
+            HFcoord_total).
+        }
+        claim HeuEq :
+          power_real (ordsucc n) = euclidean_space (ordsucc n).
+        {
+          reflexivity.
+        }
+        claim HeuTopEq :
+          product_topology_full (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology) =
+          euclidean_topology (ordsucc n).
+        {
+          reflexivity.
+        }
+        claim HdiagContEu :
+          continuous_map
+            dom
+            Tdom
+            (euclidean_space (ordsucc n))
+            (euclidean_topology (ordsucc n))
+            (diagonal_map dom Fcoord (ordsucc n)).
+        {
+          rewrite <- HeuEq.
+          rewrite <- HeuTopEq.
+          exact HdiagContPR.
+        }
+        claim Hdef :
+          H =
+          graph dom (fun p:set =>
+            graph (ordsucc n) (fun i:set =>
+              mul_SNo
+                (apply_fun lam p)
+                (apply_fun (apply_fun r (p 0)) i))).
+        {
+          apply (graph_extensional
+            dom
+            (fun p:set =>
+              Rn_scalar_mult
+                (ordsucc n)
+                (add_SNo
+                  (apply_fun flip_unit_interval (p 1))
+                  (mul_SNo
+                    (p 1)
+                    (apply_fun normX (p 0))))
+                (apply_fun r (p 0)))
+            (fun p:set =>
+              graph (ordsucc n) (fun i:set =>
+                mul_SNo
+                  (apply_fun lam p)
+                  (apply_fun (apply_fun r (p 0)) i)))).
+          let p.
+          assume Hp.
+          apply (graph_extensional
+            (ordsucc n)
+            (fun i:set =>
+              mul_SNo
+                (add_SNo
+                  (apply_fun flip_unit_interval (p 1))
+                  (mul_SNo
+                    (p 1)
+                    (apply_fun normX (p 0))))
+                (apply_fun (apply_fun r (p 0)) i))
+            (fun i:set =>
+              mul_SNo
+                (apply_fun lam p)
+                (apply_fun (apply_fun r (p 0)) i))).
+          let i.
+          assume Hi.
+          rewrite (apply_fun_graph
+            dom
+            (fun p0:set =>
+              add_SNo
+                (apply_fun flip_unit_interval (p0 1))
+                (mul_SNo
+                  (p0 1)
+                  (apply_fun normX (p0 0))))
+            p
+            Hp).
+          reflexivity.
+        }
+        claim HdiagEq :
+          forall p:set, p :e dom ->
+            apply_fun (diagonal_map dom Fcoord (ordsucc n)) p =
+            apply_fun H p.
+        {
+          let p.
+          assume Hp.
+          claim HdiagpPR :
+            apply_fun (diagonal_map dom Fcoord (ordsucc n)) p :e power_real (ordsucc n).
+          {
+            exact (HdiagFun
+              p
+              Hp).
+          }
+          claim HrawpPR :
+            apply_fun H p :e power_real (ordsucc n).
+          {
+            rewrite Hdef.
+            rewrite (apply_fun_graph
+              dom
+              (fun p0:set =>
+                graph (ordsucc n) (fun i:set =>
+                  mul_SNo
+                    (apply_fun lam p0)
+                    (apply_fun (apply_fun r (p0 0)) i)))
+              p
+              Hp).
+            exact (graph_to_R_in_power_real
+              (ordsucc n)
+              (fun i:set =>
+                mul_SNo
+                  (apply_fun lam p)
+                  (apply_fun (apply_fun r (p 0)) i))
+              (fun i Hi =>
+                Hcoord_val_in_R
+                  i
+                  p
+                  Hi
+                  Hp)).
+          }
+          apply (power_real_ext
+            (ordsucc n)
+            (apply_fun (diagonal_map dom Fcoord (ordsucc n)) p)
+            (apply_fun H p)).
+          - exact HdiagpPR.
+          - exact HrawpPR.
+          - let i.
+            assume Hi.
+            claim Hlhs :
+              apply_fun (apply_fun (diagonal_map dom Fcoord (ordsucc n)) p) i =
+              mul_SNo
+                (apply_fun lam p)
+                (apply_fun (apply_fun r (p 0)) i).
+            {
+              rewrite (diagonal_map_coord_apply
+                dom
+                Fcoord
+                (ordsucc n)
+                p
+                i
+                Hp
+                Hi).
+              rewrite (apply_fun_graph
+                (ordsucc n)
+                (fun i0:set =>
+                  graph dom (fun p0:set =>
+                    mul_SNo
+                      (apply_fun lam p0)
+                      (apply_fun (apply_fun r (p0 0)) i0)))
+                i
+                Hi).
+              rewrite (apply_fun_graph
+                dom
+                (fun p0:set =>
+                  mul_SNo
+                    (apply_fun lam p0)
+                    (apply_fun (apply_fun r (p0 0)) i))
+                p
+                Hp).
+              reflexivity.
+            }
+            claim Hrhs :
+              apply_fun (apply_fun H p) i =
+              mul_SNo
+                (apply_fun lam p)
+                (apply_fun (apply_fun r (p 0)) i).
+            {
+              rewrite Hdef.
+              rewrite (apply_fun_graph
+                dom
+                (fun p0:set =>
+                  graph (ordsucc n) (fun i0:set =>
+                    mul_SNo
+                      (apply_fun lam p0)
+                      (apply_fun (apply_fun r (p0 0)) i0)))
+                p
+                Hp).
+              rewrite (apply_fun_graph
+                (ordsucc n)
+                (fun i0:set =>
+                  mul_SNo
+                    (apply_fun lam p)
+                    (apply_fun (apply_fun r (p 0)) i0))
+                i
+                Hi).
+              reflexivity.
+            }
+            exact (eq_i_tra
+              (apply_fun (apply_fun (diagonal_map dom Fcoord (ordsucc n)) p) i)
+              (mul_SNo
+                (apply_fun lam p)
+                (apply_fun (apply_fun r (p 0)) i))
+              (apply_fun (apply_fun H p) i)
+              Hlhs
+              (eq_symm
+                (apply_fun (apply_fun H p) i)
+                (mul_SNo
+                  (apply_fun lam p)
+                  (apply_fun (apply_fun r (p 0)) i))
+                Hrhs)).
+        }
+        claim HFunEu :
+          function_on
+            H
+            dom
+            (euclidean_space (ordsucc n)).
+        {
+          rewrite Hdef.
+          apply (graph_function_on
+            dom
+            (euclidean_space (ordsucc n))
+            (fun p:set =>
+              graph (ordsucc n) (fun i:set =>
+                mul_SNo
+                  (apply_fun lam p)
+                  (apply_fun (apply_fun r (p 0)) i)))).
+          let p.
+          assume Hp.
+          exact (graph_to_R_in_power_real
+            (ordsucc n)
+            (fun i:set =>
+              mul_SNo
+                (apply_fun lam p)
+                (apply_fun (apply_fun r (p 0)) i))
+            (fun i Hi =>
+              Hcoord_val_in_R
+                i
+                p
+                Hi
+                Hp)).
+        }
+        exact (continuous_map_congr_on
+          dom
+          Tdom
+          (euclidean_space (ordsucc n))
+          (euclidean_topology (ordsucc n))
+          (diagonal_map dom Fcoord (ordsucc n))
+          H
+          HdiagContEu
+          HFunEu
+          HdiagEq).
+      }
+      claim HintoX :
+        forall p:set, p :e dom -> apply_fun H p :e X.
+      {
+        let p.
+        assume HpDom.
+        claim Hp0X : p 0 :e X.
+        {
+          exact (ap0_Sigma
+            X
+            (fun _ : set => unit_interval)
+            p
+            HpDom).
+        }
+        claim Hp1I : p 1 :e unit_interval.
+        {
+          exact (ap1_Sigma
+            X
+            (fun _ : set => unit_interval)
+            p
+            HpDom).
+        }
+        claim Hr0A : apply_fun r (p 0) :e A.
+        {
+          exact (HrFun
+            (p 0)
+            Hp0X).
+        }
+        claim Hr0Eu : apply_fun r (p 0) :e euclidean_space (ordsucc n).
+        {
+          exact (SepE1
+            (euclidean_space (ordsucc n))
+            (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+            (apply_fun r (p 0))
+            Hr0A).
+        }
+        claim HnormR : apply_fun normX (p 0) :e R.
+        {
+          exact (continuous_map_function_on
+            X
+            Tx
+            R
+            R_standard_topology
+            normX
+            HnormCont
+            (p 0)
+            Hp0X).
+        }
+        claim HnormS : SNo (apply_fun normX (p 0)).
+        {
+          exact (real_SNo
+            (apply_fun normX (p 0))
+            HnormR).
+        }
+        claim HnormPos :
+          Rlt 0 (apply_fun normX (p 0)).
+        {
+          rewrite (Rn_minus_origin_norm_map_apply
+            (ordsucc n)
+            (p 0)
+            Hsn_om
+            Hp0X).
+          exact (sqrt_SNo_nonneg_pos_of_pos
+            (euclidean_norm_sq (ordsucc n) (p 0))
+            (euclidean_norm_sq_in_R
+              (ordsucc n)
+              (p 0)
+              (nat_ordsucc
+                n
+                Hn_nat)
+              (SepE1
+                (euclidean_space (ordsucc n))
+                (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+                (p 0)
+                Hp0X))
+            (Rn_minus_origin_norm_sq_positive
+              (ordsucc n)
+              (p 0)
+              Hsn_om
+              Hp0X)).
+        }
+        claim Hp1R : p 1 :e R.
+        {
+          exact (SepE1
+            R
+            (fun s:set => ~(Rlt s 0) /\ ~(Rlt 1 s))
+            (p 1)
+            Hp1I).
+        }
+        claim Hp1S : SNo (p 1).
+        {
+          exact (real_SNo
+            (p 1)
+            Hp1R).
+        }
+        set coeff :=
+          add_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (mul_SNo
+              (p 1)
+              (apply_fun normX (p 0))).
+        claim HcoeffR : coeff :e R.
+        {
+          exact (real_add_SNo
+            (apply_fun flip_unit_interval (p 1))
+            (flip_unit_interval_in_R
+              (p 1)
+              Hp1I)
+            (mul_SNo
+              (p 1)
+              (apply_fun normX (p 0)))
+            (real_mul_SNo
+              (p 1)
+              Hp1R
+              (apply_fun normX (p 0))
+              HnormR)).
+        }
+        claim HcoeffS : SNo coeff.
+        {
+          exact (real_SNo
+            coeff
+            HcoeffR).
+        }
+        claim HcoeffNe0 : coeff <> 0.
+        {
+          apply (xm (p 1 = 0)).
+          - assume Hp10.
+            claim HcoeffEq1 : coeff = 1.
+            {
+              rewrite Hp10.
+              rewrite flip_unit_interval_at_0.
+              rewrite (mul_SNo_zeroL
+                (apply_fun normX (p 0))
+                HnormS).
+              rewrite (add_SNo_0R
+                1
+                SNo_1).
+              reflexivity.
+            }
+            assume Hc0.
+            claim H10 : 1 = 0.
+            {
+              rewrite <- HcoeffEq1.
+              exact Hc0.
+            }
+            exact (neq_1_0
+              H10).
+          - assume Hp1Ne0.
+            apply (xm (p 1 = 1)).
+            + assume Hp11.
+              claim HcoeffEqNorm :
+                coeff = apply_fun normX (p 0).
+              {
+                rewrite Hp11.
+                rewrite flip_unit_interval_at_1.
+                rewrite (mul_SNo_oneL
+                  (apply_fun normX (p 0))
+                  HnormS).
+                rewrite (add_SNo_0L
+                  (apply_fun normX (p 0))
+                  HnormS).
+                reflexivity.
+              }
+              claim HnormNe0 :
+                apply_fun normX (p 0) <> 0.
+              {
+                assume Hn0.
+                claim H00 : Rlt 0 0.
+                {
+                  rewrite <- Hn0 at 2.
+                  exact HnormPos.
+                }
+                exact (not_Rlt_refl
+                  0
+                  real_0
+                  H00).
+              }
+              assume Hc0.
+              apply HnormNe0.
+              rewrite <- HcoeffEqNorm.
+              exact Hc0.
+            + assume Hp1Ne1.
+              claim H0NeP1 : ~(0 = p 1).
+              {
+                assume H0eq.
+                exact (Hp1Ne0
+                  (eq_symm
+                    0
+                    (p 1)
+                    H0eq)).
+              }
+              claim Hp1Pos :
+                Rlt 0 (p 1).
+              {
+                exact (Rle_neq_implies_Rlt
+                  0
+                  (p 1)
+                  (unit_interval_Rle0
+                    (p 1)
+                    Hp1I)
+                  H0NeP1).
+              }
+              claim Hp1Lt1 :
+                Rlt (p 1) 1.
+              {
+                exact (Rle_neq_implies_Rlt
+                  (p 1)
+                  1
+                  (unit_interval_Rle1
+                    (p 1)
+                    Hp1I)
+                  Hp1Ne1).
+              }
+              claim HsPos :
+                Rlt 0 (apply_fun flip_unit_interval (p 1)).
+              {
+                rewrite (flip_unit_interval_apply
+                  (p 1)
+                  Hp1I).
+                exact (Rlt_0_diff_of_lt
+                  (p 1)
+                  1
+                  Hp1Lt1).
+              }
+              claim HtermPos :
+                Rlt 0 (mul_SNo (p 1) (apply_fun normX (p 0))).
+              {
+                claim HposS :
+                  0 < mul_SNo (p 1) (apply_fun normX (p 0)).
+                {
+                  exact (mul_SNo_pos_pos
+                    (p 1)
+                    (apply_fun normX (p 0))
+                    Hp1S
+                    HnormS
+                    (RltE_lt
+                      0
+                      (p 1)
+                      Hp1Pos)
+                    (RltE_lt
+                      0
+                      (apply_fun normX (p 0))
+                      HnormPos)).
+                }
+                exact (RltI
+                  0
+                  (mul_SNo (p 1) (apply_fun normX (p 0)))
+                  real_0
+                  (real_mul_SNo
+                    (p 1)
+                    Hp1R
+                    (apply_fun normX (p 0))
+                    HnormR)
+                  HposS).
+              }
+              claim HcoeffPos :
+                Rlt 0 coeff.
+              {
+                claim HsumPos :
+                  Rlt
+                    (add_SNo 0 0)
+                    (add_SNo
+                      (apply_fun flip_unit_interval (p 1))
+                      (mul_SNo (p 1) (apply_fun normX (p 0)))).
+                {
+                  exact (Rlt_add_SNo
+                    0
+                    (apply_fun flip_unit_interval (p 1))
+                    0
+                    (mul_SNo (p 1) (apply_fun normX (p 0)))
+                    HsPos
+                    HtermPos).
+                }
+                exact ((add_SNo_0L
+                  0
+                  SNo_0)
+                  (fun z _ => Rlt z coeff)
+                  HsumPos).
+              }
+              assume Hc0.
+              claim H00 : Rlt 0 0.
+              {
+                rewrite <- Hc0 at 2.
+                exact HcoeffPos.
+              }
+              exact (not_Rlt_refl
+                0
+                real_0
+                H00).
+        }
+        claim HvalEq :
+          apply_fun H p =
+          Rn_scalar_mult
+            (ordsucc n)
+            coeff
+            (apply_fun r (p 0)).
+        {
+          rewrite (apply_fun_graph
+            dom
+            (fun p0:set =>
+              Rn_scalar_mult
+                (ordsucc n)
+                (add_SNo
+                  (apply_fun flip_unit_interval (p0 1))
+                  (mul_SNo
+                    (p0 1)
+                    (apply_fun normX (p0 0))))
+                (apply_fun r (p0 0)))
+            p
+            HpDom).
+          reflexivity.
+        }
+        claim HvalEu :
+          apply_fun H p :e euclidean_space (ordsucc n).
+        {
+          rewrite HvalEq.
+          exact (Rn_scalar_mult_in_euclidean_space
+            (ordsucc n)
+            coeff
+            (apply_fun r (p 0))
+            Hr0Eu
+            HcoeffR).
+        }
+        claim HnotAll0 :
+          ~(forall i:set, i :e ordsucc n -> apply_fun (apply_fun H p) i = 0).
+        {
+          assume Hall0.
+          claim HrAll0 :
+            forall i:set, i :e ordsucc n -> apply_fun (apply_fun r (p 0)) i = 0.
+          {
+            let i.
+            assume Hi.
+            claim HriR :
+              apply_fun (apply_fun r (p 0)) i :e R.
+            {
+              exact (euclidean_space_coord_in_R
+                (ordsucc n)
+                (apply_fun r (p 0))
+                i
+                Hr0Eu
+                Hi).
+            }
+            claim HmulEq0 :
+              mul_SNo
+                coeff
+                (apply_fun (apply_fun r (p 0)) i)
+              =
+              0.
+            {
+              claim HcoordExpr :
+                apply_fun (apply_fun H p) i =
+                mul_SNo
+                  coeff
+                  (apply_fun (apply_fun r (p 0)) i).
+              {
+                rewrite HvalEq.
+                rewrite (Rn_scalar_mult_apply
+                  (ordsucc n)
+                  coeff
+                  (apply_fun r (p 0))
+                  i
+                  Hi).
+                reflexivity.
+              }
+              exact (eq_i_tra
+                (mul_SNo
+                  coeff
+                  (apply_fun (apply_fun r (p 0)) i))
+                (apply_fun (apply_fun H p) i)
+                0
+                (eq_symm
+                  (apply_fun (apply_fun H p) i)
+                  (mul_SNo
+                    coeff
+                    (apply_fun (apply_fun r (p 0)) i))
+                  HcoordExpr)
+                (Hall0
+                  i
+                  Hi)).
+            }
+            claim HmulEq00 :
+              mul_SNo
+                coeff
+                (apply_fun (apply_fun r (p 0)) i)
+              =
+              mul_SNo coeff 0.
+            {
+              exact (eq_i_tra
+                (mul_SNo
+                  coeff
+                  (apply_fun (apply_fun r (p 0)) i))
+                0
+                (mul_SNo coeff 0)
+                HmulEq0
+                (eq_symm
+                  (mul_SNo coeff 0)
+                  0
+                  (mul_SNo_zeroR
+                    coeff
+                    HcoeffS))).
+            }
+            exact (mul_SNo_nonzero_cancel
+              coeff
+              (apply_fun (apply_fun r (p 0)) i)
+              0
+              HcoeffS
+              HcoeffNe0
+              (real_SNo
+                (apply_fun (apply_fun r (p 0)) i)
+                HriR)
+              SNo_0
+              HmulEq00).
+          }
+          claim Hr0X : apply_fun r (p 0) :e X.
+          {
+            exact (Sn_subset_Rn_minus_origin
+              n
+              (apply_fun r (p 0))
+              Hn_om
+              Hr0A).
+          }
+          exact ((SepE2
+            (euclidean_space (ordsucc n))
+            (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+            (apply_fun r (p 0))
+            Hr0X)
+            HrAll0).
+        }
+        exact (SepI
+          (euclidean_space (ordsucc n))
+          (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0))
+          (apply_fun H p)
+          HvalEu
+          HnotAll0).
+      }
+      exact (continuous_map_range_restrict
+        dom
+        Tdom
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        H
+        X
+        HcontEu
+        (Sep_Subq
+          (euclidean_space (ordsucc n))
+          (fun v:set => ~(forall i:set, i :e ordsucc n -> apply_fun v i = 0)))
+        HintoX).
+    }
+    claim HH0 :
+      forall x:set, x :e X ->
+        apply_fun H (x, 0) = apply_fun hX x.
+    {
+      let x.
+      assume HxX.
+      claim Hx0Dom : (x, 0) :e dom.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval
+          x
+          0
+          HxX
+          zero_in_unit_interval).
+      }
+      claim HnormXR : apply_fun normX x :e R.
+      {
+        exact (continuous_map_function_on
+          X
+          Tx
+          R
+          R_standard_topology
+          normX
+          HnormCont
+          x
+          HxX).
+      }
+      claim HnormXS : SNo (apply_fun normX x).
+      {
+        exact (real_SNo
+          (apply_fun normX x)
+          HnormXR).
+      }
+      claim HrxA : apply_fun r x :e A.
+      {
+        exact (HrFun
+          x
+          HxX).
+      }
+      claim HrxEu : apply_fun r x :e euclidean_space (ordsucc n).
+      {
+        exact (SepE1
+          (euclidean_space (ordsucc n))
+          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+          (apply_fun r x)
+          HrxA).
+      }
+      rewrite (apply_fun_graph
+        dom
+        (fun p:set =>
+          Rn_scalar_mult
+            (ordsucc n)
+            (add_SNo
+              (apply_fun flip_unit_interval (p 1))
+              (mul_SNo
+                (p 1)
+                (apply_fun normX (p 0))))
+            (apply_fun r (p 0)))
+        (x, 0)
+        Hx0Dom).
+      rewrite tuple_2_1_eq.
+      rewrite flip_unit_interval_at_0.
+      rewrite tuple_2_0_eq.
+      rewrite (mul_SNo_zeroL
+        (apply_fun normX x)
+        HnormXS).
+      rewrite (add_SNo_0R
+        1
+        SNo_1).
+      rewrite (Rn_scalar_mult_ordsucc_one
+        n
+        (apply_fun r x)
+        Hn_nat
+        HrxEu).
+      rewrite HhXDef.
+      rewrite (compose_fun_apply
+        X
+        r
+        j
+        x
+        HxX).
+      rewrite (apply_fun_graph
+        A
+        (fun z:set => z)
+        (apply_fun r x)
+        HrxA).
+      reflexivity.
+    }
+    claim HH1 :
+      forall x:set, x :e X ->
+        apply_fun H (x, 1) = apply_fun idXMap x.
+    {
+      let x.
+      assume HxX.
+      claim Hx1Dom : (x, 1) :e dom.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval
+          x
+          1
+          HxX
+          one_in_unit_interval).
+      }
+      claim HnormXR : apply_fun normX x :e R.
+      {
+        exact (continuous_map_function_on
+          X
+          Tx
+          R
+          R_standard_topology
+          normX
+          HnormCont
+          x
+          HxX).
+      }
+      claim HnormXS : SNo (apply_fun normX x).
+      {
+        exact (real_SNo
+          (apply_fun normX x)
+          HnormXR).
+      }
+      rewrite (apply_fun_graph
+        dom
+        (fun p:set =>
+          Rn_scalar_mult
+            (ordsucc n)
+            (add_SNo
+              (apply_fun flip_unit_interval (p 1))
+              (mul_SNo
+                (p 1)
+                (apply_fun normX (p 0))))
+            (apply_fun r (p 0)))
+        (x, 1)
+        Hx1Dom).
+      rewrite tuple_2_1_eq.
+      rewrite flip_unit_interval_at_1.
+      rewrite tuple_2_0_eq.
+      rewrite (mul_SNo_oneL
+        (apply_fun normX x)
+        HnormXS).
+      rewrite (add_SNo_0L
+        (apply_fun normX x)
+        HnormXS).
+      rewrite (Rn_minus_origin_norm_map_apply
+        (ordsucc n)
+        x
+        Hsn_om
+        HxX).
+      rewrite HrDef.
+      rewrite (Rn_scalar_mult_sqrt_norm_normalize_eq
+        n
+        x
+        Hn_om
+        HxX).
+      rewrite HidXDef.
+      rewrite (apply_fun_graph
+        X
+        (fun z:set => z)
+        x
+        HxX).
+      reflexivity.
+    }
+    claim HHb0 :
+      forall t:set, t :e unit_interval ->
+        apply_fun H (b0, t) = b0.
+    {
+      let t.
+      assume Ht.
+      claim Hb0tDom : (b0, t) :e dom.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval
+          b0
+          t
+          Hb0X
+          Ht).
+      }
+      claim HtR : t :e R.
+      {
+        exact (SepE1
+          R
+          (fun s:set => ~(Rlt s 0) /\ ~(Rlt 1 s))
+          t
+          Ht).
+      }
+      claim HtS : SNo t.
+      {
+        exact (real_SNo
+          t
+          HtR).
+      }
+      claim Hb0Norm1 :
+        euclidean_norm_sq (ordsucc n) b0 = 1.
+      {
+        exact (SepE2
+          (euclidean_space (ordsucc n))
+          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+          b0
+          Hb0Sn).
+      }
+      claim Hb0Eu : b0 :e euclidean_space (ordsucc n).
+      {
+        exact (SepE1
+          (euclidean_space (ordsucc n))
+          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+          b0
+          Hb0Sn).
+      }
+      rewrite (apply_fun_graph
+        dom
+        (fun p:set =>
+          Rn_scalar_mult
+            (ordsucc n)
+            (add_SNo
+              (apply_fun flip_unit_interval (p 1))
+              (mul_SNo
+                (p 1)
+                (apply_fun normX (p 0))))
+            (apply_fun r (p 0)))
+        (b0, t)
+        Hb0tDom).
+      rewrite tuple_2_1_eq.
+      rewrite (flip_unit_interval_apply
+        t
+        Ht).
+      rewrite tuple_2_0_eq.
+      rewrite (Rn_minus_origin_norm_map_apply
+        (ordsucc n)
+        b0
+        Hsn_om
+        Hb0X).
+      rewrite Hb0Norm1.
+      rewrite sqrt_SNo_nonneg_1.
+      rewrite (mul_SNo_oneR
+        t
+        HtS).
+      rewrite <- (add_SNo_assoc
+        1
+        (minus_SNo t)
+        t
+        SNo_1
+        (SNo_minus_SNo
+          t
+          HtS)
+        HtS).
+      rewrite (add_SNo_minus_SNo_linv
+        t
+        HtS).
+      rewrite (add_SNo_0R
+        1
+        SNo_1).
+      rewrite Hrb0.
+      rewrite (Rn_scalar_mult_ordsucc_one
+        n
+        b0
+        Hn_nat
+        Hb0Eu).
+      reflexivity.
+    }
+    witness H.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * exact HHcont.
+        * exact HH0.
+      + exact HH1.
+    - exact HHb0.
+  }
+  let cls.
+  assume Hcls.
+  claim HhomEq :
+    apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls =
+    apply_fun (induced_homomorphism X Tx b0 X Tx b0 idXMap) cls.
+  {
+    exact (lemma58_1_basepoint_fixed_homotopy
+      X
+      Tx
+      X
+      Tx
+      b0
+      b0
+      hX
+      idXMap
+      HhXCont
+      HidXCont
+      HhXb0
+      HidXb0
+      Hb0X
+      HexH
+      cls
+      Hcls).
+  }
+  claim Hcomp :
+    apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls =
+    apply_fun (compose_fun GX rstar jstar) cls.
+  {
+    rewrite HhXDef.
+    exact (Theorem_52_4_functorial_composition
+      X
+      Tx
+      b0
+      A
+      Ta
+      b0
+      X
+      Tx
+      b0
+      r
+      j
+      HrCont
+      HjCont
+      Hrb0
+      Hjb0
+      Hb0X
+      cls
+      Hcls).
+  }
+  claim Hid :
+    apply_fun (induced_homomorphism X Tx b0 X Tx b0 idXMap) cls = cls.
+  {
+    rewrite HidXDef.
+    exact (Theorem_52_4_functorial_identity
+      X
+      Tx
+      b0
+      HtopX
+      Hb0X
+      cls
+      Hcls).
+  }
+  exact (eq_i_tra
+    (apply_fun (compose_fun GX rstar jstar) cls)
+    (apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls)
+    cls
+    (eq_symm
+      (apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls)
+      (apply_fun (compose_fun GX rstar jstar) cls)
+      Hcomp)
+    (eq_i_tra
+      (apply_fun (induced_homomorphism X Tx b0 X Tx b0 hX) cls)
+      (apply_fun (induced_homomorphism X Tx b0 X Tx b0 idXMap) cls)
+      cls
+      HhomEq
+      Hid)).
+}
+claim HjstarFun : function_on jstar GA GX.
+{
+  exact (group_homomorphism_function_on
+    GA
+    multA
+    GX
+    multX
+    jstar
+    HjstarHom).
+}
+claim HrstarFun : function_on rstar GX GA.
+{
+  exact (group_homomorphism_function_on
+    GX
+    multX
+    GA
+    multA
+    rstar
+    HrstarHom).
+}
+claim HjstarBij : bijection GA GX jstar.
+{
+  prove function_on jstar GA GX /\
+    (forall y:set, y :e GX ->
+      exists x:set, x :e GA /\ apply_fun jstar x = y /\
+        (forall x':set, x' :e GA -> apply_fun jstar x' = y -> x' = x)).
+  apply andI.
+  - exact HjstarFun.
+  - let y.
+    assume HyGX.
+    witness (apply_fun rstar y).
+    apply andI.
+    + apply andI.
+      * exact (HrstarFun
+          y
+          HyGX).
+      * exact (eq_i_tra
+          (apply_fun jstar (apply_fun rstar y))
+          (apply_fun (compose_fun GX rstar jstar) y)
+          y
+          (eq_symm
+            (apply_fun (compose_fun GX rstar jstar) y)
+            (apply_fun jstar (apply_fun rstar y))
+            (compose_fun_apply
+              GX
+              rstar
+              jstar
+              y
+              HyGX))
+          (Hjstar_rstar_id
+            y
+            HyGX)).
+    + let x'.
+      assume Hx'GA Hx'Eq.
+      claim HrEq :
+        apply_fun rstar (apply_fun jstar x') =
+        apply_fun rstar y.
+      {
+        rewrite Hx'Eq.
+        reflexivity.
+      }
+      claim Hleftx' :
+        apply_fun rstar (apply_fun jstar x') = x'.
+      {
+        rewrite <- (compose_fun_apply
+          GA
+          jstar
+          rstar
+          x'
+          Hx'GA).
+        exact (Hrstar_jstar_id
+          x'
+          Hx'GA).
+      }
+      exact (eq_i_tra
+        x'
+        (apply_fun rstar (apply_fun jstar x'))
+        (apply_fun rstar y)
+        (eq_symm
+          (apply_fun rstar (apply_fun jstar x'))
+          x'
+          Hleftx')
+        HrEq).
+}
+exact (group_isomorphism_intro
+  GA
+  multA
+  GX
+  multX
+  jstar
+  HjstarHom
+  HjstarBij).
+Qed.
 
 (** from S58 Definition (line 1315 in algtop.tex): deformation retract **)
 (** LATEX VERSION: A is a deformation retract of X if there is a continuous H: X x I -> X with H(x,0)=x, H(x,1) in A for all x, and H(a,t)=a for all a in A, t in I. **)
