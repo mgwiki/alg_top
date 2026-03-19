@@ -281394,6 +281394,27 @@ Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
       (forall a:set, a :e A -> apply_fun g a = apply_fun f a) /\
       nulhomotopic X Tx
         Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) g.
+let X Tx A Y n.
+assume Hnormal : normal_space (setprod X unit_interval)
+  (product_topology X Tx unit_interval unit_interval_topology).
+assume HAsub : A c= X.
+assume HAclosed : X :\: A :e Tx.
+assume Hn : n :e omega.
+assume HY : Y :e euclidean_topology n.
+let f.
+assume Hf_cont : continuous_map A (subspace_topology X Tx A)
+  Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) f.
+assume Hf_nul : nulhomotopic A (subspace_topology X Tx A)
+  Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) f.
+(** Proof of homotopy extension lemma (algtop.tex line 1930): **)
+(** Step 1: Get nulhomotopy F: AxI -> Y with F(a,0)=f(a), F(a,1)=y0 **)
+(** Step 2: Extend F to (AxI) union (Xx{1}) by F(x,1) = y0 **)
+(** Step 3: Tietze extends to G: XxI -> R^n **)
+(** Step 4: U = G^{-1}(Y) open, contains (AxI) union (Xx{1}) **)
+(** Step 5: Tube lemma: WxI c= U for open W containing A **)
+(** Step 6: Urysohn: phi: X -> [0,1], phi=0 on A, phi=1 on X-W **)
+(** Step 7: g(x) = G(x, phi(x)) extends f and maps to Y **)
+(** Step 8: H(x,t) = G(x, (1-t)phi(x)+t) is nulhomotopy of g **)
 admit.
 Admitted.
 
