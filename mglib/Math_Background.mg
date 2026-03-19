@@ -285203,15 +285203,38 @@ Lemma simple_closed_curve_arc_decomposition : forall C:set,
 let C. assume HC Hscc.
 (** Extract homeomorphism h: C -> S^1 **)
 apply Hscc. let h. assume Hh : homeomorphism C (subspace_topology (Sn 2) (Sn_topology 2) C) S1 S1_topology h.
-(** Get S1_semicircle_decomposition data **)
-(** S1 = upper union lower, upper cap lower = {bp, left}, etc. **)
-(** From S1_semicircle_decomposition: 9-fold conjunction **)
-(** Use the homeomorphism inverse g = h^{-1}: S^1 -> C **)
-(** Set C1 = image of S1_upper under g, C2 = image of S1_lower under g **)
-(** p = apply_fun g S1_basepoint, q = apply_fun g S1_left_point **)
-(** Transfer: connected via homeomorphism_preserves_connected **)
-(** Transfer: S^2-C1 open via: C1 closed in C, C closed in S^2, hence C1 closed in S^2 **)
-(** Full proof needs ~80 lines of homeomorphism property transfer **)
+set TC := subspace_topology (Sn 2) (Sn_topology 2) C.
+(** Get inverse homeomorphism g: S1 -> C **)
+apply (homeomorphism_inverse_is_homeomorphism_variant C TC S1 S1_topology h Hh).
+let g. assume Hg : homeomorphism S1 S1_topology C TC g.
+(** g: S1 -> C is a homeomorphism **)
+claim Hg_cont : continuous_map S1 S1_topology C TC g.
+{ exact (andEL (continuous_map S1 S1_topology C TC g)
+    (exists g0:set, continuous_map C TC S1 S1_topology g0 /\
+      (forall x:set, x :e S1 -> apply_fun g0 (apply_fun g x) = x) /\
+      (forall y:set, y :e C -> apply_fun g (apply_fun g0 y) = y))
+    Hg). }
+claim Hg_fn : function_on g S1 C.
+{ exact (continuous_map_function_on S1 S1_topology C TC g Hg_cont). }
+(** Set C1 = g(S1_upper), C2 = g(S1_lower), p = g(S1_basepoint), q = g(S1_left_point) **)
+set C1 := image_of g S1_upper.
+set C2 := image_of g S1_lower.
+set p0 := apply_fun g S1_basepoint.
+set q0 := apply_fun g S1_left_point.
+(** p0 and q0 are in C c= Sn 2 **)
+claim Hp0C : p0 :e C. { exact (Hg_fn S1_basepoint S1_basepoint_in_S1_early). }
+claim Hq0C : q0 :e C.
+{ claim HleftS1 : S1_left_point :e S1. { admit. }
+  exact (Hg_fn S1_left_point HleftS1). }
+claim Hp0S2 : p0 :e Sn 2. { exact (HC p0 Hp0C). }
+claim Hq0S2 : q0 :e Sn 2. { exact (HC q0 Hq0C). }
+(** Properties from S1_semicircle_decomposition **)
+(** S1 = upper union lower, upper cap lower = {bp, left}, bp in S1, left in S1, **)
+(** bp <> left, upper connected, lower connected, S1-upper open, S1-lower open **)
+(** These transfer via g to C **)
+(** Full transfer of 11 properties needs ~60 more lines **)
+(** For now, witness the existentials and admit the conjunction **)
+witness C1. witness C2. witness p0. witness q0.
 admit.
 Admitted.
 
