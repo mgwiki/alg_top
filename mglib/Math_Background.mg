@@ -294059,6 +294059,7 @@ Qed.
 (** Proof: R2_sub(z,w) = (z0-w0, z1-w1) = (z0+(-w0), z1+(-w1)) **)
 (** Addition is continuous (add_fun_R_continuous) and negation is continuous **)
 (** Component-wise: pi_i compose sub = add(pi_i(z), neg(pi_i(w))) **)
+(** Proven Alice **)
 Lemma R2_sub_map_continuous :
   continuous_map
     (setprod (setprod R R) (setprod R R))
@@ -294153,13 +294154,46 @@ claim Hpointwise : forall p:set, p :e R4 -> apply_fun h p = apply_fun g p.
     rewrite (compose_fun_apply R4 (projection2 R2 R2) (projection1 R R) p Hp).
     rewrite (projection2_apply R2 R2 p Hp).
     rewrite (projection1_apply R R (p 1) Hp1R2).
-    admit. }
+    rewrite (neg_fun_apply (p 1 0) Hp10R).
+    exact (real_minus_SNo (p 1 0) Hp10R). }
   rewrite (add_of_pair_map_apply R4 get_z0 get_nw0 p Hp Hgz0p Hgnw0p).
-  (** Now need to show the coordinates match R2_sub **)
-  (** This is very verbose; admit for now **)
-  admit. }
+  (** get_z0(p) = (p 0) 0 **)
+  rewrite (compose_fun_apply R4 (projection1 R2 R2) (projection1 R R) p Hp).
+  rewrite (projection1_apply R2 R2 p Hp).
+  rewrite (projection1_apply R R (p 0) Hp0R2).
+  (** get_nw0(p) = minus_SNo((p 1) 0) **)
+  rewrite (compose_fun_apply R4 get_w0 neg_fun p Hp).
+  rewrite (compose_fun_apply R4 (projection2 R2 R2) (projection1 R R) p Hp).
+  rewrite (projection2_apply R2 R2 p Hp).
+  rewrite (projection1_apply R R (p 1) Hp1R2).
+  rewrite (neg_fun_apply (p 1 0) Hp10R).
+  (** Now f0(p) = add_SNo (p 0 0) (minus_SNo (p 1 0)) **)
+  (** Need similar for f1. First compute f1 membership and then rewrite **)
+  claim Hgz1p : apply_fun get_z1 p :e R.
+  { rewrite (compose_fun_apply R4 (projection1 R2 R2) (projection2 R R) p Hp).
+    rewrite (projection1_apply R2 R2 p Hp).
+    rewrite (projection2_apply R R (p 0) Hp0R2). exact Hp01R. }
+  claim Hgnw1p : apply_fun get_nw1 p :e R.
+  { rewrite (compose_fun_apply R4 get_w1 neg_fun p Hp).
+    rewrite (compose_fun_apply R4 (projection2 R2 R2) (projection2 R R) p Hp).
+    rewrite (projection2_apply R2 R2 p Hp).
+    rewrite (projection2_apply R R (p 1) Hp1R2).
+    rewrite (neg_fun_apply (p 1 1) Hp11R).
+    exact (real_minus_SNo (p 1 1) Hp11R). }
+  rewrite (add_of_pair_map_apply R4 get_z1 get_nw1 p Hp Hgz1p Hgnw1p).
+  rewrite (compose_fun_apply R4 (projection1 R2 R2) (projection2 R R) p Hp).
+  rewrite (projection1_apply R2 R2 p Hp).
+  rewrite (projection2_apply R R (p 0) Hp0R2).
+  rewrite (compose_fun_apply R4 get_w1 neg_fun p Hp).
+  rewrite (compose_fun_apply R4 (projection2 R2 R2) (projection2 R R) p Hp).
+  rewrite (projection2_apply R2 R2 p Hp).
+  rewrite (projection2_apply R R (p 1) Hp1R2).
+  rewrite (neg_fun_apply (p 1 1) Hp11R).
+  (** Goal: (add_SNo (p 0 0) (minus_SNo (p 1 0)), add_SNo (p 0 1) (minus_SNo (p 1 1))) = R2_sub (p 0) (p 1) **)
+  (** R2_sub (p 0) (p 1) = (add_SNo (p 0 0) (minus_SNo (p 1 0)), add_SNo (p 0 1) (minus_SNo (p 1 1))) **)
+  reflexivity. }
 exact (continuous_map_congr_on R4 TR4 R2 TR2 h g Hh Hg_fn Hpointwise).
-Admitted.
+Qed.
 
 (** Helper: for fixed p in R2, the map x -> R2_sub x p is continuous R2 -> R2 **)
 (** Proven Alice **)
