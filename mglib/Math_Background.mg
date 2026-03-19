@@ -235565,6 +235565,83 @@ claim HconnK : forall k:set, k :e ordsucc n ->
 exact (connected_union_chain X Tx n seq Htop Hn HseqFun HconnK Hovlp).
 Qed.
 
+(** Infrastructure: choose points in each overlap of a finite chain. **)
+(** Given a chain seq(0)..seq(n) with consecutive overlaps nonempty, we pick **)
+(** t_seq(k) :e seq(k) cap seq(k+1) for each k :e n. **)
+(** Proven Charlie **)
+Lemma chain_overlap_points : forall n seq:set,
+  n :e omega ->
+  function_on seq (ordsucc n) (Power unit_interval) ->
+  (forall k:set, k :e n -> apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty) ->
+  exists t_seq:set,
+    function_on t_seq n unit_interval /\
+    (forall k:set, k :e n ->
+      apply_fun t_seq k :e apply_fun seq k /\
+      apply_fun t_seq k :e apply_fun seq (ordsucc k)).
+let n seq.
+assume HnOmega HseqPow Hovlp.
+set t_seq := graph n (fun k:set => Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k))).
+claim Ht_total : t_seq :e total_function_space n unit_interval.
+{
+  apply (graph_in_total_function_space n unit_interval
+    (fun k:set => Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k)))).
+  let k. assume Hk : k :e n.
+  claim Hk_On : k :e ordsucc n. { exact (ordsuccI1 n k Hk). }
+  claim Hseqk_pow : apply_fun seq k :e Power unit_interval.
+  { exact (HseqPow k Hk_On). }
+  claim Hseqk_sub : apply_fun seq k c= unit_interval.
+  { exact (PowerE unit_interval (apply_fun seq k) Hseqk_pow). }
+  claim Hover_ne : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+  { exact (Hovlp k Hk). }
+  claim Hex : exists t:set, t :e apply_fun seq k :/\: apply_fun seq (ordsucc k).
+  { exact (nonempty_has_element (apply_fun seq k :/\: apply_fun seq (ordsucc k)) Hover_ne). }
+  apply Hex. let t0. assume Ht0.
+  claim Ht0_in_seqk : t0 :e apply_fun seq k.
+  { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) t0 Ht0). }
+  claim Ht0_ui : t0 :e unit_interval.
+  { exact (Hseqk_sub t0 Ht0_in_seqk). }
+  claim Heps_in : (Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k)))
+    :e apply_fun seq k :/\: apply_fun seq (ordsucc k).
+  { exact (Eps_i_ax (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k)) t0 Ht0). }
+  claim Heps_in_seqk : (Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k)))
+    :e apply_fun seq k.
+  { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k))
+      (Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k))) Heps_in). }
+  exact (Hseqk_sub
+    (Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k)))
+    Heps_in_seqk).
+}
+claim Ht_fun : function_on t_seq n unit_interval.
+{
+  exact (total_function_on_function_on t_seq n unit_interval
+    (total_function_space_total_function_on_algtop n unit_interval t_seq Ht_total)).
+}
+witness t_seq.
+apply andI.
+- exact Ht_fun.
+- let k. assume Hk : k :e n.
+  claim Hover_ne : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+  { exact (Hovlp k Hk). }
+  claim Hex : exists t:set, t :e apply_fun seq k :/\: apply_fun seq (ordsucc k).
+  { exact (nonempty_has_element (apply_fun seq k :/\: apply_fun seq (ordsucc k)) Hover_ne). }
+  apply Hex. let t0. assume Ht0.
+  claim Happly :
+    apply_fun t_seq k =
+      Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k)).
+  { exact (apply_fun_graph n
+      (fun k0:set => Eps_i (fun t:set => t :e apply_fun seq k0 :/\: apply_fun seq (ordsucc k0)))
+      k Hk). }
+  rewrite Happly.
+  claim Heps_in : (Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k)))
+    :e apply_fun seq k :/\: apply_fun seq (ordsucc k).
+  { exact (Eps_i_ax (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k)) t0 Ht0). }
+  apply andI.
+  + exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k))
+      (Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k))) Heps_in).
+  + exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k))
+      (Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k))) Heps_in).
+Qed.
+
 (** Infrastructure: chain of U-type open balls in unit_interval covers a subinterval. **)
 (** Given overlapping balls 0..k all mapping f to U, their union is connected **)
 (** and contains 0 (from ball 0). By connected_subsets_real_are_intervals, **)
