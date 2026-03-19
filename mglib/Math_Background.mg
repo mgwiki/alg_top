@@ -283198,9 +283198,12 @@ apply and9I.
       + assume HpU : p :e S1_upper.
         claim Hnneg : ~(SNoLt (p 1) 0).
         { exact (SepE2 S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpU). }
-        (** From p in Vopen = setprod R (open_ray_lower R 0), extract p 1 in ray **)
-        (** Then Rlt (p 1) 0, hence SNoLt (p 1) 0, contradicting Hnneg **)
-        admit. }
+        (** p in setprod R (open_ray_lower R 0) -> p 1 in open_ray_lower R 0 -> Rlt (p 1) 0 **)
+        claim Hp1_ray : p 1 :e open_ray_lower R 0.
+        { exact (ap1_Sigma R (fun _ => open_ray_lower R 0) p HpV). }
+        claim Hp1Rlt : Rlt (p 1) 0. { exact (open_ray_lower_Rlt (p 1) 0 Hp1_ray). }
+        claim Hp1lt0 : SNoLt (p 1) 0. { exact (RltE_lt (p 1) 0 Hp1Rlt). }
+        exact (Hnneg Hp1lt0). }
   rewrite Heq.
   exact (subspace_topologyI (setprod R R) R2_topology S1 Vopen HVopen_in_R2).
 - (** S1 minus lower is open in S1: symmetric argument **)
