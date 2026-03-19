@@ -282647,10 +282647,58 @@ apply andI.
   (** x in C cap U **)
   claim HxCU : x :e C :/\: U. { exact (binintersectI C U x HxC HxU). }
   (** Now use R^m locally connected to find connected neighborhood **)
-  (** in the image f(C cap U), then pull back **)
-  (** This requires: f maps C cap U to an open set in W, **)
-  (** find connected open subset, pull back **)
-  (** Admit the remaining subspace topology work **)
+  (** Step 1: C cap U is open in the subspace C **)
+  set TC := subspace_topology X Tx C.
+  set TRm := euclidean_topology m.
+  set TW := subspace_topology (euclidean_space m) TRm W.
+  claim HCU_in_TC : C :/\: U :e TC.
+  { (** C cap U = U cap C, and U cap C in subspace by subspace_topology_intersection_open **)
+    claim HUC_in : U :/\: C :e TC.
+    { exact (subspace_topology_intersection_open X Tx C U HU). }
+    (** U cap C = C cap U **)
+    claim Hcomm : U :/\: C = C :/\: U.
+    { apply set_ext.
+      - let z. assume Hz. exact (binintersectI C U z (binintersectE2 U C z Hz) (binintersectE1 U C z Hz)).
+      - let z. assume Hz. exact (binintersectI U C z (binintersectE2 C U z Hz) (binintersectE1 C U z Hz)). }
+    rewrite <- Hcomm. exact HUC_in. }
+  (** Step 2: f maps C cap U to an open set in W **)
+  claim Hf_open : open_map C TC W TW f.
+  { exact (homeomorphism_open_map C TC W TW f Hhomeo). }
+  claim HfCU_open : image_of f (C :/\: U) :e TW.
+  { exact (open_map_image_open C TC W TW f (C :/\: U) Hf_open HCU_in_TC). }
+  (** Step 3: f(x) in image_of f (C cap U) **)
+  claim Hfx_in : apply_fun f x :e image_of f (C :/\: U).
+  { exact (ReplI (C :/\: U) (fun z => apply_fun f z) x HxCU). }
+  (** Step 4: W locally connected -> image_of f (C cap U) has connected open nbhd of f(x) **)
+  claim HW_lc : locally_connected W TW.
+  { (** W open in R^m, R^m lc -> W lc (open_subspace_locally_connected) **)
+    claim HWopen_in : open_in (euclidean_space m) TRm W.
+    { exact (andER (open_in X Tx C /\ x :e C /\ W c= euclidean_space m)
+        (open_in (euclidean_space m) TRm W)
+        (andEL (open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\ open_in (euclidean_space m) TRm W)
+          (homeomorphism C TC W TW f) Hfprops)). }
+    claim HWopen : W :e TRm.
+    { exact (andER (topology_on (euclidean_space m) TRm) (W :e TRm) HWopen_in). }
+    exact (open_subspace_locally_connected (euclidean_space m) TRm W Hlc_Rm HWopen). }
+  claim HfCU_open_in_W : image_of f (C :/\: U) :e TW.
+  { exact HfCU_open. }
+  (** Use locally_connected_local to find V' **)
+  claim Hfx_in_W : apply_fun f x :e W.
+  { exact (continuous_map_value_in_space C TC W TW f x
+      (andEL (continuous_map C TC W TW f)
+        (exists g:set, continuous_map W TW C TC g /\
+          (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y) /\
+          (forall z:set, z :e W -> apply_fun f (apply_fun g z) = z)) Hhomeo)
+      HxC). }
+  claim HV_exists : exists V':set, V' :e TW /\ apply_fun f x :e V' /\
+    V' c= image_of f (C :/\: U) /\
+    connected_space V' (subspace_topology W TW V').
+  { exact (locally_connected_local W TW (apply_fun f x) (image_of f (C :/\: U))
+      HW_lc Hfx_in_W HfCU_open Hfx_in). }
+  (** Step 5: Pull back V' via f^{-1} **)
+  (** The preimage of V' under f is connected and open in C **)
+  (** Then open in C and C open in X gives open in X **)
+  (** This completes the proof but needs formal preimage construction **)
   admit.
 Admitted.
 
