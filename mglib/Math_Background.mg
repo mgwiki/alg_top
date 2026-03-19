@@ -1,4 +1,4 @@
-(** Balance Alice 9029 **)
+(** Balance Alice 9024 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
 (** Balance Dave 2428 **)
@@ -283410,6 +283410,7 @@ apply andI. exact (eq_refl R). exact Hba.
 Qed.
 
 (** Helper: if a in open_ray_lower R b then Rlt a b **)
+(** Bounty 5 **)
 Lemma open_ray_lower_Rlt : forall a b:set,
   a :e open_ray_lower R b -> Rlt a b.
 let a b. assume Ha : a :e open_ray_lower R b.
