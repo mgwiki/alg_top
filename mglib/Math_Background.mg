@@ -282419,6 +282419,32 @@ Admitted.
 (**     G avoids 0 since alpha(t) not in g(A) means g(x) <> alpha(t). **)
 (** (5) H(x,t) = t.g(x) - p: homotopy k ~> constant(-p). **)
 (**     H avoids 0 since t.g(x) in B but p not in B. **)
+(** Forward declaration: two-arg R2 subtraction continuous (full proof at ~line 295k) **)
+Lemma R2_sub_map_continuous_early :
+  continuous_map
+    (setprod (setprod R R) (setprod R R))
+    (product_topology (setprod R R) R2_topology (setprod R R) R2_topology)
+    (setprod R R) R2_topology
+    (graph (setprod (setprod R R) (setprod R R)) (fun p:set =>
+      (add_SNo (p 0 0) (minus_SNo (p 1 0)), add_SNo (p 0 1) (minus_SNo (p 1 1))))).
+admit. Admitted.
+
+(** Forward declaration: subtracting (0,0) is identity **)
+(** Proven Alice **)
+Lemma R2_sub_zero_right_early : forall x:set,
+  x :e setprod R R ->
+  (add_SNo (x 0) (minus_SNo 0), add_SNo (x 1) (minus_SNo 0)) = x.
+let x. assume Hx : x :e setprod R R.
+claim Hx0 : x 0 :e R. { exact (ap0_Sigma R (fun _ => R) x Hx). }
+claim Hx1 : x 1 :e R. { exact (ap1_Sigma R (fun _ => R) x Hx). }
+claim Hx0S : SNo (x 0). { exact (real_SNo (x 0) Hx0). }
+claim Hx1S : SNo (x 1). { exact (real_SNo (x 1) Hx1). }
+rewrite minus_SNo_0.
+rewrite (add_SNo_0R (x 0) Hx0S).
+rewrite (add_SNo_0R (x 1) Hx1S).
+symmetry. exact (setprod_eta R R x Hx).
+Qed.
+
 (** Helper: translation by fixed vector is continuous on R2 **)
 (** This is a copy of R2_sub_right_continuous (defined later at ~line 294k) **)
 (** Forward declaration: R2_sub of different R2 points is nonzero **)
