@@ -280387,7 +280387,48 @@ Lemma locally_m_euclidean_lc_from_Rn_lc : forall X Tx m:set,
   locally_m_euclidean X Tx m ->
   locally_connected (euclidean_space m) (euclidean_topology m) ->
   locally_connected X Tx.
-admit.
+let X Tx m.
+assume Hlme : locally_m_euclidean X Tx m.
+assume Hlc_Rm : locally_connected (euclidean_space m) (euclidean_topology m).
+(** Unfold locally_m_euclidean: m in omega, topology_on X Tx, and chart property **)
+prove topology_on X Tx /\ forall x:set, x :e X -> forall U:set, U :e Tx -> x :e U ->
+  exists V:set, V :e Tx /\ x :e V /\ V c= U /\
+    connected_space V (subspace_topology X Tx V).
+(** Extract from locally_m_euclidean: ((m in omega /\ top) /\ charts) **)
+claim Hcharts : forall x:set, x :e X -> exists U V f:set,
+  open_in X Tx U /\ x :e U /\ V c= euclidean_space m /\
+  open_in (euclidean_space m) (euclidean_topology m) V /\
+  homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f.
+{ exact (andER (m :e omega /\ topology_on X Tx)
+    (forall x:set, x :e X -> exists U V f:set,
+      open_in X Tx U /\ x :e U /\ V c= euclidean_space m /\
+      open_in (euclidean_space m) (euclidean_topology m) V /\
+      homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f) Hlme). }
+claim Hfirst : m :e omega /\ topology_on X Tx.
+{ exact (andEL (m :e omega /\ topology_on X Tx)
+    (forall x:set, x :e X -> exists U V f:set,
+      open_in X Tx U /\ x :e U /\ V c= euclidean_space m /\
+      open_in (euclidean_space m) (euclidean_topology m) V /\
+      homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f) Hlme). }
+claim Hm : m :e omega. { exact (andEL (m :e omega) (topology_on X Tx) Hfirst). }
+claim Htop : topology_on X Tx. { exact (andER (m :e omega) (topology_on X Tx) Hfirst). }
+apply andI.
+- exact Htop.
+- let x. assume Hx : x :e X.
+  let U. assume HU : U :e Tx. assume HxU : x :e U.
+  (** Get chart (C, W, f) with x in C, f: C -> W homeo **)
+  claim Hchart : exists C W f:set,
+    open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\
+    open_in (euclidean_space m) (euclidean_topology m) W /\
+    homeomorphism C (subspace_topology X Tx C) W (subspace_topology (euclidean_space m) (euclidean_topology m) W) f.
+  { exact (Hcharts x Hx). }
+  apply Hchart. let C. assume HCe.
+  apply HCe. let W. assume HWe.
+  apply HWe. let f. assume Hfprops.
+  (** Extract chart properties **)
+  (** Then use R^m locally connected to find connected V' in f(U cap C) **)
+  (** Pull back V' to get connected open neighborhood in X **)
+  admit.
 Admitted.
 
 (** Forward declaration: S^2 is locally connected **)
