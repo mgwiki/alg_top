@@ -283457,6 +283457,55 @@ apply and7I.
 - exact Hcomp2_conn_X.
 Qed.
 
+(** Helper: S^2 minus two distinct points is homeomorphic to R^2 minus a point **)
+(** Proof: use stereographic projection from q to get S^2-{q} -> R^2, **)
+(** then restrict to S^2-{p,q} -> R^2-{stereo(p)}. **)
+(** For general q (not just south pole), need rotation sending q to south pole **)
+(** (SO(3) acts transitively on S^2). **)
+Lemma S2_minus_two_points_homeo_R2_minus_point : forall p q:set,
+  p :e Sn 2 -> q :e Sn 2 -> p <> q ->
+  exists f p':set, p' :e setprod R R /\
+    homeomorphism (Sn 2 :\: Sing p :\: Sing q)
+      (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q))
+      (setprod R R :\: Sing p')
+      (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'))
+      f.
+admit.
+Admitted.
+
+(** Helper: R^2-{p'} homeomorphic to R^2 minus origin (translation by -p') **)
+Lemma R2_minus_point_homeo_R2_minus_origin : forall p':set,
+  p' :e setprod R R ->
+  exists f:set,
+    homeomorphism (setprod R R :\: Sing p')
+      (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'))
+      R2_minus_origin R2_minus_origin_topology f.
+admit.
+Admitted.
+
+(** Helper: R^2 minus origin is not simply connected **)
+(** Proof: the inclusion S^1 -> R^2-{0} is not nulhomotopic (cor55_4a). **)
+(** If R^2-{0} were simply connected, every loop in R^2-{0} would be **)
+(** nulhomotopic, hence the identity S^1 -> R^2-{0} would be nulhomotopic. **)
+(** But cor55_4a says it is not. **)
+Lemma R2_minus_origin_not_simply_connected :
+  ~(simply_connected R2_minus_origin R2_minus_origin_topology).
+assume Hsc : simply_connected R2_minus_origin R2_minus_origin_topology.
+(** simply_connected gives path_connected + trivial pi1 at some x0 **)
+(** The inclusion S^1 -> R^2-{0} is not nulhomotopic **)
+claim Hnot_nul : ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+  (graph S1 (fun x:set => x))).
+{ exact cor55_4a_inclusion_S1_R2_not_nulhomotopic. }
+(** In a simply connected space, any map from a compact space is nulhomotopic **)
+(** More precisely: S^1 is compact, and any continuous map from S^1 to a **)
+(** simply connected space is nulhomotopic. **)
+(** Actually: simply_connected means path_connected + pi1 trivial. **)
+(** The identity S^1 -> R^2-{0} factors through a loop, and any loop in a **)
+(** simply connected space is nulhomotopic. **)
+(** For now, admit the contrapositive step **)
+admit.
+Admitted.
+
 (** Helper: the pi1 of S^2 minus two points is nontrivial **)
 (** (it is infinite cyclic, isomorphic to Z) **)
 Lemma pi1_S2_minus_two_points_nontrivial : forall p q:set,
@@ -283466,7 +283515,50 @@ Lemma pi1_S2_minus_two_points_nontrivial : forall p q:set,
     (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0 <>
   Sing (fundamental_group_id (Sn 2 :\: Sing p :\: Sing q)
     (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0).
-admit.
+let p q.
+assume Hp : p :e Sn 2. assume Hq : q :e Sn 2. assume Hpq : p <> q.
+let x0. assume Hx0 : x0 :e Sn 2 :\: Sing p :\: Sing q.
+assume Htriv : fundamental_group (Sn 2 :\: Sing p :\: Sing q)
+  (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0 =
+  Sing (fundamental_group_id (Sn 2 :\: Sing p :\: Sing q)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0).
+set X := Sn 2 :\: Sing p :\: Sing q.
+set Tx := subspace_topology (Sn 2) (Sn_topology 2) X.
+(** Get homeomorphism X -> R^2-{p'} **)
+apply (S2_minus_two_points_homeo_R2_minus_point p q Hp Hq Hpq).
+let f. assume Hf_data.
+apply Hf_data. let p'. assume Hp'_and_homeo.
+claim Hp'R2 : p' :e setprod R R.
+{ exact (andEL (p' :e setprod R R)
+    (homeomorphism X Tx (setprod R R :\: Sing p')
+      (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p')) f)
+    Hp'_and_homeo). }
+claim Hh1 : homeomorphism X Tx (setprod R R :\: Sing p')
+  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p')) f.
+{ exact (andER (p' :e setprod R R)
+    (homeomorphism X Tx (setprod R R :\: Sing p')
+      (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p')) f)
+    Hp'_and_homeo). }
+(** X simply connected (from Htriv + path connectedness need) **)
+(** Transfer: R^2-{p'} is simply connected **)
+claim HR2mp_sc : simply_connected (setprod R R :\: Sing p')
+  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p')).
+{ (** X has trivial pi1 at x0. Need to show X is simply connected. **)
+  (** simply_connected = path_connected + pi1 trivial **)
+  (** For now admit this transfer step **)
+  admit. }
+(** Get homeomorphism R^2-{p'} -> R^2-{0} **)
+apply (R2_minus_point_homeo_R2_minus_origin p' Hp'R2).
+let g. assume Hg.
+(** Transfer: R2_minus_origin is simply connected **)
+claim HR2m0_sc : simply_connected R2_minus_origin R2_minus_origin_topology.
+{ exact (homeomorphism_preserves_simply_connected
+    (setprod R R :\: Sing p')
+    (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'))
+    R2_minus_origin R2_minus_origin_topology
+    g Hg HR2mp_sc). }
+(** But R2_minus_origin is NOT simply connected **)
+exact (R2_minus_origin_not_simply_connected HR2m0_sc).
 Admitted.
 
 (** Helper: if two points are in the same component of S^2-f(A), **)
