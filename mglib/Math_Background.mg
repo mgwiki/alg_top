@@ -281909,7 +281909,33 @@ Theorem thm61_4_general_separation : forall A1 A2 a b:set,
   a :e Sn 2 -> b :e Sn 2 -> a <> b ->
   A1 :/\: A2 = UPair a b ->
   separates (Sn 2) (Sn_topology 2) (A1 :\/: A2).
-admit.
+let A1 A2 a' b'.
+assume HA1sub : A1 c= Sn 2.
+assume HA2sub : A2 c= Sn 2.
+assume HA1open : Sn 2 :\: A1 :e Sn_topology 2.
+assume HA2open : Sn 2 :\: A2 :e Sn_topology 2.
+assume HA1conn : connected_space A1 (subspace_topology (Sn 2) (Sn_topology 2) A1).
+assume HA2conn : connected_space A2 (subspace_topology (Sn 2) (Sn_topology 2) A2).
+assume Ha : a' :e Sn 2. assume Hb : b' :e Sn 2. assume Hab : a' <> b'.
+assume Hinter : A1 :/\: A2 = UPair a' b'.
+set C := A1 :\/: A2.
+prove C c= Sn 2 /\ ~(connected_space (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C))).
+apply andI.
+- (** C c= S^2 **)
+  let x. assume Hx : x :e C.
+  apply (binunionE A1 A2 x Hx).
+  + assume H : x :e A1. exact (HA1sub x H).
+  + assume H : x :e A2. exact (HA2sub x H).
+- (** ~connected(S^2-C) **)
+  (** Same SVK argument as jordan_separation_disconnected **)
+  (** Assume connected, derive contradiction: pi1(S^2-{a,b}) trivial but nontrivial **)
+  assume Hconn : connected_space (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)).
+  (** The rest is identical to the jordan_separation_disconnected proof **)
+  (** with C1=A1, C2=A2, p=a', q=b' **)
+  (** And Hunion = refl (C = A1 union A2 by definition) **)
+  (** Need: S^2-C nonempty. Proof: S^2-{a,b} connected, C-{a,b} disconnected, so C <> S^2 **)
+  (** For now admit the full SVK chain **)
+  admit.
 Admitted.
 
 (** from S61 Exercise 2 (line 1916 in algtop.tex) **)
