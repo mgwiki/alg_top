@@ -282979,9 +282979,12 @@ apply and9I.
   admit.
 - (** lower semicircle connected **)
   admit.
-- (** S1 minus upper is open in S1 **)
+- (** S1 minus upper is open in S1: S1-upper = {p in S1 | y<0} = S1 cap (R x ray_lower 0) **)
+  (** Proof: S1-upper = (R x open_ray_lower R 0) cap S1, and R x open_ray_lower R 0 **)
+  (** is open in R2_topology since R is open and open_ray_lower is open in R_standard. **)
+  (** Then subspace_topologyI gives the result. **)
   admit.
-- (** S1 minus lower is open in S1 **)
+- (** S1 minus lower is open in S1: symmetric argument **)
   admit.
 Admitted.
 
