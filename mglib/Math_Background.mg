@@ -283271,10 +283271,120 @@ exact (homeomorphism_lc_transfer (euclidean_space 2) (euclidean_topology 2) (set
   EuclidPlane_locally_connected).
 Qed.
 
+(** Helper: product of locally connected spaces is locally connected **)
+(** Proven Dave **)
+Lemma product_locally_connected : forall X Tx Y Ty:set,
+  locally_connected X Tx ->
+  locally_connected Y Ty ->
+  locally_connected (setprod X Y) (product_topology X Tx Y Ty).
+let X Tx Y Ty.
+assume HlcX HlcY.
+claim HtopX : topology_on X Tx. { exact (locally_connected_topology X Tx HlcX). }
+claim HtopY : topology_on Y Ty. { exact (locally_connected_topology Y Ty HlcY). }
+prove topology_on (setprod X Y) (product_topology X Tx Y Ty) /\
+  forall p:set, p :e setprod X Y -> forall U:set, U :e product_topology X Tx Y Ty -> p :e U ->
+    exists V:set, V :e product_topology X Tx Y Ty /\ p :e V /\ V c= U /\
+      connected_space V (subspace_topology (setprod X Y) (product_topology X Tx Y Ty) V).
+apply andI.
+- exact (product_topology_is_topology X Tx Y Ty HtopX HtopY).
+- let p. assume Hp : p :e setprod X Y.
+  let U. assume HU : U :e product_topology X Tx Y Ty. assume HpU : p :e U.
+  claim Hp0X : p 0 :e X. { exact (ap0_Sigma X (fun _ => Y) p Hp). }
+  claim Hp1Y : p 1 :e Y. { exact (ap1_Sigma X (fun _ => Y) p Hp). }
+  (** Find subbasis element b containing p inside U **)
+  claim Hrefine : exists b:set,
+    b :e product_subbasis X Tx Y Ty /\ (p :e b /\ b c= U).
+  { exact (generated_topology_local_refine (setprod X Y)
+      (product_subbasis X Tx Y Ty) U p HU HpU). }
+  apply Hrefine. let b. assume HbPack.
+  claim HbSubbasis : b :e product_subbasis X Tx Y Ty.
+  { exact (andEL (b :e product_subbasis X Tx Y Ty)
+      (p :e b /\ b c= U) HbPack). }
+  claim HpInbSub : p :e b /\ b c= U.
+  { exact (andER (b :e product_subbasis X Tx Y Ty)
+      (p :e b /\ b c= U) HbPack). }
+  claim HpInb : p :e b. { exact (andEL (p :e b) (b c= U) HpInbSub). }
+  claim HbSubU : b c= U. { exact (andER (p :e b) (b c= U) HpInbSub). }
+  (** Decompose b = rectangle_set U0 V0 **)
+  apply (product_subbasis_elem_is_rectangle X Tx Y Ty b HbSubbasis).
+  let U0. assume HU0inner. apply HU0inner. let V0. assume HU0V0Pack.
+  claim HU0V0left : U0 :e Tx /\ V0 :e Ty.
+  { exact (andEL (U0 :e Tx /\ V0 :e Ty) (b = rectangle_set U0 V0) HU0V0Pack). }
+  claim HU0T : U0 :e Tx.
+  { exact (andEL (U0 :e Tx) (V0 :e Ty) HU0V0left). }
+  claim HV0T : V0 :e Ty.
+  { exact (andER (U0 :e Tx) (V0 :e Ty) HU0V0left). }
+  claim HbEq : b = rectangle_set U0 V0.
+  { exact (andER (U0 :e Tx /\ V0 :e Ty) (b = rectangle_set U0 V0) HU0V0Pack). }
+  claim HpRect : p :e setprod U0 V0.
+  { rewrite <- rectangle_set_def. rewrite <- HbEq. exact HpInb. }
+  claim Hp0U0 : p 0 :e U0. { exact (ap0_Sigma U0 (fun _ => V0) p HpRect). }
+  claim Hp1V0 : p 1 :e V0. { exact (ap1_Sigma U0 (fun _ => V0) p HpRect). }
+  claim HU0subX : U0 c= X. { exact (topology_elem_subset X Tx U0 HtopX HU0T). }
+  claim HV0subY : V0 c= Y. { exact (topology_elem_subset Y Ty V0 HtopY HV0T). }
+  (** Find connected W1 c= U0 containing p 0 **)
+  apply (locally_connected_local X Tx (p 0) U0 HlcX Hp0X HU0T Hp0U0).
+  let W1. assume HW1Pack.
+  apply (and4E (W1 :e Tx) (p 0 :e W1) (W1 c= U0)
+    (connected_space W1 (subspace_topology X Tx W1)) HW1Pack).
+  assume HW1T HpW1 HW1subU0 HW1conn.
+  (** Find connected W2 c= V0 containing p 1 **)
+  apply (locally_connected_local Y Ty (p 1) V0 HlcY Hp1Y HV0T Hp1V0).
+  let W2. assume HW2Pack.
+  apply (and4E (W2 :e Ty) (p 1 :e W2) (W2 c= V0)
+    (connected_space W2 (subspace_topology Y Ty W2)) HW2Pack).
+  assume HW2T HpW2 HW2subV0 HW2conn.
+  claim HW1subX : W1 c= X. { exact (topology_elem_subset X Tx W1 HtopX HW1T). }
+  claim HW2subY : W2 c= Y. { exact (topology_elem_subset Y Ty W2 HtopY HW2T). }
+  witness (rectangle_set W1 W2).
+  apply and4I.
+  + exact (rectangle_set_open_in_product_topology X Tx Y Ty W1 W2 HtopX HtopY HW1T HW2T).
+  + prove p :e rectangle_set W1 W2.
+    rewrite (rectangle_set_def W1 W2).
+    rewrite (setprod_eta X Y p Hp).
+    exact (tuple_2_setprod_by_pair_Sigma W1 W2 (p 0) (p 1) HpW1 HpW2).
+  + prove rectangle_set W1 W2 c= U.
+    apply (Subq_tra (setprod W1 W2) (setprod U0 V0) U).
+    * exact (setprod_Subq W1 W2 U0 V0 HW1subU0 HW2subV0).
+    * claim HbSetprod : b = setprod U0 V0.
+      { rewrite HbEq. exact (rectangle_set_def U0 V0). }
+      rewrite <- HbSetprod. exact HbSubU.
+  + prove connected_space (rectangle_set W1 W2)
+      (subspace_topology (setprod X Y) (product_topology X Tx Y Ty) (rectangle_set W1 W2)).
+    rewrite (rectangle_set_def W1 W2).
+    rewrite <- (product_subspace_topology X Tx Y Ty W1 W2 HtopX HtopY HW1subX HW2subY).
+    exact (finite_product_connected W1 (subspace_topology X Tx W1)
+      W2 (subspace_topology Y Ty W2) HW1conn HW2conn).
+Qed.
+
 (** Helper: euclidean space R^n is locally connected (general) **)
 Lemma euclidean_space_locally_connected : forall n:set,
   n :e omega -> locally_connected (euclidean_space n) (euclidean_topology n).
-admit.
+let n. assume Hn : n :e omega.
+apply (nat_ind (fun n => locally_connected (euclidean_space n) (euclidean_topology n))).
+- (** Base case: n = 0. euclidean_space 0 = {Empty} is a single-point space **)
+  admit.
+- (** Inductive step: k -> ordsucc k **)
+  let k. assume Hnat_k : nat_p k.
+  assume Hlc_k : locally_connected (euclidean_space k) (euclidean_topology k).
+  prove locally_connected (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)).
+  (** euclidean_space (ordsucc k) ~ setprod (euclidean_space k) R **)
+  claim Hhomeo_split : homeomorphism (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k))
+    (setprod (euclidean_space k) R)
+    (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology)
+    (euclidean_space_succ_split_map k).
+  { exact (euclidean_space_succ_split_homeomorphism k Hnat_k). }
+  (** setprod (euclidean_space k) R locally connected: product of lc spaces **)
+  claim Hlc_prod : locally_connected (setprod (euclidean_space k) R)
+    (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology).
+  { exact (product_locally_connected (euclidean_space k) (euclidean_topology k) R R_standard_topology
+      Hlc_k R_standard_locally_connected). }
+  (** Transfer via homeomorphism **)
+  exact (homeomorphism_lc_transfer (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k))
+    (setprod (euclidean_space k) R)
+    (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology)
+    (euclidean_space_succ_split_map k) Hhomeo_split Hlc_prod).
+- exact (omega_nat_p n Hn).
 Admitted.
 
 (** Helper: locally m-euclidean implies locally connected **)
