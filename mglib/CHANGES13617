@@ -1,0 +1,37 @@
+CHANGES13617 - Dave
+Date: 2026-03-19
+
+## Fix: nulhomotopy_R2_from_unbounded_component boundary conditions
+
+### Problem
+Admits 2 and 3 in nulhomotopy_R2_from_unbounded_component (the boundary
+conditions F(x,0)=g(x) and F(x,1)=k(x) for the translation homotopy F)
+were previously coded with a `set F_trans := graph ...` abbreviation.
+The `rewrite (apply_fun_graph ...)` tactic failed because Megalodon's
+rewrite pattern matching doesn't transparently unfold local `set` definitions
+containing other local `set` definitions (r2sub) to match the LHS pattern.
+
+### Fix
+1. Replaced `set F_trans := graph ...; witness F_trans` with
+   direct `witness graph (setprod A unit_interval) (fun q => r2sub ...)`.
+   This puts the explicit graph term in the goal so apply_fun_graph matches.
+
+2. Used `claim Happly0 : ... { exact (apply_fun_graph ...) }; rewrite Happly0`
+   pattern instead of `rewrite (apply_fun_graph ...)` directly.
+   The claim+exact approach works because Megalodon uses definitional equality
+   for `exact` (beta-reduction of the graph application), while `rewrite`
+   requires syntactic pattern matching.
+
+### Status
+- nulhomotopy_R2_from_unbounded_component: 2 admits remain (F continuity,
+  scaling homotopy H). F boundary conditions now fully proved.
+- Dave's lock on thm74_1 (Bounty 270) valid until 1774034859.
+- Waiting for Charlie's lock on polygon_pasting_saturation_closed_in_B2
+  (Bounty 55) to expire at 1773967301 (~2.4h remaining).
+
+## Balance change
+Dave: 2428 (unchanged, no bounty on this fix).
+
+## Size change
+File grows by ~145 lines (bck13616 -> bck13617, includes Alice's admitted
+forward decls that were already in HEAD).

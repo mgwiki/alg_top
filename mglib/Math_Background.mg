@@ -282909,25 +282909,55 @@ apply andI.
       (** Boundary: F(x,0) = g(x) - alpha(0) = g(x) - (0,0) = g(x) **)
       (**           F(x,1) = g(x) - alpha(1) = g(x) - p = k_fun(x) **)
       (** Range in R2m0: by R2_translation_homotopy_avoids_zero **)
-      (** Define F **)
-      set F_trans := graph (setprod A unit_interval)
+      (** Witness F directly as the graph **)
+      witness graph (setprod A unit_interval)
         (fun q:set => r2sub (apply_fun g (q 0)) (apply_fun alpha (q 1))).
-      witness F_trans.
       (** Goal (left-assoc /\): (continuous /\ F(x,0)=g(x)) /\ F(x,1)=k(x) **)
       apply andI.
-      * (** (F_trans continuous) /\ F(x,0) = g(x) **)
+      * (** (F continuous) /\ F(x,0) = g(x) **)
         apply andI.
-        { (** F_trans continuous A x I -> R2m0 **)
+        { (** F continuous A x I -> R2m0 **)
           (** Continuity: F = r2sub o (g o pi1, alpha o pi2); all components continuous **)
           admit. }
         { (** F(x,0) = g(x) **)
           let x. assume Hx : x :e A.
           (** F(x,0) = r2sub(g(x), alpha(0)) = r2sub(g(x),(0,0)) = g(x) via R2_sub_zero_right_early **)
-          admit. }
+          claim Hgx_R2 : apply_fun g x :e setprod R R.
+          { exact (setminusE1 (setprod R R) (Sing (0, 0)) (apply_fun g x)
+              (continuous_map_function_on A TA R2m0 TR2m0 g Hg_cont x Hx)). }
+          claim Hx0_in : (x, 0) :e setprod A unit_interval.
+          { exact (tuple_2_setprod_by_pair_Sigma A unit_interval x 0 Hx zero_in_unit_interval). }
+          (** Use claim+exact for apply_fun_graph to avoid rewrite matching issue with local set defs **)
+          claim Happly0 : apply_fun (graph (setprod A unit_interval)
+            (fun q:set => r2sub (apply_fun g (q 0)) (apply_fun alpha (q 1)))) (x, 0) =
+            r2sub (apply_fun g ((x, 0) 0)) (apply_fun alpha ((x, 0) 1)).
+          { exact (apply_fun_graph (setprod A unit_interval)
+              (fun q:set => r2sub (apply_fun g (q 0)) (apply_fun alpha (q 1))) (x, 0) Hx0_in). }
+          rewrite Happly0.
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          rewrite Halpha0.
+          prove (add_SNo ((apply_fun g x) 0) (minus_SNo ((0, 0) 0)),
+                 add_SNo ((apply_fun g x) 1) (minus_SNo ((0, 0) 1))) = apply_fun g x.
+          rewrite (tuple_2_0_eq 0 0).
+          rewrite (tuple_2_1_eq 0 0).
+          exact (R2_sub_zero_right_early (apply_fun g x) Hgx_R2). }
       * (** F(x,1) = k_fun(x) **)
         let x. assume Hx : x :e A.
         (** F(x,1) = r2sub(g(x), alpha(1)) = r2sub(g(x), p) = k_fun(x) **)
-        admit. }
+        claim Hx1_in : (x, 1) :e setprod A unit_interval.
+        { exact (tuple_2_setprod_by_pair_Sigma A unit_interval x 1 Hx one_in_unit_interval). }
+        claim Happly1 : apply_fun (graph (setprod A unit_interval)
+          (fun q:set => r2sub (apply_fun g (q 0)) (apply_fun alpha (q 1)))) (x, 1) =
+          r2sub (apply_fun g ((x, 1) 0)) (apply_fun alpha ((x, 1) 1)).
+        { exact (apply_fun_graph (setprod A unit_interval)
+            (fun q:set => r2sub (apply_fun g (q 0)) (apply_fun alpha (q 1))) (x, 1) Hx1_in). }
+        rewrite Happly1.
+        rewrite tuple_2_0_eq.
+        rewrite tuple_2_1_eq.
+        rewrite Halpha1.
+        symmetry.
+        exact (apply_fun_graph A (fun x0:set => r2sub (apply_fun g x0) p) x Hx). }
   claim Hk_hom_const : homotopic_maps A TA R2m0 TR2m0 k_fun (const_fun A neg_p).
   { (** Scaling homotopy H(x,t) = (1-t).g(x) - p **)
     (** H(x,0) = g(x) - p = k(x), H(x,1) = -p = neg_p **)
