@@ -282374,6 +282374,80 @@ Admitted.
 (**     G avoids 0 since alpha(t) not in g(A) means g(x) <> alpha(t). **)
 (** (5) H(x,t) = t.g(x) - p: homotopy k ~> constant(-p). **)
 (**     H avoids 0 since t.g(x) in B but p not in B. **)
+(** Helper: translation by fixed vector is continuous on R2 **)
+(** This is a copy of R2_sub_right_continuous (defined later at ~line 294k) **)
+(** placed here to avoid forward reference in nulhomotopy proof **)
+(** Proven Alice **)
+Lemma R2_translation_continuous_early : forall p:set,
+  p :e setprod R R ->
+  continuous_map (setprod R R) R2_topology (setprod R R) R2_topology
+    (graph (setprod R R) (fun x:set =>
+      (add_SNo (x 0) (minus_SNo (p 0)), add_SNo (x 1) (minus_SNo (p 1))))).
+let p. assume HpR2 : p :e setprod R R.
+set R2 := setprod R R.
+claim HtopR : topology_on R R_standard_topology. { exact R_standard_topology_is_topology. }
+claim HtopR2 : topology_on R2 R2_topology.
+{ exact (product_topology_is_topology R R_standard_topology R R_standard_topology HtopR HtopR). }
+claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+set neg_p0 := minus_SNo (p 0). set neg_p1 := minus_SNo (p 1).
+claim Hnp0R : neg_p0 :e R. { exact (real_minus_SNo (p 0) Hp0R). }
+claim Hnp1R : neg_p1 :e R. { exact (real_minus_SNo (p 1) Hp1R). }
+set proj0 := projection1 R R. set proj1 := projection2 R R.
+claim Hproj0 : continuous_map R2 R2_topology R R_standard_topology proj0.
+{ exact (projection1_continuous_in_product R R_standard_topology R R_standard_topology HtopR HtopR). }
+claim Hproj1 : continuous_map R2 R2_topology R R_standard_topology proj1.
+{ exact (projection2_continuous_in_product R R_standard_topology R R_standard_topology HtopR HtopR). }
+set c0 := const_fun R2 neg_p0. set c1 := const_fun R2 neg_p1.
+claim Hc0 : continuous_map R2 R2_topology R R_standard_topology c0.
+{ exact (const_fun_continuous R2 R2_topology R R_standard_topology neg_p0 HtopR2 HtopR Hnp0R). }
+claim Hc1 : continuous_map R2 R2_topology R R_standard_topology c1.
+{ exact (const_fun_continuous R2 R2_topology R R_standard_topology neg_p1 HtopR2 HtopR Hnp1R). }
+set f0 := compose_fun R2 (pair_map R2 proj0 c0) add_fun_R.
+set f1 := compose_fun R2 (pair_map R2 proj1 c1) add_fun_R.
+claim Hf0 : continuous_map R2 R2_topology R R_standard_topology f0.
+{ exact (add_two_continuous_R R2 R2_topology proj0 c0 HtopR2 Hproj0 Hc0). }
+claim Hf1 : continuous_map R2 R2_topology R R_standard_topology f1.
+{ exact (add_two_continuous_R R2 R2_topology proj1 c1 HtopR2 Hproj1 Hc1). }
+set h := pair_map R2 f0 f1.
+claim Hh : continuous_map R2 R2_topology R2 (product_topology R R_standard_topology R R_standard_topology) h.
+{ exact (maps_into_products R2 R2_topology R R_standard_topology R R_standard_topology f0 f1 Hf0 Hf1). }
+set g := graph R2 (fun x:set =>
+  (add_SNo (x 0) (minus_SNo (p 0)), add_SNo (x 1) (minus_SNo (p 1)))).
+claim Hg_fn : function_on g R2 R2.
+{ let x. assume Hx : x :e R2.
+  prove apply_fun g x :e R2.
+  rewrite (apply_fun_graph R2 (fun z:set =>
+    (add_SNo (z 0) (minus_SNo (p 0)), add_SNo (z 1) (minus_SNo (p 1)))) x Hx).
+  exact (tuple_2_setprod_by_pair_Sigma R R
+    (add_SNo (x 0) (minus_SNo (p 0))) (add_SNo (x 1) (minus_SNo (p 1)))
+    (real_add_SNo (x 0) (ap0_Sigma R (fun _ => R) x Hx) (minus_SNo (p 0)) Hnp0R)
+    (real_add_SNo (x 1) (ap1_Sigma R (fun _ => R) x Hx) (minus_SNo (p 1)) Hnp1R)). }
+claim Hpointwise : forall x:set, x :e R2 -> apply_fun h x = apply_fun g x.
+{ let x. assume Hx : x :e R2.
+  claim Hx0R : x 0 :e R. { exact (ap0_Sigma R (fun _ => R) x Hx). }
+  claim Hx1R : x 1 :e R. { exact (ap1_Sigma R (fun _ => R) x Hx). }
+  rewrite (apply_fun_graph R2 (fun z:set =>
+    (add_SNo (z 0) (minus_SNo (p 0)), add_SNo (z 1) (minus_SNo (p 1)))) x Hx).
+  rewrite (pair_map_apply R2 R R f0 f1 x Hx).
+  claim Hproj0x : apply_fun proj0 x :e R.
+  { rewrite (projection1_apply R R x Hx). exact Hx0R. }
+  claim Hc0x : apply_fun c0 x :e R.
+  { rewrite (const_fun_apply R2 neg_p0 x Hx). exact Hnp0R. }
+  rewrite (add_of_pair_map_apply R2 proj0 c0 x Hx Hproj0x Hc0x).
+  rewrite (projection1_apply R R x Hx).
+  rewrite (const_fun_apply R2 neg_p0 x Hx).
+  claim Hproj1x : apply_fun proj1 x :e R.
+  { rewrite (projection2_apply R R x Hx). exact Hx1R. }
+  claim Hc1x : apply_fun c1 x :e R.
+  { rewrite (const_fun_apply R2 neg_p1 x Hx). exact Hnp1R. }
+  rewrite (add_of_pair_map_apply R2 proj1 c1 x Hx Hproj1x Hc1x).
+  rewrite (projection2_apply R R x Hx).
+  rewrite (const_fun_apply R2 neg_p1 x Hx).
+  reflexivity. }
+exact (continuous_map_congr_on R2 R2_topology R2 R2_topology h g Hh Hg_fn Hpointwise).
+Qed.
+
 Lemma nulhomotopy_R2_from_unbounded_component : forall A TA:set,
   compact_space A TA ->
   forall g:set,
