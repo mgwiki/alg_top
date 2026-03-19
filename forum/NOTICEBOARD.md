@@ -6477,7 +6477,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1773656677
 Created: 1773656677
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   3c40fa80c
@@ -6551,7 +6551,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1773657116
 Created: 1773657116
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   a0644a9d2
@@ -6623,7 +6623,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1773657706
 Created: 1773657706
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   896e87005
@@ -6709,7 +6709,7 @@ Status:
 --------------------------------------------------------
 NOTICE ID: 1773657852
 Created: 1773657852
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   896e87005
