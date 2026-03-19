@@ -280425,9 +280425,16 @@ apply andI.
   apply Hchart. let C. assume HCe.
   apply HCe. let W. assume HWe.
   apply HWe. let f. assume Hfprops.
-  (** Extract chart properties **)
-  (** Then use R^m locally connected to find connected V' in f(U cap C) **)
-  (** Pull back V' to get connected open neighborhood in X **)
+  (** The 5-fold conjunction from the chart: **)
+  (** (((open_in C /\ x in C) /\ W c= R^m) /\ open_in W) /\ homeomorphism **)
+  (** For the locally connected argument: **)
+  (** 1. C cap U open in X (intersection of opens) **)
+  (** 2. C cap U open in C (subspace of open) **)
+  (** 3. f(C cap U) open in W (f homeomorphism -> open map) **)
+  (** 4. R^m lc -> W lc (open subspace) -> f(C cap U) has connected open nbhd **)
+  (** 5. Pull back via f^{-1}: connected (by homeo), open in C, open in X **)
+  (** This is correct but requires substantial subspace topology bookkeeping **)
+  (** Admit for now; the mathematical argument is clear **)
   admit.
 Admitted.
 
