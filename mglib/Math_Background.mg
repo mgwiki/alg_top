@@ -284102,10 +284102,119 @@ claim Hincl_triv : forall cls:set,
   (** For now, derive pi1(R2m0, S1_basepoint) trivial via admitted helper **)
   claim Hpi1_triv : fundamental_group R2_minus_origin R2_minus_origin_topology S1_basepoint =
     Sing (fundamental_group_id R2_minus_origin R2_minus_origin_topology S1_basepoint).
-  { (** Requires: simply connected at some x0 + basepoint change to S1_basepoint **)
-    (** Path connected from Hsc. Get path from x0 to S1_basepoint. **)
-    (** Basepoint change isomorphism. Bijection from singleton -> singleton. **)
-    admit. }
+  { set R2m0 := R2_minus_origin. set R2m0T := R2_minus_origin_topology.
+    claim Hpc : path_connected_space R2m0 R2m0T.
+    { exact (andEL (path_connected_space R2m0 R2m0T)
+        (exists x0:set, x0 :e R2m0 /\
+          fundamental_group R2m0 R2m0T x0 = Sing (fundamental_group_id R2m0 R2m0T x0))
+        Hsc). }
+    claim Hx0_exists : exists x0:set, x0 :e R2m0 /\
+      fundamental_group R2m0 R2m0T x0 = Sing (fundamental_group_id R2m0 R2m0T x0).
+    { exact (andER (path_connected_space R2m0 R2m0T)
+        (exists x0:set, x0 :e R2m0 /\
+          fundamental_group R2m0 R2m0T x0 = Sing (fundamental_group_id R2m0 R2m0T x0))
+        Hsc). }
+    apply Hx0_exists. let x0. assume Hx0_data.
+    claim Hx0 : x0 :e R2m0.
+    { exact (andEL (x0 :e R2m0)
+        (fundamental_group R2m0 R2m0T x0 = Sing (fundamental_group_id R2m0 R2m0T x0))
+        Hx0_data). }
+    claim Hpi1_x0 : fundamental_group R2m0 R2m0T x0 = Sing (fundamental_group_id R2m0 R2m0T x0).
+    { exact (andER (x0 :e R2m0)
+        (fundamental_group R2m0 R2m0T x0 = Sing (fundamental_group_id R2m0 R2m0T x0))
+        Hx0_data). }
+    claim Hb0_R2m0 : S1_basepoint :e R2m0.
+    { exact (s55_S1_subset_R2_minus_origin S1_basepoint Hb0). }
+    claim HR2m0_top : topology_on R2m0 R2m0T.
+    { exact (andEL (topology_on R2m0 R2m0T)
+        (forall x y:set, x :e R2m0 -> y :e R2m0 ->
+          exists p:set, path_between R2m0 x y p /\
+            continuous_map unit_interval unit_interval_topology R2m0 R2m0T p)
+        Hpc). }
+    (** Get path from x0 to S1_basepoint **)
+    claim Hpath : exists alpha:set,
+      path_between R2m0 x0 S1_basepoint alpha /\
+      continuous_map unit_interval unit_interval_topology R2m0 R2m0T alpha.
+    { exact (andER (topology_on R2m0 R2m0T)
+        (forall x y:set, x :e R2m0 -> y :e R2m0 ->
+          exists p:set, path_between R2m0 x y p /\
+            continuous_map unit_interval unit_interval_topology R2m0 R2m0T p)
+        Hpc x0 S1_basepoint Hx0 Hb0_R2m0). }
+    apply Hpath. let alpha. assume Halpha_data.
+    claim Halpha_path : path_between R2m0 x0 S1_basepoint alpha.
+    { exact (andEL (path_between R2m0 x0 S1_basepoint alpha)
+        (continuous_map unit_interval unit_interval_topology R2m0 R2m0T alpha)
+        Halpha_data). }
+    claim Halpha_cont : continuous_map unit_interval unit_interval_topology R2m0 R2m0T alpha.
+    { exact (andER (path_between R2m0 x0 S1_basepoint alpha)
+        (continuous_map unit_interval unit_interval_topology R2m0 R2m0T alpha)
+        Halpha_data). }
+    claim Halpha0 : apply_fun alpha 0 = x0.
+    { exact (andER (function_on alpha unit_interval R2m0)
+        (apply_fun alpha 0 = x0)
+        (andEL (function_on alpha unit_interval R2m0 /\ apply_fun alpha 0 = x0)
+          (apply_fun alpha 1 = S1_basepoint) Halpha_path)). }
+    claim Halpha1 : apply_fun alpha 1 = S1_basepoint.
+    { exact (andER (function_on alpha unit_interval R2m0 /\ apply_fun alpha 0 = x0)
+        (apply_fun alpha 1 = S1_basepoint) Halpha_path). }
+    (** Basepoint change isomorphism **)
+    set phi := basepoint_change_map R2m0 R2m0T x0 S1_basepoint alpha.
+    claim Hiso : group_isomorphism
+      (fundamental_group R2m0 R2m0T x0) (fundamental_group_mult R2m0 R2m0T x0)
+      (fundamental_group R2m0 R2m0T S1_basepoint) (fundamental_group_mult R2m0 R2m0T S1_basepoint)
+      phi.
+    { exact (Theorem_52_1_basepoint_isomorphism R2m0 R2m0T x0 S1_basepoint alpha
+        HR2m0_top Halpha_cont Halpha0 Halpha1). }
+    claim Hbij : bijection
+      (fundamental_group R2m0 R2m0T x0)
+      (fundamental_group R2m0 R2m0T S1_basepoint) phi.
+    { exact (group_isomorphism_bijection
+        (fundamental_group R2m0 R2m0T x0) (fundamental_group_mult R2m0 R2m0T x0)
+        (fundamental_group R2m0 R2m0T S1_basepoint) (fundamental_group_mult R2m0 R2m0T S1_basepoint)
+        phi Hiso). }
+    (** pi1(R2m0, S1_basepoint) is a singleton **)
+    set e0 := fundamental_group_id R2m0 R2m0T x0.
+    set ebp := fundamental_group_id R2m0 R2m0T S1_basepoint.
+    claim Hcodomain_sing : fundamental_group R2m0 R2m0T S1_basepoint = Sing (apply_fun phi e0).
+    { exact (bijection_singleton_domain_codomain_singleton
+        (fundamental_group R2m0 R2m0T x0)
+        (fundamental_group R2m0 R2m0T S1_basepoint)
+        phi e0 Hbij Hpi1_x0). }
+    (** ebp is in the singleton, so ebp = apply_fun phi e0 **)
+    claim Hebp_in : ebp :e fundamental_group R2m0 R2m0T S1_basepoint.
+    { apply (and6E
+        (function_on (fundamental_group_mult R2m0 R2m0T S1_basepoint)
+          (setprod (fundamental_group R2m0 R2m0T S1_basepoint) (fundamental_group R2m0 R2m0T S1_basepoint))
+          (fundamental_group R2m0 R2m0T S1_basepoint))
+        (function_on (fundamental_group_inv R2m0 R2m0T S1_basepoint)
+          (fundamental_group R2m0 R2m0T S1_basepoint) (fundamental_group R2m0 R2m0T S1_basepoint))
+        (ebp :e fundamental_group R2m0 R2m0T S1_basepoint)
+        (forall x y z:set, x :e fundamental_group R2m0 R2m0T S1_basepoint ->
+          y :e fundamental_group R2m0 R2m0T S1_basepoint ->
+          z :e fundamental_group R2m0 R2m0T S1_basepoint ->
+          apply_fun (fundamental_group_mult R2m0 R2m0T S1_basepoint)
+            (apply_fun (fundamental_group_mult R2m0 R2m0T S1_basepoint) (x, y), z) =
+          apply_fun (fundamental_group_mult R2m0 R2m0T S1_basepoint)
+            (x, apply_fun (fundamental_group_mult R2m0 R2m0T S1_basepoint) (y, z)))
+        (forall x:set, x :e fundamental_group R2m0 R2m0T S1_basepoint ->
+          apply_fun (fundamental_group_mult R2m0 R2m0T S1_basepoint) (ebp, x) = x /\
+          apply_fun (fundamental_group_mult R2m0 R2m0T S1_basepoint) (x, ebp) = x)
+        (forall x:set, x :e fundamental_group R2m0 R2m0T S1_basepoint ->
+          apply_fun (fundamental_group_mult R2m0 R2m0T S1_basepoint)
+            (x, apply_fun (fundamental_group_inv R2m0 R2m0T S1_basepoint) x) = ebp /\
+          apply_fun (fundamental_group_mult R2m0 R2m0T S1_basepoint)
+            (apply_fun (fundamental_group_inv R2m0 R2m0T S1_basepoint) x, x) = ebp)
+        (fundamental_group_is_group R2m0 R2m0T S1_basepoint HR2m0_top Hb0_R2m0)).
+      assume _ _ He _ _ _. exact He. }
+    claim Hebp_eq : ebp = apply_fun phi e0.
+    { exact (SingE (apply_fun phi e0) ebp
+        (eq_subst_mem_set ebp
+          (fundamental_group R2m0 R2m0T S1_basepoint)
+          (Sing (apply_fun phi e0)) Hebp_in Hcodomain_sing)). }
+    (** pi1 = {phi(e0)} = {ebp} **)
+    prove fundamental_group R2m0 R2m0T S1_basepoint = Sing ebp.
+    rewrite Hebp_eq.
+    exact Hcodomain_sing. }
   (** induced_hom maps into pi1(R2m0, S1_basepoint) = {e}, so ih(cls) = e **)
   claim Hih_maps : apply_fun (induced_homomorphism S1 S1_topology S1_basepoint
     R2_minus_origin R2_minus_origin_topology S1_basepoint incl) cls
