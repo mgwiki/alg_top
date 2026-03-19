@@ -282419,6 +282419,17 @@ Admitted.
 (**     G avoids 0 since alpha(t) not in g(A) means g(x) <> alpha(t). **)
 (** (5) H(x,t) = t.g(x) - p: homotopy k ~> constant(-p). **)
 (**     H avoids 0 since t.g(x) in B but p not in B. **)
+(** Forward declaration: translation homotopy avoids zero (full proof at ~line 295k) **)
+(** If alpha(t) avoids image(g, A), then g(x) - alpha(t) != (0,0) **)
+Lemma R2_translation_homotopy_avoids_zero_early : forall A g alpha:set,
+  (forall x:set, x :e A -> apply_fun g x :e setprod R R) ->
+  (forall t:set, t :e unit_interval -> apply_fun alpha t :e setprod R R) ->
+  (forall t:set, t :e unit_interval -> ~(apply_fun alpha t :e image_of g A)) ->
+  forall x t:set, x :e A -> t :e unit_interval ->
+  (add_SNo (apply_fun g x 0) (minus_SNo (apply_fun alpha t 0)),
+   add_SNo (apply_fun g x 1) (minus_SNo (apply_fun alpha t 1))) <> (0, 0).
+admit. Admitted.
+
 (** Forward declaration: two-arg R2 subtraction continuous (full proof at ~line 295k) **)
 Lemma R2_sub_map_continuous_early :
   continuous_map
