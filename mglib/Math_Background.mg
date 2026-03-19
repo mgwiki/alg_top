@@ -281409,12 +281409,57 @@ Admitted.
 (** when A is closed in X (i.e., X\A open in Tx). **)
 (** Proof: A x I is closed (product of closed sets), X x {1} is closed (product of X and singleton). **)
 (** Union of two closed sets is closed. **)
+(** Proven Alice **)
 Lemma homotopy_extension_domain_closed : forall X Tx A:set,
   topology_on X Tx -> A c= X -> X :\: A :e Tx ->
   closed_in (setprod X unit_interval)
     (product_topology X Tx unit_interval unit_interval_topology)
     (setprod A unit_interval :\/: setprod X (Sing 1)).
-admit.
+let X Tx A.
+assume Htop : topology_on X Tx.
+assume HAsub : A c= X.
+assume HAcomp : X :\: A :e Tx.
+set TXI := product_topology X Tx unit_interval unit_interval_topology.
+(** A closed in X **)
+claim HA_closed : closed_in X Tx A.
+{ prove topology_on X Tx /\ (A c= X /\ exists U:set, U :e Tx /\ A = X :\: U).
+  apply andI.
+  - exact Htop.
+  - apply andI.
+    + exact HAsub.
+    + witness (X :\: A). apply andI.
+      { exact HAcomp. }
+      { (** A = X \ (X \ A) -- double complement **)
+        exact (eq_symm (X :\: (X :\: A)) A (setminus_setminus_eq X A HAsub)). } }
+(** A x I closed in X x I **)
+claim HAtopI : topology_on unit_interval unit_interval_topology.
+{ exact unit_interval_topology_on. }
+claim HI_closed : closed_in unit_interval unit_interval_topology unit_interval.
+{ apply (closed_inI unit_interval unit_interval_topology unit_interval HAtopI (Subq_ref unit_interval)).
+  witness Empty. apply andI.
+  - exact (topology_has_empty unit_interval unit_interval_topology HAtopI).
+  - exact (eq_symm (unit_interval :\: Empty) unit_interval (setminus_Empty_eq unit_interval)). }
+claim HAI_closed : closed_in (setprod X unit_interval) TXI (setprod A unit_interval).
+{ exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology A unit_interval HA_closed HI_closed). }
+(** {1} closed in I (Hausdorff space + singleton) **)
+claim HI_Haus : Hausdorff_space unit_interval unit_interval_topology.
+{ admit. }
+claim H1_in_I : 1 :e unit_interval. { exact one_in_unit_interval. }
+claim H1_closed : closed_in unit_interval unit_interval_topology (Sing 1).
+{ exact (Hausdorff_singletons_closed unit_interval unit_interval_topology 1 HI_Haus H1_in_I). }
+(** X closed in X **)
+claim HX_closed : closed_in X Tx X.
+{ apply (closed_inI X Tx X Htop (Subq_ref X)).
+  witness Empty. apply andI.
+  - exact (topology_has_empty X Tx Htop).
+  - exact (eq_symm (X :\: Empty) X (setminus_Empty_eq X)). }
+(** X x {1} closed in X x I **)
+claim HX1_closed : closed_in (setprod X unit_interval) TXI (setprod X (Sing 1)).
+{ exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology X (Sing 1) HX_closed H1_closed). }
+(** Union of closed is closed **)
+exact (closed_binunion (setprod X unit_interval) TXI
+  (setprod A unit_interval) (setprod X (Sing 1))
+  HAI_closed HX1_closed).
 Admitted.
 
 (** Helper for 62.1: the graph-of-phi map x -> (x, phi(x)) is continuous **)
