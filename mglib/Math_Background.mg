@@ -282837,8 +282837,69 @@ apply andI.
     claim Hk_cont : continuous_map A TA R2m0 TR2m0 k_fun.
     { exact (continuous_map_range_restrict A TA (setprod R R) R2_topology k_fun R2m0
         Hk_cont_R2 HR2m0_sub_local Hk_in_R2m0). }
-    (** Full homotopy F: A x I -> R2m0 still needs construction **)
-    admit. }
+    (** Full homotopy F: A x I -> R2m0 **)
+    (** F(x,t) = g(x) - alpha(t) where alpha: I -> R2-image(g,A) is the path from (0,0) to p **)
+    (** Extract alpha from Hp_data **)
+    claim Halpha_exists : exists alpha:set,
+      path_between (setprod R R :\: image_of g A) (0, 0) p alpha /\
+      continuous_map unit_interval unit_interval_topology
+        (setprod R R :\: image_of g A)
+        (subspace_topology (setprod R R) R2_topology (setprod R R :\: image_of g A)) alpha.
+    { exact (andER
+        (p :e setprod R R /\ p <> (0, 0) /\ ~(p :e image_of g A) /\ ~((0, 0) :e image_of g A))
+        (exists alpha:set,
+          path_between (setprod R R :\: image_of g A) (0, 0) p alpha /\
+          continuous_map unit_interval unit_interval_topology
+            (setprod R R :\: image_of g A)
+            (subspace_topology (setprod R R) R2_topology (setprod R R :\: image_of g A)) alpha)
+        Hp_data). }
+    apply Halpha_exists. let alpha. assume Halpha_data.
+    claim Halpha_path : path_between (setprod R R :\: image_of g A) (0, 0) p alpha.
+    { exact (andEL
+        (path_between (setprod R R :\: image_of g A) (0, 0) p alpha)
+        (continuous_map unit_interval unit_interval_topology
+          (setprod R R :\: image_of g A)
+          (subspace_topology (setprod R R) R2_topology (setprod R R :\: image_of g A)) alpha)
+        Halpha_data). }
+    claim Halpha_cont : continuous_map unit_interval unit_interval_topology
+      (setprod R R :\: image_of g A)
+      (subspace_topology (setprod R R) R2_topology (setprod R R :\: image_of g A)) alpha.
+    { exact (andER
+        (path_between (setprod R R :\: image_of g A) (0, 0) p alpha)
+        (continuous_map unit_interval unit_interval_topology
+          (setprod R R :\: image_of g A)
+          (subspace_topology (setprod R R) R2_topology (setprod R R :\: image_of g A)) alpha)
+        Halpha_data). }
+    (** alpha(0) = (0,0) and alpha(1) = p (from path_between) **)
+    claim Halpha0 : apply_fun alpha 0 = (0, 0).
+    { exact (andER (function_on alpha unit_interval (setprod R R :\: image_of g A))
+        (apply_fun alpha 0 = (0, 0))
+        (andEL (function_on alpha unit_interval (setprod R R :\: image_of g A) /\ apply_fun alpha 0 = (0, 0))
+          (apply_fun alpha 1 = p) Halpha_path)). }
+    claim Halpha1 : apply_fun alpha 1 = p.
+    { exact (andER
+        (function_on alpha unit_interval (setprod R R :\: image_of g A) /\ apply_fun alpha 0 = (0, 0))
+        (apply_fun alpha 1 = p) Halpha_path). }
+    (** Now construct the homotopic_maps structure **)
+    (** Need: g continuous, k_fun continuous, exists F with right properties **)
+    prove homotopic_maps A TA R2m0 TR2m0 g k_fun.
+    prove (continuous_map A TA R2m0 TR2m0 g /\ continuous_map A TA R2m0 TR2m0 k_fun) /\
+      exists F:set,
+        continuous_map (setprod A unit_interval)
+          (product_topology A TA unit_interval unit_interval_topology)
+          R2m0 TR2m0 F /\
+        (forall x:set, x :e A -> apply_fun F (x, 0) = apply_fun g x) /\
+        (forall x:set, x :e A -> apply_fun F (x, 1) = apply_fun k_fun x).
+    apply andI.
+    + exact (andI (continuous_map A TA R2m0 TR2m0 g) (continuous_map A TA R2m0 TR2m0 k_fun) Hg_cont Hk_cont).
+    + (** Construct F: (x,t) -> r2sub (g(x)) (alpha(t)) **)
+      (** This is the composition of (g o pi1, alpha o pi2): AxI -> R2 x R2 with subtraction **)
+      (** Continuity from R2_sub_map_continuous_early **)
+      (** Boundary: F(x,0) = g(x) - alpha(0) = g(x) - (0,0) = g(x) **)
+      (**           F(x,1) = g(x) - alpha(1) = g(x) - p = k_fun(x) **)
+      (** Range in R2m0: by R2_translation_homotopy_avoids_zero **)
+      (** Full construction is ~60 lines; key infrastructure is now available **)
+      admit. }
   claim Hk_hom_const : homotopic_maps A TA R2m0 TR2m0 k_fun (const_fun A neg_p).
   { (** Scaling homotopy H(x,t) = (1-t).g(x) - p **)
     (** H(x,0) = g(x) - p = k(x), H(x,1) = -p = neg_p **)
