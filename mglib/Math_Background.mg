@@ -294038,6 +294038,49 @@ Lemma R2_sub_right_continuous : forall p:set,
   p :e setprod R R ->
   continuous_map (setprod R R) R2_topology (setprod R R) R2_topology
     (graph (setprod R R) (fun x:set => R2_sub x p)).
+let p. assume HpR2 : p :e setprod R R.
+claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+(** R2_sub x p = (x0 + (-p0), x1 + (-p1)). **)
+(** Each coordinate is a continuous map R^2 -> R: **)
+(**   f0(x) = x0 + (-p0) = add(proj1(x), -p0) **)
+(**   f1(x) = x1 + (-p1) = add(proj2(x), -p1) **)
+(** Then by maps_into_products, the combined map is continuous. **)
+(** For each fi: composition of (proj_i, const(-pi)) with add **)
+set R2 := setprod R R.
+claim HtopR : topology_on R R_standard_topology. { exact R_standard_topology_is_topology. }
+claim HtopR2 : topology_on R2 R2_topology.
+{ exact (product_topology_is_topology R R_standard_topology R R_standard_topology HtopR HtopR). }
+set neg_p0 := minus_SNo (p 0).
+set neg_p1 := minus_SNo (p 1).
+claim Hnp0R : neg_p0 :e R. { exact (real_minus_SNo (p 0) Hp0R). }
+claim Hnp1R : neg_p1 :e R. { exact (real_minus_SNo (p 1) Hp1R). }
+(** Coordinate projections: continuous **)
+claim Hproj0 : continuous_map R2 R2_topology R R_standard_topology (projection1 R R).
+{ exact (projection1_continuous_in_product R R_standard_topology R R_standard_topology HtopR HtopR). }
+claim Hproj1 : continuous_map R2 R2_topology R R_standard_topology (projection2 R R).
+{ exact (projection2_continuous_in_product R R_standard_topology R R_standard_topology HtopR HtopR). }
+(** Constant -p0, -p1: continuous **)
+claim Hconst0 : continuous_map R2 R2_topology R R_standard_topology (const_fun R2 neg_p0).
+{ exact (const_fun_continuous R2 R2_topology R R_standard_topology neg_p0 HtopR2 HtopR Hnp0R). }
+claim Hconst1 : continuous_map R2 R2_topology R R_standard_topology (const_fun R2 neg_p1).
+{ exact (const_fun_continuous R2 R2_topology R R_standard_topology neg_p1 HtopR2 HtopR Hnp1R). }
+(** f0 = proj0 + const(-p0), f1 = proj1 + const(-p1): continuous **)
+set f0 := compose_fun R2 (pair_map R2 (projection1 R R) (const_fun R2 neg_p0)) add_fun_R.
+set f1 := compose_fun R2 (pair_map R2 (projection2 R R) (const_fun R2 neg_p1)) add_fun_R.
+claim Hf0 : continuous_map R2 R2_topology R R_standard_topology f0.
+{ exact (add_two_continuous_R R2 R2_topology (projection1 R R) (const_fun R2 neg_p0) HtopR2 Hproj0 Hconst0). }
+claim Hf1 : continuous_map R2 R2_topology R R_standard_topology f1.
+{ exact (add_two_continuous_R R2 R2_topology (projection2 R R) (const_fun R2 neg_p1) HtopR2 Hproj1 Hconst1). }
+(** Combined map (f0, f1): R2 -> R2 continuous by maps_into_products **)
+set h := pair_map R2 f0 f1.
+claim Hh : continuous_map R2 R2_topology R2 (product_topology R R_standard_topology R R_standard_topology) h.
+{ exact (maps_into_products R2 R2_topology R R_standard_topology R R_standard_topology f0 f1 Hf0 Hf1). }
+(** Now need: graph R2 (fun x => R2_sub x p) agrees with h pointwise **)
+(** Then use continuous_map_congr_on to transfer continuity **)
+(** Need: function_on (graph ...) R2 R2 and pointwise equality with h **)
+(** Both require showing R2_sub x p in R2 and h(x) = R2_sub x p for x in R2 **)
+(** The pointwise equality needs add_of_pair_map_apply, projection_apply, const_fun_apply **)
 admit.
 Admitted.
 
