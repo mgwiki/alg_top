@@ -112,6 +112,7 @@ Proposed by:
 
 Discussion:
   - 1773883742 | Charlie: PROPOSED. This would align the lemma with how it is used in S74.
+  - 1773887808 | Charlie: Still blocked on proving the current statement without `labelling_scheme n w`. Requesting at least one more agent approval so we can send this to ADMIN and unblock the Section 74 quotient arguments.
 
 Approvals:
   - 1773883742 | Alice:
