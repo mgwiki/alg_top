@@ -283460,6 +283460,16 @@ claim Hord : order_rel R a b. { exact (SepE2 R (fun x => order_rel R x b) a Ha).
 exact (order_rel_R_implies_Rlt a b Hord).
 Qed.
 
+(** Helper: if a in open_ray_upper R b then Rlt b a **)
+(** Proven Alice **)
+Lemma open_ray_upper_Rlt : forall a b:set,
+  a :e open_ray_upper R b -> Rlt b a.
+let a b. assume Ha : a :e open_ray_upper R b.
+prove Rlt b a.
+claim Hord : order_rel R b a. { exact (SepE2 R (fun x => order_rel R b x) a Ha). }
+exact (order_rel_R_implies_Rlt b a Hord).
+Qed.
+
 (** Helper: S^1 = upper union lower, upper cap lower = {(1,0), (-1,0)} **)
 (** Upper and lower are both arcs (homeomorphic to [-1,1] via x-projection) **)
 (** Upper is connected (it's path-connected via the circle arc) **)
@@ -283668,9 +283678,7 @@ apply and9I.
         claim Hp1_ray : p 1 :e open_ray_upper R 0.
         { exact (ap1_Sigma R (fun _ => open_ray_upper R 0) p HpV). }
         claim Hp1Rlt : Rlt 0 (p 1).
-        { (** From open_ray_upper: order_rel R 0 (p 1) -> Rlt 0 (p 1) **)
-          (** Symmetric to open_ray_lower_Rlt **)
-          admit. }
+        { exact (open_ray_upper_Rlt (p 1) 0 Hp1_ray). }
         claim Hp1gt0 : SNoLt 0 (p 1). { exact (RltE_lt 0 (p 1) Hp1Rlt). }
         exact (Hnneg Hp1gt0). }
   rewrite Heq2.
