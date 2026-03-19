@@ -283468,6 +283468,7 @@ Qed.
 
 (** Forward declaration: components of S^2-C are open in S^2 **)
 (** Uses Sn2_locally_connected + Sn2_complement_open (QED) **)
+(** Proven Alice **)
 Lemma jordan_step1_component_open : forall C x:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
