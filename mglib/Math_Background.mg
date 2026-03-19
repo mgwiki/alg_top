@@ -282363,10 +282363,66 @@ apply andI.
 Qed.
 
 (** Helper: R is locally connected (from lpc) **)
+(** Proven Bob **)
 Lemma R_standard_locally_connected :
   locally_connected R R_standard_topology.
-admit.
-Admitted.
+prove topology_on R R_standard_topology /\
+  forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
+    exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+      connected_space V (subspace_topology R R_standard_topology V).
+claim HtopR : topology_on R R_standard_topology.
+{
+  exact (andEL
+    (topology_on R R_standard_topology)
+    (forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
+      exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+        path_connected_space V (subspace_topology R R_standard_topology V))
+    R_standard_locally_path_connected).
+}
+claim Hlocpc :
+  forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
+    exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+      path_connected_space V (subspace_topology R R_standard_topology V).
+{
+  exact (andER
+    (topology_on R R_standard_topology)
+    (forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
+      exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+        path_connected_space V (subspace_topology R R_standard_topology V))
+    R_standard_locally_path_connected).
+}
+apply andI.
+- exact HtopR.
+- let x.
+  assume HxR.
+  let U.
+  assume HU HxU.
+  claim HexV :
+    exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+      path_connected_space V (subspace_topology R R_standard_topology V).
+  {
+    exact (Hlocpc x HxR U HU HxU).
+  }
+  apply HexV.
+  let V.
+  assume HV4.
+  apply (and4E
+    (V :e R_standard_topology)
+    (x :e V)
+    (V c= U)
+    (path_connected_space V (subspace_topology R R_standard_topology V))
+    HV4).
+  assume HVopen HVx HVsub HVpc.
+  witness V.
+  apply and4I.
+  * exact HVopen.
+  * exact HVx.
+  * exact HVsub.
+  * exact (path_connected_implies_connected
+      V
+      (subspace_topology R R_standard_topology V)
+      HVpc).
+Qed.
 
 (** Helper: EuclidPlane = R x R is locally path connected **)
 (** Proof: product of lpc spaces is lpc. Basis of product topology **)
