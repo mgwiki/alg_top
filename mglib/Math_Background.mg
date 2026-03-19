@@ -282860,8 +282860,26 @@ apply andI.
     prove x :e {y :e C | apply_fun f y :e V'}.
     exact (SepI C (fun y:set => apply_fun f y :e V') x HxC Hfx_in_V').
   + (** V_pullback c= U **)
-    (** V' c= image(f, C cap U) -> preimage(f, V') c= C cap U c= U **)
-    admit.
+    (** If y in V_pullback: y in C, f(y) in V' c= image(f, C cap U). **)
+    (** So f(y) = f(z) for some z in C cap U. f injective -> y = z in C cap U c= U. **)
+    let y. assume Hy : y :e V_pullback.
+    prove y :e U.
+    claim HyC : y :e C. { exact (SepE1 C (fun z:set => apply_fun f z :e V') y Hy). }
+    claim Hfy_in_V' : apply_fun f y :e V'.
+    { exact (SepE2 C (fun z:set => apply_fun f z :e V') y Hy). }
+    claim Hfy_in_img : apply_fun f y :e image_of f (C :/\: U).
+    { exact (HV'sub (apply_fun f y) Hfy_in_V'). }
+    (** apply_fun f y :e {apply_fun f z | z in C cap U} -> exists z in C cap U, f(y)=f(z) **)
+    apply (ReplE_impred (C :/\: U) (fun z:set => apply_fun f z) (apply_fun f y) Hfy_in_img).
+    let z. assume Hz : z :e C :/\: U.
+    assume Hfeq : apply_fun f y = apply_fun f z.
+    (** f injective: y = z **)
+    claim HzC : z :e C. { exact (binintersectE1 C U z Hz). }
+    claim Hyeqz : y = z.
+    { exact (homeomorphism_injective C TC W TW f Hhomeo y z HyC HzC Hfeq). }
+    (** z in C cap U -> z in U **)
+    claim HzU : z :e U. { exact (binintersectE2 C U z Hz). }
+    rewrite Hyeqz. exact HzU.
   + (** connected V_pullback in subspace of X **)
     (** V_pullback in C, homeomorphism f maps V_pullback to V' (connected) **)
     (** homeomorphism preserves connected **)
