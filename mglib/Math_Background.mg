@@ -285224,8 +285224,7 @@ set q0 := apply_fun g S1_left_point.
 (** p0 and q0 are in C c= Sn 2 **)
 claim Hp0C : p0 :e C. { exact (Hg_fn S1_basepoint S1_basepoint_in_S1_early). }
 claim Hq0C : q0 :e C.
-{ claim HleftS1 : S1_left_point :e S1. { admit. }
-  exact (Hg_fn S1_left_point HleftS1). }
+{ exact (Hg_fn S1_left_point S1_left_point_in_S1). }
 claim Hp0S2 : p0 :e Sn 2. { exact (HC p0 Hp0C). }
 claim Hq0S2 : q0 :e Sn 2. { exact (HC q0 Hq0C). }
 (** Properties from S1_semicircle_decomposition **)
