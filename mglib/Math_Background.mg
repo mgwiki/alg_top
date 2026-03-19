@@ -238293,22 +238293,11 @@ claim Htransition_VU : forall k:set, k :e nch ->
   + exact HsK.
   + exact HsSK.
   + apply binintersectI. { exact (HskU s HsSK). } { exact (HkV s HsK). } }
-(** Case analysis: is f entirely in U or V (despite ball chain)? **)
-(** If all balls are U-type: f maps into U everywhere, contradicting HnotAllU. **)
-(** If all balls are V-type: same with HnotAllV. **)
-(** So there must be at least one transition in the chain. **)
-(** **)
-(** Once we have a transition, the word data is built by: **)
-(** 1. Splitting f at the transition point **)
-(** 2. Building sub-loops via connecting paths in U cap V **)
-(** 3. Getting word data for each sub-loop (word_data_of_loop_in_U/V) **)
-(** 4. Combining via word_data_of_loop_concat **)
-(** 5. Recursing for the remaining segment **)
-(** **)
-(** Apply loop_class_split_at_transition with a suitable transition parameter. **)
-(** The ball chain and HnotAllU/HnotAllV guarantee a transition exists. **)
-(** The transition parameter s and the monotone coverage hypotheses **)
-(** follow from the real analysis of the ball chain. **)
+(** WARNING: The next (unfinished) approach tries to force a single monotone split
+    [0,s] in U and [s,1] in V. This is not valid in general: ball types can
+    alternate along the finite chain, so one must instead do transition induction
+    along the chain order (using a chain-ordered reparameterization h) and then
+    combine word data via word_data_of_loop_concat_nat. **)
 claim Htransition_exists :
   exists s:set, s :e unit_interval /\ s <> 0 /\ s <> 1 /\
     apply_fun f s :e U :/\: V /\
