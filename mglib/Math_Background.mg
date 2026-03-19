@@ -281262,10 +281262,17 @@ apply Hpath_exists. let p. assume Hp_data.
 (** - homotopic_maps for G and H composed via transitivity **)
 (** - continuity of G and H (from R2_sub, R2_scalar_mult continuous) **)
 (** - G and H avoid (0,0) (from R2_translation/scaling_homotopy_avoids_zero) **)
-prove nulhomotopic A TA
-  (setprod R R :\: Sing (0, 0))
-  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0, 0))) g.
-admit.
+set R2m0 := setprod R R :\: Sing (0, 0).
+set TR2m0 := subspace_topology (setprod R R) R2_topology R2m0.
+set neg_p := (minus_SNo (p 0), minus_SNo (p 1)).
+prove nulhomotopic A TA R2m0 TR2m0 g.
+prove exists y0:set, y0 :e R2m0 /\ homotopic_maps A TA R2m0 TR2m0 g (const_fun A y0).
+witness neg_p.
+apply andI.
+- (** neg_p in R2-{0}: -p != 0 since p != 0 **)
+  admit.
+- (** g homotopic to const(-p) via Lemma_51_1_homotopy_trans **)
+  admit.
 Admitted.
 
 (** from S61 Lem 61.2 (line 1815 in algtop.tex) **)
