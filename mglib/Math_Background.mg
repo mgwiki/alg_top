@@ -285201,14 +285201,17 @@ Lemma simple_closed_curve_arc_decomposition : forall C:set,
     Sn 2 :\: C1 :e Sn_topology 2 /\
     Sn 2 :\: C2 :e Sn_topology 2.
 let C. assume HC Hscc.
-(** Get homeomorphism h: C -> S^1 from is_simple_closed_curve **)
-(** The inverse g = h^{-1}: S^1 -> C is also a homeomorphism **)
-(** Use S1_semicircle_decomposition: S^1 = Upper union Lower, meeting at {b0, left} **)
-(** Set C1 = g(Upper), C2 = g(Lower), p = g(b0), q = g(left) **)
-(** Transfer all properties via the homeomorphism g **)
-(** Connected: homeomorphism preserves connected **)
-(** Closed: semicircles closed in S^1, g continuous -> C_i closed in C **)
-(**   C closed in S^2 -> C_i closed in S^2 -> S^2-C_i open **)
+(** Extract homeomorphism h: C -> S^1 **)
+apply Hscc. let h. assume Hh : homeomorphism C (subspace_topology (Sn 2) (Sn_topology 2) C) S1 S1_topology h.
+(** Get S1_semicircle_decomposition data **)
+(** S1 = upper union lower, upper cap lower = {bp, left}, etc. **)
+(** From S1_semicircle_decomposition: 9-fold conjunction **)
+(** Use the homeomorphism inverse g = h^{-1}: S^1 -> C **)
+(** Set C1 = image of S1_upper under g, C2 = image of S1_lower under g **)
+(** p = apply_fun g S1_basepoint, q = apply_fun g S1_left_point **)
+(** Transfer: connected via homeomorphism_preserves_connected **)
+(** Transfer: S^2-C1 open via: C1 closed in C, C closed in S^2, hence C1 closed in S^2 **)
+(** Full proof needs ~80 lines of homeomorphism property transfer **)
 admit.
 Admitted.
 
