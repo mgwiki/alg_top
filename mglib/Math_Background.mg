@@ -1,4 +1,4 @@
-(** Balance Alice 9004 **)
+(** Balance Alice 8984 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
 (** Balance Dave 2433 **)
@@ -137729,6 +137729,10 @@ rewrite HclassEq.
 reflexivity.
 Qed.
 
+(** KEY BOTTLENECK: If proved, cascades to make R2_minus_origin_not_simply_connected QED **)
+(** Needs: S1 quotient model (covering_map_R_S1 restricted to [0,1] as quotient map) **)
+(** Then path-homotopy H: IxI -> X with H(0,t)=H(1,t) descends to F: S1xI -> X **)
+(** Bounty 20 **)
 Lemma s55_loop_null_implies_nulhomotopic : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
   b0 :e S1 ->
