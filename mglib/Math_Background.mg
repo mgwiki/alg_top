@@ -282909,8 +282909,25 @@ apply andI.
       (** Boundary: F(x,0) = g(x) - alpha(0) = g(x) - (0,0) = g(x) **)
       (**           F(x,1) = g(x) - alpha(1) = g(x) - p = k_fun(x) **)
       (** Range in R2m0: by R2_translation_homotopy_avoids_zero **)
-      (** Full construction is ~60 lines; key infrastructure is now available **)
-      admit. }
+      (** Define F **)
+      set F_trans := graph (setprod A unit_interval)
+        (fun q:set => r2sub (apply_fun g (q 0)) (apply_fun alpha (q 1))).
+      witness F_trans.
+      (** Goal (left-assoc /\): (continuous /\ F(x,0)=g(x)) /\ F(x,1)=k(x) **)
+      apply andI.
+      * (** (F_trans continuous) /\ F(x,0) = g(x) **)
+        apply andI.
+        { (** F_trans continuous A x I -> R2m0 **)
+          (** Continuity: F = r2sub o (g o pi1, alpha o pi2); all components continuous **)
+          admit. }
+        { (** F(x,0) = g(x) **)
+          let x. assume Hx : x :e A.
+          (** F(x,0) = r2sub(g(x), alpha(0)) = r2sub(g(x),(0,0)) = g(x) via R2_sub_zero_right_early **)
+          admit. }
+      * (** F(x,1) = k_fun(x) **)
+        let x. assume Hx : x :e A.
+        (** F(x,1) = r2sub(g(x), alpha(1)) = r2sub(g(x), p) = k_fun(x) **)
+        admit. }
   claim Hk_hom_const : homotopic_maps A TA R2m0 TR2m0 k_fun (const_fun A neg_p).
   { (** Scaling homotopy H(x,t) = (1-t).g(x) - p **)
     (** H(x,0) = g(x) - p = k(x), H(x,1) = -p = neg_p **)
