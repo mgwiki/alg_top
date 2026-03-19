@@ -1,6 +1,6 @@
 (** Balance Alice 9068 **)
 (** Balance Bob 6353 **)
-(** Balance Charlie 792 **)
+(** Balance Charlie 799 **)
 (** Balance Dave 2428 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -244888,8 +244888,7 @@ Admitted.
 (** Helper: Given a loop fcls with a Lebesgue number for {preU, preV}, construct
     the word decomposition in pi_1(U) and pi_1(V). This is the key technical
     step for Seifert-van Kampen (lemma59_1). **)
-(** Bounty 75 **)
-(** Lock Charlie 1773980730 **)
+(** Bounty 68 **)
 Lemma loop_lebesgue_decomposition : forall X Tx U V x0 fcls Nleb:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
