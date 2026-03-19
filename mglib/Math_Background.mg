@@ -280370,10 +280370,20 @@ apply andI.
       V2 (subspace_topology R R_standard_topology V2) HV1pc HV2pc).
 Qed.
 
-(** Helper: euclidean space R^n is locally connected **)
-(** For n=2: follows from EuclidPlane_locally_path_connected **)
-(** via homeomorphism EuclidPlane -> euclidean_space 2 **)
-(** General case: product of lpc spaces **)
+(** Helper: euclidean_space 2 locally connected **)
+(** Chain: euclidean_space 2 homeo setprod (euclidean_space 1) R **)
+(**        (euclidean_space_succ_split_homeomorphism 1) **)
+(**        euclidean_space 1 homeo setprod (euclidean_space 0) R **)
+(**        (euclidean_space_succ_split_homeomorphism 0) **)
+(**        setprod ... R homeo to setprod R R **)
+(**        EuclidPlane lpc (Dave QED) -> lc (path_connected_implies_connected) **)
+(**        Transfer via homeomorphisms: lc preserved **)
+Lemma euclidean_space_2_locally_connected :
+  locally_connected (euclidean_space 2) (euclidean_topology 2).
+admit.
+Admitted.
+
+(** Helper: euclidean space R^n is locally connected (general) **)
 Lemma euclidean_space_locally_connected : forall n:set,
   n :e omega -> locally_connected (euclidean_space n) (euclidean_topology n).
 admit.
@@ -280443,7 +280453,7 @@ Lemma Sn2_locally_connected_fwd :
   locally_connected (Sn 2) (Sn_topology 2).
 exact (locally_m_euclidean_lc_from_Rn_lc (Sn 2) (Sn_topology 2) 2
   Sn_2_locally_m_euclidean
-  (euclidean_space_locally_connected 2 (nat_p_omega 2 nat_2))).
+  euclidean_space_2_locally_connected).
 Admitted.
 
 (** Forward declaration: components of S^2-C are open in S^2 **)
