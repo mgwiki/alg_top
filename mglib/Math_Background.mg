@@ -404781,6 +404781,140 @@ apply set_ext.
   exact (SepI B2 (fun u:set => apply_fun pi u :e image_of pi C) x HxB2 Hmem).
 Qed.
 
+(** Infrastructure: projection_image1 agrees with image_of projection1. **)
+(** Proven Charlie **)
+Lemma projection_image1_eq_image_of_projection1 : forall X Y U:set,
+  U c= setprod X Y ->
+  projection_image1 X Y U = image_of (projection1 X Y) U.
+let X Y U.
+assume HUSub.
+apply set_ext.
+- let x. assume HxProj.
+  claim Hex : exists y:set, (x,y) :e U.
+  { exact (SepE2 X (fun x0:set => exists y:set, (x0,y) :e U) x HxProj). }
+  apply Hex. let y. assume HxyU.
+  claim HpXY : (x,y) :e setprod X Y.
+  { exact (HUSub (x,y) HxyU). }
+  claim Hmem : apply_fun (projection1 X Y) (x,y) :e image_of (projection1 X Y) U.
+  { exact (ReplI U (fun p:set => apply_fun (projection1 X Y) p) (x,y) HxyU). }
+  claim Hval : apply_fun (projection1 X Y) (x,y) = x.
+  {
+    rewrite (projection1_apply X Y (x,y) HpXY).
+    rewrite (tuple_2_0_eq x y).
+    reflexivity.
+  }
+  exact (Hval (fun z _ => z :e image_of (projection1 X Y) U) Hmem).
+- let x. assume HxImg.
+  apply (ReplE_impred U (fun p:set => apply_fun (projection1 X Y) p) x HxImg).
+  let p. assume HpU HxEq.
+  claim HpXY : p :e setprod X Y.
+  { exact (HUSub p HpU). }
+  claim Hpeta : p = (p 0, p 1).
+  { exact (setprod_eta X Y p HpXY). }
+  claim Hp0X : p 0 :e X.
+  {
+    rewrite <- (proj0_ap_0 p).
+    exact (proj0_Sigma X (fun _ : set => Y) p HpXY).
+  }
+  claim Hp1Y : p 1 :e Y.
+  {
+    rewrite <- (proj1_ap_1 p).
+    exact (proj1_Sigma X (fun _ : set => Y) p HpXY).
+  }
+  claim Hpi0 : apply_fun (projection1 X Y) p = p 0.
+  { exact (projection1_apply X Y p HpXY). }
+  claim HxEq0 : x = p 0.
+  {
+    exact (eq_i_tra x (apply_fun (projection1 X Y) p) (p 0)
+      HxEq Hpi0).
+  }
+  claim HxX : x :e X.
+  { rewrite HxEq0. exact Hp0X. }
+  claim Hexy : exists y0:set, (x,y0) :e U.
+  {
+    witness (p 1).
+    rewrite HxEq0.
+    rewrite <- Hpeta.
+    exact HpU.
+  }
+  exact (SepI X (fun x0:set => exists y0:set, (x0,y0) :e U) x HxX Hexy).
+Qed.
+
+(** Compactness route: projection of a closed subset of a compact product is closed. **)
+(** Proven Charlie **)
+Lemma projection_image1_closed_of_closed_in_compact_prod : forall X Tx Y Ty U:set,
+  topology_on X Tx ->
+  topology_on Y Ty ->
+  compact_space X Tx ->
+  compact_space Y Ty ->
+  Hausdorff_space X Tx ->
+  closed_in (setprod X Y) (product_topology X Tx Y Ty) U ->
+  closed_in X Tx (projection_image1 X Y U).
+let X Tx Y Ty U.
+assume HtopX HtopY HcompX HcompY HHausX HUclosed.
+set P := setprod X Y.
+set Tp := product_topology X Tx Y Ty.
+claim HtopP : topology_on P Tp.
+{
+  exact (product_topology_is_topology X Tx Y Ty HtopX HtopY).
+}
+claim HUSubP : U c= P.
+{
+  exact (andEL (U c= P) (exists V :e Tp, U = P :\: V)
+    (andER (topology_on P Tp) (U c= P /\ exists V :e Tp, U = P :\: V) HUclosed)).
+}
+claim HcompP : compact_space P Tp.
+{
+  exact (finite_product_compact X Tx Y Ty HcompX HcompY).
+}
+claim HcompU : compact_space U (subspace_topology P Tp U).
+{
+  exact (closed_subspace_compact P Tp U HcompP HUclosed).
+}
+claim HcontProj : continuous_map P Tp X Tx (projection1 X Y).
+{
+  exact (projection1_continuous_in_product X Tx Y Ty HtopX HtopY).
+}
+claim HcontProjU : continuous_map U (subspace_topology P Tp U) X Tx (projection1 X Y).
+{
+  exact (continuous_on_subspace P Tp X Tx (projection1 X Y) U HtopP HUSubP HcontProj).
+}
+set Im := image_of (projection1 X Y) U.
+claim HcompIm : compact_space Im (subspace_topology X Tx Im).
+{
+  exact (continuous_image_compact U (subspace_topology P Tp U) X Tx (projection1 X Y)
+    HcompU HcontProjU).
+}
+claim HImSubX : Im c= X.
+{
+  let x. assume HxIm.
+  apply (ReplE_impred U (fun p:set => apply_fun (projection1 X Y) p) x HxIm).
+  let p. assume HpU HxEq.
+  claim HpP : p :e P. { exact (HUSubP p HpU). }
+  claim Hp0X : proj0 p :e X.
+  { exact (proj0_Sigma X (fun _ : set => Y) p HpP). }
+  claim HpiEq : apply_fun (projection1 X Y) p = proj0 p.
+  {
+    rewrite (projection1_apply X Y p HpP).
+    rewrite <- (proj0_ap_0 p).
+    reflexivity.
+  }
+  claim HxEq0 : x = proj0 p.
+  {
+    exact (eq_i_tra x (apply_fun (projection1 X Y) p) (proj0 p)
+      HxEq HpiEq).
+  }
+  rewrite HxEq0.
+  exact Hp0X.
+}
+claim HImClosed : closed_in X Tx Im.
+{
+  exact (Hausdorff_compact_sets_closed X Tx Im HHausX HImSubX HcompIm).
+}
+rewrite (projection_image1_eq_image_of_projection1 X Y U HUSubP).
+exact HImClosed.
+Qed.
+
 (** Helper goal for S74: saturation of a closed set is closed in B2. **)
 (** This should imply both: polygon_pasting_map is a closed map, and the quotient is T1. **)
 (** Bounty 55 **)
