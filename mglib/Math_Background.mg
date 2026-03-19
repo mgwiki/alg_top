@@ -281277,10 +281277,23 @@ apply andI.
   prove neg_p :e setprod R R :\: Sing (0, 0).
   (** Extract p in R2 and p != (0,0) from Hp_data **)
   (** Left-assoc 5-fold: ((((pR2 /\ pne0) /\ ...) /\ ...) /\ exists alpha) **)
+  (** Hp_data : ((((pR2 /\ pne0) /\ notimg) /\ not00img) /\ exists alpha) **)
+  claim Hfirst4 : p :e setprod R R /\ p <> (0, 0) /\ ~(p :e image_of g A) /\ ~((0, 0) :e image_of g A).
+  { exact (andEL
+      (p :e setprod R R /\ p <> (0, 0) /\ ~(p :e image_of g A) /\ ~((0, 0) :e image_of g A))
+      (exists alpha:set, path_between (setprod R R :\: image_of g A) (0, 0) p alpha /\
+        continuous_map unit_interval unit_interval_topology (setprod R R :\: image_of g A)
+          (subspace_topology (setprod R R) R2_topology (setprod R R :\: image_of g A)) alpha)
+      Hp_data). }
+  claim HpR2_ne0 : p :e setprod R R /\ p <> (0, 0).
+  { exact (andEL (p :e setprod R R /\ p <> (0, 0))
+      (~(p :e image_of g A))
+      (andEL (p :e setprod R R /\ p <> (0, 0) /\ ~(p :e image_of g A))
+        (~((0, 0) :e image_of g A)) Hfirst4)). }
   claim HpR2 : p :e setprod R R.
-  { admit. }
+  { exact (andEL (p :e setprod R R) (p <> (0, 0)) HpR2_ne0). }
   claim Hpne0 : p <> (0, 0).
-  { admit. }
+  { exact (andER (p :e setprod R R) (p <> (0, 0)) HpR2_ne0). }
   (** neg_p = (-p0, -p1) in R x R **)
   claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
   claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
