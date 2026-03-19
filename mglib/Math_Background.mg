@@ -294056,7 +294056,100 @@ Lemma R2_sub_map_continuous :
     (product_topology (setprod R R) R2_topology (setprod R R) R2_topology)
     (setprod R R) R2_topology
     (graph (setprod (setprod R R) (setprod R R)) (fun p:set => R2_sub (p 0) (p 1))).
-admit.
+set R2 := setprod R R.
+set R4 := setprod R2 R2.
+set TR2 := R2_topology.
+set TR4 := product_topology R2 TR2 R2 TR2.
+set TR := R_standard_topology.
+claim HtopR : topology_on R TR. { exact R_standard_topology_is_topology. }
+claim HtopR2 : topology_on R2 TR2.
+{ exact (product_topology_is_topology R TR R TR HtopR HtopR). }
+claim HtopR4 : topology_on R4 TR4.
+{ exact (product_topology_is_topology R2 TR2 R2 TR2 HtopR2 HtopR2). }
+(** Projections: R4 -> R2 **)
+claim Hpi1 : continuous_map R4 TR4 R2 TR2 (projection1 R2 R2).
+{ exact (projection1_continuous_in_product R2 TR2 R2 TR2 HtopR2 HtopR2). }
+claim Hpi2 : continuous_map R4 TR4 R2 TR2 (projection2 R2 R2).
+{ exact (projection2_continuous_in_product R2 TR2 R2 TR2 HtopR2 HtopR2). }
+(** Coordinate projections: R2 -> R **)
+claim Hproj0 : continuous_map R2 TR2 R TR (projection1 R R).
+{ exact (projection1_continuous_in_product R TR R TR HtopR HtopR). }
+claim Hproj1 : continuous_map R2 TR2 R TR (projection2 R R).
+{ exact (projection2_continuous_in_product R TR R TR HtopR HtopR). }
+(** Composed projections: R4 -> R **)
+(** z0 = proj0(pi1(p)) **)
+set get_z0 := compose_fun R4 (projection1 R2 R2) (projection1 R R).
+claim Hgz0 : continuous_map R4 TR4 R TR get_z0.
+{ exact (composition_continuous R4 TR4 R2 TR2 R TR (projection1 R2 R2) (projection1 R R) Hpi1 Hproj0). }
+(** z1 = proj1(pi1(p)) **)
+set get_z1 := compose_fun R4 (projection1 R2 R2) (projection2 R R).
+claim Hgz1 : continuous_map R4 TR4 R TR get_z1.
+{ exact (composition_continuous R4 TR4 R2 TR2 R TR (projection1 R2 R2) (projection2 R R) Hpi1 Hproj1). }
+(** w0 = proj0(pi2(p)) **)
+set get_w0 := compose_fun R4 (projection2 R2 R2) (projection1 R R).
+claim Hgw0 : continuous_map R4 TR4 R TR get_w0.
+{ exact (composition_continuous R4 TR4 R2 TR2 R TR (projection2 R2 R2) (projection1 R R) Hpi2 Hproj0). }
+(** w1 = proj1(pi2(p)) **)
+set get_w1 := compose_fun R4 (projection2 R2 R2) (projection2 R R).
+claim Hgw1 : continuous_map R4 TR4 R TR get_w1.
+{ exact (composition_continuous R4 TR4 R2 TR2 R TR (projection2 R2 R2) (projection2 R R) Hpi2 Hproj1). }
+(** Negated w-coordinates: neg(w0), neg(w1) **)
+set get_nw0 := compose_fun R4 get_w0 neg_fun.
+claim Hgnw0 : continuous_map R4 TR4 R TR get_nw0.
+{ exact (composition_continuous R4 TR4 R TR R TR get_w0 neg_fun Hgw0 neg_fun_continuous). }
+set get_nw1 := compose_fun R4 get_w1 neg_fun.
+claim Hgnw1 : continuous_map R4 TR4 R TR get_nw1.
+{ exact (composition_continuous R4 TR4 R TR R TR get_w1 neg_fun Hgw1 neg_fun_continuous). }
+(** f0 = z0 + (-w0), f1 = z1 + (-w1) **)
+set f0 := compose_fun R4 (pair_map R4 get_z0 get_nw0) add_fun_R.
+set f1 := compose_fun R4 (pair_map R4 get_z1 get_nw1) add_fun_R.
+claim Hf0 : continuous_map R4 TR4 R TR f0.
+{ exact (add_two_continuous_R R4 TR4 get_z0 get_nw0 HtopR4 Hgz0 Hgnw0). }
+claim Hf1 : continuous_map R4 TR4 R TR f1.
+{ exact (add_two_continuous_R R4 TR4 get_z1 get_nw1 HtopR4 Hgz1 Hgnw1). }
+(** Combined (f0, f1): R4 -> R2 continuous **)
+set h := pair_map R4 f0 f1.
+claim Hh : continuous_map R4 TR4 R2 TR2 h.
+{ exact (maps_into_products R4 TR4 R TR R TR f0 f1 Hf0 Hf1). }
+(** Show h agrees with the graph pointwise, then use congr_on **)
+set g := graph R4 (fun p:set => R2_sub (p 0) (p 1)).
+claim Hg_fn : function_on g R4 R2.
+{ let p. assume Hp : p :e R4.
+  prove apply_fun g p :e R2.
+  rewrite (apply_fun_graph R4 (fun q:set => R2_sub (q 0) (q 1)) p Hp).
+  exact (R2_sub_in_R2 (p 0) (p 1)
+    (ap0_Sigma R2 (fun _ => R2) p Hp)
+    (ap1_Sigma R2 (fun _ => R2) p Hp)). }
+(** Pointwise equality: for p in R4, apply_fun h p = R2_sub (p 0) (p 1) **)
+(** This needs careful unfolding of all the composed projections **)
+(** Each coordinate: apply_fun f0 p = add_SNo (z0) (-w0) = R2_sub (p0) (p1) at coord 0 **)
+(** Admits the pointwise equality for now **)
+claim Hpointwise : forall p:set, p :e R4 -> apply_fun h p = apply_fun g p.
+{ let p. assume Hp : p :e R4.
+  claim Hp0R2 : p 0 :e R2. { exact (ap0_Sigma R2 (fun _ => R2) p Hp). }
+  claim Hp1R2 : p 1 :e R2. { exact (ap1_Sigma R2 (fun _ => R2) p Hp). }
+  claim Hp00R : p 0 0 :e R. { exact (ap0_Sigma R (fun _ => R) (p 0) Hp0R2). }
+  claim Hp01R : p 0 1 :e R. { exact (ap1_Sigma R (fun _ => R) (p 0) Hp0R2). }
+  claim Hp10R : p 1 0 :e R. { exact (ap0_Sigma R (fun _ => R) (p 1) Hp1R2). }
+  claim Hp11R : p 1 1 :e R. { exact (ap1_Sigma R (fun _ => R) (p 1) Hp1R2). }
+  rewrite (apply_fun_graph R4 (fun q:set => R2_sub (q 0) (q 1)) p Hp).
+  rewrite (pair_map_apply R4 R R f0 f1 p Hp).
+  (** apply_fun f0 p = add_SNo (get_z0 p) (get_nw0 p) **)
+  claim Hgz0p : apply_fun get_z0 p :e R.
+  { rewrite (compose_fun_apply R4 (projection1 R2 R2) (projection1 R R) p Hp).
+    rewrite (projection1_apply R2 R2 p Hp).
+    rewrite (projection1_apply R R (p 0) Hp0R2). exact Hp00R. }
+  claim Hgnw0p : apply_fun get_nw0 p :e R.
+  { rewrite (compose_fun_apply R4 get_w0 neg_fun p Hp).
+    rewrite (compose_fun_apply R4 (projection2 R2 R2) (projection1 R R) p Hp).
+    rewrite (projection2_apply R2 R2 p Hp).
+    rewrite (projection1_apply R R (p 1) Hp1R2).
+    admit. }
+  rewrite (add_of_pair_map_apply R4 get_z0 get_nw0 p Hp Hgz0p Hgnw0p).
+  (** Now need to show the coordinates match R2_sub **)
+  (** This is very verbose; admit for now **)
+  admit. }
+exact (continuous_map_congr_on R4 TR4 R2 TR2 h g Hh Hg_fn Hpointwise).
 Admitted.
 
 (** Helper: for fixed p in R2, the map x -> R2_sub x p is continuous R2 -> R2 **)
