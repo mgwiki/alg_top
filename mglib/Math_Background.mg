@@ -281488,9 +281488,16 @@ claim Hpair_cont : continuous_map X Tx (setprod X unit_interval)
 (** and (apply_fun id_X a, apply_fun phi a) = (a, apply_fun phi a) **)
 (** This set equality needs formal construction; admit for now **)
 claim Hpair_eq : pair_map X id_X phi = graph X (fun x:set => (x, apply_fun phi x)).
-{ admit. }
+{ prove {(a,(apply_fun id_X a,apply_fun phi a))|a :e X} =
+       {(a,(a,apply_fun phi a))|a :e X}.
+  apply (ReplEq_ext X
+    (fun a:set => (a, (apply_fun id_X a, apply_fun phi a)))
+    (fun a:set => (a, (a, apply_fun phi a)))).
+  let a. assume Ha : a :e X.
+  rewrite (identity_function_apply X a Ha).
+  exact (eq_refl (a, (a, apply_fun phi a))). }
 rewrite <- Hpair_eq. exact Hpair_cont.
-Admitted.
+Qed.
 
 (** Helper for 62.1: composition G(x, phi(x)) is continuous when G and phi are **)
 Lemma composition_with_phi_continuous : forall X Tx Y Ty G phi:set,
