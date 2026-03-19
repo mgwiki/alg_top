@@ -235817,6 +235817,39 @@ reflexivity.
 Qed.
 
 (** Proven Charlie **)
+Lemma path_concat_nat_congr : forall n segs1 segs2:set,
+  nat_p n ->
+  (forall k:set, k :e ordsucc n -> apply_fun segs1 k = apply_fun segs2 k) ->
+  path_concat_nat n segs1 = path_concat_nat n segs2.
+let n segs1 segs2.
+assume HnNat Hagree.
+set P := fun m:set =>
+  forall segsa segsb:set,
+    (forall k:set, k :e ordsucc m -> apply_fun segsa k = apply_fun segsb k) ->
+    path_concat_nat m segsa = path_concat_nat m segsb.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsa segsb. assume H.
+    rewrite (path_concat_nat_0 segsa).
+    rewrite (path_concat_nat_0 segsb).
+    rewrite (H 0 (ordsuccI2 0)).
+    reflexivity.
+  - let m. assume HmNat IH.
+    let segsa segsb. assume H.
+    rewrite (path_concat_nat_S m segsa HmNat).
+    rewrite (path_concat_nat_S m segsb HmNat).
+    claim Hagree_m : forall k:set, k :e ordsucc m -> apply_fun segsa k = apply_fun segsb k.
+    { let k. assume Hk. exact (H k (ordsuccI1 (ordsucc m) k Hk)). }
+    rewrite (IH segsa segsb Hagree_m).
+    rewrite (H (ordsucc m) (ordsuccI2 (ordsucc m))).
+    reflexivity.
+  - exact HnNat.
+}
+exact (HP segs1 segs2 Hagree).
+Qed.
+
+(** Proven Charlie **)
 Lemma path_concat_nat_at_zero : forall n segs:set,
   nat_p n ->
   apply_fun (path_concat_nat n segs) 0 = apply_fun (apply_fun segs 0) 0.
@@ -235978,6 +236011,130 @@ claim HP : P n.
   - exact HnNat.
 }
 exact (HP segs HsegsFun HsegsCont Hcompat).
+Qed.
+
+(** Proven Charlie **)
+Lemma compose_path_concat_nat_eq_algtop : forall X Tx Y n segs h:set,
+  topology_on X Tx ->
+  nat_p n ->
+  function_on segs (ordsucc n) (function_space unit_interval X) ->
+  (forall k:set, k :e ordsucc n ->
+    continuous_map unit_interval unit_interval_topology X Tx (apply_fun segs k)) ->
+  (forall k:set, k :e n ->
+    apply_fun (apply_fun segs k) 1 = apply_fun (apply_fun segs (ordsucc k)) 0) ->
+  function_on h X Y ->
+  compose_fun unit_interval (path_concat_nat n segs) h
+    =
+  path_concat_nat n (graph (ordsucc n) (fun k:set => compose_fun unit_interval (apply_fun segs k) h)).
+let X Tx Y n segs h.
+assume Htop HnNat HsegsFun HsegsCont Hcompat Hh.
+set segs_post := graph (ordsucc n) (fun k:set => compose_fun unit_interval (apply_fun segs k) h).
+set P := fun m:set =>
+  forall segsm hm:set,
+    function_on segsm (ordsucc m) (function_space unit_interval X) ->
+    (forall k:set, k :e ordsucc m ->
+      continuous_map unit_interval unit_interval_topology X Tx (apply_fun segsm k)) ->
+    (forall k:set, k :e m ->
+      apply_fun (apply_fun segsm k) 1 = apply_fun (apply_fun segsm (ordsucc k)) 0) ->
+    function_on hm X Y ->
+    compose_fun unit_interval (path_concat_nat m segsm) hm
+      =
+    path_concat_nat m (graph (ordsucc m) (fun k:set => compose_fun unit_interval (apply_fun segsm k) hm)).
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsm hm.
+    assume HsegsmFun HsegsmCont HsegsmCompat Hhm.
+    rewrite (path_concat_nat_0 segsm).
+    rewrite (path_concat_nat_0 (graph (ordsucc 0) (fun k:set => compose_fun unit_interval (apply_fun segsm k) hm))).
+    claim H0in : 0 :e ordsucc 0.
+    { exact (ordsuccI2 0). }
+    rewrite (apply_fun_graph (ordsucc 0) (fun k:set => compose_fun unit_interval (apply_fun segsm k) hm) 0 H0in).
+    reflexivity.
+  - let m. assume HmNat IH.
+    let segsm hm.
+    assume HsegsmFun HsegsmCont HsegsmCompat Hhm.
+    set segsm_post := graph (ordsucc (ordsucc m)) (fun k:set => compose_fun unit_interval (apply_fun segsm k) hm).
+    rewrite (path_concat_nat_S m segsm HmNat).
+    rewrite (path_concat_nat_S m segsm_post HmNat).
+    claim HfFun : function_on (path_concat_nat m segsm) unit_interval X.
+    {
+      exact (continuous_map_function_on unit_interval unit_interval_topology X Tx
+        (path_concat_nat m segsm)
+        (path_concat_nat_continuous X Tx m segsm Htop HmNat
+          (function_on_subdomain
+            segsm
+            (ordsucc (ordsucc m))
+            (function_space unit_interval X)
+            (ordsucc m)
+            HsegsmFun
+            (ordsuccI1 (ordsucc m)))
+          (fun k Hk => HsegsmCont k (ordsuccI1 (ordsucc m) k Hk))
+          (fun k Hk => HsegsmCompat k (ordsuccI1 m k Hk)))).
+    }
+    claim HgFun : function_on (apply_fun segsm (ordsucc m)) unit_interval X.
+    {
+      exact (function_on_of_function_space
+        (apply_fun segsm (ordsucc m))
+        unit_interval
+        X
+        (HsegsmFun (ordsucc m) (ordsuccI2 (ordsucc m)))).
+    }
+    claim Hjoin : apply_fun (path_concat_nat m segsm) 1 = apply_fun (apply_fun segsm (ordsucc m)) 0.
+    {
+      rewrite (path_concat_nat_at_one m segsm HmNat).
+      exact (HsegsmCompat m (ordsuccI2 m)).
+    }
+    rewrite (compose_path_concat_eq_algtop
+      X
+      Y
+      (path_concat_nat m segsm)
+      (apply_fun segsm (ordsucc m))
+      hm
+      HfFun
+      HgFun
+      Hhm
+      Hjoin).
+    rewrite (IH segsm hm
+      (function_on_subdomain
+        segsm
+        (ordsucc (ordsucc m))
+        (function_space unit_interval X)
+        (ordsucc m)
+        HsegsmFun
+        (ordsuccI1 (ordsucc m)))
+      (fun k Hk => HsegsmCont k (ordsuccI1 (ordsucc m) k Hk))
+      (fun k Hk => HsegsmCompat k (ordsuccI1 m k Hk))
+      Hhm).
+    claim Hagree_pre :
+      forall k:set, k :e ordsucc m ->
+        apply_fun (graph (ordsucc m) (fun k0:set => compose_fun unit_interval (apply_fun segsm k0) hm)) k
+        =
+        apply_fun segsm_post k.
+    {
+      let k. assume HkOn.
+      rewrite (apply_fun_graph (ordsucc m)
+        (fun k0:set => compose_fun unit_interval (apply_fun segsm k0) hm)
+        k HkOn).
+      rewrite (apply_fun_graph (ordsucc (ordsucc m))
+        (fun k0:set => compose_fun unit_interval (apply_fun segsm k0) hm)
+        k (ordsuccI1 (ordsucc m) k HkOn)).
+      reflexivity.
+    }
+    rewrite (path_concat_nat_congr
+      m
+      (graph (ordsucc m) (fun k0:set => compose_fun unit_interval (apply_fun segsm k0) hm))
+      segsm_post
+      HmNat
+      Hagree_pre).
+    rewrite (apply_fun_graph (ordsucc (ordsucc m))
+      (fun k:set => compose_fun unit_interval (apply_fun segsm k) hm)
+      (ordsucc m)
+      (ordsuccI2 (ordsucc m))).
+    reflexivity.
+  - exact HnNat.
+}
+exact (HP segs h HsegsFun HsegsCont Hcompat Hh).
 Qed.
 
 (** Infrastructure: chain of U-type open balls in unit_interval covers a subinterval. **)
