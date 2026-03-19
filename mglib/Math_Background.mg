@@ -285234,11 +285234,23 @@ claim Hq0S2 : q0 :e Sn 2. { exact (HC q0 Hq0C). }
 (** Full transfer of 11 properties needs ~60 more lines **)
 (** For now, witness the existentials and admit the conjunction **)
 witness C1. witness C2. witness p0. witness q0.
-(** 11-fold conjunction: p0 in S2, q0 in S2, p0<>q0, C1 c= C, C2 c= C, **)
-(** C = C1 union C2, C1 cap C2 = {p0,q0}, C1 connected, C2 connected, **)
-(** S2-C1 open, S2-C2 open **)
-(** Items 1-2 proved (Hp0S2, Hq0S2). Others need homeomorphism transfer. **)
-admit.
+apply andI.
+- (** ((((((((( p0S2 /\ q0S2) /\ p0neq0) /\ C1sub) /\ C2sub) /\ union) /\ inter) /\ C1conn) /\ C2conn) /\ C1open) **)
+  (** and last: C2open **)
+  apply andI.
+  + apply andI. + apply andI. + apply andI. + apply andI.
+    + apply andI. + apply andI. + apply andI. + apply andI.
+      + (** p0 in Sn 2 **) exact Hp0S2.
+      + (** q0 in Sn 2 **) exact Hq0S2.
+    + (** p0 <> q0 **) admit.
+  + (** C1 c= C **) admit.
+  + (** C2 c= C **) admit.
+  + (** C = C1 union C2 **) admit.
+  + (** C1 cap C2 = UPair p0 q0 **) admit.
+  + (** C1 connected **) admit.
+  + (** C2 connected **) admit.
+  + (** S2 minus C1 open **) admit.
+- (** S2 minus C2 open **) admit.
 Admitted.
 
 (** Helper: S^2-C is open in S^2 when C is compact (a simple closed curve is compact). **)
