@@ -281839,13 +281839,126 @@ apply andI.
 Qed.
 
 (** Tietze for general R^n (euclidean_space n) **)
+(** Proven Dave **)
 Lemma Tietze_extension_Rn : forall X Tx A n f:set,
   normal_space X Tx -> closed_in X Tx A -> n :e omega ->
   continuous_map A (subspace_topology X Tx A) (euclidean_space n) (euclidean_topology n) f ->
   exists g:set, continuous_map X Tx (euclidean_space n) (euclidean_topology n) g /\
     (forall x:set, x :e A -> apply_fun g x = apply_fun f x).
-admit.
-Admitted.
+let X Tx A n f.
+assume Hnorm : normal_space X Tx.
+assume Hclosed : closed_in X Tx A.
+assume Hn : n :e omega.
+assume Hf : continuous_map A (subspace_topology X Tx A) (euclidean_space n) (euclidean_topology n) f.
+set P := fun m:set => forall X' Tx' A' f':set,
+  normal_space X' Tx' -> closed_in X' Tx' A' ->
+  continuous_map A' (subspace_topology X' Tx' A') (euclidean_space m) (euclidean_topology m) f' ->
+  exists g':set, continuous_map X' Tx' (euclidean_space m) (euclidean_topology m) g' /\
+    (forall x:set, x :e A' -> apply_fun g' x = apply_fun f' x).
+claim HnNat : nat_p n. { exact (omega_nat_p n Hn). }
+claim HPn : P n.
+{
+  apply (nat_ind P).
+  - (** Base case: P 0 **)
+    prove P 0.
+    let X'. let Tx'. let A'. let f'.
+    assume Hnorm' : normal_space X' Tx'.
+    assume Hclosed' : closed_in X' Tx' A'.
+    assume Hf' : continuous_map A' (subspace_topology X' Tx' A') (euclidean_space 0) (euclidean_topology 0) f'.
+    witness (const_fun X' Empty).
+    apply andI.
+    + exact (const_fun_continuous X' Tx' (euclidean_space 0) (euclidean_topology 0) Empty
+        (normal_space_topology_on X' Tx' Hnorm')
+        (euclidean_topology_is_topology 0)
+        (eq_subst_mem_set Empty {Empty} (euclidean_space 0)
+          (SingI Empty)
+          (eq_symm (euclidean_space 0) {Empty} euclidean_space_empty_is_singleton))).
+    + let x. assume Hx : x :e A'.
+      claim HxX' : x :e X'. { exact (closed_in_subset X' Tx' A' Hclosed' x Hx). }
+      rewrite (const_fun_apply X' Empty x HxX').
+      claim Hfx_in : apply_fun f' x :e euclidean_space 0.
+      { exact ((continuous_map_function_on A' (subspace_topology X' Tx' A') (euclidean_space 0) (euclidean_topology 0) f' Hf') x Hx). }
+      claim Hfx_in_Sing : apply_fun f' x :e {Empty}.
+      { exact (eq_subst_mem_set (apply_fun f' x) (euclidean_space 0) {Empty} Hfx_in euclidean_space_empty_is_singleton). }
+      symmetry. exact (SingE Empty (apply_fun f' x) Hfx_in_Sing).
+  - (** Inductive step: nat_p k, P k -> P (ordsucc k) **)
+    let k. assume Hk_nat : nat_p k.
+    assume IH : P k.
+    prove P (ordsucc k).
+    let X'. let Tx'. let A'. let f'.
+    assume Hnorm' : normal_space X' Tx'.
+    assume Hclosed' : closed_in X' Tx' A'.
+    assume Hf' : continuous_map A' (subspace_topology X' Tx' A') (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) f'.
+    (** h = split_map k o f': A' -> setprod(euclidean_space k, R) **)
+    set h := compose_fun A' f' (euclidean_space_succ_split_map k).
+    claim Hh_cont : continuous_map A' (subspace_topology X' Tx' A') (setprod (euclidean_space k) R) (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology) h.
+    { exact (composition_continuous A' (subspace_topology X' Tx' A') (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) (setprod (euclidean_space k) R) (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology) f' (euclidean_space_succ_split_map k) Hf' (euclidean_space_succ_split_map_continuous k Hk_nat)). }
+    (** h1 = proj1 o h, h2 = proj2 o h **)
+    set h1 := compose_fun A' h (projection_map1 (euclidean_space k) R).
+    set h2 := compose_fun A' h (projection_map2 (euclidean_space k) R).
+    claim Hh12 : continuous_map A' (subspace_topology X' Tx' A') (euclidean_space k) (euclidean_topology k) h1 /\
+                 continuous_map A' (subspace_topology X' Tx' A') R R_standard_topology h2.
+    { exact (maps_into_products_converse A' (subspace_topology X' Tx' A') (euclidean_space k) (euclidean_topology k) R R_standard_topology h (euclidean_topology_is_topology k) R_standard_topology_is_topology Hh_cont). }
+    claim Hh1_cont : continuous_map A' (subspace_topology X' Tx' A') (euclidean_space k) (euclidean_topology k) h1.
+    { exact (andEL (continuous_map A' (subspace_topology X' Tx' A') (euclidean_space k) (euclidean_topology k) h1)
+        (continuous_map A' (subspace_topology X' Tx' A') R R_standard_topology h2) Hh12). }
+    claim Hh2_cont : continuous_map A' (subspace_topology X' Tx' A') R R_standard_topology h2.
+    { exact (andER (continuous_map A' (subspace_topology X' Tx' A') (euclidean_space k) (euclidean_topology k) h1)
+        (continuous_map A' (subspace_topology X' Tx' A') R R_standard_topology h2) Hh12). }
+    (** Apply IH: get g1: X' -> euclidean_space k extending h1 **)
+    claim Hg1_ex : exists g1':set, continuous_map X' Tx' (euclidean_space k) (euclidean_topology k) g1' /\
+      (forall x:set, x :e A' -> apply_fun g1' x = apply_fun h1 x).
+    { exact (IH X' Tx' A' h1 Hnorm' Hclosed' Hh1_cont). }
+    apply Hg1_ex. let g1. assume Hg1_props.
+    claim Hg1_cont : continuous_map X' Tx' (euclidean_space k) (euclidean_topology k) g1.
+    { exact (andEL (continuous_map X' Tx' (euclidean_space k) (euclidean_topology k) g1)
+        (forall x:set, x :e A' -> apply_fun g1 x = apply_fun h1 x) Hg1_props). }
+    claim Hg1_ext : forall x:set, x :e A' -> apply_fun g1 x = apply_fun h1 x.
+    { exact (andER (continuous_map X' Tx' (euclidean_space k) (euclidean_topology k) g1)
+        (forall x:set, x :e A' -> apply_fun g1 x = apply_fun h1 x) Hg1_props). }
+    (** Apply Tietze_extension_real: get g2: X' -> R extending h2 **)
+    claim Hg2_ex : exists g2':set, continuous_map X' Tx' R R_standard_topology g2' /\
+      (forall x:set, x :e A' -> apply_fun g2' x = apply_fun h2 x).
+    { exact (Tietze_extension_real X' Tx' A' h2 Hnorm' Hclosed' Hh2_cont). }
+    apply Hg2_ex. let g2. assume Hg2_props.
+    claim Hg2_cont : continuous_map X' Tx' R R_standard_topology g2.
+    { exact (andEL (continuous_map X' Tx' R R_standard_topology g2)
+        (forall x:set, x :e A' -> apply_fun g2 x = apply_fun h2 x) Hg2_props). }
+    claim Hg2_ext : forall x:set, x :e A' -> apply_fun g2 x = apply_fun h2 x.
+    { exact (andER (continuous_map X' Tx' R R_standard_topology g2)
+        (forall x:set, x :e A' -> apply_fun g2 x = apply_fun h2 x) Hg2_props). }
+    (** g0 = merge_map k o pair_map(g1, g2): X' -> euclidean_space(ordsucc k) **)
+    set g0 := compose_fun X' (pair_map X' g1 g2) (euclidean_space_succ_merge_map k).
+    witness g0.
+    apply andI.
+    + (** continuity of g0 **)
+      exact (composition_continuous X' Tx' (setprod (euclidean_space k) R) (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology) (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) (pair_map X' g1 g2) (euclidean_space_succ_merge_map k) (maps_into_products X' Tx' (euclidean_space k) (euclidean_topology k) R R_standard_topology g1 g2 Hg1_cont Hg2_cont) (euclidean_space_succ_merge_map_continuous k Hk_nat)).
+    + (** extension: for x in A', apply_fun g0 x = apply_fun f' x **)
+      let x. assume Hx : x :e A'.
+      claim HxX' : x :e X'.
+      { exact (closed_in_subset X' Tx' A' Hclosed' x Hx). }
+      claim Hfx_in : apply_fun f' x :e euclidean_space (ordsucc k).
+      { exact ((continuous_map_function_on A' (subspace_topology X' Tx' A') (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) f' Hf') x Hx). }
+      claim Hhx_in : apply_fun h x :e setprod (euclidean_space k) R.
+      { exact ((continuous_map_function_on A' (subspace_topology X' Tx' A') (setprod (euclidean_space k) R) (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology) h Hh_cont) x Hx). }
+      prove apply_fun g0 x = apply_fun f' x.
+      rewrite (compose_fun_apply X' (pair_map X' g1 g2) (euclidean_space_succ_merge_map k) x HxX').
+      rewrite (pair_map_apply X' (euclidean_space k) R g1 g2 x HxX').
+      rewrite (Hg1_ext x Hx).
+      rewrite (Hg2_ext x Hx).
+      rewrite (compose_fun_apply A' h (projection_map1 (euclidean_space k) R) x Hx).
+      rewrite (compose_fun_apply A' h (projection_map2 (euclidean_space k) R) x Hx).
+      rewrite (projection1_apply (euclidean_space k) R (apply_fun h x) Hhx_in).
+      rewrite (projection2_apply (euclidean_space k) R (apply_fun h x) Hhx_in).
+      rewrite <- (setprod_eta (euclidean_space k) R (apply_fun h x) Hhx_in).
+      rewrite (euclidean_space_succ_merge_map_apply k (apply_fun h x) Hk_nat Hhx_in).
+      rewrite (compose_fun_apply A' f' (euclidean_space_succ_split_map k) x Hx).
+      rewrite (euclidean_space_succ_split_map_apply k (apply_fun f' x) Hk_nat Hfx_in).
+      exact (euclidean_space_succ_merge_split_id k (apply_fun f' x) Hk_nat Hfx_in).
+  - exact HnNat.
+}
+exact (HPn X Tx A f Hnorm Hclosed Hf).
+Qed.
 
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
 (** Bounty 275 **)
