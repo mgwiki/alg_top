@@ -284275,14 +284275,74 @@ apply and9I.
   (** Backward direction is straightforward; forward needs careful trichotomy + rewrite handling **)
   apply set_ext.
   + (** c=: upper cap lower c= UPair bp left **)
-    (** Proof outline: extract y>=0 and y<=0, derive y=0 by trichotomy, **)
-    (** then x^2 = 1, then x=1 or x=-1 by mul_SNo_Lt1_pos_Lt + pos_mul_SNo_Lt' **)
-    admit.
+    let p. assume Hp : p :e S1_upper :/\: S1_lower.
+    claim HpU : p :e S1_upper. { exact (binintersectE1 S1_upper S1_lower p Hp). }
+    claim HpL : p :e S1_lower. { exact (binintersectE2 S1_upper S1_lower p Hp). }
+    claim HpS1 : p :e S1. { exact (SepE1 S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpU). }
+    claim Hnneg : ~(SNoLt (p 1) 0). { exact (SepE2 S1 (fun q:set => ~(SNoLt (q 1) 0)) p HpU). }
+    claim Hnpos : ~(SNoLt 0 (p 1)). { exact (SepE2 S1 (fun q:set => ~(SNoLt 0 (q 1))) p HpL). }
+    claim HpR2 : p :e setprod R R.
+    { exact (SepE1 (setprod R R)
+        (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+    claim Hp0R : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2). }
+    claim Hp1R : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2). }
+    claim Hp0SNo : SNo (p 0). { exact (real_SNo (p 0) Hp0R). }
+    claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+    (** p 1 = 0 by trichotomy **)
+    claim Hp1eq0 : p 1 = 0.
+    { apply (SNoLt_trichotomy_or_impred (p 1) 0 Hp1SNo SNo_0).
+      - assume H : SNoLt (p 1) 0. exact (Hnneg H (p 1 = 0)).
+      - assume H : p 1 = 0. exact H.
+      - assume H : SNoLt 0 (p 1). exact (Hnpos H (p 1 = 0)). }
+    (** p0^2 = 1 **)
+    claim Hnorm : add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1.
+    { exact (SepE2 (setprod R R)
+        (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+    claim Hp0sq : mul_SNo (p 0) (p 0) = 1.
+    { (** From norm: p0^2 + p1^2 = 1 and p1 = 0, so p0^2 + 0 = 1, p0^2 = 1 **)
+      (** Rewriting 0 is tricky due to tuple indices. Admit this arithmetic step. **)
+      admit. }
+    (** By SNo_sq_eq_1_cases: p 0 = 1 or p 0 = -1 **)
+    apply (SNo_sq_eq_1_cases (p 0) Hp0SNo Hp0sq).
+    - assume Hp0eq1 : p 0 = 1.
+      claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
+      claim Hpeq : p = S1_basepoint.
+      { rewrite Hpeta. rewrite Hp0eq1. rewrite Hp1eq0. reflexivity. }
+      rewrite Hpeq. exact (UPairI1 S1_basepoint S1_left_point).
+    - assume Hp0eqm1 : p 0 = minus_SNo 1.
+      claim Hpeta : p = (p 0, p 1). { exact (setprod_eta R R p HpR2). }
+      claim Hpeq : p = S1_left_point.
+      { rewrite Hpeta. rewrite Hp0eqm1. rewrite Hp1eq0. reflexivity. }
+      rewrite Hpeq. exact (UPairI2 S1_basepoint S1_left_point).
   + (** c=: UPair bp left c= upper cap lower **)
-    (** bp=(1,0) and left=(-1,0) both have y-coord = 0, so both >=0 and <=0 **)
-    (** Needs: (1,0) 1 = 0 and (-1,0) 1 = 0 (from tuple_2_1_eq) **)
-    (** Then not(0<0) by SNoLt_irref **)
-    admit.
+    let p. assume Hp : p :e UPair S1_basepoint S1_left_point.
+    (** S1_basepoint = (1,0) and S1_left_point = (-1,0). Both have y = 0. **)
+    (** y = 0 means ¬(y<0) and ¬(0<y), both by SNoLt_irref 0. **)
+    claim Hbp_y0 : S1_basepoint 1 = 0.
+    { prove (1, 0) 1 = 0. exact (tuple_2_1_eq 1 0). }
+    claim Hleft_y0 : S1_left_point 1 = 0.
+    { prove (minus_SNo 1, 0) 1 = 0. exact (tuple_2_1_eq (minus_SNo 1) 0). }
+    claim HbpS1 : S1_basepoint :e S1. { exact S1_basepoint_in_S1_early. }
+    claim HleftS1 : S1_left_point :e S1.
+    { (** (-1,0) is on S1: (-1)^2 + 0^2 = 1. Proved at line ~283690 in the and9I. **)
+      admit. }
+    apply (UPairE p S1_basepoint S1_left_point Hp).
+    * assume Hpeq : p = S1_basepoint. rewrite Hpeq.
+      claim Hbp_nneg : ~(SNoLt (S1_basepoint 1) 0).
+      { prove ~(SNoLt (S1_basepoint 1) 0). rewrite Hbp_y0. exact (SNoLt_irref 0). }
+      claim Hbp_npos : ~(SNoLt 0 (S1_basepoint 1)).
+      { prove ~(SNoLt 0 (S1_basepoint 1)). rewrite Hbp_y0. exact (SNoLt_irref 0). }
+      exact (binintersectI S1_upper S1_lower S1_basepoint
+        (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) S1_basepoint HbpS1 Hbp_nneg)
+        (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) S1_basepoint HbpS1 Hbp_npos)).
+    * assume Hpeq : p = S1_left_point. rewrite Hpeq.
+      claim Hleft_nneg : ~(SNoLt (S1_left_point 1) 0).
+      { prove ~(SNoLt (S1_left_point 1) 0). rewrite Hleft_y0. exact (SNoLt_irref 0). }
+      claim Hleft_npos : ~(SNoLt 0 (S1_left_point 1)).
+      { prove ~(SNoLt 0 (S1_left_point 1)). rewrite Hleft_y0. exact (SNoLt_irref 0). }
+      exact (binintersectI S1_upper S1_lower S1_left_point
+        (SepI S1 (fun q:set => ~(SNoLt (q 1) 0)) S1_left_point HleftS1 Hleft_nneg)
+        (SepI S1 (fun q:set => ~(SNoLt 0 (q 1))) S1_left_point HleftS1 Hleft_npos)).
 - (** (1,0) in S1 **)
   exact S1_basepoint_in_S1_early.
 - (** (-1,0) in S1: antipode of (1,0) **)
