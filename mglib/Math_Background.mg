@@ -281471,7 +281471,25 @@ Lemma graph_of_phi_continuous : forall X Tx phi:set,
   continuous_map X Tx (setprod X unit_interval)
     (product_topology X Tx unit_interval unit_interval_topology)
     (graph X (fun x:set => (x, apply_fun phi x))).
-admit.
+let X Tx phi.
+assume Htop : topology_on X Tx.
+assume Hphi : continuous_map X Tx unit_interval unit_interval_topology phi.
+(** pair_map X id phi is continuous by maps_into_products **)
+set id_X := {(y,y)|y :e X}.
+claim Hid_cont : continuous_map X Tx X Tx id_X.
+{ exact (identity_continuous X Tx Htop). }
+claim Hpair_cont : continuous_map X Tx (setprod X unit_interval)
+  (product_topology X Tx unit_interval unit_interval_topology)
+  (pair_map X id_X phi).
+{ exact (maps_into_products X Tx X Tx unit_interval unit_interval_topology
+    id_X phi Hid_cont Hphi). }
+(** Now show: pair_map X id_X phi = graph X (fun x => (x, apply_fun phi x)) **)
+(** Both are sets {(a, v) | a in X, v = (apply_fun id_X a, apply_fun phi a)} **)
+(** and (apply_fun id_X a, apply_fun phi a) = (a, apply_fun phi a) **)
+(** This set equality needs formal construction; admit for now **)
+claim Hpair_eq : pair_map X id_X phi = graph X (fun x:set => (x, apply_fun phi x)).
+{ admit. }
+rewrite <- Hpair_eq. exact Hpair_cont.
 Admitted.
 
 (** Helper for 62.1: composition G(x, phi(x)) is continuous when G and phi are **)
