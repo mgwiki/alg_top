@@ -281416,10 +281416,14 @@ apply andI.
     (** G avoids (0,0) since alpha(t) not in g(A) **)
     admit. }
   claim Hk_hom_const : homotopic_maps A TA R2m0 TR2m0 k_fun (const_fun A neg_p).
-  { (** Scaling homotopy H(x,t) = t.g(x) - p **)
-    (** H(x,1) = g(x) - p = k(x) **)
-    (** H(x,0) = 0 - p = -p = neg_p **)
-    (** H avoids (0,0) since t.g(x) in ball B, p outside B **)
+  { (** Scaling homotopy H(x,t) = (1-t).g(x) - p **)
+    (** H(x,0) = g(x) - p = k(x), H(x,1) = -p = neg_p **)
+    (** H avoids (0,0): |(1-t)g(x)| <= M, |p| > M -> |(1-t)g(x)-p| > 0 **)
+    (** Need: k_fun continuous, const neg_p continuous, H continuous + boundary **)
+    (** k_fun continuous: composition g with r2sub(-, p) **)
+    (** const neg_p continuous: const_fun_continuous + neg_p in R2m0 **)
+    (** H continuous: composition_with_phi + r2sub continuous **)
+    (** Formal construction is ~100 lines; admit for now **)
     admit. }
   exact (Lemma_51_1_homotopy_trans A TA R2m0 TR2m0 g k_fun (const_fun A neg_p) Hg_hom_k Hk_hom_const).
 Admitted.
