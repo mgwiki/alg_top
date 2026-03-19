@@ -284962,12 +284962,17 @@ let p'. assume Hp'R2 : p' :e setprod R R.
 (** So f maps R^2-{p'} to R^2-{0} bijectively **)
 (** The R2_minus_origin uses a different definition (Sep not Sing), **)
 (** but {p in R^2 | not(p0=0 and p1=0)} = R^2 setminus {(0,0)} for elements of R^2 **)
-(** Note: R2_sub is defined LATER in the file (line ~294k). **)
-(** This proof should use inline subtraction or be moved after R2_sub. **)
-(** The translation x - p' can be defined locally as: **)
-(**   (add_SNo (x 0) (minus_SNo (p' 0)), add_SNo (x 1) (minus_SNo (p' 1))) **)
-(** With R2_sub_right_continuous (QED) available after R2_sub definition, **)
-(** the continuity follows. But due to forward reference, we admit for now. **)
+(** Define translation inline (R2_sub is later in file) **)
+set sub_p := fun x:set => (add_SNo (x 0) (minus_SNo (p' 0)), add_SNo (x 1) (minus_SNo (p' 1))).
+set f := graph (setprod R R :\: Sing p') sub_p.
+(** f maps R^2-{p'} to R2_minus_origin **)
+(** f is continuous (translation by fixed vector) **)
+(** f is bijective with inverse y -> y + p' **)
+(** Full proof needs: **)
+(** - continuity of translation (proved in R2_sub_right_continuous, but forward ref) **)
+(** - image lands in R2_minus_origin (needs sub_p x <> (0,0) for x <> p') **)
+(** - inverse continuity **)
+(** - R2_minus_origin equivalence with setprod R R setminus Sing(0,0) **)
 admit.
 Admitted.
 
