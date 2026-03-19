@@ -283560,6 +283560,36 @@ claim Hord : order_rel R b a. { exact (SepE2 R (fun x => order_rel R b x) a Ha).
 exact (order_rel_R_implies_Rlt b a Hord).
 Qed.
 
+(** Helper: if x^2 = 1 for SNo x, then x = 1 or x = -1 **)
+(** Proof uses: SNoLt_trichotomy_or, mul_SNo_Lt1_pos_Lt, pos_mul_SNo_Lt' **)
+Lemma SNo_sq_eq_1_cases : forall x:set,
+  SNo x -> mul_SNo x x = 1 -> x = 1 \/ x = minus_SNo 1.
+let x. assume HxSNo : SNo x. assume Hsq : mul_SNo x x = 1.
+(** Main trichotomy: (x < 1 \/ x = 1) \/ 1 < x **)
+apply (SNoLt_trichotomy_or x 1 HxSNo SNo_1).
+- assume Hle : SNoLt x 1 \/ x = 1.
+  apply Hle.
+  + assume Hxlt1 : SNoLt x 1.
+    (** 0 < x < 1 case: mul_SNo_Lt1_pos_Lt gives x^2 < x, so 1 = x^2 < x < 1, contradiction **)
+    (** x = 0 case: 0^2 = 0 <> 1 **)
+    (** x < 0 cases: use -x and mul_SNo_minus_minus **)
+    (** Each subcase needs careful trichotomy handling **)
+    admit.
+  + assume Hxeq1 : x = 1. apply orIL. exact Hxeq1.
+- assume H1ltx : SNoLt 1 x.
+  (** 1 < x: pos_mul_SNo_Lt' gives x < x^2, so 1 < x < x^2 = 1, contradiction **)
+  claim H0ltx : SNoLt 0 x. { exact (SNoLt_tra 0 1 x SNo_0 SNo_1 HxSNo SNoLt_0_1 H1ltx). }
+  claim Hx_lt_xsq : SNoLt x (mul_SNo x x).
+  { prove SNoLt x (mul_SNo x x).
+    rewrite <- (mul_SNo_oneL x HxSNo) at 1.
+    exact (pos_mul_SNo_Lt' 1 x x SNo_1 HxSNo HxSNo H0ltx H1ltx). }
+  claim H1lt_xsq : SNoLt 1 (mul_SNo x x).
+  { exact (SNoLt_tra 1 x (mul_SNo x x) SNo_1 HxSNo
+      (SNo_mul_SNo x x HxSNo HxSNo) H1ltx Hx_lt_xsq). }
+  claim H1lt1 : SNoLt 1 1. { rewrite <- Hsq at 2. exact H1lt_xsq. }
+  exact (SNoLt_irref 1 H1lt1 (x = 1 \/ x = minus_SNo 1)).
+Admitted.
+
 (** Helper: S^1 = upper union lower, upper cap lower = {(1,0), (-1,0)} **)
 (** Upper and lower are both arcs (homeomorphic to [-1,1] via x-projection) **)
 (** Upper is connected (it's path-connected via the circle arc) **)
