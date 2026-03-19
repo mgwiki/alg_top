@@ -283491,18 +283491,17 @@ Admitted.
 Lemma R2_minus_origin_not_simply_connected :
   ~(simply_connected R2_minus_origin R2_minus_origin_topology).
 assume Hsc : simply_connected R2_minus_origin R2_minus_origin_topology.
-(** simply_connected gives path_connected + trivial pi1 at some x0 **)
 (** The inclusion S^1 -> R^2-{0} is not nulhomotopic **)
 claim Hnot_nul : ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
   (graph S1 (fun x:set => x))).
 { exact cor55_4a_inclusion_S1_R2_not_nulhomotopic. }
-(** In a simply connected space, any map from a compact space is nulhomotopic **)
-(** More precisely: S^1 is compact, and any continuous map from S^1 to a **)
-(** simply connected space is nulhomotopic. **)
-(** Actually: simply_connected means path_connected + pi1 trivial. **)
-(** The identity S^1 -> R^2-{0} factors through a loop, and any loop in a **)
-(** simply connected space is nulhomotopic. **)
-(** For now, admit the contrapositive step **)
+(** But in a simply connected space, any continuous map from S^1 is nulhomotopic. **)
+(** Proof: s55_trivial_implies_nulhomotopic needs h_star trivial at basepoint. **)
+(** Since R2m0 simply connected, pi1(R2m0, b) = {e} at some b, then **)
+(** path connectedness + basepoint change gives pi1(R2m0, S1_bp) = {e}. **)
+(** Then h_star maps into {e}, hence trivial. **)
+(** Then s55_trivial_implies_nulhomotopic gives nulhomotopic. Contradiction. **)
+(** Remaining admits: basepoint transfer of trivial pi1, h_star trivial extraction **)
 admit.
 Admitted.
 
