@@ -284949,7 +284949,17 @@ let p'. assume Hp'R2 : p' :e setprod R R.
 (** So f maps R^2-{p'} to R^2-{0} bijectively **)
 (** The R2_minus_origin uses a different definition (Sep not Sing), **)
 (** but {p in R^2 | not(p0=0 and p1=0)} = R^2 setminus {(0,0)} for elements of R^2 **)
-(** Full proof needs careful handling of the R2_minus_origin definition **)
+(** Translation f(x) = x - p' is a homeomorphism R^2-{p'} -> R^2-{0} **)
+(** f is continuous by R2_sub_right_continuous (QED) **)
+(** f is bijective: R2_sub x p' = R2_sub y p' -> x = y **)
+(** f^{-1}(y) = y + p' is also continuous **)
+(** The R2_minus_origin definition uses Sep not Sing but they are extensionally equal **)
+(** for elements of R^2 **)
+(** Full proof needs: **)
+(** - restriction of R2_sub_right_continuous to R^2-{p'} **)
+(** - bijectivity via R2_sub_nonzero_of_ne **)
+(** - inverse continuity (R2_sub_right_continuous with neg(p')) **)
+(** - R2_minus_origin = R^2 setminus Sing(0,0) equivalence **)
 admit.
 Admitted.
 
