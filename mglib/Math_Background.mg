@@ -268756,7 +268756,365 @@ claim HnotScC :
       C
       (subspace_topology (setprod R R) R2_topology C).
 {
-  admit. (** remaining: pi1((R^2)\{0}) nontrivial via S58.2 with n=1 and pi1(S1) nontrivial **)
+  assume HscC0.
+  claim HCeqR2m0 : C = R2_minus_origin.
+  {
+    apply set_ext.
+    - let x.
+      assume HxC.
+      claim HxR2 : x :e setprod R R.
+      {
+        exact (setminusE1
+          (setprod R R)
+          {(0, 0),(0, 0)}
+          x
+          HxC).
+      }
+      claim HxNot : x /:e {(0, 0),(0, 0)}.
+      {
+        exact (setminusE2
+          (setprod R R)
+          {(0, 0),(0, 0)}
+          x
+          HxC).
+      }
+      apply (SepI
+        (setprod R R)
+        (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+        x
+        HxR2).
+      assume Hx0x1.
+      claim HxEq00 : x = (0, 0).
+      {
+        claim HxPairEq00 : (x 0, x 1) = (0, 0).
+        {
+          apply tuple_2_ext_euclid.
+          - exact (andEL
+              (x 0 = 0)
+              (x 1 = 0)
+              Hx0x1).
+          - exact (andER
+              (x 0 = 0)
+              (x 1 = 0)
+              Hx0x1).
+        }
+        exact (eq_i_tra
+          x
+          (x 0, x 1)
+          (0, 0)
+          (setprod_eta R R x HxR2)
+          HxPairEq00).
+      }
+      claim HxInSing : x :e {(0, 0),(0, 0)}.
+      {
+        exact (eq_subst_mem
+          x
+          (0, 0)
+          {(0, 0),(0, 0)}
+          HxEq00
+          (UPairI1 (0, 0) (0, 0))).
+      }
+      exact (HxNot HxInSing).
+    - let x.
+      assume HxR2m0.
+      claim HxR2 : x :e setprod R R.
+      {
+        exact (SepE1
+          (setprod R R)
+          (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+          x
+          HxR2m0).
+      }
+      claim HxNot00 : ~(x 0 = 0 /\ x 1 = 0).
+      {
+        exact (SepE2
+          (setprod R R)
+          (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+          x
+          HxR2m0).
+      }
+      apply (setminusI
+        (setprod R R)
+        {(0, 0),(0, 0)}
+        x
+        HxR2).
+      assume HxInSing.
+      claim HxInSingle : x :e {(0, 0)}.
+      {
+        exact (mem_eqR
+          x
+          {(0, 0),(0, 0)}
+          {(0, 0)}
+          (eq_symm
+            {(0, 0)}
+            {(0, 0),(0, 0)}
+            (Sing_eq_UPair (0, 0)))
+          HxInSing).
+      }
+      claim HxEq00 : x = (0, 0).
+      {
+        exact (SingE
+          (0, 0)
+          x
+          HxInSingle).
+      }
+      claim Hx0Eq0 : x 0 = 0.
+      {
+        exact (pair_eq_fst
+          (x 0)
+          (x 1)
+          0
+          0
+          (eq_i_tra
+            (x 0, x 1)
+            x
+            (0, 0)
+            (eq_symm
+              x
+              (x 0, x 1)
+              (setprod_eta R R x HxR2))
+            HxEq00)).
+      }
+      claim Hx1Eq0 : x 1 = 0.
+      {
+        exact (pair_eq_snd
+          (x 0)
+          (x 1)
+          0
+          0
+          (eq_i_tra
+            (x 0, x 1)
+            x
+            (0, 0)
+            (eq_symm
+              x
+              (x 0, x 1)
+              (setprod_eta R R x HxR2))
+            HxEq00)).
+      }
+      exact (HxNot00
+        (andI
+          (x 0 = 0)
+          (x 1 = 0)
+          Hx0Eq0
+          Hx1Eq0)).
+  }
+  claim HscR2m0Exp :
+    simply_connected
+      R2_minus_origin
+      (subspace_topology (setprod R R) R2_topology R2_minus_origin).
+  {
+    rewrite <- HCeqR2m0.
+    exact HscC0.
+  }
+  claim HR2m0TopDef :
+    R2_minus_origin_topology =
+    subspace_topology (setprod R R) R2_topology R2_minus_origin.
+  {
+    reflexivity.
+  }
+  claim HscR2m0 :
+    simply_connected R2_minus_origin R2_minus_origin_topology.
+  {
+    rewrite HR2m0TopDef.
+    exact HscR2m0Exp.
+  }
+  claim Hb0S1 : (1, 0) :e S1.
+  {
+    apply (SepI
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)) = 1)
+      (1, 0)).
+    - exact (tuple_2_setprod_by_pair_Sigma
+        R
+        R
+        1
+        0
+        real_1
+        real_0).
+    - rewrite tuple_2_0_eq at 1.
+      rewrite tuple_2_0_eq at 1.
+      rewrite tuple_2_1_eq at 1.
+      rewrite tuple_2_1_eq at 1.
+      rewrite (mul_SNo_oneR
+        1
+        SNo_1).
+      rewrite (mul_SNo_zeroR
+        0
+        SNo_0).
+      exact (add_SNo_0R
+        1
+        SNo_1).
+  }
+  set h := graph S1 (fun x:set => x).
+  claim HhCont :
+    continuous_map S1 S1_topology
+      R2_minus_origin R2_minus_origin_topology
+      h.
+  {
+    exact s55_inclusion_S1_R2_minus_origin_continuous.
+  }
+  claim Hhb0 :
+    apply_fun h (1, 0) :e R2_minus_origin.
+  {
+    exact (continuous_map_function_on
+      S1
+      S1_topology
+      R2_minus_origin
+      R2_minus_origin_topology
+      h
+      HhCont
+      (1, 0)
+      Hb0S1).
+  }
+  claim Hpi1Triv :
+    fundamental_group R2_minus_origin R2_minus_origin_topology (apply_fun h (1, 0))
+    =
+    {fundamental_group_id R2_minus_origin R2_minus_origin_topology (apply_fun h (1, 0))}.
+  {
+    exact (simply_connected_trivial_pi1_at_point
+      R2_minus_origin
+      R2_minus_origin_topology
+      (apply_fun h (1, 0))
+      HscR2m0
+      Hhb0).
+  }
+  claim Htriv :
+    forall cls:set, cls :e fundamental_group S1 S1_topology (1, 0) ->
+      apply_fun
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          R2_minus_origin
+          R2_minus_origin_topology
+          (apply_fun h (1, 0))
+          h)
+        cls
+      =
+      fundamental_group_id
+        R2_minus_origin
+        R2_minus_origin_topology
+        (apply_fun h (1, 0)).
+  {
+    let cls.
+    assume Hcls.
+    claim Hhom :
+      group_homomorphism
+        (fundamental_group S1 S1_topology (1, 0))
+        (fundamental_group_mult S1 S1_topology (1, 0))
+        (fundamental_group R2_minus_origin R2_minus_origin_topology (apply_fun h (1, 0)))
+        (fundamental_group_mult R2_minus_origin R2_minus_origin_topology (apply_fun h (1, 0)))
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          R2_minus_origin
+          R2_minus_origin_topology
+          (apply_fun h (1, 0))
+          h).
+    {
+      exact (induced_homomorphism_is_homomorphism
+        S1
+        S1_topology
+        (1, 0)
+        R2_minus_origin
+        R2_minus_origin_topology
+        (apply_fun h (1, 0))
+        h
+        HhCont
+        (eq_refl (apply_fun h (1, 0)))
+        Hb0S1).
+    }
+    claim HimgMem :
+      apply_fun
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          R2_minus_origin
+          R2_minus_origin_topology
+          (apply_fun h (1, 0))
+          h)
+        cls
+      :e
+      fundamental_group R2_minus_origin R2_minus_origin_topology (apply_fun h (1, 0)).
+    {
+      exact (group_homomorphism_function_on
+        (fundamental_group S1 S1_topology (1, 0))
+        (fundamental_group_mult S1 S1_topology (1, 0))
+        (fundamental_group R2_minus_origin R2_minus_origin_topology (apply_fun h (1, 0)))
+        (fundamental_group_mult R2_minus_origin R2_minus_origin_topology (apply_fun h (1, 0)))
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          R2_minus_origin
+          R2_minus_origin_topology
+          (apply_fun h (1, 0))
+          h)
+        Hhom
+        cls
+        Hcls).
+    }
+    claim HimgSing :
+      apply_fun
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          R2_minus_origin
+          R2_minus_origin_topology
+          (apply_fun h (1, 0))
+          h)
+        cls
+      :e
+      {fundamental_group_id
+        R2_minus_origin
+        R2_minus_origin_topology
+        (apply_fun h (1, 0))}.
+    {
+      rewrite <- Hpi1Triv.
+      exact HimgMem.
+    }
+    exact (singleton_elem
+      (apply_fun
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          R2_minus_origin
+          R2_minus_origin_topology
+          (apply_fun h (1, 0))
+          h)
+        cls)
+      (fundamental_group_id
+        R2_minus_origin
+        R2_minus_origin_topology
+        (apply_fun h (1, 0)))
+      HimgSing).
+  }
+  claim Hnul :
+    nulhomotopic
+      S1
+      S1_topology
+      R2_minus_origin
+      R2_minus_origin_topology
+      h.
+  {
+    exact (lemma55_3_trivial_implies_nulhomotopic
+      R2_minus_origin
+      R2_minus_origin_topology
+      h
+      (1, 0)
+      HhCont
+      Hb0S1
+      Htriv).
+  }
+  exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic
+    Hnul).
 }
 claim HscD :
   simply_connected
