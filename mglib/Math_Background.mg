@@ -281406,15 +281406,24 @@ assume Hf_cont : continuous_map A (subspace_topology X Tx A)
   Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) f.
 assume Hf_nul : nulhomotopic A (subspace_topology X Tx A)
   Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) f.
-(** Proof of homotopy extension lemma (algtop.tex line 1930): **)
-(** Step 1: Get nulhomotopy F: AxI -> Y with F(a,0)=f(a), F(a,1)=y0 **)
-(** Step 2: Extend F to (AxI) union (Xx{1}) by F(x,1) = y0 **)
-(** Step 3: Tietze extends to G: XxI -> R^n **)
-(** Step 4: U = G^{-1}(Y) open, contains (AxI) union (Xx{1}) **)
-(** Step 5: Tube lemma: WxI c= U for open W containing A **)
-(** Step 6: Urysohn: phi: X -> [0,1], phi=0 on A, phi=1 on X-W **)
-(** Step 7: g(x) = G(x, phi(x)) extends f and maps to Y **)
-(** Step 8: H(x,t) = G(x, (1-t)phi(x)+t) is nulhomotopy of g **)
+(** Step 1: Extract nulhomotopy data **)
+set TA := subspace_topology X Tx A.
+set TRn := euclidean_topology n.
+set TY := subspace_topology (euclidean_space n) TRn Y.
+(** nulhomotopic gives: exists y0 in Y, homotopic_maps A TA Y TY f (const_fun A y0) **)
+apply Hf_nul. let y0. assume Hy0_and_hom.
+claim Hy0 : y0 :e Y.
+{ exact (andEL (y0 :e Y) (homotopic_maps A TA Y TY f (const_fun A y0)) Hy0_and_hom). }
+claim Hhomotopy : homotopic_maps A TA Y TY f (const_fun A y0).
+{ exact (andER (y0 :e Y) (homotopic_maps A TA Y TY f (const_fun A y0)) Hy0_and_hom). }
+(** Steps 2-8 require: **)
+(** - Tietze extension (Tietze_extension_real, axiom) **)
+(** - Tube lemma (tube_lemma, axiom) **)
+(** - Urysohn lemma (Urysohn_lemma, axiom) **)
+(** - Construction of g and H from G and phi **)
+(** - Continuity of g and H **)
+(** Each step is substantial formalization work. **)
+(** The mathematical argument is clear; formal extraction is verbose. **)
 admit.
 Admitted.
 
