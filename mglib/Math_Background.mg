@@ -284298,10 +284298,27 @@ apply and9I.
     claim Hnorm : add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1.
     { exact (SepE2 (setprod R R)
         (fun q:set => add_SNo (mul_SNo (q 0) (q 0)) (mul_SNo (q 1) (q 1)) = 1) p HpS1). }
+    claim Hp1sq0 : mul_SNo (p 1) (p 1) = 0.
+    { prove mul_SNo (p 1) (p 1) = 0.
+      rewrite Hp1eq0.
+      exact (mul_SNo_zeroL 0 SNo_0). }
     claim Hp0sq : mul_SNo (p 0) (p 0) = 1.
-    { (** From norm: p0^2 + p1^2 = 1 and p1 = 0, so p0^2 + 0 = 1, p0^2 = 1 **)
-      (** Rewriting 0 is tricky due to tuple indices. Admit this arithmetic step. **)
-      admit. }
+    { (** From p0^2 + p1^2 = 1 and p1^2 = 0: need p0^2 + p1^2 = 1 + p1^2 **)
+      (** Then cancel_R gives p0^2 = 1 **)
+      claim H1_plus_p1sq : add_SNo 1 (mul_SNo (p 1) (p 1)) = 1.
+      { prove add_SNo 1 (mul_SNo (p 1) (p 1)) = 1.
+        rewrite Hp1sq0. exact (add_SNo_0R 1 SNo_1). }
+      claim Hnorm_eq : add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) =
+        add_SNo 1 (mul_SNo (p 1) (p 1)).
+      { rewrite H1_plus_p1sq. exact Hnorm. }
+      exact (add_SNo_cancel_R
+        (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1))
+        1
+        (SNo_mul_SNo (p 0) (p 0) Hp0SNo Hp0SNo)
+        (SNo_mul_SNo (p 1) (p 1) Hp1SNo Hp1SNo)
+        SNo_1
+        Hnorm_eq). }
     (** By SNo_sq_eq_1_cases: p 0 = 1 or p 0 = -1 **)
     apply (SNo_sq_eq_1_cases (p 0) Hp0SNo Hp0sq).
     - assume Hp0eq1 : p 0 = 1.
@@ -284324,8 +284341,18 @@ apply and9I.
     { prove (minus_SNo 1, 0) 1 = 0. exact (tuple_2_1_eq (minus_SNo 1) 0). }
     claim HbpS1 : S1_basepoint :e S1. { exact S1_basepoint_in_S1_early. }
     claim HleftS1 : S1_left_point :e S1.
-    { (** (-1,0) is on S1: (-1)^2 + 0^2 = 1. Proved at line ~283690 in the and9I. **)
-      admit. }
+    { prove (minus_SNo 1, 0) :e {p :e setprod R R |
+        add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1}.
+      apply SepI.
+      + exact (tuple_2_setprod_by_pair_Sigma R R (minus_SNo 1) 0 (real_minus_SNo 1 real_1) real_0).
+      + prove add_SNo (mul_SNo ((minus_SNo 1, 0) 0) ((minus_SNo 1, 0) 0))
+                      (mul_SNo ((minus_SNo 1, 0) 1) ((minus_SNo 1, 0) 1)) = 1.
+        rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+        rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
+        rewrite (mul_SNo_oneR 1 SNo_1).
+        rewrite (mul_SNo_zeroL 0 SNo_0).
+        rewrite (add_SNo_0R 1 SNo_1).
+        exact (eq_refl 1). }
     apply (UPairE p S1_basepoint S1_left_point Hp).
     * assume Hpeq : p = S1_basepoint. rewrite Hpeq.
       claim Hbp_nneg : ~(SNoLt (S1_basepoint 1) 0).
