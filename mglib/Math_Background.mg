@@ -282716,7 +282716,162 @@ Lemma S2_minus_simple_closed_curve_nonempty : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
   (Sn 2 :\: C) <> Empty.
-admit.
+let C. assume HC : C c= Sn 2.
+assume Hscc : is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C).
+assume Hempty : Sn 2 :\: C = Empty.
+(** If S^2-C = Empty then Sn 2 c= C, hence C = Sn 2 **)
+claim HS2subC : Sn 2 c= C. { exact (setminus_empty_implies_sub (Sn 2) C Hempty). }
+claim HCeqS2 : C = Sn 2.
+{ apply set_ext. - exact HC. - exact HS2subC. }
+(** is_simple_closed_curve C TC means exists h, homeomorphism C TC S1 S1_topology h **)
+apply Hscc. let h. assume Hh : homeomorphism C (subspace_topology (Sn 2) (Sn_topology 2) C) S1 S1_topology h.
+(** Since C = S^2, the subspace topology on C is Sn_topology 2 **)
+claim Htop_eq : subspace_topology (Sn 2) (Sn_topology 2) C = Sn_topology 2.
+{ rewrite HCeqS2. exact (subspace_topology_whole (Sn 2) (Sn_topology 2) (lemma59_3_Sn_topology_on 2)). }
+(** Rewrite homeomorphism: h : (Sn 2, Sn_topology 2) -> (S1, S1_topology) **)
+claim Hh2 : homeomorphism C (Sn_topology 2) S1 S1_topology h.
+{ prove homeomorphism C (Sn_topology 2) S1 S1_topology h.
+  rewrite <- Htop_eq. exact Hh. }
+claim Hh3 : homeomorphism (Sn 2) (Sn_topology 2) S1 S1_topology h.
+{ prove homeomorphism (Sn 2) (Sn_topology 2) S1 S1_topology h.
+  rewrite <- HCeqS2. exact Hh2. }
+(** S^2 is simply connected **)
+claim HS2sc : simply_connected (Sn 2) (Sn_topology 2).
+{ exact (thm59_3_Sn_simply_connected 2
+    (nat_p_omega 2 nat_2) (Subq_ref 2)). }
+(** Transfer: S^1 is simply connected **)
+claim HS1sc : simply_connected S1 S1_topology.
+{ exact (homeomorphism_preserves_simply_connected
+    (Sn 2) (Sn_topology 2) S1 S1_topology h Hh3 HS2sc). }
+(** But pi_1(S^1) is nontrivial: exists nontrivial element **)
+claim HS1_nontriv : exists cls:set,
+  cls :e fundamental_group S1 S1_topology S1_basepoint /\
+  cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+{ exact (s54_pi1_S1_nontrivial_from_two_lifts 0 1
+    real_0 real_1
+    covering_map_R_S1_at_0_basepoint covering_map_R_S1_at_1_basepoint
+    neq_1_0). }
+(** Contradiction: simply_connected means pi1 is trivial at some basepoint **)
+(** HS1sc gives: path_connected S1 /\ exists x0, x0 in S1 /\ pi1(S1,x0) = {e} **)
+claim HS1_triv : exists x0:set, x0 :e S1 /\
+  fundamental_group S1 S1_topology x0 = Sing (fundamental_group_id S1 S1_topology x0).
+{ exact (andER (path_connected_space S1 S1_topology)
+    (exists x0:set, x0 :e S1 /\
+      fundamental_group S1 S1_topology x0 = Sing (fundamental_group_id S1 S1_topology x0))
+    HS1sc). }
+(** Extract the nontrivial element **)
+apply HS1_nontriv. let cls. assume Hcls_data.
+claim HclsIn : cls :e fundamental_group S1 S1_topology S1_basepoint.
+{ exact (andEL
+    (cls :e fundamental_group S1 S1_topology S1_basepoint)
+    (cls <> fundamental_group_id S1 S1_topology S1_basepoint)
+    Hcls_data). }
+claim HclsNe : cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+{ exact (andER
+    (cls :e fundamental_group S1 S1_topology S1_basepoint)
+    (cls <> fundamental_group_id S1 S1_topology S1_basepoint)
+    Hcls_data). }
+(** From simply connected: pi1(S1, S1_basepoint) must also be trivial **)
+(** This requires: S1 path connected + basepoint independence **)
+(** Path connected from simply connected **)
+claim HS1_pc : path_connected_space S1 S1_topology.
+{ exact (andEL (path_connected_space S1 S1_topology)
+    (exists x0:set, x0 :e S1 /\
+      fundamental_group S1 S1_topology x0 = Sing (fundamental_group_id S1 S1_topology x0))
+    HS1sc). }
+(** From the existential, get x0 with pi1(S1,x0) = {e0} **)
+apply HS1_triv. let x0. assume Hx0_data.
+claim Hx0S1 : x0 :e S1.
+{ exact (andEL (x0 :e S1)
+    (fundamental_group S1 S1_topology x0 = Sing (fundamental_group_id S1 S1_topology x0))
+    Hx0_data). }
+claim Hpi1_triv : fundamental_group S1 S1_topology x0 = Sing (fundamental_group_id S1 S1_topology x0).
+{ exact (andER (x0 :e S1)
+    (fundamental_group S1 S1_topology x0 = Sing (fundamental_group_id S1 S1_topology x0))
+    Hx0_data). }
+(** Get path from x0 to S1_basepoint **)
+claim HS1_top : topology_on S1 S1_topology.
+{ admit. }
+claim Hbp : S1_basepoint :e S1. { exact S1_basepoint_in_S1_early. }
+claim Hpath_exists : exists p:set, path_between S1 x0 S1_basepoint p /\
+  continuous_map unit_interval unit_interval_topology S1 S1_topology p.
+{ exact (andER (topology_on S1 S1_topology)
+    (forall x y:set, x :e S1 -> y :e S1 -> exists p:set, path_between S1 x y p /\
+      continuous_map unit_interval unit_interval_topology S1 S1_topology p)
+    HS1_pc x0 S1_basepoint Hx0S1 Hbp). }
+apply Hpath_exists. let alpha. assume Halpha_data.
+claim Halpha_path : path_between S1 x0 S1_basepoint alpha.
+{ exact (andEL (path_between S1 x0 S1_basepoint alpha)
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology alpha)
+    Halpha_data). }
+claim Halpha_cont : continuous_map unit_interval unit_interval_topology S1 S1_topology alpha.
+{ exact (andER (path_between S1 x0 S1_basepoint alpha)
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology alpha)
+    Halpha_data). }
+(** Extract path endpoints **)
+claim Halpha0 : apply_fun alpha 0 = x0.
+{ exact (andER (function_on alpha unit_interval S1)
+    (apply_fun alpha 0 = x0)
+    (andEL (function_on alpha unit_interval S1 /\ apply_fun alpha 0 = x0)
+      (apply_fun alpha 1 = S1_basepoint) Halpha_path)). }
+claim Halpha1 : apply_fun alpha 1 = S1_basepoint.
+{ exact (andER (function_on alpha unit_interval S1 /\ apply_fun alpha 0 = x0)
+    (apply_fun alpha 1 = S1_basepoint) Halpha_path). }
+(** Basepoint change isomorphism: pi1(S1,x0) ~= pi1(S1,S1_basepoint) **)
+set phi := basepoint_change_map S1 S1_topology x0 S1_basepoint alpha.
+claim Hiso : group_isomorphism
+  (fundamental_group S1 S1_topology x0) (fundamental_group_mult S1 S1_topology x0)
+  (fundamental_group S1 S1_topology S1_basepoint) (fundamental_group_mult S1 S1_topology S1_basepoint)
+  phi.
+{ exact (Theorem_52_1_basepoint_isomorphism S1 S1_topology x0 S1_basepoint alpha
+    HS1_top Halpha_cont Halpha0 Halpha1). }
+(** Extract bijection **)
+claim Hbij : bijection
+  (fundamental_group S1 S1_topology x0)
+  (fundamental_group S1 S1_topology S1_basepoint) phi.
+{ exact (group_isomorphism_bijection
+    (fundamental_group S1 S1_topology x0) (fundamental_group_mult S1 S1_topology x0)
+    (fundamental_group S1 S1_topology S1_basepoint) (fundamental_group_mult S1 S1_topology S1_basepoint)
+    phi Hiso). }
+(** Since pi1(S1,x0) = {e0}, codomain is singleton **)
+set e0 := fundamental_group_id S1 S1_topology x0.
+set ebp := fundamental_group_id S1 S1_topology S1_basepoint.
+claim Hcodomain_sing : fundamental_group S1 S1_topology S1_basepoint = Sing (apply_fun phi e0).
+{ exact (bijection_singleton_domain_codomain_singleton
+    (fundamental_group S1 S1_topology x0)
+    (fundamental_group S1 S1_topology S1_basepoint)
+    phi e0 Hbij Hpi1_triv). }
+(** cls in singleton -> cls = apply_fun phi e0 **)
+claim Hcls_eq : cls = apply_fun phi e0.
+{ exact (SingE (apply_fun phi e0) cls
+    (eq_subst_mem_set cls
+      (fundamental_group S1 S1_topology S1_basepoint)
+      (Sing (apply_fun phi e0)) HclsIn Hcodomain_sing)). }
+(** ebp also in singleton -> ebp = apply_fun phi e0 **)
+claim Hebp_in : ebp :e fundamental_group S1 S1_topology S1_basepoint.
+{ set Gbp := fundamental_group S1 S1_topology S1_basepoint.
+  set multbp := fundamental_group_mult S1 S1_topology S1_basepoint.
+  set invbp := fundamental_group_inv S1 S1_topology S1_basepoint.
+  claim Hgrp : group_structure Gbp multbp ebp invbp.
+  { exact (fundamental_group_is_group S1 S1_topology S1_basepoint HS1_top Hbp). }
+  apply (and6E
+    (function_on multbp (setprod Gbp Gbp) Gbp)
+    (function_on invbp Gbp Gbp)
+    (ebp :e Gbp)
+    (forall x y z:set, x :e Gbp -> y :e Gbp -> z :e Gbp ->
+      apply_fun multbp (apply_fun multbp (x, y), z) = apply_fun multbp (x, apply_fun multbp (y, z)))
+    (forall x:set, x :e Gbp -> apply_fun multbp (ebp, x) = x /\ apply_fun multbp (x, ebp) = x)
+    (forall x:set, x :e Gbp ->
+      apply_fun multbp (x, apply_fun invbp x) = ebp /\ apply_fun multbp (apply_fun invbp x, x) = ebp)
+    Hgrp).
+  assume _ _ He _ _ _. exact He. }
+claim Hebp_eq : ebp = apply_fun phi e0.
+{ exact (SingE (apply_fun phi e0) ebp
+    (eq_subst_mem_set ebp
+      (fundamental_group S1 S1_topology S1_basepoint)
+      (Sing (apply_fun phi e0)) Hebp_in Hcodomain_sing)). }
+(** cls = apply_fun phi e0 = ebp, contradicts cls <> ebp **)
+apply HclsNe. rewrite Hcls_eq. symmetry. exact Hebp_eq.
 Admitted.
 
 (** Definition: upper and lower semicircles of S^1 **)
