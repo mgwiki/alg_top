@@ -281939,11 +281939,16 @@ apply andI.
   (** Same SVK argument as jordan_separation_disconnected **)
   (** Assume connected, derive contradiction: pi1(S^2-{a,b}) trivial but nontrivial **)
   assume Hconn : connected_space (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)).
-  (** The rest is identical to the jordan_separation_disconnected proof **)
-  (** with C1=A1, C2=A2, p=a', q=b' **)
-  (** And Hunion = refl (C = A1 union A2 by definition) **)
-  (** Need: S^2-C nonempty. Proof: S^2-{a,b} connected, C-{a,b} disconnected, so C <> S^2 **)
-  (** For now admit the full SVK chain **)
+  (** The proof is identical in structure to jordan_separation_disconnected **)
+  (** but doesn't need simple_closed_curve_arc_decomposition since A1, A2 are given. **)
+  (** Key steps: **)
+  (** 1. S^2-C nonempty (C-{a,b} disconnected, S^2-{a,b} connected, so C <> S^2) **)
+  (** 2. S^2-C open = (S^2-A1) cap (S^2-A2), intersection of two open sets **)
+  (** 3. SVK with U=S^2-A1, V=S^2-A2, trivial inclusions **)
+  (** 4. pi1(S^2-{a,b}) trivial + nontrivial = contradiction **)
+  (** All steps use the same infrastructure as jordan_separation_disconnected **)
+  (** pi1_S2_minus_two_points_nontrivial is a forward reference issue; **)
+  (** this proof should be placed after it, or use a forward declaration **)
   admit.
 Admitted.
 
