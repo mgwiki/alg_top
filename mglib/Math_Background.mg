@@ -281272,7 +281272,12 @@ prove nulhomotopic A TA R2m0 TR2m0 g.
 prove exists y0:set, y0 :e R2m0 /\ homotopic_maps A TA R2m0 TR2m0 g (const_fun A y0).
 witness neg_p.
 apply andI.
-- (** neg_p in R2-{0}: -p != 0 since p != 0 **)
+- (** neg_p in R2-{0}: -p in R^2 and -p != (0,0) since p != (0,0) **)
+  prove neg_p :e R2m0.
+  prove neg_p :e setprod R R :\: Sing (0, 0).
+  (** Need: neg_p in R x R and neg_p not in {(0,0)} **)
+  (** Extract p in R2 and p != (0,0) from Hp_data **)
+  (** Hp_data has shape: p in R2 /\ p != (0,0) /\ ... (5-fold left-assoc) **)
   admit.
 - (** g homotopic to const(-p) via Lemma_51_1_homotopy_trans **)
   admit.
