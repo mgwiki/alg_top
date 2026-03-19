@@ -293114,6 +293114,23 @@ exact (tuple_2_setprod_by_pair_Sigma R R
   Hx Hy).
 Qed.
 
+(** Helper: subtracting (0,0) is identity: R2_sub x (0,0) = x for x in R^2 **)
+(** Proven Alice **)
+Lemma R2_sub_zero_right : forall x:set,
+  x :e setprod R R -> R2_sub x (0, 0) = x.
+let x. assume HxR2 : x :e setprod R R.
+claim Hx0R : x 0 :e R. { exact (ap0_Sigma R (fun _ => R) x HxR2). }
+claim Hx1R : x 1 :e R. { exact (ap1_Sigma R (fun _ => R) x HxR2). }
+claim Hx0SNo : SNo (x 0). { exact (real_SNo (x 0) Hx0R). }
+claim Hx1SNo : SNo (x 1). { exact (real_SNo (x 1) Hx1R). }
+prove (add_SNo (x 0) (minus_SNo ((0, 0) 0)), add_SNo (x 1) (minus_SNo ((0, 0) 1))) = x.
+rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+rewrite minus_SNo_0.
+rewrite (add_SNo_0R (x 0) Hx0SNo).
+rewrite (add_SNo_0R (x 1) Hx1SNo).
+symmetry. exact (setprod_eta R R x HxR2).
+Qed.
+
 (** Helper: R2_sub is nonzero when z and w are different R^2 points **)
 Lemma R2_sub_nonzero_of_ne : forall z w:set,
   z :e setprod R R -> w :e setprod R R -> z <> w ->
