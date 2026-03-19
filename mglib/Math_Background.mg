@@ -282421,6 +282421,14 @@ Admitted.
 (**     H avoids 0 since t.g(x) in B but p not in B. **)
 (** Helper: translation by fixed vector is continuous on R2 **)
 (** This is a copy of R2_sub_right_continuous (defined later at ~line 294k) **)
+(** Forward declaration: R2_sub of different R2 points is nonzero **)
+(** Full proof at R2_sub_nonzero_of_ne (line ~295k). Placed here for nulhomotopy. **)
+Lemma R2_sub_nonzero_of_ne_early : forall z w:set,
+  z :e setprod R R -> w :e setprod R R -> z <> w ->
+  (add_SNo (z 0) (minus_SNo (w 0)), add_SNo (z 1) (minus_SNo (w 1))) <> (0, 0).
+admit.
+Admitted.
+
 (** placed here to avoid forward reference in nulhomotopy proof **)
 (** Proven Alice **)
 Lemma R2_translation_continuous_early : forall p:set,
@@ -282704,10 +282712,72 @@ apply andI.
     (** k_fun maps into R2m0: g(x) - p <> (0,0) since g(x) <> p **)
     (** (p not in image(g) by hypothesis) **)
     claim Hk_in_R2m0 : forall a:set, a :e A -> apply_fun k_fun a :e R2m0.
-    { (** k_fun(a) = r2sub(g(a), p). Need: g(a) != p (since p not in image g A). **)
-      (** Then r2sub nonzero. But R2_sub_nonzero_of_ne is at line ~295k (forward ref). **)
-      (** The proof is logically complete but blocked by file ordering. **)
-      admit. }
+    { let a. assume Ha : a :e A.
+      claim Hga_R2m0 : apply_fun g a :e R2m0.
+      { exact (continuous_map_function_on A TA R2m0 TR2m0 g Hg_cont a Ha). }
+      claim Hga_R2 : apply_fun g a :e setprod R R.
+      { exact (setminusE1 (setprod R R) (Sing (0,0)) (apply_fun g a) Hga_R2m0). }
+      claim HpR2_loc : p :e setprod R R.
+      { exact (andEL (p :e setprod R R) (p <> (0, 0))
+          (andEL (p :e setprod R R /\ p <> (0, 0))
+            (~(p :e image_of g A))
+            (andEL (p :e setprod R R /\ p <> (0, 0) /\ ~(p :e image_of g A))
+              (~((0, 0) :e image_of g A))
+              (andEL
+                (p :e setprod R R /\ p <> (0, 0) /\ ~(p :e image_of g A) /\ ~((0, 0) :e image_of g A))
+                (exists alpha:set,
+                  path_between (setprod R R :\: image_of g A) (0, 0) p alpha /\
+                  continuous_map unit_interval unit_interval_topology
+                    (setprod R R :\: image_of g A)
+                    (subspace_topology (setprod R R) R2_topology (setprod R R :\: image_of g A)) alpha)
+                Hp_data)))). }
+      claim Hp_not_img : ~(p :e image_of g A).
+      { exact (andER (p :e setprod R R /\ p <> (0, 0))
+          (~(p :e image_of g A))
+          (andEL (p :e setprod R R /\ p <> (0, 0) /\ ~(p :e image_of g A))
+            (~((0, 0) :e image_of g A))
+            (andEL
+              (p :e setprod R R /\ p <> (0, 0) /\ ~(p :e image_of g A) /\ ~((0, 0) :e image_of g A))
+              (exists alpha:set,
+                path_between (setprod R R :\: image_of g A) (0, 0) p alpha /\
+                continuous_map unit_interval unit_interval_topology
+                  (setprod R R :\: image_of g A)
+                  (subspace_topology (setprod R R) R2_topology (setprod R R :\: image_of g A)) alpha)
+              Hp_data))). }
+      (** g(a) != p: if g(a) = p then p in image(g, A), contradicting Hp_not_img **)
+      claim Hga_ne_p : apply_fun g a <> p.
+      { assume Heq : apply_fun g a = p.
+        apply Hp_not_img.
+        prove p :e image_of g A.
+        rewrite <- Heq.
+        exact (ReplI A (fun y:set => apply_fun g y) a Ha). }
+      (** k_fun(a) = r2sub(g(a), p) and r2sub(g(a), p) != (0,0) **)
+      claim Hkfa_eq : apply_fun k_fun a = r2sub (apply_fun g a) p.
+      { exact (apply_fun_graph A (fun x:set => r2sub (apply_fun g x) p) a Ha). }
+      claim Hr2sub_ne : r2sub (apply_fun g a) p <> (0, 0).
+      { exact (R2_sub_nonzero_of_ne_early (apply_fun g a) p Hga_R2 HpR2_loc Hga_ne_p). }
+      claim Hr2sub_R2 : r2sub (apply_fun g a) p :e setprod R R.
+      { claim Hga0 : apply_fun g a 0 :e R. { exact (ap0_Sigma R (fun _ => R) (apply_fun g a) Hga_R2). }
+        claim Hga1 : apply_fun g a 1 :e R. { exact (ap1_Sigma R (fun _ => R) (apply_fun g a) Hga_R2). }
+        claim Hp0 : p 0 :e R. { exact (ap0_Sigma R (fun _ => R) p HpR2_loc). }
+        claim Hp1 : p 1 :e R. { exact (ap1_Sigma R (fun _ => R) p HpR2_loc). }
+        exact (tuple_2_setprod_by_pair_Sigma R R
+          (add_SNo (apply_fun g a 0) (minus_SNo (p 0)))
+          (add_SNo (apply_fun g a 1) (minus_SNo (p 1)))
+          (real_add_SNo (apply_fun g a 0) Hga0 (minus_SNo (p 0)) (real_minus_SNo (p 0) Hp0))
+          (real_add_SNo (apply_fun g a 1) Hga1 (minus_SNo (p 1)) (real_minus_SNo (p 1) Hp1))). }
+      (** k_fun(a) in R2 **)
+      claim Hkfa_R2 : apply_fun k_fun a :e setprod R R.
+      { exact (eq_subst_mem (apply_fun k_fun a) (r2sub (apply_fun g a) p) (setprod R R) Hkfa_eq Hr2sub_R2). }
+      (** k_fun(a) not in Sing(0,0) **)
+      claim Hkfa_ne00 : apply_fun k_fun a /:e Sing (0, 0).
+      { assume Hin : apply_fun k_fun a :e Sing (0, 0).
+        claim Hkfa00 : apply_fun k_fun a = (0, 0). { exact (SingE (0, 0) (apply_fun k_fun a) Hin). }
+        claim Hr2sub00 : r2sub (apply_fun g a) p = (0, 0).
+        { exact (eq_i_tra (r2sub (apply_fun g a) p) (apply_fun k_fun a) (0, 0)
+            (eq_symm (apply_fun k_fun a) (r2sub (apply_fun g a) p) Hkfa_eq) Hkfa00). }
+        exact (Hr2sub_ne Hr2sub00). }
+      exact (setminusI (setprod R R) (Sing (0, 0)) (apply_fun k_fun a) Hkfa_R2 Hkfa_ne00). }
     (** k_fun continuous to R2m0 (by continuous_map_range_restrict) **)
     claim HR2m0_sub_local : R2m0 c= setprod R R.
     { let z. assume Hz : z :e R2m0. exact (setminusE1 (setprod R R) (Sing (0,0)) z Hz). }
