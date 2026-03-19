@@ -268644,7 +268644,150 @@ Theorem ex59_3b_R2_not_homeo_Rn : forall n:set,
   n :e omega -> 3 c= n ->
   ~(exists f:set, homeomorphism (setprod R R) R2_topology
     (euclidean_space n) (euclidean_topology n) f).
-admit.
+let n.
+assume Hn HnGe3.
+assume HhomeEx.
+apply HhomeEx.
+let f.
+assume Hhome.
+claim Hp0R2 : (0, 0) :e setprod R R.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    0
+    0
+    real_0
+    real_0).
+}
+claim HfCont :
+  continuous_map (setprod R R) R2_topology (euclidean_space n) (euclidean_topology n) f.
+{
+  exact (homeomorphism_continuous
+    (setprod R R)
+    R2_topology
+    (euclidean_space n)
+    (euclidean_topology n)
+    f
+    Hhome).
+}
+claim HfFun : function_on f (setprod R R) (euclidean_space n).
+{
+  exact (continuous_map_function_on
+    (setprod R R)
+    R2_topology
+    (euclidean_space n)
+    (euclidean_topology n)
+    f
+    HfCont).
+}
+set a := apply_fun f (0, 0).
+claim Ha : a :e euclidean_space n.
+{
+  exact (HfFun (0, 0) Hp0R2).
+}
+set C := (setprod R R) :\: {(0, 0),(0, 0)}.
+set D := (euclidean_space n) :\: {a,a}.
+claim HCsub : C c= setprod R R.
+{
+  exact (setminus_Subq
+    (setprod R R)
+    {(0, 0),(0, 0)}).
+}
+claim HhomeC :
+  homeomorphism
+    C
+    (subspace_topology (setprod R R) R2_topology C)
+    (image_of f C)
+    (subspace_topology (euclidean_space n) (euclidean_topology n) (image_of f C))
+    f.
+{
+  exact (homeomorphism_restrict_to_image_of_subset
+    (setprod R R)
+    R2_topology
+    (euclidean_space n)
+    (euclidean_topology n)
+    f
+    C
+    Hhome
+    HCsub).
+}
+claim Himg : image_of f C = D.
+{
+  exact (homeomorphism_image_of_setminus_singleton
+    (setprod R R)
+    R2_topology
+    (euclidean_space n)
+    (euclidean_topology n)
+    f
+    (0, 0)
+    Hhome
+    Hp0R2).
+}
+claim HscC :
+  simply_connected
+    C
+    (subspace_topology (setprod R R) R2_topology C)
+  ->
+  simply_connected
+    D
+    (subspace_topology (euclidean_space n) (euclidean_topology n) D).
+{
+  assume HscC0.
+  claim HscImg :
+    simply_connected
+      (image_of f C)
+      (subspace_topology (euclidean_space n) (euclidean_topology n) (image_of f C)).
+  {
+    exact (homeomorphism_preserves_simply_connected
+      C
+      (subspace_topology (setprod R R) R2_topology C)
+      (image_of f C)
+      (subspace_topology (euclidean_space n) (euclidean_topology n) (image_of f C))
+      f
+      HhomeC
+      HscC0).
+  }
+  rewrite <- Himg.
+  exact HscImg.
+}
+claim HnotScC :
+  ~ simply_connected
+      C
+      (subspace_topology (setprod R R) R2_topology C).
+{
+  admit. (** remaining: pi1((R^2)\{0}) nontrivial via S58.2 with n=1 and pi1(S1) nontrivial **)
+}
+claim HscD :
+  simply_connected
+    D
+    (subspace_topology (euclidean_space n) (euclidean_topology n) D).
+{
+  admit. (** remaining: n>=3 implies punctured R^n simply connected (via S58.2 + S59.3) **)
+}
+claim HscImg :
+  simply_connected
+    (image_of f C)
+    (subspace_topology (euclidean_space n) (euclidean_topology n) (image_of f C)).
+{
+  rewrite Himg.
+  exact HscD.
+}
+claim HscCfromD :
+  simply_connected
+    C
+    (subspace_topology (setprod R R) R2_topology C).
+{
+  exact (homeomorphism_reflects_simply_connected
+    C
+    (subspace_topology (setprod R R) R2_topology C)
+    (image_of f C)
+    (subspace_topology (euclidean_space n) (euclidean_topology n) (image_of f C))
+    f
+    HhomeC
+    HscImg).
+}
+exact (HnotScC HscCfromD).
 Admitted.
 
 (** from S59 Exercise 4(a) (line 1622-1623 in algtop.tex) **)
