@@ -238030,6 +238030,42 @@ claim HQsn : Q (ordsucc n).
 exact (HQsn n (ordsuccI2 n)).
 Qed.
 
+(** Proven Charlie **)
+(** Infrastructure: path_concat preserves pointwise membership in a set. **)
+Lemma path_concat_maps_into : forall A f g:set,
+  (forall t:set, t :e unit_interval -> apply_fun f t :e A) ->
+  (forall t:set, t :e unit_interval -> apply_fun g t :e A) ->
+  apply_fun f 1 = apply_fun g 0 ->
+  forall t:set, t :e unit_interval -> apply_fun (path_concat f g) t :e A.
+let A f g.
+assume HfA HgA Hfg.
+let t. assume Ht : t :e unit_interval.
+apply (binunionE unit_interval_left_half unit_interval_right_half t
+  (unit_interval_halves_cover (fun a b:set => t :e b) Ht)).
+- assume HtL : t :e unit_interval_left_half.
+  rewrite (path_concat_apply_left f g t Hfg HtL).
+  claim H2tI : (mul_SNo 2 t) :e unit_interval.
+  { rewrite <- (double_map_apply t HtL). exact (double_map_function_on t HtL). }
+  exact (HfA (mul_SNo 2 t) H2tI).
+- assume HtR : t :e unit_interval_right_half.
+  rewrite (path_concat_apply_right f g t Hfg HtR).
+  claim H2t1I : (add_SNo (mul_SNo 2 t) (minus_SNo 1)) :e unit_interval.
+  { rewrite <- (double_minus_one_map_apply t HtR). exact (double_minus_one_map_function_on t HtR). }
+  exact (HgA (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2t1I).
+Qed.
+
+(** Proven Charlie **)
+(** Infrastructure: reverse_path preserves pointwise membership in a set. **)
+Lemma reverse_path_maps_into : forall A f:set,
+  (forall t:set, t :e unit_interval -> apply_fun f t :e A) ->
+  forall t:set, t :e unit_interval -> apply_fun (reverse_path f) t :e A.
+let A f.
+assume HfA.
+let t. assume Ht : t :e unit_interval.
+rewrite (reverse_path_apply f t Ht).
+exact (HfA (apply_fun flip_unit_interval t) (flip_unit_interval_function_on t Ht)).
+Qed.
+
 (** Generalized helper: like ball_cover_word_nch_ind but for open connected subsets
     instead of fixed-radius balls. Needed for induction (merged/reparametrized chains
     are not balls of fixed radius).
