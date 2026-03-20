@@ -238694,7 +238694,275 @@ apply (nat_ind P).
             (graph V (fun x:set => x))) vcls)
           (path_homotopy_class_loop X Tx x0 f) Hind_eqV).
     + assume Hmixed.
-      admit.
+      claim Hm_sn : m :e ordsucc n.
+      { exact ((ordinal_TransSet (ordsucc n)
+          (nat_p_ordinal (ordsucc n) (nat_ordsucc n HnNat)))
+          n (ordsuccI2 n) m (ordsuccI2 m)). }
+      apply (HballUV m Hm_sn).
+      - assume Hm_Utype.
+        apply (HballUV n (ordsuccI2 n)).
+        + assume Hn_Utype.
+          (** Case A1: both U-type — merge seq(m) and seq(n) into seq'(m) **)
+          set seq' := graph (ordsucc m) (fun k:set =>
+            If_i (k :e m) (apply_fun seq k) (apply_fun seq m :\/: apply_fun seq n)).
+          claim Hseq'_k : forall k:set, k :e m -> apply_fun seq' k = apply_fun seq k.
+          { let k. assume Hkm.
+            rewrite (apply_fun_graph (ordsucc m)
+              (fun k0:set => If_i (k0 :e m) (apply_fun seq k0) (apply_fun seq m :\/: apply_fun seq n))
+              k (ordsuccI1 m k Hkm)).
+            exact (If_i_1 (k :e m) (apply_fun seq k) (apply_fun seq m :\/: apply_fun seq n) Hkm). }
+          claim Hseq'm_eq : apply_fun seq' m = apply_fun seq m :\/: apply_fun seq n.
+          { rewrite (apply_fun_graph (ordsucc m)
+              (fun k:set => If_i (k :e m) (apply_fun seq k) (apply_fun seq m :\/: apply_fun seq n))
+              m (ordsuccI2 m)).
+            exact (If_i_0 (m :e m) (apply_fun seq m) (apply_fun seq m :\/: apply_fun seq n)
+              (In_irref m)). }
+          claim Hk_in_sn : forall k:set, k :e m -> k :e ordsucc n.
+          { let k. assume Hkm.
+            exact ((ordsuccI1 n) k ((ordsuccI1 m) k Hkm)). }
+          claim Hseq'FnPow : function_on seq' (ordsucc m) (Power unit_interval).
+          { let k. assume HkOM.
+            apply (ordsuccE m k HkOM).
+            - assume Hkm.
+              rewrite (Hseq'_k k Hkm).
+              exact (HseqFnPow k (Hk_in_sn k Hkm)).
+            - assume Hkm.
+              rewrite Hkm. rewrite Hseq'm_eq.
+              apply PowerI. let t. assume Ht.
+              apply (binunionE (apply_fun seq m) (apply_fun seq n) t Ht).
+              + assume Htm.
+                exact (PowerE unit_interval (apply_fun seq m) (HseqFnPow m Hm_sn) t Htm).
+              + assume Htn.
+                exact (PowerE unit_interval (apply_fun seq n) (HseqFnPow n (ordsuccI2 n)) t Htn). }
+          claim Hseq'Open : forall k:set, k :e ordsucc m ->
+            apply_fun seq' k :e unit_interval_topology.
+          { let k. assume HkOM.
+            apply (ordsuccE m k HkOM).
+            - assume Hkm.
+              rewrite (Hseq'_k k Hkm).
+              exact (HseqOpen k (Hk_in_sn k Hkm)).
+            - assume Hkm.
+              rewrite Hkm. rewrite Hseq'm_eq.
+              exact (topology_binunion_closed unit_interval unit_interval_topology
+                (apply_fun seq m) (apply_fun seq n) unit_interval_topology_on
+                (HseqOpen m Hm_sn) (HseqOpen n (ordsuccI2 n))). }
+          claim Hseq'Conn : forall k:set, k :e ordsucc m ->
+            connected_space (apply_fun seq' k)
+              (subspace_topology unit_interval unit_interval_topology (apply_fun seq' k)).
+          { let k. assume HkOM.
+            apply (ordsuccE m k HkOM).
+            - assume Hkm.
+              rewrite (Hseq'_k k Hkm).
+              exact (HseqConn k (Hk_in_sn k Hkm)).
+            - assume Hkm.
+              rewrite Hkm. rewrite Hseq'm_eq.
+              exact (connected_union_two_intersect unit_interval unit_interval_topology
+                (apply_fun seq m) (apply_fun seq n) unit_interval_topology_on
+                (PowerE unit_interval (apply_fun seq m) (HseqFnPow m Hm_sn))
+                (PowerE unit_interval (apply_fun seq n) (HseqFnPow n (ordsuccI2 n)))
+                (HseqConn m Hm_sn) (HseqConn n (ordsuccI2 n))
+                (Hoverlap m (ordsuccI2 m))). }
+          claim H0_in' : 0 :e apply_fun seq' 0.
+          { rewrite (apply_fun_graph (ordsucc m)
+              (fun k:set => If_i (k :e m) (apply_fun seq k) (apply_fun seq m :\/: apply_fun seq n))
+              0 (nat_0_in_ordsucc m HmNat)).
+            apply (xm (0 :e m)).
+            - assume H0m.
+              rewrite (If_i_1 (0 :e m) (apply_fun seq 0) (apply_fun seq m :\/: apply_fun seq n) H0m).
+              exact H0_in.
+            - assume H0nm.
+              rewrite (If_i_0 (0 :e m) (apply_fun seq 0) (apply_fun seq m :\/: apply_fun seq n) H0nm).
+              apply (nat_inv m HmNat).
+              + assume Hm0.
+                apply binunionI1.
+                rewrite Hm0.
+                exact H0_in.
+              + assume Hm_succ. apply Hm_succ. let k. assume Hkpack.
+                exact ((H0nm (eq_subst_mem_set 0 (ordsucc k) m
+                    (nat_0_in_ordsucc k (andEL (nat_p k) (m = ordsucc k) Hkpack))
+                    (eq_symm m (ordsucc k) (andER (nat_p k) (m = ordsucc k) Hkpack))))
+                  (0 :e apply_fun seq m :\/: apply_fun seq n)). }
+          claim H1_in' : 1 :e apply_fun seq' m.
+          { rewrite Hseq'm_eq.
+            exact (binunionI2 (apply_fun seq m) (apply_fun seq n) 1 H1_in). }
+          claim Hoverlap' : forall k:set, k :e m ->
+            apply_fun seq' k :/\: apply_fun seq' (ordsucc k) <> Empty.
+          { let k. assume Hkm.
+            rewrite (Hseq'_k k Hkm).
+            apply (ordsuccE m (ordsucc k) (nat_ordsucc_in_ordsucc m HmNat k Hkm)).
+            - assume Hskm.
+              rewrite (Hseq'_k (ordsucc k) Hskm).
+              exact (Hoverlap k ((ordsuccI1 m) k Hkm)).
+            - assume Hskm.
+              rewrite Hskm. rewrite Hseq'm_eq.
+              assume Hempty.
+              claim Hne_aux : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+              { exact (Hoverlap k ((ordsuccI1 m) k Hkm)). }
+              apply Hne_aux.
+              apply (Empty_Subq_eq (apply_fun seq k :/\: apply_fun seq (ordsucc k))).
+              let t. assume Htpair.
+              claim Htk : t :e apply_fun seq k.
+              { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Htpair). }
+              claim Htm : t :e apply_fun seq m.
+              { rewrite <- Hskm.
+                exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Htpair). }
+              exact (eq_subst_mem_set t
+                (apply_fun seq k :/\: (apply_fun seq m :\/: apply_fun seq n)) Empty
+                (binintersectI (apply_fun seq k) (apply_fun seq m :\/: apply_fun seq n) t
+                  Htk (binunionI1 (apply_fun seq m) (apply_fun seq n) t Htm))
+                Hempty). }
+          claim HballUV' : forall k:set, k :e ordsucc m ->
+            (forall t:set, t :e apply_fun seq' k -> apply_fun f t :e U) \/
+            (forall t:set, t :e apply_fun seq' k -> apply_fun f t :e V).
+          { let k. assume HkOM.
+            apply (ordsuccE m k HkOM).
+            - assume Hkm.
+              rewrite (Hseq'_k k Hkm).
+              exact (HballUV k (Hk_in_sn k Hkm)).
+            - assume Hkm.
+              rewrite Hkm. rewrite Hseq'm_eq.
+              apply orIL.
+              let t. assume Ht.
+              apply (binunionE (apply_fun seq m) (apply_fun seq n) t Ht).
+              + assume Htm. exact (Hm_Utype t Htm).
+              + assume Htn. exact (Hn_Utype t Htn). }
+          exact (IH X Tx U V x0 f seq' Htop HU HV Hcover Hx0UV HpcUV HfLoop
+            Hseq'FnPow Hseq'Open Hseq'Conn H0_in' H1_in' Hoverlap' HballUV').
+        + assume Hn_Vtype.
+          (** Case B1: seq(m) U-type, seq(n) V-type **)
+          admit.
+      - assume Hm_Vtype.
+        apply (HballUV n (ordsuccI2 n)).
+        + assume Hn_Utype.
+          (** Case B2: seq(m) V-type, seq(n) U-type **)
+          admit.
+        + assume Hn_Vtype.
+          (** Case A2: both V-type — merge seq(m) and seq(n) into seq'(m) **)
+          set seq' := graph (ordsucc m) (fun k:set =>
+            If_i (k :e m) (apply_fun seq k) (apply_fun seq m :\/: apply_fun seq n)).
+          claim Hseq'_k : forall k:set, k :e m -> apply_fun seq' k = apply_fun seq k.
+          { let k. assume Hkm.
+            rewrite (apply_fun_graph (ordsucc m)
+              (fun k0:set => If_i (k0 :e m) (apply_fun seq k0) (apply_fun seq m :\/: apply_fun seq n))
+              k (ordsuccI1 m k Hkm)).
+            exact (If_i_1 (k :e m) (apply_fun seq k) (apply_fun seq m :\/: apply_fun seq n) Hkm). }
+          claim Hseq'm_eq : apply_fun seq' m = apply_fun seq m :\/: apply_fun seq n.
+          { rewrite (apply_fun_graph (ordsucc m)
+              (fun k:set => If_i (k :e m) (apply_fun seq k) (apply_fun seq m :\/: apply_fun seq n))
+              m (ordsuccI2 m)).
+            exact (If_i_0 (m :e m) (apply_fun seq m) (apply_fun seq m :\/: apply_fun seq n)
+              (In_irref m)). }
+          claim Hk_in_sn : forall k:set, k :e m -> k :e ordsucc n.
+          { let k. assume Hkm.
+            exact ((ordsuccI1 n) k ((ordsuccI1 m) k Hkm)). }
+          claim Hseq'FnPow : function_on seq' (ordsucc m) (Power unit_interval).
+          { let k. assume HkOM.
+            apply (ordsuccE m k HkOM).
+            - assume Hkm.
+              rewrite (Hseq'_k k Hkm).
+              exact (HseqFnPow k (Hk_in_sn k Hkm)).
+            - assume Hkm.
+              rewrite Hkm. rewrite Hseq'm_eq.
+              apply PowerI. let t. assume Ht.
+              apply (binunionE (apply_fun seq m) (apply_fun seq n) t Ht).
+              + assume Htm.
+                exact (PowerE unit_interval (apply_fun seq m) (HseqFnPow m Hm_sn) t Htm).
+              + assume Htn.
+                exact (PowerE unit_interval (apply_fun seq n) (HseqFnPow n (ordsuccI2 n)) t Htn). }
+          claim Hseq'Open : forall k:set, k :e ordsucc m ->
+            apply_fun seq' k :e unit_interval_topology.
+          { let k. assume HkOM.
+            apply (ordsuccE m k HkOM).
+            - assume Hkm.
+              rewrite (Hseq'_k k Hkm).
+              exact (HseqOpen k (Hk_in_sn k Hkm)).
+            - assume Hkm.
+              rewrite Hkm. rewrite Hseq'm_eq.
+              exact (topology_binunion_closed unit_interval unit_interval_topology
+                (apply_fun seq m) (apply_fun seq n) unit_interval_topology_on
+                (HseqOpen m Hm_sn) (HseqOpen n (ordsuccI2 n))). }
+          claim Hseq'Conn : forall k:set, k :e ordsucc m ->
+            connected_space (apply_fun seq' k)
+              (subspace_topology unit_interval unit_interval_topology (apply_fun seq' k)).
+          { let k. assume HkOM.
+            apply (ordsuccE m k HkOM).
+            - assume Hkm.
+              rewrite (Hseq'_k k Hkm).
+              exact (HseqConn k (Hk_in_sn k Hkm)).
+            - assume Hkm.
+              rewrite Hkm. rewrite Hseq'm_eq.
+              exact (connected_union_two_intersect unit_interval unit_interval_topology
+                (apply_fun seq m) (apply_fun seq n) unit_interval_topology_on
+                (PowerE unit_interval (apply_fun seq m) (HseqFnPow m Hm_sn))
+                (PowerE unit_interval (apply_fun seq n) (HseqFnPow n (ordsuccI2 n)))
+                (HseqConn m Hm_sn) (HseqConn n (ordsuccI2 n))
+                (Hoverlap m (ordsuccI2 m))). }
+          claim H0_in' : 0 :e apply_fun seq' 0.
+          { rewrite (apply_fun_graph (ordsucc m)
+              (fun k:set => If_i (k :e m) (apply_fun seq k) (apply_fun seq m :\/: apply_fun seq n))
+              0 (nat_0_in_ordsucc m HmNat)).
+            apply (xm (0 :e m)).
+            - assume H0m.
+              rewrite (If_i_1 (0 :e m) (apply_fun seq 0) (apply_fun seq m :\/: apply_fun seq n) H0m).
+              exact H0_in.
+            - assume H0nm.
+              rewrite (If_i_0 (0 :e m) (apply_fun seq 0) (apply_fun seq m :\/: apply_fun seq n) H0nm).
+              apply (nat_inv m HmNat).
+              + assume Hm0.
+                apply binunionI1.
+                rewrite Hm0.
+                exact H0_in.
+              + assume Hm_succ. apply Hm_succ. let k. assume Hkpack.
+                exact ((H0nm (eq_subst_mem_set 0 (ordsucc k) m
+                    (nat_0_in_ordsucc k (andEL (nat_p k) (m = ordsucc k) Hkpack))
+                    (eq_symm m (ordsucc k) (andER (nat_p k) (m = ordsucc k) Hkpack))))
+                  (0 :e apply_fun seq m :\/: apply_fun seq n)). }
+          claim H1_in' : 1 :e apply_fun seq' m.
+          { rewrite Hseq'm_eq.
+            exact (binunionI2 (apply_fun seq m) (apply_fun seq n) 1 H1_in). }
+          claim Hoverlap' : forall k:set, k :e m ->
+            apply_fun seq' k :/\: apply_fun seq' (ordsucc k) <> Empty.
+          { let k. assume Hkm.
+            rewrite (Hseq'_k k Hkm).
+            apply (ordsuccE m (ordsucc k) (nat_ordsucc_in_ordsucc m HmNat k Hkm)).
+            - assume Hskm.
+              rewrite (Hseq'_k (ordsucc k) Hskm).
+              exact (Hoverlap k ((ordsuccI1 m) k Hkm)).
+            - assume Hskm.
+              rewrite Hskm. rewrite Hseq'm_eq.
+              assume Hempty.
+              claim Hne_aux : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+              { exact (Hoverlap k ((ordsuccI1 m) k Hkm)). }
+              apply Hne_aux.
+              apply (Empty_Subq_eq (apply_fun seq k :/\: apply_fun seq (ordsucc k))).
+              let t. assume Htpair.
+              claim Htk : t :e apply_fun seq k.
+              { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Htpair). }
+              claim Htm : t :e apply_fun seq m.
+              { rewrite <- Hskm.
+                exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Htpair). }
+              exact (eq_subst_mem_set t
+                (apply_fun seq k :/\: (apply_fun seq m :\/: apply_fun seq n)) Empty
+                (binintersectI (apply_fun seq k) (apply_fun seq m :\/: apply_fun seq n) t
+                  Htk (binunionI1 (apply_fun seq m) (apply_fun seq n) t Htm))
+                Hempty). }
+          claim HballUV' : forall k:set, k :e ordsucc m ->
+            (forall t:set, t :e apply_fun seq' k -> apply_fun f t :e U) \/
+            (forall t:set, t :e apply_fun seq' k -> apply_fun f t :e V).
+          { let k. assume HkOM.
+            apply (ordsuccE m k HkOM).
+            - assume Hkm.
+              rewrite (Hseq'_k k Hkm).
+              exact (HballUV k (Hk_in_sn k Hkm)).
+            - assume Hkm.
+              rewrite Hkm. rewrite Hseq'm_eq.
+              apply orIR.
+              let t. assume Ht.
+              apply (binunionE (apply_fun seq m) (apply_fun seq n) t Ht).
+              + assume Htm. exact (Hm_Vtype t Htm).
+              + assume Htn. exact (Hn_Vtype t Htn). }
+          exact (IH X Tx U V x0 f seq' Htop HU HV Hcover Hx0UV HpcUV HfLoop
+            Hseq'FnPow Hseq'Open Hseq'Conn H0_in' H1_in' Hoverlap' HballUV').
 Admitted.
 
 (** Infrastructure: open balls in unit_interval are connected for any positive radius. **)
