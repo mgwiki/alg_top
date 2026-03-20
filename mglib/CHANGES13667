@@ -1,0 +1,39 @@
+CHANGES13667 - Alice
+Date: 2026-03-20
+
+## Fix ball_cover_word_construction_mixed_finish: m=0 V-first single-transition case
+
+### Problem
+After the NotV_suf refactor in CHANGES13666, additional compilation failures:
+1. `path_connected_space_binintersect_comm` used before definition (at line 435507)
+2. Wildcard `_` not supported in `andEL`/`andER`/`and3E` calls
+3. `binintersect_comm` also used before definition
+
+### Fixes
+1. Inlined `binintersect_comm` proof using `binintersect_com_Subq` + `set_ext`:
+   - `set_ext (V :/\: U) (U :/\: V) (binintersect_com_Subq V U) (binintersect_com_Subq U V)`
+   - Then `rewrite HVU_eq. exact HpcUV.`
+
+2. Replaced `andEL/andER/and3E` with wildcards by exploiting `and` definition:
+   - `and A B = forall p:prop, (A -> B -> p) -> p`
+   - So `apply HnVU_pack. assume HnVU_omega Hrest.` extracts both parts
+   - `apply Hrest. let gsVU. assume HgsVU_pack.` extracts existential
+   - `apply HgsVU_pack. assume HgsVU12 HfeqVU.` + `apply HgsVU12. assume HgsVU_fn HgsVU_type.`
+
+### Compilation Status
+- All compilation errors fixed, file now compiles (EXIT_STATUS=0)
+- Admits remain only in:
+  - m=0 multi-transition V->U case
+  - m=ordsucc k multi-transition U->V case
+  - Overall `Admitted.` at end of ball_cover_word_construction_mixed_finish
+
+### Chain
+ball_cover_word_construction_mixed_finish (Admitted) ->
+ball_cover_word_construction_mixed (Admitted) ->
+ball_cover_word_construction (Admitted) ->
+loop_lebesgue_decomposition (Admitted, Lock Charlie) ->
+lemma59_1_open_cover_generates_pi1_core (Admitted, Lock Alice $393) ->
+thm61_3_jordan_separation (Admitted, Lock Alice $424)
+
+## File size
+Previous bck13666 (559274 lines), current bck13667 (559353 lines), grows by 79 lines.
