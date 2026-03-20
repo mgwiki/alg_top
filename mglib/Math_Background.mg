@@ -239925,9 +239925,14 @@ claim HL1_word_data :
   { (** g and L1 trace the same geometric path (f on [0,s], gamma-inv on [s,1]) **)
     (** but with different parametrizations. They are path-homotopic. **)
     admit. }
-  (** Transfer word data from g to L1: rewrite [g] to [L1] via Hg_L1_homotopic **)
-  (** Hg_word_data has the right structure, just need to change [g] to [L1] in the eq **)
-  admit. }
+  (** Transfer word data from g to L1 using word_data_of_loop_eq_class **)
+  exact (word_data_of_loop_eq_class X Tx U V x0 L1 g
+    Htop HU HV Hx0UV HL1_loop Hg_loop
+    (eq_symm
+      (path_homotopy_class_loop X Tx x0 g)
+      (path_homotopy_class_loop X Tx x0 L1)
+      Hg_L1_homotopic)
+    Hg_word_data). }
 (** Step 10: Combine word data via word_data_of_loop_concat and class equality **)
 claim Hconcat_word :
   exists nc:set, nc :e omega /\
