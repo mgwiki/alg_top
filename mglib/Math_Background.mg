@@ -239383,16 +239383,44 @@ claim HL2_word_data :
       (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs2 k)) n2.
 { (** L2 = path_concat gammaX f2 maps into V **)
   (** gammaX maps into U cap V c= V, f2 maps into V **)
-  claim HL2_maps_V : forall t:set, t :e unit_interval -> apply_fun L2 t :e V.
-  { (** L2 = path_concat gammaX f2 **)
-    (** gammaX maps into U cap V c= V, f2 maps [0,1] to f([s,1]) c= V **)
-    (** For each t in unit_interval, L2(t) in V **)
-    (** L2(t) = gammaX(2t) for t in left half, f2(2t-1) for t in right half **)
-    (** In both cases, the value is in V **)
-    (** gammaX(u) = gamma(u) in U cap V subset V for all u in unit_interval **)
-    (** f2(u) = f(s + (1-s)u) for u in [0,1], and s+(1-s)u in [s,1] subset seq(n) **)
-    (** so f2(u) in V by Hn_Vtype **)
+  claim HgammaX_maps_UV : forall u:set, u :e unit_interval -> apply_fun gammaX u :e U :/\: V.
+  { let u. assume Hu : u :e unit_interval.
+    rewrite (compose_fun_apply unit_interval gamma incUV u Hu).
+    claim Hgu : apply_fun gamma u :e U :/\: V.
+    { exact (HgammaFun u Hu). }
+    rewrite (apply_fun_graph (U :/\: V) (fun x:set => x) (apply_fun gamma u) Hgu).
+    exact Hgu. }
+  claim Hf2_maps_V : forall u:set, u :e unit_interval -> apply_fun f2 u :e V.
+  { (** f2(u) = f(s + (1-s)u), and s + (1-s)u in [s,1] c= seq(n) **)
+    (** Requires showing affine_fun_I s (1-s) maps [0,1] into [s,1] **)
+    (** and [s,1] c= seq(n) via Hseqn_covers_right **)
     admit. }
+  claim HL2_maps_V : forall t:set, t :e unit_interval -> apply_fun L2 t :e V.
+  { let t. assume Ht : t :e unit_interval.
+    (** L2 = path_concat gammaX f2: need to determine which half t is in **)
+    claim HtR : t :e R. { exact (unit_interval_sub_R t Ht). }
+    apply (xm (Rlt (eps_ 1) t)).
+    - assume Hright_half : Rlt (eps_ 1) t.
+      (** t in right half: L2(t) = f2(2t-1) **)
+      claim Ht_rh : t :e unit_interval_right_half.
+      { exact (SepI unit_interval (fun x:set => ~(Rlt x (eps_ 1))) t Ht
+          (fun H : Rlt t (eps_ 1) => SNoLt_irref (eps_ 1)
+            (RltE_lt (eps_ 1) (eps_ 1) (Rlt_tra (eps_ 1) t (eps_ 1) Hright_half H)))). }
+      claim H2tm1_UI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+      { rewrite <- (double_minus_one_map_apply t Ht_rh).
+        exact (double_minus_one_map_function_on t Ht_rh). }
+      rewrite (path_concat_apply_right gammaX f2 t HjoinL2 Ht_rh).
+      exact (Hf2_maps_V (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2tm1_UI).
+    - assume Hnright : ~(Rlt (eps_ 1) t).
+      (** t in left half: L2(t) = gammaX(2t) **)
+      claim Ht_lh : t :e unit_interval_left_half.
+      { exact (SepI unit_interval (fun x:set => ~(Rlt (eps_ 1) x)) t Ht Hnright). }
+      claim H2t_UI : mul_SNo 2 t :e unit_interval.
+      { rewrite <- (double_map_apply t Ht_lh).
+        exact (double_map_function_on t Ht_lh). }
+      rewrite (path_concat_apply_left gammaX f2 t HjoinL2 Ht_lh).
+      exact (binintersectE2 U V (apply_fun gammaX (mul_SNo 2 t))
+        (HgammaX_maps_UV (mul_SNo 2 t) H2t_UI)). }
   (** Use loop_in_subspace_induced_class to get V-class **)
   apply (loop_in_subspace_induced_class X Tx V x0 L2 Htop HV Hx0V HL2_loop HL2_maps_V).
   let vcls. assume Hvcls_pack.
