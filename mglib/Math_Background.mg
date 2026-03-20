@@ -239029,6 +239029,57 @@ claim HP : P n.
 exact (HP segs HsegsFun HsegsCompat).
 Qed.
 
+(** Proven Charlie **)
+(** Infrastructure: pointwise membership for segments implies pointwise membership for path_concat_nat. **)
+Lemma path_concat_nat_pointwise_in_set_from_props :
+  forall n segs U:set,
+  n :e omega ->
+  (forall k:set, k :e ordsucc n -> forall t:set, t :e unit_interval -> apply_fun (apply_fun segs k) t :e U) ->
+  (forall k:set, k :e n ->
+    apply_fun (apply_fun segs k) 1 = apply_fun (apply_fun segs (ordsucc k)) 0) ->
+  forall t:set, t :e unit_interval ->
+    apply_fun (path_concat_nat n segs) t :e U.
+let n segs U.
+assume HnOmega HsegU HsegsCompat.
+claim HnNat : nat_p n. { exact (omega_nat_p n HnOmega). }
+set P := fun m:set =>
+  forall segsm:set,
+    (forall k:set, k :e ordsucc m -> forall s:set, s :e unit_interval -> apply_fun (apply_fun segsm k) s :e U) ->
+    (forall k:set, k :e m ->
+      apply_fun (apply_fun segsm k) 1 = apply_fun (apply_fun segsm (ordsucc k)) 0) ->
+    forall s:set, s :e unit_interval ->
+      apply_fun (path_concat_nat m segsm) s :e U.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsm. assume HsegsmU _. let s. assume HsI.
+    rewrite (path_concat_nat_0 segsm).
+    exact (HsegsmU 0 (ordsuccI2 0) s HsI).
+  - let m. assume HmNat IH.
+    let segsm. assume HsegsmU HsegsmCompat.
+    let s. assume HsI.
+    rewrite (path_concat_nat_S m segsm HmNat).
+    set f0 := path_concat_nat m segsm.
+    set g0 := apply_fun segsm (ordsucc m).
+    claim Hg0U : forall u:set, u :e unit_interval -> apply_fun g0 u :e U.
+    { let u. assume Hu. exact (HsegsmU (ordsucc m) (ordsuccI2 (ordsucc m)) u Hu). }
+    claim Hf0U : forall u:set, u :e unit_interval -> apply_fun f0 u :e U.
+    {
+      exact (IH segsm
+        (fun k Hk => HsegsmU k (ordsuccI1 (ordsucc m) k Hk))
+        (fun k Hk => HsegsmCompat k (ordsuccI1 m k Hk))).
+    }
+    claim Hjoin : apply_fun f0 1 = apply_fun g0 0.
+    {
+      rewrite (path_concat_nat_at_one m segsm HmNat).
+      exact (HsegsmCompat m (ordsuccI2 m)).
+    }
+    exact (path_concat_pointwise_in_set f0 g0 U Hf0U Hg0U Hjoin s HsI).
+  - exact HnNat.
+}
+exact (HP segs HsegU HsegsCompat).
+Qed.
+
 (** Infrastructure: word data from a finite concatenation of U or V segments.
     This is intended for chain ordered parametrizations (path_concat_nat) where each
     segment lies entirely in U or entirely in V, and consecutive segments join. **)
