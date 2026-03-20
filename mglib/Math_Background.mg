@@ -239639,20 +239639,10 @@ claim HL1_word_data :
   { (** g and L1 trace the same geometric path (f on [0,s], gamma-inv on [s,1]) **)
     (** but with different parametrizations. They are path-homotopic. **)
     admit. }
-  (** Rewrite word data from g to L1 **)
-  apply Hg_word_data. let n1. assume Hn1_pack.
-  claim Hn1_omega : n1 :e omega.
-  { admit. }
-  claim Hn1_ex : exists gs1:set, function_on gs1 n1 (fundamental_group X Tx x0) /\
-    (forall i:set, i :e n1 ->
-      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
-        apply_fun gs1 i = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 (graph U (fun x:set => x))) ucls) \/
-      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
-        apply_fun gs1 i = apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 (graph V (fun x:set => x))) vcls)) /\
-    path_homotopy_class_loop X Tx x0 g = nat_primrec (fundamental_group_id X Tx x0) (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
-  { admit. }
-  (** Word data for g transfers to L1 since [g] = [L1] **)
-  (** The conjunction decomposition and rewriting is mechanical **)
+  (** Transfer word data from g to L1 using [g] = [L1] **)
+  (** Hg_word_data gives word data with [g] = nat_primrec ... **)
+  (** Hg_L1_homotopic gives [g] = [L1] **)
+  (** So [L1] = [g] = nat_primrec ... **)
   admit. }
 (** Step 10: Combine word data via word_data_of_loop_concat and class equality **)
 claim Hconcat_word :
