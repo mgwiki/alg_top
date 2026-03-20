@@ -1,6 +1,6 @@
 (** Balance Alice 8984 **)
 (** Balance Bob 6353 **)
-(** Balance Charlie 592 **)
+(** Balance Charlie 572 **)
 (** Balance Dave 2428 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -240105,7 +240105,8 @@ Qed.
 (** Infrastructure: word data from a finite concatenation of U or V segments.
     This is intended for chain ordered parametrizations (path_concat_nat) where each
     segment lies entirely in U or entirely in V, and consecutive segments join. **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 1774066334 **)
 Lemma word_data_of_path_concat_nat_by_UV_segments :
   forall X Tx U V x0 n segs:set,
     topology_on X Tx ->
