@@ -239487,25 +239487,63 @@ claim Htransition_exists :
     { exact (andER (s :e apply_fun seq k2 /\ s :e apply_fun seq (ordsucc k2)) (apply_fun f s :e U :/\: V) Hspack). }
     claim HsUI : s :e unit_interval.
     { exact (HBallSubUI k2 Hk2_On s Hs_seqk2). }
-    (** Now we have V-first, U-second orientation. **)
-    (** The claim needs [0,s] -> U, [s,1] -> V. **)
-    (** But we have V-type balls before the transition and U-type after. **)
-    (** So [0,s] maps to V and [s,1] maps to U -- the OPPOSITE orientation. **)
-    (** **)
-    (** Since x0 :e U cap V, we can still prove the claim by noting: **)
-    (** The claim asks for SOME s with the U-first property. **)
-    (** With V-first orientation, we need a DIFFERENT transition point. **)
-    (** Since we have Uonly and Vonly balls, there must also be a U-to-V transition **)
-    (** somewhere later in the chain (because the chain must return to V-territory). **)
-    (** APPROACH: Find LastV (= last non-U ball), then k2 such that ball k2 is V-type **)
-    (** and ball (ordsucc k2) is U-type. The overlap gives s with f(s) :e U cap V. **)
-    (** Then balls 0..k2 cover [0,s] mapping to V and balls (ordsucc k2)..nch cover **)
-    (** [s,1] mapping to U. But we need [0,s] -> U, [s,1] -> V, so swap the roles **)
-    (** FIX: swap U and V in the Htransition_exists claim. **)
-    (** With V-first balls, use loop_class_split_at_transition V U x0 f. **)
-    (** This produces the same word decomposition with factors from U and V. **)
-    (** The fix requires V-prefix and U-suffix coverage (symmetric to m>0 case). **)
-    admit.
+    (** For the current goal, we only need an interior overlap point mapping to U cap V. **)
+    claim Hovlp_ne2 : apply_fun seq k2 :/\: apply_fun seq (ordsucc k2) <> Empty.
+    { exact (Hoverlap k2 Hk2_nch). }
+    claim Hsk2_On2 : ordsucc k2 :e ordsucc nch.
+    { exact (nat_ordsucc_in_ordsucc nch HnchNat k2 Hk2_nch). }
+    claim Hseqk2_ball : apply_fun seq k2 :e BallFam. { exact (HseqFn k2 Hk2_On). }
+    claim Hseqsk2_ball : apply_fun seq (ordsucc k2) :e BallFam. { exact (HseqFn (ordsucc k2) Hsk2_On2). }
+    apply (ReplE_impred unit_interval (fun c:set => open_ball unit_interval R_bounded_metric c r)
+      (apply_fun seq k2) Hseqk2_ball).
+    let ck2. assume Hck2I Hseqk2_eq.
+    apply (ReplE_impred unit_interval (fun c:set => open_ball unit_interval R_bounded_metric c r)
+      (apply_fun seq (ordsucc k2)) Hseqsk2_ball).
+    let csk2. assume Hcsk2I Hseqsk2_eq.
+    claim Hovlp_eq2 : apply_fun seq k2 :/\: apply_fun seq (ordsucc k2) =
+      open_ball unit_interval R_bounded_metric ck2 r :/\:
+      open_ball unit_interval R_bounded_metric csk2 r.
+    { rewrite Hseqk2_eq. rewrite Hseqsk2_eq. reflexivity. }
+    claim Hovlp_open2 : apply_fun seq k2 :/\: apply_fun seq (ordsucc k2) :e unit_interval_topology.
+    { rewrite Hovlp_eq2.
+      exact (open_ball_binintersect_open_in_unit_interval ck2 csk2 r r Hck2I Hcsk2I HrR HrR Hrpos Hrpos). }
+    claim Hinterior2 : exists s0:set,
+      s0 :e apply_fun seq k2 :/\: apply_fun seq (ordsucc k2) /\ s0 <> 0 /\ s0 <> 1.
+    { exact (nonempty_open_unit_interval_has_interior_point
+        (apply_fun seq k2 :/\: apply_fun seq (ordsucc k2)) Hovlp_open2 Hovlp_ne2). }
+    apply Hinterior2. let s0. assume Hs0_int_pack.
+    claim Hs0_in_ovlp_and_ne0 : s0 :e apply_fun seq k2 :/\: apply_fun seq (ordsucc k2) /\ s0 <> 0.
+    { exact (andEL
+        (s0 :e apply_fun seq k2 :/\: apply_fun seq (ordsucc k2) /\ s0 <> 0)
+        (s0 <> 1) Hs0_int_pack). }
+    claim Hs0_ne1 : s0 <> 1.
+    { exact (andER
+        (s0 :e apply_fun seq k2 :/\: apply_fun seq (ordsucc k2) /\ s0 <> 0)
+        (s0 <> 1) Hs0_int_pack). }
+    claim Hs0_in_ovlp : s0 :e apply_fun seq k2 :/\: apply_fun seq (ordsucc k2).
+    { exact (andEL (s0 :e apply_fun seq k2 :/\: apply_fun seq (ordsucc k2))
+        (s0 <> 0) Hs0_in_ovlp_and_ne0). }
+    claim Hs0_ne0 : s0 <> 0.
+    { exact (andER (s0 :e apply_fun seq k2 :/\: apply_fun seq (ordsucc k2))
+        (s0 <> 0) Hs0_in_ovlp_and_ne0). }
+    claim Hs0_seqk2 : s0 :e apply_fun seq k2.
+    { exact (binintersectE1 (apply_fun seq k2) (apply_fun seq (ordsucc k2)) s0 Hs0_in_ovlp). }
+    claim Hs0_seqsk2 : s0 :e apply_fun seq (ordsucc k2).
+    { exact (binintersectE2 (apply_fun seq k2) (apply_fun seq (ordsucc k2)) s0 Hs0_in_ovlp). }
+    claim Hs0UI : s0 :e unit_interval.
+    { exact (HBallSubUI k2 Hk2_On s0 Hs0_seqk2). }
+    claim Hfs0U : apply_fun f s0 :e U. { exact (Hsk2_Utype s0 Hs0_seqsk2). }
+    claim Hfs0V : apply_fun f s0 :e V. { exact (Hk2_Vtype s0 Hs0_seqk2). }
+    claim Hfs0UV : apply_fun f s0 :e U :/\: V.
+    { exact (binintersectI U V (apply_fun f s0) Hfs0U Hfs0V). }
+    witness s0.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * exact Hs0UI.
+        * exact Hs0_ne0.
+      + exact Hs0_ne1.
+    - exact Hfs0UV.
   - (** Case m = ordsucc k for some k: balls 0..k are all U-type, ball m is V-type **)
     assume Hm_inv : exists k:set, nat_p k /\ m = ordsucc k.
     apply Hm_inv. let k. assume Hkpack.
