@@ -238212,59 +238212,58 @@ claim Htransition_exists :
       { rewrite Hm_eq.
         exact Hj_sk. }
       exact (Hprefix_Utype j Hj_On Hj_in_m t Ht_seqj). }
-    (** Prove [s,1] -> V **)
-    (** This requires a suffix coverage: for t >= s, t is in some ball j >= ordsucc k **)
-    (** All such balls are V-type (since they are not U-type: j >= m and ball j has no **)
-    (** guarantee of being U-type). **)
-    (** Actually we need: for j >= m, ball j is V-type. This follows because: **)
-    (** - ball m is V-type (shown above) **)
-    (** - for j > m: j is NOT necessarily V-type! The chain could go V, U, V, ... **)
-    (** So we CANNOT prove that all balls after m are V-type. **)
-    (** **)
-    (** CORRECT approach for [s,1] -> V: Use the suffix union of balls m..nch. **)
-    (** These balls overlap consecutively (from Hoverlap for indices m..nch-1). **)
-    (** Their union is connected and contains both s (in ball m) and 1 (in ball nch). **)
-    (** By interval property, the union contains all of [s,1]. **)
-    (** Then for t :e [s,1], t is in some ball j with m <= j <= nch. **)
-    (** But ball j might be U-type for j > m! So f(t) :e U, not V. **)
-    (** **)
-    (** This means [s,1] -> V CANNOT be proved from just the first U-to-V transition. **)
-    (** The claim as stated requires a monotone partition: [0,s] all U, [s,1] all V. **)
-    (** APPROACH: Instead of using the FIRST transition, find the LAST U-type ball k'. **)
-    (** Then all balls from ordsucc(k') to nch are V-type (or handle similarly). **)
-    (** Use ball_chain_suffix_covers_interval (a suffix version of the prefix lemma) **)
-    (** to show that for t >= s', t is in some V-type ball. **)
-    (** Alternatively, restructure Htransition_exists to use a weaker claim **)
-    (** (existence of a finite word decomposition without monotone partition). **)
-    claim HfV : forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V.
-    { let t. assume HtI Hle.
-      (** Use suffix coverage: t is in some ball j >= ordsucc k = m **)
-      apply (ball_chain_suffix_covers_interval r nch seq k s
-        HrR Hrpos HnchOmega HseqFn Hoverlap H1_in_seqn
-        Hk_nch Hs_seqk Hs_seqsk t HtI Hle).
-      let j. assume Hjpack.
-      (** Hjpack : ((ordsucc k c= j) /\ (j :e ordsucc nch)) /\ (t :e apply_fun seq j) **)
-      claim Ht_seqj : t :e apply_fun seq j.
-      { exact (andER ((ordsucc k c= j) /\ (j :e ordsucc nch)) (t :e apply_fun seq j) Hjpack). }
-      claim Hjleft : (ordsucc k c= j) /\ (j :e ordsucc nch).
-      { exact (andEL ((ordsucc k c= j) /\ (j :e ordsucc nch)) (t :e apply_fun seq j) Hjpack). }
-      claim Hj_ge_m : ordsucc k c= j.
-      { exact (andEL (ordsucc k c= j) (j :e ordsucc nch) Hjleft). }
-      claim Hj_On : j :e ordsucc nch.
-      { exact (andER (ordsucc k c= j) (j :e ordsucc nch) Hjleft). }
-      (** j >= m means j :e NotU (or j = m or j > m). Ball j should be V-type. **)
-      (** By Hm_least: m is LEAST in NotU. j >= m means either j :e NotU or j is NOT in NotU. **)
-      (** If j NOT in NotU: ball j is U-type. This can happen for j > m! **)
-      (** So we CANNOT conclude ball j is V-type in general. **)
-      (** ADMIT: needs induction on transitions for the general case. **)
-      admit. }
-    apply and6I.
-    + exact HsUI.
-    + exact Hs_ne0.
-    + exact Hs_ne1.
-    + exact HfsUV.
-    + exact HfU.
-    + exact HfV.
+    (** Case split: are all suffix balls (from ordsucc k to nch) V-type? **)
+    (** If yes (single-transition): [s,1] -> V via suffix coverage. **)
+    (** If no (multi-transition): needs stronger induction argument. **)
+    set NotV_suf := {j :e ordsucc nch | ordsucc k c= j /\
+      ~(forall t:set, t :e apply_fun seq j -> apply_fun f t :e V)}.
+    apply (xm (NotV_suf = Empty)).
+    - assume HNotV_suf_empty.
+      (** Single-transition: all balls from ordsucc k to nch are V-type **)
+      claim Hsuffix_Vtype : forall j:set, j :e ordsucc nch -> ordsucc k c= j ->
+        forall t:set, t :e apply_fun seq j -> apply_fun f t :e V.
+      { let j. assume Hj Hge.
+        apply (Hball_UV j Hj).
+        - assume HU.
+          apply (xm (forall t:set, t :e apply_fun seq j -> apply_fun f t :e V)).
+          + assume HV2. exact HV2.
+          + assume HnV.
+            claim Hj_NS : j :e NotV_suf.
+            { exact (SepI (ordsucc nch)
+                (fun j0:set => ordsucc k c= j0 /\
+                  ~(forall t:set, t :e apply_fun seq j0 -> apply_fun f t :e V))
+                j Hj
+                (andI (ordsucc k c= j)
+                  (~(forall t:set, t :e apply_fun seq j -> apply_fun f t :e V))
+                  Hge HnV)). }
+            exact (FalseE (EmptyE j (eq_subst_mem_set j NotV_suf Empty Hj_NS HNotV_suf_empty))
+              (forall t:set, t :e apply_fun seq j -> apply_fun f t :e V)).
+        - assume HV. exact HV. }
+      claim HfV : forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V.
+      { let t. assume HtI Hle.
+        apply (ball_chain_suffix_covers_interval r nch seq k s
+          HrR Hrpos HnchOmega HseqFn Hoverlap H1_in_seqn
+          Hk_nch Hs_seqk Hs_seqsk t HtI Hle).
+        let j. assume Hjpack.
+        claim Ht_seqj : t :e apply_fun seq j.
+        { exact (andER ((ordsucc k c= j) /\ (j :e ordsucc nch)) (t :e apply_fun seq j) Hjpack). }
+        claim Hjleft : (ordsucc k c= j) /\ (j :e ordsucc nch).
+        { exact (andEL ((ordsucc k c= j) /\ (j :e ordsucc nch)) (t :e apply_fun seq j) Hjpack). }
+        claim Hj_ge_m : ordsucc k c= j.
+        { exact (andEL (ordsucc k c= j) (j :e ordsucc nch) Hjleft). }
+        claim Hj_On : j :e ordsucc nch.
+        { exact (andER (ordsucc k c= j) (j :e ordsucc nch) Hjleft). }
+        exact (Hsuffix_Vtype j Hj_On Hj_ge_m t Ht_seqj). }
+      apply and6I.
+      + exact HsUI.
+      + exact Hs_ne0.
+      + exact Hs_ne1.
+      + exact HfsUV.
+      + exact HfU.
+      + exact HfV.
+    - assume HNotV_suf_nonempty.
+      (** Multi-transition case: needs strong induction on number of transitions **)
+      admit.
 }
 apply Htransition_exists. let s_trans. assume Hs_pack.
 apply (and6E
