@@ -239028,7 +239028,10 @@ claim HL1_fun : function_on L1 unit_interval X.
 claim HL2_fun : function_on L2 unit_interval X.
 { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx L2 HL2_cont). }
 claim HL1_sub : L1 c= setprod unit_interval X.
-{ admit. }
+{ (** L1 = path_concat f1 (reverse_path gammaX), both continuous into X **)
+  (** So L1 = {(t, f1(2t)) | t in left_half} cup {(t, rev_gamma(2t-1)) | t in right_half} **)
+  (** Each pair is in setprod unit_interval X **)
+  admit. }
 claim HL2_sub : L2 c= setprod unit_interval X.
 { admit. }
 claim HL1_funspace : L1 :e function_space unit_interval X.
@@ -239183,7 +239186,12 @@ claim HL2_word_data :
     path_homotopy_class_loop X Tx x0 L2 = nat_primrec (fundamental_group_id X Tx x0)
       (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs2 k)) n2.
 { admit. }
-(** Step 9: Word data for L1 (by IH) -- admitted for now **)
+(** Step 9: Word data for L1 (by IH) **)
+(** L1 maps into U when all prefix intervals are U-type (including m=0 case). **)
+(** For general m, need chain construction. **)
+(** Approach: define g (same geometric path as L1 but parametrized as f on [0,s], **)
+(** gamma-inv on [s,1]) and show [L1] = [g], then apply IH to g with chain **)
+(** seq_g(k) = seq(k) for k < m, seq_g(m) = seq(m) cup (s,1]. **)
 claim HL1_word_data :
   exists n1:set, n1 :e omega /\
   exists gs1:set, function_on gs1 n1 (fundamental_group X Tx x0) /\
@@ -239198,7 +239206,15 @@ claim HL1_word_data :
             (graph V (fun x:set => x))) vcls)) /\
     path_homotopy_class_loop X Tx x0 L1 = nat_primrec (fundamental_group_id X Tx x0)
       (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
-{ admit. }
+{ (** Use IH. Need to construct a loop g homotopic to L1 with a chain of ordsucc m intervals. **)
+  (** Define g : unit_interval -> X by: **)
+  (** g(t) = f(t) for t <= s, g(t) = gammaX((1-t)/(1-s)) for t > s **)
+  (** This g is homotopic to L1 (same geometric path, different parametrization). **)
+  (** Chain for g: seq_g(k) = seq(k) for k < m, seq_g(m) = seq(m) cup (s, 1] **)
+  (** Each maps g into the appropriate U or V. **)
+  (** Apply IH to g -> word data for g. **)
+  (** Transfer to L1 via [L1] = [g]. **)
+  admit. }
 (** Step 10: Combine word data via word_data_of_loop_concat and class equality **)
 claim Hconcat_word :
   exists nc:set, nc :e omega /\
@@ -239592,11 +239608,14 @@ apply (nat_ind P).
             Hseq'FnPow Hseq'Open Hseq'Conn H0_in' H1_in' Hoverlap' HballUV').
         + assume Hn_Vtype.
           (** Case B1: seq(m) U-type, seq(n) V-type **)
-          admit.
+          exact (nch_transition_UV_step m HmNat IH X Tx U V x0 f seq
+            Htop HU HV Hcover Hx0UV HpcUV HfLoop
+            HseqFnPow HseqOpen HseqConn H0_in H1_in Hoverlap HballUV
+            Hm_Utype Hn_Vtype).
       - assume Hm_Vtype.
         apply (HballUV n (ordsuccI2 n)).
         + assume Hn_Utype.
-          (** Case B2: seq(m) V-type, seq(n) U-type **)
+          (** Case B2: seq(m) V-type, seq(n) U-type -- symmetric to B1 with U,V swapped **)
           admit.
         + assume Hn_Vtype.
           (** Case A2: both V-type — merge seq(m) and seq(n) into seq'(m) **)
