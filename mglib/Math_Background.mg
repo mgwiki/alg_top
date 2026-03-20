@@ -239611,7 +239611,15 @@ claim HL1_word_data :
         { (** (s,1] is connected in unit_interval -- it is an interval **)
           admit. }
         claim Hoverlap_lastI : apply_fun seq m :/\: Sep unit_interval (fun t:set => Rlt s t) <> Empty.
-        { (** seq(m) is open containing s, so it contains points > s **)
+        { (** seq(m) is open containing s, so it contains points strictly > s **)
+          (** seq(n) = seq(ordsucc m) is open containing s, and seq(n) c= [s,1] near s **)
+          (** Actually: seq(m) cap seq(n) is open and nonempty, and contains interior points **)
+          (** Any interior point p with p > s works **)
+          (** Use: the overlap seq(m) cap seq(n) contains points with Rlt s t **)
+          (** since the overlap is open and nonempty, it has interior points **)
+          (** which are in (0,1), and if the overlap is just {s}, then s in (0,1) **)
+          (** but {s} is not open, contradiction. So overlap contains points other than s. **)
+          (** In particular, points > s or < s. **)
           admit. }
         exact (connected_union_two_intersect unit_interval unit_interval_topology
           (apply_fun seq m) (Sep unit_interval (fun t:set => Rlt s t))
