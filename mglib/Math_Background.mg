@@ -238881,6 +238881,7 @@ apply set_ext.
 Qed.
 
 (** Strengthened reparametrization: gives compose_fun f2 with pointwise access **)
+(** Proven Dave **)
 Lemma reparametrization_right_half_apply : forall X Tx x0 x1 f a:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
   apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
@@ -238891,20 +238892,8 @@ Lemma reparametrization_right_half_apply : forall X Tx x0 x1 f a:set,
 let X Tx x0 x1 f a.
 assume HfCont Hf0 Hf1 HaI Ha0 Ha1.
 let u. assume Hu.
-claim HaR : a :e R. { exact (unit_interval_sub_R a HaI). }
-claim H1maR : add_SNo 1 (minus_SNo a) :e R.
-{ exact (real_add_SNo 1 real_1 (minus_SNo a) (real_minus_SNo a HaR)). }
-claim H1maPos : Rlt 0 (add_SNo 1 (minus_SNo a)).
-{ exact (RltI 0 (add_SNo 1 (minus_SNo a)) real_0 H1maR
-    (SNoLt_minus_pos a 1 (real_SNo a HaR) SNo_1 (RltE_lt a 1 Ha1))). }
-claim Haffine_cont : continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology
-  (affine_fun_I a (add_SNo 1 (minus_SNo a))).
-{ admit. }
-claim Haffine_in_UI : apply_fun (affine_fun_I a (add_SNo 1 (minus_SNo a))) u :e unit_interval.
-{ exact (continuous_map_function_on unit_interval unit_interval_topology unit_interval unit_interval_topology
-    (affine_fun_I a (add_SNo 1 (minus_SNo a))) Haffine_cont u Hu). }
 exact (compose_fun_apply unit_interval (affine_fun_I a (add_SNo 1 (minus_SNo a))) f u Hu).
-Admitted.
+Qed.
 
 (** Helper for B1/B2 transition cases in ball_cover_word_nch_ind_gen. **)
 (** Given a loop f covered by ordsucc(ordsucc m) overlapping connected open intervals, **)
@@ -239102,9 +239091,270 @@ claim Hsplit_props :
   apply_fun f1 0 = x0 /\ apply_fun f1 1 = apply_fun f s /\
   apply_fun f2 0 = apply_fun f s /\ apply_fun f2 1 = x0 /\
   path_homotopic X Tx x0 x0 f (path_concat f1 f2).
-{ (** f1 and f2 are the same as the internal definitions in Theorem_51_3_reparametrization **)
-  (** Properties: continuity (compose of continuous), endpoints (affine at 0/1), homotopy **)
-  admit. }
+{ (** Algebraic helpers **)
+  claim HsSNo : SNo s. { exact (real_SNo s Hs_R). }
+  claim HmsSNo : SNo (minus_SNo s). { exact (SNo_minus_SNo s HsSNo). }
+  claim HmsR : minus_SNo s :e R. { exact (real_minus_SNo s Hs_R). }
+  claim HcR : add_SNo 1 (minus_SNo s) :e R.
+  { exact (real_add_SNo 1 real_1 (minus_SNo s) HmsR). }
+  claim HcPos : 0 < add_SNo 1 (minus_SNo s).
+  { exact (SNoLt_minus_pos s 1 HsSNo SNo_1 (RltE_lt s 1 Hlt_s_1)). }
+  claim HcSNo : SNo (add_SNo 1 (minus_SNo s)).
+  { exact (real_SNo (add_SNo 1 (minus_SNo s)) HcR). }
+  claim HcNonneg : Rle 0 (add_SNo 1 (minus_SNo s)).
+  { exact (Rlt_implies_Rle 0 (add_SNo 1 (minus_SNo s))
+      (RltI 0 (add_SNo 1 (minus_SNo s)) real_0 HcR HcPos)). }
+  claim HsNonneg : Rle 0 s. { exact (Rlt_implies_Rle 0 s Hlt_0_s). }
+  (** Continuity of affine_fun_I 0 s : UI -> UI **)
+  claim Haffine1_in_C : affine_fun_I 0 s :e C_I_R.
+  { exact (affine_fun_I_in_C_I_R_pos 0 s real_0 Hs_R (RltE_lt 0 s Hlt_0_s)). }
+  claim Haffine1_contR :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology
+      (affine_fun_I 0 s).
+  { exact (C_I_R_continuous_real_on_I (affine_fun_I 0 s) Haffine1_in_C). }
+  claim Haffine1_into_I :
+    forall t:set, t :e unit_interval -> apply_fun (affine_fun_I 0 s) t :e unit_interval.
+  { let t. assume Ht.
+    rewrite (affine_fun_I_apply 0 s t real_0 Hs_R (RltE_lt 0 s Hlt_0_s) Ht).
+    rewrite (add_SNo_0R (mul_SNo t s)
+      (SNo_mul_SNo t s (real_SNo t (unit_interval_sub_R t Ht)) HsSNo)).
+    exact (unit_interval_mul_closed t s Ht Hs_UI). }
+  claim Haffine1_contI :
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology
+      (affine_fun_I 0 s).
+  { exact (continuous_map_range_restrict
+      unit_interval unit_interval_topology R R_standard_topology
+      (affine_fun_I 0 s) unit_interval
+      Haffine1_contR unit_interval_sub_R Haffine1_into_I). }
+  (** Continuity of affine_fun_I s (1-s) : UI -> UI **)
+  claim Haffine2_in_C : affine_fun_I s (add_SNo 1 (minus_SNo s)) :e C_I_R.
+  { exact (affine_fun_I_in_C_I_R_pos s (add_SNo 1 (minus_SNo s)) Hs_R HcR HcPos). }
+  claim Haffine2_contR :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology
+      (affine_fun_I s (add_SNo 1 (minus_SNo s))).
+  { exact (C_I_R_continuous_real_on_I (affine_fun_I s (add_SNo 1 (minus_SNo s))) Haffine2_in_C). }
+  claim Haffine2_into_I :
+    forall t:set, t :e unit_interval ->
+      apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) t :e unit_interval.
+  { let t. assume Ht.
+    claim HtR : t :e R. { exact (unit_interval_sub_R t Ht). }
+    claim HtSNo : SNo t. { exact (real_SNo t HtR). }
+    claim HmR : mul_SNo t (add_SNo 1 (minus_SNo s)) :e R.
+    { exact (real_mul_SNo t HtR (add_SNo 1 (minus_SNo s)) HcR). }
+    claim HmSNo : SNo (mul_SNo t (add_SNo 1 (minus_SNo s))).
+    { exact (real_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) HmR). }
+    claim HmBounds :
+      Rle 0 (mul_SNo t (add_SNo 1 (minus_SNo s))) /\
+      Rle (mul_SNo t (add_SNo 1 (minus_SNo s))) (add_SNo 1 (minus_SNo s)).
+    { exact (unit_interval_mul_const_bounds t (add_SNo 1 (minus_SNo s)) Ht HcR HcNonneg). }
+    claim HmNonneg : Rle 0 (mul_SNo t (add_SNo 1 (minus_SNo s))).
+    { exact (andEL (Rle 0 (mul_SNo t (add_SNo 1 (minus_SNo s))))
+        (Rle (mul_SNo t (add_SNo 1 (minus_SNo s))) (add_SNo 1 (minus_SNo s))) HmBounds). }
+    claim HmLeC : Rle (mul_SNo t (add_SNo 1 (minus_SNo s))) (add_SNo 1 (minus_SNo s)).
+    { exact (andER (Rle 0 (mul_SNo t (add_SNo 1 (minus_SNo s))))
+        (Rle (mul_SNo t (add_SNo 1 (minus_SNo s))) (add_SNo 1 (minus_SNo s))) HmBounds). }
+    claim HoutNonnegA :
+      Rle 0 (add_SNo s (mul_SNo t (add_SNo 1 (minus_SNo s)))).
+    { exact (Rle_tra 0 (mul_SNo t (add_SNo 1 (minus_SNo s)))
+        (add_SNo s (mul_SNo t (add_SNo 1 (minus_SNo s)))) HmNonneg
+        (Rle_increase_by_nonneg_left s (mul_SNo t (add_SNo 1 (minus_SNo s))) Hs_R HmR HsNonneg)). }
+    claim HoutNonneg : Rle 0 (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) s).
+    { rewrite <- (add_SNo_com s (mul_SNo t (add_SNo 1 (minus_SNo s))) HsSNo HmSNo).
+      exact HoutNonnegA. }
+    claim HoutLeCa :
+      Rle (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) s)
+          (add_SNo (add_SNo 1 (minus_SNo s)) s).
+    { exact (Rle_add_SNo_1
+        (mul_SNo t (add_SNo 1 (minus_SNo s)))
+        (add_SNo 1 (minus_SNo s)) s HmR HcR Hs_R HmLeC). }
+    claim HcaEq1 : add_SNo (add_SNo 1 (minus_SNo s)) s = 1.
+    { rewrite <- (add_SNo_assoc 1 (minus_SNo s) s SNo_1 HmsSNo HsSNo).
+      rewrite (add_SNo_minus_SNo_linv s HsSNo).
+      rewrite (add_SNo_0R 1 SNo_1). reflexivity. }
+    claim HcaLe1 : Rle (add_SNo (add_SNo 1 (minus_SNo s)) s) 1.
+    { rewrite HcaEq1. exact (Rle_refl 1 real_1). }
+    claim HoutLe1 : Rle (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) s) 1.
+    { exact (Rle_tra (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) s)
+        (add_SNo (add_SNo 1 (minus_SNo s)) s) 1 HoutLeCa HcaLe1). }
+    claim HoutR : add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) s :e R.
+    { exact (real_add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) HmR s Hs_R). }
+    rewrite (affine_fun_I_apply s (add_SNo 1 (minus_SNo s)) t Hs_R HcR HcPos Ht).
+    exact (SepI R (fun x:set => ~ (Rlt x 0) /\ ~ (Rlt 1 x))
+      (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) s) HoutR
+      (andI (~ (Rlt (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) s) 0))
+        (~ (Rlt 1 (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) s)))
+        (RleE_nlt 0 (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) s) HoutNonneg)
+        (RleE_nlt (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo s))) s) 1 HoutLe1))). }
+  claim Haffine2_contI :
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology
+      (affine_fun_I s (add_SNo 1 (minus_SNo s))).
+  { exact (continuous_map_range_restrict
+      unit_interval unit_interval_topology R R_standard_topology
+      (affine_fun_I s (add_SNo 1 (minus_SNo s))) unit_interval
+      Haffine2_contR unit_interval_sub_R Haffine2_into_I). }
+  (** Continuity of f1 and f2 **)
+  claim Hf1Cont : continuous_map unit_interval unit_interval_topology X Tx f1.
+  { exact (composition_continuous unit_interval unit_interval_topology
+      unit_interval unit_interval_topology X Tx
+      (affine_fun_I 0 s) f Haffine1_contI HfCont). }
+  claim Hf2Cont : continuous_map unit_interval unit_interval_topology X Tx f2.
+  { exact (composition_continuous unit_interval unit_interval_topology
+      unit_interval unit_interval_topology X Tx
+      (affine_fun_I s (add_SNo 1 (minus_SNo s))) f Haffine2_contI HfCont). }
+  (** Endpoint conditions for f1 **)
+  claim Hf1_0 : apply_fun f1 0 = x0.
+  { rewrite (compose_fun_apply unit_interval (affine_fun_I 0 s) f 0 zero_in_unit_interval).
+    rewrite (affine_fun_I_apply 0 s 0 real_0 Hs_R (RltE_lt 0 s Hlt_0_s) zero_in_unit_interval).
+    rewrite (mul_SNo_zeroL s HsSNo). rewrite (add_SNo_0R 0 SNo_0). exact Hf0. }
+  claim Hf1_1 : apply_fun f1 1 = apply_fun f s.
+  { rewrite (compose_fun_apply unit_interval (affine_fun_I 0 s) f 1 one_in_unit_interval).
+    rewrite (affine_fun_I_apply 0 s 1 real_0 Hs_R (RltE_lt 0 s Hlt_0_s) one_in_unit_interval).
+    rewrite (mul_SNo_oneL s HsSNo). rewrite (add_SNo_0R s HsSNo). reflexivity. }
+  (** Endpoint conditions for f2 **)
+  claim Hf2_0 : apply_fun f2 0 = apply_fun f s.
+  { rewrite (compose_fun_apply unit_interval (affine_fun_I s (add_SNo 1 (minus_SNo s))) f 0 zero_in_unit_interval).
+    rewrite (affine_fun_I_apply s (add_SNo 1 (minus_SNo s)) 0 Hs_R HcR HcPos zero_in_unit_interval).
+    rewrite (mul_SNo_zeroL (add_SNo 1 (minus_SNo s)) HcSNo). rewrite (add_SNo_0L s HsSNo). reflexivity. }
+  claim Hf2_1 : apply_fun f2 1 = x0.
+  { rewrite (compose_fun_apply unit_interval (affine_fun_I s (add_SNo 1 (minus_SNo s))) f 1 one_in_unit_interval).
+    rewrite (affine_fun_I_apply s (add_SNo 1 (minus_SNo s)) 1 Hs_R HcR HcPos one_in_unit_interval).
+    rewrite (mul_SNo_oneL (add_SNo 1 (minus_SNo s)) HcSNo).
+    rewrite <- (add_SNo_assoc 1 (minus_SNo s) s SNo_1 HmsSNo HsSNo).
+    rewrite (add_SNo_minus_SNo_linv s HsSNo). rewrite (add_SNo_0R 1 SNo_1). exact Hf1. }
+  (** Path homotopy: f ~ path_concat f1 f2 via phi = path_concat(phi1, phi2) **)
+  claim Hf_hom : path_homotopic X Tx x0 x0 f (path_concat f1 f2).
+  { claim Hconcat_cont :
+      continuous_map unit_interval unit_interval_topology X Tx (path_concat f1 f2).
+    { exact (path_concat_continuous X Tx x0 (apply_fun f s) x0
+        f1 f2 Hf1Cont Hf2Cont Hf1_0 Hf1_1 Hf2_0 Hf2_1). }
+    claim Hconcat_0 : apply_fun (path_concat f1 f2) 0 = x0.
+    { rewrite (path_concat_at_zero f1 f2). exact Hf1_0. }
+    claim Hconcat_1 : apply_fun (path_concat f1 f2) 1 = x0.
+    { rewrite (path_concat_at_one f1 f2). exact Hf2_1. }
+    set phi1 := affine_fun_I 0 s.
+    set phi2 := affine_fun_I s (add_SNo 1 (minus_SNo s)).
+    set phi := path_concat phi1 phi2.
+    claim Hphi1_0 : apply_fun phi1 0 = 0.
+    { rewrite (affine_fun_I_apply 0 s 0 real_0 Hs_R (RltE_lt 0 s Hlt_0_s) zero_in_unit_interval).
+      rewrite (mul_SNo_zeroL s HsSNo). rewrite (add_SNo_0R 0 SNo_0). reflexivity. }
+    claim Hphi1_1 : apply_fun phi1 1 = s.
+    { rewrite (affine_fun_I_apply 0 s 1 real_0 Hs_R (RltE_lt 0 s Hlt_0_s) one_in_unit_interval).
+      rewrite (mul_SNo_oneL s HsSNo). rewrite (add_SNo_0R s HsSNo). reflexivity. }
+    claim Hphi2_0 : apply_fun phi2 0 = s.
+    { rewrite (affine_fun_I_apply s (add_SNo 1 (minus_SNo s)) 0 Hs_R HcR HcPos zero_in_unit_interval).
+      rewrite (mul_SNo_zeroL (add_SNo 1 (minus_SNo s)) HcSNo). rewrite (add_SNo_0L s HsSNo). reflexivity. }
+    claim Hphi2_1 : apply_fun phi2 1 = 1.
+    { rewrite (affine_fun_I_apply s (add_SNo 1 (minus_SNo s)) 1 Hs_R HcR HcPos one_in_unit_interval).
+      rewrite (mul_SNo_oneL (add_SNo 1 (minus_SNo s)) HcSNo).
+      rewrite <- (add_SNo_assoc 1 (minus_SNo s) s SNo_1 HmsSNo HsSNo).
+      rewrite (add_SNo_minus_SNo_linv s HsSNo). rewrite (add_SNo_0R 1 SNo_1). reflexivity. }
+    claim Hphi_join : apply_fun phi1 1 = apply_fun phi2 0.
+    { rewrite Hphi1_1. rewrite Hphi2_0. reflexivity. }
+    claim HphiCont :
+      continuous_map unit_interval unit_interval_topology
+        unit_interval unit_interval_topology phi.
+    { exact (path_concat_continuous unit_interval unit_interval_topology 0 s 1
+        phi1 phi2 Haffine1_contI Haffine2_contI Hphi1_0 Hphi1_1 Hphi2_0 Hphi2_1). }
+    claim Hphi_0 : apply_fun phi 0 = 0.
+    { rewrite (path_concat_at_zero phi1 phi2). exact Hphi1_0. }
+    claim Hphi_1 : apply_fun phi 1 = 1.
+    { rewrite (path_concat_at_one phi1 phi2). exact Hphi2_1. }
+    set idI := graph unit_interval (fun t:set => t).
+    claim Hphi_hom_id :
+      path_homotopic unit_interval unit_interval_topology 0 1 phi idI.
+    { exact (unit_interval_path_homotopic_to_id phi HphiCont Hphi_0 Hphi_1). }
+    claim Hid_hom_phi :
+      path_homotopic unit_interval unit_interval_topology 0 1 idI phi.
+    { exact (Lemma_51_1_path_homotopy_sym
+        unit_interval unit_interval_topology 0 1 phi idI Hphi_hom_id). }
+    set fid := compose_fun unit_interval idI f.
+    set fphi := compose_fun unit_interval phi f.
+    claim Hfid_hom_fphi : path_homotopic X Tx x0 x0 fid fphi.
+    { exact (path_homotopic_precompose
+        X Tx x0 x0 f idI phi HfCont Hf0 Hf1 Hid_hom_phi). }
+    claim HidICont :
+      continuous_map unit_interval unit_interval_topology
+        unit_interval unit_interval_topology idI.
+    { exact (identity_continuous unit_interval unit_interval_topology unit_interval_topology_on). }
+    claim Hfid_cont : continuous_map unit_interval unit_interval_topology X Tx fid.
+    { exact (composition_continuous unit_interval unit_interval_topology
+        unit_interval unit_interval_topology X Tx idI f HidICont HfCont). }
+    claim Hfid_0 : apply_fun fid 0 = x0.
+    { rewrite (compose_fun_apply unit_interval idI f 0 zero_in_unit_interval).
+      rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval). exact Hf0. }
+    claim Hfid_1 : apply_fun fid 1 = x0.
+    { rewrite (compose_fun_apply unit_interval idI f 1 one_in_unit_interval).
+      rewrite (apply_fun_graph unit_interval (fun t:set => t) 1 one_in_unit_interval). exact Hf1. }
+    claim Hf_pw_fid :
+      forall t:set, t :e unit_interval -> apply_fun f t = apply_fun fid t.
+    { let t. assume Ht.
+      rewrite (compose_fun_apply unit_interval idI f t Ht).
+      rewrite (apply_fun_graph unit_interval (fun u:set => u) t Ht). reflexivity. }
+    claim Hf_hom_fid : path_homotopic X Tx x0 x0 f fid.
+    { exact (path_homotopic_of_pointwise_equal X Tx x0 x0 f fid
+        HfCont Hfid_cont Hf0 Hf1 Hfid_0 Hfid_1 Hf_pw_fid). }
+    claim Hfphi_cont : continuous_map unit_interval unit_interval_topology X Tx fphi.
+    { exact (composition_continuous unit_interval unit_interval_topology
+        unit_interval unit_interval_topology X Tx phi f HphiCont HfCont). }
+    claim Hfphi_0 : apply_fun fphi 0 = x0.
+    { rewrite (compose_fun_apply unit_interval phi f 0 zero_in_unit_interval).
+      rewrite Hphi_0. exact Hf0. }
+    claim Hfphi_1 : apply_fun fphi 1 = x0.
+    { rewrite (compose_fun_apply unit_interval phi f 1 one_in_unit_interval).
+      rewrite Hphi_1. exact Hf1. }
+    claim Hf1_join_f2 : apply_fun f1 1 = apply_fun f2 0.
+    { rewrite Hf1_1. rewrite Hf2_0. reflexivity. }
+    claim Hfphi_pw_concat :
+      forall t:set, t :e unit_interval ->
+        apply_fun fphi t = apply_fun (path_concat f1 f2) t.
+    { let t. assume HtUI.
+      claim HtLHRH : t :e unit_interval_left_half :\/: unit_interval_right_half.
+      { exact (unit_interval_halves_cover (fun a b:set => t :e a -> t :e b)
+          (binunion_Subq_min unit_interval_left_half unit_interval_right_half unit_interval
+            unit_interval_left_half_sub unit_interval_right_half_sub t) HtUI). }
+      apply (binunionE unit_interval_left_half unit_interval_right_half t HtLHRH).
+      - assume HtL : t :e unit_interval_left_half.
+        claim HtUI2 : t :e unit_interval.
+        { exact (SepE1 unit_interval (fun x:set => ~ (Rlt (eps_ 1) x)) t HtL). }
+        rewrite (compose_fun_apply unit_interval phi f t HtUI2).
+        rewrite (path_concat_apply_left phi1 phi2 t Hphi_join HtL).
+        rewrite (path_concat_apply_left f1 f2 t Hf1_join_f2 HtL).
+        claim H2t_UI : mul_SNo 2 t :e unit_interval.
+        { claim Hdm : apply_fun double_map_left_half t = mul_SNo 2 t.
+          { exact (double_map_apply t HtL). }
+          rewrite <- Hdm. exact (double_map_function_on t HtL). }
+        rewrite (compose_fun_apply unit_interval phi1 f (mul_SNo 2 t) H2t_UI).
+        reflexivity.
+      - assume HtR : t :e unit_interval_right_half.
+        claim HtUI2 : t :e unit_interval.
+        { exact (SepE1 unit_interval (fun x:set => ~ (Rlt x (eps_ 1))) t HtR). }
+        rewrite (compose_fun_apply unit_interval phi f t HtUI2).
+        rewrite (path_concat_apply_right phi1 phi2 t Hphi_join HtR).
+        rewrite (path_concat_apply_right f1 f2 t Hf1_join_f2 HtR).
+        claim H2tm1_UI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+        { claim Hdm : apply_fun double_minus_one_map_right_half t =
+            add_SNo (mul_SNo 2 t) (minus_SNo 1).
+          { exact (double_minus_one_map_apply t HtR). }
+          rewrite <- Hdm. exact (double_minus_one_map_function_on t HtR). }
+        rewrite (compose_fun_apply unit_interval phi2 f
+          (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2tm1_UI).
+        reflexivity. }
+    claim Hfphi_hom_concat : path_homotopic X Tx x0 x0 fphi (path_concat f1 f2).
+    { exact (path_homotopic_of_pointwise_equal X Tx x0 x0 fphi (path_concat f1 f2)
+        Hfphi_cont Hconcat_cont Hfphi_0 Hfphi_1 Hconcat_0 Hconcat_1 Hfphi_pw_concat). }
+    claim Hf_hom_fphi : path_homotopic X Tx x0 x0 f fphi.
+    { exact (Lemma_51_1_path_homotopy_trans X Tx x0 x0 f fid fphi Hf_hom_fid Hfid_hom_fphi). }
+    exact (Lemma_51_1_path_homotopy_trans X Tx x0 x0 f fphi (path_concat f1 f2)
+      Hf_hom_fphi Hfphi_hom_concat). }
+  exact (and7I
+    (continuous_map unit_interval unit_interval_topology X Tx f1)
+    (continuous_map unit_interval unit_interval_topology X Tx f2)
+    (apply_fun f1 0 = x0)
+    (apply_fun f1 1 = apply_fun f s)
+    (apply_fun f2 0 = apply_fun f s)
+    (apply_fun f2 1 = x0)
+    (path_homotopic X Tx x0 x0 f (path_concat f1 f2))
+    Hf1Cont Hf2Cont Hf1_0 Hf1_1 Hf2_0 Hf2_1 Hf_hom). }
 apply (and7E
   (continuous_map unit_interval unit_interval_topology X Tx f1)
   (continuous_map unit_interval unit_interval_topology X Tx f2)
@@ -239571,9 +239821,10 @@ claim HL2_word_data :
               s HprodR2 H1ms_R Hs_R
               (Rle_of_SNoLe (mul_SNo u (add_SNo 1 (minus_SNo s))) (add_SNo 1 (minus_SNo s))
                 HprodR2 H1ms_R Hprod_le_1ms2)). }
-          (** Rle val ((1-s)+s) and (1-s)+s = 1, so Rle val 1 **)
-          (** Cannot rewrite in hypothesis in Megalodon, admit final step **)
-          admit. }
+          claim HsumEq1 : Rle (add_SNo (add_SNo 1 (minus_SNo s)) s) 1.
+          { rewrite H1ms_plus_s. exact (Rle_refl 1 real_1). }
+          exact (Rle_tra (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s)
+            (add_SNo (add_SNo 1 (minus_SNo s)) s) 1 Hval_le_sum HsumEq1). }
         exact (andER
           (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s :e R /\ 1 :e R)
           (~(Rlt 1 (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s)))
