@@ -1,4 +1,4 @@
-(** Balance Alice 8948 **)
+(** Balance Alice 8905 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
 (** Balance Dave 2670 **)
@@ -283456,7 +283456,8 @@ Admitted.
 (** from S61 Thm 61.3 (line 1867 in algtop.tex) **)
 (** LATEX VERSION: (Jordan separation theorem) A simple closed curve in S^2 separates S^2. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 424 **)
+(** Bounty 467 **)
+(** Lock Alice 1774076816 **)
 Theorem thm61_3_jordan_separation : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
