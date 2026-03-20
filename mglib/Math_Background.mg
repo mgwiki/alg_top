@@ -237531,6 +237531,71 @@ apply (nat_inv mV HmVnat).
         exact (HV_succ s (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn)).
 Qed.
 
+(** Strong induction on nat_p, proved before line 237534 using nat_ind. **)
+Lemma nat_strong_ind_pre :
+  forall P:set -> prop,
+  (forall n:set, nat_p n -> (forall m:set, m :e n -> P m) -> P n) ->
+  forall n:set, nat_p n -> P n.
+let P.
+assume Hstep.
+let n. assume Hn_nat.
+set Q := fun t:set => forall m:set, m :e t -> P m.
+claim HQ : forall t:set, nat_p t -> Q t.
+{
+  apply nat_ind.
+  - let m. assume Hm0.
+    exact (FalseE (EmptyE m Hm0) (P m)).
+  - let t. assume Ht_nat IHQt.
+    let m. assume Hm_st.
+    apply (ordsuccE t m Hm_st).
+    + assume Hm_t. exact (IHQt m Hm_t).
+    + assume Hm_eq.
+      claim Pt : P t. { exact (Hstep t Ht_nat IHQt). }
+      rewrite Hm_eq. exact Pt.
+}
+claim HQsn : Q (ordsucc n).
+{ exact (HQ (ordsucc n) (nat_ordsucc n Hn_nat)). }
+exact (HQsn n (ordsuccI2 n)).
+Qed.
+
+(** Helper: ball chain word decomposition by induction on ball chain length.
+    Given a loop f with a ball chain where each ball maps f to U or V,
+    produce a word decomposition of f's homotopy class in pi_1(X). **)
+Lemma ball_cover_word_nch_ind :
+  forall nch:set, nat_p nch ->
+  forall X Tx U V x0 f r seq:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  x0 :e U :/\: V ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  f :e loop_space X Tx x0 ->
+  r :e R -> Rlt 0 r ->
+  function_on seq (ordsucc nch)
+    {open_ball unit_interval R_bounded_metric x r | x :e unit_interval} ->
+  0 :e apply_fun seq 0 ->
+  1 :e apply_fun seq nch ->
+  (forall k:set, k :e nch ->
+    apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty) ->
+  (forall k:set, k :e ordsucc nch ->
+    (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U) \/
+    (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V)) ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 f = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+admit.
+Admitted.
+
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->

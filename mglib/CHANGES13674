@@ -1,0 +1,22 @@
+CHANGES13674 - Alice
+Date: 2026-03-20
+
+## Add nat_strong_ind_pre and ball_cover_word_nch_ind (Admitted)
+
+### nat_strong_ind_pre
+- Added strong induction lemma before line 237534 (before ball_cover_word_construction_mixed_finish area)
+- Needed because nat_strong_ind_early is defined after this point in the file
+- Proved Qed using nat_ind (same proof as nat_strong_ind_early)
+- Fixed: used EmptyE m Hm0 directly (0 = Empty definitionally; zero_eq_empty not yet defined here)
+
+### ball_cover_word_nch_ind (Admitted)
+- New lemma: given a loop f with ball chain where each ball maps f to U or V,
+  produce a word decomposition of f's homotopy class in pi_1(X)
+- Induction on ball chain length (nch), using nat_strong_ind_pre
+- Proof body: admit. Admitted. (induction argument blocked: IH application for
+  loopG requires a "shorter" ball chain which is non-trivial to construct)
+- This lemma provides the key infrastructure for fixing 2 admits in
+  ball_cover_word_construction_mixed_finish
+
+### Size change
+Previous bck13673 (559991 lines), current bck13674 (560056 lines), grows by 65 lines.
