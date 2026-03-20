@@ -239537,7 +239537,21 @@ claim HL1_word_data :
       path_homotopy_class_loop X Tx x0 g = nat_primrec (fundamental_group_id X Tx x0)
         (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
   { (** Apply IH to g with seq_g chain **)
-    admit. }
+    claim Hsg_fn : function_on seq_g (ordsucc m) (Power unit_interval). { admit. }
+    claim Hsg_open : forall k:set, k :e ordsucc m -> apply_fun seq_g k :e unit_interval_topology. { admit. }
+    claim Hsg_conn : forall k:set, k :e ordsucc m ->
+      connected_space (apply_fun seq_g k)
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seq_g k)). { admit. }
+    claim Hsg_0 : 0 :e apply_fun seq_g 0. { admit. }
+    claim Hsg_1 : 1 :e apply_fun seq_g m. { admit. }
+    claim Hsg_overlap : forall k:set, k :e m ->
+      apply_fun seq_g k :/\: apply_fun seq_g (ordsucc k) <> Empty. { admit. }
+    claim Hsg_UV : forall k:set, k :e ordsucc m ->
+      (forall t:set, t :e apply_fun seq_g k -> apply_fun g t :e U) \/
+      (forall t:set, t :e apply_fun seq_g k -> apply_fun g t :e V). { admit. }
+    exact (IH X Tx U V x0 g seq_g
+      Htop HU HV Hcover Hx0UV HpcUV Hg_loop
+      Hsg_fn Hsg_open Hsg_conn Hsg_0 Hsg_1 Hsg_overlap Hsg_UV). }
   (** Transfer word data from g to L1 via homotopy [g] = [L1] **)
   claim Hg_L1_homotopic : path_homotopy_class_loop X Tx x0 g = path_homotopy_class_loop X Tx x0 L1.
   { (** g and L1 trace the same geometric path (f on [0,s], gamma-inv on [s,1]) **)
