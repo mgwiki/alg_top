@@ -284050,7 +284050,7 @@ claim HG_at_1 : forall x:set, x :e X -> apply_fun G (x,1) = y0.
 { let x. assume Hx.
   claim HpI : (x,1) :e domain_ext.
   { prove (x,1) :e setprod A unit_interval :\/: setprod X (Sing 1).
-    apply orIR.
+    apply binunionI2.
     exact (tuple_2_setprod_by_pair_Sigma X (Sing 1) x 1 Hx (SingI 1)). }
   rewrite (HG_eq_Fext (x,1) HpI).
   exact (HF_ext_X1 x Hx). }
@@ -284059,7 +284059,7 @@ claim HG_at_a0 : forall a:set, a :e A -> apply_fun G (a,0) = apply_fun f a.
 { let a. assume Ha.
   claim HpI : (a,0) :e domain_ext.
   { prove (a,0) :e setprod A unit_interval :\/: setprod X (Sing 1).
-    apply orIL.
+    apply binunionI1.
     exact (tuple_2_setprod_by_pair_Sigma A unit_interval a 0 Ha zero_in_unit_interval). }
   rewrite (HG_eq_Fext (a,0) HpI).
   rewrite (HF_ext_AI a 0 Ha zero_in_unit_interval).
@@ -284080,42 +284080,87 @@ claim HA_sub_W : Wtp2.
     (andEL (Wtp1 /\ Wtp2) Wtp3 HW_data)). }
 claim HWI_in_Y : Wtp3.
 { exact (andER (Wtp1 /\ Wtp2) Wtp3 HW_data). }
-(** Step E: normal_space X Tx (X is factor of normal X×I) **)
-claim HX_normal : normal_space X Tx.
-{ admit. }
-(** Step F: Urysohn_bump: f_bump: X -> R with f_bump=1 on A, f_bump=0 on X\W, values in [0,1] **)
+(** Step E: Urysohn_bump on X×I: h_bump=1 on A×I, h_bump=0 on (X×I)\(W×I) **)
 claim HA_closed : closed_in X Tx A.
 { apply (closed_inI X Tx A HtopX HAsub).
   witness (X :\: A). apply andI.
   - exact HAclosed.
   - exact (eq_symm (X :\: (X :\: A)) A (setminus_setminus_eq X A HAsub)). }
-claim Hbump_exists : exists f_bump:set,
-  continuous_map X Tx R R_standard_topology f_bump /\
-  (forall a:set, a :e A -> apply_fun f_bump a = 1) /\
-  (forall x:set, x :e X :\: W -> apply_fun f_bump x = 0) /\
-  (forall x:set, x :e X -> apply_fun f_bump x :e unit_interval).
-{ exact (Urysohn_bump_closed_in_open X Tx A W HX_normal HA_closed HW_open HA_sub_W). }
-apply Hbump_exists. let f_bump. assume Hbump_data.
-set Bp1 := continuous_map X Tx R R_standard_topology f_bump.
-set Bp2 := forall a:set, a :e A -> apply_fun f_bump a = 1.
-set Bp3 := forall x:set, x :e X :\: W -> apply_fun f_bump x = 0.
-set Bp4 := forall x:set, x :e X -> apply_fun f_bump x :e unit_interval.
-claim Hf_bump_cont : Bp1.
-{ exact (andEL Bp1 Bp2
-    (andEL (Bp1 /\ Bp2) Bp3
-      (andEL ((Bp1 /\ Bp2) /\ Bp3) Bp4 Hbump_data))). }
-claim Hf_bump_on_A : Bp2.
-{ exact (andER Bp1 Bp2
-    (andEL (Bp1 /\ Bp2) Bp3
-      (andEL ((Bp1 /\ Bp2) /\ Bp3) Bp4 Hbump_data))). }
-claim Hf_bump_on_XW : Bp3.
-{ exact (andER (Bp1 /\ Bp2) Bp3
-    (andEL ((Bp1 /\ Bp2) /\ Bp3) Bp4 Hbump_data)). }
-claim Hf_bump_in_I : Bp4.
-{ exact (andER ((Bp1 /\ Bp2) /\ Bp3) Bp4 Hbump_data). }
+claim HAI_closed : closed_in (setprod X unit_interval) TXI (setprod A unit_interval).
+{ exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology A unit_interval
+    HA_closed (space_is_closed unit_interval unit_interval_topology unit_interval_topology_on)). }
+claim HWI_open : setprod W unit_interval :e TXI.
+{ rewrite <- (rectangle_set_def W unit_interval).
+  exact (rectangle_set_open_in_product_topology X Tx unit_interval unit_interval_topology W unit_interval
+    HtopX unit_interval_topology_on HW_open
+    (topology_has_X unit_interval unit_interval_topology unit_interval_topology_on)). }
+claim HAI_sub_WI : setprod A unit_interval c= setprod W unit_interval.
+{ exact (setprod_Subq A unit_interval W unit_interval HA_sub_W (Subq_ref unit_interval)). }
+claim Hhbump_exists : exists h_bump:set,
+  continuous_map (setprod X unit_interval) TXI R R_standard_topology h_bump /\
+  (forall p:set, p :e setprod A unit_interval -> apply_fun h_bump p = 1) /\
+  (forall p:set, p :e (setprod X unit_interval) :\: setprod W unit_interval -> apply_fun h_bump p = 0) /\
+  (forall p:set, p :e setprod X unit_interval -> apply_fun h_bump p :e unit_interval).
+{ exact (Urysohn_bump_closed_in_open (setprod X unit_interval) TXI
+    (setprod A unit_interval) (setprod W unit_interval)
+    Hnormal HAI_closed HWI_open HAI_sub_WI). }
+apply Hhbump_exists. let h_bump. assume Hhbump_data.
+set Hbp1 := continuous_map (setprod X unit_interval) TXI R R_standard_topology h_bump.
+set Hbp2 := forall p:set, p :e setprod A unit_interval -> apply_fun h_bump p = 1.
+set Hbp3 := forall p:set, p :e (setprod X unit_interval) :\: setprod W unit_interval -> apply_fun h_bump p = 0.
+set Hbp4 := forall p:set, p :e setprod X unit_interval -> apply_fun h_bump p :e unit_interval.
+claim Hh_bump_cont : Hbp1.
+{ exact (andEL Hbp1 Hbp2
+    (andEL (Hbp1 /\ Hbp2) Hbp3
+      (andEL ((Hbp1 /\ Hbp2) /\ Hbp3) Hbp4 Hhbump_data))). }
+claim Hh_bump_on_AI : Hbp2.
+{ exact (andER Hbp1 Hbp2
+    (andEL (Hbp1 /\ Hbp2) Hbp3
+      (andEL ((Hbp1 /\ Hbp2) /\ Hbp3) Hbp4 Hhbump_data))). }
+claim Hh_bump_on_XWI : Hbp3.
+{ exact (andER (Hbp1 /\ Hbp2) Hbp3
+    (andEL ((Hbp1 /\ Hbp2) /\ Hbp3) Hbp4 Hhbump_data)). }
+claim Hh_bump_in_I : Hbp4.
+{ exact (andER ((Hbp1 /\ Hbp2) /\ Hbp3) Hbp4 Hhbump_data). }
+(** Step F: f_bump(x) = h_bump(x, 0): X -> R via constant phi=0 **)
+set const_0_I := const_fun X 0.
+claim Hconst0_cont : continuous_map X Tx unit_interval unit_interval_topology const_0_I.
+{ exact (const_fun_continuous X Tx unit_interval unit_interval_topology 0
+    HtopX unit_interval_topology_on zero_in_unit_interval). }
+set f_bump := graph X (fun x:set => apply_fun h_bump (x, apply_fun const_0_I x)).
+claim Hf_bump_cont : continuous_map X Tx R R_standard_topology f_bump.
+{ exact (composition_with_phi_continuous X Tx R R_standard_topology h_bump const_0_I
+    HtopX Hh_bump_cont Hconst0_cont). }
+claim Hf_bump_on_A : forall a:set, a :e A -> apply_fun f_bump a = 1.
+{ let a. assume Ha.
+  rewrite (apply_fun_graph X (fun x:set => apply_fun h_bump (x, apply_fun const_0_I x)) a (HAsub a Ha)).
+  rewrite (const_fun_apply X 0 a (HAsub a Ha)).
+  apply Hh_bump_on_AI.
+  exact (tuple_2_setprod_by_pair_Sigma A unit_interval a 0 Ha zero_in_unit_interval). }
+claim Hf_bump_on_XW : forall x:set, x :e X :\: W -> apply_fun f_bump x = 0.
+{ let x. assume HxXW.
+  claim Hx : x :e X. { exact (setminusE1 X W x HxXW). }
+  claim Hxnotw : x /:e W. { exact (setminusE2 X W x HxXW). }
+  rewrite (apply_fun_graph X (fun z:set => apply_fun h_bump (z, apply_fun const_0_I z)) x Hx).
+  rewrite (const_fun_apply X 0 x Hx).
+  apply Hh_bump_on_XWI.
+  apply (setminusI (setprod X unit_interval) (setprod W unit_interval) (x,0)).
+  - exact (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval).
+  - assume Hcontra : (x,0) :e setprod W unit_interval.
+    apply Hxnotw.
+    exact (eq_subst_mem x ((x,0) 0) W
+      (pair_eq_fst x 0 ((x,0) 0) ((x,0) 1)
+        (setprod_eta W unit_interval (x,0) Hcontra))
+      (ap0_Sigma W (fun _ => unit_interval) (x,0) Hcontra)). }
+claim Hf_bump_in_I : forall x:set, x :e X -> apply_fun f_bump x :e unit_interval.
+{ let x. assume Hx.
+  rewrite (apply_fun_graph X (fun z:set => apply_fun h_bump (z, apply_fun const_0_I z)) x Hx).
+  rewrite (const_fun_apply X 0 x Hx).
+  exact (Hh_bump_in_I (x,0) (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)). }
 (** Restrict f_bump to unit_interval codomain **)
 claim Hf_bump_I : continuous_map X Tx unit_interval unit_interval_topology f_bump.
-{ admit. }
+{ exact (continuous_map_range_restrict X Tx R R_standard_topology f_bump unit_interval
+    Hf_bump_cont unit_interval_sub_R Hf_bump_in_I). }
 (** phi = flip_unit_interval ∘ f_bump: phi=0 on A, phi=1 on X\W **)
 set phi := compose_fun X f_bump flip_unit_interval.
 claim Hphi_cont : continuous_map X Tx unit_interval unit_interval_topology phi.
@@ -284129,7 +284174,7 @@ claim Hphi_on_A : forall a:set, a :e A -> apply_fun phi a = 0.
   exact flip_unit_interval_at_1. }
 claim Hphi_on_XW : forall x:set, x :e X -> x /:e W -> apply_fun phi x = 1.
 { let x. assume Hx. assume Hxnotw.
-  claim HxXW : x :e X :\: W. { exact (setminusI x X W Hx Hxnotw). }
+  claim HxXW : x :e X :\: W. { exact (setminusI X W x Hx Hxnotw). }
   rewrite (compose_fun_apply X f_bump flip_unit_interval x Hx).
   rewrite (Hf_bump_on_XW x HxXW).
   exact flip_unit_interval_at_0. }
@@ -284160,17 +284205,18 @@ claim Hg_extends_f : forall a:set, a :e A -> apply_fun g a = apply_fun f a.
   exact (HG_at_a0 a Ha). }
 (** g continuous as map to Y (subspace of R^n) **)
 claim Hg_cont_Y : continuous_map X Tx Y TY g.
-{ admit. }
-(** g is nulhomotopic to y0 via H(x,t) = G(x, t + (1-t)*phi(x)) **)
+{ exact (continuous_map_range_restrict X Tx (euclidean_space n) TRn g Y
+    Hg_cont HY_sub_Rn Hg_in_Y). }
+(** g is nulhomotopic to y0 via the homotopy H(x,t) = G(x, t + (1-t) phi(x)) **)
 claim Hg_nulhomotopic : nulhomotopic X Tx Y TY g.
 { admit. }
 (** Witness: g **)
 witness g.
 apply andI.
-- exact Hg_cont_Y.
 - apply andI.
+  + exact Hg_cont_Y.
   + exact Hg_extends_f.
-  + exact Hg_nulhomotopic.
+- exact Hg_nulhomotopic.
 Admitted.
 
 (** from S62 Lem 62.2 (line 1953 in algtop.tex) **)
