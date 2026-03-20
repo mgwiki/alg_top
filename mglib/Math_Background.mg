@@ -235864,6 +235864,184 @@ exact (andI
   Hpaths).
 Qed.
 
+(** Infrastructure: a finite overlapping chain of connected subsets of unit_interval yields a path between endpoints. **)
+(** Proven Charlie **)
+Lemma unit_interval_chain_path_between :
+  forall n seq x0 x1:set,
+    n :e omega ->
+    function_on seq (ordsucc n) (Power unit_interval) ->
+    (forall k:set, k :e ordsucc n ->
+      connected_space (apply_fun seq k)
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seq k))) ->
+    x0 :e apply_fun seq 0 ->
+    x1 :e apply_fun seq n ->
+    (forall k:set, k :e n -> apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty) ->
+    exists h:set,
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h /\
+      apply_fun h 0 = x0 /\
+      apply_fun h 1 = x1.
+let n seq x0 x1.
+assume HnOmega HseqPow HseqConn Hx0 Hx1 Hover.
+claim HnNat : nat_p n.
+{ exact (omega_nat_p n HnOmega). }
+set P := fun m:set =>
+  forall seqm a0 a1:set,
+    function_on seqm (ordsucc m) (Power unit_interval) ->
+    (forall k:set, k :e ordsucc m ->
+      connected_space (apply_fun seqm k)
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seqm k))) ->
+    a0 :e apply_fun seqm 0 ->
+    a1 :e apply_fun seqm m ->
+    (forall k:set, k :e m -> apply_fun seqm k :/\: apply_fun seqm (ordsucc k) <> Empty) ->
+    exists h:set,
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology h /\
+      apply_fun h 0 = a0 /\
+      apply_fun h 1 = a1.
+claim HPn : P n.
+{
+  apply (nat_ind P).
+  - (** base m = 0 **)
+    let seqm a0 a1.
+    assume HseqmPow HseqmConn Ha0 Ha1 Hinter0.
+    claim HA_sub : apply_fun seqm 0 c= unit_interval.
+    { exact (PowerE unit_interval (apply_fun seqm 0) (HseqmPow 0 (ordsuccI2 0))). }
+    claim HconnA :
+      connected_space (apply_fun seqm 0)
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seqm 0)).
+    { exact (HseqmConn 0 (ordsuccI2 0)). }
+    claim Hex :
+      exists p:set,
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology p /\
+        (forall t:set, t :e unit_interval -> apply_fun p t :e apply_fun seqm 0) /\
+        apply_fun p 0 = a0 /\
+        apply_fun p 1 = a1.
+    {
+      exact (connected_subset_unit_interval_path_between
+        (apply_fun seqm 0) a0 a1
+        HA_sub HconnA Ha0 Ha1).
+    }
+    apply Hex. let p. assume HpPack.
+    apply (and4E
+      (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology p)
+      (forall t:set, t :e unit_interval -> apply_fun p t :e apply_fun seqm 0)
+      (apply_fun p 0 = a0)
+      (apply_fun p 1 = a1)
+      HpPack).
+    assume HpCont HpRange Hp0 Hp1.
+    witness p.
+    apply andI.
+    + exact (andI
+        (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology p)
+        (apply_fun p 0 = a0)
+        HpCont
+        Hp0).
+    + exact Hp1.
+  - (** step m -> ordsucc m **)
+    let m. assume HmNat IH.
+    let seqm a0 a1.
+    assume HseqmPow HseqmConn Ha0 Ha1 Hinter.
+    set mm := ordsucc m.
+    (** Choose an overlap point s in seq(m) cap seq(m+1). **)
+    claim Hover_ne : apply_fun seqm m :/\: apply_fun seqm mm <> Empty.
+    { exact (Hinter m (ordsuccI2 m)). }
+    claim Hex_s : exists s:set, s :e apply_fun seqm m :/\: apply_fun seqm mm.
+    { exact (nonempty_has_element (apply_fun seqm m :/\: apply_fun seqm mm) Hover_ne). }
+    apply Hex_s. let s. assume HsPack.
+    claim Hs_in_m : s :e apply_fun seqm m.
+    { exact (binintersectE1 (apply_fun seqm m) (apply_fun seqm mm) s HsPack). }
+    claim Hs_in_mm : s :e apply_fun seqm mm.
+    { exact (binintersectE2 (apply_fun seqm m) (apply_fun seqm mm) s HsPack). }
+    (** Prefix chain: restrict domain to ordsucc m. **)
+    claim Hsub_dom : ordsucc m c= ordsucc mm.
+    { exact (ordsuccI1 (ordsucc m)). }
+    claim HseqmPow_pre : function_on seqm (ordsucc m) (Power unit_interval).
+    { exact (function_on_subdomain seqm (ordsucc mm) (Power unit_interval) (ordsucc m) HseqmPow Hsub_dom). }
+    claim HseqmConn_pre : forall k:set, k :e ordsucc m ->
+      connected_space (apply_fun seqm k)
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seqm k)).
+    {
+      let k. assume Hk : k :e ordsucc m.
+      exact (HseqmConn k (Hsub_dom k Hk)).
+    }
+    claim Hinter_pre : forall k:set, k :e m -> apply_fun seqm k :/\: apply_fun seqm (ordsucc k) <> Empty.
+    {
+      let k. assume Hk : k :e m.
+      exact (Hinter k (ordsuccI1 m k Hk)).
+    }
+    claim Hprefix_ex :
+      exists hpre:set,
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hpre /\
+        apply_fun hpre 0 = a0 /\
+        apply_fun hpre 1 = s.
+    { exact (IH seqm a0 s HseqmPow_pre HseqmConn_pre Ha0 Hs_in_m Hinter_pre). }
+    apply Hprefix_ex. let hpre. assume HhprePack.
+    claim HhpreCont :
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hpre.
+    { exact (andEL
+        (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hpre)
+        (apply_fun hpre 0 = a0)
+        (andEL
+          (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hpre /\
+           apply_fun hpre 0 = a0)
+          (apply_fun hpre 1 = s)
+          HhprePack)). }
+    claim Hhpre0 : apply_fun hpre 0 = a0.
+    { exact (andER
+        (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hpre)
+        (apply_fun hpre 0 = a0)
+        (andEL
+          (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hpre /\
+           apply_fun hpre 0 = a0)
+          (apply_fun hpre 1 = s)
+          HhprePack)). }
+    claim Hhpre1 : apply_fun hpre 1 = s.
+    { exact (andER
+        (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology hpre /\
+         apply_fun hpre 0 = a0)
+        (apply_fun hpre 1 = s)
+        HhprePack). }
+    (** Last segment inside seq(m+1) from s to a1. **)
+    claim HAmm_sub : apply_fun seqm mm c= unit_interval.
+    { exact (PowerE unit_interval (apply_fun seqm mm) (HseqmPow mm (ordsuccI2 mm))). }
+    claim HconnAmm :
+      connected_space (apply_fun seqm mm)
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seqm mm)).
+    { exact (HseqmConn mm (ordsuccI2 mm)). }
+    claim Hlast_ex :
+      exists plast:set,
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology plast /\
+        (forall t:set, t :e unit_interval -> apply_fun plast t :e apply_fun seqm mm) /\
+        apply_fun plast 0 = s /\
+        apply_fun plast 1 = a1.
+    {
+      exact (connected_subset_unit_interval_path_between
+        (apply_fun seqm mm) s a1
+        HAmm_sub HconnAmm Hs_in_mm Ha1).
+    }
+    apply Hlast_ex. let plast. assume HplastPack.
+    apply (and4E
+      (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology plast)
+      (forall t:set, t :e unit_interval -> apply_fun plast t :e apply_fun seqm mm)
+      (apply_fun plast 0 = s)
+      (apply_fun plast 1 = a1)
+      HplastPack).
+    assume HplastCont HplastRange Hplast0 Hplast1.
+    set h := path_concat hpre plast.
+    witness h.
+    apply andI.
+    + apply andI.
+      * exact (path_concat_continuous
+          unit_interval unit_interval_topology a0 s a1
+          hpre plast
+          HhpreCont HplastCont
+          Hhpre0 Hhpre1 Hplast0 Hplast1).
+      * rewrite (path_concat_at_zero hpre plast). exact Hhpre0.
+    + rewrite (path_concat_at_one hpre plast). exact Hplast1.
+  - exact HnNat.
+}
+exact (HPn seq x0 x1 HseqPow HseqConn Hx0 Hx1 Hover).
+Qed.
+
 (** Infrastructure: build a loop from a path between x and y plus connecting paths from x0. **)
 (** This is the standard "close up a path" construction used in van Kampen style proofs. **)
 (** Proven Charlie **)
