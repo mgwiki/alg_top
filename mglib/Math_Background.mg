@@ -283989,15 +283989,189 @@ claim Hdomain_closed : closed_in (setprod X unit_interval) TXI domain_ext.
 (** Step 5: U = G^{-1}(Y) open in X x I, contains domain_ext **)
 (** Step 6: Tube lemma gives W containing A with W x I c= U **)
 (** Step 7: Urysohn: phi = 0 on A, phi = 1 on X-W **)
-(** Step 8: g(x) = G(x, phi(x)) maps to Y, extends f **)
-(** Step 9: H(x,t) = G(x, (1-t)phi(x)+t) is nulhomotopy **)
-(** Step 4: Build extended F on domain_ext and apply Tietze **)
-(** Need: closed pasting lemma (glue F0 on AxI and const y0 on Xx{1}) **)
-(** Then Tietze_extension_Rn extends to G: XxI -> Rn **)
-(** Steps 5-9: tube lemma, Urysohn, phi construction **)
-(** All axioms available: tube_lemma, Urysohn_lemma, Tietze_extension_Rn (QED) **)
-(** Missing: closed pasting lemma (Munkres Thm 18.3) **)
-admit.
+(** Step A: F_ext on domain_ext by pasting F0 on AxI and const_y0 on Xx{1} **)
+claim HFext_exists : exists F_ext:set,
+  continuous_map domain_ext domain_ext_top Y TY F_ext /\
+  (forall a t:set, a :e A -> t :e unit_interval ->
+    apply_fun F_ext (a,t) = apply_fun F0 (a,t)) /\
+  (forall x:set, x :e X -> apply_fun F_ext (x,1) = y0).
+{ admit. }
+apply HFext_exists. let F_ext. assume HFext_data.
+set F_ext_cont_tp := continuous_map domain_ext domain_ext_top Y TY F_ext.
+set F_ext_AI_tp := forall a t:set, a :e A -> t :e unit_interval ->
+    apply_fun F_ext (a,t) = apply_fun F0 (a,t).
+set F_ext_X1_tp := forall x:set, x :e X -> apply_fun F_ext (x,1) = y0.
+claim HF_ext_cont : F_ext_cont_tp.
+{ exact (andEL F_ext_cont_tp F_ext_AI_tp
+    (andEL (F_ext_cont_tp /\ F_ext_AI_tp) F_ext_X1_tp HFext_data)). }
+claim HF_ext_AI : F_ext_AI_tp.
+{ exact (andER F_ext_cont_tp F_ext_AI_tp
+    (andEL (F_ext_cont_tp /\ F_ext_AI_tp) F_ext_X1_tp HFext_data)). }
+claim HF_ext_X1 : F_ext_X1_tp.
+{ exact (andER (F_ext_cont_tp /\ F_ext_AI_tp) F_ext_X1_tp HFext_data). }
+(** Step B: F_ext_Rn = F_ext composed with inclusion Y -> R^n **)
+claim HY_sub_Rn : Y c= euclidean_space n.
+{ exact (topology_elem_subset (euclidean_space n) TRn Y (euclidean_topology_is_topology n) HY). }
+claim HtopRn : topology_on (euclidean_space n) TRn.
+{ exact (euclidean_topology_is_topology n). }
+set incl_Y_Rn := {(y,y)|y :e Y}.
+claim Hincl_cont : continuous_map Y TY (euclidean_space n) TRn incl_Y_Rn.
+{ exact (subspace_inclusion_continuous (euclidean_space n) TRn Y HtopRn HY_sub_Rn). }
+set F_ext_Rn := compose_fun domain_ext F_ext incl_Y_Rn.
+claim HF_ext_Rn_cont : continuous_map domain_ext domain_ext_top (euclidean_space n) TRn F_ext_Rn.
+{ exact (composition_continuous domain_ext domain_ext_top Y TY (euclidean_space n) TRn
+    F_ext incl_Y_Rn HF_ext_cont Hincl_cont). }
+claim HF_ext_Rn_apply : forall p:set, p :e domain_ext ->
+    apply_fun F_ext_Rn p = apply_fun F_ext p.
+{ let p. assume Hp.
+  rewrite (compose_fun_apply domain_ext F_ext incl_Y_Rn p Hp).
+  claim Hyp : apply_fun F_ext p :e Y.
+  { exact (continuous_map_function_on domain_ext domain_ext_top Y TY F_ext HF_ext_cont p Hp). }
+  exact (apply_fun_graph Y (fun z:set => z) (apply_fun F_ext p) Hyp). }
+(** Step C: Tietze gives G: X×I → R^n extending F_ext_Rn **)
+claim HG_exists : exists G:set,
+  continuous_map (setprod X unit_interval) TXI (euclidean_space n) TRn G /\
+  (forall p:set, p :e domain_ext -> apply_fun G p = apply_fun F_ext_Rn p).
+{ exact (Tietze_extension_Rn (setprod X unit_interval) TXI domain_ext n F_ext_Rn
+    Hnormal Hdomain_closed Hn HF_ext_Rn_cont). }
+apply HG_exists. let G. assume HG_data.
+set GpropC := continuous_map (setprod X unit_interval) TXI (euclidean_space n) TRn G.
+set GpropE := forall p:set, p :e domain_ext -> apply_fun G p = apply_fun F_ext_Rn p.
+claim HG_cont : GpropC.
+{ exact (andEL GpropC GpropE HG_data). }
+claim HG_ext : GpropE.
+{ exact (andER GpropC GpropE HG_data). }
+(** G at domain_ext = F_ext **)
+claim HG_eq_Fext : forall p:set, p :e domain_ext -> apply_fun G p = apply_fun F_ext p.
+{ let p. assume Hp.
+  rewrite (HG_ext p Hp).
+  exact (HF_ext_Rn_apply p Hp). }
+(** G(x,1) = y0 for all x in X **)
+claim HG_at_1 : forall x:set, x :e X -> apply_fun G (x,1) = y0.
+{ let x. assume Hx.
+  claim HpI : (x,1) :e domain_ext.
+  { prove (x,1) :e setprod A unit_interval :\/: setprod X (Sing 1).
+    apply orIR.
+    exact (tuple_2_setprod_by_pair_Sigma X (Sing 1) x 1 Hx (SingI 1)). }
+  rewrite (HG_eq_Fext (x,1) HpI).
+  exact (HF_ext_X1 x Hx). }
+(** G(a,0) = f(a) for all a in A **)
+claim HG_at_a0 : forall a:set, a :e A -> apply_fun G (a,0) = apply_fun f a.
+{ let a. assume Ha.
+  claim HpI : (a,0) :e domain_ext.
+  { prove (a,0) :e setprod A unit_interval :\/: setprod X (Sing 1).
+    apply orIL.
+    exact (tuple_2_setprod_by_pair_Sigma A unit_interval a 0 Ha zero_in_unit_interval). }
+  rewrite (HG_eq_Fext (a,0) HpI).
+  rewrite (HF_ext_AI a 0 Ha zero_in_unit_interval).
+  exact (HF0_at_0 a Ha). }
+(** Step D: W from tube lemma: open W with A ⊆ W ⊆ X and W×I ⊆ G^{-1}(Y) **)
+claim HW_exists : exists W:set, W :e Tx /\ A c= W /\
+  (forall x t:set, x :e W -> t :e unit_interval -> apply_fun G (x,t) :e Y).
+{ admit. }
+apply HW_exists. let W. assume HW_data.
+set Wtp1 := W :e Tx.
+set Wtp2 := A c= W.
+set Wtp3 := forall x t:set, x :e W -> t :e unit_interval -> apply_fun G (x,t) :e Y.
+claim HW_open : Wtp1.
+{ exact (andEL Wtp1 Wtp2
+    (andEL (Wtp1 /\ Wtp2) Wtp3 HW_data)). }
+claim HA_sub_W : Wtp2.
+{ exact (andER Wtp1 Wtp2
+    (andEL (Wtp1 /\ Wtp2) Wtp3 HW_data)). }
+claim HWI_in_Y : Wtp3.
+{ exact (andER (Wtp1 /\ Wtp2) Wtp3 HW_data). }
+(** Step E: normal_space X Tx (X is factor of normal X×I) **)
+claim HX_normal : normal_space X Tx.
+{ admit. }
+(** Step F: Urysohn_bump: f_bump: X -> R with f_bump=1 on A, f_bump=0 on X\W, values in [0,1] **)
+claim HA_closed : closed_in X Tx A.
+{ apply (closed_inI X Tx A HtopX HAsub).
+  witness (X :\: A). apply andI.
+  - exact HAclosed.
+  - exact (eq_symm (X :\: (X :\: A)) A (setminus_setminus_eq X A HAsub)). }
+claim Hbump_exists : exists f_bump:set,
+  continuous_map X Tx R R_standard_topology f_bump /\
+  (forall a:set, a :e A -> apply_fun f_bump a = 1) /\
+  (forall x:set, x :e X :\: W -> apply_fun f_bump x = 0) /\
+  (forall x:set, x :e X -> apply_fun f_bump x :e unit_interval).
+{ exact (Urysohn_bump_closed_in_open X Tx A W HX_normal HA_closed HW_open HA_sub_W). }
+apply Hbump_exists. let f_bump. assume Hbump_data.
+set Bp1 := continuous_map X Tx R R_standard_topology f_bump.
+set Bp2 := forall a:set, a :e A -> apply_fun f_bump a = 1.
+set Bp3 := forall x:set, x :e X :\: W -> apply_fun f_bump x = 0.
+set Bp4 := forall x:set, x :e X -> apply_fun f_bump x :e unit_interval.
+claim Hf_bump_cont : Bp1.
+{ exact (andEL Bp1 Bp2
+    (andEL (Bp1 /\ Bp2) Bp3
+      (andEL ((Bp1 /\ Bp2) /\ Bp3) Bp4 Hbump_data))). }
+claim Hf_bump_on_A : Bp2.
+{ exact (andER Bp1 Bp2
+    (andEL (Bp1 /\ Bp2) Bp3
+      (andEL ((Bp1 /\ Bp2) /\ Bp3) Bp4 Hbump_data))). }
+claim Hf_bump_on_XW : Bp3.
+{ exact (andER (Bp1 /\ Bp2) Bp3
+    (andEL ((Bp1 /\ Bp2) /\ Bp3) Bp4 Hbump_data)). }
+claim Hf_bump_in_I : Bp4.
+{ exact (andER ((Bp1 /\ Bp2) /\ Bp3) Bp4 Hbump_data). }
+(** Restrict f_bump to unit_interval codomain **)
+claim Hf_bump_I : continuous_map X Tx unit_interval unit_interval_topology f_bump.
+{ admit. }
+(** phi = flip_unit_interval ∘ f_bump: phi=0 on A, phi=1 on X\W **)
+set phi := compose_fun X f_bump flip_unit_interval.
+claim Hphi_cont : continuous_map X Tx unit_interval unit_interval_topology phi.
+{ exact (composition_continuous X Tx unit_interval unit_interval_topology
+    unit_interval unit_interval_topology f_bump flip_unit_interval
+    Hf_bump_I flip_unit_interval_continuous). }
+claim Hphi_on_A : forall a:set, a :e A -> apply_fun phi a = 0.
+{ let a. assume Ha.
+  rewrite (compose_fun_apply X f_bump flip_unit_interval a (HAsub a Ha)).
+  rewrite (Hf_bump_on_A a Ha).
+  exact flip_unit_interval_at_1. }
+claim Hphi_on_XW : forall x:set, x :e X -> x /:e W -> apply_fun phi x = 1.
+{ let x. assume Hx. assume Hxnotw.
+  claim HxXW : x :e X :\: W. { exact (setminusI x X W Hx Hxnotw). }
+  rewrite (compose_fun_apply X f_bump flip_unit_interval x Hx).
+  rewrite (Hf_bump_on_XW x HxXW).
+  exact flip_unit_interval_at_0. }
+claim Hphi_in_I : forall x:set, x :e X -> apply_fun phi x :e unit_interval.
+{ let x. assume Hx.
+  rewrite (compose_fun_apply X f_bump flip_unit_interval x Hx).
+  exact (flip_unit_interval_function_on (apply_fun f_bump x) (Hf_bump_in_I x Hx)). }
+(** Step G: g(x) = G(x, phi(x)) **)
+set g := graph X (fun x:set => apply_fun G (x, apply_fun phi x)).
+claim Hg_cont : continuous_map X Tx (euclidean_space n) TRn g.
+{ exact (composition_with_phi_continuous X Tx (euclidean_space n) TRn G phi HtopX HG_cont Hphi_cont). }
+(** g maps into Y **)
+claim Hg_in_Y : forall x:set, x :e X -> apply_fun g x :e Y.
+{ let x. assume Hx.
+  rewrite (apply_fun_graph X (fun z:set => apply_fun G (z, apply_fun phi z)) x Hx).
+  apply (xm (x :e W)).
+  - assume HxW : x :e W.
+    exact (HWI_in_Y x (apply_fun phi x) HxW (Hphi_in_I x Hx)).
+  - assume HxnotW : x /:e W.
+    rewrite (Hphi_on_XW x Hx HxnotW).
+    rewrite (HG_at_1 x Hx).
+    exact Hy0. }
+(** g restricts to f on A **)
+claim Hg_extends_f : forall a:set, a :e A -> apply_fun g a = apply_fun f a.
+{ let a. assume Ha.
+  rewrite (apply_fun_graph X (fun z:set => apply_fun G (z, apply_fun phi z)) a (HAsub a Ha)).
+  rewrite (Hphi_on_A a Ha).
+  exact (HG_at_a0 a Ha). }
+(** g continuous as map to Y (subspace of R^n) **)
+claim Hg_cont_Y : continuous_map X Tx Y TY g.
+{ admit. }
+(** g is nulhomotopic to y0 via H(x,t) = G(x, t + (1-t)*phi(x)) **)
+claim Hg_nulhomotopic : nulhomotopic X Tx Y TY g.
+{ admit. }
+(** Witness: g **)
+witness g.
+apply andI.
+- exact Hg_cont_Y.
+- apply andI.
+  + exact Hg_extends_f.
+  + exact Hg_nulhomotopic.
 Admitted.
 
 (** from S62 Lem 62.2 (line 1953 in algtop.tex) **)
