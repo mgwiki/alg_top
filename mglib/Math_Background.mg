@@ -410123,16 +410123,6 @@ rewrite (projection_image1_eq_image_of_projection1 X Y U HUSubP).
 exact HImClosed.
 Qed.
 
-(** Helper goal for S74: saturation of a closed set is closed in B2. **)
-(** This should imply both: polygon_pasting_map is a closed map, and the quotient is T1. **)
-(** Bounty 55 **)
-(** Lock Charlie 1773967301 **)
-Lemma polygon_pasting_saturation_closed_in_B2 : forall n w C:set,
-  C c= B2 ->
-  closed_in B2 B2_topology C ->
-  closed_in B2 B2_topology {x :e B2 | exists c:set, c :e C /\ polygon_pasting_equiv n w x c}.
-Admitted.
-
 (** polygon_pasting_map is injective on interior points. **)
 (** Proven Charlie **)
 Lemma polygon_pasting_map_inj_nonS1 : forall n w x y:set,
@@ -410567,6 +410557,111 @@ claim HB2TopEq : B2_topology = subspace_topology (setprod R R) R2_topology B2.
 rewrite HB2TopEq.
 exact (ex17_12_subspace_Hausdorff (setprod R R) R2_topology B2 HHausR2 HB2subR2).
 Qed.
+
+(** Helper: The graph of polygon_pasting_equiv is closed in the product topology on B2 x B2. **)
+(** This is a key lemma enabling the saturation-closed result below. **)
+Lemma polygon_pasting_equiv_graph_closed_in_B2_prod : forall n w:set,
+  closed_in (setprod B2 B2) (product_topology B2 B2_topology B2 B2_topology)
+    {p :e setprod B2 B2 | polygon_pasting_equiv n w (p 0) (p 1)}.
+Admitted.
+
+(** Helper goal for S74: saturation of a closed set is closed in B2. **)
+(** This should imply both: polygon_pasting_map is a closed map, and the quotient is T1. **)
+(** Bounty 55 **)
+Lemma polygon_pasting_saturation_closed_in_B2 : forall n w C:set,
+  C c= B2 ->
+  closed_in B2 B2_topology C ->
+  closed_in B2 B2_topology {x :e B2 | exists c:set, c :e C /\ polygon_pasting_equiv n w x c}.
+let n w C.
+assume HCsubB2 HCclosed.
+set SatC := {x :e B2 | exists c:set, c :e C /\ polygon_pasting_equiv n w x c}.
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{ exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology). }
+claim HB2subR2 : B2 c= setprod R R.
+{ exact (Sep_Subq (setprod R R) (fun p:set =>
+    ~(Rlt 1 (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)))))). }
+claim HtopB2 : topology_on B2 B2_topology.
+{ exact (subspace_topology_is_topology (setprod R R) R2_topology B2 HtopR2 HB2subR2). }
+claim HtopProd : topology_on (setprod B2 B2) (product_topology B2 B2_topology B2 B2_topology).
+{ exact (product_topology_is_topology B2 B2_topology B2 B2_topology HtopB2 HtopB2). }
+claim Hproj2cont : continuous_map (setprod B2 B2) (product_topology B2 B2_topology B2 B2_topology)
+  B2 B2_topology (projection2 B2 B2).
+{ exact (projection2_continuous_in_product B2 B2_topology B2 B2_topology HtopB2 HtopB2). }
+set B_set := preimage_of (setprod B2 B2) (projection2 B2 B2) C.
+claim HBclosed : closed_in (setprod B2 B2) (product_topology B2 B2_topology B2 B2_topology) B_set.
+{ exact (continuous_map_preimage_closed (setprod B2 B2) (product_topology B2 B2_topology B2 B2_topology)
+    B2 B2_topology (projection2 B2 B2) C Hproj2cont HCclosed). }
+set A_set := {p :e setprod B2 B2 | polygon_pasting_equiv n w (p 0) (p 1)}.
+claim HAclosed : closed_in (setprod B2 B2) (product_topology B2 B2_topology B2 B2_topology) A_set.
+{ exact (polygon_pasting_equiv_graph_closed_in_B2_prod n w). }
+set U_set := A_set :/\: B_set.
+claim HUclosed : closed_in (setprod B2 B2) (product_topology B2 B2_topology B2 B2_topology) U_set.
+{ exact (closed_binintersect (setprod B2 B2) (product_topology B2 B2_topology B2 B2_topology) A_set B_set
+    HAclosed HBclosed). }
+claim Hprojclosed : closed_in B2 B2_topology (projection_image1 B2 B2 U_set).
+{ exact (projection_image1_closed_of_closed_in_compact_prod B2 B2_topology B2 B2_topology U_set
+    HtopB2 HtopB2 B2_compact B2_compact B2_Hausdorff HUclosed). }
+claim Heq : projection_image1 B2 B2 U_set = SatC.
+{
+  apply set_ext.
+  - let x. assume HxProj.
+    claim HxB2 : x :e B2.
+    { exact (SepE1 B2 (fun x0:set => exists y:set, (x0,y) :e U_set) x HxProj). }
+    claim Hexists : exists y:set, (x,y) :e U_set.
+    { exact (SepE2 B2 (fun x0:set => exists y:set, (x0,y) :e U_set) x HxProj). }
+    apply Hexists. let y. assume HxyU.
+    claim HxyA : (x,y) :e A_set.
+    { exact (binintersectE1 A_set B_set (x,y) HxyU). }
+    claim HxyB : (x,y) :e B_set.
+    { exact (binintersectE2 A_set B_set (x,y) HxyU). }
+    claim HxyProd : (x,y) :e setprod B2 B2.
+    { exact (SepE1 (setprod B2 B2) (fun p:set => polygon_pasting_equiv n w (p 0) (p 1)) (x,y) HxyA). }
+    claim Hraw : polygon_pasting_equiv n w ((x,y) 0) ((x,y) 1).
+    { exact (SepE2 (setprod B2 B2) (fun p:set => polygon_pasting_equiv n w (p 0) (p 1)) (x,y) HxyA). }
+    claim H0 : (x,y) 0 = x. { rewrite tuple_2_0_eq. reflexivity. }
+    claim H1 : (x,y) 1 = y. { rewrite tuple_2_1_eq. reflexivity. }
+    claim Hxc : polygon_pasting_equiv n w x y.
+    { exact (H1 (fun v _ => polygon_pasting_equiv n w x v)
+        (H0 (fun v _ => polygon_pasting_equiv n w v ((x,y) 1)) Hraw)). }
+    claim HapC : apply_fun (projection2 B2 B2) (x,y) :e C.
+    { exact (SepE2 (setprod B2 B2) (fun p:set => apply_fun (projection2 B2 B2) p :e C) (x,y) HxyB). }
+    claim HyC : y :e C.
+    { exact (H1 (fun v _ => v :e C)
+        (projection2_apply B2 B2 (x,y) HxyProd (fun v _ => v :e C) HapC)). }
+    apply (SepI B2 (fun x0:set => exists c:set, c :e C /\ polygon_pasting_equiv n w x0 c) x HxB2).
+    witness y.
+    exact (andI (y :e C) (polygon_pasting_equiv n w x y) HyC Hxc).
+  - let x. assume HxSat.
+    claim HxB2 : x :e B2.
+    { exact (SepE1 B2 (fun x0:set => exists c:set, c :e C /\ polygon_pasting_equiv n w x0 c) x HxSat). }
+    claim Hex : exists c:set, c :e C /\ polygon_pasting_equiv n w x c.
+    { exact (SepE2 B2 (fun x0:set => exists c:set, c :e C /\ polygon_pasting_equiv n w x0 c) x HxSat). }
+    apply Hex. let c. assume Hpack.
+    claim HcC : c :e C. { exact (andEL (c :e C) (polygon_pasting_equiv n w x c) Hpack). }
+    claim Hxc : polygon_pasting_equiv n w x c. { exact (andER (c :e C) (polygon_pasting_equiv n w x c) Hpack). }
+    claim HcB2 : c :e B2. { exact (HCsubB2 c HcC). }
+    claim HxcProd : (x,c) :e setprod B2 B2.
+    { exact (tuple_2_setprod_by_pair_Sigma B2 B2 x c HxB2 HcB2). }
+    claim HxcA : (x,c) :e A_set.
+    { apply (SepI (setprod B2 B2) (fun p:set => polygon_pasting_equiv n w (p 0) (p 1)) (x,c) HxcProd).
+      rewrite tuple_2_0_eq.
+      rewrite tuple_2_1_eq.
+      exact Hxc. }
+    claim HxcB_app : apply_fun (projection2 B2 B2) (x,c) :e C.
+    { rewrite (projection2_apply B2 B2 (x,c) HxcProd).
+      rewrite tuple_2_1_eq.
+      exact HcC. }
+    claim HxcB : (x,c) :e B_set.
+    { exact (SepI (setprod B2 B2) (fun p:set => apply_fun (projection2 B2 B2) p :e C) (x,c) HxcProd HxcB_app). }
+    claim HxcU : (x,c) :e U_set.
+    { exact (binintersectI A_set B_set (x,c) HxcA HxcB). }
+    exact (SepI B2 (fun x0:set => exists y:set, (x0,y) :e U_set) x HxB2
+      (fun Q HQ => HQ c HxcU)).
+}
+rewrite <- Heq.
+exact Hprojclosed.
+Admitted.
 
 (** from S74 Thm 74.1 (line 3916 in algtop.tex): compact Hausdorff **)
 (** LATEX VERSION: Let X be the space obtained from a finite collection **)
