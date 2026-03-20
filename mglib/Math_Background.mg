@@ -237090,6 +237090,302 @@ exact (Lemma_51_1_path_homotopy_sym X Tx x0 x0
   HRHS_to_LHS).
 Qed.
 
+(** Infrastructure: decompose a three-piece concatenation into three loops at x0 using two junction paths. **)
+(** Proven Charlie **)
+Lemma path_concat_three_piece_to_three_loops : forall X Tx x0 y1 y2 g0 g1 g2 gamma1 gamma2:set,
+  path_between X x0 y1 g0 ->
+  continuous_map unit_interval unit_interval_topology X Tx g0 ->
+  path_between X y1 y2 g1 ->
+  continuous_map unit_interval unit_interval_topology X Tx g1 ->
+  path_between X y2 x0 g2 ->
+  continuous_map unit_interval unit_interval_topology X Tx g2 ->
+  path_between X x0 y1 gamma1 ->
+  continuous_map unit_interval unit_interval_topology X Tx gamma1 ->
+  path_between X x0 y2 gamma2 ->
+  continuous_map unit_interval unit_interval_topology X Tx gamma2 ->
+  path_homotopic X Tx x0 x0
+    (path_concat g0 (path_concat g1 g2))
+    (path_concat
+      (path_concat g0 (reverse_path gamma1))
+      (path_concat
+        (path_concat gamma1 (path_concat g1 (reverse_path gamma2)))
+        (path_concat gamma2 g2))).
+let X Tx x0 y1 y2 g0 g1 g2 gamma1 gamma2.
+assume Hg0 Hg0C Hg1 Hg1C Hg2 Hg2C Hga1 Hga1C Hga2 Hga2C.
+claim Hg0_0 : apply_fun g0 0 = x0. { exact (path_between_at_zero X x0 y1 g0 Hg0). }
+claim Hg0_1 : apply_fun g0 1 = y1. { exact (path_between_at_one X x0 y1 g0 Hg0). }
+claim Hg1_0 : apply_fun g1 0 = y1. { exact (path_between_at_zero X y1 y2 g1 Hg1). }
+claim Hg1_1 : apply_fun g1 1 = y2. { exact (path_between_at_one X y1 y2 g1 Hg1). }
+claim Hg2_0 : apply_fun g2 0 = y2. { exact (path_between_at_zero X y2 x0 g2 Hg2). }
+claim Hg2_1 : apply_fun g2 1 = x0. { exact (path_between_at_one X y2 x0 g2 Hg2). }
+claim Hga1_0 : apply_fun gamma1 0 = x0. { exact (path_between_at_zero X x0 y1 gamma1 Hga1). }
+claim Hga1_1 : apply_fun gamma1 1 = y1. { exact (path_between_at_one X x0 y1 gamma1 Hga1). }
+claim Hga2_0 : apply_fun gamma2 0 = x0. { exact (path_between_at_zero X x0 y2 gamma2 Hga2). }
+claim Hga2_1 : apply_fun gamma2 1 = y2. { exact (path_between_at_one X x0 y2 gamma2 Hga2). }
+claim Hrev1C : continuous_map unit_interval unit_interval_topology X Tx (reverse_path gamma1).
+{ exact (reverse_path_continuous X Tx gamma1 Hga1C). }
+claim Hrev2C : continuous_map unit_interval unit_interval_topology X Tx (reverse_path gamma2).
+{ exact (reverse_path_continuous X Tx gamma2 Hga2C). }
+claim Hrev1_0 : apply_fun (reverse_path gamma1) 0 = y1.
+{ rewrite (reverse_path_at_zero gamma1). exact Hga1_1. }
+claim Hrev1_1 : apply_fun (reverse_path gamma1) 1 = x0.
+{ rewrite (reverse_path_at_one gamma1). exact Hga1_0. }
+claim Hrev2_0 : apply_fun (reverse_path gamma2) 0 = y2.
+{ rewrite (reverse_path_at_zero gamma2). exact Hga2_1. }
+claim Hrev2_1 : apply_fun (reverse_path gamma2) 1 = x0.
+{ rewrite (reverse_path_at_one gamma2). exact Hga2_0. }
+set g12 := path_concat g1 g2.
+claim Hg12C : continuous_map unit_interval unit_interval_topology X Tx g12.
+{
+  exact (path_concat_continuous X Tx y1 y2 x0 g1 g2
+    Hg1C Hg2C Hg1_0 Hg1_1 Hg2_0 Hg2_1).
+}
+claim Hg12_0 : apply_fun g12 0 = y1.
+{ rewrite (path_concat_at_zero g1 g2). exact Hg1_0. }
+claim Hg12_1 : apply_fun g12 1 = x0.
+{ rewrite (path_concat_at_one g1 g2). exact Hg2_1. }
+claim Hg12_between : path_between X y1 x0 g12.
+{
+  claim Hg12Fun : function_on g12 unit_interval X.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx g12 Hg12C). }
+  exact (path_betweenI X y1 x0 g12 Hg12Fun Hg12_0 Hg12_1).
+}
+claim Hsplit1 :
+  path_homotopic X Tx x0 x0
+    (path_concat g0 g12)
+    (path_concat (path_concat g0 (reverse_path gamma1)) (path_concat gamma1 g12)).
+{
+  exact (path_concat_insert_rev_gamma_gamma X Tx x0 y1 g0 g12 gamma1
+    Hg0 Hg0C Hg12_between Hg12C Hga1 Hga1C).
+}
+set g0rev := path_concat g0 (reverse_path gamma1).
+set ga1g12 := path_concat gamma1 g12.
+claim Hg0revC : continuous_map unit_interval unit_interval_topology X Tx g0rev.
+{
+  exact (path_concat_continuous X Tx x0 y1 x0 g0 (reverse_path gamma1)
+    Hg0C Hrev1C Hg0_0 Hg0_1 Hrev1_0 Hrev1_1).
+}
+claim Hga1g12C : continuous_map unit_interval unit_interval_topology X Tx ga1g12.
+{
+  exact (path_concat_continuous X Tx x0 y1 x0 gamma1 g12
+    Hga1C Hg12C Hga1_0 Hga1_1 Hg12_0 Hg12_1).
+}
+claim Hga1g12_0 : apply_fun ga1g12 0 = x0.
+{ rewrite (path_concat_at_zero gamma1 g12). exact Hga1_0. }
+claim Hga1g12_1 : apply_fun ga1g12 1 = x0.
+{ rewrite (path_concat_at_one gamma1 g12). exact Hg12_1. }
+claim Hassoc_g12 :
+  path_homotopic X Tx x0 x0
+    (path_concat gamma1 g12)
+    (path_concat (path_concat gamma1 g1) g2).
+{
+  exact (Theorem_51_2_associativity X Tx x0 y1 y2 x0
+    gamma1 g1 g2
+    Hga1C Hg1C Hg2C
+    Hga1_0 Hga1_1
+    Hg1_0 Hg1_1
+    Hg2_0 Hg2_1).
+}
+set ga1g1 := path_concat gamma1 g1.
+claim Hga1g1C : continuous_map unit_interval unit_interval_topology X Tx ga1g1.
+{
+  exact (path_concat_continuous X Tx x0 y1 y2 gamma1 g1
+    Hga1C Hg1C Hga1_0 Hga1_1 Hg1_0 Hg1_1).
+}
+claim Hga1g1_0 : apply_fun ga1g1 0 = x0.
+{ rewrite (path_concat_at_zero gamma1 g1). exact Hga1_0. }
+claim Hga1g1_1 : apply_fun ga1g1 1 = y2.
+{ rewrite (path_concat_at_one gamma1 g1). exact Hg1_1. }
+claim Hg2_between : path_between X y2 x0 g2.
+{ exact Hg2. }
+claim Hsplit2 :
+  path_homotopic X Tx x0 x0
+    (path_concat ga1g1 g2)
+    (path_concat (path_concat ga1g1 (reverse_path gamma2)) (path_concat gamma2 g2)).
+{
+  claim Hga1g1_between : path_between X x0 y2 ga1g1.
+  {
+    claim Hga1g1Fun : function_on ga1g1 unit_interval X.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx ga1g1 Hga1g1C). }
+    exact (path_betweenI X x0 y2 ga1g1 Hga1g1Fun Hga1g1_0 Hga1g1_1).
+  }
+  exact (path_concat_insert_rev_gamma_gamma X Tx x0 y2 ga1g1 g2 gamma2
+    Hga1g1_between Hga1g1C Hg2_between Hg2C Hga2 Hga2C).
+}
+claim Hga1g12_to_rhs :
+  path_homotopic X Tx x0 x0
+    ga1g12
+    (path_concat
+      (path_concat gamma1 (path_concat g1 (reverse_path gamma2)))
+      (path_concat gamma2 g2)).
+{
+  claim Hga1g12_to_mid :
+    path_homotopic X Tx x0 x0
+      ga1g12
+      (path_concat (path_concat ga1g1 (reverse_path gamma2)) (path_concat gamma2 g2)).
+  {
+    exact (Lemma_51_1_path_homotopy_trans X Tx x0 x0
+      ga1g12
+      (path_concat ga1g1 g2)
+      (path_concat (path_concat ga1g1 (reverse_path gamma2)) (path_concat gamma2 g2))
+      Hassoc_g12
+      Hsplit2).
+  }
+  set g1rev2 := path_concat g1 (reverse_path gamma2).
+  claim Hassoc_gamma1_g1_rev2 :
+    path_homotopic X Tx x0 x0
+      (path_concat gamma1 g1rev2)
+      (path_concat (path_concat gamma1 g1) (reverse_path gamma2)).
+  {
+    exact (Theorem_51_2_associativity X Tx x0 y1 y2 x0
+      gamma1 g1 (reverse_path gamma2)
+      Hga1C Hg1C Hrev2C
+      Hga1_0 Hga1_1
+      Hg1_0 Hg1_1
+      Hrev2_0 Hrev2_1).
+  }
+  claim Hassoc_left :
+    path_homotopic X Tx x0 x0
+      (path_concat (path_concat gamma1 g1) (reverse_path gamma2))
+      (path_concat gamma1 g1rev2).
+  {
+    exact (Lemma_51_1_path_homotopy_sym X Tx x0 x0
+      (path_concat gamma1 g1rev2)
+      (path_concat (path_concat gamma1 g1) (reverse_path gamma2))
+      Hassoc_gamma1_g1_rev2).
+  }
+  claim Hga2g2C : continuous_map unit_interval unit_interval_topology X Tx (path_concat gamma2 g2).
+  {
+    exact (path_concat_continuous X Tx x0 y2 x0 gamma2 g2
+      Hga2C Hg2C Hga2_0 Hga2_1 Hg2_0 Hg2_1).
+  }
+  claim Hga2g2_0 : apply_fun (path_concat gamma2 g2) 0 = x0.
+  { rewrite (path_concat_at_zero gamma2 g2). exact Hga2_0. }
+  claim Hga2g2_1 : apply_fun (path_concat gamma2 g2) 1 = x0.
+  { rewrite (path_concat_at_one gamma2 g2). exact Hg2_1. }
+  claim HrightRefl :
+    path_homotopic X Tx x0 x0 (path_concat gamma2 g2) (path_concat gamma2 g2).
+  {
+    exact (Lemma_51_1_path_homotopy_refl X Tx x0 x0 (path_concat gamma2 g2)
+      Hga2g2C
+      Hga2g2_0
+      Hga2g2_1).
+  }
+  claim Hreassoc_mid :
+    path_homotopic X Tx x0 x0
+      (path_concat (path_concat ga1g1 (reverse_path gamma2)) (path_concat gamma2 g2))
+      (path_concat (path_concat gamma1 g1rev2) (path_concat gamma2 g2)).
+  {
+    exact (path_concat_well_defined_on_classes X Tx x0 x0 x0
+      (path_concat ga1g1 (reverse_path gamma2))
+      (path_concat gamma1 g1rev2)
+      (path_concat gamma2 g2)
+      (path_concat gamma2 g2)
+      Hassoc_left
+      HrightRefl).
+  }
+  claim Hmid_to_final :
+    path_homotopic X Tx x0 x0
+      (path_concat (path_concat ga1g1 (reverse_path gamma2)) (path_concat gamma2 g2))
+      (path_concat
+        (path_concat gamma1 (path_concat g1 (reverse_path gamma2)))
+        (path_concat gamma2 g2)).
+  {
+    claim Hga1g1rev2C :
+      continuous_map unit_interval unit_interval_topology X Tx (path_concat ga1g1 (reverse_path gamma2)).
+    {
+      exact (path_concat_continuous X Tx x0 y2 x0 ga1g1 (reverse_path gamma2)
+        Hga1g1C Hrev2C Hga1g1_0 Hga1g1_1 Hrev2_0 Hrev2_1).
+    }
+    claim Hga1g1rev2_0 : apply_fun (path_concat ga1g1 (reverse_path gamma2)) 0 = x0.
+    { rewrite (path_concat_at_zero ga1g1 (reverse_path gamma2)). exact Hga1g1_0. }
+    claim Hga1g1rev2_1 : apply_fun (path_concat ga1g1 (reverse_path gamma2)) 1 = x0.
+    { rewrite (path_concat_at_one ga1g1 (reverse_path gamma2)). exact Hrev2_1. }
+    claim Hga1g1rev2_to_gamma1g1rev2 :
+      path_homotopic X Tx x0 x0
+        (path_concat ga1g1 (reverse_path gamma2))
+        (path_concat gamma1 g1rev2).
+    {
+      exact (Lemma_51_1_path_homotopy_trans X Tx x0 x0
+        (path_concat ga1g1 (reverse_path gamma2))
+        (path_concat (path_concat gamma1 g1) (reverse_path gamma2))
+        (path_concat gamma1 g1rev2)
+        (Lemma_51_1_path_homotopy_refl X Tx x0 x0 (path_concat (path_concat gamma1 g1) (reverse_path gamma2))
+          Hga1g1rev2C
+          Hga1g1rev2_0
+          Hga1g1rev2_1)
+        Hassoc_left).
+    }
+    exact (path_concat_well_defined_on_classes X Tx x0 x0 x0
+      (path_concat ga1g1 (reverse_path gamma2))
+      (path_concat gamma1 g1rev2)
+      (path_concat gamma2 g2)
+      (path_concat gamma2 g2)
+      Hga1g1rev2_to_gamma1g1rev2
+      HrightRefl).
+  }
+  exact (Lemma_51_1_path_homotopy_trans X Tx x0 x0
+    ga1g12
+    (path_concat (path_concat ga1g1 (reverse_path gamma2)) (path_concat gamma2 g2))
+    (path_concat
+      (path_concat gamma1 (path_concat g1 (reverse_path gamma2)))
+      (path_concat gamma2 g2))
+    Hga1g12_to_mid
+    Hmid_to_final).
+}
+claim Hfinal :
+  path_homotopic X Tx x0 x0
+    (path_concat (path_concat g0 (reverse_path gamma1)) ga1g12)
+    (path_concat
+      (path_concat g0 (reverse_path gamma1))
+      (path_concat
+        (path_concat gamma1 (path_concat g1 (reverse_path gamma2)))
+        (path_concat gamma2 g2))).
+{
+  (** Replace the right factor using the homotopy Hga1g12_to_rhs, then reassociate. **)
+  claim HleftRefl :
+    path_homotopic X Tx x0 x0 (path_concat g0 (reverse_path gamma1)) (path_concat g0 (reverse_path gamma1)).
+  {
+    claim Hg0rev0 : apply_fun (path_concat g0 (reverse_path gamma1)) 0 = x0.
+    { rewrite (path_concat_at_zero g0 (reverse_path gamma1)). exact Hg0_0. }
+    claim Hg0rev1 : apply_fun (path_concat g0 (reverse_path gamma1)) 1 = x0.
+    { rewrite (path_concat_at_one g0 (reverse_path gamma1)). exact Hrev1_1. }
+    exact (Lemma_51_1_path_homotopy_refl X Tx x0 x0 (path_concat g0 (reverse_path gamma1))
+      Hg0revC
+      Hg0rev0
+      Hg0rev1).
+  }
+  claim Hreplace :
+    path_homotopic X Tx x0 x0
+      (path_concat (path_concat g0 (reverse_path gamma1)) ga1g12)
+      (path_concat (path_concat g0 (reverse_path gamma1))
+        (path_concat
+          (path_concat gamma1 (path_concat g1 (reverse_path gamma2)))
+          (path_concat gamma2 g2))).
+  {
+    exact (path_concat_well_defined_on_classes X Tx x0 x0 x0
+      (path_concat g0 (reverse_path gamma1)) (path_concat g0 (reverse_path gamma1))
+      ga1g12
+      (path_concat
+        (path_concat gamma1 (path_concat g1 (reverse_path gamma2)))
+        (path_concat gamma2 g2))
+      HleftRefl
+      Hga1g12_to_rhs).
+  }
+  exact Hreplace.
+}
+exact (Lemma_51_1_path_homotopy_trans X Tx x0 x0
+  (path_concat g0 g12)
+  (path_concat g0rev ga1g12)
+  (path_concat
+    (path_concat g0 (reverse_path gamma1))
+    (path_concat
+      (path_concat gamma1 (path_concat g1 (reverse_path gamma2)))
+      (path_concat gamma2 g2)))
+  Hsplit1
+  Hfinal).
+Qed.
+
 (** Infrastructure: chain of U-type open balls in unit_interval covers a subinterval. **)
 (** Given overlapping balls 0..k all mapping f to U, their union is connected **)
 (** and contains 0 (from ball 0). By connected_subsets_real_are_intervals, **)
