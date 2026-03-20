@@ -239749,9 +239749,36 @@ claim HL1_word_data :
               (open_ball unit_interval R_bounded_metric s r c= apply_fun seq m)
               Hr_inner). }
           (** Find a point t in ball with t > s **)
-          (** eps_(1) = 1/2 works: t = midpoint of s and min(s+r, 1) **)
-          (** For simplicity, use the fact that open balls in UI contain points > center when center < 1 **)
-          admit. }
+          (** Use: open_ball contains center, and for s < 1 with r > 0, **)
+          (** the ball extends to the right of s **)
+          (** Specifically: min(s + r/2, (s+1)/2) is in ball and > s **)
+          (** The construction requires SNo arithmetic (eps_1 = 1/2, add, mul) **)
+          (** which is available but verbose. Using bounded ball version instead. **)
+          assume Hempty : apply_fun seq m :/\: Sep unit_interval (fun t:set => Rlt s t) = Empty.
+          (** If the overlap is empty, then seq(m) c= [0, s]. **)
+          (** But seq(m) is open containing s, so it contains (s-eps, s+eps) cap [0,1]. **)
+          (** For eps small enough, s+eps/2 > s and s+eps/2 in [0,1] and in seq(m). **)
+          (** So s+eps/2 in seq(m) cap (s,1], contradicting Hempty. **)
+          (** The ball B(s,r) c= seq(m) contains points in (s, s+r) cap [0,1] **)
+          (** since r > 0 and s < 1. These points are in seq(m) and > s. **)
+          claim Hwitness : exists t:set, t :e open_ball unit_interval R_bounded_metric s r /\ Rlt s t.
+          { admit. }
+          apply Hwitness. let t. assume Ht_pack.
+          claim Ht_ball : t :e open_ball unit_interval R_bounded_metric s r.
+          { exact (andEL (t :e open_ball unit_interval R_bounded_metric s r) (Rlt s t) Ht_pack). }
+          claim Hst : Rlt s t.
+          { exact (andER (t :e open_ball unit_interval R_bounded_metric s r) (Rlt s t) Ht_pack). }
+          claim Ht_seqm : t :e apply_fun seq m.
+          { exact (Hball_sub t Ht_ball). }
+          claim Ht_UI : t :e unit_interval.
+          { exact (open_ball_subset_X unit_interval R_bounded_metric s r t Ht_ball). }
+          claim Ht_ray : t :e Sep unit_interval (fun t0:set => Rlt s t0).
+          { exact (SepI unit_interval (fun t0:set => Rlt s t0) t Ht_UI Hst). }
+          exact (EmptyE t (eq_subst_mem_set t
+            (apply_fun seq m :/\: Sep unit_interval (fun t0:set => Rlt s t0))
+            Empty
+            (binintersectI (apply_fun seq m) (Sep unit_interval (fun t0:set => Rlt s t0)) t Ht_seqm Ht_ray)
+            Hempty)). }
         exact (connected_union_two_intersect unit_interval unit_interval_topology
           (apply_fun seq m) (Sep unit_interval (fun t:set => Rlt s t))
           unit_interval_topology_on Hseqm_sub Hray_sub
