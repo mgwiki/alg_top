@@ -1,7 +1,7 @@
 (** Balance Alice 8948 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
-(** Balance Dave 2400 **)
+(** Balance Dave 2703 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -283896,8 +283896,8 @@ Qed.
 
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
 (** NOTICE 1773890061 (APPROVED): added topology_on X Tx hypothesis. **)
-(** Bounty 303 **)
-(** Lock Dave 1774062649 **)
+(** Collected Dave 303 **)
+(** Proven Dave **)
 Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
   topology_on X Tx ->
   normal_space (setprod X unit_interval)
@@ -283994,7 +283994,129 @@ claim HFext_exists : exists F_ext:set,
   (forall a t:set, a :e A -> t :e unit_interval ->
     apply_fun F_ext (a,t) = apply_fun F0 (a,t)) /\
   (forall x:set, x :e X -> apply_fun F_ext (x,1) = y0).
-{ admit. }
+{
+  (** Setup: topology on X×I and domain_ext **)
+  claim HtopXI : topology_on (setprod X unit_interval) TXI.
+  { exact (product_topology_is_topology X Tx unit_interval unit_interval_topology HtopX unit_interval_topology_on). }
+  claim HAI_sub_XI : setprod A unit_interval c= setprod X unit_interval.
+  { exact (setprod_Subq A unit_interval X unit_interval HAsub (Subq_ref unit_interval)). }
+  claim HX1_sub_XI : setprod X (Sing 1) c= setprod X unit_interval.
+  { exact (setprod_Subq X (Sing 1) X unit_interval (Subq_ref X) (fun z Hz => eq_subst_mem z 1 unit_interval (SingE 1 z Hz) one_in_unit_interval)). }
+  claim domain_ext_sub_XI : domain_ext c= setprod X unit_interval.
+  { exact (binunion_Subq_min (setprod A unit_interval) (setprod X (Sing 1)) (setprod X unit_interval) HAI_sub_XI HX1_sub_XI). }
+  claim HtopDomext : topology_on domain_ext domain_ext_top.
+  { exact (subspace_topology_is_topology (setprod X unit_interval) TXI domain_ext HtopXI domain_ext_sub_XI). }
+  claim AI_sub_domext : setprod A unit_interval c= domain_ext.
+  { exact (binunion_Subq_1 (setprod A unit_interval) (setprod X (Sing 1))). }
+  claim X1_sub_domext : setprod X (Sing 1) c= domain_ext.
+  { exact (binunion_Subq_2 (setprod A unit_interval) (setprod X (Sing 1))). }
+  (** A closed in X **)
+  claim HA_closed_X : closed_in X Tx A.
+  { apply (closed_inI X Tx A HtopX HAsub).
+    witness (X :\: A). apply andI.
+    - exact HAclosed.
+    - exact (eq_symm (X :\: (X :\: A)) A (setminus_setminus_eq X A HAsub)). }
+  (** A×I closed in X×I **)
+  claim HAI_closed_XI : closed_in (setprod X unit_interval) TXI (setprod A unit_interval).
+  { exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology A unit_interval
+      HA_closed_X (X_is_closed unit_interval unit_interval_topology unit_interval_topology_on)). }
+  (** {1} closed in I **)
+  claim H1_closed_I : closed_in unit_interval unit_interval_topology (Sing 1).
+  { exact (Hausdorff_singletons_closed unit_interval unit_interval_topology 1
+      (ex17_12_subspace_Hausdorff R R_standard_topology unit_interval
+        R_standard_topology_Hausdorff unit_interval_sub_R) one_in_unit_interval). }
+  (** X×{1} closed in X×I **)
+  claim HX1_closed_XI : closed_in (setprod X unit_interval) TXI (setprod X (Sing 1)).
+  { exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology X (Sing 1)
+      (X_is_closed X Tx HtopX) H1_closed_I). }
+  (** A×I closed in domain_ext_top **)
+  claim HAI_closed_domext : closed_in domain_ext domain_ext_top (setprod A unit_interval).
+  { apply (iffER (closed_in domain_ext domain_ext_top (setprod A unit_interval))
+      (exists C:set, closed_in (setprod X unit_interval) TXI C /\ setprod A unit_interval = C :/\: domain_ext)
+      (closed_in_subspace_iff_intersection (setprod X unit_interval) TXI domain_ext (setprod A unit_interval) HtopXI domain_ext_sub_XI)).
+    witness (setprod A unit_interval).
+    apply andI.
+    - exact HAI_closed_XI.
+    - exact (eq_symm (setprod A unit_interval :/\: domain_ext) (setprod A unit_interval)
+        (binintersect_Subq_eq_1 (setprod A unit_interval) domain_ext AI_sub_domext)). }
+  (** X×{1} closed in domain_ext_top **)
+  claim HX1_closed_domext : closed_in domain_ext domain_ext_top (setprod X (Sing 1)).
+  { apply (iffER (closed_in domain_ext domain_ext_top (setprod X (Sing 1)))
+      (exists C:set, closed_in (setprod X unit_interval) TXI C /\ setprod X (Sing 1) = C :/\: domain_ext)
+      (closed_in_subspace_iff_intersection (setprod X unit_interval) TXI domain_ext (setprod X (Sing 1)) HtopXI domain_ext_sub_XI)).
+    witness (setprod X (Sing 1)).
+    apply andI.
+    - exact HX1_closed_XI.
+    - exact (eq_symm (setprod X (Sing 1) :/\: domain_ext) (setprod X (Sing 1))
+        (binintersect_Subq_eq_1 (setprod X (Sing 1)) domain_ext X1_sub_domext)). }
+  (** F0 continuous with subspace topology on A×I ⊆ domain_ext **)
+  claim HF0_cont' : continuous_map (setprod A unit_interval)
+    (subspace_topology domain_ext domain_ext_top (setprod A unit_interval)) Y TY F0.
+  { claim Hsubsp_AI_eq : subspace_topology domain_ext domain_ext_top (setprod A unit_interval) =
+      product_topology A TA unit_interval unit_interval_topology.
+    { rewrite (ex16_1_subspace_transitive (setprod X unit_interval) TXI domain_ext (setprod A unit_interval)
+        HtopXI domain_ext_sub_XI AI_sub_domext).
+      rewrite <- (product_subspace_topology X Tx unit_interval unit_interval_topology A unit_interval
+        HtopX unit_interval_topology_on HAsub (Subq_ref unit_interval)).
+      rewrite (subspace_topology_whole unit_interval unit_interval_topology unit_interval_topology_on).
+      exact (eq_refl (product_topology A TA unit_interval unit_interval_topology)). }
+    rewrite Hsubsp_AI_eq.
+    exact HF0_cont. }
+  (** const_y0 continuous on X×{1} with subspace topology **)
+  set T_X1 := subspace_topology domain_ext domain_ext_top (setprod X (Sing 1)).
+  claim HtopTX1 : topology_on (setprod X (Sing 1)) T_X1.
+  { exact (subspace_topology_is_topology domain_ext domain_ext_top (setprod X (Sing 1))
+      HtopDomext X1_sub_domext). }
+  claim HY_sub_Rn' : Y c= euclidean_space n.
+  { exact (topology_elem_subset (euclidean_space n) TRn Y (euclidean_topology_is_topology n) HY). }
+  claim HtopRn' : topology_on (euclidean_space n) TRn.
+  { exact (euclidean_topology_is_topology n). }
+  claim HtopTY : topology_on Y TY.
+  { exact (subspace_topology_is_topology (euclidean_space n) TRn Y HtopRn' HY_sub_Rn'). }
+  claim Hconst_y0_cont : continuous_map (setprod X (Sing 1)) T_X1 Y TY (const_fun (setprod X (Sing 1)) y0).
+  { exact (const_fun_continuous (setprod X (Sing 1)) T_X1 Y TY y0 HtopTX1 HtopTY Hy0). }
+  (** Agreement on A×I ∩ X×{1} = A×{1}: F0(p) = y0 = const_y0(p) **)
+  claim Hagree : forall p:set, p :e (setprod A unit_interval) :/\: (setprod X (Sing 1)) ->
+    apply_fun F0 p = apply_fun (const_fun (setprod X (Sing 1)) y0) p.
+  { let p. assume Hp_int.
+    claim Hp_AI : p :e setprod A unit_interval.
+    { exact (binintersectE1 (setprod A unit_interval) (setprod X (Sing 1)) p Hp_int). }
+    claim Hp_X1 : p :e setprod X (Sing 1).
+    { exact (binintersectE2 (setprod A unit_interval) (setprod X (Sing 1)) p Hp_int). }
+    rewrite (const_fun_apply (setprod X (Sing 1)) y0 p Hp_X1).
+    claim Hp0_A : (p 0) :e A.
+    { exact (ap0_Sigma A (fun _ => unit_interval) p Hp_AI). }
+    claim Hp1_1 : p 1 = 1.
+    { exact (SingE 1 (p 1) (ap1_Sigma X (fun _ => Sing 1) p Hp_X1)). }
+    rewrite (setprod_eta A unit_interval p Hp_AI).
+    rewrite Hp1_1.
+    rewrite (HF0_at_1 (p 0) Hp0_A).
+    exact (const_fun_apply A y0 (p 0) Hp0_A). }
+  (** Apply pasting_lemma to paste F0 on A×I and const_y0 on X×{1} **)
+  apply (pasting_lemma domain_ext (setprod A unit_interval) (setprod X (Sing 1)) Y domain_ext_top TY
+    F0 (const_fun (setprod X (Sing 1)) y0)
+    HtopDomext HAI_closed_domext HX1_closed_domext (eq_refl domain_ext) HF0_cont' Hconst_y0_cont Hagree).
+  let h. assume Hh_data.
+  witness h.
+  set Hh1 := continuous_map domain_ext domain_ext_top Y TY h.
+  set Hh2 := forall x:set, x :e setprod A unit_interval -> apply_fun h x = apply_fun F0 x.
+  set Hh3 := forall x:set, x :e setprod X (Sing 1) -> apply_fun h x = apply_fun (const_fun (setprod X (Sing 1)) y0) x.
+  claim Hh_cont : Hh1.
+  { exact (andEL Hh1 (Hh2 /\ Hh3) Hh_data). }
+  claim Hh_on_AI : Hh2.
+  { exact (andEL Hh2 Hh3 (andER Hh1 (Hh2 /\ Hh3) Hh_data)). }
+  claim Hh_on_X1 : Hh3.
+  { exact (andER Hh2 Hh3 (andER Hh1 (Hh2 /\ Hh3) Hh_data)). }
+  apply andI.
+  - apply andI.
+    + exact Hh_cont.
+    + let a t. assume Ha Ht.
+      rewrite (Hh_on_AI (a,t) (tuple_2_setprod_by_pair_Sigma A unit_interval a t Ha Ht)).
+      exact (eq_refl (apply_fun F0 (a,t))).
+  - let x. assume Hx.
+    rewrite (Hh_on_X1 (x,1) (tuple_2_setprod_by_pair_Sigma X (Sing 1) x 1 Hx (SingI 1))).
+    exact (const_fun_apply (setprod X (Sing 1)) y0 (x,1)
+      (tuple_2_setprod_by_pair_Sigma X (Sing 1) x 1 Hx (SingI 1))). }
 apply HFext_exists. let F_ext. assume HFext_data.
 set F_ext_cont_tp := continuous_map domain_ext domain_ext_top Y TY F_ext.
 set F_ext_AI_tp := forall a t:set, a :e A -> t :e unit_interval ->
@@ -284286,9 +284408,223 @@ claim Hg_extends_f : forall a:set, a :e A -> apply_fun g a = apply_fun f a.
 claim Hg_cont_Y : continuous_map X Tx Y TY g.
 { exact (continuous_map_range_restrict X Tx (euclidean_space n) TRn g Y
     Hg_cont HY_sub_Rn Hg_in_Y). }
-(** g is nulhomotopic to y0 via the homotopy H(x,t) = G(x, t + (1-t) phi(x)) **)
+(** g is nulhomotopic to y0 via the homotopy H(x,t) = G(x, (1-t) phi(x) + t) **)
 claim Hg_nulhomotopic : nulhomotopic X Tx Y TY g.
-{ admit. }
+{
+  (** topology on Y **)
+  claim HtopTY_g : topology_on Y TY.
+  { exact (subspace_topology_is_topology (euclidean_space n) TRn Y HtopRn HY_sub_Rn). }
+  (** topology on X×I **)
+  claim HtopXI_g : topology_on (setprod X unit_interval) TXI.
+  { exact (product_topology_is_topology X Tx unit_interval unit_interval_topology HtopX unit_interval_topology_on). }
+  (** nulhomotopic = exists y0, homotopic_maps **)
+  prove exists y0':set, y0' :e Y /\ homotopic_maps X Tx Y TY g (const_fun X y0').
+  witness y0. apply andI.
+  - exact Hy0.
+  - (** homotopic_maps g const_y0: left-assoc /\ structure **)
+    prove continuous_map X Tx Y TY g /\
+      continuous_map X Tx Y TY (const_fun X y0) /\
+      exists F:set,
+        continuous_map (setprod X unit_interval) TXI Y TY F /\
+        (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun g x) /\
+        (forall x:set, x :e X -> apply_fun F (x, 1) = apply_fun (const_fun X y0) x).
+    apply andI.
+    + apply andI.
+      * exact Hg_cont_Y.
+      * exact (const_fun_continuous X Tx Y TY y0 HtopX HtopTY_g Hy0).
+    + (** Construct homotopy H(x,t) = G(x, (1-t) phi(x) + t) **)
+      set Z := setprod X unit_interval.
+      (** Step: projection maps **)
+      claim HprojCont :
+        continuous_map Z TXI X Tx (projection_map1 X unit_interval) /\
+        continuous_map Z TXI unit_interval unit_interval_topology (projection_map2 X unit_interval).
+      { exact (projection_maps_continuous X Tx unit_interval unit_interval_topology HtopX unit_interval_topology_on). }
+      claim Hpi1c : continuous_map Z TXI X Tx (projection_map1 X unit_interval).
+      { exact (andEL
+          (continuous_map Z TXI X Tx (projection_map1 X unit_interval))
+          (continuous_map Z TXI unit_interval unit_interval_topology (projection_map2 X unit_interval))
+          HprojCont). }
+      claim Hpi2c : continuous_map Z TXI unit_interval unit_interval_topology (projection_map2 X unit_interval).
+      { exact (andER
+          (continuous_map Z TXI X Tx (projection_map1 X unit_interval))
+          (continuous_map Z TXI unit_interval unit_interval_topology (projection_map2 X unit_interval))
+          HprojCont). }
+      (** phi_z(x,t) = phi(x) **)
+      set phi_z_g := compose_fun Z (projection_map1 X unit_interval) phi.
+      claim Hphiz_cont : continuous_map Z TXI unit_interval unit_interval_topology phi_z_g.
+      { exact (composition_continuous Z TXI X Tx unit_interval unit_interval_topology
+          (projection_map1 X unit_interval) phi Hpi1c Hphi_cont). }
+      (** flip_t(x,t) = 1-t **)
+      set flip_t_g := compose_fun Z (projection_map2 X unit_interval) flip_unit_interval.
+      claim Hflip_t_cont : continuous_map Z TXI unit_interval unit_interval_topology flip_t_g.
+      { exact (composition_continuous Z TXI unit_interval unit_interval_topology unit_interval unit_interval_topology
+          (projection_map2 X unit_interval) flip_unit_interval Hpi2c flip_unit_interval_continuous). }
+      (** prod_t_g(x,t) = (1-t) phi(x) **)
+      set prod_t_g := compose_fun Z (pair_map Z flip_t_g phi_z_g) mul_fun_R.
+      claim Hprod_g_cont : continuous_map Z TXI unit_interval unit_interval_topology prod_t_g.
+      { exact (mul_two_continuous_unit_interval Z TXI flip_t_g phi_z_g HtopXI_g Hflip_t_cont Hphiz_cont). }
+      (** Coerce to R via inclusion **)
+      set inclIR := graph unit_interval (fun s:set => s).
+      set prod_R_g := compose_fun Z prod_t_g inclIR.
+      claim Hprod_R_cont : continuous_map Z TXI R R_standard_topology prod_R_g.
+      { exact (composition_continuous Z TXI unit_interval unit_interval_topology R R_standard_topology
+          prod_t_g inclIR Hprod_g_cont unit_interval_inclusion_continuous). }
+      set t_R_g := compose_fun Z (projection_map2 X unit_interval) inclIR.
+      claim Ht_R_cont : continuous_map Z TXI R R_standard_topology t_R_g.
+      { exact (composition_continuous Z TXI unit_interval unit_interval_topology R R_standard_topology
+          (projection_map2 X unit_interval) inclIR Hpi2c unit_interval_inclusion_continuous). }
+      (** alpha_R(x,t) = (1-t) phi(x) + t: R-valued **)
+      set alpha_R_g := compose_fun Z (pair_map Z prod_R_g t_R_g) add_fun_R.
+      claim Halpha_R_cont : continuous_map Z TXI R R_standard_topology alpha_R_g.
+      { exact (add_two_continuous_R Z TXI prod_R_g t_R_g HtopXI_g Hprod_R_cont Ht_R_cont). }
+      (** Key computation: apply_fun alpha_R_g xt = add_SNo (mul_SNo (1-t) phi(x)) t **)
+      claim Halpha_compute : forall xt:set, xt :e Z ->
+        apply_fun alpha_R_g xt =
+          add_SNo (mul_SNo (apply_fun flip_unit_interval (xt 1)) (apply_fun phi (xt 0))) (xt 1).
+      { let xt. assume Hxt.
+        claim HxtI : xt 1 :e unit_interval. { exact (ap1_Sigma X (fun _ => unit_interval) xt Hxt). }
+        claim HxtX : xt 0 :e X. { exact (ap0_Sigma X (fun _ => unit_interval) xt Hxt). }
+        claim HprodI : apply_fun prod_t_g xt :e unit_interval.
+        { exact (continuous_map_function_on Z TXI unit_interval unit_interval_topology prod_t_g Hprod_g_cont xt Hxt). }
+        claim HtI : apply_fun (projection_map2 X unit_interval) xt :e unit_interval.
+        { exact (continuous_map_function_on Z TXI unit_interval unit_interval_topology (projection_map2 X unit_interval) Hpi2c xt Hxt). }
+        rewrite (add_of_pair_map_apply Z prod_R_g t_R_g xt Hxt
+          (continuous_map_function_on Z TXI R R_standard_topology prod_R_g Hprod_R_cont xt Hxt)
+          (continuous_map_function_on Z TXI R R_standard_topology t_R_g Ht_R_cont xt Hxt)).
+        rewrite (compose_fun_apply Z prod_t_g inclIR xt Hxt).
+        rewrite (apply_fun_graph unit_interval (fun s:set => s) (apply_fun prod_t_g xt) HprodI).
+        rewrite (compose_fun_apply Z (projection_map2 X unit_interval) inclIR xt Hxt).
+        rewrite (apply_fun_graph unit_interval (fun s:set => s) (apply_fun (projection_map2 X unit_interval) xt) HtI).
+        rewrite (projection_map2_apply X unit_interval xt Hxt).
+        rewrite (mul_of_pair_map_apply Z flip_t_g phi_z_g xt Hxt
+          (unit_interval_sub_R (apply_fun flip_t_g xt) (continuous_map_function_on Z TXI unit_interval unit_interval_topology flip_t_g Hflip_t_cont xt Hxt))
+          (unit_interval_sub_R (apply_fun phi_z_g xt) (continuous_map_function_on Z TXI unit_interval unit_interval_topology phi_z_g Hphiz_cont xt Hxt))).
+        rewrite (compose_fun_apply Z (projection_map2 X unit_interval) flip_unit_interval xt Hxt).
+        rewrite (projection_map2_apply X unit_interval xt Hxt).
+        rewrite (compose_fun_apply Z (projection_map1 X unit_interval) phi xt Hxt).
+        rewrite (projection_map1_apply X unit_interval xt Hxt).
+        exact (eq_refl (add_SNo (mul_SNo (apply_fun flip_unit_interval (xt 1)) (apply_fun phi (xt 0))) (xt 1))). }
+      (** alpha_R_g(xt) ∈ unit_interval **)
+      claim Halpha_in_I : forall xt:set, xt :e Z -> apply_fun alpha_R_g xt :e unit_interval.
+      { let xt. assume Hxt.
+        claim HxtI : xt 1 :e unit_interval. { exact (ap1_Sigma X (fun _ => unit_interval) xt Hxt). }
+        claim HxtX : xt 0 :e X. { exact (ap0_Sigma X (fun _ => unit_interval) xt Hxt). }
+        claim Hphi_in_I2 : apply_fun phi (xt 0) :e unit_interval.
+        { exact (continuous_map_function_on X Tx unit_interval unit_interval_topology phi Hphi_cont (xt 0) HxtX). }
+        claim HxtSNo : SNo (xt 1). { exact (real_SNo (xt 1) (unit_interval_sub_R (xt 1) HxtI)). }
+        (** Rewrite alpha_R_g xt to convex combination form **)
+        rewrite (Halpha_compute xt Hxt).
+        rewrite (flip_unit_interval_apply (xt 1) HxtI).
+        claim Hmul1 : add_SNo (mul_SNo (add_SNo 1 (minus_SNo (xt 1))) (apply_fun phi (xt 0))) (xt 1) =
+                      add_SNo (mul_SNo (add_SNo 1 (minus_SNo (xt 1))) (apply_fun phi (xt 0))) (mul_SNo (xt 1) 1).
+        { rewrite (mul_SNo_oneR (xt 1) HxtSNo).
+          exact (eq_refl (add_SNo (mul_SNo (add_SNo 1 (minus_SNo (xt 1))) (apply_fun phi (xt 0))) (xt 1))). }
+        rewrite Hmul1.
+        exact (convex_in_R_combination unit_interval (apply_fun phi (xt 0)) 1 (xt 1)
+          unit_interval_convex_in Hphi_in_I2 one_in_unit_interval HxtI). }
+      (** alpha_R_g continuous to unit_interval **)
+      claim Halpha_cont : continuous_map Z TXI unit_interval unit_interval_topology alpha_R_g.
+      { exact (continuous_map_range_restrict Z TXI R R_standard_topology alpha_R_g unit_interval
+          Halpha_R_cont unit_interval_sub_R Halpha_in_I). }
+      (** Phi(x,t) = (x, alpha(x,t)): Z → X×I = Z **)
+      set Phi_g := pair_map Z (projection_map1 X unit_interval) alpha_R_g.
+      claim HPhi_cont : continuous_map Z TXI Z TXI Phi_g.
+      { exact (maps_into_products Z TXI X Tx unit_interval unit_interval_topology
+          (projection_map1 X unit_interval) alpha_R_g Hpi1c Halpha_cont). }
+      (** H_Rn = G ∘ Phi: Z → R^n continuous **)
+      set H_Rn_g := compose_fun Z Phi_g G.
+      claim HH_Rn_cont : continuous_map Z TXI (euclidean_space n) TRn H_Rn_g.
+      { exact (composition_continuous Z TXI Z TXI (euclidean_space n) TRn Phi_g G HPhi_cont HG_cont). }
+      (** H_Rn(x,t) values in Y **)
+      claim HH_in_Y : forall xt:set, xt :e Z -> apply_fun H_Rn_g xt :e Y.
+      { let xt. assume Hxt.
+        claim HxtX : xt 0 :e X. { exact (ap0_Sigma X (fun _ => unit_interval) xt Hxt). }
+        claim HxtI : xt 1 :e unit_interval. { exact (ap1_Sigma X (fun _ => unit_interval) xt Hxt). }
+        claim HPhiApply : apply_fun Phi_g xt = (apply_fun (projection_map1 X unit_interval) xt, apply_fun alpha_R_g xt).
+        { exact (pair_map_apply Z X unit_interval (projection_map1 X unit_interval) alpha_R_g xt Hxt). }
+        claim Hpi1_eq : apply_fun (projection_map1 X unit_interval) xt = xt 0.
+        { rewrite (projection_map1_apply X unit_interval xt Hxt). exact (eq_refl (xt 0)). }
+        claim HH_eq : apply_fun H_Rn_g xt = apply_fun G (xt 0, apply_fun alpha_R_g xt).
+        { rewrite (compose_fun_apply Z Phi_g G xt Hxt).
+          rewrite HPhiApply.
+          rewrite Hpi1_eq.
+          exact (eq_refl (apply_fun G (xt 0, apply_fun alpha_R_g xt))). }
+        rewrite HH_eq.
+        apply (xm (xt 0 :e W)).
+        - assume HxW : xt 0 :e W.
+          exact (HWI_in_Y (xt 0) (apply_fun alpha_R_g xt) HxW (Halpha_in_I xt Hxt)).
+        - assume HxnotW : xt 0 /:e W.
+          (** phi(x) = 1 since x not in W, so alpha(x,t) = (1-t) + t = 1 **)
+          claim Hphi1 : apply_fun phi (xt 0) = 1.
+          { exact (Hphi_on_XW (xt 0) HxtX HxnotW). }
+          claim Halpha1 : apply_fun alpha_R_g xt = 1.
+          { rewrite (Halpha_compute xt Hxt).
+            rewrite (flip_unit_interval_apply (xt 1) HxtI).
+            rewrite Hphi1.
+            claim HtSNo : SNo (xt 1). { exact (real_SNo (xt 1) (unit_interval_sub_R (xt 1) HxtI)). }
+            rewrite (mul_SNo_oneR (add_SNo 1 (minus_SNo (xt 1)))
+              (SNo_add_SNo 1 (minus_SNo (xt 1)) SNo_1 (SNo_minus_SNo (xt 1) HtSNo))).
+            rewrite <- (add_SNo_assoc 1 (minus_SNo (xt 1)) (xt 1) SNo_1 (SNo_minus_SNo (xt 1) HtSNo) HtSNo).
+            rewrite (add_SNo_minus_SNo_linv (xt 1) HtSNo).
+            exact (add_SNo_0R 1 SNo_1). }
+          rewrite Halpha1.
+          exact (eq_subst_mem (apply_fun G (xt 0, 1)) y0 Y (HG_at_1 (xt 0) HxtX) Hy0). }
+      (** H: Z → Y continuous **)
+      claim HH_cont_Y : continuous_map Z TXI Y TY H_Rn_g.
+      { exact (continuous_map_range_restrict Z TXI (euclidean_space n) TRn H_Rn_g Y
+          HH_Rn_cont HY_sub_Rn HH_in_Y). }
+      (** Witness H_Rn_g as the homotopy **)
+      witness H_Rn_g.
+      apply andI.
+      - apply andI.
+        + exact HH_cont_Y.
+        + (** H(x,0) = g(x) **)
+          let x. assume Hx.
+          claim Hx0 : (x,0) :e Z.
+          { exact (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval). }
+          claim HHx0 : apply_fun H_Rn_g (x,0) = apply_fun G (x, apply_fun alpha_R_g (x,0)).
+          { rewrite (compose_fun_apply Z Phi_g G (x,0) Hx0).
+            rewrite (pair_map_apply Z X unit_interval (projection_map1 X unit_interval) alpha_R_g (x,0) Hx0).
+            rewrite (projection_map1_apply X unit_interval (x,0) Hx0).
+            rewrite tuple_2_0_eq.
+            exact (eq_refl (apply_fun G (x, apply_fun alpha_R_g (x,0)))). }
+          claim Halpha0 : apply_fun alpha_R_g (x,0) = apply_fun phi x.
+          { rewrite (Halpha_compute (x,0) Hx0).
+            rewrite tuple_2_1_eq.
+            rewrite flip_unit_interval_at_0.
+            rewrite tuple_2_0_eq.
+            claim HphixSNo : SNo (apply_fun phi x).
+            { exact (real_SNo (apply_fun phi x)
+                (unit_interval_sub_R (apply_fun phi x)
+                  (continuous_map_function_on X Tx unit_interval unit_interval_topology phi Hphi_cont x Hx))). }
+            rewrite (mul_SNo_oneL (apply_fun phi x) HphixSNo).
+            exact (add_SNo_0R (apply_fun phi x) HphixSNo). }
+          rewrite HHx0. rewrite Halpha0.
+          rewrite (apply_fun_graph X (fun z => apply_fun G (z, apply_fun phi z)) x Hx).
+          exact (eq_refl (apply_fun G (x, apply_fun phi x))).
+      - (** H(x,1) = const_y0(x) = y0 **)
+        let x. assume Hx.
+        claim Hx1 : (x,1) :e Z.
+        { exact (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval). }
+        claim HHx1 : apply_fun H_Rn_g (x,1) = apply_fun G (x, apply_fun alpha_R_g (x,1)).
+        { rewrite (compose_fun_apply Z Phi_g G (x,1) Hx1).
+          rewrite (pair_map_apply Z X unit_interval (projection_map1 X unit_interval) alpha_R_g (x,1) Hx1).
+          rewrite (projection_map1_apply X unit_interval (x,1) Hx1).
+          rewrite tuple_2_0_eq.
+          exact (eq_refl (apply_fun G (x, apply_fun alpha_R_g (x,1)))). }
+        claim Halpha1 : apply_fun alpha_R_g (x,1) = 1.
+        { rewrite (Halpha_compute (x,1) Hx1).
+          rewrite tuple_2_1_eq.
+          rewrite flip_unit_interval_at_1.
+          rewrite tuple_2_0_eq.
+          claim HphixR : apply_fun phi x :e R.
+          { exact (unit_interval_sub_R (apply_fun phi x)
+              (continuous_map_function_on X Tx unit_interval unit_interval_topology phi Hphi_cont x Hx)). }
+          rewrite (mul_SNo_zeroL (apply_fun phi x) (real_SNo (apply_fun phi x) HphixR)).
+          exact (add_SNo_0L 1 SNo_1). }
+        rewrite HHx1. rewrite Halpha1.
+        rewrite (HG_at_1 x Hx).
+        exact (eq_symm (apply_fun (const_fun X y0) x) y0 (const_fun_apply X y0 x Hx)). }
 (** Witness: g **)
 witness g.
 apply andI.
@@ -284296,7 +284632,7 @@ apply andI.
   + exact Hg_cont_Y.
   + exact Hg_extends_f.
 - exact Hg_nulhomotopic.
-Admitted.
+Qed.
 
 (** from S62 Lem 62.2 (line 1953 in algtop.tex) **)
 (** LATEX VERSION: (Borsuk lemma) Let a, b in S^2, A compact, f: A -> S^2-a-b **)
