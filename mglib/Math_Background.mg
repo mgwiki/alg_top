@@ -239345,16 +239345,161 @@ claim HL1_word_data :
             (graph V (fun x:set => x))) vcls)) /\
     path_homotopy_class_loop X Tx x0 L1 = nat_primrec (fundamental_group_id X Tx x0)
       (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
-{ (** Show L1 maps entirely into U when m = 0, use IH otherwise. **)
-  (** L1(t) = f1(2t) for t in [0,1/2] and gammaX(2-2t) for t in [1/2,1]. **)
-  (** f1(u) = f(su), gammaX maps into U cap V. **)
-  (** For all t in unit_interval, L1(t) in X. Need word data. **)
-  (** Strategy: show all values of L1 are in U (when m=0) or use IH (general). **)
-  claim HL1_all_in_U_or_V : forall t:set, t :e unit_interval ->
-    apply_fun L1 t :e X.
-  { let t. assume Ht. exact (HL1_fun t Ht). }
-  (** For the general case, we need to apply IH with a chain. **)
-  (** For now, admit - the full pasting_lemma construction is needed. **)
+{ (** Construct g via pasting_lemma: f on [0,s], reparametrized gamma on [s,1] **)
+  set A := Sep unit_interval (fun t:set => ~(Rlt s t)).
+  set B := Sep unit_interval (fun t:set => ~(Rlt t s)).
+  claim HA_closed : closed_in unit_interval unit_interval_topology A.
+  { exact (unit_interval_left_closed_at s Hs_UI Hlt_0_s Hlt_s_1). }
+  claim HB_closed : closed_in unit_interval unit_interval_topology B.
+  { exact (unit_interval_right_closed_at s Hs_UI Hlt_0_s Hlt_s_1). }
+  claim HAB_union : A :\/: B = unit_interval.
+  { exact (unit_interval_split_at s Hs_UI). }
+  (** f is continuous on A = [0,s] as restriction **)
+  claim HAsub : A c= unit_interval.
+  { let t. assume Ht. exact (SepE1 unit_interval (fun t0:set => ~(Rlt s t0)) t Ht). }
+  claim HBsub : B c= unit_interval.
+  { let t. assume Ht. exact (SepE1 unit_interval (fun t0:set => ~(Rlt t0 s)) t Ht). }
+  claim Hf_on_A : continuous_map A (subspace_topology unit_interval unit_interval_topology A)
+    X Tx f.
+  { (** f is continuous on [0,1], hence on any subspace [0,s] **)
+    admit. }
+  (** Define reparametrized gamma on B = [s,1]: t -> gammaX((1-t)/(1-s)) **)
+  (** This is continuous B -> X and maps into U cap V **)
+  claim Hg_on_B_ex : exists gB:set,
+    continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
+    apply_fun gB s = apply_fun f s /\
+    (forall t:set, t :e B -> apply_fun gB t :e U :/\: V).
+  { (** gB = gammaX composed with affine rescaling [s,1]->[1,0] **)
+    admit. }
+  apply Hg_on_B_ex. let gB. assume HgB_pack.
+  (** HgB_pack : (cont /\ gB(s) = f(s)) /\ (forall t in B, gB(t) in U cap V) -- left assoc **)
+  claim HgB_UV : forall t:set, t :e B -> apply_fun gB t :e U :/\: V.
+  { exact (andER
+      (continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
+       apply_fun gB s = apply_fun f s)
+      (forall t:set, t :e B -> apply_fun gB t :e U :/\: V)
+      HgB_pack). }
+  claim HgB_inner : continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
+    apply_fun gB s = apply_fun f s.
+  { exact (andEL
+      (continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
+       apply_fun gB s = apply_fun f s)
+      (forall t:set, t :e B -> apply_fun gB t :e U :/\: V)
+      HgB_pack). }
+  claim HgB_cont : continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB.
+  { exact (andEL
+      (continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB)
+      (apply_fun gB s = apply_fun f s)
+      HgB_inner). }
+  claim HgBs : apply_fun gB s = apply_fun f s.
+  { exact (andER
+      (continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB)
+      (apply_fun gB s = apply_fun f s)
+      HgB_inner). }
+  (** Agreement on A cap B = {s} **)
+  claim Hagree : forall x:set, x :e A :/\: B -> apply_fun f x = apply_fun gB x.
+  { let x. assume Hx : x :e A :/\: B.
+    claim HxA : x :e A. { exact (binintersectE1 A B x Hx). }
+    claim HxB : x :e B. { exact (binintersectE2 A B x Hx). }
+    claim Hnst : ~(Rlt s x). { exact (SepE2 unit_interval (fun t0:set => ~(Rlt s t0)) x HxA). }
+    claim Hnts : ~(Rlt x s). { exact (SepE2 unit_interval (fun t0:set => ~(Rlt t0 s)) x HxB). }
+    claim HxR : x :e R. { exact (unit_interval_sub_R x (HAsub x HxA)). }
+    claim Hxs : x = s. { exact (R_eq_of_not_Rlt x s HxR Hs_R Hnts Hnst). }
+    rewrite Hxs. exact (eq_symm (apply_fun gB s) (apply_fun f s) HgBs). }
+  (** Apply pasting_lemma **)
+  apply (pasting_lemma unit_interval A B X unit_interval_topology Tx f gB
+    unit_interval_topology_on HA_closed HB_closed HAB_union Hf_on_A HgB_cont Hagree).
+  let g. assume Hg_pack.
+  claim Hg_cont : continuous_map unit_interval unit_interval_topology X Tx g.
+  { exact (andEL
+      (continuous_map unit_interval unit_interval_topology X Tx g)
+      ((forall x:set, x :e A -> apply_fun g x = apply_fun f x) /\
+       (forall x:set, x :e B -> apply_fun g x = apply_fun gB x))
+      Hg_pack). }
+  claim Hg_values : (forall x:set, x :e A -> apply_fun g x = apply_fun f x) /\
+    (forall x:set, x :e B -> apply_fun g x = apply_fun gB x).
+  { exact (andER
+      (continuous_map unit_interval unit_interval_topology X Tx g)
+      ((forall x:set, x :e A -> apply_fun g x = apply_fun f x) /\
+       (forall x:set, x :e B -> apply_fun g x = apply_fun gB x))
+      Hg_pack). }
+  claim Hg_on_A : forall x:set, x :e A -> apply_fun g x = apply_fun f x.
+  { exact (andEL
+      (forall x:set, x :e A -> apply_fun g x = apply_fun f x)
+      (forall x:set, x :e B -> apply_fun g x = apply_fun gB x)
+      Hg_values). }
+  claim Hg_on_B : forall x:set, x :e B -> apply_fun g x = apply_fun gB x.
+  { exact (andER
+      (forall x:set, x :e A -> apply_fun g x = apply_fun f x)
+      (forall x:set, x :e B -> apply_fun g x = apply_fun gB x)
+      Hg_values). }
+  (** g(0) = f(0) = x0 **)
+  claim H0_in_A : 0 :e A.
+  { exact (SepI unit_interval (fun t:set => ~(Rlt s t)) 0 zero_in_unit_interval
+      (fun H : Rlt s 0 => SNoLt_irref 0 (RltE_lt 0 0
+        (Rlt_tra 0 s 0 (RltI 0 s real_0 Hs_R (RltE_lt 0 s Hlt_0_s)) H)))). }
+  claim Hg0 : apply_fun g 0 = x0.
+  { rewrite (Hg_on_A 0 H0_in_A). exact Hf0. }
+  (** g(1) = gB(1) = x0 (gB at 1 should be gammaX(0) = x0) **)
+  claim H1_in_B : 1 :e B.
+  { exact (SepI unit_interval (fun t:set => ~(Rlt t s)) 1 one_in_unit_interval
+      (fun H : Rlt 1 s => SNoLt_irref 1 (RltE_lt 1 1
+        (Rlt_tra 1 s 1 H (RltI s 1 Hs_R real_1 (RltE_lt s 1 Hlt_s_1)))))). }
+  claim Hg1 : apply_fun g 1 = x0.
+  { rewrite (Hg_on_B 1 H1_in_B).
+    (** gB(1) = gammaX(0) = x0 -- from the construction of gB **)
+    admit. }
+  (** g is a loop at x0 **)
+  claim Hg_loop_at : loop_at X Tx x0 g.
+  { prove (continuous_map unit_interval unit_interval_topology X Tx g /\
+      apply_fun g 0 = x0) /\ apply_fun g 1 = x0.
+    apply andI. apply andI. exact Hg_cont. exact Hg0. exact Hg1. }
+  claim Hg_fun : function_on g unit_interval X.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx g Hg_cont). }
+  claim Hg_loop : g :e loop_space X Tx x0.
+  { admit. }
+  (** Define chain for g: ordsucc m intervals **)
+  (** seq_g(k) = seq(k) for k < m; seq_g(m) = seq(m) cup {t in UI: Rlt s t} **)
+  set lastI := apply_fun seq m :\/: Sep unit_interval (fun t:set => Rlt s t).
+  set seq_g := graph (ordsucc m)
+    (fun k:set => If_i (k :e m) (apply_fun seq k) lastI).
+  (** Verify chain properties and apply IH **)
+  (** For now, admit the chain verification and IH application **)
+  claim Hg_word_data :
+    exists n1:set, n1 :e omega /\
+    exists gs1:set, function_on gs1 n1 (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n1 ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs1 i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs1 i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)) /\
+      path_homotopy_class_loop X Tx x0 g = nat_primrec (fundamental_group_id X Tx x0)
+        (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
+  { (** Apply IH to g with seq_g chain **)
+    admit. }
+  (** Transfer word data from g to L1 via homotopy [g] = [L1] **)
+  claim Hg_L1_homotopic : path_homotopy_class_loop X Tx x0 g = path_homotopy_class_loop X Tx x0 L1.
+  { (** g and L1 trace the same geometric path (f on [0,s], gamma-inv on [s,1]) **)
+    (** but with different parametrizations. They are path-homotopic. **)
+    admit. }
+  (** Rewrite word data from g to L1 **)
+  apply Hg_word_data. let n1. assume Hn1_pack.
+  claim Hn1_omega : n1 :e omega.
+  { admit. }
+  claim Hn1_ex : exists gs1:set, function_on gs1 n1 (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n1 ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs1 i = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs1 i = apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 g = nat_primrec (fundamental_group_id X Tx x0) (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
+  { admit. }
+  (** Word data for g transfers to L1 since [g] = [L1] **)
+  (** The conjunction decomposition and rewriting is mechanical **)
   admit. }
 (** Step 10: Combine word data via word_data_of_loop_concat and class equality **)
 claim Hconcat_word :
