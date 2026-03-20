@@ -239799,37 +239799,87 @@ claim HL1_word_data :
           { exact (andER (Rlt 0 r)
               (open_ball unit_interval R_bounded_metric s r c= apply_fun seq m)
               Hr_inner). }
-          (** Find a point t in ball with t > s **)
-          (** Use: open_ball contains center, and for s < 1 with r > 0, **)
-          (** the ball extends to the right of s **)
-          (** Specifically: min(s + r/2, (s+1)/2) is in ball and > s **)
-          (** The construction requires SNo arithmetic (eps_1 = 1/2, add, mul) **)
-          (** which is available but verbose. Using bounded ball version instead. **)
-          assume Hempty : apply_fun seq m :/\: Sep unit_interval (fun t:set => Rlt s t) = Empty.
-          (** If the overlap is empty, then seq(m) c= [0, s]. **)
-          (** But seq(m) is open containing s, so it contains (s-eps, s+eps) cap [0,1]. **)
-          (** For eps small enough, s+eps/2 > s and s+eps/2 in [0,1] and in seq(m). **)
-          (** So s+eps/2 in seq(m) cap (s,1], contradicting Hempty. **)
-          (** The ball B(s,r) c= seq(m) contains points in (s, s+r) cap [0,1] **)
-          (** since r > 0 and s < 1. These points are in seq(m) and > s. **)
-          claim Hwitness : exists t:set, t :e open_ball unit_interval R_bounded_metric s r /\ Rlt s t.
-          { admit. }
-          apply Hwitness. let t. assume Ht_pack.
-          claim Ht_ball : t :e open_ball unit_interval R_bounded_metric s r.
-          { exact (andEL (t :e open_ball unit_interval R_bounded_metric s r) (Rlt s t) Ht_pack). }
-          claim Hst : Rlt s t.
-          { exact (andER (t :e open_ball unit_interval R_bounded_metric s r) (Rlt s t) Ht_pack). }
-          claim Ht_seqm : t :e apply_fun seq m.
-          { exact (Hball_sub t Ht_ball). }
-          claim Ht_UI : t :e unit_interval.
-          { exact (open_ball_subset_X unit_interval R_bounded_metric s r t Ht_ball). }
-          claim Ht_ray : t :e Sep unit_interval (fun t0:set => Rlt s t0).
-          { exact (SepI unit_interval (fun t0:set => Rlt s t0) t Ht_UI Hst). }
-          exact (EmptyE t (eq_subst_mem_set t
+          (** Find witness t = s + r3 where r3 < r and r3 < 1-s **)
+          claim H1ms_pos : Rlt 0 (add_SNo 1 (minus_SNo s)).
+          { exact (Rlt_0_diff_of_lt s 1 Hlt_s_1). }
+          claim H1ms_R : add_SNo 1 (minus_SNo s) :e R.
+          { exact (real_add_SNo 1 real_1 (minus_SNo s) (real_minus_SNo s Hs_R)). }
+          apply (exists_eps_lt_two_pos_Euclid r (add_SNo 1 (minus_SNo s)) HrR H1ms_R Hrpos H1ms_pos).
+          let r3. assume Hr3_full.
+          claim Hr3_pack2 : (r3 :e R /\ Rlt 0 r3) /\ Rlt r3 r.
+          { exact (andEL ((r3 :e R /\ Rlt 0 r3) /\ Rlt r3 r) (Rlt r3 (add_SNo 1 (minus_SNo s))) Hr3_full). }
+          claim Hr3_lt_1ms : Rlt r3 (add_SNo 1 (minus_SNo s)).
+          { exact (andER ((r3 :e R /\ Rlt 0 r3) /\ Rlt r3 r) (Rlt r3 (add_SNo 1 (minus_SNo s))) Hr3_full). }
+          claim Hr3_r3pos : r3 :e R /\ Rlt 0 r3.
+          { exact (andEL (r3 :e R /\ Rlt 0 r3) (Rlt r3 r) Hr3_pack2). }
+          claim Hr3_lt_r : Rlt r3 r.
+          { exact (andER (r3 :e R /\ Rlt 0 r3) (Rlt r3 r) Hr3_pack2). }
+          claim Hr3R : r3 :e R.
+          { exact (andEL (r3 :e R) (Rlt 0 r3) Hr3_r3pos). }
+          claim Hr3pos : Rlt 0 r3.
+          { exact (andER (r3 :e R) (Rlt 0 r3) Hr3_r3pos). }
+          claim HsSNo : SNo s. { exact (real_SNo s Hs_R). }
+          claim Hr3SNo : SNo r3. { exact (real_SNo r3 Hr3R). }
+          claim HtR : add_SNo s r3 :e R. { exact (real_add_SNo s Hs_R r3 Hr3R). }
+          claim H1ms_SNo : SNo (add_SNo 1 (minus_SNo s)).
+          { exact (real_SNo (add_SNo 1 (minus_SNo s)) H1ms_R). }
+          (** t = s + r3 is in unit_interval **)
+          claim Ht_UI : add_SNo s r3 :e unit_interval.
+          { apply (SepI R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x)) (add_SNo s r3) HtR).
+            apply andI.
+            - (** ~Rlt (s+r3) 0 **)
+              claim Hle0s : Rle 0 s. { exact (unit_interval_Rle0 s Hs_UI). }
+              claim Hle_s_sr3 : Rle s (add_SNo s r3).
+              { exact ((add_SNo_0R s HsSNo) (fun a _ => Rle a (add_SNo s r3))
+                  (Rle_add_SNo_2 s 0 r3 Hs_R real_0 Hr3R (Rlt_implies_Rle 0 r3 Hr3pos))). }
+              exact (RleE_nlt 0 (add_SNo s r3) (Rle_tra 0 s (add_SNo s r3) Hle0s Hle_s_sr3)).
+            - (** ~Rlt 1 (s+r3) : s+r3 < 1 **)
+              claim Heq_s1ms : add_SNo s (add_SNo 1 (minus_SNo s)) = 1.
+              { rewrite (add_SNo_com 1 (minus_SNo s) SNo_1 (SNo_minus_SNo s HsSNo)).
+                rewrite (add_SNo_assoc s (minus_SNo s) 1 HsSNo (SNo_minus_SNo s HsSNo) SNo_1).
+                rewrite (add_SNo_minus_SNo_rinv s HsSNo).
+                exact (add_SNo_0L 1 SNo_1). }
+              claim Hlt_sr3_s1ms_SNo : add_SNo s r3 < add_SNo s (add_SNo 1 (minus_SNo s)).
+              { exact (add_SNo_Lt2 s r3 (add_SNo 1 (minus_SNo s)) HsSNo Hr3SNo H1ms_SNo
+                  (RltE_lt r3 (add_SNo 1 (minus_SNo s)) Hr3_lt_1ms)). }
+              claim Hlt_sr3_1 : Rlt (add_SNo s r3) 1.
+              { apply (RltI (add_SNo s r3) 1 HtR real_1).
+                exact (Heq_s1ms (fun a _ => add_SNo s r3 < a) Hlt_sr3_s1ms_SNo). }
+              exact (not_Rlt_sym (add_SNo s r3) 1 Hlt_sr3_1). }
+          (** t is in the ball B(s,r) **)
+          claim Ht_in_ball : add_SNo s r3 :e open_ball unit_interval R_bounded_metric s r.
+          { apply (open_ballI unit_interval R_bounded_metric s r (add_SNo s r3) Ht_UI).
+            rewrite (R_bounded_metric_apply_early s (add_SNo s r3) Hs_R HtR).
+            claim Hstminus : add_SNo s (minus_SNo (add_SNo s r3)) = minus_SNo r3.
+            { rewrite (minus_add_SNo_distr s r3 HsSNo Hr3SNo).
+              rewrite (add_SNo_assoc s (minus_SNo s) (minus_SNo r3) HsSNo
+                (SNo_minus_SNo s HsSNo) (SNo_minus_SNo r3 Hr3SNo)).
+              rewrite (add_SNo_minus_SNo_rinv s HsSNo).
+              exact (add_SNo_0L (minus_SNo r3) (SNo_minus_SNo r3 Hr3SNo)). }
+            claim Habs_eq : abs_SNo (add_SNo s (minus_SNo (add_SNo s r3))) = r3.
+            { rewrite Hstminus.
+              rewrite (abs_SNo_minus r3 Hr3SNo).
+              exact (pos_abs_SNo r3 (RltE_lt 0 r3 Hr3pos)). }
+            claim Hrbd_le_r3 : Rle (R_bounded_distance s (add_SNo s r3)) r3.
+            { exact (Habs_eq (fun a _ => Rle (R_bounded_distance s (add_SNo s r3)) a)
+                (R_bounded_distance_le_abs_diff s (add_SNo s r3) Hs_R HtR)). }
+            exact (Rle_Rlt_tra (R_bounded_distance s (add_SNo s r3)) r3 r Hrbd_le_r3 Hr3_lt_r). }
+          (** t is in seq m **)
+          claim Ht_in_seqm : add_SNo s r3 :e apply_fun seq m.
+          { exact (Hball_sub (add_SNo s r3) Ht_in_ball). }
+          (** t > s **)
+          claim Hlt_s_t : Rlt s (add_SNo s r3).
+          { apply (RltI s (add_SNo s r3) Hs_R HtR).
+            exact ((add_SNo_0R s HsSNo) (fun a _ => a < add_SNo s r3)
+              (add_SNo_Lt2 s 0 r3 HsSNo SNo_0 Hr3SNo (RltE_lt 0 r3 Hr3pos))). }
+          (** t is in Sep UI (Rlt s) **)
+          claim Ht_in_ray : add_SNo s r3 :e Sep unit_interval (fun t0:set => Rlt s t0).
+          { exact (SepI unit_interval (fun t0:set => Rlt s t0) (add_SNo s r3) Ht_UI Hlt_s_t). }
+          exact (elem_implies_nonempty
             (apply_fun seq m :/\: Sep unit_interval (fun t0:set => Rlt s t0))
-            Empty
-            (binintersectI (apply_fun seq m) (Sep unit_interval (fun t0:set => Rlt s t0)) t Ht_seqm Ht_ray)
-            Hempty)). }
+            (add_SNo s r3)
+            (binintersectI (apply_fun seq m) (Sep unit_interval (fun t0:set => Rlt s t0))
+              (add_SNo s r3) Ht_in_seqm Ht_in_ray)). }
         exact (connected_union_two_intersect unit_interval unit_interval_topology
           (apply_fun seq m) (Sep unit_interval (fun t:set => Rlt s t))
           unit_interval_topology_on Hseqm_sub Hray_sub
