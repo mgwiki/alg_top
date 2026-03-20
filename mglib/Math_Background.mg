@@ -239384,8 +239384,14 @@ claim HL2_word_data :
 { (** L2 = path_concat gammaX f2 maps into V **)
   (** gammaX maps into U cap V c= V, f2 maps into V **)
   claim HL2_maps_V : forall t:set, t :e unit_interval -> apply_fun L2 t :e V.
-  { (** path_concat gammaX f2: left half maps gammaX into U cap V c= V, **)
-    (** right half maps f2 into V (f on [s,1] c= seq(n) -> V) **)
+  { (** L2 = path_concat gammaX f2 **)
+    (** gammaX maps into U cap V c= V, f2 maps [0,1] to f([s,1]) c= V **)
+    (** For each t in unit_interval, L2(t) in V **)
+    (** L2(t) = gammaX(2t) for t in left half, f2(2t-1) for t in right half **)
+    (** In both cases, the value is in V **)
+    (** gammaX(u) = gamma(u) in U cap V subset V for all u in unit_interval **)
+    (** f2(u) = f(s + (1-s)u) for u in [0,1], and s+(1-s)u in [s,1] subset seq(n) **)
+    (** so f2(u) in V by Hn_Vtype **)
     admit. }
   (** Use loop_in_subspace_induced_class to get V-class **)
   apply (loop_in_subspace_induced_class X Tx V x0 L2 Htop HV Hx0V HL2_loop HL2_maps_V).
