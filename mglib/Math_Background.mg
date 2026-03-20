@@ -239666,8 +239666,60 @@ claim HL1_word_data :
         { let t. assume Ht. exact (SepE1 unit_interval (fun t0:set => Rlt s t0) t Ht). }
         claim Hray_conn : connected_space (Sep unit_interval (fun t:set => Rlt s t))
           (subspace_topology unit_interval unit_interval_topology (Sep unit_interval (fun t:set => Rlt s t))).
-        { (** (s,1] is connected in unit_interval -- it is an interval **)
-          admit. }
+        { (** (s,1] is connected in unit_interval -- it equals halfopen_interval_right_in R s 1 **)
+          claim Hray_eq_halfopen : Sep unit_interval (fun t:set => Rlt s t) = halfopen_interval_right_in R s 1.
+          { apply set_ext.
+            - let t. assume Ht.
+              claim HtUI : t :e unit_interval. { exact (SepE1 unit_interval (fun t0:set => Rlt s t0) t Ht). }
+              claim HstRlt : Rlt s t. { exact (SepE2 unit_interval (fun t0:set => Rlt s t0) t Ht). }
+              claim HtR : t :e R. { exact (unit_interval_sub_R t HtUI). }
+              claim HstOrd : order_rel R s t. { exact (Rlt_implies_order_rel_R s t HstRlt). }
+              claim Hnlt1t : ~(Rlt 1 t).
+              { exact (andER (t :e R /\ 1 :e R) (~(Rlt 1 t)) (unit_interval_Rle1 t HtUI)). }
+              claim Ht1or : t = 1 \/ order_rel R t 1.
+              { apply (order_rel_trichotomy_or_impred R t 1 simply_ordered_set_R HtR real_1
+                  (t = 1 \/ order_rel R t 1)).
+                - assume H. apply orIR. exact H.
+                - assume H. apply orIL. exact H.
+                - assume H. apply FalseE. exact (Hnlt1t (order_rel_R_implies_Rlt 1 t H)). }
+              exact (SepI R (fun x:set => order_rel R s x /\ (x = 1 \/ order_rel R x 1)) t HtR
+                (andI (order_rel R s t) (t = 1 \/ order_rel R t 1) HstOrd Ht1or)).
+            - let t. assume Ht.
+              claim HtR : t :e R. { exact (SepE1 R (fun x:set => order_rel R s x /\ (x = 1 \/ order_rel R x 1)) t Ht). }
+              claim HtPack : order_rel R s t /\ (t = 1 \/ order_rel R t 1).
+              { exact (SepE2 R (fun x:set => order_rel R s x /\ (x = 1 \/ order_rel R x 1)) t Ht). }
+              claim HstRlt : Rlt s t.
+              { exact (order_rel_R_implies_Rlt s t (andEL (order_rel R s t) (t = 1 \/ order_rel R t 1) HtPack)). }
+              claim Ht1or : t = 1 \/ order_rel R t 1.
+              { exact (andER (order_rel R s t) (t = 1 \/ order_rel R t 1) HtPack). }
+              claim Hnlt1t : ~(Rlt 1 t).
+              { apply Ht1or.
+                - assume H. rewrite H. exact (not_Rlt_refl 1 real_1).
+                - assume H. exact (not_Rlt_sym t 1 (order_rel_R_implies_Rlt t 1 H)). }
+              claim H0ltt : Rlt 0 t. { exact (Rlt_tra 0 s t Hlt_0_s HstRlt). }
+              claim HtUI : t :e unit_interval.
+              { exact (SepI R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x)) t HtR
+                  (andI (~(Rlt t 0)) (~(Rlt 1 t)) (not_Rlt_sym 0 t H0ltt) Hnlt1t)). }
+              exact (SepI unit_interval (fun t0:set => Rlt s t0) t HtUI HstRlt). }
+          rewrite Hray_eq_halfopen.
+          apply (interval_in_unit_interval_connected s 1 (halfopen_interval_right_in R s 1)
+            Hs_R real_1 (Rlt_implies_order_rel_R s 1 Hlt_s_1)
+            (interval_in_R_halfopen_interval_right_in s 1 Hs_R real_1)).
+          let t. assume Ht.
+          claim HtR2 : t :e R. { exact (SepE1 R (fun x:set => order_rel R s x /\ (x = 1 \/ order_rel R x 1)) t Ht). }
+          claim HtPack2 : order_rel R s t /\ (t = 1 \/ order_rel R t 1).
+          { exact (SepE2 R (fun x:set => order_rel R s x /\ (x = 1 \/ order_rel R x 1)) t Ht). }
+          claim HstRlt2 : Rlt s t.
+          { exact (order_rel_R_implies_Rlt s t (andEL (order_rel R s t) (t = 1 \/ order_rel R t 1) HtPack2)). }
+          claim Ht1or2 : t = 1 \/ order_rel R t 1.
+          { exact (andER (order_rel R s t) (t = 1 \/ order_rel R t 1) HtPack2). }
+          claim Hnlt1t2 : ~(Rlt 1 t).
+          { apply Ht1or2.
+            - assume H. rewrite H. exact (not_Rlt_refl 1 real_1).
+            - assume H. exact (not_Rlt_sym t 1 (order_rel_R_implies_Rlt t 1 H)). }
+          claim H0ltt2 : Rlt 0 t. { exact (Rlt_tra 0 s t Hlt_0_s HstRlt2). }
+          exact (SepI R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x)) t HtR2
+            (andI (~(Rlt t 0)) (~(Rlt 1 t)) (not_Rlt_sym 0 t H0ltt2) Hnlt1t2)). }
         claim Hoverlap_lastI : apply_fun seq m :/\: Sep unit_interval (fun t:set => Rlt s t) <> Empty.
         { (** seq(m) open containing s with s < 1 -> contains points > s **)
           (** Use metric ball: seq(m) in metric_topology -> ball B(s,r) c= seq(m) **)
@@ -240277,7 +240329,53 @@ apply (nat_ind P).
         apply (HballUV n (ordsuccI2 n)).
         + assume Hn_Utype.
           (** Case B2: seq(m) V-type, seq(n) U-type -- symmetric to B1 with U,V swapped **)
-          admit.
+          claim HcoverVU : X = V :\/: U.
+          { rewrite (binunion_comm V U). exact Hcover. }
+          claim Hx0VU : x0 :e V :/\: U.
+          { exact (binintersectI V U x0 (binintersectE2 U V x0 Hx0UV) (binintersectE1 U V x0 Hx0UV)). }
+          claim HpcVU : path_connected_space (V :/\: U) (subspace_topology X Tx (V :/\: U)).
+          { claim HVUeq : V :/\: U = U :/\: V.
+            { exact (set_ext (V :/\: U) (U :/\: V) (binintersect_com_Subq V U) (binintersect_com_Subq U V)). }
+            rewrite HVUeq. exact HpcUV. }
+          claim HballUV_VU : forall k:set, k :e ordsucc n ->
+            (forall t:set, t :e apply_fun seq k -> apply_fun f t :e V) \/
+            (forall t:set, t :e apply_fun seq k -> apply_fun f t :e U).
+          { let k. assume Hkon.
+            apply (HballUV k Hkon).
+            - assume HU. apply orIR. exact HU.
+            - assume HV. apply orIL. exact HV. }
+          claim HresultVU :
+            exists nVU:set, nVU :e omega /\
+            exists gsVU:set, function_on gsVU nVU (fundamental_group X Tx x0) /\
+              (forall i:set, i :e nVU ->
+                (exists ucls:set, ucls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                  apply_fun gsVU i =
+                    apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                      (graph V (fun x:set => x))) ucls) \/
+                (exists vcls:set, vcls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+                  apply_fun gsVU i =
+                    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                      (graph U (fun x:set => x))) vcls)) /\
+              path_homotopy_class_loop X Tx x0 f = nat_primrec (fundamental_group_id X Tx x0)
+                (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gsVU k)) nVU.
+          { exact (nch_transition_UV_step m HmNat IH X Tx V U x0 f seq
+              Htop HV HU HcoverVU Hx0VU HpcVU HfLoop
+              HseqFnPow HseqOpen HseqConn H0_in H1_in Hoverlap HballUV_VU
+              Hm_Vtype Hn_Utype). }
+          apply HresultVU. let nVU. assume HnVU_pack.
+          apply HnVU_pack. assume HnVU_omega HrestVU.
+          apply HrestVU. let gsVU. assume HgsVU_pack.
+          apply HgsVU_pack. assume HgsVU_fn_type HgsVU_class.
+          apply HgsVU_fn_type. assume HgsVU_fn HgsVU_type.
+          witness nVU. apply andI.
+          - exact HnVU_omega.
+          - witness gsVU. apply and3I.
+            + exact HgsVU_fn.
+            + let i. assume Hi.
+              apply (HgsVU_type i Hi).
+              * assume HVcls. apply orIR. exact HVcls.
+              * assume HUcls. apply orIL. exact HUcls.
+            + exact HgsVU_class.
         + assume Hn_Vtype.
           (** Case A2: both V-type — merge seq(m) and seq(n) into seq'(m) **)
           set seq' := graph (ordsucc m) (fun k:set =>
