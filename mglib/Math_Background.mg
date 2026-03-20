@@ -236939,6 +236939,157 @@ exact (path_between_continuous_loop_at X Tx x0
   HallBetween HallCont).
 Qed.
 
+(** Infrastructure: insert gamma^{-1} then gamma at a junction point. **)
+(** This is the key algebraic step for turning concatenations of paths between intermediate points **)
+(** into concatenations of loops at the basepoint. **)
+(** Proven Charlie **)
+Lemma path_concat_insert_rev_gamma_gamma : forall X Tx x0 y p q gamma:set,
+  path_between X x0 y p ->
+  continuous_map unit_interval unit_interval_topology X Tx p ->
+  path_between X y x0 q ->
+  continuous_map unit_interval unit_interval_topology X Tx q ->
+  path_between X x0 y gamma ->
+  continuous_map unit_interval unit_interval_topology X Tx gamma ->
+  path_homotopic X Tx x0 x0
+    (path_concat p q)
+    (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q)).
+let X Tx x0 y p q gamma.
+assume Hp HpC Hq HqC Hga HgaC.
+claim Hp0 : apply_fun p 0 = x0. { exact (path_between_at_zero X x0 y p Hp). }
+claim Hp1 : apply_fun p 1 = y. { exact (path_between_at_one X x0 y p Hp). }
+claim Hq0 : apply_fun q 0 = y. { exact (path_between_at_zero X y x0 q Hq). }
+claim Hq1 : apply_fun q 1 = x0. { exact (path_between_at_one X y x0 q Hq). }
+claim Hga0 : apply_fun gamma 0 = x0. { exact (path_between_at_zero X x0 y gamma Hga). }
+claim Hga1 : apply_fun gamma 1 = y. { exact (path_between_at_one X x0 y gamma Hga). }
+claim HrevC : continuous_map unit_interval unit_interval_topology X Tx (reverse_path gamma).
+{ exact (reverse_path_continuous X Tx gamma HgaC). }
+claim Hrev0 : apply_fun (reverse_path gamma) 0 = y.
+{ rewrite (reverse_path_at_zero gamma). exact Hga1. }
+claim Hrev1 : apply_fun (reverse_path gamma) 1 = x0.
+{ rewrite (reverse_path_at_one gamma). exact Hga0. }
+claim HpgCont : continuous_map unit_interval unit_interval_topology X Tx (path_concat p (reverse_path gamma)).
+{
+  exact (path_concat_continuous X Tx x0 y x0 p (reverse_path gamma)
+    HpC HrevC Hp0 Hp1 Hrev0 Hrev1).
+}
+claim HgqCont : continuous_map unit_interval unit_interval_topology X Tx (path_concat gamma q).
+{
+  exact (path_concat_continuous X Tx x0 y x0 gamma q
+    HgaC HqC Hga0 Hga1 Hq0 Hq1).
+}
+claim Hgq0 : apply_fun (path_concat gamma q) 0 = x0.
+{ rewrite (path_concat_at_zero gamma q). exact Hga0. }
+claim Hgq1 : apply_fun (path_concat gamma q) 1 = x0.
+{ rewrite (path_concat_at_one gamma q). exact Hq1. }
+claim Hassoc1 :
+  path_homotopic X Tx x0 x0
+    (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q))
+    (path_concat p (path_concat (reverse_path gamma) (path_concat gamma q))).
+{
+  exact (Lemma_51_1_path_homotopy_sym X Tx x0 x0
+    (path_concat p (path_concat (reverse_path gamma) (path_concat gamma q)))
+    (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q))
+    (Theorem_51_2_associativity X Tx x0 y x0 x0
+      p (reverse_path gamma) (path_concat gamma q)
+      HpC HrevC HgqCont
+      Hp0 Hp1
+      Hrev0 Hrev1
+      Hgq0 Hgq1)).
+}
+claim Hassoc2 :
+  path_homotopic X Tx y x0
+    (path_concat (reverse_path gamma) (path_concat gamma q))
+    (path_concat (path_concat (reverse_path gamma) gamma) q).
+{
+  exact (Theorem_51_2_associativity X Tx y x0 y x0
+    (reverse_path gamma) gamma q
+    HrevC HgaC HqC
+    Hrev0 Hrev1
+    Hga0 Hga1
+    Hq0 Hq1).
+}
+claim Hleftinv :
+  path_homotopic X Tx y y
+    (path_concat (reverse_path gamma) gamma)
+    (constant_path y).
+{
+  exact (Theorem_51_2_left_inverse X Tx x0 y gamma
+    HgaC Hga0 Hga1).
+}
+claim HqRefl : path_homotopic X Tx y x0 q q.
+{
+  exact (Lemma_51_1_path_homotopy_refl X Tx y x0 q HqC Hq0 Hq1).
+}
+claim Hmid_replace :
+  path_homotopic X Tx y x0
+    (path_concat (path_concat (reverse_path gamma) gamma) q)
+    (path_concat (constant_path y) q).
+{
+  exact (path_concat_well_defined_on_classes X Tx y y x0
+    (path_concat (reverse_path gamma) gamma) (constant_path y)
+    q q
+    Hleftinv HqRefl).
+}
+claim Hconst_left :
+  path_homotopic X Tx y x0
+    (path_concat (constant_path y) q)
+    q.
+{
+  claim HyX : y :e X.
+  { rewrite <- Hq0.
+    exact (path_between_value_in_space X y x0 q 0 Hq zero_in_unit_interval). }
+  exact (Theorem_51_2_left_identity X Tx y x0 q HqC Hq0 Hq1
+    HyX).
+}
+claim Hmid_to_q :
+  path_homotopic X Tx y x0
+    (path_concat (reverse_path gamma) (path_concat gamma q))
+    q.
+{
+  exact (Lemma_51_1_path_homotopy_trans X Tx y x0
+    (path_concat (reverse_path gamma) (path_concat gamma q))
+    (path_concat (path_concat (reverse_path gamma) gamma) q)
+    q
+    Hassoc2
+    (Lemma_51_1_path_homotopy_trans X Tx y x0
+      (path_concat (path_concat (reverse_path gamma) gamma) q)
+      (path_concat (constant_path y) q)
+      q
+      Hmid_replace
+      Hconst_left)).
+}
+claim HpRefl : path_homotopic X Tx x0 y p p.
+{
+  exact (Lemma_51_1_path_homotopy_refl X Tx x0 y p HpC Hp0 Hp1).
+}
+claim Houter_replace :
+  path_homotopic X Tx x0 x0
+    (path_concat p (path_concat (reverse_path gamma) (path_concat gamma q)))
+    (path_concat p q).
+{
+  exact (path_concat_well_defined_on_classes X Tx x0 y x0
+    p p
+    (path_concat (reverse_path gamma) (path_concat gamma q)) q
+    HpRefl Hmid_to_q).
+}
+claim HRHS_to_LHS :
+  path_homotopic X Tx x0 x0
+    (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q))
+    (path_concat p q).
+{
+  exact (Lemma_51_1_path_homotopy_trans X Tx x0 x0
+    (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q))
+    (path_concat p (path_concat (reverse_path gamma) (path_concat gamma q)))
+    (path_concat p q)
+    Hassoc1
+    Houter_replace).
+}
+exact (Lemma_51_1_path_homotopy_sym X Tx x0 x0
+  (path_concat (path_concat p (reverse_path gamma)) (path_concat gamma q))
+  (path_concat p q)
+  HRHS_to_LHS).
+Qed.
+
 (** Infrastructure: chain of U-type open balls in unit_interval covers a subinterval. **)
 (** Given overlapping balls 0..k all mapping f to U, their union is connected **)
 (** and contains 0 (from ball 0). By connected_subsets_real_are_intervals, **)
