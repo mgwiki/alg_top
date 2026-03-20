@@ -239624,6 +239624,110 @@ apply (binintersectI U V (apply_fun p0 1)).
 - exact (Hp0V 1 one_in_unit_interval).
 Qed.
 
+(** Proven Charlie **)
+(** Infrastructure: graphifying a continuous path gives a pointwise-equal homotopic path. **)
+Lemma path_homotopic_to_graph_on_unit_interval : forall X Tx x0 x1 f:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  apply_fun f 0 = x0 ->
+  apply_fun f 1 = x1 ->
+  path_homotopic X Tx x0 x1 f (graph unit_interval (fun t:set => apply_fun f t)).
+let X Tx x0 x1 f.
+assume HfCont Hf0 Hf1.
+set g := graph unit_interval (fun t:set => apply_fun f t).
+claim HgCont : continuous_map unit_interval unit_interval_topology X Tx g.
+{
+  apply (continuous_map_extensional
+    unit_interval unit_interval_topology
+    X Tx
+    f g
+    HfCont).
+  let t. assume Ht.
+  exact (apply_fun_graph unit_interval (fun s:set => apply_fun f s) t Ht).
+}
+claim Hg0 : apply_fun g 0 = x0.
+{
+  rewrite (apply_fun_graph unit_interval (fun s:set => apply_fun f s) 0 zero_in_unit_interval).
+  exact Hf0.
+}
+claim Hg1 : apply_fun g 1 = x1.
+{
+  rewrite (apply_fun_graph unit_interval (fun s:set => apply_fun f s) 1 one_in_unit_interval).
+  exact Hf1.
+}
+claim Hpw : forall t:set, t :e unit_interval -> apply_fun f t = apply_fun g t.
+{
+  let t. assume Ht.
+  exact (eq_symm
+    (apply_fun g t)
+    (apply_fun f t)
+    (apply_fun_graph unit_interval (fun s:set => apply_fun f s) t Ht)).
+}
+exact (path_homotopic_of_pointwise_equal
+  X Tx x0 x1
+  f g
+  HfCont HgCont
+  Hf0 Hf1 Hg0 Hg1
+  Hpw).
+Qed.
+
+(** Proven Charlie **)
+(** Infrastructure: graphifying a continuous loop gives a loop_space element. **)
+Lemma graph_on_unit_interval_in_loop_space : forall X Tx x0 f:set,
+  topology_on X Tx ->
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  apply_fun f 0 = x0 ->
+  apply_fun f 1 = x0 ->
+  (graph unit_interval (fun t:set => apply_fun f t)) :e loop_space X Tx x0.
+let X Tx x0 f.
+assume Htop HfCont Hf0 Hf1.
+set g := graph unit_interval (fun t:set => apply_fun f t).
+claim HfFun : function_on f unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f HfCont). }
+claim HgTot : g :e total_function_space unit_interval X.
+{
+  exact (graph_in_total_function_space unit_interval X
+    (fun t:set => apply_fun f t)
+    (fun t Ht => HfFun t Ht)).
+}
+claim HgFS : g :e function_space unit_interval X.
+{ exact (total_function_space_sub_function_space unit_interval X g HgTot). }
+claim HgCont : continuous_map unit_interval unit_interval_topology X Tx g.
+{
+  apply (continuous_map_extensional
+    unit_interval unit_interval_topology
+    X Tx
+    f g
+    HfCont).
+  let t. assume Ht.
+  exact (apply_fun_graph unit_interval (fun s:set => apply_fun f s) t Ht).
+}
+claim Hg0 : apply_fun g 0 = x0.
+{
+  rewrite (apply_fun_graph unit_interval (fun s:set => apply_fun f s) 0 zero_in_unit_interval).
+  exact Hf0.
+}
+claim Hg1 : apply_fun g 1 = x0.
+{
+  rewrite (apply_fun_graph unit_interval (fun s:set => apply_fun f s) 1 one_in_unit_interval).
+  exact Hf1.
+}
+claim HgLoopAt : loop_at X Tx x0 g.
+{
+  apply (loop_at_fold X Tx x0 g).
+  apply andI.
+  - apply andI.
+    + exact HgCont.
+    + exact Hg0.
+  - exact Hg1.
+}
+exact (SepI
+  (function_space unit_interval X)
+  (fun h:set => loop_at X Tx x0 h)
+  g
+  HgFS
+  HgLoopAt).
+Qed.
+
 (** Infrastructure: word data from a finite concatenation of U or V segments.
     This is intended for chain ordered parametrizations (path_concat_nat) where each
     segment lies entirely in U or entirely in V, and consecutive segments join. **)
