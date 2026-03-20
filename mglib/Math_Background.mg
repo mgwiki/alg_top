@@ -239080,6 +239080,74 @@ claim HP : P n.
 exact (HP segs HsegU HsegsCompat).
 Qed.
 
+(** Proven Charlie **)
+Lemma preimage_of_extensional : forall X f g V:set,
+  (forall x:set, x :e X -> apply_fun f x = apply_fun g x) ->
+  preimage_of X f V = preimage_of X g V.
+let X f g V.
+assume Heq.
+apply set_ext.
+- let x. assume Hx.
+  claim HxX : x :e X.
+  { exact (SepE1 X (fun z:set => apply_fun f z :e V) x Hx). }
+  claim HxV : apply_fun f x :e V.
+  { exact (SepE2 X (fun z:set => apply_fun f z :e V) x Hx). }
+  claim HxgV : apply_fun g x :e V.
+  { rewrite <- (Heq x HxX). exact HxV. }
+  exact (SepI X (fun z:set => apply_fun g z :e V) x HxX HxgV).
+- let x. assume Hx.
+  claim HxX : x :e X.
+  { exact (SepE1 X (fun z:set => apply_fun g z :e V) x Hx). }
+  claim HxV : apply_fun g x :e V.
+  { exact (SepE2 X (fun z:set => apply_fun g z :e V) x Hx). }
+  claim HxfV : apply_fun f x :e V.
+  { rewrite (Heq x HxX). exact HxV. }
+  exact (SepI X (fun z:set => apply_fun f z :e V) x HxX HxfV).
+Qed.
+
+(** Proven Charlie **)
+Lemma continuous_map_extensional : forall X Tx Y Ty f g:set,
+  continuous_map X Tx Y Ty f ->
+  (forall x:set, x :e X -> apply_fun g x = apply_fun f x) ->
+  continuous_map X Tx Y Ty g.
+let X Tx Y Ty f g.
+assume Hcont Heq.
+apply (and4E
+  (topology_on X Tx)
+  (topology_on Y Ty)
+  (function_on f X Y)
+  (forall V:set, V :e Ty -> preimage_of X f V :e Tx)
+  Hcont).
+assume HtopX HtopY HfFun Hpre.
+claim HgFun : function_on g X Y.
+{
+  let x. assume HxX.
+  rewrite (Heq x HxX).
+  exact (HfFun x HxX).
+}
+claim HgPre : forall V:set, V :e Ty -> preimage_of X g V :e Tx.
+{
+  let V. assume HV.
+  claim Hpre_eq : preimage_of X g V = preimage_of X f V.
+  { exact (preimage_of_extensional X g f V (fun x Hx => Heq x Hx)). }
+  exact (eq_subst_mem
+    (preimage_of X g V)
+    (preimage_of X f V)
+    Tx
+    Hpre_eq
+    (Hpre V HV)).
+}
+exact (and4I
+  (topology_on X Tx)
+  (topology_on Y Ty)
+  (function_on g X Y)
+  (forall V:set, V :e Ty -> preimage_of X g V :e Tx)
+  HtopX
+  HtopY
+  HgFun
+  HgPre).
+Qed.
+
 (** Infrastructure: word data from a finite concatenation of U or V segments.
     This is intended for chain ordered parametrizations (path_concat_nat) where each
     segment lies entirely in U or entirely in V, and consecutive segments join. **)
