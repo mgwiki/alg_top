@@ -236358,6 +236358,511 @@ claim HPn : P n.
 exact (HPn seq x0 x1 HseqPow HseqConn Hx0 Hx1 Hover).
 Qed.
 
+(** Infrastructure: build explicit segment maps inside each set of a finite overlapping chain in unit_interval. **)
+(** The resulting segs(k) is a path in unit_interval with image in seq(k), and the segments join consecutively. **)
+(** Proven Charlie **)
+Lemma unit_interval_chain_path_concat_nat_data :
+  forall n seq x0 x1:set,
+    n :e omega ->
+    function_on seq (ordsucc n) (Power unit_interval) ->
+    (forall k:set, k :e ordsucc n ->
+      connected_space (apply_fun seq k)
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seq k))) ->
+    x0 :e apply_fun seq 0 ->
+    x1 :e apply_fun seq n ->
+    (forall k:set, k :e n -> apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty) ->
+    exists segs:set,
+      function_on segs (ordsucc n) (function_space unit_interval unit_interval) /\
+      (forall k:set, k :e ordsucc n ->
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs k) /\
+        (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs k) t :e apply_fun seq k)) /\
+      apply_fun (apply_fun segs 0) 0 = x0 /\
+      apply_fun (apply_fun segs n) 1 = x1 /\
+      (forall k:set, k :e n ->
+        apply_fun (apply_fun segs k) 1 = apply_fun (apply_fun segs (ordsucc k)) 0).
+let n seq x0 x1.
+assume HnOmega HseqPow HseqConn Hx0 Hx1 Hover.
+claim HnNat : nat_p n. { exact (omega_nat_p n HnOmega). }
+set P := fun m:set =>
+  forall seqm a0 a1:set,
+    function_on seqm (ordsucc m) (Power unit_interval) ->
+    (forall k:set, k :e ordsucc m ->
+      connected_space (apply_fun seqm k)
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seqm k))) ->
+    a0 :e apply_fun seqm 0 ->
+    a1 :e apply_fun seqm m ->
+    (forall k:set, k :e m -> apply_fun seqm k :/\: apply_fun seqm (ordsucc k) <> Empty) ->
+    exists segsm:set,
+      function_on segsm (ordsucc m) (function_space unit_interval unit_interval) /\
+      (forall k:set, k :e ordsucc m ->
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsm k) /\
+        (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsm k) t :e apply_fun seqm k)) /\
+      apply_fun (apply_fun segsm 0) 0 = a0 /\
+      apply_fun (apply_fun segsm m) 1 = a1 /\
+      (forall k:set, k :e m ->
+        apply_fun (apply_fun segsm k) 1 = apply_fun (apply_fun segsm (ordsucc k)) 0).
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - (** Base m = 0 **)
+    let seqm a0 a1.
+    assume HseqmPow HseqmConn Ha0 Ha1 Hinter0.
+    set A0 := apply_fun seqm 0.
+    claim HA0sub : A0 c= unit_interval.
+    { exact (PowerE unit_interval A0 (HseqmPow 0 (ordsuccI2 0))). }
+    claim HconnA0 :
+      connected_space A0 (subspace_topology unit_interval unit_interval_topology A0).
+    { exact (HseqmConn 0 (ordsuccI2 0)). }
+    claim Hseg_ex :
+      exists p:set,
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology p /\
+        (forall t:set, t :e unit_interval -> apply_fun p t :e A0) /\
+        apply_fun p 0 = a0 /\
+        apply_fun p 1 = a1.
+    { exact (connected_subset_unit_interval_path_between A0 a0 a1 HA0sub HconnA0 Ha0 Ha1). }
+    apply Hseg_ex. let p. assume HpPack.
+    apply (and4E
+      (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology p)
+      (forall t:set, t :e unit_interval -> apply_fun p t :e A0)
+      (apply_fun p 0 = a0)
+      (apply_fun p 1 = a1)
+      HpPack).
+    assume HpCont HpRange Hp0 Hp1.
+    (** Turn p into an element of function_space by graphifying its pointwise action. **)
+    set seg0 := graph unit_interval (fun t:set => apply_fun p t).
+    claim Hseg0FS : seg0 :e function_space unit_interval unit_interval.
+    {
+      apply (graph_in_function_space unit_interval unit_interval (fun t:set => apply_fun p t)).
+      let t. assume Ht.
+      exact (HA0sub (apply_fun p t) (HpRange t Ht)).
+    }
+    claim Hseg0Fun : function_on seg0 unit_interval unit_interval.
+    { exact (function_on_of_function_space seg0 unit_interval unit_interval Hseg0FS). }
+    claim Hagree : forall t:set, t :e unit_interval -> apply_fun seg0 t = apply_fun p t.
+    { let t. assume Ht. exact (apply_fun_graph unit_interval (fun t0:set => apply_fun p t0) t Ht). }
+    claim Hseg0Cont :
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg0.
+    {
+      exact (continuous_map_congr_on unit_interval unit_interval_topology unit_interval unit_interval_topology
+        p seg0 HpCont Hseg0Fun (fun t Ht => eq_symm (apply_fun seg0 t) (apply_fun p t) (Hagree t Ht))).
+    }
+    set segsm := graph (ordsucc 0) (fun k:set => seg0).
+    claim HsegsmFS : segsm :e function_space (ordsucc 0) (function_space unit_interval unit_interval).
+    {
+      apply (graph_in_function_space (ordsucc 0) (function_space unit_interval unit_interval)
+        (fun k:set => seg0)).
+      let k. assume _. exact Hseg0FS.
+    }
+    claim HsegsmFun : function_on segsm (ordsucc 0) (function_space unit_interval unit_interval).
+    { exact (function_on_of_function_space segsm (ordsucc 0) (function_space unit_interval unit_interval) HsegsmFS). }
+    witness segsm.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * apply andI.
+          { exact HsegsmFun. }
+          { let k. assume Hk : k :e ordsucc 0.
+            apply (ordsuccE 0 k Hk).
+            - assume Hk0. exact (FalseE (EmptyE k Hk0)
+                (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsm k) /\
+                 (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsm k) t :e apply_fun seqm k))).
+            - assume HkEq. rewrite HkEq.
+              rewrite (apply_fun_graph (ordsucc 0) (fun k0:set => seg0) 0 (ordsuccI2 0)).
+              apply andI.
+              + exact Hseg0Cont.
+              + let t. assume Ht.
+                rewrite (apply_fun_graph (ordsucc 0) (fun k0:set => seg0) 0 (ordsuccI2 0)).
+                exact (eq_subst_mem_rev
+                  (apply_fun p t)
+                  (apply_fun seg0 t)
+                  A0
+                  (eq_symm (apply_fun seg0 t) (apply_fun p t) (Hagree t Ht))
+                  (HpRange t Ht)). }
+        * rewrite (apply_fun_graph (ordsucc 0) (fun k0:set => seg0) 0 (ordsuccI2 0)).
+          rewrite (Hagree 0 zero_in_unit_interval).
+          exact Hp0.
+      + rewrite (apply_fun_graph (ordsucc 0) (fun k0:set => seg0) 0 (ordsuccI2 0)).
+        rewrite (Hagree 1 one_in_unit_interval).
+        exact Hp1.
+    - let k. assume Hk : k :e 0.
+      exact (FalseE (EmptyE k Hk)
+        (apply_fun (apply_fun segsm k) 1 = apply_fun (apply_fun segsm (ordsucc k)) 0)).
+  - (** Step m -> ordsucc m **)
+    let m. assume HmNat IH.
+    let seqm a0 a1.
+    assume HseqmPow HseqmConn Ha0 Ha1 Hinter.
+    set sm := ordsucc m.
+    claim HsmEq : sm = ordsucc m. { reflexivity. }
+    (** Pick a glue point s in the last overlap seqm(m) cap seqm(m+1). **)
+    claim Hovlp_last : apply_fun seqm m :/\: apply_fun seqm sm <> Empty.
+    { exact (Hinter m (ordsuccI2 m)). }
+    apply (nonempty_has_element (apply_fun seqm m :/\: apply_fun seqm sm) Hovlp_last).
+    let s. assume HsIn.
+    claim HsM : s :e apply_fun seqm m.
+    { exact (binintersectE1 (apply_fun seqm m) (apply_fun seqm sm) s HsIn). }
+    claim HsSM : s :e apply_fun seqm sm.
+    { exact (binintersectE2 (apply_fun seqm m) (apply_fun seqm sm) s HsIn). }
+    (** Apply IH to the prefix chain 0..m with endpoint s. **)
+    claim Hseqm_pre : function_on seqm (ordsucc m) (Power unit_interval).
+    {
+      exact (function_on_subdomain
+        seqm
+        (ordsucc sm)
+        (Power unit_interval)
+        (ordsucc m)
+        HseqmPow
+        (ordsuccI1 (ordsucc m))).
+    }
+    claim HseqmConn_pre : forall k:set, k :e ordsucc m ->
+      connected_space (apply_fun seqm k)
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seqm k)).
+    { let k. assume Hk. exact (HseqmConn k (ordsuccI1 (ordsucc m) k Hk)). }
+    claim Hinter_pre : forall k:set, k :e m -> apply_fun seqm k :/\: apply_fun seqm (ordsucc k) <> Empty.
+    { let k. assume Hk. exact (Hinter k (ordsuccI1 m k Hk)). }
+    apply (IH seqm a0 s Hseqm_pre HseqmConn_pre Ha0 HsM Hinter_pre).
+    let segs_pre. assume HprePack.
+    (** Unpack IH data. **)
+    claim HpreABCD :
+      ((function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval) /\
+        (forall k:set, k :e ordsucc m ->
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+          (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k))) /\
+       apply_fun (apply_fun segs_pre 0) 0 = a0) /\
+      apply_fun (apply_fun segs_pre m) 1 = s.
+    {
+      exact (andEL
+        (((function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval) /\
+           (forall k:set, k :e ordsucc m ->
+             continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+             (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k))) /\
+          apply_fun (apply_fun segs_pre 0) 0 = a0) /\
+         apply_fun (apply_fun segs_pre m) 1 = s)
+        (forall k:set, k :e m ->
+          apply_fun (apply_fun segs_pre k) 1 = apply_fun (apply_fun segs_pre (ordsucc k)) 0)
+        HprePack).
+    }
+    claim HpreCompat :
+      forall k:set, k :e m ->
+        apply_fun (apply_fun segs_pre k) 1 = apply_fun (apply_fun segs_pre (ordsucc k)) 0.
+    {
+      exact (andER
+        (((function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval) /\
+           (forall k:set, k :e ordsucc m ->
+             continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+             (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k))) /\
+          apply_fun (apply_fun segs_pre 0) 0 = a0) /\
+         apply_fun (apply_fun segs_pre m) 1 = s)
+        (forall k:set, k :e m ->
+          apply_fun (apply_fun segs_pre k) 1 = apply_fun (apply_fun segs_pre (ordsucc k)) 0)
+        HprePack).
+    }
+    claim HpreABC :
+      (function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval) /\
+       (forall k:set, k :e ordsucc m ->
+         continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+         (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k))) /\
+      apply_fun (apply_fun segs_pre 0) 0 = a0.
+    { exact (andEL
+        ((function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval) /\
+          (forall k:set, k :e ordsucc m ->
+            continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+            (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k))) /\
+         apply_fun (apply_fun segs_pre 0) 0 = a0)
+        (apply_fun (apply_fun segs_pre m) 1 = s)
+        HpreABCD). }
+    claim Hpre_m1 : apply_fun (apply_fun segs_pre m) 1 = s.
+    { exact (andER
+        ((function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval) /\
+          (forall k:set, k :e ordsucc m ->
+            continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+            (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k))) /\
+         apply_fun (apply_fun segs_pre 0) 0 = a0)
+        (apply_fun (apply_fun segs_pre m) 1 = s)
+        HpreABCD). }
+    claim HpreAB :
+      function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval) /\
+      (forall k:set, k :e ordsucc m ->
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+        (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k)).
+    { exact (andEL
+        (function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval) /\
+         (forall k:set, k :e ordsucc m ->
+           continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+           (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k)))
+        (apply_fun (apply_fun segs_pre 0) 0 = a0)
+        HpreABC). }
+    claim Hpre0 : apply_fun (apply_fun segs_pre 0) 0 = a0.
+    { exact (andER
+        (function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval) /\
+         (forall k:set, k :e ordsucc m ->
+           continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+           (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k)))
+        (apply_fun (apply_fun segs_pre 0) 0 = a0)
+        HpreABC). }
+    claim HpreFun :
+      function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval).
+    { exact (andEL
+        (function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval))
+        (forall k:set, k :e ordsucc m ->
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+          (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k))
+        HpreAB). }
+    claim HpreProp :
+      forall k:set, k :e ordsucc m ->
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+        (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k).
+    { exact (andER
+        (function_on segs_pre (ordsucc m) (function_space unit_interval unit_interval))
+        (forall k:set, k :e ordsucc m ->
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+          (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k))
+        HpreAB). }
+    (** Build last segment inside seqm(m+1) from s to a1. **)
+    claim HAsm_sub : apply_fun seqm sm c= unit_interval.
+    { exact (PowerE unit_interval (apply_fun seqm sm) (HseqmPow sm (ordsuccI2 sm))). }
+    claim HAsm_conn :
+      connected_space (apply_fun seqm sm)
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seqm sm)).
+    { exact (HseqmConn sm (ordsuccI2 sm)). }
+    claim Hseg_ex :
+      exists p:set,
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology p /\
+        (forall t:set, t :e unit_interval -> apply_fun p t :e apply_fun seqm sm) /\
+        apply_fun p 0 = s /\
+        apply_fun p 1 = a1.
+    { exact (connected_subset_unit_interval_path_between (apply_fun seqm sm) s a1 HAsm_sub HAsm_conn HsSM Ha1). }
+    apply Hseg_ex. let p. assume HpPack.
+    apply (and4E
+      (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology p)
+      (forall t:set, t :e unit_interval -> apply_fun p t :e apply_fun seqm sm)
+      (apply_fun p 0 = s)
+      (apply_fun p 1 = a1)
+      HpPack).
+    assume HpCont HpRange Hp0 Hp1.
+    set seg_last := graph unit_interval (fun t:set => apply_fun p t).
+    claim HsegLastFS : seg_last :e function_space unit_interval unit_interval.
+    {
+      apply (graph_in_function_space unit_interval unit_interval (fun t:set => apply_fun p t)).
+      let t. assume Ht.
+      exact (HAsm_sub (apply_fun p t) (HpRange t Ht)).
+    }
+    claim HsegLastFun : function_on seg_last unit_interval unit_interval.
+    { exact (function_on_of_function_space seg_last unit_interval unit_interval HsegLastFS). }
+    claim HagreeL : forall t:set, t :e unit_interval -> apply_fun seg_last t = apply_fun p t.
+    { let t. assume Ht. exact (apply_fun_graph unit_interval (fun t0:set => apply_fun p t0) t Ht). }
+    claim HsegLastCont :
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg_last.
+    {
+      exact (continuous_map_congr_on unit_interval unit_interval_topology unit_interval unit_interval_topology
+        p seg_last HpCont HsegLastFun (fun t Ht => eq_symm (apply_fun seg_last t) (apply_fun p t) (HagreeL t Ht))).
+    }
+    claim HsegLast0 : apply_fun seg_last 0 = s.
+    { rewrite (HagreeL 0 zero_in_unit_interval). exact Hp0. }
+    claim HsegLast1 : apply_fun seg_last 1 = a1.
+    { rewrite (HagreeL 1 one_in_unit_interval). exact Hp1. }
+    (** Extend segs_pre with seg_last at the end. **)
+    set segsm := graph (ordsucc sm) (fun k:set =>
+      If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last).
+    claim HsegsmFS : segsm :e function_space (ordsucc sm) (function_space unit_interval unit_interval).
+    {
+      apply (graph_in_function_space (ordsucc sm) (function_space unit_interval unit_interval)
+        (fun k:set => If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last)).
+      let k. assume HkOn : k :e ordsucc sm.
+      apply (xm (k :e ordsucc m)).
+      + assume HkPre.
+        claim Hif : If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last = apply_fun segs_pre k.
+        { exact (If_i_1 (k :e ordsucc m) (apply_fun segs_pre k) seg_last HkPre). }
+        exact (eq_subst_mem_rev
+          (apply_fun segs_pre k)
+          (If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last)
+          (function_space unit_interval unit_interval)
+          (eq_symm (If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last) (apply_fun segs_pre k) Hif)
+          (HpreFun k HkPre)).
+      + assume HkNotPre.
+        claim Hif : If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last = seg_last.
+        { exact (If_i_0 (k :e ordsucc m) (apply_fun segs_pre k) seg_last HkNotPre). }
+        exact (eq_subst_mem_rev
+          seg_last
+          (If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last)
+          (function_space unit_interval unit_interval)
+          (eq_symm (If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last) seg_last Hif)
+          HsegLastFS).
+    }
+    claim HsegsmFun : function_on segsm (ordsucc sm) (function_space unit_interval unit_interval).
+    { exact (function_on_of_function_space segsm (ordsucc sm) (function_space unit_interval unit_interval) HsegsmFS). }
+    witness segsm.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * apply andI.
+          { exact HsegsmFun. }
+          { let k. assume HkOn : k :e ordsucc sm.
+            apply (ordsuccE sm k HkOn).
+            - assume HkIn.
+              claim HkInPre : k :e ordsucc m.
+              { exact (eq_subst_mem_set k sm (ordsucc m) HkIn HsmEq). }
+              claim HsegprePack :
+                continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k) /\
+                (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k).
+              { exact (HpreProp k HkInPre). }
+              claim HsegpreCont :
+                continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k).
+              { exact (andEL
+                  (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k))
+                  (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k)
+                  HsegprePack). }
+              claim HsegpreRange :
+                forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k.
+              { exact (andER
+                  (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segs_pre k))
+                  (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k)
+                  HsegprePack). }
+              claim Hsegsmk_eq :
+                apply_fun segsm k = apply_fun segs_pre k.
+              {
+                claim H1 :
+                  apply_fun segsm k =
+                    If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last.
+                { exact (apply_fun_graph (ordsucc sm)
+                    (fun k0:set => If_i (k0 :e ordsucc m) (apply_fun segs_pre k0) seg_last)
+                    k HkOn). }
+                claim H2 :
+                  If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last = apply_fun segs_pre k.
+                { exact (If_i_1 (k :e ordsucc m) (apply_fun segs_pre k) seg_last HkInPre). }
+                exact (eq_i_tra (apply_fun segsm k)
+                  (If_i (k :e ordsucc m) (apply_fun segs_pre k) seg_last)
+                  (apply_fun segs_pre k) H1 H2).
+              }
+              claim Hsegsmk_FS : apply_fun segsm k :e function_space unit_interval unit_interval.
+              { exact (HsegsmFun k HkOn). }
+              claim Hsegsmk_fun : function_on (apply_fun segsm k) unit_interval unit_interval.
+              { exact (function_on_of_function_space (apply_fun segsm k) unit_interval unit_interval Hsegsmk_FS). }
+              claim Hagree :
+                forall t:set, t :e unit_interval -> apply_fun (apply_fun segs_pre k) t = apply_fun (apply_fun segsm k) t.
+              {
+                let t. assume Ht.
+                exact (eq_i_tra
+                  (apply_fun (apply_fun segs_pre k) t)
+                  (apply_fun (apply_fun segsm k) t)
+                  (apply_fun (apply_fun segsm k) t)
+                  (apply_fun_congr (apply_fun segs_pre k) (apply_fun segsm k) t (eq_symm (apply_fun segsm k) (apply_fun segs_pre k) Hsegsmk_eq))
+                  (eq_refl (apply_fun (apply_fun segsm k) t))).
+              }
+              claim HsegsmkCont :
+                continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsm k).
+              {
+                exact (continuous_map_congr_on
+                  unit_interval unit_interval_topology
+                  unit_interval unit_interval_topology
+                  (apply_fun segs_pre k)
+                  (apply_fun segsm k)
+                  HsegpreCont
+                  Hsegsmk_fun
+                  Hagree).
+              }
+              apply andI.
+              + exact HsegsmkCont.
+              + let t. assume Ht.
+                claim HtRange : apply_fun (apply_fun segs_pre k) t :e apply_fun seqm k.
+                { exact (HsegpreRange t Ht). }
+                exact (eq_subst_mem_rev
+                  (apply_fun (apply_fun segs_pre k) t)
+                  (apply_fun (apply_fun segsm k) t)
+                  (apply_fun seqm k)
+                  (Hagree t Ht)
+                  HtRange).
+            - assume Hkeq.
+              rewrite Hkeq.
+              rewrite (apply_fun_graph (ordsucc sm)
+                (fun k0:set => If_i (k0 :e ordsucc m) (apply_fun segs_pre k0) seg_last)
+                sm (ordsuccI2 sm)).
+              rewrite (If_i_0 (sm :e ordsucc m) (apply_fun segs_pre sm) seg_last (In_irref sm)).
+              apply andI.
+              + exact HsegLastCont.
+              + let t. assume Ht.
+                claim HsegsmSmEq : apply_fun segsm sm = seg_last.
+                {
+                  claim H1 :
+                    apply_fun segsm sm =
+                      If_i (sm :e ordsucc m) (apply_fun segs_pre sm) seg_last.
+                  { exact (apply_fun_graph (ordsucc sm)
+                      (fun k0:set => If_i (k0 :e ordsucc m) (apply_fun segs_pre k0) seg_last)
+                      sm (ordsuccI2 sm)). }
+                  claim H2 :
+                    If_i (sm :e ordsucc m) (apply_fun segs_pre sm) seg_last = seg_last.
+                  { exact (If_i_0 (sm :e ordsucc m) (apply_fun segs_pre sm) seg_last (In_irref sm)). }
+                  exact (eq_i_tra
+                    (apply_fun segsm sm)
+                    (If_i (sm :e ordsucc m) (apply_fun segs_pre sm) seg_last)
+                    seg_last H1 H2).
+                }
+                claim HtEq1 :
+                  apply_fun (apply_fun segsm sm) t = apply_fun seg_last t.
+                { exact (apply_fun_congr (apply_fun segsm sm) seg_last t HsegsmSmEq). }
+                claim HtEq2 :
+                  apply_fun seg_last t = apply_fun p t.
+                { exact (HagreeL t Ht). }
+                claim HtEq :
+                  apply_fun (apply_fun segsm sm) t = apply_fun p t.
+                { exact (eq_i_tra (apply_fun (apply_fun segsm sm) t) (apply_fun seg_last t) (apply_fun p t) HtEq1 HtEq2). }
+                exact (eq_subst_mem_rev
+                  (apply_fun p t)
+                  (apply_fun (apply_fun segsm sm) t)
+                  (apply_fun seqm sm)
+                  (eq_symm (apply_fun (apply_fun segsm sm) t) (apply_fun p t) HtEq)
+                  (HpRange t Ht)). }
+        * (** startpoint at 0 **)
+          rewrite (apply_fun_graph (ordsucc sm)
+            (fun k0:set => If_i (k0 :e ordsucc m) (apply_fun segs_pre k0) seg_last)
+            0 (nat_0_in_ordsucc sm (nat_ordsucc m HmNat))).
+          claim H0in : 0 :e ordsucc m. { exact (nat_0_in_ordsucc m HmNat). }
+          rewrite (If_i_1 (0 :e ordsucc m) (apply_fun segs_pre 0) seg_last H0in).
+          exact Hpre0.
+      + (** endpoint at m+1 **)
+        rewrite (apply_fun_graph (ordsucc sm)
+          (fun k0:set => If_i (k0 :e ordsucc m) (apply_fun segs_pre k0) seg_last)
+          sm (ordsuccI2 sm)).
+        rewrite (If_i_0 (sm :e ordsucc m) (apply_fun segs_pre sm) seg_last (In_irref sm)).
+        exact HsegLast1.
+    - let k. assume Hk : k :e sm.
+      apply (ordsuccE m k Hk).
+      + assume HkInm.
+        (** compatibility inherited from segs_pre **)
+        claim HkOnBig : k :e ordsucc sm.
+        { exact (ordsuccI1 sm k (ordsuccI1 m k HkInm)). }
+        claim HskOnBig : ordsucc k :e ordsucc sm.
+        { exact (nat_ordsucc_in_ordsucc sm (nat_ordsucc m HmNat) k (ordsuccI1 m k HkInm)). }
+        rewrite (apply_fun_graph (ordsucc sm)
+          (fun k0:set => If_i (k0 :e ordsucc m) (apply_fun segs_pre k0) seg_last)
+          k HkOnBig).
+        rewrite (If_i_1 (k :e ordsucc m) (apply_fun segs_pre k) seg_last (ordsuccI1 m k HkInm)).
+	        rewrite (apply_fun_graph (ordsucc sm)
+	          (fun k0:set => If_i (k0 :e ordsucc m) (apply_fun segs_pre k0) seg_last)
+	          (ordsucc k) HskOnBig).
+	        rewrite (If_i_1 (ordsucc k :e ordsucc m) (apply_fun segs_pre (ordsucc k)) seg_last
+	          (nat_ordsucc_in_ordsucc m HmNat k HkInm)).
+	        exact (HpreCompat k HkInm).
+      + assume Hkeqm.
+        (** last compatibility: segs_pre(m) ends at s and seg_last starts at s **)
+        rewrite Hkeqm.
+        claim HmOnBig : m :e ordsucc sm.
+        { exact (ordsuccI1 sm m (ordsuccI2 m)). }
+        rewrite (apply_fun_graph (ordsucc sm)
+          (fun k0:set => If_i (k0 :e ordsucc m) (apply_fun segs_pre k0) seg_last)
+          m HmOnBig).
+        rewrite (If_i_1 (m :e ordsucc m) (apply_fun segs_pre m) seg_last (ordsuccI2 m)).
+        rewrite (apply_fun_graph (ordsucc sm)
+          (fun k0:set => If_i (k0 :e ordsucc m) (apply_fun segs_pre k0) seg_last)
+          sm (ordsuccI2 sm)).
+        rewrite (If_i_0 (sm :e ordsucc m) (apply_fun segs_pre sm) seg_last (In_irref sm)).
+        rewrite Hpre_m1.
+        symmetry.
+        exact HsegLast0.
+  - exact HnNat.
+}
+exact (HP seq x0 x1 HseqPow HseqConn Hx0 Hx1 Hover).
+Qed.
+
 (** Infrastructure: build a loop from a path between x and y plus connecting paths from x0. **)
 (** This is the standard "close up a path" construction used in van Kampen style proofs. **)
 (** Proven Charlie **)
@@ -238997,6 +239502,377 @@ assume HfA.
 let t. assume Ht : t :e unit_interval.
 rewrite (reverse_path_apply f t Ht).
 exact (HfA (apply_fun flip_unit_interval t) (flip_unit_interval_function_on t Ht)).
+Qed.
+
+(** Infrastructure: concatenate a finite sequence of paths indexed by a natural number. **)
+(** The input segs is intended to be a function on ordsucc n, so indices 0..n. **)
+Definition path_concat_nat : set -> set -> set :=
+  fun n segs:set =>
+    nat_primrec (apply_fun segs 0)
+      (fun k acc:set => path_concat acc (apply_fun segs (ordsucc k))) n.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_def : forall n segs:set,
+  path_concat_nat n segs =
+    nat_primrec (apply_fun segs 0)
+      (fun k acc:set => path_concat acc (apply_fun segs (ordsucc k))) n.
+let n segs.
+reflexivity.
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_0 : forall segs:set,
+  path_concat_nat 0 segs = apply_fun segs 0.
+let segs.
+rewrite (path_concat_nat_def 0 segs).
+rewrite (nat_primrec_0 (apply_fun segs 0)
+  (fun k acc:set => path_concat acc (apply_fun segs (ordsucc k)))).
+reflexivity.
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_S : forall n segs:set,
+  nat_p n ->
+  path_concat_nat (ordsucc n) segs =
+    path_concat (path_concat_nat n segs) (apply_fun segs (ordsucc n)).
+let n segs.
+assume HnNat.
+rewrite (path_concat_nat_def (ordsucc n) segs).
+rewrite (path_concat_nat_def n segs).
+rewrite (nat_primrec_S (apply_fun segs 0)
+  (fun k acc:set => path_concat acc (apply_fun segs (ordsucc k))) n HnNat).
+reflexivity.
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_congr : forall n segs1 segs2:set,
+  nat_p n ->
+  (forall k:set, k :e ordsucc n -> apply_fun segs1 k = apply_fun segs2 k) ->
+  path_concat_nat n segs1 = path_concat_nat n segs2.
+let n segs1 segs2.
+assume HnNat Hagree.
+set P := fun m:set =>
+  forall segsa segsb:set,
+    (forall k:set, k :e ordsucc m -> apply_fun segsa k = apply_fun segsb k) ->
+    path_concat_nat m segsa = path_concat_nat m segsb.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsa segsb. assume H.
+    rewrite (path_concat_nat_0 segsa).
+    rewrite (path_concat_nat_0 segsb).
+    rewrite (H 0 (ordsuccI2 0)).
+    reflexivity.
+  - let m. assume HmNat IH.
+    let segsa segsb. assume H.
+    rewrite (path_concat_nat_S m segsa HmNat).
+    rewrite (path_concat_nat_S m segsb HmNat).
+    claim Hagree_m : forall k:set, k :e ordsucc m -> apply_fun segsa k = apply_fun segsb k.
+    { let k. assume Hk. exact (H k (ordsuccI1 (ordsucc m) k Hk)). }
+    rewrite (IH segsa segsb Hagree_m).
+    rewrite (H (ordsucc m) (ordsuccI2 (ordsucc m))).
+    reflexivity.
+  - exact HnNat.
+}
+exact (HP segs1 segs2 Hagree).
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_at_zero : forall n segs:set,
+  nat_p n ->
+  apply_fun (path_concat_nat n segs) 0 = apply_fun (apply_fun segs 0) 0.
+let n segs.
+assume HnNat.
+set P := fun m:set =>
+  apply_fun (path_concat_nat m segs) 0 = apply_fun (apply_fun segs 0) 0.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - exact (apply_fun_congr
+      (path_concat_nat 0 segs)
+      (apply_fun segs 0)
+      0
+      (path_concat_nat_0 segs)).
+  - let m. assume HmNat IH.
+    claim Heq :
+      path_concat_nat (ordsucc m) segs =
+        path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m)).
+    { exact (path_concat_nat_S m segs HmNat). }
+    claim Happ :
+      apply_fun (path_concat_nat (ordsucc m) segs) 0 =
+        apply_fun (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m))) 0.
+    {
+      exact (apply_fun_congr
+        (path_concat_nat (ordsucc m) segs)
+        (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m)))
+        0
+        Heq).
+    }
+    exact (eq_i_tra
+      (apply_fun (path_concat_nat (ordsucc m) segs) 0)
+      (apply_fun (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m))) 0)
+      (apply_fun (apply_fun segs 0) 0)
+      Happ
+      (eq_i_tra
+        (apply_fun (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m))) 0)
+        (apply_fun (path_concat_nat m segs) 0)
+        (apply_fun (apply_fun segs 0) 0)
+        (path_concat_at_zero (path_concat_nat m segs) (apply_fun segs (ordsucc m)))
+        IH)).
+  - exact HnNat.
+}
+exact HP.
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_at_one : forall n segs:set,
+  nat_p n ->
+  apply_fun (path_concat_nat n segs) 1 = apply_fun (apply_fun segs n) 1.
+let n segs.
+assume HnNat.
+set P := fun m:set =>
+  apply_fun (path_concat_nat m segs) 1 = apply_fun (apply_fun segs m) 1.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - exact (apply_fun_congr
+      (path_concat_nat 0 segs)
+      (apply_fun segs 0)
+      1
+      (path_concat_nat_0 segs)).
+  - let m. assume HmNat IH.
+    claim Heq :
+      path_concat_nat (ordsucc m) segs =
+        path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m)).
+    { exact (path_concat_nat_S m segs HmNat). }
+    claim Happ :
+      apply_fun (path_concat_nat (ordsucc m) segs) 1 =
+        apply_fun (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m))) 1.
+    {
+      exact (apply_fun_congr
+        (path_concat_nat (ordsucc m) segs)
+        (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m)))
+        1
+        Heq).
+    }
+    exact (eq_i_tra
+      (apply_fun (path_concat_nat (ordsucc m) segs) 1)
+      (apply_fun (path_concat (path_concat_nat m segs) (apply_fun segs (ordsucc m))) 1)
+      (apply_fun (apply_fun segs (ordsucc m)) 1)
+      Happ
+      (path_concat_at_one (path_concat_nat m segs) (apply_fun segs (ordsucc m)))).
+  - exact HnNat.
+}
+exact HP.
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_continuous : forall X Tx n segs:set,
+  topology_on X Tx ->
+  nat_p n ->
+  function_on segs (ordsucc n) (function_space unit_interval X) ->
+  (forall k:set, k :e ordsucc n ->
+    continuous_map unit_interval unit_interval_topology X Tx (apply_fun segs k)) ->
+  (forall k:set, k :e n ->
+    apply_fun (apply_fun segs k) 1 = apply_fun (apply_fun segs (ordsucc k)) 0) ->
+  continuous_map unit_interval unit_interval_topology X Tx (path_concat_nat n segs).
+let X Tx n segs.
+assume Htop HnNat HsegsFun HsegsCont Hcompat.
+set P := fun m:set =>
+  forall segsm:set,
+    function_on segsm (ordsucc m) (function_space unit_interval X) ->
+    (forall k:set, k :e ordsucc m ->
+      continuous_map unit_interval unit_interval_topology X Tx (apply_fun segsm k)) ->
+    (forall k:set, k :e m ->
+      apply_fun (apply_fun segsm k) 1 = apply_fun (apply_fun segsm (ordsucc k)) 0) ->
+    continuous_map unit_interval unit_interval_topology X Tx (path_concat_nat m segsm).
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsm.
+    assume HsegsmFun HsegsmCont HsegsmCompat.
+    rewrite (path_concat_nat_0 segsm).
+    exact (HsegsmCont 0 (ordsuccI2 0)).
+  - let m. assume HmNat IH.
+    let segsm.
+    assume HsegsmFun HsegsmCont HsegsmCompat.
+    rewrite (path_concat_nat_S m segsm HmNat).
+    set f0 := path_concat_nat m segsm.
+    set g0 := apply_fun segsm (ordsucc m).
+    claim Hf0Cont :
+      continuous_map unit_interval unit_interval_topology X Tx f0.
+    {
+      exact (IH segsm
+        (function_on_subdomain segsm (ordsucc (ordsucc m)) (function_space unit_interval X) (ordsucc m)
+          HsegsmFun (ordsuccI1 (ordsucc m)))
+        (fun k Hk => HsegsmCont k (ordsuccI1 (ordsucc m) k Hk))
+        (fun k Hk => HsegsmCompat k (ordsuccI1 m k Hk))).
+    }
+    claim Hg0Cont :
+      continuous_map unit_interval unit_interval_topology X Tx g0.
+    { exact (HsegsmCont (ordsucc m) (ordsuccI2 (ordsucc m))). }
+    set x0 := apply_fun (apply_fun segsm 0) 0.
+    set x1 := apply_fun (apply_fun segsm m) 1.
+    set x2 := apply_fun (apply_fun segsm (ordsucc m)) 1.
+    claim Hf0_0 : apply_fun f0 0 = x0.
+    { rewrite (path_concat_nat_at_zero m segsm HmNat). reflexivity. }
+    claim Hf0_1 : apply_fun f0 1 = x1.
+    { rewrite (path_concat_nat_at_one m segsm HmNat). reflexivity. }
+    claim Hg0_0 : apply_fun g0 0 = x1.
+    {
+      claim Hcmp : apply_fun (apply_fun segsm m) 1 = apply_fun (apply_fun segsm (ordsucc m)) 0.
+      { exact (HsegsmCompat m (ordsuccI2 m)). }
+      rewrite <- Hcmp. reflexivity.
+    }
+    claim Hg0_1 : apply_fun g0 1 = x2.
+    { reflexivity. }
+    exact (path_concat_continuous X Tx x0 x1 x2 f0 g0
+      Hf0Cont Hg0Cont Hf0_0 Hf0_1 Hg0_0 Hg0_1).
+  - exact HnNat.
+}
+exact (HP segs HsegsFun HsegsCont Hcompat).
+Qed.
+
+(** Proven Charlie **)
+Lemma compose_path_concat_nat_eq_algtop : forall X Tx Y n segs h:set,
+  topology_on X Tx ->
+  nat_p n ->
+  function_on segs (ordsucc n) (function_space unit_interval X) ->
+  (forall k:set, k :e ordsucc n ->
+    continuous_map unit_interval unit_interval_topology X Tx (apply_fun segs k)) ->
+  (forall k:set, k :e n ->
+    apply_fun (apply_fun segs k) 1 = apply_fun (apply_fun segs (ordsucc k)) 0) ->
+  function_on h X Y ->
+  compose_fun unit_interval (path_concat_nat n segs) h
+    =
+  path_concat_nat n (graph (ordsucc n) (fun k:set => compose_fun unit_interval (apply_fun segs k) h)).
+let X Tx Y n segs h.
+assume Htop HnNat HsegsFun HsegsCont Hcompat Hh.
+set P := fun m:set =>
+  forall segsm hm:set,
+    function_on segsm (ordsucc m) (function_space unit_interval X) ->
+    (forall k:set, k :e ordsucc m ->
+      continuous_map unit_interval unit_interval_topology X Tx (apply_fun segsm k)) ->
+    (forall k:set, k :e m ->
+      apply_fun (apply_fun segsm k) 1 = apply_fun (apply_fun segsm (ordsucc k)) 0) ->
+    function_on hm X Y ->
+    compose_fun unit_interval (path_concat_nat m segsm) hm
+      =
+    path_concat_nat m (graph (ordsucc m) (fun k:set => compose_fun unit_interval (apply_fun segsm k) hm)).
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsm hm.
+    assume HsegsmFun HsegsmCont HsegsmCompat Hhm.
+    rewrite (path_concat_nat_0 segsm).
+    rewrite (path_concat_nat_0 (graph (ordsucc 0) (fun k:set => compose_fun unit_interval (apply_fun segsm k) hm))).
+    rewrite (apply_fun_graph (ordsucc 0) (fun k:set => compose_fun unit_interval (apply_fun segsm k) hm) 0 (ordsuccI2 0)).
+    reflexivity.
+  - let m. assume HmNat IH.
+    let segsm hm.
+    assume HsegsmFun HsegsmCont HsegsmCompat Hhm.
+    set segsm_post := graph (ordsucc (ordsucc m)) (fun k:set => compose_fun unit_interval (apply_fun segsm k) hm).
+    rewrite (path_concat_nat_S m segsm HmNat).
+    rewrite (path_concat_nat_S m segsm_post HmNat).
+    claim HfFun : function_on (path_concat_nat m segsm) unit_interval X.
+    {
+      exact (continuous_map_function_on unit_interval unit_interval_topology X Tx
+        (path_concat_nat m segsm)
+        (path_concat_nat_continuous X Tx m segsm Htop HmNat
+          (function_on_subdomain
+            segsm
+            (ordsucc (ordsucc m))
+            (function_space unit_interval X)
+            (ordsucc m)
+            HsegsmFun
+            (ordsuccI1 (ordsucc m)))
+          (fun k Hk => HsegsmCont k (ordsuccI1 (ordsucc m) k Hk))
+          (fun k Hk => HsegsmCompat k (ordsuccI1 m k Hk)))).
+    }
+    claim HgFun : function_on (apply_fun segsm (ordsucc m)) unit_interval X.
+    {
+      exact (function_on_of_function_space
+        (apply_fun segsm (ordsucc m))
+        unit_interval
+        X
+        (HsegsmFun (ordsucc m) (ordsuccI2 (ordsucc m)))).
+    }
+    claim Hjoin : apply_fun (path_concat_nat m segsm) 1 = apply_fun (apply_fun segsm (ordsucc m)) 0.
+    { rewrite (path_concat_nat_at_one m segsm HmNat). exact (HsegsmCompat m (ordsuccI2 m)). }
+    rewrite (compose_path_concat_eq_algtop
+      X Y (path_concat_nat m segsm) (apply_fun segsm (ordsucc m)) hm HfFun HgFun Hhm Hjoin).
+    rewrite (IH segsm hm
+      (function_on_subdomain segsm (ordsucc (ordsucc m)) (function_space unit_interval X) (ordsucc m)
+        HsegsmFun (ordsuccI1 (ordsucc m)))
+      (fun k Hk => HsegsmCont k (ordsuccI1 (ordsucc m) k Hk))
+      (fun k Hk => HsegsmCompat k (ordsuccI1 m k Hk))
+      Hhm).
+    claim Hagree_pre :
+      forall k:set, k :e ordsucc m ->
+        apply_fun (graph (ordsucc m) (fun k0:set => compose_fun unit_interval (apply_fun segsm k0) hm)) k
+        =
+        apply_fun segsm_post k.
+    {
+      let k. assume HkOn.
+      rewrite (apply_fun_graph (ordsucc m)
+        (fun k0:set => compose_fun unit_interval (apply_fun segsm k0) hm)
+        k HkOn).
+      rewrite (apply_fun_graph (ordsucc (ordsucc m))
+        (fun k0:set => compose_fun unit_interval (apply_fun segsm k0) hm)
+        k (ordsuccI1 (ordsucc m) k HkOn)).
+      reflexivity.
+    }
+    rewrite (path_concat_nat_congr
+      m
+      (graph (ordsucc m) (fun k0:set => compose_fun unit_interval (apply_fun segsm k0) hm))
+      segsm_post
+      HmNat
+      Hagree_pre).
+    rewrite (apply_fun_graph (ordsucc (ordsucc m))
+      (fun k:set => compose_fun unit_interval (apply_fun segsm k) hm)
+      (ordsucc m)
+      (ordsuccI2 (ordsucc m))).
+    reflexivity.
+  - exact HnNat.
+}
+exact (HP segs h HsegsFun HsegsCont Hcompat Hh).
+Qed.
+
+(** Proven Charlie **)
+Lemma path_concat_nat_preserves_loop_space : forall X Tx x0 n segs:set,
+  n :e omega ->
+  function_on segs (ordsucc n) (loop_space X Tx x0) ->
+  path_concat_nat n segs :e loop_space X Tx x0.
+let X Tx x0 n segs.
+assume HnOmega Hsegs.
+claim HnNat : nat_p n. { exact (omega_nat_p n HnOmega). }
+set P := fun m:set =>
+  forall segsm:set,
+    function_on segsm (ordsucc m) (loop_space X Tx x0) ->
+    path_concat_nat m segsm :e loop_space X Tx x0.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsm. assume Hsegsm.
+    rewrite (path_concat_nat_0 segsm).
+    exact (Hsegsm 0 (ordsuccI2 0)).
+  - let m. assume HmNat IH.
+    let segsm. assume Hsegsm.
+    rewrite (path_concat_nat_S m segsm HmNat).
+    set f0 := path_concat_nat m segsm.
+    set g0 := apply_fun segsm (ordsucc m).
+    claim Hf0Loop : f0 :e loop_space X Tx x0.
+    {
+      exact (IH segsm
+        (function_on_subdomain segsm (ordsucc (ordsucc m)) (loop_space X Tx x0) (ordsucc m)
+          Hsegsm (ordsuccI1 (ordsucc m)))).
+    }
+    claim Hg0Loop : g0 :e loop_space X Tx x0.
+    { exact (Hsegsm (ordsucc m) (ordsuccI2 (ordsucc m))). }
+    exact (path_concat_preserves_loop_space X Tx x0 f0 g0 Hf0Loop Hg0Loop).
+  - exact HnNat.
+}
+exact (HP segs Hsegs).
 Qed.
 
 (** Proven Charlie **)
