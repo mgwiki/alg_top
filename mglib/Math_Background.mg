@@ -239581,7 +239581,42 @@ claim HL1_word_data :
           unit_interval_topology_on Hseqm_open Hray_open). }
     claim Hsg_conn : forall k:set, k :e ordsucc m ->
       connected_space (apply_fun seq_g k)
-        (subspace_topology unit_interval unit_interval_topology (apply_fun seq_g k)). { admit. }
+        (subspace_topology unit_interval unit_interval_topology (apply_fun seq_g k)).
+    { let k. assume Hk : k :e ordsucc m.
+      apply (ordsuccE m k Hk).
+      - assume Hkm : k :e m.
+        claim Hseqg_k_eq : apply_fun seq_g k = apply_fun seq k.
+        { rewrite (apply_fun_graph (ordsucc m)
+            (fun k0:set => If_i (k0 :e m) (apply_fun seq k0) lastI) k Hk).
+          exact (If_i_1 (k :e m) (apply_fun seq k) lastI Hkm). }
+        rewrite Hseqg_k_eq.
+        exact (HseqConn k (ordinal_TransSet (ordsucc (ordsucc m))
+          (nat_p_ordinal (ordsucc (ordsucc m)) (nat_ordsucc (ordsucc m) (nat_ordsucc m HmNat)))
+          (ordsucc m) (ordsuccI2 (ordsucc m)) k (ordsuccI1 m k Hkm))).
+      - assume Hkm : k = m.
+        claim Hseqg_m_eq : apply_fun seq_g k = lastI.
+        { rewrite (apply_fun_graph (ordsucc m)
+            (fun k0:set => If_i (k0 :e m) (apply_fun seq k0) lastI) k Hk).
+          rewrite Hkm.
+          exact (If_i_0 (m :e m) (apply_fun seq m) lastI (In_irref m)). }
+        rewrite Hseqg_m_eq.
+        (** lastI = seq(m) cup {t : Rlt s t}, connected via connected_union_two_intersect **)
+        claim Hseqm_conn : connected_space (apply_fun seq m)
+          (subspace_topology unit_interval unit_interval_topology (apply_fun seq m)).
+        { exact (HseqConn m (ordsuccI1 (ordsucc m) m (ordsuccI2 m))). }
+        claim Hray_sub : Sep unit_interval (fun t:set => Rlt s t) c= unit_interval.
+        { let t. assume Ht. exact (SepE1 unit_interval (fun t0:set => Rlt s t0) t Ht). }
+        claim Hray_conn : connected_space (Sep unit_interval (fun t:set => Rlt s t))
+          (subspace_topology unit_interval unit_interval_topology (Sep unit_interval (fun t:set => Rlt s t))).
+        { (** (s,1] is connected in unit_interval -- it is an interval **)
+          admit. }
+        claim Hoverlap_lastI : apply_fun seq m :/\: Sep unit_interval (fun t:set => Rlt s t) <> Empty.
+        { (** seq(m) is open containing s, so it contains points > s **)
+          admit. }
+        exact (connected_union_two_intersect unit_interval unit_interval_topology
+          (apply_fun seq m) (Sep unit_interval (fun t:set => Rlt s t))
+          unit_interval_topology_on Hseqm_sub Hray_sub
+          Hseqm_conn Hray_conn Hoverlap_lastI). }
     claim Hsg_0 : 0 :e apply_fun seq_g 0. { admit. }
     claim Hsg_1 : 1 :e apply_fun seq_g m.
     { rewrite (apply_fun_graph (ordsucc m)
