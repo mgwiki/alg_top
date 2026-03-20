@@ -239390,11 +239390,34 @@ claim HL2_word_data :
     { exact (HgammaFun u Hu). }
     rewrite (apply_fun_graph (U :/\: V) (fun x:set => x) (apply_fun gamma u) Hgu).
     exact Hgu. }
+  claim H1ms_R : add_SNo 1 (minus_SNo s) :e R. { admit. }
+  claim H1ms_pos : Rlt 0 (add_SNo 1 (minus_SNo s)). { admit. }
   claim Hf2_maps_V : forall u:set, u :e unit_interval -> apply_fun f2 u :e V.
-  { (** f2(u) = f(s + (1-s)u), and s + (1-s)u in [s,1] c= seq(n) **)
-    (** Requires showing affine_fun_I s (1-s) maps [0,1] into [s,1] **)
-    (** and [s,1] c= seq(n) via Hseqn_covers_right **)
-    admit. }
+  { let u. assume Hu : u :e unit_interval.
+    (** f2(u) = f(affine_fun_I(s, 1-s)(u)) = f(u(1-s) + s) **)
+    (** u(1-s) + s in [s, 1], so in seq(n), so f maps it to V **)
+    claim HuR : u :e R. { exact (unit_interval_sub_R u Hu). }
+    claim Haffine_in_UI : apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u :e unit_interval.
+    { (** affine_fun_I s (1-s) maps [0,1] into [s,1] c= [0,1] **)
+      admit. }
+    claim Haffine_ge_s : Rle s (apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u).
+    { (** u(1-s) + s >= s since u(1-s) >= 0 **)
+      admit. }
+    claim Haffine_in_seqn :
+      apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u :e apply_fun seq n.
+    { (** The value is in [s,1], and seq(n) contains [s,1] **)
+      (** seq(n) is connected, contains s and 1, so by interval property contains [s,1] **)
+      admit. }
+    (** f2 = compose_fun UI (affine_fun_I s (1-s)) f **)
+    (** so apply_fun f2 u = apply_fun f (apply_fun (affine_fun_I s (1-s)) u) **)
+    claim Hf2_eq : apply_fun f2 u =
+      apply_fun f (apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u).
+    { (** f2 is defined as compose_fun, so apply compose_fun_apply **)
+      admit. }
+    rewrite Hf2_eq.
+    exact (Hn_Vtype
+      (apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u)
+      Haffine_in_seqn). }
   claim HL2_maps_V : forall t:set, t :e unit_interval -> apply_fun L2 t :e V.
   { let t. assume Ht : t :e unit_interval.
     (** L2 = path_concat gammaX f2: need to determine which half t is in **)
