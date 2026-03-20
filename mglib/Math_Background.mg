@@ -239625,7 +239625,29 @@ claim HL1_word_data :
           (apply_fun seq m) (Sep unit_interval (fun t:set => Rlt s t))
           unit_interval_topology_on Hseqm_sub Hray_sub
           Hseqm_conn Hray_conn Hoverlap_lastI). }
-    claim Hsg_0 : 0 :e apply_fun seq_g 0. { admit. }
+    claim Hsg_0 : 0 :e apply_fun seq_g 0.
+    { rewrite (apply_fun_graph (ordsucc m)
+        (fun k:set => If_i (k :e m) (apply_fun seq k) lastI)
+        0 (nat_0_in_ordsucc m HmNat)).
+      apply (xm (0 :e m)).
+      - assume H0m : 0 :e m.
+        rewrite (If_i_1 (0 :e m) (apply_fun seq 0) lastI H0m). exact H0_in.
+      - assume Hn0m : ~(0 :e m).
+        rewrite (If_i_0 (0 :e m) (apply_fun seq 0) lastI Hn0m).
+        (** m = 0 since 0 not in m and m is nat **)
+        claim Hm0 : m = 0.
+        { apply (nat_inv m HmNat).
+          - assume H. exact H.
+          - assume Hm_succ. apply Hm_succ. let k. assume Hkp.
+            claim Hk_nat : nat_p k. { exact (andEL (nat_p k) (m = ordsucc k) Hkp). }
+            claim Hm_eq : m = ordsucc k. { exact (andER (nat_p k) (m = ordsucc k) Hkp). }
+            claim H0_in_m : 0 :e m.
+            { rewrite Hm_eq. exact (nat_0_in_ordsucc k Hk_nat). }
+            exact (FalseE (Hn0m H0_in_m) (m = 0)). }
+        (** seq(0) = seq(m), so 0 in seq(m) c= lastI **)
+        claim H0_in_seqm : 0 :e apply_fun seq m.
+        { rewrite Hm0. exact H0_in. }
+        exact (binunionI1 (apply_fun seq m) (Sep unit_interval (fun t:set => Rlt s t)) 0 H0_in_seqm). }
     claim Hsg_1 : 1 :e apply_fun seq_g m.
     { rewrite (apply_fun_graph (ordsucc m)
         (fun k:set => If_i (k :e m) (apply_fun seq k) lastI)
