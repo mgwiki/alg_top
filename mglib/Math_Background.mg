@@ -239663,15 +239663,36 @@ claim HL1_word_data :
         { (** (s,1] is connected in unit_interval -- it is an interval **)
           admit. }
         claim Hoverlap_lastI : apply_fun seq m :/\: Sep unit_interval (fun t:set => Rlt s t) <> Empty.
-        { (** seq(m) is open containing s, so it contains points strictly > s **)
-          (** seq(n) = seq(ordsucc m) is open containing s, and seq(n) c= [s,1] near s **)
-          (** Actually: seq(m) cap seq(n) is open and nonempty, and contains interior points **)
-          (** Any interior point p with p > s works **)
-          (** Use: the overlap seq(m) cap seq(n) contains points with Rlt s t **)
-          (** since the overlap is open and nonempty, it has interior points **)
-          (** which are in (0,1), and if the overlap is just {s}, then s in (0,1) **)
-          (** but {s} is not open, contradiction. So overlap contains points other than s. **)
-          (** In particular, points > s or < s. **)
+        { (** seq(m) open containing s with s < 1 -> contains points > s **)
+          (** Use metric ball: seq(m) in metric_topology -> ball B(s,r) c= seq(m) **)
+          (** Then midpoint of s and min(s+r, 1) is in both **)
+          claim Hseqm_open2 : apply_fun seq m :e unit_interval_topology.
+          { exact (HseqOpen m (ordsuccI1 (ordsucc m) m (ordsuccI2 m))). }
+          claim Hseqm_metric : apply_fun seq m :e metric_topology unit_interval R_bounded_metric.
+          { rewrite metric_topology_unit_interval_eq_I_topology. exact Hseqm_open2. }
+          apply (metric_topology_neighborhood_contains_ball unit_interval R_bounded_metric
+            s (apply_fun seq m) R_bounded_metric_is_metric_on_unit_interval Hs_UI
+            Hseqm_metric Hs_m).
+          let r. assume Hr_pack.
+          claim HrR : r :e R.
+          { exact (andEL (r :e R)
+              (Rlt 0 r /\ open_ball unit_interval R_bounded_metric s r c= apply_fun seq m)
+              Hr_pack). }
+          claim Hr_inner : Rlt 0 r /\ open_ball unit_interval R_bounded_metric s r c= apply_fun seq m.
+          { exact (andER (r :e R)
+              (Rlt 0 r /\ open_ball unit_interval R_bounded_metric s r c= apply_fun seq m)
+              Hr_pack). }
+          claim Hrpos : Rlt 0 r.
+          { exact (andEL (Rlt 0 r)
+              (open_ball unit_interval R_bounded_metric s r c= apply_fun seq m)
+              Hr_inner). }
+          claim Hball_sub : open_ball unit_interval R_bounded_metric s r c= apply_fun seq m.
+          { exact (andER (Rlt 0 r)
+              (open_ball unit_interval R_bounded_metric s r c= apply_fun seq m)
+              Hr_inner). }
+          (** Find a point t in ball with t > s **)
+          (** eps_(1) = 1/2 works: t = midpoint of s and min(s+r, 1) **)
+          (** For simplicity, use the fact that open balls in UI contain points > center when center < 1 **)
           admit. }
         exact (connected_union_two_intersect unit_interval unit_interval_topology
           (apply_fun seq m) (Sep unit_interval (fun t:set => Rlt s t))
