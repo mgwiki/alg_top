@@ -238880,6 +238880,32 @@ apply set_ext.
     exact (SepI unit_interval (fun t0:set => ~(Rlt s t0)) t Ht Hnst).
 Qed.
 
+(** Strengthened reparametrization: gives compose_fun f2 with pointwise access **)
+Lemma reparametrization_right_half_apply : forall X Tx x0 x1 f a:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
+  a :e unit_interval -> Rlt 0 a -> Rlt a 1 ->
+  forall u:set, u :e unit_interval ->
+    apply_fun (compose_fun unit_interval (affine_fun_I a (add_SNo 1 (minus_SNo a))) f) u =
+      apply_fun f (apply_fun (affine_fun_I a (add_SNo 1 (minus_SNo a))) u).
+let X Tx x0 x1 f a.
+assume HfCont Hf0 Hf1 HaI Ha0 Ha1.
+let u. assume Hu.
+claim HaR : a :e R. { exact (unit_interval_sub_R a HaI). }
+claim H1maR : add_SNo 1 (minus_SNo a) :e R.
+{ exact (real_add_SNo 1 real_1 (minus_SNo a) (real_minus_SNo a HaR)). }
+claim H1maPos : Rlt 0 (add_SNo 1 (minus_SNo a)).
+{ exact (RltI 0 (add_SNo 1 (minus_SNo a)) real_0 H1maR
+    (SNoLt_minus_pos a 1 (real_SNo a HaR) SNo_1 (RltE_lt a 1 Ha1))). }
+claim Haffine_cont : continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology
+  (affine_fun_I a (add_SNo 1 (minus_SNo a))).
+{ admit. }
+claim Haffine_in_UI : apply_fun (affine_fun_I a (add_SNo 1 (minus_SNo a))) u :e unit_interval.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology unit_interval unit_interval_topology
+    (affine_fun_I a (add_SNo 1 (minus_SNo a))) Haffine_cont u Hu). }
+exact (compose_fun_apply unit_interval (affine_fun_I a (add_SNo 1 (minus_SNo a))) f u Hu).
+Admitted.
+
 (** Helper for B1/B2 transition cases in ball_cover_word_nch_ind_gen. **)
 (** Given a loop f covered by ordsucc(ordsucc m) overlapping connected open intervals, **)
 (** where seq(m) maps f into U and seq(ordsucc m) maps f into V, **)
@@ -239036,26 +239062,17 @@ claim Hf0 : apply_fun f 0 = x0.
 { exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
 claim Hf1 : apply_fun f 1 = x0.
 { exact (loop_at_at_one X Tx x0 f HfLoopAt). }
-(** Step 4: Split f at s using Theorem_51_3_reparametrization **)
-claim Hsplit : exists f1 f2:set,
+(** Step 4: Define f1, f2 explicitly as compose_fun for pointwise access **)
+set f1 := compose_fun unit_interval (affine_fun_I 0 s) f.
+set f2 := compose_fun unit_interval (affine_fun_I s (add_SNo 1 (minus_SNo s))) f.
+(** Get properties from Theorem_51_3_reparametrization **)
+claim Hsplit_props :
   continuous_map unit_interval unit_interval_topology X Tx f1 /\
   continuous_map unit_interval unit_interval_topology X Tx f2 /\
   apply_fun f1 0 = x0 /\ apply_fun f1 1 = apply_fun f s /\
   apply_fun f2 0 = apply_fun f s /\ apply_fun f2 1 = x0 /\
   path_homotopic X Tx x0 x0 f (path_concat f1 f2).
-{ exact (Theorem_51_3_reparametrization X Tx x0 x0 f s
-    HfCont Hf0 Hf1 Hs_UI Hlt_0_s Hlt_s_1). }
-(** Step 5: Get connecting path gamma from x0 to f(s) in U cap V **)
-claim Hgamma_ex : exists gamma:set,
-  path_between (U :/\: V) x0 (apply_fun f s) gamma /\
-  continuous_map unit_interval unit_interval_topology
-    (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma.
-{ exact (path_connected_space_paths
-    (U :/\: V) (subspace_topology X Tx (U :/\: V))
-    x0 (apply_fun f s) HpcUV Hx0UV HfsUV). }
-(** Step 6: Decompose split and gamma, construct L1 L2 **)
-apply Hsplit. let f1. assume Hf1_ex.
-apply Hf1_ex. let f2. assume HsplitPack.
+{ admit. }
 apply (and7E
   (continuous_map unit_interval unit_interval_topology X Tx f1)
   (continuous_map unit_interval unit_interval_topology X Tx f2)
@@ -239064,8 +239081,17 @@ apply (and7E
   (apply_fun f2 0 = apply_fun f s)
   (apply_fun f2 1 = x0)
   (path_homotopic X Tx x0 x0 f (path_concat f1 f2))
-  HsplitPack).
+  Hsplit_props).
 assume Hf1Cont Hf2Cont Hf1_0 Hf1_1 Hf2_0 Hf2_1 Hf_hom_split.
+(** Step 5: Get connecting path gamma from x0 to f(s) in U cap V **)
+claim Hgamma_ex : exists gamma:set,
+  path_between (U :/\: V) x0 (apply_fun f s) gamma /\
+  continuous_map unit_interval unit_interval_topology
+    (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma.
+{ exact (path_connected_space_paths
+    (U :/\: V) (subspace_topology X Tx (U :/\: V))
+    x0 (apply_fun f s) HpcUV Hx0UV HfsUV). }
+(** Step 6: Decompose and construct L1 L2 **)
 apply Hgamma_ex. let gamma. assume HgammaPack.
 claim HgammaPath : path_between (U :/\: V) x0 (apply_fun f s) gamma.
 { exact (andEL
@@ -239417,8 +239443,8 @@ claim HL2_word_data :
     (** so apply_fun f2 u = apply_fun f (apply_fun (affine_fun_I s (1-s)) u) **)
     claim Hf2_eq : apply_fun f2 u =
       apply_fun f (apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u).
-    { (** f2 is defined as compose_fun, so apply compose_fun_apply **)
-      admit. }
+    { exact (compose_fun_apply unit_interval
+        (affine_fun_I s (add_SNo 1 (minus_SNo s))) f u Hu). }
     rewrite Hf2_eq.
     exact (Hn_Vtype
       (apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u)
