@@ -239867,10 +239867,8 @@ claim HL1_word_data :
   { (** g and L1 trace the same geometric path (f on [0,s], gamma-inv on [s,1]) **)
     (** but with different parametrizations. They are path-homotopic. **)
     admit. }
-  (** Transfer word data from g to L1 using [g] = [L1] **)
-  (** Hg_word_data gives word data with [g] = nat_primrec ... **)
-  (** Hg_L1_homotopic gives [g] = [L1] **)
-  (** So [L1] = [g] = nat_primrec ... **)
+  (** Transfer word data from g to L1 using Hg_word_data and Hg_L1_homotopic **)
+  (** Mechanical: decompose Hg_word_data, rewrite [g] to [L1], reassemble **)
   admit. }
 (** Step 10: Combine word data via word_data_of_loop_concat and class equality **)
 claim Hconcat_word :
