@@ -239148,6 +239148,454 @@ exact (and4I
   HgPre).
 Qed.
 
+(** Proven Charlie **)
+Lemma word_data_of_X_loop_pointwise_in_U : forall X Tx U V x0 f:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  x0 :e U :/\: V ->
+  f :e loop_space X Tx x0 ->
+  (forall t:set, t :e unit_interval -> apply_fun f t :e U) ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 f =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+let X Tx U V x0 f.
+assume Htop HU HV Hx0UV HfLoop HfU.
+set incU := graph U (fun x:set => x).
+set loopU := graph unit_interval (fun t:set => apply_fun f t).
+claim HUsub : U c= X. { exact (topology_elem_subset X Tx U Htop HU). }
+claim Hx0U : x0 :e U. { exact (binintersectE1 U V x0 Hx0UV). }
+claim HfContX : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_space_continuous X Tx x0 f HfLoop). }
+claim HfContU : continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) f.
+{ exact (continuous_map_range_restrict
+    unit_interval unit_interval_topology X Tx f U
+    HfContX HUsub HfU). }
+claim Heq_loopU : forall t:set, t :e unit_interval -> apply_fun loopU t = apply_fun f t.
+{ let t. assume Ht. exact (apply_fun_graph unit_interval (fun s:set => apply_fun f s) t Ht). }
+claim HloopUCont : continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) loopU.
+{ exact (continuous_map_extensional
+    unit_interval unit_interval_topology
+    U (subspace_topology X Tx U)
+    f loopU
+    HfContU
+    Heq_loopU). }
+claim HfEnds : apply_fun f 0 = x0 /\ apply_fun f 1 = x0.
+{ exact (loop_space_endpoint_data X Tx x0 f HfLoop). }
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (andEL (apply_fun f 0 = x0) (apply_fun f 1 = x0) HfEnds). }
+claim Hf1 : apply_fun f 1 = x0.
+{ exact (andER (apply_fun f 0 = x0) (apply_fun f 1 = x0) HfEnds). }
+claim HloopU0 : apply_fun loopU 0 = x0.
+{ rewrite (apply_fun_graph unit_interval (fun s:set => apply_fun f s) 0 zero_in_unit_interval). exact Hf0. }
+claim HloopU1 : apply_fun loopU 1 = x0.
+{ rewrite (apply_fun_graph unit_interval (fun s:set => apply_fun f s) 1 one_in_unit_interval). exact Hf1. }
+claim HloopU_at : loop_at U (subspace_topology X Tx U) x0 loopU.
+{
+  apply (loop_at_fold U (subspace_topology X Tx U) x0 loopU).
+  apply andI.
+  - apply andI.
+    + exact HloopUCont.
+    + exact HloopU0.
+  - exact HloopU1.
+}
+claim HloopU_total : loopU :e total_function_space unit_interval U.
+{ exact (graph_in_total_function_space unit_interval U
+    (fun t:set => apply_fun f t)
+    (fun t Ht => HfU t Ht)). }
+claim HloopU_fs : loopU :e function_space unit_interval U.
+{ exact (total_function_space_sub_function_space unit_interval U loopU HloopU_total). }
+claim HloopU_ls : loopU :e loop_space U (subspace_topology X Tx U) x0.
+{
+  exact (SepI
+    (function_space unit_interval U)
+    (fun g:set => loop_at U (subspace_topology X Tx U) x0 g)
+    loopU
+    HloopU_fs
+    HloopU_at).
+}
+claim HwdU :
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopU incU) =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+{ exact (word_data_of_loop_in_U X Tx U V x0 loopU Htop HU HV Hx0UV HloopU_ls). }
+claim HincUCont : continuous_map U (subspace_topology X Tx U) X Tx incU.
+{ exact (subspace_inclusion_continuous X Tx U Htop HUsub). }
+claim HcompContX : continuous_map unit_interval unit_interval_topology X Tx (compose_fun unit_interval loopU incU).
+{ exact (composition_continuous
+    unit_interval unit_interval_topology
+    U (subspace_topology X Tx U)
+    X Tx
+    loopU incU
+    HloopUCont HincUCont). }
+claim Hcomp0 : apply_fun (compose_fun unit_interval loopU incU) 0 = x0.
+{
+  rewrite (compose_fun_apply unit_interval loopU incU 0 zero_in_unit_interval).
+  rewrite HloopU0.
+  exact (apply_fun_graph U (fun x:set => x) x0 Hx0U).
+}
+claim Hcomp1 : apply_fun (compose_fun unit_interval loopU incU) 1 = x0.
+{
+  rewrite (compose_fun_apply unit_interval loopU incU 1 one_in_unit_interval).
+  rewrite HloopU1.
+  exact (apply_fun_graph U (fun x:set => x) x0 Hx0U).
+}
+claim Hpw : forall t:set, t :e unit_interval ->
+  apply_fun f t = apply_fun (compose_fun unit_interval loopU incU) t.
+{
+  let t. assume Ht.
+  rewrite (compose_fun_apply unit_interval loopU incU t Ht).
+  claim HloopUt_U : apply_fun loopU t :e U.
+  {
+    exact (function_on_of_function_space
+      loopU unit_interval U
+      HloopU_fs
+      t
+      Ht).
+  }
+  rewrite (apply_fun_graph U (fun x:set => x) (apply_fun loopU t) HloopUt_U).
+  rewrite (apply_fun_graph unit_interval (fun s:set => apply_fun f s) t Ht).
+  reflexivity.
+}
+claim Hhom : path_homotopic X Tx x0 x0 f (compose_fun unit_interval loopU incU).
+{
+  exact (path_homotopic_of_pointwise_equal X Tx x0 x0
+    f (compose_fun unit_interval loopU incU)
+    HfContX HcompContX
+    Hf0 Hf1 Hcomp0 Hcomp1
+    Hpw).
+}
+claim Hclass_eq :
+  path_homotopy_class_loop X Tx x0 f =
+    path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopU incU).
+{ exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0 f (compose_fun unit_interval loopU incU) Hhom). }
+apply HwdU.
+let n. assume HnPack.
+witness n.
+apply andI.
+- exact (andEL
+    (n :e omega)
+    (exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)) /\
+      path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopU incU) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n)
+    HnPack).
+- claim Hgs_ex :
+    exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)) /\
+      path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopU incU) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+  {
+    exact (andER
+      (n :e omega)
+      (exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)) /\
+        path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopU incU) =
+          nat_primrec (fundamental_group_id X Tx x0)
+            (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n)
+      HnPack).
+  }
+  apply Hgs_ex. let gs. assume HgsPack.
+  witness gs.
+  apply andI.
+  + exact (andEL
+      (function_on gs n (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)))
+      (path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopU incU) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n)
+      HgsPack).
+  + rewrite Hclass_eq.
+    exact (andER
+      (function_on gs n (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0 incU) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)))
+      (path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopU incU) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n)
+      HgsPack).
+Qed.
+
+(** Proven Charlie **)
+Lemma word_data_of_X_loop_pointwise_in_V : forall X Tx U V x0 f:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  x0 :e U :/\: V ->
+  f :e loop_space X Tx x0 ->
+  (forall t:set, t :e unit_interval -> apply_fun f t :e V) ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 f =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+let X Tx U V x0 f.
+assume Htop HU HV Hx0UV HfLoop HfV.
+set incV := graph V (fun x:set => x).
+set loopV := graph unit_interval (fun t:set => apply_fun f t).
+claim HVsub : V c= X. { exact (topology_elem_subset X Tx V Htop HV). }
+claim Hx0V : x0 :e V. { exact (binintersectE2 U V x0 Hx0UV). }
+claim HfContX : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_space_continuous X Tx x0 f HfLoop). }
+claim HfContV : continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) f.
+{ exact (continuous_map_range_restrict
+    unit_interval unit_interval_topology X Tx f V
+    HfContX HVsub HfV). }
+claim Heq_loopV : forall t:set, t :e unit_interval -> apply_fun loopV t = apply_fun f t.
+{ let t. assume Ht. exact (apply_fun_graph unit_interval (fun s:set => apply_fun f s) t Ht). }
+claim HloopVCont : continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) loopV.
+{ exact (continuous_map_extensional
+    unit_interval unit_interval_topology
+    V (subspace_topology X Tx V)
+    f loopV
+    HfContV
+    Heq_loopV). }
+claim HfEnds : apply_fun f 0 = x0 /\ apply_fun f 1 = x0.
+{ exact (loop_space_endpoint_data X Tx x0 f HfLoop). }
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (andEL (apply_fun f 0 = x0) (apply_fun f 1 = x0) HfEnds). }
+claim Hf1 : apply_fun f 1 = x0.
+{ exact (andER (apply_fun f 0 = x0) (apply_fun f 1 = x0) HfEnds). }
+claim HloopV0 : apply_fun loopV 0 = x0.
+{ rewrite (apply_fun_graph unit_interval (fun s:set => apply_fun f s) 0 zero_in_unit_interval). exact Hf0. }
+claim HloopV1 : apply_fun loopV 1 = x0.
+{ rewrite (apply_fun_graph unit_interval (fun s:set => apply_fun f s) 1 one_in_unit_interval). exact Hf1. }
+claim HloopV_at : loop_at V (subspace_topology X Tx V) x0 loopV.
+{
+  apply (loop_at_fold V (subspace_topology X Tx V) x0 loopV).
+  apply andI.
+  - apply andI.
+    + exact HloopVCont.
+    + exact HloopV0.
+  - exact HloopV1.
+}
+claim HloopV_total : loopV :e total_function_space unit_interval V.
+{ exact (graph_in_total_function_space unit_interval V
+    (fun t:set => apply_fun f t)
+    (fun t Ht => HfV t Ht)). }
+claim HloopV_fs : loopV :e function_space unit_interval V.
+{ exact (total_function_space_sub_function_space unit_interval V loopV HloopV_total). }
+claim HloopV_ls : loopV :e loop_space V (subspace_topology X Tx V) x0.
+{
+  exact (SepI
+    (function_space unit_interval V)
+    (fun g:set => loop_at V (subspace_topology X Tx V) x0 g)
+    loopV
+    HloopV_fs
+    HloopV_at).
+}
+claim HwdV :
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV) vcls)) /\
+    path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopV incV) =
+      nat_primrec (fundamental_group_id X Tx x0)
+        (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+{ exact (word_data_of_loop_in_V X Tx U V x0 loopV Htop HU HV Hx0UV HloopV_ls). }
+claim HincVCont : continuous_map V (subspace_topology X Tx V) X Tx incV.
+{ exact (subspace_inclusion_continuous X Tx V Htop HVsub). }
+claim HcompContX : continuous_map unit_interval unit_interval_topology X Tx (compose_fun unit_interval loopV incV).
+{ exact (composition_continuous
+    unit_interval unit_interval_topology
+    V (subspace_topology X Tx V)
+    X Tx
+    loopV incV
+    HloopVCont HincVCont). }
+claim Hcomp0 : apply_fun (compose_fun unit_interval loopV incV) 0 = x0.
+{
+  rewrite (compose_fun_apply unit_interval loopV incV 0 zero_in_unit_interval).
+  rewrite HloopV0.
+  exact (apply_fun_graph V (fun x:set => x) x0 Hx0V).
+}
+claim Hcomp1 : apply_fun (compose_fun unit_interval loopV incV) 1 = x0.
+{
+  rewrite (compose_fun_apply unit_interval loopV incV 1 one_in_unit_interval).
+  rewrite HloopV1.
+  exact (apply_fun_graph V (fun x:set => x) x0 Hx0V).
+}
+claim Hpw : forall t:set, t :e unit_interval ->
+  apply_fun f t = apply_fun (compose_fun unit_interval loopV incV) t.
+{
+  let t. assume Ht.
+  rewrite (compose_fun_apply unit_interval loopV incV t Ht).
+  claim HloopVt_V : apply_fun loopV t :e V.
+  {
+    exact (function_on_of_function_space
+      loopV unit_interval V
+      HloopV_fs
+      t
+      Ht).
+  }
+  rewrite (apply_fun_graph V (fun x:set => x) (apply_fun loopV t) HloopVt_V).
+  rewrite (apply_fun_graph unit_interval (fun s:set => apply_fun f s) t Ht).
+  reflexivity.
+}
+claim Hhom : path_homotopic X Tx x0 x0 f (compose_fun unit_interval loopV incV).
+{
+  exact (path_homotopic_of_pointwise_equal X Tx x0 x0
+    f (compose_fun unit_interval loopV incV)
+    HfContX HcompContX
+    Hf0 Hf1 Hcomp0 Hcomp1
+    Hpw).
+}
+claim Hclass_eq :
+  path_homotopy_class_loop X Tx x0 f =
+    path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopV incV).
+{ exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0 f (compose_fun unit_interval loopV incV) Hhom). }
+apply HwdV.
+let n. assume HnPack.
+witness n.
+apply andI.
+- exact (andEL
+    (n :e omega)
+    (exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV) vcls)) /\
+      path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopV incV) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n)
+    HnPack).
+- claim Hgs_ex :
+    exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV) vcls)) /\
+      path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopV incV) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+  {
+    exact (andER
+      (n :e omega)
+      (exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV) vcls)) /\
+        path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopV incV) =
+          nat_primrec (fundamental_group_id X Tx x0)
+            (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n)
+      HnPack).
+  }
+  apply Hgs_ex. let gs. assume HgsPack.
+  witness gs.
+  apply andI.
+  + exact (andEL
+      (function_on gs n (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV) vcls)))
+      (path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopV incV) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n)
+      HgsPack).
+  + rewrite Hclass_eq.
+    exact (andER
+      (function_on gs n (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0 incV) vcls)))
+      (path_homotopy_class_loop X Tx x0 (compose_fun unit_interval loopV incV) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n)
+      HgsPack).
+Qed.
+
 (** Infrastructure: word data from a finite concatenation of U or V segments.
     This is intended for chain ordered parametrizations (path_concat_nat) where each
     segment lies entirely in U or entirely in V, and consecutive segments join. **)
