@@ -239539,7 +239539,35 @@ claim HL1_word_data :
   { (** Apply IH to g with seq_g chain **)
     claim Hsg_fn : function_on seq_g (ordsucc m) (Power unit_interval).
     { admit. }
-    claim Hsg_open : forall k:set, k :e ordsucc m -> apply_fun seq_g k :e unit_interval_topology. { admit. }
+    claim Hsg_open : forall k:set, k :e ordsucc m -> apply_fun seq_g k :e unit_interval_topology.
+    { let k. assume Hk : k :e ordsucc m.
+      rewrite (apply_fun_graph (ordsucc m)
+        (fun k0:set => If_i (k0 :e m) (apply_fun seq k0) lastI) k Hk).
+      apply (ordsuccE m k Hk).
+      - assume Hkm : k :e m.
+        rewrite (If_i_1 (k :e m) (apply_fun seq k) lastI Hkm).
+        exact (HseqOpen k (ordinal_TransSet (ordsucc (ordsucc m))
+          (nat_p_ordinal (ordsucc (ordsucc m)) (nat_ordsucc (ordsucc m) (nat_ordsucc m HmNat)))
+          (ordsucc m) (ordsuccI2 (ordsucc m)) k (ordsuccI1 m k Hkm))).
+      - assume Hkm : k = m.
+        claim HIfk : If_i (k :e m) (apply_fun seq k) lastI = lastI.
+        { rewrite Hkm. exact (If_i_0 (m :e m) (apply_fun seq m) lastI (In_irref m)). }
+        rewrite HIfk.
+        (** lastI = seq(m) cup {t : Rlt s t}, union of two open sets **)
+        claim Hseqm_open : apply_fun seq m :e unit_interval_topology.
+        { exact (HseqOpen m (ordsuccI1 (ordsucc m) m (ordsuccI2 m))). }
+        claim Hray_in_subspace :
+          Sep R (fun x:set => Rlt s x) :/\: unit_interval :e unit_interval_topology.
+        { exact (subspace_topologyI R R_standard_topology unit_interval
+            (Sep R (fun x:set => Rlt s x))
+            (open_ray_in_R_standard_topology s Hs_R)). }
+        claim Hray_eq : Sep R (fun x:set => Rlt s x) :/\: unit_interval = Sep unit_interval (fun t:set => Rlt s t).
+        { admit. }
+        claim Hray_open : Sep unit_interval (fun t:set => Rlt s t) :e unit_interval_topology.
+        { rewrite <- Hray_eq. exact Hray_in_subspace. }
+        exact (topology_binunion_closed unit_interval unit_interval_topology
+          (apply_fun seq m) (Sep unit_interval (fun t:set => Rlt s t))
+          unit_interval_topology_on Hseqm_open Hray_open). }
     claim Hsg_conn : forall k:set, k :e ordsucc m ->
       connected_space (apply_fun seq_g k)
         (subspace_topology unit_interval unit_interval_topology (apply_fun seq_g k)). { admit. }
