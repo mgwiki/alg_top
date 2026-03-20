@@ -239465,7 +239465,24 @@ claim HL2_word_data :
     { exact (affine_fun_I_apply s (add_SNo 1 (minus_SNo s)) u
         Hs_R H1ms_R (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos) Hu). }
     claim Haffine_in_UI : apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u :e unit_interval.
-    { rewrite Haffine_val. admit. }
+    { rewrite Haffine_val.
+      (** Goal: add_SNo (mul_SNo u (1-s)) s :e unit_interval **)
+      (** Need: value in R, value >= 0, value <= 1 **)
+      claim HprodR2 : mul_SNo u (add_SNo 1 (minus_SNo s)) :e R.
+      { exact (real_mul_SNo u HuR (add_SNo 1 (minus_SNo s)) H1ms_R). }
+      claim HvalR : add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s :e R.
+      { exact (real_add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) HprodR2 s Hs_R). }
+      (** value >= 0: follows from u(1-s) >= 0 and s >= 0 **)
+      claim Hval_ge_0 : ~(Rlt (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s) 0).
+      { admit. }
+      (** value <= 1: u(1-s) + s <= 1-s + s = 1, since u <= 1 so u(1-s) <= 1-s **)
+      claim Hval_le_1 : ~(Rlt 1 (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s)).
+      { admit. }
+      exact (SepI R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x))
+        (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s) HvalR
+        (andI (~(Rlt (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s) 0))
+              (~(Rlt 1 (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s)))
+              Hval_ge_0 Hval_le_1)). }
     claim Haffine_ge_s : Rle s (apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u).
     { rewrite Haffine_val.
       claim HuSNo : SNo u. { exact (real_SNo u HuR). }
