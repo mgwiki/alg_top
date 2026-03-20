@@ -235700,6 +235700,91 @@ apply andI.
       (Eps_i (fun t:set => t :e apply_fun seq k :/\: apply_fun seq (ordsucc k))) Heps_in).
 Qed.
 
+(** Infrastructure: convex_in R implies star_convex about any point in the set. **)
+(** Proven Charlie **)
+Lemma convex_in_R_implies_star_convex : forall A a0:set,
+  convex_in R A ->
+  a0 :e A ->
+  star_convex A a0.
+let A a0.
+assume Hconv Ha0A.
+claim HsubR : A c= R. { exact (convex_in_subset R A Hconv). }
+rewrite (star_convex_unfold A a0).
+apply andI.
+- apply andI.
+  + exact HsubR.
+  + exact Ha0A.
+- let a. assume HaA.
+  let t. assume Ht.
+  exact (convex_in_R_combination A a0 a t Hconv Ha0A HaA Ht).
+Qed.
+
+(** Infrastructure: connected subsets of unit_interval admit a path between any two points. **)
+(** Proven Charlie **)
+Lemma connected_subset_unit_interval_path_between :
+  forall A x y:set,
+    A c= unit_interval ->
+    connected_space A (subspace_topology unit_interval unit_interval_topology A) ->
+    x :e A ->
+    y :e A ->
+    exists p:set,
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology p /\
+      (forall t:set, t :e unit_interval -> apply_fun p t :e A) /\
+      apply_fun p 0 = x /\
+      apply_fun p 1 = y.
+let A x y.
+assume HAsubI HconnI HxA HyA.
+claim HAsubR : A c= R.
+{ exact (Subq_tra A unit_interval R HAsubI unit_interval_sub_R). }
+claim HtopEqA :
+  subspace_topology unit_interval unit_interval_topology A =
+    subspace_topology R R_standard_topology A.
+{ exact (subspace_topology_transitive_weak R R_standard_topology unit_interval A HAsubI). }
+claim HconnR : connected_space A (subspace_topology R R_standard_topology A).
+{ rewrite <- HtopEqA. exact HconnI. }
+claim Hconv : convex_in R A.
+{ exact (connected_subset_R_convex_in A HAsubR HconnR). }
+claim Hstar : star_convex A x.
+{ exact (convex_in_R_implies_star_convex A x Hconv HxA). }
+apply (star_convex_segment_continuous A x y Hstar HyA).
+let seg. assume HsegPack.
+apply (and3E
+  (continuous_map unit_interval unit_interval_topology A (subspace_topology R R_standard_topology A) seg)
+  (apply_fun seg 0 = x)
+  (apply_fun seg 1 = y)
+  HsegPack).
+assume HsegCont Hseg0 Hseg1.
+claim HsegContI : continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology seg.
+{
+  exact (continuous_map_range_expand
+    unit_interval
+    unit_interval_topology
+    A
+    (subspace_topology R R_standard_topology A)
+    unit_interval
+    unit_interval_topology
+    seg
+    HsegCont
+    HAsubI
+    unit_interval_topology_on
+    (eq_symm
+      (subspace_topology unit_interval unit_interval_topology A)
+      (subspace_topology R R_standard_topology A)
+      HtopEqA)).
+}
+claim HsegFun : function_on seg unit_interval A.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology A (subspace_topology R R_standard_topology A) seg HsegCont). }
+witness seg.
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact HsegContI.
+    * let t. assume Ht.
+      exact (HsegFun t Ht).
+  + exact Hseg0.
+- exact Hseg1.
+Qed.
+
 (** Infrastructure: build a loop from a path between x and y plus connecting paths from x0. **)
 (** This is the standard "close up a path" construction used in van Kampen style proofs. **)
 (** Proven Charlie **)
