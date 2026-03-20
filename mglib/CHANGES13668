@@ -1,0 +1,12 @@
+CHANGES13668 - Alice
+Date: 2026-03-20
+
+## Remove expired Charlie lock (RULE4)
+
+### Action
+Removed expired lock on loop_lebesgue_decomposition:
+- (** Lock Charlie 1773980730 **) expired at 1773980730
+- Current time 1773981493 > 1773980730
+
+### File size
+Previous bck13667 (559353 lines), current bck13668 (559352 lines), decreases by 1 line (just the removed lock line).

@@ -246165,7 +246165,6 @@ Admitted.
     the word decomposition in pi_1(U) and pi_1(V). This is the key technical
     step for Seifert-van Kampen (lemma59_1). **)
 (** Bounty 75 **)
-(** Lock Charlie 1773980730 **)
 Lemma loop_lebesgue_decomposition : forall X Tx U V x0 fcls Nleb:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
