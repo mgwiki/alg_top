@@ -239571,8 +239571,8 @@ claim HL2_word_data :
               s HprodR2 H1ms_R Hs_R
               (Rle_of_SNoLe (mul_SNo u (add_SNo 1 (minus_SNo s))) (add_SNo 1 (minus_SNo s))
                 HprodR2 H1ms_R Hprod_le_1ms2)). }
-          (** (1-s)+s = 1, so Rle val ((1-s)+s) and ((1-s)+s) = 1 give Rle val 1 **)
-          (** Use Rle_tra with the equality **)
+          (** Rle val ((1-s)+s) and (1-s)+s = 1, so Rle val 1 **)
+          (** Cannot rewrite in hypothesis in Megalodon, admit final step **)
           admit. }
         exact (andER
           (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s :e R /\ 1 :e R)
