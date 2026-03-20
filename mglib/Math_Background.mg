@@ -1,7 +1,7 @@
 (** Balance Alice 8948 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
-(** Balance Dave 2428 **)
+(** Balance Dave 2400 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -283897,7 +283897,8 @@ Qed.
 
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
 (** NOTICE 1773890061 (APPROVED): added topology_on X Tx hypothesis. **)
-(** Bounty 275 **)
+(** Bounty 303 **)
+(** Lock Dave 1774062649 **)
 Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
   topology_on X Tx ->
   normal_space (setprod X unit_interval)
