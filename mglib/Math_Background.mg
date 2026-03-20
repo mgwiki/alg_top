@@ -239537,7 +239537,8 @@ claim HL1_word_data :
       path_homotopy_class_loop X Tx x0 g = nat_primrec (fundamental_group_id X Tx x0)
         (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
   { (** Apply IH to g with seq_g chain **)
-    claim Hsg_fn : function_on seq_g (ordsucc m) (Power unit_interval). { admit. }
+    claim Hsg_fn : function_on seq_g (ordsucc m) (Power unit_interval).
+    { admit. }
     claim Hsg_open : forall k:set, k :e ordsucc m -> apply_fun seq_g k :e unit_interval_topology. { admit. }
     claim Hsg_conn : forall k:set, k :e ordsucc m ->
       connected_space (apply_fun seq_g k)
