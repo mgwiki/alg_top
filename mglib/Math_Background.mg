@@ -239361,8 +239361,8 @@ claim HL1_word_data :
   { let t. assume Ht. exact (SepE1 unit_interval (fun t0:set => ~(Rlt t0 s)) t Ht). }
   claim Hf_on_A : continuous_map A (subspace_topology unit_interval unit_interval_topology A)
     X Tx f.
-  { (** f is continuous on [0,1], hence on any subspace [0,s] **)
-    admit. }
+  { exact (continuous_on_subspace unit_interval unit_interval_topology X Tx f A
+      unit_interval_topology_on HAsub HfCont). }
   (** Define reparametrized gamma on B = [s,1]: t -> gammaX((1-t)/(1-s)) **)
   (** This is continuous B -> X and maps into U cap V **)
   claim Hg_on_B_ex : exists gB:set,
