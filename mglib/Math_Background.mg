@@ -1,7 +1,7 @@
 (** Balance Alice 8948 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
-(** Balance Dave 2703 **)
+(** Balance Dave 2670 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -283457,7 +283457,6 @@ Admitted.
 (** LATEX VERSION: (Jordan separation theorem) A simple closed curve in S^2 separates S^2. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 424 **)
-(** Lock Alice 1773992405 **)
 Theorem thm61_3_jordan_separation : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -284639,7 +284638,8 @@ Qed.
 (** continuous injective. If f is nulhomotopic, then a and b lie in the same **)
 (** component of S^2-f(A). **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 300 **)
-(** Bounty 330 **)
+(** Bounty 363 **)
+(** Lock Dave 1774076891 **)
 Theorem lemma62_2_borsuk : forall a b:set,
   a :e Sn 2 -> b :e Sn 2 -> a <> b ->
   forall A TA:set, compact_space A TA ->
