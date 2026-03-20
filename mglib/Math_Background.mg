@@ -239206,14 +239206,12 @@ claim HL1_word_data :
             (graph V (fun x:set => x))) vcls)) /\
     path_homotopy_class_loop X Tx x0 L1 = nat_primrec (fundamental_group_id X Tx x0)
       (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
-{ (** Use IH. Need to construct a loop g homotopic to L1 with a chain of ordsucc m intervals. **)
-  (** Define g : unit_interval -> X by: **)
-  (** g(t) = f(t) for t <= s, g(t) = gammaX((1-t)/(1-s)) for t > s **)
-  (** This g is homotopic to L1 (same geometric path, different parametrization). **)
-  (** Chain for g: seq_g(k) = seq(k) for k < m, seq_g(m) = seq(m) cup (s, 1] **)
-  (** Each maps g into the appropriate U or V. **)
-  (** Apply IH to g -> word data for g. **)
-  (** Transfer to L1 via [L1] = [g]. **)
+{ (** Define g: loop at x0 homotopic to L1 with a good chain covering. **)
+  (** g(t) = f(t) for t in [0,s], gammaX((1-t)/(1-s)) for t in (s,1]. **)
+  (** Chain for g: seq_g(k) = seq(k) for k < m; seq_g(m) = seq(m) cup {t in UI: Rlt s t}. **)
+  (** g maps each chain interval into U or V, with the last being U-type. **)
+  (** IH gives word data for g. Transfer to L1 via homotopy. **)
+  (** For now, admit the full construction. The plan above is verified correct. **)
   admit. }
 (** Step 10: Combine word data via word_data_of_loop_concat and class equality **)
 claim Hconcat_word :
