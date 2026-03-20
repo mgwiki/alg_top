@@ -239474,7 +239474,10 @@ claim HL2_word_data :
       { exact (real_add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) HprodR2 s Hs_R). }
       (** value >= 0: follows from u(1-s) >= 0 and s >= 0 **)
       claim Hval_ge_0 : ~(Rlt (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s) 0).
-      { admit. }
+      { (** prod >= 0 and s >= 0 => prod + s >= 0 => not < 0 **)
+        (** Use SNoLe_add_nonneg_right on 0: 0 <= 0 + prod = prod, then add s >= 0 **)
+        (** Actually simpler: 0 <= prod and 0 <= s, so 0 + 0 <= prod + s by monotonicity **)
+        admit. }
       (** value <= 1: u(1-s) + s <= 1-s + s = 1, since u <= 1 so u(1-s) <= 1-s **)
       claim Hval_le_1 : ~(Rlt 1 (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s)).
       { admit. }
