@@ -239460,12 +239460,14 @@ claim HL2_word_data :
     (** f2(u) = f(affine_fun_I(s, 1-s)(u)) = f(u(1-s) + s) **)
     (** u(1-s) + s in [s, 1], so in seq(n), so f maps it to V **)
     claim HuR : u :e R. { exact (unit_interval_sub_R u Hu). }
+    claim Haffine_val : apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u =
+      add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s.
+    { exact (affine_fun_I_apply s (add_SNo 1 (minus_SNo s)) u
+        Hs_R H1ms_R (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos) Hu). }
     claim Haffine_in_UI : apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u :e unit_interval.
-    { (** affine_fun_I s (1-s) maps [0,1] into [s,1] c= [0,1] **)
-      admit. }
+    { rewrite Haffine_val. admit. }
     claim Haffine_ge_s : Rle s (apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u).
-    { (** u(1-s) + s >= s since u >= 0 and 1-s >= 0 **)
-      admit. }
+    { rewrite Haffine_val. admit. }
     claim Haffine_in_seqn :
       apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u :e apply_fun seq n.
     { exact (Hseqn_covers_right
