@@ -238066,6 +238066,64 @@ rewrite (reverse_path_apply f t Ht).
 exact (HfA (apply_fun flip_unit_interval t) (flip_unit_interval_function_on t Ht)).
 Qed.
 
+(** Proven Charlie **)
+Lemma overlapping_chain_union_eq_unit_interval : forall n seq:set,
+  n :e omega ->
+  function_on seq (ordsucc n) (Power unit_interval) ->
+  (forall k:set, k :e ordsucc n ->
+    connected_space (apply_fun seq k)
+      (subspace_topology unit_interval unit_interval_topology (apply_fun seq k))) ->
+  0 :e apply_fun seq 0 ->
+  1 :e apply_fun seq n ->
+  (forall k:set, k :e n -> apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty) ->
+  Union {apply_fun seq k | k :e ordsucc n} = unit_interval.
+let n seq.
+assume HnOmega HseqPow HseqConn H0in H1in Hover.
+set UnionAll := Union {apply_fun seq k | k :e ordsucc n}.
+claim HnNat : nat_p n.
+{ exact (omega_nat_p n HnOmega). }
+claim HtopI : topology_on unit_interval unit_interval_topology.
+{ exact unit_interval_topology_on. }
+claim HconnCond : forall k:set, k :e ordsucc n ->
+  apply_fun seq k c= unit_interval /\
+  connected_space (apply_fun seq k)
+    (subspace_topology unit_interval unit_interval_topology (apply_fun seq k)).
+{
+  let k. assume Hk.
+  apply andI.
+  - exact (PowerE unit_interval (apply_fun seq k) (HseqPow k Hk)).
+  - exact (HseqConn k Hk).
+}
+claim HunionConn : connected_space UnionAll (subspace_topology unit_interval unit_interval_topology UnionAll).
+{
+  exact (overlapping_chain_union_connected unit_interval unit_interval_topology n seq
+    HtopI HnOmega HconnCond Hover).
+}
+claim HunionSub : UnionAll c= unit_interval.
+{
+  let t. assume HtU : t :e UnionAll.
+  apply (UnionE_impred {apply_fun seq k | k :e ordsucc n} t HtU).
+  let B. assume HtB : t :e B. assume HB : B :e {apply_fun seq k | k :e ordsucc n}.
+  apply (ReplE_impred (ordsucc n) (fun k:set => apply_fun seq k) B HB).
+  let k. assume Hk : k :e ordsucc n. assume Heq : B = apply_fun seq k.
+  claim HtSeq : t :e apply_fun seq k. { exact (mem_eqR t B (apply_fun seq k) Heq HtB). }
+  exact ((PowerE unit_interval (apply_fun seq k) (HseqPow k Hk)) t HtSeq).
+}
+claim H0Union : 0 :e UnionAll.
+{
+  apply (UnionI {apply_fun seq k | k :e ordsucc n} 0 (apply_fun seq 0)).
+  - exact H0in.
+  - exact (ReplI (ordsucc n) (fun k:set => apply_fun seq k) 0 (nat_0_in_ordsucc n HnNat)).
+}
+claim H1Union : 1 :e UnionAll.
+{
+  apply (UnionI {apply_fun seq k | k :e ordsucc n} 1 (apply_fun seq n)).
+  - exact H1in.
+  - exact (ReplI (ordsucc n) (fun k:set => apply_fun seq k) n (ordsuccI2 n)).
+}
+exact (connected_subset_unit_interval_endpoints_all UnionAll HunionSub HunionConn H0Union H1Union).
+Qed.
+
 (** Generalized helper: like ball_cover_word_nch_ind but for open connected subsets
     instead of fixed-radius balls. Needed for induction (merged/reparametrized chains
     are not balls of fixed radius).
