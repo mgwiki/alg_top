@@ -239473,11 +239473,46 @@ claim HL2_word_data :
       claim HvalR : add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s :e R.
       { exact (real_add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) HprodR2 s Hs_R). }
       (** value >= 0: follows from u(1-s) >= 0 and s >= 0 **)
+      claim HprodR2 : mul_SNo u (add_SNo 1 (minus_SNo s)) :e R.
+      { exact (real_mul_SNo u HuR (add_SNo 1 (minus_SNo s)) H1ms_R). }
+      claim Hprod_Rle_0 : Rle 0 (mul_SNo u (add_SNo 1 (minus_SNo s))).
+      { exact (Rle_of_SNoLe 0 (mul_SNo u (add_SNo 1 (minus_SNo s)))
+          real_0 HprodR2
+          (mul_SNo_nonneg_nonneg u (add_SNo 1 (minus_SNo s))
+            (real_SNo u HuR) (real_SNo (add_SNo 1 (minus_SNo s)) H1ms_R)
+            (SNoLe_of_Rle 0 u (RleI 0 u real_0 HuR
+              (andEL (~(Rlt u 0)) (~(Rlt 1 u))
+                (SepE2 R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x)) u Hu))))
+            (SNoLe_of_Rle 0 (add_SNo 1 (minus_SNo s)) (RleI 0 (add_SNo 1 (minus_SNo s)) real_0 H1ms_R
+              (fun H:Rlt (add_SNo 1 (minus_SNo s)) 0 =>
+                SNoLt_irref 0 (SNoLt_tra 0 (add_SNo 1 (minus_SNo s)) 0
+                  SNo_0 (real_SNo (add_SNo 1 (minus_SNo s)) H1ms_R) SNo_0
+                  (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos)
+                  (RltE_lt (add_SNo 1 (minus_SNo s)) 0 H))))))). }
+      claim Hval_Rle_0 : Rle 0 (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s).
+      { (** Rle 0 prod and Rle 0 s => Rle (0+0) (prod+s) by Rle_add_SNo_1 + Rle_add_SNo_2 **)
+        (** Simpler: Rle 0 s => Rle (prod+0) (prod+s) by Rle_add_SNo_2 **)
+        (** And Rle 0 prod => Rle 0 (prod+0) = prod **)
+        (** So Rle 0 prod <= prod + s **)
+        claim HprodSNo2 : SNo (mul_SNo u (add_SNo 1 (minus_SNo s))).
+        { exact (real_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) HprodR2). }
+        claim HsSNo2 : SNo s. { exact (real_SNo s Hs_R). }
+        claim Hs_SNoLe_0 : SNoLe 0 s.
+        { exact (SNoLe_of_Rle 0 s (RleI 0 s real_0 Hs_R Hs_nlt0)). }
+        claim Hprod_le_sum : Rle (mul_SNo u (add_SNo 1 (minus_SNo s)))
+          (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s).
+        { exact (Rle_of_SNoLe (mul_SNo u (add_SNo 1 (minus_SNo s)))
+            (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s)
+            HprodR2 HvalR
+            (SNoLe_add_nonneg_right (mul_SNo u (add_SNo 1 (minus_SNo s))) s
+              HprodSNo2 HsSNo2 Hs_SNoLe_0)). }
+        exact (Rle_tra 0 (mul_SNo u (add_SNo 1 (minus_SNo s)))
+          (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s)
+          Hprod_Rle_0 Hprod_le_sum). }
       claim Hval_ge_0 : ~(Rlt (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s) 0).
-      { (** prod >= 0 and s >= 0 => prod + s >= 0 => not < 0 **)
-        (** Use SNoLe_add_nonneg_right on 0: 0 <= 0 + prod = prod, then add s >= 0 **)
-        (** Actually simpler: 0 <= prod and 0 <= s, so 0 + 0 <= prod + s by monotonicity **)
-        admit. }
+      { exact (andER (0 :e R /\ add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s :e R)
+          (~(Rlt (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s) 0))
+          Hval_Rle_0). }
       (** value <= 1: u(1-s) + s <= 1-s + s = 1, since u <= 1 so u(1-s) <= 1-s **)
       claim Hval_le_1 : ~(Rlt 1 (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s)).
       { admit. }
