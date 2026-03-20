@@ -239092,10 +239092,7 @@ claim Htransition_VU : forall k:set, k :e nch ->
     along the chain order (using a chain-ordered reparameterization h) and then
     combine word data via word_data_of_loop_concat_nat. **)
 claim Htransition_exists :
-  exists s:set, s :e unit_interval /\ s <> 0 /\ s <> 1 /\
-    apply_fun f s :e U :/\: V /\
-    (forall t:set, t :e unit_interval -> Rle t s -> apply_fun f t :e U) /\
-    (forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V).
+  exists s:set, s :e unit_interval /\ s <> 0 /\ s <> 1 /\ apply_fun f s :e U :/\: V.
 {
   set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
   claim HnchNat : nat_p nch. { exact (omega_nat_p nch HnchOmega). }
@@ -239593,92 +239590,16 @@ claim Htransition_exists :
     claim HfsUV : apply_fun f s :e U :/\: V.
     { exact (binintersectI U V (apply_fun f s) HfsU HfsV). }
     witness s.
-    (** Prove f(s) :e U cap V **)
-    (** Prove [0,s] -> U using ball_chain_prefix_covers_interval **)
-    claim HfU : forall t:set, t :e unit_interval -> Rle t s -> apply_fun f t :e U.
-    { let t. assume HtI Hle.
-      (** By ball_chain_prefix_covers_interval, t is in some ball j with j :e ordsucc k **)
-      claim Hprefix_cover :
-        exists j:set, j :e ordsucc k /\ t :e apply_fun seq j.
-      { exact (ball_chain_prefix_covers_interval r nch seq k s
-          HrR Hrpos HnchOmega HseqFn Hoverlap H0_in_seq0
-          Hk_nch Hs_seqk Hs_seqsk
-          t HtI Hle). }
-      apply Hprefix_cover. let j. assume Hjpack.
-      claim Hj_sk : j :e ordsucc k.
-      { exact (andEL (j :e ordsucc k) (t :e apply_fun seq j) Hjpack). }
-      claim Ht_seqj : t :e apply_fun seq j.
-      { exact (andER (j :e ordsucc k) (t :e apply_fun seq j) Hjpack). }
-      (** j :e ordsucc k means j <= k, so j < m, so ball j is U-type **)
-      claim Hj_On : j :e ordsucc nch.
-      { claim Hsk_sub_snch : ordsucc k c= ordsucc nch.
-        { exact (Subq_tra (ordsucc k) nch (ordsucc nch)
-            (ordinal_ordsucc_In_Subq nch Hnch_ord k Hk_nch)
-            (ordsuccI1 nch)). }
-        exact (Hsk_sub_snch j Hj_sk). }
-      claim Hj_in_m : j :e m.
-      { rewrite Hm_eq.
-        exact Hj_sk. }
-      exact (Hprefix_Utype j Hj_On Hj_in_m t Ht_seqj). }
-    (** Prove [s,1] -> V **)
-    (** This requires a suffix coverage: for t >= s, t is in some ball j >= ordsucc k **)
-    (** All such balls are V-type (since they are not U-type: j >= m and ball j has no **)
-    (** guarantee of being U-type). **)
-    (** Actually we need: for j >= m, ball j is V-type. This follows because: **)
-    (** - ball m is V-type (shown above) **)
-    (** - for j > m: j is NOT necessarily V-type! The chain could go V, U, V, ... **)
-    (** So we CANNOT prove that all balls after m are V-type. **)
-    (** **)
-    (** CORRECT approach for [s,1] -> V: Use the suffix union of balls m..nch. **)
-    (** These balls overlap consecutively (from Hoverlap for indices m..nch-1). **)
-    (** Their union is connected and contains both s (in ball m) and 1 (in ball nch). **)
-    (** By interval property, the union contains all of [s,1]. **)
-    (** Then for t :e [s,1], t is in some ball j with m <= j <= nch. **)
-    (** But ball j might be U-type for j > m! So f(t) :e U, not V. **)
-    (** **)
-    (** This means [s,1] -> V CANNOT be proved from just the first U-to-V transition. **)
-    (** The claim as stated requires a monotone partition: [0,s] all U, [s,1] all V. **)
-    (** APPROACH: Instead of using the FIRST transition, find the LAST U-type ball k'. **)
-    (** Then all balls from ordsucc(k') to nch are V-type (or handle similarly). **)
-    (** Use ball_chain_suffix_covers_interval (a suffix version of the prefix lemma) **)
-    (** to show that for t >= s', t is in some V-type ball. **)
-    (** Alternatively, restructure Htransition_exists to use a weaker claim **)
-    (** (existence of a finite word decomposition without monotone partition). **)
-    claim HfV : forall t:set, t :e unit_interval -> Rle s t -> apply_fun f t :e V.
-    { let t. assume HtI Hle.
-      (** Use suffix coverage: t is in some ball j >= ordsucc k = m **)
-      apply (ball_chain_suffix_covers_interval r nch seq k s
-        HrR Hrpos HnchOmega HseqFn Hoverlap H1_in_seqn
-        Hk_nch Hs_seqk Hs_seqsk t HtI Hle).
-      let j. assume Hjpack.
-      (** Hjpack : ((ordsucc k c= j) /\ (j :e ordsucc nch)) /\ (t :e apply_fun seq j) **)
-      claim Ht_seqj : t :e apply_fun seq j.
-      { exact (andER ((ordsucc k c= j) /\ (j :e ordsucc nch)) (t :e apply_fun seq j) Hjpack). }
-      claim Hjleft : (ordsucc k c= j) /\ (j :e ordsucc nch).
-      { exact (andEL ((ordsucc k c= j) /\ (j :e ordsucc nch)) (t :e apply_fun seq j) Hjpack). }
-      claim Hj_ge_m : ordsucc k c= j.
-      { exact (andEL (ordsucc k c= j) (j :e ordsucc nch) Hjleft). }
-      claim Hj_On : j :e ordsucc nch.
-      { exact (andER (ordsucc k c= j) (j :e ordsucc nch) Hjleft). }
-      (** j >= m means j :e NotU (or j = m or j > m). Ball j should be V-type. **)
-      (** By Hm_least: m is LEAST in NotU. j >= m means either j :e NotU or j is NOT in NotU. **)
-      (** If j NOT in NotU: ball j is U-type. This can happen for j > m! **)
-      (** So we CANNOT conclude ball j is V-type in general. **)
-      (** ADMIT: needs induction on transitions for the general case. **)
-      admit. }
-    apply and6I.
-    + exact HsUI.
-    + exact Hs_ne0.
-    + exact Hs_ne1.
-    + exact HfsUV.
-    + exact HfU.
-    + exact HfV.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * exact HsUI.
+        * exact Hs_ne0.
+      + exact Hs_ne1.
+    - exact HfsUV.
 }
-(** The Htransition_exists monotone-split claim above is not valid in general and
-    must not be used. The correct proof shrinks to a radius r1 with r1 < r and r1 < 1,
-    rebuilds a small-ball chain, and performs transition induction along the chain
-    order, closing each block at x0 using path connectivity of U cap V and combining
-    word data via word_data_of_loop_concat_nat. **)
+(** Now shrink to a radius r1 with r1 < r and r1 < 1 and work with a chain ordered
+    parametrization. **)
 claim Hr1_ex : exists r1:set, r1 :e R /\ Rlt 0 r1 /\ Rlt r1 r /\ Rlt r1 1.
 { exact (exists_small_radius_lt_r_and_lt1 r HrR Hrpos). }
 apply Hr1_ex. let r1. assume Hr1pack.
