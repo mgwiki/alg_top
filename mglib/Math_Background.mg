@@ -284067,7 +284067,86 @@ claim HG_at_a0 : forall a:set, a :e A -> apply_fun G (a,0) = apply_fun f a.
 (** Step D: W from tube lemma: open W with A ⊆ W ⊆ X and W×I ⊆ G^{-1}(Y) **)
 claim HW_exists : exists W:set, W :e Tx /\ A c= W /\
   (forall x t:set, x :e W -> t :e unit_interval -> apply_fun G (x,t) :e Y).
-{ admit. }
+{
+  (** N = G^{-1}(Y) is open in TXI **)
+  set N := preimage_of (setprod X unit_interval) G Y.
+  claim HN_open : N :e TXI.
+  { exact (continuous_map_preimage (setprod X unit_interval) TXI (euclidean_space n) TRn G HG_cont Y HY). }
+  (** For each a in A, {a}xI ⊆ N since G(a,t) = F_ext(a,t) in Y **)
+  claim HSing_sub_N : forall a:set, a :e A -> setprod (Sing a) unit_interval c= N.
+  { let a. assume Ha.
+    let p. assume Hp.
+    claim HSing_sub_A : Sing a c= A.
+    { let y. assume Hy. rewrite (SingE a y Hy). exact Ha. }
+    claim Hp_in_AI : p :e setprod A unit_interval.
+    { exact (setprod_Subq (Sing a) unit_interval A unit_interval HSing_sub_A (Subq_ref unit_interval) p Hp). }
+    claim Hp_in_XI : p :e setprod X unit_interval.
+    { exact (setprod_Subq A unit_interval X unit_interval HAsub (Subq_ref unit_interval) p Hp_in_AI). }
+    claim Hp_in_dom : p :e domain_ext.
+    { apply binunionI1. exact Hp_in_AI. }
+    claim HGp_in_Y : apply_fun G p :e Y.
+    { rewrite (HG_eq_Fext p Hp_in_dom).
+      exact ((continuous_map_function_on domain_ext domain_ext_top Y TY F_ext HF_ext_cont) p Hp_in_dom). }
+    exact (SepI (setprod X unit_interval) (fun z:set => apply_fun G z :e Y) p Hp_in_XI HGp_in_Y). }
+  (** Tube lemma: for each a in A, get Ua open with a in Ua and Ua x I ⊆ N **)
+  claim HUa_exists : forall a:set, a :e A ->
+    exists U:set, U :e Tx /\ a :e U /\ setprod U unit_interval c= N.
+  { let a. assume Ha.
+    apply (tube_lemma X Tx unit_interval unit_interval_topology
+      HtopX unit_interval_topology_on unit_interval_compact_axiom a (HAsub a Ha) N).
+    apply andI.
+    - exact HN_open.
+    - exact (HSing_sub_N a Ha). }
+  (** Choose Ua for each a using Eps_i **)
+  set Uprop := fun a:set => fun U:set => U :e Tx /\ a :e U /\ setprod U unit_interval c= N.
+  set Uchoice := fun a:set => Eps_i (Uprop a).
+  claim HUchoice_ok : forall a:set, a :e A -> Uprop a (Uchoice a).
+  { let a. assume Ha.
+    exact (Eps_i_ex (Uprop a) (HUa_exists a Ha)). }
+  (** W = Union of all Uchoice a for a in A **)
+  witness Union {Uchoice a | a :e A}.
+  apply andI.
+  - apply andI.
+    + (** W open **)
+      claim HUFam_sub_Tx : {Uchoice a | a :e A} c= Tx.
+      { let U. assume HU.
+        apply (ReplE A Uchoice U HU). let a. assume Ha_conj.
+        claim Ha : a :e A.
+        { exact (andEL (a :e A) (U = Uchoice a) Ha_conj). }
+        claim HUeq : U = Uchoice a.
+        { exact (andER (a :e A) (U = Uchoice a) Ha_conj). }
+        rewrite HUeq.
+        exact (andEL (Uchoice a :e Tx) (a :e Uchoice a)
+          (andEL ((Uchoice a :e Tx) /\ (a :e Uchoice a)) (setprod (Uchoice a) unit_interval c= N)
+            (HUchoice_ok a Ha))). }
+      exact (topology_union_closed X Tx {Uchoice a | a :e A} HtopX HUFam_sub_Tx).
+    + (** A ⊆ W **)
+      let a. assume Ha.
+      exact (UnionI {Uchoice a | a :e A} a (Uchoice a)
+        (andER (Uchoice a :e Tx) (a :e Uchoice a)
+          (andEL ((Uchoice a :e Tx) /\ (a :e Uchoice a)) (setprod (Uchoice a) unit_interval c= N)
+            (HUchoice_ok a Ha)))
+        (ReplI A Uchoice a Ha)).
+  - (** G(W x I) ⊆ Y **)
+    let x t. assume HxW Ht.
+    apply (UnionE {Uchoice a | a :e A} x HxW). let U. assume HU_conj.
+    claim HxU : x :e U.
+    { exact (andEL (x :e U) (U :e {Uchoice a | a :e A}) HU_conj). }
+    claim HU_mem : U :e {Uchoice a | a :e A}.
+    { exact (andER (x :e U) (U :e {Uchoice a | a :e A}) HU_conj). }
+    apply (ReplE A Uchoice U HU_mem). let a. assume Ha_conj.
+    claim Ha : a :e A.
+    { exact (andEL (a :e A) (U = Uchoice a) Ha_conj). }
+    claim HUeq : U = Uchoice a.
+    { exact (andER (a :e A) (U = Uchoice a) Ha_conj). }
+    claim HxUa : x :e Uchoice a.
+    { rewrite <- HUeq. exact HxU. }
+    claim HxtUaI : (x,t) :e setprod (Uchoice a) unit_interval.
+    { exact (tuple_2_setprod_by_pair_Sigma (Uchoice a) unit_interval x t HxUa Ht). }
+    claim HxtN : (x,t) :e N.
+    { exact ((andER ((Uchoice a :e Tx) /\ (a :e Uchoice a)) (setprod (Uchoice a) unit_interval c= N)
+        (HUchoice_ok a Ha)) (x,t) HxtUaI). }
+    exact (SepE2 (setprod X unit_interval) (fun z:set => apply_fun G z :e Y) (x,t) HxtN). }
 apply HW_exists. let W. assume HW_data.
 set Wtp1 := W :e Tx.
 set Wtp2 := A c= W.
