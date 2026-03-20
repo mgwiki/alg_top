@@ -238915,6 +238915,41 @@ apply (nat_inv mV HmVnat).
         exact (HV_succ s (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn)).
 Qed.
 
+(** Infrastructure: word data from a finite concatenation of U or V segments.
+    This is intended for chain ordered parametrizations (path_concat_nat) where each
+    segment lies entirely in U or entirely in V, and consecutive segments join. **)
+Lemma word_data_of_path_concat_nat_by_UV_segments :
+  forall X Tx U V x0 n segs:set,
+    topology_on X Tx ->
+    U :e Tx -> V :e Tx ->
+    x0 :e U :/\: V ->
+    path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+    n :e omega ->
+    function_on segs (ordsucc n) (function_space unit_interval X) ->
+    (forall k:set, k :e ordsucc n ->
+      continuous_map unit_interval unit_interval_topology X Tx (apply_fun segs k) /\
+      ((forall t:set, t :e unit_interval -> apply_fun (apply_fun segs k) t :e U) \/
+       (forall t:set, t :e unit_interval -> apply_fun (apply_fun segs k) t :e V))) ->
+    apply_fun (apply_fun segs 0) 0 = x0 ->
+    apply_fun (apply_fun segs n) 1 = x0 ->
+    (forall k:set, k :e n ->
+      apply_fun (apply_fun segs k) 1 = apply_fun (apply_fun segs (ordsucc k)) 0) ->
+    exists n0:set, n0 :e omega /\
+    exists gs0:set, function_on gs0 n0 (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n0 ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs0 i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs0 i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)) /\
+      path_homotopy_class_loop X Tx x0 (path_concat_nat n segs) =
+        nat_primrec (fundamental_group_id X Tx x0)
+          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs0 k)) n0.
+Admitted.
+
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -239990,7 +240025,6 @@ claim Hfh_eq_concat :
 
 (** TODO: transition induction along the chain order (using segsI and Hball_image1)
     to build a finite word decomposition for fh, then transfer to f via Hclass_fh_eq. **)
-admit.
 Admitted.
 
 Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
