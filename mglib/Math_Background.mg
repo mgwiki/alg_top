@@ -238915,6 +238915,120 @@ apply (nat_inv mV HmVnat).
         exact (HV_succ s (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) s HsIn)).
 Qed.
 
+(** Proven Charlie **)
+(** Infrastructure: path concatenation preserves pointwise membership in a set. **)
+Lemma path_concat_pointwise_in_set : forall f g U:set,
+  (forall t:set, t :e unit_interval -> apply_fun f t :e U) ->
+  (forall t:set, t :e unit_interval -> apply_fun g t :e U) ->
+  apply_fun f 1 = apply_fun g 0 ->
+  forall t:set, t :e unit_interval -> apply_fun (path_concat f g) t :e U.
+let f g U.
+assume HfU HgU Hjoin.
+let t. assume HtI.
+claim HtLR : t :e unit_interval_left_half :\/: unit_interval_right_half.
+{
+  exact (eq_subst_mem_set
+    t
+    unit_interval
+    (unit_interval_left_half :\/: unit_interval_right_half)
+    HtI
+    (eq_symm (unit_interval_left_half :\/: unit_interval_right_half) unit_interval
+      unit_interval_halves_cover)).
+}
+apply (binunionE unit_interval_left_half unit_interval_right_half t HtLR).
+- assume HtLH.
+  rewrite (path_concat_apply_left f g t Hjoin HtLH).
+  claim H2tI : mul_SNo 2 t :e unit_interval.
+  {
+    claim H2tI0 : apply_fun double_map_left_half t :e unit_interval.
+    { exact (double_map_function_on t HtLH). }
+    exact (eq_subst_mem_rev
+      (apply_fun double_map_left_half t)
+      (mul_SNo 2 t)
+      unit_interval
+      (double_map_apply t HtLH)
+      H2tI0).
+  }
+  exact (HfU (mul_SNo 2 t) H2tI).
+- assume HtRH.
+  rewrite (path_concat_apply_right f g t Hjoin HtRH).
+  claim H2tm1I : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+  {
+    claim H2tm1I0 : apply_fun double_minus_one_map_right_half t :e unit_interval.
+    { exact (double_minus_one_map_function_on t HtRH). }
+    exact (eq_subst_mem_rev
+      (apply_fun double_minus_one_map_right_half t)
+      (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+      unit_interval
+      (double_minus_one_map_apply t HtRH)
+      H2tm1I0).
+  }
+  exact (HgU (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2tm1I).
+Qed.
+
+(** Proven Charlie **)
+(** Infrastructure: path_concat_nat preserves pointwise membership in a set under compatibility. **)
+Lemma path_concat_nat_pointwise_in_set :
+  forall n segs U:set,
+  n :e omega ->
+  function_on segs (ordsucc n) (function_space unit_interval U) ->
+  (forall k:set, k :e n ->
+    apply_fun (apply_fun segs k) 1 = apply_fun (apply_fun segs (ordsucc k)) 0) ->
+  forall t:set, t :e unit_interval ->
+    apply_fun (path_concat_nat n segs) t :e U.
+let n segs U.
+assume HnOmega HsegsFun HsegsCompat.
+claim HnNat : nat_p n. { exact (omega_nat_p n HnOmega). }
+set P := fun m:set =>
+  forall segsm:set,
+    function_on segsm (ordsucc m) (function_space unit_interval U) ->
+    (forall k:set, k :e m ->
+      apply_fun (apply_fun segsm k) 1 = apply_fun (apply_fun segsm (ordsucc k)) 0) ->
+    forall t:set, t :e unit_interval ->
+      apply_fun (path_concat_nat m segsm) t :e U.
+claim HP : P n.
+{
+  apply (nat_ind P).
+  - let segsm. assume HsegsmFun _. let t. assume HtI.
+    rewrite (path_concat_nat_0 segsm).
+    claim H0On : 0 :e ordsucc 0. { exact (ordsuccI2 0). }
+    claim Hseg0FS : apply_fun segsm 0 :e function_space unit_interval U.
+    { exact (HsegsmFun 0 H0On). }
+    exact (function_on_of_function_space
+      (apply_fun segsm 0) unit_interval U Hseg0FS t HtI).
+  - let m. assume HmNat IH.
+    let segsm. assume HsegsmFun HsegsmCompat.
+    let t. assume HtI.
+    rewrite (path_concat_nat_S m segsm HmNat).
+    set f0 := path_concat_nat m segsm.
+    set g0 := apply_fun segsm (ordsucc m).
+    claim Hg0FS : g0 :e function_space unit_interval U.
+    { exact (HsegsmFun (ordsucc m) (ordsuccI2 (ordsucc m))). }
+    claim Hg0U : forall s:set, s :e unit_interval -> apply_fun g0 s :e U.
+    { exact (function_on_of_function_space g0 unit_interval U Hg0FS). }
+    claim Hf0U : forall s:set, s :e unit_interval -> apply_fun f0 s :e U.
+    {
+      exact (IH segsm
+        (function_on_subdomain
+          segsm
+          (ordsucc (ordsucc m))
+          (function_space unit_interval U)
+          (ordsucc m)
+          HsegsmFun
+          (ordsuccI1 (ordsucc m)))
+        (fun k Hk => HsegsmCompat k (ordsuccI1 m k Hk))).
+    }
+    claim Hjoin : apply_fun f0 1 = apply_fun g0 0.
+    {
+      rewrite (path_concat_nat_at_one m segsm HmNat).
+      exact (HsegsmCompat m (ordsuccI2 m)).
+    }
+    exact (path_concat_pointwise_in_set f0 g0 U Hf0U Hg0U Hjoin t HtI).
+  - exact HnNat.
+}
+exact (HP segs HsegsFun HsegsCompat).
+Qed.
+
 (** Infrastructure: word data from a finite concatenation of U or V segments.
     This is intended for chain ordered parametrizations (path_concat_nat) where each
     segment lies entirely in U or entirely in V, and consecutive segments join. **)
