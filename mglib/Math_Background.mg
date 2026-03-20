@@ -239538,7 +239538,27 @@ claim HL1_word_data :
         (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
   { (** Apply IH to g with seq_g chain **)
     claim Hsg_fn : function_on seq_g (ordsucc m) (Power unit_interval).
-    { admit. }
+    { apply (total_function_on_function_on seq_g (ordsucc m) (Power unit_interval)).
+      apply (total_function_on_graph (ordsucc m) (Power unit_interval)
+        (fun k:set => If_i (k :e m) (apply_fun seq k) lastI)).
+      let k. assume Hk : k :e ordsucc m.
+      apply (ordsuccE m k Hk).
+      - assume Hkm : k :e m.
+        prove If_i (k :e m) (apply_fun seq k) lastI :e Power unit_interval.
+        rewrite (If_i_1 (k :e m) (apply_fun seq k) lastI Hkm).
+        exact (HseqFnPow k (ordinal_TransSet (ordsucc (ordsucc m))
+          (nat_p_ordinal (ordsucc (ordsucc m)) (nat_ordsucc (ordsucc m) (nat_ordsucc m HmNat)))
+          (ordsucc m) (ordsuccI2 (ordsucc m)) k (ordsuccI1 m k Hkm))).
+      - assume Hkm : k = m.
+        prove If_i (k :e m) (apply_fun seq k) lastI :e Power unit_interval.
+        rewrite Hkm.
+        rewrite (If_i_0 (m :e m) (apply_fun seq m) lastI (In_irref m)).
+        apply (PowerI unit_interval lastI).
+        let t. assume Ht : t :e lastI.
+        apply (binunionE (apply_fun seq m) (Sep unit_interval (fun t0:set => Rlt s t0)) t Ht).
+        + assume Htm : t :e apply_fun seq m. exact (Hseqm_sub t Htm).
+        + assume Hts : t :e Sep unit_interval (fun t0:set => Rlt s t0).
+          exact (SepE1 unit_interval (fun t0:set => Rlt s t0) t Hts). }
     claim Hsg_open : forall k:set, k :e ordsucc m -> apply_fun seq_g k :e unit_interval_topology.
     { let k. assume Hk : k :e ordsucc m.
       rewrite (apply_fun_graph (ordsucc m)
