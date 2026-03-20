@@ -239167,12 +239167,69 @@ claim HL1_fun : function_on L1 unit_interval X.
 claim HL2_fun : function_on L2 unit_interval X.
 { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx L2 HL2_cont). }
 claim HL1_sub : L1 c= setprod unit_interval X.
-{ (** L1 = path_concat f1 (reverse_path gammaX), both continuous into X **)
-  (** So L1 = {(t, f1(2t)) | t in left_half} cup {(t, rev_gamma(2t-1)) | t in right_half} **)
-  (** Each pair is in setprod unit_interval X **)
-  admit. }
+{
+  let p. assume Hp.
+  apply (binunionE
+    {(t, apply_fun f1 (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    {(t, apply_fun (reverse_path gammaX) (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    p Hp).
+  - assume Hleft.
+    apply (ReplE_impred unit_interval_left_half
+      (fun t:set => (t, apply_fun f1 (mul_SNo 2 t))) p Hleft).
+    let t. assume Ht Heq.
+    claim H2tI : mul_SNo 2 t :e unit_interval.
+    { rewrite <- (double_map_apply t Ht). exact (double_map_function_on t Ht). }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma unit_interval X t
+      (apply_fun f1 (mul_SNo 2 t))
+      (unit_interval_left_half_sub t Ht)
+      (continuous_map_function_on unit_interval unit_interval_topology X Tx f1 Hf1Cont (mul_SNo 2 t) H2tI)).
+  - assume Hright.
+    apply (ReplE_impred unit_interval_right_half
+      (fun t:set => (t, apply_fun (reverse_path gammaX) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))) p Hright).
+    let t. assume Ht Heq.
+    claim H2m1tI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+    { rewrite <- (double_minus_one_map_apply t Ht). exact (double_minus_one_map_function_on t Ht). }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma unit_interval X t
+      (apply_fun (reverse_path gammaX) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+      (unit_interval_right_half_sub t Ht)
+      (continuous_map_function_on unit_interval unit_interval_topology X Tx (reverse_path gammaX)
+        HrevCont
+        (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2m1tI)).
+}
 claim HL2_sub : L2 c= setprod unit_interval X.
-{ admit. }
+{
+  let p. assume Hp.
+  apply (binunionE
+    {(t, apply_fun gammaX (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    {(t, apply_fun f2 (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    p Hp).
+  - assume Hleft.
+    apply (ReplE_impred unit_interval_left_half
+      (fun t:set => (t, apply_fun gammaX (mul_SNo 2 t))) p Hleft).
+    let t. assume Ht Heq.
+    claim H2tI2 : mul_SNo 2 t :e unit_interval.
+    { rewrite <- (double_map_apply t Ht). exact (double_map_function_on t Ht). }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma unit_interval X t
+      (apply_fun gammaX (mul_SNo 2 t))
+      (unit_interval_left_half_sub t Ht)
+      (continuous_map_function_on unit_interval unit_interval_topology X Tx gammaX HgammaXCont
+        (mul_SNo 2 t) H2tI2)).
+  - assume Hright.
+    apply (ReplE_impred unit_interval_right_half
+      (fun t:set => (t, apply_fun f2 (add_SNo (mul_SNo 2 t) (minus_SNo 1)))) p Hright).
+    let t. assume Ht Heq.
+    claim H2m1tI2 : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+    { rewrite <- (double_minus_one_map_apply t Ht). exact (double_minus_one_map_function_on t Ht). }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma unit_interval X t
+      (apply_fun f2 (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+      (unit_interval_right_half_sub t Ht)
+      (continuous_map_function_on unit_interval unit_interval_topology X Tx f2 Hf2Cont
+        (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2m1tI2)).
+}
 claim HL1_funspace : L1 :e function_space unit_interval X.
 { exact (SepI (Power (setprod unit_interval X)) (fun u:set => function_on u unit_interval X)
     L1 (PowerI (setprod unit_interval X) L1 HL1_sub) HL1_fun). }
@@ -414111,7 +414168,6 @@ Admitted.
 (** scheme. Then X is a compact Hausdorff space. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 270 **)
-(** Lock Dave 1774034859 **)
 Theorem thm74_1_polygon_pasting_compact_hausdorff :
   forall n w:set,
   labelling_scheme n w ->
