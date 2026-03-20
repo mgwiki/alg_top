@@ -238747,10 +238747,56 @@ Lemma unit_interval_left_closed_at : forall s:set,
   closed_in unit_interval unit_interval_topology
     (Sep unit_interval (fun t:set => ~(Rlt s t))).
 let s. assume HsUI Hs0 Hs1.
-(** [0,s] is closed iff its complement (s,1] is open **)
-(** (s,1] = {t in [0,1] : Rlt s t} is open in unit_interval **)
-admit.
-Admitted.
+set A := Sep unit_interval (fun t:set => ~(Rlt s t)).
+claim HAsub : A c= unit_interval.
+{ let t. assume Ht. exact (SepE1 unit_interval (fun t0:set => ~(Rlt s t0)) t Ht). }
+apply (closed_inI unit_interval unit_interval_topology A
+  unit_interval_topology_on HAsub).
+(** Need: exists U in unit_interval_topology, A = unit_interval setminus U **)
+(** U = {t in unit_interval : Rlt s t} = (s, 1] in [0,1] **)
+set U := Sep unit_interval (fun t:set => Rlt s t).
+claim HU_open : U :e unit_interval_topology.
+{ (** U = {t in UI : Rlt s t} = {x in R : Rlt s x} cap UI **)
+  claim HsR : s :e R. { exact (unit_interval_sub_R s HsUI). }
+  set V := Sep R (fun x:set => Rlt s x).
+  claim HV_open : V :e R_standard_topology.
+  { exact (open_ray_in_R_standard_topology s HsR). }
+  claim HU_eq : U = V :/\: unit_interval.
+  { apply set_ext.
+    - let t. assume Ht : t :e U.
+      claim HtUI : t :e unit_interval.
+      { exact (SepE1 unit_interval (fun t0:set => Rlt s t0) t Ht). }
+      claim HtRlt : Rlt s t.
+      { exact (SepE2 unit_interval (fun t0:set => Rlt s t0) t Ht). }
+      claim HtR : t :e R. { exact (unit_interval_sub_R t HtUI). }
+      exact (binintersectI V unit_interval t
+        (SepI R (fun x:set => Rlt s x) t HtR HtRlt) HtUI).
+    - let t. assume Ht : t :e V :/\: unit_interval.
+      claim HtV : t :e V. { exact (binintersectE1 V unit_interval t Ht). }
+      claim HtUI : t :e unit_interval. { exact (binintersectE2 V unit_interval t Ht). }
+      claim HtRlt : Rlt s t. { exact (SepE2 R (fun x:set => Rlt s x) t HtV). }
+      exact (SepI unit_interval (fun t0:set => Rlt s t0) t HtUI HtRlt). }
+  rewrite HU_eq.
+  exact (subspace_topologyI R R_standard_topology unit_interval V HV_open). }
+witness U. apply andI.
+- exact HU_open.
+- apply set_ext.
+  + let t. assume Ht : t :e A.
+    claim HtUI : t :e unit_interval.
+    { exact (SepE1 unit_interval (fun t0:set => ~(Rlt s t0)) t Ht). }
+    claim HnRlt : ~(Rlt s t).
+    { exact (SepE2 unit_interval (fun t0:set => ~(Rlt s t0)) t Ht). }
+    exact (setminusI unit_interval U t HtUI
+      (fun HtU : t :e U => HnRlt (SepE2 unit_interval (fun t0:set => Rlt s t0) t HtU))).
+  + let t. assume Ht : t :e unit_interval :\: U.
+    claim HtUI : t :e unit_interval.
+    { exact (setminusE1 unit_interval U t Ht). }
+    claim HtnU : t /:e U.
+    { exact (setminusE2 unit_interval U t Ht). }
+    exact (SepI unit_interval (fun t0:set => ~(Rlt s t0)) t HtUI
+      (fun HRlt : Rlt s t => HtnU
+        (SepI unit_interval (fun t0:set => Rlt s t0) t HtUI HRlt))).
+Qed.
 
 (** Helper: [s,1] is closed in unit_interval when s in (0,1) **)
 Lemma unit_interval_right_closed_at : forall s:set,
@@ -238758,8 +238804,53 @@ Lemma unit_interval_right_closed_at : forall s:set,
   closed_in unit_interval unit_interval_topology
     (Sep unit_interval (fun t:set => ~(Rlt t s))).
 let s. assume HsUI Hs0 Hs1.
-admit.
-Admitted.
+set B := Sep unit_interval (fun t:set => ~(Rlt t s)).
+claim HBsub : B c= unit_interval.
+{ let t. assume Ht. exact (SepE1 unit_interval (fun t0:set => ~(Rlt t0 s)) t Ht). }
+apply (closed_inI unit_interval unit_interval_topology B
+  unit_interval_topology_on HBsub).
+set W := Sep unit_interval (fun t:set => Rlt t s).
+claim HW_open : W :e unit_interval_topology.
+{ claim HsR : s :e R. { exact (unit_interval_sub_R s HsUI). }
+  set V := Sep R (fun x:set => Rlt x s).
+  claim HV_open : V :e R_standard_topology.
+  { exact (open_left_ray_in_R_standard_topology s HsR). }
+  claim HW_eq : W = V :/\: unit_interval.
+  { apply set_ext.
+    - let t. assume Ht : t :e W.
+      claim HtUI : t :e unit_interval.
+      { exact (SepE1 unit_interval (fun t0:set => Rlt t0 s) t Ht). }
+      claim HtRlt : Rlt t s.
+      { exact (SepE2 unit_interval (fun t0:set => Rlt t0 s) t Ht). }
+      claim HtR : t :e R. { exact (unit_interval_sub_R t HtUI). }
+      exact (binintersectI V unit_interval t
+        (SepI R (fun x:set => Rlt x s) t HtR HtRlt) HtUI).
+    - let t. assume Ht : t :e V :/\: unit_interval.
+      claim HtV : t :e V. { exact (binintersectE1 V unit_interval t Ht). }
+      claim HtUI : t :e unit_interval. { exact (binintersectE2 V unit_interval t Ht). }
+      claim HtRlt : Rlt t s. { exact (SepE2 R (fun x:set => Rlt x s) t HtV). }
+      exact (SepI unit_interval (fun t0:set => Rlt t0 s) t HtUI HtRlt). }
+  rewrite HW_eq.
+  exact (subspace_topologyI R R_standard_topology unit_interval V HV_open). }
+witness W. apply andI.
+- exact HW_open.
+- apply set_ext.
+  + let t. assume Ht : t :e B.
+    claim HtUI : t :e unit_interval.
+    { exact (SepE1 unit_interval (fun t0:set => ~(Rlt t0 s)) t Ht). }
+    claim HnRlt : ~(Rlt t s).
+    { exact (SepE2 unit_interval (fun t0:set => ~(Rlt t0 s)) t Ht). }
+    exact (setminusI unit_interval W t HtUI
+      (fun HtW : t :e W => HnRlt (SepE2 unit_interval (fun t0:set => Rlt t0 s) t HtW))).
+  + let t. assume Ht : t :e unit_interval :\: W.
+    claim HtUI : t :e unit_interval.
+    { exact (setminusE1 unit_interval W t Ht). }
+    claim HtnW : t /:e W.
+    { exact (setminusE2 unit_interval W t Ht). }
+    exact (SepI unit_interval (fun t0:set => ~(Rlt t0 s)) t HtUI
+      (fun HRlt : Rlt t s => HtnW
+        (SepI unit_interval (fun t0:set => Rlt t0 s) t HtUI HRlt))).
+Qed.
 
 (** Helper: [0,s] union [s,1] = unit_interval **)
 Lemma unit_interval_split_at : forall s:set,
