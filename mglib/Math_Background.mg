@@ -239381,7 +239381,39 @@ claim HL2_word_data :
             (graph V (fun x:set => x))) vcls)) /\
     path_homotopy_class_loop X Tx x0 L2 = nat_primrec (fundamental_group_id X Tx x0)
       (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs2 k)) n2.
-{ admit. }
+{ (** L2 = path_concat gammaX f2 maps into V **)
+  (** gammaX maps into U cap V c= V, f2 maps into V **)
+  claim HL2_maps_V : forall t:set, t :e unit_interval -> apply_fun L2 t :e V.
+  { (** path_concat gammaX f2: left half maps gammaX into U cap V c= V, **)
+    (** right half maps f2 into V (f on [s,1] c= seq(n) -> V) **)
+    admit. }
+  (** Use loop_in_subspace_induced_class to get V-class **)
+  apply (loop_in_subspace_induced_class X Tx V x0 L2 Htop HV Hx0V HL2_loop HL2_maps_V).
+  let vcls. assume Hvcls_pack.
+  claim Hvcls_mem : vcls :e fundamental_group V (subspace_topology X Tx V) x0.
+  { exact (andEL
+      (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+      (apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 L2)
+      Hvcls_pack). }
+  claim Hvcls_eq : apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+    (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 L2.
+  { exact (andER
+      (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+      (apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 L2)
+      Hvcls_pack). }
+  (** Use word_data_single_image with the V-class **)
+  apply (word_data_single_image X Tx U V x0 (path_homotopy_class_loop X Tx x0 L2)
+    Htop HU HV Hx0UV).
+  apply orIR.
+  witness vcls. apply andI.
+  - exact Hvcls_mem.
+  - exact (eq_symm
+      (apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x))) vcls)
+      (path_homotopy_class_loop X Tx x0 L2)
+      Hvcls_eq). }
 (** Step 9: Word data for L1 (by IH) **)
 (** L1 maps into U when all prefix intervals are U-type (including m=0 case). **)
 (** For general m, need chain construction. **)
