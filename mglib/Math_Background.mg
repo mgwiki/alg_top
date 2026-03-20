@@ -239467,7 +239467,36 @@ claim HL2_word_data :
     claim Haffine_in_UI : apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u :e unit_interval.
     { rewrite Haffine_val. admit. }
     claim Haffine_ge_s : Rle s (apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u).
-    { rewrite Haffine_val. admit. }
+    { rewrite Haffine_val.
+      claim HuSNo : SNo u. { exact (real_SNo u HuR). }
+      claim H1msSNo : SNo (add_SNo 1 (minus_SNo s)). { exact (real_SNo (add_SNo 1 (minus_SNo s)) H1ms_R). }
+      claim HsSNo : SNo s. { exact (real_SNo s Hs_R). }
+      claim HprodSNo : SNo (mul_SNo u (add_SNo 1 (minus_SNo s))).
+      { exact (SNo_mul_SNo u (add_SNo 1 (minus_SNo s)) HuSNo H1msSNo). }
+      claim Hu_Rle_0 : Rle 0 u.
+      { exact (RleI 0 u real_0 HuR
+          (andEL (~(Rlt u 0)) (~(Rlt 1 u))
+            (SepE2 R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x)) u Hu))). }
+      claim H1ms_Rle_0 : Rle 0 (add_SNo 1 (minus_SNo s)).
+      { exact (RleI 0 (add_SNo 1 (minus_SNo s)) real_0 H1ms_R
+          (fun H:Rlt (add_SNo 1 (minus_SNo s)) 0 =>
+            SNoLt_irref 0 (SNoLt_tra 0 (add_SNo 1 (minus_SNo s)) 0
+              SNo_0 H1msSNo SNo_0
+              (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos) (RltE_lt (add_SNo 1 (minus_SNo s)) 0 H)))). }
+      claim Hprod_ge_0 : SNoLe 0 (mul_SNo u (add_SNo 1 (minus_SNo s))).
+      { exact (mul_SNo_nonneg_nonneg u (add_SNo 1 (minus_SNo s)) HuSNo H1msSNo
+          (SNoLe_of_Rle 0 u Hu_Rle_0) (SNoLe_of_Rle 0 (add_SNo 1 (minus_SNo s)) H1ms_Rle_0)). }
+      (** s <= mul + s = s + mul by commutativity, from 0 <= mul **)
+      claim Hcomm : add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s =
+        add_SNo s (mul_SNo u (add_SNo 1 (minus_SNo s))).
+      { exact (add_SNo_com (mul_SNo u (add_SNo 1 (minus_SNo s))) s HprodSNo HsSNo). }
+      rewrite Hcomm.
+      claim HsumR : add_SNo s (mul_SNo u (add_SNo 1 (minus_SNo s))) :e R.
+      { exact (real_add_SNo s Hs_R (mul_SNo u (add_SNo 1 (minus_SNo s)))
+          (real_mul_SNo u HuR (add_SNo 1 (minus_SNo s)) H1ms_R)). }
+      exact (Rle_of_SNoLe s (add_SNo s (mul_SNo u (add_SNo 1 (minus_SNo s))))
+        Hs_R HsumR
+        (SNoLe_add_nonneg_right s (mul_SNo u (add_SNo 1 (minus_SNo s))) HsSNo HprodSNo Hprod_ge_0)). }
     claim Haffine_in_seqn :
       apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u :e apply_fun seq n.
     { exact (Hseqn_covers_right
