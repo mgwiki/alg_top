@@ -239551,7 +239551,57 @@ claim HL1_word_data :
       apply binunionI2.
       exact (SepI unit_interval (fun t:set => Rlt s t) 1 one_in_unit_interval Hlt_s_1). }
     claim Hsg_overlap : forall k:set, k :e m ->
-      apply_fun seq_g k :/\: apply_fun seq_g (ordsucc k) <> Empty. { admit. }
+      apply_fun seq_g k :/\: apply_fun seq_g (ordsucc k) <> Empty.
+    { let k. assume Hkm : k :e m.
+      claim HkNat : nat_p k. { exact (nat_p_trans m HmNat k Hkm). }
+      claim Hk_osm : k :e ordsucc m. { exact (ordsuccI1 m k Hkm). }
+      claim Hsk_osm : ordsucc k :e ordsucc m.
+      { exact (nat_ordsucc_in_ordsucc m HmNat k Hkm). }
+      (** seq_g(k) = seq(k) since k < m **)
+      claim Hseqg_k : apply_fun seq_g k = apply_fun seq k.
+      { rewrite (apply_fun_graph (ordsucc m)
+          (fun k0:set => If_i (k0 :e m) (apply_fun seq k0) lastI)
+          k Hk_osm).
+        exact (If_i_1 (k :e m) (apply_fun seq k) lastI Hkm). }
+      rewrite Hseqg_k.
+      (** seq_g(ordsucc k): either ordsucc k < m or ordsucc k = m **)
+      apply (ordsuccE m (ordsucc k) Hsk_osm).
+      - assume Hsk_m : ordsucc k :e m.
+        (** seq_g(ordsucc k) = seq(ordsucc k) **)
+        claim Hseqg_sk : apply_fun seq_g (ordsucc k) = apply_fun seq (ordsucc k).
+        { rewrite (apply_fun_graph (ordsucc m)
+            (fun k0:set => If_i (k0 :e m) (apply_fun seq k0) lastI)
+            (ordsucc k) Hsk_osm).
+          exact (If_i_1 (ordsucc k :e m) (apply_fun seq (ordsucc k)) lastI Hsk_m). }
+        rewrite Hseqg_sk.
+        exact (Hoverlap k (ordsuccI1 m k Hkm)).
+      - assume Hsk_eq_m : ordsucc k = m.
+        (** seq_g(ordsucc k) = seq_g(m) = lastI **)
+        claim Hseqg_sk : apply_fun seq_g (ordsucc k) = lastI.
+        { rewrite (apply_fun_graph (ordsucc m)
+            (fun k0:set => If_i (k0 :e m) (apply_fun seq k0) lastI)
+            (ordsucc k) Hsk_osm).
+          rewrite Hsk_eq_m.
+          exact (If_i_0 (m :e m) (apply_fun seq m) lastI (In_irref m)). }
+        rewrite Hseqg_sk.
+        (** seq(k) cap lastI nonempty: lastI contains seq(m), and **)
+        (** seq(k) cap seq(ordsucc k) = seq(k) cap seq(m) nonempty **)
+        assume Hempty : apply_fun seq k :/\: lastI = Empty.
+        claim Hovlp_k : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+        { exact (Hoverlap k (ordsuccI1 m k Hkm)). }
+        apply Hovlp_k.
+        apply (Empty_Subq_eq (apply_fun seq k :/\: apply_fun seq (ordsucc k))).
+        let t. assume Ht.
+        claim Htk : t :e apply_fun seq k.
+        { exact (binintersectE1 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Ht). }
+        claim Htsk : t :e apply_fun seq (ordsucc k).
+        { exact (binintersectE2 (apply_fun seq k) (apply_fun seq (ordsucc k)) t Ht). }
+        claim Htm : t :e apply_fun seq m.
+        { rewrite <- Hsk_eq_m. exact Htsk. }
+        claim Ht_lastI : t :e lastI.
+        { exact (binunionI1 (apply_fun seq m) (Sep unit_interval (fun t0:set => Rlt s t0)) t Htm). }
+        exact (eq_subst_mem_set t (apply_fun seq k :/\: lastI) Empty
+          (binintersectI (apply_fun seq k) lastI t Htk Ht_lastI) Hempty). }
     claim Hsg_UV : forall k:set, k :e ordsucc m ->
       (forall t:set, t :e apply_fun seq_g k -> apply_fun g t :e U) \/
       (forall t:set, t :e apply_fun seq_g k -> apply_fun g t :e V).
