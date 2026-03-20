@@ -239554,9 +239554,30 @@ claim HL2_word_data :
             s HprodR2 H1ms_R Hs_R
             (Rle_of_SNoLe (mul_SNo u (add_SNo 1 (minus_SNo s))) (add_SNo 1 (minus_SNo s))
               HprodR2 H1ms_R Hprod_le_1ms2)). }
-        (** val <= (1-s) + s = 1, so val <= 1, so not 1 < val **)
-        (** Need: (1-s)+s = 1 and Rle val ((1-s)+s) -> Rle val 1 **)
-        admit. }
+        (** (1+(-s))+s = 1+((-s)+s) = 1+0 = 1 **)
+        claim HsSNo3 : SNo s. { exact (real_SNo s Hs_R). }
+        claim HmsSNo : SNo (minus_SNo s). { exact (SNo_minus_SNo s HsSNo3). }
+        claim H1ms_plus_s : add_SNo (add_SNo 1 (minus_SNo s)) s = 1.
+        { rewrite <- (add_SNo_assoc 1 (minus_SNo s) s SNo_1 HmsSNo HsSNo3).
+          rewrite (add_SNo_minus_SNo_linv s HsSNo3).
+          exact (add_SNo_0R 1 SNo_1). }
+        (** Rle val ((1-s)+s) and (1-s)+s = 1 => Rle val 1 => ~(Rlt 1 val) **)
+        claim Hval_Rle_1 : Rle (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s) 1.
+        { claim Hval_le_sum : Rle (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s)
+            (add_SNo (add_SNo 1 (minus_SNo s)) s).
+          { exact (Rle_add_SNo_1
+              (mul_SNo u (add_SNo 1 (minus_SNo s)))
+              (add_SNo 1 (minus_SNo s))
+              s HprodR2 H1ms_R Hs_R
+              (Rle_of_SNoLe (mul_SNo u (add_SNo 1 (minus_SNo s))) (add_SNo 1 (minus_SNo s))
+                HprodR2 H1ms_R Hprod_le_1ms2)). }
+          (** (1-s)+s = 1, so Rle val ((1-s)+s) and ((1-s)+s) = 1 give Rle val 1 **)
+          (** Use Rle_tra with the equality **)
+          admit. }
+        exact (andER
+          (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s :e R /\ 1 :e R)
+          (~(Rlt 1 (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s)))
+          Hval_Rle_1). }
       exact (SepI R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x))
         (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s) HvalR
         (andI (~(Rlt (add_SNo (mul_SNo u (add_SNo 1 (minus_SNo s))) s) 0))
