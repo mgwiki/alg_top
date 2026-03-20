@@ -239596,6 +239596,34 @@ apply andI.
       HgsPack).
 Qed.
 
+(** Proven Charlie **)
+Lemma joinpoint_in_intersection_if_U_then_V : forall U V p0 p1:set,
+  (forall t:set, t :e unit_interval -> apply_fun p0 t :e U) ->
+  (forall t:set, t :e unit_interval -> apply_fun p1 t :e V) ->
+  apply_fun p0 1 = apply_fun p1 0 ->
+  apply_fun p0 1 :e U :/\: V.
+let U V p0 p1.
+assume Hp0U Hp1V Hjoin.
+apply (binintersectI U V (apply_fun p0 1)).
+- exact (Hp0U 1 one_in_unit_interval).
+- rewrite Hjoin.
+  exact (Hp1V 0 zero_in_unit_interval).
+Qed.
+
+(** Proven Charlie **)
+Lemma joinpoint_in_intersection_if_V_then_U : forall U V p0 p1:set,
+  (forall t:set, t :e unit_interval -> apply_fun p0 t :e V) ->
+  (forall t:set, t :e unit_interval -> apply_fun p1 t :e U) ->
+  apply_fun p0 1 = apply_fun p1 0 ->
+  apply_fun p0 1 :e U :/\: V.
+let U V p0 p1.
+assume Hp0V Hp1U Hjoin.
+apply (binintersectI U V (apply_fun p0 1)).
+- rewrite Hjoin.
+  exact (Hp1U 0 zero_in_unit_interval).
+- exact (Hp0V 1 one_in_unit_interval).
+Qed.
+
 (** Infrastructure: word data from a finite concatenation of U or V segments.
     This is intended for chain ordered parametrizations (path_concat_nat) where each
     segment lies entirely in U or entirely in V, and consecutive segments join. **)
