@@ -239048,6 +239048,36 @@ claim HfsV : apply_fun f s :e V.
 { exact (Hn_Vtype s Hs_n). }
 claim HfsUV : apply_fun f s :e U :/\: V.
 { exact (binintersectI U V (apply_fun f s) HfsU HfsV). }
+(** seq(n) covers [s,1] via interval property **)
+claim Hseqn_sub : apply_fun seq n c= unit_interval.
+{ exact (PowerE unit_interval (apply_fun seq n)
+    (HseqFnPow n (ordsuccI2 (ordsucc m)))). }
+claim Hseqn_conn : connected_space (apply_fun seq n)
+  (subspace_topology unit_interval unit_interval_topology (apply_fun seq n)).
+{ exact (HseqConn n (ordsuccI2 (ordsucc m))). }
+claim Hseqn_covers_right : forall t:set, t :e unit_interval -> Rle s t ->
+  t :e apply_fun seq n.
+{ let t. assume HtUI : t :e unit_interval. assume Hle_st : Rle s t.
+  claim HtR : t :e R. { exact (unit_interval_sub_R t HtUI). }
+  (** Rle s t means ~(Rlt t s). Case split: Rlt s t or t = s **)
+  apply (xm (t = s)).
+  - assume Hts : t = s. rewrite Hts. exact Hs_n.
+  - assume Htns : t <> s.
+    claim Hlt_st : Rlt s t.
+    { exact (Rle_neq_implies_Rlt s t Hle_st (fun Hst:s = t => Htns (eq_symm s t Hst))). }
+    apply (xm (t = 1)).
+    + assume Ht1 : t = 1. rewrite Ht1. exact H1_in.
+    + assume Htn1 : t <> 1.
+      claim Hlt_t1 : Rlt t 1.
+      { exact (Rle_neq_implies_Rlt t 1
+          (RleI t 1 HtR real_1
+            (andER (~(Rlt t 0)) (~(Rlt 1 t))
+              (SepE2 R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x)) t HtUI)))
+          Htn1). }
+      exact (connected_subset_unit_interval_interval_property
+        (apply_fun seq n) Hseqn_sub Hseqn_conn
+        s 1 t Hs_n H1_in HtUI (orIL (Rlt s t /\ Rlt t 1) (Rlt 1 t /\ Rlt t s)
+          (andI (Rlt s t) (Rlt t 1) Hlt_st Hlt_t1))). }
 (** Step 3: Basic loop properties **)
 claim Hx0U : x0 :e U. { exact (binintersectE1 U V x0 Hx0UV). }
 claim Hx0V : x0 :e V. { exact (binintersectE2 U V x0 Hx0UV). }
@@ -239072,7 +239102,9 @@ claim Hsplit_props :
   apply_fun f1 0 = x0 /\ apply_fun f1 1 = apply_fun f s /\
   apply_fun f2 0 = apply_fun f s /\ apply_fun f2 1 = x0 /\
   path_homotopic X Tx x0 x0 f (path_concat f1 f2).
-{ admit. }
+{ (** f1 and f2 are the same as the internal definitions in Theorem_51_3_reparametrization **)
+  (** Properties: continuity (compose of continuous), endpoints (affine at 0/1), homotopy **)
+  admit. }
 apply (and7E
   (continuous_map unit_interval unit_interval_topology X Tx f1)
   (continuous_map unit_interval unit_interval_topology X Tx f2)
@@ -239436,9 +239468,9 @@ claim HL2_word_data :
       admit. }
     claim Haffine_in_seqn :
       apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u :e apply_fun seq n.
-    { (** The value is in [s,1], and seq(n) contains [s,1] **)
-      (** seq(n) is connected, contains s and 1, so by interval property contains [s,1] **)
-      admit. }
+    { exact (Hseqn_covers_right
+        (apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u)
+        Haffine_in_UI Haffine_ge_s). }
     (** f2 = compose_fun UI (affine_fun_I s (1-s)) f **)
     (** so apply_fun f2 u = apply_fun f (apply_fun (affine_fun_I s (1-s)) u) **)
     claim Hf2_eq : apply_fun f2 u =
