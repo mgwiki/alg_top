@@ -239390,8 +239390,13 @@ claim HL2_word_data :
     { exact (HgammaFun u Hu). }
     rewrite (apply_fun_graph (U :/\: V) (fun x:set => x) (apply_fun gamma u) Hgu).
     exact Hgu. }
-  claim H1ms_R : add_SNo 1 (minus_SNo s) :e R. { admit. }
-  claim H1ms_pos : Rlt 0 (add_SNo 1 (minus_SNo s)). { admit. }
+  claim Hms_R : minus_SNo s :e R.
+  { exact (real_minus_SNo s Hs_R). }
+  claim H1ms_R : add_SNo 1 (minus_SNo s) :e R.
+  { exact (real_add_SNo 1 real_1 (minus_SNo s) Hms_R). }
+  claim H1ms_pos : Rlt 0 (add_SNo 1 (minus_SNo s)).
+  { exact (RltI 0 (add_SNo 1 (minus_SNo s)) real_0 H1ms_R
+      (SNoLt_minus_pos s 1 (real_SNo s Hs_R) SNo_1 (RltE_lt s 1 Hlt_s_1))). }
   claim Hf2_maps_V : forall u:set, u :e unit_interval -> apply_fun f2 u :e V.
   { let u. assume Hu : u :e unit_interval.
     (** f2(u) = f(affine_fun_I(s, 1-s)(u)) = f(u(1-s) + s) **)
