@@ -238269,7 +238269,90 @@ apply (nat_ind P).
   let m. assume HmNat IH.
   let X Tx U V x0 f seq.
   assume Htop HU HV Hcover Hx0UV HpcUV HfLoop HseqFnPow HseqOpen HseqConn H0_in H1_in Hoverlap HballUV.
-  admit.
+  set n := ordsucc m.
+  claim HnNat : nat_p n. { exact (nat_ordsucc m HmNat). }
+  claim HnOmega : n :e omega. { exact (nat_p_omega n HnNat). }
+  claim HunionEq : Union {apply_fun seq k | k :e ordsucc n} = unit_interval.
+  {
+    exact (overlapping_chain_union_eq_unit_interval n seq HnOmega HseqFnPow HseqConn H0_in H1_in Hoverlap).
+  }
+  apply (xm (forall k:set, k :e ordsucc n ->
+    forall t:set, t :e apply_fun seq k -> apply_fun f t :e U)).
+  - assume HallUset.
+    claim HfUI : forall t:set, t :e unit_interval -> apply_fun f t :e U.
+    {
+      let t. assume HtUI.
+      claim HtU : t :e Union {apply_fun seq k | k :e ordsucc n}.
+      { rewrite HunionEq. exact HtUI. }
+      apply (UnionE_impred {apply_fun seq k | k :e ordsucc n} t HtU).
+      let B. assume HtB : t :e B. assume HB : B :e {apply_fun seq k | k :e ordsucc n}.
+      apply (ReplE_impred (ordsucc n) (fun k:set => apply_fun seq k) B HB).
+      let k. assume Hk : k :e ordsucc n. assume Heq : B = apply_fun seq k.
+      claim HtSeq : t :e apply_fun seq k. { exact (mem_eqR t B (apply_fun seq k) Heq HtB). }
+      exact (HallUset k Hk t HtSeq).
+    }
+    apply (loop_in_subspace_induced_class X Tx U x0 f Htop HU
+      (binintersectE1 U V x0 Hx0UV) HfLoop HfUI).
+    let ucls. assume Hucls_pack.
+    claim Hucls_mem : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
+    { exact (andEL (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+        (apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls = path_homotopy_class_loop X Tx x0 f)
+        Hucls_pack). }
+    claim Hind_eq : apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) ucls = path_homotopy_class_loop X Tx x0 f.
+    { exact (andER (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+        (apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls = path_homotopy_class_loop X Tx x0 f)
+        Hucls_pack). }
+    apply (word_data_single_image X Tx U V x0 (path_homotopy_class_loop X Tx x0 f)
+      Htop HU HV Hx0UV).
+    apply orIL.
+    witness ucls. apply andI.
+    + exact Hucls_mem.
+    + exact (eq_symm (apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls)
+        (path_homotopy_class_loop X Tx x0 f) Hind_eq).
+  - assume HnotAllUset.
+    apply (xm (forall k:set, k :e ordsucc n ->
+      forall t:set, t :e apply_fun seq k -> apply_fun f t :e V)).
+    + assume HallVset.
+      claim HfVI : forall t:set, t :e unit_interval -> apply_fun f t :e V.
+      {
+        let t. assume HtUI.
+        claim HtU : t :e Union {apply_fun seq k | k :e ordsucc n}.
+        { rewrite HunionEq. exact HtUI. }
+        apply (UnionE_impred {apply_fun seq k | k :e ordsucc n} t HtU).
+        let B. assume HtB : t :e B. assume HB : B :e {apply_fun seq k | k :e ordsucc n}.
+        apply (ReplE_impred (ordsucc n) (fun k:set => apply_fun seq k) B HB).
+        let k. assume Hk : k :e ordsucc n. assume Heq : B = apply_fun seq k.
+        claim HtSeq : t :e apply_fun seq k. { exact (mem_eqR t B (apply_fun seq k) Heq HtB). }
+        exact (HallVset k Hk t HtSeq).
+      }
+      apply (loop_in_subspace_induced_class X Tx V x0 f Htop HV
+        (binintersectE2 U V x0 Hx0UV) HfLoop HfVI).
+      let vcls. assume Hvcls_pack.
+      claim Hvcls_mem : vcls :e fundamental_group V (subspace_topology X Tx V) x0.
+      { exact (andEL (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+          (apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 f)
+          Hvcls_pack). }
+      claim Hind_eqV : apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 f.
+      { exact (andER (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+          (apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 f)
+          Hvcls_pack). }
+      apply (word_data_single_image X Tx U V x0 (path_homotopy_class_loop X Tx x0 f)
+        Htop HU HV Hx0UV).
+      apply orIR.
+      witness vcls. apply andI.
+      - exact Hvcls_mem.
+      - exact (eq_symm (apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)
+          (path_homotopy_class_loop X Tx x0 f) Hind_eqV).
+    + assume Hmixed.
+      admit.
 Admitted.
 
 (** Helper: ball chain word decomposition by induction on ball chain length.
