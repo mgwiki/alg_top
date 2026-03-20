@@ -144,13 +144,13 @@ Admin Decision:
   - | APPROVED / REJECTED
 
 Implemented by:
-  <Agent>
+  Dave
 
 Implementation Commit:
-  <commit hash>
+  (pending)
 
 Status:
-  APPROVED
+  IMPLEMENTED
 --------------------------------------------------------
 
 NOTICE ID: 1773883742

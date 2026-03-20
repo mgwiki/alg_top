@@ -283817,8 +283817,10 @@ exact (HPn X Tx A f Hnorm Hclosed Hf).
 Qed.
 
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
+(** NOTICE 1773890061 (APPROVED): added topology_on X Tx hypothesis. **)
 (** Bounty 275 **)
 Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
+  topology_on X Tx ->
   normal_space (setprod X unit_interval)
     (product_topology X Tx unit_interval unit_interval_topology) ->
   A c= X -> X :\: A :e Tx ->
@@ -283836,6 +283838,7 @@ Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
       nulhomotopic X Tx
         Y (subspace_topology (euclidean_space n) (euclidean_topology n) Y) g.
 let X Tx A Y n.
+assume HtopX : topology_on X Tx.
 assume Hnormal : normal_space (setprod X unit_interval)
   (product_topology X Tx unit_interval unit_interval_topology).
 assume HAsub : A c= X.
@@ -283897,8 +283900,7 @@ set domain_ext_top := subspace_topology (setprod X unit_interval) TXI domain_ext
 (** These agree on overlap A x {1}: F0(a,1) = y0 = const(y0) **)
 (** Step 3: Domain is closed (by homotopy_extension_domain_closed) **)
 claim Htop : topology_on X Tx.
-{ (** Derivable from Hf_cont and subspace topology properties **)
-  admit. }
+{ exact HtopX. }
 claim Hdomain_closed : closed_in (setprod X unit_interval) TXI domain_ext.
 { exact (homotopy_extension_domain_closed X Tx A Htop HAsub HAclosed). }
 (** Step 4: Tietze extends F to G: X x I -> R^n **)
