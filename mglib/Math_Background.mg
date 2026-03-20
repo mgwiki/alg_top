@@ -238741,6 +238741,54 @@ claim H1Union : 1 :e UnionAll.
 exact (connected_subset_unit_interval_endpoints_all UnionAll HunionSub HunionConn H0Union H1Union).
 Qed.
 
+(** Helper: [0,s] is closed in unit_interval when s in (0,1) **)
+Lemma unit_interval_left_closed_at : forall s:set,
+  s :e unit_interval -> Rlt 0 s -> Rlt s 1 ->
+  closed_in unit_interval unit_interval_topology
+    (Sep unit_interval (fun t:set => ~(Rlt s t))).
+let s. assume HsUI Hs0 Hs1.
+(** [0,s] is closed iff its complement (s,1] is open **)
+(** (s,1] = {t in [0,1] : Rlt s t} is open in unit_interval **)
+admit.
+Admitted.
+
+(** Helper: [s,1] is closed in unit_interval when s in (0,1) **)
+Lemma unit_interval_right_closed_at : forall s:set,
+  s :e unit_interval -> Rlt 0 s -> Rlt s 1 ->
+  closed_in unit_interval unit_interval_topology
+    (Sep unit_interval (fun t:set => ~(Rlt t s))).
+let s. assume HsUI Hs0 Hs1.
+admit.
+Admitted.
+
+(** Helper: [0,s] union [s,1] = unit_interval **)
+Lemma unit_interval_split_at : forall s:set,
+  s :e unit_interval ->
+  Sep unit_interval (fun t:set => ~(Rlt s t)) :\/: Sep unit_interval (fun t:set => ~(Rlt t s))
+  = unit_interval.
+let s. assume HsUI.
+claim HsR : s :e R. { exact (unit_interval_sub_R s HsUI). }
+apply set_ext.
+- let t. assume Ht.
+  apply (binunionE
+    (Sep unit_interval (fun t0:set => ~(Rlt s t0)))
+    (Sep unit_interval (fun t0:set => ~(Rlt t0 s)))
+    t Ht).
+  + assume H. exact (SepE1 unit_interval (fun t0:set => ~(Rlt s t0)) t H).
+  + assume H. exact (SepE1 unit_interval (fun t0:set => ~(Rlt t0 s)) t H).
+- let t. assume Ht : t :e unit_interval.
+  claim HtR : t :e R. { exact (unit_interval_sub_R t Ht). }
+  apply (xm (Rlt s t)).
+  + assume Hst : Rlt s t.
+    apply binunionI2.
+    exact (SepI unit_interval (fun t0:set => ~(Rlt t0 s)) t Ht
+      (fun Hts:Rlt t s => SNoLt_irref s (RltE_lt s s
+        (Rlt_tra s t s Hst Hts)))).
+  + assume Hnst.
+    apply binunionI1.
+    exact (SepI unit_interval (fun t0:set => ~(Rlt s t0)) t Ht Hnst).
+Qed.
+
 (** Helper for B1/B2 transition cases in ball_cover_word_nch_ind_gen. **)
 (** Given a loop f covered by ordsucc(ordsucc m) overlapping connected open intervals, **)
 (** where seq(m) maps f into U and seq(ordsucc m) maps f into V, **)
@@ -239206,12 +239254,16 @@ claim HL1_word_data :
             (graph V (fun x:set => x))) vcls)) /\
     path_homotopy_class_loop X Tx x0 L1 = nat_primrec (fundamental_group_id X Tx x0)
       (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
-{ (** Define g: loop at x0 homotopic to L1 with a good chain covering. **)
-  (** g(t) = f(t) for t in [0,s], gammaX((1-t)/(1-s)) for t in (s,1]. **)
-  (** Chain for g: seq_g(k) = seq(k) for k < m; seq_g(m) = seq(m) cup {t in UI: Rlt s t}. **)
-  (** g maps each chain interval into U or V, with the last being U-type. **)
-  (** IH gives word data for g. Transfer to L1 via homotopy. **)
-  (** For now, admit the full construction. The plan above is verified correct. **)
+{ (** Show L1 maps entirely into U when m = 0, use IH otherwise. **)
+  (** L1(t) = f1(2t) for t in [0,1/2] and gammaX(2-2t) for t in [1/2,1]. **)
+  (** f1(u) = f(su), gammaX maps into U cap V. **)
+  (** For all t in unit_interval, L1(t) in X. Need word data. **)
+  (** Strategy: show all values of L1 are in U (when m=0) or use IH (general). **)
+  claim HL1_all_in_U_or_V : forall t:set, t :e unit_interval ->
+    apply_fun L1 t :e X.
+  { let t. assume Ht. exact (HL1_fun t Ht). }
+  (** For the general case, we need to apply IH with a chain. **)
+  (** For now, admit - the full pasting_lemma construction is needed. **)
   admit. }
 (** Step 10: Combine word data via word_data_of_loop_concat and class equality **)
 claim Hconcat_word :
