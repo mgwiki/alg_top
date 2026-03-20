@@ -1,0 +1,39 @@
+CHANGES13676 - Alice
+Date: 2026-03-20
+
+## Add ball_cover_word_nch_ind_gen + fix call sites in ball_cover_word_construction_mixed_finish
+
+### ball_cover_word_nch_ind_gen (Admitted - inductive step)
+- New generalized helper lemma for ball chain word decomposition
+- Statement: like ball_cover_word_nch_ind but uses open connected subsets instead of
+  fixed-radius balls (needed for induction: merged/reparametrized chains are not balls)
+- Base case (nch = 0) FULLY PROVED:
+  - seq(0) = unit_interval by connected_subset_unit_interval_endpoints_all
+  - U-type: apply loop_in_subspace_induced_class + word_data_single_image
+  - V-type: symmetric argument
+- Inductive step: admit (pending - requires case split on first transition)
+- Ends with Admitted.
+
+### Call site fix in ball_cover_word_construction_mixed_finish
+- Previously: call sites used ball_cover_word_nch_ind (fixed-radius signature)
+  but passed generalized args (HseqFnPow, HseqOpen, HseqConn) - MISMATCH
+- Fixed: changed both call sites to use ball_cover_word_nch_ind_gen
+  which has exactly the generalized signature matching the available claims
+
+### ball_cover_word_nch_ind (unchanged)
+- Kept with original fixed-radius statement + admit. Admitted.
+- Not yet updated to delegate to _gen (deferred)
+
+### Upstream: Charlie's additions (pulled from origin)
+- open_ball_unit_interval_segment_continuous_in_unit_interval_anyr (QED, Charlie)
+  - Segment between any two points in a ball, staying in the ball
+- unit_interval_ball_chain_path_between_anyr (QED, Charlie)
+  - Path through a ball chain from any x0 to x1
+- path_concat_insert_reverse_gamma_gamma (QED, Charlie)
+  - p ++ q ~ (p ++ rev(gamma)) ++ (gamma ++ q)
+
+### Compilation: EXIT=0 (no errors)
+
+### Size change
+Previous HEAD (560528 lines), current bck13676 (560690 lines), grows by 162 lines.
+(162 = 147 from ball_cover_word_nch_ind_gen + call site changes + 15 from other diffs)
