@@ -239982,8 +239982,227 @@ claim Hfh_eq_concat :
   reflexivity.
 }
 
-(** TODO: transition induction along the chain order (using segsI and Hball_image1)
-    to build a finite word decomposition for fh, then transfer to f via Hclass_fh_eq. **)
+(** Build word data for fh using the chain-ordered segments segsF, then transfer to f. **)
+claim HsegsF_fnspace :
+  function_on segsF (ordsucc n1) (function_space unit_interval X).
+{
+  apply (graph_function_on (ordsucc n1) (function_space unit_interval X)
+    (fun k:set => compose_fun unit_interval (apply_fun segsI k) f)).
+  let k. assume HkOn.
+  claim HsegIkFS : apply_fun segsI k :e function_space unit_interval unit_interval.
+  { exact (HsegsIFun k HkOn). }
+  claim HsegIkFun : function_on (apply_fun segsI k) unit_interval unit_interval.
+  { exact (function_on_of_function_space (apply_fun segsI k) unit_interval unit_interval HsegIkFS). }
+  exact (compose_fun_in_function_space
+    unit_interval unit_interval X (apply_fun segsI k) f HsegIkFun HfFun).
+}
+claim HsegsF_props :
+  forall k:set, k :e ordsucc n1 ->
+    continuous_map unit_interval unit_interval_topology X Tx (apply_fun segsF k) /\
+    ((forall t:set, t :e unit_interval -> apply_fun (apply_fun segsF k) t :e U) \/
+     (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsF k) t :e V)).
+{
+  let k. assume HkOn.
+  claim HsegIkFS : apply_fun segsI k :e function_space unit_interval unit_interval.
+  { exact (HsegsIFun k HkOn). }
+  claim HsegIkFun : function_on (apply_fun segsI k) unit_interval unit_interval.
+  { exact (function_on_of_function_space (apply_fun segsI k) unit_interval unit_interval HsegIkFS). }
+  claim HsegIkCont : continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k).
+  { exact (andEL
+      (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k))
+      (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k)
+      (HsegsIAll k HkOn)). }
+  claim HsegsFk_eq : apply_fun segsF k = compose_fun unit_interval (apply_fun segsI k) f.
+  { exact (apply_fun_graph (ordsucc n1) (fun j:set => compose_fun unit_interval (apply_fun segsI j) f) k HkOn). }
+  claim HsegsFkCont : continuous_map unit_interval unit_interval_topology X Tx (apply_fun segsF k).
+  {
+    rewrite HsegsFk_eq.
+    exact (composition_continuous
+      unit_interval unit_interval_topology
+      unit_interval unit_interval_topology
+      X Tx
+      (apply_fun segsI k)
+      f
+      HsegIkCont
+      HfCont).
+  }
+  apply andI.
+  - exact HsegsFkCont.
+  - (** Decide whether seq1(k) is U-type or V-type and use it to type the whole segment. **)
+    claim Hseq1k_ball : apply_fun seq1 k :e {open_ball unit_interval R_bounded_metric x r1 | x :e unit_interval}.
+    { exact (Hseq1Fn k HkOn). }
+    apply (ReplE_impred unit_interval (fun c:set => open_ball unit_interval R_bounded_metric c r1)
+      (apply_fun seq1 k) Hseq1k_ball).
+    let c_k. assume Hc_k_ui : c_k :e unit_interval.
+    assume Hseq1k_eq : apply_fun seq1 k = open_ball unit_interval R_bounded_metric c_k r1.
+    apply (Hball_image1 c_k Hc_k_ui).
+    + assume HballU : forall t:set, t :e open_ball unit_interval R_bounded_metric c_k r1 -> apply_fun f t :e U.
+      apply orIL.
+      let t. assume HtI.
+      claim Ht_in_seq : apply_fun (apply_fun segsI k) t :e apply_fun seq1 k.
+      { exact (andER
+          (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k))
+          (forall t0:set, t0 :e unit_interval -> apply_fun (apply_fun segsI k) t0 :e apply_fun seq1 k)
+          (HsegsIAll k HkOn) t HtI). }
+      claim Ht_ball : apply_fun (apply_fun segsI k) t :e open_ball unit_interval R_bounded_metric c_k r1.
+      { exact (eq_subst_mem_set (apply_fun (apply_fun segsI k) t)
+          (apply_fun seq1 k)
+          (open_ball unit_interval R_bounded_metric c_k r1)
+          Ht_in_seq
+          Hseq1k_eq). }
+      rewrite HsegsFk_eq.
+      rewrite (compose_fun_apply unit_interval (apply_fun segsI k) f t HtI).
+      exact (HballU (apply_fun (apply_fun segsI k) t) Ht_ball).
+    + assume HballV : forall t:set, t :e open_ball unit_interval R_bounded_metric c_k r1 -> apply_fun f t :e V.
+      apply orIR.
+      let t. assume HtI.
+      claim Ht_in_seq : apply_fun (apply_fun segsI k) t :e apply_fun seq1 k.
+      { exact (andER
+          (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k))
+          (forall t0:set, t0 :e unit_interval -> apply_fun (apply_fun segsI k) t0 :e apply_fun seq1 k)
+          (HsegsIAll k HkOn) t HtI). }
+      claim Ht_ball : apply_fun (apply_fun segsI k) t :e open_ball unit_interval R_bounded_metric c_k r1.
+      { exact (eq_subst_mem_set (apply_fun (apply_fun segsI k) t)
+          (apply_fun seq1 k)
+          (open_ball unit_interval R_bounded_metric c_k r1)
+          Ht_in_seq
+          Hseq1k_eq). }
+      rewrite HsegsFk_eq.
+      rewrite (compose_fun_apply unit_interval (apply_fun segsI k) f t HtI).
+      exact (HballV (apply_fun (apply_fun segsI k) t) Ht_ball).
+}
+claim HsegsF0 : apply_fun (apply_fun segsF 0) 0 = x0.
+{
+  claim H0On : 0 :e ordsucc n1. { exact (nat_0_in_ordsucc n1 Hn1Nat). }
+  claim HsegsF0_eq : apply_fun segsF 0 = compose_fun unit_interval (apply_fun segsI 0) f.
+  { exact (apply_fun_graph (ordsucc n1) (fun j:set => compose_fun unit_interval (apply_fun segsI j) f) 0 H0On). }
+  rewrite HsegsF0_eq.
+  rewrite (compose_fun_apply unit_interval (apply_fun segsI 0) f 0 zero_in_unit_interval).
+  rewrite (andER
+    (function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+     (forall k:set, k :e ordsucc n1 ->
+       continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+       (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k)))
+    (apply_fun (apply_fun segsI 0) 0 = 0)
+    HsegsIPack3).
+  exact Hf0.
+}
+claim HsegsFn : apply_fun (apply_fun segsF n1) 1 = x0.
+{
+  claim HnOn : n1 :e ordsucc n1. { exact (ordsuccI2 n1). }
+  claim HsegsFn_eq : apply_fun segsF n1 = compose_fun unit_interval (apply_fun segsI n1) f.
+  { exact (apply_fun_graph (ordsucc n1) (fun j:set => compose_fun unit_interval (apply_fun segsI j) f) n1 HnOn). }
+  rewrite HsegsFn_eq.
+  rewrite (compose_fun_apply unit_interval (apply_fun segsI n1) f 1 one_in_unit_interval).
+  rewrite (andER
+    ((function_on segsI (ordsucc n1) (function_space unit_interval unit_interval) /\
+      (forall k:set, k :e ordsucc n1 ->
+        continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (apply_fun segsI k) /\
+        (forall t:set, t :e unit_interval -> apply_fun (apply_fun segsI k) t :e apply_fun seq1 k))) /\
+     apply_fun (apply_fun segsI 0) 0 = 0)
+    (apply_fun (apply_fun segsI n1) 1 = 1)
+    HsegsIPack2).
+  exact Hf1.
+}
+claim HsegsFCompat :
+  forall k:set, k :e n1 ->
+    apply_fun (apply_fun segsF k) 1 = apply_fun (apply_fun segsF (ordsucc k)) 0.
+{
+  let k. assume HkIn.
+  claim HkOn : k :e ordsucc n1. { exact (ordsuccI1 n1 k HkIn). }
+  claim HskOn : ordsucc k :e ordsucc n1.
+  { exact (nat_ordsucc_in_ordsucc n1 Hn1Nat k HkIn). }
+  claim HsegsFk_eq : apply_fun segsF k = compose_fun unit_interval (apply_fun segsI k) f.
+  { exact (apply_fun_graph (ordsucc n1) (fun j:set => compose_fun unit_interval (apply_fun segsI j) f) k HkOn). }
+  claim HsegsFsk_eq : apply_fun segsF (ordsucc k) = compose_fun unit_interval (apply_fun segsI (ordsucc k)) f.
+  { exact (apply_fun_graph (ordsucc n1) (fun j:set => compose_fun unit_interval (apply_fun segsI j) f) (ordsucc k) HskOn). }
+  rewrite HsegsFk_eq.
+  rewrite HsegsFsk_eq.
+  rewrite (compose_fun_apply unit_interval (apply_fun segsI k) f 1 one_in_unit_interval).
+  rewrite (compose_fun_apply unit_interval (apply_fun segsI (ordsucc k)) f 0 zero_in_unit_interval).
+  rewrite (HsegsICompatAll k HkIn).
+  reflexivity.
+}
+  apply (word_data_of_path_concat_nat_by_UV_segments
+	  X Tx U V x0 n1 segsF
+	  Htop HU HV Hx0UV HpcUV Hn1Omega HsegsF_fnspace HsegsF_props
+	  HsegsF0 HsegsFn HsegsFCompat).
+	let n0. assume HwdPack.
+	witness n0.
+	apply andI.
+	- exact (andEL
+	    (n0 :e omega)
+	    (exists gs0:set, function_on gs0 n0 (fundamental_group X Tx x0) /\
+	      (forall i:set, i :e n0 ->
+	        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+	          apply_fun gs0 i =
+	            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+	              (graph U (fun x:set => x))) ucls) \/
+	        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+	          apply_fun gs0 i =
+	            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+	              (graph V (fun x:set => x))) vcls)) /\
+	      path_homotopy_class_loop X Tx x0 (path_concat_nat n1 segsF) =
+	        nat_primrec (fundamental_group_id X Tx x0)
+	          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs0 k)) n0)
+	    HwdPack).
+	- claim Hgs_ex :
+	    exists gs0:set, function_on gs0 n0 (fundamental_group X Tx x0) /\
+	      (forall i:set, i :e n0 ->
+	        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+	          apply_fun gs0 i =
+	            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+	              (graph U (fun x:set => x))) ucls) \/
+	        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+	          apply_fun gs0 i =
+	            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+	              (graph V (fun x:set => x))) vcls)) /\
+	      path_homotopy_class_loop X Tx x0 (path_concat_nat n1 segsF) =
+	        nat_primrec (fundamental_group_id X Tx x0)
+	          (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs0 k)) n0.
+	  {
+	    exact (andER
+	      (n0 :e omega)
+	      (exists gs0:set, function_on gs0 n0 (fundamental_group X Tx x0) /\
+	        (forall i:set, i :e n0 ->
+	          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+	            apply_fun gs0 i =
+	              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+	                (graph U (fun x:set => x))) ucls) \/
+	          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+	            apply_fun gs0 i =
+	              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+	                (graph V (fun x:set => x))) vcls)) /\
+	        path_homotopy_class_loop X Tx x0 (path_concat_nat n1 segsF) =
+	          nat_primrec (fundamental_group_id X Tx x0)
+	            (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs0 k)) n0)
+	      HwdPack).
+	  }
+	  apply Hgs_ex. let gs0. assume Hgs0Pack.
+	  witness gs0.
+	  apply (and3E
+	    (function_on gs0 n0 (fundamental_group X Tx x0))
+	    (forall i:set, i :e n0 ->
+	      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+	        apply_fun gs0 i =
+	          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+	            (graph U (fun x:set => x))) ucls) \/
+	      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+	        apply_fun gs0 i =
+	          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+	            (graph V (fun x:set => x))) vcls))
+	    (path_homotopy_class_loop X Tx x0 (path_concat_nat n1 segsF) =
+	      nat_primrec (fundamental_group_id X Tx x0)
+	        (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs0 k)) n0)
+	    Hgs0Pack).
+		  assume Hgs0Fun Hgs0Type Hclass_concat.
+		  apply andI.
+		  - apply andI.
+		    * exact Hgs0Fun.
+		    * exact Hgs0Type.
+		  - rewrite <- Hclass_fh_eq.
+		    rewrite Hfh_eq_concat.
+		    exact Hclass_concat.
 Admitted.
 
 Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
@@ -352759,8 +352978,8 @@ Qed.
 	    S
 	    HSsub).
 	}
-	exact (finite_nonempty_subset_of_ordinal_has_max n S Hord HfinS HSsub HSne).
-	Qed.
+		exact (finite_nonempty_subset_of_ordinal_has_max n S Hord HfinS HSsub HSne).
+Qed.
 
 (** Infrastructure: in the cor68_6 setting, adjacent entries from the same side cannot multiply to eG **)
 (** This is the key "no local cancellation" fact used when collapsing words to a binary reduced word. **)
