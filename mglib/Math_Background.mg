@@ -239554,7 +239554,83 @@ claim HL1_word_data :
       apply_fun seq_g k :/\: apply_fun seq_g (ordsucc k) <> Empty. { admit. }
     claim Hsg_UV : forall k:set, k :e ordsucc m ->
       (forall t:set, t :e apply_fun seq_g k -> apply_fun g t :e U) \/
-      (forall t:set, t :e apply_fun seq_g k -> apply_fun g t :e V). { admit. }
+      (forall t:set, t :e apply_fun seq_g k -> apply_fun g t :e V).
+    { let k. assume Hk : k :e ordsucc m.
+      apply (ordsuccE m k Hk).
+      - assume Hkm : k :e m.
+        (** seq_g(k) = seq(k) for k < m **)
+        claim Hseqg_k : apply_fun seq_g k = apply_fun seq k.
+        { rewrite (apply_fun_graph (ordsucc m)
+            (fun k0:set => If_i (k0 :e m) (apply_fun seq k0) lastI)
+            k (ordsuccI1 m k Hkm)).
+          exact (If_i_1 (k :e m) (apply_fun seq k) lastI Hkm). }
+        rewrite Hseqg_k.
+        (** seq(k) maps g into type(seq(k)) **)
+        (** g(t) = f(t) when t <= s, gB(t) when t >= s **)
+        (** Either way, maps into type(seq(k)) **)
+        claim Hk_osn : k :e ordsucc (ordsucc m).
+        { exact (ordinal_TransSet (ordsucc (ordsucc m))
+            (nat_p_ordinal (ordsucc (ordsucc m)) (nat_ordsucc (ordsucc m) (nat_ordsucc m HmNat)))
+            (ordsucc m) (ordsuccI2 (ordsucc m)) k (ordsuccI1 m k Hkm)). }
+        apply (HballUV k Hk_osn).
+        + assume HkU : forall t:set, t :e apply_fun seq k -> apply_fun f t :e U.
+          apply orIL. let t. assume Ht : t :e apply_fun seq k.
+          claim HtUI : t :e unit_interval.
+          { exact (PowerE unit_interval (apply_fun seq k) (HseqFnPow k Hk_osn) t Ht). }
+          apply (xm (Rlt s t)).
+          { assume Hst. rewrite (Hg_on_B t (SepI unit_interval (fun t0:set => ~(Rlt t0 s)) t HtUI
+              (fun Hts:Rlt t s => SNoLt_irref s (RltE_lt s s (Rlt_tra s t s Hst Hts))))).
+            exact (binintersectE1 U V (apply_fun gB t) (HgB_UV t
+              (SepI unit_interval (fun t0:set => ~(Rlt t0 s)) t HtUI
+                (fun Hts:Rlt t s => SNoLt_irref s (RltE_lt s s (Rlt_tra s t s Hst Hts)))))). }
+          { assume Hnst.
+            rewrite (Hg_on_A t (SepI unit_interval (fun t0:set => ~(Rlt s t0)) t HtUI Hnst)).
+            exact (HkU t Ht). }
+        + assume HkV : forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
+          apply orIR. let t. assume Ht : t :e apply_fun seq k.
+          claim HtUI : t :e unit_interval.
+          { exact (PowerE unit_interval (apply_fun seq k) (HseqFnPow k Hk_osn) t Ht). }
+          apply (xm (Rlt s t)).
+          { assume Hst. rewrite (Hg_on_B t (SepI unit_interval (fun t0:set => ~(Rlt t0 s)) t HtUI
+              (fun Hts:Rlt t s => SNoLt_irref s (RltE_lt s s (Rlt_tra s t s Hst Hts))))).
+            exact (binintersectE2 U V (apply_fun gB t) (HgB_UV t
+              (SepI unit_interval (fun t0:set => ~(Rlt t0 s)) t HtUI
+                (fun Hts:Rlt t s => SNoLt_irref s (RltE_lt s s (Rlt_tra s t s Hst Hts)))))). }
+          { assume Hnst.
+            rewrite (Hg_on_A t (SepI unit_interval (fun t0:set => ~(Rlt s t0)) t HtUI Hnst)).
+            exact (HkV t Ht). }
+      - assume Hkm : k = m.
+        (** seq_g(m) = lastI = seq(m) cup (s,1] maps g into U **)
+        rewrite Hkm.
+        claim Hseqg_m : apply_fun seq_g m = lastI.
+        { rewrite (apply_fun_graph (ordsucc m)
+            (fun k0:set => If_i (k0 :e m) (apply_fun seq k0) lastI)
+            m (ordsuccI2 m)).
+          exact (If_i_0 (m :e m) (apply_fun seq m) lastI (In_irref m)). }
+        rewrite Hseqg_m.
+        apply orIL. let t. assume Ht : t :e lastI.
+        apply (binunionE (apply_fun seq m) (Sep unit_interval (fun t0:set => Rlt s t0)) t Ht).
+        + assume Htm : t :e apply_fun seq m.
+          claim HtUI : t :e unit_interval. { exact (Hseqm_sub t Htm). }
+          apply (xm (Rlt s t)).
+          { assume Hst. rewrite (Hg_on_B t (SepI unit_interval (fun t0:set => ~(Rlt t0 s)) t HtUI
+              (fun Hts:Rlt t s => SNoLt_irref s (RltE_lt s s (Rlt_tra s t s Hst Hts))))).
+            exact (binintersectE1 U V (apply_fun gB t) (HgB_UV t
+              (SepI unit_interval (fun t0:set => ~(Rlt t0 s)) t HtUI
+                (fun Hts:Rlt t s => SNoLt_irref s (RltE_lt s s (Rlt_tra s t s Hst Hts)))))). }
+          { assume Hnst.
+            rewrite (Hg_on_A t (SepI unit_interval (fun t0:set => ~(Rlt s t0)) t HtUI Hnst)).
+            exact (Hm_Utype t Htm). }
+        + assume Hts : t :e Sep unit_interval (fun t0:set => Rlt s t0).
+          claim HtUI : t :e unit_interval.
+          { exact (SepE1 unit_interval (fun t0:set => Rlt s t0) t Hts). }
+          claim Hst : Rlt s t.
+          { exact (SepE2 unit_interval (fun t0:set => Rlt s t0) t Hts). }
+          rewrite (Hg_on_B t (SepI unit_interval (fun t0:set => ~(Rlt t0 s)) t HtUI
+            (fun Hts2:Rlt t s => SNoLt_irref s (RltE_lt s s (Rlt_tra s t s Hst Hts2))))).
+          exact (binintersectE1 U V (apply_fun gB t) (HgB_UV t
+            (SepI unit_interval (fun t0:set => ~(Rlt t0 s)) t HtUI
+              (fun Hts2:Rlt t s => SNoLt_irref s (RltE_lt s s (Rlt_tra s t s Hst Hts2)))))). }
     exact (IH X Tx U V x0 g seq_g
       Htop HU HV Hcover Hx0UV HpcUV Hg_loop
       Hsg_fn Hsg_open Hsg_conn Hsg_0 Hsg_1 Hsg_overlap Hsg_UV). }
