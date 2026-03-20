@@ -239406,7 +239406,7 @@ claim HL2_word_data :
     { (** affine_fun_I s (1-s) maps [0,1] into [s,1] c= [0,1] **)
       admit. }
     claim Haffine_ge_s : Rle s (apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u).
-    { (** u(1-s) + s >= s since u(1-s) >= 0 **)
+    { (** u(1-s) + s >= s since u >= 0 and 1-s >= 0 **)
       admit. }
     claim Haffine_in_seqn :
       apply_fun (affine_fun_I s (add_SNo 1 (minus_SNo s))) u :e apply_fun seq n.
