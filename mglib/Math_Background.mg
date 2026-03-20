@@ -239562,7 +239562,18 @@ claim HL1_word_data :
             (Sep R (fun x:set => Rlt s x))
             (open_ray_in_R_standard_topology s Hs_R)). }
         claim Hray_eq : Sep R (fun x:set => Rlt s x) :/\: unit_interval = Sep unit_interval (fun t:set => Rlt s t).
-        { admit. }
+        { apply set_ext.
+          - let t. assume Ht.
+            exact (SepI unit_interval (fun t0:set => Rlt s t0) t
+              (binintersectE2 (Sep R (fun x:set => Rlt s x)) unit_interval t Ht)
+              (SepE2 R (fun x:set => Rlt s x) t
+                (binintersectE1 (Sep R (fun x:set => Rlt s x)) unit_interval t Ht))).
+          - let t. assume Ht.
+            exact (binintersectI (Sep R (fun x:set => Rlt s x)) unit_interval t
+              (SepI R (fun x:set => Rlt s x) t
+                (unit_interval_sub_R t (SepE1 unit_interval (fun t0:set => Rlt s t0) t Ht))
+                (SepE2 unit_interval (fun t0:set => Rlt s t0) t Ht))
+              (SepE1 unit_interval (fun t0:set => Rlt s t0) t Ht)). }
         claim Hray_open : Sep unit_interval (fun t:set => Rlt s t) :e unit_interval_topology.
         { rewrite <- Hray_eq. exact Hray_in_subspace. }
         exact (topology_binunion_closed unit_interval unit_interval_topology
