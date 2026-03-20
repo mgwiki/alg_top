@@ -235785,6 +235785,85 @@ apply andI.
 - exact Hseg1.
 Qed.
 
+(** Infrastructure: connected subsets of unit_interval are path connected (with the subspace topology). **)
+(** Proven Charlie **)
+Lemma connected_subset_unit_interval_path_connected :
+  forall A:set,
+    A c= unit_interval ->
+    connected_space A (subspace_topology unit_interval unit_interval_topology A) ->
+    path_connected_space A (subspace_topology unit_interval unit_interval_topology A).
+let A.
+assume HAsubI HconnA.
+claim HtopA : topology_on A (subspace_topology unit_interval unit_interval_topology A).
+{
+  exact (subspace_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    A
+    unit_interval_topology_on
+    HAsubI).
+}
+claim Hpaths :
+  forall x y:set, x :e A -> y :e A ->
+    exists p:set, path_between A x y p /\
+      continuous_map unit_interval unit_interval_topology A
+        (subspace_topology unit_interval unit_interval_topology A) p.
+{
+  let x y. assume HxA HyA.
+  claim Hp_ex : exists p:set,
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology p /\
+    (forall t:set, t :e unit_interval -> apply_fun p t :e A) /\
+    apply_fun p 0 = x /\
+    apply_fun p 1 = y.
+  { exact (connected_subset_unit_interval_path_between A x y HAsubI HconnA HxA HyA). }
+  apply Hp_ex.
+  let p. assume HpPack.
+  apply (and4E
+    (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology p)
+    (forall t:set, t :e unit_interval -> apply_fun p t :e A)
+    (apply_fun p 0 = x)
+    (apply_fun p 1 = y)
+    HpPack).
+  assume HpContI HpRange Hp0 Hp1.
+  claim HpContA : continuous_map unit_interval unit_interval_topology A
+    (subspace_topology unit_interval unit_interval_topology A) p.
+  {
+    exact (continuous_map_range_restrict
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      p
+      A
+      HpContI
+      HAsubI
+      HpRange).
+  }
+  claim HpFunA : function_on p unit_interval A.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      A
+      (subspace_topology unit_interval unit_interval_topology A)
+      p
+      HpContA).
+  }
+  witness p.
+  apply andI.
+  - exact (path_betweenI A x y p HpFunA Hp0 Hp1).
+  - exact HpContA.
+}
+exact (andI
+  (topology_on A (subspace_topology unit_interval unit_interval_topology A))
+  (forall x y:set, x :e A -> y :e A ->
+    exists p:set, path_between A x y p /\
+      continuous_map unit_interval unit_interval_topology A
+        (subspace_topology unit_interval unit_interval_topology A) p)
+  HtopA
+  Hpaths).
+Qed.
+
 (** Infrastructure: build a loop from a path between x and y plus connecting paths from x0. **)
 (** This is the standard "close up a path" construction used in van Kampen style proofs. **)
 (** Proven Charlie **)
