@@ -408894,11 +408894,27 @@ assume H.
 exact (polygon_pasting_equiv_chain_of_step n w x y H).
 Qed.
 
-(** Deprecated: after NOTICE 1773340391 polygon_pasting_equiv is a chain closure,
-    so polygon_pasting_equiv -> polygon_pasting_step is not generally valid. **)
+(** NOTICE 1773866153 (APPROVED): replaced false equiv->step with chain-witness extraction. **)
+(** Proven Dave **)
 Lemma polygon_pasting_equiv_to_step : forall n w x y:set,
-  polygon_pasting_equiv n w x y -> polygon_pasting_step n w x y.
-Admitted.
+  polygon_pasting_equiv n w x y ->
+  exists m f:set,
+    m :e omega /\
+    function_on f (ordsucc m) B2 /\
+    apply_fun f 0 = x /\
+    apply_fun f m = y /\
+    forall k:set, k :e m ->
+      polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k)).
+let n w x y.
+assume H.
+exact (andER (x :e B2 /\ y :e B2) (exists m f:set,
+    m :e omega /\
+    function_on f (ordsucc m) B2 /\
+    apply_fun f 0 = x /\
+    apply_fun f m = y /\
+    forall k:set, k :e m ->
+      polygon_pasting_step n w (apply_fun f k) (apply_fun f (ordsucc k))) H).
+Qed.
 
 (** Extend a chain by one final polygon_pasting_step. **)
 (** Proven Charlie **)
@@ -410567,13 +410583,15 @@ Admitted.
 
 (** Helper goal for S74: saturation of a closed set is closed in B2. **)
 (** This should imply both: polygon_pasting_map is a closed map, and the quotient is T1. **)
+(** NOTICE 1773883742 (APPROVED): add labelling_scheme n w hypothesis. **)
 (** Bounty 55 **)
 Lemma polygon_pasting_saturation_closed_in_B2 : forall n w C:set,
+  labelling_scheme n w ->
   C c= B2 ->
   closed_in B2 B2_topology C ->
   closed_in B2 B2_topology {x :e B2 | exists c:set, c :e C /\ polygon_pasting_equiv n w x c}.
 let n w C.
-assume HCsubB2 HCclosed.
+assume Hlabel HCsubB2 HCclosed.
 set SatC := {x :e B2 | exists c:set, c :e C /\ polygon_pasting_equiv n w x c}.
 claim HtopR2 : topology_on (setprod R R) R2_topology.
 { exact (product_topology_is_topology R R_standard_topology R R_standard_topology
@@ -410812,7 +410830,7 @@ apply andI.
     { exact (closed_in_subset B2 B2_topology C HCclosed). }
     set SatC := {x :e B2 | exists c:set, c :e C /\ polygon_pasting_equiv n w x c}.
     claim HsatClosed : closed_in B2 B2_topology SatC.
-    { exact (polygon_pasting_saturation_closed_in_B2 n w C HCsubB2 HCclosed). }
+    { exact (polygon_pasting_saturation_closed_in_B2 n w C Hlabel HCsubB2 HCclosed). }
     claim HpreImgEq :
       preimage_of B2 pi (image_of pi C) = SatC.
     { exact (polygon_pasting_preimage_image_eq_saturation n w C HCsubB2). }
@@ -410886,7 +410904,7 @@ apply andI.
     }
     set Sat0 := {x :e B2 | exists c:set, c :e {x0} /\ polygon_pasting_equiv n w x c}.
     claim Hsat0Closed : closed_in B2 B2_topology Sat0.
-    { exact (polygon_pasting_saturation_closed_in_B2 n w {x0} HSingSub HSingClosed). }
+    { exact (polygon_pasting_saturation_closed_in_B2 n w {x0} Hlabel HSingSub HSingClosed). }
     claim Hsat0Eq : Sat0 = {y :e B2 | polygon_pasting_equiv n w y x0}.
     {
       apply set_ext.
