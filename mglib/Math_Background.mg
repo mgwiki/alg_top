@@ -240117,8 +240117,14 @@ claim HL1_word_data :
       rewrite (compose_fun_apply B rescale revGX s Hs_B).
       (** Need: rescale(s) = 0, then revGX(0) = f(s) **)
       claim Hrescale_s : apply_fun rescale s = 0.
-      { (** rescale(s) = affine(s) = s c_inv + (-s c_inv) = 0 **)
-        admit. }
+      { (** rescale(s) = s c_inv + (-(s c_inv)) = 0 **)
+        claim HsSNo : SNo s. { exact (real_SNo s Hs_R). }
+        claim Hsc : SNo (mul_SNo s c_inv). { exact (SNo_mul_SNo s c_inv HsSNo Hc_inv_SNo). }
+        claim HbR : b_rescale :e R. { admit. }
+        claim Hc_inv_R : c_inv :e R. { admit. }
+        rewrite (affine_fun_I_apply b_rescale c_inv s HbR Hc_inv_R Hc_inv_pos Hs_UI).
+        (** Goal: add_SNo (mul_SNo s c_inv) (minus_SNo (mul_SNo s c_inv)) = 0 **)
+        exact (add_SNo_minus_SNo_rinv (mul_SNo s c_inv) Hsc). }
       rewrite Hrescale_s. exact HrevGX_0. }
     claim HgBw_1 : apply_fun gB_witness 1 = x0.
     { (** gB(1) = revGX(rescale(1)) = revGX(1) = x0 **)
