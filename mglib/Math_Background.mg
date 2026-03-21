@@ -240111,10 +240111,26 @@ claim HL1_word_data :
         rescale revGX Hrescale_on_B_cont HrevGX_cont). }
     claim HgBw_s : apply_fun gB_witness s = apply_fun f s.
     { (** gB(s) = revGX(rescale(s)) = revGX(0) = f(s) **)
-      admit. }
+      claim Hs_B : s :e B.
+      { exact (SepI unit_interval (fun t:set => ~(Rlt t s)) s Hs_UI
+          (fun H : Rlt s s => SNoLt_irref s (RltE_lt s s H))). }
+      rewrite (compose_fun_apply B rescale revGX s Hs_B).
+      (** Need: rescale(s) = 0, then revGX(0) = f(s) **)
+      claim Hrescale_s : apply_fun rescale s = 0.
+      { (** rescale(s) = affine(s) = s c_inv + (-s c_inv) = 0 **)
+        admit. }
+      rewrite Hrescale_s. exact HrevGX_0. }
     claim HgBw_1 : apply_fun gB_witness 1 = x0.
     { (** gB(1) = revGX(rescale(1)) = revGX(1) = x0 **)
-      admit. }
+      claim H1_in_B2 : 1 :e B.
+      { exact (SepI unit_interval (fun t:set => ~(Rlt t s)) 1 one_in_unit_interval
+          (fun H : Rlt 1 s => SNoLt_irref 1 (RltE_lt 1 1
+            (Rlt_tra 1 s 1 H (RltI s 1 Hs_R real_1 (RltE_lt s 1 Hlt_s_1)))))). }
+      rewrite (compose_fun_apply B rescale revGX 1 H1_in_B2).
+      claim Hrescale_1 : apply_fun rescale 1 = 1.
+      { (** rescale(1) = 1 c_inv + (-s c_inv) = (1-s) c_inv = 1 **)
+        admit. }
+      rewrite Hrescale_1. exact HrevGX_1. }
     claim HgBw_UV : forall t:set, t :e B -> apply_fun gB_witness t :e U :/\: V.
     { let t. assume HtB : t :e B.
       (** gB_witness(t) = revGX(rescale(t)) where rescale(t) in [0,1] **)
