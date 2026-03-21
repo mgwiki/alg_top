@@ -240095,12 +240095,47 @@ claim HL1_word_data :
     (** gB_witness(s) = revGX(0) = f(s) **)
     (** gB_witness(1) = revGX(1) = x0 **)
     (** gB_witness maps B into U cap V (via HrevGX_UV) **)
-    (** The formal construction needs: **)
-    (**   1. Show rescale maps B into [0,1] **)
-    (**   2. Define gB as restriction of compose_fun UI rescale revGX to B **)
-    (**   3. Verify properties **)
-    (** For now admit the full construction **)
-    admit. }
+    (** Witness: compose_fun B rescale_on_B revGX **)
+    (** where rescale_on_B = restriction of rescale to B, mapping B -> [0,1] **)
+    claim Hrescale_on_B_cont :
+      continuous_map B (subspace_topology unit_interval unit_interval_topology B)
+        unit_interval unit_interval_topology rescale.
+    { (** rescale is affine (continuous R -> R), maps B c= UI to [0,1] c= UI **)
+      (** Need: continuous_on_subspace + range restriction to UI **)
+      admit. }
+    set gB_witness := compose_fun B rescale revGX.
+    claim HgB_cont : continuous_map B (subspace_topology unit_interval unit_interval_topology B)
+      X Tx gB_witness.
+    { exact (composition_continuous B (subspace_topology unit_interval unit_interval_topology B)
+        unit_interval unit_interval_topology X Tx
+        rescale revGX Hrescale_on_B_cont HrevGX_cont). }
+    claim HgBw_s : apply_fun gB_witness s = apply_fun f s.
+    { (** gB(s) = revGX(rescale(s)) = revGX(0) = f(s) **)
+      admit. }
+    claim HgBw_1 : apply_fun gB_witness 1 = x0.
+    { (** gB(1) = revGX(rescale(1)) = revGX(1) = x0 **)
+      admit. }
+    claim HgBw_UV : forall t:set, t :e B -> apply_fun gB_witness t :e U :/\: V.
+    { let t. assume HtB : t :e B.
+      (** gB_witness(t) = revGX(rescale(t)) where rescale(t) in [0,1] **)
+      (** So gB_witness(t) in U cap V by HrevGX_UV **)
+      claim HtUI : t :e unit_interval. { exact (HBsub t HtB). }
+      claim Hrescale_t_UI : apply_fun rescale t :e unit_interval.
+      { exact (continuous_map_function_on B (subspace_topology unit_interval unit_interval_topology B)
+          unit_interval unit_interval_topology rescale Hrescale_on_B_cont t HtB). }
+      rewrite (compose_fun_apply B rescale revGX t HtB).
+      exact (HrevGX_UV (apply_fun rescale t) Hrescale_t_UI). }
+    witness gB_witness.
+    prove (continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB_witness /\
+      apply_fun gB_witness s = apply_fun f s /\
+      apply_fun gB_witness 1 = x0) /\
+      (forall t:set, t :e B -> apply_fun gB_witness t :e U :/\: V).
+    apply andI.
+    - apply andI. apply andI.
+      + exact HgB_cont.
+      + exact HgBw_s.
+      + exact HgBw_1.
+    - exact HgBw_UV. }
   apply Hg_on_B_ex. let gB. assume HgB_pack.
   (** HgB_pack : (((cont /\ gBs) /\ gB1) /\ UV) -- left assoc **)
   claim HgB_UV : forall t:set, t :e B -> apply_fun gB t :e U :/\: V.
