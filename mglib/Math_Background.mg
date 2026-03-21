@@ -240120,8 +240120,15 @@ claim HL1_word_data :
       { (** rescale(s) = s c_inv + (-(s c_inv)) = 0 **)
         claim HsSNo : SNo s. { exact (real_SNo s Hs_R). }
         claim Hsc : SNo (mul_SNo s c_inv). { exact (SNo_mul_SNo s c_inv HsSNo Hc_inv_SNo). }
-        claim HbR : b_rescale :e R. { admit. }
-        claim Hc_inv_R : c_inv :e R. { admit. }
+        claim Hc_inv_R0 : c_inv :e R.
+        { exact (real_recip_SNo_pos (add_SNo 1 (minus_SNo s)) H1ms_R2
+            (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos2)). }
+        claim HbR : b_rescale :e R.
+        { exact (real_minus_SNo (mul_SNo s c_inv)
+            (real_mul_SNo s Hs_R c_inv Hc_inv_R0)). }
+        claim Hc_inv_R : c_inv :e R.
+        { exact (real_recip_SNo_pos (add_SNo 1 (minus_SNo s)) H1ms_R2
+            (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos2)). }
         rewrite (affine_fun_I_apply b_rescale c_inv s HbR Hc_inv_R Hc_inv_pos Hs_UI).
         (** Goal: add_SNo (mul_SNo s c_inv) (minus_SNo (mul_SNo s c_inv)) = 0 **)
         exact (add_SNo_minus_SNo_rinv (mul_SNo s c_inv) Hsc). }
