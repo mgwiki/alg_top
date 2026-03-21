@@ -240137,9 +240137,50 @@ claim HL1_word_data :
         (** Need: this is in [0,1]. Use SepI with two bounds. **)
         (** Bound 1: rescale(t) >= 0 **)
         claim Hrescale_ge_0 : ~(Rlt (apply_fun rescale t) 0).
-        { (** rescale(t) >= 0 since t >= s and c_inv > 0 **)
-          (** Use Rle approach: Rle s t from Hge_s, then show Rle 0 rescale(t) **)
-          admit. }
+        { rewrite Hrescale_t_val.
+          (** Goal: ~(Rlt (add_SNo (mul_SNo t c_inv) b_rescale) 0) **)
+          claim Hle_st : Rle s t. { exact (RleI s t Hs_R HtR Hge_s). }
+          claim HscR : mul_SNo s c_inv :e R. { exact (real_mul_SNo s Hs_R c_inv Hc_inv_R2). }
+          claim HtcR : mul_SNo t c_inv :e R. { exact (real_mul_SNo t HtR c_inv Hc_inv_R2). }
+          claim HbR3 : b_rescale :e R. { exact (real_minus_SNo (mul_SNo s c_inv) HscR). }
+          claim Hle_sc_tc : Rle (mul_SNo s c_inv) (mul_SNo t c_inv).
+          { exact (Rle_of_SNoLe (mul_SNo s c_inv) (mul_SNo t c_inv) HscR HtcR
+              (nonneg_mul_SNo_Le' s t c_inv (real_SNo s Hs_R) (real_SNo t HtR) Hc_inv_SNo
+                (SNoLe_of_Rle 0 c_inv (Rlt_implies_Rle 0 c_inv
+                  (RltI 0 c_inv real_0 Hc_inv_R2 Hc_inv_pos)))
+                (SNoLe_of_Rle s t Hle_st))). }
+          (** Rle (sc + (-(sc))) (tc + (-(sc))) i.e. Rle 0 (tc + b_rescale) **)
+          claim Hle_0_val : Rle 0 (add_SNo (mul_SNo t c_inv) b_rescale).
+          { claim Hle_sum : Rle (add_SNo (mul_SNo s c_inv) b_rescale)
+              (add_SNo (mul_SNo t c_inv) b_rescale).
+            { exact (Rle_add_SNo_1 (mul_SNo s c_inv) (mul_SNo t c_inv)
+                b_rescale HscR HtcR HbR3 Hle_sc_tc). }
+            claim Hsc_plus_b : add_SNo (mul_SNo s c_inv) b_rescale = 0.
+            { exact (add_SNo_minus_SNo_rinv (mul_SNo s c_inv) (SNo_mul_SNo s c_inv (real_SNo s Hs_R) Hc_inv_SNo)). }
+            (** Rle (sc+b) (tc+b) gives ~(Rlt (tc+b) (sc+b)) **)
+            claim Hnlt : ~(Rlt (add_SNo (mul_SNo t c_inv) b_rescale) (add_SNo (mul_SNo s c_inv) b_rescale)).
+            { exact (andER
+                (add_SNo (mul_SNo s c_inv) b_rescale :e R /\ add_SNo (mul_SNo t c_inv) b_rescale :e R)
+                (~(Rlt (add_SNo (mul_SNo t c_inv) b_rescale) (add_SNo (mul_SNo s c_inv) b_rescale)))
+                Hle_sum). }
+            (** ~(Rlt (tc+b) 0): assume Rlt (tc+b) 0, then Rlt (tc+b) (sc+b) **)
+            (** via sc+b = 0 substitution in the Rlt **)
+            (** Rle 0 (tc+b): construct directly using Rle_tra 0 (sc+b) (tc+b) **)
+            (** sc+b = 0 by Hsc_plus_b. Rle (sc+b) (tc+b) by Hle_sum. **)
+            (** Need: Rle 0 (sc+b). From sc+b = 0: Rle 0 0 which is Rle_ref. **)
+            claim HscbR : add_SNo (mul_SNo s c_inv) b_rescale :e R.
+            { exact (real_add_SNo (mul_SNo s c_inv) HscR b_rescale HbR3). }
+            claim Hle_0_scb : Rle 0 (add_SNo (mul_SNo s c_inv) b_rescale).
+            { prove Rle 0 (add_SNo (mul_SNo s c_inv) b_rescale).
+              rewrite Hsc_plus_b. exact (RleI 0 0 real_0 real_0 (not_Rlt_refl 0 real_0)). }
+            claim HvalR2 : add_SNo (mul_SNo t c_inv) b_rescale :e R.
+            { exact (real_add_SNo (mul_SNo t c_inv) HtcR b_rescale HbR3). }
+            exact (Rle_tra 0 (add_SNo (mul_SNo s c_inv) b_rescale)
+              (add_SNo (mul_SNo t c_inv) b_rescale) Hle_0_scb Hle_sum). }
+          exact (andER
+            (0 :e R /\ add_SNo (mul_SNo t c_inv) b_rescale :e R)
+            (~(Rlt (add_SNo (mul_SNo t c_inv) b_rescale) 0))
+            Hle_0_val). }
         (** Bound 2: rescale(t) <= 1 **)
         claim Hrescale_le_1 : ~(Rlt 1 (apply_fun rescale t)).
         { (** (t-s) c_inv <= (1-s) c_inv = 1 since t <= 1 **)
