@@ -137802,14 +137802,30 @@ set fxid := graph (setprod A C) (fun ac:set => (apply_fun f (ac 0), ac 1)).
 claim HtopA : topology_on A Ta. { exact (continuous_map_topology_dom A Ta B Tb f Hf_cont). }
 claim HtopB : topology_on B Tb. { exact (continuous_map_topology_cod A Ta B Tb f Hf_cont). }
 claim HcompAC : compact_space (setprod A C) (product_topology A Ta C Tc).
-{ admit. (** product of compact is compact **) }
+{ exact (finite_product_compact A Ta C Tc HcompA HcompC). }
 (** fxid continuous **)
 claim Hfxid_cont : continuous_map (setprod A C) (product_topology A Ta C Tc)
   (setprod B C) (product_topology B Tb C Tc) fxid.
 { admit. (** product of continuous maps: f on first, id on second **) }
 (** fxid surjective **)
 claim Hfxid_surj : surjective_map (setprod A C) (setprod B C) fxid.
-{ admit. (** from Hf_surj: for (b,c), get a with f(a)=b, then fxid(a,c)=(b,c) **) }
+{ prove function_on fxid (setprod A C) (setprod B C) /\
+    forall y:set, y :e setprod B C -> exists x:set, x :e setprod A C /\ apply_fun fxid x = y.
+  apply andI.
+  - exact (continuous_map_function_on (setprod A C) (product_topology A Ta C Tc)
+      (setprod B C) (product_topology B Tb C Tc) fxid Hfxid_cont).
+  - let bc. assume Hbc : bc :e setprod B C.
+    claim HbB : bc 0 :e B. { exact (ap0_Sigma B (fun _ => C) bc Hbc). }
+    claim HcC : bc 1 :e C. { exact (ap1_Sigma B (fun _ => C) bc Hbc). }
+    claim Hf_surj_parts : function_on f A B /\ forall y:set, y :e B -> exists x:set, x :e A /\ apply_fun f x = y.
+    { exact Hf_surj. }
+    claim Hf_surj2 : forall y:set, y :e B -> exists x:set, x :e A /\ apply_fun f x = y.
+    { exact (andER (function_on f A B) (forall y:set, y :e B -> exists x:set, x :e A /\ apply_fun f x = y) Hf_surj_parts). }
+    apply (Hf_surj2 (bc 0) HbB). let a. assume Ha_data.
+    claim HaA : a :e A. { exact (andEL (a :e A) (apply_fun f a = bc 0) Ha_data). }
+    claim Hfa : apply_fun f a = bc 0. { exact (andER (a :e A) (apply_fun f a = bc 0) Ha_data). }
+    witness (a, bc 1).
+    admit. (** show (a,bc1) in AxC and fxid(a,bc1) = bc; needs pair arithmetic **) }
 (** fxid is a closed map (compact -> Hausdorff continuous) **)
 claim Hfxid_closed : closed_map (setprod A C) (product_topology A Ta C Tc)
   (setprod B C) (product_topology B Tb C Tc) fxid.
