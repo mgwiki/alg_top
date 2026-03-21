@@ -240102,7 +240102,31 @@ claim HL1_word_data :
     apply_fun seq_L1 k :/\: apply_fun seq_L1 (ordsucc k) <> Empty. { admit. }
   claim Hseq_L1_UV : forall k:set, k :e ordsucc m ->
     (forall t:set, t :e apply_fun seq_L1 k -> apply_fun L1 t :e U) \/
-    (forall t:set, t :e apply_fun seq_L1 k -> apply_fun L1 t :e V). { admit. }
+    (forall t:set, t :e apply_fun seq_L1 k -> apply_fun L1 t :e V).
+  { let k. assume Hk : k :e ordsucc m.
+    apply (ordsuccE m k Hk).
+    - assume Hkm : k :e m.
+      (** seq_L1(k) = {t : 2st in seq(k)} for k < m **)
+      claim Hk_osn : k :e ordsucc (ordsucc m).
+      { exact (ordinal_TransSet (ordsucc (ordsucc m))
+          (nat_p_ordinal (ordsucc (ordsucc m)) (nat_ordsucc (ordsucc m) (nat_ordsucc m HmNat)))
+          (ordsucc m) (ordsuccI2 (ordsucc m)) k (ordsuccI1 m k Hkm)). }
+      apply (HballUV k Hk_osn).
+      + assume HkU : forall t:set, t :e apply_fun seq k -> apply_fun f t :e U.
+        apply orIL. let t. assume Ht : t :e apply_fun seq_L1 k.
+        (** L1(t) in U: decompose t in left/right half **)
+        (** For right half: L1(t) = revGX(2t-1) in U cap V c= U **)
+        (** For left half: L1(t) = f1(2t) where f1 = compose_fun ... f **)
+        (**   and 2st in seq(k), so f(2st) in U by HkU **)
+        (**   f1(2t) relates to f(2st) via affine_fun_I + mul commutativity **)
+        admit.
+      + assume HkV : forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
+        apply orIR. let t. assume Ht : t :e apply_fun seq_L1 k.
+        admit.
+    - assume Hkm : k = m.
+      (** seq_L1(m) = lastI_L1 is U-type **)
+      apply orIL. let t. assume Ht : t :e apply_fun seq_L1 k.
+      admit. }
   exact (IH X Tx U V x0 L1 seq_L1
     Htop HU HV Hcover Hx0UV HpcUV HL1_loop
     Hseq_L1_fn Hseq_L1_open Hseq_L1_conn Hseq_L1_0 Hseq_L1_1
