@@ -292122,17 +292122,31 @@ set h_full := graph (setprod R R) (fun y:set =>
   (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1)))).
 claim Hh_cont_R2 : continuous_map (setprod R R) R2_topology (setprod R R) R2_topology h_full.
 { exact (R2_translation_continuous_early neg_p Hneg_pR2). }
-(** h_full maps R^2\{0} into R^2\{p'} **)
-(** For y in R^2\{0}: h(y) = y + p'. h(y) = p' iff y = 0. So y != 0 => h(y) != p' **)
-(** h_full is a surjection from R^2\{0} to R^2\{p'}: for x in R^2\{p'}, y = x - p' in R^2\{0} **)
-(** Use continuous_image_path_connected **)
-(** Source: punctured_space_path_connected gives pc of R^2\{0} **)
-(** This proof is mechanical but needs SNo arithmetic for pair coord simplifications **)
-(** neg_p 0 = minus_SNo (p' 0), so minus_SNo (neg_p 0) = minus_SNo (minus_SNo (p' 0)) = p' 0 **)
-(** Similarly for coord 1 **)
-(** So h_full(y) = (y0 + p'0, y1 + p'1) after simplification **)
-(** h_full maps R^2\{0} to R^2\{p'}: if y != (0,0) and h(y) = (y0+p'0, y1+p'1), **)
-(** then h(y) = p' iff y0+p'0 = p'0 and y1+p'1 = p'1 iff y0=0 and y1=0 iff y=(0,0), contradiction **)
+(** neg_p coords: neg_p 0 = -(p'0), neg_p 1 = -(p'1) **)
+claim Hnp0 : neg_p 0 = minus_SNo (p' 0).
+{ prove (minus_SNo (p' 0), minus_SNo (p' 1)) 0 = minus_SNo (p' 0).
+  rewrite <- (tuple_pair (minus_SNo (p' 0)) (minus_SNo (p' 1))).
+  exact (pair_ap_0 (minus_SNo (p' 0)) (minus_SNo (p' 1))). }
+claim Hnp1 : neg_p 1 = minus_SNo (p' 1).
+{ prove (minus_SNo (p' 0), minus_SNo (p' 1)) 1 = minus_SNo (p' 1).
+  rewrite <- (tuple_pair (minus_SNo (p' 0)) (minus_SNo (p' 1))).
+  exact (pair_ap_1 (minus_SNo (p' 0)) (minus_SNo (p' 1))). }
+(** h_full(y) evaluates to (y0 + p'0, y1 + p'1) since -(-(p'i)) = p'i **)
+claim Hh_apply : forall y:set, y :e setprod R R ->
+  apply_fun h_full y =
+    (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1))).
+{ let y. assume Hy.
+  exact (apply_fun_graph (setprod R R)
+    (fun y0:set => (add_SNo (y0 0) (minus_SNo (neg_p 0)), add_SNo (y0 1) (minus_SNo (neg_p 1))))
+    y Hy). }
+(** -(-(p'i)) = p'i **)
+claim Hmnp0 : minus_SNo (neg_p 0) = p' 0.
+{ rewrite Hnp0. exact (minus_SNo_invol (p' 0) Hp0SNo). }
+claim Hmnp1 : minus_SNo (neg_p 1) = p' 1.
+{ rewrite Hnp1. exact (minus_SNo_invol (p' 1) Hp1SNo). }
+(** h_full maps R^2\{0} to R^2\{p'} **)
+(** h_full continuous on subspace, surjective **)
+(** For now admit remaining construction; the key ingredients are established **)
 admit.
 Admitted.
 
