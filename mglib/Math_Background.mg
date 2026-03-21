@@ -138204,9 +138204,80 @@ apply andI.
       (** H = F o q (factorization through quotient) **)
       claim Hfactors : forall st:set, st :e unit_square ->
         apply_fun H st = apply_fun F (apply_fun q st).
-      { admit. (** KEY: well-definedness of F via Eps_i. **)
-        (** Needs: ell injective on (0,1) OR: for any s,s' with ell(s)=ell(s'), **)
-        (** H(s,t) = H(s',t). Holds because H(0,t) = H(1,t) = y0 (boundary). **) }
+      { let st. assume Hst : st :e unit_square.
+        claim HsI : st 0 :e unit_interval. { exact (ap0_Sigma unit_interval (fun _ => unit_interval) st Hst). }
+        claim HtI : st 1 :e unit_interval. { exact (ap1_Sigma unit_interval (fun _ => unit_interval) st Hst). }
+        (** q(st) = (ell(st 0), st 1) **)
+        claim Hqeval : apply_fun q st = (apply_fun ell (st 0), st 1).
+        { exact (apply_fun_graph unit_square (fun st0:set => (apply_fun ell (st0 0), st0 1)) st Hst). }
+        (** F(q(st)) = F(ell(s), t) = H(eps_s', t) where ell(eps_s') = ell(s) **)
+        claim Hq_in : apply_fun q st :e setprod S1 unit_interval.
+        { exact (continuous_map_function_on unit_square unit_square_topology
+            (setprod S1 unit_interval) (product_topology S1 S1_topology unit_interval unit_interval_topology)
+            q Hq_cont st Hst). }
+        claim HFqeval : apply_fun F (apply_fun q st) =
+          apply_fun H (Eps_i (fun s':set => s' :e unit_interval /\ apply_fun ell s' = (apply_fun q st) 0), (apply_fun q st) 1).
+        { exact (apply_fun_graph (setprod S1 unit_interval)
+            (fun xt0:set => apply_fun H (Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = xt0 0), xt0 1))
+            (apply_fun q st) Hq_in). }
+        (** (apply_fun q st) 0 = ell(st 0), (apply_fun q st) 1 = st 1 **)
+        claim Hq0 : (apply_fun q st) 0 = apply_fun ell (st 0).
+        { rewrite Hqeval. rewrite <- (tuple_pair (apply_fun ell (st 0)) (st 1)).
+          exact (pair_ap_0 (apply_fun ell (st 0)) (st 1)). }
+        claim Hq1 : (apply_fun q st) 1 = st 1.
+        { rewrite Hqeval. rewrite <- (tuple_pair (apply_fun ell (st 0)) (st 1)).
+          exact (pair_ap_1 (apply_fun ell (st 0)) (st 1)). }
+        (** Simplify F(q(st)) **)
+        claim HFq_simp : apply_fun F (apply_fun q st) =
+          apply_fun H (Eps_i (fun s':set => s' :e unit_interval /\ apply_fun ell s' = apply_fun ell (st 0)), st 1).
+        { rewrite HFqeval. rewrite Hq0. rewrite Hq1. reflexivity. }
+        (** Now: eps_s' is some s' with ell(s') = ell(s). **)
+        (** H(s, t) = H(eps_s', t) by well-definedness: **)
+        (** st 0 is a valid witness for the Eps_i predicate **)
+        set eps_s' := Eps_i (fun s':set => s' :e unit_interval /\ apply_fun ell s' = apply_fun ell (st 0)).
+        claim Heps_valid : eps_s' :e unit_interval /\ apply_fun ell eps_s' = apply_fun ell (st 0).
+        { exact (Eps_i_ax (fun s':set => s' :e unit_interval /\ apply_fun ell s' = apply_fun ell (st 0))
+            (st 0) (andI (st 0 :e unit_interval) (apply_fun ell (st 0) = apply_fun ell (st 0)) HsI (fun Q H => H))). }
+        claim Heps_I : eps_s' :e unit_interval.
+        { exact (andEL (eps_s' :e unit_interval) (apply_fun ell eps_s' = apply_fun ell (st 0)) Heps_valid). }
+        (** H(st 0, st 1) = H(eps_s', st 1) **)
+        (** This is the well-definedness: ell(eps_s') = ell(st 0) implies H values equal **)
+        (** For s in {0,1}: H(s, t) = y0. For s in (0,1): ell injective so eps_s' = s. **)
+        (** Case split using xm **)
+        claim Hst_eta : st = (st 0, st 1). { exact (setprod_eta unit_interval unit_interval st Hst). }
+        claim HH_welldef : apply_fun H (st 0, st 1) = apply_fun H (eps_s', st 1).
+        { apply (xm (st 0 = 0)).
+          - assume Hs0 : st 0 = 0.
+            (** H(0, t) = y0 and H(eps_s', t) = ... **)
+            (** eps_s' has ell(eps_s') = ell(0) = b0. **)
+            (** Any s' with ell(s') = b0 must be in {0, 1} (by covering map injectivity on (0,1)). **)
+            (** H(0, t) = y0, H(1, t) = y0, so H(eps_s', t) = y0. **)
+            claim Hleft : apply_fun H (0, st 1) = y0. { exact (HH_left (st 1) HtI). }
+            rewrite Hs0. rewrite Hleft.
+            admit. (** need H(eps_s', st 1) = y0; requires eps_s' in {0,1} when ell(eps_s') = ell(0) = b0 **)
+          - assume Hsn0 : st 0 <> 0.
+            apply (xm (st 0 = 1)).
+            + assume Hs1 : st 0 = 1.
+              claim Hright : apply_fun H (1, st 1) = y0. { exact (HH_right (st 1) HtI). }
+              rewrite Hs1. rewrite Hright.
+              admit. (** need H(eps_s', st 1) = y0; same argument **)
+            + assume Hsn1 : st 0 <> 1.
+              (** st 0 in (0,1), ell injective here, so eps_s' = st 0 **)
+              admit. (** need ell injective on (0,1) to conclude eps_s' = st 0 **) }
+        (** Goal: apply_fun H st = apply_fun F (apply_fun q st) **)
+        (** = apply_fun H (eps_s', st 1) by HFq_simp **)
+        (** = apply_fun H (st 0, st 1) by HH_welldef (symmetric) **)
+        (** = apply_fun H st by st = (st 0, st 1) **)
+        claim Hgoal_rhs : apply_fun F (apply_fun q st) = apply_fun H (eps_s', st 1).
+        { exact HFq_simp. }
+        claim Hgoal_mid : apply_fun H (st 0, st 1) = apply_fun H (eps_s', st 1).
+        { exact HH_welldef. }
+        claim Hgoal_lhs : apply_fun H (st 0, st 1) = apply_fun H st.
+        { admit. (** setprod_eta rewrite direction issue **) }
+        exact (eq_i_tra (apply_fun H st) (apply_fun H (eps_s', st 1)) (apply_fun F (apply_fun q st))
+          (eq_i_tra (apply_fun H st) (apply_fun H (st 0, st 1)) (apply_fun H (eps_s', st 1))
+            (eq_symm (apply_fun H (st 0, st 1)) (apply_fun H st) Hgoal_lhs) Hgoal_mid)
+          (eq_symm (apply_fun F (apply_fun q st)) (apply_fun H (eps_s', st 1)) HFq_simp)). }
       (** F function_on **)
       claim HF_fn : function_on F (setprod S1 unit_interval) X.
       { let xt. assume Hxt : xt :e setprod S1 unit_interval.
