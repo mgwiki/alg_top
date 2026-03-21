@@ -239976,6 +239976,7 @@ claim HL1_word_data :
   claim Hg_on_B_ex : exists gB:set,
     continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
     apply_fun gB s = apply_fun f s /\
+    apply_fun gB 1 = x0 /\
     (forall t:set, t :e B -> apply_fun gB t :e U :/\: V).
   { (** Get a path from f(s) to x0 in U cap V **)
     claim Hpath_fs_x0 : exists p:set,
@@ -240042,20 +240043,33 @@ claim HL1_word_data :
     (**   composition_continuous for continuity **)
     admit. }
   apply Hg_on_B_ex. let gB. assume HgB_pack.
-  (** HgB_pack : (cont /\ gB(s) = f(s)) /\ (forall t in B, gB(t) in U cap V) -- left assoc **)
+  (** HgB_pack : (((cont /\ gBs) /\ gB1) /\ UV) -- left assoc **)
   claim HgB_UV : forall t:set, t :e B -> apply_fun gB t :e U :/\: V.
   { exact (andER
       (continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
-       apply_fun gB s = apply_fun f s)
+       apply_fun gB s = apply_fun f s /\ apply_fun gB 1 = x0)
       (forall t:set, t :e B -> apply_fun gB t :e U :/\: V)
       HgB_pack). }
+  claim HgB_3 : continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
+    apply_fun gB s = apply_fun f s /\ apply_fun gB 1 = x0.
+  { exact (andEL
+      (continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
+       apply_fun gB s = apply_fun f s /\ apply_fun gB 1 = x0)
+      (forall t:set, t :e B -> apply_fun gB t :e U :/\: V)
+      HgB_pack). }
+  claim HgB1 : apply_fun gB 1 = x0.
+  { exact (andER
+      (continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
+       apply_fun gB s = apply_fun f s)
+      (apply_fun gB 1 = x0)
+      HgB_3). }
   claim HgB_inner : continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
     apply_fun gB s = apply_fun f s.
   { exact (andEL
       (continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
        apply_fun gB s = apply_fun f s)
-      (forall t:set, t :e B -> apply_fun gB t :e U :/\: V)
-      HgB_pack). }
+      (apply_fun gB 1 = x0)
+      HgB_3). }
   claim HgB_cont : continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB.
   { exact (andEL
       (continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB)
@@ -240116,9 +240130,7 @@ claim HL1_word_data :
       (fun H : Rlt 1 s => SNoLt_irref 1 (RltE_lt 1 1
         (Rlt_tra 1 s 1 H (RltI s 1 Hs_R real_1 (RltE_lt s 1 Hlt_s_1)))))). }
   claim Hg1 : apply_fun g 1 = x0.
-  { rewrite (Hg_on_B 1 H1_in_B).
-    (** gB(1) = gammaX(0) = x0 -- from the construction of gB **)
-    admit. }
+  { rewrite (Hg_on_B 1 H1_in_B). exact HgB1. }
   (** g is a loop at x0 **)
   claim Hg_loop_at : loop_at X Tx x0 g.
   { prove (continuous_map unit_interval unit_interval_topology X Tx g /\
