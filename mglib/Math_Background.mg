@@ -1,4 +1,4 @@
-(** Balance Alice 8905 **)
+(** Balance Alice 9373 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
 (** Balance Dave 2670 **)
@@ -242147,7 +242147,8 @@ apply (nat_ind P).
               + assume Htn. exact (Hn_Vtype t Htn). }
           exact (IH X Tx U V x0 f seq' Htop HU HV Hcover Hx0UV HpcUV HfLoop
             Hseq'FnPow Hseq'Open Hseq'Conn H0_in' H1_in' Hoverlap' HballUV').
-Admitted.
+- exact HnchNat.
+Qed.
 
 (** Infrastructure: open balls in unit_interval are connected for any positive radius. **)
 (** Proven Charlie **)
@@ -243180,7 +243181,7 @@ set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interva
       exact (ball_cover_word_nch_ind_gen nch HnchNat X Tx U V x0 f seq
         Htop HU HV Hcover Hx0UV HpcUV HfLoop HseqFnPow HseqOpen HseqConn
         H0_in_seq0 H1_in_seqn Hoverlap Hball_UV).
-Admitted.
+Qed.
 
 Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
@@ -250534,7 +250535,7 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
     exact (ball_cover_word_construction_mixed_finish
       X Tx U V x0 f r
       Htop HU HV Hcover Hx0UV HpcUV HfLoop HrR Hrpos Hball_image HnotAllU HnotAllV).
-Admitted.
+Qed.
 
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
@@ -250984,12 +250985,13 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
 	    assume HnotAllV : ~(forall t:set, t :e unit_interval -> apply_fun f t :e V).
 	    exact (ball_cover_word_construction_mixed X Tx U V x0 f r
 	      Htop HU HV Hcover Hx0UV HpcUV HfLoop HrR Hrpos Hball_image HnotAllU HnotAllV).
-Admitted.
+Qed.
 
 (** Helper: Given a loop fcls with a Lebesgue number for {preU, preV}, construct
     the word decomposition in pi_1(U) and pi_1(V). This is the key technical
     step for Seifert-van Kampen (lemma59_1). **)
-(** Bounty 75 **)
+(** Collected Alice 75 **)
+(** Proven Alice **)
 Lemma loop_lebesgue_decomposition : forall X Tx U V x0 fcls Nleb:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -251074,12 +251076,13 @@ claim Hball_image :
 }
 exact (ball_cover_word_construction X Tx U V x0 fcls r
   Htop HU HV Hcover Hx0UV HpcUV HfclsLoop HrR Hrpos Hball_image).
-Admitted.
+Qed.
 
 (** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 393 **)
+(** Collected Alice 393 **)
+(** Proven Alice **)
 Theorem lemma59_1_open_cover_generates_pi1_core : forall X Tx U V x0 cls:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -266332,7 +266335,7 @@ claim Hcore :
                                               Htop HU HV Hcover Hx0UV HpcUV HfclsLoop HNlebOmega Hleb).
 }
 exact Hcore.
-Admitted.
+Qed.
 
 Theorem thm59_1_open_cover_generates_pi1 : forall X Tx U V x0:set,
   topology_on X Tx ->
