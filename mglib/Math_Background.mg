@@ -239977,17 +239977,69 @@ claim HL1_word_data :
     continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
     apply_fun gB s = apply_fun f s /\
     (forall t:set, t :e B -> apply_fun gB t :e U :/\: V).
-  { (** Construct gB on B = [s,1] mapping into U cap V **)
-    (** gB = gammaX composed with t -> (1-t)/(1-s) on B **)
-    (** where (1-t)/(1-s) sends s to 1 and 1 to 0 **)
-    (** Composed with gammaX: gB(s) = gammaX(1) = f(s) and gB(1) = gammaX(0) = x0 **)
-    (** gB maps into image of gammaX c= U cap V **)
-    (** Construction: **)
-    (**   c_inv = recip_SNo_pos(1-s) **)
-    (**   inner(t) = (1-t) times c_inv for t in B **)
-    (**   gB(t) = gammaX(inner(t)) **)
-    (** Show: inner maps B to [0,1], gammaX continuous, composition continuous **)
-    (** gB(s) = gammaX(1) = f(s), maps B into gammaX(UI) c= U cap V **)
+  { (** Get a path from f(s) to x0 in U cap V **)
+    claim Hpath_fs_x0 : exists p:set,
+      path_between (U :/\: V) (apply_fun f s) x0 p /\
+      continuous_map unit_interval unit_interval_topology
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) p.
+    { exact (path_connected_space_paths
+        (U :/\: V) (subspace_topology X Tx (U :/\: V))
+        (apply_fun f s) x0 HpcUV HfsUV Hx0UV). }
+    apply Hpath_fs_x0. let p_UV. assume Hp_pack.
+    claim Hp_path : path_between (U :/\: V) (apply_fun f s) x0 p_UV.
+    { exact (andEL
+        (path_between (U :/\: V) (apply_fun f s) x0 p_UV)
+        (continuous_map unit_interval unit_interval_topology
+          (U :/\: V) (subspace_topology X Tx (U :/\: V)) p_UV)
+        Hp_pack). }
+    claim Hp_cont : continuous_map unit_interval unit_interval_topology
+      (U :/\: V) (subspace_topology X Tx (U :/\: V)) p_UV.
+    { exact (andER
+        (path_between (U :/\: V) (apply_fun f s) x0 p_UV)
+        (continuous_map unit_interval unit_interval_topology
+          (U :/\: V) (subspace_topology X Tx (U :/\: V)) p_UV)
+        Hp_pack). }
+    claim Hp_fun : function_on p_UV unit_interval (U :/\: V).
+    { exact (path_between_function_on (U :/\: V) (apply_fun f s) x0 p_UV Hp_path). }
+    (** Compose p_UV with inclusion U cap V -> X to get pX : UI -> X **)
+    set pX := compose_fun unit_interval p_UV incUV.
+    claim HpX_cont : continuous_map unit_interval unit_interval_topology X Tx pX.
+    { exact (composition_continuous unit_interval unit_interval_topology
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) X Tx
+        p_UV incUV Hp_cont HincUVCont). }
+    claim HpX_0 : apply_fun pX 0 = apply_fun f s.
+    { rewrite (compose_fun_apply unit_interval p_UV incUV 0 zero_in_unit_interval).
+      rewrite (apply_fun_graph (U :/\: V) (fun x:set => x)
+        (apply_fun p_UV 0)
+        (Hp_fun 0 zero_in_unit_interval)).
+      exact (path_between_at_zero (U :/\: V) (apply_fun f s) x0 p_UV Hp_path). }
+    claim HpX_1 : apply_fun pX 1 = x0.
+    { rewrite (compose_fun_apply unit_interval p_UV incUV 1 one_in_unit_interval).
+      rewrite (apply_fun_graph (U :/\: V) (fun x:set => x)
+        (apply_fun p_UV 1)
+        (Hp_fun 1 one_in_unit_interval)).
+      exact (path_between_at_one (U :/\: V) (apply_fun f s) x0 p_UV Hp_path). }
+    (** Define rescaling B -> [0,1]: t -> (t-s)/(1-s) **)
+    set c_inv := recip_SNo_pos (add_SNo 1 (minus_SNo s)).
+    claim H1ms_R2 : add_SNo 1 (minus_SNo s) :e R.
+    { exact (real_add_SNo 1 real_1 (minus_SNo s) (real_minus_SNo s Hs_R)). }
+    claim H1ms_pos2 : Rlt 0 (add_SNo 1 (minus_SNo s)).
+    { exact (RltI 0 (add_SNo 1 (minus_SNo s)) real_0 H1ms_R2
+        (SNoLt_minus_pos s 1 (real_SNo s Hs_R) SNo_1 (RltE_lt s 1 Hlt_s_1))). }
+    claim Hc_inv_SNo : SNo c_inv.
+    { exact (SNo_recip_SNo_pos (add_SNo 1 (minus_SNo s))
+        (real_SNo (add_SNo 1 (minus_SNo s)) H1ms_R2)
+        (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos2)). }
+    (** gB(t) = pX((t-s)/(1-s)) for t in B **)
+    (** gB(s) = pX(0) = f(s), gB(1) = pX(1) = x0 **)
+    (** gB maps B into pX(UI) c= X, and pX(UI) = gammaX(UI) c= U cap V **)
+    (** Construction requires: **)
+    (**   1. Define rescaling function on B **)
+    (**   2. Show it maps B into [0,1] **)
+    (**   3. Compose with pX **)
+    (**   4. Show continuity on B **)
+    (**   5. Verify endpoints and U cap V membership **)
+    (** Each step needs SNo arithmetic with c_inv = 1/(1-s) **)
     admit. }
   apply Hg_on_B_ex. let gB. assume HgB_pack.
   (** HgB_pack : (cont /\ gB(s) = f(s)) /\ (forall t in B, gB(t) in U cap V) -- left assoc **)
