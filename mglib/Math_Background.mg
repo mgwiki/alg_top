@@ -240006,6 +240006,18 @@ claim HL1_word_data :
     path_homotopy_class_loop X Tx x0 L1 = nat_primrec (fundamental_group_id X Tx x0)
       (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs1 k)) n1.
 { (** DIRECT IH on L1 with preimage chain (avoids pasting_lemma g construction) **)
+  (** Infrastructure: reverse_path gammaX maps into U cap V **)
+  claim HrevGX_UV : forall u:set, u :e unit_interval -> apply_fun (reverse_path gammaX) u :e U :/\: V.
+  { let u. assume Hu.
+    rewrite (reverse_path_apply_formula gammaX u Hu).
+    claim H1mu : add_SNo 1 (minus_SNo u) :e unit_interval.
+    { rewrite <- (flip_unit_interval_apply u Hu).
+      exact (flip_unit_interval_function_on u Hu). }
+    rewrite (compose_fun_apply unit_interval gamma incUV (add_SNo 1 (minus_SNo u)) H1mu).
+    claim Hgu : apply_fun gamma (add_SNo 1 (minus_SNo u)) :e U :/\: V.
+    { exact (HgammaFun (add_SNo 1 (minus_SNo u)) H1mu). }
+    rewrite (apply_fun_graph (U :/\: V) (fun x:set => x) (apply_fun gamma (add_SNo 1 (minus_SNo u))) Hgu).
+    exact Hgu. }
   set right_half_open := Sep unit_interval (fun t:set => Rlt (eps_ 1) t).
   set lastI_L1 := Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq m)
     :\/: right_half_open.
@@ -240114,12 +240126,55 @@ claim HL1_word_data :
       apply (HballUV k Hk_osn).
       + assume HkU : forall t:set, t :e apply_fun seq k -> apply_fun f t :e U.
         apply orIL. let t. assume Ht : t :e apply_fun seq_L1 k.
-        (** L1(t) in U: decompose t in left/right half **)
-        (** For right half: L1(t) = revGX(2t-1) in U cap V c= U **)
-        (** For left half: L1(t) = f1(2t) where f1 = compose_fun ... f **)
-        (**   and 2st in seq(k), so f(2st) in U by HkU **)
-        (**   f1(2t) relates to f(2st) via affine_fun_I + mul commutativity **)
-        admit.
+        (** Need: apply_fun L1 t in U **)
+        (** Extract t properties from seq_L1(k) membership **)
+        claim Hseq_L1_k_eq : apply_fun seq_L1 k =
+          Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k).
+        { rewrite (apply_fun_graph (ordsucc m)
+            (fun k0:set => If_i (k0 :e m)
+              (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k0))
+              lastI_L1) k Hk).
+          exact (If_i_1 (k :e m)
+            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k))
+            lastI_L1 Hkm). }
+        claim Ht_sep : t :e Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k).
+        { exact (eq_subst_mem_set t (apply_fun seq_L1 k)
+            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k))
+            Ht Hseq_L1_k_eq). }
+        claim HtUI : t :e unit_interval.
+        { exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k) t Ht_sep). }
+        claim H2st_seqk : mul_SNo 2 (mul_SNo s t) :e apply_fun seq k.
+        { exact (SepE2 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k) t Ht_sep). }
+        (** Case split: t in left half or right half **)
+        apply (xm (Rlt (eps_ 1) t)).
+        { (** Right half: L1(t) = revGX(2t-1) in U cap V c= U **)
+          assume Hright : Rlt (eps_ 1) t.
+          claim Ht_rh : t :e unit_interval_right_half.
+          { exact (SepI unit_interval (fun x:set => ~(Rlt x (eps_ 1))) t HtUI
+              (fun H : Rlt t (eps_ 1) => SNoLt_irref (eps_ 1)
+                (RltE_lt (eps_ 1) (eps_ 1) (Rlt_tra (eps_ 1) t (eps_ 1) Hright H)))). }
+          rewrite (path_concat_apply_right f1 (reverse_path gammaX) t HjoinL1 Ht_rh).
+          claim H2tm1_UI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+          { rewrite <- (double_minus_one_map_apply t Ht_rh).
+            exact (double_minus_one_map_function_on t Ht_rh). }
+          exact (binintersectE1 U V
+            (apply_fun (reverse_path gammaX) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+            (HrevGX_UV (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2tm1_UI)). }
+        { (** Left half: L1(t) = f1(2t) = f(2ts) = f(2st) in U by HkU **)
+          assume Hnright : ~(Rlt (eps_ 1) t).
+          claim Ht_lh : t :e unit_interval_left_half.
+          { exact (SepI unit_interval (fun x:set => ~(Rlt (eps_ 1) x)) t HtUI Hnright). }
+          rewrite (path_concat_apply_left f1 (reverse_path gammaX) t HjoinL1 Ht_lh).
+          (** f1(2t) = f(affine(0,s)(2t)) by compose_fun_apply **)
+          claim H2t_UI : mul_SNo 2 t :e unit_interval.
+          { rewrite <- (double_map_apply t Ht_lh).
+            exact (double_map_function_on t Ht_lh). }
+          rewrite (compose_fun_apply unit_interval (affine_fun_I 0 s) f (mul_SNo 2 t) H2t_UI).
+          (** Goal: f(affine(0,s)(2t)) in U **)
+          (** affine(0,s)(2t) = (2t)s + 0 = (2t)s = 2(ts) = 2(st) **)
+          (** So f(2st) in U by HkU and H2st_seqk **)
+          (** Need: affine(0,s)(2t) = 2(st), then HkU **)
+          admit. }
       + assume HkV : forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
         apply orIR. let t. assume Ht : t :e apply_fun seq_L1 k.
         admit.
