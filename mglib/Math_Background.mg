@@ -292367,11 +292367,90 @@ claim Hhp_ne_south : apply_fun h p <> south_pole_3.
       (eq_symm (apply_fun g (apply_fun h p)) p H1)
       (eq_i_tra (apply_fun g (apply_fun h p)) (apply_fun g (apply_fun h q)) q H4 H2)). }
   exact (Hpq Hp_eq_q). }
-(** Now compose: stereo restricted to S2-{h(p),south_pole} with h restricted to S2-{p,q} **)
-(** This gives the final homeomorphism **)
-(** Full construction requires restriction + composition of homeomorphisms **)
-(** using homeomorphism_restrict_to_image_of_subset + homeomorphism_compose **)
-admit. (** TODO: compose h restricted and stereo restricted; ~50 lines of restriction algebra **)
+(** Step 2: Restrict h to C = S2-{p,q}. **)
+(** h: S2 -> S2 is a homeomorphism. C = S2 \ {p} \ {q} c= S2. **)
+(** image_of h C = S2 \ {h(p)} \ {south_pole} (since h is bijective, h(q) = south) **)
+set C := Sn 2 :\: Sing p :\: Sing q.
+claim HCsub : C c= Sn 2.
+{ let x. assume Hx : x :e C.
+  exact (setminusE1 (Sn 2) (Sing p) x (setminusE1 (Sn 2 :\: Sing p) (Sing q) x Hx)). }
+(** h restricted to C is a homeomorphism C -> image_of h C **)
+claim Hh_restr : homeomorphism C (subspace_topology (Sn 2) (Sn_topology 2) C)
+  (image_of h C) (subspace_topology (Sn 2) (Sn_topology 2) (image_of h C)) h.
+{ exact (homeomorphism_restrict_to_image_of_subset (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h C
+    Hh_homeo HCsub). }
+(** Step 3: image_of h C = Sn 2 \ {h(p)} \ {south_pole} **)
+(** This requires showing the image is exactly the doubly-punctured sphere **)
+set D := Sn 2 :\: Sing (apply_fun h p) :\: Sing south_pole_3.
+claim Himage_eq : image_of h C = D.
+{ admit. (** TODO: set-level bijection argument; h bijective, h(p) and h(q)=south are excluded **) }
+(** Step 4: stereo_S_map restricted to D-without-south = D **)
+(** D c= Sn 2 \ {south_pole} (since D already excludes south_pole) **)
+claim HDsub_nosouth : D c= Sn 2 :\: Sing south_pole_3.
+{ let x. assume Hx : x :e D.
+  exact (setminusI (Sn 2) (Sing south_pole_3) x
+    (setminusE1 (Sn 2) (Sing (apply_fun h p)) x
+      (setminusE1 (Sn 2 :\: Sing (apply_fun h p)) (Sing south_pole_3) x Hx))
+    (setminusE2 (Sn 2 :\: Sing (apply_fun h p)) (Sing south_pole_3) x Hx)). }
+(** stereo restricted to D: D -> image_of stereo D **)
+claim Hstereo_restr_sub : homeomorphism D
+  (subspace_topology (Sn 2 :\: Sing south_pole_3) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing south_pole_3)) D)
+  (image_of stereo_S_map D) (subspace_topology (euclidean_space 2) (euclidean_topology 2) (image_of stereo_S_map D))
+  stereo_S_map.
+{ exact (homeomorphism_restrict_to_image_of_subset
+    (Sn 2 :\: Sing south_pole_3) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing south_pole_3))
+    (euclidean_space 2) (euclidean_topology 2) stereo_S_map D
+    stereo_S_map_homeomorphism HDsub_nosouth). }
+(** Rewrite D topology from subspace-of-subspace to subspace-of-ambient **)
+claim Htop_D_eq : subspace_topology (Sn 2 :\: Sing south_pole_3)
+  (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing south_pole_3)) D
+  = subspace_topology (Sn 2) (Sn_topology 2) D.
+{ exact (subspace_topology_transitive_weak (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing south_pole_3) D HDsub_nosouth). }
+claim Hstereo_restr : homeomorphism D (subspace_topology (Sn 2) (Sn_topology 2) D)
+  (image_of stereo_S_map D) (subspace_topology (euclidean_space 2) (euclidean_topology 2) (image_of stereo_S_map D))
+  stereo_S_map.
+{ rewrite <- Htop_D_eq. exact Hstereo_restr_sub. }
+(** Step 5: image_of stereo D = R2 \ {stereo(h(p))} **)
+(** stereo is a bijection S2\{south} -> R2. Restricting to D (which excludes h(p) and south) **)
+(** gives R2 \ {stereo(h(p))} **)
+set p' := apply_fun stereo_S_map (apply_fun h p).
+claim Hstereo_image_eq : image_of stereo_S_map D = euclidean_space 2 :\: Sing p'.
+{ admit. (** TODO: stereo bijection restricted removes exactly stereo(h(p)) **) }
+(** p' in R2 **)
+claim Hp'R2 : p' :e setprod R R.
+{ admit. (** stereo maps Sn2\south into euclidean_space 2 = R2 (via product topology eq) **) }
+(** Step 6: compose the restricted homeomorphisms **)
+(** R2_topology = euclidean_topology 2 for setprod R R **)
+(** Need: euclidean_space 2 = setprod R R and euclidean_topology 2 = R2_topology **)
+(** These equalities hold by definition **)
+(** Rewrite image topology from image_of h C to D **)
+claim Htop_image_eq : subspace_topology (Sn 2) (Sn_topology 2) (image_of h C)
+  = subspace_topology (Sn 2) (Sn_topology 2) D.
+{ rewrite Himage_eq. reflexivity. }
+claim Hh_restr2 : homeomorphism C (subspace_topology (Sn 2) (Sn_topology 2) C)
+  D (subspace_topology (Sn 2) (Sn_topology 2) D) h.
+{ rewrite <- Himage_eq. exact Hh_restr. }
+claim Hstereo_image_top : subspace_topology (euclidean_space 2) (euclidean_topology 2) (image_of stereo_S_map D)
+  = subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: Sing p').
+{ rewrite Hstereo_image_eq. reflexivity. }
+claim Hstereo_restr2 : homeomorphism D (subspace_topology (Sn 2) (Sn_topology 2) D)
+  (euclidean_space 2 :\: Sing p')
+  (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: Sing p'))
+  stereo_S_map.
+{ rewrite <- Hstereo_image_eq. exact Hstereo_restr. }
+(** Compose: h then stereo **)
+claim Hcomposed : homeomorphism C (subspace_topology (Sn 2) (Sn_topology 2) C)
+  (euclidean_space 2 :\: Sing p')
+  (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: Sing p'))
+  (compose_fun C h stereo_S_map).
+{ exact (homeomorphism_compose C (subspace_topology (Sn 2) (Sn_topology 2) C)
+    D (subspace_topology (Sn 2) (Sn_topology 2) D)
+    (euclidean_space 2 :\: Sing p')
+    (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: Sing p'))
+    h stereo_S_map Hh_restr2 Hstereo_restr2). }
+(** Remaining: convert euclidean_space 2 to setprod R R **)
+(** These spaces are homeomorphic but not definitionally equal in Megalodon **)
+admit.
 Admitted.
 
 (** Helper: R^2 minus any point is path connected **)
