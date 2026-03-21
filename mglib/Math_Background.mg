@@ -240173,8 +240173,31 @@ claim HL1_word_data :
           (** Goal: f(affine(0,s)(2t)) in U **)
           (** affine(0,s)(2t) = (2t)s + 0 = (2t)s = 2(ts) = 2(st) **)
           (** So f(2st) in U by HkU and H2st_seqk **)
-          (** Need: affine(0,s)(2t) = 2(st), then HkU **)
-          admit. }
+          (** Show affine(0,s)(2t) = 2(st) via eq_i_tra chain **)
+          claim HtSNo : SNo t. { exact (real_SNo t (unit_interval_sub_R t HtUI)). }
+          claim HsSNo : SNo s. { exact (real_SNo s Hs_R). }
+          claim H2tSNo : SNo (mul_SNo 2 t). { exact (SNo_mul_SNo 2 t SNo_2 HtSNo). }
+          claim Haffine_eval : apply_fun (affine_fun_I 0 s) (mul_SNo 2 t) =
+            add_SNo (mul_SNo (mul_SNo 2 t) s) 0.
+          { exact (affine_fun_I_apply 0 s (mul_SNo 2 t) real_0 Hs_R
+              (RltE_lt 0 s Hlt_0_s) H2t_UI). }
+          claim Hstep1 : add_SNo (mul_SNo (mul_SNo 2 t) s) 0 = mul_SNo (mul_SNo 2 t) s.
+          { exact (add_SNo_0R (mul_SNo (mul_SNo 2 t) s) (SNo_mul_SNo (mul_SNo 2 t) s H2tSNo HsSNo)). }
+          claim Hstep2 : mul_SNo (mul_SNo 2 t) s = mul_SNo 2 (mul_SNo t s).
+          { exact (eq_symm (mul_SNo 2 (mul_SNo t s)) (mul_SNo (mul_SNo 2 t) s)
+              (mul_SNo_assoc 2 t s SNo_2 HtSNo HsSNo)). }
+          claim Hstep3 : mul_SNo 2 (mul_SNo t s) = mul_SNo 2 (mul_SNo s t).
+          { prove mul_SNo 2 (mul_SNo t s) = mul_SNo 2 (mul_SNo s t).
+            rewrite (mul_SNo_com t s HtSNo HsSNo). reflexivity. }
+          claim Haffine_eq_2st : apply_fun (affine_fun_I 0 s) (mul_SNo 2 t) = mul_SNo 2 (mul_SNo s t).
+          { exact (eq_i_tra (apply_fun (affine_fun_I 0 s) (mul_SNo 2 t))
+              (add_SNo (mul_SNo (mul_SNo 2 t) s) 0) (mul_SNo 2 (mul_SNo s t))
+              Haffine_eval (eq_i_tra (add_SNo (mul_SNo (mul_SNo 2 t) s) 0)
+                (mul_SNo (mul_SNo 2 t) s) (mul_SNo 2 (mul_SNo s t))
+                Hstep1 (eq_i_tra (mul_SNo (mul_SNo 2 t) s) (mul_SNo 2 (mul_SNo t s))
+                  (mul_SNo 2 (mul_SNo s t)) Hstep2 Hstep3))). }
+          rewrite Haffine_eq_2st.
+          exact (HkU (mul_SNo 2 (mul_SNo s t)) H2st_seqk). }
       + assume HkV : forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
         apply orIR. let t. assume Ht : t :e apply_fun seq_L1 k.
         admit.
