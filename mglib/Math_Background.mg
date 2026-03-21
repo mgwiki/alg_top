@@ -138283,7 +138283,9 @@ apply andI.
         claim Hgoal_mid : apply_fun H (st 0, st 1) = apply_fun H (eps_s', st 1).
         { exact HH_welldef. }
         claim Hgoal_lhs : apply_fun H (st 0, st 1) = apply_fun H st.
-        { admit. (** setprod_eta rewrite direction issue **) }
+        { claim Hst_eta : st = (st 0, st 1). { exact (setprod_eta unit_interval unit_interval st Hst). }
+          (** st = (st 0, st 1) by Hst_eta, so H(st 0, st 1) = H(st) by congruence **)
+          admit. (** H(st 0, st 1) = H(st) by setprod_eta congruence **) }
         exact (eq_i_tra (apply_fun H st) (apply_fun H (eps_s', st 1)) (apply_fun F (apply_fun q st))
           (eq_i_tra (apply_fun H st) (apply_fun H (st 0, st 1)) (apply_fun H (eps_s', st 1))
             (eq_symm (apply_fun H (st 0, st 1)) (apply_fun H st) Hgoal_lhs) Hgoal_mid)
