@@ -238951,6 +238951,110 @@ assume HfCont Hf0 Hf1 HaI Ha0 Ha1.
 admit.
 Admitted.
 
+(** Early copy of R_standard_locally_path_connected, needed for chain connectivity **)
+Lemma R_standard_locally_path_connected_early :
+  locally_path_connected R R_standard_topology.
+prove topology_on R R_standard_topology /\
+  forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
+    exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+      path_connected_space V (subspace_topology R R_standard_topology V).
+apply andI.
+- exact R_standard_topology_is_topology.
+- let x. assume HxR : x :e R.
+  let U. assume HU : U :e R_standard_topology. assume HxU : x :e U.
+  claim HUmet : U :e metric_topology R R_bounded_metric.
+  { rewrite metric_topology_R_bounded_metric_eq_R_standard_topology_early. exact HU. }
+  claim Hball_small : exists r:set, r :e R /\ Rlt 0 r /\ Rlt r 1 /\ open_ball R R_bounded_metric x r c= U.
+  { claim Hresult : exists r:set, r :e R /\ Rlt 0 r /\ open_ball R R_bounded_metric x r c= U /\ Rlt r 1.
+    { exact (metric_topology_neighborhood_contains_ball_bounded R R_bounded_metric x U 1
+        R_bounded_metric_is_metric_on HxR HUmet HxU real_1 Rlt_0_1). }
+    apply Hresult. let r. assume Hr4.
+    witness r.
+    apply (and4E (r :e R) (Rlt 0 r) (open_ball R R_bounded_metric x r c= U) (Rlt r 1) Hr4).
+    assume HrR2 Hr_pos2 Hball_sub2 Hr_lt12.
+    apply and4I. exact HrR2. exact Hr_pos2. exact Hr_lt12. exact Hball_sub2. }
+  apply Hball_small. let r. assume Hr.
+  apply (and4E (r :e R) (Rlt 0 r) (Rlt r 1) (open_ball R R_bounded_metric x r c= U) Hr).
+  assume HrR : r :e R.
+  assume Hr_pos : Rlt 0 r.
+  assume Hr_lt1 : Rlt r 1.
+  assume Hball_sub : open_ball R R_bounded_metric x r c= U.
+  set B := open_ball R R_bounded_metric x r.
+  witness B.
+  apply and4I.
+  + exact (open_ball_R_bounded_metric_in_R_standard_topology_early x r HxR HrR Hr_pos).
+  + exact (center_in_open_ball R R_bounded_metric x r R_bounded_metric_is_metric_on HxR Hr_pos).
+  + exact Hball_sub.
+  + claim Hbeq : B = open_interval (add_SNo x (minus_SNo r)) (add_SNo x r).
+    { exact (open_ball_R_bounded_metric_eq_open_interval x r HxR HrR Hr_pos Hr_lt1). }
+    rewrite Hbeq.
+    claim HxmrR : add_SNo x (minus_SNo r) :e R.
+    { exact (real_add_SNo x HxR (minus_SNo r) (real_minus_SNo r HrR)). }
+    claim HxprR : add_SNo x r :e R.
+    { exact (real_add_SNo x HxR r HrR). }
+    claim Hlt : Rlt (add_SNo x (minus_SNo r)) (add_SNo x r).
+    { claim HxSNo : SNo x. { exact (real_SNo x HxR). }
+      claim HrSNo : SNo r. { exact (real_SNo r HrR). }
+      claim HmrSNo : SNo (minus_SNo r). { exact (SNo_minus_SNo r HrSNo). }
+      claim Hmr_lt_0 : SNoLt (minus_SNo r) 0.
+      { claim Hr_pos_SNo : SNoLt 0 r. { exact (RltE_lt 0 r Hr_pos). }
+        claim Hmr_lt_mr_plus_r : SNoLt (add_SNo (minus_SNo r) 0) (add_SNo (minus_SNo r) r).
+        { exact (add_SNo_Lt2 (minus_SNo r) 0 r HmrSNo SNo_0 HrSNo Hr_pos_SNo). }
+        prove SNoLt (minus_SNo r) 0.
+        rewrite <- (add_SNo_minus_SNo_linv r HrSNo).
+        rewrite <- (add_SNo_0R (minus_SNo r) HmrSNo) at 1.
+        exact Hmr_lt_mr_plus_r. }
+      claim Hr_pos_SNo2 : SNoLt 0 r. { exact (RltE_lt 0 r Hr_pos). }
+      claim Hmr_lt_r : SNoLt (minus_SNo r) r.
+      { exact (SNoLt_tra (minus_SNo r) 0 r HmrSNo SNo_0 HrSNo Hmr_lt_0 Hr_pos_SNo2). }
+      claim Hxmr_lt_xr : SNoLt (add_SNo x (minus_SNo r)) (add_SNo x r).
+      { exact (add_SNo_Lt2 x (minus_SNo r) r HxSNo HmrSNo HrSNo Hmr_lt_r). }
+      exact (RltI (add_SNo x (minus_SNo r)) (add_SNo x r) HxmrR HxprR Hxmr_lt_xr). }
+    exact (open_interval_path_connected (add_SNo x (minus_SNo r)) (add_SNo x r) HxmrR HxprR Hlt).
+Qed.
+
+(** Early copy of R_standard_locally_connected **)
+Lemma R_standard_locally_connected_early :
+  locally_connected R R_standard_topology.
+prove topology_on R R_standard_topology /\
+  forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
+    exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+      connected_space V (subspace_topology R R_standard_topology V).
+claim HtopR : topology_on R R_standard_topology.
+{ exact (andEL
+    (topology_on R R_standard_topology)
+    (forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
+      exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+        path_connected_space V (subspace_topology R R_standard_topology V))
+    R_standard_locally_path_connected_early). }
+claim Hlocpc :
+  forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
+    exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+      path_connected_space V (subspace_topology R R_standard_topology V).
+{ exact (andER
+    (topology_on R R_standard_topology)
+    (forall x:set, x :e R -> forall U:set, U :e R_standard_topology -> x :e U ->
+      exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+        path_connected_space V (subspace_topology R R_standard_topology V))
+    R_standard_locally_path_connected_early). }
+apply andI.
+- exact HtopR.
+- let x. assume HxR. let U. assume HU HxU.
+  claim HexV :
+    exists V:set, V :e R_standard_topology /\ x :e V /\ V c= U /\
+      path_connected_space V (subspace_topology R R_standard_topology V).
+  { exact (Hlocpc x HxR U HU HxU). }
+  apply HexV. let V. assume HV4.
+  apply (and4E (V :e R_standard_topology) (x :e V) (V c= U)
+    (path_connected_space V (subspace_topology R R_standard_topology V)) HV4).
+  assume HVopen HVx HVsub HVpc.
+  witness V. apply and4I.
+  * exact HVopen.
+  * exact HVx.
+  * exact HVsub.
+  * exact (path_connected_implies_connected V (subspace_topology R R_standard_topology V) HVpc).
+Qed.
+
 Lemma nch_transition_UV_step :
   forall m:set, nat_p m ->
   (forall X Tx U V x0 f seq:set,
