@@ -243352,7 +243352,7 @@ witness n. apply andI.
     apply (Hgs_type i Hi).
     * assume HVcls. apply orIR. exact HVcls.
     * assume HUcls. apply orIL. exact HUcls.
-  + exact Hgs_class.
+	  + exact Hgs_class.
 Qed.
 
 (** Generalized helper: like ball_cover_word_nch_ind but for open connected subsets
