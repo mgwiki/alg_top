@@ -239135,6 +239135,13 @@ exact (connected_ambient_open_contains_U U HU HUne HUconn x Hx).
 Admitted.
 
 (** Proven Dave **)
+(** Preimage of convex set under positive scaling, intersected with UI, is convex **)
+Theorem preimage_scaling_convex : forall c W:set,
+  c :e R -> Rlt 0 c ->
+  convex_in R W ->
+  convex_in R (Sep unit_interval (fun t:set => mul_SNo c t :e W)).
+admit.
+Admitted.
 Lemma nch_transition_UV_step :
   forall m:set, nat_p m ->
   (forall X Tx U V x0 f seq:set,
