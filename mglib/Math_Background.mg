@@ -292125,12 +292125,44 @@ Definition householder_S2 : set -> set -> set := fun n x =>
   graph 3 (fun i:set =>
     add_SNo (apply_fun x i) (minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i)))).
 
+(** R3_dot using apply_fun (compatible with euclidean_space) **)
+Definition R3_dot_af : set -> set -> set := fun v w =>
+  add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun w 0)) (mul_SNo (apply_fun v 1) (apply_fun w 1))) (mul_SNo (apply_fun v 2) (apply_fun w 2)).
+
+(** R3_dot_af is real-valued for vectors in euclidean_space 3 **)
+(** Proven Alice **)
+Lemma R3_dot_af_real : forall v w:set,
+  v :e euclidean_space 3 -> w :e euclidean_space 3 ->
+  R3_dot_af v w :e R.
+let v w. assume Hv Hw.
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3. { exact (ordsuccI2 2). }
+claim Hv0 : apply_fun v 0 :e R. { exact (euclidean_3_coord_in_R v 0 Hv H0in3). }
+claim Hv1 : apply_fun v 1 :e R. { exact (euclidean_3_coord_in_R v 1 Hv H1in3). }
+claim Hv2 : apply_fun v 2 :e R. { exact (euclidean_3_coord_in_R v 2 Hv H2in3). }
+claim Hw0 : apply_fun w 0 :e R. { exact (euclidean_3_coord_in_R w 0 Hw H0in3). }
+claim Hw1 : apply_fun w 1 :e R. { exact (euclidean_3_coord_in_R w 1 Hw H1in3). }
+claim Hw2 : apply_fun w 2 :e R. { exact (euclidean_3_coord_in_R w 2 Hw H2in3). }
+prove add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun w 0)) (mul_SNo (apply_fun v 1) (apply_fun w 1))) (mul_SNo (apply_fun v 2) (apply_fun w 2)) :e R.
+exact (real_add_SNo
+  (add_SNo (mul_SNo (apply_fun v 0) (apply_fun w 0)) (mul_SNo (apply_fun v 1) (apply_fun w 1)))
+  (real_add_SNo (mul_SNo (apply_fun v 0) (apply_fun w 0)) (real_mul_SNo (apply_fun v 0) Hv0 (apply_fun w 0) Hw0)
+    (mul_SNo (apply_fun v 1) (apply_fun w 1)) (real_mul_SNo (apply_fun v 1) Hv1 (apply_fun w 1) Hw1))
+  (mul_SNo (apply_fun v 2) (apply_fun w 2)) (real_mul_SNo (apply_fun v 2) Hv2 (apply_fun w 2) Hw2)).
+Qed.
+
 (** R3_dot is real-valued for vectors in euclidean_space 3 **)
 Lemma R3_dot_real : forall v w:set,
   v :e euclidean_space 3 -> w :e euclidean_space 3 ->
   R3_dot v w :e R.
 let v w. assume Hv Hw.
-admit.
+prove add_SNo (add_SNo (mul_SNo (v 0) (w 0)) (mul_SNo (v 1) (w 1))) (mul_SNo (v 2) (w 2)) :e R.
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3. { exact (ordsuccI2 2). }
+admit. (** TODO: close under mul and add using euclidean_3_coord_in_R **)
+(** Needs: v 0 = apply_fun v 0 identity (ap vs apply_fun) **)
 Admitted.
 
 (** R3_dot equals euclidean_norm_sq on the diagonal: v dot v = norm_sq v **)
@@ -292183,7 +292215,12 @@ claim Hg_in : forall i:set, i :e 3 -> g i :e space_family_set (const_space_famil
 { let i. assume Hi.
   rewrite (space_family_set_const_space_family 3 R R_standard_topology i Hi).
   prove g i :e R.
-  admit. (** TODO: g i in R; needs xi in R, ni in R, closure under add/mul/minus **) }
+  claim HxiR : apply_fun x i :e R. { exact (euclidean_3_coord_in_R x i Hx Hi). }
+  claim HniR : apply_fun n i :e R. { exact (euclidean_3_coord_in_R n i Hn Hi). }
+  claim HddR : add_SNo d d :e R. { exact (real_add_SNo d HdR d HdR). }
+  claim HprodR : mul_SNo (add_SNo d d) (apply_fun n i) :e R. { exact (real_mul_SNo (add_SNo d d) HddR (apply_fun n i) HniR). }
+  claim HmprodR : minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i)) :e R. { exact (real_minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i)) HprodR). }
+  exact (real_add_SNo (apply_fun x i) HxiR (minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i))) HmprodR). }
 exact (product_space_graphI 3 (const_space_family 3 R R_standard_topology) g Hg_in).
 Admitted.
 
