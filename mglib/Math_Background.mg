@@ -293861,7 +293861,7 @@ Lemma SNo_sub_sq : forall a b:set,
   SNo a -> SNo b ->
   mul_SNo (add_SNo a (minus_SNo b)) (add_SNo a (minus_SNo b)) =
   add_SNo (add_SNo (mul_SNo a a) (minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b)))) (mul_SNo b b).
-admit. (** (a-b)^2 = a^2 - 2ab + b^2 by distributivity + SNo arithmetic **)
+admit.
 Admitted.
 
 (** R3_dot_af bilinearity: (x-2dn) dot (x-2dn) = x dot x - 4d(x dot n) + 4d^2(n dot n) **)
