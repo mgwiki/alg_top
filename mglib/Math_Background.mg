@@ -1,7 +1,7 @@
 (** Balance Alice 9404 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
-(** Balance Dave 2670 **)
+(** Balance Dave 2604 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -52223,7 +52223,8 @@ Admitted.
 (** LATEX VERSION: The map p: R -> S^1 given by p(x) = (cos 2pi x, sin 2pi x) **)
 (** is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 182 **)
+(** Bounty 201 **)
+(** Lock Dave 1774171634 **)
 Theorem thm53_1_R_covers_S1 :
   covering_map R R_standard_topology S1 S1_topology covering_map_R_S1.
 set p := covering_map_R_S1.
@@ -203578,7 +203579,8 @@ Admitted.
 (** from S57 Thm 57.1 (line 1186 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is continuous and antipode-preserving, then h is not nulhomotopic. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 467 **)
+(** Bounty 514 **)
+(** Lock Dave 1774171634 **)
 Theorem thm57_1_antipode_preserving_not_nulhomotopic : forall h:set,
   antipode_preserving_S1 h ->
   ~(nulhomotopic S1 S1_topology S1 S1_topology h).
