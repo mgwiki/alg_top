@@ -137864,10 +137864,19 @@ apply andI.
     (** Step 3: H descends to F: S1xI -> X via the quotient p x id **)
     (** Step 4: p x id is a quotient map (p closed surjective continuous, id compact) **)
     (** Step 5: F continuous by s55_continuous_descends_to_quotient_topology **)
-    (** For now admit - key infrastructure needed: **)
-    (** - standard_loop in loop_space S1 S1_topology b0 **)
-    (** - product of quotient map with identity is quotient **)
-    admit.
+    (** Use standard_S1_loop: a surjective loop [0,1] -> S1 at S1_basepoint **)
+    (** For general b0: we construct a loop at b0 by path-shifting. **)
+    (** For the initial implementation, use b0 = S1_basepoint via standard_S1_loop. **)
+    (** The general case follows by basepoint change (path connectedness of S1). **)
+    (** Step 1: get loop p at b0 and apply Hloop_null **)
+    (** Step 2: descend homotopy through quotient map **)
+    (** Step 3: verify boundary conditions **)
+    admit. (** TODO: full quotient descent proof for S1 homotopy; needs: **)
+    (** - standard_S1_loop_in_loop_space (or loop at general b0) **)
+    (** - product of compact-to-Hausdorff quotient with compact is quotient **)
+    (** - s55_continuous_descends_to_quotient_topology for the descent **)
+    (** - verification that F(x,0) = h(x) and F(x,1) = const **)
+    (** Estimated ~200 lines; all infrastructure theorems exist or are Admitted. **)
 Admitted.
 
 Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
@@ -565597,6 +565606,18 @@ Qed.
     This requires: nat_ind on k, path-splitting at s, subpath-to-loop conversion
     via U cap V connectivity, and word_data concatenation. Estimated ~300-500 lines.
 **)
+
+(** Infrastructure for S2 homogeneity: Householder reflection **)
+(** Inner product of 3-vectors **)
+Definition R3_inner : set -> set -> set := fun v w =>
+  add_SNo (add_SNo (mul_SNo (v 0) (w 0)) (mul_SNo (v 1) (w 1))) (mul_SNo (v 2) (w 2)).
+
+(** Householder reflection through hyperplane perpendicular to unit vector n **)
+(** For n on S2: reflects x as x - 2(x dot n)n **)
+Definition householder_reflect_S2 : set -> set -> set := fun n x =>
+  let d := R3_inner x n in
+  graph 3 (fun i:set =>
+    add_SNo (apply_fun x i) (minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i)))).
 
 (** Sandbox End Alice **)
 (** Sandbox Begin Bob **)
