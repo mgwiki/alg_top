@@ -292175,12 +292175,30 @@ let n x. assume Hn Hx.
 admit.
 Admitted.
 
+(** R3_dot is linear in the first argument: (a+b) dot c = a dot c + b dot c **)
+Lemma R3_dot_add_left : forall a b c:set,
+  a :e euclidean_space 3 -> b :e euclidean_space 3 -> c :e euclidean_space 3 ->
+  R3_dot (graph 3 (fun i:set => add_SNo (apply_fun a i) (apply_fun b i))) c =
+    add_SNo (R3_dot a c) (R3_dot b c).
+admit.
+Admitted.
+
+(** R3_dot scales: (lambda a) dot c = lambda (a dot c) for scalar lambda **)
+Lemma R3_dot_scale_left : forall lam:set, forall a c:set,
+  SNo lam -> a :e euclidean_space 3 -> c :e euclidean_space 3 ->
+  R3_dot (graph 3 (fun i:set => mul_SNo lam (apply_fun a i))) c =
+    mul_SNo lam (R3_dot a c).
+admit.
+Admitted.
+
 (** householder_S2 preserves the norm when n is a unit vector **)
+(** Proof: norm_sq(x - 2dn) = x dot x - 4d(x dot n) + 4d^2(n dot n) **)
+(**       = x dot x - 4d^2 + 4d^2 = x dot x (using n dot n = 1, d = x dot n) **)
 Lemma householder_S2_preserves_norm : forall n x:set,
   n :e Sn 2 -> x :e euclidean_space 3 ->
   euclidean_norm_sq 3 (householder_S2 n x) = euclidean_norm_sq 3 x.
 let n x. assume Hn Hx.
-admit.
+admit. (** TODO: expand using R3_dot_self_eq_norm_sq + bilinearity **)
 Admitted.
 
 (** householder_S2 preserves S2 **)
@@ -292188,7 +292206,19 @@ Lemma householder_S2_preserves_Sn2 : forall n x:set,
   n :e Sn 2 -> x :e Sn 2 ->
   householder_S2 n x :e Sn 2.
 let n x. assume Hn Hx.
-admit.
+claim HxE3 : x :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) x Hx). }
+claim Hxnorm : euclidean_norm_sq 3 x = 1.
+{ exact (SepE2 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) x Hx). }
+claim HhxE3 : householder_S2 n x :e euclidean_space 3.
+{ exact (householder_S2_in_E3 n x
+    (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn)
+    HxE3). }
+claim Hhxnorm : euclidean_norm_sq 3 (householder_S2 n x) = 1.
+{ exact (eq_i_tra (euclidean_norm_sq 3 (householder_S2 n x)) (euclidean_norm_sq 3 x) 1
+    (householder_S2_preserves_norm n x Hn HxE3) Hxnorm). }
+exact (SepI (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1)
+  (householder_S2 n x) HhxE3 Hhxnorm).
 Admitted.
 
 (** householder_S2 is involutory **)
@@ -292329,7 +292359,20 @@ Lemma householder_S2_maps_q_to_south : forall q:set,
   exists n:set, n :e Sn 2 /\
     householder_S2 n q = south_pole_3.
 let q. assume Hq HqnS.
-admit.
+claim HqE3 : q :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) q Hq). }
+claim Hqnorm : euclidean_norm_sq 3 q = 1.
+{ exact (SepE2 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) q Hq). }
+(** n = (q - south_pole) / norm(q - south_pole) **)
+(** south_pole = (0, 0, -1), so q - south = (q0, q1, q2+1) **)
+(** norm_sq(q - south) = q0^2 + q1^2 + (q2+1)^2 = 2(1+q2) **)
+(** Since q != south_pole, 1+q2 > 0, so norm > 0 **)
+(** Key identity: householder n q = q - 2(q dot n)n **)
+(**   = q - 2 ((1+q2)/norm) ((q-south)/norm) n **)
+(**   = q - (q - south) = south **)
+(** The factor 2(q dot n) = 2(1+q2)/norm = norm, so 2(q dot n) n = q - south **)
+admit. (** TODO: define n = (q-south)/norm, prove n in Sn2, prove H(n,q) = south **)
+(** Requires: sqrt_SNo for normalization, detailed coord arithmetic **)
 Admitted.
 
 (** Self-homeomorphism of S2 mapping any point to south_pole **)
