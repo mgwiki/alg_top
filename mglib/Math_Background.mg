@@ -240013,7 +240013,38 @@ claim HL1_word_data :
     (fun k:set => If_i (k :e m)
       (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
       lastI_L1).
-  claim Hseq_L1_fn : function_on seq_L1 (ordsucc m) (Power unit_interval). { admit. }
+  claim Hseq_L1_fn : function_on seq_L1 (ordsucc m) (Power unit_interval).
+  { apply (total_function_on_function_on seq_L1 (ordsucc m) (Power unit_interval)).
+    apply (total_function_on_graph (ordsucc m) (Power unit_interval)
+      (fun k:set => If_i (k :e m)
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+        lastI_L1)).
+    let k. assume Hk : k :e ordsucc m.
+    apply (ordsuccE m k Hk).
+    - assume Hkm : k :e m.
+      prove If_i (k :e m)
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+        lastI_L1 :e Power unit_interval.
+      rewrite (If_i_1 (k :e m)
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+        lastI_L1 Hkm).
+      apply (PowerI unit_interval (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))).
+      let t. assume Ht. exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k) t Ht).
+    - assume Hkm : k = m.
+      prove If_i (k :e m)
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+        lastI_L1 :e Power unit_interval.
+      rewrite Hkm.
+      rewrite (If_i_0 (m :e m)
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq m))
+        lastI_L1 (In_irref m)).
+      apply (PowerI unit_interval lastI_L1).
+      let t. assume Ht.
+      apply (binunionE
+        (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq m))
+        right_half_open t Ht).
+      + assume H. exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq m) t H).
+      + assume H. exact (SepE1 unit_interval (fun t0:set => Rlt (eps_ 1) t0) t H). }
   claim Hseq_L1_open : forall k:set, k :e ordsucc m ->
     apply_fun seq_L1 k :e unit_interval_topology. { admit. }
   claim Hseq_L1_conn : forall k:set, k :e ordsucc m ->
