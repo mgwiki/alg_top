@@ -1,6 +1,6 @@
 (** Balance Alice 9404 **)
 (** Balance Bob 6353 **)
-(** Balance Charlie 792 **)
+(** Balance Charlie 777 **)
 (** Balance Dave 2585 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -408424,6 +408424,59 @@ rewrite Hterm_eq.
 reflexivity.
 Qed.
 
+(** Infrastructure: existence for the Seifert van Kampen universal pushout property **)
+(** Bounty 165 **)
+(** Lock Charlie 1774162205 **)
+Theorem seifert_van_kampen_universal_pushout_existence :
+  forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  x0 :e U :/\: V ->
+  forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall phi1 phi2:set,
+      group_homomorphism
+        (fundamental_group U (subspace_topology X Tx U) x0)
+        (fundamental_group_mult U (subspace_topology X Tx U) x0)
+        H multH phi1 ->
+      group_homomorphism
+        (fundamental_group V (subspace_topology X Tx V) x0)
+        (fundamental_group_mult V (subspace_topology X Tx V) x0)
+        H multH phi2 ->
+      (forall g:set, g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+        apply_fun phi1
+          (apply_fun (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            U (subspace_topology X Tx U) x0
+            (graph (U :/\: V) (fun x:set => x))) g) =
+        apply_fun phi2
+          (apply_fun (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            V (subspace_topology X Tx V) x0
+            (graph (U :/\: V) (fun x:set => x))) g)) ->
+      exists Phi:set,
+        group_homomorphism
+          (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+          H multH Phi /\
+        (forall g:set,
+          g :e fundamental_group U (subspace_topology X Tx U) x0 ->
+          apply_fun Phi
+            (apply_fun (induced_homomorphism
+              U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) g) =
+            apply_fun phi1 g) /\
+        (forall g:set,
+          g :e fundamental_group V (subspace_topology X Tx V) x0 ->
+          apply_fun Phi
+            (apply_fun (induced_homomorphism
+              V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) g) =
+            apply_fun phi2 g).
+admit.
+Admitted.
 (** Infrastructure helper for S70 Thm 70.1:
     universal pushout property for fundamental groups of a two-set open cover. **)
 Theorem seifert_van_kampen_universal_pushout_helper :
