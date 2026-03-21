@@ -293735,7 +293735,19 @@ Lemma jordan_sep_inclusion_trivial_on_arc_complement :
   fundamental_group_id
     (Sn 2 :\: Sing p :\: Sing q)
     (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing p :\: Sing q)) x0.
-admit.
+(** Proof (Munkres Lemma 61.1): bisection on the arc C1. **)
+(** C1 is an arc with endpoints in {p,q}. **)
+(** Split C1 = C1a union C1b at midpoint. **)
+(** The inclusion S2-C1 -> S2-{p,q} factors through S2-C1a and S2-C1b: **)
+(** S2-C1 c= S2-C1a (since C1a c= C1) and S2-C1 c= S2-C1b. **)
+(** By induction on arc halving: the induced maps from S2-C1a and S2-C1b **)
+(** to S2-{p,q} are trivial. Hence the composition is trivial. **)
+(** Base case: when C1 is a single point, S2-C1 = S2-{pt} is simply connected, **)
+(** so pi_1 is trivial. **)
+(** The convergence uses: arcs are compact, S2-{pt} is simply connected, **)
+(** any loop in S2-{p,q} avoids a compact set, so it avoids **)
+(** a sufficiently small sub-arc. **)
+admit. (** TODO: bisection/induction argument; shares technique with thm63_2 **)
 Admitted.
 
 (** Helper: if both i_star and j_star are trivial, and X = U union V with **)
