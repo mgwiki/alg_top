@@ -293429,11 +293429,30 @@ Qed.
 Lemma householder_S2_v2_dot_expansion : forall n x:set,
   n :e Sn 2 -> x :e euclidean_space 3 ->
   R3_dot_af (householder_S2_v2 n x) (householder_S2_v2 n x) = R3_dot_af x x.
-admit. (** needs coordinate-wise expansion of R3_dot_af on v2 result **)
-(** Each coord of v2 is x_i - 2d n_i. Squaring and summing gives **)
-(** sum x_i^2 - 4d sum(x_i n_i) + 4d^2 sum(n_i^2) **)
+let n x. assume Hn Hx.
+claim HnE3 : n :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn). }
+set d := R3_dot_af x n.
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3. { exact (ordsuccI2 2). }
+(** Evaluate v2 n x coordinates via apply_fun_graph **)
+set g := fun i:set => add_SNo (apply_fun x i) (minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i))).
+claim Hv2_eq : householder_S2_v2 n x = graph 3 g. { reflexivity. }
+claim Hv2_coord : forall i:set, i :e 3 ->
+  apply_fun (householder_S2_v2 n x) i = g i.
+{ let i. assume Hi.
+  exact (apply_fun_graph 3 g i Hi). }
+(** Each coordinate of v2 is xi - 2d ni **)
+(** R3_dot_af (v2 n x) (v2 n x) expands using v2 coordinates **)
+(** = (g 0)^2 + (g 1)^2 + (g 2)^2 **)
+(** = (x0 - 2d n0)^2 + (x1 - 2d n1)^2 + (x2 - 2d n2)^2 **)
+(** Expanding each: (a-b)^2 = a^2 - 2ab + b^2 **)
+(** Sum = sum xi^2 - 4d sum(xi ni) + 4d^2 sum(ni^2) **)
 (** = R3_dot_af x x - 4d (R3_dot_af x n) + 4d^2 (R3_dot_af n n) **)
 (** = R3_dot_af x x - 4d^2 + 4d^2 = R3_dot_af x x **)
+(** (using R3_dot_af x n = d and R3_dot_af n n = euclidean_norm_sq 3 n = 1) **)
+admit. (** ~100 lines of SNo arithmetic: expand, regroup, cancel 4d^2 terms **)
 Admitted.
 
 (** householder_S2_v2 preserves norm (key for S2 preservation) **)
