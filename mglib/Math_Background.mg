@@ -292196,7 +292196,21 @@ Lemma householder_S2_involutory : forall n x:set,
   n :e Sn 2 -> x :e euclidean_space 3 ->
   householder_S2 n (householder_S2 n x) = x.
 let n x. assume Hn Hx.
-admit.
+claim HnE3 : n :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn). }
+claim Hnorm1 : euclidean_norm_sq 3 n = 1.
+{ exact (SepE2 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn). }
+claim Hdot1 : R3_dot n n = 1.
+{ exact (eq_i_tra (R3_dot n n) (euclidean_norm_sq 3 n) 1
+    (R3_dot_self_eq_norm_sq n HnE3) Hnorm1). }
+(** The computation: **)
+(** Let d = R3_dot x n. householder_S2 n x has coords: x_i - 2d n_i **)
+(** R3_dot (householder_S2 n x) n = R3_dot x n - 2d (R3_dot n n) = d - 2d = -d **)
+(** householder_S2 n (householder_S2 n x) has coords: **)
+(** (x_i - 2d n_i) - 2(-d) n_i = x_i - 2d n_i + 2d n_i = x_i **)
+(** So householder_S2 n (householder_S2 n x) = x **)
+(** This requires: R3_dot linear in first arg, R3_dot n n = 1 **)
+admit. (** TODO: bilinearity of R3_dot + pointwise arithmetic **)
 Admitted.
 
 (** householder_S2 maps n to Rn_negate 3 n (the antipode) **)
