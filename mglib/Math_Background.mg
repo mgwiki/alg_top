@@ -240130,10 +240130,23 @@ claim HL1_word_data :
         claim Hle_1 : ~(Rlt 1 t).
         { exact (andER (~(Rlt t 0)) (~(Rlt 1 t))
             (SepE2 R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x)) t HtUI)). }
-        (** rescale(t) >= 0: since t >= s and c_inv > 0, (t-s) c_inv >= 0 **)
-        (** rescale(t) <= 1: since t <= 1 and (1-s) c_inv = 1, (t-s) c_inv <= (1-s) c_inv = 1 **)
-        (** For now admit the detailed SNo arithmetic **)
-        admit. }
+        (** Compute rescale(t) using affine_fun_I_apply **)
+        claim Hrescale_t_val : apply_fun rescale t = add_SNo (mul_SNo t c_inv) b_rescale.
+        { exact (affine_fun_I_apply b_rescale c_inv t HbR2 Hc_inv_R2 Hc_inv_pos HtUI). }
+        (** rescale(t) = t c_inv - s c_inv = (t-s) c_inv **)
+        (** Need: this is in [0,1]. Use SepI with two bounds. **)
+        (** Bound 1: rescale(t) >= 0 **)
+        claim Hrescale_ge_0 : ~(Rlt (apply_fun rescale t) 0).
+        { (** (t-s) c_inv >= 0 since t >= s and c_inv > 0 **)
+          admit. }
+        (** Bound 2: rescale(t) <= 1 **)
+        claim Hrescale_le_1 : ~(Rlt 1 (apply_fun rescale t)).
+        { (** (t-s) c_inv <= (1-s) c_inv = 1 since t <= 1 **)
+          admit. }
+        exact (SepI R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x))
+          (apply_fun rescale t) Hrescale_t_R
+          (andI (~(Rlt (apply_fun rescale t) 0)) (~(Rlt 1 (apply_fun rescale t)))
+            Hrescale_ge_0 Hrescale_le_1)). }
       exact (continuous_map_range_restrict B (subspace_topology unit_interval unit_interval_topology B)
         R R_standard_topology rescale unit_interval
         Hrescale_cont_B_R unit_interval_sub_R Hrescale_range). }
