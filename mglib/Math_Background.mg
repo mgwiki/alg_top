@@ -240118,8 +240118,21 @@ claim HL1_word_data :
           rescale B unit_interval_topology_on HBsub Hrescale_cont_R). }
       (** Step 3: range restriction to unit_interval **)
       claim Hrescale_range : forall t:set, t :e B -> apply_fun rescale t :e unit_interval.
-      { (** For t in B=[s,1]: rescale(t) = (t-s)/(1-s) in [0,1] **)
-        (** rescale(s) = 0, rescale(1) = 1, and rescale is monotone **)
+      { let t. assume HtB : t :e B.
+        claim HtUI : t :e unit_interval. { exact (HBsub t HtB). }
+        claim HtR : t :e R. { exact (unit_interval_sub_R t HtUI). }
+        claim Hrescale_t_R : apply_fun rescale t :e R.
+        { exact (C_I_R_function_on rescale Hrescale_C_I_R t HtUI). }
+        (** t >= s (from B membership) **)
+        claim Hge_s : ~(Rlt t s).
+        { exact (SepE2 unit_interval (fun t0:set => ~(Rlt t0 s)) t HtB). }
+        (** t <= 1 (from unit_interval) **)
+        claim Hle_1 : ~(Rlt 1 t).
+        { exact (andER (~(Rlt t 0)) (~(Rlt 1 t))
+            (SepE2 R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x)) t HtUI)). }
+        (** rescale(t) >= 0: since t >= s and c_inv > 0, (t-s) c_inv >= 0 **)
+        (** rescale(t) <= 1: since t <= 1 and (1-s) c_inv = 1, (t-s) c_inv <= (1-s) c_inv = 1 **)
+        (** For now admit the detailed SNo arithmetic **)
         admit. }
       exact (continuous_map_range_restrict B (subspace_topology unit_interval unit_interval_topology B)
         R R_standard_topology rescale unit_interval
