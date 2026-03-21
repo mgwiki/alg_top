@@ -137933,11 +137933,23 @@ apply andI.
     (** Step 5: F continuous by s55_continuous_descends_to_quotient_topology **)
     (** Step 6: F(x,0) = h(x) since H(s,0) = h(ell(s)) and ell surjective **)
     (** Step 7: F(x,1) = y0 since H(s,1) = y0 **)
-    admit. (** TODO: quotient descent construction; needs **)
-    (** - s55_continuous_compact_Hausdorff_closed_map (proved) **)
-    (** - s55_surjective_closed_map_quotient_sub (proved) **)
-    (** - s55_continuous_descends_to_quotient_topology (proved) **)
-    (** - product of quotient with compact is quotient (derive from above) **)
+    (** Extract H from path_homotopic **)
+    (** path_homotopic gives: continuity of both paths, endpoints, and exists H with properties **)
+    claim Hhell_parts : continuous_map unit_interval unit_interval_topology X Tx hell /\
+      continuous_map unit_interval unit_interval_topology X Tx (constant_path y0) /\
+      apply_fun hell 0 = y0 /\ apply_fun hell 1 = y0 /\
+      apply_fun (constant_path y0) 0 = y0 /\ apply_fun (constant_path y0) 1 = y0 /\
+      exists H:set,
+        continuous_map unit_square unit_square_topology X Tx H /\
+        (forall s:set, s :e unit_interval -> apply_fun H (s, 0) = apply_fun hell s) /\
+        (forall s:set, s :e unit_interval -> apply_fun H (s, 1) = apply_fun (constant_path y0) s) /\
+        (forall t:set, t :e unit_interval -> apply_fun H (0, t) = y0) /\
+        (forall t:set, t :e unit_interval -> apply_fun H (1, t) = y0).
+    { exact Hhell_null. }
+    (** Extract the homotopy H **)
+    admit. (** TODO ~150 lines: unpack H from Hhell_parts, build quotient map ell x id, **)
+    (** define F via epsilon, prove F continuous via s55_continuous_descends_to_quotient_topology, **)
+    (** verify F(x,0) = h(x) and F(x,1) = y0 **)
 Admitted.
 
 Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
