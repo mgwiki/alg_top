@@ -293880,7 +293880,14 @@ claim Hamb_eq : mul_SNo a (minus_SNo b) = minus_SNo (mul_SNo a b).
 { exact (mul_minus_SNo_distrR a b Ha Hb). }
 claim Hbb : (mul_SNo (minus_SNo b) (minus_SNo b)) = (mul_SNo b b).
 { exact (mul_SNo_minus_minus b b Hb Hb). }
-admit. (** final assembly: rewrite Hd1-Hd3r-Hamb_eq-Hbb into 4 terms, rearrange by assoc **)
+rewrite Hd1. rewrite Hd2.
+rewrite Hamb_eq.
+rewrite Hcom. rewrite Hd3r. rewrite Hamb_eq. rewrite Hbb.
+claim Hmab : SNo (mul_SNo a b). { exact (SNo_mul_SNo a b Ha Hb). }
+claim Hm_mab : SNo (minus_SNo (mul_SNo a b)). { exact (SNo_minus_SNo (mul_SNo a b) Hmab). }
+claim Hbb2 : SNo (mul_SNo b b). { exact (SNo_mul_SNo b b Hb Hb). }
+claim Haa : SNo (mul_SNo a a). { exact (SNo_mul_SNo a a Ha Ha). }
+admit. (** rewrite assembly blocked by associativity direction - needs explicit eq_i_tra **)
 Admitted.
 
 (** R3_dot_af bilinearity: (x-2dn) dot (x-2dn) = x dot x - 4d(x dot n) + 4d^2(n dot n) **)
