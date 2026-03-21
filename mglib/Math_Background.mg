@@ -240390,7 +240390,20 @@ claim HL1_word_data :
         unit_interval_topology_on Hpart1_open Hpart2_open). }
   claim Hseq_L1_conn : forall k:set, k :e ordsucc m ->
     connected_space (apply_fun seq_L1 k)
-      (subspace_topology unit_interval unit_interval_topology (apply_fun seq_L1 k)). { admit. }
+      (subspace_topology unit_interval unit_interval_topology (apply_fun seq_L1 k)).
+  { let k. assume Hk : k :e ordsucc m.
+    claim HseqL1k_sub : apply_fun seq_L1 k c= unit_interval.
+    { exact (PowerE unit_interval (apply_fun seq_L1 k) (Hseq_L1_fn k Hk)). }
+    (** Convert subspace topology using transitivity **)
+    rewrite (subspace_topology_transitive_weak R R_standard_topology unit_interval (apply_fun seq_L1 k) HseqL1k_sub).
+    (** Now need: connected_space seq_L1(k) (subspace_topology R R_standard_topology seq_L1(k)) **)
+    claim HseqL1k_subR : apply_fun seq_L1 k c= R.
+    { let t. assume Ht. exact (unit_interval_sub_R t (HseqL1k_sub t Ht)). }
+    claim HseqL1k_ne : apply_fun seq_L1 k <> Empty.
+    { admit. }
+    claim HseqL1k_convex : convex_in R (apply_fun seq_L1 k).
+    { admit. }
+    exact (convex_in_R_connected (apply_fun seq_L1 k) HseqL1k_subR HseqL1k_convex HseqL1k_ne). }
   claim H2s0_eq_0 : mul_SNo 2 (mul_SNo s 0) = 0.
   { rewrite (mul_SNo_zeroR s (real_SNo s Hs_R)). exact (mul_SNo_zeroR 2 SNo_2). }
   claim Hseq_L1_0 : 0 :e apply_fun seq_L1 0.
