@@ -293452,7 +293452,23 @@ claim Hv2_coord : forall i:set, i :e 3 ->
 (** = R3_dot_af x x - 4d (R3_dot_af x n) + 4d^2 (R3_dot_af n n) **)
 (** = R3_dot_af x x - 4d^2 + 4d^2 = R3_dot_af x x **)
 (** (using R3_dot_af x n = d and R3_dot_af n n = euclidean_norm_sq 3 n = 1) **)
-admit. (** ~100 lines of SNo arithmetic: expand, regroup, cancel 4d^2 terms **)
+(** Rewrite R3_dot_af of v2 using Hv2_coord **)
+claim HdR : d :e R. { exact (R3_dot_af_real x n Hx HnE3). }
+claim HdSNo : SNo d. { exact (real_SNo d HdR). }
+claim Hnnorm : R3_dot_af n n = 1.
+{ exact (eq_i_tra (R3_dot_af n n) (euclidean_norm_sq 3 n) 1
+    (R3_dot_af_self_eq_norm_sq n HnE3)
+    (SepE2 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn)). }
+(** The core algebraic identity: for each coord i, **)
+(** (xi + (-(2d ni)))^2 = xi^2 + (-(2d ni))^2 + 2 xi (-(2d ni)) **)
+(** = xi^2 + 4d^2 ni^2 - 4d xi ni **)
+(** Summing: dot(x,x) + 4d^2 dot(n,n) - 4d dot(x,n) **)
+(** = dot(x,x) + 4d^2 - 4d^2 = dot(x,x) **)
+(** Direct coordinate proof: unpack R3_dot_af on both sides and show equal **)
+admit. (** The expansion is ~80 lines of SNo arithmetic using **)
+(** mul_SNo_distrL/R, mul_minus_SNo_distrR, add_SNo_assoc, add_SNo_comm, **)
+(** R3_dot_af unfold via Hv2_coord, and the key cancellation **)
+(** d = R3_dot_af x n and R3_dot_af n n = 1 **)
 Admitted.
 
 (** householder_S2_v2 preserves norm (key for S2 preservation) **)
