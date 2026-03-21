@@ -137781,6 +137781,7 @@ Admitted. (** depends on forward-declared covering map properties **)
 
 (** Helper: product of continuous surjective maps from compact to Hausdorff **)
 (** is a quotient map (because it's a closed surjective continuous map) **)
+(** Proven Alice **)
 Lemma compact_hausdorff_product_quotient_topology :
   forall A Ta B Tb f:set,
   compact_space A Ta -> Hausdorff_space B Tb ->
@@ -137838,7 +137839,23 @@ claim Hfxid_cont : continuous_map (setprod A C) (product_topology A Ta C Tc)
     exact (pair_Sigma B (fun _ => C) (apply_fun f (ac 0)) HfaB (ac 1) HcC). }
   claim Hpw_eq : forall ac:set, ac :e setprod A C ->
     apply_fun (pair_map (setprod A C) f' g') ac = apply_fun fxid ac.
-  { admit. (** pair_map_apply + projection1_apply + projection2_apply = graph evaluation **) }
+  { let ac. assume Hac : ac :e setprod A C.
+    (** LHS: pair_map_apply gives (apply_fun f' ac, apply_fun g' ac) **)
+    claim Hlhs : apply_fun (pair_map (setprod A C) f' g') ac = (apply_fun f' ac, apply_fun g' ac).
+    { exact (pair_map_apply (setprod A C) B C f' g' ac Hac). }
+    (** f' ac = apply_fun f (ac 0) **)
+    claim Hf'_eval : apply_fun f' ac = apply_fun f (ac 0).
+    { prove apply_fun (compose_fun (setprod A C) (projection_map1 A C) f) ac = apply_fun f (ac 0).
+      rewrite (compose_fun_apply (setprod A C) (projection_map1 A C) f ac Hac).
+      rewrite (projection1_apply A C ac Hac). reflexivity. }
+    (** g' ac = ac 1 **)
+    claim Hg'_eval : apply_fun g' ac = ac 1.
+    { exact (projection2_apply A C ac Hac). }
+    (** RHS: fxid ac = (apply_fun f (ac 0), ac 1) **)
+    claim Hrhs : apply_fun fxid ac = (apply_fun f (ac 0), ac 1).
+    { exact (apply_fun_graph (setprod A C) (fun ac0:set => (apply_fun f (ac0 0), ac0 1)) ac Hac). }
+    (** LHS = (f'(ac), g'(ac)) = (f(ac 0), ac 1) = fxid(ac) = RHS **)
+    rewrite Hlhs. rewrite Hf'_eval. rewrite Hg'_eval. symmetry. exact Hrhs. }
   exact (continuous_map_congr_on (setprod A C) (product_topology A Ta C Tc)
     (setprod B C) (product_topology B Tb C Tc)
     (pair_map (setprod A C) f' g') fxid Hpm Hfxid_fn Hpw_eq). }
@@ -137891,7 +137908,7 @@ exact (s55_surjective_closed_map_quotient_sub
   (setprod A C) (product_topology A Ta C Tc)
   (setprod B C) (product_topology B Tb C Tc)
   fxid HtopAC HtopBC Hfxid_surj Hfxid_closed).
-Admitted.
+Qed.
 
 (** KEY BOTTLENECK: If proved, cascades to make R2_minus_origin_not_simply_connected QED **)
 (** Bounty 20 **)
