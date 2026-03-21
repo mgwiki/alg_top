@@ -292163,32 +292163,49 @@ claim Hh_image : forall y:set, y :e setprod R R :\: Sing (0,0) ->
     apply Hyne2. admit. }
   exact (setminusI (setprod R R) (Sing p') (apply_fun h_full y) Hhy_R2 Hhy_ne_p). }
 (** Restrict h_full to subspaces **)
-claim Hh_restr_cont : continuous_map
-  (setprod R R :\: Sing (0,0))
-  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0,0)))
-  (setprod R R :\: Sing p')
-  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'))
-  h_full.
-{ (** h_full is continuous R^2 -> R^2 and maps R^2\{0} into R^2\{p'} **)
-  (** Use composition with subspace inclusion + range restrict **)
+(** Combine: h_full continuous on R^2, maps R^2\{0} into R^2\{p'}, surjective **)
+(** Use continuous_image_path_connected with compose_fun for domain restriction **)
+set S := setprod R R :\: Sing (0,0).
+set T := setprod R R :\: Sing p'.
+set Ts := subspace_topology (setprod R R) R2_topology S.
+set Tt := subspace_topology (setprod R R) R2_topology T.
+set incl := {(y,y)|y :e S}.
+set h_comp := compose_fun S incl h_full.
+claim Htop_R2 : topology_on (setprod R R) R2_topology.
+{ exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology). }
+claim HS_sub : S c= setprod R R. { exact (setminus_Subq (setprod R R) (Sing (0,0))). }
+claim HT_sub : T c= setprod R R. { exact (setminus_Subq (setprod R R) (Sing p')). }
+claim Hincl_cont : continuous_map S Ts (setprod R R) R2_topology incl.
+{ exact (subspace_inclusion_continuous (setprod R R) R2_topology S Htop_R2 HS_sub). }
+claim Hcomp_cont_R2 : continuous_map S Ts (setprod R R) R2_topology h_comp.
+{ exact (composition_continuous S Ts (setprod R R) R2_topology (setprod R R) R2_topology
+    incl h_full Hincl_cont Hh_cont_R2). }
+(** h_comp maps S into T **)
+claim Hcomp_image : forall y:set, y :e S -> apply_fun h_comp y :e T.
+{ let y. assume Hy : y :e S.
+  claim HyR2 : y :e setprod R R. { exact (HS_sub y Hy). }
+  claim Heval : apply_fun h_comp y = apply_fun h_full (apply_fun incl y).
+  { exact (compose_fun_apply S incl h_full y Hy). }
+  claim Hincl_id : apply_fun incl y = y.
+  { exact (identity_function_apply S y Hy). }
+  claim Hstep2 : apply_fun h_full (apply_fun incl y) = apply_fun h_full y.
+  { prove apply_fun h_full (apply_fun incl y) = apply_fun h_full y.
+    rewrite Hincl_id. reflexivity. }
+  claim Heval2 : apply_fun h_comp y = apply_fun h_full y.
+  { exact (eq_i_tra (apply_fun h_comp y) (apply_fun h_full (apply_fun incl y))
+      (apply_fun h_full y) Heval Hstep2). }
+  rewrite Heval2. exact (Hh_image y Hy). }
+claim Hcomp_cont_T : continuous_map S Ts T Tt h_comp.
+{ exact (continuous_map_range_restrict S Ts (setprod R R) R2_topology h_comp T
+    Hcomp_cont_R2 HT_sub Hcomp_image). }
+(** Surjectivity of h_comp onto T **)
+claim Hcomp_surj : forall x:set, x :e T -> exists y:set, y :e S /\ apply_fun h_comp y = x.
+{ let x. assume Hx : x :e T.
+  (** y = x - p', h_comp(y) = h_full(y) = y + p' = x **)
   admit. }
-(** Surjectivity **)
-claim Hh_surj : forall x:set, x :e setprod R R :\: Sing p' ->
-  exists y:set, y :e setprod R R :\: Sing (0,0) /\ apply_fun h_full y = x.
-{ let x. assume Hx : x :e setprod R R :\: Sing p'.
-  (** y = x - p' = (x0-p'0, x1-p'1) **)
-  (** Needs explicit construction and arithmetic **)
-  admit. }
-(** Apply continuous_image_path_connected **)
-exact (continuous_image_path_connected
-  (setprod R R :\: Sing (0,0))
-  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0,0)))
-  (setprod R R :\: Sing p')
-  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'))
-  h_full
-  punctured_space_path_connected
-  Hh_restr_cont
-  Hh_surj).
+exact (continuous_image_path_connected S Ts T Tt h_comp
+  punctured_space_path_connected Hcomp_cont_T Hcomp_surj).
 Admitted.
 
 (** Helper: R^2-{p'} homeomorphic to R^2 minus origin (translation by -p') **)
