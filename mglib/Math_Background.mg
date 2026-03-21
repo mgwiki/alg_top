@@ -293365,6 +293365,35 @@ exact (real_add_SNo
   (mul_SNo (apply_fun v 2) (apply_fun w 2)) (real_mul_SNo (apply_fun v 2) Hv2 (apply_fun w 2) Hw2)).
 Qed.
 
+(** Correct Householder reflection using R3_dot_af **)
+Definition householder_S2_v2 : set -> set -> set := fun n x =>
+  let d := R3_dot_af x n in
+  graph 3 (fun i:set =>
+    add_SNo (apply_fun x i) (minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i)))).
+
+(** householder_S2_v2 maps E3 into E3 **)
+(** Proven Alice **)
+Lemma householder_S2_v2_in_E3 : forall n x:set,
+  n :e euclidean_space 3 -> x :e euclidean_space 3 ->
+  householder_S2_v2 n x :e euclidean_space 3.
+let n x. assume Hn Hx.
+set d := R3_dot_af x n.
+claim HdR : d :e R. { exact (R3_dot_af_real x n Hx Hn). }
+set g := fun i:set => add_SNo (apply_fun x i) (minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i))).
+prove graph 3 g :e euclidean_space 3.
+claim Hg_in : forall i:set, i :e 3 -> g i :e space_family_set (const_space_family 3 R R_standard_topology) i.
+{ let i. assume Hi.
+  rewrite (space_family_set_const_space_family 3 R R_standard_topology i Hi).
+  prove g i :e R.
+  claim HxiR : apply_fun x i :e R. { exact (euclidean_3_coord_in_R x i Hx Hi). }
+  claim HniR : apply_fun n i :e R. { exact (euclidean_3_coord_in_R n i Hn Hi). }
+  claim HddR : add_SNo d d :e R. { exact (real_add_SNo d HdR d HdR). }
+  claim HprodR : mul_SNo (add_SNo d d) (apply_fun n i) :e R. { exact (real_mul_SNo (add_SNo d d) HddR (apply_fun n i) HniR). }
+  claim HmprodR : minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i)) :e R. { exact (real_minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i)) HprodR). }
+  exact (real_add_SNo (apply_fun x i) HxiR (minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i))) HmprodR). }
+exact (product_space_graphI 3 (const_space_family 3 R R_standard_topology) g Hg_in).
+Qed.
+
 (** R3_dot is real-valued for vectors in euclidean_space 3 **)
 Lemma R3_dot_real : forall v w:set,
   v :e euclidean_space 3 -> w :e euclidean_space 3 ->
