@@ -293394,6 +293394,33 @@ claim Hg_in : forall i:set, i :e 3 -> g i :e space_family_set (const_space_famil
 exact (product_space_graphI 3 (const_space_family 3 R R_standard_topology) g Hg_in).
 Qed.
 
+(** householder_S2_v2 preserves norm (key for S2 preservation) **)
+Lemma householder_S2_v2_preserves_norm : forall n x:set,
+  n :e Sn 2 -> x :e euclidean_space 3 ->
+  euclidean_norm_sq 3 (householder_S2_v2 n x) = euclidean_norm_sq 3 x.
+admit.
+Admitted.
+
+(** householder_S2_v2 preserves S2 **)
+Lemma householder_S2_v2_preserves_Sn2 : forall n x:set,
+  n :e Sn 2 -> x :e Sn 2 ->
+  householder_S2_v2 n x :e Sn 2.
+let n x. assume Hn Hx.
+claim HxE3 : x :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) x Hx). }
+claim HnE3 : n :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn). }
+claim Hxnorm : euclidean_norm_sq 3 x = 1.
+{ exact (SepE2 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) x Hx). }
+claim HhxE3 : householder_S2_v2 n x :e euclidean_space 3.
+{ exact (householder_S2_v2_in_E3 n x HnE3 HxE3). }
+claim Hhxnorm : euclidean_norm_sq 3 (householder_S2_v2 n x) = 1.
+{ exact (eq_i_tra (euclidean_norm_sq 3 (householder_S2_v2 n x)) (euclidean_norm_sq 3 x) 1
+    (householder_S2_v2_preserves_norm n x Hn HxE3) Hxnorm). }
+exact (SepI (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1)
+  (householder_S2_v2 n x) HhxE3 Hhxnorm).
+Admitted.
+
 (** R3_dot is real-valued for vectors in euclidean_space 3 **)
 Lemma R3_dot_real : forall v w:set,
   v :e euclidean_space 3 -> w :e euclidean_space 3 ->
