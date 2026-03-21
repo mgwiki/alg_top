@@ -292121,7 +292121,6 @@ admit.
 Admitted.
 
 (** Helper: R^2 minus any point is path connected **)
-(** Proven Alice **)
 Lemma R2_minus_point_path_connected : forall p':set,
   p' :e setprod R R ->
   path_connected_space (setprod R R :\: Sing p')
@@ -292377,6 +292376,7 @@ exact (continuous_image_path_connected S Ts T Tt h_comp
 Qed.
 
 (** Helper: R^2-{p'} homeomorphic to R^2 minus origin (translation by -p') **)
+(** Proven Alice **)
 Lemma R2_minus_point_homeo_R2_minus_origin : forall p':set,
   p' :e setprod R R ->
   exists f:set,
@@ -292401,14 +292401,367 @@ claim Hp0R : p' 0 :e R. { exact (ap0_Sigma R (fun _ => R) p' Hp'R2). }
 claim Hp1R : p' 1 :e R. { exact (ap1_Sigma R (fun _ => R) p' Hp'R2). }
 claim Hp0SNo : SNo (p' 0). { exact (real_SNo (p' 0) Hp0R). }
 claim Hp1SNo : SNo (p' 1). { exact (real_SNo (p' 1) Hp1R). }
-(** f maps R^2\{p'} to R2_minus_origin **)
-(** g maps R2_minus_origin to R^2\{p'} **)
-(** f, g continuous as restrictions of continuous maps on R^2 **)
-(** g(f(x)) = x and f(g(y)) = y by add/sub cancellation **)
-(** Full proof is mechanical but long; admit for now and fill step by step **)
+claim HmpSNo0 : SNo (minus_SNo (p' 0)). { exact (SNo_minus_SNo (p' 0) Hp0SNo). }
+claim HmpSNo1 : SNo (minus_SNo (p' 1)). { exact (SNo_minus_SNo (p' 1) Hp1SNo). }
+claim Hmp0R : minus_SNo (p' 0) :e R. { exact (real_minus_SNo (p' 0) Hp0R). }
+claim Hmp1R : minus_SNo (p' 1) :e R. { exact (real_minus_SNo (p' 1) Hp1R). }
+set neg_p := (minus_SNo (p' 0), minus_SNo (p' 1)).
+claim Hneg_pR2 : neg_p :e setprod R R.
+{ rewrite <- (tuple_pair (minus_SNo (p' 0)) (minus_SNo (p' 1))).
+  exact (pair_Sigma R (fun _:set => R) (minus_SNo (p' 0)) Hmp0R (minus_SNo (p' 1)) Hmp1R). }
+set Source := setprod R R :\: Sing p'.
+set SourceT := subspace_topology (setprod R R) R2_topology Source.
+set Target := R2_minus_origin.
+set TargetT := R2_minus_origin_topology.
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{ exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology). }
+claim HSource_sub : Source c= setprod R R.
+{ exact (setminus_Subq (setprod R R) (Sing p')). }
+claim HTarget_sub : Target c= setprod R R.
+{ let y. assume Hy : y :e Target. exact (SepE1 (setprod R R) (fun q:set => ~(q 0 = 0 /\ q 1 = 0)) y Hy). }
+(** neg_p coordinates **)
+claim Hnp0 : neg_p 0 = minus_SNo (p' 0).
+{ rewrite <- (tuple_pair (minus_SNo (p' 0)) (minus_SNo (p' 1))).
+  exact (pair_ap_0 (minus_SNo (p' 0)) (minus_SNo (p' 1))). }
+claim Hnp1 : neg_p 1 = minus_SNo (p' 1).
+{ rewrite <- (tuple_pair (minus_SNo (p' 0)) (minus_SNo (p' 1))).
+  exact (pair_ap_1 (minus_SNo (p' 0)) (minus_SNo (p' 1))). }
+claim Hmnp0 : minus_SNo (neg_p 0) = p' 0.
+{ rewrite Hnp0. exact (minus_SNo_invol (p' 0) Hp0SNo). }
+claim Hmnp1 : minus_SNo (neg_p 1) = p' 1.
+{ rewrite Hnp1. exact (minus_SNo_invol (p' 1) Hp1SNo). }
+(** Full R2 translations **)
+set h_sub_full := graph (setprod R R) sub_p.
+set h_add_full := graph (setprod R R) (fun y:set =>
+  (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1)))).
+claim Hh_sub_cont : continuous_map (setprod R R) R2_topology (setprod R R) R2_topology h_sub_full.
+{ exact (R2_translation_continuous_early p' Hp'R2). }
+claim Hh_add_cont : continuous_map (setprod R R) R2_topology (setprod R R) R2_topology h_add_full.
+{ exact (R2_translation_continuous_early neg_p Hneg_pR2). }
+(** apply_fun for f and g **)
+claim Hf_apply : forall x:set, x :e Source -> apply_fun f x = sub_p x.
+{ let x. assume Hx. exact (apply_fun_graph Source sub_p x Hx). }
+claim Hg_apply : forall y:set, y :e Target -> apply_fun g y = add_p y.
+{ let y. assume Hy. exact (apply_fun_graph Target add_p y Hy). }
+(** Helper: sub_p x in R2 for x in R2 **)
+claim Hsub_p_R2 : forall x:set, x :e setprod R R -> sub_p x :e setprod R R.
+{ let x. assume Hx.
+  claim Hx0R : x 0 :e R. { exact (ap0_Sigma R (fun _ => R) x Hx). }
+  claim Hx1R : x 1 :e R. { exact (ap1_Sigma R (fun _ => R) x Hx). }
+  prove (add_SNo (x 0) (minus_SNo (p' 0)), add_SNo (x 1) (minus_SNo (p' 1))) :e setprod R R.
+  rewrite <- (tuple_pair (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))).
+  exact (pair_Sigma R (fun _:set => R)
+    (add_SNo (x 0) (minus_SNo (p' 0))) (real_add_SNo (x 0) Hx0R (minus_SNo (p' 0)) Hmp0R)
+    (add_SNo (x 1) (minus_SNo (p' 1))) (real_add_SNo (x 1) Hx1R (minus_SNo (p' 1)) Hmp1R)). }
+(** Helper: add_p y in R2 for y in R2 **)
+claim Hadd_p_R2 : forall y:set, y :e setprod R R -> add_p y :e setprod R R.
+{ let y. assume Hy.
+  claim Hy0R : y 0 :e R. { exact (ap0_Sigma R (fun _ => R) y Hy). }
+  claim Hy1R : y 1 :e R. { exact (ap1_Sigma R (fun _ => R) y Hy). }
+  prove (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)) :e setprod R R.
+  rewrite <- (tuple_pair (add_SNo (y 0) (p' 0)) (add_SNo (y 1) (p' 1))).
+  exact (pair_Sigma R (fun _:set => R)
+    (add_SNo (y 0) (p' 0)) (real_add_SNo (y 0) Hy0R (p' 0) Hp0R)
+    (add_SNo (y 1) (p' 1)) (real_add_SNo (y 1) Hy1R (p' 1) Hp1R)). }
+(** Helper: sub_p pair coordinates **)
+claim Hsub_p_0 : forall x:set, (sub_p x) 0 = add_SNo (x 0) (minus_SNo (p' 0)).
+{ let x. prove (add_SNo (x 0) (minus_SNo (p' 0)), add_SNo (x 1) (minus_SNo (p' 1))) 0 = add_SNo (x 0) (minus_SNo (p' 0)).
+  rewrite <- (tuple_pair (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))).
+  exact (pair_ap_0 (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))). }
+claim Hsub_p_1 : forall x:set, (sub_p x) 1 = add_SNo (x 1) (minus_SNo (p' 1)).
+{ let x. prove (add_SNo (x 0) (minus_SNo (p' 0)), add_SNo (x 1) (minus_SNo (p' 1))) 1 = add_SNo (x 1) (minus_SNo (p' 1)).
+  rewrite <- (tuple_pair (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))).
+  exact (pair_ap_1 (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))). }
+(** Helper: add_p pair coordinates **)
+claim Hadd_p_0 : forall y:set, (add_p y) 0 = add_SNo (y 0) (p' 0).
+{ let y. prove (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)) 0 = add_SNo (y 0) (p' 0).
+  rewrite <- (tuple_pair (add_SNo (y 0) (p' 0)) (add_SNo (y 1) (p' 1))).
+  exact (pair_ap_0 (add_SNo (y 0) (p' 0)) (add_SNo (y 1) (p' 1))). }
+claim Hadd_p_1 : forall y:set, (add_p y) 1 = add_SNo (y 1) (p' 1).
+{ let y. prove (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)) 1 = add_SNo (y 1) (p' 1).
+  rewrite <- (tuple_pair (add_SNo (y 0) (p' 0)) (add_SNo (y 1) (p' 1))).
+  exact (pair_ap_1 (add_SNo (y 0) (p' 0)) (add_SNo (y 1) (p' 1))). }
+(** Helper: cancellation (x - p') + p' = x for each coord **)
+claim Hcancel_sub_add_0 : forall x:set, x :e setprod R R ->
+  add_SNo (add_SNo (x 0) (minus_SNo (p' 0))) (p' 0) = x 0.
+{ let x. assume Hx.
+  claim HxSNo : SNo (x 0). { exact (real_SNo (x 0) (ap0_Sigma R (fun _ => R) x Hx)). }
+  rewrite <- (add_SNo_assoc (x 0) (minus_SNo (p' 0)) (p' 0) HxSNo HmpSNo0 Hp0SNo).
+  rewrite (add_SNo_minus_SNo_linv (p' 0) Hp0SNo).
+  exact (add_SNo_0R (x 0) HxSNo). }
+claim Hcancel_sub_add_1 : forall x:set, x :e setprod R R ->
+  add_SNo (add_SNo (x 1) (minus_SNo (p' 1))) (p' 1) = x 1.
+{ let x. assume Hx.
+  claim HxSNo : SNo (x 1). { exact (real_SNo (x 1) (ap1_Sigma R (fun _ => R) x Hx)). }
+  rewrite <- (add_SNo_assoc (x 1) (minus_SNo (p' 1)) (p' 1) HxSNo HmpSNo1 Hp1SNo).
+  rewrite (add_SNo_minus_SNo_linv (p' 1) Hp1SNo).
+  exact (add_SNo_0R (x 1) HxSNo). }
+(** Helper: cancellation (y + p') - p' = y for each coord **)
+claim Hcancel_add_sub_0 : forall y:set, y :e setprod R R ->
+  add_SNo (add_SNo (y 0) (p' 0)) (minus_SNo (p' 0)) = y 0.
+{ let y. assume Hy.
+  claim HySNo : SNo (y 0). { exact (real_SNo (y 0) (ap0_Sigma R (fun _ => R) y Hy)). }
+  rewrite <- (add_SNo_assoc (y 0) (p' 0) (minus_SNo (p' 0)) HySNo Hp0SNo HmpSNo0).
+  rewrite (add_SNo_minus_SNo_rinv (p' 0) Hp0SNo).
+  exact (add_SNo_0R (y 0) HySNo). }
+claim Hcancel_add_sub_1 : forall y:set, y :e setprod R R ->
+  add_SNo (add_SNo (y 1) (p' 1)) (minus_SNo (p' 1)) = y 1.
+{ let y. assume Hy.
+  claim HySNo : SNo (y 1). { exact (real_SNo (y 1) (ap1_Sigma R (fun _ => R) y Hy)). }
+  rewrite <- (add_SNo_assoc (y 1) (p' 1) (minus_SNo (p' 1)) HySNo Hp1SNo HmpSNo1).
+  rewrite (add_SNo_minus_SNo_rinv (p' 1) Hp1SNo).
+  exact (add_SNo_0R (y 1) HySNo). }
+(** f maps Source into Target **)
+claim Hf_image : forall x:set, x :e Source -> apply_fun f x :e Target.
+{ let x. assume Hx : x :e Source.
+  claim HxR2 : x :e setprod R R. { exact (HSource_sub x Hx). }
+  claim HxnP : x <> p'.
+  { assume Heq. apply (setminusE2 (setprod R R) (Sing p') x Hx). rewrite Heq. exact (SingI p'). }
+  claim Hfx_eq : apply_fun f x = sub_p x. { exact (Hf_apply x Hx). }
+  claim Hfx_R2 : apply_fun f x :e setprod R R.
+  { rewrite Hfx_eq. exact (Hsub_p_R2 x HxR2). }
+  claim Hfx_ne0 : ~(apply_fun f x 0 = 0 /\ apply_fun f x 1 = 0).
+  { assume Hboth.
+    claim Hfx0_eq0 : apply_fun f x 0 = 0.
+    { exact (andEL (apply_fun f x 0 = 0) (apply_fun f x 1 = 0) Hboth). }
+    claim Hfx1_eq0 : apply_fun f x 1 = 0.
+    { exact (andER (apply_fun f x 0 = 0) (apply_fun f x 1 = 0) Hboth). }
+    claim Hfx0_coord : apply_fun f x 0 = add_SNo (x 0) (minus_SNo (p' 0)).
+    { rewrite Hfx_eq. exact (Hsub_p_0 x). }
+    claim Hfx1_coord : apply_fun f x 1 = add_SNo (x 1) (minus_SNo (p' 1)).
+    { rewrite Hfx_eq. exact (Hsub_p_1 x). }
+    claim Hx0mp0 : add_SNo (x 0) (minus_SNo (p' 0)) = 0.
+    { exact (eq_i_tra (add_SNo (x 0) (minus_SNo (p' 0))) (apply_fun f x 0) 0
+        (eq_symm (apply_fun f x 0) (add_SNo (x 0) (minus_SNo (p' 0))) Hfx0_coord) Hfx0_eq0). }
+    claim Hx1mp1 : add_SNo (x 1) (minus_SNo (p' 1)) = 0.
+    { exact (eq_i_tra (add_SNo (x 1) (minus_SNo (p' 1))) (apply_fun f x 1) 0
+        (eq_symm (apply_fun f x 1) (add_SNo (x 1) (minus_SNo (p' 1))) Hfx1_coord) Hfx1_eq0). }
+    claim Hx0SNo : SNo (x 0). { exact (real_SNo (x 0) (ap0_Sigma R (fun _ => R) x HxR2)). }
+    claim Hx1SNo : SNo (x 1). { exact (real_SNo (x 1) (ap1_Sigma R (fun _ => R) x HxR2)). }
+    claim Hx0_eq_p0 : x 0 = p' 0.
+    { exact (add_SNo_cancel_R (x 0) (minus_SNo (p' 0)) (p' 0) Hx0SNo HmpSNo0 Hp0SNo
+        (eq_i_tra (add_SNo (x 0) (minus_SNo (p' 0))) 0 (add_SNo (p' 0) (minus_SNo (p' 0)))
+          Hx0mp0
+          (eq_symm (add_SNo (p' 0) (minus_SNo (p' 0))) 0 (add_SNo_minus_SNo_rinv (p' 0) Hp0SNo)))). }
+    claim Hx1_eq_p1 : x 1 = p' 1.
+    { exact (add_SNo_cancel_R (x 1) (minus_SNo (p' 1)) (p' 1) Hx1SNo HmpSNo1 Hp1SNo
+        (eq_i_tra (add_SNo (x 1) (minus_SNo (p' 1))) 0 (add_SNo (p' 1) (minus_SNo (p' 1)))
+          Hx1mp1
+          (eq_symm (add_SNo (p' 1) (minus_SNo (p' 1))) 0 (add_SNo_minus_SNo_rinv (p' 1) Hp1SNo)))). }
+    apply HxnP.
+    rewrite (setprod_eta R R x HxR2). rewrite (setprod_eta R R p' Hp'R2).
+    rewrite Hx0_eq_p0. rewrite Hx1_eq_p1. reflexivity. }
+  exact (SepI (setprod R R) (fun q:set => ~(q 0 = 0 /\ q 1 = 0)) (apply_fun f x) Hfx_R2 Hfx_ne0). }
+(** g maps Target into Source **)
+claim Hg_image : forall y:set, y :e Target -> apply_fun g y :e Source.
+{ let y. assume Hy : y :e Target.
+  claim HyR2 : y :e setprod R R. { exact (HTarget_sub y Hy). }
+  claim Hyne0 : ~(y 0 = 0 /\ y 1 = 0).
+  { exact (SepE2 (setprod R R) (fun q:set => ~(q 0 = 0 /\ q 1 = 0)) y Hy). }
+  claim Hgy_eq : apply_fun g y = add_p y. { exact (Hg_apply y Hy). }
+  claim Hgy_R2 : apply_fun g y :e setprod R R.
+  { rewrite Hgy_eq. exact (Hadd_p_R2 y HyR2). }
+  claim Hgy_ne_p : apply_fun g y <> p'.
+  { assume Heq : apply_fun g y = p'.
+    claim Hadd_eq_p : add_p y = p'.
+    { exact (eq_i_tra (add_p y) (apply_fun g y) p'
+        (eq_symm (apply_fun g y) (add_p y) Hgy_eq) Heq). }
+    claim Hy0R : y 0 :e R. { exact (ap0_Sigma R (fun _ => R) y HyR2). }
+    claim Hy1R : y 1 :e R. { exact (ap1_Sigma R (fun _ => R) y HyR2). }
+    claim Hy0SNo : SNo (y 0). { exact (real_SNo (y 0) Hy0R). }
+    claim Hy1SNo : SNo (y 1). { exact (real_SNo (y 1) Hy1R). }
+    claim Hcoord0 : add_SNo (y 0) (p' 0) = p' 0.
+    { claim Hlhs : (add_p y) 0 = add_SNo (y 0) (p' 0). { exact (Hadd_p_0 y). }
+      claim Hrhs : (add_p y) 0 = p' 0. { rewrite Hadd_eq_p. reflexivity. }
+      prove add_SNo (y 0) (p' 0) = p' 0. rewrite <- Hlhs. exact Hrhs. }
+    claim Hcoord1 : add_SNo (y 1) (p' 1) = p' 1.
+    { claim Hlhs : (add_p y) 1 = add_SNo (y 1) (p' 1). { exact (Hadd_p_1 y). }
+      claim Hrhs : (add_p y) 1 = p' 1. { rewrite Hadd_eq_p. reflexivity. }
+      prove add_SNo (y 1) (p' 1) = p' 1. rewrite <- Hlhs. exact Hrhs. }
+    claim Hy0_eq_0 : y 0 = 0.
+    { claim H0plus : add_SNo 0 (p' 0) = p' 0. { exact (add_SNo_0L (p' 0) Hp0SNo). }
+      exact (add_SNo_cancel_R (y 0) (p' 0) 0 Hy0SNo Hp0SNo SNo_0
+        (eq_i_tra (add_SNo (y 0) (p' 0)) (p' 0) (add_SNo 0 (p' 0))
+          Hcoord0 (eq_symm (add_SNo 0 (p' 0)) (p' 0) H0plus))). }
+    claim Hy1_eq_0 : y 1 = 0.
+    { claim H0plus : add_SNo 0 (p' 1) = p' 1. { exact (add_SNo_0L (p' 1) Hp1SNo). }
+      exact (add_SNo_cancel_R (y 1) (p' 1) 0 Hy1SNo Hp1SNo SNo_0
+        (eq_i_tra (add_SNo (y 1) (p' 1)) (p' 1) (add_SNo 0 (p' 1))
+          Hcoord1 (eq_symm (add_SNo 0 (p' 1)) (p' 1) H0plus))). }
+    apply Hyne0. apply andI. exact Hy0_eq_0. exact Hy1_eq_0. }
+  exact (setminusI (setprod R R) (Sing p') (apply_fun g y) Hgy_R2
+    (fun H : apply_fun g y :e Sing p' => Hgy_ne_p (SingE p' (apply_fun g y) H))). }
+(** f continuous: restrict h_sub_full to Source -> Target **)
+claim Hincl_src : continuous_map Source SourceT (setprod R R) R2_topology {(x,x)|x :e Source}.
+{ exact (subspace_inclusion_continuous (setprod R R) R2_topology Source HtopR2 HSource_sub). }
+claim Hf_cont_R2 : continuous_map Source SourceT (setprod R R) R2_topology (compose_fun Source {(x,x)|x :e Source} h_sub_full).
+{ exact (composition_continuous Source SourceT (setprod R R) R2_topology (setprod R R) R2_topology
+    {(x,x)|x :e Source} h_sub_full Hincl_src Hh_sub_cont). }
+(** f agrees with compose_fun ... on Source **)
+claim Hf_agrees : forall x:set, x :e Source -> apply_fun f x =
+  apply_fun (compose_fun Source {(x,x)|x :e Source} h_sub_full) x.
+{ let x. assume Hx.
+  claim Hcomp_eval : apply_fun (compose_fun Source {(y,y)|y :e Source} h_sub_full) x =
+    apply_fun h_sub_full (apply_fun {(y,y)|y :e Source} x).
+  { exact (compose_fun_apply Source {(y,y)|y :e Source} h_sub_full x Hx). }
+  claim Hincl_eval : apply_fun {(y,y)|y :e Source} x = x.
+  { exact (identity_function_apply Source x Hx). }
+  claim Hcomp_simp : apply_fun (compose_fun Source {(y,y)|y :e Source} h_sub_full) x =
+    apply_fun h_sub_full x.
+  { prove apply_fun (compose_fun Source {(y,y)|y :e Source} h_sub_full) x = apply_fun h_sub_full x.
+    rewrite Hcomp_eval. rewrite Hincl_eval. reflexivity. }
+  claim Hfull_eval : apply_fun h_sub_full x = sub_p x.
+  { exact (apply_fun_graph (setprod R R) sub_p x (HSource_sub x Hx)). }
+  claim Hf_eval : apply_fun f x = sub_p x. { exact (Hf_apply x Hx). }
+  exact (eq_i_tra (apply_fun f x) (sub_p x)
+    (apply_fun (compose_fun Source {(y,y)|y :e Source} h_sub_full) x)
+    Hf_eval
+    (eq_i_tra (sub_p x) (apply_fun h_sub_full x)
+      (apply_fun (compose_fun Source {(y,y)|y :e Source} h_sub_full) x)
+      (eq_symm (apply_fun h_sub_full x) (sub_p x) Hfull_eval)
+      (eq_symm (apply_fun (compose_fun Source {(y,y)|y :e Source} h_sub_full) x)
+        (apply_fun h_sub_full x) Hcomp_simp))). }
+claim Hf_fn_on : function_on f Source (setprod R R).
+{ let x. assume Hx : x :e Source.
+  rewrite (Hf_apply x Hx). exact (Hsub_p_R2 x (HSource_sub x Hx)). }
+claim Hf_pw_eq : forall x:set, x :e Source ->
+  apply_fun (compose_fun Source {(x,x)|x :e Source} h_sub_full) x = apply_fun f x.
+{ let x. assume Hx. symmetry. exact (Hf_agrees x Hx). }
+claim Hf_cont_R2_as_f : continuous_map Source SourceT (setprod R R) R2_topology f.
+{ exact (continuous_map_congr_on Source SourceT (setprod R R) R2_topology
+    (compose_fun Source {(x,x)|x :e Source} h_sub_full) f Hf_cont_R2
+    Hf_fn_on Hf_pw_eq). }
+claim Hf_cont : continuous_map Source SourceT Target TargetT f.
+{ exact (continuous_map_range_restrict Source SourceT (setprod R R) R2_topology f Target
+    Hf_cont_R2_as_f HTarget_sub Hf_image). }
+(** g continuous: restrict h_add_full to Target -> Source **)
+claim Hincl_tgt : continuous_map Target TargetT (setprod R R) R2_topology {(y,y)|y :e Target}.
+{ exact (subspace_inclusion_continuous (setprod R R) R2_topology Target HtopR2 HTarget_sub). }
+claim Hg_cont_R2 : continuous_map Target TargetT (setprod R R) R2_topology (compose_fun Target {(y,y)|y :e Target} h_add_full).
+{ exact (composition_continuous Target TargetT (setprod R R) R2_topology (setprod R R) R2_topology
+    {(y,y)|y :e Target} h_add_full Hincl_tgt Hh_add_cont). }
+(** g agrees with compose_fun ... on Target. **)
+(** h_add_full(y) = (y0 + (-(neg_p 0)), y1 + (-(neg_p 1))) = (y0 + p'0, y1 + p'1) = add_p y **)
+claim Hg_agrees_full : forall y:set, y :e setprod R R ->
+  apply_fun h_add_full y = add_p y.
+{ let y. assume Hy.
+  claim Heval : apply_fun h_add_full y =
+    (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1))).
+  { exact (apply_fun_graph (setprod R R)
+      (fun y0:set => (add_SNo (y0 0) (minus_SNo (neg_p 0)), add_SNo (y0 1) (minus_SNo (neg_p 1))))
+      y Hy). }
+  prove apply_fun h_add_full y = (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)).
+  rewrite Heval. rewrite Hmnp0. rewrite Hmnp1. reflexivity. }
+claim Hg_agrees : forall y:set, y :e Target -> apply_fun g y =
+  apply_fun (compose_fun Target {(y,y)|y :e Target} h_add_full) y.
+{ let y. assume Hy.
+  claim HyR2 : y :e setprod R R. { exact (HTarget_sub y Hy). }
+  claim Hcomp_eval : apply_fun (compose_fun Target {(z,z)|z :e Target} h_add_full) y =
+    apply_fun h_add_full (apply_fun {(z,z)|z :e Target} y).
+  { exact (compose_fun_apply Target {(z,z)|z :e Target} h_add_full y Hy). }
+  claim Hincl_eval : apply_fun {(z,z)|z :e Target} y = y.
+  { exact (identity_function_apply Target y Hy). }
+  claim Hcomp_simp : apply_fun (compose_fun Target {(z,z)|z :e Target} h_add_full) y =
+    apply_fun h_add_full y.
+  { rewrite Hcomp_eval. rewrite Hincl_eval. reflexivity. }
+  claim Hfull_eval : apply_fun h_add_full y = add_p y.
+  { exact (Hg_agrees_full y HyR2). }
+  claim Hg_eval : apply_fun g y = add_p y. { exact (Hg_apply y Hy). }
+  exact (eq_i_tra (apply_fun g y) (add_p y)
+    (apply_fun (compose_fun Target {(z,z)|z :e Target} h_add_full) y)
+    Hg_eval
+    (eq_i_tra (add_p y) (apply_fun h_add_full y)
+      (apply_fun (compose_fun Target {(z,z)|z :e Target} h_add_full) y)
+      (eq_symm (apply_fun h_add_full y) (add_p y) Hfull_eval)
+      (eq_symm (apply_fun (compose_fun Target {(z,z)|z :e Target} h_add_full) y)
+        (apply_fun h_add_full y) Hcomp_simp))). }
+claim Hg_fn_on : function_on g Target (setprod R R).
+{ let y. assume Hy : y :e Target.
+  rewrite (Hg_apply y Hy). exact (Hadd_p_R2 y (HTarget_sub y Hy)). }
+claim Hg_pw_eq : forall y:set, y :e Target ->
+  apply_fun (compose_fun Target {(y,y)|y :e Target} h_add_full) y = apply_fun g y.
+{ let y. assume Hy. symmetry. exact (Hg_agrees y Hy). }
+claim Hg_cont_R2_as_g : continuous_map Target TargetT (setprod R R) R2_topology g.
+{ exact (continuous_map_congr_on Target TargetT (setprod R R) R2_topology
+    (compose_fun Target {(y,y)|y :e Target} h_add_full) g Hg_cont_R2
+    Hg_fn_on Hg_pw_eq). }
+claim Hg_cont : continuous_map Target TargetT Source SourceT g.
+{ exact (continuous_map_range_restrict Target TargetT (setprod R R) R2_topology g Source
+    Hg_cont_R2_as_g HSource_sub Hg_image). }
+(** g(f(x)) = x for x in Source **)
+claim Hgf_inv : forall x:set, x :e Source -> apply_fun g (apply_fun f x) = x.
+{ let x. assume Hx.
+  claim HxR2 : x :e setprod R R. { exact (HSource_sub x Hx). }
+  claim Hfx_in : apply_fun f x :e Target. { exact (Hf_image x Hx). }
+  claim Hfx_eq : apply_fun f x = sub_p x. { exact (Hf_apply x Hx). }
+  claim Hgfx_eq : apply_fun g (apply_fun f x) = add_p (apply_fun f x).
+  { exact (Hg_apply (apply_fun f x) Hfx_in). }
+  (** add_p (sub_p x) = ((x0 - p'0) + p'0, (x1 - p'1) + p'1) = (x0, x1) = x **)
+  claim Hgfx_coord0 : (add_p (apply_fun f x)) 0 = x 0.
+  { claim H1 : (add_p (apply_fun f x)) 0 = add_SNo (apply_fun f x 0) (p' 0).
+    { exact (Hadd_p_0 (apply_fun f x)). }
+    claim H2 : apply_fun f x 0 = add_SNo (x 0) (minus_SNo (p' 0)).
+    { rewrite Hfx_eq. exact (Hsub_p_0 x). }
+    rewrite H1. rewrite H2. exact (Hcancel_sub_add_0 x HxR2). }
+  claim Hgfx_coord1 : (add_p (apply_fun f x)) 1 = x 1.
+  { claim H1 : (add_p (apply_fun f x)) 1 = add_SNo (apply_fun f x 1) (p' 1).
+    { exact (Hadd_p_1 (apply_fun f x)). }
+    claim H2 : apply_fun f x 1 = add_SNo (x 1) (minus_SNo (p' 1)).
+    { rewrite Hfx_eq. exact (Hsub_p_1 x). }
+    rewrite H1. rewrite H2. exact (Hcancel_sub_add_1 x HxR2). }
+  claim Hgfx_pair : add_p (apply_fun f x) = x.
+  { claim Hx_eta : x = (x 0, x 1). { exact (setprod_eta R R x HxR2). }
+    claim HfxR2 : apply_fun f x :e setprod R R.
+    { exact (HTarget_sub (apply_fun f x) Hfx_in). }
+    claim Hgfx_eta : add_p (apply_fun f x) = ((add_p (apply_fun f x)) 0, (add_p (apply_fun f x)) 1).
+    { exact (setprod_eta R R (add_p (apply_fun f x)) (Hadd_p_R2 (apply_fun f x) HfxR2)). }
+    rewrite Hgfx_eta. rewrite Hgfx_coord0. rewrite Hgfx_coord1.
+    symmetry. exact Hx_eta. }
+  rewrite Hgfx_eq. exact Hgfx_pair. }
+(** f(g(y)) = y for y in Target **)
+claim Hfg_inv : forall y:set, y :e Target -> apply_fun f (apply_fun g y) = y.
+{ let y. assume Hy.
+  claim HyR2 : y :e setprod R R. { exact (HTarget_sub y Hy). }
+  claim Hgy_in : apply_fun g y :e Source. { exact (Hg_image y Hy). }
+  claim Hgy_eq : apply_fun g y = add_p y. { exact (Hg_apply y Hy). }
+  claim Hfgy_eq : apply_fun f (apply_fun g y) = sub_p (apply_fun g y).
+  { exact (Hf_apply (apply_fun g y) Hgy_in). }
+  claim Hfgy_coord0 : (sub_p (apply_fun g y)) 0 = y 0.
+  { claim H1 : (sub_p (apply_fun g y)) 0 = add_SNo (apply_fun g y 0) (minus_SNo (p' 0)).
+    { exact (Hsub_p_0 (apply_fun g y)). }
+    claim H2 : apply_fun g y 0 = add_SNo (y 0) (p' 0).
+    { rewrite Hgy_eq. exact (Hadd_p_0 y). }
+    rewrite H1. rewrite H2. exact (Hcancel_add_sub_0 y HyR2). }
+  claim Hfgy_coord1 : (sub_p (apply_fun g y)) 1 = y 1.
+  { claim H1 : (sub_p (apply_fun g y)) 1 = add_SNo (apply_fun g y 1) (minus_SNo (p' 1)).
+    { exact (Hsub_p_1 (apply_fun g y)). }
+    claim H2 : apply_fun g y 1 = add_SNo (y 1) (p' 1).
+    { rewrite Hgy_eq. exact (Hadd_p_1 y). }
+    rewrite H1. rewrite H2. exact (Hcancel_add_sub_1 y HyR2). }
+  claim Hfgy_pair : sub_p (apply_fun g y) = y.
+  { claim Hy_eta : y = (y 0, y 1). { exact (setprod_eta R R y HyR2). }
+    claim HgyR2 : apply_fun g y :e setprod R R.
+    { exact (HSource_sub (apply_fun g y) Hgy_in). }
+    claim Hfgy_eta : sub_p (apply_fun g y) = ((sub_p (apply_fun g y)) 0, (sub_p (apply_fun g y)) 1).
+    { exact (setprod_eta R R (sub_p (apply_fun g y)) (Hsub_p_R2 (apply_fun g y) HgyR2)). }
+    rewrite Hfgy_eta. rewrite Hfgy_coord0. rewrite Hfgy_coord1.
+    symmetry. exact Hy_eta. }
+  rewrite Hfgy_eq. exact Hfgy_pair. }
+(** Package as homeomorphism **)
 witness f.
-admit.
-Admitted.
+prove continuous_map Source SourceT Target TargetT f /\
+  exists h:set, (continuous_map Target TargetT Source SourceT h /\
+    (forall x:set, x :e Source -> apply_fun h (apply_fun f x) = x)) /\
+    (forall y:set, y :e Target -> apply_fun f (apply_fun h y) = y).
+apply andI.
+- exact Hf_cont.
+- witness g. apply andI.
+  + apply andI.
+    * exact Hg_cont.
+    * exact Hgf_inv.
+  + exact Hfg_inv.
+Qed.
 
 (** Helper: R^2 minus origin is not simply connected **)
 (** Proof: the inclusion S^1 -> R^2-{0} is not nulhomotopic (cor55_4a). **)
