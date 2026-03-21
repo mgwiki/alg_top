@@ -240019,7 +240019,9 @@ claim HL1_word_data :
   claim Hseq_L1_conn : forall k:set, k :e ordsucc m ->
     connected_space (apply_fun seq_L1 k)
       (subspace_topology unit_interval unit_interval_topology (apply_fun seq_L1 k)). { admit. }
-  claim Hseq_L1_0 : 0 :e apply_fun seq_L1 0. { admit. }
+  claim Hseq_L1_0 : 0 :e apply_fun seq_L1 0.
+  { (** 0 in seq_L1(0): need 2s(0) = 0 in seq(0), from H0_in **)
+    admit. }
   claim Hseq_L1_1 : 1 :e apply_fun seq_L1 m.
   { rewrite (apply_fun_graph (ordsucc m)
       (fun k:set => If_i (k :e m)
