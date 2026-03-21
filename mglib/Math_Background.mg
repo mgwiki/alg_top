@@ -1,6 +1,6 @@
 (** Balance Alice 9404 **)
 (** Balance Bob 6353 **)
-(** Balance Charlie 777 **)
+(** Balance Charlie 760 **)
 (** Balance Dave 2585 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -408555,8 +408555,8 @@ reflexivity.
 Qed.
 
 (** Infrastructure: existence for the Seifert van Kampen universal pushout property **)
-(** Bounty 165 **)
-(** Lock Charlie 1774162205 **)
+(** Bounty 182 **)
+(** Lock Charlie 1774178876 **)
 Theorem seifert_van_kampen_universal_pushout_existence :
   forall X Tx U V x0:set,
   topology_on X Tx ->
