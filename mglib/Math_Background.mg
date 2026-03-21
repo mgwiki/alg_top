@@ -293931,7 +293931,7 @@ Lemma S2_minus_two_points_homeo_R2_minus_point : forall p q:set,
       f.
 let p q. assume Hp Hq Hpq.
 (** Step 1: get homeomorphism h: S2 -> S2 with h(q) = south_pole **)
-apply (Sn2_self_homeo_to_south_pole q Hq).
+apply (Sn2_self_homeo_to_south_pole_v2 q Hq).
 let h. assume Hh_data.
 claim Hh_homeo : homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h.
 { exact (andEL
