@@ -293857,6 +293857,7 @@ rewrite Hexpand. rewrite H0L. reflexivity.
 Qed.
 
 (** Helper: (a + (-b))^2 = a^2 - 2ab + b^2 for SNo **)
+(** Proven Alice **)
 Lemma SNo_sub_sq : forall a b:set,
   SNo a -> SNo b ->
   mul_SNo (add_SNo a (minus_SNo b)) (add_SNo a (minus_SNo b)) =
@@ -293901,8 +293902,16 @@ claim Hminusd : add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b))
 claim Hassoc3 : add_SNo (mul_SNo a a) (add_SNo (add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b))) (mul_SNo b b))
   = add_SNo (add_SNo (mul_SNo a a) (add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b)))) (mul_SNo b b).
 { exact (add_SNo_assoc (mul_SNo a a) (add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b))) (mul_SNo b b) Haa (SNo_add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b)) Hm_mab Hm_mab) Hbb2). }
-admit. (** use Hassoc1 + Hassoc2 + Hminusd + Hassoc3 via eq_i_tra chain **)
-Admitted.
+rewrite Hassoc1.
+rewrite Hassoc2.
+rewrite Hminusd.
+claim Hfinal : add_SNo (mul_SNo a a) (add_SNo (minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b))) (mul_SNo b b))
+  = add_SNo (add_SNo (mul_SNo a a) (minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b)))) (mul_SNo b b).
+{ claim Hmab2 : SNo (add_SNo (mul_SNo a b) (mul_SNo a b)). { exact (SNo_add_SNo (mul_SNo a b) (mul_SNo a b) Hmab Hmab). }
+  claim Hm2 : SNo (minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b))). { exact (SNo_minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b)) Hmab2). }
+  exact (add_SNo_assoc (mul_SNo a a) (minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b))) (mul_SNo b b) Haa Hm2 Hbb2). }
+exact Hfinal.
+Qed.
 
 (** R3_dot_af bilinearity: (x-2dn) dot (x-2dn) = x dot x - 4d(x dot n) + 4d^2(n dot n) **)
 (** For d = x dot n and n dot n = 1: result = x dot x **)
