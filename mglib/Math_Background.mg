@@ -408652,6 +408652,14 @@ set i1 := induced_homomorphism (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
 set i2 := induced_homomorphism (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
   V (subspace_topology X Tx V) x0
   (graph (U :/\: V) (fun x:set => x)).
+claim HUV_square : forall gUV:set,
+  gUV :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+    apply_fun j1 (apply_fun i1 gUV) = apply_fun j2 (apply_fun i2 gUV).
+{
+  let gUV. assume HgUV.
+  exact (seifert_van_kampen_overlap_inclusion_agree
+    X Tx U V x0 gUV Htop HUopen HVopen Hcover Hx0UV HgUV).
+}
 admit.
 Admitted.
 (** Infrastructure helper for S70 Thm 70.1:
