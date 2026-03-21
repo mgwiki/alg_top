@@ -138132,7 +138132,7 @@ apply andI.
       { (** q = graph ... (fun st => (ell(st 0), st 1)) agrees with pair_map ... ell_o_pi1 pi2 **)
         set ell_pi1 := compose_fun unit_square (projection_map1 unit_interval unit_interval) ell.
         set pi2 := projection_map2 unit_interval unit_interval.
-        claim HtopUI : topology_on unit_interval unit_interval_topology. { admit. (** standard **) }
+        claim HtopUI : topology_on unit_interval unit_interval_topology. { exact unit_interval_topology_on. }
         claim Hpi1 : continuous_map unit_square unit_square_topology unit_interval unit_interval_topology
           (projection_map1 unit_interval unit_interval).
         { exact (projection1_continuous_in_product unit_interval unit_interval_topology
@@ -138151,10 +138151,29 @@ apply andI.
             S1 S1_topology unit_interval unit_interval_topology ell_pi1 pi2 Hell_pi1 Hpi2). }
         (** q agrees with pair_map pointwise -> transfer continuity **)
         claim Hq_fn : function_on q unit_square (setprod S1 unit_interval).
-        { admit. (** q maps unit_square into S1 x I **) }
+        { let st. assume Hst : st :e unit_square.
+          claim Hst0 : st 0 :e unit_interval. { exact (ap0_Sigma unit_interval (fun _ => unit_interval) st Hst). }
+          claim Hst1 : st 1 :e unit_interval. { exact (ap1_Sigma unit_interval (fun _ => unit_interval) st Hst). }
+          claim Heval : apply_fun q st = (apply_fun ell (st 0), st 1).
+          { exact (apply_fun_graph unit_square (fun st0:set => (apply_fun ell (st0 0), st0 1)) st Hst). }
+          rewrite Heval.
+          claim Hell_fn : function_on ell unit_interval S1.
+          { exact (continuous_map_function_on unit_interval unit_interval_topology S1 S1_topology ell Hell_cont). }
+          rewrite <- (tuple_pair (apply_fun ell (st 0)) (st 1)).
+          exact (pair_Sigma S1 (fun _ => unit_interval) (apply_fun ell (st 0)) (Hell_fn (st 0) Hst0) (st 1) Hst1). }
         claim Hpw : forall st:set, st :e unit_square ->
           apply_fun (pair_map unit_square ell_pi1 pi2) st = apply_fun q st.
-        { admit. (** pair_map_apply + compose_fun_apply + projection_apply = graph eval **) }
+        { let st. assume Hst : st :e unit_square.
+          claim Hlhs : apply_fun (pair_map unit_square ell_pi1 pi2) st = (apply_fun ell_pi1 st, apply_fun pi2 st).
+          { exact (pair_map_apply unit_square S1 unit_interval ell_pi1 pi2 st Hst). }
+          claim Hell_pi1_eval : apply_fun ell_pi1 st = apply_fun ell (st 0).
+          { rewrite (compose_fun_apply unit_square (projection_map1 unit_interval unit_interval) ell st Hst).
+            rewrite (projection1_apply unit_interval unit_interval st Hst). reflexivity. }
+          claim Hpi2_eval : apply_fun pi2 st = st 1.
+          { exact (projection2_apply unit_interval unit_interval st Hst). }
+          claim Hrhs : apply_fun q st = (apply_fun ell (st 0), st 1).
+          { exact (apply_fun_graph unit_square (fun st0:set => (apply_fun ell (st0 0), st0 1)) st Hst). }
+          rewrite Hlhs. rewrite Hell_pi1_eval. rewrite Hpi2_eval. symmetry. exact Hrhs. }
         exact (continuous_map_congr_on unit_square unit_square_topology
           (setprod S1 unit_interval) (product_topology S1 S1_topology unit_interval unit_interval_topology)
           (pair_map unit_square ell_pi1 pi2) q Hpm Hq_fn Hpw). }
