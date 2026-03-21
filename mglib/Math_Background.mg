@@ -292290,8 +292290,22 @@ Lemma householder_S2_homeomorphism : forall n:set,
   homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
     (graph (Sn 2) (householder_S2 n)).
 let n. assume Hn.
-(** Proof: continuous involution on S2 (compact Hausdorff) = homeomorphism **)
-admit.
+(** Use compact_to_Hausdorff_bijection_homeomorphism **)
+(** S2 compact (compact_Sn_2), S2 Hausdorff (Sn_2_Hausdorff) **)
+(** graph (Sn 2) (householder_S2 n) is continuous + bijective **)
+set hn := graph (Sn 2) (householder_S2 n).
+claim Hhn_fn : function_on hn (Sn 2) (Sn 2).
+{ let x. assume Hx : x :e Sn 2.
+  rewrite (apply_fun_graph (Sn 2) (householder_S2 n) x Hx).
+  exact (householder_S2_preserves_Sn2 n x Hn Hx). }
+(** Continuity: restriction of E3 continuous map to Sn 2 **)
+claim Hhn_cont : continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) hn.
+{ admit. (** TODO: continuous restriction from E3 to Sn2; needs householder_S2_continuous **)  }
+(** Bijectivity: involution **)
+claim Hhn_bij : bijection (Sn 2) (Sn 2) hn.
+{ admit. (** TODO: householder_S2_involutory gives self-inverse -> bijective **)  }
+exact (compact_to_Hausdorff_bijection_homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) hn
+  compact_Sn_2 Sn_2_Hausdorff Hhn_cont Hhn_bij).
 Admitted.
 
 (** For q in S2 with q != south_pole_3, the midpoint direction **)
