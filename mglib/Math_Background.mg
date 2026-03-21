@@ -137998,12 +137998,14 @@ apply andI.
       (** + s55_continuous_descends_to_quotient_topology **)
     - (** F(x, 0) = h(x) for x in S1 **)
       let x. assume Hx : x :e S1.
-      (** Pick s with ell(s) = x. F(x,0) = H(s,0) = hell(s) = h(ell(s)) = h(x) **)
-      admit. (** TODO: use Hell_surj, HH_at0, compose_fun_apply **)
+      (** F(x,0) = apply_fun F (x,0) = H(eps_s, 0) where ell(eps_s) = x **)
+      (** = hell(eps_s) = h(ell(eps_s)) = h(x) **)
+      admit. (** needs: apply_fun F unfold + Eps_i picks valid s + HH_at0 + compose_fun hell **)
     - (** F(x, 1) = const_fun S1 y0 (x) = y0 **)
       let x. assume Hx : x :e S1.
-      (** F(x,1) = H(s,1) = constant_path y0 (s) = y0 **)
-      admit. (** TODO: use HH_at1, constant_path_apply **)
+      (** F(x,1) = H(eps_s, 1) = constant_path y0 (eps_s) = y0 **)
+      prove apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x.
+      admit. (** needs: apply_fun F unfold + HH_at1 + const_fun_apply **)
 Admitted.
 
 Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
