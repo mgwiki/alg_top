@@ -292363,8 +292363,36 @@ claim HR2mp_sc : simply_connected (setprod R R :\: Sing p')
       fundamental_group X Tx x0' = Sing (fundamental_group_id X Tx x0').
     apply andI.
     - (** X path connected: transfer from R^2-{p'} via inverse homeomorphism **)
-      (** R^2-{p'} is path connected and homeomorphic to X; use continuous_image_path_connected **)
-      admit.
+      set Y := setprod R R :\: Sing p'.
+      set Ty := subspace_topology (setprod R R) R2_topology Y.
+      (** Extract inverse g from homeomorphism **)
+      claim Hf_cont : continuous_map X Tx Y Ty f.
+      { exact (andEL (continuous_map X Tx Y Ty f)
+          (exists g:set, (continuous_map Y Ty X Tx g /\ (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)) /\ (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+          Hh1). }
+      claim Hh1_rest : exists g:set, (continuous_map Y Ty X Tx g /\ (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)) /\ (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y).
+      { exact (andER (continuous_map X Tx Y Ty f)
+          (exists g:set, (continuous_map Y Ty X Tx g /\ (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)) /\ (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+          Hh1). }
+      apply Hh1_rest. let g. assume Hg_data.
+      claim Hg_cont : continuous_map Y Ty X Tx g.
+      { exact (andEL (continuous_map Y Ty X Tx g) (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+          (andEL (continuous_map Y Ty X Tx g /\ (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+            (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y) Hg_data)). }
+      claim Hgf_inv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+      { exact (andER (continuous_map Y Ty X Tx g) (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+          (andEL (continuous_map Y Ty X Tx g /\ (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+            (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y) Hg_data)). }
+      (** g is surjective: for x in X, take y = f(x) in Y, g(y) = g(f(x)) = x **)
+      claim Hg_surj : forall x:set, x :e X -> exists y:set, y :e Y /\ apply_fun g y = x.
+      { let x. assume HxX.
+        claim Hfx_Y : apply_fun f x :e Y.
+        { exact (continuous_map_function_on X Tx Y Ty f Hf_cont x HxX). }
+        witness (apply_fun f x). apply andI. exact Hfx_Y. exact (Hgf_inv x HxX). }
+      (** R^2-{p'} path connected via R^2-{0} **)
+      claim HY_pc : path_connected_space Y Ty.
+      { admit. }
+      exact (continuous_image_path_connected Y Ty X Tx g HY_pc Hg_cont Hg_surj).
     - (** pi1 trivial at x0 **)
       witness x0. apply andI.
       + exact Hx0.
