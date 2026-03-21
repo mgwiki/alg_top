@@ -290282,7 +290282,26 @@ assume Harc : is_arc D (subspace_topology (Sn 2) (Sn_topology 2) D).
 (** disjoint from h(x). By continuity: h(I_m) in epsilon-nbhd for large m. **)
 (** So alpha avoids h(I_m). Contradiction. **)
 assume Hsep : separates (Sn 2) (Sn_topology 2) D.
-admit.
+(** Bisection argument (Munkres 63.2, line 2141-2173): **)
+(** If D separates S^2, then S^2-D is disconnected. **)
+(** Split D = D1 union D2 at midpoint d. **)
+(** X = S^2-{d} is simply connected (homeo R^2). **)
+(** U = S^2-D1, V = S^2-D2 are open. **)
+(** X = U union V, U cap V = S^2-D. **)
+(** If S^2-D disconnected: write U cap V = A cup B (disjoint open). **)
+(** By thm63_1a: pi_1(X) has infinite cyclic subgroup. **)
+(** But pi_1(X) = pi_1(S^2-{d}) = 0 (simply connected). Contradiction. **)
+(** **)
+(** To make this work without full iteration: need D1, D2 to be arcs **)
+(** such that a can be joined to b in both S^2-D1 and S^2-D2. **)
+(** This is NOT immediate (it requires the bisection iteration). **)
+(** **)
+(** For the first step: assume D1, D2 are proper subarcs such that **)
+(** S^2-D1 and S^2-D2 are both path connected (i.e., neither separates). **)
+(** Then the argument above gives contradiction. **)
+(** The iteration halves the arc until both halves don't separate. **)
+admit. (** TODO: bisection argument; needs thm63_1a, Sn2_minus_point_simply_connected, **)
+(** arc midpoint decomposition, iteration via compactness **)
 Admitted.
 
 (** from S63 Thm 63.3 (line 2177 in algtop.tex) **)
