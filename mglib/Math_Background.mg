@@ -293424,6 +293424,14 @@ prove R3_dot_af v v = euclidean_norm_sq 3 v.
 rewrite Hexpand. rewrite H0L. reflexivity.
 Qed.
 
+(** Helper: (a + (-b))^2 = a^2 - 2ab + b^2 for SNo **)
+Lemma SNo_sub_sq : forall a b:set,
+  SNo a -> SNo b ->
+  mul_SNo (add_SNo a (minus_SNo b)) (add_SNo a (minus_SNo b)) =
+  add_SNo (add_SNo (mul_SNo a a) (minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b)))) (mul_SNo b b).
+admit. (** (a-b)^2 = a^2 - 2ab + b^2 by distributivity + SNo arithmetic **)
+Admitted.
+
 (** R3_dot_af bilinearity: (x-2dn) dot (x-2dn) = x dot x - 4d(x dot n) + 4d^2(n dot n) **)
 (** For d = x dot n and n dot n = 1: result = x dot x **)
 Lemma householder_S2_v2_dot_expansion : forall n x:set,
