@@ -240910,8 +240910,39 @@ claim HL1_word_data :
       Hsg_fn Hsg_open Hsg_conn Hsg_0 Hsg_1 Hsg_overlap Hsg_UV). }
   (** Transfer word data from g to L1 via homotopy [g] = [L1] **)
   claim Hg_L1_homotopic : path_homotopy_class_loop X Tx x0 g = path_homotopy_class_loop X Tx x0 L1.
-  { (** g and L1 trace the same geometric path (f on [0,s], gamma-inv on [s,1]) **)
-    (** but with different parametrizations. They are path-homotopic. **)
+  { (** Apply Theorem_51_3 to g at s to get g ~ path_concat g1 g2 **)
+    claim Hg_split : exists g1_t g2_t:set,
+      continuous_map unit_interval unit_interval_topology X Tx g1_t /\
+      continuous_map unit_interval unit_interval_topology X Tx g2_t /\
+      apply_fun g1_t 0 = x0 /\ apply_fun g1_t 1 = apply_fun g s /\
+      apply_fun g2_t 0 = apply_fun g s /\ apply_fun g2_t 1 = x0 /\
+      path_homotopic X Tx x0 x0 g (path_concat g1_t g2_t).
+    { exact (Theorem_51_3_reparametrization X Tx x0 x0 g s
+        Hg_cont Hg0 Hg1 Hs_UI Hlt_0_s Hlt_s_1). }
+    apply Hg_split. let g1_t. assume Hg1t_ex.
+    apply Hg1t_ex. let g2_t. assume Hg_split_pack.
+    apply (and7E
+      (continuous_map unit_interval unit_interval_topology X Tx g1_t)
+      (continuous_map unit_interval unit_interval_topology X Tx g2_t)
+      (apply_fun g1_t 0 = x0)
+      (apply_fun g1_t 1 = apply_fun g s)
+      (apply_fun g2_t 0 = apply_fun g s)
+      (apply_fun g2_t 1 = x0)
+      (path_homotopic X Tx x0 x0 g (path_concat g1_t g2_t))
+      Hg_split_pack).
+    assume Hg1t_cont Hg2t_cont Hg1t_0 Hg1t_1 Hg2t_0 Hg2t_1 Hg_hom_split.
+    (** g ~ path_concat g1_t g2_t **)
+    (** g1_t endpoints match f1, g2_t endpoints match revGX **)
+    (** So path_concat g1_t g2_t and path_concat f1 revGX (= L1) **)
+    (** are both loops x0 -> f(s) -> x0 **)
+    (** [g] = [path_concat g1_t g2_t] = [g1_t] dot [g2_t] **)
+    (** [L1] = [path_concat f1 revGX] = [f1] dot [revGX] **)
+    (** If [g1_t] = [f1] and [g2_t] = [revGX], then [g] = [L1]. **)
+    (** Both equalities hold because g1_t, f1 are paths x0 -> f(s) **)
+    (** through the simply-connected... no, X is not simply connected. **)
+    (** The equalities hold by POINTWISE EQUALITY of the compose_fun definitions. **)
+    (** This requires access to the Theorem_51_3 internal definitions. **)
+    (** For now admit this final step. **)
     admit. }
   (** Transfer word data from g to L1 using word_data_of_loop_eq_class **)
   exact (word_data_of_loop_eq_class X Tx U V x0 L1 g
