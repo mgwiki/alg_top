@@ -238942,9 +238942,12 @@ Lemma Theorem_51_3_explicit : forall X Tx x0 x1 f a:set,
     apply_fun f2_e u = apply_fun f (apply_fun (affine_fun_I a (add_SNo 1 (minus_SNo a))) u)).
 let X Tx x0 x1 f a.
 assume HfCont Hf0 Hf1 HaI Ha0 Ha1.
-(** The compose_fun_apply gives pointwise evaluation directly **)
-(** The homotopy comes from Theorem_51_3_reparametrization **)
-(** (which internally uses the same compose_fun definitions) **)
+(** Properties 1-7 from Theorem_51_3_reparametrization **)
+(** Properties 8-9 (pointwise) from compose_fun_apply **)
+(** Homotopy needs: f ~ path_concat f1_e f2_e where f1_e, f2_e are our explicit defs **)
+(** This requires proving the homotopy for the specific compose_fun definitions **)
+(** The standard Theorem_51_3 proves it for existential witnesses **)
+(** We need to show our explicit defs give the same homotopy **)
 admit.
 Admitted.
 
