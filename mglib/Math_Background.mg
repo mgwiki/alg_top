@@ -408159,7 +408159,8 @@ Admitted.
 (** U cap V), then there is a unique Phi: pi1(X,x0) -> H with Phi o j1 = phi1, **)
 (** Phi o j2 = phi2. **)
 (** EFFORT: 60 lines textbook, difficulty 9/10, USD 1200 **)
-(** Bounty 1320 **)
+(** Bounty 1452 **)
+(** Lock Charlie 1774141869 **)
 Theorem thm70_1_seifert_van_kampen :
   forall X Tx U V x0:set,
   topology_on X Tx ->
