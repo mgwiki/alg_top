@@ -240183,8 +240183,75 @@ claim HL1_word_data :
             Hle_0_val). }
         (** Bound 2: rescale(t) <= 1 **)
         claim Hrescale_le_1 : ~(Rlt 1 (apply_fun rescale t)).
-        { (** (t-s) c_inv <= (1-s) c_inv = 1 since t <= 1 **)
-          admit. }
+        { (** tc+b <= 1c+b = 1 since t <= 1 **)
+          rewrite Hrescale_t_val.
+          (** Rle t 1 from Hle_1 **)
+          claim Hle_t1 : Rle t 1. { exact (RleI t 1 HtR real_1 Hle_1). }
+          (** Rle (tc) (1c) by monotonicity **)
+          claim HtcR2 : mul_SNo t c_inv :e R. { exact (real_mul_SNo t HtR c_inv Hc_inv_R2). }
+          claim HbR4 : b_rescale :e R. { exact (real_minus_SNo (mul_SNo s c_inv) (real_mul_SNo s Hs_R c_inv Hc_inv_R2)). }
+          claim Hle_tc_1c : Rle (mul_SNo t c_inv) (mul_SNo 1 c_inv).
+          { exact (Rle_of_SNoLe (mul_SNo t c_inv) (mul_SNo 1 c_inv) HtcR2
+              (real_mul_SNo 1 real_1 c_inv Hc_inv_R2)
+              (nonneg_mul_SNo_Le' t 1 c_inv (real_SNo t HtR) SNo_1 Hc_inv_SNo
+                (SNoLe_of_Rle 0 c_inv (Rlt_implies_Rle 0 c_inv
+                  (RltI 0 c_inv real_0 Hc_inv_R2 Hc_inv_pos)))
+                (SNoLe_of_Rle t 1 Hle_t1))). }
+          (** Rle (tc+b) (1c+b) **)
+          claim Hle_tcb_1cb : Rle (add_SNo (mul_SNo t c_inv) b_rescale)
+            (add_SNo (mul_SNo 1 c_inv) b_rescale).
+          { exact (Rle_add_SNo_1 (mul_SNo t c_inv) (mul_SNo 1 c_inv) b_rescale
+              HtcR2 (real_mul_SNo 1 real_1 c_inv Hc_inv_R2) HbR4 Hle_tc_1c). }
+          (** 1c+b = rescale(1) = 1 by Hstep1...Hstep5 from Hrescale_1 proof **)
+          (** Actually, rescale(1) = 1 is already proved in Hrescale_1 scope **)
+          (** I need: add_SNo (mul_SNo 1 c_inv) b_rescale = 1 **)
+          claim H1cb_eq_1 : add_SNo (mul_SNo 1 c_inv) b_rescale = 1.
+          { (** Same as Hrescale_1 proof: eq_i_tra chain **)
+            claim HsSNo4 : SNo s. { exact (real_SNo s Hs_R). }
+            claim H1msSNo4 : SNo (add_SNo 1 (minus_SNo s)). { exact (real_SNo (add_SNo 1 (minus_SNo s)) H1ms_R2). }
+            claim Hst2 : add_SNo (mul_SNo 1 c_inv) b_rescale = add_SNo c_inv b_rescale.
+            { prove add_SNo (mul_SNo 1 c_inv) b_rescale = add_SNo c_inv b_rescale.
+              rewrite (mul_SNo_oneL c_inv Hc_inv_SNo). reflexivity. }
+            claim Hst3 : add_SNo c_inv b_rescale =
+              add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv).
+            { prove add_SNo c_inv b_rescale =
+                add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv).
+              rewrite (mul_SNo_oneL c_inv Hc_inv_SNo).
+              rewrite (mul_SNo_minus_distrL s c_inv HsSNo4 Hc_inv_SNo).
+              reflexivity. }
+            claim Hst4 : add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv) =
+              mul_SNo (add_SNo 1 (minus_SNo s)) c_inv.
+            { exact (eq_symm (mul_SNo (add_SNo 1 (minus_SNo s)) c_inv)
+                (add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv))
+                (mul_SNo_distrR 1 (minus_SNo s) c_inv SNo_1 (SNo_minus_SNo s HsSNo4) Hc_inv_SNo)). }
+            claim Hst5 : mul_SNo (add_SNo 1 (minus_SNo s)) c_inv = 1.
+            { exact (andER (SNo c_inv) (mul_SNo (add_SNo 1 (minus_SNo s)) c_inv = 1)
+                (recip_SNo_pos_prop1 (add_SNo 1 (minus_SNo s)) H1msSNo4
+                  (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos2))). }
+            exact (eq_i_tra (add_SNo (mul_SNo 1 c_inv) b_rescale) (add_SNo c_inv b_rescale) 1
+              Hst2 (eq_i_tra (add_SNo c_inv b_rescale)
+                (add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv)) 1
+                Hst3 (eq_i_tra
+                  (add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv))
+                  (mul_SNo (add_SNo 1 (minus_SNo s)) c_inv) 1
+                  Hst4 Hst5))). }
+          (** Rle (tc+b) (1c+b) and 1c+b = 1 => Rle (tc+b) 1 **)
+          claim Hle_val_1 : Rle (add_SNo (mul_SNo t c_inv) b_rescale) 1.
+          { claim HvalR3 : add_SNo (mul_SNo t c_inv) b_rescale :e R.
+            { exact (real_add_SNo (mul_SNo t c_inv) HtcR2 b_rescale HbR4). }
+            claim H1cbR : add_SNo (mul_SNo 1 c_inv) b_rescale :e R.
+            { exact (real_add_SNo (mul_SNo 1 c_inv)
+                (real_mul_SNo 1 real_1 c_inv Hc_inv_R2) b_rescale HbR4). }
+            claim Hle_1cb_1 : Rle (add_SNo (mul_SNo 1 c_inv) b_rescale) 1.
+            { prove Rle (add_SNo (mul_SNo 1 c_inv) b_rescale) 1.
+              rewrite H1cb_eq_1. exact (RleI 1 1 real_1 real_1 (not_Rlt_refl 1 real_1)). }
+            exact (Rle_tra (add_SNo (mul_SNo t c_inv) b_rescale)
+              (add_SNo (mul_SNo 1 c_inv) b_rescale) 1
+              Hle_tcb_1cb Hle_1cb_1). }
+          exact (andER
+            (add_SNo (mul_SNo t c_inv) b_rescale :e R /\ 1 :e R)
+            (~(Rlt 1 (add_SNo (mul_SNo t c_inv) b_rescale)))
+            Hle_val_1). }
         exact (SepI R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x))
           (apply_fun rescale t) Hrescale_t_R
           (andI (~(Rlt (apply_fun rescale t) 0)) (~(Rlt 1 (apply_fun rescale t)))
