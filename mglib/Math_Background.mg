@@ -241665,10 +241665,61 @@ exact (word_data_of_loop_eq_class X Tx U V x0 f (path_concat L1 L2)
   Htop HU HV Hx0UV HfLoop Hconcat_loop Hclass_eq Hconcat_word).
 Qed.
 
+(** Helper: swap U and V in word_data output (for symmetric transition case) **)
+(** Proven Dave **)
+Lemma word_data_symm_UV :
+  forall X Tx U V x0 f:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  x0 :e U :/\: V ->
+  (exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 f = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n) ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 f = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+let X Tx U V x0 f.
+assume Htop HU HV Hx0UV Hwd.
+apply Hwd. let n. assume Hn_pack.
+apply Hn_pack. assume HnOmega Hrest.
+apply Hrest. let gs. assume Hgs_pack.
+apply Hgs_pack. assume Hgs_fn_type Hgs_class.
+apply Hgs_fn_type. assume Hgs_fn Hgs_type.
+witness n. apply andI.
+- exact HnOmega.
+- witness gs. apply and3I.
+  + exact Hgs_fn.
+  + let i. assume Hi.
+    apply (Hgs_type i Hi).
+    * assume HVcls. apply orIR. exact HVcls.
+    * assume HUcls. apply orIL. exact HUcls.
+  + exact Hgs_class.
+Qed.
+
 (** Generalized helper: like ball_cover_word_nch_ind but for open connected subsets
     instead of fixed-radius balls. Needed for induction (merged/reparametrized chains
-    are not balls of fixed radius).
-    Base case proved; inductive step admitted. **)
+    are not balls of fixed radius). **)
+(** Proven Dave **)
 Lemma ball_cover_word_nch_ind_gen :
   forall nch:set, nat_p nch ->
   forall X Tx U V x0 f seq:set,
@@ -242319,6 +242370,7 @@ Qed.
     Given a loop f with a ball chain where each ball maps f to U or V,
     produce a word decomposition of f's homotopy class in pi_1(X).
     Calls ball_cover_word_nch_ind_gen after deriving open+connected properties. **)
+(** Proven Dave **)
 Lemma ball_cover_word_nch_ind :
   forall nch:set, nat_p nch ->
   forall X Tx U V x0 f r seq:set,
@@ -242406,8 +242458,9 @@ exact (ball_cover_word_nch_ind_gen
   Htop HU HV Hcover Hx0UV HpcUV HfLoop
   HseqPow HseqOpen HseqConn
   H0_in H1_in Hoverlap HballUV).
-Admitted.
+Qed.
 
+(** Proven Dave **)
 Lemma ball_cover_word_construction_mixed_finish : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -243247,6 +243300,7 @@ set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interva
         H0_in_seq0 H1_in_seqn Hoverlap Hball_UV).
 Qed.
 
+(** Proven Dave **)
 Lemma ball_cover_word_construction_mixed : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -250601,6 +250655,7 @@ claim HgrpX : group_structure (fundamental_group X Tx x0) (fundamental_group_mul
       Htop HU HV Hcover Hx0UV HpcUV HfLoop HrR Hrpos Hball_image HnotAllU HnotAllV).
 Qed.
 
+(** Proven Dave **)
 Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -251054,6 +251109,7 @@ Qed.
 (** Helper: Given a loop fcls with a Lebesgue number for {preU, preV}, construct
     the word decomposition in pi_1(U) and pi_1(V). This is the key technical
     step for Seifert-van Kampen (lemma59_1). **)
+(** Proven Dave **)
 (** Collected Alice 75 **)
 (** Proven Alice **)
 Lemma loop_lebesgue_decomposition : forall X Tx U V x0 fcls Nleb:set,
@@ -251145,6 +251201,7 @@ Qed.
 (** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
+(** Proven Dave **)
 (** Collected Alice 393 **)
 (** Proven Alice **)
 Theorem lemma59_1_open_cover_generates_pi1_core : forall X Tx U V x0 cls:set,
