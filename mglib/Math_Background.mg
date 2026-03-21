@@ -138318,10 +138318,35 @@ apply andI.
       (** But s55_continuous_descends needs function_on q, function_on F, **)
       (** compose_fun q F continuous, and topology_on (quotient_topology ...) **)
       (** All these are available or provable from the claims above. **)
-      admit. (** TODO: formal assembly of quotient descent; ~30 lines **)
-      (** Needs: show compose_fun unit_square q F = H (from Hfactors), **)
-      (** then s55_continuous_descends_to_quotient_topology gives F cont on quotient, **)
-      (** and quotient_universal_property converts to product topology **)
+      (** compose_fun unit_square q F is continuous (it agrees with H pointwise) **)
+      set comp_qF := compose_fun unit_square q F.
+      claim Hcomp_qF_cont : continuous_map unit_square unit_square_topology X Tx comp_qF.
+      { (** comp_qF agrees with H pointwise **)
+        claim Hcomp_fn : function_on comp_qF unit_square X.
+        { let st. assume Hst.
+          claim Hcomp_eval : apply_fun comp_qF st = apply_fun F (apply_fun q st).
+          { exact (compose_fun_apply unit_square q F st Hst). }
+          rewrite Hcomp_eval. rewrite <- (Hfactors st Hst).
+          exact (continuous_map_function_on unit_square unit_square_topology X Tx H HH_cont st Hst). }
+        claim Hpw : forall st:set, st :e unit_square -> apply_fun H st = apply_fun comp_qF st.
+        { let st. assume Hst.
+          claim Hcomp_eval : apply_fun comp_qF st = apply_fun F (apply_fun q st).
+          { exact (compose_fun_apply unit_square q F st Hst). }
+          rewrite Hcomp_eval. exact (Hfactors st Hst). }
+        exact (continuous_map_congr_on unit_square unit_square_topology X Tx H comp_qF HH_cont Hcomp_fn Hpw). }
+      (** quotient_topology c= product_topology (using compact_hausdorff_product_quotient) **)
+      (** Need: ell continuous surjective from compact I to Hausdorff S1 **)
+      claim Hell_surj_map : surjective_map unit_interval S1 ell.
+      { prove function_on ell unit_interval S1 /\ forall y:set, y :e S1 -> exists x:set, x :e unit_interval /\ apply_fun ell x = y.
+        apply andI.
+        - exact (continuous_map_function_on unit_interval unit_interval_topology S1 S1_topology ell Hell_cont).
+        - exact Hell_surj. }
+      admit. (** TODO: ~20 lines. Use: **)
+      (** 1. compact_hausdorff_product_quotient gives quotient_topology c= product_topology **)
+      (** 2. quotient_topology_is_topology gives topology_on (quotient_topology) **)
+      (** 3. s55_continuous_descends gives F cont on quotient **)
+      (** 4. quotient_universal_property gives q continuous on quotient -> product c= quotient **)
+      (** 5. So quotient = product, F continuous on product **)
     - (** F(x, 0) = h(x) for x in S1 **)
       let x. assume Hx : x :e S1.
       claim HxI_pair : (x, 0) :e setprod S1 unit_interval.
