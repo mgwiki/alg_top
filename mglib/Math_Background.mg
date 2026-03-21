@@ -1,4 +1,4 @@
-(** Balance Alice 9373 **)
+(** Balance Alice 9404 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
 (** Balance Dave 2670 **)
@@ -276144,8 +276144,7 @@ apply andI.
   }
   rewrite HclsWord.
   exact HwordEq.
-Admitted.
-(** Missing: depends on thm59_1_open_cover_generates_pi1. **)
+Qed.
 
 (** Helper: generation by i-star plus trivial i-star forces basepoint pi1 trivial. **)
 Theorem lemma59_4a_pi1_trivial_from_i_generation : forall X Tx U x0:set,
@@ -276827,7 +276826,7 @@ exact (lemma59_4a_pi1_trivial_from_i_generation
   Hx0U
   Hgen
   Hi_triv).
-Admitted.
+Qed.
 (** Missing: depends on ex59_4a_trivial_j_star. **)
 
 (** Helper: intended S59.4(a) conclusion for noticeboard proposal 1772562693 (alias). **)
@@ -276871,7 +276870,7 @@ exact (lemma59_4a_path_connected_pieces_from_data
   Htop HU HV Hcover Hx0UV
   HpcU HpcV HpcUV
   Hi_triv Hj_triv).
-Admitted.
+Qed.
 (** Missing: depends on lemma59_4a_path_connected_pieces_from_data. **)
 
 (** Helper: if i-star and j-star are trivial and pieces are path connected, then X is simply connected. **)
@@ -276976,14 +276975,14 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
   HpcX
   Hx0X
   Hpi1X).
-Admitted.
-(** Missing: depends on ex59_4a_trivial_j_star. **)
+Qed.
 
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
 (** Admin-approved-refactored per noticeboard proposal 1772519545 **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 25 **)
-(** Bounty 31 **)
+(** Collected Alice 31 **)
+(** Proven Alice **)
 Theorem ex59_4a_both_trivial : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -277126,8 +277125,7 @@ claim HpcV : path_connected_space V (subspace_topology X Tx V).
     HpcPieces).
 }
 exact (HscX_if_pcX HpcU HpcV).
-Admitted.
-(** Missing: depends on ex59_4a_both_trivial_if_pieces_path_connected. **)
+Qed.
 
 (** ============================================================ **)
 (** S60 Fundamental Groups of Some Surfaces                      **)
