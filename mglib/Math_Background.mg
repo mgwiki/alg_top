@@ -408554,6 +408554,51 @@ rewrite HcompUVV.
 reflexivity.
 Qed.
 
+(** Infrastructure: overlap relations map to the identity under any free product homomorphism extending j1 and j2. **)
+(** Charlie: admitted. proof attempt in /project/bck556. **)
+Lemma classical_van_kampen_overlap_relation_in_kernel :
+  forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  x0 :e U :/\: V ->
+  forall FP multFP eFP invFP ifam j:set,
+    external_free_product FP multFP eFP invFP (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set =>
+        if i = 0 then fundamental_group U (subspace_topology X Tx U) x0
+        else fundamental_group V (subspace_topology X Tx V) x0))
+      (graph (UPair 0 1) (fun i:set =>
+        if i = 0 then fundamental_group_mult U (subspace_topology X Tx U) x0
+        else fundamental_group_mult V (subspace_topology X Tx V) x0))
+      ifam ->
+    group_homomorphism FP multFP
+      (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) j ->
+    (forall g:set, g :e fundamental_group U (subspace_topology X Tx U) x0 ->
+      apply_fun j (apply_fun (apply_fun ifam 0) g) =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) g) ->
+    (forall g:set, g :e fundamental_group V (subspace_topology X Tx V) x0 ->
+      apply_fun j (apply_fun (apply_fun ifam 1) g) =
+        apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+          (graph V (fun x:set => x))) g) ->
+    forall g:set,
+      g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+      apply_fun j
+        (apply_fun multFP
+          (apply_fun invFP
+            (apply_fun (apply_fun ifam 0)
+              (apply_fun (induced_homomorphism (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+                U (subspace_topology X Tx U) x0
+                (graph (U :/\: V) (fun x:set => x))) g)),
+           apply_fun (apply_fun ifam 1)
+             (apply_fun (induced_homomorphism (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+               V (subspace_topology X Tx V) x0
+               (graph (U :/\: V) (fun x:set => x))) g)))
+      =
+      fundamental_group_id X Tx x0.
+admit.
+Admitted.
+
+
 (** Infrastructure: existence for the Seifert van Kampen universal pushout property **)
 (** Bounty 182 **)
 (** Lock Charlie 1774178876 **)
