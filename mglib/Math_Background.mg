@@ -240075,7 +240075,9 @@ claim HL1_word_data :
       exact Hgu. }
     claim HrevGX_UV : forall u:set, u :e unit_interval -> apply_fun revGX u :e U :/\: V.
     { let u. assume Hu.
-      claim H1mu : add_SNo 1 (minus_SNo u) :e unit_interval. { admit. }
+      claim H1mu : add_SNo 1 (minus_SNo u) :e unit_interval.
+      { rewrite <- (flip_unit_interval_apply u Hu).
+        exact (flip_unit_interval_function_on u Hu). }
       rewrite (reverse_path_apply_formula gammaX u Hu).
       exact (HgammaX_UV2 (add_SNo 1 (minus_SNo u)) H1mu). }
     (** Define rescaling: affine_fun_I with b = -s/(1-s), c = 1/(1-s) **)
