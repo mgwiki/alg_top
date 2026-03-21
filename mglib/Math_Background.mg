@@ -292683,10 +292683,34 @@ apply (xm (q = south_pole_3)).
 Admitted.
 
 (** Helper: euclidean_space 2 is homeomorphic to setprod R R **)
+(** Proven Alice **)
 Lemma euclidean_space_2_homeo_R2 : exists h:set,
   homeomorphism (euclidean_space 2) (euclidean_topology 2) (setprod R R) R2_topology h.
-admit. (** compose euclidean_space_succ_split_homeomorphism 1 with homeomorphism_product_left **)
-Admitted.
+claim Hnat1 : nat_p 1.
+{ rewrite <- ordsucc_0_eq_1_nat. exact (nat_ordsucc Empty nat_0). }
+set TpE1R := product_topology (euclidean_space 1) (euclidean_topology 1) R R_standard_topology.
+claim Hsplit : homeomorphism (euclidean_space 2) (euclidean_topology 2)
+  (setprod (euclidean_space 1) R) TpE1R (euclidean_space_succ_split_map 1).
+{ rewrite <- ordsucc_1_eq_2_nat.
+  exact (euclidean_space_succ_split_homeomorphism 1 Hnat1). }
+claim Hg_ex : exists g:set, homeomorphism (euclidean_space 1) (euclidean_topology 1) R R_standard_topology g.
+{ rewrite <- SingEmpty_eq_1.
+  exact (homeomorphism_inverse_is_homeomorphism_variant R R_standard_topology
+    (euclidean_space (Sing Empty)) (euclidean_topology (Sing Empty)) R1_singleton_map
+    R_homeomorphic_euclidean_space_1). }
+apply Hg_ex. let g. assume Hg : homeomorphism (euclidean_space 1) (euclidean_topology 1) R R_standard_topology g.
+set fprod := pair_map (setprod (euclidean_space 1) R)
+  (compose_fun (setprod (euclidean_space 1) R) (projection_map1 (euclidean_space 1) R) g)
+  (projection_map2 (euclidean_space 1) R).
+claim Hprod_homeo : homeomorphism (setprod (euclidean_space 1) R) TpE1R (setprod R R) R2_topology fprod.
+{ exact (homeomorphism_product_left (euclidean_space 1) (euclidean_topology 1) R R_standard_topology R R_standard_topology
+    g Hg R_standard_topology_is_topology). }
+set hcomp := compose_fun (euclidean_space 2) (euclidean_space_succ_split_map 1) fprod.
+witness hcomp.
+exact (homeomorphism_compose (euclidean_space 2) (euclidean_topology 2)
+  (setprod (euclidean_space 1) R) TpE1R (setprod R R) R2_topology
+  (euclidean_space_succ_split_map 1) fprod Hsplit Hprod_homeo).
+Qed.
 
 (** Helper: S^2 minus two distinct points is homeomorphic to R^2 minus a point **)
 (** Proof: use Sn2_self_homeo_to_south_pole to move q to south pole, **)
