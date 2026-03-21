@@ -292177,7 +292177,75 @@ Lemma householder_S2_maps_to_neg : forall n:set,
   n :e Sn 2 ->
   householder_S2 n n = Rn_negate 3 n.
 let n. assume Hn.
-admit.
+claim HnE3 : n :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn). }
+claim Hnorm1 : euclidean_norm_sq 3 n = 1.
+{ exact (SepE2 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn). }
+(** R3_dot n n = euclidean_norm_sq 3 n = 1 **)
+claim Hdot1 : R3_dot n n = 1.
+{ exact (eq_i_tra (R3_dot n n) (euclidean_norm_sq 3 n) 1
+    (R3_dot_self_eq_norm_sq n HnE3) Hnorm1). }
+(** householder_S2 n n = graph 3 (fun i => n_i + (-(2d . n_i))) where d = R3_dot n n = 1 **)
+(** So 2d = 2.1 = 2, and each coord becomes n_i + (-(2 n_i)) = -n_i **)
+(** Both householder_S2 n n and Rn_negate 3 n are graph 3 (fun i => ...) **)
+(** Use graph_extensional to reduce to pointwise equality **)
+claim H2d_eq_2 : add_SNo (R3_dot n n) (R3_dot n n) = 2.
+{ rewrite Hdot1. exact add_SNo_1_1_2. }
+(** Pointwise: for i in 3, n_i + (-(2d n_i)) = -n_i **)
+claim Hpointwise : forall i:set, i :e 3 ->
+  add_SNo (apply_fun n i) (minus_SNo (mul_SNo (add_SNo (R3_dot n n) (R3_dot n n)) (apply_fun n i)))
+  = minus_SNo (apply_fun n i).
+{ let i. assume Hi : i :e 3.
+  set ni := apply_fun n i.
+  claim HniSNo : SNo ni.
+  { admit. (** n in euclidean_space 3, i in 3 => apply_fun n i in R => SNo **) }
+  claim HmniSNo : SNo (minus_SNo ni). { exact (SNo_minus_SNo ni HniSNo). }
+  (** 2d = 2, so mul_SNo 2d ni = mul_SNo 2 ni = ni + ni **)
+  claim H2d_ni : mul_SNo (add_SNo (R3_dot n n) (R3_dot n n)) ni = add_SNo ni ni.
+  { rewrite H2d_eq_2. exact (mul_SNo_2_eq_add ni HniSNo). }
+  (** -(ni + ni) = -ni + -ni **)
+  claim Hminus_sum : minus_SNo (add_SNo ni ni) = add_SNo (minus_SNo ni) (minus_SNo ni).
+  { exact (minus_add_SNo_distr ni ni HniSNo HniSNo). }
+  (** ni + (-(2d ni)) = ni + (-(ni+ni)) = ni + (-ni + -ni) **)
+  claim Hstep1 : add_SNo ni (minus_SNo (mul_SNo (add_SNo (R3_dot n n) (R3_dot n n)) ni))
+    = add_SNo ni (minus_SNo (add_SNo ni ni)).
+  { rewrite H2d_ni. reflexivity. }
+  claim Hstep2 : add_SNo ni (minus_SNo (add_SNo ni ni))
+    = add_SNo ni (add_SNo (minus_SNo ni) (minus_SNo ni)).
+  { rewrite Hminus_sum. reflexivity. }
+  (** ni + (-ni + -ni) = (ni + -ni) + -ni = 0 + -ni = -ni **)
+  claim Hassoc : add_SNo ni (add_SNo (minus_SNo ni) (minus_SNo ni))
+    = add_SNo (add_SNo ni (minus_SNo ni)) (minus_SNo ni).
+  { exact (add_SNo_assoc ni (minus_SNo ni) (minus_SNo ni) HniSNo HmniSNo HmniSNo). }
+  claim Hrinv : add_SNo ni (minus_SNo ni) = 0.
+  { exact (add_SNo_minus_SNo_rinv ni HniSNo). }
+  claim H0L : add_SNo 0 (minus_SNo ni) = minus_SNo ni.
+  { exact (add_SNo_0L (minus_SNo ni) HmniSNo). }
+  claim Hrinv_step : add_SNo (add_SNo ni (minus_SNo ni)) (minus_SNo ni) = add_SNo 0 (minus_SNo ni).
+  { rewrite Hrinv. reflexivity. }
+  exact (eq_i_tra
+    (add_SNo ni (minus_SNo (mul_SNo (add_SNo (R3_dot n n) (R3_dot n n)) ni)))
+    (add_SNo ni (add_SNo (minus_SNo ni) (minus_SNo ni)))
+    (minus_SNo ni)
+    (eq_i_tra
+      (add_SNo ni (minus_SNo (mul_SNo (add_SNo (R3_dot n n) (R3_dot n n)) ni)))
+      (add_SNo ni (minus_SNo (add_SNo ni ni)))
+      (add_SNo ni (add_SNo (minus_SNo ni) (minus_SNo ni)))
+      Hstep1 Hstep2)
+    (eq_i_tra
+      (add_SNo ni (add_SNo (minus_SNo ni) (minus_SNo ni)))
+      (add_SNo (add_SNo ni (minus_SNo ni)) (minus_SNo ni))
+      (minus_SNo ni)
+      Hassoc
+      (eq_i_tra
+        (add_SNo (add_SNo ni (minus_SNo ni)) (minus_SNo ni))
+        (add_SNo 0 (minus_SNo ni))
+        (minus_SNo ni)
+        Hrinv_step H0L))). }
+exact (graph_extensional 3
+  (fun i:set => add_SNo (apply_fun n i) (minus_SNo (mul_SNo (add_SNo (R3_dot n n) (R3_dot n n)) (apply_fun n i))))
+  (fun i:set => minus_SNo (apply_fun n i))
+  Hpointwise).
 Admitted.
 
 (** householder_S2 is continuous on euclidean_space 3 **)
