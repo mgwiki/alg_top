@@ -292238,10 +292238,22 @@ claim Hh1 : homeomorphism X Tx (setprod R R :\: Sing p')
 (** Transfer: R^2-{p'} is simply connected **)
 claim HR2mp_sc : simply_connected (setprod R R :\: Sing p')
   (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p')).
-{ (** X has trivial pi1 at x0. Need to show X is simply connected. **)
-  (** simply_connected = path_connected + pi1 trivial **)
-  (** For now admit this transfer step **)
-  admit. }
+{ (** X simply connected from Htriv + path connected, then transfer via f **)
+  claim HX_sc : simply_connected X Tx.
+  { prove path_connected_space X Tx /\ exists x0':set, x0' :e X /\
+      fundamental_group X Tx x0' = Sing (fundamental_group_id X Tx x0').
+    apply andI.
+    - (** X path connected: transfer from R^2-{p'} via homeomorphism **)
+      (** R^2-{p'} path connected from R^2-{0} pc + homeomorphism **)
+      admit.
+    - (** pi1 trivial at x0 **)
+      witness x0. apply andI.
+      + exact Hx0.
+      + exact Htriv. }
+  exact (homeomorphism_preserves_simply_connected X Tx
+    (setprod R R :\: Sing p')
+    (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'))
+    f Hh1 HX_sc). }
 (** Get homeomorphism R^2-{p'} -> R^2-{0} **)
 apply (R2_minus_point_homeo_R2_minus_origin p' Hp'R2).
 let g. assume Hg.
