@@ -240056,16 +240056,48 @@ claim HL1_word_data :
     { exact (SNo_recip_SNo_pos (add_SNo 1 (minus_SNo s))
         (real_SNo (add_SNo 1 (minus_SNo s)) H1ms_R2)
         (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos2)). }
-    (** Define gB witness explicitly **)
-    (** inner(t) = (t-s) times c_inv maps B to [0,1] **)
-    (** gB(t) = pX(inner(t)) maps B to X through U cap V **)
-    (** Properties: continuous, gB(s)=f(s), maps into U cap V **)
-    (** Requires: inner maps B into UI, pX continuous, composition continuous **)
-    (** inner(s) = 0 -> gB(s) = pX(0) = f(s) **)
-    (** For t in B: pX(inner(t)) in X, and p_UV(inner(t)) in U cap V **)
-    (**   so gB(t) = incUV(p_UV(inner(t))) in U cap V **)
-    (** Full proof: ~60 lines of SNo arithmetic for bounds, **)
-    (**   composition_continuous for continuity **)
+    (** Use reverse_path gammaX as the path from f(s) to x0 in U cap V **)
+    (** reverse_path(gammaX)(0) = f(s), reverse_path(gammaX)(1) = x0 **)
+    (** All values in U cap V (via HgammaX_maps_UV) **)
+    set revGX := reverse_path gammaX.
+    claim HrevGX_cont : continuous_map unit_interval unit_interval_topology X Tx revGX.
+    { exact (reverse_path_continuous X Tx gammaX HgammaXCont). }
+    claim HrevGX_0 : apply_fun revGX 0 = apply_fun f s.
+    { rewrite (reverse_path_at_zero gammaX). exact Hgamma1. }
+    claim HrevGX_1 : apply_fun revGX 1 = x0.
+    { rewrite (reverse_path_at_one gammaX). exact Hgamma0. }
+    claim HgammaX_UV2 : forall u:set, u :e unit_interval -> apply_fun gammaX u :e U :/\: V.
+    { let u. assume Hu : u :e unit_interval.
+      rewrite (compose_fun_apply unit_interval gamma incUV u Hu).
+      claim Hgu : apply_fun gamma u :e U :/\: V.
+      { exact (HgammaFun u Hu). }
+      rewrite (apply_fun_graph (U :/\: V) (fun x:set => x) (apply_fun gamma u) Hgu).
+      exact Hgu. }
+    claim HrevGX_UV : forall u:set, u :e unit_interval -> apply_fun revGX u :e U :/\: V.
+    { let u. assume Hu.
+      claim H1mu : add_SNo 1 (minus_SNo u) :e unit_interval. { admit. }
+      rewrite (reverse_path_apply_formula gammaX u Hu).
+      exact (HgammaX_UV2 (add_SNo 1 (minus_SNo u)) H1mu). }
+    (** Define rescaling: affine_fun_I with b = -s/(1-s), c = 1/(1-s) **)
+    set b_rescale := minus_SNo (mul_SNo s c_inv).
+    claim Hc_inv_pos : SNoLt 0 c_inv.
+    { exact (recip_SNo_pos_pos (add_SNo 1 (minus_SNo s))
+        (real_SNo (add_SNo 1 (minus_SNo s)) H1ms_R2)
+        (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos2)). }
+    set rescale := affine_fun_I b_rescale c_inv.
+    (** rescale maps B = [s,1] into [0,1]: **)
+    (** rescale(t) = t/c_inv + (-s/c_inv) = (t-s)/(1-s) **)
+    (** At t=s: 0. At t=1: 1. For t in [s,1]: range [0,1]. **)
+    (** gB_witness = compose of rescale (restricted to B) with revGX **)
+    (** Continuity: rescale continuous (affine), revGX continuous, compose continuous **)
+    (** gB_witness(s) = revGX(0) = f(s) **)
+    (** gB_witness(1) = revGX(1) = x0 **)
+    (** gB_witness maps B into U cap V (via HrevGX_UV) **)
+    (** The formal construction needs: **)
+    (**   1. Show rescale maps B into [0,1] **)
+    (**   2. Define gB as restriction of compose_fun UI rescale revGX to B **)
+    (**   3. Verify properties **)
+    (** For now admit the full construction **)
     admit. }
   apply Hg_on_B_ex. let gB. assume HgB_pack.
   (** HgB_pack : (((cont /\ gBs) /\ gB1) /\ UV) -- left assoc **)
