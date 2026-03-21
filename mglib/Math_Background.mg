@@ -293421,6 +293421,72 @@ exact (SepI (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1)
   (householder_S2_v2 n x) HhxE3 Hhxnorm).
 Admitted.
 
+(** R3_dot_af self on diagonal equals euclidean_norm_sq 3 **)
+(** Proven Alice **)
+Lemma R3_dot_af_self_eq_norm_sq : forall v:set,
+  v :e euclidean_space 3 ->
+  R3_dot_af v v = euclidean_norm_sq 3 v.
+let v. assume Hv.
+set f := fun i:set => mul_SNo (apply_fun v i) (apply_fun v i).
+claim Hnat0 : nat_p 0. { exact nat_0. }
+claim Hnat1 : nat_p 1. { exact nat_1. }
+claim Hnat2 : nat_p 2. { exact nat_2. }
+claim Hstep3 : finite_real_sum f 3 = add_SNo (finite_real_sum f 2) (f 2).
+{ exact (finite_real_sum_S f 2 Hnat2). }
+claim Hstep2 : finite_real_sum f 2 = add_SNo (finite_real_sum f 1) (f 1).
+{ exact (finite_real_sum_S f 1 Hnat1). }
+claim Hstep1 : finite_real_sum f 1 = add_SNo (finite_real_sum f 0) (f 0).
+{ exact (finite_real_sum_S f 0 Hnat0). }
+claim Hstep0 : finite_real_sum f 0 = 0.
+{ exact (finite_real_sum_0 f). }
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim Hf0SNo : SNo (f 0).
+{ exact (real_SNo (f 0) (real_mul_SNo (apply_fun v 0) (euclidean_3_coord_in_R v 0 Hv H0in3)
+    (apply_fun v 0) (euclidean_3_coord_in_R v 0 Hv H0in3))). }
+claim H0L : add_SNo 0 (f 0) = f 0. { exact (add_SNo_0L (f 0) Hf0SNo). }
+claim Hexpand : euclidean_norm_sq 3 v = add_SNo (add_SNo (add_SNo 0 (f 0)) (f 1)) (f 2).
+{ prove finite_real_sum f 3 = add_SNo (add_SNo (add_SNo 0 (f 0)) (f 1)) (f 2).
+  rewrite Hstep3. rewrite Hstep2. rewrite Hstep1. rewrite Hstep0. reflexivity. }
+prove R3_dot_af v v = euclidean_norm_sq 3 v.
+rewrite Hexpand. rewrite H0L. reflexivity.
+Qed.
+
+(** householder_S2_v2 is a homeomorphism of S2 **)
+Lemma householder_S2_v2_homeomorphism : forall n:set,
+  n :e Sn 2 ->
+  homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+    (graph (Sn 2) (householder_S2_v2 n)).
+let n. assume Hn.
+set hn := graph (Sn 2) (householder_S2_v2 n).
+claim Hhn_fn : function_on hn (Sn 2) (Sn 2).
+{ let x. assume Hx : x :e Sn 2.
+  rewrite (apply_fun_graph (Sn 2) (householder_S2_v2 n) x Hx).
+  exact (householder_S2_v2_preserves_Sn2 n x Hn Hx). }
+claim Hhn_cont : continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) hn.
+{ admit. (** continuous restriction from E3 to Sn2 **) }
+claim Hhn_bij : bijection (Sn 2) (Sn 2) hn.
+{ admit. (** v2 involutory -> self-inverse -> bijective **) }
+exact (compact_to_Hausdorff_bijection_homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) hn
+  compact_Sn_2 Sn_2_Hausdorff Hhn_cont Hhn_bij).
+Admitted.
+
+(** Self-homeomorphism of S2 mapping any point to south_pole via v2 **)
+Lemma Sn2_self_homeo_to_south_pole_v2 : forall q:set,
+  q :e Sn 2 ->
+  exists h:set, homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h /\
+    apply_fun h q = south_pole_3.
+let q. assume Hq.
+apply (xm (q = south_pole_3)).
+- assume Heq : q = south_pole_3.
+  witness {(x,x)|x :e Sn 2}.
+  apply andI.
+  + admit. (** identity is homeomorphism **)
+  + rewrite (identity_function_apply (Sn 2) q Hq). exact Heq.
+- assume Hne : q <> south_pole_3.
+  (** Use householder_S2_v2 with appropriate n **)
+  admit. (** define n = (q - south)/norm, prove n in Sn2, prove v2 maps q to south **)
+Admitted.
+
 (** R3_dot is real-valued for vectors in euclidean_space 3 **)
 Lemma R3_dot_real : forall v w:set,
   v :e euclidean_space 3 -> w :e euclidean_space 3 ->
