@@ -295566,8 +295566,15 @@ claim Hdisconn : ~(connected_space SmC TSmC) /\ SmC <> Empty.
 (** Part 3: at most 2 components **)
 (** Uses arc decomposition C = C1 union C2, arc nonseparation for C1 and C2, **)
 (** and thm63_1c to show any third component would violate simple connectivity of S^2-{p,q} **)
-admit. (** TODO: combine jordan_separation_disconnected + at-most-2 argument **)
-(** "At most 2" needs: arc_decomposition, arc_nonseparation, thm63_1c **)
+(** From disconnected + nonempty: get two disjoint open sets covering SmC **)
+claim Hnotconn : ~(connected_space SmC TSmC).
+{ exact (andEL (~(connected_space SmC TSmC)) (SmC <> Empty) Hdisconn). }
+claim Hnotempty : SmC <> Empty.
+{ exact (andER (~(connected_space SmC TSmC)) (SmC <> Empty) Hdisconn). }
+(** "At least 2 components": from disconnected, get x1,x2 in different components **)
+(** "At most 2 components": needs arc_decomposition + arc_nonseparation + thm63_1c **)
+admit. (** TODO: disconnected -> 2 distinct components (standard topology), **)
+(** then at-most-2 via arc decomposition + arc nonseparation **)
 Admitted.
 
 (** Helper: R is locally path connected **)
