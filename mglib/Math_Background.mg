@@ -238924,6 +238924,30 @@ Admitted.
 (** Given a loop f covered by ordsucc(ordsucc m) overlapping connected open intervals, **)
 (** where seq(m) maps f into U and seq(ordsucc m) maps f into V, **)
 (** use IH to produce word data for f. **)
+(** Strengthened reparametrization: explicit compose_fun with pointwise eval and homotopy **)
+Lemma Theorem_51_3_explicit : forall X Tx x0 x1 f a:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
+  a :e unit_interval -> Rlt 0 a -> Rlt a 1 ->
+  let f1_e := compose_fun unit_interval (affine_fun_I 0 a) f in
+  let f2_e := compose_fun unit_interval (affine_fun_I a (add_SNo 1 (minus_SNo a))) f in
+  continuous_map unit_interval unit_interval_topology X Tx f1_e /\
+  continuous_map unit_interval unit_interval_topology X Tx f2_e /\
+  apply_fun f1_e 0 = x0 /\ apply_fun f1_e 1 = apply_fun f a /\
+  apply_fun f2_e 0 = apply_fun f a /\ apply_fun f2_e 1 = x1 /\
+  path_homotopic X Tx x0 x1 f (path_concat f1_e f2_e) /\
+  (forall u:set, u :e unit_interval ->
+    apply_fun f1_e u = apply_fun f (apply_fun (affine_fun_I 0 a) u)) /\
+  (forall u:set, u :e unit_interval ->
+    apply_fun f2_e u = apply_fun f (apply_fun (affine_fun_I a (add_SNo 1 (minus_SNo a))) u)).
+let X Tx x0 x1 f a.
+assume HfCont Hf0 Hf1 HaI Ha0 Ha1.
+(** The compose_fun_apply gives pointwise evaluation directly **)
+(** The homotopy comes from Theorem_51_3_reparametrization **)
+(** (which internally uses the same compose_fun definitions) **)
+admit.
+Admitted.
+
 Lemma nch_transition_UV_step :
   forall m:set, nat_p m ->
   (forall X Tx U V x0 f seq:set,
@@ -240951,7 +240975,10 @@ claim HL1_word_data :
     (**   - Hg_on_A for g = f on [0,s] **)
     (**   - Hg_on_B for g = gB on [s,1], then gB = compose revGX **)
     (**   - affine_fun_I evaluation **)
-    (**   - Theorem_51_3 for g ~ path_concat g1_def g2_def homotopy **)
+    (**   - Theorem_51_3_explicit for g ~ path_concat g1_def g2_def homotopy **)
+    (**   - path_homotopic_of_pointwise_equal for pointwise agreement **)
+    (**   - Lemma_51_1_path_homotopy_trans for transitivity **)
+    (** Use Theorem_51_3_explicit which gives concrete pointwise eval **)
     admit. }
   (** Transfer word data from g to L1 using word_data_of_loop_eq_class **)
   exact (word_data_of_loop_eq_class X Tx U V x0 L1 g
