@@ -138129,7 +138129,35 @@ apply andI.
       (** q continuous: product of ell (continuous) with id (continuous) **)
       claim Hq_cont : continuous_map unit_square unit_square_topology
         (setprod S1 unit_interval) (product_topology S1 S1_topology unit_interval unit_interval_topology) q.
-      { admit. (** product of continuous maps: ell on first coord, id on second **) }
+      { (** q = graph ... (fun st => (ell(st 0), st 1)) agrees with pair_map ... ell_o_pi1 pi2 **)
+        set ell_pi1 := compose_fun unit_square (projection_map1 unit_interval unit_interval) ell.
+        set pi2 := projection_map2 unit_interval unit_interval.
+        claim HtopUI : topology_on unit_interval unit_interval_topology. { admit. (** standard **) }
+        claim Hpi1 : continuous_map unit_square unit_square_topology unit_interval unit_interval_topology
+          (projection_map1 unit_interval unit_interval).
+        { exact (projection1_continuous_in_product unit_interval unit_interval_topology
+            unit_interval unit_interval_topology HtopUI HtopUI). }
+        claim Hell_pi1 : continuous_map unit_square unit_square_topology S1 S1_topology ell_pi1.
+        { exact (composition_continuous unit_square unit_square_topology
+            unit_interval unit_interval_topology S1 S1_topology
+            (projection_map1 unit_interval unit_interval) ell Hpi1 Hell_cont). }
+        claim Hpi2 : continuous_map unit_square unit_square_topology unit_interval unit_interval_topology pi2.
+        { exact (projection2_continuous_in_product unit_interval unit_interval_topology
+            unit_interval unit_interval_topology HtopUI HtopUI). }
+        claim Hpm : continuous_map unit_square unit_square_topology
+          (setprod S1 unit_interval) (product_topology S1 S1_topology unit_interval unit_interval_topology)
+          (pair_map unit_square ell_pi1 pi2).
+        { exact (maps_into_products_axiom unit_square unit_square_topology
+            S1 S1_topology unit_interval unit_interval_topology ell_pi1 pi2 Hell_pi1 Hpi2). }
+        (** q agrees with pair_map pointwise -> transfer continuity **)
+        claim Hq_fn : function_on q unit_square (setprod S1 unit_interval).
+        { admit. (** q maps unit_square into S1 x I **) }
+        claim Hpw : forall st:set, st :e unit_square ->
+          apply_fun (pair_map unit_square ell_pi1 pi2) st = apply_fun q st.
+        { admit. (** pair_map_apply + compose_fun_apply + projection_apply = graph eval **) }
+        exact (continuous_map_congr_on unit_square unit_square_topology
+          (setprod S1 unit_interval) (product_topology S1 S1_topology unit_interval unit_interval_topology)
+          (pair_map unit_square ell_pi1 pi2) q Hpm Hq_fn Hpw). }
       (** q surjective: from Hell_surj **)
       claim Hq_surj : forall xt:set, xt :e setprod S1 unit_interval ->
         exists st:set, st :e unit_square /\ apply_fun q st = xt.
