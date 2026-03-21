@@ -292113,11 +292113,133 @@ apply and7I.
 - exact Hcomp2_conn_X.
 Qed.
 
+(** Inner product of 3-vectors: v dot w = v0 w0 + v1 w1 + v2 w2 **)
+Definition R3_dot : set -> set -> set := fun v w =>
+  add_SNo (add_SNo (mul_SNo (v 0) (w 0)) (mul_SNo (v 1) (w 1))) (mul_SNo (v 2) (w 2)).
+
+(** Householder reflection for S2: x - 2(x dot n)n component-wise **)
+(** For n on S2 with n dot n = 1, this preserves S2 and maps n to -n **)
+Definition householder_S2 : set -> set -> set := fun n x =>
+  let d := R3_dot x n in
+  graph 3 (fun i:set =>
+    add_SNo (apply_fun x i) (minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i)))).
+
+(** R3_dot is real-valued for vectors in euclidean_space 3 **)
+Lemma R3_dot_real : forall v w:set,
+  v :e euclidean_space 3 -> w :e euclidean_space 3 ->
+  R3_dot v w :e R.
+let v w. assume Hv Hw.
+admit.
+Admitted.
+
+(** R3_dot equals euclidean_norm_sq on the diagonal: v dot v = norm_sq v **)
+Lemma R3_dot_self_eq_norm_sq : forall v:set,
+  v :e euclidean_space 3 ->
+  R3_dot v v = euclidean_norm_sq 3 v.
+let v. assume Hv.
+admit.
+Admitted.
+
+(** householder_S2 maps euclidean_space 3 into euclidean_space 3 **)
+Lemma householder_S2_in_E3 : forall n x:set,
+  n :e euclidean_space 3 -> x :e euclidean_space 3 ->
+  householder_S2 n x :e euclidean_space 3.
+let n x. assume Hn Hx.
+admit.
+Admitted.
+
+(** householder_S2 preserves the norm when n is a unit vector **)
+Lemma householder_S2_preserves_norm : forall n x:set,
+  n :e Sn 2 -> x :e euclidean_space 3 ->
+  euclidean_norm_sq 3 (householder_S2 n x) = euclidean_norm_sq 3 x.
+let n x. assume Hn Hx.
+admit.
+Admitted.
+
+(** householder_S2 preserves S2 **)
+Lemma householder_S2_preserves_Sn2 : forall n x:set,
+  n :e Sn 2 -> x :e Sn 2 ->
+  householder_S2 n x :e Sn 2.
+let n x. assume Hn Hx.
+admit.
+Admitted.
+
+(** householder_S2 is involutory **)
+Lemma householder_S2_involutory : forall n x:set,
+  n :e Sn 2 -> x :e euclidean_space 3 ->
+  householder_S2 n (householder_S2 n x) = x.
+let n x. assume Hn Hx.
+admit.
+Admitted.
+
+(** householder_S2 maps n to Rn_negate 3 n (the antipode) **)
+Lemma householder_S2_maps_to_neg : forall n:set,
+  n :e Sn 2 ->
+  householder_S2 n n = Rn_negate 3 n.
+let n. assume Hn.
+admit.
+Admitted.
+
+(** householder_S2 is continuous on euclidean_space 3 **)
+Lemma householder_S2_continuous : forall n:set,
+  n :e Sn 2 ->
+  continuous_map (euclidean_space 3) (euclidean_topology 3) (euclidean_space 3) (euclidean_topology 3)
+    (graph (euclidean_space 3) (householder_S2 n)).
+let n. assume Hn.
+admit.
+Admitted.
+
+(** householder_S2 is a homeomorphism of S2 **)
+Lemma householder_S2_homeomorphism : forall n:set,
+  n :e Sn 2 ->
+  homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+    (graph (Sn 2) (householder_S2 n)).
+let n. assume Hn.
+(** Proof: continuous involution on S2 (compact Hausdorff) = homeomorphism **)
+admit.
+Admitted.
+
+(** For q in S2 with q != south_pole_3, the midpoint direction **)
+(** n = (q - south_pole) normalized maps q to south_pole via Householder **)
+Lemma householder_S2_maps_q_to_south : forall q:set,
+  q :e Sn 2 -> q <> south_pole_3 ->
+  exists n:set, n :e Sn 2 /\
+    householder_S2 n q = south_pole_3.
+let q. assume Hq HqnS.
+admit.
+Admitted.
+
+(** Self-homeomorphism of S2 mapping any point to south_pole **)
+Lemma Sn2_self_homeo_to_south_pole : forall q:set,
+  q :e Sn 2 ->
+  exists h:set, homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h /\
+    apply_fun h q = south_pole_3.
+let q. assume Hq.
+(** Case q = south_pole: identity **)
+(** Case q != south_pole: use Householder reflection **)
+apply (xm (q = south_pole_3)).
+- assume Heq : q = south_pole_3.
+  witness {(x,x)|x :e Sn 2}.
+  apply andI.
+  + admit. (** identity is homeomorphism **)
+  + rewrite (identity_function_apply (Sn 2) q Hq). exact Heq.
+- assume Hne : q <> south_pole_3.
+  apply (householder_S2_maps_q_to_south q Hq Hne).
+  let n. assume Hdata.
+  claim Hn : n :e Sn 2. { exact (andEL (n :e Sn 2) (householder_S2 n q = south_pole_3) Hdata). }
+  claim Hmaps : householder_S2 n q = south_pole_3.
+  { exact (andER (n :e Sn 2) (householder_S2 n q = south_pole_3) Hdata). }
+  witness (graph (Sn 2) (householder_S2 n)).
+  apply andI.
+  + exact (householder_S2_homeomorphism n Hn).
+  + claim Heval : apply_fun (graph (Sn 2) (householder_S2 n)) q = householder_S2 n q.
+    { exact (apply_fun_graph (Sn 2) (householder_S2 n) q Hq). }
+    rewrite Heval. exact Hmaps.
+Admitted.
+
 (** Helper: S^2 minus two distinct points is homeomorphic to R^2 minus a point **)
-(** Proof: use stereographic projection from q to get S^2-{q} -> R^2, **)
-(** then restrict to S^2-{p,q} -> R^2-{stereo(p)}. **)
-(** For general q (not just south pole), need rotation sending q to south pole **)
-(** (SO(3) acts transitively on S^2). **)
+(** Proof: use Sn2_self_homeo_to_south_pole to move q to south pole, **)
+(** then use stereo_S_map_homeomorphism to project to R^2 **)
 Lemma S2_minus_two_points_homeo_R2_minus_point : forall p q:set,
   p :e Sn 2 -> q :e Sn 2 -> p <> q ->
   exists f p':set, p' :e setprod R R /\
@@ -292126,7 +292248,62 @@ Lemma S2_minus_two_points_homeo_R2_minus_point : forall p q:set,
       (setprod R R :\: Sing p')
       (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'))
       f.
-admit.
+let p q. assume Hp Hq Hpq.
+(** Step 1: get homeomorphism h: S2 -> S2 with h(q) = south_pole **)
+apply (Sn2_self_homeo_to_south_pole q Hq).
+let h. assume Hh_data.
+claim Hh_homeo : homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h.
+{ exact (andEL
+    (homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h)
+    (apply_fun h q = south_pole_3) Hh_data). }
+claim Hhq : apply_fun h q = south_pole_3.
+{ exact (andER
+    (homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h)
+    (apply_fun h q = south_pole_3) Hh_data). }
+(** Step 2: h maps S2-{p,q} homeomorphically onto S2-{h(p),south_pole} **)
+(** h(p) in S2 and h(p) != south_pole (since h is bijective and h(q) = south_pole, p != q) **)
+claim Hhp_Sn : apply_fun h p :e Sn 2.
+{ exact (continuous_map_function_on (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h
+    (andEL (continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h)
+      (exists g:set, continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) g /\
+        (forall x:set, x :e Sn 2 -> apply_fun g (apply_fun h x) = x) /\
+        (forall y:set, y :e Sn 2 -> apply_fun h (apply_fun g y) = y)) Hh_homeo)
+    p Hp). }
+(** Step 3: stereo_S_map is homeomorphism S2-{south_pole} -> R2 **)
+(** restrict to S2-{h(p),south_pole} -> R2-{stereo(h(p))} **)
+set p' := apply_fun stereo_S_map (apply_fun h p).
+(** stereo(h(p)) in R2 since h(p) in S2-{south_pole} **)
+(** Need: h(p) != south_pole **)
+claim Hhp_ne_south : apply_fun h p <> south_pole_3.
+{ assume Heq : apply_fun h p = south_pole_3.
+  (** h(p) = south_pole = h(q), but h injective and p != q -> contradiction **)
+  apply (andER (continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h)
+    (exists g:set, continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) g /\
+      (forall x:set, x :e Sn 2 -> apply_fun g (apply_fun h x) = x) /\
+      (forall y:set, y :e Sn 2 -> apply_fun h (apply_fun g y) = y)) Hh_homeo).
+  let g. assume Hg_data.
+  claim Hgf_inv : forall x:set, x :e Sn 2 -> apply_fun g (apply_fun h x) = x.
+  { exact (andER (continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) g)
+      (forall x:set, x :e Sn 2 -> apply_fun g (apply_fun h x) = x)
+      (andEL
+        (continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) g /\
+          (forall x:set, x :e Sn 2 -> apply_fun g (apply_fun h x) = x))
+        (forall y:set, y :e Sn 2 -> apply_fun h (apply_fun g y) = y) Hg_data)). }
+  claim Hp_eq_q : p = q.
+  { claim H1 : apply_fun g (apply_fun h p) = p. { exact (Hgf_inv p Hp). }
+    claim H2 : apply_fun g (apply_fun h q) = q. { exact (Hgf_inv q Hq). }
+    claim H3 : apply_fun h p = apply_fun h q. { rewrite Heq. rewrite Hhq. reflexivity. }
+    claim H4 : apply_fun g (apply_fun h p) = apply_fun g (apply_fun h q).
+    { rewrite H3. reflexivity. }
+    exact (eq_i_tra p (apply_fun g (apply_fun h p)) q
+      (eq_symm (apply_fun g (apply_fun h p)) p H1)
+      (eq_i_tra (apply_fun g (apply_fun h p)) (apply_fun g (apply_fun h q)) q H4 H2)). }
+  exact (Hpq Hp_eq_q). }
+(** Now compose: stereo restricted to S2-{h(p),south_pole} with h restricted to S2-{p,q} **)
+(** This gives the final homeomorphism **)
+(** Full construction requires restriction + composition of homeomorphisms **)
+(** using homeomorphism_restrict_to_image_of_subset + homeomorphism_compose **)
+admit. (** TODO: compose h restricted and stereo restricted; ~50 lines of restriction algebra **)
 Admitted.
 
 (** Helper: R^2 minus any point is path connected **)
