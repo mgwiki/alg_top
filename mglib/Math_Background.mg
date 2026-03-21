@@ -137793,7 +137793,39 @@ Lemma compact_hausdorff_product_quotient_topology :
   quotient_topology (setprod A C) (product_topology A Ta C Tc) (setprod B C)
     (graph (setprod A C) (fun ac:set => (apply_fun f (ac 0), ac 1)))
     c= product_topology B Tb C Tc.
-admit.
+let A Ta B Tb f.
+assume HcompA HhausB Hf_cont Hf_surj.
+let C Tc.
+assume HcompC HtopC HhausBC.
+set fxid := graph (setprod A C) (fun ac:set => (apply_fun f (ac 0), ac 1)).
+(** A x C compact, B x C Hausdorff **)
+claim HtopA : topology_on A Ta. { exact (continuous_map_topology_dom A Ta B Tb f Hf_cont). }
+claim HtopB : topology_on B Tb. { exact (continuous_map_topology_cod A Ta B Tb f Hf_cont). }
+claim HcompAC : compact_space (setprod A C) (product_topology A Ta C Tc).
+{ admit. (** product of compact is compact **) }
+(** fxid continuous **)
+claim Hfxid_cont : continuous_map (setprod A C) (product_topology A Ta C Tc)
+  (setprod B C) (product_topology B Tb C Tc) fxid.
+{ admit. (** product of continuous maps: f on first, id on second **) }
+(** fxid surjective **)
+claim Hfxid_surj : surjective_map (setprod A C) (setprod B C) fxid.
+{ admit. (** from Hf_surj: for (b,c), get a with f(a)=b, then fxid(a,c)=(b,c) **) }
+(** fxid is a closed map (compact -> Hausdorff continuous) **)
+claim Hfxid_closed : closed_map (setprod A C) (product_topology A Ta C Tc)
+  (setprod B C) (product_topology B Tb C Tc) fxid.
+{ exact (s55_continuous_compact_Hausdorff_closed_map
+    (setprod A C) (product_topology A Ta C Tc)
+    (setprod B C) (product_topology B Tb C Tc)
+    fxid HcompAC HhausBC Hfxid_cont). }
+(** Closed surjective -> quotient_topology c= target_topology **)
+claim HtopAC : topology_on (setprod A C) (product_topology A Ta C Tc).
+{ exact (product_topology_is_topology A Ta C Tc HtopA HtopC). }
+claim HtopBC : topology_on (setprod B C) (product_topology B Tb C Tc).
+{ exact (product_topology_is_topology B Tb C Tc HtopB HtopC). }
+exact (s55_surjective_closed_map_quotient_sub
+  (setprod A C) (product_topology A Ta C Tc)
+  (setprod B C) (product_topology B Tb C Tc)
+  fxid HtopAC HtopBC Hfxid_surj Hfxid_closed).
 Admitted.
 
 (** KEY BOTTLENECK: If proved, cascades to make R2_minus_origin_not_simply_connected QED **)
