@@ -294405,7 +294405,20 @@ Lemma S2_complement_simple_closed_curve_exactly_two_components :
       component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x1 \/
       component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) y =
       component_of (Sn 2 :\: C) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: C)) x2).
-admit.
+let C. assume HC Hscc.
+set SmC := Sn 2 :\: C.
+set TSmC := subspace_topology (Sn 2) (Sn_topology 2) SmC.
+(** Part 1: at least 2 components (from jordan_separation_disconnected) **)
+claim Hdisconn : ~(connected_space SmC TSmC) /\ SmC <> Empty.
+{ exact (jordan_separation_disconnected C HC Hscc). }
+(** Part 2: get two points in different components **)
+(** From disconnected: exists nonempty disjoint open A, B with SmC = A union B **)
+(** Pick x1 in A, x2 in B. They are in different components. **)
+(** Part 3: at most 2 components **)
+(** Uses arc decomposition C = C1 union C2, arc nonseparation for C1 and C2, **)
+(** and thm63_1c to show any third component would violate simple connectivity of S^2-{p,q} **)
+admit. (** TODO: combine jordan_separation_disconnected + at-most-2 argument **)
+(** "At most 2" needs: arc_decomposition, arc_nonseparation, thm63_1c **)
 Admitted.
 
 (** Helper: R is locally path connected **)
