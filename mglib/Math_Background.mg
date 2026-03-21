@@ -240229,7 +240229,29 @@ claim HL1_word_data :
           (** In left half: 2st = 2st where t <= 1/2, so 2st <= s <= 1, hence in UI **)
           (** So 2st in V_of(k) cap UI = seq(k), and HkU applies **)
           (** 2st in UI since t in left half: 2st <= s <= 1 and 2st >= 0 **)
-          claim H2st_UI : mul_SNo 2 (mul_SNo s t) :e unit_interval. { admit. }
+          claim H2st_UI : mul_SNo 2 (mul_SNo s t) :e unit_interval.
+          { (** st in UI by unit_interval_mul_closed, st <= 1/2 by s <= 1 and t <= 1/2 **)
+            claim Hst_UI : mul_SNo s t :e unit_interval.
+            { exact (unit_interval_mul_closed s t Hs_UI HtUI). }
+            claim Hst_lh : mul_SNo s t :e unit_interval_left_half.
+            { apply (SepI unit_interval (fun x:set => ~(Rlt (eps_ 1) x)) (mul_SNo s t) Hst_UI).
+              claim HstSNo : SNo (mul_SNo s t). { exact (SNo_mul_SNo s t HsSNo HtSNo). }
+              claim Hsle1 : s <= 1. { exact (SNoLe_of_Rle s 1 (RleI s 1 Hs_R real_1 Hs_nlt1)). }
+              claim H0let : 0 <= t. { exact (SNoLe_of_Rle 0 t (unit_interval_Rle0 t HtUI)). }
+              claim Hst_le_1t : mul_SNo s t <= mul_SNo 1 t.
+              { exact (nonneg_mul_SNo_Le' s 1 t HsSNo SNo_1 HtSNo H0let Hsle1). }
+              claim H1tSNo : SNo (mul_SNo 1 t). { exact (SNo_mul_SNo 1 t SNo_1 HtSNo). }
+              claim H1t_le_t : mul_SNo 1 t <= t.
+              { rewrite (mul_SNo_oneL t HtSNo). exact (SNoLe_ref t). }
+              claim Hst_le_t : mul_SNo s t <= t.
+              { exact (SNoLe_tra (mul_SNo s t) (mul_SNo 1 t) t HstSNo H1tSNo HtSNo Hst_le_1t H1t_le_t). }
+              assume Habs : Rlt (eps_ 1) (mul_SNo s t).
+              exact (Hnright (RltI (eps_ 1) t eps_1_in_R (unit_interval_sub_R t HtUI)
+                (SNoLtLe_tra (eps_ 1) (mul_SNo s t) t SNo_eps_1 HstSNo HtSNo
+                  (RltE_lt (eps_ 1) (mul_SNo s t) Habs)
+                  Hst_le_t))). }
+            rewrite <- (double_map_apply (mul_SNo s t) Hst_lh).
+            exact (double_map_function_on (mul_SNo s t) Hst_lh). }
           (** seq(k) = V_of(k) cap UI **)
           claim HVk_spec : apply_fun seq k =
             ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)
@@ -240309,7 +240331,28 @@ claim HL1_word_data :
                     (mul_SNo_assoc 2 t s SNo_2 HtSNo2 HsSNo2))
                   Hstep3v))). }
           rewrite Haffine_eq_2st2.
-          claim H2st_UI2 : mul_SNo 2 (mul_SNo s t) :e unit_interval. { admit. }
+          claim H2st_UI2 : mul_SNo 2 (mul_SNo s t) :e unit_interval.
+          { claim Hst_UI2 : mul_SNo s t :e unit_interval.
+            { exact (unit_interval_mul_closed s t Hs_UI HtUI2). }
+            claim HstSNo2 : SNo (mul_SNo s t). { exact (SNo_mul_SNo s t HsSNo2 HtSNo2). }
+            claim Hsle1_2 : s <= 1. { exact (SNoLe_of_Rle s 1 (RleI s 1 Hs_R real_1 Hs_nlt1)). }
+            claim H0let2 : 0 <= t. { exact (SNoLe_of_Rle 0 t (unit_interval_Rle0 t HtUI2)). }
+            claim Hst_le_1t2 : mul_SNo s t <= mul_SNo 1 t.
+            { exact (nonneg_mul_SNo_Le' s 1 t HsSNo2 SNo_1 HtSNo2 H0let2 Hsle1_2). }
+            claim H1tSNo2 : SNo (mul_SNo 1 t). { exact (SNo_mul_SNo 1 t SNo_1 HtSNo2). }
+            claim H1t_le_t2 : mul_SNo 1 t <= t.
+            { rewrite (mul_SNo_oneL t HtSNo2). exact (SNoLe_ref t). }
+            claim Hst_le_t2 : mul_SNo s t <= t.
+            { exact (SNoLe_tra (mul_SNo s t) (mul_SNo 1 t) t HstSNo2 H1tSNo2 HtSNo2 Hst_le_1t2 H1t_le_t2). }
+            claim Hst_lh2 : mul_SNo s t :e unit_interval_left_half.
+            { apply (SepI unit_interval (fun x:set => ~(Rlt (eps_ 1) x)) (mul_SNo s t) Hst_UI2).
+              assume Habs2 : Rlt (eps_ 1) (mul_SNo s t).
+              exact (Hnright2 (RltI (eps_ 1) t eps_1_in_R (unit_interval_sub_R t HtUI2)
+                (SNoLtLe_tra (eps_ 1) (mul_SNo s t) t SNo_eps_1 HstSNo2 HtSNo2
+                  (RltE_lt (eps_ 1) (mul_SNo s t) Habs2)
+                  Hst_le_t2))). }
+            rewrite <- (double_map_apply (mul_SNo s t) Hst_lh2).
+            exact (double_map_function_on (mul_SNo s t) Hst_lh2). }
           claim HVk_spec2 : apply_fun seq k =
             ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)
               :/\: unit_interval.
@@ -240385,7 +240428,28 @@ claim HL1_word_data :
                     (mul_SNo_assoc 2 t s SNo_2 HtSNo3 HsSNo3))
                   Hstep3m))). }
           rewrite Haffine_eq_2st3.
-          claim H2st_UI3 : mul_SNo 2 (mul_SNo s t) :e unit_interval. { admit. }
+          claim H2st_UI3 : mul_SNo 2 (mul_SNo s t) :e unit_interval.
+          { claim Hst_UI3 : mul_SNo s t :e unit_interval.
+            { exact (unit_interval_mul_closed s t Hs_UI HtUI3). }
+            claim HstSNo3 : SNo (mul_SNo s t). { exact (SNo_mul_SNo s t HsSNo3 HtSNo3). }
+            claim Hsle1_3 : s <= 1. { exact (SNoLe_of_Rle s 1 (RleI s 1 Hs_R real_1 Hs_nlt1)). }
+            claim H0let3 : 0 <= t. { exact (SNoLe_of_Rle 0 t (unit_interval_Rle0 t HtUI3)). }
+            claim Hst_le_1t3 : mul_SNo s t <= mul_SNo 1 t.
+            { exact (nonneg_mul_SNo_Le' s 1 t HsSNo3 SNo_1 HtSNo3 H0let3 Hsle1_3). }
+            claim H1tSNo3 : SNo (mul_SNo 1 t). { exact (SNo_mul_SNo 1 t SNo_1 HtSNo3). }
+            claim H1t_le_t3 : mul_SNo 1 t <= t.
+            { rewrite (mul_SNo_oneL t HtSNo3). exact (SNoLe_ref t). }
+            claim Hst_le_t3 : mul_SNo s t <= t.
+            { exact (SNoLe_tra (mul_SNo s t) (mul_SNo 1 t) t HstSNo3 H1tSNo3 HtSNo3 Hst_le_1t3 H1t_le_t3). }
+            claim Hst_lh3 : mul_SNo s t :e unit_interval_left_half.
+            { apply (SepI unit_interval (fun x:set => ~(Rlt (eps_ 1) x)) (mul_SNo s t) Hst_UI3).
+              assume Habs3 : Rlt (eps_ 1) (mul_SNo s t).
+              exact (Hnright3 (RltI (eps_ 1) t eps_1_in_R (unit_interval_sub_R t HtUI3)
+                (SNoLtLe_tra (eps_ 1) (mul_SNo s t) t SNo_eps_1 HstSNo3 HtSNo3
+                  (RltE_lt (eps_ 1) (mul_SNo s t) Habs3)
+                  Hst_le_t3))). }
+            rewrite <- (double_map_apply (mul_SNo s t) Hst_lh3).
+            exact (double_map_function_on (mul_SNo s t) Hst_lh3). }
           claim HVm_spec2 : apply_fun seq m =
             ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m)
               :/\: unit_interval.
