@@ -292172,7 +292172,18 @@ Lemma householder_S2_in_E3 : forall n x:set,
   n :e euclidean_space 3 -> x :e euclidean_space 3 ->
   householder_S2 n x :e euclidean_space 3.
 let n x. assume Hn Hx.
-admit.
+(** householder_S2 n x = graph 3 (fun i => x_i - 2(x dot n) n_i) **)
+(** Each coord is in R since x_i, n_i in R and R is closed under add, mul, minus **)
+set d := R3_dot x n.
+claim HdR : d :e R. { exact (R3_dot_real x n Hx Hn). }
+set g := fun i:set => add_SNo (apply_fun x i) (minus_SNo (mul_SNo (add_SNo d d) (apply_fun n i))).
+prove graph 3 g :e euclidean_space 3.
+claim Hg_in : forall i:set, i :e 3 -> g i :e space_family_set (const_space_family 3 R R_standard_topology) i.
+{ let i. assume Hi.
+  rewrite (space_family_set_const_space_family 3 R R_standard_topology i Hi).
+  prove g i :e R.
+  admit. (** TODO: g i in R; needs xi in R, ni in R, closure under add/mul/minus **) }
+exact (product_space_graphI 3 (const_space_family 3 R R_standard_topology) g Hg_in).
 Admitted.
 
 (** R3_dot is linear in the first argument: (a+b) dot c = a dot c + b dot c **)
