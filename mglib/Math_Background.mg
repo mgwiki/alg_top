@@ -240322,8 +240322,11 @@ claim HL1_word_data :
           assume H : apply_fun seq 0 = Empty.
           exact (EmptyE 0 (eq_subst_mem_set 0 (apply_fun seq 0) Empty H0_in H)).
         - assume Hkne0 : k <> 0.
-          (** k in m and k <> 0, so k > 0, so k-1 in m and overlap k-1 gives point in seq(k) **)
-          admit. }
+          claim Hovlp_kk : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+          { exact (Hoverlap k (ordsuccI1 m k Hkm)). }
+          assume Hempty : apply_fun seq k = Empty.
+          apply Hovlp_kk.
+          rewrite Hempty. exact (binintersect_Empty_left (apply_fun seq (ordsucc k))). }
       claim HVk_Ropen : Vk :e R_standard_topology.
       { exact (connected_ambient_open_Ropen (apply_fun seq k)
           (HseqOpen k Hk_osn) Hseqk_ne). }
