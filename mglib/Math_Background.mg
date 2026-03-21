@@ -239105,24 +239105,88 @@ claim HW_in_subT : W :e subspace_topology R R_standard_topology V.
 { exact (andER (topology_on V (subspace_topology R R_standard_topology V))
     (W :e subspace_topology R R_standard_topology V) Hcomp_open_in_V). }
 (** W in subspace_topology R R_standard_topology V means exists U0 in R_standard_topology, W = U0 cap V **)
-admit.
-Admitted.
+apply (subspace_topologyE R R_standard_topology V W HW_in_subT).
+let U0. assume HU0_data : U0 :e R_standard_topology /\ W = U0 :/\: V.
+claim HU0_Ropen : U0 :e R_standard_topology.
+{ exact (andEL (U0 :e R_standard_topology) (W = U0 :/\: V) HU0_data). }
+claim HWeq : W = U0 :/\: V.
+{ exact (andER (U0 :e R_standard_topology) (W = U0 :/\: V) HU0_data). }
+rewrite HWeq.
+exact (topology_binintersect_closed R R_standard_topology U0 V
+  R_standard_topology_is_topology HU0_Ropen HVopen).
+Qed.
 
 Theorem connected_ambient_open_contains_U : forall U:set,
   U :e unit_interval_topology ->
   U <> Empty ->
   connected_space U (subspace_topology unit_interval unit_interval_topology U) ->
   U c= connected_ambient_open R R_standard_topology unit_interval U.
-admit.
-Admitted.
+let U. assume HU HUne HUconn.
+set V := ambient_open_of_subspace_open R R_standard_topology unit_interval U.
+set W := connected_ambient_open R R_standard_topology unit_interval U.
+claim HUeq : U = V :/\: unit_interval.
+{ exact (andER (V :e R_standard_topology) (U = V :/\: unit_interval)
+    (ambient_open_of_subspace_open_spec R R_standard_topology unit_interval U HU)). }
+claim HU_sub_V : U c= V.
+{ let x. assume Hx : x :e U.
+  exact (binintersectE1 V unit_interval x
+    (eq_subst_mem_set x U (V :/\: unit_interval) Hx HUeq)). }
+claim Href : Eps_i (fun p:set => p :e U) :e U.
+{ exact (Eps_i_ex (fun p:set => p :e U) (nonempty_has_element U HUne)). }
+claim Href_V : Eps_i (fun p:set => p :e U) :e V.
+{ exact (HU_sub_V (Eps_i (fun p:set => p :e U)) Href). }
+(** Convert connected_space U from UI-subspace to V-subspace **)
+claim HU_sub_UI : U c= unit_interval.
+{ let x. assume Hx : x :e U.
+  exact (binintersectE2 V unit_interval x
+    (eq_subst_mem_set x U (V :/\: unit_interval) Hx HUeq)). }
+claim HUconn_R : connected_space U (subspace_topology R R_standard_topology U).
+{ rewrite <- (subspace_topology_transitive_weak R R_standard_topology unit_interval U HU_sub_UI).
+  exact HUconn. }
+claim HUconn_V : connected_space U (subspace_topology V (subspace_topology R R_standard_topology V) U).
+{ rewrite (subspace_topology_transitive_weak R R_standard_topology V U HU_sub_V).
+  exact HUconn_R. }
+(** For each y in U: y in V and exists C connected containing ref and y **)
+let y. assume Hy : y :e U.
+claim Hy_V : y :e V. { exact (HU_sub_V y Hy). }
+claim Hwitness : exists C:set,
+  connected_space C (subspace_topology V (subspace_topology R R_standard_topology V) C) /\
+  Eps_i (fun p:set => p :e U) :e C /\ y :e C.
+{ witness U. apply andI. apply andI. exact HUconn_V. exact Href. exact Hy. }
+exact (SepI V (fun z:set => exists C:set,
+  connected_space C (subspace_topology V (subspace_topology R R_standard_topology V) C) /\
+  Eps_i (fun p:set => p :e U) :e C /\ z :e C) y Hy_V Hwitness).
+Qed.
 
 Theorem connected_ambient_open_cap_UI : forall U:set,
   U :e unit_interval_topology ->
   U <> Empty ->
   connected_space U (subspace_topology unit_interval unit_interval_topology U) ->
   U = connected_ambient_open R R_standard_topology unit_interval U :/\: unit_interval.
-admit.
-Admitted.
+let U. assume HU HUne HUconn.
+set V := ambient_open_of_subspace_open R R_standard_topology unit_interval U.
+set W := connected_ambient_open R R_standard_topology unit_interval U.
+claim HUeq : U = V :/\: unit_interval.
+{ exact (andER (V :e R_standard_topology) (U = V :/\: unit_interval)
+    (ambient_open_of_subspace_open_spec R R_standard_topology unit_interval U HU)). }
+claim HW_sub_V : W c= V.
+{ exact (connected_ambient_open_sub R R_standard_topology unit_interval U HU). }
+claim HU_sub_W : U c= W.
+{ exact (connected_ambient_open_contains_U U HU HUne HUconn). }
+apply set_ext.
+- let x. assume Hx : x :e U.
+  claim HxW : x :e W. { exact (HU_sub_W x Hx). }
+  claim HxUI : x :e unit_interval.
+  { exact (binintersectE2 V unit_interval x
+      (eq_subst_mem_set x U (V :/\: unit_interval) Hx HUeq)). }
+  exact (binintersectI W unit_interval x HxW HxUI).
+- let x. assume Hx : x :e W :/\: unit_interval.
+  claim HxW2 : x :e W. { exact (binintersectE1 W unit_interval x Hx). }
+  claim HxUI2 : x :e unit_interval. { exact (binintersectE2 W unit_interval x Hx). }
+  claim HxV : x :e V. { exact (HW_sub_V x HxW2). }
+  claim HxVUI : x :e V :/\: unit_interval. { exact (binintersectI V unit_interval x HxV HxUI2). }
+  exact (eq_subst_mem_set x (V :/\: unit_interval) U HxVUI (eq_symm U (V :/\: unit_interval) HUeq)).
+Qed.
 
 Theorem connected_ambient_open_mem : forall U x:set,
   U :e unit_interval_topology ->
@@ -239132,7 +239196,7 @@ Theorem connected_ambient_open_mem : forall U x:set,
   x :e connected_ambient_open R R_standard_topology unit_interval U.
 let U x. assume HU HUne HUconn Hx.
 exact (connected_ambient_open_contains_U U HU HUne HUconn x Hx).
-Admitted.
+Qed.
 
 (** Proven Dave **)
 (** Preimage of convex set under positive scaling, intersected with UI, is convex **)
