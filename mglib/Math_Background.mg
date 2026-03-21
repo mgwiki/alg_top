@@ -138393,7 +138393,33 @@ apply andI.
           unit_interval unit_interval_topology unit_interval_compact_axiom unit_interval_topology_on
           Hprod_Haus). }
       (** Step 6: F continuous on quotient + quotient c= product -> F continuous on product **)
-      admit. (** final transfer: continuous on coarser topology -> continuous on finer **)
+      set prod_top := product_topology S1 S1_topology unit_interval unit_interval_topology.
+      claim HtopProd : topology_on (setprod S1 unit_interval) prod_top.
+      { claim HtopS1 : topology_on S1 S1_topology.
+        { exact (continuous_map_topology_cod unit_interval unit_interval_topology S1 S1_topology ell Hell_cont). }
+        exact (product_topology_is_topology S1 S1_topology unit_interval unit_interval_topology HtopS1 unit_interval_topology_on). }
+      (** Extract parts from HF_cont_Q **)
+      claim HF_cont_Q_preimage : forall V:set, V :e Tx ->
+        preimage_of (setprod S1 unit_interval) F V :e
+          quotient_topology unit_square unit_square_topology (setprod S1 unit_interval) q.
+      { exact (andER
+          (topology_on (setprod S1 unit_interval)
+            (quotient_topology unit_square unit_square_topology (setprod S1 unit_interval) q) /\
+           topology_on X Tx /\ function_on F (setprod S1 unit_interval) X)
+          (forall V:set, V :e Tx ->
+            preimage_of (setprod S1 unit_interval) F V :e
+              quotient_topology unit_square unit_square_topology (setprod S1 unit_interval) q)
+          HF_cont_Q). }
+      prove continuous_map (setprod S1 unit_interval) prod_top X Tx F.
+      prove topology_on (setprod S1 unit_interval) prod_top /\ topology_on X Tx /\
+        function_on F (setprod S1 unit_interval) X /\
+        (forall V:set, V :e Tx -> preimage_of (setprod S1 unit_interval) F V :e prod_top).
+      apply and4I.
+      + exact HtopProd.
+      + exact HtopX.
+      + exact HF_fn.
+      + let V. assume HV : V :e Tx.
+        exact (Hqt_sub (preimage_of (setprod S1 unit_interval) F V) (HF_cont_Q_preimage V HV)).
     - (** F(x, 0) = h(x) for x in S1 **)
       let x. assume Hx : x :e S1.
       claim HxI_pair : (x, 0) :e setprod S1 unit_interval.
