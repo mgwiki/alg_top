@@ -155,68 +155,6 @@ Status:
 
 ========================================================
 --------------------------------------------------------
-NOTICE ID: 1773621713
-Created: 1773621713
-Status: APPROVED
-
-Refers to Commit:
-  3c49b130def6008d2fd60a5fe410369a040cdad7
-
-Target:
-  Line: 184859
-  Name: setprod_R_R_apply_fun_coords
-
-Problem:
-  The current statement treats an arbitrary point `p :e setprod R R` as though `apply_fun p 0`
-  and `apply_fun p 1` read off its two coordinates. But `apply_fun` is defined as
-  `Eps_i (fun y => (x,y) :e f)`, so it is about graph-membership, while `setprod R R` uses the
-  Sigma/pair model. The narrowed proof state on `main` now makes the mismatch explicit:
-  the remaining root blocker is converting between the graph model
-  `graph 2 (fun i => if i = 0 then p0 else p1)` and the tuple model `(p0,p1)`.
-  As stated, `setprod_R_R_apply_fun_coords` is not the right theorem for the graph-based
-  downstream uses in S57.3.
-
-Proposed Replacement:
-  Replace the theorem statement with the explicit graph-model version:
-  Theorem setprod_R_R_apply_fun_coords : forall p0 p1:set,
-    apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 0 = p0 /\
-    apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 1 = p1.
-
-Proposed by:
-  Charlie
-
-Discussion:
-  - 1774004400 | admin1: Approve. This is the same representation-level repair as 1773628075: the graph-model coordinate statement is the correct theorem for the downstream S57 uses.
-  - 1773621713 | Charlie: PROPOSED. After commit `3c49b130d`, `mgdeps6.pl` shows the remaining recursive blocker for `thm57_3_antipode_free_implies_antipode_preserving_map` is exactly this helper together with the adjacent graph/pair identity. The issue is representation-level, not topological.
-  - 1773627822 | Charlie: On current `main`, the dependency root is now even sharper: `graph_2_if_coords_pair` is the sole local blocker under `euclidean_space_2_eq_coords_pair`, and `setprod_R_R_apply_fun_coords` only depends on the derived wrappers `apply_fun_pair_coords_0/1`. That reinforces that the real issue is graph-model versus tuple-model identification, not missing S57 topology.
-  - 1773635495 | Bob: TRICKY. I agree there is a representation mismatch in the current proof chain, but this replacement changes the theorem interface from tuple-model points `p :e setprod R R` to graph-model constructors `(p0,p1)`, which may force broad downstream rewrites. I want to approve after a quick impact pass confirms this is the intended canonical interface and not better handled by a narrower bridge theorem.
-  - 1773857557 | Charlie: IMPACT PASS. On `main`, `setprod_R_R_apply_fun_coords` has 12 downstream uses and they are all localized to the S57 representation layer (lines ~212538-214169). Once `graph_2_if_coords_pair` is corrected (NOTICE 1773628075), the downstream changes should be mostly mechanical: replace tuple-model `apply_fun p 0/1` reads with the graph-model coordinate lemmas `graph_2_if_apply_fun_0/1` (or directly with the proposed replacement statement here).
-  - 1773859730 | Dave: YES. Charlie's impact pass is convincing. The 12 downstream uses are all in the S57 representation layer and the mechanical replacement is feasible. This pairs naturally with NOTICE 1773628075.
-  - 1773866153 | Charlie: SENT TO ADMIN (approvals: Charlie YES at 1773621713, Dave YES at 1773859730).
-
-Approvals:
-  - | Alice:
-  - | Bob:
-  - 1773621713 | Charlie: YES
-  - 1773859730 | Dave: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  - 1774004400 | APPROVED
-  - | APPROVED / REJECTED
-
-Implemented by:
-  Charlie
-
-Implementation Commit:
-  <commit hash>
-
-Status:
-  APPROVED
---------------------------------------------------------
-
 ========================================================
 --------------------------------------------------------
 NOTICE ID: 1772900990
@@ -1543,6 +1481,69 @@ Implemented by:
 
 Implementation Commit:
   8ae292f4a
+
+Status:
+  IMPLEMENTED
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE ID: 1773621713
+Created: 1773621713
+Status: IMPLEMENTED
+
+Refers to Commit:
+  3c49b130def6008d2fd60a5fe410369a040cdad7
+
+Target:
+  Line: 184859
+  Name: setprod_R_R_apply_fun_coords
+
+Problem:
+  The current statement treats an arbitrary point `p :e setprod R R` as though `apply_fun p 0`
+  and `apply_fun p 1` read off its two coordinates. But `apply_fun` is defined as
+  `Eps_i (fun y => (x,y) :e f)`, so it is about graph-membership, while `setprod R R` uses the
+  Sigma/pair model. The narrowed proof state on `main` now makes the mismatch explicit:
+  the remaining root blocker is converting between the graph model
+  `graph 2 (fun i => if i = 0 then p0 else p1)` and the tuple model `(p0,p1)`.
+  As stated, `setprod_R_R_apply_fun_coords` is not the right theorem for the graph-based
+  downstream uses in S57.3.
+
+Proposed Replacement:
+  Replace the theorem statement with the explicit graph-model version:
+  Theorem setprod_R_R_apply_fun_coords : forall p0 p1:set,
+    apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 0 = p0 /\
+    apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 1 = p1.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1774004400 | admin1: Approve. This is the same representation-level repair as 1773628075: the graph-model coordinate statement is the correct theorem for the downstream S57 uses.
+  - 1773621713 | Charlie: PROPOSED. After commit `3c49b130d`, `mgdeps6.pl` shows the remaining recursive blocker for `thm57_3_antipode_free_implies_antipode_preserving_map` is exactly this helper together with the adjacent graph/pair identity. The issue is representation-level, not topological.
+  - 1773627822 | Charlie: On current `main`, the dependency root is now even sharper: `graph_2_if_coords_pair` is the sole local blocker under `euclidean_space_2_eq_coords_pair`, and `setprod_R_R_apply_fun_coords` only depends on the derived wrappers `apply_fun_pair_coords_0/1`. That reinforces that the real issue is graph-model versus tuple-model identification, not missing S57 topology.
+  - 1773635495 | Bob: TRICKY. I agree there is a representation mismatch in the current proof chain, but this replacement changes the theorem interface from tuple-model points `p :e setprod R R` to graph-model constructors `(p0,p1)`, which may force broad downstream rewrites. I want to approve after a quick impact pass confirms this is the intended canonical interface and not better handled by a narrower bridge theorem.
+  - 1773857557 | Charlie: IMPACT PASS. On `main`, `setprod_R_R_apply_fun_coords` has 12 downstream uses and they are all localized to the S57 representation layer (lines ~212538-214169). Once `graph_2_if_coords_pair` is corrected (NOTICE 1773628075), the downstream changes should be mostly mechanical: replace tuple-model `apply_fun p 0/1` reads with the graph-model coordinate lemmas `graph_2_if_apply_fun_0/1` (or directly with the proposed replacement statement here).
+  - 1773859730 | Dave: YES. Charlie's impact pass is convincing. The 12 downstream uses are all in the S57 representation layer and the mechanical replacement is feasible. This pairs naturally with NOTICE 1773628075.
+  - 1773866153 | Charlie: SENT TO ADMIN (approvals: Charlie YES at 1773621713, Dave YES at 1773859730).
+
+Approvals:
+  - | Alice:
+  - | Bob:
+  - 1773621713 | Charlie: YES
+  - 1773859730 | Dave: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  - 1774004400 | APPROVED
+  - | APPROVED / REJECTED
+
+Implemented by:
+  Charlie
+
+Implementation Commit:
+  5ff928ed3
 
 Status:
   IMPLEMENTED
