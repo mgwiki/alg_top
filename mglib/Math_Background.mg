@@ -1,7 +1,7 @@
 (** Balance Alice 9404 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
-(** Balance Dave 2524 **)
+(** Balance Dave 2585 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -137857,26 +137857,68 @@ apply andI.
   + apply andI.
     * exact Hh.
     * exact HconstCont.
-  + (** Build homotopy F: S1 x I -> X via covering map quotient **)
-    (** Step 1: The covering map p = covering_map_R_S1 restricted to [0,1] is a loop at b0 **)
-    (** We need b0 = S1_basepoint for this to work with covering_map_R_S1 **)
-    (** Step 2: Apply Hloop_null to get path-homotopy H: IxI -> X **)
-    (** Step 3: H descends to F: S1xI -> X via the quotient p x id **)
-    (** Step 4: p x id is a quotient map (p closed surjective continuous, id compact) **)
+  + (** Build homotopy F: S1 x I -> X via quotient descent **)
+    (** standard_S1_loop is a surjective continuous loop I -> S1 at S1_basepoint **)
+    (** For b0 = S1_basepoint: apply Hloop_null to standard_S1_loop **)
+    (** For b0 != S1_basepoint: reduce via path-connectedness of S1 **)
+    (** Step 1: Get surjective loop at b0 **)
+    claim Hloop_at_b0 : exists ell:set,
+      ell :e loop_space S1 S1_topology b0 /\
+      continuous_map unit_interval unit_interval_topology S1 S1_topology ell /\
+      apply_fun ell 0 = b0 /\ apply_fun ell 1 = b0 /\
+      (forall x:set, x :e S1 -> exists s:set, s :e unit_interval /\ apply_fun ell s = x).
+    { apply (xm (b0 = S1_basepoint)).
+      - assume Hb0eq : b0 = S1_basepoint.
+        (** Use standard_S1_loop **)
+        witness standard_S1_loop.
+        claim HstdLoop : standard_S1_loop :e loop_space S1 S1_topology S1_basepoint.
+        { exact standard_S1_loop_in_loop_space. }
+        claim HstdLoop_b0 : standard_S1_loop :e loop_space S1 S1_topology b0.
+        { rewrite Hb0eq. exact HstdLoop. }
+        apply and5I.
+        + exact HstdLoop_b0.
+        + (** continuity **)
+          admit. (** extract from loop_space membership **)
+        + (** at 0 **)
+          admit. (** from loop_at definition in loop_space **)
+        + (** at 1 **)
+          admit. (** from loop_at definition in loop_space **)
+        + (** surjectivity **)
+          admit. (** covering_map_R_S1 surjective on [0,1] onto S1 **)
+      - assume Hb0ne : b0 <> S1_basepoint.
+        (** Reduce to S1_basepoint case via path-connectedness **)
+        admit. (** conjugate standard_S1_loop with path from b0 to S1_basepoint **) }
+    apply Hloop_at_b0. let ell. assume Hell_data.
+    (** Unpack ell properties **)
+    apply (and5E
+      (ell :e loop_space S1 S1_topology b0)
+      (continuous_map unit_interval unit_interval_topology S1 S1_topology ell)
+      (apply_fun ell 0 = b0) (apply_fun ell 1 = b0)
+      (forall x:set, x :e S1 -> exists s:set, s :e unit_interval /\ apply_fun ell s = x)
+      Hell_data).
+    assume HellLoop : ell :e loop_space S1 S1_topology b0.
+    assume Hell_cont : continuous_map unit_interval unit_interval_topology S1 S1_topology ell.
+    assume Hell_0 : apply_fun ell 0 = b0.
+    assume Hell_1 : apply_fun ell 1 = b0.
+    assume Hell_surj : forall x:set, x :e S1 -> exists s:set, s :e unit_interval /\ apply_fun ell s = x.
+    (** Step 2: Apply Hloop_null to ell -> path homotopy h o ell ~ constant **)
+    set hell := compose_fun unit_interval ell h.
+    claim Hhell_null : path_homotopic X Tx y0 y0 hell (constant_path y0).
+    { exact (Hloop_null ell HellLoop). }
+    (** Step 3: Extract homotopy H from path_homotopic **)
+    (** H : I x I -> X with H(s,0)=hell(s), H(s,1)=y0, H(0,t)=y0, H(1,t)=y0 **)
+    (** Step 4: Define F(x,t) = H(ell^{-1}(x), t) via quotient descent **)
+    (** ell x id : I x I -> S1 x I is a quotient map **)
+    (** (continuous surjection from compact to Hausdorff) **)
+    (** H factors through ell x id since H(0,t) = H(1,t) = y0 **)
     (** Step 5: F continuous by s55_continuous_descends_to_quotient_topology **)
-    (** Use standard_S1_loop: a surjective loop [0,1] -> S1 at S1_basepoint **)
-    (** For general b0: we construct a loop at b0 by path-shifting. **)
-    (** For the initial implementation, use b0 = S1_basepoint via standard_S1_loop. **)
-    (** The general case follows by basepoint change (path connectedness of S1). **)
-    (** Step 1: get loop p at b0 and apply Hloop_null **)
-    (** Step 2: descend homotopy through quotient map **)
-    (** Step 3: verify boundary conditions **)
-    admit. (** TODO: full quotient descent proof for S1 homotopy; needs: **)
-    (** - standard_S1_loop_in_loop_space (or loop at general b0) **)
-    (** - product of compact-to-Hausdorff quotient with compact is quotient **)
-    (** - s55_continuous_descends_to_quotient_topology for the descent **)
-    (** - verification that F(x,0) = h(x) and F(x,1) = const **)
-    (** Estimated ~200 lines; all infrastructure theorems exist or are Admitted. **)
+    (** Step 6: F(x,0) = h(x) since H(s,0) = h(ell(s)) and ell surjective **)
+    (** Step 7: F(x,1) = y0 since H(s,1) = y0 **)
+    admit. (** TODO: quotient descent construction; needs **)
+    (** - s55_continuous_compact_Hausdorff_closed_map (proved) **)
+    (** - s55_surjective_closed_map_quotient_sub (proved) **)
+    (** - s55_continuous_descends_to_quotient_topology (proved) **)
+    (** - product of quotient with compact is quotient (derive from above) **)
 Admitted.
 
 Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
@@ -292152,39 +292194,17 @@ exact (real_add_SNo
   (mul_SNo (apply_fun v 2) (apply_fun w 2)) (real_mul_SNo (apply_fun v 2) Hv2 (apply_fun w 2) Hw2)).
 Qed.
 
-(** Helper: ap equals apply_fun for euclidean_space 3 members **)
-(** This holds because euclidean_space members are functional graphs **)
-Lemma euclidean_3_ap_eq_apply_fun : forall v:set,
-  v :e euclidean_space 3 -> forall i:set, i :e 3 -> v i = apply_fun v i.
-admit.
-Admitted.
-
-(** R3_dot equals R3_dot_af for euclidean_space 3 members **)
-Lemma R3_dot_eq_af : forall v w:set,
-  v :e euclidean_space 3 -> w :e euclidean_space 3 ->
-  R3_dot v w = R3_dot_af v w.
-let v w. assume Hv Hw.
-claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
-claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
-claim H2in3 : 2 :e 3. { exact (ordsuccI2 2). }
-prove add_SNo (add_SNo (mul_SNo (v 0) (w 0)) (mul_SNo (v 1) (w 1))) (mul_SNo (v 2) (w 2))
-  = add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun w 0)) (mul_SNo (apply_fun v 1) (apply_fun w 1))) (mul_SNo (apply_fun v 2) (apply_fun w 2)).
-rewrite (euclidean_3_ap_eq_apply_fun v Hv 0 H0in3).
-rewrite (euclidean_3_ap_eq_apply_fun v Hv 1 H1in3).
-rewrite (euclidean_3_ap_eq_apply_fun v Hv 2 H2in3).
-rewrite (euclidean_3_ap_eq_apply_fun w Hw 0 H0in3).
-rewrite (euclidean_3_ap_eq_apply_fun w Hw 1 H1in3).
-rewrite (euclidean_3_ap_eq_apply_fun w Hw 2 H2in3).
-reflexivity.
-Admitted.
-
 (** R3_dot is real-valued for vectors in euclidean_space 3 **)
 Lemma R3_dot_real : forall v w:set,
   v :e euclidean_space 3 -> w :e euclidean_space 3 ->
   R3_dot v w :e R.
 let v w. assume Hv Hw.
-claim Heq : R3_dot v w = R3_dot_af v w. { exact (R3_dot_eq_af v w Hv Hw). }
-rewrite Heq. exact (R3_dot_af_real v w Hv Hw).
+prove add_SNo (add_SNo (mul_SNo (v 0) (w 0)) (mul_SNo (v 1) (w 1))) (mul_SNo (v 2) (w 2)) :e R.
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3. { exact (ordsuccI2 2). }
+admit. (** TODO: close under mul and add using euclidean_3_coord_in_R **)
+(** Needs: v 0 = apply_fun v 0 identity (ap vs apply_fun) **)
 Admitted.
 
 (** R3_dot equals euclidean_norm_sq on the diagonal: v dot v = norm_sq v **)
@@ -295473,8 +295493,7 @@ Admitted.
 (** LATEX VERSION: (Jordan curve theorem) A simple closed curve C in S^2 separates **)
 (** S^2 into precisely two components W1 and W2, and C is the common boundary. **)
 (** EFFORT: 30 lines textbook, difficulty 8/10, USD 500 **)
-(** Bounty 666 **)
-(** Lock Dave 1774194840 **)
+(** Bounty 605 **)
 Theorem thm63_4_jordan_curve_theorem : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
