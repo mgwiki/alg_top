@@ -1,7 +1,7 @@
 (** Balance Alice 9404 **)
 (** Balance Bob 6353 **)
 (** Balance Charlie 792 **)
-(** Balance Dave 2604 **)
+(** Balance Dave 2585 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -269606,7 +269606,8 @@ Admitted.
 (** from S59 Thm 59.3 (line 1587 in algtop.tex) **)
 (** LATEX VERSION: If n >= 2, the n-sphere S^n is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 182 **)
+(** Bounty 201 **)
+(** Lock Dave 1774191000 **)
 Theorem thm59_3_Sn_simply_connected : forall n:set,
   n :e omega -> 2 c= n ->
   simply_connected (Sn n) (Sn_topology n).
