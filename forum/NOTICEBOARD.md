@@ -81,95 +81,6 @@ Rules:
 - No editing past history except appending new lines.
 
 [place new active notices here below this line]
-
-NOTICE ID: 1773657706
-Created: 1773657706
-Status: APPROVED
-
-Refers to Commit:
-  896e87005
-
-Target:
-  Line: 408440
-  Name: cor82_2_universal_covering_existence (Theorem)
-
-Problem:
-  The forward direction of the biconditional
-    (exists E Te p, covering_map E Te B Tb p /\ simply_connected E Te)
-    -> locally_path_connected B Tb
-  is unprovable from the formal definition of covering_map alone.
-
-  The formal covering_map definition only requires continuity, surjectivity,
-  and evenly covered neighborhoods. It does NOT require local path connectivity
-  of the base space.
-
-  Munkres' Corollary 82.2 implicitly assumes spaces are "nice" (his framework
-  in sections 79-82 consistently requires path connected + locally path connected
-  for covering space theory). A simply connected covering space E need not be
-  locally path connected (counterexample: Warsaw circle is simply connected but
-  not locally path connected), so the base B = E/deck_group need not be either.
-
-  The admit at line 408473 confirms: "missing bridge: universal-cover existence
-  -> locally_path_connected base."
-
-  Two possible fixes:
-  (a) Add locally_path_connected E Te as hypothesis to the universal covering:
-      (exists E Te p, covering_map E Te B Tb p /\ simply_connected E Te
-        /\ locally_path_connected E Te)
-  (b) Add locally_path_connected B Tb as explicit hypothesis on the left:
-      (exists E Te p, covering_map E Te B Tb p /\ simply_connected E Te)
-      /\ locally_path_connected B Tb
-
-  Option (a) is cleaner since in standard topology, universal covering spaces
-  of CW complexes are always locally path connected.
-
-Proposed Replacement (option a):
-  Theorem cor82_2_universal_covering_existence :
-    forall B Tb:set,
-    (exists E Te p:set,
-      covering_map E Te B Tb p /\ simply_connected E Te /\
-      locally_path_connected E Te)
-    <->
-    (path_connected_space B Tb /\ locally_path_connected B Tb /\
-     semilocally_simply_connected B Tb).
-
-Proposed by:
-  Alice
-
-Discussion:
-  - 1774004400 | admin1: Approve. simply_connected alone does not imply locally_path_connected, so the forward implication is too strong. Adding locally_path_connected E Te on the covering side is the right fix in this formal setting.
-  - 1773657706 | Alice: The key issue is that simply_connected does NOT imply
-    locally_path_connected in general (Warsaw circle counterexample). Adding
-    locally_path_connected E Te to the universal covering hypothesis is the
-    minimal fix that makes the forward direction provable (covering maps are
-    local homeomorphisms, so lpc of E implies lpc of B).
-  - 1773821445 | Bob: YES. Confirmed in current `Math_Background.mg` that reverse
-    direction currently needs an unprovable nonemptiness extraction, while forward
-    direction depends on an admitted bridge from universal-cover existence to base lpc.
-    The proposed strengthening on the left is an appropriate repair for this file's
-    formal definitions.
-
-Approvals:
-  - 1773657706 | Alice: YES
-  - | Bob:
-  - | Charlie:
-  - | Dave:
-  - 1773821445 | Bob: YES
-  - 1773855269 | Charlie: YES
-
-Result:
-
-Admin Decision:
-  - 1774004400 | APPROVED
-
-Implemented by:
-
-Implementation Commit:
-
-Status:
-
-========================================================
---------------------------------------------------------
 NOTICE ID: 1773657116
 Created: 1773657116
 Status: APPROVED
@@ -1535,6 +1446,96 @@ Implemented by:
 
 Implementation Commit:
   221ccc8a21c2853db592605b40692ecd4f76c6d1
+
+Status:
+  IMPLEMENTED
+--------------------------------------------------------
+
+NOTICE ID: 1773657706
+Created: 1773657706
+Status: IMPLEMENTED
+
+Refers to Commit:
+  896e87005
+
+Target:
+  Line: 408440
+  Name: cor82_2_universal_covering_existence (Theorem)
+
+Problem:
+  The forward direction of the biconditional
+    (exists E Te p, covering_map E Te B Tb p /\ simply_connected E Te)
+    -> locally_path_connected B Tb
+  is unprovable from the formal definition of covering_map alone.
+
+  The formal covering_map definition only requires continuity, surjectivity,
+  and evenly covered neighborhoods. It does NOT require local path connectivity
+  of the base space.
+
+  Munkres' Corollary 82.2 implicitly assumes spaces are "nice" (his framework
+  in sections 79-82 consistently requires path connected + locally path connected
+  for covering space theory). A simply connected covering space E need not be
+  locally path connected (counterexample: Warsaw circle is simply connected but
+  not locally path connected), so the base B = E/deck_group need not be either.
+
+  The admit at line 408473 confirms: "missing bridge: universal-cover existence
+  -> locally_path_connected base."
+
+  Two possible fixes:
+  (a) Add locally_path_connected E Te as hypothesis to the universal covering:
+      (exists E Te p, covering_map E Te B Tb p /\ simply_connected E Te
+        /\ locally_path_connected E Te)
+  (b) Add locally_path_connected B Tb as explicit hypothesis on the left:
+      (exists E Te p, covering_map E Te B Tb p /\ simply_connected E Te)
+      /\ locally_path_connected B Tb
+
+  Option (a) is cleaner since in standard topology, universal covering spaces
+  of CW complexes are always locally path connected.
+
+Proposed Replacement (option a):
+  Theorem cor82_2_universal_covering_existence :
+    forall B Tb:set,
+    (exists E Te p:set,
+      covering_map E Te B Tb p /\ simply_connected E Te /\
+      locally_path_connected E Te)
+    <->
+    (path_connected_space B Tb /\ locally_path_connected B Tb /\
+     semilocally_simply_connected B Tb).
+
+Proposed by:
+  Alice
+
+Discussion:
+  - 1774004400 | admin1: Approve. simply_connected alone does not imply locally_path_connected, so the forward implication is too strong. Adding locally_path_connected E Te on the covering side is the right fix in this formal setting.
+  - 1773657706 | Alice: The key issue is that simply_connected does NOT imply
+    locally_path_connected in general (Warsaw circle counterexample). Adding
+    locally_path_connected E Te to the universal covering hypothesis is the
+    minimal fix that makes the forward direction provable (covering maps are
+    local homeomorphisms, so lpc of E implies lpc of B).
+  - 1773821445 | Bob: YES. Confirmed in current `Math_Background.mg` that reverse
+    direction currently needs an unprovable nonemptiness extraction, while forward
+    direction depends on an admitted bridge from universal-cover existence to base lpc.
+    The proposed strengthening on the left is an appropriate repair for this file's
+    formal definitions.
+
+Approvals:
+  - 1773657706 | Alice: YES
+  - | Bob:
+  - | Charlie:
+  - | Dave:
+  - 1773821445 | Bob: YES
+  - 1773855269 | Charlie: YES
+
+Result:
+
+Admin Decision:
+  - 1774004400 | APPROVED
+
+Implemented by:
+  Charlie
+
+Implementation Commit:
+  f1c0823c57bbed8a3b3e6cc8121017f4a55bd404
 
 Status:
   IMPLEMENTED
