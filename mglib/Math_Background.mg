@@ -138207,7 +138207,27 @@ apply andI.
       { admit. (** key: well-definedness of F via Eps_i + H boundary conditions **) }
       (** F function_on **)
       claim HF_fn : function_on F (setprod S1 unit_interval) X.
-      { admit. (** F maps into X since H maps into X **) }
+      { let xt. assume Hxt : xt :e setprod S1 unit_interval.
+        claim HxS1 : xt 0 :e S1. { exact (ap0_Sigma S1 (fun _ => unit_interval) xt Hxt). }
+        claim HtI : xt 1 :e unit_interval. { exact (ap1_Sigma S1 (fun _ => unit_interval) xt Hxt). }
+        claim Heval : apply_fun F xt =
+          apply_fun H (Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = xt 0), xt 1).
+        { exact (apply_fun_graph (setprod S1 unit_interval)
+            (fun xt0:set => apply_fun H (Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = xt0 0), xt0 1))
+            xt Hxt). }
+        rewrite Heval.
+        (** Eps_i picks some s with s in I and ell(s) = xt 0 **)
+        set eps_s := Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = xt 0).
+        claim Heps_valid : eps_s :e unit_interval /\ apply_fun ell eps_s = xt 0.
+        { (** Need witness s0 with s0 in I and ell(s0) = xt 0, then Eps_i_ax gives it for eps_s **)
+          apply (Hell_surj (xt 0) HxS1). let s0. assume Hs0.
+          exact (Eps_i_ax (fun s:set => s :e unit_interval /\ apply_fun ell s = xt 0) s0 Hs0). }
+        claim Heps_I : eps_s :e unit_interval.
+        { exact (andEL (eps_s :e unit_interval) (apply_fun ell eps_s = xt 0) Heps_valid). }
+        claim Hst_sq : (eps_s, xt 1) :e unit_square.
+        { rewrite <- (tuple_pair eps_s (xt 1)).
+          exact (pair_Sigma unit_interval (fun _ => unit_interval) eps_s Heps_I (xt 1) HtI). }
+        exact (continuous_map_function_on unit_square unit_square_topology X Tx H HH_cont (eps_s, xt 1) Hst_sq). }
       (** Combine: quotient descent gives F continuous **)
       (** Step A: q = ell x id satisfies compact_hausdorff_product_quotient_topology conditions **)
       (** ell: I -> S1 is continuous surjective from compact to Hausdorff **)
