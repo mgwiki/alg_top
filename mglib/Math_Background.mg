@@ -138204,7 +138204,9 @@ apply andI.
       (** H = F o q (factorization through quotient) **)
       claim Hfactors : forall st:set, st :e unit_square ->
         apply_fun H st = apply_fun F (apply_fun q st).
-      { admit. (** key: well-definedness of F via Eps_i + H boundary conditions **) }
+      { admit. (** KEY: well-definedness of F via Eps_i. **)
+        (** Needs: ell injective on (0,1) OR: for any s,s' with ell(s)=ell(s'), **)
+        (** H(s,t) = H(s',t). Holds because H(0,t) = H(1,t) = y0 (boundary). **) }
       (** F function_on **)
       claim HF_fn : function_on F (setprod S1 unit_interval) X.
       { let xt. assume Hxt : xt :e setprod S1 unit_interval.
@@ -138236,7 +138238,19 @@ apply andI.
       (** Step C: topology_on (S1 x I) (quotient_topology ...) **)
       (** Step D: s55_continuous_descends gives F continuous on quotient_topology **)
       (** Step E: quotient_topology = product_topology so F continuous on product_topology **)
-      admit. (** TODO: ~30 lines; all pieces exist, needs assembly **)
+      (** Assembly: **)
+      (** 1. H factors through q: H = F o q **)
+      (** 2. H continuous -> compose_fun unit_square q F continuous **)
+      (** 3. compact_hausdorff_product_quotient gives quotient_topology c= product_topology **)
+      (** 4. s55_continuous_descends gives F continuous on quotient_topology **)
+      (** 5. quotient_topology c= product_topology so F continuous on product_topology **)
+      (** But s55_continuous_descends needs function_on q, function_on F, **)
+      (** compose_fun q F continuous, and topology_on (quotient_topology ...) **)
+      (** All these are available or provable from the claims above. **)
+      admit. (** TODO: formal assembly of quotient descent; ~30 lines **)
+      (** Needs: show compose_fun unit_square q F = H (from Hfactors), **)
+      (** then s55_continuous_descends_to_quotient_topology gives F cont on quotient, **)
+      (** and quotient_universal_property converts to product topology **)
     - (** F(x, 0) = h(x) for x in S1 **)
       let x. assume Hx : x :e S1.
       claim HxI_pair : (x, 0) :e setprod S1 unit_interval.
