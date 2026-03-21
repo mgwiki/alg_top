@@ -137825,7 +137825,17 @@ claim Hfxid_cont : continuous_map (setprod A C) (product_topology A Ta C Tc)
       B Tb C Tc f' g' Hf' Hg'). }
   (** fxid agrees with pair_map f' g' pointwise **)
   claim Hfxid_fn : function_on fxid (setprod A C) (setprod B C).
-  { admit. (** fxid maps into BxC: f(ac 0) in B, ac 1 in C **) }
+  { let ac. assume Hac : ac :e setprod A C.
+    claim HaA : ac 0 :e A. { exact (ap0_Sigma A (fun _ => C) ac Hac). }
+    claim HcC : ac 1 :e C. { exact (ap1_Sigma A (fun _ => C) ac Hac). }
+    claim Hfxid_eval : apply_fun fxid ac = (apply_fun f (ac 0), ac 1).
+    { exact (apply_fun_graph (setprod A C) (fun ac0:set => (apply_fun f (ac0 0), ac0 1)) ac Hac). }
+    rewrite Hfxid_eval.
+    claim Hf_fn : function_on f A B.
+    { exact (andEL (function_on f A B) (forall y:set, y :e B -> exists x:set, x :e A /\ apply_fun f x = y) Hf_surj). }
+    claim HfaB : apply_fun f (ac 0) :e B. { exact (Hf_fn (ac 0) HaA). }
+    rewrite <- (tuple_pair (apply_fun f (ac 0)) (ac 1)).
+    exact (pair_Sigma B (fun _ => C) (apply_fun f (ac 0)) HfaB (ac 1) HcC). }
   claim Hpw_eq : forall ac:set, ac :e setprod A C ->
     apply_fun (pair_map (setprod A C) f' g') ac = apply_fun fxid ac.
   { admit. (** pair_map_apply + projection1_apply + projection2_apply = graph evaluation **) }
@@ -137850,7 +137860,21 @@ claim Hfxid_surj : surjective_map (setprod A C) (setprod B C) fxid.
     claim HaA : a :e A. { exact (andEL (a :e A) (apply_fun f a = bc 0) Ha_data). }
     claim Hfa : apply_fun f a = bc 0. { exact (andER (a :e A) (apply_fun f a = bc 0) Ha_data). }
     witness (a, bc 1).
-    admit. (** show (a,bc1) in AxC and fxid(a,bc1) = bc; needs pair arithmetic **) }
+    claim HacAC : (a, bc 1) :e setprod A C.
+    { rewrite <- (tuple_pair a (bc 1)).
+      exact (pair_Sigma A (fun _ => C) a HaA (bc 1) HcC). }
+    apply andI.
+    + exact HacAC.
+    + (** fxid(a, bc 1) = bc **)
+      claim Heval : apply_fun fxid (a, bc 1) = (apply_fun f ((a, bc 1) 0), (a, bc 1) 1).
+      { exact (apply_fun_graph (setprod A C) (fun ac0:set => (apply_fun f (ac0 0), ac0 1)) (a, bc 1) HacAC). }
+      claim Hap0 : (a, bc 1) 0 = a.
+      { rewrite <- (tuple_pair a (bc 1)). exact (pair_ap_0 a (bc 1)). }
+      claim Hap1 : (a, bc 1) 1 = bc 1.
+      { rewrite <- (tuple_pair a (bc 1)). exact (pair_ap_1 a (bc 1)). }
+      claim Hbc_eta : bc = (bc 0, bc 1). { exact (setprod_eta B C bc Hbc). }
+      rewrite Heval. rewrite Hap0. rewrite Hap1. rewrite Hfa.
+      symmetry. exact Hbc_eta. }
 (** fxid is a closed map (compact -> Hausdorff continuous) **)
 claim Hfxid_closed : closed_map (setprod A C) (product_topology A Ta C Tc)
   (setprod B C) (product_topology B Tb C Tc) fxid.
