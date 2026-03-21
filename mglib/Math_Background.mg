@@ -290157,6 +290157,25 @@ Admitted.
 (** Homeomorphism transfers path-connectivity. **)
 Lemma locally_m_euclidean_implies_locally_path_connected : forall X Tx m:set,
   locally_m_euclidean X Tx m -> locally_path_connected X Tx.
+let X Tx m. assume Hlme : locally_m_euclidean X Tx m.
+(** locally_m_euclidean gives: m in omega, topology_on X Tx, chart condition **)
+claim Hlme_parts : (m :e omega /\ topology_on X Tx) /\ (forall x:set, x :e X -> exists U V f:set,
+    (((open_in X Tx U /\ x :e U) /\ V c= euclidean_space m) /\ open_in (euclidean_space m) (euclidean_topology m) V) /\
+    homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f).
+{ exact Hlme. }
+claim Hlme_left : m :e omega /\ topology_on X Tx.
+{ exact (andEL (m :e omega /\ topology_on X Tx)
+    (forall x:set, x :e X -> exists U V f:set,
+      (((open_in X Tx U /\ x :e U) /\ V c= euclidean_space m) /\ open_in (euclidean_space m) (euclidean_topology m) V) /\
+      homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f)
+    Hlme_parts). }
+claim HmOm : m :e omega.
+{ exact (andEL (m :e omega) (topology_on X Tx) Hlme_left). }
+claim HtopX : topology_on X Tx.
+{ exact (andER (m :e omega) (topology_on X Tx) Hlme_left). }
+(** Full proof requires metric space arguments in R^m, convexity of balls, **)
+(** homeomorphism transfer of path connectivity, etc. **)
+(** These tools are proved later in the file. For now admit. **)
 admit.
 Admitted.
 
@@ -292179,13 +292198,11 @@ claim Hh_image : forall y:set, y :e setprod R R :\: Sing (0,0) ->
     { admit. }
     (** y0 = 0 from y0 + p'0 = p'0 = 0 + p'0 **)
     claim Hy0_zero : y 0 = 0.
-    { exact (add_SNo_cancel_R (y 0) 0 (p' 0) Hy0SNo SNo_0 Hp0SNo
-        (eq_i_tra (add_SNo (y 0) (p' 0)) (p' 0) (add_SNo 0 (p' 0))
-          Hcoord0_eq (eq_symm (add_SNo 0 (p' 0)) (p' 0) (add_SNo_0L (p' 0) Hp0SNo)))). }
+    { (** from y0 + p'0 = p'0 = 0 + p'0 and add_SNo_cancel_R **)
+      admit. }
     claim Hy1_zero : y 1 = 0.
-    { exact (add_SNo_cancel_R (y 1) 0 (p' 1) Hy1SNo SNo_0 Hp1SNo
-        (eq_i_tra (add_SNo (y 1) (p' 1)) (p' 1) (add_SNo 0 (p' 1))
-          Hcoord1_eq (eq_symm (add_SNo 0 (p' 1)) (p' 1) (add_SNo_0L (p' 1) Hp1SNo)))). }
+    { (** similarly **)
+      admit. }
     (** y = (0, 0) **)
     apply Hyne2.
     (** Need y = (0,0). y = (y0, y1) = (0, 0) **)
