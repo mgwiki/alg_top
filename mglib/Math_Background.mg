@@ -408636,12 +408636,32 @@ set idX := fundamental_group_id X Tx x0.
 set invX := fundamental_group_inv X Tx x0.
 claim Hx0U : x0 :e U.
 { exact (binintersectE1 U V x0 Hx0UV). }
+claim Hx0V : x0 :e V.
+{ exact (binintersectE2 U V x0 Hx0UV). }
 claim HUsub : U c= X.
 { exact (topology_elem_subset X Tx U Htop HUopen). }
+claim HVsub : V c= X.
+{ exact (topology_elem_subset X Tx V Htop HVopen). }
 claim Hx0X : x0 :e X.
 { exact (HUsub x0 Hx0U). }
 claim HgrpX : group_structure piX multX idX invX.
 { exact (fundamental_group_is_group X Tx x0 Htop Hx0X). }
+set piU := fundamental_group U (subspace_topology X Tx U) x0.
+set multU := fundamental_group_mult U (subspace_topology X Tx U) x0.
+set idU := fundamental_group_id U (subspace_topology X Tx U) x0.
+set invU := fundamental_group_inv U (subspace_topology X Tx U) x0.
+set piV := fundamental_group V (subspace_topology X Tx V) x0.
+set multV := fundamental_group_mult V (subspace_topology X Tx V) x0.
+set idV := fundamental_group_id V (subspace_topology X Tx V) x0.
+set invV := fundamental_group_inv V (subspace_topology X Tx V) x0.
+claim HtopU : topology_on U (subspace_topology X Tx U).
+{ exact (subspace_topology_is_topology X Tx U Htop HUsub). }
+claim HtopV : topology_on V (subspace_topology X Tx V).
+{ exact (subspace_topology_is_topology X Tx V Htop HVsub). }
+claim HgrpU : group_structure piU multU idU invU.
+{ exact (fundamental_group_is_group U (subspace_topology X Tx U) x0 HtopU Hx0U). }
+claim HgrpV : group_structure piV multV idV invV.
+{ exact (fundamental_group_is_group V (subspace_topology X Tx V) x0 HtopV Hx0V). }
 set j1 := induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
   (graph U (fun x:set => x)).
 set j2 := induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
