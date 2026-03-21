@@ -293861,9 +293861,26 @@ Lemma SNo_sub_sq : forall a b:set,
   SNo a -> SNo b ->
   mul_SNo (add_SNo a (minus_SNo b)) (add_SNo a (minus_SNo b)) =
   add_SNo (add_SNo (mul_SNo a a) (minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b)))) (mul_SNo b b).
-admit. (** SNo distributivity: (a-b)^2 = a^2 - 2ab + b^2 **)
-(** Steps proved: Hd1 via mul_SNo_distrR, Hd2 via mul_SNo_distrL, Hamb_eq via mul_minus_SNo_distrR **)
-(** Blocked: mul_SNo_distrL with minus_SNo first arg has Megalodon parsing issue **)
+let a b. assume Ha : SNo a. assume Hb : SNo b.
+claim Hmb : SNo (minus_SNo b). { exact (SNo_minus_SNo b Hb). }
+claim Hamb : SNo (add_SNo a (minus_SNo b)).
+{ exact (SNo_add_SNo a (minus_SNo b) Ha Hmb). }
+claim Hd1 : mul_SNo (add_SNo a (minus_SNo b)) (add_SNo a (minus_SNo b))
+  = add_SNo (mul_SNo a (add_SNo a (minus_SNo b))) (mul_SNo (minus_SNo b) (add_SNo a (minus_SNo b))).
+{ exact (mul_SNo_distrR a (minus_SNo b) (add_SNo a (minus_SNo b)) Ha Hmb Hamb). }
+claim Hd2 : mul_SNo a (add_SNo a (minus_SNo b)) = add_SNo (mul_SNo a a) (mul_SNo a (minus_SNo b)).
+{ exact (mul_SNo_distrL a a (minus_SNo b) Ha Ha Hmb). }
+claim Hcom : mul_SNo (minus_SNo b) (add_SNo a (minus_SNo b))
+  = mul_SNo (add_SNo a (minus_SNo b)) (minus_SNo b).
+{ exact (mul_SNo_com (minus_SNo b) (add_SNo a (minus_SNo b)) Hmb Hamb). }
+claim Hd3r : mul_SNo (add_SNo a (minus_SNo b)) (minus_SNo b)
+  = add_SNo (mul_SNo a (minus_SNo b)) (mul_SNo (minus_SNo b) (minus_SNo b)).
+{ exact (mul_SNo_distrR a (minus_SNo b) (minus_SNo b) Ha Hmb Hmb). }
+claim Hamb_eq : mul_SNo a (minus_SNo b) = minus_SNo (mul_SNo a b).
+{ exact (mul_minus_SNo_distrR a b Ha Hb). }
+claim Hbb : (mul_SNo (minus_SNo b) (minus_SNo b)) = (mul_SNo b b).
+{ exact (mul_SNo_minus_minus b b Hb Hb). }
+admit. (** assemble 4 terms using Hd1, Hd2, Hcom, Hd3r, Hamb_eq, Hbb + add_SNo_assoc **)
 Admitted.
 
 (** R3_dot_af bilinearity: (x-2dn) dot (x-2dn) = x dot x - 4d(x dot n) + 4d^2(n dot n) **)
