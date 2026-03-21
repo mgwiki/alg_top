@@ -292243,8 +292243,8 @@ claim HR2mp_sc : simply_connected (setprod R R :\: Sing p')
   { prove path_connected_space X Tx /\ exists x0':set, x0' :e X /\
       fundamental_group X Tx x0' = Sing (fundamental_group_id X Tx x0').
     apply andI.
-    - (** X path connected: transfer from R^2-{p'} via homeomorphism **)
-      (** R^2-{p'} path connected from R^2-{0} pc + homeomorphism **)
+    - (** X path connected: transfer from R^2-{p'} via inverse homeomorphism **)
+      (** R^2-{p'} is path connected and homeomorphic to X; use continuous_image_path_connected **)
       admit.
     - (** pi1 trivial at x0 **)
       witness x0. apply andI.
