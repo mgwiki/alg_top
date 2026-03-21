@@ -82,78 +82,6 @@ Rules:
 
 [place new active notices here below this line]
 
-NOTICE ID: 1773657852
-Created: 1773657852
-Status: APPROVED
-
-Refers to Commit:
-  896e87005
-
-Target:
-  Line: 301351
-  Name: ex67_3_change_of_basis (Theorem)
-
-Problem:
-  The theorem states that {2x+3y, x-y} is a basis for a free abelian group
-  with basis {x,y}. This is FALSE.
-
-  A change of basis in Z^2 requires the transition matrix to have determinant
-  +/-1. The matrix for {2x+3y, x-y} is:
-    [[2, 3], [1, -1]]
-  which has determinant 2*(-1) - 3*1 = -5. Since |-5| != 1, the elements
-  {2x+3y, x-y} do NOT form a basis.
-
-  Concretely: x = (a + 3b)/5 where a = 2x+3y, b = x-y. Since 1/5 is not
-  an integer, x cannot be expressed as an integer linear combination of a,b.
-
-  The LaTeX source (algtop.tex line 2706) also says {2x+3y, x-y}, so this
-  appears to be an error in the source material (possibly a typo from the
-  original Munkres text or the transcription).
-
-  Possible correct versions:
-  (a) {2x - 3y, x - y}: det = -2+3 = 1. Valid basis change.
-  (b) {2x + 3y, x + 2y}: det = 4-3 = 1. Valid basis change.
-  (c) {3x + 2y, x - y}: det = -3-2 = -5. Still wrong.
-
-Proposed Replacement (option a):
-  Theorem ex67_3_change_of_basis :
-    forall G mult e inv x y:set,
-    free_abelian_group_with_basis G mult e inv 2 (graph 2 (fun i =>
-      if i = 0 then x else y)) ->
-    free_abelian_group_with_basis G mult e inv 2 (graph 2 (fun i =>
-      if i = 0
-      then apply_fun mult (group_power_nat mult e x 2,
-                           apply_fun inv (group_power_nat mult e y 3))
-      else apply_fun mult (x, apply_fun inv y))).
-  (Change: replace y^3 with inv(y^3) in the first basis element,
-   giving 2x - 3y instead of 2x + 3y.)
-
-Proposed by:
-  Alice
-
-Discussion:
-  - 1774004400 | admin1: Approve. The original basis change has determinant -5, so it is genuinely false. Replacing 2x+3y by 2x-3y gives a unimodular change of basis (determinant 1).
-  - 1773657852 | Alice: The determinant computation is elementary: for
-    {ax + by, cx + dy} to be a basis of a rank-2 free abelian group with
-    basis {x,y}, we need |ad - bc| = 1. For {2x+3y, x-y}: |2(-1)-3(1)| = 5.
-    For {2x-3y, x-y}: |2(-1)-(-3)(1)| = |-2+3| = 1. Option (a) is the
-    minimal fix.
-
-Approvals:
-  - 1773657852 | Alice: YES
-  - | Bob:
-  - | Charlie:
-  - | Dave:
-  - 1773855269 | Charlie: YES
-
-Result:
-
-Admin Decision:
-  - 1774004400 | APPROVED
-
-Implemented by:
-
-Implementation Commit:
 NOTICE ID: 1773657706
 Created: 1773657706
 Status: APPROVED
@@ -1531,6 +1459,85 @@ Implementation Commit:
 
 Status:
   REJECTED
+--------------------------------------------------------
+
+NOTICE ID: 1773657852
+Created: 1773657852
+Status: IMPLEMENTED
+
+Refers to Commit:
+  896e87005
+
+Target:
+  Line: 301351
+  Name: ex67_3_change_of_basis (Theorem)
+
+Problem:
+  The theorem states that {2x+3y, x-y} is a basis for a free abelian group
+  with basis {x,y}. This is FALSE.
+
+  A change of basis in Z^2 requires the transition matrix to have determinant
+  +/-1. The matrix for {2x+3y, x-y} is:
+    [[2, 3], [1, -1]]
+  which has determinant 2*(-1) - 3*1 = -5. Since |-5| != 1, the elements
+  {2x+3y, x-y} do NOT form a basis.
+
+  Concretely: x = (a + 3b)/5 where a = 2x+3y, b = x-y. Since 1/5 is not
+  an integer, x cannot be expressed as an integer linear combination of a,b.
+
+  The LaTeX source (algtop.tex line 2706) also says {2x+3y, x-y}, so this
+  appears to be an error in the source material (possibly a typo from the
+  original Munkres text or the transcription).
+
+  Possible correct versions:
+  (a) {2x - 3y, x - y}: det = -2+3 = 1. Valid basis change.
+  (b) {2x + 3y, x + 2y}: det = 4-3 = 1. Valid basis change.
+  (c) {3x + 2y, x - y}: det = -3-2 = -5. Still wrong.
+
+Proposed Replacement (option a):
+  Theorem ex67_3_change_of_basis :
+    forall G mult e inv x y:set,
+    free_abelian_group_with_basis G mult e inv 2 (graph 2 (fun i =>
+      if i = 0 then x else y)) ->
+    free_abelian_group_with_basis G mult e inv 2 (graph 2 (fun i =>
+      if i = 0
+      then apply_fun mult (group_power_nat mult e x 2,
+                           apply_fun inv (group_power_nat mult e y 3))
+      else apply_fun mult (x, apply_fun inv y))).
+  (Change: replace y^3 with inv(y^3) in the first basis element,
+   giving 2x - 3y instead of 2x + 3y.)
+
+Proposed by:
+  Alice
+
+Discussion:
+  - 1774004400 | admin1: Approve. The original basis change has determinant -5, so it is genuinely false. Replacing 2x+3y by 2x-3y gives a unimodular change of basis (determinant 1).
+  - 1773657852 | Alice: The determinant computation is elementary: for
+    {ax + by, cx + dy} to be a basis of a rank-2 free abelian group with
+    basis {x,y}, we need |ad - bc| = 1. For {2x+3y, x-y}: |2(-1)-3(1)| = 5.
+    For {2x-3y, x-y}: |2(-1)-(-3)(1)| = |-2+3| = 1. Option (a) is the
+    minimal fix.
+
+Approvals:
+  - 1773657852 | Alice: YES
+  - | Bob:
+  - | Charlie:
+  - | Dave:
+  - 1773855269 | Charlie: YES
+
+Result:
+
+Admin Decision:
+  - 1774004400 | APPROVED
+
+Implemented by:
+  Charlie
+
+Implementation Commit:
+  221ccc8a21c2853db592605b40692ecd4f76c6d1
+
+Status:
+  IMPLEMENTED
 --------------------------------------------------------
 
 NOTICE ID: 1773656677
