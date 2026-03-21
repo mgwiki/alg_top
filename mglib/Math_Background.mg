@@ -239140,8 +239140,56 @@ Theorem preimage_scaling_convex : forall c W:set,
   c :e R -> Rlt 0 c ->
   convex_in R W ->
   convex_in R (Sep unit_interval (fun t:set => mul_SNo c t :e W)).
-admit.
-Admitted.
+let c W. assume HcR : c :e R. assume Hcpos : Rlt 0 c. assume HWconv : convex_in R W.
+claim HcSNo : SNo c. { exact (real_SNo c HcR). }
+claim Hc_snopos : 0 < c. { exact (RltE_lt 0 c Hcpos). }
+set A := Sep unit_interval (fun t:set => mul_SNo c t :e W).
+claim HAsubR : A c= R.
+{ let t. assume Ht : t :e A. exact (unit_interval_sub_R t (SepE1 unit_interval (fun t0:set => mul_SNo c t0 :e W) t Ht)). }
+claim HWsubR : W c= R. { exact (andEL (W c= R) (forall a b:set, a :e W -> b :e W -> order_interval R a b c= W) HWconv). }
+claim HWconv2 : forall a b:set, a :e W -> b :e W -> order_interval R a b c= W.
+{ exact (andER (W c= R) (forall a b:set, a :e W -> b :e W -> order_interval R a b c= W) HWconv). }
+prove A c= R /\ (forall a b:set, a :e A -> b :e A -> order_interval R a b c= A).
+apply andI.
+- exact HAsubR.
+- let a. let b. assume Ha : a :e A. assume Hb : b :e A.
+  claim HaUI : a :e unit_interval. { exact (SepE1 unit_interval (fun t:set => mul_SNo c t :e W) a Ha). }
+  claim HbUI : b :e unit_interval. { exact (SepE1 unit_interval (fun t:set => mul_SNo c t :e W) b Hb). }
+  claim HcaW : mul_SNo c a :e W. { exact (SepE2 unit_interval (fun t:set => mul_SNo c t :e W) a Ha). }
+  claim HcbW : mul_SNo c b :e W. { exact (SepE2 unit_interval (fun t:set => mul_SNo c t :e W) b Hb). }
+  claim HaR : a :e R. { exact (unit_interval_sub_R a HaUI). }
+  claim HbR : b :e R. { exact (unit_interval_sub_R b HbUI). }
+  claim HaSNo : SNo a. { exact (real_SNo a HaR). }
+  claim HbSNo : SNo b. { exact (real_SNo b HbR). }
+  claim HcaR : mul_SNo c a :e R. { exact (real_mul_SNo c HcR a HaR). }
+  claim HcbR : mul_SNo c b :e R. { exact (real_mul_SNo c HcR b HbR). }
+  let x. assume Hx : x :e order_interval R a b.
+  claim HxR : x :e R. { exact (SepE1 R (fun z:set => order_rel R a z /\ order_rel R z b) x Hx). }
+  claim Hx_ord : order_rel R a x /\ order_rel R x b.
+  { exact (SepE2 R (fun z:set => order_rel R a z /\ order_rel R z b) x Hx). }
+  claim Halt_ax : Rlt a x. { exact (order_rel_R_implies_Rlt a x (andEL (order_rel R a x) (order_rel R x b) Hx_ord)). }
+  claim Halt_xb : Rlt x b. { exact (order_rel_R_implies_Rlt x b (andER (order_rel R a x) (order_rel R x b) Hx_ord)). }
+  (** x in UI: use convexity of UI **)
+  claim HxUI : x :e unit_interval.
+  { exact (andER (unit_interval c= R) (forall a0 b0:set, a0 :e unit_interval -> b0 :e unit_interval -> order_interval R a0 b0 c= unit_interval) unit_interval_convex_in a b HaUI HbUI x Hx). }
+  (** cx in W: use convexity of W with ca, cb in W and ca < cx < cb **)
+  claim HxSNo : SNo x. { exact (real_SNo x HxR). }
+  claim HcxR : mul_SNo c x :e R. { exact (real_mul_SNo c HcR x HxR). }
+  claim Hca_lt_cx : Rlt (mul_SNo c a) (mul_SNo c x).
+  { exact (RltI (mul_SNo c a) (mul_SNo c x) HcaR HcxR
+      (pos_mul_SNo_Lt c a x HcSNo Hc_snopos HaSNo HxSNo (RltE_lt a x Halt_ax))). }
+  claim Hcx_lt_cb : Rlt (mul_SNo c x) (mul_SNo c b).
+  { exact (RltI (mul_SNo c x) (mul_SNo c b) HcxR HcbR
+      (pos_mul_SNo_Lt c x b HcSNo Hc_snopos HxSNo HbSNo (RltE_lt x b Halt_xb))). }
+  claim Hcx_in_oi : mul_SNo c x :e order_interval R (mul_SNo c a) (mul_SNo c b).
+  { exact (SepI R (fun z:set => order_rel R (mul_SNo c a) z /\ order_rel R z (mul_SNo c b)) (mul_SNo c x) HcxR
+      (andI (order_rel R (mul_SNo c a) (mul_SNo c x)) (order_rel R (mul_SNo c x) (mul_SNo c b))
+        (Rlt_implies_order_rel_R (mul_SNo c a) (mul_SNo c x) Hca_lt_cx)
+        (Rlt_implies_order_rel_R (mul_SNo c x) (mul_SNo c b) Hcx_lt_cb))). }
+  claim HcxW : mul_SNo c x :e W.
+  { exact (HWconv2 (mul_SNo c a) (mul_SNo c b) HcaW HcbW (mul_SNo c x) Hcx_in_oi). }
+  exact (SepI unit_interval (fun t:set => mul_SNo c t :e W) x HxUI HcxW).
+Qed.
 Lemma nch_transition_UV_step :
   forall m:set, nat_p m ->
   (forall X Tx U V x0 f seq:set,
