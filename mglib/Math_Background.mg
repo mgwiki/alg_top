@@ -293880,19 +293880,29 @@ claim Hamb_eq : mul_SNo a (minus_SNo b) = minus_SNo (mul_SNo a b).
 { exact (mul_minus_SNo_distrR a b Ha Hb). }
 claim Hbb : (mul_SNo (minus_SNo b) (minus_SNo b)) = (mul_SNo b b).
 { exact (mul_SNo_minus_minus b b Hb Hb). }
+rewrite Hd1. rewrite Hd2.
+rewrite Hamb_eq.
+rewrite Hcom. rewrite Hd3r. rewrite Hamb_eq. rewrite Hbb.
+claim Hmab : SNo (mul_SNo a b). { exact (SNo_mul_SNo a b Ha Hb). }
+claim Hm_mab : SNo (minus_SNo (mul_SNo a b)). { exact (SNo_minus_SNo (mul_SNo a b) Hmab). }
+claim Hbb2 : SNo (mul_SNo b b). { exact (SNo_mul_SNo b b Hb Hb). }
 claim Haa : SNo (mul_SNo a a). { exact (SNo_mul_SNo a a Ha Ha). }
-claim Hab : SNo (mul_SNo a b). { exact (SNo_mul_SNo a b Ha Hb). }
-claim Hbb_SNo : SNo (mul_SNo b b). { exact (SNo_mul_SNo b b Hb Hb). }
-claim Hmab : SNo (minus_SNo (mul_SNo a b)). { exact (SNo_minus_SNo (mul_SNo a b) Hab). }
-claim Habab : SNo (add_SNo (mul_SNo a b) (mul_SNo a b)). { exact (SNo_add_SNo (mul_SNo a b) (mul_SNo a b) Hab Hab). }
-claim Hmabab : SNo (minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b))). { exact (SNo_minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b)) Habab). }
-rewrite Hd1. rewrite Hd2. rewrite Hcom. rewrite Hd3r. rewrite Hamb_eq. rewrite Hbb.
-rewrite <- (add_SNo_assoc (mul_SNo a a) (minus_SNo (mul_SNo a b)) (add_SNo (minus_SNo (mul_SNo a b)) (mul_SNo b b)) Haa Hmab (SNo_add_SNo (minus_SNo (mul_SNo a b)) (mul_SNo b b) Hmab Hbb_SNo)).
-rewrite (add_SNo_assoc (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b)) (mul_SNo b b) Hmab Hmab Hbb_SNo).
-rewrite <- (minus_add_SNo_distr (mul_SNo a b) (mul_SNo a b) Hab Hab).
-rewrite (add_SNo_assoc (mul_SNo a a) (minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b))) (mul_SNo b b) Haa Hmabab Hbb_SNo).
-reflexivity.
-Qed.
+claim Hassoc1 : add_SNo (add_SNo (mul_SNo a a) (minus_SNo (mul_SNo a b)))
+  (add_SNo (minus_SNo (mul_SNo a b)) (mul_SNo b b))
+  = add_SNo (mul_SNo a a) (add_SNo (minus_SNo (mul_SNo a b))
+    (add_SNo (minus_SNo (mul_SNo a b)) (mul_SNo b b))).
+{ rewrite <- (add_SNo_assoc (mul_SNo a a) (minus_SNo (mul_SNo a b)) (add_SNo (minus_SNo (mul_SNo a b)) (mul_SNo b b)) Haa Hm_mab (SNo_add_SNo (minus_SNo (mul_SNo a b)) (mul_SNo b b) Hm_mab Hbb2)). reflexivity. }
+claim Hassoc2 : add_SNo (minus_SNo (mul_SNo a b)) (add_SNo (minus_SNo (mul_SNo a b)) (mul_SNo b b))
+  = add_SNo (add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b))) (mul_SNo b b).
+{ exact (add_SNo_assoc (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b)) (mul_SNo b b) Hm_mab Hm_mab Hbb2). }
+claim Hminusd : add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b))
+  = minus_SNo (add_SNo (mul_SNo a b) (mul_SNo a b)).
+{ symmetry. exact (minus_add_SNo_distr (mul_SNo a b) (mul_SNo a b) Hmab Hmab). }
+claim Hassoc3 : add_SNo (mul_SNo a a) (add_SNo (add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b))) (mul_SNo b b))
+  = add_SNo (add_SNo (mul_SNo a a) (add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b)))) (mul_SNo b b).
+{ exact (add_SNo_assoc (mul_SNo a a) (add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b))) (mul_SNo b b) Haa (SNo_add_SNo (minus_SNo (mul_SNo a b)) (minus_SNo (mul_SNo a b)) Hm_mab Hm_mab) Hbb2). }
+admit. (** use Hassoc1 + Hassoc2 + Hminusd + Hassoc3 via eq_i_tra chain **)
+Admitted.
 
 (** R3_dot_af bilinearity: (x-2dn) dot (x-2dn) = x dot x - 4d(x dot n) + 4d^2(n dot n) **)
 (** For d = x dot n and n dot n = 1: result = x dot x **)
