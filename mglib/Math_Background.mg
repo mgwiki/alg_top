@@ -240100,9 +240100,30 @@ claim HL1_word_data :
     claim Hrescale_on_B_cont :
       continuous_map B (subspace_topology unit_interval unit_interval_topology B)
         unit_interval unit_interval_topology rescale.
-    { (** rescale is affine (continuous R -> R), maps B c= UI to [0,1] c= UI **)
-      (** Need: continuous_on_subspace + range restriction to UI **)
-      admit. }
+    { (** Step 1: rescale continuous UI -> R (affine function) **)
+      claim Hc_inv_R2 : c_inv :e R.
+      { exact (real_recip_SNo_pos (add_SNo 1 (minus_SNo s)) H1ms_R2
+          (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos2)). }
+      claim HbR2 : b_rescale :e R.
+      { exact (real_minus_SNo (mul_SNo s c_inv)
+          (real_mul_SNo s Hs_R c_inv Hc_inv_R2)). }
+      claim Hrescale_C_I_R : rescale :e C_I_R.
+      { exact (affine_fun_I_in_C_I_R_pos b_rescale c_inv HbR2 Hc_inv_R2 Hc_inv_pos). }
+      claim Hrescale_cont_R : continuous_map unit_interval unit_interval_topology R R_standard_topology rescale.
+      { exact (C_I_R_continuous_real_on_I rescale Hrescale_C_I_R). }
+      (** Step 2: restrict to B **)
+      claim Hrescale_cont_B_R : continuous_map B (subspace_topology unit_interval unit_interval_topology B)
+        R R_standard_topology rescale.
+      { exact (continuous_on_subspace unit_interval unit_interval_topology R R_standard_topology
+          rescale B unit_interval_topology_on HBsub Hrescale_cont_R). }
+      (** Step 3: range restriction to unit_interval **)
+      claim Hrescale_range : forall t:set, t :e B -> apply_fun rescale t :e unit_interval.
+      { (** For t in B=[s,1]: rescale(t) = (t-s)/(1-s) in [0,1] **)
+        (** rescale(s) = 0, rescale(1) = 1, and rescale is monotone **)
+        admit. }
+      exact (continuous_map_range_restrict B (subspace_topology unit_interval unit_interval_topology B)
+        R R_standard_topology rescale unit_interval
+        Hrescale_cont_B_R unit_interval_sub_R Hrescale_range). }
     set gB_witness := compose_fun B rescale revGX.
     claim HgB_cont : continuous_map B (subspace_topology unit_interval unit_interval_topology B)
       X Tx gB_witness.
