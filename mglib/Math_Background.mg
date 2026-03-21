@@ -408595,8 +408595,304 @@ Lemma classical_van_kampen_overlap_relation_in_kernel :
                (graph (U :/\: V) (fun x:set => x))) g)))
       =
       fundamental_group_id X Tx x0.
-admit.
-Admitted.
+let X Tx U V x0.
+assume Htop HU HV Hcover Hx0UV.
+let FP multFP eFP invFP ifam j.
+assume HextFP Hjhom Hj0 Hj1.
+let g. assume HgUV.
+set UV := U :/\: V.
+set piX := fundamental_group X Tx x0.
+set multX := fundamental_group_mult X Tx x0.
+set idX := fundamental_group_id X Tx x0.
+set invX := fundamental_group_inv X Tx x0.
+set TU := subspace_topology X Tx U.
+set TV := subspace_topology X Tx V.
+set TUV := subspace_topology X Tx UV.
+set piU := fundamental_group U TU x0.
+set multU := fundamental_group_mult U TU x0.
+set piV := fundamental_group V TV x0.
+set multV := fundamental_group_mult V TV x0.
+claim Hx0U : x0 :e U. { exact (binintersectE1 U V x0 Hx0UV). }
+claim Hx0V : x0 :e V. { exact (binintersectE2 U V x0 Hx0UV). }
+claim HUsubX : U c= X. { exact (topology_elem_subset X Tx U Htop HU). }
+claim HVsubX : V c= X. { exact (topology_elem_subset X Tx V Htop HV). }
+claim Hx0X : x0 :e X. { exact (HUsubX x0 Hx0U). }
+claim HUVsubU : UV c= U. { let z. assume Hz. exact (binintersectE1 U V z Hz). }
+claim HUVsubV : UV c= V. { let z. assume Hz. exact (binintersectE2 U V z Hz). }
+claim HtopU : topology_on U TU. { exact (subspace_topology_is_topology X Tx U Htop HUsubX). }
+claim HtopV : topology_on V TV. { exact (subspace_topology_is_topology X Tx V Htop HVsubX). }
+claim HtopUV : topology_on UV TUV.
+{
+  claim HUVsubX : UV c= X. { let z. assume Hz. exact (HUsubX z (HUVsubU z Hz)). }
+  exact (subspace_topology_is_topology X Tx UV Htop HUVsubX).
+}
+claim HgrpX : group_structure piX multX idX invX.
+{ exact (fundamental_group_is_group X Tx x0 Htop Hx0X). }
+set incU := graph U (fun x:set => x).
+set incV := graph V (fun x:set => x).
+set incUV := graph UV (fun x:set => x).
+claim HincUcont : continuous_map U TU X Tx incU.
+{ exact (subspace_inclusion_continuous X Tx U Htop HUsubX). }
+claim HincVcont : continuous_map V TV X Tx incV.
+{ exact (subspace_inclusion_continuous X Tx V Htop HVsubX). }
+claim HincUVUcont0 : continuous_map UV (subspace_topology U TU UV) U TU incUV.
+{ exact (subspace_inclusion_continuous U TU UV HtopU HUVsubU). }
+claim HincUVVcont0 : continuous_map UV (subspace_topology V TV UV) V TV incUV.
+{ exact (subspace_inclusion_continuous V TV UV HtopV HUVsubV). }
+claim HincUVUcont : continuous_map UV TUV U TU incUV.
+{ rewrite <- (subspace_topology_transitive_weak X Tx U UV HUVsubU). exact HincUVUcont0. }
+claim HincUVVcont : continuous_map UV TUV V TV incUV.
+{ rewrite <- (subspace_topology_transitive_weak X Tx V UV HUVsubV). exact HincUVVcont0. }
+claim HincUx0 : apply_fun incU x0 = x0.
+{ exact (apply_fun_graph U (fun x:set => x) x0 Hx0U). }
+claim HincVx0 : apply_fun incV x0 = x0.
+{ exact (apply_fun_graph V (fun x:set => x) x0 Hx0V). }
+claim HincUVx0 : apply_fun incUV x0 = x0.
+{ exact (apply_fun_graph UV (fun x:set => x) x0 Hx0UV). }
+set jU := induced_homomorphism U TU x0 X Tx x0 incU.
+set jV := induced_homomorphism V TV x0 X Tx x0 incV.
+set iU := induced_homomorphism UV TUV x0 U TU x0 incUV.
+set iV := induced_homomorphism UV TUV x0 V TV x0 incUV.
+claim HjUhom : group_homomorphism piU multU piX multX jU.
+{ exact (induced_homomorphism_is_homomorphism U TU x0 X Tx x0 incU HincUcont HincUx0 Hx0U). }
+claim HjVhom : group_homomorphism piV multV piX multX jV.
+{ exact (induced_homomorphism_is_homomorphism V TV x0 X Tx x0 incV HincVcont HincVx0 Hx0V). }
+claim HiUhom : group_homomorphism (fundamental_group UV TUV x0) (fundamental_group_mult UV TUV x0) piU multU iU.
+{ exact (induced_homomorphism_is_homomorphism UV TUV x0 U TU x0 incUV HincUVUcont HincUVx0 Hx0UV). }
+claim HiVhom : group_homomorphism (fundamental_group UV TUV x0) (fundamental_group_mult UV TUV x0) piV multV iV.
+{ exact (induced_homomorphism_is_homomorphism UV TUV x0 V TV x0 incUV HincUVVcont HincUVx0 Hx0UV). }
+claim HiU_fn : function_on iU (fundamental_group UV TUV x0) piU.
+{ exact (group_homomorphism_function_on (fundamental_group UV TUV x0) (fundamental_group_mult UV TUV x0) piU multU iU HiUhom). }
+claim HiV_fn : function_on iV (fundamental_group UV TUV x0) piV.
+{ exact (group_homomorphism_function_on (fundamental_group UV TUV x0) (fundamental_group_mult UV TUV x0) piV multV iV HiVhom). }
+claim HiU_mem : apply_fun iU g :e piU. { exact (HiU_fn g HgUV). }
+claim HiV_mem : apply_fun iV g :e piV. { exact (HiV_fn g HgUV). }
+claim H0 : 0 :e UPair 0 1. { exact (UPairI1 0 1). }
+claim H1 : 1 :e UPair 0 1. { exact (UPairI2 0 1). }
+claim HgrpFP : group_structure FP multFP eFP invFP.
+{
+  apply (and4E
+    (group_structure FP multFP eFP invFP)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      exists ea ia:set,
+        group_structure
+          (apply_fun (graph (UPair 0 1) (fun i:set =>
+            if i = 0 then piU else piV)) alpha)
+          (apply_fun (graph (UPair 0 1) (fun i:set =>
+            if i = 0 then multU else multV)) alpha)
+          ea ia)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      group_homomorphism
+        (apply_fun (graph (UPair 0 1) (fun i:set =>
+          if i = 0 then piU else piV)) alpha)
+        (apply_fun (graph (UPair 0 1) (fun i:set =>
+          if i = 0 then multU else multV)) alpha)
+        FP multFP (apply_fun ifam alpha) /\
+      (forall x y:set,
+        x :e apply_fun (graph (UPair 0 1) (fun i:set =>
+          if i = 0 then piU else piV)) alpha ->
+        y :e apply_fun (graph (UPair 0 1) (fun i:set =>
+          if i = 0 then piU else piV)) alpha ->
+        apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y))
+    (free_product_of_subgroups FP multFP eFP invFP (UPair 0 1)
+      (graph (UPair 0 1) (fun alpha:set =>
+        homomorphism_image
+          (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV)) alpha)
+          (apply_fun ifam alpha)))
+      (graph (UPair 0 1) (fun alpha:set =>
+        apply_fun (apply_fun ifam alpha) (Eps_i (fun ea:set =>
+          exists ma ia:set,
+            group_structure
+              (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV)) alpha)
+              (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then multU else multV)) alpha)
+              ea ia)))))
+    HextFP).
+  assume Hgrp _ _ _. exact Hgrp.
+}
+claim Hinj : forall alpha:set, alpha :e (UPair 0 1) ->
+  group_homomorphism
+    (apply_fun (graph (UPair 0 1) (fun i:set =>
+      if i = 0 then piU else piV)) alpha)
+    (apply_fun (graph (UPair 0 1) (fun i:set =>
+      if i = 0 then multU else multV)) alpha)
+    FP multFP (apply_fun ifam alpha).
+{
+  apply (and4E
+    (group_structure FP multFP eFP invFP)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      exists ea ia:set,
+        group_structure
+          (apply_fun (graph (UPair 0 1) (fun i:set =>
+            if i = 0 then piU else piV)) alpha)
+          (apply_fun (graph (UPair 0 1) (fun i:set =>
+            if i = 0 then multU else multV)) alpha)
+          ea ia)
+    (forall alpha:set, alpha :e (UPair 0 1) ->
+      group_homomorphism
+        (apply_fun (graph (UPair 0 1) (fun i:set =>
+          if i = 0 then piU else piV)) alpha)
+        (apply_fun (graph (UPair 0 1) (fun i:set =>
+          if i = 0 then multU else multV)) alpha)
+        FP multFP (apply_fun ifam alpha) /\
+      (forall x y:set,
+        x :e apply_fun (graph (UPair 0 1) (fun i:set =>
+          if i = 0 then piU else piV)) alpha ->
+        y :e apply_fun (graph (UPair 0 1) (fun i:set =>
+          if i = 0 then piU else piV)) alpha ->
+        apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y))
+    (free_product_of_subgroups FP multFP eFP invFP (UPair 0 1)
+      (graph (UPair 0 1) (fun alpha:set =>
+        homomorphism_image
+          (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV)) alpha)
+          (apply_fun ifam alpha)))
+      (graph (UPair 0 1) (fun alpha:set =>
+        apply_fun (apply_fun ifam alpha) (Eps_i (fun ea:set =>
+          exists ma ia:set,
+            group_structure
+              (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV)) alpha)
+              (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then multU else multV)) alpha)
+              ea ia)))))
+    HextFP).
+  assume _ _ Hmono _. 
+  let alpha. assume Hal.
+  exact (andEL
+    (group_homomorphism
+      (apply_fun (graph (UPair 0 1) (fun i:set =>
+        if i = 0 then piU else piV)) alpha)
+      (apply_fun (graph (UPair 0 1) (fun i:set =>
+        if i = 0 then multU else multV)) alpha)
+      FP multFP (apply_fun ifam alpha))
+    (forall x y:set,
+      x :e apply_fun (graph (UPair 0 1) (fun i:set =>
+        if i = 0 then piU else piV)) alpha ->
+      y :e apply_fun (graph (UPair 0 1) (fun i:set =>
+        if i = 0 then piU else piV)) alpha ->
+      apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)
+    (Hmono alpha Hal)).
+}
+claim Hifam0_fn : function_on (apply_fun ifam 0) piU FP.
+{
+  claim Hhom0 : group_homomorphism
+    (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV)) 0)
+    (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then multU else multV)) 0)
+    FP multFP (apply_fun ifam 0).
+  { exact (Hinj 0 H0). }
+  claim Hdom0 : apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV)) 0 = piU.
+  {
+    rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV) 0 H0).
+    claim H00 : 0 = 0. { reflexivity. }
+    exact (If_i_1 (0 = 0) piU piV H00).
+  }
+  rewrite <- Hdom0.
+  exact (group_homomorphism_function_on
+    (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV)) 0)
+    (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then multU else multV)) 0)
+    FP multFP (apply_fun ifam 0) Hhom0).
+}
+claim Hifam1_fn : function_on (apply_fun ifam 1) piV FP.
+{
+  claim Hhom1 : group_homomorphism
+    (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV)) 1)
+    (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then multU else multV)) 1)
+    FP multFP (apply_fun ifam 1).
+  { exact (Hinj 1 H1). }
+  claim Hdom1 : apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV)) 1 = piV.
+  {
+    rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV) 1 H1).
+    exact (If_i_0 (1 = 0) piU piV (neq_1_0)).
+  }
+  rewrite <- Hdom1.
+  exact (group_homomorphism_function_on
+    (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then piU else piV)) 1)
+    (apply_fun (graph (UPair 0 1) (fun i:set => if i = 0 then multU else multV)) 1)
+    FP multFP (apply_fun ifam 1) Hhom1).
+}
+claim Hj_fn : function_on j FP piX.
+{ exact (group_homomorphism_function_on FP multFP piX multX j Hjhom). }
+claim HinvFP_fn : function_on invFP FP FP.
+{
+  apply (and6E
+    (function_on multFP (setprod FP FP) FP)
+    (function_on invFP FP FP)
+    (eFP :e FP)
+    (forall a b c:set, a :e FP -> b :e FP -> c :e FP ->
+      apply_fun multFP (apply_fun multFP (a, b), c) = apply_fun multFP (a, apply_fun multFP (b, c)))
+    (forall a:set, a :e FP -> apply_fun multFP (eFP, a) = a /\ apply_fun multFP (a, eFP) = a)
+    (forall a:set, a :e FP ->
+      apply_fun multFP (a, apply_fun invFP a) = eFP /\ apply_fun multFP (apply_fun invFP a, a) = eFP)
+    HgrpFP).
+  assume _ Hinv _ _ _ _. exact Hinv.
+}
+claim HmultFP_fn : function_on multFP (setprod FP FP) FP.
+{
+  apply (and6E
+    (function_on multFP (setprod FP FP) FP)
+    (function_on invFP FP FP)
+    (eFP :e FP)
+    (forall a b c:set, a :e FP -> b :e FP -> c :e FP ->
+      apply_fun multFP (apply_fun multFP (a, b), c) = apply_fun multFP (a, apply_fun multFP (b, c)))
+    (forall a:set, a :e FP -> apply_fun multFP (eFP, a) = a /\ apply_fun multFP (a, eFP) = a)
+    (forall a:set, a :e FP ->
+      apply_fun multFP (a, apply_fun invFP a) = eFP /\ apply_fun multFP (apply_fun invFP a, a) = eFP)
+    HgrpFP).
+  assume Hm _ _ _ _ _. exact Hm.
+}
+claim Ht0_mem : apply_fun (apply_fun ifam 0) (apply_fun iU g) :e FP.
+{ exact (Hifam0_fn (apply_fun iU g) HiU_mem). }
+claim Ht1_mem : apply_fun (apply_fun ifam 1) (apply_fun iV g) :e FP.
+{ exact (Hifam1_fn (apply_fun iV g) HiV_mem). }
+claim Ha_mem : apply_fun invFP (apply_fun (apply_fun ifam 0) (apply_fun iU g)) :e FP.
+{ exact (HinvFP_fn (apply_fun (apply_fun ifam 0) (apply_fun iU g)) Ht0_mem). }
+claim Hb_mem : apply_fun (apply_fun ifam 1) (apply_fun iV g) :e FP.
+{ exact Ht1_mem. }
+rewrite (group_homomorphism_mult_rule FP multFP piX multX j
+  (apply_fun invFP (apply_fun (apply_fun ifam 0) (apply_fun iU g)))
+  (apply_fun (apply_fun ifam 1) (apply_fun iV g))
+  Hjhom Ha_mem Hb_mem).
+claim Hinv_push :
+  apply_fun j (apply_fun invFP (apply_fun (apply_fun ifam 0) (apply_fun iU g)))
+  =
+  apply_fun invX (apply_fun j (apply_fun (apply_fun ifam 0) (apply_fun iU g))).
+{
+  exact (group_hom_sends_inverse_cyclic_helper
+    FP multFP eFP invFP
+    piX multX idX invX
+    j
+    HgrpFP HgrpX Hjhom
+    (apply_fun (apply_fun ifam 0) (apply_fun iU g))
+    Ht0_mem).
+}
+rewrite Hinv_push.
+rewrite (Hj0 (apply_fun iU g) HiU_mem).
+rewrite (Hj1 (apply_fun iV g) HiV_mem).
+claim Hsquare :
+  apply_fun jU (apply_fun iU g) = apply_fun jV (apply_fun iV g).
+{
+  exact (seifert_van_kampen_overlap_inclusion_agree
+    X Tx U V x0 g
+    Htop HU HV Hcover Hx0UV HgUV).
+}
+rewrite Hsquare.
+claim HjV_fn : function_on jV piV piX.
+{ exact (group_homomorphism_function_on piV multV piX multX jV HjVhom). }
+claim Hz_mem : apply_fun jV (apply_fun iV g) :e piX.
+{ exact (HjV_fn (apply_fun iV g) HiV_mem). }
+apply (and6E
+  (function_on multX (setprod piX piX) piX)
+  (function_on invX piX piX)
+  (idX :e piX)
+  (forall a b c:set, a :e piX -> b :e piX -> c :e piX ->
+    apply_fun multX (apply_fun multX (a, b), c) = apply_fun multX (a, apply_fun multX (b, c)))
+  (forall a:set, a :e piX -> apply_fun multX (idX, a) = a /\ apply_fun multX (a, idX) = a)
+  (forall a:set, a :e piX ->
+    apply_fun multX (a, apply_fun invX a) = idX /\ apply_fun multX (apply_fun invX a, a) = idX)
+  HgrpX).
+assume _ _ _ _ _ HinvX_law.
+exact (andER
+  (apply_fun multX (apply_fun jV (apply_fun iV g), apply_fun invX (apply_fun jV (apply_fun iV g))) = idX)
+  (apply_fun multX (apply_fun invX (apply_fun jV (apply_fun iV g)), apply_fun jV (apply_fun iV g)) = idX)
+  (HinvX_law (apply_fun jV (apply_fun iV g)) Hz_mem)).
+Qed.
 
 
 (** Infrastructure: existence for the Seifert van Kampen universal pushout property **)
