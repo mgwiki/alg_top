@@ -306270,6 +306270,175 @@ let n. assume Hn : n :e omega.
 exact (Hnat n (omega_nat_p n Hn)).
 Qed.
 
+(** Infrastructure: homomorphism respects nat_primrec products **)
+(** Proven Charlie **)
+Lemma group_homomorphism_nat_primrec_product :
+  forall G multG eG invG H multH eH invH h n xs:set,
+  group_structure G multG eG invG ->
+  group_structure H multH eH invH ->
+  group_homomorphism G multG H multH h ->
+  n :e omega ->
+  function_on xs n G ->
+  apply_fun h
+    (nat_primrec eG (fun k r => apply_fun multG (r, apply_fun xs k)) n)
+  =
+  nat_primrec eH (fun k r => apply_fun multH (r, apply_fun h (apply_fun xs k))) n.
+let G multG eG invG H multH eH invH h n xs.
+assume HgrpG : group_structure G multG eG invG.
+assume HgrpH : group_structure H multH eH invH.
+assume Hhom : group_homomorphism G multG H multH h.
+assume HnO : n :e omega.
+assume Hxs : function_on xs n G.
+claim HmultG_fn : function_on multG (setprod G G) G.
+{ apply (and6E
+    (function_on multG (setprod G G) G)
+    (function_on invG G G)
+    (eG :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun multG (apply_fun multG (x, y), z) =
+        apply_fun multG (x, apply_fun multG (y, z)))
+    (forall x:set, x :e G ->
+      apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+    (forall x:set, x :e G ->
+      apply_fun multG (x, apply_fun invG x) = eG /\
+      apply_fun multG (apply_fun invG x, x) = eG)
+    HgrpG).
+  assume Hm _ _ _ _ _. exact Hm. }
+claim HeG_G : eG :e G.
+{ apply (and6E
+    (function_on multG (setprod G G) G)
+    (function_on invG G G)
+    (eG :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun multG (apply_fun multG (x, y), z) =
+        apply_fun multG (x, apply_fun multG (y, z)))
+    (forall x:set, x :e G ->
+      apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+    (forall x:set, x :e G ->
+      apply_fun multG (x, apply_fun invG x) = eG /\
+      apply_fun multG (apply_fun invG x, x) = eG)
+    HgrpG).
+  assume _ _ He _ _ _. exact He. }
+claim HmultH_fn : function_on multH (setprod H H) H.
+{ apply (and6E
+    (function_on multH (setprod H H) H)
+    (function_on invH H H)
+    (eH :e H)
+    (forall x y z:set, x :e H -> y :e H -> z :e H ->
+      apply_fun multH (apply_fun multH (x, y), z) =
+        apply_fun multH (x, apply_fun multH (y, z)))
+    (forall x:set, x :e H ->
+      apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x)
+    (forall x:set, x :e H ->
+      apply_fun multH (x, apply_fun invH x) = eH /\
+      apply_fun multH (apply_fun invH x, x) = eH)
+    HgrpH).
+  assume Hm _ _ _ _ _. exact Hm. }
+claim HeH_H : eH :e H.
+{ apply (and6E
+    (function_on multH (setprod H H) H)
+    (function_on invH H H)
+    (eH :e H)
+    (forall x y z:set, x :e H -> y :e H -> z :e H ->
+      apply_fun multH (apply_fun multH (x, y), z) =
+        apply_fun multH (x, apply_fun multH (y, z)))
+    (forall x:set, x :e H ->
+      apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x)
+    (forall x:set, x :e H ->
+      apply_fun multH (x, apply_fun invH x) = eH /\
+      apply_fun multH (apply_fun invH x, x) = eH)
+    HgrpH).
+  assume _ _ He _ _ _. exact He. }
+claim He_map : apply_fun h eG = eH.
+{ exact (group_hom_maps_id_to_id G multG eG invG H multH eH invH h HgrpG HgrpH Hhom). }
+set P := fun m:set =>
+  forall xsm:set,
+    function_on xsm m G ->
+    apply_fun h
+      (nat_primrec eG (fun k r => apply_fun multG (r, apply_fun xsm k)) m)
+    =
+    nat_primrec eH (fun k r => apply_fun multH (r, apply_fun h (apply_fun xsm k))) m.
+claim HP : P n.
+{
+  claim HnNat : nat_p n.
+  { exact (omega_nat_p n HnO). }
+  apply (nat_ind P).
+  - let xsm. assume Hxsm.
+    rewrite (nat_primrec_0 eG (fun k r => apply_fun multG (r, apply_fun xsm k))).
+    rewrite (nat_primrec_0 eH (fun k r => apply_fun multH (r, apply_fun h (apply_fun xsm k)))).
+    exact He_map.
+  - let k. assume Hk : nat_p k.
+    assume IH : P k.
+    let xsm. assume Hxsm : function_on xsm (ordsucc k) G.
+    claim Hk_sub : k c= ordsucc k.
+    { let i. assume Hi. exact (ordsuccI1 k i Hi). }
+    claim Hxsm_sub : function_on xsm k G.
+    { exact (function_on_subdomain xsm (ordsucc k) G k Hxsm Hk_sub). }
+    claim HIH_eq :
+      apply_fun h
+        (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsm i)) k)
+      =
+      nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xsm i))) k.
+    { exact (IH xsm Hxsm_sub). }
+    rewrite (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun xsm i)) k Hk).
+    rewrite (nat_primrec_S eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xsm i))) k Hk).
+    claim HprevG :
+      nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsm i)) k :e G.
+    {
+      claim Hsafe_x_G : forall i:set, If_i (i :e k) (apply_fun xsm i) eG :e G.
+      { let i.
+        apply (xm (i :e k)).
+        - assume Hik : i :e k.
+          rewrite (If_i_1 (i :e k) (apply_fun xsm i) eG Hik).
+          exact (Hxsm i (Hk_sub i Hik)).
+        - assume Hnik : ~(i :e k).
+          rewrite (If_i_0 (i :e k) (apply_fun xsm i) eG Hnik).
+          exact HeG_G. }
+      claim Hprev_safe :
+        nat_primrec eG (fun i r => apply_fun multG (r, If_i (i :e k) (apply_fun xsm i) eG)) k :e G.
+      { exact (local_nat_primrec_in_group G multG eG HmultG_fn HeG_G
+          (fun i:set => If_i (i :e k) (apply_fun xsm i) eG) Hsafe_x_G k (nat_p_omega k Hk)). }
+      claim Hprev_eq :
+        nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsm i)) k
+        =
+        nat_primrec eG (fun i r => apply_fun multG (r, If_i (i :e k) (apply_fun xsm i) eG)) k.
+      {
+        apply (nat_primrec_ext eG
+          (fun i r:set => apply_fun multG (r, apply_fun xsm i))
+          (fun i r:set => apply_fun multG (r, If_i (i :e k) (apply_fun xsm i) eG))
+          k (nat_p_omega k Hk)).
+        let i r. assume Hi : i :e k.
+        rewrite (If_i_1 (i :e k) (apply_fun xsm i) eG Hi).
+        reflexivity.
+      }
+      rewrite Hprev_eq.
+      exact Hprev_safe.
+    }
+    claim HxkG : apply_fun xsm k :e G.
+    { exact (Hxsm k (ordsuccI2 k)). }
+    claim Hmult_rule :
+      apply_fun h (apply_fun multG
+        (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsm i)) k,
+         apply_fun xsm k))
+      =
+      apply_fun multH
+        (apply_fun h (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsm i)) k),
+         apply_fun h (apply_fun xsm k)).
+    { exact (group_homomorphism_mult_rule
+        G multG H multH h
+        (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsm i)) k)
+        (apply_fun xsm k)
+        Hhom
+        HprevG
+        HxkG). }
+    rewrite Hmult_rule.
+    rewrite HIH_eq.
+    reflexivity.
+  - exact HnNat.
+}
+exact (HP xs Hxs).
+Qed.
+
 (** Helper: in an abelian group, extract a single term from a nat_primrec product **)
 (** Proven Alice **)
 Lemma nat_primrec_abelian_extract :
@@ -408039,6 +408208,221 @@ Admitted.
 (** S70 The Seifert-van Kampen Thm                           **)
 (** (lines 3183-3494 in algtop.tex)                              **)
 (** ============================================================ **)
+
+(** Infrastructure: uniqueness for the Seifert van Kampen universal property **)
+(** Proven Charlie **)
+Lemma seifert_van_kampen_universal_pushout_uniqueness :
+  forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  x0 :e U :/\: V ->
+  forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall phi1 phi2 Phi Phi':set,
+      group_homomorphism
+        (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+        H multH Phi ->
+      (forall g:set,
+        g :e fundamental_group U (subspace_topology X Tx U) x0 ->
+        apply_fun Phi
+          (apply_fun (induced_homomorphism
+            U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) g) =
+          apply_fun phi1 g) ->
+      (forall g:set,
+        g :e fundamental_group V (subspace_topology X Tx V) x0 ->
+        apply_fun Phi
+          (apply_fun (induced_homomorphism
+            V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) g) =
+          apply_fun phi2 g) ->
+      group_homomorphism
+        (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+        H multH Phi' ->
+      (forall g:set,
+        g :e fundamental_group U (subspace_topology X Tx U) x0 ->
+        apply_fun Phi'
+          (apply_fun (induced_homomorphism
+            U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) g) =
+          apply_fun phi1 g) ->
+      (forall g:set,
+        g :e fundamental_group V (subspace_topology X Tx V) x0 ->
+        apply_fun Phi'
+          (apply_fun (induced_homomorphism
+            V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) g) =
+          apply_fun phi2 g) ->
+      forall g:set, g :e fundamental_group X Tx x0 ->
+        apply_fun Phi' g = apply_fun Phi g.
+let X Tx U V x0.
+assume Htop HU HV Hcover HpcU HpcV HpcUV Hx0UV.
+let H multH eH invH.
+assume HgrpH : group_structure H multH eH invH.
+let phi1 phi2 Phi Phi'.
+assume HPhi : group_homomorphism (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) H multH Phi.
+assume HPhiU : forall g:set,
+  g :e fundamental_group U (subspace_topology X Tx U) x0 ->
+  apply_fun Phi
+    (apply_fun (induced_homomorphism
+      U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) g) =
+    apply_fun phi1 g.
+assume HPhiV : forall g:set,
+  g :e fundamental_group V (subspace_topology X Tx V) x0 ->
+  apply_fun Phi
+    (apply_fun (induced_homomorphism
+      V (subspace_topology X Tx V) x0 X Tx x0
+      (graph V (fun x:set => x))) g) =
+    apply_fun phi2 g.
+assume HPhi' : group_homomorphism (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) H multH Phi'.
+assume HPhi'U : forall g:set,
+  g :e fundamental_group U (subspace_topology X Tx U) x0 ->
+  apply_fun Phi'
+    (apply_fun (induced_homomorphism
+      U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) g) =
+    apply_fun phi1 g.
+assume HPhi'V : forall g:set,
+  g :e fundamental_group V (subspace_topology X Tx V) x0 ->
+  apply_fun Phi'
+    (apply_fun (induced_homomorphism
+      V (subspace_topology X Tx V) x0 X Tx x0
+      (graph V (fun x:set => x))) g) =
+    apply_fun phi2 g.
+let g. assume Hg : g :e fundamental_group X Tx x0.
+claim Hx0U : x0 :e U.
+{ exact (binintersectE1 U V x0 Hx0UV). }
+claim HUsub : U c= X.
+{ exact (topology_elem_subset X Tx U Htop HU). }
+claim Hx0X : x0 :e X.
+{ exact (HUsub x0 Hx0U). }
+set piX := fundamental_group X Tx x0.
+set multX := fundamental_group_mult X Tx x0.
+set idX := fundamental_group_id X Tx x0.
+set invX := fundamental_group_inv X Tx x0.
+claim HgrpX : group_structure piX multX idX invX.
+{ exact (fundamental_group_is_group X Tx x0 Htop Hx0X). }
+set iStar := induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+  (graph U (fun x:set => x)).
+set jStar := induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+  (graph V (fun x:set => x)).
+(** Decompose g using thm59_1_open_cover_generates_pi1 **)
+apply (thm59_1_open_cover_generates_pi1 X Tx U V x0 Htop HU HV Hcover Hx0UV HpcUV g Hg).
+let n. assume HnPack.
+claim HnO : n :e omega.
+{ exact (andEL
+    (n :e omega)
+    (exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs i = apply_fun iStar ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs i = apply_fun jStar vcls)) /\
+      g = nat_primrec idX (fun k r => apply_fun multX (r, apply_fun gs k)) n)
+    HnPack). }
+claim HgsEx :
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i = apply_fun iStar ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i = apply_fun jStar vcls)) /\
+    g = nat_primrec idX (fun k r => apply_fun multX (r, apply_fun gs k)) n.
+{ exact (andER
+    (n :e omega)
+    (exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs i = apply_fun iStar ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs i = apply_fun jStar vcls)) /\
+      g = nat_primrec idX (fun k r => apply_fun multX (r, apply_fun gs k)) n)
+    HnPack). }
+apply HgsEx.
+let gs. assume HgsPack.
+apply (and3E
+  (function_on gs n piX)
+  (forall i:set, i :e n ->
+    (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      apply_fun gs i = apply_fun iStar ucls) \/
+    (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+      apply_fun gs i = apply_fun jStar vcls))
+  (g = nat_primrec idX (fun k r => apply_fun multX (r, apply_fun gs k)) n)
+  HgsPack).
+assume HgsFun Hterms Hg_word.
+rewrite Hg_word.
+claim HPhi_word :
+  apply_fun Phi (nat_primrec idX (fun k r => apply_fun multX (r, apply_fun gs k)) n)
+  =
+  nat_primrec eH (fun k r => apply_fun multH (r, apply_fun Phi (apply_fun gs k))) n.
+{ exact (group_homomorphism_nat_primrec_product
+    piX multX idX invX H multH eH invH Phi n gs
+    HgrpX HgrpH HPhi HnO HgsFun). }
+claim HPhi'_word :
+  apply_fun Phi' (nat_primrec idX (fun k r => apply_fun multX (r, apply_fun gs k)) n)
+  =
+  nat_primrec eH (fun k r => apply_fun multH (r, apply_fun Phi' (apply_fun gs k))) n.
+{ exact (group_homomorphism_nat_primrec_product
+    piX multX idX invX H multH eH invH Phi' n gs
+    HgrpX HgrpH HPhi' HnO HgsFun). }
+rewrite HPhi'_word.
+rewrite HPhi_word.
+apply (nat_primrec_ext eH
+  (fun k r:set => apply_fun multH (r, apply_fun Phi' (apply_fun gs k)))
+  (fun k r:set => apply_fun multH (r, apply_fun Phi (apply_fun gs k)))
+  n HnO).
+let i r. assume Hi : i :e n.
+claim Hterm_eq : apply_fun Phi' (apply_fun gs i) = apply_fun Phi (apply_fun gs i).
+{
+  claim Hgs_i_mem : apply_fun gs i :e piX.
+  { exact (HgsFun i Hi). }
+  apply (Hterms i Hi).
+  - assume HuEx : exists ucls:set,
+      ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      apply_fun gs i = apply_fun iStar ucls.
+    apply HuEx.
+    let ucls. assume HuPack.
+    claim HuMem : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
+    { exact (andEL
+        (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+        (apply_fun gs i = apply_fun iStar ucls)
+        HuPack). }
+    claim Hgs_i_eq : apply_fun gs i = apply_fun iStar ucls.
+    { exact (andER
+        (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+        (apply_fun gs i = apply_fun iStar ucls)
+        HuPack). }
+    rewrite Hgs_i_eq.
+    rewrite (HPhi'U ucls HuMem).
+    rewrite (HPhiU ucls HuMem).
+    reflexivity.
+  - assume HvEx : exists vcls:set,
+      vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+      apply_fun gs i = apply_fun jStar vcls.
+    apply HvEx.
+    let vcls. assume HvPack.
+    claim HvMem : vcls :e fundamental_group V (subspace_topology X Tx V) x0.
+    { exact (andEL
+        (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+        (apply_fun gs i = apply_fun jStar vcls)
+        HvPack). }
+    claim Hgs_i_eq : apply_fun gs i = apply_fun jStar vcls.
+    { exact (andER
+        (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+        (apply_fun gs i = apply_fun jStar vcls)
+        HvPack). }
+    rewrite Hgs_i_eq.
+    rewrite (HPhi'V vcls HvMem).
+    rewrite (HPhiV vcls HvMem).
+    reflexivity.
+}
+rewrite Hterm_eq.
+reflexivity.
+Qed.
 
 (** Infrastructure helper for S70 Thm 70.1:
     universal pushout property for fundamental groups of a two-set open cover. **)
