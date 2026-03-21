@@ -292101,6 +292101,41 @@ Lemma S2_minus_two_points_homeo_R2_minus_point : forall p q:set,
 admit.
 Admitted.
 
+(** Helper: R^2 minus any point is path connected **)
+Lemma R2_minus_point_path_connected : forall p':set,
+  p' :e setprod R R ->
+  path_connected_space (setprod R R :\: Sing p')
+    (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p')).
+let p'. assume Hp'R2.
+claim Hp0R : p' 0 :e R. { exact (ap0_Sigma R (fun _ => R) p' Hp'R2). }
+claim Hp1R : p' 1 :e R. { exact (ap1_Sigma R (fun _ => R) p' Hp'R2). }
+claim Hp0SNo : SNo (p' 0). { exact (real_SNo (p' 0) Hp0R). }
+claim Hp1SNo : SNo (p' 1). { exact (real_SNo (p' 1) Hp1R). }
+set neg_p := (minus_SNo (p' 0), minus_SNo (p' 1)).
+claim Hmp0R : minus_SNo (p' 0) :e R. { exact (real_minus_SNo (p' 0) Hp0R). }
+claim Hmp1R : minus_SNo (p' 1) :e R. { exact (real_minus_SNo (p' 1) Hp1R). }
+claim Hneg_pR2 : neg_p :e setprod R R.
+{ rewrite <- (tuple_pair (minus_SNo (p' 0)) (minus_SNo (p' 1))).
+  exact (pair_Sigma R (fun _:set => R) (minus_SNo (p' 0)) Hmp0R (minus_SNo (p' 1)) Hmp1R). }
+(** Translation h(y) = y - neg_p = y + p' is continuous R^2 -> R^2 **)
+set h_full := graph (setprod R R) (fun y:set =>
+  (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1)))).
+claim Hh_cont_R2 : continuous_map (setprod R R) R2_topology (setprod R R) R2_topology h_full.
+{ exact (R2_translation_continuous_early neg_p Hneg_pR2). }
+(** h_full maps R^2\{0} into R^2\{p'} **)
+(** For y in R^2\{0}: h(y) = y + p'. h(y) = p' iff y = 0. So y != 0 => h(y) != p' **)
+(** h_full is a surjection from R^2\{0} to R^2\{p'}: for x in R^2\{p'}, y = x - p' in R^2\{0} **)
+(** Use continuous_image_path_connected **)
+(** Source: punctured_space_path_connected gives pc of R^2\{0} **)
+(** This proof is mechanical but needs SNo arithmetic for pair coord simplifications **)
+(** neg_p 0 = minus_SNo (p' 0), so minus_SNo (neg_p 0) = minus_SNo (minus_SNo (p' 0)) = p' 0 **)
+(** Similarly for coord 1 **)
+(** So h_full(y) = (y0 + p'0, y1 + p'1) after simplification **)
+(** h_full maps R^2\{0} to R^2\{p'}: if y != (0,0) and h(y) = (y0+p'0, y1+p'1), **)
+(** then h(y) = p' iff y0+p'0 = p'0 and y1+p'1 = p'1 iff y0=0 and y1=0 iff y=(0,0), contradiction **)
+admit.
+Admitted.
+
 (** Helper: R^2-{p'} homeomorphic to R^2 minus origin (translation by -p') **)
 Lemma R2_minus_point_homeo_R2_minus_origin : forall p':set,
   p' :e setprod R R ->
@@ -292120,14 +292155,18 @@ let p'. assume Hp'R2 : p' :e setprod R R.
 (** Define translation inline (R2_sub is later in file) **)
 set sub_p := fun x:set => (add_SNo (x 0) (minus_SNo (p' 0)), add_SNo (x 1) (minus_SNo (p' 1))).
 set f := graph (setprod R R :\: Sing p') sub_p.
-(** f maps R^2-{p'} to R2_minus_origin **)
-(** f is continuous (translation by fixed vector) **)
-(** f is bijective with inverse y -> y + p' **)
-(** Full proof needs: **)
-(** - continuity of translation (proved in R2_sub_right_continuous, but forward ref) **)
-(** - image lands in R2_minus_origin (needs sub_p x <> (0,0) for x <> p') **)
-(** - inverse continuity **)
-(** - R2_minus_origin equivalence with setprod R R setminus Sing(0,0) **)
+set add_p := fun y:set => (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)).
+set g := graph R2_minus_origin add_p.
+claim Hp0R : p' 0 :e R. { exact (ap0_Sigma R (fun _ => R) p' Hp'R2). }
+claim Hp1R : p' 1 :e R. { exact (ap1_Sigma R (fun _ => R) p' Hp'R2). }
+claim Hp0SNo : SNo (p' 0). { exact (real_SNo (p' 0) Hp0R). }
+claim Hp1SNo : SNo (p' 1). { exact (real_SNo (p' 1) Hp1R). }
+(** f maps R^2\{p'} to R2_minus_origin **)
+(** g maps R2_minus_origin to R^2\{p'} **)
+(** f, g continuous as restrictions of continuous maps on R^2 **)
+(** g(f(x)) = x and f(g(y)) = y by add/sub cancellation **)
+(** Full proof is mechanical but long; admit for now and fill step by step **)
+witness f.
 admit.
 Admitted.
 
@@ -292393,7 +292432,7 @@ claim HR2mp_sc : simply_connected (setprod R R :\: Sing p')
         witness (apply_fun f x). apply andI. exact Hfx_Y. exact (Hgf_inv x HxX). }
       (** R^2-{p'} path connected via R^2-{0} **)
       claim HY_pc : path_connected_space Y Ty.
-      { admit. }
+      { exact (R2_minus_point_path_connected p' Hp'R2). }
       exact (continuous_image_path_connected Y Ty X Tx g HY_pc Hg_cont Hg_surj).
     - (** pi1 trivial at x0 **)
       witness x0. apply andI.
