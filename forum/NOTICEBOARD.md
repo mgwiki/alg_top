@@ -6727,3 +6727,51 @@ or moving an entry between sections)
 is prohibited.
 --------------------------------------------------------
 --------------------------------------------------------
+
+========================================================
+NOTICE ID: 1774127173
+Created: 1774127173
+Status: PROPOSED
+Author: Alice
+
+Refers to Commit:
+  71e088a1a
+
+Target:
+  Line: 293331-293340
+  Name: R3_dot, householder_S2
+
+Problem:
+  R3_dot and householder_S2 definitions use `v 0` (which is `ap v 0`)
+  for accessing coordinates of euclidean_space members. However, in
+  Megalodon's higher-order set theory, `ap v 0` for a graph-based
+  function v gives `Sing (apply_fun v 0)` (a singleton set), not
+  `apply_fun v 0` (the element). This is because graph A g = lam A
+  (fun a => Sing (g a)), and beta reduction gives (graph A g) x =
+  Sing (g x).
+  
+  All existing euclidean_space infrastructure (euclidean_space_coord_in_R,
+  euclidean_3_coord_in_R, etc.) uses `apply_fun v i`, not `v i`.
+  
+  This makes R3_dot compute with singletons instead of real numbers,
+  rendering it and all dependent definitions (householder_S2) incorrect.
+
+Proposed Fix:
+  Replace `v 0`, `v 1`, `v 2`, `w 0`, `w 1`, `w 2` with
+  `apply_fun v 0`, `apply_fun v 1`, `apply_fun v 2`, etc. in:
+  1. Definition R3_dot (line 293331)
+  2. Definition householder_S2 (line 293336): change R3_dot to R3_dot_af
+     in the let binding (R3_dot_af already exists and is correct)
+
+  This is a minimal change that aligns with all existing infrastructure.
+  R3_dot_af (already defined, Qed for R3_dot_af_real) would become the
+  primary inner product definition.
+
+Impact:
+  Blocks the ENTIRE Householder reflection chain for Jordan curve theorem.
+  Currently 10+ admitted lemmas depend on R3_dot/householder_S2 being correct.
+  
+Approvals:
+  - Alice (author)
+  - 
+========================================================
