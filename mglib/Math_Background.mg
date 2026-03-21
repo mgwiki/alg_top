@@ -292144,10 +292144,51 @@ claim Hmnp0 : minus_SNo (neg_p 0) = p' 0.
 { rewrite Hnp0. exact (minus_SNo_invol (p' 0) Hp0SNo). }
 claim Hmnp1 : minus_SNo (neg_p 1) = p' 1.
 { rewrite Hnp1. exact (minus_SNo_invol (p' 1) Hp1SNo). }
-(** h_full maps R^2\{0} to R^2\{p'} **)
-(** h_full continuous on subspace, surjective **)
-(** For now admit remaining construction; the key ingredients are established **)
-admit.
+(** h_full maps R^2 into R^2 (it's a function R^2 -> R^2) **)
+claim Hh_fn : forall y:set, y :e setprod R R -> apply_fun h_full y :e setprod R R.
+{ exact (continuous_map_function_on (setprod R R) R2_topology (setprod R R) R2_topology h_full Hh_cont_R2). }
+(** h_full maps R^2\{0} into R^2\{p'} **)
+claim Hh_image : forall y:set, y :e setprod R R :\: Sing (0,0) ->
+  apply_fun h_full y :e setprod R R :\: Sing p'.
+{ let y. assume Hy : y :e setprod R R :\: Sing (0,0).
+  claim HyR2 : y :e setprod R R. { exact (setminusE1 (setprod R R) (Sing (0,0)) y Hy). }
+  claim Hyne : y /:e Sing (0,0).
+  { exact (setminusE2 (setprod R R) (Sing (0,0)) y Hy). }
+  claim Hyne2 : y <> (0,0).
+  { assume Hyeq : y = (0,0). apply Hyne. rewrite Hyeq. exact (SingI (0,0)). }
+  claim Hhy_R2 : apply_fun h_full y :e setprod R R. { exact (Hh_fn y HyR2). }
+  claim Hhy_ne_p : apply_fun h_full y /:e Sing p'.
+  { assume Hhy_p : apply_fun h_full y :e Sing p'.
+    claim Hhy_eq : apply_fun h_full y = p'. { exact (SingE p' (apply_fun h_full y) Hhy_p). }
+    apply Hyne2. admit. }
+  exact (setminusI (setprod R R) (Sing p') (apply_fun h_full y) Hhy_R2 Hhy_ne_p). }
+(** Restrict h_full to subspaces **)
+claim Hh_restr_cont : continuous_map
+  (setprod R R :\: Sing (0,0))
+  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0,0)))
+  (setprod R R :\: Sing p')
+  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'))
+  h_full.
+{ (** h_full is continuous R^2 -> R^2 and maps R^2\{0} into R^2\{p'} **)
+  (** Use composition with subspace inclusion + range restrict **)
+  admit. }
+(** Surjectivity **)
+claim Hh_surj : forall x:set, x :e setprod R R :\: Sing p' ->
+  exists y:set, y :e setprod R R :\: Sing (0,0) /\ apply_fun h_full y = x.
+{ let x. assume Hx : x :e setprod R R :\: Sing p'.
+  (** y = x - p' = (x0-p'0, x1-p'1) **)
+  (** Needs explicit construction and arithmetic **)
+  admit. }
+(** Apply continuous_image_path_connected **)
+exact (continuous_image_path_connected
+  (setprod R R :\: Sing (0,0))
+  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0,0)))
+  (setprod R R :\: Sing p')
+  (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'))
+  h_full
+  punctured_space_path_connected
+  Hh_restr_cont
+  Hh_surj).
 Admitted.
 
 (** Helper: R^2-{p'} homeomorphic to R^2 minus origin (translation by -p') **)
