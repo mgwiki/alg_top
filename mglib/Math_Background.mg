@@ -292121,6 +292121,7 @@ admit.
 Admitted.
 
 (** Helper: R^2 minus any point is path connected **)
+(** Proven Alice **)
 Lemma R2_minus_point_path_connected : forall p':set,
   p' :e setprod R R ->
   path_connected_space (setprod R R :\: Sing p')
@@ -292189,24 +292190,54 @@ claim Hh_image : forall y:set, y :e setprod R R :\: Sing (0,0) ->
     { exact (Hh_apply y HyR2). }
     (** apply_fun h_full y = (y0 + p'0, y1 + p'1) after simplification **)
     claim Hhy_pair : (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)) = p'.
-    { (** Via h_eval and mnp simplification **)
-      admit. }
+    { claim H4 : (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1))) = p'.
+      { exact (eq_i_tra
+          (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1)))
+          (apply_fun h_full y)
+          p'
+          (eq_symm (apply_fun h_full y)
+            (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1)))
+            (Hh_apply y HyR2))
+          Hhy_eq). }
+      claim H5 : (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)) =
+        (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1))).
+      { rewrite Hmnp0. rewrite Hmnp1. reflexivity. }
+      exact (eq_i_tra
+        (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1))
+        (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1)))
+        p' H5 H4). }
     (** coord equalities from pair equality **)
     claim Hcoord0_eq : add_SNo (y 0) (p' 0) = p' 0.
-    { admit. }
+    { claim Hlhs : (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)) 0 = add_SNo (y 0) (p' 0).
+      { rewrite <- (tuple_pair (add_SNo (y 0) (p' 0)) (add_SNo (y 1) (p' 1))).
+        exact (pair_ap_0 (add_SNo (y 0) (p' 0)) (add_SNo (y 1) (p' 1))). }
+      claim Hrhs : (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)) 0 = p' 0.
+      { rewrite Hhy_pair. reflexivity. }
+      prove add_SNo (y 0) (p' 0) = p' 0. rewrite <- Hlhs. exact Hrhs. }
     claim Hcoord1_eq : add_SNo (y 1) (p' 1) = p' 1.
-    { admit. }
+    { claim Hlhs : (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)) 1 = add_SNo (y 1) (p' 1).
+      { rewrite <- (tuple_pair (add_SNo (y 0) (p' 0)) (add_SNo (y 1) (p' 1))).
+        exact (pair_ap_1 (add_SNo (y 0) (p' 0)) (add_SNo (y 1) (p' 1))). }
+      claim Hrhs : (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)) 1 = p' 1.
+      { rewrite Hhy_pair. reflexivity. }
+      prove add_SNo (y 1) (p' 1) = p' 1. rewrite <- Hlhs. exact Hrhs. }
     (** y0 = 0 from y0 + p'0 = p'0 = 0 + p'0 **)
     claim Hy0_zero : y 0 = 0.
-    { (** from y0 + p'0 = p'0 = 0 + p'0 and add_SNo_cancel_R **)
-      admit. }
+    { claim H0plus : add_SNo 0 (p' 0) = p' 0.
+      { exact (add_SNo_0L (p' 0) Hp0SNo). }
+      claim Hcombined : add_SNo (y 0) (p' 0) = add_SNo 0 (p' 0).
+      { prove add_SNo (y 0) (p' 0) = add_SNo 0 (p' 0). rewrite H0plus. exact Hcoord0_eq. }
+      exact (add_SNo_cancel_R (y 0) (p' 0) 0 Hy0SNo Hp0SNo SNo_0 Hcombined). }
     claim Hy1_zero : y 1 = 0.
-    { (** similarly **)
-      admit. }
+    { claim H0plus : add_SNo 0 (p' 1) = p' 1.
+      { exact (add_SNo_0L (p' 1) Hp1SNo). }
+      claim Hcombined : add_SNo (y 1) (p' 1) = add_SNo 0 (p' 1).
+      { prove add_SNo (y 1) (p' 1) = add_SNo 0 (p' 1). rewrite H0plus. exact Hcoord1_eq. }
+      exact (add_SNo_cancel_R (y 1) (p' 1) 0 Hy1SNo Hp1SNo SNo_0 Hcombined). }
     (** y = (0, 0) **)
     apply Hyne2.
-    (** Need y = (0,0). y = (y0, y1) = (0, 0) **)
-    admit. }
+    claim Hy_eta : y = (y 0, y 1). { exact (setprod_eta R R y HyR2). }
+    rewrite Hy_eta. rewrite Hy0_zero. rewrite Hy1_zero. reflexivity. }
   exact (setminusI (setprod R R) (Sing p') (apply_fun h_full y) Hhy_R2 Hhy_ne_p). }
 (** Restrict h_full to subspaces **)
 (** Combine: h_full continuous on R^2, maps R^2\{0} into R^2\{p'}, surjective **)
@@ -292248,11 +292279,102 @@ claim Hcomp_cont_T : continuous_map S Ts T Tt h_comp.
 (** Surjectivity of h_comp onto T **)
 claim Hcomp_surj : forall x:set, x :e T -> exists y:set, y :e S /\ apply_fun h_comp y = x.
 { let x. assume Hx : x :e T.
-  (** y = x - p', h_comp(y) = h_full(y) = y + p' = x **)
-  admit. }
+  claim HxR2 : x :e setprod R R. { exact (HT_sub x Hx). }
+  claim HxnP : x /:e Sing p'. { exact (setminusE2 (setprod R R) (Sing p') x Hx). }
+  claim Hx0R : x 0 :e R. { exact (ap0_Sigma R (fun _ => R) x HxR2). }
+  claim Hx1R : x 1 :e R. { exact (ap1_Sigma R (fun _ => R) x HxR2). }
+  claim Hx0SNo : SNo (x 0). { exact (real_SNo (x 0) Hx0R). }
+  claim Hx1SNo : SNo (x 1). { exact (real_SNo (x 1) Hx1R). }
+  set yx := (add_SNo (x 0) (minus_SNo (p' 0)), add_SNo (x 1) (minus_SNo (p' 1))).
+  claim Hyx0R : add_SNo (x 0) (minus_SNo (p' 0)) :e R.
+  { exact (real_add_SNo (x 0) Hx0R (minus_SNo (p' 0)) (real_minus_SNo (p' 0) Hp0R)). }
+  claim Hyx1R : add_SNo (x 1) (minus_SNo (p' 1)) :e R.
+  { exact (real_add_SNo (x 1) Hx1R (minus_SNo (p' 1)) (real_minus_SNo (p' 1) Hp1R)). }
+  claim HyxR2 : yx :e setprod R R.
+  { rewrite <- (tuple_pair (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))).
+    exact (pair_Sigma R (fun _:set => R) (add_SNo (x 0) (minus_SNo (p' 0))) Hyx0R
+      (add_SNo (x 1) (minus_SNo (p' 1))) Hyx1R). }
+  claim Hyx_ne_00 : yx <> (0,0).
+  { assume Hyxeq : yx = (0,0).
+    claim Hyx0_eq : yx 0 = (0,0) 0. { rewrite Hyxeq. reflexivity. }
+    claim Hyx0_val : yx 0 = add_SNo (x 0) (minus_SNo (p' 0)).
+    { rewrite <- (tuple_pair (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))).
+      exact (pair_ap_0 (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))). }
+    claim H00_0 : (0,0) 0 = 0.
+    { rewrite <- (tuple_pair 0 0). exact (pair_ap_0 0 0). }
+    claim Hx0mp0 : add_SNo (x 0) (minus_SNo (p' 0)) = 0.
+    { exact (eq_i_tra (add_SNo (x 0) (minus_SNo (p' 0))) (yx 0) 0
+        (eq_symm (yx 0) (add_SNo (x 0) (minus_SNo (p' 0))) Hyx0_val)
+        (eq_i_tra (yx 0) ((0,0) 0) 0 Hyx0_eq H00_0)). }
+    claim Hyx1_eq : yx 1 = (0,0) 1. { rewrite Hyxeq. reflexivity. }
+    claim Hyx1_val : yx 1 = add_SNo (x 1) (minus_SNo (p' 1)).
+    { rewrite <- (tuple_pair (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))).
+      exact (pair_ap_1 (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))). }
+    claim H00_1 : (0,0) 1 = 0.
+    { rewrite <- (tuple_pair 0 0). exact (pair_ap_1 0 0). }
+    claim Hx1mp1 : add_SNo (x 1) (minus_SNo (p' 1)) = 0.
+    { exact (eq_i_tra (add_SNo (x 1) (minus_SNo (p' 1))) (yx 1) 0
+        (eq_symm (yx 1) (add_SNo (x 1) (minus_SNo (p' 1))) Hyx1_val)
+        (eq_i_tra (yx 1) ((0,0) 1) 0 Hyx1_eq H00_1)). }
+    claim HmpSNo0 : SNo (minus_SNo (p' 0)). { exact (SNo_minus_SNo (p' 0) Hp0SNo). }
+    claim HmpSNo1 : SNo (minus_SNo (p' 1)). { exact (SNo_minus_SNo (p' 1) Hp1SNo). }
+    claim Hx0_eq_p0 : x 0 = p' 0.
+    { exact (add_SNo_cancel_R (x 0) (minus_SNo (p' 0)) (p' 0) Hx0SNo HmpSNo0 Hp0SNo
+        (eq_i_tra (add_SNo (x 0) (minus_SNo (p' 0)))
+          0 (add_SNo (p' 0) (minus_SNo (p' 0)))
+          Hx0mp0
+          (eq_symm (add_SNo (p' 0) (minus_SNo (p' 0))) 0
+            (add_SNo_minus_SNo_rinv (p' 0) Hp0SNo)))). }
+    claim Hx1_eq_p1 : x 1 = p' 1.
+    { exact (add_SNo_cancel_R (x 1) (minus_SNo (p' 1)) (p' 1) Hx1SNo HmpSNo1 Hp1SNo
+        (eq_i_tra (add_SNo (x 1) (minus_SNo (p' 1)))
+          0 (add_SNo (p' 1) (minus_SNo (p' 1)))
+          Hx1mp1
+          (eq_symm (add_SNo (p' 1) (minus_SNo (p' 1))) 0
+            (add_SNo_minus_SNo_rinv (p' 1) Hp1SNo)))). }
+    claim Hx_eq_p : x = p'.
+    { claim Hx_eta : x = (x 0, x 1). { exact (setprod_eta R R x HxR2). }
+      claim Hp_eta : p' = (p' 0, p' 1). { exact (setprod_eta R R p' Hp'R2). }
+      rewrite Hx_eta. rewrite Hp_eta. rewrite Hx0_eq_p0. rewrite Hx1_eq_p1. reflexivity. }
+    apply HxnP. rewrite Hx_eq_p. exact (SingI p'). }
+  claim HyxS : yx :e S.
+  { exact (setminusI (setprod R R) (Sing (0,0)) yx HyxR2
+      (fun H : yx :e Sing (0,0) => Hyx_ne_00 (SingE (0,0) yx H))). }
+  witness yx. apply andI.
+  - exact HyxS.
+  - claim Heval_yx : apply_fun h_comp yx = apply_fun h_full yx.
+    { claim Hev1 : apply_fun h_comp yx = apply_fun h_full (apply_fun incl yx).
+      { exact (compose_fun_apply S incl h_full yx HyxS). }
+      claim Hev2 : apply_fun h_full (apply_fun incl yx) = apply_fun h_full yx.
+      { rewrite (identity_function_apply S yx HyxS). reflexivity. }
+      exact (eq_i_tra (apply_fun h_comp yx) (apply_fun h_full (apply_fun incl yx))
+        (apply_fun h_full yx) Hev1 Hev2). }
+    claim Heval_full : apply_fun h_full yx =
+      (add_SNo (yx 0) (minus_SNo (neg_p 0)), add_SNo (yx 1) (minus_SNo (neg_p 1))).
+    { exact (Hh_apply yx HyxR2). }
+    claim Hyx0_coord : yx 0 = add_SNo (x 0) (minus_SNo (p' 0)).
+    { rewrite <- (tuple_pair (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))).
+      exact (pair_ap_0 (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))). }
+    claim Hyx1_coord : yx 1 = add_SNo (x 1) (minus_SNo (p' 1)).
+    { rewrite <- (tuple_pair (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))).
+      exact (pair_ap_1 (add_SNo (x 0) (minus_SNo (p' 0))) (add_SNo (x 1) (minus_SNo (p' 1)))). }
+    claim Hcoord0_cancel : add_SNo (add_SNo (x 0) (minus_SNo (p' 0))) (p' 0) = x 0.
+    { rewrite <- (add_SNo_assoc (x 0) (minus_SNo (p' 0)) (p' 0) Hx0SNo (SNo_minus_SNo (p' 0) Hp0SNo) Hp0SNo).
+      rewrite (add_SNo_minus_SNo_linv (p' 0) Hp0SNo).
+      exact (add_SNo_0R (x 0) Hx0SNo). }
+    claim Hcoord1_cancel : add_SNo (add_SNo (x 1) (minus_SNo (p' 1))) (p' 1) = x 1.
+    { rewrite <- (add_SNo_assoc (x 1) (minus_SNo (p' 1)) (p' 1) Hx1SNo (SNo_minus_SNo (p' 1) Hp1SNo) Hp1SNo).
+      rewrite (add_SNo_minus_SNo_linv (p' 1) Hp1SNo).
+      exact (add_SNo_0R (x 1) Hx1SNo). }
+    claim Hresult : apply_fun h_full yx = x.
+    { rewrite Heval_full. rewrite Hyx0_coord. rewrite Hyx1_coord.
+      rewrite Hmnp0. rewrite Hmnp1.
+      rewrite Hcoord0_cancel. rewrite Hcoord1_cancel.
+      symmetry. exact (setprod_eta R R x HxR2). }
+    exact (eq_i_tra (apply_fun h_comp yx) (apply_fun h_full yx) x Heval_yx Hresult). }
 exact (continuous_image_path_connected S Ts T Tt h_comp
   punctured_space_path_connected Hcomp_cont_T Hcomp_surj).
-Admitted.
+Qed.
 
 (** Helper: R^2-{p'} homeomorphic to R^2 minus origin (translation by -p') **)
 Lemma R2_minus_point_homeo_R2_minus_origin : forall p':set,
