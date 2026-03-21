@@ -408533,7 +408533,58 @@ set j2 := induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
 (** extending by multiplicativity. Well-definedness from compatibility on UV. **)
 (** The full construction requires building the function Phi from the word decomposition. **)
 (** This is the core of the van Kampen proof and requires careful induction. **)
-admit.
+claim Hex :
+  exists Phi:set,
+    group_homomorphism piX multX H multH Phi /\
+    (forall g:set,
+      g :e piU ->
+      apply_fun Phi (apply_fun j1 g) = apply_fun phi1 g) /\
+    (forall g:set,
+      g :e piV ->
+      apply_fun Phi (apply_fun j2 g) = apply_fun phi2 g).
+{
+  admit.
+}
+apply Hex.
+let Phi. assume HPhiPack.
+apply (and3E
+  (group_homomorphism piX multX H multH Phi)
+  (forall g:set,
+    g :e piU ->
+    apply_fun Phi (apply_fun j1 g) = apply_fun phi1 g)
+  (forall g:set,
+    g :e piV ->
+    apply_fun Phi (apply_fun j2 g) = apply_fun phi2 g)
+  HPhiPack).
+assume HPhi : group_homomorphism piX multX H multH Phi.
+assume HPhiU : forall g:set,
+  g :e piU ->
+  apply_fun Phi (apply_fun j1 g) = apply_fun phi1 g.
+assume HPhiV : forall g:set,
+  g :e piV ->
+  apply_fun Phi (apply_fun j2 g) = apply_fun phi2 g.
+witness Phi.
+apply andI.
+- apply andI.
+  - apply andI.
+    - exact HPhi.
+    - let g. assume HgU.
+      exact (HPhiU g HgU).
+  - let g. assume HgV.
+    exact (HPhiV g HgV).
+- let Phi'. assume HPhi'.
+  assume HPhi'U.
+  assume HPhi'V.
+  let g. assume Hg.
+  exact (seifert_van_kampen_universal_pushout_uniqueness
+    X Tx U V x0
+    Htop HUopen HVopen Hcover
+    HpcU HpcV HpcUV Hx0UV
+    H multH eH invH HgrpH
+    phi1 phi2 Phi Phi'
+    HPhi HPhiU HPhiV
+    HPhi' HPhi'U HPhi'V
+    g Hg).
 Admitted.
 
 (** from S70 Thm 70.1 (line 3186 in algtop.tex): Seifert-van Kampen theorem **)
