@@ -277,73 +277,6 @@ Status:
   APPROVED
 --------------------------------------------------------
 
-NOTICE ID: 1772962528
-Created: 1772962528
-Status: APPROVED
-
-Refers to Commit:
-  5f667c07ef9a7190a76cdc6a6856394c7899072c
-
-Target:
-  Line: 119572
-  Name: thm54_6c_loop_characterization
-
-Problem:
-  The theorem statement has a precedence parsing bug. In Megalodon,
-  biconditional `<->` (precedence 805) binds LESS tightly than
-  implication `->` (precedence 800), so the statement:
-    covering_map E Te B Tb p -> e0 :e E ->
-    loop_at B Tb (apply_fun p e0) f ->
-    (path_homotopy_class_loop ... :e homomorphism_image ...) <-> apply_fun (path_lift ...) 1 = e0
-  parses as:
-    (covering_map ... -> e0 :e E -> loop_at ... -> LHS) <-> RHS
-  instead of the intended:
-    covering_map ... -> e0 :e E -> loop_at ... -> (LHS <-> RHS)
-  This makes the theorem unprovable as stated. The correct version
-  (thm54_6c_loop_characterization_equiv at line 119528) has explicit
-  parentheses and is already proved with Qed.
-
-Proposed Replacement:
-  Replace the theorem statement (lines 119572-119580) with:
-  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
-    covering_map E Te B Tb p -> e0 :e E ->
-    loop_at B Tb (apply_fun p e0) f ->
-    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
-      homomorphism_image
-        (fundamental_group E Te e0)
-        (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
-    <->
-    apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
-  (Only change: add outer parentheses around the biconditional)
-
-Proposed by:
-  Alice
-
-Discussion:
-  - 1774004400 | admin1: Approve. This is the canonical parenthesization fix for thm54_6c_loop_characterization and should be the notice workers implement.
-  - 1772962528 | Alice: The parsing bug is confirmed by compilation error
-    "claim is not an implication" when attempting assume Hcov on this
-    theorem. The _equiv version (line 119528) with correct parentheses
-    compiles and proves fine with Qed.
-
-Approvals:
-  - 1772962528 | Alice: YES
-  - | Bob:
-  - 1773019324 | Charlie: YES
-  - 1772999917 | Dave: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  - 1774004400 | APPROVED
-
-Implemented by:
-
-Implementation Commit:
-
-Status:
-
 ========================================================
 --------------------------------------------------------
 NOTICE ID: 1772900990
@@ -2126,6 +2059,77 @@ Implementation Commit:
 
 Status:
   REJECTED
+--------------------------------------------------------
+--------------------------------------------------------
+NOTICE ID: 1772962528
+Created: 1772962528
+Status: IMPLEMENTED
+
+Refers to Commit:
+  5f667c07ef9a7190a76cdc6a6856394c7899072c
+
+Target:
+  Line: 119572
+  Name: thm54_6c_loop_characterization
+
+Problem:
+  The theorem statement has a precedence parsing bug. In Megalodon,
+  biconditional `<->` (precedence 805) binds LESS tightly than
+  implication `->` (precedence 800), so the statement:
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    (path_homotopy_class_loop ... :e homomorphism_image ...) <-> apply_fun (path_lift ...) 1 = e0
+  parses as:
+    (covering_map ... -> e0 :e E -> loop_at ... -> LHS) <-> RHS
+  instead of the intended:
+    covering_map ... -> e0 :e E -> loop_at ... -> (LHS <-> RHS)
+  This makes the theorem unprovable as stated. The correct version
+  (thm54_6c_loop_characterization_equiv at line 119528) has explicit
+  parentheses and is already proved with Qed.
+
+Proposed Replacement:
+  Replace the theorem statement (lines 119572-119580) with:
+  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+      homomorphism_image
+        (fundamental_group E Te e0)
+        (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+    <->
+    apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+  (Only change: add outer parentheses around the biconditional)
+
+Proposed by:
+  Alice
+
+Discussion:
+  - 1774004400 | admin1: Approve. This is the canonical parenthesization fix for thm54_6c_loop_characterization and should be the notice workers implement.
+  - 1772962528 | Alice: The parsing bug is confirmed by compilation error
+    "claim is not an implication" when attempting assume Hcov on this
+    theorem. The _equiv version (line 119528) with correct parentheses
+    compiles and proves fine with Qed.
+
+Approvals:
+  - 1772962528 | Alice: YES
+  - | Bob:
+  - 1773019324 | Charlie: YES
+  - 1772999917 | Dave: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  - 1774004400 | APPROVED
+
+Implemented by:
+  Charlie
+
+Implementation Commit:
+  4eb68fdff
+
+Status:
+  IMPLEMENTED
 --------------------------------------------------------
 --------------------------------------------------------
 NOTICE ID: 1772954786
