@@ -137779,6 +137779,23 @@ apply SepI.
     Hat1).
 Admitted. (** depends on forward-declared covering map properties **)
 
+(** Helper: product of continuous surjective maps from compact to Hausdorff **)
+(** is a quotient map (because it's a closed surjective continuous map) **)
+Lemma compact_hausdorff_product_quotient_topology :
+  forall A Ta B Tb f:set,
+  compact_space A Ta -> Hausdorff_space B Tb ->
+  continuous_map A Ta B Tb f ->
+  surjective_map A B f ->
+  forall C Tc:set,
+  compact_space C Tc ->
+  topology_on C Tc ->
+  Hausdorff_space (setprod B C) (product_topology B Tb C Tc) ->
+  quotient_topology (setprod A C) (product_topology A Ta C Tc) (setprod B C)
+    (graph (setprod A C) (fun ac:set => (apply_fun f (ac 0), ac 1)))
+    c= product_topology B Tb C Tc.
+admit.
+Admitted.
+
 (** KEY BOTTLENECK: If proved, cascades to make R2_minus_origin_not_simply_connected QED **)
 (** Bounty 20 **)
 Lemma s55_loop_null_implies_nulhomotopic : forall X Tx h b0:set,
