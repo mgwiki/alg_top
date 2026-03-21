@@ -240019,43 +240019,43 @@ claim HL1_word_data :
     rewrite (apply_fun_graph (U :/\: V) (fun x:set => x) (apply_fun gamma (add_SNo 1 (minus_SNo u))) Hgu).
     exact Hgu. }
   set right_half_open := Sep unit_interval (fun t:set => Rlt (eps_ 1) t).
-  set lastI_L1 := Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq m)
+  set lastI_L1 := Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m))
     :\/: right_half_open.
   set seq_L1 := graph (ordsucc m)
     (fun k:set => If_i (k :e m)
-      (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+      (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
       lastI_L1).
   claim Hseq_L1_fn : function_on seq_L1 (ordsucc m) (Power unit_interval).
   { apply (total_function_on_function_on seq_L1 (ordsucc m) (Power unit_interval)).
     apply (total_function_on_graph (ordsucc m) (Power unit_interval)
       (fun k:set => If_i (k :e m)
-        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
         lastI_L1)).
     let k. assume Hk : k :e ordsucc m.
     apply (ordsuccE m k Hk).
     - assume Hkm : k :e m.
       prove If_i (k :e m)
-        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
         lastI_L1 :e Power unit_interval.
       rewrite (If_i_1 (k :e m)
-        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
         lastI_L1 Hkm).
-      apply (PowerI unit_interval (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))).
-      let t. assume Ht. exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k) t Ht).
+      apply (PowerI unit_interval (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))).
+      let t. assume Ht. exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)) t Ht).
     - assume Hkm : k = m.
       prove If_i (k :e m)
-        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
         lastI_L1 :e Power unit_interval.
       rewrite Hkm.
       rewrite (If_i_0 (m :e m)
-        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq m))
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m)))
         lastI_L1 (In_irref m)).
       apply (PowerI unit_interval lastI_L1).
       let t. assume Ht.
       apply (binunionE
-        (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq m))
+        (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m)))
         right_half_open t Ht).
-      + assume H. exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq m) t H).
+      + assume H. exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m)) t H).
       + assume H. exact (SepE1 unit_interval (fun t0:set => Rlt (eps_ 1) t0) t H). }
   claim Hseq_L1_open : forall k:set, k :e ordsucc m ->
     apply_fun seq_L1 k :e unit_interval_topology. { admit. }
@@ -240067,23 +240067,25 @@ claim HL1_word_data :
   claim Hseq_L1_0 : 0 :e apply_fun seq_L1 0.
   { claim Hseq_L1_0_eq : apply_fun seq_L1 0 =
       If_i (0 :e m)
-        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq 0))
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq 0)))
         lastI_L1.
     { exact (apply_fun_graph (ordsucc m)
         (fun k:set => If_i (k :e m)
-          (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+          (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
           lastI_L1) 0 (nat_0_in_ordsucc m HmNat)). }
     rewrite Hseq_L1_0_eq.
     claim H0_in_seq0 : mul_SNo 2 (mul_SNo s 0) :e apply_fun seq 0.
     { rewrite H2s0_eq_0. exact H0_in. }
+    claim H0_in_Vof0 : mul_SNo 2 (mul_SNo s 0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq 0).
+    { admit. }
     apply (xm (0 :e m)).
     - assume H0m.
-      rewrite (If_i_1 (0 :e m) (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq 0))
+      rewrite (If_i_1 (0 :e m) (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq 0)))
         lastI_L1 H0m).
-      exact (SepI unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq 0)
-        0 zero_in_unit_interval H0_in_seq0).
+      exact (SepI unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq 0))
+        0 zero_in_unit_interval H0_in_Vof0).
     - assume Hn0m.
-      rewrite (If_i_0 (0 :e m) (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq 0))
+      rewrite (If_i_0 (0 :e m) (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq 0)))
         lastI_L1 Hn0m).
       claim Hm0 : m = 0.
       { apply (nat_inv m HmNat).
@@ -240094,18 +240096,18 @@ claim HL1_word_data :
           exact (FalseE (Hn0m (eq_subst_mem_set 0 (ordsucc k) m
             (nat_0_in_ordsucc k Hk_nat) (eq_symm m (ordsucc k) Hm_eq))) (m = 0)). }
       apply binunionI1.
-      claim H0_in_seqm : mul_SNo 2 (mul_SNo s 0) :e apply_fun seq m.
-      { rewrite Hm0. exact H0_in_seq0. }
-      exact (SepI unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq m)
-        0 zero_in_unit_interval H0_in_seqm). }
+      claim H0_in_Vofm : mul_SNo 2 (mul_SNo s 0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m).
+      { admit. }
+      exact (SepI unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m))
+        0 zero_in_unit_interval H0_in_Vofm). }
   claim Hseq_L1_1 : 1 :e apply_fun seq_L1 m.
   { rewrite (apply_fun_graph (ordsucc m)
       (fun k:set => If_i (k :e m)
-        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
         lastI_L1)
       m (ordsuccI2 m)).
     rewrite (If_i_0 (m :e m)
-      (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq m))
+      (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m)))
       lastI_L1 (In_irref m)).
     apply binunionI2.
     exact (SepI unit_interval (fun t:set => Rlt (eps_ 1) t) 1 one_in_unit_interval
@@ -240129,22 +240131,22 @@ claim HL1_word_data :
         (** Need: apply_fun L1 t in U **)
         (** Extract t properties from seq_L1(k) membership **)
         claim Hseq_L1_k_eq : apply_fun seq_L1 k =
-          Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k).
+          Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)).
         { rewrite (apply_fun_graph (ordsucc m)
             (fun k0:set => If_i (k0 :e m)
-              (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k0))
+              (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k0)))
               lastI_L1) k Hk).
           exact (If_i_1 (k :e m)
-            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k))
+            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
             lastI_L1 Hkm). }
-        claim Ht_sep : t :e Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k).
+        claim Ht_sep : t :e Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)).
         { exact (eq_subst_mem_set t (apply_fun seq_L1 k)
-            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k))
+            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
             Ht Hseq_L1_k_eq). }
         claim HtUI : t :e unit_interval.
-        { exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k) t Ht_sep). }
-        claim H2st_seqk : mul_SNo 2 (mul_SNo s t) :e apply_fun seq k.
-        { exact (SepE2 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k) t Ht_sep). }
+        { exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)) t Ht_sep). }
+        claim H2st_Vofk : mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k).
+        { exact (SepE2 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)) t Ht_sep). }
         (** Case split: t in left half or right half **)
         apply (xm (Rlt (eps_ 1) t)).
         { (** Right half: L1(t) = revGX(2t-1) in U cap V c= U **)
@@ -240197,26 +240199,30 @@ claim HL1_word_data :
                 Hstep1 (eq_i_tra (mul_SNo (mul_SNo 2 t) s) (mul_SNo 2 (mul_SNo t s))
                   (mul_SNo 2 (mul_SNo s t)) Hstep2 Hstep3))). }
           rewrite Haffine_eq_2st.
-          exact (HkU (mul_SNo 2 (mul_SNo s t)) H2st_seqk). }
+          (** Convert 2st from V_of(k) to seq(k): need 2st in UI **)
+          (** In left half: 2st = 2st where t <= 1/2, so 2st <= s <= 1, hence in UI **)
+          (** So 2st in V_of(k) cap UI = seq(k), and HkU applies **)
+          claim H2st_in_seqk : mul_SNo 2 (mul_SNo s t) :e apply_fun seq k. { admit. }
+          exact (HkU (mul_SNo 2 (mul_SNo s t)) H2st_in_seqk). }
       + assume HkV : forall t:set, t :e apply_fun seq k -> apply_fun f t :e V.
         apply orIR. let t. assume Ht : t :e apply_fun seq_L1 k.
         claim Hseq_L1_k_eq2 : apply_fun seq_L1 k =
-          Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k).
+          Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)).
         { rewrite (apply_fun_graph (ordsucc m)
             (fun k0:set => If_i (k0 :e m)
-              (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k0))
+              (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k0)))
               lastI_L1) k Hk).
           exact (If_i_1 (k :e m)
-            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k))
+            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
             lastI_L1 Hkm). }
-        claim Ht_sep2 : t :e Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k).
+        claim Ht_sep2 : t :e Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)).
         { exact (eq_subst_mem_set t (apply_fun seq_L1 k)
-            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k))
+            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)))
             Ht Hseq_L1_k_eq2). }
         claim HtUI2 : t :e unit_interval.
-        { exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k) t Ht_sep2). }
-        claim H2st_seqk2 : mul_SNo 2 (mul_SNo s t) :e apply_fun seq k.
-        { exact (SepE2 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k) t Ht_sep2). }
+        { exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)) t Ht_sep2). }
+        claim H2st_seqk2 : mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k).
+        { exact (SepE2 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k)) t Ht_sep2). }
         apply (xm (Rlt (eps_ 1) t)).
         { assume Hright : Rlt (eps_ 1) t.
           claim Ht_rh2 : t :e unit_interval_right_half.
@@ -240257,28 +240263,29 @@ claim HL1_word_data :
                     (mul_SNo_assoc 2 t s SNo_2 HtSNo2 HsSNo2))
                   Hstep3v))). }
           rewrite Haffine_eq_2st2.
-          exact (HkV (mul_SNo 2 (mul_SNo s t)) H2st_seqk2). }
+          claim H2st_in_seqk2 : mul_SNo 2 (mul_SNo s t) :e apply_fun seq k. { admit. }
+          exact (HkV (mul_SNo 2 (mul_SNo s t)) H2st_in_seqk2). }
     - assume Hkm : k = m.
       (** seq_L1(m) = lastI_L1 is U-type (seq(m) U-type + right half in U cap V c= U) **)
       rewrite Hkm.
       claim Hseq_L1_m_eq : apply_fun seq_L1 m = lastI_L1.
       { rewrite (apply_fun_graph (ordsucc m)
           (fun k0:set => If_i (k0 :e m)
-            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq k0))
+            (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq k0)))
             lastI_L1) m (ordsuccI2 m)).
         exact (If_i_0 (m :e m)
-          (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq m))
+          (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m)))
           lastI_L1 (In_irref m)). }
       rewrite Hseq_L1_m_eq.
       apply orIL. let t. assume Ht : t :e lastI_L1.
       apply (binunionE
-        (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq m))
+        (Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m)))
         right_half_open t Ht).
-      + assume Htm : t :e Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq m).
+      + assume Htm : t :e Sep unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m)).
         claim HtUI3 : t :e unit_interval.
-        { exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq m) t Htm). }
-        claim H2st_seqm : mul_SNo 2 (mul_SNo s t) :e apply_fun seq m.
-        { exact (SepE2 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e apply_fun seq m) t Htm). }
+        { exact (SepE1 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m)) t Htm). }
+        claim H2st_seqm : mul_SNo 2 (mul_SNo s t) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m).
+        { exact (SepE2 unit_interval (fun t0:set => mul_SNo 2 (mul_SNo s t0) :e ambient_open_of_subspace_open R R_standard_topology unit_interval (apply_fun seq m)) t Htm). }
         apply (xm (Rlt (eps_ 1) t)).
         { assume Hright : Rlt (eps_ 1) t.
           claim Ht_rh3 : t :e unit_interval_right_half.
@@ -240318,7 +240325,8 @@ claim HL1_word_data :
                     (mul_SNo_assoc 2 t s SNo_2 HtSNo3 HsSNo3))
                   Hstep3m))). }
           rewrite Haffine_eq_2st3.
-          exact (Hm_Utype (mul_SNo 2 (mul_SNo s t)) H2st_seqm). }
+          claim H2st_in_seqm : mul_SNo 2 (mul_SNo s t) :e apply_fun seq m. { admit. }
+          exact (Hm_Utype (mul_SNo 2 (mul_SNo s t)) H2st_in_seqm). }
       + assume Hts : t :e right_half_open.
         claim HtUI4 : t :e unit_interval.
         { exact (SepE1 unit_interval (fun t0:set => Rlt (eps_ 1) t0) t Hts). }
