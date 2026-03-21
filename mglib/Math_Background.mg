@@ -408424,6 +408424,136 @@ rewrite Hterm_eq.
 reflexivity.
 Qed.
 
+(** Infrastructure: the two inclusion routes from U cap V into X agree on pi1. **)
+(** Proven Charlie **)
+Lemma seifert_van_kampen_overlap_inclusion_agree :
+  forall X Tx U V x0 g:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  x0 :e U :/\: V ->
+  g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x)))
+    (apply_fun (induced_homomorphism (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+        U (subspace_topology X Tx U) x0
+        (graph (U :/\: V) (fun x:set => x))) g)
+  =
+  apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+      (graph V (fun x:set => x)))
+    (apply_fun (induced_homomorphism (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+        V (subspace_topology X Tx V) x0
+        (graph (U :/\: V) (fun x:set => x))) g).
+let X Tx U V x0 g.
+assume Htop HU HV Hcover Hx0UV Hg.
+set UV := U :/\: V.
+claim Hx0U : x0 :e U. { exact (binintersectE1 U V x0 Hx0UV). }
+claim Hx0V : x0 :e V. { exact (binintersectE2 U V x0 Hx0UV). }
+claim HUsubX : U c= X. { exact (topology_elem_subset X Tx U Htop HU). }
+claim HVsubX : V c= X. { exact (topology_elem_subset X Tx V Htop HV). }
+claim HUVsubU : UV c= U.
+{ let z. assume Hz. exact (binintersectE1 U V z Hz). }
+claim HUVsubV : UV c= V.
+{ let z. assume Hz. exact (binintersectE2 U V z Hz). }
+claim HUVsubX : UV c= X.
+{ let z. assume Hz. exact (HUsubX z (HUVsubU z Hz)). }
+set TU := subspace_topology X Tx U.
+set TV := subspace_topology X Tx V.
+set TUV := subspace_topology X Tx UV.
+claim HtopU : topology_on U TU.
+{ exact (subspace_topology_is_topology X Tx U Htop HUsubX). }
+claim HtopV : topology_on V TV.
+{ exact (subspace_topology_is_topology X Tx V Htop HVsubX). }
+set incU := graph U (fun x:set => x).
+set incV := graph V (fun x:set => x).
+set incUV := graph UV (fun x:set => x).
+claim HincUCont : continuous_map U TU X Tx incU.
+{ exact (subspace_inclusion_continuous X Tx U Htop HUsubX). }
+claim HincVCont : continuous_map V TV X Tx incV.
+{ exact (subspace_inclusion_continuous X Tx V Htop HVsubX). }
+claim HincUVUCont0 : continuous_map UV (subspace_topology U TU UV) U TU incUV.
+{ exact (subspace_inclusion_continuous U TU UV HtopU HUVsubU). }
+claim HincUVVCont0 : continuous_map UV (subspace_topology V TV UV) V TV incUV.
+{ exact (subspace_inclusion_continuous V TV UV HtopV HUVsubV). }
+claim HincUVUCont : continuous_map UV TUV U TU incUV.
+{ rewrite <- (subspace_topology_transitive_weak X Tx U UV HUVsubU). exact HincUVUCont0. }
+claim HincUVVCont : continuous_map UV TUV V TV incUV.
+{ rewrite <- (subspace_topology_transitive_weak X Tx V UV HUVsubV). exact HincUVVCont0. }
+claim HincUVx0 : apply_fun incUV x0 = x0.
+{ exact (apply_fun_graph UV (fun x:set => x) x0 Hx0UV). }
+claim HincUx0 : apply_fun incU x0 = x0.
+{ exact (apply_fun_graph U (fun x:set => x) x0 Hx0U). }
+claim HincVx0 : apply_fun incV x0 = x0.
+{ exact (apply_fun_graph V (fun x:set => x) x0 Hx0V). }
+claim Hx0UV_mem : x0 :e UV. { exact Hx0UV. }
+claim Hleft_comp :
+  apply_fun (induced_homomorphism UV TUV x0 X Tx x0 (compose_fun UV incUV incU)) g
+  =
+  apply_fun (compose_fun (fundamental_group UV TUV x0)
+    (induced_homomorphism UV TUV x0 U TU x0 incUV)
+    (induced_homomorphism U TU x0 X Tx x0 incU)) g.
+{
+  exact (Theorem_52_4_functorial_composition
+    UV TUV x0 U TU x0 X Tx x0 incUV incU
+    HincUVUCont HincUCont HincUVx0 HincUx0 Hx0UV_mem g Hg).
+}
+claim Hright_comp :
+  apply_fun (induced_homomorphism UV TUV x0 X Tx x0 (compose_fun UV incUV incV)) g
+  =
+  apply_fun (compose_fun (fundamental_group UV TUV x0)
+    (induced_homomorphism UV TUV x0 V TV x0 incUV)
+    (induced_homomorphism V TV x0 X Tx x0 incV)) g.
+{
+  exact (Theorem_52_4_functorial_composition
+    UV TUV x0 V TV x0 X Tx x0 incUV incV
+    HincUVVCont HincVCont HincUVx0 HincVx0 Hx0UV_mem g Hg).
+}
+rewrite <- (compose_fun_apply
+  (fundamental_group UV TUV x0)
+  (induced_homomorphism UV TUV x0 U TU x0 incUV)
+  (induced_homomorphism U TU x0 X Tx x0 incU)
+  g
+  Hg).
+rewrite <- (compose_fun_apply
+  (fundamental_group UV TUV x0)
+  (induced_homomorphism UV TUV x0 V TV x0 incUV)
+  (induced_homomorphism V TV x0 X Tx x0 incV)
+  g
+  Hg).
+rewrite <- Hleft_comp.
+rewrite <- Hright_comp.
+claim HcompUVU : compose_fun UV incUV incU = incUV.
+{
+  apply (total_function_space_extensional UV X (compose_fun UV incUV incU) incUV).
+  - exact (compose_fun_in_total_function_space UV U X incUV incU
+      (continuous_map_function_on UV TUV U TU incUV HincUVUCont)
+      (continuous_map_function_on U TU X Tx incU HincUCont)).
+  - exact (graph_in_total_function_space UV X (fun x:set => x)
+      (fun x:set => fun Hx:x :e UV => HUVsubX x Hx)).
+  - let z. assume Hz.
+    rewrite (compose_fun_apply UV incUV incU z Hz).
+    rewrite (apply_fun_graph UV (fun x:set => x) z Hz).
+    rewrite (apply_fun_graph U (fun x:set => x) z (HUVsubU z Hz)).
+    reflexivity.
+}
+claim HcompUVV : compose_fun UV incUV incV = incUV.
+{
+  apply (total_function_space_extensional UV X (compose_fun UV incUV incV) incUV).
+  - exact (compose_fun_in_total_function_space UV V X incUV incV
+      (continuous_map_function_on UV TUV V TV incUV HincUVVCont)
+      (continuous_map_function_on V TV X Tx incV HincVCont)).
+  - exact (graph_in_total_function_space UV X (fun x:set => x)
+      (fun x:set => fun Hx:x :e UV => HUVsubX x Hx)).
+  - let z. assume Hz.
+    rewrite (compose_fun_apply UV incUV incV z Hz).
+    rewrite (apply_fun_graph UV (fun x:set => x) z Hz).
+    rewrite (apply_fun_graph V (fun x:set => x) z (HUVsubV z Hz)).
+    reflexivity.
+}
+rewrite HcompUVU.
+rewrite HcompUVV.
+reflexivity.
+Qed.
+
 (** Infrastructure: existence for the Seifert van Kampen universal pushout property **)
 (** Bounty 165 **)
 (** Lock Charlie 1774162205 **)
