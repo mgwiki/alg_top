@@ -240137,7 +240137,8 @@ claim HL1_word_data :
         (** Need: this is in [0,1]. Use SepI with two bounds. **)
         (** Bound 1: rescale(t) >= 0 **)
         claim Hrescale_ge_0 : ~(Rlt (apply_fun rescale t) 0).
-        { (** (t-s) c_inv >= 0 since t >= s and c_inv > 0 **)
+        { (** rescale(t) >= 0 since t >= s and c_inv > 0 **)
+          (** Use Rle approach: Rle s t from Hge_s, then show Rle 0 rescale(t) **)
           admit. }
         (** Bound 2: rescale(t) <= 1 **)
         claim Hrescale_le_1 : ~(Rlt 1 (apply_fun rescale t)).
