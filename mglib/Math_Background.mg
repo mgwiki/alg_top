@@ -137911,14 +137911,20 @@ exact (s55_surjective_closed_map_quotient_sub
 Qed.
 
 (** Forward declaration: S1 is Hausdorff (proved later as s55_S1_Hausdorff) **)
+(** Proven Alice **)
 Lemma S1_Hausdorff_early : Hausdorff_space S1 S1_topology.
-admit.
-Admitted.
+exact (ex17_12_subspace_Hausdorff (setprod R R) R2_topology S1
+  (ex17_11_product_Hausdorff R R_standard_topology R R_standard_topology
+    R_standard_topology_Hausdorff R_standard_topology_Hausdorff)
+  (Sep_Subq (setprod R R) (fun p:set => add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1))).
+Qed.
 
 (** Forward declaration: unit_interval is Hausdorff **)
+(** Proven Alice **)
 Lemma unit_interval_Hausdorff_early : Hausdorff_space unit_interval unit_interval_topology.
-admit.
-Admitted.
+exact (ex17_12_subspace_Hausdorff R R_standard_topology unit_interval
+  R_standard_topology_Hausdorff unit_interval_sub_R).
+Qed.
 
 (** KEY BOTTLENECK: If proved, cascades to make R2_minus_origin_not_simply_connected QED **)
 (** Bounty 20 **)
