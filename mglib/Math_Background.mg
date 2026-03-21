@@ -239977,7 +239977,11 @@ claim HL1_word_data :
     continuous_map B (subspace_topology unit_interval unit_interval_topology B) X Tx gB /\
     apply_fun gB s = apply_fun f s /\
     (forall t:set, t :e B -> apply_fun gB t :e U :/\: V).
-  { (** gB = gammaX composed with affine rescaling [s,1]->[1,0] **)
+  { (** gB = reverse_path(gammaX) composed with affine rescaling [s,1]->[0,1] **)
+    (** The affine map t -> (t-s)/(1-s) sends [s,1] to [0,1]. **)
+    (** Composed with reverse_path(gammaX) gives gB(t) = gammaX((1-t)/(1-s)). **)
+    (** gB(s) = gammaX(1) = f(s) and gB maps into image of gammaX c= U cap V. **)
+    (** For now admit - requires recip_SNo_pos infrastructure for 1/(1-s). **)
     admit. }
   apply Hg_on_B_ex. let gB. assume HgB_pack.
   (** HgB_pack : (cont /\ gB(s) = f(s)) /\ (forall t in B, gB(t) in U cap V) -- left assoc **)
