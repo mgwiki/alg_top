@@ -266369,7 +266369,7 @@ assume Hcls : cls :e fundamental_group X Tx x0.
 exact (lemma59_1_open_cover_generates_pi1_core
   X Tx U V x0 cls
   Htop HU HV Hcover Hx0UV HpcUV Hcls).
-Admitted.
+Qed.
 
 (** Helper: group homomorphism maps identity to identity **)
 (** Proven Alice **)
@@ -267697,7 +267697,7 @@ apply andI.
       claim HclsId : cls = fundamental_group_id X Tx z0.
       { exact (singleton_elem cls (fundamental_group_id X Tx z0) Hcls). }
       rewrite HclsId. exact HeG.
-Admitted.
+Qed.
 
 (** Helper infrastructure for S59.3: Euclidean and sphere topologies are bona fide topologies **)
 (** Proven Bob **)
@@ -292486,8 +292486,7 @@ apply (set_ext G (Sing e)).
   rewrite (Hall_eq_e cls Hcls). exact (SingI e).
 - let cls. assume Hcls : cls :e Sing e.
   rewrite (SingE e cls Hcls). exact He_in_G.
-Admitted.
-(** Proof complete modulo thm59_1_open_cover_generates_pi1 (which depends on admitted core) **)
+Qed.
 
 (** Helper: jordan separation - S^2-C disconnected when C simple closed curve **)
 (** Proof (Thm 61.3): by contradiction using SVK + nulhomotopy + pi1(S2-2pts) nontrivial **)
