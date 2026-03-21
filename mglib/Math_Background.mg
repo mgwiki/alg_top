@@ -239062,6 +239062,78 @@ Definition connected_ambient_open : set -> set -> set -> set -> set :=
       (subspace_topology X Tx (ambient_open_of_subspace_open X Tx Y U))
       (Eps_i (fun p:set => p :e U)).
 
+(** Properties of connected_ambient_open **)
+Theorem connected_ambient_open_sub : forall X Tx Y U:set,
+  U :e subspace_topology X Tx Y ->
+  connected_ambient_open X Tx Y U c= ambient_open_of_subspace_open X Tx Y U.
+let X Tx Y U. assume HU.
+exact (Sep_Subq (ambient_open_of_subspace_open X Tx Y U)
+  (fun y:set => exists C:set,
+    connected_space C (subspace_topology (ambient_open_of_subspace_open X Tx Y U)
+      (subspace_topology X Tx (ambient_open_of_subspace_open X Tx Y U)) C) /\
+    Eps_i (fun p:set => p :e U) :e C /\ y :e C)).
+Qed.
+
+Theorem connected_ambient_open_Ropen : forall U:set,
+  U :e unit_interval_topology ->
+  U <> Empty ->
+  connected_ambient_open R R_standard_topology unit_interval U :e R_standard_topology.
+let U. assume HU HUne.
+set V := ambient_open_of_subspace_open R R_standard_topology unit_interval U.
+set W := connected_ambient_open R R_standard_topology unit_interval U.
+claim HVopen : V :e R_standard_topology.
+{ exact (andEL (V :e R_standard_topology) (U = V :/\: unit_interval)
+    (ambient_open_of_subspace_open_spec R R_standard_topology unit_interval U HU)). }
+claim Hlc : locally_connected V (subspace_topology R R_standard_topology V).
+{ exact (open_subspace_locally_connected R R_standard_topology V
+    R_standard_locally_connected_early HVopen). }
+claim Href : Eps_i (fun p:set => p :e U) :e U.
+{ exact (Eps_i_ex (fun p:set => p :e U) (nonempty_has_element U HUne)). }
+claim HUeq : U = V :/\: unit_interval.
+{ exact (andER (V :e R_standard_topology) (U = V :/\: unit_interval)
+    (ambient_open_of_subspace_open_spec R R_standard_topology unit_interval U HU)). }
+claim Href_V : Eps_i (fun p:set => p :e U) :e V.
+{ exact (binintersectE1 V unit_interval (Eps_i (fun p:set => p :e U))
+    (eq_subst_mem_set (Eps_i (fun p:set => p :e U)) U (V :/\: unit_interval) Href HUeq)). }
+claim Hcomp_open_in_V : open_in V (subspace_topology R R_standard_topology V) W.
+{ exact (components_are_open_in_locally_connected V
+    (subspace_topology R R_standard_topology V) Hlc
+    (Eps_i (fun p:set => p :e U)) Href_V). }
+(** W is open in subspace topology of V, meaning W = U0 cap V for some R-open U0 **)
+(** Since V is R-open, W = U0 cap V is R-open **)
+claim HW_in_subT : W :e subspace_topology R R_standard_topology V.
+{ exact (andER (topology_on V (subspace_topology R R_standard_topology V))
+    (W :e subspace_topology R R_standard_topology V) Hcomp_open_in_V). }
+(** W in subspace_topology R R_standard_topology V means exists U0 in R_standard_topology, W = U0 cap V **)
+admit.
+Admitted.
+
+Theorem connected_ambient_open_contains_U : forall U:set,
+  U :e unit_interval_topology ->
+  U <> Empty ->
+  connected_space U (subspace_topology unit_interval unit_interval_topology U) ->
+  U c= connected_ambient_open R R_standard_topology unit_interval U.
+admit.
+Admitted.
+
+Theorem connected_ambient_open_cap_UI : forall U:set,
+  U :e unit_interval_topology ->
+  U <> Empty ->
+  connected_space U (subspace_topology unit_interval unit_interval_topology U) ->
+  U = connected_ambient_open R R_standard_topology unit_interval U :/\: unit_interval.
+admit.
+Admitted.
+
+Theorem connected_ambient_open_mem : forall U x:set,
+  U :e unit_interval_topology ->
+  U <> Empty ->
+  connected_space U (subspace_topology unit_interval unit_interval_topology U) ->
+  x :e U ->
+  x :e connected_ambient_open R R_standard_topology unit_interval U.
+let U x. assume HU HUne HUconn Hx.
+exact (connected_ambient_open_contains_U U HU HUne HUconn x Hx).
+Admitted.
+
 Lemma nch_transition_UV_step :
   forall m:set, nat_p m ->
   (forall X Tx U V x0 f seq:set,
@@ -240244,8 +240316,17 @@ claim HL1_word_data :
           lastI_L1 Hkm). }
       rewrite Hseq_L1_k_is.
       set Vk := connected_ambient_open R R_standard_topology unit_interval (apply_fun seq k).
+      claim Hseqk_ne : apply_fun seq k <> Empty.
+      { apply (xm (k = 0)).
+        - assume Hk0 : k = 0. rewrite Hk0.
+          assume H : apply_fun seq 0 = Empty.
+          exact (EmptyE 0 (eq_subst_mem_set 0 (apply_fun seq 0) Empty H0_in H)).
+        - assume Hkne0 : k <> 0.
+          (** k in m and k <> 0, so k > 0, so k-1 in m and overlap k-1 gives point in seq(k) **)
+          admit. }
       claim HVk_Ropen : Vk :e R_standard_topology.
-      { admit. }
+      { exact (connected_ambient_open_Ropen (apply_fun seq k)
+          (HseqOpen k Hk_osn) Hseqk_ne). }
       claim Hpreimg_Ropen : preimage_of R (mul_const_fun (mul_SNo 2 s)) Vk :e R_standard_topology.
       { exact (continuous_map_preimage R R_standard_topology R R_standard_topology
           (mul_const_fun (mul_SNo 2 s)) Hmc_cont Vk HVk_Ropen). }
@@ -240265,8 +240346,12 @@ claim HL1_word_data :
       rewrite Hseq_L1_m_is.
       (** lastI_L1 = Sep(...) ∪ right_half_open, both open **)
       set Vm := connected_ambient_open R R_standard_topology unit_interval (apply_fun seq m).
+      claim Hseqm_ne : apply_fun seq m <> Empty.
+      { assume H : apply_fun seq m = Empty.
+        exact (EmptyE s (eq_subst_mem_set s (apply_fun seq m) Empty Hs_m H)). }
       claim HVm_Ropen : Vm :e R_standard_topology.
-      { admit. }
+      { exact (connected_ambient_open_Ropen (apply_fun seq m)
+          (HseqOpen m (ordsuccI1 (ordsucc m) m (ordsuccI2 m))) Hseqm_ne). }
       claim Hpart1_open : Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e Vm) :e unit_interval_topology.
       { rewrite (Hpreimage_sep_eq Vm HVm_Ropen).
         exact (subspace_topologyI R R_standard_topology unit_interval
@@ -240318,7 +240403,15 @@ claim HL1_word_data :
     claim H0_in_seq0 : mul_SNo 2 (mul_SNo s 0) :e apply_fun seq 0.
     { rewrite H2s0_eq_0. exact H0_in. }
     claim H0_in_Vof0 : mul_SNo 2 (mul_SNo s 0) :e connected_ambient_open R R_standard_topology unit_interval (apply_fun seq 0).
-    { admit. }
+    { claim H0_osn : 0 :e ordsucc (ordsucc m).
+      { exact (ordinal_TransSet (ordsucc (ordsucc m))
+          (nat_p_ordinal (ordsucc (ordsucc m)) (nat_ordsucc (ordsucc m) (nat_ordsucc m HmNat)))
+          (ordsucc m) (ordsuccI2 (ordsucc m)) 0 (nat_0_in_ordsucc m HmNat)). }
+      claim Hseq0_ne : apply_fun seq 0 <> Empty.
+      { assume H : apply_fun seq 0 = Empty.
+        exact (EmptyE 0 (eq_subst_mem_set 0 (apply_fun seq 0) Empty H0_in H)). }
+      exact (connected_ambient_open_mem (apply_fun seq 0) (mul_SNo 2 (mul_SNo s 0))
+        (HseqOpen 0 H0_osn) Hseq0_ne (HseqConn 0 H0_osn) H0_in_seq0). }
     apply (xm (0 :e m)).
     - assume H0m.
       rewrite (If_i_1 (0 :e m) (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e connected_ambient_open R R_standard_topology unit_interval (apply_fun seq 0)))
@@ -240338,7 +240431,14 @@ claim HL1_word_data :
             (nat_0_in_ordsucc k Hk_nat) (eq_symm m (ordsucc k) Hm_eq))) (m = 0)). }
       apply binunionI1.
       claim H0_in_Vofm : mul_SNo 2 (mul_SNo s 0) :e connected_ambient_open R R_standard_topology unit_interval (apply_fun seq m).
-      { admit. }
+      { claim H0_in_seqm : mul_SNo 2 (mul_SNo s 0) :e apply_fun seq m.
+        { rewrite Hm0. exact H0_in_seq0. }
+        claim Hseqm_ne2 : apply_fun seq m <> Empty.
+        { assume H : apply_fun seq m = Empty.
+          exact (EmptyE s (eq_subst_mem_set s (apply_fun seq m) Empty Hs_m H)). }
+        exact (connected_ambient_open_mem (apply_fun seq m) (mul_SNo 2 (mul_SNo s 0))
+          (HseqOpen m (ordsuccI1 (ordsucc m) m (ordsuccI2 m))) Hseqm_ne2
+          (HseqConn m (ordsuccI1 (ordsucc m) m (ordsuccI2 m))) H0_in_seqm). }
       exact (SepI unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e connected_ambient_open R R_standard_topology unit_interval (apply_fun seq m))
         0 zero_in_unit_interval H0_in_Vofm). }
   claim Hseq_L1_1 : 1 :e apply_fun seq_L1 m.
@@ -240471,7 +240571,15 @@ claim HL1_word_data :
           claim HVk_spec : apply_fun seq k =
             connected_ambient_open R R_standard_topology unit_interval (apply_fun seq k)
               :/\: unit_interval.
-          { admit. }
+          { claim Hseqk_ne_uv : apply_fun seq k <> Empty.
+            { claim Hovlp_k : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+              { exact (Hoverlap k (ordsuccI1 m k Hkm)). }
+              assume Hempty : apply_fun seq k = Empty.
+              apply Hovlp_k.
+              prove apply_fun seq k :/\: apply_fun seq (ordsucc k) = Empty.
+              rewrite Hempty. exact (binintersect_Empty_left (apply_fun seq (ordsucc k))). }
+            exact (connected_ambient_open_cap_UI (apply_fun seq k) (HseqOpen k Hk_osn)
+              Hseqk_ne_uv (HseqConn k Hk_osn)). }
           claim H2st_in_seqk : mul_SNo 2 (mul_SNo s t) :e apply_fun seq k.
           { rewrite HVk_spec.
             exact (binintersectI
@@ -240563,7 +240671,14 @@ claim HL1_word_data :
           claim HVk_spec2 : apply_fun seq k =
             connected_ambient_open R R_standard_topology unit_interval (apply_fun seq k)
               :/\: unit_interval.
-          { admit. }
+          { claim Hseqk_ne_uv2 : apply_fun seq k <> Empty.
+            { claim Hovlp_k2 : apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+              { exact (Hoverlap k (ordsuccI1 m k Hkm)). }
+              assume Hempty : apply_fun seq k = Empty.
+              apply Hovlp_k2.
+              rewrite Hempty. exact (binintersect_Empty_left (apply_fun seq (ordsucc k))). }
+            exact (connected_ambient_open_cap_UI (apply_fun seq k) (HseqOpen k Hk_osn)
+              Hseqk_ne_uv2 (HseqConn k Hk_osn)). }
           claim H2st_in_seqk2 : mul_SNo 2 (mul_SNo s t) :e apply_fun seq k.
           { rewrite HVk_spec2.
             exact (binintersectI
@@ -240656,7 +240771,13 @@ claim HL1_word_data :
           claim HVm_spec2 : apply_fun seq m =
             connected_ambient_open R R_standard_topology unit_interval (apply_fun seq m)
               :/\: unit_interval.
-          { admit. }
+          { claim Hseqm_ne_uv : apply_fun seq m <> Empty.
+            { assume H : apply_fun seq m = Empty.
+              exact (EmptyE s (eq_subst_mem_set s (apply_fun seq m) Empty Hs_m H)). }
+            exact (connected_ambient_open_cap_UI (apply_fun seq m)
+              (HseqOpen m (ordsuccI1 (ordsucc m) m (ordsuccI2 m)))
+              Hseqm_ne_uv
+              (HseqConn m (ordsuccI1 (ordsucc m) m (ordsuccI2 m)))). }
           claim H2st_in_seqm : mul_SNo 2 (mul_SNo s t) :e apply_fun seq m.
           { rewrite HVm_spec2.
             exact (binintersectI
