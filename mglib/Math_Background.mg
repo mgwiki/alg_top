@@ -292152,17 +292152,39 @@ exact (real_add_SNo
   (mul_SNo (apply_fun v 2) (apply_fun w 2)) (real_mul_SNo (apply_fun v 2) Hv2 (apply_fun w 2) Hw2)).
 Qed.
 
+(** Helper: ap equals apply_fun for euclidean_space 3 members **)
+(** This holds because euclidean_space members are functional graphs **)
+Lemma euclidean_3_ap_eq_apply_fun : forall v:set,
+  v :e euclidean_space 3 -> forall i:set, i :e 3 -> v i = apply_fun v i.
+admit.
+Admitted.
+
+(** R3_dot equals R3_dot_af for euclidean_space 3 members **)
+Lemma R3_dot_eq_af : forall v w:set,
+  v :e euclidean_space 3 -> w :e euclidean_space 3 ->
+  R3_dot v w = R3_dot_af v w.
+let v w. assume Hv Hw.
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3. { exact (ordsuccI2 2). }
+prove add_SNo (add_SNo (mul_SNo (v 0) (w 0)) (mul_SNo (v 1) (w 1))) (mul_SNo (v 2) (w 2))
+  = add_SNo (add_SNo (mul_SNo (apply_fun v 0) (apply_fun w 0)) (mul_SNo (apply_fun v 1) (apply_fun w 1))) (mul_SNo (apply_fun v 2) (apply_fun w 2)).
+rewrite (euclidean_3_ap_eq_apply_fun v Hv 0 H0in3).
+rewrite (euclidean_3_ap_eq_apply_fun v Hv 1 H1in3).
+rewrite (euclidean_3_ap_eq_apply_fun v Hv 2 H2in3).
+rewrite (euclidean_3_ap_eq_apply_fun w Hw 0 H0in3).
+rewrite (euclidean_3_ap_eq_apply_fun w Hw 1 H1in3).
+rewrite (euclidean_3_ap_eq_apply_fun w Hw 2 H2in3).
+reflexivity.
+Admitted.
+
 (** R3_dot is real-valued for vectors in euclidean_space 3 **)
 Lemma R3_dot_real : forall v w:set,
   v :e euclidean_space 3 -> w :e euclidean_space 3 ->
   R3_dot v w :e R.
 let v w. assume Hv Hw.
-prove add_SNo (add_SNo (mul_SNo (v 0) (w 0)) (mul_SNo (v 1) (w 1))) (mul_SNo (v 2) (w 2)) :e R.
-claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
-claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
-claim H2in3 : 2 :e 3. { exact (ordsuccI2 2). }
-admit. (** TODO: close under mul and add using euclidean_3_coord_in_R **)
-(** Needs: v 0 = apply_fun v 0 identity (ap vs apply_fun) **)
+claim Heq : R3_dot v w = R3_dot_af v w. { exact (R3_dot_eq_af v w Hv Hw). }
+rewrite Heq. exact (R3_dot_af_real v w Hv Hw).
 Admitted.
 
 (** R3_dot equals euclidean_norm_sq on the diagonal: v dot v = norm_sq v **)
