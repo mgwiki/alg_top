@@ -137806,7 +137806,32 @@ claim HcompAC : compact_space (setprod A C) (product_topology A Ta C Tc).
 (** fxid continuous **)
 claim Hfxid_cont : continuous_map (setprod A C) (product_topology A Ta C Tc)
   (setprod B C) (product_topology B Tb C Tc) fxid.
-{ admit. (** product of continuous maps: f on first, id on second **) }
+{ (** f' = f o pi1 : AxC -> B, g' = pi2 : AxC -> C **)
+  set f' := compose_fun (setprod A C) (projection_map1 A C) f.
+  set g' := projection_map2 A C.
+  claim Hpi1 : continuous_map (setprod A C) (product_topology A Ta C Tc) A Ta (projection_map1 A C).
+  { exact (projection1_continuous_in_product A Ta C Tc HtopA HtopC). }
+  claim Hpi2 : continuous_map (setprod A C) (product_topology A Ta C Tc) C Tc (projection_map2 A C).
+  { exact (projection2_continuous_in_product A Ta C Tc HtopA HtopC). }
+  claim Hf' : continuous_map (setprod A C) (product_topology A Ta C Tc) B Tb f'.
+  { exact (composition_continuous (setprod A C) (product_topology A Ta C Tc) A Ta B Tb
+      (projection_map1 A C) f Hpi1 Hf_cont). }
+  claim Hg' : continuous_map (setprod A C) (product_topology A Ta C Tc) C Tc g'.
+  { exact Hpi2. }
+  (** pair_map (AxC) f' g' is continuous into BxC **)
+  claim Hpm : continuous_map (setprod A C) (product_topology A Ta C Tc)
+    (setprod B C) (product_topology B Tb C Tc) (pair_map (setprod A C) f' g').
+  { exact (maps_into_products_axiom (setprod A C) (product_topology A Ta C Tc)
+      B Tb C Tc f' g' Hf' Hg'). }
+  (** fxid agrees with pair_map f' g' pointwise **)
+  claim Hfxid_fn : function_on fxid (setprod A C) (setprod B C).
+  { admit. (** fxid maps into BxC: f(ac 0) in B, ac 1 in C **) }
+  claim Hpw_eq : forall ac:set, ac :e setprod A C ->
+    apply_fun (pair_map (setprod A C) f' g') ac = apply_fun fxid ac.
+  { admit. (** pair_map_apply + projection1_apply + projection2_apply = graph evaluation **) }
+  exact (continuous_map_congr_on (setprod A C) (product_topology A Ta C Tc)
+    (setprod B C) (product_topology B Tb C Tc)
+    (pair_map (setprod A C) f' g') fxid Hpm Hfxid_fn Hpw_eq). }
 (** fxid surjective **)
 claim Hfxid_surj : surjective_map (setprod A C) (setprod B C) fxid.
 { prove function_on fxid (setprod A C) (setprod B C) /\
