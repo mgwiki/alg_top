@@ -240148,13 +240148,40 @@ claim HL1_word_data :
         claim HbR1 : b_rescale :e R.
         { exact (real_minus_SNo (mul_SNo s c_inv)
             (real_mul_SNo s Hs_R c_inv Hc_inv_R1)). }
-        (** rescale(1) = 1 c_inv + b_rescale = c_inv + (-(s c_inv)) **)
-        (** = c_inv(1-s) = (1-s) c_inv = 1 **)
-        (** Proof requires: affine_fun_I_apply, mul_SNo_oneL, **)
-        (** mul_SNo_distrR, recip_SNo_pos_prop1, mul_SNo_minus_distrL **)
-        (** The recursive rewrite issue with 1 -> (1-s)c_inv prevents direct proof **)
-        (** Using targeted prove+rewrite approach **)
-        admit. }
+        (** Build equality chain via eq_i_tra **)
+        claim HsSNo2 : SNo s. { exact (real_SNo s Hs_R). }
+        claim H1msSNo2 : SNo (add_SNo 1 (minus_SNo s)).
+        { exact (real_SNo (add_SNo 1 (minus_SNo s)) H1ms_R2). }
+        claim Hstep1 : apply_fun rescale 1 = add_SNo (mul_SNo 1 c_inv) b_rescale.
+        { exact (affine_fun_I_apply b_rescale c_inv 1 HbR1 Hc_inv_R1 Hc_inv_pos one_in_unit_interval). }
+        claim Hstep2 : add_SNo (mul_SNo 1 c_inv) b_rescale = add_SNo c_inv b_rescale.
+        { prove add_SNo (mul_SNo 1 c_inv) b_rescale = add_SNo c_inv b_rescale.
+          rewrite (mul_SNo_oneL c_inv Hc_inv_SNo). reflexivity. }
+        claim Hstep3 : add_SNo c_inv b_rescale =
+          add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv).
+        { prove add_SNo c_inv b_rescale =
+            add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv).
+          rewrite (mul_SNo_oneL c_inv Hc_inv_SNo).
+          rewrite (mul_SNo_minus_distrL s c_inv HsSNo2 Hc_inv_SNo).
+          reflexivity. }
+        claim Hstep4 : add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv) =
+          mul_SNo (add_SNo 1 (minus_SNo s)) c_inv.
+        { exact (eq_symm
+            (mul_SNo (add_SNo 1 (minus_SNo s)) c_inv)
+            (add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv))
+            (mul_SNo_distrR 1 (minus_SNo s) c_inv SNo_1 (SNo_minus_SNo s HsSNo2) Hc_inv_SNo)). }
+        claim Hstep5 : mul_SNo (add_SNo 1 (minus_SNo s)) c_inv = 1.
+        { exact (andER (SNo c_inv) (mul_SNo (add_SNo 1 (minus_SNo s)) c_inv = 1)
+            (recip_SNo_pos_prop1 (add_SNo 1 (minus_SNo s)) H1msSNo2
+              (RltE_lt 0 (add_SNo 1 (minus_SNo s)) H1ms_pos2))). }
+        exact (eq_i_tra (apply_fun rescale 1) (add_SNo (mul_SNo 1 c_inv) b_rescale) 1
+          Hstep1 (eq_i_tra (add_SNo (mul_SNo 1 c_inv) b_rescale) (add_SNo c_inv b_rescale) 1
+            Hstep2 (eq_i_tra (add_SNo c_inv b_rescale)
+              (add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv)) 1
+              Hstep3 (eq_i_tra
+                (add_SNo (mul_SNo 1 c_inv) (mul_SNo (minus_SNo s) c_inv))
+                (mul_SNo (add_SNo 1 (minus_SNo s)) c_inv) 1
+                Hstep4 Hstep5)))). }
       rewrite Hrescale_1. exact HrevGX_1. }
     claim HgBw_UV : forall t:set, t :e B -> apply_fun gB_witness t :e U :/\: V.
     { let t. assume HtB : t :e B.
