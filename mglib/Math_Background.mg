@@ -137946,10 +137946,64 @@ apply andI.
         (forall t:set, t :e unit_interval -> apply_fun H (0, t) = y0) /\
         (forall t:set, t :e unit_interval -> apply_fun H (1, t) = y0).
     { exact Hhell_null. }
-    (** Extract the homotopy H **)
-    admit. (** TODO ~150 lines: unpack H from Hhell_parts, build quotient map ell x id, **)
-    (** define F via epsilon, prove F continuous via s55_continuous_descends_to_quotient_topology, **)
-    (** verify F(x,0) = h(x) and F(x,1) = y0 **)
+    (** Extract the homotopy H from the 7-fold conjunction **)
+    (** Structure: ((((((A /\ B) /\ C) /\ D) /\ E) /\ F) /\ exists H, ...) **)
+    claim HexH : exists H:set,
+      continuous_map unit_square unit_square_topology X Tx H /\
+      (forall s:set, s :e unit_interval -> apply_fun H (s, 0) = apply_fun hell s) /\
+      (forall s:set, s :e unit_interval -> apply_fun H (s, 1) = apply_fun (constant_path y0) s) /\
+      (forall t:set, t :e unit_interval -> apply_fun H (0, t) = y0) /\
+      (forall t:set, t :e unit_interval -> apply_fun H (1, t) = y0).
+    { exact (andER
+        (continuous_map unit_interval unit_interval_topology X Tx hell /\
+         continuous_map unit_interval unit_interval_topology X Tx (constant_path y0) /\
+         apply_fun hell 0 = y0 /\ apply_fun hell 1 = y0 /\
+         apply_fun (constant_path y0) 0 = y0 /\ apply_fun (constant_path y0) 1 = y0)
+        (exists H:set,
+          continuous_map unit_square unit_square_topology X Tx H /\
+          (forall s:set, s :e unit_interval -> apply_fun H (s, 0) = apply_fun hell s) /\
+          (forall s:set, s :e unit_interval -> apply_fun H (s, 1) = apply_fun (constant_path y0) s) /\
+          (forall t:set, t :e unit_interval -> apply_fun H (0, t) = y0) /\
+          (forall t:set, t :e unit_interval -> apply_fun H (1, t) = y0))
+        Hhell_parts). }
+    apply HexH. let H. assume HH_data.
+    (** Unpack H properties **)
+    apply (and5E
+      (continuous_map unit_square unit_square_topology X Tx H)
+      (forall s:set, s :e unit_interval -> apply_fun H (s, 0) = apply_fun hell s)
+      (forall s:set, s :e unit_interval -> apply_fun H (s, 1) = apply_fun (constant_path y0) s)
+      (forall t:set, t :e unit_interval -> apply_fun H (0, t) = y0)
+      (forall t:set, t :e unit_interval -> apply_fun H (1, t) = y0)
+      HH_data).
+    assume HH_cont : continuous_map unit_square unit_square_topology X Tx H.
+    assume HH_at0 : forall s:set, s :e unit_interval -> apply_fun H (s, 0) = apply_fun hell s.
+    assume HH_at1 : forall s:set, s :e unit_interval -> apply_fun H (s, 1) = apply_fun (constant_path y0) s.
+    assume HH_left : forall t:set, t :e unit_interval -> apply_fun H (0, t) = y0.
+    assume HH_right : forall t:set, t :e unit_interval -> apply_fun H (1, t) = y0.
+    (** Step 4: Define the quotient map q = ell x id : IxI -> S1xI **)
+    (** q(s,t) = (ell(s), t) **)
+    set q := graph unit_square (fun st:set => (apply_fun ell (st 0), st 1)).
+    (** Step 5: Define F : S1 x I -> X **)
+    (** For each (x,t) in S1 x I, pick s with ell(s) = x and set F(x,t) = H(s,t) **)
+    (** Well-defined: ell(s1) = ell(s2) = x implies s1,s2 in {0,1} (if equal) **)
+    (** or s1 = s2 (ell injective on (0,1)). At s=0,1: H(0,t) = H(1,t) = y0 **)
+    set F := graph (setprod S1 unit_interval) (fun xt:set =>
+      apply_fun H (Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = xt 0), xt 1)).
+    witness F.
+    (** Need: F continuous, F(x,0) = h(x), F(x,1) = y0 **)
+    apply and3I.
+    - (** F continuous: F o q = H (on unit_square), q quotient map -> F continuous **)
+      admit. (** TODO: quotient descent argument using **)
+      (** s55_continuous_compact_Hausdorff_closed_map + s55_surjective_closed_map_quotient_sub **)
+      (** + s55_continuous_descends_to_quotient_topology **)
+    - (** F(x, 0) = h(x) for x in S1 **)
+      let x. assume Hx : x :e S1.
+      (** Pick s with ell(s) = x. F(x,0) = H(s,0) = hell(s) = h(ell(s)) = h(x) **)
+      admit. (** TODO: use Hell_surj, HH_at0, compose_fun_apply **)
+    - (** F(x, 1) = const_fun S1 y0 (x) = y0 **)
+      let x. assume Hx : x :e S1.
+      (** F(x,1) = H(s,1) = constant_path y0 (s) = y0 **)
+      admit. (** TODO: use HH_at1, constant_path_apply **)
 Admitted.
 
 Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
