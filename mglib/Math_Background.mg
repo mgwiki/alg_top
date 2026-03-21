@@ -137910,6 +137910,16 @@ exact (s55_surjective_closed_map_quotient_sub
   fxid HtopAC HtopBC Hfxid_surj Hfxid_closed).
 Qed.
 
+(** Forward declaration: S1 is Hausdorff (proved later as s55_S1_Hausdorff) **)
+Lemma S1_Hausdorff_early : Hausdorff_space S1 S1_topology.
+admit.
+Admitted.
+
+(** Forward declaration: unit_interval is Hausdorff **)
+Lemma unit_interval_Hausdorff_early : Hausdorff_space unit_interval unit_interval_topology.
+admit.
+Admitted.
+
 (** KEY BOTTLENECK: If proved, cascades to make R2_minus_origin_not_simply_connected QED **)
 (** Bounty 20 **)
 Lemma s55_loop_null_implies_nulhomotopic : forall X Tx h b0:set,
@@ -138373,7 +138383,15 @@ apply andI.
       (** Step 5: quotient_topology c= product_topology **)
       claim Hqt_sub : quotient_topology unit_square unit_square_topology (setprod S1 unit_interval) q
         c= product_topology S1 S1_topology unit_interval unit_interval_topology.
-      { admit. (** compact_hausdorff_product_quotient + S1 Hausdorff + product Hausdorff **) }
+      { claim Hprod_Haus : Hausdorff_space (setprod S1 unit_interval)
+          (product_topology S1 S1_topology unit_interval unit_interval_topology).
+        { exact (ex17_11_product_Hausdorff S1 S1_topology unit_interval unit_interval_topology
+            S1_Hausdorff_early unit_interval_Hausdorff_early). }
+        exact (compact_hausdorff_product_quotient_topology
+          unit_interval unit_interval_topology S1 S1_topology ell
+          unit_interval_compact_axiom S1_Hausdorff_early Hell_cont Hell_surj_map
+          unit_interval unit_interval_topology unit_interval_compact_axiom unit_interval_topology_on
+          Hprod_Haus). }
       (** Step 6: F continuous on quotient + quotient c= product -> F continuous on product **)
       admit. (** final transfer: continuous on coarser topology -> continuous on finer **)
     - (** F(x, 0) = h(x) for x in S1 **)
