@@ -292160,7 +292160,36 @@ claim Hh_image : forall y:set, y :e setprod R R :\: Sing (0,0) ->
   claim Hhy_ne_p : apply_fun h_full y /:e Sing p'.
   { assume Hhy_p : apply_fun h_full y :e Sing p'.
     claim Hhy_eq : apply_fun h_full y = p'. { exact (SingE p' (apply_fun h_full y) Hhy_p). }
-    apply Hyne2. admit. }
+    (** derive y = (0,0) from h(y) = p' **)
+    claim Hy0R : y 0 :e R. { exact (ap0_Sigma R (fun _ => R) y HyR2). }
+    claim Hy1R : y 1 :e R. { exact (ap1_Sigma R (fun _ => R) y HyR2). }
+    claim Hy0SNo : SNo (y 0). { exact (real_SNo (y 0) Hy0R). }
+    claim Hy1SNo : SNo (y 1). { exact (real_SNo (y 1) Hy1R). }
+    claim Hh_eval : apply_fun h_full y =
+      (add_SNo (y 0) (minus_SNo (neg_p 0)), add_SNo (y 1) (minus_SNo (neg_p 1))).
+    { exact (Hh_apply y HyR2). }
+    (** apply_fun h_full y = (y0 + p'0, y1 + p'1) after simplification **)
+    claim Hhy_pair : (add_SNo (y 0) (p' 0), add_SNo (y 1) (p' 1)) = p'.
+    { (** Via h_eval and mnp simplification **)
+      admit. }
+    (** coord equalities from pair equality **)
+    claim Hcoord0_eq : add_SNo (y 0) (p' 0) = p' 0.
+    { admit. }
+    claim Hcoord1_eq : add_SNo (y 1) (p' 1) = p' 1.
+    { admit. }
+    (** y0 = 0 from y0 + p'0 = p'0 = 0 + p'0 **)
+    claim Hy0_zero : y 0 = 0.
+    { exact (add_SNo_cancel_R (y 0) 0 (p' 0) Hy0SNo SNo_0 Hp0SNo
+        (eq_i_tra (add_SNo (y 0) (p' 0)) (p' 0) (add_SNo 0 (p' 0))
+          Hcoord0_eq (eq_symm (add_SNo 0 (p' 0)) (p' 0) (add_SNo_0L (p' 0) Hp0SNo)))). }
+    claim Hy1_zero : y 1 = 0.
+    { exact (add_SNo_cancel_R (y 1) 0 (p' 1) Hy1SNo SNo_0 Hp1SNo
+        (eq_i_tra (add_SNo (y 1) (p' 1)) (p' 1) (add_SNo 0 (p' 1))
+          Hcoord1_eq (eq_symm (add_SNo 0 (p' 1)) (p' 1) (add_SNo_0L (p' 1) Hp1SNo)))). }
+    (** y = (0, 0) **)
+    apply Hyne2.
+    (** Need y = (0,0). y = (y0, y1) = (0, 0) **)
+    admit. }
   exact (setminusI (setprod R R) (Sing p') (apply_fun h_full y) Hhy_R2 Hhy_ne_p). }
 (** Restrict h_full to subspaces **)
 (** Combine: h_full continuous on R^2, maps R^2\{0} into R^2\{p'}, surjective **)
