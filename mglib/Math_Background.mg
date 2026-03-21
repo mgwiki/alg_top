@@ -240050,9 +240050,42 @@ claim HL1_word_data :
   claim Hseq_L1_conn : forall k:set, k :e ordsucc m ->
     connected_space (apply_fun seq_L1 k)
       (subspace_topology unit_interval unit_interval_topology (apply_fun seq_L1 k)). { admit. }
+  claim H2s0_eq_0 : mul_SNo 2 (mul_SNo s 0) = 0.
+  { rewrite (mul_SNo_zeroR s (real_SNo s Hs_R)). exact (mul_SNo_zeroR 2 SNo_2). }
   claim Hseq_L1_0 : 0 :e apply_fun seq_L1 0.
-  { (** 0 in seq_L1(0): need 2s(0) = 0 in seq(0), from H0_in **)
-    admit. }
+  { claim Hseq_L1_0_eq : apply_fun seq_L1 0 =
+      If_i (0 :e m)
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq 0))
+        lastI_L1.
+    { exact (apply_fun_graph (ordsucc m)
+        (fun k:set => If_i (k :e m)
+          (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+          lastI_L1) 0 (nat_0_in_ordsucc m HmNat)). }
+    rewrite Hseq_L1_0_eq.
+    claim H0_in_seq0 : mul_SNo 2 (mul_SNo s 0) :e apply_fun seq 0.
+    { rewrite H2s0_eq_0. exact H0_in. }
+    apply (xm (0 :e m)).
+    - assume H0m.
+      rewrite (If_i_1 (0 :e m) (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq 0))
+        lastI_L1 H0m).
+      exact (SepI unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq 0)
+        0 zero_in_unit_interval H0_in_seq0).
+    - assume Hn0m.
+      rewrite (If_i_0 (0 :e m) (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq 0))
+        lastI_L1 Hn0m).
+      claim Hm0 : m = 0.
+      { apply (nat_inv m HmNat).
+        - assume H. exact H.
+        - assume Hm_succ. apply Hm_succ. let k. assume Hkp.
+          claim Hk_nat : nat_p k. { exact (andEL (nat_p k) (m = ordsucc k) Hkp). }
+          claim Hm_eq : m = ordsucc k. { exact (andER (nat_p k) (m = ordsucc k) Hkp). }
+          exact (FalseE (Hn0m (eq_subst_mem_set 0 (ordsucc k) m
+            (nat_0_in_ordsucc k Hk_nat) (eq_symm m (ordsucc k) Hm_eq))) (m = 0)). }
+      apply binunionI1.
+      claim H0_in_seqm : mul_SNo 2 (mul_SNo s 0) :e apply_fun seq m.
+      { rewrite Hm0. exact H0_in_seq0. }
+      exact (SepI unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq m)
+        0 zero_in_unit_interval H0_in_seqm). }
   claim Hseq_L1_1 : 1 :e apply_fun seq_L1 m.
   { rewrite (apply_fun_graph (ordsucc m)
       (fun k:set => If_i (k :e m)
