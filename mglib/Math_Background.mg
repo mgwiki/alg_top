@@ -138009,10 +138009,27 @@ apply andI.
     witness F.
     (** Need: F continuous, F(x,0) = h(x), F(x,1) = y0 **)
     apply and3I.
-    - (** F continuous: F o q = H (on unit_square), q quotient map -> F continuous **)
-      admit. (** TODO: quotient descent argument using **)
-      (** s55_continuous_compact_Hausdorff_closed_map + s55_surjective_closed_map_quotient_sub **)
-      (** + s55_continuous_descends_to_quotient_topology **)
+    - (** F continuous: F o (ell x id) = H, (ell x id) quotient -> F continuous **)
+      (** Define q = ell x id : I x I -> S1 x I **)
+      set q := graph unit_square (fun st:set => (apply_fun ell (st 0), st 1)).
+      (** q continuous: product of ell (continuous) with id (continuous) **)
+      claim Hq_cont : continuous_map unit_square unit_square_topology
+        (setprod S1 unit_interval) (product_topology S1 S1_topology unit_interval unit_interval_topology) q.
+      { admit. (** product of continuous maps: ell on first coord, id on second **) }
+      (** q surjective: from Hell_surj **)
+      claim Hq_surj : forall xt:set, xt :e setprod S1 unit_interval ->
+        exists st:set, st :e unit_square /\ apply_fun q st = xt.
+      { admit. (** use Hell_surj to find s with ell(s) = x, then (s,t) maps to (x,t) **) }
+      (** H = F o q (factorization through quotient) **)
+      claim Hfactors : forall st:set, st :e unit_square ->
+        apply_fun H st = apply_fun F (apply_fun q st).
+      { admit. (** key: well-definedness of F via Eps_i + H boundary conditions **) }
+      (** F function_on **)
+      claim HF_fn : function_on F (setprod S1 unit_interval) X.
+      { admit. (** F maps into X since H maps into X **) }
+      (** Combine: quotient descent gives F continuous **)
+      admit. (** use compact_hausdorff_product_quotient_topology + s55_continuous_descends **)
+      (** to conclude F continuous on product topology **)
     - (** F(x, 0) = h(x) for x in S1 **)
       let x. assume Hx : x :e S1.
       (** F(x,0) = apply_fun F (x,0) = H(eps_s, 0) where ell(eps_s) = x **)
