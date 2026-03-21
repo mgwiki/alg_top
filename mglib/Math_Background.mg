@@ -290524,33 +290524,600 @@ assume Hsep : separates (Sn 2) (Sn_topology 2) (D1 :\/: D2).
 admit.
 Admitted.
 
+(** Early infrastructure for locally path connected proofs, needed before Sn2_locally_path_connected **)
+(** Proven Dave **)
+Lemma homeomorphism_preserves_path_connected_space_left_early :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  path_connected_space Y Ty ->
+  path_connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HpcY.
+claim HfCont : continuous_map X Tx Y Ty f.
+{ exact (homeomorphism_continuous X Tx Y Ty f Hhome). }
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_dom X Tx Y Ty f HfCont). }
+claim HfFun : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f HfCont). }
+claim HtopY : topology_on Y Ty.
+{ exact (andEL (topology_on Y Ty)
+    (forall x y:set, x :e Y -> y :e Y ->
+      exists p:set, path_between Y x y p /\
+        continuous_map unit_interval unit_interval_topology Y Ty p)
+    HpcY). }
+claim HpathsY : forall x y:set, x :e Y -> y :e Y ->
+  exists p:set, path_between Y x y p /\
+    continuous_map unit_interval unit_interval_topology Y Ty p.
+{ exact (andER (topology_on Y Ty)
+    (forall x y:set, x :e Y -> y :e Y ->
+      exists p:set, path_between Y x y p /\
+        continuous_map unit_interval unit_interval_topology Y Ty p)
+    HpcY). }
+prove topology_on X Tx /\
+  forall x y:set, x :e X -> y :e X ->
+    exists p:set, path_between X x y p /\
+      continuous_map unit_interval unit_interval_topology X Tx p.
+apply andI.
+- exact HtopX.
+- let x y.
+  assume HxX HyX.
+  claim HfxY : apply_fun f x :e Y. { exact (HfFun x HxX). }
+  claim HfyY : apply_fun f y :e Y. { exact (HfFun y HyX). }
+  apply (HpathsY (apply_fun f x) (apply_fun f y) HfxY HfyY).
+  let pY. assume HpYpack.
+  claim HpYbetween : path_between Y (apply_fun f x) (apply_fun f y) pY.
+  { exact (andEL (path_between Y (apply_fun f x) (apply_fun f y) pY)
+      (continuous_map unit_interval unit_interval_topology Y Ty pY) HpYpack). }
+  claim HpYcont : continuous_map unit_interval unit_interval_topology Y Ty pY.
+  { exact (andER (path_between Y (apply_fun f x) (apply_fun f y) pY)
+      (continuous_map unit_interval unit_interval_topology Y Ty pY) HpYpack). }
+  apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+  let g. assume Hgpack.
+  apply (and3E (continuous_map Y Ty X Tx g)
+    (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0)
+    (forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0) Hgpack).
+  assume HgCont Hgleft _.
+  set pX := compose_fun unit_interval pY g.
+  claim HpXcont : continuous_map unit_interval unit_interval_topology X Tx pX.
+  { exact (composition_continuous unit_interval unit_interval_topology Y Ty X Tx pY g HpYcont HgCont). }
+  claim HpXfun : function_on pX unit_interval X.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx pX HpXcont). }
+  witness pX.
+  apply andI.
+  + apply (path_betweenI X x y pX).
+    * exact HpXfun.
+    * rewrite (compose_fun_apply unit_interval pY g 0 zero_in_unit_interval).
+      rewrite (path_between_at_zero Y (apply_fun f x) (apply_fun f y) pY HpYbetween).
+      exact (Hgleft x HxX).
+    * rewrite (compose_fun_apply unit_interval pY g 1 one_in_unit_interval).
+      rewrite (path_between_at_one Y (apply_fun f x) (apply_fun f y) pY HpYbetween).
+      exact (Hgleft y HyX).
+  + exact HpXcont.
+Qed.
+
+(** Proven Dave **)
+Lemma homeomorphism_image_of_preimage_eq_early :
+  forall X Tx Y Ty f Vpc:set,
+  homeomorphism X Tx Y Ty f ->
+  Vpc c= Y ->
+  image_of f (preimage_of X f Vpc) = Vpc.
+let X Tx Y Ty f Vpc.
+assume Hhome HVpcsub.
+apply set_ext.
+- let y. assume Hy.
+  apply (ReplE_impred (preimage_of X f Vpc) (fun x:set => apply_fun f x) y Hy).
+  let x. assume HxPreV Hyeq. rewrite Hyeq.
+  exact (SepE2 X (fun z:set => apply_fun f z :e Vpc) x HxPreV).
+- let y. assume HyVpc.
+  prove y :e {apply_fun f x | x :e preimage_of X f Vpc}.
+  apply (homeomorphism_surjective_value X Tx Y Ty f y Hhome (HVpcsub y HyVpc)).
+  let x. assume Hxpack.
+  claim HxX : x :e X. { exact (andEL (x :e X) (apply_fun f x = y) Hxpack). }
+  claim Hfxeqy : apply_fun f x = y. { exact (andER (x :e X) (apply_fun f x = y) Hxpack). }
+  claim HxPreV : x :e preimage_of X f Vpc.
+  { prove x :e {z :e X | apply_fun f z :e Vpc}.
+    apply (SepI X (fun z:set => apply_fun f z :e Vpc) x HxX).
+    rewrite Hfxeqy. exact HyVpc. }
+  rewrite <- Hfxeqy.
+  exact (ReplI (preimage_of X f Vpc) (fun x0:set => apply_fun f x0) x HxPreV).
+Qed.
+
+(** Proven Dave **)
+Lemma homeomorphism_codomain_eq_early :
+  forall A Ta B1 B2 Y Ty f:set,
+  homeomorphism A Ta B1 (subspace_topology Y Ty B1) f ->
+  B1 = B2 ->
+  homeomorphism A Ta B2 (subspace_topology Y Ty B2) f.
+let A Ta B1 B2 Y Ty f.
+assume Hhomeo Heq.
+rewrite <- Heq. exact Hhomeo.
+Qed.
+
+(** Proven Dave **)
+Lemma homeomorphism_restrict_to_preimage_early :
+  forall X Tx Y Ty f Vpc:set,
+  homeomorphism X Tx Y Ty f ->
+  Vpc c= Y ->
+  homeomorphism (preimage_of X f Vpc) (subspace_topology X Tx (preimage_of X f Vpc))
+    Vpc (subspace_topology Y Ty Vpc) f.
+let X Tx Y Ty f Vpc.
+assume Hhome HVpcsub.
+exact (homeomorphism_codomain_eq_early
+  (preimage_of X f Vpc) (subspace_topology X Tx (preimage_of X f Vpc))
+  (image_of f (preimage_of X f Vpc)) Vpc Y Ty f
+  (homeomorphism_restrict_to_image_of_subset X Tx Y Ty f (preimage_of X f Vpc) Hhome
+    (Sep_Subq X (fun y:set => apply_fun f y :e Vpc)))
+  (homeomorphism_image_of_preimage_eq_early X Tx Y Ty f Vpc Hhome HVpcsub)).
+Qed.
+
+(** Proven Dave **)
+Lemma preimage_pc_under_homeomorphism_early :
+  forall X Tx Y Ty f Vpc:set,
+  homeomorphism X Tx Y Ty f ->
+  Vpc c= Y ->
+  path_connected_space Vpc (subspace_topology Y Ty Vpc) ->
+  path_connected_space (preimage_of X f Vpc) (subspace_topology X Tx (preimage_of X f Vpc)).
+let X Tx Y Ty f Vpc.
+assume Hhome HVpcsub HVpcPC.
+exact (homeomorphism_preserves_path_connected_space_left_early
+  (preimage_of X f Vpc) (subspace_topology X Tx (preimage_of X f Vpc))
+  Vpc (subspace_topology Y Ty Vpc) f
+  (homeomorphism_restrict_to_preimage_early X Tx Y Ty f Vpc Hhome HVpcsub)
+  HVpcPC).
+Qed.
+
+(** Proven Dave **)
+Lemma open_subspace_locally_path_connected_early : forall X Tx Y:set,
+  locally_path_connected X Tx -> Y :e Tx ->
+  locally_path_connected Y (subspace_topology X Tx Y).
+let X Tx Y.
+assume HlpcX HYopen.
+claim HtopX : topology_on X Tx.
+{ exact (locally_path_connected_topology X Tx HlpcX). }
+claim HYsub : Y c= X. { exact (topology_elem_subset X Tx Y HtopX HYopen). }
+claim HtopY : topology_on Y (subspace_topology X Tx Y).
+{ exact (subspace_topology_is_topology X Tx Y HtopX HYsub). }
+prove topology_on Y (subspace_topology X Tx Y) /\
+  forall y:set, y :e Y -> forall U:set, U :e subspace_topology X Tx Y -> y :e U ->
+    exists V:set, V :e subspace_topology X Tx Y /\ y :e V /\ V c= U /\
+      path_connected_space V (subspace_topology Y (subspace_topology X Tx Y) V).
+apply andI.
+- exact HtopY.
+- let y. assume HyY.
+  let U. assume HUopen HyU.
+  claim HU_sub_Y : U c= Y. { exact (topology_elem_subset Y (subspace_topology X Tx Y) U HtopY HUopen). }
+  claim HU_open_in_Y : open_in Y (subspace_topology X Tx Y) U.
+  { prove topology_on Y (subspace_topology X Tx Y) /\ U :e subspace_topology X Tx Y.
+    apply andI. exact HtopY. exact HUopen. }
+  claim HU_open_X : U :e Tx.
+  { exact (open_in_subspace_if_ambient_open X Tx Y U HtopX HYopen HU_sub_Y HU_open_in_Y). }
+  claim HyX : y :e X. { exact (HYsub y HyY). }
+  apply (locally_path_connected_local X Tx y U HlpcX HyX HU_open_X HyU).
+  let V. assume HVpack.
+  set pc_type := path_connected_space V (subspace_topology X Tx V).
+  claim HVpc : pc_type.
+  { exact (andER (((V :e Tx) /\ (y :e V)) /\ (V c= U)) pc_type HVpack). }
+  claim HVleft3 : ((V :e Tx) /\ (y :e V)) /\ (V c= U).
+  { exact (andEL (((V :e Tx) /\ (y :e V)) /\ (V c= U)) pc_type HVpack). }
+  claim HVsubU : V c= U.
+  { exact (andER ((V :e Tx) /\ (y :e V)) (V c= U) HVleft3). }
+  claim HVleft2 : (V :e Tx) /\ (y :e V).
+  { exact (andEL ((V :e Tx) /\ (y :e V)) (V c= U) HVleft3). }
+  claim HVopen : V :e Tx. { exact (andEL (V :e Tx) (y :e V) HVleft2). }
+  claim HyV : y :e V. { exact (andER (V :e Tx) (y :e V) HVleft2). }
+  claim HVsubY : V c= Y. { let v. assume Hv. exact (HU_sub_Y v (HVsubU v Hv)). }
+  claim HVopenSub : V :e subspace_topology X Tx Y.
+  { rewrite <- (binintersect_Subq_eq_1 V Y HVsubY).
+    exact (subspace_topology_intersection_open X Tx Y V HVopen). }
+  claim HVpc_sub : path_connected_space V (subspace_topology Y (subspace_topology X Tx Y) V).
+  { rewrite (subspace_topology_transitive_weak X Tx Y V HVsubY). exact HVpc. }
+  witness V.
+  apply and4I.
+  + exact HVopenSub.
+  + exact HyV.
+  + exact HVsubU.
+  + exact HVpc_sub.
+Qed.
+
+(** Proven Dave **)
+Lemma homeomorphism_preserves_lpc_left_early : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_path_connected Y Ty ->
+  locally_path_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HlpcY.
+claim HtopX : topology_on X Tx. { exact (homeomorphism_topology_left X Tx Y Ty f Hhome). }
+claim HtopY : topology_on Y Ty. { exact (homeomorphism_topology_right X Tx Y Ty f Hhome). }
+prove topology_on X Tx /\
+  forall x:set, x :e X -> forall U:set, U :e Tx -> x :e U ->
+    exists V:set, V :e Tx /\ x :e V /\ V c= U /\ path_connected_space V (subspace_topology X Tx V).
+apply andI.
+- exact HtopX.
+- let x. assume HxX.
+  let U. assume HUopen HxU.
+  claim Hopen_map : open_map X Tx Y Ty f.
+  { exact (homeomorphism_open_map X Tx Y Ty f Hhome). }
+  claim HfU_open : image_of f U :e Ty.
+  { exact (open_map_image_open X Tx Y Ty f U Hopen_map HUopen). }
+  claim HfxY : apply_fun f x :e Y.
+  { exact (homeomorphism_function_on X Tx Y Ty f Hhome x HxX). }
+  claim Hfx_fU : apply_fun f x :e image_of f U.
+  { exact (ReplI U (fun z:set => apply_fun f z) x HxU). }
+  apply (locally_path_connected_local Y Ty (apply_fun f x) (image_of f U) HlpcY HfxY HfU_open Hfx_fU).
+  let V'. assume HV'pack.
+  set pc_type' := path_connected_space V' (subspace_topology Y Ty V').
+  claim HV'pc : pc_type'.
+  { exact (andER (((V' :e Ty) /\ (apply_fun f x :e V')) /\ (V' c= image_of f U)) pc_type' HV'pack). }
+  claim HV'left3 : ((V' :e Ty) /\ (apply_fun f x :e V')) /\ (V' c= image_of f U).
+  { exact (andEL (((V' :e Ty) /\ (apply_fun f x :e V')) /\ (V' c= image_of f U)) pc_type' HV'pack). }
+  claim HV'sub_fU : V' c= image_of f U.
+  { exact (andER ((V' :e Ty) /\ (apply_fun f x :e V')) (V' c= image_of f U) HV'left3). }
+  claim HV'left2 : (V' :e Ty) /\ (apply_fun f x :e V').
+  { exact (andEL ((V' :e Ty) /\ (apply_fun f x :e V')) (V' c= image_of f U) HV'left3). }
+  claim HV'open : V' :e Ty. { exact (andEL (V' :e Ty) (apply_fun f x :e V') HV'left2). }
+  claim HfxV' : apply_fun f x :e V'. { exact (andER (V' :e Ty) (apply_fun f x :e V') HV'left2). }
+  set W := preimage_of X f V'.
+  claim HWopen : W :e Tx.
+  { exact (continuous_map_preimage X Tx Y Ty f (homeomorphism_continuous X Tx Y Ty f Hhome) V' HV'open). }
+  claim HxW : x :e W.
+  { prove x :e {z :e X | apply_fun f z :e V'}.
+    exact (SepI X (fun z:set => apply_fun f z :e V') x HxX HfxV'). }
+  claim HWsub : W c= X. { exact (Sep_Subq X (fun z:set => apply_fun f z :e V')). }
+  claim HWsubU : W c= U.
+  { let w. assume Hw.
+    claim HwX : w :e X. { exact (HWsub w Hw). }
+    claim Hfw_V' : apply_fun f w :e V'. { exact (SepE2 X (fun z:set => apply_fun f z :e V') w Hw). }
+    claim Hfw_fU : apply_fun f w :e image_of f U. { exact (HV'sub_fU (apply_fun f w) Hfw_V'). }
+    apply (ReplE_impred U (fun z:set => apply_fun f z) (apply_fun f w) Hfw_fU).
+    let u. assume HuU Hfweq.
+    claim Hwu : w = u.
+    { exact (homeomorphism_injective X Tx Y Ty f Hhome w u HwX
+        (topology_elem_subset X Tx U HtopX HUopen u HuU) Hfweq). }
+    rewrite Hwu. exact HuU. }
+  claim HWpc : path_connected_space W (subspace_topology X Tx W).
+  { exact (preimage_pc_under_homeomorphism_early X Tx Y Ty f V' Hhome
+      (topology_elem_subset Y Ty V' HtopY HV'open) HV'pc). }
+  witness W.
+  apply and4I.
+  + exact HWopen.
+  + exact HxW.
+  + exact HWsubU.
+  + exact HWpc.
+Qed.
+
+(** Proven Dave **)
+Lemma product_locally_path_connected_early : forall X Tx Y Ty:set,
+  locally_path_connected X Tx ->
+  locally_path_connected Y Ty ->
+  locally_path_connected (setprod X Y) (product_topology X Tx Y Ty).
+let X Tx Y Ty.
+assume HlpcX HlpcY.
+claim HtopX : topology_on X Tx. { exact (locally_path_connected_topology X Tx HlpcX). }
+claim HtopY : topology_on Y Ty. { exact (locally_path_connected_topology Y Ty HlpcY). }
+prove topology_on (setprod X Y) (product_topology X Tx Y Ty) /\
+  forall p:set, p :e setprod X Y -> forall U:set, U :e product_topology X Tx Y Ty -> p :e U ->
+    exists V:set, V :e product_topology X Tx Y Ty /\ p :e V /\ V c= U /\
+      path_connected_space V (subspace_topology (setprod X Y) (product_topology X Tx Y Ty) V).
+apply andI.
+- exact (product_topology_is_topology X Tx Y Ty HtopX HtopY).
+- let p. assume Hp : p :e setprod X Y.
+  let U. assume HU : U :e product_topology X Tx Y Ty. assume HpU : p :e U.
+  claim Hp0X : p 0 :e X. { exact (ap0_Sigma X (fun _ => Y) p Hp). }
+  claim Hp1Y : p 1 :e Y. { exact (ap1_Sigma X (fun _ => Y) p Hp). }
+  claim Hrefine : exists b:set, b :e product_subbasis X Tx Y Ty /\ (p :e b /\ b c= U).
+  { exact (generated_topology_local_refine (setprod X Y) (product_subbasis X Tx Y Ty) U p HU HpU). }
+  apply Hrefine. let b. assume HbPack.
+  claim HbSubbasis : b :e product_subbasis X Tx Y Ty.
+  { exact (andEL (b :e product_subbasis X Tx Y Ty) (p :e b /\ b c= U) HbPack). }
+  claim HpInbSub : p :e b /\ b c= U.
+  { exact (andER (b :e product_subbasis X Tx Y Ty) (p :e b /\ b c= U) HbPack). }
+  claim HpInb : p :e b. { exact (andEL (p :e b) (b c= U) HpInbSub). }
+  claim HbSubU : b c= U. { exact (andER (p :e b) (b c= U) HpInbSub). }
+  apply (product_subbasis_elem_is_rectangle X Tx Y Ty b HbSubbasis).
+  let U0. assume HU0inner. apply HU0inner. let V0. assume HU0V0Pack.
+  claim HU0V0left : U0 :e Tx /\ V0 :e Ty.
+  { exact (andEL (U0 :e Tx /\ V0 :e Ty) (b = rectangle_set U0 V0) HU0V0Pack). }
+  claim HU0T : U0 :e Tx. { exact (andEL (U0 :e Tx) (V0 :e Ty) HU0V0left). }
+  claim HV0T : V0 :e Ty. { exact (andER (U0 :e Tx) (V0 :e Ty) HU0V0left). }
+  claim HbEq : b = rectangle_set U0 V0.
+  { exact (andER (U0 :e Tx /\ V0 :e Ty) (b = rectangle_set U0 V0) HU0V0Pack). }
+  claim HpRect : p :e setprod U0 V0.
+  { rewrite <- rectangle_set_def. rewrite <- HbEq. exact HpInb. }
+  claim Hp0U0 : p 0 :e U0. { exact (ap0_Sigma U0 (fun _ => V0) p HpRect). }
+  claim Hp1V0 : p 1 :e V0. { exact (ap1_Sigma U0 (fun _ => V0) p HpRect). }
+  apply (locally_path_connected_local X Tx (p 0) U0 HlpcX Hp0X HU0T Hp0U0).
+  let W1. assume HW1Pack.
+  apply (and4E (W1 :e Tx) (p 0 :e W1) (W1 c= U0)
+    (path_connected_space W1 (subspace_topology X Tx W1)) HW1Pack).
+  assume HW1T HpW1 HW1subU0 HW1pc.
+  apply (locally_path_connected_local Y Ty (p 1) V0 HlpcY Hp1Y HV0T Hp1V0).
+  let W2. assume HW2Pack.
+  apply (and4E (W2 :e Ty) (p 1 :e W2) (W2 c= V0)
+    (path_connected_space W2 (subspace_topology Y Ty W2)) HW2Pack).
+  assume HW2T HpW2 HW2subV0 HW2pc.
+  claim HW1subX : W1 c= X. { exact (topology_elem_subset X Tx W1 HtopX HW1T). }
+  claim HW2subY : W2 c= Y. { exact (topology_elem_subset Y Ty W2 HtopY HW2T). }
+  witness (rectangle_set W1 W2).
+  apply and4I.
+  + exact (rectangle_set_open_in_product_topology X Tx Y Ty W1 W2 HtopX HtopY HW1T HW2T).
+  + prove p :e rectangle_set W1 W2.
+    rewrite (rectangle_set_def W1 W2).
+    rewrite (setprod_eta X Y p Hp).
+    exact (tuple_2_setprod_by_pair_Sigma W1 W2 (p 0) (p 1) HpW1 HpW2).
+  + prove rectangle_set W1 W2 c= U.
+    apply (Subq_tra (setprod W1 W2) (setprod U0 V0) U).
+    * exact (setprod_Subq W1 W2 U0 V0 HW1subU0 HW2subV0).
+    * claim HbSetprod : b = setprod U0 V0.
+      { rewrite HbEq. exact (rectangle_set_def U0 V0). }
+      rewrite <- HbSetprod. exact HbSubU.
+  + prove path_connected_space (rectangle_set W1 W2)
+      (subspace_topology (setprod X Y) (product_topology X Tx Y Ty) (rectangle_set W1 W2)).
+    rewrite (rectangle_set_def W1 W2).
+    rewrite <- (product_subspace_topology X Tx Y Ty W1 W2 HtopX HtopY HW1subX HW2subY).
+    exact (finite_product_path_connected W1 (subspace_topology X Tx W1)
+      W2 (subspace_topology Y Ty W2) HW1pc HW2pc).
+Qed.
+
+(** Proven Dave **)
+Lemma euclidean_space_locally_path_connected_early : forall n:set,
+  n :e omega -> locally_path_connected (euclidean_space n) (euclidean_topology n).
+let n. assume Hn : n :e omega.
+apply (nat_ind (fun n => locally_path_connected (euclidean_space n) (euclidean_topology n))).
+- prove locally_path_connected (euclidean_space 0) (euclidean_topology 0).
+  claim HtopE0 : topology_on (euclidean_space 0) (euclidean_topology 0).
+  { exact (euclidean_topology_is_topology 0). }
+  prove topology_on (euclidean_space 0) (euclidean_topology 0) /\
+    forall x:set, x :e euclidean_space 0 -> forall U:set, U :e euclidean_topology 0 -> x :e U ->
+      exists V:set, V :e euclidean_topology 0 /\ x :e V /\ V c= U /\
+        path_connected_space V (subspace_topology (euclidean_space 0) (euclidean_topology 0) V).
+  apply andI. exact HtopE0.
+  let x. assume HxE0.
+  let U. assume HU HxU.
+  claim HxSing : x :e {Empty}.
+  { exact (eq_subst_mem_set x (euclidean_space Empty) {Empty} HxE0 euclidean_space_empty_is_singleton). }
+  claim HxeqEmpty : x = Empty. { exact (SingE Empty x HxSing). }
+  claim HEmptyU : Empty :e U.
+  { exact (eq_subst_mem_rev x Empty U HxeqEmpty HxU). }
+  witness (euclidean_space 0).
+  apply and4I.
+  + exact (topology_has_X (euclidean_space 0) (euclidean_topology 0) HtopE0).
+  + exact HxE0.
+  + prove euclidean_space 0 c= U.
+    let z. assume HzE0.
+    claim HzSing : z :e {Empty}.
+    { exact (eq_subst_mem_set z (euclidean_space Empty) {Empty} HzE0 euclidean_space_empty_is_singleton). }
+    claim HzeqEmpty : z = Empty. { exact (SingE Empty z HzSing). }
+    exact (eq_subst_mem z Empty U HzeqEmpty HEmptyU).
+  + rewrite (subspace_topology_whole (euclidean_space 0) (euclidean_topology 0) HtopE0).
+    prove topology_on (euclidean_space 0) (euclidean_topology 0) /\
+      forall a b:set, a :e euclidean_space 0 -> b :e euclidean_space 0 ->
+        exists p:set, path_between (euclidean_space 0) a b p /\
+          continuous_map unit_interval unit_interval_topology (euclidean_space 0) (euclidean_topology 0) p.
+    apply andI. exact HtopE0.
+    let a b. assume HaE0 HbE0.
+    claim HaSing : a :e {Empty}.
+    { exact (eq_subst_mem_set a (euclidean_space Empty) {Empty} HaE0 euclidean_space_empty_is_singleton). }
+    claim HaeqEmpty : a = Empty. { exact (SingE Empty a HaSing). }
+    claim HbSing : b :e {Empty}.
+    { exact (eq_subst_mem_set b (euclidean_space Empty) {Empty} HbE0 euclidean_space_empty_is_singleton). }
+    claim HbeqEmpty : b = Empty. { exact (SingE Empty b HbSing). }
+    claim HEmptyE0 : Empty :e euclidean_space 0.
+    { exact (eq_subst_mem_set Empty {Empty} (euclidean_space Empty) (SingI Empty)
+        (eq_symm (euclidean_space Empty) {Empty} euclidean_space_empty_is_singleton)). }
+    set cp := const_fun unit_interval Empty.
+    witness cp.
+    apply andI.
+    * apply path_betweenI.
+      - exact (total_function_on_function_on cp unit_interval (euclidean_space 0)
+          (const_fun_total_function_on unit_interval (euclidean_space 0) Empty HEmptyE0)).
+      - rewrite (const_fun_apply unit_interval Empty 0 zero_in_unit_interval).
+        exact (eq_symm a Empty HaeqEmpty).
+      - rewrite (const_fun_apply unit_interval Empty 1 one_in_unit_interval).
+        exact (eq_symm b Empty HbeqEmpty).
+    * exact (const_fun_continuous unit_interval unit_interval_topology
+        (euclidean_space 0) (euclidean_topology 0) Empty
+        unit_interval_topology_on HtopE0 HEmptyE0).
+- let k. assume Hnat_k : nat_p k.
+  assume Hlpc_k : locally_path_connected (euclidean_space k) (euclidean_topology k).
+  prove locally_path_connected (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)).
+  claim Hhomeo_split : homeomorphism (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k))
+    (setprod (euclidean_space k) R)
+    (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology)
+    (euclidean_space_succ_split_map k).
+  { exact (euclidean_space_succ_split_homeomorphism k Hnat_k). }
+  claim Hlpc_prod : locally_path_connected (setprod (euclidean_space k) R)
+    (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology).
+  { exact (product_locally_path_connected_early (euclidean_space k) (euclidean_topology k) R R_standard_topology
+      Hlpc_k R_standard_locally_path_connected_early). }
+  exact (homeomorphism_preserves_lpc_left_early (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k))
+    (setprod (euclidean_space k) R)
+    (product_topology (euclidean_space k) (euclidean_topology k) R R_standard_topology)
+    (euclidean_space_succ_split_map k) Hhomeo_split Hlpc_prod).
+- exact (omega_nat_p n Hn).
+Qed.
+
+(** Early: locally m-euclidean implies lpc, using chart to transfer from R^m **)
+(** Proven Dave **)
+Lemma locally_m_euclidean_lpc_from_Rn_lpc_early : forall X Tx m:set,
+  locally_m_euclidean X Tx m ->
+  locally_path_connected (euclidean_space m) (euclidean_topology m) ->
+  locally_path_connected X Tx.
+let X Tx m.
+assume Hlme : locally_m_euclidean X Tx m.
+assume Hlpc_Rm : locally_path_connected (euclidean_space m) (euclidean_topology m).
+claim Hcharts : forall x:set, x :e X -> exists U V f:set,
+  open_in X Tx U /\ x :e U /\ V c= euclidean_space m /\
+  open_in (euclidean_space m) (euclidean_topology m) V /\
+  homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f.
+{ exact (andER (m :e omega /\ topology_on X Tx)
+    (forall x:set, x :e X -> exists U V f:set,
+      open_in X Tx U /\ x :e U /\ V c= euclidean_space m /\
+      open_in (euclidean_space m) (euclidean_topology m) V /\
+      homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f) Hlme). }
+claim Hfirst : m :e omega /\ topology_on X Tx.
+{ exact (andEL (m :e omega /\ topology_on X Tx)
+    (forall x:set, x :e X -> exists U V f:set,
+      open_in X Tx U /\ x :e U /\ V c= euclidean_space m /\
+      open_in (euclidean_space m) (euclidean_topology m) V /\
+      homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f) Hlme). }
+claim Htop : topology_on X Tx. { exact (andER (m :e omega) (topology_on X Tx) Hfirst). }
+prove topology_on X Tx /\ forall x:set, x :e X -> forall U:set, U :e Tx -> x :e U ->
+  exists V:set, V :e Tx /\ x :e V /\ V c= U /\
+    path_connected_space V (subspace_topology X Tx V).
+apply andI.
+- exact Htop.
+- let x. assume Hx : x :e X.
+  let U. assume HU : U :e Tx. assume HxU : x :e U.
+  claim Hchart : exists C W f:set,
+    open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\
+    open_in (euclidean_space m) (euclidean_topology m) W /\
+    homeomorphism C (subspace_topology X Tx C) W (subspace_topology (euclidean_space m) (euclidean_topology m) W) f.
+  { exact (Hcharts x Hx). }
+  apply Hchart. let C. assume HCe.
+  apply HCe. let W. assume HWe.
+  apply HWe. let f. assume Hfprops.
+  claim Hhomeo : homeomorphism C (subspace_topology X Tx C) W
+    (subspace_topology (euclidean_space m) (euclidean_topology m) W) f.
+  { exact (andER
+      (open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\ open_in (euclidean_space m) (euclidean_topology m) W)
+      (homeomorphism C (subspace_topology X Tx C) W (subspace_topology (euclidean_space m) (euclidean_topology m) W) f) Hfprops). }
+  claim Hfirst4 : open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\
+    open_in (euclidean_space m) (euclidean_topology m) W.
+  { exact (andEL
+      (open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\ open_in (euclidean_space m) (euclidean_topology m) W)
+      (homeomorphism C (subspace_topology X Tx C) W (subspace_topology (euclidean_space m) (euclidean_topology m) W) f) Hfprops). }
+  claim HCopen_xC : open_in X Tx C /\ x :e C.
+  { exact (andEL (open_in X Tx C /\ x :e C) (W c= euclidean_space m)
+      (andEL (open_in X Tx C /\ x :e C /\ W c= euclidean_space m)
+        (open_in (euclidean_space m) (euclidean_topology m) W) Hfirst4)). }
+  claim HCopen : C :e Tx.
+  { exact (andER (topology_on X Tx) (C :e Tx)
+      (andEL (open_in X Tx C) (x :e C) HCopen_xC)). }
+  claim HxC : x :e C.
+  { exact (andER (open_in X Tx C) (x :e C) HCopen_xC). }
+  claim HCU_open : C :/\: U :e Tx.
+  { claim HCopen_in : open_in X Tx C.
+    { prove topology_on X Tx /\ C :e Tx. exact (andI (topology_on X Tx) (C :e Tx) Htop HCopen). }
+    claim HUopen_in : open_in X Tx U.
+    { prove topology_on X Tx /\ U :e Tx. exact (andI (topology_on X Tx) (U :e Tx) Htop HU). }
+    claim HCUopen_in : open_in X Tx (C :/\: U).
+    { exact (binintersect_open X Tx C U HCopen_in HUopen_in). }
+    exact (andER (topology_on X Tx) (C :/\: U :e Tx) HCUopen_in). }
+  claim HxCU : x :e C :/\: U. { exact (binintersectI C U x HxC HxU). }
+  set TC := subspace_topology X Tx C.
+  set TRm := euclidean_topology m.
+  set TW := subspace_topology (euclidean_space m) TRm W.
+  claim HCU_in_TC : C :/\: U :e TC.
+  { claim HUC_in : U :/\: C :e TC.
+    { exact (subspace_topology_intersection_open X Tx C U HU). }
+    claim Hcomm : U :/\: C = C :/\: U.
+    { apply set_ext.
+      - let z. assume Hz. exact (binintersectI C U z (binintersectE2 U C z Hz) (binintersectE1 U C z Hz)).
+      - let z. assume Hz. exact (binintersectI U C z (binintersectE2 C U z Hz) (binintersectE1 C U z Hz)). }
+    rewrite <- Hcomm. exact HUC_in. }
+  claim Hf_open : open_map C TC W TW f.
+  { exact (homeomorphism_open_map C TC W TW f Hhomeo). }
+  claim HfCU_open : image_of f (C :/\: U) :e TW.
+  { exact (open_map_image_open C TC W TW f (C :/\: U) Hf_open HCU_in_TC). }
+  claim Hfx_in : apply_fun f x :e image_of f (C :/\: U).
+  { exact (ReplI (C :/\: U) (fun z => apply_fun f z) x HxCU). }
+  claim HW_lpc : locally_path_connected W TW.
+  { claim HWopen_in : open_in (euclidean_space m) TRm W.
+    { exact (andER (open_in X Tx C /\ x :e C /\ W c= euclidean_space m)
+        (open_in (euclidean_space m) TRm W)
+        (andEL (open_in X Tx C /\ x :e C /\ W c= euclidean_space m /\ open_in (euclidean_space m) TRm W)
+          (homeomorphism C TC W TW f) Hfprops)). }
+    claim HWopen : W :e TRm.
+    { exact (andER (topology_on (euclidean_space m) TRm) (W :e TRm) HWopen_in). }
+    exact (open_subspace_locally_path_connected_early (euclidean_space m) TRm W Hlpc_Rm HWopen). }
+  claim Hfx_in_W : apply_fun f x :e W.
+  { exact (continuous_map_value_in_space C TC W TW f x
+      (andEL (continuous_map C TC W TW f)
+        (exists g:set, continuous_map W TW C TC g /\
+          (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y) /\
+          (forall z:set, z :e W -> apply_fun f (apply_fun g z) = z)) Hhomeo)
+      HxC). }
+  claim HV_exists : exists V':set, V' :e TW /\ apply_fun f x :e V' /\
+    V' c= image_of f (C :/\: U) /\
+    path_connected_space V' (subspace_topology W TW V').
+  { exact (locally_path_connected_local W TW (apply_fun f x) (image_of f (C :/\: U))
+      HW_lpc Hfx_in_W HfCU_open Hfx_in). }
+  apply HV_exists. let V'. assume HV'props.
+  apply (and4E (V' :e TW) (apply_fun f x :e V') (V' c= image_of f (C :/\: U))
+    (path_connected_space V' (subspace_topology W TW V')) HV'props).
+  assume HV'open : V' :e TW.
+  assume Hfx_in_V' : apply_fun f x :e V'.
+  assume HV'sub : V' c= image_of f (C :/\: U).
+  assume HV'pc : path_connected_space V' (subspace_topology W TW V').
+  set V_pullback := preimage_of C f V'.
+  witness V_pullback.
+  apply and4I.
+  + claim Hf_cont : continuous_map C TC W TW f.
+    { exact (andEL (continuous_map C TC W TW f)
+        (exists g:set, continuous_map W TW C TC g /\
+          (forall y:set, y :e C -> apply_fun g (apply_fun f y) = y) /\
+          (forall z:set, z :e W -> apply_fun f (apply_fun g z) = z)) Hhomeo). }
+    claim Hpreimage_cont : forall V0:set, V0 :e TW -> preimage_of C f V0 :e TC.
+    { exact (andER (topology_on C TC /\ topology_on W TW /\ function_on f C W)
+        (forall V0:set, V0 :e TW -> preimage_of C f V0 :e TC)
+        Hf_cont). }
+    claim HVpb_in_TC : V_pullback :e TC.
+    { exact (Hpreimage_cont V' HV'open). }
+    claim HVpb_sub_C : V_pullback c= C.
+    { let y. assume Hy. exact (SepE1 C (fun z:set => apply_fun f z :e V') y Hy). }
+    claim HtopC : topology_on C TC.
+    { claim HCsub : C c= X.
+      { exact (open_in_subset X Tx C (andEL (open_in X Tx C) (x :e C) HCopen_xC)). }
+      exact (subspace_topology_is_topology X Tx C Htop HCsub). }
+    claim HVpb_open_in : open_in C TC V_pullback.
+    { prove topology_on C TC /\ V_pullback :e TC.
+      exact (andI (topology_on C TC) (V_pullback :e TC) HtopC HVpb_in_TC). }
+    exact (open_in_subspace_if_ambient_open X Tx C V_pullback Htop HCopen HVpb_sub_C HVpb_open_in).
+  + prove x :e preimage_of C f V'.
+    prove x :e {y :e C | apply_fun f y :e V'}.
+    exact (SepI C (fun y:set => apply_fun f y :e V') x HxC Hfx_in_V').
+  + let y. assume Hy : y :e V_pullback.
+    prove y :e U.
+    claim HyC : y :e C. { exact (SepE1 C (fun z:set => apply_fun f z :e V') y Hy). }
+    claim Hfy_in_V' : apply_fun f y :e V'.
+    { exact (SepE2 C (fun z:set => apply_fun f z :e V') y Hy). }
+    claim Hfy_in_img : apply_fun f y :e image_of f (C :/\: U).
+    { exact (HV'sub (apply_fun f y) Hfy_in_V'). }
+    apply (ReplE_impred (C :/\: U) (fun z:set => apply_fun f z) (apply_fun f y) Hfy_in_img).
+    let z. assume Hz : z :e C :/\: U.
+    assume Hfeq : apply_fun f y = apply_fun f z.
+    claim HzC : z :e C. { exact (binintersectE1 C U z Hz). }
+    claim Hyeqz : y = z.
+    { exact (homeomorphism_injective C TC W TW f Hhomeo y z HyC HzC Hfeq). }
+    claim HzU : z :e U. { exact (binintersectE2 C U z Hz). }
+    rewrite Hyeqz. exact HzU.
+  + claim HtopW2 : topology_on W TW.
+    { exact (homeomorphism_topology_right C TC W TW f Hhomeo). }
+    claim HV'subW : V' c= W.
+    { exact (topology_elem_subset W TW V' HtopW2 HV'open). }
+    claim HVpb_subC_a2 : V_pullback c= C.
+    { exact (Sep_Subq C (fun y:set => apply_fun f y :e V')). }
+    rewrite <- (subspace_topology_transitive_weak X Tx C V_pullback HVpb_subC_a2).
+    exact (preimage_pc_under_homeomorphism_early C TC W TW f V' Hhomeo HV'subW HV'pc).
+Qed.
+
 (** Helper: locally m-euclidean implies locally path connected **)
 (** Proof: every point has nbhd homeo to open V in R^m, **)
-(** V contains open balls (convex, hence path-connected). **)
-(** Homeomorphism transfers path-connectivity. **)
+(** V is lpc (R^m is lpc). Homeomorphism transfers lpc. **)
+(** Proven Dave **)
 Lemma locally_m_euclidean_implies_locally_path_connected : forall X Tx m:set,
   locally_m_euclidean X Tx m -> locally_path_connected X Tx.
 let X Tx m. assume Hlme : locally_m_euclidean X Tx m.
-(** locally_m_euclidean gives: m in omega, topology_on X Tx, chart condition **)
-claim Hlme_parts : (m :e omega /\ topology_on X Tx) /\ (forall x:set, x :e X -> exists U V f:set,
-    (((open_in X Tx U /\ x :e U) /\ V c= euclidean_space m) /\ open_in (euclidean_space m) (euclidean_topology m) V) /\
-    homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f).
-{ exact Hlme. }
-claim Hlme_left : m :e omega /\ topology_on X Tx.
+claim Hfirst : m :e omega /\ topology_on X Tx.
 { exact (andEL (m :e omega /\ topology_on X Tx)
     (forall x:set, x :e X -> exists U V f:set,
       (((open_in X Tx U /\ x :e U) /\ V c= euclidean_space m) /\ open_in (euclidean_space m) (euclidean_topology m) V) /\
       homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f)
-    Hlme_parts). }
-claim HmOm : m :e omega.
-{ exact (andEL (m :e omega) (topology_on X Tx) Hlme_left). }
-claim HtopX : topology_on X Tx.
-{ exact (andER (m :e omega) (topology_on X Tx) Hlme_left). }
-(** Full proof requires metric space arguments in R^m, convexity of balls, **)
-(** homeomorphism transfer of path connectivity, etc. **)
-(** These tools are proved later in the file. For now admit. **)
-admit.
-Admitted.
+    Hlme). }
+claim HmOm : m :e omega. { exact (andEL (m :e omega) (topology_on X Tx) Hfirst). }
+exact (locally_m_euclidean_lpc_from_Rn_lpc_early X Tx m Hlme
+  (euclidean_space_locally_path_connected_early m HmOm)).
+Qed.
 
 (** Helper: locally m-euclidean implies locally connected **)
 (** Follows from lme -> lpc -> lc, but lpc_implies_lc is defined later in file **)
@@ -290560,10 +291127,11 @@ admit.
 Admitted.
 
 (** Helper: S^2 is locally path connected. **)
+(** Proven Dave **)
 Lemma Sn2_locally_path_connected :
   locally_path_connected (Sn 2) (Sn_topology 2).
 exact (locally_m_euclidean_implies_locally_path_connected (Sn 2) (Sn_topology 2) 2 Sn_2_locally_m_euclidean).
-Admitted.
+Qed.
 
 (** Helper: S^2 is locally connected. **)
 Lemma Sn2_locally_connected :
