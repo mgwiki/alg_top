@@ -408475,6 +408475,53 @@ Theorem seifert_van_kampen_universal_pushout_existence :
               V (subspace_topology X Tx V) x0 X Tx x0
               (graph V (fun x:set => x))) g) =
             apply_fun phi2 g).
+let X Tx U V x0.
+assume Htop HUopen HVopen Hcover HpcU HpcV HpcUV Hx0UV.
+let H multH eH invH.
+assume HgrpH : group_structure H multH eH invH.
+let phi1 phi2.
+assume Hphi1 : group_homomorphism
+  (fundamental_group U (subspace_topology X Tx U) x0)
+  (fundamental_group_mult U (subspace_topology X Tx U) x0)
+  H multH phi1.
+assume Hphi2 : group_homomorphism
+  (fundamental_group V (subspace_topology X Tx V) x0)
+  (fundamental_group_mult V (subspace_topology X Tx V) x0)
+  H multH phi2.
+assume Hcompat : forall g:set, g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+  apply_fun phi1
+    (apply_fun (induced_homomorphism
+      (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+      U (subspace_topology X Tx U) x0
+      (graph (U :/\: V) (fun x:set => x))) g) =
+  apply_fun phi2
+    (apply_fun (induced_homomorphism
+      (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+      V (subspace_topology X Tx V) x0
+      (graph (U :/\: V) (fun x:set => x))) g).
+(** Goal: construct Phi : pi1(X,x0)->H extending phi1,phi2 under compatibility on U cap V. **)
+set piX := fundamental_group X Tx x0.
+set multX := fundamental_group_mult X Tx x0.
+set idX := fundamental_group_id X Tx x0.
+set invX := fundamental_group_inv X Tx x0.
+claim Hx0U : x0 :e U.
+{ exact (binintersectE1 U V x0 Hx0UV). }
+claim HUsub : U c= X.
+{ exact (topology_elem_subset X Tx U Htop HUopen). }
+claim Hx0X : x0 :e X.
+{ exact (HUsub x0 Hx0U). }
+claim HgrpX : group_structure piX multX idX invX.
+{ exact (fundamental_group_is_group X Tx x0 Htop Hx0X). }
+set j1 := induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+  (graph U (fun x:set => x)).
+set j2 := induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+  (graph V (fun x:set => x)).
+set i1 := induced_homomorphism (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+  U (subspace_topology X Tx U) x0
+  (graph (U :/\: V) (fun x:set => x)).
+set i2 := induced_homomorphism (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+  V (subspace_topology X Tx V) x0
+  (graph (U :/\: V) (fun x:set => x)).
 admit.
 Admitted.
 (** Infrastructure helper for S70 Thm 70.1:
