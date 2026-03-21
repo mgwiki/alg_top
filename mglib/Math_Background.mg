@@ -292855,9 +292855,47 @@ claim Hcomposed : homeomorphism C (subspace_topology (Sn 2) (Sn_topology 2) C)
     (euclidean_space 2 :\: Sing p')
     (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: Sing p'))
     h stereo_S_map Hh_restr2 Hstereo_restr2). }
-(** Remaining: convert euclidean_space 2 to setprod R R **)
-(** These spaces are homeomorphic but not definitionally equal in Megalodon **)
-admit.
+(** Convert euclidean_space 2 to setprod R R via euclidean_space_2_homeo_R2 **)
+apply euclidean_space_2_homeo_R2. let e2r2. assume He2r2.
+(** Restrict e2r2 to E2 \ {p'} -> R2 \ {e2r2(p')} **)
+claim Hp'E2 : p' :e euclidean_space 2.
+{ admit. (** stereo maps into euclidean_space 2, h(p) in S2\south **) }
+claim HE2mp_sub : euclidean_space 2 :\: Sing p' c= euclidean_space 2.
+{ exact (setminus_Subq (euclidean_space 2) (Sing p')). }
+claim He2r2_restr : homeomorphism (euclidean_space 2 :\: Sing p')
+  (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: Sing p'))
+  (image_of e2r2 (euclidean_space 2 :\: Sing p'))
+  (subspace_topology (setprod R R) R2_topology (image_of e2r2 (euclidean_space 2 :\: Sing p')))
+  e2r2.
+{ exact (homeomorphism_restrict_to_image_of_subset (euclidean_space 2) (euclidean_topology 2)
+    (setprod R R) R2_topology e2r2 (euclidean_space 2 :\: Sing p') He2r2 HE2mp_sub). }
+(** image_of e2r2 (E2 \ {p'}) = R2 \ {e2r2(p')} **)
+set p'R2 := apply_fun e2r2 p'.
+claim Hp'R2_in : p'R2 :e setprod R R.
+{ admit. (** e2r2 maps E2 into R2, p' in E2 **) }
+claim Himage_eq : image_of e2r2 (euclidean_space 2 :\: Sing p') = setprod R R :\: Sing p'R2.
+{ admit. (** bijection of E2 onto R2 restricts to bijection of complements **) }
+(** Compose: (stereo+h) then e2r2_restr **)
+set full_f := compose_fun C (compose_fun C h stereo_S_map) e2r2.
+witness full_f. witness p'R2.
+apply andI.
+- exact Hp'R2_in.
+- (** Rewrite image to use p'R2 **)
+  claim Htop_eq : subspace_topology (setprod R R) R2_topology (image_of e2r2 (euclidean_space 2 :\: Sing p'))
+    = subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'R2).
+  { rewrite Himage_eq. reflexivity. }
+  claim He2r2_restr2 : homeomorphism (euclidean_space 2 :\: Sing p')
+    (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: Sing p'))
+    (setprod R R :\: Sing p'R2)
+    (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'R2))
+    e2r2.
+  { rewrite <- Himage_eq. exact He2r2_restr. }
+  exact (homeomorphism_compose C (subspace_topology (Sn 2) (Sn_topology 2) C)
+    (euclidean_space 2 :\: Sing p')
+    (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: Sing p'))
+    (setprod R R :\: Sing p'R2)
+    (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'R2))
+    (compose_fun C h stereo_S_map) e2r2 Hcomposed He2r2_restr2).
 Admitted.
 
 (** Helper: R^2 minus any point is path connected **)
