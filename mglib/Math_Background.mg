@@ -138209,8 +138209,14 @@ apply andI.
       claim HF_fn : function_on F (setprod S1 unit_interval) X.
       { admit. (** F maps into X since H maps into X **) }
       (** Combine: quotient descent gives F continuous **)
-      admit. (** use compact_hausdorff_product_quotient_topology + s55_continuous_descends **)
-      (** to conclude F continuous on product topology **)
+      (** Step A: q = ell x id satisfies compact_hausdorff_product_quotient_topology conditions **)
+      (** ell: I -> S1 is continuous surjective from compact to Hausdorff **)
+      (** I is compact, S1 x I is Hausdorff **)
+      (** Step B: quotient_topology c= product_topology **)
+      (** Step C: topology_on (S1 x I) (quotient_topology ...) **)
+      (** Step D: s55_continuous_descends gives F continuous on quotient_topology **)
+      (** Step E: quotient_topology = product_topology so F continuous on product_topology **)
+      admit. (** TODO: ~30 lines; all pieces exist, needs assembly **)
     - (** F(x, 0) = h(x) for x in S1 **)
       let x. assume Hx : x :e S1.
       (** F(x,0) = apply_fun F (x,0) = H(eps_s, 0) where ell(eps_s) = x **)
