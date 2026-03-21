@@ -137875,16 +137875,35 @@ apply andI.
         { exact standard_S1_loop_in_loop_space. }
         claim HstdLoop_b0 : standard_S1_loop :e loop_space S1 S1_topology b0.
         { rewrite Hb0eq. exact HstdLoop. }
+        (** Extract loop_at from loop_space **)
+        claim Hloop_at : loop_at S1 S1_topology S1_basepoint standard_S1_loop.
+        { exact (SepE2 (function_space unit_interval S1)
+            (fun f:set => loop_at S1 S1_topology S1_basepoint f)
+            standard_S1_loop HstdLoop). }
+        (** loop_at = ((cont /\ f(0)=bp) /\ f(1)=bp) left-assoc **)
+        claim Hstd_cont : continuous_map unit_interval unit_interval_topology S1 S1_topology standard_S1_loop.
+        { exact (andEL (continuous_map unit_interval unit_interval_topology S1 S1_topology standard_S1_loop)
+            (apply_fun standard_S1_loop 0 = S1_basepoint)
+            (andEL (continuous_map unit_interval unit_interval_topology S1 S1_topology standard_S1_loop /\
+              apply_fun standard_S1_loop 0 = S1_basepoint)
+              (apply_fun standard_S1_loop 1 = S1_basepoint) Hloop_at)). }
+        claim Hstd_at0 : apply_fun standard_S1_loop 0 = S1_basepoint.
+        { exact (andER (continuous_map unit_interval unit_interval_topology S1 S1_topology standard_S1_loop)
+            (apply_fun standard_S1_loop 0 = S1_basepoint)
+            (andEL (continuous_map unit_interval unit_interval_topology S1 S1_topology standard_S1_loop /\
+              apply_fun standard_S1_loop 0 = S1_basepoint)
+              (apply_fun standard_S1_loop 1 = S1_basepoint) Hloop_at)). }
+        claim Hstd_at1 : apply_fun standard_S1_loop 1 = S1_basepoint.
+        { exact (andER (continuous_map unit_interval unit_interval_topology S1 S1_topology standard_S1_loop /\
+            apply_fun standard_S1_loop 0 = S1_basepoint)
+            (apply_fun standard_S1_loop 1 = S1_basepoint) Hloop_at). }
         apply and5I.
         + exact HstdLoop_b0.
-        + (** continuity **)
-          admit. (** extract from loop_space membership **)
-        + (** at 0 **)
-          admit. (** from loop_at definition in loop_space **)
-        + (** at 1 **)
-          admit. (** from loop_at definition in loop_space **)
-        + (** surjectivity **)
-          admit. (** covering_map_R_S1 surjective on [0,1] onto S1 **)
+        + exact Hstd_cont.
+        + prove apply_fun standard_S1_loop 0 = b0. rewrite Hb0eq. exact Hstd_at0.
+        + prove apply_fun standard_S1_loop 1 = b0. rewrite Hb0eq. exact Hstd_at1.
+        + (** surjectivity: covering_map_R_S1 surjective onto S1 implies standard_S1_loop surjective on I **)
+          admit. (** needs covering_map_R_S1 surjectivity restricted to [0,1] **)
       - assume Hb0ne : b0 <> S1_basepoint.
         (** Reduce to S1_basepoint case via path-connectedness **)
         admit. (** conjugate standard_S1_loop with path from b0 to S1_basepoint **) }
