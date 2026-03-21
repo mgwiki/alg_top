@@ -240937,12 +240937,21 @@ claim HL1_word_data :
     (** are both loops x0 -> f(s) -> x0 **)
     (** [g] = [path_concat g1_t g2_t] = [g1_t] dot [g2_t] **)
     (** [L1] = [path_concat f1 revGX] = [f1] dot [revGX] **)
-    (** If [g1_t] = [f1] and [g2_t] = [revGX], then [g] = [L1]. **)
-    (** Both equalities hold because g1_t, f1 are paths x0 -> f(s) **)
-    (** through the simply-connected... no, X is not simply connected. **)
-    (** The equalities hold by POINTWISE EQUALITY of the compose_fun definitions. **)
-    (** This requires access to the Theorem_51_3 internal definitions. **)
-    (** For now admit this final step. **)
+    (** Define explicit g1, g2 as compose_fun of g (bypassing existential) **)
+    set g1_def := compose_fun unit_interval (affine_fun_I 0 s) g.
+    set g2_def := compose_fun unit_interval (affine_fun_I s (add_SNo 1 (minus_SNo s))) g.
+    (** g1_def(u) = g(su), g2_def(u) = g(s+(1-s)u) **)
+    (** g1_def(u) = g(su) = f(su) = f1(u) for all u (since su in [0,s], Hg_on_A) **)
+    (** g2_def(u) = g(s+(1-s)u) = gB(s+(1-s)u) = revGX(u) for all u **)
+    (** Then: g ~ path_concat g1_def g2_def (Theorem_51_3 on g at s) **)
+    (** And: path_concat g1_def g2_def = path_concat f1 revGX (pointwise on each half) **)
+    (** Key tool: path_homotopic_of_pointwise_equal for the equality **)
+    (** This is a long but mechanical proof requiring: **)
+    (**   - compose_fun_apply for g1_def/g2_def evaluation **)
+    (**   - Hg_on_A for g = f on [0,s] **)
+    (**   - Hg_on_B for g = gB on [s,1], then gB = compose revGX **)
+    (**   - affine_fun_I evaluation **)
+    (**   - Theorem_51_3 for g ~ path_concat g1_def g2_def homotopy **)
     admit. }
   (** Transfer word data from g to L1 using word_data_of_loop_eq_class **)
   exact (word_data_of_loop_eq_class X Tx U V x0 L1 g
