@@ -291632,6 +291632,439 @@ Lemma Sn2_minus_point_simply_connected : forall p:set,
 admit.
 Admitted.
 
+(** Helper: north pole (Rn_negate 3 south_pole_3) is not equal to south_pole_3 **)
+(** Proven Dave **)
+Lemma north_pole_3_neq_south_pole_3 :
+  Rn_negate 3 south_pole_3 <> south_pole_3.
+exact (fun Heq =>
+  Sn2_v_neq_neg_v south_pole_3 south_pole_3_in_Sn2
+    (eq_symm (Rn_negate 3 south_pole_3) south_pole_3 Heq)).
+Qed.
+
+(** Helper: north pole is in Sn 2 minus south_pole_3 **)
+(** Proven Dave **)
+Lemma north_pole_3_in_U_prime :
+  Rn_negate 3 south_pole_3 :e Sn 2 :\: {south_pole_3}.
+apply (setminusI (Sn 2) {south_pole_3} (Rn_negate 3 south_pole_3)).
+- exact (Rn_negate_3_in_Sn2 south_pole_3 south_pole_3_in_Sn2).
+- assume Hin : Rn_negate 3 south_pole_3 :e {south_pole_3}.
+  exact (north_pole_3_neq_south_pole_3
+    (SingE south_pole_3 (Rn_negate 3 south_pole_3) Hin)).
+Qed.
+
+(** Helper: stereo_S_fn maps north pole to Rn_zero 2 **)
+(** Proven Dave **)
+Lemma stereo_S_fn_north_is_zero :
+  stereo_S_fn (Rn_negate 3 south_pole_3) = Rn_zero 2.
+set np := Rn_negate 3 south_pole_3.
+claim H0in3 : 0 :e 3. { exact (ordsuccI1 2 0 In_0_2). }
+claim H1in3 : 1 :e 3. { exact (ordsuccI1 2 1 In_1_2). }
+claim H2in3 : 2 :e 3. { exact In_2_3. }
+claim Hsp0 : apply_fun south_pole_3 0 = 0.
+{ rewrite (apply_fun_graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0) 0 H0in3).
+  exact (If_i_0 (0 = 2) (minus_SNo 1) 0
+    (fun H:0=2 => In_irref 0 ((eq_symm 0 2 H) (fun z _ => 0 :e z) In_0_2))). }
+claim Hsp1 : apply_fun south_pole_3 1 = 0.
+{ rewrite (apply_fun_graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0) 1 H1in3).
+  exact (If_i_0 (1 = 2) (minus_SNo 1) 0
+    (fun H:1=2 => In_irref 2 (H (fun z _ => z :e 2) In_1_2))). }
+claim Hnp0 : apply_fun np 0 = 0.
+{ rewrite (Rn_negate_apply 3 south_pole_3 0 H0in3).
+  rewrite Hsp0. exact minus_SNo_0. }
+claim Hnp1 : apply_fun np 1 = 0.
+{ rewrite (Rn_negate_apply 3 south_pole_3 1 H1in3).
+  rewrite Hsp1. exact minus_SNo_0. }
+claim HnpU : np :e Sn 2 :\: {south_pole_3}. { exact north_pole_3_in_U_prime. }
+claim HnpSn : np :e Sn 2. { exact (Rn_negate_3_in_Sn2 south_pole_3 south_pole_3_in_Sn2). }
+claim HnpE3 : np :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) np HnpSn). }
+claim Hnp2R : apply_fun np 2 :e R.
+{ exact (euclidean_space_coord_in_R 3 np 2 HnpE3 H2in3). }
+claim Hdenom_R : add_SNo 1 (apply_fun np 2) :e R.
+{ exact (real_add_SNo 1 real_1 (apply_fun np 2) Hnp2R). }
+claim Hdenom_pos : Rlt 0 (add_SNo 1 (apply_fun np 2)).
+{ exact (stereo_S_denom_pos np HnpU). }
+claim HrSNo : SNo (recip_SNo_pos (add_SNo 1 (apply_fun np 2))).
+{ exact (SNo_recip_SNo_pos (add_SNo 1 (apply_fun np 2))
+    (real_SNo (add_SNo 1 (apply_fun np 2)) Hdenom_R) (RltE_lt 0 (add_SNo 1 (apply_fun np 2)) Hdenom_pos)). }
+prove graph 2
+  (fun i:set => if i = 0
+    then mul_SNo (apply_fun np 0) (recip_SNo_pos (add_SNo 1 (apply_fun np 2)))
+    else mul_SNo (apply_fun np 1) (recip_SNo_pos (add_SNo 1 (apply_fun np 2))))
+  = graph 2 (fun i:set => 0).
+apply (graph_extensional 2
+  (fun i:set => if i = 0
+    then mul_SNo (apply_fun np 0) (recip_SNo_pos (add_SNo 1 (apply_fun np 2)))
+    else mul_SNo (apply_fun np 1) (recip_SNo_pos (add_SNo 1 (apply_fun np 2))))
+  (fun i:set => 0)).
+let i. assume Hi.
+apply (xm (i = 0)).
+- assume Hi0.
+  rewrite (If_i_1 (i = 0)
+    (mul_SNo (apply_fun np 0) (recip_SNo_pos (add_SNo 1 (apply_fun np 2))))
+    (mul_SNo (apply_fun np 1) (recip_SNo_pos (add_SNo 1 (apply_fun np 2))))
+    Hi0).
+  rewrite Hnp0.
+  exact (mul_SNo_zeroL (recip_SNo_pos (add_SNo 1 (apply_fun np 2))) HrSNo).
+- assume Hni0.
+  rewrite (If_i_0 (i = 0)
+    (mul_SNo (apply_fun np 0) (recip_SNo_pos (add_SNo 1 (apply_fun np 2))))
+    (mul_SNo (apply_fun np 1) (recip_SNo_pos (add_SNo 1 (apply_fun np 2))))
+    Hni0).
+  rewrite Hnp1.
+  exact (mul_SNo_zeroL (recip_SNo_pos (add_SNo 1 (apply_fun np 2))) HrSNo).
+Qed.
+
+(** Main: S^2 is simply connected (polar cap decomposition) **)
+(** Uses: Sn2_minus_south_pole_simply_connected + negation homeomorphism + cor59_2 **)
+(** Proven Dave **)
+Lemma Sn2_simply_connected :
+  simply_connected (Sn 2) (Sn_topology 2).
+set north_pole := Rn_negate 3 south_pole_3.
+set U'' := Sn 2 :\: {south_pole_3}.
+set V'' := Sn 2 :\: {north_pole}.
+set neg_map := graph (Sn 2) (fun v:set => Rn_negate 3 v).
+claim HtopSn2 : topology_on (Sn 2) (Sn_topology 2).
+{ exact (lemma59_3_Sn_topology_on 2). }
+claim HnorthSn2 : north_pole :e Sn 2.
+{ exact (Rn_negate_3_in_Sn2 south_pole_3 south_pole_3_in_Sn2). }
+claim HnorthE3 : north_pole :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1)
+    north_pole HnorthSn2). }
+(** U'' is simply connected **)
+claim HscU : simply_connected U'' (subspace_topology (Sn 2) (Sn_topology 2) U'').
+{ exact Sn2_minus_south_pole_simply_connected. }
+(** U'' is open **)
+claim HUopen : U'' :e Sn_topology 2.
+{ exact Sn2_minus_south_open. }
+(** neg_map homeomorphism **)
+claim Hneg_homeo : homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) neg_map.
+{ exact Rn_negate_3_Sn2_homeomorphism. }
+(** apply_fun neg_map x = Rn_negate 3 x for x in Sn 2 **)
+claim Hneg_apply : forall x:set, x :e Sn 2 -> apply_fun neg_map x = Rn_negate 3 x.
+{ let x. assume Hx.
+  exact (apply_fun_graph (Sn 2) (fun v:set => Rn_negate 3 v) x Hx). }
+(** image_of neg_map U'' = V'' **)
+claim Himage_eq : image_of neg_map U'' = V''.
+{ apply set_ext.
+  - let y.
+    assume Hy : y :e image_of neg_map U''.
+    apply (ReplE_impred U'' (fun x:set => apply_fun neg_map x) y Hy).
+    let x. assume HxU : x :e U''.
+    assume Hyx : y = apply_fun neg_map x.
+    claim HxSn : x :e Sn 2. { exact (setminusE1 (Sn 2) {south_pole_3} x HxU). }
+    claim HxE3 : x :e euclidean_space 3.
+    { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) x HxSn). }
+    claim HxNotSouth : ~ (x :e {south_pole_3}).
+    { exact (setminusE2 (Sn 2) {south_pole_3} x HxU). }
+    rewrite Hyx. rewrite (Hneg_apply x HxSn).
+    apply (setminusI (Sn 2) {north_pole} (Rn_negate 3 x)).
+    + exact (Rn_negate_3_in_Sn2 x HxSn).
+    + assume Hin : Rn_negate 3 x :e {north_pole}.
+      claim Heq : Rn_negate 3 x = north_pole.
+      { exact (SingE north_pole (Rn_negate 3 x) Hin). }
+      claim HxSouth : x = south_pole_3.
+      { rewrite <- (Rn_negate_involution 3 x HxE3). rewrite Heq.
+        exact (Rn_negate_involution 3 south_pole_3 south_pole_3_in_E3). }
+      exact (HxNotSouth (HxSouth (fun z _ => x :e {z}) (SingI x))).
+  - let y.
+    assume Hy : y :e V''.
+    claim HySn : y :e Sn 2. { exact (setminusE1 (Sn 2) {north_pole} y Hy). }
+    claim HyNotNorth : ~ (y :e {north_pole}).
+    { exact (setminusE2 (Sn 2) {north_pole} y Hy). }
+    claim HyE3 : y :e euclidean_space 3.
+    { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1) y HySn). }
+    set x := Rn_negate 3 y.
+    claim HxSn : x :e Sn 2. { exact (Rn_negate_3_in_Sn2 y HySn). }
+    claim HxNotSouth : ~ (x :e {south_pole_3}).
+    { assume Hin : x :e {south_pole_3}.
+      claim Heq : x = south_pole_3. { exact (SingE south_pole_3 x Hin). }
+      claim HyNorth : y = north_pole.
+      { rewrite <- (Rn_negate_involution 3 y HyE3).
+        rewrite Heq. reflexivity. }
+      exact (HyNotNorth (HyNorth (fun z _ => y :e {z}) (SingI y))). }
+    claim HxU : x :e U''. { exact (setminusI (Sn 2) {south_pole_3} x HxSn HxNotSouth). }
+    claim Hyx : y = apply_fun neg_map x.
+    { rewrite (Hneg_apply x HxSn).
+      exact (eq_symm (Rn_negate 3 x) y (Rn_negate_involution 3 y HyE3)). }
+    rewrite Hyx.
+    exact (ReplI U'' (fun z:set => apply_fun neg_map z) x HxU). }
+(** homeomorphism_restrict_to_image_of_subset: neg_map restricted to U'' **)
+claim HrestrictHomeo :
+  homeomorphism U'' (subspace_topology (Sn 2) (Sn_topology 2) U'')
+    (image_of neg_map U'') (subspace_topology (Sn 2) (Sn_topology 2) (image_of neg_map U''))
+    neg_map.
+{ exact (homeomorphism_restrict_to_image_of_subset (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2)
+    neg_map U'' Hneg_homeo
+    (setminus_Subq (Sn 2) {south_pole_3})). }
+(** Rewrite image to V'' **)
+claim HrestrictHomeoV :
+  homeomorphism U'' (subspace_topology (Sn 2) (Sn_topology 2) U'')
+    V'' (subspace_topology (Sn 2) (Sn_topology 2) V'') neg_map.
+{ rewrite <- Himage_eq. exact HrestrictHomeo. }
+(** V'' is simply connected **)
+claim HscV : simply_connected V'' (subspace_topology (Sn 2) (Sn_topology 2) V'').
+{ exact (homeomorphism_preserves_simply_connected
+    U'' (subspace_topology (Sn 2) (Sn_topology 2) U'')
+    V'' (subspace_topology (Sn 2) (Sn_topology 2) V'')
+    neg_map HrestrictHomeoV HscU). }
+(** V'' is open **)
+claim HVopen : V'' :e Sn_topology 2.
+{ claim Hnorth_closed : closed_in (Sn 2) (Sn_topology 2) {north_pole}.
+  { exact (finite_sets_closed_in_Hausdorff (Sn 2) (Sn_topology 2) Sn_2_Hausdorff
+      {north_pole} (singleton_subset north_pole (Sn 2) HnorthSn2) (Sing_finite north_pole)). }
+  exact (open_in_elem (Sn 2) (Sn_topology 2) V''
+    (open_of_closed_complement (Sn 2) (Sn_topology 2) {north_pole} Hnorth_closed)). }
+(** Sn 2 = U'' union V'' **)
+claim Hcover : Sn 2 = U'' :\/: V''.
+{ apply set_ext.
+  - let x. assume Hx : x :e Sn 2.
+    apply (xm (x = south_pole_3)).
+    + assume Heq_s.
+      apply binunionI2.
+      apply (setminusI (Sn 2) {north_pole} x Hx).
+      assume Hin : x :e {north_pole}.
+      claim Heq_n : x = north_pole. { exact (SingE north_pole x Hin). }
+      claim Hsp_eq_np : south_pole_3 = north_pole.
+      { exact (eq_i_tra south_pole_3 x north_pole (eq_symm x south_pole_3 Heq_s) Heq_n). }
+      exact (north_pole_3_neq_south_pole_3 (eq_symm south_pole_3 north_pole Hsp_eq_np)).
+    + assume Hne : x <> south_pole_3.
+      apply binunionI1.
+      apply (setminusI (Sn 2) {south_pole_3} x Hx).
+      assume Hin : x :e {south_pole_3}.
+      exact (Hne (SingE south_pole_3 x Hin)).
+  - let x. assume Hx.
+    apply (binunionE U'' V'' x Hx).
+    + assume HxU : x :e U''. exact (setminusE1 (Sn 2) {south_pole_3} x HxU).
+    + assume HxV : x :e V''. exact (setminusE1 (Sn 2) {north_pole} x HxV). }
+(** U'' ∩ V'' path connected **)
+(** First: U'' ∩ V'' is open **)
+claim HUVopen : open_in (Sn 2) (Sn_topology 2) (U'' :/\: V'').
+{ exact (binintersect_open (Sn 2) (Sn_topology 2) U'' V''
+    (open_inI (Sn 2) (Sn_topology 2) U'' HtopSn2 HUopen)
+    (open_inI (Sn 2) (Sn_topology 2) V'' HtopSn2 HVopen)). }
+(** U'' ∩ V'' ≠ Empty via stereo_S_map: north_pole in U'', maps to Rn_zero 2 **)
+(** Use image_of neg_map U'' = V'': north_pole in V'' = image, so exists point in U'' ∩ V'' **)
+(** Concretely: north_pole ∈ U'' and north_pole ∈ V'' requires north_pole ≠ north_pole, false **)
+(** Instead: find point in U'' ∩ V'' via stereo_S_inv of some nonzero u **)
+(** We show U'' ∩ V'' is connected, hence nonempty from U'' ∩ V'' ≠ Empty via witness **)
+(** Witness: south_pole_3 ∈ V'' and some point of U'' ∩ V'' via inv map **)
+(** north_pole ∈ U'' (proved above), south_pole_3 ∈ V'' (since south_pole_3 ≠ north_pole) **)
+claim HsouthV : south_pole_3 :e V''.
+{ apply (setminusI (Sn 2) {north_pole} south_pole_3 south_pole_3_in_Sn2).
+  assume Hin : south_pole_3 :e {north_pole}.
+  claim Heq : south_pole_3 = north_pole. { exact (SingE north_pole south_pole_3 Hin). }
+  exact (north_pole_3_neq_south_pole_3 (eq_symm south_pole_3 (Rn_negate 3 south_pole_3) Heq)). }
+(** north_pole ∈ U'' **)
+claim HnorthU : north_pole :e U''.
+{ exact north_pole_3_in_U_prime. }
+(** Key: image of stereo_S_map on U'' ∩ V'' = E^2 minus {Rn_zero 2} **)
+(** For connectivity of U'' ∩ V'', use that U'' ∩ V'' is LPC and we can find E^2 minus pt connected **)
+(** U'' is locally path connected (as open subspace of Sn2) **)
+claim HlpcU : locally_path_connected U'' (subspace_topology (Sn 2) (Sn_topology 2) U'').
+{ exact (open_subspace_locally_path_connected_early (Sn 2) (Sn_topology 2) U''
+    Sn2_locally_path_connected HUopen). }
+(** image_of stereo_S_map (U'' ∩ V'') = euclidean_space 2 minus {Rn_zero 2} **)
+claim HimageUV :
+  image_of stereo_S_map (U'' :/\: V'') =
+    euclidean_space 2 :\: {Rn_zero 2}.
+{ apply set_ext.
+  - let w. assume Hw : w :e image_of stereo_S_map (U'' :/\: V'').
+    apply (ReplE_impred (U'' :/\: V'') (fun z:set => apply_fun stereo_S_map z) w Hw).
+    let z. assume HzUV : z :e U'' :/\: V''.
+    assume Hwz : w = apply_fun stereo_S_map z.
+    claim HzU : z :e U''. { exact (binintersectE1 U'' V'' z HzUV). }
+    claim HzV : z :e V''. { exact (binintersectE2 U'' V'' z HzUV). }
+    claim HzE3 : z :e euclidean_space 3.
+    { exact (SepE1 (euclidean_space 3) (fun u:set => euclidean_norm_sq 3 u = 1)
+        z (setminusE1 (Sn 2) {south_pole_3} z HzU)). }
+    claim HwE2 : w :e euclidean_space 2.
+    { rewrite Hwz.
+      rewrite (apply_fun_graph (Sn 2 :\: {south_pole_3}) stereo_S_fn z HzU).
+      exact (stereo_S_into_E2 z HzU). }
+    claim HwNonZero : ~ (w :e {Rn_zero 2}).
+    { assume Hin : w :e {Rn_zero 2}.
+      claim HwZero : w = Rn_zero 2. { exact (SingE (Rn_zero 2) w Hin). }
+      claim HzNotNorth : ~ (z :e {north_pole}).
+      { exact (setminusE2 (Sn 2) {north_pole} z HzV). }
+      (** stereo_S_fn z = Rn_zero 2 means stereo_S_inv_fn(Rn_zero 2) = z by left inverse **)
+      claim Hsterofn_z : apply_fun stereo_S_map z = Rn_zero 2.
+      { exact (eq_i_tra (apply_fun stereo_S_map z) w (Rn_zero 2)
+            (eq_symm w (apply_fun stereo_S_map z) Hwz) HwZero). }
+      claim Hsterofn_fn_z :
+        apply_fun stereo_S_map z = stereo_S_fn z.
+      { rewrite (apply_fun_graph (Sn 2 :\: {south_pole_3}) stereo_S_fn z HzU). reflexivity. }
+      claim Hfn_z : stereo_S_fn z = Rn_zero 2.
+      { rewrite <- Hsterofn_fn_z. exact Hsterofn_z. }
+      claim Hfn_north : stereo_S_fn (Rn_negate 3 south_pole_3) = Rn_zero 2.
+      { exact stereo_S_fn_north_is_zero. }
+      (** By left inverse: stereo_S_inv_fn(stereo_S_fn z) = z **)
+      claim Hlinv_z : stereo_S_inv_fn (stereo_S_fn z) = z.
+      { exact (stereo_S_left_inv z HzU). }
+      claim Hlinv_np : stereo_S_inv_fn (stereo_S_fn (Rn_negate 3 south_pole_3))
+        = Rn_negate 3 south_pole_3.
+      { exact (stereo_S_left_inv (Rn_negate 3 south_pole_3) north_pole_3_in_U_prime). }
+      claim HzEqNorth : z = Rn_negate 3 south_pole_3.
+      { rewrite <- Hlinv_z. rewrite Hfn_z.
+        rewrite <- Hlinv_np. rewrite Hfn_north. reflexivity. }
+      exact (HzNotNorth (HzEqNorth (fun v _ => z :e {v}) (SingI z))). }
+    exact (setminusI (euclidean_space 2) {Rn_zero 2} w HwE2 HwNonZero).
+  - let w. assume Hw : w :e euclidean_space 2 :\: {Rn_zero 2}.
+    claim HwE2 : w :e euclidean_space 2. { exact (setminusE1 (euclidean_space 2) {Rn_zero 2} w Hw). }
+    claim HwNonZero : ~ (w :e {Rn_zero 2}).
+    { exact (setminusE2 (euclidean_space 2) {Rn_zero 2} w Hw). }
+    set z := stereo_S_inv_fn w.
+    claim HzSn : z :e Sn 2. { exact (stereo_S_inv_fn_in_Sn2 w HwE2). }
+    claim HzNotSouth : ~ (z :e {south_pole_3}).
+    { exact (stereo_S_inv_fn_not_south w HwE2). }
+    claim HzU : z :e U''. { exact (setminusI (Sn 2) {south_pole_3} z HzSn HzNotSouth). }
+    claim HzNotNorth : ~ (z :e {north_pole}).
+    { assume Hin : z :e {north_pole}.
+      claim HzNorth : z = north_pole.
+      { exact (SingE north_pole z Hin). }
+      claim Hfn_z : stereo_S_fn z = Rn_zero 2.
+      { rewrite HzNorth. exact stereo_S_fn_north_is_zero. }
+      claim Hright_inv_w : stereo_S_fn (stereo_S_inv_fn w) = w.
+      { exact (stereo_S_right_inv w HwE2). }
+      claim HwZero : w = Rn_zero 2.
+      { rewrite <- Hright_inv_w. exact Hfn_z. }
+      exact (HwNonZero (HwZero (fun v _ => w :e {v}) (SingI w))). }
+    claim HzV : z :e V''. { exact (setminusI (Sn 2) {north_pole} z HzSn HzNotNorth). }
+    claim HzUV : z :e U'' :/\: V''.
+    { exact (binintersectI U'' V'' z HzU HzV). }
+    claim Hwz : w = apply_fun stereo_S_map z.
+    { rewrite (apply_fun_graph (Sn 2 :\: {south_pole_3}) stereo_S_fn z HzU).
+      exact (eq_symm (stereo_S_fn z) w (stereo_S_right_inv w HwE2)). }
+    rewrite Hwz.
+    exact (ReplI (U'' :/\: V'') (fun x:set => apply_fun stereo_S_map x) z HzUV). }
+(** U'' ∩ V'' ≠ Empty: witness is the equatorial point ep = S1_equator_in_S2(S1_basepoint) **)
+claim HUVne : (U'' :/\: V'') <> Empty.
+{ set ep := apply_fun S1_equator_in_S2 S1_basepoint.
+  claim HepSn2 : ep :e Sn 2.
+  { exact (S1_equator_in_S2_in_Sn2 S1_basepoint S1_basepoint_in_S1_early). }
+  (** Coordinate 2 of ep = 0 (from S1_equator_in_S2 formula for coord 2) **)
+  claim Hep2 : apply_fun ep 2 = 0.
+  { rewrite (apply_fun_graph S1
+      (fun z:set => graph 3 (fun j:set => if j = 0 then z 0 else if j = 1 then z 1 else 0))
+      S1_basepoint S1_basepoint_in_S1_early).
+    rewrite (apply_fun_graph 3
+      (fun j:set => if j = 0 then S1_basepoint 0 else if j = 1 then S1_basepoint 1 else 0)
+      2 In_2_3).
+    rewrite (If_i_0 (2 = 0) (S1_basepoint 0)
+      (if 2 = 1 then S1_basepoint 1 else 0) (neq_ordsucc_0 1)).
+    rewrite (If_i_0 (2 = 1) (S1_basepoint 1) 0
+      (fun H:2=1 => In_irref 1 (H (fun t _ => 1 :e t) In_1_2))).
+    reflexivity. }
+  (** Coordinate 2 of south_pole_3 = minus_SNo 1 **)
+  claim Hsp2 : apply_fun south_pole_3 2 = minus_SNo 1.
+  { rewrite (apply_fun_graph 3 (fun i:set => if i = 2 then minus_SNo 1 else 0) 2 In_2_3).
+    exact (If_i_1 (2 = 2) (minus_SNo 1) 0 (eq_refl 2)). }
+  (** ep ∉ {south_pole_3}: coord 2 is 0 ≠ minus_SNo 1 **)
+  claim HepNotSouth : ~ (ep :e {south_pole_3}).
+  { assume Hin : ep :e {south_pole_3}.
+    claim Heq : ep = south_pole_3. { exact (SingE south_pole_3 ep Hin). }
+    claim Hcoord_eq : apply_fun south_pole_3 2 = 0.
+    { exact (Heq (fun z _ => apply_fun z 2 = 0) Hep2). }
+    claim H0ms1 : 0 = minus_SNo 1.
+    { exact (eq_i_tra 0 (apply_fun south_pole_3 2) (minus_SNo 1)
+        (eq_symm (apply_fun south_pole_3 2) 0 Hcoord_eq) Hsp2). }
+    claim Hlt : minus_SNo 1 < 0.
+    { exact (minus_SNo_0 (fun z _ => minus_SNo 1 < z)
+        (minus_SNo_Lt_contra 0 1 SNo_0 SNo_1 SNoLt_0_1)). }
+    exact (SNoLt_irref (minus_SNo 1) (H0ms1 (fun z _ => minus_SNo 1 < z) Hlt)). }
+  (** Coordinate 2 of north_pole = 1 (Rn_negate of -1 = 1) **)
+  claim Hnp2 : apply_fun north_pole 2 = 1.
+  { rewrite (Rn_negate_apply 3 south_pole_3 2 In_2_3).
+    rewrite Hsp2.
+    exact (minus_SNo_invol 1 SNo_1). }
+  (** ep ∉ {north_pole}: coord 2 is 0 ≠ 1 **)
+  claim HepNotNorth : ~ (ep :e {north_pole}).
+  { assume Hin : ep :e {north_pole}.
+    claim Heq : ep = north_pole. { exact (SingE north_pole ep Hin). }
+    claim Hcoord_eq : apply_fun north_pole 2 = 0.
+    { exact (Heq (fun z _ => apply_fun z 2 = 0) Hep2). }
+    claim H01 : 0 = 1.
+    { exact (eq_i_tra 0 (apply_fun north_pole 2) 1
+        (eq_symm (apply_fun north_pole 2) 0 Hcoord_eq) Hnp2). }
+    exact (neq_0_1 H01). }
+  claim HepU : ep :e U''. { exact (setminusI (Sn 2) {south_pole_3} ep HepSn2 HepNotSouth). }
+  claim HepV : ep :e V''. { exact (setminusI (Sn 2) {north_pole} ep HepSn2 HepNotNorth). }
+  claim HepUV : ep :e U'' :/\: V''. { exact (binintersectI U'' V'' ep HepU HepV). }
+  assume Hempty : (U'' :/\: V'') = Empty.
+  exact (EmptyE ep (Hempty (fun z _ => ep :e z) HepUV)). }
+(** connected_space (euclidean_space 2 :\: {Rn_zero 2}): from punctured_euclidean_space_connected_ge2 **)
+claim HconnE2_pt : connected_space (euclidean_space 2 :\: {Rn_zero 2})
+  (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: {Rn_zero 2})).
+{ exact ((eq_symm {Rn_zero 2} {Rn_zero 2, Rn_zero 2} (Sing_eq_UPair (Rn_zero 2)))
+    (fun z _ => connected_space (euclidean_space 2 :\: z)
+      (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: z)))
+    (punctured_euclidean_space_connected_ge2 2 (Rn_zero 2)
+      (nat_p_omega 2 nat_2) (Subq_ref 2) (Rn_zero_in_euclidean_space 2 nat_2))). }
+(** path_connected_space (euclidean_space 2 :\: {Rn_zero 2}): LPC + connected + open **)
+claim HpcE2_pt : path_connected_space (euclidean_space 2 :\: {Rn_zero 2})
+  (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: {Rn_zero 2})).
+{ claim HlpcE2 : locally_path_connected (euclidean_space 2) (euclidean_topology 2).
+  { exact (euclidean_space_locally_path_connected_early 2 (nat_p_omega 2 nat_2)). }
+  claim HclE2_pt : closed_in (euclidean_space 2) (euclidean_topology 2) {Rn_zero 2}.
+  { exact (finite_sets_closed_in_Hausdorff (euclidean_space 2) (euclidean_topology 2)
+      (euclidean_space_Hausdorff 2)
+      {Rn_zero 2} (singleton_subset (Rn_zero 2) (euclidean_space 2) (Rn_zero_in_euclidean_space 2 nat_2))
+      (Sing_finite (Rn_zero 2))). }
+  claim HopenE2_pt : open_in (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: {Rn_zero 2}).
+  { exact (open_of_closed_complement (euclidean_space 2) (euclidean_topology 2) {Rn_zero 2} HclE2_pt). }
+  exact (ex23_connected_open_sets_path_connected (euclidean_space 2) (euclidean_topology 2)
+    (euclidean_space 2 :\: {Rn_zero 2}) HlpcE2 HopenE2_pt HconnE2_pt). }
+(** Restrict stereo_S_map homeomorphism to U'' ∩ V'' **)
+claim HrestrictUV :
+  homeomorphism (U'' :/\: V'')
+    (subspace_topology U'' (subspace_topology (Sn 2) (Sn_topology 2) U'') (U'' :/\: V''))
+    (image_of stereo_S_map (U'' :/\: V''))
+    (subspace_topology (euclidean_space 2) (euclidean_topology 2) (image_of stereo_S_map (U'' :/\: V'')))
+    stereo_S_map.
+{ exact (homeomorphism_restrict_to_image_of_subset U'' (subspace_topology (Sn 2) (Sn_topology 2) U'')
+    (euclidean_space 2) (euclidean_topology 2) stereo_S_map (U'' :/\: V'')
+    stereo_S_map_homeomorphism (binintersect_Subq_1 U'' V'')). }
+(** Transitivity of subspace topologies **)
+claim HeqTopUV :
+  subspace_topology U'' (subspace_topology (Sn 2) (Sn_topology 2) U'') (U'' :/\: V'') =
+  subspace_topology (Sn 2) (Sn_topology 2) (U'' :/\: V'').
+{ exact (subspace_topology_transitive_weak (Sn 2) (Sn_topology 2) U'' (U'' :/\: V'')
+    (binintersect_Subq_1 U'' V'')). }
+(** Homeomorphism from U'' ∩ V'' to E^2 :\: {Rn_zero 2} **)
+claim HhomeoUV :
+  homeomorphism (U'' :/\: V'') (subspace_topology (Sn 2) (Sn_topology 2) (U'' :/\: V''))
+    (euclidean_space 2 :\: {Rn_zero 2})
+    (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: {Rn_zero 2}))
+    stereo_S_map.
+{ prove homeomorphism (U'' :/\: V'') (subspace_topology (Sn 2) (Sn_topology 2) (U'' :/\: V''))
+    (euclidean_space 2 :\: {Rn_zero 2})
+    (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: {Rn_zero 2}))
+    stereo_S_map.
+  rewrite <- HeqTopUV. rewrite <- HimageUV. exact HrestrictUV. }
+(** connected_space (U'' ∩ V''): via inverse homeomorphism from E^2 :\: {Rn_zero 2} **)
+claim HconnUV :
+  connected_space (U'' :/\: V'') (subspace_topology (Sn 2) (Sn_topology 2) (U'' :/\: V'')).
+{ apply (homeomorphism_inverse_is_homeomorphism_variant (U'' :/\: V'')
+    (subspace_topology (Sn 2) (Sn_topology 2) (U'' :/\: V''))
+    (euclidean_space 2 :\: {Rn_zero 2})
+    (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: {Rn_zero 2}))
+    stereo_S_map HhomeoUV).
+  let g. assume Hg.
+  exact (homeomorphism_preserves_connected
+    (euclidean_space 2 :\: {Rn_zero 2})
+    (subspace_topology (euclidean_space 2) (euclidean_topology 2) (euclidean_space 2 :\: {Rn_zero 2}))
+    (U'' :/\: V'') (subspace_topology (Sn 2) (Sn_topology 2) (U'' :/\: V''))
+    g Hg HconnE2_pt). }
+(** path_connected_space (U'' ∩ V''): LPC + open + connected **)
+claim HpcUV :
+  path_connected_space (U'' :/\: V'') (subspace_topology (Sn 2) (Sn_topology 2) (U'' :/\: V'')).
+{ exact (ex23_connected_open_sets_path_connected (Sn 2) (Sn_topology 2) (U'' :/\: V'')
+    Sn2_locally_path_connected HUVopen HconnUV). }
+(** Apply Mayer-Vietoris: Sn 2 = U'' ∪ V'', both simply connected, U'' ∩ V'' path connected **)
+exact (cor59_2_simply_connected_union (Sn 2) (Sn_topology 2) U'' V''
+  HtopSn2 HUopen HVopen Hcover HscU HscV HUVne HpcUV).
+Qed.
+
 (** Helper: S^2 minus a simple closed curve is nonempty **)
 (** Proof: If C = S^2 then S^2 homeo S^1. But S^2 is simply connected **)
 (** (thm59_3) while S^1 has nontrivial pi_1. Contradiction. **)
@@ -291660,8 +292093,7 @@ claim Hh3 : homeomorphism (Sn 2) (Sn_topology 2) S1 S1_topology h.
   rewrite <- HCeqS2. exact Hh2. }
 (** S^2 is simply connected **)
 claim HS2sc : simply_connected (Sn 2) (Sn_topology 2).
-{ exact (thm59_3_Sn_simply_connected 2
-    (nat_p_omega 2 nat_2) (Subq_ref 2)). }
+{ exact Sn2_simply_connected. }
 (** Transfer: S^1 is simply connected **)
 claim HS1sc : simply_connected S1 S1_topology.
 { exact (homeomorphism_preserves_simply_connected
