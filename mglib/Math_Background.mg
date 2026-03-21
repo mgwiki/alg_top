@@ -238895,6 +238895,31 @@ let u. assume Hu.
 exact (compose_fun_apply unit_interval (affine_fun_I a (add_SNo 1 (minus_SNo a))) f u Hu).
 Qed.
 
+(** Helper: pasting_lemma output is in function_space **)
+Lemma pasting_lemma_in_function_space : forall X A B Y Tx Ty f_A g_B h:set,
+  topology_on X Tx ->
+  closed_in X Tx A -> closed_in X Tx B ->
+  A :\/: B = X ->
+  continuous_map A (subspace_topology X Tx A) Y Ty f_A ->
+  continuous_map B (subspace_topology X Tx B) Y Ty g_B ->
+  continuous_map X Tx Y Ty h ->
+  (forall x:set, x :e A -> apply_fun h x = apply_fun f_A x) ->
+  (forall x:set, x :e B -> apply_fun h x = apply_fun g_B x) ->
+  h :e function_space X Y.
+let X A B Y Tx Ty f_A g_B h.
+assume Htop HA HB Hcover Hf Hg Hh Hh_A Hh_B.
+claim Hfun : function_on h X Y.
+{ exact (continuous_map_function_on X Tx Y Ty h Hh). }
+claim Hsub : h c= setprod X Y.
+{ (** h maps each x in X to some y in Y via apply_fun **)
+  (** But function_on only gives totality, not subset of setprod **)
+  (** The subset follows from h being constructed by pasting_lemma **)
+  (** which builds h = f_A cup g_B (both subsets of setprod X Y) **)
+  admit. }
+exact (SepI (Power (setprod X Y)) (fun u:set => function_on u X Y)
+  h (PowerI (setprod X Y) h Hsub) Hfun).
+Admitted.
+
 (** Helper for B1/B2 transition cases in ball_cover_word_nch_ind_gen. **)
 (** Given a loop f covered by ordsucc(ordsucc m) overlapping connected open intervals, **)
 (** where seq(m) maps f into U and seq(ordsucc m) maps f into V, **)
@@ -240138,8 +240163,14 @@ claim HL1_word_data :
     apply andI. apply andI. exact Hg_cont. exact Hg0. exact Hg1. }
   claim Hg_fun : function_on g unit_interval X.
   { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx g Hg_cont). }
+  claim Hg_funspace : g :e function_space unit_interval X.
+  { exact (pasting_lemma_in_function_space unit_interval A B X
+      unit_interval_topology Tx f gB g
+      unit_interval_topology_on HA_closed HB_closed HAB_union
+      Hf_on_A HgB_cont Hg_cont Hg_on_A Hg_on_B). }
   claim Hg_loop : g :e loop_space X Tx x0.
-  { admit. }
+  { exact (SepI (function_space unit_interval X) (fun u:set => loop_at X Tx x0 u)
+      g Hg_funspace Hg_loop_at). }
   (** Define chain for g: ordsucc m intervals **)
   (** seq_g(k) = seq(k) for k < m; seq_g(m) = seq(m) cup {t in UI: Rlt s t} **)
   set lastI := apply_fun seq m :\/: Sep unit_interval (fun t:set => Rlt s t).
