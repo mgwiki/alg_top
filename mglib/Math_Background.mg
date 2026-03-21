@@ -138239,14 +138239,61 @@ apply andI.
       admit. (** TODO: ~30 lines; all pieces exist, needs assembly **)
     - (** F(x, 0) = h(x) for x in S1 **)
       let x. assume Hx : x :e S1.
-      (** F(x,0) = apply_fun F (x,0) = H(eps_s, 0) where ell(eps_s) = x **)
-      (** = hell(eps_s) = h(ell(eps_s)) = h(x) **)
-      admit. (** needs: apply_fun F unfold + Eps_i picks valid s + HH_at0 + compose_fun hell **)
+      claim HxI_pair : (x, 0) :e setprod S1 unit_interval.
+      { rewrite <- (tuple_pair x 0).
+        exact (pair_Sigma S1 (fun _ => unit_interval) x Hx 0 zero_in_unit_interval). }
+      claim HFeval : apply_fun F (x, 0) =
+        apply_fun H (Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = (x, 0) 0), (x, 0) 1).
+      { exact (apply_fun_graph (setprod S1 unit_interval)
+          (fun xt0:set => apply_fun H (Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = xt0 0), xt0 1))
+          (x, 0) HxI_pair). }
+      claim Hap0 : (x, 0) 0 = x. { rewrite <- (tuple_pair x 0). exact (pair_ap_0 x 0). }
+      claim Hap1 : (x, 0) 1 = 0. { rewrite <- (tuple_pair x 0). exact (pair_ap_1 x 0). }
+      set eps_s := Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = x).
+      claim Heps_valid : eps_s :e unit_interval /\ apply_fun ell eps_s = x.
+      { apply (Hell_surj x Hx). let s0. assume Hs0.
+        exact (Eps_i_ax (fun s:set => s :e unit_interval /\ apply_fun ell s = x) s0 Hs0). }
+      claim HepsI : eps_s :e unit_interval.
+      { exact (andEL (eps_s :e unit_interval) (apply_fun ell eps_s = x) Heps_valid). }
+      claim Hells_x : apply_fun ell eps_s = x.
+      { exact (andER (eps_s :e unit_interval) (apply_fun ell eps_s = x) Heps_valid). }
+      (** F(x,0) = H(eps_s, 0) **)
+      claim HFsimp : apply_fun F (x, 0) = apply_fun H (eps_s, 0).
+      { rewrite HFeval. rewrite Hap0. rewrite Hap1. reflexivity. }
+      (** H(eps_s, 0) = hell(eps_s) = h(ell(eps_s)) = h(x) **)
+      claim Hat0 : apply_fun H (eps_s, 0) = apply_fun hell eps_s.
+      { exact (HH_at0 eps_s HepsI). }
+      claim Hhell_eval : apply_fun hell eps_s = apply_fun h (apply_fun ell eps_s).
+      { exact (compose_fun_apply unit_interval ell h eps_s HepsI). }
+      rewrite HFsimp. rewrite Hat0. rewrite Hhell_eval. rewrite Hells_x. reflexivity.
     - (** F(x, 1) = const_fun S1 y0 (x) = y0 **)
       let x. assume Hx : x :e S1.
-      (** F(x,1) = H(eps_s, 1) = constant_path y0 (eps_s) = y0 **)
       prove apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x.
-      admit. (** needs: apply_fun F unfold + HH_at1 + const_fun_apply **)
+      claim HxI_pair : (x, 1) :e setprod S1 unit_interval.
+      { rewrite <- (tuple_pair x 1).
+        exact (pair_Sigma S1 (fun _ => unit_interval) x Hx 1 one_in_unit_interval). }
+      claim HFeval : apply_fun F (x, 1) =
+        apply_fun H (Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = (x, 1) 0), (x, 1) 1).
+      { exact (apply_fun_graph (setprod S1 unit_interval)
+          (fun xt0:set => apply_fun H (Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = xt0 0), xt0 1))
+          (x, 1) HxI_pair). }
+      claim Hap0 : (x, 1) 0 = x. { rewrite <- (tuple_pair x 1). exact (pair_ap_0 x 1). }
+      claim Hap1 : (x, 1) 1 = 1. { rewrite <- (tuple_pair x 1). exact (pair_ap_1 x 1). }
+      set eps_s := Eps_i (fun s:set => s :e unit_interval /\ apply_fun ell s = x).
+      claim Heps_valid : eps_s :e unit_interval /\ apply_fun ell eps_s = x.
+      { apply (Hell_surj x Hx). let s0. assume Hs0.
+        exact (Eps_i_ax (fun s:set => s :e unit_interval /\ apply_fun ell s = x) s0 Hs0). }
+      claim HepsI : eps_s :e unit_interval.
+      { exact (andEL (eps_s :e unit_interval) (apply_fun ell eps_s = x) Heps_valid). }
+      claim HFsimp : apply_fun F (x, 1) = apply_fun H (eps_s, 1).
+      { rewrite HFeval. rewrite Hap0. rewrite Hap1. reflexivity. }
+      claim Hat1 : apply_fun H (eps_s, 1) = apply_fun (constant_path y0) eps_s.
+      { exact (HH_at1 eps_s HepsI). }
+      claim Hconst_eval : apply_fun (constant_path y0) eps_s = y0.
+      { exact (constant_path_apply y0 eps_s HepsI). }
+      claim Hconst_rhs : apply_fun (const_fun S1 y0) x = y0.
+      { exact (const_fun_apply S1 y0 x Hx). }
+      rewrite HFsimp. rewrite Hat1. rewrite Hconst_eval. symmetry. exact Hconst_rhs.
 Admitted.
 
 Lemma s55_trivial_implies_nulhomotopic : forall X Tx h b0:set,
