@@ -138180,7 +138180,27 @@ apply andI.
       (** q surjective: from Hell_surj **)
       claim Hq_surj : forall xt:set, xt :e setprod S1 unit_interval ->
         exists st:set, st :e unit_square /\ apply_fun q st = xt.
-      { admit. (** use Hell_surj to find s with ell(s) = x, then (s,t) maps to (x,t) **) }
+      { let xt. assume Hxt : xt :e setprod S1 unit_interval.
+        claim HxS1 : xt 0 :e S1. { exact (ap0_Sigma S1 (fun _ => unit_interval) xt Hxt). }
+        claim HtI : xt 1 :e unit_interval. { exact (ap1_Sigma S1 (fun _ => unit_interval) xt Hxt). }
+        apply (Hell_surj (xt 0) HxS1). let s. assume Hs_data.
+        claim HsI : s :e unit_interval. { exact (andEL (s :e unit_interval) (apply_fun ell s = xt 0) Hs_data). }
+        claim Hells : apply_fun ell s = xt 0. { exact (andER (s :e unit_interval) (apply_fun ell s = xt 0) Hs_data). }
+        witness (s, xt 1).
+        claim Hst_sq : (s, xt 1) :e unit_square.
+        { rewrite <- (tuple_pair s (xt 1)).
+          exact (pair_Sigma unit_interval (fun _ => unit_interval) s HsI (xt 1) HtI). }
+        apply andI.
+        - exact Hst_sq.
+        - claim Hqeval : apply_fun q (s, xt 1) = (apply_fun ell ((s, xt 1) 0), (s, xt 1) 1).
+          { exact (apply_fun_graph unit_square (fun st0:set => (apply_fun ell (st0 0), st0 1)) (s, xt 1) Hst_sq). }
+          claim Hap0 : (s, xt 1) 0 = s.
+          { rewrite <- (tuple_pair s (xt 1)). exact (pair_ap_0 s (xt 1)). }
+          claim Hap1 : (s, xt 1) 1 = xt 1.
+          { rewrite <- (tuple_pair s (xt 1)). exact (pair_ap_1 s (xt 1)). }
+          claim Hxt_eta : xt = (xt 0, xt 1). { exact (setprod_eta S1 unit_interval xt Hxt). }
+          rewrite Hqeval. rewrite Hap0. rewrite Hap1. rewrite Hells.
+          symmetry. exact Hxt_eta. }
       (** H = F o q (factorization through quotient) **)
       claim Hfactors : forall st:set, st :e unit_square ->
         apply_fun H st = apply_fun F (apply_fun q st).
