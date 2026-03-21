@@ -240020,7 +240020,18 @@ claim HL1_word_data :
     connected_space (apply_fun seq_L1 k)
       (subspace_topology unit_interval unit_interval_topology (apply_fun seq_L1 k)). { admit. }
   claim Hseq_L1_0 : 0 :e apply_fun seq_L1 0. { admit. }
-  claim Hseq_L1_1 : 1 :e apply_fun seq_L1 m. { admit. }
+  claim Hseq_L1_1 : 1 :e apply_fun seq_L1 m.
+  { rewrite (apply_fun_graph (ordsucc m)
+      (fun k:set => If_i (k :e m)
+        (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq k))
+        lastI_L1)
+      m (ordsuccI2 m)).
+    rewrite (If_i_0 (m :e m)
+      (Sep unit_interval (fun t:set => mul_SNo 2 (mul_SNo s t) :e apply_fun seq m))
+      lastI_L1 (In_irref m)).
+    apply binunionI2.
+    exact (SepI unit_interval (fun t:set => Rlt (eps_ 1) t) 1 one_in_unit_interval
+      eps_1_lt1_R). }
   claim Hseq_L1_overlap : forall k:set, k :e m ->
     apply_fun seq_L1 k :/\: apply_fun seq_L1 (ordsucc k) <> Empty. { admit. }
   claim Hseq_L1_UV : forall k:set, k :e ordsucc m ->
