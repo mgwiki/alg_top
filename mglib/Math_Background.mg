@@ -293596,6 +293596,79 @@ exact (homeomorphism_compose (euclidean_space 2) (euclidean_topology 2)
   (euclidean_space_succ_split_map 1) fprod Hsplit Hprod_homeo).
 Qed.
 
+(** Helper: image under homeomorphism of subset minus singleton **)
+(** Proven Dave **)
+Lemma homeomorphism_image_setminus_Sing :
+  forall X Tx Y Ty f S a:set,
+  homeomorphism X Tx Y Ty f ->
+  S c= X -> a :e X ->
+  image_of f (S :\: Sing a) = (image_of f S) :\: Sing (apply_fun f a).
+let X Tx Y Ty f S a.
+assume Hhome HSX HaX.
+claim Hf_on : function_on f X Y.
+{ exact (homeomorphism_function_on X Tx Y Ty f Hhome). }
+apply set_ext.
+- let y. assume Hy.
+  apply (ReplE_impred (S :\: Sing a) (fun x:set => apply_fun f x) y Hy).
+  let x. assume HxSa Heq.
+  claim HxS : x :e S. { exact (setminusE1 S (Sing a) x HxSa). }
+  claim HxneA : ~ (x :e Sing a). { exact (setminusE2 S (Sing a) x HxSa). }
+  claim HxX : x :e X. { exact (HSX x HxS). }
+  claim HyImg : y :e image_of f S.
+  { rewrite Heq. exact (ReplI S (fun x':set => apply_fun f x') x HxS). }
+  claim HyNeSing : ~ (y :e Sing (apply_fun f a)).
+  { assume HySing.
+    claim Hyeq : y = apply_fun f a. { exact (SingE (apply_fun f a) y HySing). }
+    claim Hfxeq : apply_fun f x = apply_fun f a.
+    { rewrite <- Heq. exact Hyeq. }
+    claim Hxa : x = a.
+    { exact (homeomorphism_injective X Tx Y Ty f Hhome x a HxX HaX Hfxeq). }
+    exact (HxneA (eq_subst_mem x a (Sing a) Hxa (SingI a))). }
+  exact (setminusI (image_of f S) (Sing (apply_fun f a)) y HyImg HyNeSing).
+- let y. assume Hy.
+  claim HyImg : y :e image_of f S.
+  { exact (setminusE1 (image_of f S) (Sing (apply_fun f a)) y Hy). }
+  claim HyNeSing : ~ (y :e Sing (apply_fun f a)).
+  { exact (setminusE2 (image_of f S) (Sing (apply_fun f a)) y Hy). }
+  apply (ReplE_impred S (fun x:set => apply_fun f x) y HyImg).
+  let x. assume HxS Heq.
+  claim HxX : x :e X. { exact (HSX x HxS). }
+  claim HxNeSing : ~ (x :e Sing a).
+  { assume HxSing.
+    claim Hxa : x = a. { exact (SingE a x HxSing). }
+    claim Hyeqa : y = apply_fun f a. { rewrite <- Hxa. exact Heq. }
+    exact (HyNeSing (eq_subst_mem y (apply_fun f a) (Sing (apply_fun f a))
+      Hyeqa (SingI (apply_fun f a)))). }
+  claim HxSa : x :e S :\: Sing a.
+  { exact (setminusI S (Sing a) x HxS HxNeSing). }
+  exact (eq_subst_mem y (apply_fun f x) (image_of f (S :\: Sing a)) Heq
+    (ReplI (S :\: Sing a) (fun x':set => apply_fun f x') x HxSa)).
+Qed.
+
+(** Helper: homeomorphism image of X minus two singletons **)
+(** Proven Dave **)
+Lemma homeomorphism_image_double_setminus_Sing :
+  forall X Tx Y Ty f a b:set,
+  homeomorphism X Tx Y Ty f ->
+  a :e X -> b :e X ->
+  image_of f (X :\: Sing a :\: Sing b) =
+  Y :\: Sing (apply_fun f a) :\: Sing (apply_fun f b).
+let X Tx Y Ty f a b.
+assume Hhome HaX HbX.
+claim Hf_on : function_on f X Y.
+{ exact (homeomorphism_function_on X Tx Y Ty f Hhome). }
+claim HXsub : X c= X. { exact (Subq_ref X). }
+claim Hstep1 : image_of f (X :\: Sing a) = Y :\: Sing (apply_fun f a).
+{ rewrite (Sing_eq_UPair a). rewrite (Sing_eq_UPair (apply_fun f a)).
+  exact (homeomorphism_image_of_setminus_singleton X Tx Y Ty f a Hhome HaX). }
+claim HXaSub : X :\: Sing a c= X.
+{ exact (setminus_Subq X (Sing a)). }
+claim Hstep2 : image_of f ((X :\: Sing a) :\: Sing b) =
+  (image_of f (X :\: Sing a)) :\: Sing (apply_fun f b).
+{ exact (homeomorphism_image_setminus_Sing X Tx Y Ty f (X :\: Sing a) b Hhome HXaSub HbX). }
+rewrite Hstep2. rewrite Hstep1. reflexivity.
+Qed.
+
 (** Helper: S^2 minus two distinct points is homeomorphic to R^2 minus a point **)
 (** Proof: use Sn2_self_homeo_to_south_pole to move q to south pole, **)
 (** then use stereo_S_map_homeomorphism to project to R^2 **)
@@ -293674,7 +293747,11 @@ claim Hh_restr : homeomorphism C (subspace_topology (Sn 2) (Sn_topology 2) C)
 (** This requires showing the image is exactly the doubly-punctured sphere **)
 set D := Sn 2 :\: Sing (apply_fun h p) :\: Sing south_pole_3.
 claim Himage_eq : image_of h C = D.
-{ admit. (** TODO: set-level bijection argument; h bijective, h(p) and h(q)=south are excluded **) }
+{ claim Hstep : image_of h (Sn 2 :\: Sing p :\: Sing q) =
+    Sn 2 :\: Sing (apply_fun h p) :\: Sing (apply_fun h q).
+  { exact (homeomorphism_image_double_setminus_Sing (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) h p q
+      Hh_homeo Hp Hq). }
+  rewrite <- Hhq. exact Hstep. }
 (** Step 4: stereo_S_map restricted to D-without-south = D **)
 (** D c= Sn 2 \ {south_pole} (since D already excludes south_pole) **)
 claim HDsub_nosouth : D c= Sn 2 :\: Sing south_pole_3.
@@ -293706,10 +293783,47 @@ claim Hstereo_restr : homeomorphism D (subspace_topology (Sn 2) (Sn_topology 2) 
 (** gives R2 \ {stereo(h(p))} **)
 set p' := apply_fun stereo_S_map (apply_fun h p).
 claim Hstereo_image_eq : image_of stereo_S_map D = euclidean_space 2 :\: Sing p'.
-{ admit. (** TODO: stereo bijection restricted removes exactly stereo(h(p)) **) }
-(** p' in R2 **)
-claim Hp'R2 : p' :e setprod R R.
-{ admit. (** stereo maps Sn2\south into euclidean_space 2 = R2 (via product topology eq) **) }
+{ (** D = (Sn 2 :\: Sing south_pole_3) :\: Sing (h(p)) via setminus swap **)
+  (** Use: image_of stereo_S_map D = image_of stereo_S_map ((domain) :\: Sing (h(p))) **)
+  (** = (euclidean_space 2) :\: Sing (stereo_S_map (h(p))) by homeomorphism_image_setminus_Sing **)
+  claim HDasSubDomain : D = (Sn 2 :\: Sing south_pole_3) :\: Sing (apply_fun h p).
+  { (** D = (Sn 2 :\: Sing (h(p))) :\: Sing south_pole_3 = (Sn 2 :\: Sing south_pole_3) :\: Sing (h(p)) **)
+    apply set_ext.
+    - let x. assume Hx.
+      claim HxSn : x :e Sn 2.
+      { exact (setminusE1 (Sn 2) (Sing (apply_fun h p)) x
+          (setminusE1 (Sn 2 :\: Sing (apply_fun h p)) (Sing south_pole_3) x Hx)). }
+      claim HxneSouth : ~ (x :e Sing south_pole_3).
+      { exact (setminusE2 (Sn 2 :\: Sing (apply_fun h p)) (Sing south_pole_3) x Hx). }
+      claim HxneHp : ~ (x :e Sing (apply_fun h p)).
+      { exact (setminusE2 (Sn 2) (Sing (apply_fun h p)) x
+          (setminusE1 (Sn 2 :\: Sing (apply_fun h p)) (Sing south_pole_3) x Hx)). }
+      exact (setminusI (Sn 2 :\: Sing south_pole_3) (Sing (apply_fun h p)) x
+        (setminusI (Sn 2) (Sing south_pole_3) x HxSn HxneSouth) HxneHp).
+    - let x. assume Hx.
+      claim HxSn : x :e Sn 2.
+      { exact (setminusE1 (Sn 2) (Sing south_pole_3) x
+          (setminusE1 (Sn 2 :\: Sing south_pole_3) (Sing (apply_fun h p)) x Hx)). }
+      claim HxneSouth : ~ (x :e Sing south_pole_3).
+      { exact (setminusE2 (Sn 2) (Sing south_pole_3) x
+          (setminusE1 (Sn 2 :\: Sing south_pole_3) (Sing (apply_fun h p)) x Hx)). }
+      claim HxneHp : ~ (x :e Sing (apply_fun h p)).
+      { exact (setminusE2 (Sn 2 :\: Sing south_pole_3) (Sing (apply_fun h p)) x Hx). }
+      exact (setminusI (Sn 2 :\: Sing (apply_fun h p)) (Sing south_pole_3) x
+        (setminusI (Sn 2) (Sing (apply_fun h p)) x HxSn HxneHp) HxneSouth). }
+  claim Hhp_not_south : ~ (apply_fun h p :e Sing south_pole_3).
+  { exact (fun Hc => Hhp_ne_south (SingE south_pole_3 (apply_fun h p) Hc)). }
+  claim Hhp_nosouth : apply_fun h p :e Sn 2 :\: Sing south_pole_3.
+  { exact (setminusI (Sn 2) (Sing south_pole_3) (apply_fun h p) Hhp_Sn Hhp_not_south). }
+  rewrite HDasSubDomain.
+  rewrite (Sing_eq_UPair (apply_fun h p)).
+  rewrite (Sing_eq_UPair p').
+  exact (homeomorphism_image_of_setminus_singleton
+    (Sn 2 :\: Sing south_pole_3)
+    (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing south_pole_3))
+    (euclidean_space 2) (euclidean_topology 2)
+    stereo_S_map (apply_fun h p)
+    stereo_S_map_homeomorphism Hhp_nosouth). }
 (** Step 6: compose the restricted homeomorphisms **)
 (** R2_topology = euclidean_topology 2 for setprod R R **)
 (** Need: euclidean_space 2 = setprod R R and euclidean_topology 2 = R2_topology **)
@@ -293743,7 +293857,11 @@ claim Hcomposed : homeomorphism C (subspace_topology (Sn 2) (Sn_topology 2) C)
 apply euclidean_space_2_homeo_R2. let e2r2. assume He2r2.
 (** Restrict e2r2 to E2 \ {p'} -> R2 \ {e2r2(p')} **)
 claim Hp'E2 : p' :e euclidean_space 2.
-{ admit. (** stereo maps into euclidean_space 2, h(p) in S2\south **) }
+{ claim Hhp_not_south2 : ~ (apply_fun h p :e Sing south_pole_3).
+  { exact (fun Hc => Hhp_ne_south (SingE south_pole_3 (apply_fun h p) Hc)). }
+  claim Hhp_nosouth2 : apply_fun h p :e Sn 2 :\: Sing south_pole_3.
+  { exact (setminusI (Sn 2) (Sing south_pole_3) (apply_fun h p) Hhp_Sn Hhp_not_south2). }
+  exact (stereo_S_map_function_on (apply_fun h p) Hhp_nosouth2). }
 claim HE2mp_sub : euclidean_space 2 :\: Sing p' c= euclidean_space 2.
 { exact (setminus_Subq (euclidean_space 2) (Sing p')). }
 claim He2r2_restr : homeomorphism (euclidean_space 2 :\: Sing p')
@@ -293756,9 +293874,13 @@ claim He2r2_restr : homeomorphism (euclidean_space 2 :\: Sing p')
 (** image_of e2r2 (E2 \ {p'}) = R2 \ {e2r2(p')} **)
 set p'R2 := apply_fun e2r2 p'.
 claim Hp'R2_in : p'R2 :e setprod R R.
-{ admit. (** e2r2 maps E2 into R2, p' in E2 **) }
+{ exact (homeomorphism_function_on (euclidean_space 2) (euclidean_topology 2)
+    (setprod R R) R2_topology e2r2 He2r2 p' Hp'E2). }
 claim Himage_eq : image_of e2r2 (euclidean_space 2 :\: Sing p') = setprod R R :\: Sing p'R2.
-{ admit. (** bijection of E2 onto R2 restricts to bijection of complements **) }
+{ rewrite (Sing_eq_UPair p'). rewrite (Sing_eq_UPair p'R2).
+  exact (homeomorphism_image_of_setminus_singleton
+    (euclidean_space 2) (euclidean_topology 2) (setprod R R) R2_topology
+    e2r2 p' He2r2 Hp'E2). }
 (** Compose: (stereo+h) then e2r2_restr **)
 set full_f := compose_fun C (compose_fun C h stereo_S_map) e2r2.
 witness full_f. witness p'R2.
@@ -293780,7 +293902,7 @@ apply andI.
     (setprod R R :\: Sing p'R2)
     (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing p'R2))
     (compose_fun C h stereo_S_map) e2r2 Hcomposed He2r2_restr2).
-Admitted.
+Admitted. (** body is complete; deps on Sn2_self_homeo_to_south_pole (householder chain admitted) **)
 
 (** Helper: R^2 minus any point is path connected **)
 Lemma R2_minus_point_path_connected : forall p':set,
