@@ -293880,7 +293880,7 @@ claim Hamb_eq : mul_SNo a (minus_SNo b) = minus_SNo (mul_SNo a b).
 { exact (mul_minus_SNo_distrR a b Ha Hb). }
 claim Hbb : (mul_SNo (minus_SNo b) (minus_SNo b)) = (mul_SNo b b).
 { exact (mul_SNo_minus_minus b b Hb Hb). }
-admit. (** assemble 4 terms using Hd1, Hd2, Hcom, Hd3r, Hamb_eq, Hbb + add_SNo_assoc **)
+admit. (** final assembly: rewrite Hd1-Hd3r-Hamb_eq-Hbb into 4 terms, rearrange by assoc **)
 Admitted.
 
 (** R3_dot_af bilinearity: (x-2dn) dot (x-2dn) = x dot x - 4d(x dot n) + 4d^2(n dot n) **)
