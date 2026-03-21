@@ -138341,12 +138341,41 @@ apply andI.
         apply andI.
         - exact (continuous_map_function_on unit_interval unit_interval_topology S1 S1_topology ell Hell_cont).
         - exact Hell_surj. }
-      admit. (** TODO: ~20 lines. Use: **)
-      (** 1. compact_hausdorff_product_quotient gives quotient_topology c= product_topology **)
-      (** 2. quotient_topology_is_topology gives topology_on (quotient_topology) **)
-      (** 3. s55_continuous_descends gives F cont on quotient **)
-      (** 4. quotient_universal_property gives q continuous on quotient -> product c= quotient **)
-      (** 5. So quotient = product, F continuous on product **)
+      (** Step 1: function_on q **)
+      claim Hq_fn_global : function_on q unit_square (setprod S1 unit_interval).
+      { exact (continuous_map_function_on unit_square unit_square_topology
+          (setprod S1 unit_interval) (product_topology S1 S1_topology unit_interval unit_interval_topology)
+          q Hq_cont). }
+      (** Step 2: quotient_map q **)
+      claim Hq_qmap : quotient_map unit_square unit_square_topology (setprod S1 unit_interval) q.
+      { prove topology_on unit_square unit_square_topology /\
+          function_on q unit_square (setprod S1 unit_interval) /\
+          (forall y:set, y :e setprod S1 unit_interval -> exists x:set, x :e unit_square /\ apply_fun q x = y).
+        apply and3I.
+        - exact (product_topology_is_topology unit_interval unit_interval_topology
+            unit_interval unit_interval_topology unit_interval_topology_on unit_interval_topology_on).
+        - exact Hq_fn_global.
+        - exact Hq_surj. }
+      (** Step 3: topology_on quotient **)
+      claim HtopQ : topology_on (setprod S1 unit_interval)
+        (quotient_topology unit_square unit_square_topology (setprod S1 unit_interval) q).
+      { claim HtopUS : topology_on unit_square unit_square_topology.
+        { exact (product_topology_is_topology unit_interval unit_interval_topology
+            unit_interval unit_interval_topology unit_interval_topology_on unit_interval_topology_on). }
+        exact (quotient_topology_is_topology unit_square unit_square_topology
+          (setprod S1 unit_interval) q HtopUS Hq_qmap). }
+      (** Step 4: s55_continuous_descends gives F cont on quotient **)
+      claim HF_cont_Q : continuous_map (setprod S1 unit_interval)
+        (quotient_topology unit_square unit_square_topology (setprod S1 unit_interval) q) X Tx F.
+      { exact (s55_continuous_descends_to_quotient_topology
+          unit_square unit_square_topology (setprod S1 unit_interval) q X Tx F
+          Hq_fn_global HF_fn Hcomp_qF_cont HtopQ). }
+      (** Step 5: quotient_topology c= product_topology **)
+      claim Hqt_sub : quotient_topology unit_square unit_square_topology (setprod S1 unit_interval) q
+        c= product_topology S1 S1_topology unit_interval unit_interval_topology.
+      { admit. (** compact_hausdorff_product_quotient + S1 Hausdorff + product Hausdorff **) }
+      (** Step 6: F continuous on quotient + quotient c= product -> F continuous on product **)
+      admit. (** final transfer: continuous on coarser topology -> continuous on finer **)
     - (** F(x, 0) = h(x) for x in S1 **)
       let x. assume Hx : x :e S1.
       claim HxI_pair : (x, 0) :e setprod S1 unit_interval.
