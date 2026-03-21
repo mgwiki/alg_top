@@ -292137,7 +292137,34 @@ Lemma R3_dot_self_eq_norm_sq : forall v:set,
   v :e euclidean_space 3 ->
   R3_dot v v = euclidean_norm_sq 3 v.
 let v. assume Hv.
-admit.
+(** R3_dot v v = (v0 v0 + v1 v1) + v2 v2 **)
+(** euclidean_norm_sq 3 v = finite_real_sum (fun i => vi vi) 3 **)
+(** = ((0 + v0 v0) + v1 v1) + v2 v2 **)
+set f := fun i:set => mul_SNo (apply_fun v i) (apply_fun v i).
+claim Hnat0 : nat_p 0. { exact nat_0. }
+claim Hnat1 : nat_p 1. { exact nat_1. }
+claim Hnat2 : nat_p 2. { exact nat_2. }
+claim Hstep3 : finite_real_sum f 3 = add_SNo (finite_real_sum f 2) (f 2).
+{ exact (finite_real_sum_S f 2 Hnat2). }
+claim Hstep2 : finite_real_sum f 2 = add_SNo (finite_real_sum f 1) (f 1).
+{ exact (finite_real_sum_S f 1 Hnat1). }
+claim Hstep1 : finite_real_sum f 1 = add_SNo (finite_real_sum f 0) (f 0).
+{ exact (finite_real_sum_S f 0 Hnat0). }
+claim Hstep0 : finite_real_sum f 0 = 0.
+{ exact (finite_real_sum_0 f). }
+(** finite_real_sum f 3 = ((0 + f0) + f1) + f2 **)
+claim Hexpand : euclidean_norm_sq 3 v = add_SNo (add_SNo (add_SNo 0 (f 0)) (f 1)) (f 2).
+{ prove finite_real_sum f 3 = add_SNo (add_SNo (add_SNo 0 (f 0)) (f 1)) (f 2).
+  rewrite Hstep3. rewrite Hstep2. rewrite Hstep1. rewrite Hstep0. reflexivity. }
+(** R3_dot v v = (f 0 + f 1) + f 2 **)
+(** Need: add_SNo 0 (f 0) = f 0 **)
+claim Hf0SNo : SNo (f 0). { admit. }
+claim H0L : add_SNo 0 (f 0) = f 0. { exact (add_SNo_0L (f 0) Hf0SNo). }
+(** R3_dot v v = add_SNo (add_SNo (f 0) (f 1)) (f 2) **)
+(** after rewriting, need v 0 = apply_fun v 0 etc. for euclidean_space members **)
+prove R3_dot v v = euclidean_norm_sq 3 v.
+rewrite Hexpand. rewrite H0L.
+admit. (** needs ap = apply_fun for euclidean_space members **)
 Admitted.
 
 (** householder_S2 maps euclidean_space 3 into euclidean_space 3 **)
