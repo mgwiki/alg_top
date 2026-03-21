@@ -293394,33 +293394,6 @@ claim Hg_in : forall i:set, i :e 3 -> g i :e space_family_set (const_space_famil
 exact (product_space_graphI 3 (const_space_family 3 R R_standard_topology) g Hg_in).
 Qed.
 
-(** householder_S2_v2 preserves norm (key for S2 preservation) **)
-Lemma householder_S2_v2_preserves_norm : forall n x:set,
-  n :e Sn 2 -> x :e euclidean_space 3 ->
-  euclidean_norm_sq 3 (householder_S2_v2 n x) = euclidean_norm_sq 3 x.
-admit.
-Admitted.
-
-(** householder_S2_v2 preserves S2 **)
-Lemma householder_S2_v2_preserves_Sn2 : forall n x:set,
-  n :e Sn 2 -> x :e Sn 2 ->
-  householder_S2_v2 n x :e Sn 2.
-let n x. assume Hn Hx.
-claim HxE3 : x :e euclidean_space 3.
-{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) x Hx). }
-claim HnE3 : n :e euclidean_space 3.
-{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn). }
-claim Hxnorm : euclidean_norm_sq 3 x = 1.
-{ exact (SepE2 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) x Hx). }
-claim HhxE3 : householder_S2_v2 n x :e euclidean_space 3.
-{ exact (householder_S2_v2_in_E3 n x HnE3 HxE3). }
-claim Hhxnorm : euclidean_norm_sq 3 (householder_S2_v2 n x) = 1.
-{ exact (eq_i_tra (euclidean_norm_sq 3 (householder_S2_v2 n x)) (euclidean_norm_sq 3 x) 1
-    (householder_S2_v2_preserves_norm n x Hn HxE3) Hxnorm). }
-exact (SepI (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1)
-  (householder_S2_v2 n x) HhxE3 Hhxnorm).
-Admitted.
-
 (** R3_dot_af self on diagonal equals euclidean_norm_sq 3 **)
 (** Proven Alice **)
 Lemma R3_dot_af_self_eq_norm_sq : forall v:set,
@@ -293450,6 +293423,61 @@ claim Hexpand : euclidean_norm_sq 3 v = add_SNo (add_SNo (add_SNo 0 (f 0)) (f 1)
 prove R3_dot_af v v = euclidean_norm_sq 3 v.
 rewrite Hexpand. rewrite H0L. reflexivity.
 Qed.
+
+(** R3_dot_af bilinearity: (x-2dn) dot (x-2dn) = x dot x - 4d(x dot n) + 4d^2(n dot n) **)
+(** For d = x dot n and n dot n = 1: result = x dot x **)
+Lemma householder_S2_v2_dot_expansion : forall n x:set,
+  n :e Sn 2 -> x :e euclidean_space 3 ->
+  R3_dot_af (householder_S2_v2 n x) (householder_S2_v2 n x) = R3_dot_af x x.
+admit. (** needs coordinate-wise expansion of R3_dot_af on v2 result **)
+(** Each coord of v2 is x_i - 2d n_i. Squaring and summing gives **)
+(** sum x_i^2 - 4d sum(x_i n_i) + 4d^2 sum(n_i^2) **)
+(** = R3_dot_af x x - 4d (R3_dot_af x n) + 4d^2 (R3_dot_af n n) **)
+(** = R3_dot_af x x - 4d^2 + 4d^2 = R3_dot_af x x **)
+Admitted.
+
+(** householder_S2_v2 preserves norm (key for S2 preservation) **)
+Lemma householder_S2_v2_preserves_norm : forall n x:set,
+  n :e Sn 2 -> x :e euclidean_space 3 ->
+  euclidean_norm_sq 3 (householder_S2_v2 n x) = euclidean_norm_sq 3 x.
+let n x. assume Hn Hx.
+claim HnE3 : n :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn). }
+claim Hv2E3 : householder_S2_v2 n x :e euclidean_space 3.
+{ exact (householder_S2_v2_in_E3 n x HnE3 Hx). }
+claim Hstep1 : euclidean_norm_sq 3 (householder_S2_v2 n x) =
+  R3_dot_af (householder_S2_v2 n x) (householder_S2_v2 n x).
+{ symmetry. exact (R3_dot_af_self_eq_norm_sq (householder_S2_v2 n x) Hv2E3). }
+claim Hstep2 : R3_dot_af (householder_S2_v2 n x) (householder_S2_v2 n x) = R3_dot_af x x.
+{ exact (householder_S2_v2_dot_expansion n x Hn Hx). }
+claim Hstep3 : R3_dot_af x x = euclidean_norm_sq 3 x.
+{ exact (R3_dot_af_self_eq_norm_sq x Hx). }
+exact (eq_i_tra (euclidean_norm_sq 3 (householder_S2_v2 n x))
+  (R3_dot_af (householder_S2_v2 n x) (householder_S2_v2 n x))
+  (euclidean_norm_sq 3 x) Hstep1
+  (eq_i_tra (R3_dot_af (householder_S2_v2 n x) (householder_S2_v2 n x))
+    (R3_dot_af x x) (euclidean_norm_sq 3 x) Hstep2 Hstep3)).
+Admitted.
+
+(** householder_S2_v2 preserves S2 **)
+Lemma householder_S2_v2_preserves_Sn2 : forall n x:set,
+  n :e Sn 2 -> x :e Sn 2 ->
+  householder_S2_v2 n x :e Sn 2.
+let n x. assume Hn Hx.
+claim HxE3 : x :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) x Hx). }
+claim HnE3 : n :e euclidean_space 3.
+{ exact (SepE1 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) n Hn). }
+claim Hxnorm : euclidean_norm_sq 3 x = 1.
+{ exact (SepE2 (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1) x Hx). }
+claim HhxE3 : householder_S2_v2 n x :e euclidean_space 3.
+{ exact (householder_S2_v2_in_E3 n x HnE3 HxE3). }
+claim Hhxnorm : euclidean_norm_sq 3 (householder_S2_v2 n x) = 1.
+{ exact (eq_i_tra (euclidean_norm_sq 3 (householder_S2_v2 n x)) (euclidean_norm_sq 3 x) 1
+    (householder_S2_v2_preserves_norm n x Hn HxE3) Hxnorm). }
+exact (SepI (euclidean_space 3) (fun v:set => euclidean_norm_sq 3 v = 1)
+  (householder_S2_v2 n x) HhxE3 Hhxnorm).
+Admitted.
 
 (** householder_S2_v2 is a homeomorphism of S2 **)
 Lemma householder_S2_v2_homeomorphism : forall n:set,
