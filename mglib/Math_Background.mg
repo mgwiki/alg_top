@@ -292682,6 +292682,12 @@ apply (xm (q = south_pole_3)).
     rewrite Heval. exact Hmaps.
 Admitted.
 
+(** Helper: euclidean_space 2 is homeomorphic to setprod R R **)
+Lemma euclidean_space_2_homeo_R2 : exists h:set,
+  homeomorphism (euclidean_space 2) (euclidean_topology 2) (setprod R R) R2_topology h.
+admit. (** compose euclidean_space_succ_split_homeomorphism 1 with homeomorphism_product_left **)
+Admitted.
+
 (** Helper: S^2 minus two distinct points is homeomorphic to R^2 minus a point **)
 (** Proof: use Sn2_self_homeo_to_south_pole to move q to south pole, **)
 (** then use stereo_S_map_homeomorphism to project to R^2 **)
