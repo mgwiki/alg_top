@@ -252740,9 +252740,9 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         (** Goal: [f] = gXV **)
         rewrite Hj_star. rewrite Hclass_repV_eq. symmetry. exact Hclass_fV_eq.
   + (** Case 2b: Mixed case - loop crosses between U and V **)
-	    assume HnotAllV : ~(forall t:set, t :e unit_interval -> apply_fun f t :e V).
-	    exact (ball_cover_word_construction_mixed X Tx U V x0 f r
-	      Htop HU HV Hcover Hx0UV HpcUV HfLoop HrR Hrpos Hball_image HnotAllU HnotAllV).
+		    assume HnotAllV : ~(forall t:set, t :e unit_interval -> apply_fun f t :e V).
+		    exact (ball_cover_word_construction_mixed X Tx U V x0 f r
+		      Htop HU HV Hcover Hx0UV HpcUV HfLoop HrR Hrpos Hball_image HnotAllU HnotAllV).
 Qed.
 
 (** Helper: Given a loop fcls with a Lebesgue number for {preU, preV}, construct
