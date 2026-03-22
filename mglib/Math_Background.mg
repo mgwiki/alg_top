@@ -293984,8 +293984,12 @@ claim Hb0SNo : SNo b0. { exact (Hdni_SNo 0 H0in3). }
 claim Hb1SNo : SNo b1. { exact (Hdni_SNo 1 H1in3). }
 claim Hb2SNo : SNo b2. { exact (Hdni_SNo 2 H2in3). }
 set extra := fun i:set => add_SNo (minus_SNo (add_SNo (mul_SNo (apply_fun x i) (mul_SNo dd (apply_fun n i))) (mul_SNo (apply_fun x i) (mul_SNo dd (apply_fun n i))))) (mul_SNo (mul_SNo dd (apply_fun n i)) (mul_SNo dd (apply_fun n i))).
-claim Hextra_sum_zero : add_SNo (add_SNo (extra 0) (extra 1)) (extra 2) = 0.
+claim Hdd_sq : SNo (mul_SNo dd dd). { exact (SNo_mul_SNo dd dd HddSNo HddSNo). }
+claim Hextra_sum_eq : add_SNo (add_SNo (extra 0) (extra 1)) (extra 2) = add_SNo (minus_SNo (mul_SNo dd dd)) (mul_SNo dd dd).
 { admit. }
+claim Hextra_sum_zero : add_SNo (add_SNo (extra 0) (extra 1)) (extra 2) = 0.
+{ rewrite Hextra_sum_eq.
+  exact (add_SNo_minus_SNo_linv (mul_SNo dd dd) Hdd_sq). }
 admit. (** use Hextra_sum_zero + add_SNo regrouping to show LHS = RHS **)
 Admitted.
 
