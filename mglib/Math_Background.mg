@@ -293954,7 +293954,27 @@ claim Hnnorm : R3_dot_af n n = 1.
 (** Summing: dot(x,x) + 4d^2 dot(n,n) - 4d dot(x,n) **)
 (** = dot(x,x) + 4d^2 - 4d^2 = dot(x,x) **)
 (** Direct coordinate proof: unpack R3_dot_af on both sides and show equal **)
-admit. (** The expansion is ~80 lines of SNo arithmetic using **)
+set dd := add_SNo d d.
+claim HddSNo : SNo dd. { exact (SNo_add_SNo d d HdSNo HdSNo). }
+claim Hxi_SNo : forall i:set, i :e 3 -> SNo (apply_fun x i).
+{ let i. assume Hi : i :e 3. exact (real_SNo (apply_fun x i) (euclidean_3_coord_in_R x i Hx Hi)). }
+claim Hni_SNo : forall i:set, i :e 3 -> SNo (apply_fun n i).
+{ let i. assume Hi : i :e 3. exact (real_SNo (apply_fun n i) (euclidean_3_coord_in_R n i HnE3 Hi)). }
+claim Hdni_SNo : forall i:set, i :e 3 -> SNo (mul_SNo dd (apply_fun n i)).
+{ let i. assume Hi : i :e 3. exact (SNo_mul_SNo dd (apply_fun n i) HddSNo (Hni_SNo i Hi)). }
+claim Hsub_sq_i : forall i:set, i :e 3 ->
+  mul_SNo (g i) (g i) =
+  add_SNo (add_SNo (mul_SNo (apply_fun x i) (apply_fun x i))
+    (minus_SNo (add_SNo (mul_SNo (apply_fun x i) (mul_SNo dd (apply_fun n i)))
+      (mul_SNo (apply_fun x i) (mul_SNo dd (apply_fun n i))))))
+    (mul_SNo (mul_SNo dd (apply_fun n i)) (mul_SNo dd (apply_fun n i))).
+{ let i. assume Hi : i :e 3.
+  exact (SNo_sub_sq (apply_fun x i) (mul_SNo dd (apply_fun n i)) (Hxi_SNo i Hi) (Hdni_SNo i Hi)). }
+prove R3_dot_af (householder_S2_v2 n x) (householder_S2_v2 n x) = R3_dot_af x x.
+prove add_SNo (add_SNo (mul_SNo (apply_fun (householder_S2_v2 n x) 0) (apply_fun (householder_S2_v2 n x) 0)) (mul_SNo (apply_fun (householder_S2_v2 n x) 1) (apply_fun (householder_S2_v2 n x) 1))) (mul_SNo (apply_fun (householder_S2_v2 n x) 2) (apply_fun (householder_S2_v2 n x) 2)) = add_SNo (add_SNo (mul_SNo (apply_fun x 0) (apply_fun x 0)) (mul_SNo (apply_fun x 1) (apply_fun x 1))) (mul_SNo (apply_fun x 2) (apply_fun x 2)).
+rewrite (Hv2_coord 0 H0in3). rewrite (Hv2_coord 1 H1in3). rewrite (Hv2_coord 2 H2in3).
+rewrite (Hsub_sq_i 0 H0in3). rewrite (Hsub_sq_i 1 H1in3). rewrite (Hsub_sq_i 2 H2in3).
+admit. (** goal now has expanded (a^2 - 2ab + b^2) for each coord; need to rearrange and cancel **)
 (** mul_SNo_distrL/R, mul_minus_SNo_distrR, add_SNo_assoc, add_SNo_comm, **)
 (** R3_dot_af unfold via Hv2_coord, and the key cancellation **)
 (** d = R3_dot_af x n and R3_dot_af n n = 1 **)
