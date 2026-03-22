@@ -294054,7 +294054,32 @@ apply (xm (q = south_pole_3)).
 - assume Heq : q = south_pole_3.
   witness {(x,x)|x :e Sn 2}.
   apply andI.
-  + admit. (** identity is homeomorphism **)
+  + prove homeomorphism (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) {(x,x)|x :e Sn 2}.
+    claim HtopSn : topology_on (Sn 2) (Sn_topology 2). { exact (lemma59_3_Sn_topology_on 2). }
+    set idS2 := {(x,x)|x :e Sn 2}.
+    claim Hid_incl : continuous_map (Sn 2) (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2)) (Sn 2) (Sn_topology 2) idS2.
+    { exact (subspace_inclusion_continuous (Sn 2) (Sn_topology 2) (Sn 2) HtopSn (Subq_ref (Sn 2))). }
+    claim Hsubtop : subspace_topology (Sn 2) (Sn_topology 2) (Sn 2) = Sn_topology 2.
+    { exact (subspace_topology_whole (Sn 2) (Sn_topology 2) HtopSn). }
+    claim Hid_cont : continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) idS2.
+    { prove continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) idS2.
+      rewrite <- Hsubtop at 1.
+      exact Hid_incl. }
+    prove continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) idS2 /\
+      exists g:set, continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) g /\
+        (forall x:set, x :e Sn 2 -> apply_fun g (apply_fun idS2 x) = x) /\
+        (forall y:set, y :e Sn 2 -> apply_fun idS2 (apply_fun g y) = y).
+    apply andI.
+    { exact Hid_cont. }
+    witness idS2.
+    apply and3I.
+    { exact Hid_cont. }
+    { let x. assume Hx : x :e Sn 2.
+      rewrite (identity_function_apply (Sn 2) x Hx).
+      exact (identity_function_apply (Sn 2) x Hx). }
+    { let y. assume Hy : y :e Sn 2.
+      rewrite (identity_function_apply (Sn 2) y Hy).
+      exact (identity_function_apply (Sn 2) y Hy). }
   + rewrite (identity_function_apply (Sn 2) q Hq). exact Heq.
 - assume Hne : q <> south_pole_3.
   (** Use householder_S2_v2 with appropriate n **)
