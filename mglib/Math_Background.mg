@@ -293974,12 +293974,19 @@ prove R3_dot_af (householder_S2_v2 n x) (householder_S2_v2 n x) = R3_dot_af x x.
 prove add_SNo (add_SNo (mul_SNo (apply_fun (householder_S2_v2 n x) 0) (apply_fun (householder_S2_v2 n x) 0)) (mul_SNo (apply_fun (householder_S2_v2 n x) 1) (apply_fun (householder_S2_v2 n x) 1))) (mul_SNo (apply_fun (householder_S2_v2 n x) 2) (apply_fun (householder_S2_v2 n x) 2)) = add_SNo (add_SNo (mul_SNo (apply_fun x 0) (apply_fun x 0)) (mul_SNo (apply_fun x 1) (apply_fun x 1))) (mul_SNo (apply_fun x 2) (apply_fun x 2)).
 rewrite (Hv2_coord 0 H0in3). rewrite (Hv2_coord 1 H1in3). rewrite (Hv2_coord 2 H2in3).
 rewrite (Hsub_sq_i 0 H0in3). rewrite (Hsub_sq_i 1 H1in3). rewrite (Hsub_sq_i 2 H2in3).
-admit.
-(** = R3_dot_af x x - 4d^2 + 4d^2 = R3_dot_af x x **)
-(** This requires ~50 lines of add_SNo_assoc/comm regrouping **)
-(** mul_SNo_distrL/R, mul_minus_SNo_distrR, add_SNo_assoc, add_SNo_comm, **)
-(** R3_dot_af unfold via Hv2_coord, and the key cancellation **)
-(** d = R3_dot_af x n and R3_dot_af n n = 1 **)
+set x0 := apply_fun x 0. set x1 := apply_fun x 1. set x2 := apply_fun x 2.
+set n0 := apply_fun n 0. set n1 := apply_fun n 1. set n2 := apply_fun n 2.
+set b0 := mul_SNo dd n0. set b1 := mul_SNo dd n1. set b2 := mul_SNo dd n2.
+claim Hx0SNo : SNo x0. { exact (Hxi_SNo 0 H0in3). }
+claim Hx1SNo : SNo x1. { exact (Hxi_SNo 1 H1in3). }
+claim Hx2SNo : SNo x2. { exact (Hxi_SNo 2 H2in3). }
+claim Hb0SNo : SNo b0. { exact (Hdni_SNo 0 H0in3). }
+claim Hb1SNo : SNo b1. { exact (Hdni_SNo 1 H1in3). }
+claim Hb2SNo : SNo b2. { exact (Hdni_SNo 2 H2in3). }
+set extra := fun i:set => add_SNo (minus_SNo (add_SNo (mul_SNo (apply_fun x i) (mul_SNo dd (apply_fun n i))) (mul_SNo (apply_fun x i) (mul_SNo dd (apply_fun n i))))) (mul_SNo (mul_SNo dd (apply_fun n i)) (mul_SNo dd (apply_fun n i))).
+claim Hextra_sum_zero : add_SNo (add_SNo (extra 0) (extra 1)) (extra 2) = 0.
+{ admit. (** -2dd(x dot n) + dd^2(n dot n) = -4d^2 + 4d^2 = 0 **) }
+admit. (** use Hextra_sum_zero + add_SNo regrouping to show LHS = RHS **)
 Admitted.
 
 (** householder_S2_v2 preserves norm (key for S2 preservation) **)
