@@ -1,0 +1,19 @@
+CHANGES13739 - Dave
+Date: 2026-03-22
+
+## Add Proven Dave tag to finite_real_sum_head_split + merge with Alice's changes
+
+### Summary
+Added (** Proven Dave **) tag to finite_real_sum_head_split.
+Merged with Alice's latest commit (scaling_homotopy_R2_to_constant helper).
+
+### Changes:
+- Added (** Proven Dave **) above finite_real_sum_head_split (required by rules)
+- Merged with Alice's remote changes
+
+### Active locks:
+- Lock Dave 1774274075 on thm59_3_Sn_simply_connected (Bounty 222) - ~17h remaining
+
+### Size change
+Previous bck13738 (571354 lines), current bck13739 (571659 lines), grows by 305 lines.
+(305 from Alice's remote additions + Proven Dave tag)

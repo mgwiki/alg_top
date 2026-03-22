@@ -1,0 +1,32 @@
+CHANGES13738 - Dave
+Date: 2026-03-22
+
+## Add finite_real_sum_head_split (Qed) + stub lemma59_3_F_image_in_U (Admitted)
+
+### Summary
+Added finite_real_sum_head_split (head-tail split) lemma and a stub for
+lemma59_3_F_image_in_U (image in U geometric claim). The geometric
+claim proof is complex and left as Admitted pending proper infrastructure.
+
+### New theorems added:
+1. finite_real_sum_head_split - head-tail split: finite_real_sum g (ordsucc m) = g(0) + finite_real_sum (shift g) m (Qed)
+2. lemma59_3_F_image_in_U - geometric claim: normalize(affine(x,flip(t))) :e U for x :e U (Admitted)
+
+### Key techniques for finite_real_sum_head_split:
+- Proved by nat_ind via internal claim Hind
+- Base case: uses finite_real_sum_S, finite_real_sum_0, add_SNo_0L, add_SNo_0R
+- Step case: uses add_SNo_assoc (note: assoc gives x+(y+z)=(x+y)+z, so eq_symm needed)
+- Fixed: Megalodon does NOT support _ wildcards in exact terms; must be explicit
+
+### Remaining admits in thm59_3 chain:
+- lemma59_3_F_image_in_U: geometric claim (needs careful coord analysis)
+- lemma59_3_FV_continuous: V-side analog
+- lemma59_3_overlap_path_connected_ge2: path connectivity of U∩V
+- lemma59_3_sphere_cover_data, thm59_3_Sn_simply_connected: still admit
+
+### Active locks:
+- Lock Dave 1774274075 on thm59_3_Sn_simply_connected (Bounty 222) - ~18h remaining
+
+### Size change
+Previous bck13737 (571309 lines), current bck13738 (571354 lines), grows by 45 lines.
+(45 lines from finite_real_sum_head_split + lemma59_3_F_image_in_U stub)
