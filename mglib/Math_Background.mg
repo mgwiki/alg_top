@@ -296318,8 +296318,20 @@ claim Hnotempty : SmC <> Empty.
 { exact (andER (~(connected_space SmC TSmC)) (SmC <> Empty) Hdisconn). }
 (** "At least 2 components": from disconnected, get x1,x2 in different components **)
 (** "At most 2 components": needs arc_decomposition + arc_nonseparation + thm63_1c **)
-admit. (** TODO: disconnected -> 2 distinct components (standard topology), **)
-(** then at-most-2 via arc decomposition + arc nonseparation **)
+claim HtopSmC : topology_on SmC TSmC.
+{ claim HSmCsub : SmC c= Sn 2. { let x. assume Hx : x :e SmC. exact (setminusE1 (Sn 2) C x Hx). }
+  exact (subspace_topology_is_topology (Sn 2) (Sn_topology 2) SmC (lemma59_3_Sn_topology_on 2) HSmCsub). }
+claim Hsep_exists : exists U V:set, U :e TSmC /\ V :e TSmC /\ separation_of SmC U V.
+{ apply (xm (exists U V:set, U :e TSmC /\ V :e TSmC /\ separation_of SmC U V)).
+  - assume H : exists U V:set, U :e TSmC /\ V :e TSmC /\ separation_of SmC U V. exact H.
+  - assume Hnosep : ~(exists U V:set, U :e TSmC /\ V :e TSmC /\ separation_of SmC U V).
+    claim Hconn : connected_space SmC TSmC.
+    { prove topology_on SmC TSmC /\ ~(exists U V:set, U :e TSmC /\ V :e TSmC /\ separation_of SmC U V).
+      apply andI. exact HtopSmC. exact Hnosep. }
+    exact (Hnotconn Hconn (exists U V:set, U :e TSmC /\ V :e TSmC /\ separation_of SmC U V)). }
+apply Hsep_exists. let U. assume HUe. apply HUe. let V. assume HUV_data.
+admit. (** extract U, V separation properties; pick x1 in U, x2 in V; show different components **)
+(** "at most 2" needs arc decomposition + arc nonseparation **)
 Admitted.
 
 (** Helper: R is locally path connected **)
