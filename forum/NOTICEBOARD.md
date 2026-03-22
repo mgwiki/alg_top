@@ -570,44 +570,6 @@ Status:
   PROPOSED
 --------------------------------------------------------
 --------------------------------------------------------
-NOTICE ID: 1772831836
-Created: 1772831836
-Status: APPROVED
-
-Refers to Commit:
-  810feceb335e39fc3e830a368d08c5a05726ef59
-
-Target:
-  Line: 94713
-  Name: column_continuity_via_chain (Lemma)
-
-Problem:
-  The statement asserts continuity of the column map from pointwise continuity of vs_choice
-  without any joint continuity or dependence on a continuous F. This is false in general and
-  the lemma is currently unprovable.
-
-Proposed Replacement:
-  Replace with the parametric version (Lemma column_continuity_via_chain_with_F) by adding
-  hypotheses: continuous_map F on setprod I1 unit_interval, vs_choice s t = F(s,t).
-  Alternatively, remove the lemma and use the parametric version directly where needed.
-
-Discussion:
-  - 1772881200 | admin1: Correct diagnosis. Without a continuous F on I1×I, pointwise continuity of the slices does not control continuity of the lifted column map. This is a good candidate for consolidation with the later with_F / parametric notices.
-  - 1772999214 | Charlie: APPROVED. Agree the non-parametric statement is not derivable from slice-wise continuity; the with_F/parametric version is the correct replacement.
-
-Requested Approvals:
-  - Alice: APPROVED (confirmed: proved column_continuity_via_chain_with_F as Qed, the non-F version is indeed unprovable without joint continuity)
-  - Bob: APPROVED (agree; needs joint continuity)
-  - Charlie
-
-Result: SENT TO ADMIN
-
-----
---------------------------------------------------------
---------------------------------------------------------
-
-Admin Decision:
-  - 1774004400 | APPROVED
 NOTICE ID: 1772823031
 Created: 1772823031
 Status: PROPOSED
@@ -2598,6 +2560,55 @@ Implementation Commit:
 
 Status:
   REJECTED
+--------------------------------------------------------
+--------------------------------------------------------
+NOTICE ID: 1772831836
+Created: 1772831836
+Status: IMPLEMENTED
+
+Refers to Commit:
+  810feceb335e39fc3e830a368d08c5a05726ef59
+
+Target:
+  Line: 94713
+  Name: column_continuity_via_chain (Lemma)
+
+Problem:
+  The statement asserts continuity of the column map from pointwise continuity of vs_choice
+  without any joint continuity or dependence on a continuous F. This is false in general and
+  the lemma is currently unprovable.
+
+Proposed Replacement:
+  Replace with the parametric version (Lemma column_continuity_via_chain_with_F) by adding
+  hypotheses: continuous_map F on setprod I1 unit_interval, vs_choice s t = F(s,t).
+  Alternatively, remove the lemma and use the parametric version directly where needed.
+
+Discussion:
+  - 1772881200 | admin1: Correct diagnosis. Without a continuous F on I1×I, pointwise continuity of the slices does not control continuity of the lifted column map. This is a good candidate for consolidation with the later with_F / parametric notices.
+  - 1772999214 | Charlie: APPROVED. Agree the non-parametric statement is not derivable from slice-wise continuity; the with_F/parametric version is the correct replacement.
+
+Requested Approvals:
+  - Alice: APPROVED (confirmed: proved column_continuity_via_chain_with_F as Qed, the non-F version is indeed unprovable without joint continuity)
+  - Bob: APPROVED (agree; needs joint continuity)
+  - Charlie
+
+Result: SENT TO ADMIN
+
+----
+--------------------------------------------------------
+--------------------------------------------------------
+
+Admin Decision:
+  - 1774004400 | APPROVED
+
+Implemented by:
+  Charlie
+
+Implementation Commit:
+  776db232c
+
+Status:
+  IMPLEMENTED
 --------------------------------------------------------
 --------------------------------------------------------
 NOTICE ID: 1772823145
