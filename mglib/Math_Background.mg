@@ -293984,6 +293984,24 @@ claim Hb0SNo : SNo b0. { exact (Hdni_SNo 0 H0in3). }
 claim Hb1SNo : SNo b1. { exact (Hdni_SNo 1 H1in3). }
 claim Hb2SNo : SNo b2. { exact (Hdni_SNo 2 H2in3). }
 set extra := fun i:set => add_SNo (minus_SNo (add_SNo (mul_SNo (apply_fun x i) (mul_SNo dd (apply_fun n i))) (mul_SNo (apply_fun x i) (mul_SNo dd (apply_fun n i))))) (mul_SNo (mul_SNo dd (apply_fun n i)) (mul_SNo dd (apply_fun n i))).
+claim Hxb_com : forall i:set, i :e 3 -> mul_SNo (apply_fun x i) (mul_SNo dd (apply_fun n i)) = mul_SNo dd (mul_SNo (apply_fun x i) (apply_fun n i)).
+{ let i. assume Hi : i :e 3.
+  rewrite (mul_SNo_assoc (apply_fun x i) dd (apply_fun n i) (Hxi_SNo i Hi) HddSNo (Hni_SNo i Hi)).
+  rewrite (mul_SNo_com (apply_fun x i) dd (Hxi_SNo i Hi) HddSNo).
+  rewrite <- (mul_SNo_assoc dd (apply_fun x i) (apply_fun n i) HddSNo (Hxi_SNo i Hi) (Hni_SNo i Hi)).
+  reflexivity. }
+claim Hni_dd_com : forall i:set, i :e 3 -> mul_SNo (apply_fun n i) (mul_SNo dd (apply_fun n i)) = mul_SNo dd (mul_SNo (apply_fun n i) (apply_fun n i)).
+{ let i. assume Hi : i :e 3.
+  rewrite (mul_SNo_assoc (apply_fun n i) dd (apply_fun n i) (Hni_SNo i Hi) HddSNo (Hni_SNo i Hi)).
+  rewrite (mul_SNo_com (apply_fun n i) dd (Hni_SNo i Hi) HddSNo).
+  rewrite <- (mul_SNo_assoc dd (apply_fun n i) (apply_fun n i) HddSNo (Hni_SNo i Hi) (Hni_SNo i Hi)).
+  reflexivity. }
+claim Hb_sq_com : forall i:set, i :e 3 -> mul_SNo (mul_SNo dd (apply_fun n i)) (mul_SNo dd (apply_fun n i)) = mul_SNo (mul_SNo dd dd) (mul_SNo (apply_fun n i) (apply_fun n i)).
+{ let i. assume Hi : i :e 3.
+  rewrite <- (mul_SNo_assoc dd (apply_fun n i) (mul_SNo dd (apply_fun n i)) HddSNo (Hni_SNo i Hi) (Hdni_SNo i Hi)).
+  rewrite (Hni_dd_com i Hi).
+  rewrite (mul_SNo_assoc dd dd (mul_SNo (apply_fun n i) (apply_fun n i)) HddSNo HddSNo (SNo_mul_SNo (apply_fun n i) (apply_fun n i) (Hni_SNo i Hi) (Hni_SNo i Hi))).
+  reflexivity. }
 claim Hextra_sum_zero : add_SNo (add_SNo (extra 0) (extra 1)) (extra 2) = 0.
 { admit. }
 admit. (** use Hextra_sum_zero + add_SNo regrouping to show LHS = RHS **)
