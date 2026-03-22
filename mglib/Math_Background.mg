@@ -293974,7 +293974,9 @@ prove R3_dot_af (householder_S2_v2 n x) (householder_S2_v2 n x) = R3_dot_af x x.
 prove add_SNo (add_SNo (mul_SNo (apply_fun (householder_S2_v2 n x) 0) (apply_fun (householder_S2_v2 n x) 0)) (mul_SNo (apply_fun (householder_S2_v2 n x) 1) (apply_fun (householder_S2_v2 n x) 1))) (mul_SNo (apply_fun (householder_S2_v2 n x) 2) (apply_fun (householder_S2_v2 n x) 2)) = add_SNo (add_SNo (mul_SNo (apply_fun x 0) (apply_fun x 0)) (mul_SNo (apply_fun x 1) (apply_fun x 1))) (mul_SNo (apply_fun x 2) (apply_fun x 2)).
 rewrite (Hv2_coord 0 H0in3). rewrite (Hv2_coord 1 H1in3). rewrite (Hv2_coord 2 H2in3).
 rewrite (Hsub_sq_i 0 H0in3). rewrite (Hsub_sq_i 1 H1in3). rewrite (Hsub_sq_i 2 H2in3).
-admit. (** goal now has expanded (a^2 - 2ab + b^2) for each coord; need to rearrange and cancel **)
+admit. (** need: rearrange 9-term sum into (sum xi^2) - 4d(sum xi ni) + 4d^2(sum ni^2) **)
+(** = R3_dot_af x x - 4d^2 + 4d^2 = R3_dot_af x x **)
+(** This requires ~50 lines of add_SNo_assoc/comm regrouping **)
 (** mul_SNo_distrL/R, mul_minus_SNo_distrR, add_SNo_assoc, add_SNo_comm, **)
 (** R3_dot_af unfold via Hv2_coord, and the key cancellation **)
 (** d = R3_dot_af x n and R3_dot_af n n = 1 **)
