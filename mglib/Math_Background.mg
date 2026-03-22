@@ -294008,6 +294008,17 @@ claim Hextra_sum_zero : add_SNo (add_SNo (extra 0) (extra 1)) (extra 2) = 0.
     (add_SNo (minus_SNo (add_SNo (mul_SNo x2 (mul_SNo dd n2)) (mul_SNo x2 (mul_SNo dd n2)))) (mul_SNo (mul_SNo dd n2) (mul_SNo dd n2))) = 0.
   rewrite (Hxb_com 0 H0in3). rewrite (Hxb_com 1 H1in3). rewrite (Hxb_com 2 H2in3).
   rewrite (Hb_sq_com 0 H0in3). rewrite (Hb_sq_com 1 H1in3). rewrite (Hb_sq_com 2 H2in3).
+  set xn0 := mul_SNo x0 n0. set xn1 := mul_SNo x1 n1. set xn2 := mul_SNo x2 n2.
+  set nn0 := mul_SNo n0 n0. set nn1 := mul_SNo n1 n1. set nn2 := mul_SNo n2 n2.
+  claim Hxn0 : SNo xn0. { exact (SNo_mul_SNo x0 n0 Hx0SNo (Hni_SNo 0 H0in3)). }
+  claim Hxn1 : SNo xn1. { exact (SNo_mul_SNo x1 n1 Hx1SNo (Hni_SNo 1 H1in3)). }
+  claim Hxn2 : SNo xn2. { exact (SNo_mul_SNo x2 n2 Hx2SNo (Hni_SNo 2 H2in3)). }
+  claim Hnn0 : SNo nn0. { exact (SNo_mul_SNo n0 n0 (Hni_SNo 0 H0in3) (Hni_SNo 0 H0in3)). }
+  claim Hnn1 : SNo nn1. { exact (SNo_mul_SNo n1 n1 (Hni_SNo 1 H1in3) (Hni_SNo 1 H1in3)). }
+  claim Hnn2 : SNo nn2. { exact (SNo_mul_SNo n2 n2 (Hni_SNo 2 H2in3) (Hni_SNo 2 H2in3)). }
+  rewrite <- (mul_SNo_distrL dd xn0 xn0 HddSNo Hxn0 Hxn0) at 1.
+  rewrite <- (mul_SNo_distrL dd xn1 xn1 HddSNo Hxn1 Hxn1) at 1.
+  rewrite <- (mul_SNo_distrL dd xn2 xn2 HddSNo Hxn2 Hxn2) at 1.
   admit. }
 admit. (** use Hextra_sum_zero + add_SNo regrouping to show LHS = RHS **)
 Admitted.
