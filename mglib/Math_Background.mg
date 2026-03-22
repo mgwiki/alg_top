@@ -294003,7 +294003,12 @@ claim Hb_sq_com : forall i:set, i :e 3 -> mul_SNo (mul_SNo dd (apply_fun n i)) (
   rewrite (mul_SNo_assoc dd dd (mul_SNo (apply_fun n i) (apply_fun n i)) HddSNo HddSNo (SNo_mul_SNo (apply_fun n i) (apply_fun n i) (Hni_SNo i Hi) (Hni_SNo i Hi))).
   reflexivity. }
 claim Hextra_sum_zero : add_SNo (add_SNo (extra 0) (extra 1)) (extra 2) = 0.
-{ admit. }
+{ prove add_SNo (add_SNo (add_SNo (minus_SNo (add_SNo (mul_SNo x0 (mul_SNo dd n0)) (mul_SNo x0 (mul_SNo dd n0)))) (mul_SNo (mul_SNo dd n0) (mul_SNo dd n0)))
+    (add_SNo (minus_SNo (add_SNo (mul_SNo x1 (mul_SNo dd n1)) (mul_SNo x1 (mul_SNo dd n1)))) (mul_SNo (mul_SNo dd n1) (mul_SNo dd n1))))
+    (add_SNo (minus_SNo (add_SNo (mul_SNo x2 (mul_SNo dd n2)) (mul_SNo x2 (mul_SNo dd n2)))) (mul_SNo (mul_SNo dd n2) (mul_SNo dd n2))) = 0.
+  rewrite (Hxb_com 0 H0in3). rewrite (Hxb_com 1 H1in3). rewrite (Hxb_com 2 H2in3).
+  rewrite (Hb_sq_com 0 H0in3). rewrite (Hb_sq_com 1 H1in3). rewrite (Hb_sq_com 2 H2in3).
+  admit. }
 admit. (** use Hextra_sum_zero + add_SNo regrouping to show LHS = RHS **)
 Admitted.
 
