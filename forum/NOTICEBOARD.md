@@ -155,73 +155,6 @@ Status:
 
 ========================================================
 --------------------------------------------------------
-========================================================
---------------------------------------------------------
-NOTICE ID: 1772900990
-Created: 1772900990
-Status: APPROVED
-
-Refers to Commit:
-  6bf683f3fb6f6771896dedfbaba854802e6a2913
-
-Target:
-  Line: 303779
-  Name: thm81_5_properly_discontinuous_covering (Theorem)
-
-Problem:
-  The theorem statement is missing three hypotheses:
-  1. Group closure under composition (needed by orbit_map_invariant throughout both directions)
-  2. Group closure under inverse (needed by orbit_map_invariant throughout both directions)
-  3. Function extensionality: elements of G must be in total_function_space X X
-     (needed in forward direction: covering transformation that fixes a point must be
-     identity, which requires set-level equality from pointwise equality)
-  Currently the proof has admits for all three.
-  In Munkres, (1) and (2) are implicit since G is assumed to be a group.
-  (3) is implicit since functions in Munkres are always proper set-theoretic functions.
-
-Proposed Replacement:
-  Add three hypotheses to the theorem statement after the identity axiom:
-
-  Theorem thm81_5_properly_discontinuous_covering :
-    forall X Tx G idG:set,
-    path_connected_space X Tx -> locally_path_connected X Tx ->
-    (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
-    idG :e G -> (forall x:set, x :e X -> apply_fun idG x = x) ->
-    (forall g1 g2:set, g1 :e G -> g2 :e G ->
-      exists g3:set, g3 :e G /\ forall z:set, z :e X ->
-        apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
-    (forall g0:set, g0 :e G ->
-      exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
-        apply_fun ginv (apply_fun g0 z) = z) ->
-    G c= total_function_space X X ->
-    (covering_map X Tx (orbit_space X G) (orbit_topology X Tx G) (orbit_map X G)
-     <->
-     properly_discontinuous X Tx G idG).
-
-Discussion:
-  - 1772881200 | admin1: The three added hypotheses address real proof obligations, not mere convenience: composition/inverse closure are standard group axioms, and total-function extensionality is needed to conclude g = idG from pointwise equality. Leaning yes, subject to checking that G c= total_function_space X X is the minimal extensionality assumption actually used.
-  - 1772900990 | Alice: The backward direction is fully proved modulo Hcomp/Hinv admits.
-    Adding them as hypotheses is standard (Munkres assumes G is a group).
-    The pairwise_disjoint proof and inverse continuity proof both depend on Hcomp/Hinv
-    through orbit_map_invariant. This is a structural gap, not a proof difficulty.
-  - 1772901100 | Alice: The forward direction needs function extensionality: when a
-    covering transformation g fixes a point (g(y) = y), by lift uniqueness g agrees with
-    idG on all of X. To get g = idG (contradicting g != idG), we need
-    total_function_space_extensional, which requires g, idG in total_function_space X X.
-    The hypothesis G c= total_function_space X X provides this.
-
-Approvals:
-  - 1772900990 | Alice: YES
-  - 1772999917 | Dave: YES
-
-Result:
-  SENT TO ADMIN
-
-========================================================
---------------------------------------------------------
-
-Admin Decision:
-  - 1774004400 | APPROVED
 NOTICE ID: 1772881541
 Created: 1772881541
 Status: PROPOSED
@@ -2206,6 +2139,79 @@ Status:
   IMPLEMENTED
 
 ========================================================
+--------------------------------------------------------
+NOTICE ID: 1772900990
+Created: 1772900990
+Status: IMPLEMENTED
+
+Refers to Commit:
+  6bf683f3fb6f6771896dedfbaba854802e6a2913
+
+Target:
+  Line: 303779
+  Name: thm81_5_properly_discontinuous_covering (Theorem)
+
+Problem:
+  The theorem statement is missing three hypotheses:
+  1. Group closure under composition (needed by orbit_map_invariant throughout both directions)
+  2. Group closure under inverse (needed by orbit_map_invariant throughout both directions)
+  3. Function extensionality: elements of G must be in total_function_space X X
+     (needed in forward direction: covering transformation that fixes a point must be
+     identity, which requires set-level equality from pointwise equality)
+  Currently the proof has admits for all three.
+  In Munkres, (1) and (2) are implicit since G is assumed to be a group.
+  (3) is implicit since functions in Munkres are always proper set-theoretic functions.
+
+Proposed Replacement:
+  Add three hypotheses to the theorem statement after the identity axiom:
+
+  Theorem thm81_5_properly_discontinuous_covering :
+    forall X Tx G idG:set,
+    path_connected_space X Tx -> locally_path_connected X Tx ->
+    (forall g:set, g :e G -> homeomorphism X Tx X Tx g) ->
+    idG :e G -> (forall x:set, x :e X -> apply_fun idG x = x) ->
+    (forall g1 g2:set, g1 :e G -> g2 :e G ->
+      exists g3:set, g3 :e G /\ forall z:set, z :e X ->
+        apply_fun g3 z = apply_fun g2 (apply_fun g1 z)) ->
+    (forall g0:set, g0 :e G ->
+      exists ginv:set, ginv :e G /\ forall z:set, z :e X ->
+        apply_fun ginv (apply_fun g0 z) = z) ->
+    G c= total_function_space X X ->
+    (covering_map X Tx (orbit_space X G) (orbit_topology X Tx G) (orbit_map X G)
+     <->
+     properly_discontinuous X Tx G idG).
+
+Discussion:
+  - 1772881200 | admin1: The three added hypotheses address real proof obligations, not mere convenience: composition/inverse closure are standard group axioms, and total-function extensionality is needed to conclude g = idG from pointwise equality. Leaning yes, subject to checking that G c= total_function_space X X is the minimal extensionality assumption actually used.
+  - 1772900990 | Alice: The backward direction is fully proved modulo Hcomp/Hinv admits.
+    Adding them as hypotheses is standard (Munkres assumes G is a group).
+    The pairwise_disjoint proof and inverse continuity proof both depend on Hcomp/Hinv
+    through orbit_map_invariant. This is a structural gap, not a proof difficulty.
+  - 1772901100 | Alice: The forward direction needs function extensionality: when a
+    covering transformation g fixes a point (g(y) = y), by lift uniqueness g agrees with
+    idG on all of X. To get g = idG (contradicting g != idG), we need
+    total_function_space_extensional, which requires g, idG in total_function_space X X.
+    The hypothesis G c= total_function_space X X provides this.
+
+Approvals:
+  - 1772900990 | Alice: YES
+  - 1772999917 | Dave: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  - 1774004400 | APPROVED
+
+Implemented by:
+  Charlie
+
+Implementation Commit:
+  976adfde6
+
+Status:
+  IMPLEMENTED
+--------------------------------------------------------
 --------------------------------------------------------
 NOTICE ID: 1772871888
 Created: 1772871888
