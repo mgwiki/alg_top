@@ -6773,5 +6773,58 @@ Impact:
   
 Approvals:
   - Alice (author)
-  - 
+  -
+========================================================
+
+========================================================
+NOTICE ID: 1774224400
+Created: 1774224400
+Status: PROPOSED
+
+Refers to Commit:
+  39a3a784c
+
+Target:
+  Line: ~290695
+  Name: nulhomotopy_R2_from_unbounded_component
+
+Problem:
+  The theorem has two independent existential hypotheses:
+  H3: exists M, M :e R /\ Rlt 0 M /\ (forall a :e A, |g(a)|^2 <= M)
+  H4: exists p, p :e R^2 /\ p != (0,0) /\ ~(p :e image(g,A)) /\ ... /\ exists alpha path...
+
+  The proof requires Rlt M |p|^2 (so that the scaling homotopy avoids (0,0)),
+  but M and p come from independent existentials with no relationship.
+  This creates an unprovable admit (Hpbig_loc) at line ~291321.
+
+  scaling_homotopy_R2_to_constant (now Qed, 475 lines) requires this bound.
+  nulhomotopy_R2_v2 was added as a workaround but delegates to the original.
+
+Proposed Replacement:
+  Combine the two existentials into one:
+  (exists M p:set, M :e R /\ Rlt 0 M /\
+    (forall a:set, a :e A -> ~(Rlt M ...)) /\
+    Rlt M (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1))) /\
+    p :e setprod R R /\ p <> (0, 0) /\
+    ~(p :e image_of g A) /\ ~((0,0) :e image_of g A) /\
+    exists alpha:set, path_between ... alpha /\ continuous_map ... alpha)
+
+  This adds Rlt M |p|^2 to the hypothesis, which the callers can provide
+  by choosing p outside the bounding ball of image(g,A).
+
+Impact:
+  Fixes the Hpbig_loc gap, enabling the entire nulhomotopy chain toward
+  Jordan curve theorem. The 475-line scaling_homotopy Qed proof becomes
+  fully usable.
+
+Proposed by: Alice
+
+Discussion:
+  - 1774224400 | Alice: The combined hypothesis matches the intended mathematical
+    argument from Munkres Lemma 61.2: choose p in the unbounded component with
+    |p| > sqrt(M). The callers can construct such p since image(g,A) is bounded.
+
+Approvals:
+  - 1774224400 | Alice: YES
+  -
 ========================================================
