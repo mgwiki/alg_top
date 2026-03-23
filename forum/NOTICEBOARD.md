@@ -6828,3 +6828,52 @@ Approvals:
   - 1774224400 | Alice: YES
   -
 ========================================================
+
+========================================================
+NOTICE ID: 1774225147
+Created: 1774225147
+Status: PROPOSED
+
+Refers to Commit:
+  2669a7495
+
+Target:
+  Line: 120843
+  Name: thm54_6c_loop_characterization
+
+Problem:
+  The statement uses `<->` without parentheses after `->` chains:
+    covering_map ... -> e0 :e E -> loop_at ... -> A <-> B
+  In Megalodon, `<->` binds tighter than `->`, so this parses as:
+    (covering_map ... -> e0 :e E -> loop_at ... -> A) <-> B
+  instead of the intended:
+    covering_map ... -> e0 :e E -> loop_at ... -> (A <-> B)
+
+  The correct version already exists as thm54_6c_loop_characterization_equiv
+  (line ~120799, Qed) and thm54_6c_loop_characterization_assumptions (Qed).
+  The buggy version is unprovable as stated.
+
+Proposed Replacement:
+  Wrap the biconditional in parentheses:
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+      homomorphism_image (fundamental_group E Te e0)
+        (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+    <->
+    apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+
+Impact:
+  Low direct impact (the correct equiv version is already Qed and used),
+  but eliminates a confusing admitted theorem.
+
+Proposed by: Alice
+
+Discussion:
+  - 1774225147 | Alice: Trivially fixable, proof is just
+    exact (thm54_6c_loop_characterization_equiv).
+
+Approvals:
+  - 1774225147 | Alice: YES
+  -
+========================================================
