@@ -6731,7 +6731,7 @@ is prohibited.
 ========================================================
 NOTICE ID: 1774127173
 Created: 1774127173
-Status: PROPOSED
+Status: SENT TO ADMIN
 Author: Alice
 
 Refers to Commit:
@@ -6773,13 +6773,15 @@ Impact:
   
 Approvals:
   - Alice (author)
-  -
+  - 1774228611 | Dave: YES — confirmed bug: `v 0` in Megalodon gives Sing(apply_fun v 0),
+    not a real number. R3_dot_af already exists with correct apply_fun syntax. Fix is
+    minimal and clearly correct. Blocking Householder chain is a serious impact.
 ========================================================
 
 ========================================================
 NOTICE ID: 1774224400
 Created: 1774224400
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   39a3a784c
@@ -6826,13 +6828,16 @@ Discussion:
 
 Approvals:
   - 1774224400 | Alice: YES
-  -
+  - 1774228611 | Dave: YES — confirmed bug at lines 291603-291621: M and p in separate
+    existentials with no joint ordering condition. Hpbig_loc (Rlt M |p|^2) is unprovable
+    without combining them. The proposed combined existential matches Munkres Lemma 61.2
+    correctly. Implementation note: the norm term should use apply_fun p 0/1, not p 0/1.
 ========================================================
 
 ========================================================
 NOTICE ID: 1774225147
 Created: 1774225147
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   2669a7495
@@ -6875,5 +6880,7 @@ Discussion:
 
 Approvals:
   - 1774225147 | Alice: YES
-  -
+  - 1774228611 | Dave: YES — confirmed parsing bug at line 120843-120851 (admitted with
+    comment explaining the issue). thm54_6c_loop_characterization_equiv already Qed.
+    Fix is trivially correct; proof is exact (thm54_6c_loop_characterization_equiv).
 ========================================================
