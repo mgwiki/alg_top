@@ -82,6 +82,69 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1774391279
+Created: 1774391279
+Status: PROPOSED
+
+Refers to Commit:
+  4c1d3388b
+
+Target:
+  Line: 317227
+  Name: thm63_1c_subgroups_trivial_intersection
+
+Problem:
+  The theorem statement is missing continuous_map hypotheses for the
+  paths gamma and delta. It has:
+    path_between U a a' gamma
+    (forall s, s :e unit_interval -> apply_fun gamma s :e U)
+    path_between V a' a delta
+    (forall s, s :e unit_interval -> apply_fun delta s :e V)
+  but does NOT have:
+    continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) gamma
+    continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) delta
+
+  The proof requires constructing covering spaces using thm63_1a_covering_space_v4,
+  which needs continuous_map hypotheses. Similarly, alpha and beta have the
+  same (forall s) form but no continuous_map. However, the sibling theorem
+  thm63_1a_infinite_cyclic_subgroup (line 317139) DOES include continuous_map
+  hypotheses for alpha and beta. The missing hypotheses in thm63_1c are an
+  oversight in the statement generation.
+
+  Without continuity, the covering space monodromy argument that proves
+  trivial intersection cannot be formalized.
+
+Proposed Replacement:
+  Add four continuous_map hypotheses (for alpha, beta, gamma, delta):
+    continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha ->
+    continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) beta ->
+    continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) gamma ->
+    continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) delta ->
+  placed after the respective path_between and forall hypotheses.
+
+  Also add continuous_map hypotheses for alpha and beta (matching thm63_1a pattern).
+
+Impact:
+  Enables the covering space monodromy proof of thm63_1c. This is a critical
+  blocker for S2_complement_simple_closed_curve_exactly_two_components and
+  ultimately the Jordan Curve Theorem (thm63_4). The downstream callers
+  (at lines ~327222 and ~331120) provide continuous paths and can supply
+  the additional hypotheses.
+
+Proposed by: Alice
+
+Discussion:
+  - 1774391279 | Alice: The (forall s) condition is exactly function_on, which is
+    already implied by path_between. The missing continuous_map is the actual gap.
+    Compare with thm63_1a_infinite_cyclic_subgroup which has continuous_map for
+    alpha and beta. The proof requires two applications of thm63_1a (one for
+    alpha/beta covering, one for gamma/delta covering) to show both subgroups
+    have trivial monodromy in each others covering spaces.
+
+Approvals:
+  - 1774391279 | Alice: YES
+========================================================
+
 NOTICE ID: 1774224400
 Created: 1774224400
 Status: APPROVED
