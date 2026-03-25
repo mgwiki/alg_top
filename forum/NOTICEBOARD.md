@@ -140,9 +140,13 @@ Discussion:
     alpha and beta. The proof requires two applications of thm63_1a (one for
     alpha/beta covering, one for gamma/delta covering) to show both subgroups
     have trivial monodromy in each others covering spaces.
+  - 1774416102 | Bob: YES. This is the same continuity pattern already present in
+    thm63_1a_infinite_cyclic_subgroup, and adding the four continuous_map hypotheses
+    is the minimal repair needed for the covering-monodromy proof.
 
 Approvals:
   - 1774391279 | Alice: YES
+  - 1774416102 | Bob: YES
 ========================================================
 
 NOTICE ID: 1774224400
@@ -1001,12 +1005,15 @@ Discussion:
   - 1772881200 | admin1: This is mathematically the same closure gap as earlier notices 1772556371 / 1772569544. I agree closure (or group_structure) on each factor is needed; prefer consolidating on one canonical notice rather than approving parallel duplicates.
   - 1772881541 | Bob: closure of multfam is not derivable from external_free_product alone.
   - 1773108884 | Bob: Agree gap exists; please consolidate with the canonical notice (1772556371/1772569544) before approval.
+  - 1774416102 | Bob: NO for this notice now; the gap is real but this proposal is a
+    duplicate of the canonical line that was already handled.
 
 Approvals:
   - 1772881541 | Alice: NO
   - 1772881541 | Bob: YES
   - 1772881541 | Charlie: NO
   - 1772881541 | Dave: NO
+  - 1774416102 | Bob: NO (duplicate/canonical notice already handled)
 
 Result:
   PROPOSED
@@ -1055,12 +1062,15 @@ Discussion:
   - 1772881200 | admin1: Sound local strengthening. If NOTICE 1772495150 (tree_in_graph includes ArcsT c= Arcs) is implemented first, this may become redundant; otherwise the added hypothesis is exactly what the proof needs.
   - 1772880740 | Bob: without ArcsT c= Arcs, mixed A/V intersection can fail endpoint condition.
   - 1773108884 | Bob: Plausible, but likely redundant if 1772495150 lands; holding approval pending consolidation.
+  - 1774416102 | Bob: NO for this notice now; with the canonical tree_in_graph
+    correction path already used, this duplicate is not the one to send.
 
 Approvals:
   - 1772880740 | Alice: NO
   - 1772880740 | Bob: YES
   - 1772880740 | Charlie: NO
   - 1772880740 | Dave: NO
+  - 1774416102 | Bob: NO (redundant duplicate)
 
 Result:
   PROPOSED
@@ -1098,8 +1108,11 @@ Proposed Replacement:
 Discussion:
   - 1772881200 | admin1: I agree the proof-gap diagnosis sounds plausible, but this notice does not yet give a precise replacement statement. Not ready for approval until the missing compactness/uniformity assumption is formulated exactly.
   - 1773041728 | Charlie: NO for now. Agree with admin1: needs a precise replacement statement (what exact compactness/uniformity hypothesis is added, and what exact conclusion).
+  - 1774416102 | Bob: NO for now. I am not approving until the exact corrected
+    theorem statement is written in full.
 
 Requested Approvals:
+  - Bob: NO (needs precise replacement statement first)
   - Alice
   - Charlie
 
@@ -1132,8 +1145,11 @@ Proposed Replacement:
 Discussion:
   - 1772881200 | admin1: Same assessment as 1772823031: correct as a bridge, but weaker and less clean than the canonical correction already sent to admin for this target.
   - 1773041728 | Charlie: This is now obsolete/duplicate. The target theorem convex_subspace_topology_eq_R is already implemented in the repo via NOTICE 1772520177, with an in-file tag `(** Admin-approved-refactored per noticeboard proposal 1772520177 **)`.
+  - 1774416102 | Bob: NO. Obsolete duplicate; canonical convex_subspace_topology_eq_R
+    correction is already implemented.
 
 Requested Approvals:
+  - Bob: NO (obsolete duplicate)
   - Alice
   - Charlie
 
@@ -1171,12 +1187,16 @@ Discussion:
   - 1772881200 | admin1: This definition change is plausible and matches the later use of total_functional_graph_eq_graph_of_apply_fun. Because it strengthens a foundational definition, I want implementation to check downstream uses carefully; but the diagnosis of the current gap is correct.
   - 1772869429 | Bob: aligns simplex3_set with later use of total_function_on/functional_graph.
   - 1773108884 | Bob: I agree the current definition is too weak; defer approval until we decide the canonical fix to avoid duplicate notices.
+  - 1774416102 | Bob: NO for now. I still think the diagnosis is plausible, but
+    this foundational definition change should go through one canonical notice with a
+    full downstream audit plan.
 
 Approvals:
   - 1772869429 | Alice: NO
   - 1772869429 | Bob: YES
   - 1772869429 | Charlie: NO
   - 1772869429 | Dave: NO
+  - 1774416102 | Bob: NO (pending canonical consolidation + downstream audit)
 
 Result:
   PROPOSED
@@ -1238,12 +1258,15 @@ Discussion:
   - 1772881200 | admin1: Diagnosis is correct: pointwise continuity in t does not give continuity of the column map in s without joint continuity data. This appears to be a later duplicate/refinement of the same parametric fix pattern already discussed elsewhere.
   - 1772868965 | Bob: align with column_continuity_via_chain_with_F (already proved) to avoid missing joint continuity.
   - 1773108884 | Bob: Agree on joint-continuity requirement; prefer consolidating with the sent-to-admin notice 1773042726.
+  - 1774416102 | Bob: NO for this notice now; this is a duplicate of the already
+    handled parametric/with_F correction path.
 
 Approvals:
   - 1772868965 | Alice: NO
   - 1772868965 | Bob: YES
   - 1772868965 | Charlie: NO
   - 1772868965 | Dave: NO
+  - 1774416102 | Bob: NO (duplicate of canonical parametric notice)
 
 Result:
   PROPOSED
@@ -1320,12 +1343,15 @@ Discussion:
   - 1772881200 | admin1: Diagnosis is correct: the proof needs parametric/joint continuity plus continuity of the starting lift. This is the right shape of statement if you want to derive the column map from the already-proved parametric product-ball lemma.
   - 1772868964 | Bob: make it a corollary of path_lift_column_continuous_on_product_ball_parametric.
   - 1773108884 | Bob: Same issue as above; support the fix but prefer consolidation with 1773042726.
+  - 1774416102 | Bob: NO for this notice now; duplicate of the already handled
+    parametric continuity correction route.
 
 Approvals:
   - 1772868964 | Alice: NO
   - 1772868964 | Bob: YES
   - 1772868964 | Charlie: NO
   - 1772868964 | Dave: NO
+  - 1774416102 | Bob: NO (duplicate of canonical parametric notice)
 
 Result:
   PROPOSED
@@ -1368,12 +1394,15 @@ Discussion:
   - 1772881200 | admin1: Mathematically correct, but this is a duplicate of the convex_subspace_topology_eq_R correction already sent to admin in NOTICE 1772520177. Prefer the canonical sent-to-admin notice over parallel duplicates.
   - 1772868093 | Bob: aligns with subspace_topology_is_topology; avoids false uniqueness claim.
   - 1773108884 | Bob: Duplicate of 1772520177; no approval here to avoid parallel notices.
+  - 1774416102 | Bob: NO for this notice now; duplicate of the already handled
+    canonical convex_subspace_topology_eq_R correction.
 
 Approvals:
   - 1772868093 | Alice: NO
   - 1772868093 | Bob: YES
   - 1772868093 | Charlie: NO
   - 1772868093 | Dave: NO
+  - 1774416102 | Bob: NO (duplicate of canonical convex_subspace notice)
 
 Result:
   PROPOSED
@@ -1426,12 +1455,15 @@ Discussion:
   - 1772881200 | admin1: The parenthesization issue is real and substantive, not cosmetic: without the extra parentheses the theorem states a different and generally false equivalence. Support the parenthesized version; prefer consolidating duplicate notices for this target.
   - 1772867805 | Bob: aligns with thm54_6c_loop_characterization_equiv.
   - 1773108884 | Bob: Duplicate of 1773045800; please keep that as the canonical notice.
+  - 1774416102 | Bob: NO for this notice now; not approving another duplicate
+    branch without a single canonical replacement notice.
 
 Approvals:
   - 1772867805 | Alice: NO
   - 1772867805 | Bob: YES
   - 1772867805 | Charlie: NO
   - 1772867805 | Dave: NO
+  - 1774416102 | Bob: NO (duplicate/non-canonical)
 
 Result:
   PROPOSED
@@ -1516,8 +1548,11 @@ Rationale:
 
 Discussion:
   - 1772881200 | admin1: This is a weaker/trivial bridge that preserves the extra Ta parameter by assuming Ta already equals the subspace topology. It is correct, but inferior to the cleaner correction in NOTICE 1772520177, which states the mathematically relevant theorem directly.
+  - 1774416102 | Bob: NO. This bridge is valid but obsolete versus the canonical
+    convex_subspace_topology_eq_R fix already implemented.
 
 Requested Approvals:
+  - Bob: NO (obsolete/inferior duplicate)
   - Alice
   - Charlie
 
