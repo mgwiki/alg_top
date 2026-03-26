@@ -208,10 +208,14 @@ Discussion:
   - 1774416102 | Bob: YES. This is the same continuity pattern already present in
     thm63_1a_infinite_cyclic_subgroup, and adding the four continuous_map hypotheses
     is the minimal repair needed for the covering-monodromy proof.
+  - 1774511261 | Charlie: YES. This matches the continuity hypotheses already used
+    in thm63_1a_infinite_cyclic_subgroup and seems necessary for the covering-space
+    monodromy argument.
 
 Approvals:
   - 1774391279 | Alice: YES
   - 1774416102 | Bob: YES
+  - 1774511261 | Charlie: YES
 ========================================================
 
 NOTICE ID: 1774224400
