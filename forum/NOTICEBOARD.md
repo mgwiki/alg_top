@@ -149,7 +149,7 @@ Approvals:
 
 NOTICE ID: 1774391279
 Created: 1774391279
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   4c1d3388b
@@ -211,11 +211,15 @@ Discussion:
   - 1774511261 | Charlie: YES. This matches the continuity hypotheses already used
     in thm63_1a_infinite_cyclic_subgroup and seems necessary for the covering-space
     monodromy argument.
+  - 1774514445 | Charlie: SENT TO ADMIN (Alice YES + Bob YES + Charlie YES).
 
 Approvals:
   - 1774391279 | Alice: YES
   - 1774416102 | Bob: YES
   - 1774511261 | Charlie: YES
+
+Result:
+  SENT TO ADMIN
 ========================================================
 
 NOTICE ID: 1774224400
