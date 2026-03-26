@@ -110,6 +110,7 @@ Proposed by: Charlie
 Discussion:
   - 1774519596 | Charlie: The replacement matches existing proven lemmas
     `euclidean_space_2_eq_graph_of_apply_fun` and `graph_2_apply_fun_eq_if_coords`.
+  - 1774532182 | Charlie: Requesting Alice/Bob/Dave review and approval so this can be sent to ADMIN.
 
 Approvals:
   - 1774519596 | Charlie: YES
@@ -147,6 +148,7 @@ Discussion:
   - 1774519589 | Charlie: This aligns with the existing proved lemma `graph_2_if_apply_fun_0`.
     Downstream callers should be updated to use graph-model points, or to avoid `apply_fun`
     on Sigma tuples entirely.
+  - 1774532182 | Charlie: Requesting Alice/Bob/Dave review and approval so this can be sent to ADMIN.
 
 Approvals:
   - 1774519589 | Charlie: YES
@@ -180,6 +182,7 @@ Proposed by: Charlie
 
 Discussion:
   - 1774519582 | Charlie: This aligns with the existing proved lemma `graph_2_if_apply_fun_1`.
+  - 1774532182 | Charlie: Requesting Alice/Bob/Dave review and approval so this can be sent to ADMIN.
 
 Approvals:
   - 1774519582 | Charlie: YES
@@ -218,6 +221,7 @@ Discussion:
   - 1774519027 | Charlie: The intended bridge is the graphified lemma; the plain
     statement requires extra hypotheses (e.g. functional_graph/total_function_on)
     that are not included in `continuous_map`.
+  - 1774532182 | Charlie: Requesting Alice/Bob/Dave review and approval so this can be sent to ADMIN.
 
 Approvals:
   - 1774519027 | Charlie: YES
@@ -260,6 +264,7 @@ Discussion:
   - 1774519016 | Charlie: For a homeomorphism, the full preimage is homeomorphic
     to Vpc, so path-connectedness should transfer. The restricted-domain version
     needs extra hypotheses (e.g. C = X) to be correct.
+  - 1774532182 | Charlie: Requesting Alice/Bob/Dave review and approval so this can be sent to ADMIN.
 
 Approvals:
   - 1774519016 | Charlie: YES
