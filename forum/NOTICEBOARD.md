@@ -82,6 +82,113 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1774519596
+Created: 1774519596
+Status: PROPOSED
+
+Refers to Commit:
+  bd2043fc8
+
+Target:
+  Line: 187654
+  Name: euclidean_space_2_eq_coords_pair
+
+Problem:
+  The statement concludes a set-equality between an `euclidean_space 2` point `u`
+  (represented as a functional graph on domain 2) and the tuple `(apply_fun u 0, apply_fun u 1)`.
+  This mixes the graph-model of functions with the Sigma/tuple model, and is noted in the proof
+  attempt as "graph model != tuple model" (an `admit` remains at this exact gap).
+
+Proposed Replacement:
+  Replace the conclusion with the graph-model coordinate equality:
+    Theorem euclidean_space_2_eq_coords_pair : forall u:set,
+      u :e euclidean_space 2 ->
+      u = graph 2 (fun i:set => if i = 0 then apply_fun u 0 else apply_fun u 1).
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774519596 | Charlie: The replacement matches existing proven lemmas
+    `euclidean_space_2_eq_graph_of_apply_fun` and `graph_2_apply_fun_eq_if_coords`.
+
+Approvals:
+  - 1774519596 | Charlie: YES
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
+NOTICE ID: 1774519589
+Created: 1774519589
+Status: PROPOSED
+
+Refers to Commit:
+  bd2043fc8
+
+Target:
+  Line: 187871
+  Name: apply_fun_pair_coords_0
+
+Problem:
+  The statement uses `apply_fun (p0,p1) 0`, but `(p0,p1)` is a tuple/pair value,
+  not a functional graph on domain `{0,1}`. With `apply_fun` defined via `Eps_i`
+  over membership in a graph, this is not justified and is admitted with an in-file note
+  that the tuple model differs from the graph model.
+
+Proposed Replacement:
+  Replace the tuple-based `apply_fun` statement with the already-correct graph version:
+    Theorem apply_fun_pair_coords_0 : forall p0 p1:set,
+      apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 0 = p0.
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774519589 | Charlie: This aligns with the existing proved lemma `graph_2_if_apply_fun_0`.
+    Downstream callers should be updated to use graph-model points, or to avoid `apply_fun`
+    on Sigma tuples entirely.
+
+Approvals:
+  - 1774519589 | Charlie: YES
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
+NOTICE ID: 1774519582
+Created: 1774519582
+Status: PROPOSED
+
+Refers to Commit:
+  bd2043fc8
+
+Target:
+  Line: 187877
+  Name: apply_fun_pair_coords_1
+
+Problem:
+  Same issue as `apply_fun_pair_coords_0`: `apply_fun` is applied to a tuple `(p0,p1)`
+  which is not a graph-model function.
+
+Proposed Replacement:
+  Replace with the already-correct graph version:
+    Theorem apply_fun_pair_coords_1 : forall p0 p1:set,
+      apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 1 = p1.
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774519582 | Charlie: This aligns with the existing proved lemma `graph_2_if_apply_fun_1`.
+
+Approvals:
+  - 1774519582 | Charlie: YES
+
+Result:
+  PROPOSED
+
+========================================================
+
 NOTICE ID: 1774519027
 Created: 1774519027
 Status: PROPOSED
