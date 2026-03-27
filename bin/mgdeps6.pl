@@ -58,9 +58,9 @@ while ($region =~ /(^\s*(Lemma|Theorem)\s+([A-Za-z_][A-Za-z0-9_]*)\b.*?^\s*(Qed|
     $block{$thm} = $b;
     $lines{$thm} = scalar(split /\R/, $b);
 
-    my $is_admit = ($b =~ /\badmit\b/i) || ($end eq "Admitted");
+    my $is_admit = ($b =~ /^\s*admit\.\s*$/m);
     $admit{$thm} = $is_admit ? 1 : 0;
-    $kind{$thm}  = 'A' if $end eq "Admitted";
+    $kind{$thm}  = 'A' if $is_admit;
 
     my %seen_all;
     my %seen_thm;
