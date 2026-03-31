@@ -187,6 +187,7 @@ Proposed by: Charlie
 Discussion:
   - 1774972620 | Charlie: This is a proof-only compilation fix, but it requires editing a previously-Qed theorem,
     so `mgguard` will complain unless ADMIN allows an exception ("admin approved refactoring"). Please advise/approve.
+  - 1774978086 | Charlie: Still the first megalodon failure on `charlie/worddata-sync` after syncing with origin/main.
 
 Approvals:
   - 1774972620 | Alice: YES / NO
