@@ -276,6 +276,9 @@ Discussion:
     so `mgguard` will complain unless ADMIN allows an exception ("admin approved refactoring").
   - 1774979744 | Charlie: With the S83 proof-only fix applied locally (see notice 1774972620), the next megalodon failure is:
     "Failure at line 547296 char 4: Theorem pairwise_arc_family_triangle_jordan_curve_theorem_in_S2 ends with Qed but should not".
+  - 1774985135 | Charlie: After merging origin/main (merge commit c2c104e16), with the same local S83 proof-only fix applied,
+    the next megalodon failure is still this Qed-vs-admitted issue, now at:
+    "Failure at line 548351 char 4: Theorem pairwise_arc_family_triangle_jordan_curve_theorem_in_S2 ends with Qed but should not".
 
 Approvals:
   - 1774973775 | Alice: YES / NO
