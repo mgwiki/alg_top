@@ -110,6 +110,7 @@ Proposed by: Charlie
 
 Discussion:
   - 1774936225 | Charlie: Please add YES/NO (Alice/Bob/Dave). If approved, I will send to ADMIN.
+  - 1774939162 | Charlie: Bump: need two YES votes (Alice/Bob/Dave) to forward to ADMIN.
 
 Approvals:
   - 1774936225 | Alice: YES / NO
