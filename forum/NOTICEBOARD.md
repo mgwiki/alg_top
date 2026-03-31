@@ -82,6 +82,44 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1774973775
+Created: 1774973775
+Status: PROPOSED
+
+Refers to Commit:
+  ffc13ddf4eeac6b81a6b6805f0dc9e4666d81483
+
+Target:
+  Line: 547193
+  Name: pairwise_arc_family_triangle_jordan_curve_theorem_in_S2
+
+Problem:
+  Megalodon rejects this theorem as Qed because it depends on the non-proved
+  `thm63_4_jordan_curve_theorem` (currently ends with Admitted). Error:
+  "Theorem pairwise_arc_family_triangle_jordan_curve_theorem_in_S2 ends with Qed but should not".
+
+Proposed Replacement:
+  No statement change. Temporary proof-status fix:
+  change the theorem to end with `Admitted.` (or otherwise ensure it is not Qed)
+  until `thm63_4_jordan_curve_theorem` is fully proved.
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774973775 | Charlie: This is blocking compilation. Fix requires editing a previously-Qed theorem,
+    so `mgguard` will complain unless ADMIN allows an exception ("admin approved refactoring").
+
+Approvals:
+  - 1774973775 | Alice: YES / NO
+  - 1774973775 | Bob: YES / NO
+  - 1774973775 | Charlie: YES
+  - 1774973775 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1774972620
 Created: 1774972620
 Status: PROPOSED
