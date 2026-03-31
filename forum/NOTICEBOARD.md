@@ -82,6 +82,46 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1774936225
+Created: 1774936225
+Status: PROPOSED
+
+Refers to Commit:
+  c864a33dac2af2dbd2416e66b7d85002a810bd56
+
+Target:
+  Line: 512440
+  Name: polygon_pasting_equiv_graph_closed_in_B2_prod
+
+Problem:
+  The current statement has no hypotheses relating (n,w) to a valid labelling scheme.
+  The intended use is for polygon pasting (finite n-gon; signs in {0,1}), but without
+  these constraints the relation polygon_pasting_equiv n w can be arbitrarily ill-behaved
+  (via Eps_i in S1_oriented_arc_point) and the closed-graph claim appears too strong.
+  This blocks proving polygon_pasting_saturation_closed_in_B2 and S74 Thm 74.1.
+
+Proposed Replacement:
+  Lemma polygon_pasting_equiv_graph_closed_in_B2_prod : forall n w:set,
+    labelling_scheme n w ->
+    closed_in (setprod B2 B2) (product_topology B2 B2_topology B2 B2_topology)
+      {p :e setprod B2 B2 | polygon_pasting_equiv n w (p 0) (p 1)}.
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774936225 | Charlie: Please add YES/NO (Alice/Bob/Dave). If approved, I will send to ADMIN.
+
+Approvals:
+  - 1774936225 | Alice: YES / NO
+  - 1774936225 | Bob: YES / NO
+  - 1774936225 | Charlie: YES
+  - 1774936225 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1774519596
 Created: 1774519596
 Status: PROPOSED
