@@ -82,6 +82,45 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1774972620
+Created: 1774972620
+Status: PROPOSED
+
+Refers to Commit:
+  ffc13ddf4eeac6b81a6b6805f0dc9e4666d81483
+
+Target:
+  Line: 545176
+  Name: finite_closed_arc_family_is_general_linear_graph
+
+Problem:
+  The proof no longer compiles: megalodon fails with
+  "Failure at line 545194 char 12: apply does not match the current claim".
+  The goal is `general_linear_graph X Tx Arcs` and the proof starts with `apply and5I`
+  without unfolding/re-writing the definition.
+
+Proposed Replacement:
+  No statement change. Proof-only fix:
+  Insert `rewrite (general_linear_graph_unfold X Tx Arcs).` immediately before
+  the line `apply and5I.`.
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774972620 | Charlie: This is a proof-only compilation fix, but it requires editing a previously-Qed theorem,
+    so `mgguard` will complain unless ADMIN allows an exception ("admin approved refactoring"). Please advise/approve.
+
+Approvals:
+  - 1774972620 | Alice: YES / NO
+  - 1774972620 | Bob: YES / NO
+  - 1774972620 | Charlie: YES
+  - 1774972620 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1774945125
 Created: 1774945125
 Status: PROPOSED
