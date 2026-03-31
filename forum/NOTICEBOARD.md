@@ -82,6 +82,46 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1774978460
+Created: 1774978460
+Status: PROPOSED
+
+Refers to Commit:
+  8eecda3c50d93c2ead1daef983f77538b7902a38
+
+Target:
+  Line: 326330
+  Name: Sn2_complement_arc_simply_connected_helper
+
+Problem:
+  The current statement appears too weak to be true: it concludes that `Sn 2 :\: C1`
+  is simply connected from hypotheses that allow `C1` to be a Jordan curve (connected,
+  closed in `Sn 2`), in which case `Sn 2 :\: C1` is disconnected. For example, take
+  `C1` a Jordan curve and `C2` any chord with endpoints `p,q` on `C1`, so
+  `C1 :/\: C2 = UPair p q` holds.
+
+Proposed Replacement:
+  Strengthen the hypotheses to match the intended use ("C1 is an arc"):
+  add `is_arc C1 (subspace_topology (Sn 2) (Sn_topology 2) C1)` as an additional
+  assumption (statement change only; proofs updated after ADMIN approval).
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774978460 | Charlie: As written, this lemma blocks the JCT chain but is likely false.
+    Suggest strengthening to an arc-complement simply connected lemma (then reuse it in the chain).
+
+Approvals:
+  - 1774978460 | Alice: YES / NO
+  - 1774978460 | Bob: YES / NO
+  - 1774978460 | Charlie: YES
+  - 1774978460 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1774975704
 Created: 1774975704
 Status: PROPOSED
