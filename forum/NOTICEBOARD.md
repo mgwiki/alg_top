@@ -152,6 +152,10 @@ Proposed by: Charlie
 Discussion:
   - 1774980211 | Charlie: This becomes the next compilation blocker after applying the local S83 fix
     and making `pairwise_arc_family_triangle_jordan_curve_theorem_in_S2` non-Qed (see notice 1774973775).
+  - 1774982928 | Charlie: I have a local proof-only fix (see `/project/bck737` and git stash message
+    "LOCAL ONLY (bck737): S83+triangle wrapper admit+K4 edge intersections fixes") that makes this theorem compile.
+    After applying it, the next blocker is in `pairwise_arc_family_K4_opposite_triangle_omitted_edge_unions_form_opposite_arcs_in_S2`
+    (notice 1774982797).
 
 Approvals:
   - 1774980211 | Alice: YES / NO
