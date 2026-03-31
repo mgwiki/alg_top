@@ -82,6 +82,48 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1774980211
+Created: 1774980211
+Status: PROPOSED
+
+Refers to Commit:
+  d70bf6824b712cf63eb70d909623d20a0ba3ae3b
+
+Target:
+  Line: 547301
+  Name: pairwise_arc_family_K4_edge_intersections
+
+Problem:
+  After bypassing earlier compilation blockers, megalodon reports a proof-term mismatch:
+  "Failure at line 547463 char 55: Proof term proves ... but expected to prove ...".
+  This looks like an `/\\` left-associativity packaging/unpacking issue: the proof builds
+  the 15-way conjunction of K4 edge intersection facts with nested `andI`, but the
+  nesting does not match the left-associated goal.
+
+Proposed Replacement:
+  No statement change. Proof-only fix:
+  restructure the proof to match left-associated `/\\` exactly, e.g. by:
+  1) proving each of the 15 conjuncts as named `claim`s, then
+  2) reassembling them with an explicit left-associated `andI` chain (or a new helper
+     lemma `and15I` defined in AlgTop and used here).
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774980211 | Charlie: This becomes the next compilation blocker after applying the local S83 fix
+    and making `pairwise_arc_family_triangle_jordan_curve_theorem_in_S2` non-Qed (see notice 1774973775).
+
+Approvals:
+  - 1774980211 | Alice: YES / NO
+  - 1774980211 | Bob: YES / NO
+  - 1774980211 | Charlie: YES
+  - 1774980211 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1774978460
 Created: 1774978460
 Status: PROPOSED
