@@ -82,6 +82,46 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1774975704
+Created: 1774975704
+Status: PROPOSED
+
+Refers to Commit:
+  ffc13ddf4eeac6b81a6b6805f0dc9e4666d81483
+
+Target:
+  Line: 547533
+  Name: pairwise_arc_family_K4_vertices_omit_opposite_triangles_in_S2
+
+Problem:
+  The proof unpacks the 15-way conjunction returned by
+  `pairwise_arc_family_K4_edge_intersections` using `and3E` / `andER` as if `/\\`
+  were right-associative. In Megalodon, `/\\` is left-associative, so the proof
+  terms do not match the expected sub-claims (compile error around line 547787).
+
+Proposed Replacement:
+  No statement change. Proof-only fix:
+  replace the `and3E`/`andER` extraction with correct left-associative unpacking
+  using `andEL`/`andER` chains (or introduce small helper lemmas to extract the
+  required conjuncts from the 15-way conjunction).
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774975704 | Charlie: This is a proof-structure bug triggered by left-assoc `/\\`.
+    Fix requires editing previously-Qed theorems, so `mgguard` will complain unless ADMIN allows an exception.
+
+Approvals:
+  - 1774975704 | Alice: YES / NO
+  - 1774975704 | Bob: YES / NO
+  - 1774975704 | Charlie: YES
+  - 1774975704 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1774973775
 Created: 1774973775
 Status: PROPOSED
