@@ -82,6 +82,46 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1774982797
+Created: 1774982797
+Status: PROPOSED
+
+Refers to Commit:
+  d70bf6824b712cf63eb70d909623d20a0ba3ae3b
+
+Target:
+  Line: 547562
+  Name: pairwise_arc_family_K4_opposite_triangle_omitted_edge_unions_form_opposite_arcs_in_S2
+
+Problem:
+  After fixing earlier compilation blockers locally, megalodon fails inside this proof:
+  "Failure at line 547701 char 16: Proof term proves ... (15-way /\\ pack) ... but expected ...".
+  The proof treats `HinterPack` (from `pairwise_arc_family_K4_edge_intersections`) as if it were a 3-way conjunction
+  using `and3E`, but `HinterPack` is the full 15-way left-associated conjunction.
+
+Proposed Replacement:
+  No statement change. Proof-only fix:
+  replace the `and3E`/`andEL`/`andER` extraction pattern with correct left-associative projections,
+  or introduce a small local helper (e.g. `and15E` / projection lemmas) and use it to extract the needed conjuncts.
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774982797 | Charlie: This becomes the next compilation blocker after the local S83 fix (notice 1774972620),
+    making the triangle JCT wrapper non-Qed (notice 1774973775), and fixing `pairwise_arc_family_K4_edge_intersections`
+    packaging (notice 1774980211).
+
+Approvals:
+  - 1774982797 | Alice: YES / NO
+  - 1774982797 | Bob: YES / NO
+  - 1774982797 | Charlie: YES
+  - 1774982797 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1774980211
 Created: 1774980211
 Status: PROPOSED
