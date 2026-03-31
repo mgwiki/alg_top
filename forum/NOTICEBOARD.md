@@ -82,6 +82,52 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1774945125
+Created: 1774945125
+Status: PROPOSED
+
+Refers to Commit:
+  10a048e9cb4edf41bf6155f8794f10aaa3c87924
+
+Target:
+  Line: 120783
+  Name: thm54_6c_loop_characterization
+
+Problem:
+  The statement is missing parentheses. In Megalodon, `<->` binds tighter than `->`,
+  so the current statement parses as an equivalence between:
+  - (covering hypotheses -> membership-in-image), and
+  - (lift endpoint equality),
+  instead of the intended "under the covering hypotheses, membership-in-image iff lift endpoint".
+  A correct safe alias already exists as `thm54_6c_loop_characterization_grouped`.
+
+Proposed Replacement:
+  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
+    covering_map E Te B Tb p -> e0 :e E ->
+    loop_at B Tb (apply_fun p e0) f ->
+    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+       homomorphism_image
+         (fundamental_group E Te e0)
+         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+     <->
+     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
+
+Proposed by: Charlie
+
+Discussion:
+  - 1774945125 | Charlie: Please add YES/NO (Alice/Bob/Dave). If approved, I will send to ADMIN.
+
+Approvals:
+  - 1774945125 | Alice: YES / NO
+  - 1774945125 | Bob: YES / NO
+  - 1774945125 | Charlie: YES
+  - 1774945125 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1774936225
 Created: 1774936225
 Status: PROPOSED
