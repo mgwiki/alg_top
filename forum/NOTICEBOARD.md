@@ -188,6 +188,8 @@ Proposed by: Charlie
 Discussion:
   - 1774973775 | Charlie: This is blocking compilation. Fix requires editing a previously-Qed theorem,
     so `mgguard` will complain unless ADMIN allows an exception ("admin approved refactoring").
+  - 1774979744 | Charlie: With the S83 proof-only fix applied locally (see notice 1774972620), the next megalodon failure is:
+    "Failure at line 547296 char 4: Theorem pairwise_arc_family_triangle_jordan_curve_theorem_in_S2 ends with Qed but should not".
 
 Approvals:
   - 1774973775 | Alice: YES / NO
