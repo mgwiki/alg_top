@@ -82,6 +82,45 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1775015860
+Created: 1775015860
+Status: PROPOSED
+
+Refers to Commit:
+  5f8c73b77c85a6205e16c39bd073ad016d8b0f3b
+
+Target:
+  Line: 568548 (duplicate also at 569551)
+  Name: general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2
+
+Problem:
+  The theorem name is declared twice in `Math_Background.mg`, which makes megalodon fail with:
+  "general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2 has already been used."
+  This blocks compilation past the general-linear-graph K4 chosen-region boundary chain.
+
+Proposed Replacement:
+  Rename the first declaration (at line 568548 in the referenced commit) to a distinct name:
+  Replace:
+    Theorem general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2 :
+  With:
+    Theorem general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2_both_boundaries :
+
+Proposed by: Charlie
+
+Discussion:
+  - 1775015860 | Charlie: Pure disambiguation rename to fix a duplicated global identifier; statement body unchanged.
+
+Approvals:
+  - 1775015860 | Alice: YES / NO
+  - 1775015860 | Bob: YES / NO
+  - 1775015860 | Charlie: YES
+  - 1775015860 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1774982797
 Created: 1774982797
 Status: PROPOSED
