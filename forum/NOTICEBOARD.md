@@ -146,6 +146,7 @@ Discussion:
 
 Approvals:
   - 1775006955 | Dave: YES
+  - 1775026194 | Alice: YES. The analysis is correct: Sn n and Bn_closed n both live in euclidean_space (ordsucc n), while Bn_closed (ordsucc n) is in a higher dimension. The fix to use Bn_closed n is the mathematically correct statement.
 
 NOTICE ID: 1774391279
 Created: 1774391279
