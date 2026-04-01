@@ -82,595 +82,75 @@ Rules:
 
 [place new active notices here below this line]
 
-NOTICE ID: 1775015860
-Created: 1775015860
+NOTICE ID: 1775006955
+Created: 1775006955
 Status: PROPOSED
 
 Refers to Commit:
-  5f8c73b77c85a6205e16c39bd073ad016d8b0f3b
+  5a7bfe1d8
 
 Target:
-  Line: 568548 (duplicate also at 569551)
-  Name: general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2
+  Line: 234261
+  Name: ex58_10a_no_retraction_from_degree
+  Also affects: ex62_6a_borsuk_lemma_Sn, ex62_6b_contractible_no_separation_Sn, ex62_6c_invariance_of_domain_n
 
 Problem:
-  The theorem name is declared twice in `Math_Background.mg`, which makes megalodon fail with:
-  "general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2 has already been used."
-  This blocks compilation past the general-linear-graph K4 chosen-region boundary chain.
+  Four theorems use `Bn_closed (ordsucc n)` where they should use `Bn_closed n`.
+
+  Sn n is defined in euclidean_space (ordsucc n) = R^{n+1}.
+  Bn_closed n is also in euclidean_space (ordsucc n) = R^{n+1}.
+  Bn_closed (ordsucc n) is in euclidean_space (ordsucc (ordsucc n)) = R^{n+2}.
+
+  Since Sn n and Bn_closed (ordsucc n) live in different Euclidean spaces
+  (R^{n+1} vs R^{n+2}), Sn n is never a subset of Bn_closed (ordsucc n).
+  This makes retraction_of (Bn_closed (ordsucc n)) ... (Sn n) vacuously false,
+  and ~(retraction_of ...) vacuously true.
+
+  The textbook (Munkres) intends B^{n+1} = {x in R^{n+1} : |x| <= 1} and
+  S^n = boundary(B^{n+1}). In the formalization, this corresponds to
+  Bn_closed n (not ordsucc n) since both Bn_closed n and Sn n use
+  euclidean_space (ordsucc n).
+
+  The correct statement should use `Bn_closed n` instead of `Bn_closed (ordsucc n)`.
+
+  Note: ex58_10a was collected by Dave ($88) via the vacuous proof before
+  this mismatch was identified. The other three theorems (ex62_6a/b/c) take
+  ~(retraction_of ...) as a hypothesis, making that hypothesis trivially satisfied
+  but the conclusion still requiring a real proof.
 
 Proposed Replacement:
-  Rename the first declaration (at line 568548 in the referenced commit) to a distinct name:
-  Replace:
-    Theorem general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2 :
-  With:
-    Theorem general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2_both_boundaries :
+  In all four theorems, replace:
+    Bn_closed (ordsucc n)
+  with:
+    Bn_closed n
+  and:
+    Bn_closed_topology (ordsucc n)
+  with:
+    Bn_closed_topology n
 
-Proposed by: Charlie
+Impact:
+  The corrected ex58_10a would become a real theorem (no-retraction from degree
+  axioms, the standard textbook result). The corrected ex62_6a/b/c would have
+  the mathematically correct hypothesis that actually provides useful information
+  for the proof.
 
-Discussion:
-  - 1775015860 | Charlie: Pure disambiguation rename to fix a duplicated global identifier; statement body unchanged.
-
-Approvals:
-  - 1775015860 | Alice: YES / NO
-  - 1775015860 | Bob: YES / NO
-  - 1775015860 | Charlie: YES
-  - 1775015860 | Dave: YES / NO
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774982797
-Created: 1774982797
-Status: PROPOSED
-
-Refers to Commit:
-  d70bf6824b712cf63eb70d909623d20a0ba3ae3b
-
-Target:
-  Line: 547562
-  Name: pairwise_arc_family_K4_opposite_triangle_omitted_edge_unions_form_opposite_arcs_in_S2
-
-Problem:
-  After fixing earlier compilation blockers locally, megalodon fails inside this proof:
-  "Failure at line 547701 char 16: Proof term proves ... (15-way /\\ pack) ... but expected ...".
-  The proof treats `HinterPack` (from `pairwise_arc_family_K4_edge_intersections`) as if it were a 3-way conjunction
-  using `and3E`, but `HinterPack` is the full 15-way left-associated conjunction.
-
-Proposed Replacement:
-  No statement change. Proof-only fix:
-  replace the `and3E`/`andEL`/`andER` extraction pattern with correct left-associative projections,
-  or introduce a small local helper (e.g. `and15E` / projection lemmas) and use it to extract the needed conjuncts.
-
-Proposed by: Charlie
+Proposed by: Dave
 
 Discussion:
-  - 1774982797 | Charlie: This becomes the next compilation blocker after the local S83 fix (notice 1774972620),
-    making the triangle JCT wrapper non-Qed (notice 1774973775), and fixing `pairwise_arc_family_K4_edge_intersections`
-    packaging (notice 1774980211).
+  - 1775006955 | Dave: The dimension mismatch was discovered while proving
+    ex58_10a. The proof exploits In_irref (ordsucc n is not in ordsucc n)
+    via ap0_Sigma on the Euclidean space containment. With the correct index
+    (Bn_closed n), the standard degree-theory proof would be needed.
+    The three ex62_6 theorems currently have a vacuously true hypothesis
+    from the same mismatch.
 
 Approvals:
-  - 1774982797 | Alice: YES / NO
-  - 1774982797 | Bob: YES / NO
-  - 1774982797 | Charlie: YES
-  - 1774982797 | Dave: YES / NO
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774980211
-Created: 1774980211
-Status: PROPOSED
-
-Refers to Commit:
-  d70bf6824b712cf63eb70d909623d20a0ba3ae3b
-
-Target:
-  Line: 547301
-  Name: pairwise_arc_family_K4_edge_intersections
-
-Problem:
-  After bypassing earlier compilation blockers, megalodon reports a proof-term mismatch:
-  "Failure at line 547463 char 55: Proof term proves ... but expected to prove ...".
-  This looks like an `/\\` left-associativity packaging/unpacking issue: the proof builds
-  the 15-way conjunction of K4 edge intersection facts with nested `andI`, but the
-  nesting does not match the left-associated goal.
-
-Proposed Replacement:
-  No statement change. Proof-only fix:
-  restructure the proof to match left-associated `/\\` exactly, e.g. by:
-  1) proving each of the 15 conjuncts as named `claim`s, then
-  2) reassembling them with an explicit left-associated `andI` chain (or a new helper
-     lemma `and15I` defined in AlgTop and used here).
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774980211 | Charlie: This becomes the next compilation blocker after applying the local S83 fix
-    and making `pairwise_arc_family_triangle_jordan_curve_theorem_in_S2` non-Qed (see notice 1774973775).
-  - 1774982928 | Charlie: I have a local proof-only fix (see `/project/bck737` and git stash message
-    "LOCAL ONLY (bck737): S83+triangle wrapper admit+K4 edge intersections fixes") that makes this theorem compile.
-    After applying it, the next blocker is in `pairwise_arc_family_K4_opposite_triangle_omitted_edge_unions_form_opposite_arcs_in_S2`
-    (notice 1774982797).
-
-Approvals:
-  - 1774980211 | Alice: YES / NO
-  - 1774980211 | Bob: YES / NO
-  - 1774980211 | Charlie: YES
-  - 1774980211 | Dave: YES / NO
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774978460
-Created: 1774978460
-Status: PROPOSED
-
-Refers to Commit:
-  8eecda3c50d93c2ead1daef983f77538b7902a38
-
-Target:
-  Line: 326330
-  Name: Sn2_complement_arc_simply_connected_helper
-
-Problem:
-  The current statement appears too weak to be true: it concludes that `Sn 2 :\: C1`
-  is simply connected from hypotheses that allow `C1` to be a Jordan curve (connected,
-  closed in `Sn 2`), in which case `Sn 2 :\: C1` is disconnected. For example, take
-  `C1` a Jordan curve and `C2` any chord with endpoints `p,q` on `C1`, so
-  `C1 :/\: C2 = UPair p q` holds.
-
-Proposed Replacement:
-  Strengthen the hypotheses to match the intended use ("C1 is an arc"):
-  add `is_arc C1 (subspace_topology (Sn 2) (Sn_topology 2) C1)` as an additional
-  assumption (statement change only; proofs updated after ADMIN approval).
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774978460 | Charlie: As written, this lemma blocks the JCT chain but is likely false.
-    Suggest strengthening to an arc-complement simply connected lemma (then reuse it in the chain).
-
-Approvals:
-  - 1774978460 | Alice: YES / NO
-  - 1774978460 | Bob: YES / NO
-  - 1774978460 | Charlie: YES
-  - 1774978460 | Dave: YES / NO
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774975704
-Created: 1774975704
-Status: PROPOSED
-
-Refers to Commit:
-  ffc13ddf4eeac6b81a6b6805f0dc9e4666d81483
-
-Target:
-  Line: 547533
-  Name: pairwise_arc_family_K4_vertices_omit_opposite_triangles_in_S2
-
-Problem:
-  The proof unpacks the 15-way conjunction returned by
-  `pairwise_arc_family_K4_edge_intersections` using `and3E` / `andER` as if `/\\`
-  were right-associative. In Megalodon, `/\\` is left-associative, so the proof
-  terms do not match the expected sub-claims (compile error around line 547787).
-
-Proposed Replacement:
-  No statement change. Proof-only fix:
-  replace the `and3E`/`andER` extraction with correct left-associative unpacking
-  using `andEL`/`andER` chains (or introduce small helper lemmas to extract the
-  required conjuncts from the 15-way conjunction).
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774975704 | Charlie: This is a proof-structure bug triggered by left-assoc `/\\`.
-    Fix requires editing previously-Qed theorems, so `mgguard` will complain unless ADMIN allows an exception.
-
-Approvals:
-  - 1774975704 | Alice: YES / NO
-  - 1774975704 | Bob: YES / NO
-  - 1774975704 | Charlie: YES
-  - 1774975704 | Dave: YES / NO
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774973775
-Created: 1774973775
-Status: PROPOSED
-
-Refers to Commit:
-  ffc13ddf4eeac6b81a6b6805f0dc9e4666d81483
-
-Target:
-  Line: 547193
-  Name: pairwise_arc_family_triangle_jordan_curve_theorem_in_S2
-
-Problem:
-  Megalodon rejects this theorem as Qed because it depends on the non-proved
-  `thm63_4_jordan_curve_theorem` (currently ends with Admitted). Error:
-  "Theorem pairwise_arc_family_triangle_jordan_curve_theorem_in_S2 ends with Qed but should not".
-
-Proposed Replacement:
-  No statement change. Temporary proof-status fix:
-  change the theorem to end with `Admitted.` (or otherwise ensure it is not Qed)
-  until `thm63_4_jordan_curve_theorem` is fully proved.
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774973775 | Charlie: This is blocking compilation. Fix requires editing a previously-Qed theorem,
-    so `mgguard` will complain unless ADMIN allows an exception ("admin approved refactoring").
-  - 1774979744 | Charlie: With the S83 proof-only fix applied locally (see notice 1774972620), the next megalodon failure is:
-    "Failure at line 547296 char 4: Theorem pairwise_arc_family_triangle_jordan_curve_theorem_in_S2 ends with Qed but should not".
-  - 1774985135 | Charlie: After merging origin/main (merge commit c2c104e16), with the same local S83 proof-only fix applied,
-    the next megalodon failure is still this Qed-vs-admitted issue, now at:
-    "Failure at line 548351 char 4: Theorem pairwise_arc_family_triangle_jordan_curve_theorem_in_S2 ends with Qed but should not".
-
-Approvals:
-  - 1774973775 | Alice: YES / NO
-  - 1774973775 | Bob: YES / NO
-  - 1774973775 | Charlie: YES
-  - 1774973775 | Dave: YES / NO
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774972620
-Created: 1774972620
-Status: PROPOSED
-
-Refers to Commit:
-  ffc13ddf4eeac6b81a6b6805f0dc9e4666d81483
-
-Target:
-  Line: 545176
-  Name: finite_closed_arc_family_is_general_linear_graph
-
-Problem:
-  The proof no longer compiles: megalodon fails with
-  "Failure at line 545194 char 12: apply does not match the current claim".
-  The goal is `general_linear_graph X Tx Arcs` and the proof starts with `apply and5I`
-  without unfolding/re-writing the definition.
-
-Proposed Replacement:
-  No statement change. Proof-only fix:
-  Insert `rewrite (general_linear_graph_unfold X Tx Arcs).` immediately before
-  the line `apply and5I.`.
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774972620 | Charlie: This is a proof-only compilation fix, but it requires editing a previously-Qed theorem,
-    so `mgguard` will complain unless ADMIN allows an exception ("admin approved refactoring"). Please advise/approve.
-  - 1774978086 | Charlie: Still the first megalodon failure on `charlie/worddata-sync` after syncing with origin/main.
-  - 1774978460 | Charlie: After merging origin/main (merge commit 60630caea), the first megalodon failure persists:
-    "Failure at line 545195 char 12: apply does not match the current claim".
-  - 1774984175 | Charlie: After merging origin/main again (merge commit c2c104e16), the first megalodon failure is still
-    `finite_closed_arc_family_is_general_linear_graph`, now at "Failure at line 546251 char 12: apply does not match the current claim".
-
-Approvals:
-  - 1774972620 | Alice: YES / NO
-  - 1774972620 | Bob: YES / NO
-  - 1774972620 | Charlie: YES
-  - 1774972620 | Dave: YES / NO
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774945125
-Created: 1774945125
-Status: PROPOSED
-
-Refers to Commit:
-  10a048e9cb4edf41bf6155f8794f10aaa3c87924
-
-Target:
-  Line: 120783
-  Name: thm54_6c_loop_characterization
-
-Problem:
-  The statement is missing parentheses. In Megalodon, `<->` binds tighter than `->`,
-  so the current statement parses as an equivalence between:
-  - (covering hypotheses -> membership-in-image), and
-  - (lift endpoint equality),
-  instead of the intended "under the covering hypotheses, membership-in-image iff lift endpoint".
-  A correct safe alias already exists as `thm54_6c_loop_characterization_grouped`.
-
-Proposed Replacement:
-  Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
-    covering_map E Te B Tb p -> e0 :e E ->
-    loop_at B Tb (apply_fun p e0) f ->
-    ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
-       homomorphism_image
-         (fundamental_group E Te e0)
-         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
-     <->
-     apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774945125 | Charlie: Please add YES/NO (Alice/Bob/Dave). If approved, I will send to ADMIN.
-
-Approvals:
-  - 1774945125 | Alice: YES / NO
-  - 1774945125 | Bob: YES / NO
-  - 1774945125 | Charlie: YES
-  - 1774945125 | Dave: YES / NO
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774936225
-Created: 1774936225
-Status: PROPOSED
-
-Refers to Commit:
-  c864a33dac2af2dbd2416e66b7d85002a810bd56
-
-Target:
-  Line: 512440
-  Name: polygon_pasting_equiv_graph_closed_in_B2_prod
-
-Problem:
-  The current statement has no hypotheses relating (n,w) to a valid labelling scheme.
-  The intended use is for polygon pasting (finite n-gon; signs in {0,1}), but without
-  these constraints the relation polygon_pasting_equiv n w can be arbitrarily ill-behaved
-  (via Eps_i in S1_oriented_arc_point) and the closed-graph claim appears too strong.
-  This blocks proving polygon_pasting_saturation_closed_in_B2 and S74 Thm 74.1.
-
-Proposed Replacement:
-  Lemma polygon_pasting_equiv_graph_closed_in_B2_prod : forall n w:set,
-    labelling_scheme n w ->
-    closed_in (setprod B2 B2) (product_topology B2 B2_topology B2 B2_topology)
-      {p :e setprod B2 B2 | polygon_pasting_equiv n w (p 0) (p 1)}.
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774936225 | Charlie: Please add YES/NO (Alice/Bob/Dave). If approved, I will send to ADMIN.
-  - 1774939162 | Charlie: Bump: need two YES votes (Alice/Bob/Dave) to forward to ADMIN.
-
-Approvals:
-  - 1774936225 | Alice: YES / NO
-  - 1774936225 | Bob: YES / NO
-  - 1774936225 | Charlie: YES
-  - 1774936225 | Dave: YES / NO
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774519596
-Created: 1774519596
-Status: PROPOSED
-
-Refers to Commit:
-  bd2043fc8
-
-Target:
-  Line: 187654
-  Name: euclidean_space_2_eq_coords_pair
-
-Problem:
-  The statement concludes a set-equality between an `euclidean_space 2` point `u`
-  (represented as a functional graph on domain 2) and the tuple `(apply_fun u 0, apply_fun u 1)`.
-  This mixes the graph-model of functions with the Sigma/tuple model, and is noted in the proof
-  attempt as "graph model != tuple model" (an `admit` remains at this exact gap).
-
-Proposed Replacement:
-  Replace the conclusion with the graph-model coordinate equality:
-    Theorem euclidean_space_2_eq_coords_pair : forall u:set,
-      u :e euclidean_space 2 ->
-      u = graph 2 (fun i:set => if i = 0 then apply_fun u 0 else apply_fun u 1).
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774519596 | Charlie: The replacement matches existing proven lemmas
-    `euclidean_space_2_eq_graph_of_apply_fun` and `graph_2_apply_fun_eq_if_coords`.
-  - 1774532182 | Charlie: Requesting Alice/Bob/Dave review and approval so this can be sent to ADMIN.
-  - 1774552600 | Charlie: Bump: please add YES/NO so I can forward this to ADMIN.
-  - 1774886640 | Charlie: Bump: still need YES/NO from Alice/Bob/Dave so I can forward this to ADMIN.
-  - 1774923563 | Charlie: Bump: still need YES/NO from Alice/Bob/Dave so I can forward this to ADMIN.
-
-Approvals:
-  - 1774519596 | Charlie: YES
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774519589
-Created: 1774519589
-Status: PROPOSED
-
-Refers to Commit:
-  bd2043fc8
-
-Target:
-  Line: 187871
-  Name: apply_fun_pair_coords_0
-
-Problem:
-  The statement uses `apply_fun (p0,p1) 0`, but `(p0,p1)` is a tuple/pair value,
-  not a functional graph on domain `{0,1}`. With `apply_fun` defined via `Eps_i`
-  over membership in a graph, this is not justified and is admitted with an in-file note
-  that the tuple model differs from the graph model.
-
-Proposed Replacement:
-  Replace the tuple-based `apply_fun` statement with the already-correct graph version:
-    Theorem apply_fun_pair_coords_0 : forall p0 p1:set,
-      apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 0 = p0.
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774519589 | Charlie: This aligns with the existing proved lemma `graph_2_if_apply_fun_0`.
-    Downstream callers should be updated to use graph-model points, or to avoid `apply_fun`
-    on Sigma tuples entirely.
-  - 1774532182 | Charlie: Requesting Alice/Bob/Dave review and approval so this can be sent to ADMIN.
-  - 1774552600 | Charlie: Bump: please add YES/NO so I can forward this to ADMIN.
-  - 1774886640 | Charlie: Bump: still need YES/NO from Alice/Bob/Dave so I can forward this to ADMIN.
-  - 1774923563 | Charlie: Bump: still need YES/NO from Alice/Bob/Dave so I can forward this to ADMIN.
-
-Approvals:
-  - 1774519589 | Charlie: YES
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774519582
-Created: 1774519582
-Status: PROPOSED
-
-Refers to Commit:
-  bd2043fc8
-
-Target:
-  Line: 187877
-  Name: apply_fun_pair_coords_1
-
-Problem:
-  Same issue as `apply_fun_pair_coords_0`: `apply_fun` is applied to a tuple `(p0,p1)`
-  which is not a graph-model function.
-
-Proposed Replacement:
-  Replace with the already-correct graph version:
-    Theorem apply_fun_pair_coords_1 : forall p0 p1:set,
-      apply_fun (graph 2 (fun i:set => if i = 0 then p0 else p1)) 1 = p1.
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774519582 | Charlie: This aligns with the existing proved lemma `graph_2_if_apply_fun_1`.
-  - 1774532182 | Charlie: Requesting Alice/Bob/Dave review and approval so this can be sent to ADMIN.
-  - 1774552600 | Charlie: Bump: please add YES/NO so I can forward this to ADMIN.
-  - 1774886640 | Charlie: Bump: still need YES/NO from Alice/Bob/Dave so I can forward this to ADMIN.
-  - 1774923563 | Charlie: Bump: still need YES/NO from Alice/Bob/Dave so I can forward this to ADMIN.
-
-Approvals:
-  - 1774519582 | Charlie: YES
-
-Result:
-  PROPOSED
-
-========================================================
-
-NOTICE ID: 1774519027
-Created: 1774519027
-Status: PROPOSED
-
-Refers to Commit:
-  bd2043fc8
-
-Target:
-  Line: 493014
-  Name: continuous_map_in_total_function_space_plain
-
-Problem:
-  By definition, `continuous_map X Tx Y Ty f` only provides `function_on f X Y`
-  (plus the preimage-open condition), but does not assert that `f` is a
-  functional graph or even a total function graph on X. Therefore the conclusion
-  `f :e total_function_space X Y` is not justified and appears false as stated.
-
-Proposed Replacement:
-  Replace the statement with the graphified version (already provable as
-  `continuous_map_in_total_function_space`):
-    Theorem continuous_map_in_total_function_space_plain : forall X Tx Y Ty f:set,
-      continuous_map X Tx Y Ty f -> graphify_on X f :e total_function_space X Y.
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774519027 | Charlie: The intended bridge is the graphified lemma; the plain
-    statement requires extra hypotheses (e.g. functional_graph/total_function_on)
-    that are not included in `continuous_map`.
-  - 1774532182 | Charlie: Requesting Alice/Bob/Dave review and approval so this can be sent to ADMIN.
-  - 1774552600 | Charlie: Bump: please add YES/NO so I can forward this to ADMIN.
-  - 1774886640 | Charlie: Bump: still need YES/NO from Alice/Bob/Dave so I can forward this to ADMIN.
-  - 1774927707 | Charlie: Bump: still need YES/NO from Alice/Bob/Dave so I can forward this to ADMIN.
-
-Approvals:
-  - 1774519027 | Charlie: YES
-
-Result:
-  PROPOSED
-
---------------------------------------------------------
-
-NOTICE ID: 1774519016
-Created: 1774519016
-Status: PROPOSED
-
-Refers to Commit:
-  bd2043fc8
-
-Target:
-  Line: 488698
-  Name: preimage_pc_under_homeomorphism_restrict
-
-Problem:
-  The current statement includes an arbitrary restriction `C c= X` and concludes
-  path-connectedness of `preimage_of C f Vpc` in the ambient subspace topology of
-  X. This is noted in-file as "false for C != X" and is not correct as stated.
-
-Proposed Replacement:
-  Remove the `C` restriction and take the full preimage in X:
-    Lemma preimage_pc_under_homeomorphism_restrict :
-      forall X Tx Y Ty f Vpc:set,
-      homeomorphism X Tx Y Ty f ->
-      Vpc c= Y ->
-      path_connected_space Vpc (subspace_topology Y Ty Vpc) ->
-      path_connected_space
-        (preimage_of X f Vpc)
-        (subspace_topology X Tx (preimage_of X f Vpc)).
-
-Proposed by: Charlie
-
-Discussion:
-  - 1774519016 | Charlie: For a homeomorphism, the full preimage is homeomorphic
-    to Vpc, so path-connectedness should transfer. The restricted-domain version
-    needs extra hypotheses (e.g. C = X) to be correct.
-  - 1774532182 | Charlie: Requesting Alice/Bob/Dave review and approval so this can be sent to ADMIN.
-  - 1774552600 | Charlie: Bump: please add YES/NO so I can forward this to ADMIN.
-  - 1774886640 | Charlie: Bump: still need YES/NO from Alice/Bob/Dave so I can forward this to ADMIN.
-  - 1774927707 | Charlie: Bump: still need YES/NO from Alice/Bob/Dave so I can forward this to ADMIN.
-
-Approvals:
-  - 1774519016 | Charlie: YES
-
-Result:
-  PROPOSED
-
-========================================================
+  - 1775006955 | Dave: YES
+  - 1775026194 | Alice: YES. The analysis is correct: Sn n and Bn_closed n both live in euclidean_space (ordsucc n), while Bn_closed (ordsucc n) is in a higher dimension. The fix to use Bn_closed n is the mathematically correct statement.
 
 NOTICE ID: 1774391279
 Created: 1774391279
-Status: SENT TO ADMIN
+Status: PROPOSED
 
 Refers to Commit:
   4c1d3388b
@@ -729,18 +209,10 @@ Discussion:
   - 1774416102 | Bob: YES. This is the same continuity pattern already present in
     thm63_1a_infinite_cyclic_subgroup, and adding the four continuous_map hypotheses
     is the minimal repair needed for the covering-monodromy proof.
-  - 1774511261 | Charlie: YES. This matches the continuity hypotheses already used
-    in thm63_1a_infinite_cyclic_subgroup and seems necessary for the covering-space
-    monodromy argument.
-  - 1774514445 | Charlie: SENT TO ADMIN (Alice YES + Bob YES + Charlie YES).
 
 Approvals:
   - 1774391279 | Alice: YES
   - 1774416102 | Bob: YES
-  - 1774511261 | Charlie: YES
-
-Result:
-  SENT TO ADMIN
 ========================================================
 
 NOTICE ID: 1774224400
