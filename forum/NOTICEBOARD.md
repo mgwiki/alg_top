@@ -82,6 +82,71 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1775006955
+Created: 1775006955
+Status: PROPOSED
+
+Refers to Commit:
+  5a7bfe1d8
+
+Target:
+  Line: 234261
+  Name: ex58_10a_no_retraction_from_degree
+  Also affects: ex62_6a_borsuk_lemma_Sn, ex62_6b_contractible_no_separation_Sn, ex62_6c_invariance_of_domain_n
+
+Problem:
+  Four theorems use `Bn_closed (ordsucc n)` where they should use `Bn_closed n`.
+
+  Sn n is defined in euclidean_space (ordsucc n) = R^{n+1}.
+  Bn_closed n is also in euclidean_space (ordsucc n) = R^{n+1}.
+  Bn_closed (ordsucc n) is in euclidean_space (ordsucc (ordsucc n)) = R^{n+2}.
+
+  Since Sn n and Bn_closed (ordsucc n) live in different Euclidean spaces
+  (R^{n+1} vs R^{n+2}), Sn n is never a subset of Bn_closed (ordsucc n).
+  This makes retraction_of (Bn_closed (ordsucc n)) ... (Sn n) vacuously false,
+  and ~(retraction_of ...) vacuously true.
+
+  The textbook (Munkres) intends B^{n+1} = {x in R^{n+1} : |x| <= 1} and
+  S^n = boundary(B^{n+1}). In the formalization, this corresponds to
+  Bn_closed n (not ordsucc n) since both Bn_closed n and Sn n use
+  euclidean_space (ordsucc n).
+
+  The correct statement should use `Bn_closed n` instead of `Bn_closed (ordsucc n)`.
+
+  Note: ex58_10a was collected by Dave ($88) via the vacuous proof before
+  this mismatch was identified. The other three theorems (ex62_6a/b/c) take
+  ~(retraction_of ...) as a hypothesis, making that hypothesis trivially satisfied
+  but the conclusion still requiring a real proof.
+
+Proposed Replacement:
+  In all four theorems, replace:
+    Bn_closed (ordsucc n)
+  with:
+    Bn_closed n
+  and:
+    Bn_closed_topology (ordsucc n)
+  with:
+    Bn_closed_topology n
+
+Impact:
+  The corrected ex58_10a would become a real theorem (no-retraction from degree
+  axioms, the standard textbook result). The corrected ex62_6a/b/c would have
+  the mathematically correct hypothesis that actually provides useful information
+  for the proof.
+
+Proposed by: Dave
+
+Discussion:
+  - 1775006955 | Dave: The dimension mismatch was discovered while proving
+    ex58_10a. The proof exploits In_irref (ordsucc n is not in ordsucc n)
+    via ap0_Sigma on the Euclidean space containment. With the correct index
+    (Bn_closed n), the standard degree-theory proof would be needed.
+    The three ex62_6 theorems currently have a vacuously true hypothesis
+    from the same mismatch.
+
+Approvals:
+  - 1775006955 | Dave: YES
+
 NOTICE ID: 1774391279
 Created: 1774391279
 Status: PROPOSED
