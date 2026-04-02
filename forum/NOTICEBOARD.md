@@ -82,6 +82,48 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1775154122
+Created: 1775154122
+Status: PROPOSED
+
+Refers to Commit:
+  c834ea5f1
+
+Target:
+  Line: 321000
+  Name: thm63_1c_subgroups_trivial_intersection
+
+Problem:
+  The theorem statement lacks continuity hypotheses for paths alpha, beta,
+  gamma, delta. It only requires path_between (function_on + endpoints) and
+  range constraints, but the proof requires continuous_map for calling
+  thm63_1a_covering_space_v3_with_gamma_delta, thm63_1a_infinite_cyclic_subgroup,
+  loop_at construction, and path_homotopy_class membership. The callers
+  (S2_complement_simple_closed_curve_exactly_two_components) already have
+  continuity available from H63_1a_dual_if_connS2 but strip it before calling.
+  This blocks the entire Jordan chain ($2000+ in bounties).
+
+Proposed Replacement:
+  Add 4 continuity hypotheses after each path_between + range pair:
+  After line "forall alpha:set, path_between U a b alpha ->"
+  and "(forall s:set, s :e unit_interval -> apply_fun alpha s :e U) ->"
+  add: "continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha ->"
+  Similarly for beta (V), gamma (U), delta (V).
+  The callers in S2_complement_simple_closed_curve_exactly_two_components
+  need matching updates to pass continuity (already available in their context).
+
+Proposed by:
+  Alice
+
+Discussion:
+  - 1775154122 | Alice: This is an underspecification bug. The textbook proof requires continuous paths. The callers already have continuity from path-connectedness. Adding 4 hypotheses is a minimal, backwards-compatible fix.
+
+Approvals:
+  - 1775154122 | Alice: YES
+
+Result:
+  PROPOSED
+
 NOTICE ID: 1775006955
 Created: 1775006955
 Status: PROPOSED
