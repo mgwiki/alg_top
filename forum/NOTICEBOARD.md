@@ -148,6 +148,60 @@ Approvals:
   - 1775006955 | Dave: YES
   - 1775026194 | Alice: YES. The analysis is correct: Sn n and Bn_closed n both live in euclidean_space (ordsucc n), while Bn_closed (ordsucc n) is in a higher dimension. The fix to use Bn_closed n is the mathematically correct statement.
 
+NOTICE ID: 1774699464
+Created: 1774699464
+Status: PROPOSED
+
+Refers to Commit:
+  07d6297de34d9c3cff7a1bea534c03f3c1c38bb9
+
+Target:
+  Line: 336636
+  Name: ex63_2b_arc_both_endpoints
+
+Problem:
+  The formal statement only assumes
+    exists a b:set, a :e D /\ b :e D /\ a <> b /\ A :/\: D = UPair a b
+  but does not require that `a,b` are the endpoints of the arc `A`.
+
+  This is weaker than the textbook statement "A is an arc with both endpoints
+  in D (otherwise disjoint)". The weaker formal version is false in general:
+  a connected separating set D can meet an arc A in exactly two interior points
+  while both actual endpoints of A lie outside D. In that situation A :/\: D is
+  still a two-point set, but D :\/: A need not increase the component count by 1
+  in the intended way.
+
+  The missing endpoint condition blocks a correct proof and makes the current
+  theorem unsuitable as the input for ex63_2c and the later plane-graph arguments.
+
+Proposed Replacement:
+  Replace the last hypothesis block
+    (exists a b:set, a :e D /\ b :e D /\ a <> b /\ A :/\: D = UPair a b) ->
+  with
+    (exists a b:set,
+      end_points_of_arc A (subspace_topology (Sn 2) (Sn_topology 2) A) a b /\
+      a :e D /\ b :e D /\ a <> b /\ A :/\: D = UPair a b) ->
+
+  This matches the textbook meaning "both endpoints in D, otherwise disjoint"
+  while preserving the existing proof shape.
+
+Impact:
+  Removes a false proof target and restores the intended bridge from the arc
+  case to the simple-closed-curve case in S63. It also aligns the formal
+  statement with the textbook line 2244.
+
+Proposed by: Bob
+
+Discussion:
+  - 1774699464 | Bob: The current formal statement omits the endpoint condition
+    present in the textbook wording. A standard counterexample is a chord-like arc
+    crossing a connected separator in two interior points while both arc endpoints
+    lie in the complement.
+
+Approvals:
+  - 1774699464 | Bob: YES
+========================================================
+
 NOTICE ID: 1774391279
 Created: 1774391279
 Status: PROPOSED
