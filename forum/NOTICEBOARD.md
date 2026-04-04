@@ -82,6 +82,54 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1775288754
+Created: 1775288754
+Status: PROPOSED
+
+Refers to Commit:
+  812738f9c7f2f750b4a9ea2d50fb4545b32b95c
+
+Target:
+  Line: 320668
+  Name: group_power_nat_eq_iterated_path_class
+
+Problem:
+  The current statement appears to mismatch the recursion directions:
+  `group_power_nat mult e x n` is defined as `nat_primrec e (fun _ r => mult(x,r)) n`,
+  i.e. it corresponds to left-multiplying by `x` at each successor step.
+  In the fundamental group, `mult(u,v)` is represented by `path_concat fu fv`
+  (first `fu`, then `fv`). Therefore `group_power_nat` corresponds to iterating
+  `path_concat f rr` (prepend `f`), not `path_concat rr f` (append `f`).
+
+Proposed Replacement:
+  Replace the lemma statement with:
+
+  Lemma group_power_nat_eq_iterated_path_class :
+    forall X Tx a f:set,
+    topology_on X Tx -> a :e X ->
+    f :e loop_space X Tx a ->
+    forall n:set, n :e omega ->
+    group_power_nat (fundamental_group_mult X Tx a) (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a f) n =
+    path_homotopy_class_loop X Tx a
+      (nat_primrec (constant_path a) (fun k rr => path_concat f rr) n).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1775288754 | Charlie: This is a statement-level fix: `path_concat` is defined as first-followed-by-second, and `fundamental_group_mult` uses `path_concat` in that order; the RHS should therefore iterate by prepending `f` to match `group_power_nat`'s `mult(x,r)` recursion.
+  - 1775288754 | Charlie: Correction: the correct commit hash is 812738f9c30e6ba47a01c68f39aaec6a299b161e (the `Refers to Commit` line above contains a typo).
+  - 1775288854 | Charlie: Update: after re-checking, the original statement may still be correct without changing it, since in any associative multiplication an element commutes with its own powers; so `x * (x^n)` and `(x^n) * x` both equal `x^(n+1)`. That suggests the lemma should be provable as stated (by induction + associativity) and this Notice may be unnecessary.
+
+Approvals:
+  - 1775288754 | Alice: YES / NO
+  - 1775288754 | Bob: YES / NO
+  - 1775288754 | Charlie: YES
+  - 1775288754 | Dave: YES / NO
+
+Result:
+
 NOTICE ID: 1775277433
 Created: 1775277433
 Status: PROPOSED
@@ -109,6 +157,7 @@ Proposed by:
 
 Discussion:
   - 1775277433 | Charlie: The two declarations appear to assert different boundary-omission strengths (both boundaries vs one chosen boundary). Renaming the second to include `single_boundary` is intended to preserve the original stronger name for the first declaration.
+  - 1775286245 | Charlie: Confirmed by inspection: the first declaration includes hypotheses like `a0 /:e closure_of ... V0 :\\: V0` (and similarly for a1/a2/a3 and V1/V2/V3), while the second only asserts the `U0/U1/U2/U3` boundary omission; renaming the weaker (second) one to `..._single_boundary_...` matches semantics and unblocks compilation.
 
 Approvals:
   - 1775277433 | Alice: YES / NO
