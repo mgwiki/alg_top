@@ -82,6 +82,55 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1775277433
+Created: 1775277433
+Status: PROPOSED
+
+Refers to Commit:
+  eb8188b577ff2f750b4a9ea2d50fb4545b32b95c
+
+Target:
+  Line: 574898 and 575901
+  Name: general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2
+
+Problem:
+  The theorem name `general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2`
+  is declared twice in `Math_Background.mg`, which breaks compilation (duplicate identifier).
+
+Proposed Replacement:
+  In the second declaration (line 575901), rename the theorem to:
+
+  Theorem general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_single_boundary_in_S2 :
+
+  Leave the first declaration (line 574898) unchanged.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1775277433 | Charlie: The two declarations appear to assert different boundary-omission strengths (both boundaries vs one chosen boundary). Renaming the second to include `single_boundary` is intended to preserve the original stronger name for the first declaration.
+
+Approvals:
+  - 1775277433 | Alice: YES / NO
+  - 1775277433 | Bob: YES / NO
+  - 1775277433 | Charlie: YES
+  - 1775277433 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1775154122
 Created: 1775154122
 Status: PROPOSED
