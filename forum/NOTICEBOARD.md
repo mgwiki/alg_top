@@ -775,8 +775,10 @@ Admin Decision:
   - | APPROVED / REJECTED
 
 Implemented by:
+  Charlie
 
 Implementation Commit:
+  59c140d47d3e8012f0a1dfe83f4853dec031d5ec
 
 Status:
   APPROVED
