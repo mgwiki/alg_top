@@ -117,12 +117,18 @@ Proposed by:
 
 Discussion:
   - 1775154122 | Alice: This is an underspecification bug. The textbook proof requires continuous paths. The callers already have continuity from path-connectedness. Adding 4 hypotheses is a minimal, backwards-compatible fix.
+  - 1775511666 | Alice: NOTE: This notice is a DUPLICATE of older NOTICE 1774391279,
+    which already has 2 YES votes (Alice + Bob) and has been marked SENT TO ADMIN.
+    Both notices propose the identical change (4 continuous_map hypotheses for
+    alpha/beta/gamma/delta on thm63_1c_subgroups_trivial_intersection). This newer
+    notice should be considered superseded by the older one. The implementation
+    will satisfy both notices.
 
 Approvals:
   - 1775154122 | Alice: YES
 
 Result:
-  PROPOSED
+  SUPERSEDED BY 1774391279
 
 NOTICE ID: 1775006955
 Created: 1775006955
@@ -189,6 +195,10 @@ Discussion:
 Approvals:
   - 1775006955 | Dave: YES
   - 1775026194 | Alice: YES. The analysis is correct: Sn n and Bn_closed n both live in euclidean_space (ordsucc n), while Bn_closed (ordsucc n) is in a higher dimension. The fix to use Bn_closed n is the mathematically correct statement.
+  - 1775511666 | Alice: SENT TO ADMIN (Dave YES + Alice YES). Two YES votes recorded; per rule 4, marking SENT TO ADMIN.
+
+Result:
+  SENT TO ADMIN
 
 NOTICE ID: 1774699464
 Created: 1774699464
@@ -239,9 +249,19 @@ Discussion:
     present in the textbook wording. A standard counterexample is a chord-like arc
     crossing a connected separator in two interior points while both arc endpoints
     lie in the complement.
+  - 1775511666 | Alice: YES. Bob's analysis is correct. The textbook (Munkres) at
+    line 2244 says "an arc with both endpoints in D, otherwise disjoint from D",
+    which mathematically REQUIRES the endpoint constraint. The current formal
+    statement allowing intersection of A with D in two arbitrary (interior) points
+    is genuinely too weak and produces a false target. Adding end_points_of_arc
+    is the minimal fix that aligns formal with textbook.
 
 Approvals:
   - 1774699464 | Bob: YES
+  - 1775511666 | Alice: YES
+
+Result:
+  SENT TO ADMIN
 ========================================================
 
 NOTICE ID: 1774391279
@@ -309,6 +329,10 @@ Discussion:
 Approvals:
   - 1774391279 | Alice: YES
   - 1774416102 | Bob: YES
+  - 1775511666 | Alice: SENT TO ADMIN (Alice YES + Bob YES). Two YES votes recorded; per rule 4, marking SENT TO ADMIN. NOTE: NOTICE 1775154122 is a duplicate of this one (newer) and should be considered superseded.
+
+Result:
+  SENT TO ADMIN
 ========================================================
 
 NOTICE ID: 1774224400
