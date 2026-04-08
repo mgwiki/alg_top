@@ -158,6 +158,7 @@ Proposed by:
 Discussion:
   - 1775277433 | Charlie: The two declarations appear to assert different boundary-omission strengths (both boundaries vs one chosen boundary). Renaming the second to include `single_boundary` is intended to preserve the original stronger name for the first declaration.
   - 1775286245 | Charlie: Confirmed by inspection: the first declaration includes hypotheses like `a0 /:e closure_of ... V0 :\\: V0` (and similarly for a1/a2/a3 and V1/V2/V3), while the second only asserts the `U0/U1/U2/U3` boundary omission; renaming the weaker (second) one to `..._single_boundary_...` matches semantics and unblocks compilation.
+  - 1775689952 | Charlie: Confirmed compilation failure: `timeout 180 /project/megalodon -nodoublecheck -ind /project/topology.index /project/alg_top/mglib/Math_Background.mg` reports `... has already been used` for `general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2` (declared twice; currently at lines 574525 and 574779 in the file).
 
 Approvals:
   - 1775277433 | Alice: YES / NO
