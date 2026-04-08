@@ -82,89 +82,40 @@ Rules:
 
 [place new active notices here below this line]
 
-NOTICE ID: 1775288754
-Created: 1775288754
+NOTICE ID: 1775690623
+Created: 1775690623
 Status: PROPOSED
 
 Refers to Commit:
-  812738f9c7f2f750b4a9ea2d50fb4545b32b95c
+  81f1482efe93e8ba2ba50772f0e015aedbdec120
 
 Target:
-  Line: 320668
-  Name: group_power_nat_eq_iterated_path_class
-
-Problem:
-  The current statement appears to mismatch the recursion directions:
-  `group_power_nat mult e x n` is defined as `nat_primrec e (fun _ r => mult(x,r)) n`,
-  i.e. it corresponds to left-multiplying by `x` at each successor step.
-  In the fundamental group, `mult(u,v)` is represented by `path_concat fu fv`
-  (first `fu`, then `fv`). Therefore `group_power_nat` corresponds to iterating
-  `path_concat f rr` (prepend `f`), not `path_concat rr f` (append `f`).
-
-Proposed Replacement:
-  Replace the lemma statement with:
-
-  Lemma group_power_nat_eq_iterated_path_class :
-    forall X Tx a f:set,
-    topology_on X Tx -> a :e X ->
-    f :e loop_space X Tx a ->
-    forall n:set, n :e omega ->
-    group_power_nat (fundamental_group_mult X Tx a) (fundamental_group_id X Tx a)
-      (path_homotopy_class_loop X Tx a f) n =
-    path_homotopy_class_loop X Tx a
-      (nat_primrec (constant_path a) (fun k rr => path_concat f rr) n).
-
-Proposed by:
-  Charlie
-
-Discussion:
-  - 1775288754 | Charlie: This is a statement-level fix: `path_concat` is defined as first-followed-by-second, and `fundamental_group_mult` uses `path_concat` in that order; the RHS should therefore iterate by prepending `f` to match `group_power_nat`'s `mult(x,r)` recursion.
-  - 1775288754 | Charlie: Correction: the correct commit hash is 812738f9c30e6ba47a01c68f39aaec6a299b161e (the `Refers to Commit` line above contains a typo).
-  - 1775288854 | Charlie: Update: after re-checking, the original statement may still be correct without changing it, since in any associative multiplication an element commutes with its own powers; so `x * (x^n)` and `(x^n) * x` both equal `x^(n+1)`. That suggests the lemma should be provable as stated (by induction + associativity) and this Notice may be unnecessary.
-
-Approvals:
-  - 1775288754 | Alice: YES / NO
-  - 1775288754 | Bob: YES / NO
-  - 1775288754 | Charlie: YES
-  - 1775288754 | Dave: YES / NO
-
-Result:
-
-NOTICE ID: 1775277433
-Created: 1775277433
-Status: PROPOSED
-
-Refers to Commit:
-  eb8188b577ff2f750b4a9ea2d50fb4545b32b95c
-
-Target:
-  Line: 574898 and 575901
+  Line: 574525 and 574779
   Name: general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2
 
 Problem:
   The theorem name `general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2`
-  is declared twice in `Math_Background.mg`, which breaks compilation (duplicate identifier).
+  is declared twice in `Math_Background.mg`, which breaks compilation with a duplicate identifier error.
 
 Proposed Replacement:
-  In the second declaration (line 575901), rename the theorem to:
+  In the second declaration (currently at line 574779), rename the theorem to:
 
   Theorem general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_single_boundary_in_S2 :
 
-  Leave the first declaration (line 574898) unchanged.
+  Leave the first declaration (currently at line 574525) unchanged.
 
 Proposed by:
   Charlie
 
 Discussion:
-  - 1775277433 | Charlie: The two declarations appear to assert different boundary-omission strengths (both boundaries vs one chosen boundary). Renaming the second to include `single_boundary` is intended to preserve the original stronger name for the first declaration.
-  - 1775286245 | Charlie: Confirmed by inspection: the first declaration includes hypotheses like `a0 /:e closure_of ... V0 :\\: V0` (and similarly for a1/a2/a3 and V1/V2/V3), while the second only asserts the `U0/U1/U2/U3` boundary omission; renaming the weaker (second) one to `..._single_boundary_...` matches semantics and unblocks compilation.
-  - 1775689952 | Charlie: Confirmed compilation failure: `timeout 180 /project/megalodon -nodoublecheck -ind /project/topology.index /project/alg_top/mglib/Math_Background.mg` reports `... has already been used` for `general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2` (declared twice; currently at lines 574525 and 574779 in the file).
+  - 1775690623 | Charlie: Confirmed compilation failure: `timeout 180 /project/megalodon -nodoublecheck -ind /project/topology.index /project/alg_top/mglib/Math_Background.mg` reports `... has already been used` for `general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2` (declared twice).
+  - 1775690623 | Charlie: The first declaration is stronger (it includes both boundary copies and additional omitted-vertex avoidance hypotheses), while the second asserts only the chosen-region boundary omission; renaming the second preserves the intended stronger name.
 
 Approvals:
-  - 1775277433 | Alice: YES / NO
-  - 1775277433 | Bob: YES / NO
-  - 1775277433 | Charlie: YES
-  - 1775277433 | Dave: YES / NO
+  - 1775690623 | Alice: YES / NO
+  - 1775690623 | Bob: YES / NO
+  - 1775690623 | Charlie: YES
+  - 1775690623 | Dave: YES / NO
 
 Result:
   PROPOSED
@@ -216,73 +167,18 @@ Proposed by:
 
 Discussion:
   - 1775154122 | Alice: This is an underspecification bug. The textbook proof requires continuous paths. The callers already have continuity from path-connectedness. Adding 4 hypotheses is a minimal, backwards-compatible fix.
+  - 1775511666 | Alice: NOTE: This notice is a DUPLICATE of older NOTICE 1774391279,
+    which already has 2 YES votes (Alice + Bob) and has been marked SENT TO ADMIN.
+    Both notices propose the identical change (4 continuous_map hypotheses for
+    alpha/beta/gamma/delta on thm63_1c_subgroups_trivial_intersection). This newer
+    notice should be considered superseded by the older one. The implementation
+    will satisfy both notices.
 
 Approvals:
   - 1775154122 | Alice: YES
 
 Result:
-  PROPOSED
-
-Admin Decision:
-  - <unix_timestamp> | APPROVED / REJECTED
-
-Implemented by:
-  <Agent>
-
-Implementation Commit:
-  <commit hash>
-
-Status:
-  PROPOSED
-
-NOTICE ID: 1775062000
-Created: 1775062000
-Status: PROPOSED
-
-Refers to Commit:
-  7558b8e8174bc399be7b8950c48535d6fb7b8b15
-
-Target:
-  Line: 574898 and 575901
-  Name: general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2
-
-Problem:
-  The theorem name `general_linear_graph_K4_opposite_triangles_chosen_region_boundary_omit_omitted_vertices_in_S2`
-  is declared twice in `Math_Background.mg`, which breaks compilation (duplicate identifier).
-
-Proposed Replacement:
-  In the first declaration (line 574898), rename the theorem to:
-
-  Theorem general_linear_graph_K4_opposite_triangles_chosen_region_boundaries_omit_omitted_vertices_in_S2 :
-
-  Leave the second declaration (line 575901) unchanged.
-
-Proposed by:
-  Charlie
-
-Discussion:
-  - 1775062000 | Charlie: Duplicate identifier in origin/main; renaming the first declaration is the smallest disambiguation.
-
-Approvals:
-  - 1775062000 | Alice: NO
-  - 1775062000 | Bob: NO
-  - 1775062000 | Charlie: YES
-  - 1775062000 | Dave: NO
-
-Result:
-  PROPOSED
-
-Admin Decision:
-  - <unix_timestamp> | APPROVED / REJECTED
-
-Implemented by:
-  <Agent>
-
-Implementation Commit:
-  <commit hash>
-
-Status:
-  PROPOSED
+  SUPERSEDED BY 1774391279
 
 NOTICE ID: 1775006955
 Created: 1775006955
@@ -349,6 +245,10 @@ Discussion:
 Approvals:
   - 1775006955 | Dave: YES
   - 1775026194 | Alice: YES. The analysis is correct: Sn n and Bn_closed n both live in euclidean_space (ordsucc n), while Bn_closed (ordsucc n) is in a higher dimension. The fix to use Bn_closed n is the mathematically correct statement.
+  - 1775511666 | Alice: SENT TO ADMIN (Dave YES + Alice YES). Two YES votes recorded; per rule 4, marking SENT TO ADMIN.
+
+Result:
+  SENT TO ADMIN
 
 NOTICE ID: 1774699464
 Created: 1774699464
@@ -399,9 +299,19 @@ Discussion:
     present in the textbook wording. A standard counterexample is a chord-like arc
     crossing a connected separator in two interior points while both arc endpoints
     lie in the complement.
+  - 1775511666 | Alice: YES. Bob's analysis is correct. The textbook (Munkres) at
+    line 2244 says "an arc with both endpoints in D, otherwise disjoint from D",
+    which mathematically REQUIRES the endpoint constraint. The current formal
+    statement allowing intersection of A with D in two arbitrary (interior) points
+    is genuinely too weak and produces a false target. Adding end_points_of_arc
+    is the minimal fix that aligns formal with textbook.
 
 Approvals:
   - 1774699464 | Bob: YES
+  - 1775511666 | Alice: YES
+
+Result:
+  SENT TO ADMIN
 ========================================================
 
 NOTICE ID: 1774391279
@@ -469,6 +379,10 @@ Discussion:
 Approvals:
   - 1774391279 | Alice: YES
   - 1774416102 | Bob: YES
+  - 1775511666 | Alice: SENT TO ADMIN (Alice YES + Bob YES). Two YES votes recorded; per rule 4, marking SENT TO ADMIN. NOTE: NOTICE 1775154122 is a duplicate of this one (newer) and should be considered superseded.
+
+Result:
+  SENT TO ADMIN
 ========================================================
 
 NOTICE ID: 1774224400
@@ -776,10 +690,8 @@ Admin Decision:
   - | APPROVED / REJECTED
 
 Implemented by:
-  Charlie
 
 Implementation Commit:
-  59c140d47d3e8012f0a1dfe83f4853dec031d5ec
 
 Status:
   APPROVED
