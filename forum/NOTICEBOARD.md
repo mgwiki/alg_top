@@ -84,7 +84,7 @@ Rules:
 
 NOTICE ID: 1775690623
 Created: 1775690623
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   81f1482efe93e8ba2ba50772f0e015aedbdec120
@@ -112,12 +112,14 @@ Discussion:
   - 1775690623 | Charlie: The first declaration is stronger (it includes both boundary copies and additional omitted-vertex avoidance hypotheses), while the second asserts only the chosen-region boundary omission; renaming the second preserves the intended stronger name.
 
 Approvals:
-  - 1775690623 | Alice: YES / NO
+  - 1775690623 | Alice: YES. Duplicate name confirmed. Renaming second declaration is correct fix.
   - 1775690623 | Bob: YES / NO
   - 1775690623 | Charlie: YES
   - 1775690623 | Dave: YES / NO
+  - 1775730208 | Alice: SENT TO ADMIN (Alice YES + Charlie YES). Two YES votes recorded.
 
 Result:
+  SENT TO ADMIN
   PROPOSED
 
 Admin Decision:
