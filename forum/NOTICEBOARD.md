@@ -385,6 +385,61 @@ Result:
   SENT TO ADMIN
 ========================================================
 
+NOTICE ID: 1775727049
+Created: 1775727049
+Status: PROPOSED
+
+Refers to Commit:
+  b16bee178
+
+Target:
+  Line: 350344
+  Name: thm63_1b_infinite_cyclic_generator
+
+Problem:
+  The theorem statement is missing continuous_map hypotheses for the
+  paths alpha and beta. It has:
+    path_between U a b alpha
+    (forall s, s :e unit_interval -> apply_fun alpha s :e U)
+    path_between V b a beta
+    (forall s, s :e unit_interval -> apply_fun beta s :e V)
+  but does NOT have:
+    continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha
+    continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) beta
+
+  This is the exact same gap as in the sibling theorem thm63_1c_subgroups_trivial_intersection
+  (Notice 1774391279). The proof of thm63_1b requires applying thm63_1a_infinite_cyclic_subgroup,
+  which has continuous_map hypotheses. Additionally, the covering space monodromy argument
+  needed to show that g = [alpha.beta] generates the infinite cyclic group (not just has
+  infinite order) requires the covering space from thm63_1a_covering_space_v4, which also
+  needs continuity. Without continuity, path_homotopy_class_loop X Tx a (path_concat alpha beta)
+  may not even be in the fundamental group.
+
+Proposed Replacement:
+  Add two continuous_map hypotheses (for alpha and beta):
+    continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha ->
+    continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) beta ->
+  placed after the respective path_between and forall hypotheses.
+
+Impact:
+  Enables the covering space proof of thm63_1b. This theorem is needed for
+  the Jordan separation results (S63) and the Jordan Curve Theorem chain.
+  All current callers of this theorem supply continuous paths.
+
+Proposed by: Alice
+
+Discussion:
+  - 1775727049 | Alice: Same pattern as Notice 1774391279 for thm63_1c. Dave already noted
+    in that discussion that thm63_1b has the same issue. The fix is minimal and matches
+    the hypothesis pattern in thm63_1a_infinite_cyclic_subgroup.
+
+Approvals:
+  - 1775727049 | Alice: YES
+
+Result:
+
+========================================================
+
 NOTICE ID: 1774224400
 Created: 1774224400
 Status: APPROVED
