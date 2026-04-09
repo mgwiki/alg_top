@@ -440,6 +440,54 @@ Result:
 
 ========================================================
 
+NOTICE ID: 1775730208
+Created: 1775730208
+Status: PROPOSED
+
+Refers to Commit:
+  2238816e4
+
+Target:
+  Line: 363830
+  Name: Sn2_complement_arc_simply_connected_helper
+
+Problem:
+  The theorem requires proving is_arc C1 from the given hypotheses
+  (C1 subset S^2, C1 connected, C1 cap C2 = {p,q}, complement open).
+  However, is_arc cannot be derived without knowing C1 is a piece of
+  a simple closed curve. The calling context (jordan_sep_inclusion_trivial_on_arc_complement,
+  line 364021) obtains C1 from simple_closed_curve_arc_decomposition, which
+  provides C1 connected + complement open, but NOT is_arc directly.
+
+  Adding is_arc C1 as a hypothesis eliminates an admitted claim and
+  focuses the remaining work on the core pi1-trivial argument.
+  The calling theorem's context can derive is_arc from the simple
+  closed curve homeomorphism.
+
+Proposed Replacement:
+  Add one hypothesis after C1 connected and complement open:
+    is_arc C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) ->
+
+Impact:
+  Eliminates the is_arc admit in the proof. The remaining gap (trivial pi1
+  of arc complement) is the true mathematical core. All callers can supply
+  is_arc from the simple_closed_curve_arc_decomposition context.
+
+Proposed by: Alice
+
+Discussion:
+  - 1775730208 | Alice: The proof currently admits is_arc C1 twice (first and second branch)
+    because it cannot be derived from the given hypotheses. Adding it as a hypothesis
+    is the minimal fix. It also fixes the nonemptiness issue since an arc C1 is strictly
+    smaller than S^2 (different topological dimension), ensuring S^2 \ C1 is nonempty.
+
+Approvals:
+  - 1775730208 | Alice: YES
+
+Result:
+
+========================================================
+
 NOTICE ID: 1774224400
 Created: 1774224400
 Status: APPROVED
