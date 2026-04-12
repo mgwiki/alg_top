@@ -82,6 +82,96 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776030633
+Created: 1776030633
+Status: PROPOSED
+
+Refers to Commit:
+  123631e3f6bc41b9ac7f69ec6d465dbc386cf711
+
+Target:
+  Line: 621020
+  Name: same_group_order2_free_quotient_rank_unique_local
+
+Problem:
+  The statement is too broad for the mathematics it is meant to express.
+  It quantifies an arbitrary ambient tuple `(H, mult, e, inv)` and assumes only
+  `subgroup_of` data for `T1` and `T2`, together with free-abelian structure on
+  the two quotient objects built from `quotient_group_* H mult e inv Ti`.
+
+  But the intended uniqueness principle is about one fixed abelian group whose
+  order-2 subgroup and torsion-free quotient rank determine the same invariant.
+  The current theorem never assumes that `H` is even a genuine group, let alone
+  an abelian one. Since `subgroup_of` itself does not include ambient
+  `group_structure`, the theorem is not an honest generic algebra statement in
+  its present form.
+
+  In the actual downstream use, `H` is a first homology group, so the missing
+  ambient abelian-group hypothesis is available. The current generic statement
+  overreaches that use case and blocks honest proof search.
+
+Proposed Replacement:
+  Replace the statement by the same theorem with an explicit ambient abelian
+  group hypothesis:
+
+  Theorem same_group_order2_free_quotient_rank_unique_local :
+    forall H mult e inv n m T1 T2 k1 k2 basis1 basis2:set,
+    abelian_group H mult e inv ->
+    subgroup_of T1 H mult e inv ->
+    equip T1 (ordsucc (ordsucc 0)) ->
+    k1 :e omega ->
+    ordsucc k1 = n ->
+    free_abelian_group_with_basis
+      (quotient_group_set H mult T1)
+      (quotient_group_mult H mult T1)
+      (quotient_group_id H mult e T1)
+      (quotient_group_inv H mult inv T1)
+      k1
+      basis1 ->
+    subgroup_of T2 H mult e inv ->
+    equip T2 (ordsucc (ordsucc 0)) ->
+    k2 :e omega ->
+    ordsucc k2 = m ->
+    free_abelian_group_with_basis
+      (quotient_group_set H mult T2)
+      (quotient_group_mult H mult T2)
+      (quotient_group_id H mult e T2)
+      (quotient_group_inv H mult inv T2)
+      k2
+      basis2 ->
+    n = m.
+
+  This is the honest abstraction needed by the current projective-plane H1
+  chain, where the ambient group is always first homology.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776030633 | Bob: The theorem is trying to package a classification fact about one fixed abelian group, but it never says the ambient object is an abelian group.
+  - 1776030633 | Bob: I am not changing the theorem statement here. This notice records the mismatch so later proof work can target the right abstraction under governance.
+
+Approvals:
+  - 1776030633 | Alice: YES / NO
+  - 1776030633 | Bob: YES
+  - 1776030633 | Charlie: YES / NO
+  - 1776030633 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776030144
 Created: 1776030144
 Status: PROPOSED
