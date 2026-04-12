@@ -82,6 +82,127 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776007911
+Created: 1776007911
+Status: PROPOSED
+
+Refers to Commit:
+  4c1eac3a6f42173840e59bf3a5afbe6c80da8409
+
+Target:
+  Line: 625375
+  Name: thm75_4_projective_plane_free_quotient_rank_absolute_core_local
+
+Problem:
+  The statement is false because it has dropped all S75.4 presentation data.
+  It currently claims that for every group `Q`, every subgroup `T <= Q` with
+  `|T| = 2`, and every `k :e omega`, the quotient `Q/T` is free abelian of
+  rank `k`. A concrete counterexample is `Q = Z/2`, `T = Q`, `k = 1`: then
+  `Q/T` is trivial, so it cannot be free abelian of rank `1`.
+  The only reason this theorem appeared plausible is that the preceding helper
+  chain progressively erased the hypotheses tying `Q` and `T` to the
+  abelianized projective-plane one-relator presentation.
+
+Proposed Replacement:
+  Replace the theorem statement by the current structured S75.4 statement:
+
+  Theorem thm75_4_projective_plane_free_quotient_rank_absolute_core_local :
+    forall m:set,
+    m :e omega -> ordsucc 0 :e m ->
+    forall F multF eF invF gens relword piN T basis k:set,
+    forall Q multQ eQ iQ:set,
+    free_group_with_generators F multF eF invF m gens ->
+    relword :e F ->
+    free_abelian_group_with_basis
+      (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+      (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+      (quotient_group_id F multF eF (commutator_subgroup F multF eF invF))
+      (quotient_group_inv F multF invF (commutator_subgroup F multF eF invF))
+      m
+      basis ->
+    piN = Repl
+      (least_normal_subgroup F multF eF invF (UPair relword relword))
+      (fun y:set =>
+        apply_fun (quotient_projection F multF
+          (commutator_subgroup F multF eF invF)) y) ->
+    subgroup_of T
+      (quotient_group_set
+        (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+        (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+        piN)
+      (quotient_group_mult
+        (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+        (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+        piN)
+      (quotient_group_id
+        (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+        (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+        (quotient_group_id F multF eF (commutator_subgroup F multF eF invF))
+        piN)
+      (quotient_group_inv
+        (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+        (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+        (quotient_group_inv F multF invF (commutator_subgroup F multF eF invF))
+        piN) ->
+    equip T (ordsucc (ordsucc 0)) ->
+    k :e omega ->
+    ordsucc k = m ->
+    Q = quotient_group_set
+      (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+      (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+      piN ->
+    multQ = quotient_group_mult
+      (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+      (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+      piN ->
+    eQ = quotient_group_id
+      (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+      (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+      (quotient_group_id F multF eF (commutator_subgroup F multF eF invF))
+      piN ->
+    iQ = quotient_group_inv
+      (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+      (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+      (quotient_group_inv F multF invF (commutator_subgroup F multF eF invF))
+      piN ->
+    group_structure Q multQ eQ iQ ->
+    exists basisQ:set,
+      free_abelian_group_with_basis
+        (quotient_group_set Q multQ T)
+        (quotient_group_mult Q multQ T)
+        (quotient_group_id Q multQ eQ T)
+        (quotient_group_inv Q multQ iQ T)
+        k
+        basisQ.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776007911 | Bob: The current statement is mathematically false; counterexample `Q = Z/2`, `T = Q`, `k = 1`.
+  - 1776007911 | Bob: The proposed replacement matches the actual S75.4 context already present one layer up in `Math_Background.mg`, so it repairs the dropped hypotheses without changing the surrounding proof strategy.
+
+Approvals:
+  - 1776007911 | Alice: YES / NO
+  - 1776007911 | Bob: YES
+  - 1776007911 | Charlie: YES / NO
+  - 1776007911 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1775690623
 Created: 1775690623
 Status: SENT TO ADMIN
