@@ -82,6 +82,88 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776021231
+Created: 1776021231
+Status: PROPOSED
+
+Refers to Commit:
+  965a606041de031e81625fbc167dcbb93a8d80e0
+
+Target:
+  Line: 621085
+  Name: thm74_4_projective_plane_raw_generator_count_rank_one_case_local
+
+Problem:
+  The statement is false as written. It claims that the rank-one raw presentation
+  branch for `thm74_4_pi1_m_fold_projective_plane` always yields `False`.
+  But the S74.4 presentation theorem itself allows `m = ordsucc 0`, and for the
+  ordinary projective plane `P^2` the fundamental group is exactly a one-generator
+  one-relator quotient (`Z/2`). So the current hypotheses are consistent when
+  `m = ordsucc 0`; they do not justify a contradiction.
+
+  The theorem was introduced while narrowing the nonzero generator-count branch
+  and accidentally over-strengthened the intended conclusion from
+  “rank-one forces `m = 1`” to “rank-one is impossible”.
+
+Proposed Replacement:
+  Replace only the conclusion:
+
+  Theorem thm74_4_projective_plane_raw_generator_count_rank_one_case_local :
+    forall m k F multF eF invF gens relword h:set,
+    m :e omega -> ordsucc 0 :e m ->
+    k :e omega ->
+    free_group_with_generators F multF eF invF k gens ->
+    relword :e F ->
+    group_isomorphism
+      (fundamental_group (m_fold_projective_plane_space m)
+        (m_fold_projective_plane_topology m)
+        (apply_fun
+          (polygon_pasting_map (mul_SNo 2 m) (m_fold_projective_plane_labelling m))
+          (S1_param 0)))
+      (fundamental_group_mult (m_fold_projective_plane_space m)
+        (m_fold_projective_plane_topology m)
+        (apply_fun
+          (polygon_pasting_map (mul_SNo 2 m) (m_fold_projective_plane_labelling m))
+          (S1_param 0)))
+      (quotient_group_set F multF
+        (least_normal_subgroup F multF eF invF (UPair relword relword)))
+      (quotient_group_mult F multF
+        (least_normal_subgroup F multF eF invF (UPair relword relword)))
+      h ->
+    k = ordsucc 0 ->
+    m = ordsucc 0.
+
+  This is the honest branch statement needed by
+  `thm74_4_projective_plane_raw_generator_count_nonzero_case_local`.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776021231 | Bob: The counterexample is already inside the same chapter: `thm74_4_pi1_m_fold_projective_plane` permits `m = 1`, and `P^2` has a one-generator presentation.
+  - 1776021231 | Bob: I am not changing the theorem statement here. This notice is only to record the bug and stop further fake progress on the false branch.
+
+Approvals:
+  - 1776021231 | Alice: YES / NO
+  - 1776021231 | Bob: YES
+  - 1776021231 | Charlie: YES / NO
+  - 1776021231 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776009865
 Created: 1776009865
 Status: PROPOSED
