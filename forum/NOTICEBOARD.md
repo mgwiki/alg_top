@@ -82,6 +82,95 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776009865
+Created: 1776009865
+Status: PROPOSED
+
+Refers to Commit:
+  363eca0179e13ca15de213a774113db0cb28d086
+
+Target:
+  Line: 625399 and 625554
+  Name: thm75_4_projective_plane_abelianized_order2_candidate_not_in_relator_image_local
+  Also affects: thm75_4_projective_plane_abelianized_relator_projects_to_basis0_square_local
+
+Problem:
+  Both statements are under-specified and false as written because `relword`
+  is quantified as an arbitrary element of the free group.
+
+  For `thm75_4_projective_plane_abelianized_order2_candidate_not_in_relator_image_local`,
+  take `relword` to be a word whose image in the abelianization is exactly
+  `apply_fun basis 0`. Then `piN` contains `apply_fun basis 0`, contradicting
+  the conclusion.
+
+  For `thm75_4_projective_plane_abelianized_relator_projects_to_basis0_square_local`,
+  take `relword` whose abelianized image is not
+  `apply_fun (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+   (apply_fun basis 0, apply_fun basis 0)`.
+  The current hypotheses do not relate `relword` to the canonical
+  projective-plane relator `alpha_0^2 ... alpha_{m-1}^2`, so the claimed
+  equality need not hold.
+
+  The dropped information is exactly the projective-plane relator content coming
+  from `thm74_4_pi1_m_fold_projective_plane`. Without an explicit hypothesis
+  encoding that relator, both theorems are unsound.
+
+Proposed Replacement:
+  Until a proper predicate for “relword is the canonical m-fold projective-plane
+  relator” is introduced, replace the two statements by honest versions that
+  expose the missing assumptions explicitly:
+
+  1. Replace
+     `thm75_4_projective_plane_abelianized_order2_candidate_not_in_relator_image_local`
+     with the same statement plus one extra hypothesis immediately before the
+     conclusion:
+
+       `apply_fun basis 0 /:e piN ->`
+
+  2. Replace
+     `thm75_4_projective_plane_abelianized_relator_projects_to_basis0_square_local`
+     with the same statement plus one extra hypothesis immediately before the
+     conclusion:
+
+       `apply_fun
+          (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+          (apply_fun basis 0, apply_fun basis 0) =
+        apply_fun
+          (quotient_projection F multF
+            (commutator_subgroup F multF eF invF)) relword ->`
+
+  These replacements are minimal but truthful. A better long-term fix would be
+  a separate approved notice that introduces an explicit hypothesis tying
+  `relword` to the canonical projective-plane relator from S74.4.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776009865 | Bob: The issue is the same shape as NOTICE 1776007911: local helper statements were over-generalized until the projective-plane-specific content disappeared.
+  - 1776009865 | Bob: I am not implementing any statement change here. This notice is only to record the under-specification and prevent further fake proof work on false statements.
+
+Approvals:
+  - 1776009865 | Alice: YES / NO
+  - 1776009865 | Bob: YES
+  - 1776009865 | Charlie: YES / NO
+  - 1776009865 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776007911
 Created: 1776007911
 Status: PROPOSED
