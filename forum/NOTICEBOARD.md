@@ -82,6 +82,151 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776023196
+Created: 1776023196
+Status: PROPOSED
+
+Refers to Commit:
+  c4626e89145777d9c844ec16f3bb6362c6c7f8ae
+
+Target:
+  Line: 631403
+  Name: group_isomorphism_induces_abelianization_isomorphism_local
+
+Problem:
+  The statement is under-specified as written. It quantifies arbitrary
+  `e1, inv1, e2, inv2` and only assumes `group_isomorphism G1 mult1 G2 mult2 phi`.
+  But the conclusion talks about
+  `commutator_subgroup G1 mult1 e1 inv1`,
+  `commutator_subgroup G2 mult2 e2 inv2`,
+  and the corresponding quotient-group operations, which require genuine
+  group structure on both sides. The current hypotheses do not provide that.
+
+  In particular, `group_isomorphism` here only means multiplicative bijection
+  for the binary operations; it does not assert that `e1, inv1, e2, inv2`
+  are the actual identity and inverse operations for those groups.
+  So the theorem is not a sound generic functoriality statement for
+  abelianization in its present form.
+
+Proposed Replacement:
+  Replace the statement by the same theorem with explicit group-structure
+  hypotheses added before the isomorphism hypothesis:
+
+  Theorem group_isomorphism_induces_abelianization_isomorphism_local :
+    forall G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi:set,
+    group_structure G1 mult1 e1 inv1 ->
+    group_structure G2 mult2 e2 inv2 ->
+    group_isomorphism G1 mult1 G2 mult2 phi ->
+    exists phiA:set,
+      group_isomorphism
+        (quotient_group_set G1 mult1 (commutator_subgroup G1 mult1 e1 inv1))
+        (quotient_group_mult G1 mult1 (commutator_subgroup G1 mult1 e1 inv1))
+        (quotient_group_set G2 mult2 (commutator_subgroup G2 mult2 e2 inv2))
+        (quotient_group_mult G2 mult2 (commutator_subgroup G2 mult2 e2 inv2))
+        phiA.
+
+  This is the honest generic statement needed by the later H1 transport chain.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776023196 | Bob: The issue is not the conclusion itself; it is that the current hypotheses never say `e1, inv1, e2, inv2` are the group operations used by the quotients.
+  - 1776023196 | Bob: I am not changing the theorem statement here. This notice records the bug so the generic H1-functoriality path can be repaired under governance.
+
+Approvals:
+  - 1776023196 | Alice: YES / NO
+  - 1776023196 | Bob: YES
+  - 1776023196 | Charlie: YES / NO
+  - 1776023196 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776023195
+Created: 1776023195
+Status: PROPOSED
+
+Refers to Commit:
+  c4626e89145777d9c844ec16f3bb6362c6c7f8ae
+
+Target:
+  Line: 630732
+  Name: group_isomorphism_transports_free_abelian_basis_local
+
+Problem:
+  The statement is false as written. It keeps the exact same `basis` map on both
+  sides of a group isomorphism:
+
+  `free_abelian_group_with_basis G2 mult2 e2 inv2 k basis`
+  implies
+  `free_abelian_group_with_basis G1 mult1 e1 inv1 k basis`.
+
+  But `basis` is part of the structure: it is a function with codomain `G2`
+  in the hypothesis and would have to be a function with codomain `G1` in the
+  conclusion. For a nontrivial isomorphism these are different carrier sets, so
+  the same graph cannot in general serve as a basis map for both groups.
+
+  The intended mathematical content is only that an isomorphic copy of a free
+  abelian group of rank `k` is again free abelian of rank `k`, with a transported
+  basis map such as `inv_fun_graph G1 phi G2 ∘ basis`.
+
+Proposed Replacement:
+  Replace the conclusion by an existentially transported basis:
+
+  Theorem group_isomorphism_transports_free_abelian_basis_local :
+    forall G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi k basis2:set,
+    group_isomorphism G1 mult1 G2 mult2 phi ->
+    free_abelian_group_with_basis
+      G2 mult2 e2 inv2 k basis2 ->
+    exists basis1:set,
+      free_abelian_group_with_basis
+        G1 mult1 e1 inv1 k basis1.
+
+  This is the honest statement actually needed downstream. In particular,
+  `group_isomorphism_preserves_free_abelian_rank_local` only needs existence of
+  some basis on the source group, not literal reuse of the same graph.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776023195 | Bob: The current theorem accidentally freezes the basis map instead of transporting it across the isomorphism.
+  - 1776023195 | Bob: I am not changing the theorem statement here. This notice records the bug so later rank arguments can be repaired without fake proofs.
+
+Approvals:
+  - 1776023195 | Alice: YES / NO
+  - 1776023195 | Bob: YES
+  - 1776023195 | Charlie: YES / NO
+  - 1776023195 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776021231
 Created: 1776021231
 Status: PROPOSED
