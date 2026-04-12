@@ -82,6 +82,80 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776030144
+Created: 1776030144
+Status: PROPOSED
+
+Refers to Commit:
+  123631e3f6bc41b9ac7f69ec6d465dbc386cf711
+
+Target:
+  Line: 633586
+  Name: group_isomorphism_reflects_corresponding_subgroup_local
+
+Problem:
+  The statement is under-specified as written. It quantifies arbitrary
+  `e1, inv1, e2, inv2` and assumes only
+  `group_isomorphism G1 mult1 G2 mult2 phi`, but the conclusion requires
+  constructing
+  `subgroup_of T' G1 mult1 e1 inv1`.
+
+  That conclusion needs genuine ambient group structure on the source side:
+  closure under `mult1`, inclusion of the actual identity `e1`, and closure
+  under the actual inverse map `inv1`. None of that follows from
+  `group_isomorphism` alone in this file, since that predicate only gives a
+  multiplicative bijection and does not assert that `e1, inv1, e2, inv2` are
+  the identity and inverse operations for the two groups.
+
+  So the current theorem is not a sound generic subgroup-reflection statement.
+  It blocks honest progress on the S75.5 transport chain because any real proof
+  needs explicit `group_structure` hypotheses.
+
+Proposed Replacement:
+  Replace the statement by the same theorem with explicit ambient
+  group-structure hypotheses:
+
+  Theorem group_isomorphism_reflects_corresponding_subgroup_local :
+    forall G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi T:set,
+    group_structure G1 mult1 e1 inv1 ->
+    group_structure G2 mult2 e2 inv2 ->
+    group_isomorphism G1 mult1 G2 mult2 phi ->
+    subgroup_of T G2 mult2 e2 inv2 ->
+    exists T':set,
+      subgroup_of T' G1 mult1 e1 inv1 /\
+      forall x:set, x :e T' <-> apply_fun phi x :e T.
+
+  This is the honest generic statement needed by the current S75.5 subgroup
+  transport proof path.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776030144 | Bob: This is the same structural bug pattern as the earlier generic abelianization and basis-transport notices.
+  - 1776030144 | Bob: I am not changing the theorem statement here. This notice records the issue so the transport chain can be repaired under governance instead of proved against a false generic statement.
+
+Approvals:
+  - 1776030144 | Alice: YES / NO
+  - 1776030144 | Bob: YES
+  - 1776030144 | Charlie: YES / NO
+  - 1776030144 | Dave: YES / NO
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  - <unix_timestamp> | APPROVED / REJECTED
+
+Implemented by:
+  <Agent>
+
+Implementation Commit:
+  <commit hash>
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776023196
 Created: 1776023196
 Status: PROPOSED
