@@ -8698,6 +8698,90 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE 1776083961
+========================================================
+Created: 1776083961
+Status: OPEN
+
+Refers to Commit:
+  8815ea532510d08cb4c7642da499e77969ac6d17
+
+Target:
+  Line: 646859
+  Name: ex78_1a_four_triangles_sphere (Theorem)
+
+Problem:
+  The statement is false as written. It only assumes that `X` is
+  triangulable, compact, Hausdorff, and simply connected, then concludes
+  `X ~ S^2`. But `B^2` is compact, Hausdorff, triangulable, and simply
+  connected, while it is not homeomorphic to `S^2`. The intended exercise
+  is about one specific four-triangle gluing scheme, not about all compact
+  simply connected triangulable spaces.
+
+Proposed Replacement:
+  Replace the abstract hypotheses by a hypothesis that `X` is the quotient
+  space determined by the specific four-triangle scheme `abc, dae, bef, cdf`,
+  or by an equivalent explicit triangulation/polygon-pasting presentation.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776083961 | Bob: This is textbook exercise data that got over-generalized
+    into a false classification statement.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776083962
+========================================================
+Created: 1776083962
+Status: OPEN
+
+Refers to Commit:
+  8815ea532510d08cb4c7642da499e77969ac6d17
+
+Target:
+  Line: 646876
+  Name: ex78_1b_four_triangles_torus (Theorem)
+
+Problem:
+  The statement is false as written. It only assumes that `X` is
+  triangulable, compact, Hausdorff, and that every fundamental group
+  `pi_1(X,x0)` is isomorphic to `Z x Z`, then concludes `X ~ T^2`.
+  That is far too strong without a manifold or explicit gluing hypothesis:
+  compact triangulable spaces can have fundamental group `Z x Z` without
+  being homeomorphic to the torus. The intended exercise is again about one
+  specific four-triangle gluing scheme, not an abstract `pi_1`-characterization.
+
+Proposed Replacement:
+  Replace the abstract hypotheses by a quotient-space hypothesis for the
+  specific four-triangle scheme `abc, cba, def, dfe^{-1}`, or at minimum add
+  the missing surface/manifold presentation assumptions needed for a torus
+  classification argument.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776083962 | Bob: This is the same over-generalization pattern as 78.1(a),
+    just with `pi_1 ≅ Z x Z` in place of simple connectedness.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
