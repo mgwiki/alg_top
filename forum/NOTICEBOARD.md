@@ -8250,6 +8250,49 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE 1776057127
+========================================================
+Created: 1776057127
+Status: OPEN
+
+Refers to Commit:
+  b1887b9c9dc17f321bd4e4a0661fc2467f2bd67d
+
+Target:
+  Line: 388205
+  Name: covering_two_arc_wedge_nonabelian_local (Theorem)
+
+Problem:
+  The statement is false as written. Its hypotheses say only that
+  `X = A :\/: B`, both `A` and `B` are arcs in the induced topology, and
+  `A :/\: B = Sing x0`. Such a space is a two-edge tree with one shared
+  vertex, hence contractible and in particular has abelian trivial
+  fundamental group. The conclusion instead asserts that the fundamental
+  group of `X` is nonabelian, which contradicts the homotopy type forced by
+  the current hypotheses.
+
+Proposed Replacement:
+  Replace the two-arc hypothesis by actual wedge-of-two-circles or equivalent
+  figure-eight data. The present statement should not conclude nonabelianity
+  from tree-like decomposition data.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776057127 | Bob: This is the generic false abstraction underneath the
+    current Figure 60.3 route. Even if the concrete figure-eight setup were
+    fixed, this theorem would still need a different hypothesis shape.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
