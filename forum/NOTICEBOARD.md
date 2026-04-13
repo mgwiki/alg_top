@@ -82,6 +82,63 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776121394
+Created: 1776121394
+Status: PROPOSED
+
+Refers to Commit:
+  f77f5d15ba9757f53562c951422f9ccaec41585d
+
+Target:
+  Line: 655403
+  Name: ex79_1_punctured_circle_lower_branch_chart_basepoint_endpoint_local
+
+Problem:
+  The statement is false as written. Its codomain is
+    halfopen_interval_left_in R (minus_SNo 1) 1
+  and by definition
+    halfopen_interval_left_in X a b = {x :e X | (x = a \/ a < x) /\ x < b}.
+  Therefore every point in that codomain satisfies `x < 1`, so `1` is not an
+  element of the codomain.
+
+  But the theorem concludes existence of a homeomorphism `fL` into that
+  codomain together with
+    apply_fun fL S1_basepoint = 1.
+  No such witness can exist, independently of the antecedent. This is a
+  statement-level contradiction, not a missing proof.
+
+Proposed Replacement:
+  Replace the endpoint equation by a condition compatible with the codomain,
+  for example `apply_fun fL S1_basepoint = minus_SNo 1`, or restate the target
+  interval so that the desired endpoint value `1` actually lies in the
+  codomain.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776121394 | Bob: This surfaced while narrowing the S79 punctured-circle
+    chart chain. The upper branch endpoint theorem is fine, but the lower
+    branch currently asks for an impossible image value.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776100979
 Created: 1776100979
 Status: PROPOSED
