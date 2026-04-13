@@ -82,6 +82,64 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776058029
+Created: 1776058029
+Status: PROPOSED
+
+Refers to Commit:
+  c8308e636b1f4b4b80de40ec213e6be6ed172512
+
+Target:
+  Line: 639697
+  Name: thm75_5_singleton_H1_vs_nontrivial_H1_obstruction_local
+
+Problem:
+  The statement is false as written because it does not assume that `X` is
+  nonempty. If `X = Empty` and `Y = Empty`, then both universal hypotheses are
+  vacuous: there is no `x0 :e X` for the singleton-H1 premise to check, and no
+  `y0 :e Y` for the nontrivial-H1 premise to check. But `Empty` is
+  homeomorphic to itself, so the conclusion `~(exists h:set, homeomorphism X Tx
+  Y Ty h)` fails.
+
+  The new pointed theorem
+  `thm75_5_pointed_singleton_H1_vs_nontrivial_H1_obstruction_local` already
+  shows the correct shape of the argument: one needs an actual basepoint in `X`
+  to transport across a homeomorphism and obtain a contradiction in `Y`.
+
+Proposed Replacement:
+  Strengthen the theorem by adding an explicit nonemptiness hypothesis on `X`,
+  for example:
+
+  `exists x0:set, x0 :e X`
+
+  ahead of the current universal singleton-H1 premise. With that addition, the
+  theorem can be reduced to the new pointed obstruction theorem by choosing a
+  witness `x0`.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776058029 | Bob: The empty-space counterexample is immediate, and the new
+    pointed theorem already isolates the correct proof shape.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776030633
 Created: 1776030633
 Status: PROPOSED
