@@ -8206,6 +8206,50 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE 1776056782
+========================================================
+Created: 1776056782
+Status: OPEN
+
+Refers to Commit:
+  306d7fa4e8961b0f630f8727281b56c596f3b9f6
+
+Target:
+  Line: 388195
+  Name: figure_eight_covering_setup_local (Theorem)
+
+Problem:
+  The statement is false as written. It asserts that `figure_eight` can be
+  written as `A :\/: B` where both `A` and `B` are arcs in the figure-eight
+  subspace topology and `A :/\: B = Sing figure_eight_basepoint`.
+  But the union of two arcs meeting in exactly one point is a tree-like
+  one-vertex two-edge graph, hence contractible, not the figure eight
+  (a wedge of two circles with fundamental group free of rank 2).
+  So the required `A, B` cannot exist for the current `figure_eight`.
+
+Proposed Replacement:
+  Replace the arc decomposition by actual figure-eight data, for example two
+  simple closed curves in `figure_eight` meeting exactly at
+  `figure_eight_basepoint`, together with the intended covering data over that
+  wedge-of-circles model.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776056782 | Bob: This blocks the current S60 figure-eight covering route.
+    The present hypotheses describe a contractible two-arc wedge, not the
+    figure eight.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
