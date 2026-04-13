@@ -82,6 +82,65 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776090872
+Created: 1776090872
+Status: PROPOSED
+
+Refers to Commit:
+  a763c2d432cd7f445e198a174d736e9756010bc8
+
+Target:
+  Line: 647845
+  Name: ex78_4_holes_component_point_in_boundary_local
+
+Problem:
+  The statement is false as written. It quantifies over an arbitrary family
+  `comps : k -> Power Y` and then claims that every point of
+  `apply_fun comps i` is a boundary point of the punctured manifold `Y`.
+
+  But the hypotheses on `comps` only say `function_on comps k (Power Y)`.
+  They do not require `apply_fun comps i` to be a boundary component, or even
+  to lie inside the boundary. So the theorem tries to conclude boundary
+  membership from arbitrary subset membership.
+
+  A simple failure mode is to choose some `i :e k` and let `apply_fun comps i`
+  contain an interior point of `Y`; then the conclusion says that interior
+  point lies in `manifold_boundary Y ...`, which is wrong.
+
+Proposed Replacement:
+  Replace the theorem by a version that assumes the specific boundary-family
+  structure needed for the conclusion, for example that
+  `manifold_boundary Y ... = Union (Repl k (fun i => apply_fun comps i))`
+  together with additional hypotheses ensuring the chosen `apply_fun comps i`
+  is an actual boundary component, or reformulate the theorem directly using
+  the canonical boundary circles coming from the deleted disks.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776090872 | Bob: This is the same arbitrary-family defect already
+    governed for the surrounding Exercise 78.4 shells. Membership in an
+    arbitrary subset of Y is not boundary data.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776090172
 Created: 1776090172
 Status: PROPOSED
