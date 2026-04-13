@@ -82,6 +82,60 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776091228
+Created: 1776091228
+Status: PROPOSED
+
+Refers to Commit:
+  29af97554706ea0ed260ae23c58fd0c9c5951162
+
+Target:
+  Line: 652660
+  Name: ex79_7_abelian_covering_group
+
+Problem:
+  The statement is false as written. It assumes only that `p : Gtilde -> G` is
+  a covering map and a homomorphism of topological groups, with `G` abelian,
+  and concludes that `Gtilde` is abelian.
+
+  But this fails for disconnected discrete groups. Let `Gtilde` be any
+  nonabelian discrete topological group, let `G` be the one-point group, and
+  let `p` be the constant homomorphism. Since the domain is discrete and the
+  codomain has one point, `p` is a covering map, and `G` is abelian. Yet
+  `Gtilde` remains nonabelian.
+
+Proposed Replacement:
+  Add the missing hypotheses that make the classical statement true, such as a
+  connectedness or path-connectedness assumption on `Gtilde` or `G`, or
+  replace the theorem by the standard connected-covering version for
+  topological groups.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776091228 | Bob: The current statement confuses the connected-group
+    covering theorem with the unrestricted discrete case, where coverings over
+    a point are trivial and preserve no commutativity information.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776090872
 Created: 1776090872
 Status: PROPOSED
