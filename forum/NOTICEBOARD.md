@@ -144,6 +144,132 @@ Implementation Commit:
 Status:
   PROPOSED
 
+NOTICE ID: 1776110407
+Created: 1776110407
+Status: PROPOSED
+
+Refers to Commit:
+  9d633eabce8add6d0f8ff18d454983a9591f0bf2
+
+Target:
+  Line: 687677
+  Name: thm82_1_subgroup_cover_from_regular_universal_cover_core_local
+
+Problem:
+  The statement is false as written. It assumes only
+    regular_covering_map U Tu B Tb pu u0
+  and
+    simply_connected U Tu
+  but concludes existence of a covering `p : E -> B` with
+    locally_path_connected E Te.
+
+  Under the current formal definitions, if `B` is simply connected but not
+  locally path connected, the identity map on `B` is a regular covering of
+  `B` by itself. Instantiating the theorem with `U = B`, `Tu = Tb`,
+  and `pu = id_B` then yields a covering onto `B` from a locally path
+  connected total space `E`. The existing theorem
+    `covering_map_locally_path_connected_codomain`
+  would then force `B` itself to be locally path connected, contradiction.
+
+  So the current hypotheses are too weak: simply connected total space does
+  not suffice to justify the locally path connected covering produced in the
+  conclusion.
+
+Proposed Replacement:
+  Strengthen the theorem by adding a genuinely sufficient local-path-connected
+  hypothesis, for example `locally_path_connected U Tu`, or refactor it to
+  use a universal-cover input that already carries the needed local
+  path-connectedness data.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776110407 | Bob: This is the first false S82 helper in the current
+    subgroup-realization chain. The current proof also telegraphs the issue by
+    calling `regular_universal_cover_orbit_homeomorphism_local`, whose proof
+    currently recovers lpc through the already-governed false lemma
+    `universal_cover_implies_lpc`.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776110408
+Created: 1776110408
+Status: PROPOSED
+
+Refers to Commit:
+  9d633eabce8add6d0f8ff18d454983a9591f0bf2
+
+Target:
+  Line: 687759
+  Name: thm82_1_subgroup_cover_from_universal_cover_local
+
+Problem:
+  The statement is false as written. It assumes only the existence of some
+  simply connected covering of `B`:
+    exists U Tu pu, covering_map U Tu B Tb pu /\ simply_connected U Tu
+  and concludes existence of a covering `p : E -> B` with
+    locally_path_connected E Te.
+
+  But under the current formal definitions, any simply connected space `B`
+  admits the identity covering `id_B : B -> B`. Hence any simply connected
+  space that is not locally path connected satisfies the theorem's hypothesis.
+  The conclusion would then produce a covering onto `B` from a locally path
+  connected total space `E`, and the existing theorem
+    `covering_map_locally_path_connected_codomain`
+  would force `B` itself to be locally path connected, contradiction.
+
+  So the theorem overstates what follows from mere existence of a simply
+  connected covering.
+
+Proposed Replacement:
+  Strengthen the hypothesis to require a universal-cover input with enough
+  local-path-connectedness data on the total space, or replace the hypothesis
+  by the standard base assumptions used in `thm82_1_existence_of_covering`.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776110408 | Bob: This theorem is the exact false helper currently sitting
+    underneath `thm82_1_existence_of_covering`. The issue is statement-level,
+    not just a missing proof: identity coverings on simply connected non-lpc
+    spaces are direct counterexamples.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776100978
 Created: 1776100978
 Status: PROPOSED
