@@ -8009,6 +8009,162 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE ID: 1776052431
+Created: 1776052431
+Status: OPEN
+
+Refers to Commit:
+  92440e7d8de53c99b16237f3e97218a70025d626
+
+Target:
+  Line: 390907
+  Name: connected_sum_of_path_connected_tori_first_cover_piece_open_local (Theorem)
+
+Problem:
+  The statement is false as written. It assumes only
+  `connected_sum_space ... = U :\/: V` and `(U :/\: V) <> Empty`, then concludes
+  `U :e connected_sum_topology ...`. But taking `V = connected_sum_space ...`,
+  the hypotheses reduce to `U :\/: X = X` and `U <> Empty`, so the theorem would
+  imply that every nonempty subset U of the connected-sum space is open.
+  That is far stronger than the intended claim about the specific quotient-image
+  cover piece and is not mathematically correct.
+
+Proposed Replacement:
+  Replace this with a theorem about the specific chosen first cover piece, or add
+  hypotheses characterizing U as that quotient-image subset.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776052431 | Bob: This is another arbitrary-U,V shell. The openness fact belongs
+    to the explicit first cover piece, not to every nonempty member of a binary cover.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE ID: 1776052432
+Created: 1776052432
+Status: OPEN
+
+Refers to Commit:
+  92440e7d8de53c99b16237f3e97218a70025d626
+
+Target:
+  Line: 390933
+  Name: connected_sum_of_path_connected_tori_second_cover_piece_open_local (Theorem)
+
+Problem:
+  The statement is false as written. It assumes only
+  `connected_sum_space ... = U :\/: V` and `(U :/\: V) <> Empty`, then concludes
+  `V :e connected_sum_topology ...`. But taking `U = connected_sum_space ...`,
+  the hypotheses reduce to `X :\/: V = X` and `V <> Empty`, so the theorem would
+  imply that every nonempty subset V of the connected-sum space is open.
+  The intended theorem is about the explicit second quotient-image cover piece,
+  not arbitrary V.
+
+Proposed Replacement:
+  Replace this with a theorem about the specific chosen second cover piece, or add
+  hypotheses characterizing V as that quotient-image subset.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776052432 | Bob: Same defect as the first-piece openness shell, just on the V side.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE ID: 1776052433
+Created: 1776052433
+Status: OPEN
+
+Refers to Commit:
+  92440e7d8de53c99b16237f3e97218a70025d626
+
+Target:
+  Line: 391244
+  Name: connected_sum_of_path_connected_tori_first_cover_piece_path_connected_local (Theorem)
+
+Problem:
+  The statement is false as written. It assumes only the torus path-connectedness
+  hypotheses together with `connected_sum_space ... = U :\/: V` and `(U :/\: V) <> Empty`,
+  then concludes `path_connected_space U ...`. By taking
+  `V = connected_sum_space ...`, the theorem would force every nonempty subset U of the
+  connected-sum space to be path connected. The intended theorem is only about the
+  specific first quotient-image cover piece.
+
+Proposed Replacement:
+  Replace this with a theorem about the explicit first cover piece, or add
+  hypotheses identifying U as that cover subset.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776052433 | Bob: This shell abstracts away the actual cover-piece geometry and
+    becomes far too strong.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE ID: 1776052434
+Created: 1776052434
+Status: OPEN
+
+Refers to Commit:
+  92440e7d8de53c99b16237f3e97218a70025d626
+
+Target:
+  Line: 391302
+  Name: connected_sum_of_path_connected_tori_second_cover_piece_path_connected_local (Theorem)
+
+Problem:
+  The statement is false as written. It assumes only the torus path-connectedness
+  hypotheses together with `connected_sum_space ... = U :\/: V` and `(U :/\: V) <> Empty`,
+  then concludes `path_connected_space V ...`. By taking
+  `U = connected_sum_space ...`, the theorem would force every nonempty subset V of the
+  connected-sum space to be path connected. The intended theorem is only about the
+  specific second quotient-image cover piece.
+
+Proposed Replacement:
+  Replace this with a theorem about the explicit second cover piece, or add
+  hypotheses identifying V as that cover subset.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776052434 | Bob: Same defect as the first-piece path-connectedness shell, on the V side.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
