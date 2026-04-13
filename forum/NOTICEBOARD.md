@@ -9113,6 +9113,164 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE 1776088764
+========================================================
+Created: 1776088764
+Status: OPEN
+
+Refers to Commit:
+  5b456ce7b58af58c1c2e1c29b14dad65515718ee
+
+Target:
+  Line: 646894
+  Name: ex78_3_closed_ball_is_two_manifold_with_boundary_local (Theorem)
+
+Problem:
+  The statement is false as written. In this file, `Bn_closed 1` is already
+  used as the closed disk in `R^2`, for example in `Bn_closed_1_compact_early`
+  and `B2_pair_from_Bn_closed_1_continuous`, which map it into
+  `euclidean_space 2 = R^2`. So `Bn_closed 2` is the next-dimensional closed
+  ball, not the planar closed disk from Exercise 78.3. Consequently the
+  current theorem is asserting that a 3-ball is a 2-manifold with boundary,
+  which is false.
+
+Proposed Replacement:
+  Replace `Bn_closed 2` and `Bn_closed_topology 2` by the planar disk object
+  `Bn_closed 1` and `Bn_closed_topology 1`, or by an equivalent explicit
+  closed-disk space in `R^2`.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776088764 | Bob: The dimension shift is visible locally in the file, so
+    this is a statement bug, not just a missing proof.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776088765
+========================================================
+Created: 1776088765
+Status: OPEN
+
+Refers to Commit:
+  5b456ce7b58af58c1c2e1c29b14dad65515718ee
+
+Target:
+  Line: 646900
+  Name: ex78_3_closed_ball_boundary_is_circle_local (Theorem)
+
+Problem:
+  The statement is false as written for the same dimension reason. The
+  boundary of `Bn_closed 2` is not `Sn (ordsucc 0) = S^1`; the surrounding file
+  already shows that the planar closed disk is `Bn_closed 1`. So the current
+  theorem identifies the boundary of the wrong-dimensional closed ball with the
+  circle.
+
+Proposed Replacement:
+  Replace the ambient closed ball by `Bn_closed 1` with topology
+  `Bn_closed_topology 1`, or restate the theorem for the actual boundary of
+  `Bn_closed 2`.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776088765 | Bob: This is the main Exercise 78.3 boundary statement, and
+    the current indexing is incompatible with the rest of the file.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776088766
+========================================================
+Created: 1776088766
+Status: OPEN
+
+Refers to Commit:
+  5b456ce7b58af58c1c2e1c29b14dad65515718ee
+
+Target:
+  Line: 646908
+  Name: ex78_3_closed_ball_boundary_point_on_S1_local (Theorem)
+
+Problem:
+  The statement is false as written because it is the pointwise form of the
+  false boundary-equality theorem above. A point of
+  `manifold_boundary (Bn_closed 2) (Bn_closed_topology 2)` need not lie in
+  `Sn (ordsucc 0)`.
+
+Proposed Replacement:
+  Replace `Bn_closed 2` by the actual planar closed disk object `Bn_closed 1`,
+  or restate the theorem for the correct-dimensional sphere boundary.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776088766 | Bob: This is the active pointwise shell currently underneath
+    the closed-ball boundary equality wrapper.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776088767
+========================================================
+Created: 1776088767
+Status: OPEN
+
+Refers to Commit:
+  5b456ce7b58af58c1c2e1c29b14dad65515718ee
+
+Target:
+  Line: 646934
+  Name: ex78_3_closed_ball_S1_point_in_boundary_local (Theorem)
+
+Problem:
+  The statement is false as written because it is the reverse pointwise form
+  of the same dimension-shifted boundary claim. The theorem compares
+  `Sn (ordsucc 0)` to the boundary of `Bn_closed 2`, but elsewhere in the file
+  the planar disk is `Bn_closed 1`.
+
+Proposed Replacement:
+  Replace `Bn_closed 2` by `Bn_closed 1`, or restate the theorem for the
+  correct sphere boundary of `Bn_closed 2`.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776088767 | Bob: This is the second active pointwise shell in the
+    currently reduced Exercise 78.3 block.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
