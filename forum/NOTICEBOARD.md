@@ -8520,6 +8520,93 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE 1776075682
+========================================================
+Created: 1776075682
+Status: OPEN
+
+Refers to Commit:
+  41e9434d4f9dd8e32f5a34cc8c1efe42a4f2687b
+
+Target:
+  Line: 645202
+  Name: cor77_2_projective_type_structure_nonempty_tail_local (Theorem)
+
+Problem:
+  The statement is false as written because it quantifies over arbitrary
+  `w'` and `k` satisfying the displayed paired-prefix hypotheses, but those
+  hypotheses do not encode maximality of the projective prefix. A concrete
+  counterexample is the proper projective scheme `a a b b`: taking `w' = w`
+  and `k = 1` satisfies the hypotheses, with the first pair `a a` extracted,
+  but the remaining tail `b b` is still projective-type rather than torus-type.
+  So the current conclusion that every nonempty tail must be torus type is too
+  strong.
+
+Proposed Replacement:
+  Strengthen the hypotheses to express maximality of the extracted same-sign
+  prefix, or weaken the conclusion so it only applies to a specially chosen
+  witness `(w',k)` produced by the preceding existence theorem.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776075682 | Bob: This is the exact blocker underneath the current
+    Corollary 77.2 reduction chain. The existential theorem above can still
+    be meaningful, but this arbitrary-parameter local shell is not.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776075683
+========================================================
+Created: 1776075683
+Status: OPEN
+
+Refers to Commit:
+  41e9434d4f9dd8e32f5a34cc8c1efe42a4f2687b
+
+Target:
+  Line: 645223
+  Name: cor77_2_projective_type_structure_tail_local (Theorem)
+
+Problem:
+  This statement inherits the same defect as
+  `cor77_2_projective_type_structure_nonempty_tail_local`. It quantifies over
+  arbitrary `w'` and `k` with a paired prefix, but without any maximality
+  condition on that prefix. For the projective scheme `a a b b`, taking
+  `w' = w` and `k = 1` satisfies the hypotheses, while neither disjunct of the
+  conclusion holds: `mul_SNo 2 k = n` is false and the remaining tail `b b`
+  is not torus type. So the current disjunction is false as written.
+
+Proposed Replacement:
+  Restrict the theorem to a chosen maximal witness `(w',k)` coming from the
+  existence theorem, or add a maximality hypothesis on the paired prefix
+  before concluding that the remaining tail is empty or torus type.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776075683 | Bob: This is the weaker shell used directly in the collected
+    corollary, so governing it now is cleaner than continuing to narrow false
+    wrappers above it.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
