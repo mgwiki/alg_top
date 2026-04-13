@@ -8912,6 +8912,207 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE 1776087672
+========================================================
+Created: 1776087672
+Status: OPEN
+
+Refers to Commit:
+  cf57bddd72f5dccaf44fdac8982caeb064900ed2
+
+Target:
+  Line: 647717
+  Name: ex78_4_holes_boundary_component_properties_local (Theorem)
+
+Problem:
+  The statement is false as written. It assumes only that
+  `manifold_boundary Y ... = Union (Repl k (fun i => apply_fun comps i))`,
+  with `comps : k -> Power Y` arbitrary. That equality does not force the
+  individual sets `apply_fun comps i` to be the actual boundary components:
+  one can decompose a boundary circle into arbitrary subsets whose union is
+  the whole boundary. Those subsets need not be connected or pairwise
+  disjoint, so the conjunction claimed here is too strong.
+
+Proposed Replacement:
+  Replace the arbitrary family `comps` by an existentially chosen family of
+  actual boundary components, or strengthen the hypotheses so each
+  `apply_fun comps i` is asserted to be a connected boundary component.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776087672 | Bob: This is the aggregate false shell underneath the
+    remaining Exercise 78.4 component theorems.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776087673
+========================================================
+Created: 1776087673
+Status: OPEN
+
+Refers to Commit:
+  cf57bddd72f5dccaf44fdac8982caeb064900ed2
+
+Target:
+  Line: 647802
+  Name: ex78_4_holes_boundary_component_connected_local (Theorem)
+
+Problem:
+  The statement is false as written. From the current hypotheses,
+  `apply_fun comps i` is merely an arbitrary subset of `Y` whose family union
+  equals the boundary. Such a subset need not be connected: a single boundary
+  circle can be partitioned into disconnected pieces while preserving the same
+  union equality. Therefore connectedness of each indexed set does not follow.
+
+Proposed Replacement:
+  Strengthen the hypotheses so each `apply_fun comps i` is an actual boundary
+  component, or replace the theorem by one about a specifically chosen
+  component family.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776087673 | Bob: This is the first false branch inside the boundary
+    component properties package.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776087674
+========================================================
+Created: 1776087674
+Status: OPEN
+
+Refers to Commit:
+  cf57bddd72f5dccaf44fdac8982caeb064900ed2
+
+Target:
+  Line: 647876
+  Name: ex78_4_holes_boundary_component_homeomorphic_S1_local (Theorem)
+
+Problem:
+  The statement is false as written. The hypotheses do not identify
+  `apply_fun comps i` as a genuine boundary component, only as one member of
+  an arbitrary indexed family whose union is the boundary. An arbitrary subset
+  of a circle need not itself be homeomorphic to `S1`, so the current
+  conclusion is too strong.
+
+Proposed Replacement:
+  Replace the theorem by one whose hypotheses assert that `apply_fun comps i`
+  is an actual boundary component, or build the specific component family
+  existentially before stating the homeomorphism-to-`S1` conclusion.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776087674 | Bob: This is the circle-classification shell used to prove
+    connectedness, and it fails for the same arbitrary-family reason.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776087675
+========================================================
+Created: 1776087675
+Status: OPEN
+
+Refers to Commit:
+  cf57bddd72f5dccaf44fdac8982caeb064900ed2
+
+Target:
+  Line: 647909
+  Name: ex78_4_holes_boundary_component_disjoint_local (Theorem)
+
+Problem:
+  The statement is false as written. Equality of the boundary with
+  `Union (Repl k (fun i => apply_fun comps i))` does not imply that the family
+  is pairwise disjoint. One may choose overlapping subsets with the same union,
+  so the current disjointness conclusion is not forced by the stated
+  hypotheses.
+
+Proposed Replacement:
+  Add hypotheses that `comps` lists distinct boundary components, or replace
+  the theorem by a result about a specifically chosen disjoint component
+  family.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776087675 | Bob: This is the second false branch inside the boundary
+    component properties package.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776087676
+========================================================
+Created: 1776087676
+Status: OPEN
+
+Refers to Commit:
+  cf57bddd72f5dccaf44fdac8982caeb064900ed2
+
+Target:
+  Line: 647982
+  Name: ex78_4_holes_boundary_component_point_not_shared_local (Theorem)
+
+Problem:
+  The statement is false as written for the same reason as the disjointness
+  theorem. The current hypotheses permit overlapping indexed subsets whose
+  union is the whole boundary, so one cannot conclude pointwise that no `x`
+  lies in both `apply_fun comps i` and `apply_fun comps j`.
+
+Proposed Replacement:
+  Require that `comps` consists of distinct boundary components, or replace
+  the theorem by the pointwise form of a result about a specifically chosen
+  disjoint boundary-component family.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776087676 | Bob: This is the pointwise false shell underneath the current
+    disjointness wrapper.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
