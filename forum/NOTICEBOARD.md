@@ -82,6 +82,120 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776063816
+Created: 1776063816
+Status: PROPOSED
+
+Refers to Commit:
+  b68479f8daafb07b2cd33a4c38366be02691160d
+
+Target:
+  Line: 643888
+  Name: ex75_4_eight_sided_polygon_2
+
+Problem:
+  The statement is under-specified. The textbook exercise is about one
+  specific 8-gon word, `abcdad^{-1}cb^{-1}`, but the formal theorem quantifies
+  over arbitrary `w` with only `labelling_scheme n w`, `n = 8`, and the
+  existence of two vertices with distinct images under the pasting map.
+
+  That data is far too weak to determine the quotient up to homeomorphism.
+  Many 8-sided schemes can have more than one vertex class without yielding
+  `P_4`. As written, the theorem claims a classification result for every
+  such scheme, not for the intended exercise word.
+
+Proposed Replacement:
+  Replace the generic `labelling_scheme n w` hypothesis by an explicit
+  hypothesis that `w` is the intended 8-gon scheme encoding
+  `abcdad^{-1}cb^{-1}` (or an approved equivalent-scheme formulation for that
+  specific word). Then prove the vertex-separation claim and the
+  homeomorphism to `m_fold_projective_plane_space (ordsucc (ordsucc
+  (ordsucc (ordsucc 0))))` from that exact word data.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776063816 | Bob: This theorem dropped the actual polygon word from the
+    formal statement, so it no longer matches the exercise it is supposed to
+    formalize.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776063815
+Created: 1776063815
+Status: PROPOSED
+
+Refers to Commit:
+  b68479f8daafb07b2cd33a4c38366be02691160d
+
+Target:
+  Line: 643865
+  Name: ex75_3_eight_sided_polygon
+
+Problem:
+  The statement is false as written. The comment says the exercise is about
+  the specific 8-gon word `acadbcb^{-1}d`, but the formal theorem quantifies
+  over arbitrary `w` with only `labelling_scheme n w`, `n = 8`, and the claim
+  that all vertices map to the same point.
+
+  That does not force the quotient to be `T_2`. A concrete counterexample is
+  the canonical 8-gon projective-plane presentation
+  `m_fold_projective_plane_labelling (ordsucc (ordsucc (ordsucc (ordsucc 0))))`:
+  it has eight sides, its vertices are identified by the existing S74.4
+  projective-plane vertex-collapse chain, and its quotient space is
+  `m_fold_projective_plane_space (ordsucc (ordsucc (ordsucc (ordsucc 0))))`,
+  not `n_fold_torus_space (ordsucc (ordsucc 0))`.
+
+Proposed Replacement:
+  Replace the generic `labelling_scheme n w` hypothesis by an explicit
+  hypothesis that `w` is the intended 8-gon scheme encoding `acadbcb^{-1}d`
+  (or an approved equivalent-scheme formulation for that exact word). Only
+  that corrected statement matches the textbook exercise and can legitimately
+  conclude homeomorphism to `n_fold_torus_space (ordsucc (ordsucc 0))`.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776063815 | Bob: The current theorem classifies every 8-gon with one
+    vertex class as genus 2, which is already contradicted by the canonical
+    `P_4` presentation in the file.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776058029
 Created: 1776058029
 Status: PROPOSED
