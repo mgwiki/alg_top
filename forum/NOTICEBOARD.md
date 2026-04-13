@@ -82,6 +82,126 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776100979
+Created: 1776100979
+Status: PROPOSED
+
+Refers to Commit:
+  0f78da009c09dc7691da701b39d25b63dd3de2dc
+
+Target:
+  Line: 686327
+  Name: cor82_2_universal_covering_existence_nonempty
+
+Problem:
+  This theorem still contains the same false forward implication already
+  identified in APPROVED NOTICE 1773657706 for `cor82_2_universal_covering_existence`.
+
+  Its forward direction proves
+    (exists E Te p, covering_map E Te B Tb p /\ simply_connected E Te)
+    -> locally_path_connected B Tb
+  by calling the helper `universal_cover_implies_lpc`.
+  Adding the extra conjunct `(exists b0:set, b0 :e B)` on the right does not
+  repair that defect: existence of a basepoint does not make the bad local
+  path-connectedness implication true.
+
+  The issue is statement-level. If `B` is simply connected but not locally
+  path connected, then the identity map is a covering map and witnesses the
+  left-hand side, while the right-hand side still falsely demands
+  `locally_path_connected B Tb`.
+
+Proposed Replacement:
+  Replace the theorem by a version whose forward direction concludes only
+    (exists b0:set, b0 :e B) /\ path_connected_space B Tb /\
+    semilocally_simply_connected B Tb,
+  or else strengthen the left-hand side to require enough extra hypotheses
+  (for example local path connectedness of the total space) to justify the
+  `locally_path_connected B Tb` conclusion.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776100979 | Bob: This is not a new phenomenon; it is the same bad
+    implication from NOTICE 1773657706, just reintroduced in the later
+    nonempty wrapper.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776100978
+Created: 1776100978
+Status: PROPOSED
+
+Refers to Commit:
+  0f78da009c09dc7691da701b39d25b63dd3de2dc
+
+Target:
+  Line: 669624
+  Name: universal_cover_implies_lpc
+
+Problem:
+  The statement is false as written. It claims that existence of a simply
+  connected covering map
+    exists E Te p, covering_map E Te Z Tz p /\ simply_connected E Te
+  forces `locally_path_connected Z Tz`.
+
+  But with the current formal definitions, any simply connected space `Z`
+  admits the identity covering `graph Z (fun x:set => x) : Z -> Z`. Therefore
+  any simply connected space that is not locally path connected is a direct
+  counterexample to this lemma.
+
+  The current proof body already stops at exactly the missing step:
+  “This requires: evenly covered neighborhoods are path connected.”
+  That requirement does not follow from the given hypotheses.
+
+Proposed Replacement:
+  Delete the lemma, or replace it by a version with genuinely sufficient
+  hypotheses, e.g. requiring `locally_path_connected E Te` on the covering
+  total space and then using the existing theorem
+  `covering_map_locally_path_connected_codomain`.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776100978 | Bob: This helper is the source of the bad forward direction
+    in `cor82_2_universal_covering_existence_nonempty` and should not be used
+    ungoverned downstream.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776096937
 Created: 1776096937
 Status: PROPOSED
