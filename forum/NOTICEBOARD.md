@@ -82,6 +82,61 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776064155
+Created: 1776064155
+Status: PROPOSED
+
+Refers to Commit:
+  c2717adcaa6ecdf2172cd1fc80178893d1dbe8a2
+
+Target:
+  Line: 643955
+  Name: ex76_2_dunce_cap_vs_P2
+
+Problem:
+  The statement is false as written. It no longer formalizes the specific
+  two-region scheme discussed in the textbook; instead it quantifies over
+  arbitrary compact Hausdorff spaces `X, Tx` and assumes only that every
+  fundamental group `pi_1(X,x0)` is cyclic of order 2.
+
+  That does not characterize `P^2`. A concrete counterexample is the disjoint
+  union `P^2 :.: P^2` with the disjoint-union topology: it is compact and
+  Hausdorff, and every basepoint lies in one component with fundamental group
+  `Z/2`, but the whole space is disconnected and therefore not homeomorphic to
+  `P^2`.
+
+Proposed Replacement:
+  Replace the current theorem by a statement about the actual polygonal
+  two-region scheme from the exercise, or at minimum add the missing geometric
+  hypotheses that identify `X` as that quotient space. A pure
+  `compact_space + Hausdorff_space + all pi_1 = Z/2` statement is too weak.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776064155 | Bob: The current theorem threw away the scheme data and kept
+    only a homotopy-group invariant that is nowhere near a full
+    homeomorphism classifier.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776063816
 Created: 1776063816
 Status: PROPOSED
