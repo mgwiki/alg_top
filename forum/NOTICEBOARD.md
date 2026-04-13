@@ -8607,6 +8607,51 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE 1776081081
+========================================================
+Created: 1776081081
+Status: OPEN
+
+Refers to Commit:
+  a2dd22b729477abf34e5ee0db8438acf70f7b21f
+
+Target:
+  Line: 646511
+  Name: thm78_1_triangulation_quotient_map_local (Theorem)
+
+Problem:
+  The statement is under-specified. Its hypotheses only say that each
+  `apply_fun triangular_regions i` is some polygonal region in `R^2`, but
+  they never include the homeomorphisms from those regions onto the actual
+  triangulation pieces `apply_fun triangles i` in `X`. Without that extra
+  data there is no canonical way to define the claimed map
+  `pi : setprod n (...) -> X`, and in general the conclusion is too strong:
+  unrelated polygonal regions with the right cardinality/shape data do not
+  determine a surjection onto `X`.
+
+Proposed Replacement:
+  Strengthen the theorem by adding, for each `i :e n`, a homeomorphism from
+  `apply_fun triangular_regions i` onto `apply_fun triangles i`, or replace
+  the theorem by a version that directly outputs both the regions and the
+  quotient map from the original triangulation data in one package.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776081081 | Bob: This is the first false shell underneath both named
+    S78 theorems. Governing it is cleaner than continuing to split wrappers
+    that cannot be honestly proved from the current hypotheses.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
