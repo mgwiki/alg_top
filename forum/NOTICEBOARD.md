@@ -144,6 +144,183 @@ Implementation Commit:
 Status:
   PROPOSED
 
+NOTICE ID: 1776110828
+Created: 1776110828
+Status: PROPOSED
+
+Refers to Commit:
+  e9b680773e7807f72a2eb9d7328aec2f893e06b3
+
+Target:
+  Line: 686514
+  Name: thm82_1_subgroup_cover_over_literal_orbit_space_core_local
+
+Problem:
+  The statement is false as written. It assumes only a regular covering
+    regular_covering_map U Tu B Tb pu u0
+  with simply connected total space `U`, and concludes existence of a
+  covering of the orbit-space base by a path connected, locally path
+  connected total space.
+
+  Under the current formal definitions, if `U` is simply connected but not
+  locally path connected, the identity map on `U` is a regular covering of
+  `B := U` by itself. The covering transformation group is then trivial, so
+  the orbit space is just `U` again. For the trivial subgroup `H0`, the
+  theorem would therefore produce a covering
+    q : E -> orbit_space(...) = U
+  with `locally_path_connected E Te`.
+
+  But the existing theorem `covering_map_locally_path_connected_codomain`
+  then forces the codomain `U` itself to be locally path connected, a
+  contradiction. So the theorem overstates what follows from its current
+  hypotheses.
+
+Proposed Replacement:
+  Strengthen the statement with a genuinely sufficient local-path-connected
+  hypothesis on the relevant spaces, or refactor it to depend only on an
+  approved theorem that already packages those hypotheses.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776110828 | Bob: This is the current admitted S82 bottleneck. It is not
+    merely hard; it is false for the same identity-cover reason already
+    governing the downstream universal-cover helpers.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776110829
+Created: 1776110829
+Status: PROPOSED
+
+Refers to Commit:
+  e9b680773e7807f72a2eb9d7328aec2f893e06b3
+
+Target:
+  Line: 686872
+  Name: thm82_1_subgroup_cover_from_literal_orbit_model_core_local
+
+Problem:
+  The statement is false as written. Even after adding the orbit-space
+  homeomorphism `k`, it still concludes existence of a covering with locally
+  path connected total space from hypotheses that do not force the base to be
+  locally path connected.
+
+  Taking a simply connected but non-locally-path-connected space `B`, the
+  identity covering on `B`, the trivial covering-transformation group, and
+  `k = id_B`, all hypotheses are satisfied for the trivial subgroup `H`.
+  The theorem then yields a covering
+    compose_fun E q k : E -> B
+  with `locally_path_connected E Te`.
+
+  By `covering_map_locally_path_connected_codomain`, this forces `B` itself to
+  be locally path connected, contradiction. So the theorem is false, not just
+  unfinished.
+
+Proposed Replacement:
+  Strengthen the hypotheses to include enough local-path-connectedness data, or
+  restate the theorem over an approved corrected version of the literal-orbit
+  subgroup-realization theorem.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776110829 | Bob: This theorem is already marked `Proven Bob`, but its
+    proof depends recursively on the admitted literal-orbit core above. The
+    problem is statement-level and should be governed before anyone builds more
+    work on it.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776110830
+Created: 1776110830
+Status: PROPOSED
+
+Refers to Commit:
+  e9b680773e7807f72a2eb9d7328aec2f893e06b3
+
+Target:
+  Line: 687358
+  Name: thm82_1_subgroup_cover_from_orbit_model_core_local
+
+Problem:
+  The statement is false as written for the same reason as the literal-orbit
+  version. It concludes a covering of `B` with a locally path connected total
+  space from hypotheses that permit `B` to be simply connected but not locally
+  path connected.
+
+  In the identity-cover/trivial-group case on such a space `B`, the hypotheses
+  are satisfied with the identity homeomorphism from the orbit space to `B`
+  and the trivial subgroup `H`. The conclusion again yields a covering
+    p : E -> B
+  with `locally_path_connected E Te`, forcing `B` locally path connected by
+  `covering_map_locally_path_connected_codomain`, contradiction.
+
+Proposed Replacement:
+  Strengthen the theorem with the missing local-path-connectedness assumptions,
+  or defer to a corrected approved statement downstream of the literal-orbit
+  subgroup-realization core.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776110830 | Bob: This is the main proved S82 orbit-model helper currently
+    feeding the false regular-universal-cover helper chain. The issue is
+    mathematical, not just proof debt.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776110407
 Created: 1776110407
 Status: PROPOSED
