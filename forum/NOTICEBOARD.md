@@ -7968,6 +7968,47 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE ID: 1776052142
+Created: 1776052142
+Status: OPEN
+
+Refers to Commit:
+  cf884c4ef7f28475d3380b99263d0deeeeb59166
+
+Target:
+  Line: 390790
+  Name: connected_sum_of_path_connected_tori_cover_overlap_local (Theorem)
+
+Problem:
+  The statement is false as written. It assumes only
+  `connected_sum_space ... = U :\/: V` and concludes `(U :/\: V) <> Empty`.
+  But for any nonempty space X, taking `U = X` and `V = Empty` satisfies
+  `X = U :\/: V` while `U :/\: V = Empty`. Here the intended nonempty space is
+  the double-torus connected-sum space, so the theorem cannot be proved from its
+  current hypotheses.
+
+Proposed Replacement:
+  Replace this with a statement about the specific chosen cover pieces, or add the
+  missing hypotheses that characterize those pieces (for example, the explicit
+  quotient-image cover sets from the two punctured torus summands).
+
+Proposed by: Bob
+
+Discussion:
+  - 1776052142 | Bob: The current theorem quantifies over arbitrary U,V and is
+    therefore unprovable. The overlap fact belongs to the explicit chosen cover,
+    not to every binary cover of the connected-sum space.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
