@@ -82,6 +82,65 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776096937
+Created: 1776096937
+Status: PROPOSED
+
+Refers to Commit:
+  288730ea9e7e9ae5b08aec6837a37515559abf5b
+
+Target:
+  Line: 681341
+  Name: thm81_5_properly_discontinuous_covering
+
+Problem:
+  The statement is under-specified as written. It quantifies over an arbitrary
+  set `G` of homeomorphisms with `idG :e G`, but the theorem and its current
+  proof body require closure of `G` under composition and inverses.
+
+  This is already visible in the internal admitted claims:
+  `Hcomp : forall g1 g2, ... exists g3 :e G ...`
+  and
+  `Hinv : forall g0, ... exists ginv :e G ...`.
+  Those properties do not follow from the stated hypotheses.
+
+  Without them, `orbit_equiv X G` need not be an equivalence relation, the
+  orbit map need not be invariant under the action data used later in the
+  proof, and the backward covering-space construction has no justified way to
+  move between slices by composing or inverting elements of `G`.
+
+Proposed Replacement:
+  Replace the theorem by a version that explicitly assumes the needed group
+  structure on `G`, for example composition closure and inverse closure
+  compatible with the action, or reformulate it using a packaged group action
+  hypothesis instead of a bare subset of homeomorphisms.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776096937 | Bob: This is a major theorem-level blocker, not a local proof
+    gap. The admitted `Hcomp` and `Hinv` claims are exactly the missing group
+    axioms.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776091228
 Created: 1776091228
 Status: PROPOSED
