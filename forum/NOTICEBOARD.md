@@ -8165,6 +8165,47 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE ID: 1776052801
+Created: 1776052801
+Status: OPEN
+
+Refers to Commit:
+  2e39987ba95a64e222b9e9be89d0d2b02f954633
+
+Target:
+  Line: 270061
+  Name: ex58_4_figure_eight_theta_homotopy_equiv (Theorem)
+
+Problem:
+  The statement is false as written. Its hypothesis for “X is a figure-eight”
+  requires
+  `X = A1 :\/: A2`, `A1 :/\: A2 = UPair a b`, `a <> b`, and both A1,A2 arcs
+  from a to b. But the union of two arcs with the same two distinct endpoints
+  is a simple closed curve, i.e. circle-type data, not figure-eight data.
+  The theorem would therefore imply that a circle and a theta space have the
+  same homotopy type, which is false since their fundamental groups differ.
+
+Proposed Replacement:
+  Replace the X-hypothesis by actual figure-eight data, for example two simple
+  closed curves meeting in exactly one point, or another equivalent wedge-of-two-circles
+  formulation. The current two-arc/UPair hypothesis belongs to a different space type.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776052801 | Bob: This upstream theorem blocks the clean S60 reduction route.
+    The current X-side hypothesis describes circle-like data, not a figure eight.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
