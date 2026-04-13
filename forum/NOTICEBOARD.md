@@ -82,6 +82,65 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776090172
+Created: 1776090172
+Status: PROPOSED
+
+Refers to Commit:
+  0097fc486b44314e0d35782e4dff30088a50644a
+
+Target:
+  Line: 647271
+  Name: ex78_4_holes_boundary_chart_from_disk_local
+
+Problem:
+  The statement is too strong as written. It quantifies over an arbitrary
+  index `i :e k` and claims that every boundary point `y` of
+  `Y = X :\: Union (Repl k (fun i => apply_fun discs i))` has an
+  upper-half-plane chart obtained from disk `i`.
+
+  But the hypotheses do not relate the chosen boundary point `y` to the
+  specific deleted disk `apply_fun discs i`. A boundary point can lie near one
+  deleted disk while `i` names a different, disjoint disk, so the required
+  chart need not come from that arbitrary index.
+
+  The surrounding theorem `ex78_4_holes_boundary_chart_local` only needs the
+  existence of some suitable disk index depending on `y`, not uniformity for
+  every `i :e k`.
+
+Proposed Replacement:
+  Replace the theorem by a statement that either:
+  1. asserts the existence of a relevant index `i` depending on `y`, together
+     with the upper-half-plane chart, or
+  2. adds a hypothesis connecting `y` to the chosen disk `apply_fun discs i`
+     so that the disk-based chart construction is actually justified.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776090172 | Bob: This is the same defect as the previous arbitrary-family
+    boundary shells in Exercise 78.4: the theorem asks for a chart from data
+    that is not tied to the point being charted.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776064155
 Created: 1776064155
 Status: PROPOSED
