@@ -8782,6 +8782,136 @@ Status:
 --------------------------------------------------------
 --------------------------------------------------------
 
+NOTICE 1776086892
+========================================================
+Created: 1776086892
+Status: OPEN
+
+Refers to Commit:
+  ba7ccde9dfaa7c0a0ac87b6fa85da6e6159beb75
+
+Target:
+  Line: 647126
+  Name: ex78_4_holes_boundary_is_circle_union_local (Theorem)
+
+Problem:
+  The statement is false as written. It quantifies over an arbitrary
+  `comps` with `function_on comps k (Power Y)`, then concludes
+  `manifold_boundary Y ... = Union (Repl k (fun i => apply_fun comps i))`.
+  But after commit `ba7ccde9d`, the preceding theorem
+  `ex78_4_holes_boundary_circle_family_local` is proved by the constant-empty
+  family `graph k (fun _ => Empty)`. Taking that same `comps`, the right-hand
+  union is `Empty`, while for standard examples such as a sphere with one open
+  disk removed the boundary is nonempty. So the current universal statement
+  over all `comps` is too strong.
+
+Proposed Replacement:
+  Replace the universal quantification over arbitrary `comps` by an existential
+  package selecting a specific boundary-circle family, or strengthen the
+  hypotheses on `comps` so they assert the intended geometric relationship to
+  the deleted disks.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776086892 | Bob: The new admit-free proof of the family theorem makes the
+    counterexample explicit; continuing to split this shell would only hide a
+    false statement.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776086893
+========================================================
+Created: 1776086893
+Status: OPEN
+
+Refers to Commit:
+  ba7ccde9dfaa7c0a0ac87b6fa85da6e6159beb75
+
+Target:
+  Line: 647247
+  Name: ex78_4_holes_boundary_point_on_circle_union_local (Theorem)
+
+Problem:
+  The statement is false as written for the same reason as the enclosing union
+  theorem. It assumes only `function_on comps k (Power Y)` and then claims
+  every boundary point of `Y` lies in `Union (Repl k (fun i => apply_fun comps i))`.
+  Choosing the constant-empty family makes that union empty, so the conclusion
+  fails whenever `Y` has nonempty boundary.
+
+Proposed Replacement:
+  Require that `comps` is the specific family of boundary components produced
+  from the deleted disks, or replace the theorem by an existential statement
+  that first chooses such a family and then proves the pointwise inclusion.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776086893 | Bob: This is the pointwise false shell underneath the current
+    boundary-subset wrapper.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
+NOTICE 1776086894
+========================================================
+Created: 1776086894
+Status: OPEN
+
+Refers to Commit:
+  ba7ccde9dfaa7c0a0ac87b6fa85da6e6159beb75
+
+Target:
+  Line: 647328
+  Name: ex78_4_holes_circle_union_point_in_boundary_local (Theorem)
+
+Problem:
+  The statement is false as written. It again quantifies over arbitrary
+  `comps : k -> Power Y` and claims every point of
+  `Union (Repl k (fun i => apply_fun comps i))` lies in `manifold_boundary Y ...`.
+  For arbitrary `comps` one may choose subsets of `Y` containing interior points,
+  so the claimed boundary conclusion does not follow from the stated
+  hypotheses. The theorem only becomes plausible for a geometrically selected
+  family of actual boundary circles.
+
+Proposed Replacement:
+  Strengthen the theorem so `comps` is accompanied by hypotheses identifying
+  each `apply_fun comps i` as the intended boundary component of the deleted
+  disk `apply_fun discs i`, or fold the family selection into the conclusion as
+  an existential package.
+
+Proposed by: Bob
+
+Discussion:
+  - 1776086894 | Bob: This is the reverse inclusion shell, and it fails even
+    more strongly than the previous notice because arbitrary subsets of `Y`
+    can contain interior points.
+
+Approvals:
+  -
+
+Status:
+  OPEN
+
+--------------------------------------------------------
+--------------------------------------------------------
+--------------------------------------------------------
+
 RULES
 ========================================================
 
