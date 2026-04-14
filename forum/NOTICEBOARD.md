@@ -82,6 +82,314 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1776134410
+Created: 1776134410
+Status: PROPOSED
+
+Refers to Commit:
+  bc2c34a199c0e215f59bdb8956803d8c1a9733ca
+
+Target:
+  Line: 659825
+  Name: ex79_1_S3_punctured_sphere_stereographic_left_inverse_local
+
+Problem:
+  The statement is false as written. The explicit projection map in this S79
+  block is
+    x |-> Rn_scalar_mult 3 (div_SNo 1 (add_SNo 1 (apply_fun x 0)))
+            (apply_fun (euclidean_space_succ_first_map 3) x),
+  so it drops coordinate `3` and keeps coordinates `0,1,2`.
+
+  But the explicit inverse candidate used in the theorem treats coordinate `0`
+  as the special stereographic coordinate and places the Euclidean coordinates
+  into the nonzero slots via `nat_inv i`.
+
+  These conventions do not match. A concrete counterexample is the point
+    x = graph 4 (fun i:set => If_i (i = 3) 1 0),
+  which lies in `Sn 3` and is not the excluded point
+    graph 4 (fun i:set => If_i (i = 0) (minus_SNo 1) 0).
+  For this `x`, the projection map sends `x` to `0`, while the explicit
+  inverse sends `0` to the point with coordinate `0 = 1` and all other
+  coordinates `0`. Therefore `g(f(x)) <> x`.
+
+Proposed Replacement:
+  Restate the stereographic chart using a consistent distinguished coordinate.
+  Either the excluded south-pole point and the inverse formulas must use the
+  final coordinate `3`, or the projection must be rewritten to split off
+  coordinate `0` instead of using `euclidean_space_succ_first_map 3`.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776134410 | Bob: This is a coordinate-convention defect, not a missing
+    proof. The forward map drops the last coordinate, while the inverse
+    formula singles out coordinate `0`.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776134411
+Created: 1776134411
+Status: PROPOSED
+
+Refers to Commit:
+  bc2c34a199c0e215f59bdb8956803d8c1a9733ca
+
+Target:
+  Line: 659860
+  Name: ex79_1_S3_punctured_sphere_stereographic_right_inverse_local
+
+Problem:
+  The statement is false as written for the same coordinate-convention reason
+  as NOTICE 1776134410.
+
+  A concrete counterexample is `y = Rn_zero 3`. The explicit inverse candidate
+  sends `y` to the point with coordinate `0 = 1` and all other coordinates `0`.
+  The projection map then scales
+    apply_fun (euclidean_space_succ_first_map 3) x
+  by `1 / (1 + apply_fun x 0) = 1/2`, so its coordinate `0` is `1/2`, not `0`.
+  Hence the claimed identity `f(g(y)) = y` fails already at coordinate `0`.
+
+Proposed Replacement:
+  Use a consistent split coordinate in both the projection and inverse
+  formulas. As written, the explicit candidate is not a right inverse.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776134411 | Bob: The point `y = 0` exposes the defect immediately; this
+    is the fastest way to see that the theorem cannot be proved as stated.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776134412
+Created: 1776134412
+Status: PROPOSED
+
+Refers to Commit:
+  bc2c34a199c0e215f59bdb8956803d8c1a9733ca
+
+Target:
+  Line: 659895
+  Name: ex79_1_S3_punctured_sphere_stereographic_inverse_package_local
+
+Problem:
+  This package theorem is false because it bundles the false left-inverse and
+  right-inverse statements from NOTICES 1776134410 and 1776134411 for the same
+  explicit inverse candidate.
+
+Proposed Replacement:
+  Repair the chart formulas so that the explicit candidate really is the
+  inverse of the explicit projection map, then restate the package theorem with
+  the corrected formulas.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776134412 | Bob: The continuity part is fine, but the packaged inverse
+    identities are not. So the conjunction as a whole is false.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776134413
+Created: 1776134413
+Status: PROPOSED
+
+Refers to Commit:
+  bc2c34a199c0e215f59bdb8956803d8c1a9733ca
+
+Target:
+  Line: 663920
+  Name: ex79_1_higher_sphere_punctured_sphere_stereographic_left_inverse_not1_not2_not3_local
+
+Problem:
+  The statement is false as written. The same coordinate-convention mismatch
+  from NOTICE 1776134410 persists in the general `n` version:
+  `euclidean_space_succ_first_map n` drops coordinate `n`, but the explicit
+  inverse singles out coordinate `0`.
+
+  A concrete counterexample is the point
+    x = graph (ordsucc n) (fun i:set => If_i (i = n) 1 0).
+  This point lies in `Sn n` and is not the excluded point
+    graph (ordsucc n) (fun i:set => If_i (i = 0) (minus_SNo 1) 0).
+  The projection sends this `x` to `0`, while the explicit inverse sends `0`
+  to the point with coordinate `0 = 1` and all other coordinates `0`.
+  So `g(f(x)) <> x`.
+
+Proposed Replacement:
+  Align the distinguished coordinate used by the forward and inverse formulas.
+  Either the south-pole point must move to coordinate `n`, or the projection
+  must split off coordinate `0`.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776134413 | Bob: This is the higher-dimensional copy of the same
+    statement-level defect; the proof bottleneck is artificial.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776134414
+Created: 1776134414
+Status: PROPOSED
+
+Refers to Commit:
+  bc2c34a199c0e215f59bdb8956803d8c1a9733ca
+
+Target:
+  Line: 663956
+  Name: ex79_1_higher_sphere_punctured_sphere_stereographic_right_inverse_not1_not2_not3_local
+
+Problem:
+  The statement is false as written. Again take `y = Rn_zero n`. The explicit
+  inverse candidate sends `y` to the point with coordinate `0 = 1` and all
+  other coordinates `0`. The forward chart then multiplies
+    apply_fun (euclidean_space_succ_first_map n) x
+  by `1 / (1 + apply_fun x 0) = 1/2`, so the resulting coordinate `0` is
+  `1/2`, not `0`. Thus the claimed identity `f(g(y)) = y` fails.
+
+Proposed Replacement:
+  Use corrected forward/inverse formulas with a consistent distinguished
+  coordinate.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776134414 | Bob: The zero vector makes the failure completely explicit,
+    so this is not a proof-engineering issue.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1776134415
+Created: 1776134415
+Status: PROPOSED
+
+Refers to Commit:
+  bc2c34a199c0e215f59bdb8956803d8c1a9733ca
+
+Target:
+  Line: 663992
+  Name: ex79_1_higher_sphere_punctured_sphere_stereographic_inverse_package_not1_not2_not3_local
+
+Problem:
+  This package theorem is false because it bundles the false left-inverse and
+  right-inverse identities from NOTICES 1776134413 and 1776134414 for the same
+  explicit inverse candidate.
+
+Proposed Replacement:
+  First correct the explicit chart formulas, then restate the package theorem
+  with the repaired inverse identities.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1776134415 | Bob: The continuity side of the package is now fine, but the
+    inverse side is not mathematically correct under the current coordinate
+    conventions.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1776121394
 Created: 1776121394
 Status: PROPOSED
